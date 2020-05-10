@@ -318,7 +318,7 @@ namespace Stroika::Foundation::Traversal {
 #endif
 
     public:
-        struct EqualsComparer;
+        using EqualsComparer [[deprecated ("use std::equal_to (or just ==) in in 2.1a5")]] = std::equal_to<Range>;
 
     public:
         /**
@@ -398,16 +398,8 @@ namespace Stroika::Foundation::Traversal {
         Openness fEndOpenness_;
     };
 
-    /**
-     */
-    template <typename T, typename TRAITS>
-    struct Range<T, TRAITS>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
-        constexpr bool operator() (const Range& lhs, const Range& rhs) const;
-    };
-
 #if __cpp_impl_three_way_comparison < 201907
     /**
-     *  Basic comparison operator overloads with the obivous meaning, and simply indirect to @Range<T, TRAITS>::EqualsComparer
      */
     template <typename T, typename TRAITS>
     bool operator== (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);

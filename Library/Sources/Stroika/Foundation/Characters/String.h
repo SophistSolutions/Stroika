@@ -1175,7 +1175,7 @@ namespace Stroika::Foundation::Characters {
         using ThreeWayComparer = Common::compare_three_way<String, String>;
 
     public:
-        using EqualsComparer [[deprecated ("use std::equal_to in  in 2.1a5")]] = std::equal_to<String>;
+        using EqualsComparer [[deprecated ("use std::equal_to (or just ==) in in 2.1a5")]] = std::equal_to<String>;
 
     public:
         struct LessComparer;

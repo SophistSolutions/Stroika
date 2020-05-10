@@ -374,23 +374,12 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename TRAITS>
     constexpr bool Range<T, TRAITS>::operator== (const Range& rhs) const
     {
-        return EqualsComparer{}(*this, rhs);
-    }
-#endif
-
-    /*
-     ********************************************************************************
-     ************************ Range<T, TRAITS>::EqualsComparer **********************
-     ********************************************************************************
-     */
-    template <typename T, typename TRAITS>
-    constexpr bool Range<T, TRAITS>::EqualsComparer::operator() (const Range& lhs, const Range& rhs) const
-    {
-        if (lhs.empty ()) {
+        if (empty ()) {
             return rhs.empty ();
         }
-        return lhs.GetLowerBound () == rhs.GetLowerBound () and lhs.GetUpperBound () == rhs.GetUpperBound () and lhs.GetLowerBoundOpenness () == rhs.GetLowerBoundOpenness () and lhs.GetUpperBoundOpenness () == rhs.GetUpperBoundOpenness ();
+        return GetLowerBound () == rhs.GetLowerBound () and GetUpperBound () == rhs.GetUpperBound () and GetLowerBoundOpenness () == rhs.GetLowerBoundOpenness () and GetUpperBoundOpenness () == rhs.GetUpperBoundOpenness ();
     }
+#endif
 
 #if __cpp_impl_three_way_comparison < 201907
     /*
@@ -401,12 +390,15 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename TRAITS>
     inline bool operator== (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
     {
-        return typename Range<T, TRAITS>::EqualsComparer{}(lhs, rhs);
+        if (lhs.empty ()) {
+            return rhs.empty ();
+        }
+        return lhs.GetLowerBound () == rhs.GetLowerBound () and lhs.GetUpperBound () == rhs.GetUpperBound () and lhs.GetLowerBoundOpenness () == rhs.GetLowerBoundOpenness () and lhs.GetUpperBoundOpenness () == rhs.GetUpperBoundOpenness ();
     }
     template <typename T, typename TRAITS>
     inline bool operator!= (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
     {
-        return not typename Range<T, TRAITS>::EqualsComparer{}(lhs, rhs);
+        return not (lhs == rhs);
     }
 #endif
 

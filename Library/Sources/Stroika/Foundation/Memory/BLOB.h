@@ -295,7 +295,7 @@ namespace Stroika::Foundation::Memory {
 #endif
 
     public:
-        struct EqualsComparer;
+        using EqualsComparer [[deprecated ("use std::equal_to (or just ==) in in 2.1a5")]] = std::equal_to<BLOB>;
 
     public:
         struct ThreeWayComparer;
@@ -374,14 +374,6 @@ namespace Stroika::Foundation::Memory {
         virtual pair<const byte*, const byte*> GetBounds () const = 0;
 
         nonvirtual const _IRep& operator= (const _IRep&) = delete;
-    };
-
-    /**
-     *
-     *  Like ThreeWayComparer checking for 0, but often faster
-     */
-    struct BLOB::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
-        nonvirtual bool operator() (const BLOB& lhs, const BLOB& rhs) const;
     };
 
     /**
