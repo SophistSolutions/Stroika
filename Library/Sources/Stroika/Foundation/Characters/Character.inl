@@ -41,7 +41,7 @@ namespace Stroika::Foundation::Characters {
     }
     DISABLE_COMPILER_MSC_WARNING_END (4244)
     constexpr inline Character::Character (wchar_t wc)
-        : fCharacterCode_ (wc)
+        : fCharacterCode_{wc}
     {
     }
     inline char Character::GetAsciiCode () const
@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline wchar_t Character::GetCharacterCode () const
     {
-        return (fCharacterCode_);
+        return fCharacterCode_;
     }
     template <>
     inline wchar_t Character::As () const
