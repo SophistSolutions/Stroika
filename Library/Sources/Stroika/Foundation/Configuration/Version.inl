@@ -66,43 +66,33 @@ namespace Stroika::Foundation::Configuration {
 
     /*
      ********************************************************************************
-     *********************** Version::ThreeWayComparer ******************************
-     ********************************************************************************
-     */
-    constexpr Common::strong_ordering Version::ThreeWayComparer::operator() (const Version& lhs, const Version& rhs) const
-    {
-        return Common::ThreeWayCompare (make_signed_t<Binary32BitFullVersionType> (lhs.AsFullVersionNum ()), make_signed_t<Binary32BitFullVersionType> (rhs.AsFullVersionNum ()));
-    }
-
-    /*
-     ********************************************************************************
      ***************************** Version operators ********************************
      ********************************************************************************
      */
 #if __cpp_impl_three_way_comparison < 201907
     constexpr bool operator< (const Version& lhs, const Version& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) < 0;
+        return make_signed_t<Binary32BitFullVersionType> (lhs.AsFullVersionNum ()) < make_signed_t<Binary32BitFullVersionType> (rhs.AsFullVersionNum ()));
     }
     constexpr bool operator<= (const Version& lhs, const Version& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) <= 0;
+        return make_signed_t<Binary32BitFullVersionType> (lhs.AsFullVersionNum ()) <= make_signed_t<Binary32BitFullVersionType> (rhs.AsFullVersionNum ()));
     }
     constexpr bool operator== (const Version& lhs, const Version& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) == 0;
+        return make_signed_t<Binary32BitFullVersionType> (lhs.AsFullVersionNum ()) == make_signed_t<Binary32BitFullVersionType> (rhs.AsFullVersionNum ()));
     }
     constexpr bool operator!= (const Version& lhs, const Version& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) != 0;
+        return make_signed_t<Binary32BitFullVersionType> (lhs.AsFullVersionNum ()) != make_signed_t<Binary32BitFullVersionType> (rhs.AsFullVersionNum ()));
     }
     constexpr bool operator>= (const Version& lhs, const Version& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) >= 0;
+        return make_signed_t<Binary32BitFullVersionType> (lhs.AsFullVersionNum ()) >= make_signed_t<Binary32BitFullVersionType> (rhs.AsFullVersionNum ()));
     }
     constexpr bool operator> (const Version& lhs, const Version& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) > 0;
+        return make_signed_t<Binary32BitFullVersionType> (lhs.AsFullVersionNum ()) > make_signed_t<Binary32BitFullVersionType> (rhs.AsFullVersionNum ()));
     }
 #endif
 

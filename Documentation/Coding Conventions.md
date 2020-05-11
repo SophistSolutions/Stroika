@@ -122,23 +122,92 @@ Or for Stream classes, the &#39;stream quasi namespace&#39; contains a New metho
 
 - Note this has materially changed in Stroika v2.1, due to the upcoming
   changes in C++20 to support the spaceship operator and automatic compare
-  operation functions from it.
+  operation functions generated from it.
 
 Stroika types generally support the c++20 operator== and operator<=> semantics and operators.
 
 But sometimes you want to have a compare functor that takes parameters (e.g. string optionally case insensitive).
 
-Stroika types follow the convention of providing a ThreeWayComparer function object (generally fully constexpr) and an EqualsComparer object. These are generally available as nested members of the given type T. These are **not always** available, but will be where to look if there are options for how to compare a given object.
+Stroika types follow the convention of providing a ThreeWayComparer function object and an EqualsComparer object. If-and-only-if the comparitors can be parameterized, they are available as nested members of the given type T. These are **not** available (as nested members) if they cannot be parameterized.
+
+One subtlety that does occasionally need to be accomodated (especailly pre-C++20) is telling a less comparer from an equals comparer, etc in overloads. This is done with Common::ComparisonRelationType and Common::ComparisonRelationDeclaration.
 
 ### Definition of comparison
 
+As much as possible, an attempt was made to make this the same across C++ versions, but C++20 is different enough, that this wasn't done perfectly.
+
+These instructions cover support of both.
+
+For a class T, where the compare functions are NOT paramterized:
+
+#### ALWAYS define
+
 ```C++
-    struct TimeOfDay::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        constexpr int operator() (const TimeOfDay& lhs, const TimeOfDay& rhs) const;
-    };
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        constexpr strong_ordering operator<=> (const T& rhs) const;
+
+    public:
+        /**
+         */
+        constexpr bool operator== (const T& rhs) const;
+#endif
 ```
 
-and if
+(note - sometimes you can use instead)
+
+```C++
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        constexpr auto operator<=> (const T& rhs) const = default;
+#endif
+```
+
+and then define
+
+```C++
+#if __cpp_impl_three_way_comparison < 201907
+    constexpr bool operator< (const T& lhs, const T& rhs);
+    constexpr bool operator<= (const T& lhs, const T& rhs);
+    constexpr bool operator== (const T& lhs, const T& rhs);
+    constexpr bool operator!= (const T& lhs, const T& rhs);
+    constexpr bool operator>= (const T& lhs, const T& rhs);
+    constexpr bool operator> (const T& lhs, const T& rhs);
+#endif
+```
+
+#### And if T compare function may be parameterized also
+
+```C++
+   struct T {
+     ....
+
+
+     struct EqualsComparer;
+     struct ThreeWayComparer;
+   };
+    struct T::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+        constexpr EqualsComparer (int extraArgs = 0);
+        constexpr bool operator() (const T& lhs, const T& rhs) const;
+    };
+    struct T::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+        constexpr ThreeWayComparer (int extraArgs = 0);
+        constexpr strong_ordering operator() (const T& lhs, const T& rhs) const;
+    };
+
+```
+
+&&&& IGNORE BELIOW
+
+```C++
+    struct TimeOfDay::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+        constexpr strong_ordering operator() (const TimeOfDay& lhs, const TimeOfDay& rhs) const;
+    };
+```
 
 ```C++
 #if \_\__cpp_impl_three_way_comparison < 201907

@@ -224,6 +224,7 @@ namespace Stroika::Foundation::Characters {
 
 #if __cpp_lib_three_way_comparison < 201907L
 namespace Stroika::Foundation::Common {
+    // specialization not needed, but more efficient
     template <>
     struct compare_three_way<Characters::Character, Characters::Character> : Characters::Character::ThreeWayComparer {
     };

@@ -58,6 +58,9 @@ namespace Stroika::Foundation::Configuration {
      *  by MSFT (as near as I can tell they have none - its just 4 bytes for them).
      *
      *  @see Stroika_Make_FULL_VERSION for the mapping
+     *
+     *  \note Comparisons:
+     *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
     struct Version {
     public:
@@ -118,7 +121,7 @@ namespace Stroika::Foundation::Configuration {
         nonvirtual Characters::String ToString () const;
 
     public:
-        struct ThreeWayComparer;
+        using ThreeWayComparer [[deprecated ("use Common::compare_three_way in  in 2.1a5")]] = Common::compare_three_way<Version, Version>;
 
 #if __cpp_impl_three_way_comparison >= 201907
     public:
@@ -131,12 +134,6 @@ namespace Stroika::Foundation::Configuration {
          */
         constexpr bool operator== (const Version& rhs) const;
 #endif
-    };
-
-    /**
-     */
-    struct Version::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        constexpr Common::strong_ordering operator() (const Version& lhs, const Version& rhs) const;
     };
 
 #if __cpp_impl_three_way_comparison < 201907

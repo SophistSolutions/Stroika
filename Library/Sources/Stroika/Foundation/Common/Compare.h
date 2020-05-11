@@ -140,6 +140,14 @@ namespace Stroika::Foundation::Common {
     };
 
     /**
+
+
+    &&& @todo see if this can be deprecated and if 
+
+        return three_way_compare{} (lhs,rhs) works/deduces right types - not sure how it would be I've seen examples in docs of this
+
+
+
      *  \brief trivial wrapper calling ThreeWayComparer<T>{}(lhs,rhs) i.e. std::compare_three_way{} (lhs, rhs)
      *
      *  Since the type of ThreeWayComparer cannot be deduced, you must write a painful:
