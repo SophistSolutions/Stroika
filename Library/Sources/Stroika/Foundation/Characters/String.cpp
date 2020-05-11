@@ -768,7 +768,7 @@ bool String::StartsWith (const Character& c, CompareOptions co) const
     if (accessor._ConstGetRep ()._GetLength () == 0) {
         return false;
     }
-    return equal_to<Character>{co}(accessor._ConstGetRep ().GetAt (0), c);
+    return Character::EqualsComparer{co}(accessor._ConstGetRep ().GetAt (0), c);
 }
 
 bool String::StartsWith (const String& subString, CompareOptions co) const
@@ -796,7 +796,7 @@ bool String::EndsWith (const Character& c, CompareOptions co) const
     if (thisStrLen == 0) {
         return false;
     }
-    return equal_to<Character>{co}(useRep.GetAt (thisStrLen - 1), c);
+    return Character::EqualsComparer{co}(useRep.GetAt (thisStrLen - 1), c);
 }
 
 bool String::EndsWith (const String& subString, CompareOptions co) const

@@ -123,14 +123,16 @@ namespace Stroika::Foundation::Characters {
         }
     }
 
-}
-
-namespace std {
-    constexpr equal_to<Stroika::Foundation::Characters::Character>::equal_to (Stroika::Foundation::Characters::CompareOptions co)
+    /*
+     ********************************************************************************
+     *************************** Character::EqualsComparer **************************
+     ********************************************************************************
+     */
+    constexpr Character::EqualsComparer::EqualsComparer (CompareOptions co)
         : fCompareOptions{co}
     {
     }
-    inline bool equal_to<Stroika::Foundation::Characters::Character>::operator() (Stroika::Foundation::Characters::Character lhs, Stroika::Foundation::Characters::Character rhs) const
+    constexpr bool Character::EqualsComparer::operator() (Character lhs, Character rhs) const
     {
         using namespace Stroika::Foundation::Characters;
         switch (fCompareOptions) {
@@ -143,19 +145,17 @@ namespace std {
                 return false;
         }
     }
-}
 
-#if __cpp_lib_three_way_comparison < 201907L
-namespace Stroika::Foundation::Common
-#else
-namespace std
-#endif
-{
-    constexpr compare_three_way<Stroika::Foundation::Characters::Character, Stroika::Foundation::Characters::Character>::compare_three_way (Stroika::Foundation::Characters::CompareOptions co)
+    /*
+     ********************************************************************************
+     ************************* Character::ThreeWayComparer **************************
+     ********************************************************************************
+     */
+    constexpr Character::ThreeWayComparer::ThreeWayComparer (Stroika::Foundation::Characters::CompareOptions co)
         : fCompareOptions{co}
     {
     }
-    inline auto compare_three_way<Stroika::Foundation::Characters::Character, Stroika::Foundation::Characters::Character>::operator() (Stroika::Foundation::Characters::Character lhs, Stroika::Foundation::Characters::Character rhs) const
+    inline auto Character::ThreeWayComparer::operator() (Stroika::Foundation::Characters::Character lhs, Stroika::Foundation::Characters::Character rhs) const
     {
         using namespace Stroika::Foundation::Characters;
         using SIGNED_WCHART_ = make_signed_t<wchar_t>;
@@ -169,10 +169,8 @@ namespace std
                 return Common::kEqual;
         }
     }
-}
 
 #if __cpp_impl_three_way_comparison < 201907
-namespace Stroika::Foundation::Characters {
     /*
      ********************************************************************************
      ************************* Character operators **********************************
@@ -202,7 +200,8 @@ namespace Stroika::Foundation::Characters {
     {
         return Common::compare_three_way<Character, Character>{}(lhs, rhs) > 0;
     }
-}
 #endif
+
+}
 
 #endif /*_Stroika_Foundation_Characters_Character_inl_*/

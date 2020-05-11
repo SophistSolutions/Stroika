@@ -49,7 +49,8 @@ namespace Stroika::Foundation::Characters {
 
     /**
      *  \note Comparisons:
-     *        compare_three_way and equal_to specialized to provide extra optional comparison parameters
+     *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *        o Character::EqualsComparer and Character::ThreeWayComparer provided with construction parameters to allow case insensitive compares 
      */
     class Character {
     public:
@@ -143,7 +144,10 @@ namespace Stroika::Foundation::Characters {
 #endif
 
     public:
-        using ThreeWayComparer [[deprecated ("use Common::compare_three_way in  in 2.1a5")]] = Common::compare_three_way<Character, Character>;
+        struct EqualsComparer;
+
+    public:
+        struct ThreeWayComparer;
 
     public:
         /**
@@ -161,6 +165,38 @@ namespace Stroika::Foundation::Characters {
     wchar_t Character::As () const;
     template <>
     char32_t Character::As () const;
+
+    /**
+     *  Like equal_to<Character> but allow optional case insensitive compares
+     */
+    struct Character::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+        /**
+         *  optional CompareOptions to CTOR allows for case insensative compares
+         */
+        constexpr EqualsComparer (Stroika::Foundation::Characters::CompareOptions co = Stroika::Foundation::Characters::CompareOptions::eWithCase);
+
+        /**
+         */
+        constexpr bool operator() (Character lhs, Character rhs) const;
+
+        Stroika::Foundation::Characters::CompareOptions fCompareOptions;
+    };
+
+    /**
+     *  Like std::compare_three_way<Character,Character> but allow optional case insensitive compares
+     */
+    struct Character::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+        /**
+         *  optional CompareOptions to CTOR allows for case insensative compares
+         */
+        constexpr ThreeWayComparer (Stroika::Foundation::Characters::CompareOptions co = Stroika::Foundation::Characters::CompareOptions::eWithCase);
+
+        /**
+         */
+        nonvirtual auto operator() (Stroika::Foundation::Characters::Character lhs, Stroika::Foundation::Characters::Character rhs) const;
+
+        Stroika::Foundation::Characters::CompareOptions fCompareOptions;
+    };
 
 #if __cpp_impl_three_way_comparison < 201907
     /**
@@ -186,48 +222,13 @@ namespace Stroika::Foundation::Characters {
 
 }
 
-namespace std {
-    /**
-     *  Specialize equal_to<Character> to allow optional case insensitive compares
-     */
-    template <>
-    struct equal_to<Stroika::Foundation::Characters::Character> {
-        /**
-         *  optional CompareOptions to CTOR allows for case insensative compares
-         */
-        constexpr equal_to (Stroika::Foundation::Characters::CompareOptions co = Stroika::Foundation::Characters::CompareOptions::eWithCase);
-
-        /**
-         */
-        nonvirtual bool operator() (Stroika::Foundation::Characters::Character lhs, Stroika::Foundation::Characters::Character rhs) const;
-
-        Stroika::Foundation::Characters::CompareOptions fCompareOptions;
-    };
-}
-
 #if __cpp_lib_three_way_comparison < 201907L
-namespace Stroika::Foundation::Common
-#else
-namespace std
-#endif
-{
-    /**
-     *  Specialize compare_three_way<Character,Character> to allow optional case insensitive compares
-     */
+namespace Stroika::Foundation::Common {
     template <>
-    struct compare_three_way<Stroika::Foundation::Characters::Character, Stroika::Foundation::Characters::Character> {
-        /**
-         *  optional CompareOptions to CTOR allows for case insensative compares
-         */
-        constexpr compare_three_way (Stroika::Foundation::Characters::CompareOptions co = Stroika::Foundation::Characters::CompareOptions::eWithCase);
-
-        /**
-         */
-        nonvirtual auto operator() (Stroika::Foundation::Characters::Character lhs, Stroika::Foundation::Characters::Character rhs) const;
-
-        Stroika::Foundation::Characters::CompareOptions fCompareOptions;
+    struct compare_three_way<Characters::Character, Characters::Character> : Characters::Character::ThreeWayComparer {
     };
 }
+#endif
 
 /*
  ********************************************************************************
