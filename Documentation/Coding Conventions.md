@@ -118,7 +118,7 @@ Or for Stream classes, the &#39;stream quasi namespace&#39; contains a New metho
 
 ---
 
-## Comparisons: shapceship, operator==, operator<=> and operator<, operator>, etc…
+## <a name="Comparisons"></a> Comparisons: shapceship, operator==, operator<=> and operator<, operator>, etc…
 
 - Note this has materially changed in Stroika v2.1, due to the upcoming
   changes in C++20 to support the spaceship operator and automatic compare
@@ -180,58 +180,30 @@ and then define
 #endif
 ```
 
-#### And if T compare function may be parameterized also
+    **NOTE** This is even simpler for code which is only required to support C++20 - just define the one or two compare funcitons and you are done.
+
+#### If T compare function may be parameterized also
 
 ```C++
-   struct T {
+  struct T {
      ....
-
-
      struct EqualsComparer;
      struct ThreeWayComparer;
-   };
-    struct T::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+  };
+  struct T::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
         constexpr EqualsComparer (int extraArgs = 0);
-        constexpr bool operator() (const T& lhs, const T& rhs) const;
-    };
-    struct T::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+        bool operator() (const T& lhs, const T& rhs) const;
+  };
+  struct T::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         constexpr ThreeWayComparer (int extraArgs = 0);
-        constexpr strong_ordering operator() (const T& lhs, const T& rhs) const;
-    };
+        strong_ordering operator() (const T& lhs, const T& rhs) const;
+  };
 
 ```
 
-&&&& IGNORE BELIOW
+### How to **call** the comparison functions
 
-```C++
-    struct TimeOfDay::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        constexpr strong_ordering operator() (const TimeOfDay& lhs, const TimeOfDay& rhs) const;
-    };
-```
-
-```C++
-#if \_\__cpp_impl_three_way_comparison < 201907
-  ...bool operator<, operator<=, operator>, operator>=, operator==, operator!=
-#endif
-```
-
-which inline trivially maps to this.
-
-and if
-
-```C++
-#if \_\__cpp_impl_three_way_comparison >= 201907
-class T { ...
-  bool operator== (const T& rhs) {
-    return EqualsComparer{} (*this, rhs);
-  }
-  strong_ordering operator<=> (const T& rhs) {
-    return ThreeWayComparer{} (*this, rhs);
-  }
-#endif
-```
-
-### Call for comparison
+Calling comparison functions is simple.
 
 #### Using default comparison
 
@@ -246,7 +218,7 @@ All the various operators should just work with no effort, on both C++ 17, and w
 
 #### Using possibly explicit comparison functor
 
-Use templates to capture a 'compare' function (either Equals, or ThreeWay). And then call it directly. If using ThreeWay comparison, and with code that may need to use C++17 (or earlier) - use the helpful
+To support the C++20 compare_three_way function object (compatibly with C++17), it intoduces its own copy of this in the 'Common' namespace, along with:
 
 ```C++
   Common::strong_ordering   (alias for std::strong_ordering)
@@ -255,7 +227,27 @@ Use templates to capture a 'compare' function (either Equals, or ThreeWay). And 
   Common::kGreater          (alias for std::strong_ordering::greater)
 ```
 
-##### Example
+For code which assumes C++20 or later, just use the appropriate C++20 types/values/classes, with no need for the C++17-compatability helpers.
+
+Then to make use of these explicit function compare objects (the most common case) where the comparison function is not parameterized:
+
+```C++
+auto compareFunc = equal_to<T>{};
+if (compareFunc(t1, t2)) {
+  ...
+}
+```
+
+or
+
+```C++
+auto compareFunc = Common::compare_three_way<T,T>{};
+if (compareFunc(t1, t2) == Common::kLess) {
+  ...
+}
+```
+
+For the more complicated case of passing in explicit parameters, you use the nested members inside T, for example:
 
 ```C++
   var cmp1 = String::EqualsComparer{};
@@ -278,20 +270,15 @@ Use templates to capture a 'compare' function (either Equals, or ThreeWay). And 
   }
 ```
 
-### OLD COMMENTS
-
-Stroika code which COUNTS on comparison doesn't directly call T::ThreeWayCompare{}(), but instead uses **a < b** or **Common::ThreeWayCompare**, or **Common:ThreeWayComparer**.
-
-Note - Stroika classes will occasionally define T::EqualsComparer - very similer to T::ThreeWayComparer. This will ONLY be done when it provides a more efficient implementation than the ThreeWayComparer. In those cases, operator== and operator!= will map to that.
-
 ### Comparisons Rationale
 
 - Working with builtin types (e.g. int)
 - Working with STL types, and 3rd-party libraries
-- Probably more likely to seamlessly fit with user code
+- Seamlessly fit with user code
 - Works with C++17, and the newer operator<=> () code interoperably
+- when we abandon C++17 support, easy to deprecate 'Common:' wrappers on C++20 comparison code, and simplify.
 
-Note that we choose to use non-member operator overloads for these comparison functions because putting them in the namespace where the class is defined provides the same convenience of use (name lookup) as member functions, but allows for cases like C \&lt; O where C is some time convertible to O, and O is the class we are adding operator\&lt; support for.
+Note that we choose to use non-member operator overloads for these comparison functions (in C++17) because putting them in the namespace where the class is defined provides the same convenience of use (name lookup) as member functions, but allows for cases like C \&lt; O where C is some time convertible to O, and O is the class we are adding operator\&lt; support for.
 
 So for example:
 
@@ -301,6 +288,8 @@ So for example:
 ```
 
 Works as expected, so long as either the left or right side is a String class, and the other side is convertible to a String.
+
+**Design Note** - We considered specializing equal_to<> and three_way_compare<> templates to allow for refining the behavior (adding parameters) to compare functions. But the problem with this is I was unable to get ADDING NEW parameters to the base compare-templates (e.g. for Collection<>EqualsComparer we add in to the EqualsCompare template the BASE_COMPARER object, which cannot be added to the std::equal_to<> template - or I couldn't figure out how). So that left the approach of a nested type for the comparer objects.
 
 ---
 
