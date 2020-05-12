@@ -861,7 +861,7 @@ namespace Stroika::Foundation::Characters {
      */
     inline bool operator< (const String& lhs, const String& rhs)
     {
-        return String::ThreeWayComparer<String, String>{}(lhs, rhs) < 0;
+        return String::ThreeWayComparer{}(lhs, rhs) < 0;
     }
     inline bool operator< (const String& lhs, const wchar_t* rhs)
     {
