@@ -149,7 +149,7 @@ namespace Stroika::Foundation::DataExchange {
     private:
         AtomType                            fType_;
         AtomType                            fSubType_;
-        Containers::Mapping<String, String> fParameters_{equal_to<String>{Characters::CompareOptions::eCaseInsensitive}};
+        Containers::Mapping<String, String> fParameters_{String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive}};
     };
     template <>
     nonvirtual String InternetMediaType::As () const;

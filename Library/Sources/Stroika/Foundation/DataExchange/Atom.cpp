@@ -36,7 +36,7 @@ namespace {
          * Use SpinLock since locks very short lived. COULD use shared_mutex because much more reads than writes. But since locks so short, little point.
          */
         Execution::SpinLock                                    fCritSec; // lock needed here to keep map and sequence in sync
-        Mapping<String, AtomManager_Default::AtomInternalType> fMap{equal_to<String>{Characters::CompareOptions::eCaseInsensitive}};
+        Mapping<String, AtomManager_Default::AtomInternalType> fMap{String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive}};
         Sequence<String>                                       fSeq;
     };
     AtomManager_CaseInsensitive_Rep_* sAtomMgrCaseInsensitiveRep_;

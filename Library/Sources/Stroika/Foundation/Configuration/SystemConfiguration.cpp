@@ -651,7 +651,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
 
         // No good way I can find to tell...
         if (not tmp.fPreferedInstallerTechnology.has_value ()) {
-            auto nameEqComparer = equal_to<String>{CompareOptions::eCaseInsensitive};
+            auto nameEqComparer = String::EqualsComparer{CompareOptions::eCaseInsensitive};
             if (nameEqComparer (tmp.fShortPrettyName, L"Centos"sv) or
                 nameEqComparer (tmp.fShortPrettyName, L"RedHat"sv)) {
                 tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eRPM;

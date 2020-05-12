@@ -153,8 +153,8 @@ namespace {
             fruits += L"APPLE";
             fruits += L"bananas";
             fruits += L"cherries";
-            DbgTrace (L"fruits=%s", Characters::ToString (fruits.Distinct (equal_to<String>{CompareOptions::eCaseInsensitive})).c_str ());
-            Assert (fruits.Distinct (equal_to<String>{CompareOptions::eCaseInsensitive}).size () == 3); // only one apple or the other (case squished)
+            DbgTrace (L"fruits=%s", Characters::ToString (fruits.Distinct (String::EqualsComparer{CompareOptions::eCaseInsensitive})).c_str ());
+            Assert (fruits.Distinct (String::EqualsComparer{CompareOptions::eCaseInsensitive}).size () == 3); // only one apple or the other (case squished)
         }
     }
 }
@@ -199,7 +199,7 @@ namespace {
             Assert (fruits.size () == 4);
         }
         for (Iterator<String> i = fruits.begin (); i != fruits.end (); ++i) {
-            if (equal_to<String>{CompareOptions::eCaseInsensitive}(*i, L"apple")) {
+            if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(*i, L"apple")) {
                 fruits.Remove (i);
                 // with STL containers, it would be illegal to reference i again, as in i++.
                 // However, with Stroika iterators, they are smart about doing the right thing,

@@ -77,7 +77,7 @@ namespace {
             }
 
             bool matches          = false;
-            auto targetEqComparer = equal_to<String>{CompareOptions::eCaseInsensitive};
+            auto targetEqComparer = String::EqualsComparer{CompareOptions::eCaseInsensitive};
             if (targetEqComparer (da.fTarget, kTarget_UPNPRootDevice)) {
                 matches = true;
             }
