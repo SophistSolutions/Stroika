@@ -115,32 +115,17 @@ namespace Stroika::Foundation::IO::Network {
 #if __cpp_impl_three_way_comparison >= 201907
     inline bool Socket::Ptr::operator== (const Ptr& rhs) const
     {
-        return ThreeWayComparer{}(*this, rhs) == 0;
+        shared_lock<const AssertExternallySynchronizedLock> critSec1{*this}; // nb: not deadlock risk cuz these aren't really mutexes, just checks
+        shared_lock<const AssertExternallySynchronizedLock> critSec2{rhs};
+        return _GetSharedRep () == rhs._GetSharedRep ();
     }
     inline strong_ordering Socket::Ptr::operator<=> (const Ptr& rhs) const
     {
-        return ThreeWayComparer{}(*this, rhs);
+        shared_lock<const AssertExternallySynchronizedLock> critSec1{*this}; // nb: not deadlock risk cuz these aren't really mutexes, just checks
+        shared_lock<const AssertExternallySynchronizedLock> critSec2{rhs};
+        return Common::ThreeWayCompare (_GetSharedRep (), rhs._GetSharedRep ());
     }
 #endif
-
-    /*
-     ********************************************************************************
-     ************************* Socket::Ptr::ThreeWayComparer ************************
-     ********************************************************************************
-     */
-    inline Common::strong_ordering Socket::Ptr::ThreeWayComparer::operator() (const Socket::Ptr& lhs, const Socket::Ptr& rhs) const
-    {
-        shared_lock<const AssertExternallySynchronizedLock> critSec1{lhs}; // nb: not deadlock risk cuz these aren't really mutexes, just checks
-        shared_lock<const AssertExternallySynchronizedLock> critSec2{rhs};
-        /* 
-         *  Used to check Common::ThreeWayCompare (GetNativeSocket (), rhs.GetNativeSocket ());
-         *  but this is better. It practically always amounts to the same thing (since one typically constructs
-         *  a Socket object, and copies that as a Ref - thought it CAN be different if you manually attach
-         *  the same low level socket to another Stroika socket object). And comparing with GetNativeSocket () - requires
-         *  being careful about null ptrs.
-         */
-        return Common::ThreeWayCompare (lhs._GetSharedRep (), rhs._GetSharedRep ());
-    }
 
 #if __cpp_impl_three_way_comparison < 201907
     /*

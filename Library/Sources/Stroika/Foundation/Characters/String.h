@@ -1557,7 +1557,7 @@ namespace std {
 #if __cpp_lib_three_way_comparison < 201907L
 namespace Stroika::Foundation::Common {
     /**
-    defined for performance - not sematnics
+     * defined for performance - not semantics
      */
     template <>
     struct compare_three_way<Characters::String, Characters::String> : Characters::String::ThreeWayComparer {

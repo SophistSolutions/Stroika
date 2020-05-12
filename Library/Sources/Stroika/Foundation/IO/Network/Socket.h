@@ -170,9 +170,15 @@ namespace Stroika::Foundation::IO::Network {
      *  \note   select: Socket has no select method: instead use Execution::WaitForIOReady which
      *          works transparently with sockets, sets of sockets, or other waitable objects.
      *
-     *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
-     *
      *  \note inherits from Socket just for inherited type definitions - no methods or data.
+     *
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *        o Socket::Ptr objects are compared (relative or equality) by their underlying 'rep' object.
+     *          This USED to be done by calling GetNativeSocket () so two separately attached sockets
+     *          would compare equal. Now - we compare the underlying smart pointers. This is nearly always
+     *          the same thing, but can be different in the case of multiple objects attached to the same
+     *          socket. This is probably a better definition, and definitely more efficient.
      *
      *  \note Since Socket::Ptr is a smart pointer, the constness of the methods depends on whether they modify the smart pointer itself, not
      *        the underlying thread object.
@@ -317,7 +323,7 @@ namespace Stroika::Foundation::IO::Network {
         nonvirtual bool IsOpen () const;
 
     public:
-        struct ThreeWayComparer;
+        using ThreeWayComparer [[deprecated ("use Common::compare_three_way in  in 2.1a5")]] = Common::compare_three_way<Ptr, Ptr>;
 
 #if __cpp_impl_three_way_comparison >= 201907
     public:
@@ -391,17 +397,6 @@ namespace Stroika::Foundation::IO::Network {
 
     private:
         shared_ptr<_IRep> fRep_;
-    };
-
-    /**
-     *  \note   Socket::Ptr objects are compared (relative or equality) by their underlying object.
-     *          This USED to be done by calling GetNativeSocket () so two separately attached sockets
-     *          would compare equal. Now - we compare the underlying smart pointers. This is nearly always
-     *          the same thing, but can be different in the case of multiple objects attached to the same
-     *          socket. This is probably a better defintiion, and definitely more efficient.
-     */
-    struct Socket::Ptr::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        Common::strong_ordering operator() (const Socket::Ptr& lhs, const Socket::Ptr& rhs) const;
     };
 
 #if __cpp_impl_three_way_comparison < 201907

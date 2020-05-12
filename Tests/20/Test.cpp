@@ -132,7 +132,7 @@ namespace {
     {
         Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_3_Compare_ ()");
 #if 0
-        // This is RIGHT but We need a way to use 'TRAITS' to extend the defintiion of Sequence<T> or some such - to make this work...
+        // This is RIGHT but We need a way to use 'TRAITS' to extend the definition of Sequence<T> or some such - to make this work...
         {
             VerifyTestResult (s.size () == 0);
             s.Append (1);
@@ -156,7 +156,7 @@ namespace {
     {
         Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_4_Equals_ ()");
         using T = typename CONCRETE_SEQUENCE_T::value_type;
-        // This is RIGHT but We need a way to use 'TRAITS' to extend the defintiion of Sequence<T> or some such - to make this work...
+        // This is RIGHT but We need a way to use 'TRAITS' to extend the definition of Sequence<T> or some such - to make this work...
         {
             CONCRETE_SEQUENCE_T s;
             VerifyTestResult (s.size () == 0);

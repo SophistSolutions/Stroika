@@ -63,7 +63,10 @@ namespace Stroika::Foundation::Common {
 #endif
 
     /**
-     *  Portable to C++17 version of std::compare_three_way (in Stroika::Foundation::Common namespace to avoid rule of not adding stuff to std namespace)
+     *  Portable to C++17 version of std::compare_three_way (in Stroika::Foundation::Common namespace to avoid rule 
+     *  of not adding stuff to std namespace).
+     *
+     *  For code which requires C++20 or later, simply call std::compare_three_way instead.
      */
 #if __cpp_lib_three_way_comparison < 201907L
     template <class T, class U>

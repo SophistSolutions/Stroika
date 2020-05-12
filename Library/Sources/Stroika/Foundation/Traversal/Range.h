@@ -163,6 +163,9 @@ namespace Stroika::Foundation::Traversal {
      *  Since a range is half/open/closed by default, this means that
      *      Range<int> (1,1) == Range<int> (3,3) would be true, since the are both empty.
      *
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *
      *  @see DiscreteRange
      *  @see DisjointRange
      *  @see DisjointDiscreteRange
