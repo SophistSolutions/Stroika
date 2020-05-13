@@ -43,40 +43,18 @@ namespace Stroika::Foundation::Common {
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     constexpr auto CountedValue<VALUE_TYPE, COUNTER_TYPE>::operator<=> (const CountedValue& rhs) const
     {
-        return ThreeWayComparer{}(*this, rhs) <=> 0;
+        Common::strong_ordering cmp = Common::ThreeWayCompare (fValue, rhs.fValue);
+        if (cmp != Common::kEqual) {
+            return cmp;
+        }
+        return Common::ThreeWayCompare (fCount, rhs.fCount);
     }
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     constexpr bool CountedValue<VALUE_TYPE, COUNTER_TYPE>::operator== (const CountedValue& rhs) const
     {
-        return EqualsComparer{}(*this, rhs);
+        return fValue == rhs.fValue and fValue == rhs.fValue;
     }
 #endif
-
-    /*
-     ********************************************************************************
-     ********** CountedValue<VALUE_TYPE, COUNTER_TYPE>::EqualsComparer **************
-     ********************************************************************************
-     */
-    template <typename VALUE_TYPE, typename COUNTER_TYPE>
-    constexpr bool CountedValue<VALUE_TYPE, COUNTER_TYPE>::EqualsComparer::operator() (const CountedValue& lhs, const CountedValue& rhs) const
-    {
-        return lhs.fValue == rhs.fValue and lhs.fValue == rhs.fValue;
-    }
-
-    /*
-     ********************************************************************************
-     ********** CountedValue<VALUE_TYPE, COUNTER_TYPE>::ThreeWayComparer ************
-     ********************************************************************************
-     */
-    template <typename VALUE_TYPE, typename COUNTER_TYPE>
-    constexpr Common::strong_ordering CountedValue<VALUE_TYPE, COUNTER_TYPE>::ThreeWayComparer::operator() (const CountedValue& lhs, const CountedValue& rhs) const
-    {
-        Common::strong_ordering cmp = Common::ThreeWayCompare (lhs.fValue, rhs.fValue);
-        if (cmp != Common::kEqual) {
-            return cmp;
-        }
-        return Common::ThreeWayCompare (lhs.fCount, rhs.fCount);
-    }
 
 #if __cpp_impl_three_way_comparison < 201907
     /*
@@ -87,32 +65,36 @@ namespace Stroika::Foundation::Common {
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     inline bool operator< (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) < 0;
+        Common::strong_ordering cmp = Common::ThreeWayCompare (fValue, rhs.fValue);
+        if (cmp != Common::kEqual) {
+            return cmp < 0;
+        }
+        return Common::ThreeWayCompare (fCount, rhs.fCount);
     }
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     inline bool operator<= (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) <= 0;
+        return operator< (lhs, rhs) or operator== (lhs, rhs);
     }
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     inline bool operator== (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs)
     {
-        return typename CountedValue<VALUE_TYPE, COUNTER_TYPE>::EqualsComparer{}(lhs, rhs);
+        return lhs.fValue == rhs.fValue and lhs.fValue == rhs.fValue;
     }
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     inline bool operator!= (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs)
     {
-        return not typename CountedValue<VALUE_TYPE, COUNTER_TYPE>::EqualsComparer{}(lhs, rhs);
+        return not(lhs == rhs);
     }
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     inline bool operator>= (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) >= 0;
+        return not(lhs < rhs);
     }
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     inline bool operator> (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) > 0;
+        return not(lhs <= rhs);
     }
 #endif
 

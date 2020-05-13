@@ -30,6 +30,10 @@ namespace Stroika::Foundation::Common {
      *  CountedValue is the same as a value, but with a count as well.
      *
      *  Essentially the same as pair<VALUE_TYPE,COUNTER_TYPE> but with more clearly named data elements
+     *
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *        o @todo COULD add EqualsComparer/ThreeWayComparer members which take explicit 'T' comparer argument
      */
     template <typename VALUE_TYPE, typename COUNTER_TYPE = unsigned int>
     struct CountedValue {
@@ -75,24 +79,10 @@ namespace Stroika::Foundation::Common {
 #endif
 
     public:
-        struct EqualsComparer;
+        using EqualsComparer [[deprecated ("use equal_to<> or == in  in 2.1a5")]] = equal_to<CountedValue>;
 
     public:
-        struct ThreeWayComparer;
-    };
-
-    /**
-     */
-    template <typename VALUE_TYPE, typename COUNTER_TYPE>
-    struct CountedValue<VALUE_TYPE, COUNTER_TYPE>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
-        constexpr bool operator() (const CountedValue& lhs, const CountedValue& rhs) const;
-    };
-
-    /**
-     */
-    template <typename VALUE_TYPE, typename COUNTER_TYPE>
-    struct CountedValue<VALUE_TYPE, COUNTER_TYPE>::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        constexpr Common::strong_ordering operator() (const CountedValue& lhs, const CountedValue& rhs) const;
+        using ThreeWayComparer [[deprecated ("use Common::compare_three_way in  in 2.1a5")]] = Common::compare_three_way<CountedValue, CountedValue>;
     };
 
 #if __cpp_impl_three_way_comparison < 201907
