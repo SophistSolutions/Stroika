@@ -78,10 +78,12 @@ namespace Stroika::Foundation::Cache {
      *          VerifyTestResult (tmp.Lookup ("d") == "4");
      *      \endcode
      *
-     *  @see SynchronizedLRUCache<> - internally synchronized version
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *        o No comparison of LRUCache objects is currently supported. It might make sense, but would be of questionable use.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#ExternallySynchronized">ExternallySynchronized</a>
      *
+     *  @see SynchronizedLRUCache<> - internally synchronized version
      */
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER = equal_to<KEY>, typename KEY_HASH_FUNCTION = nullptr_t, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
     class LRUCache : private Debug::AssertExternallySynchronizedLock, private STATS_TYPE {
