@@ -96,7 +96,9 @@ namespace Stroika::Foundation::Common {
     public:
         /**
          */
-        constexpr auto operator<=> (const KeyValuePair&) const = default;
+        // @todo understand why constexpr doesnt work here on g++10 and clang++10
+        //constexpr
+        auto operator<=> (const KeyValuePair&) const = default;
 #endif
 
     public:
