@@ -23,8 +23,9 @@ ARG VS_16_4_5=https://download.visualstudio.microsoft.com/download/pr/378e5eb4-c
 ARG VS_16_4_6=https://download.visualstudio.microsoft.com/download/pr/5714a1fb-d8a9-4e24-b6b7-c1a40a001d4c/f68093ddf8d523354d63ac326697473c98439c92c7df09159fe974ea6622b2f5/vs_BuildTools.exe
 ARG VS_16_5_0=https://download.visualstudio.microsoft.com/download/pr/c650b629-fb28-4b7a-b943-1d293b185299/2dcd24c40e00b11df44d2b646833ba22d1cee73aed25ba3de020ca710df0addb/vs_BuildTools.exe
 ARG VS_16_5_1=https://download.visualstudio.microsoft.com/download/pr/69b51b7f-ea5e-4729-9e7e-9ff9e2457545/cdfa3a2aa5c083800b3fe85f59a566da8f445c27e5eb5a679639ab1faf8b35ba/vs_BuildTools.exe
+ARG VS_16_5_5=https://download.visualstudio.microsoft.com/download/pr/68d6b204-9df0-4fcc-abcc-08ee0eff9cb2/17af83ed545d1287df7575786c326009e459708b60a6821d2a4f5606ef8efb9e/vs_BuildTools.exe
 
-RUN Invoke-WebRequest "$env:VS_16_5_1" `
+RUN Invoke-WebRequest "$env:VS_16_5_5" `
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
 RUN & "$env:TEMP\vs_buildtools.exe" `
     --add Microsoft.VisualStudio.Workload.VCTools `
