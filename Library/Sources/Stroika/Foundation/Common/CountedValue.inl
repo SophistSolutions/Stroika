@@ -65,11 +65,11 @@ namespace Stroika::Foundation::Common {
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     inline bool operator< (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs)
     {
-        Common::strong_ordering cmp = Common::ThreeWayCompare (fValue, rhs.fValue);
+        Common::strong_ordering cmp = Common::ThreeWayCompare (lhs.fValue, rhs.fValue);
         if (cmp != Common::kEqual) {
             return cmp < 0;
         }
-        return Common::ThreeWayCompare (fCount, rhs.fCount);
+        return Common::ThreeWayCompare (lhs.fCount, rhs.fCount);
     }
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     inline bool operator<= (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs)
