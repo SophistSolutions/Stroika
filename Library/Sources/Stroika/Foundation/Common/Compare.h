@@ -149,7 +149,7 @@ namespace Stroika::Foundation::Common {
 
         return three_way_compare{} (lhs,rhs) works/deduces right types - not sure how it would be I've seen examples in docs of this
 
-
+        Butif cannot get the above deduction to work, keep this just for the deduction. But I HTINK deduction guides should work...
 
      *  \brief trivial wrapper calling ThreeWayComparer<T>{}(lhs,rhs) i.e. std::compare_three_way{} (lhs, rhs)
      *
