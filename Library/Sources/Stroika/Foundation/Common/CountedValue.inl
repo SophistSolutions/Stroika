@@ -69,7 +69,7 @@ namespace Stroika::Foundation::Common {
         if (cmp != Common::kEqual) {
             return cmp < 0;
         }
-        return Common::ThreeWayCompare (lhs.fCount, rhs.fCount);
+        return Common::ThreeWayCompare (lhs.fCount, rhs.fCount) < 0;
     }
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     inline bool operator<= (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs)
