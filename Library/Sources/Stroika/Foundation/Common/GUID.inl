@@ -37,17 +37,6 @@ namespace Stroika::Foundation::Common {
         return GUID{};
     }
 
-    /*
-     ********************************************************************************
-     ************************* GUID::ThreeWayComparer *******************************
-     ********************************************************************************
-     */
-    inline Common::strong_ordering GUID::ThreeWayComparer::operator() (const GUID& lhs, const GUID& rhs) const
-    {
-        static_assert (sizeof (GUID) == 16); // else cannot use memcmp this way
-        return Common::CompareResultNormalizer (memcmp (&lhs, &rhs, sizeof (GUID)));
-    }
-
 #if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
@@ -56,27 +45,27 @@ namespace Stroika::Foundation::Common {
      */
     inline bool operator< (const GUID& lhs, const GUID& rhs)
     {
-        return GUID::ThreeWayComparer{}(lhs, rhs) < 0;
+        return memcmp (&lhs, &rhs, sizeof (GUID)) < 0;
     }
     inline bool operator<= (const GUID& lhs, const GUID& rhs)
     {
-        return GUID::ThreeWayComparer{}(lhs, rhs) <= 0;
+        return memcmp (&lhs, &rhs, sizeof (GUID)) <= 0;
     }
     inline bool operator== (const GUID& lhs, const GUID& rhs)
     {
-        return GUID::ThreeWayComparer{}(lhs, rhs) == 0;
+        return memcmp (&lhs, &rhs, sizeof (GUID)) == 0;
     }
     inline bool operator!= (const GUID& lhs, const GUID& rhs)
     {
-        return GUID::ThreeWayComparer{}(lhs, rhs) != 0;
+        return memcmp (&lhs, &rhs, sizeof (GUID)) != 0;
     }
     inline bool operator>= (const GUID& lhs, const GUID& rhs)
     {
-        return GUID::ThreeWayComparer{}(lhs, rhs) >= 0;
+        return memcmp (&lhs, &rhs, sizeof (GUID)) >= 0;
     }
     inline bool operator> (const GUID& lhs, const GUID& rhs)
     {
-        return GUID::ThreeWayComparer{}(lhs, rhs) > 0;
+        return memcmp (&lhs, &rhs, sizeof (GUID)) > 0;
     }
 #endif
 

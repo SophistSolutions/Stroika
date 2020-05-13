@@ -24,6 +24,9 @@ namespace Stroika::Foundation::Common {
 
     /**
      *  A very common 16-byte opaque ID structure.
+     *
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
     struct GUID {
         /**
@@ -61,20 +64,13 @@ namespace Stroika::Foundation::Common {
 #endif
 
     public:
-        struct ThreeWayComparer;
+        using ThreeWayComparer [[deprecated ("use Common::compare_three_way in  in 2.1a5")]] = Common::compare_three_way<GUID, GUID>;
 
     public:
         /**
          *  @see Characters::ToString ()
          */
         nonvirtual Characters::String ToString () const;
-    };
-
-    /**
-     *  @see Common::ThreeWayComparer<> template
-     */
-    struct GUID::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        nonvirtual Common::strong_ordering operator() (const GUID& lhs, const GUID& rhs) const;
     };
 
 #if __cpp_impl_three_way_comparison < 201907

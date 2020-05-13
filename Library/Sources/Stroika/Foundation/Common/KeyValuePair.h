@@ -18,8 +18,6 @@
 /**
  * TODO:
  *      @todo   Consider having KeyValuePair have an operator explict pair<Key,Value>() converter.
- *
- *      @todo   Add Common::ThreeWayCompare () method (enableif default creatable) or spaceship operator).
  */
 
 namespace Stroika::Foundation::Common {
@@ -29,6 +27,9 @@ namespace Stroika::Foundation::Common {
      *  (when used for mappings, or other key/value pairs).
      *
      *  \note   moderately interoperable with pair<>
+     *
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
     template <typename KEY_TYPE, typename VALUE_TYPE>
     struct KeyValuePair {
@@ -95,33 +96,14 @@ namespace Stroika::Foundation::Common {
     public:
         /**
          */
-        constexpr auto operator<=> (const KeyValuePair&) const;
-
-    public:
-        /**
-         */
-        constexpr bool operator== (const KeyValuePair&) const;
+        constexpr auto operator<=> (const KeyValuePair&) const = default;
 #endif
 
     public:
-        struct EqualsComparer;
+        using EqualsComparer [[deprecated ("use equal_to or == in  in 2.1a5")]] = std::equal_to<KeyValuePair>;
 
     public:
-        struct ThreeWayComparer;
-    };
-
-    /**
-     */
-    template <typename KEY_TYPE, typename VALUE_TYPE>
-    struct KeyValuePair<KEY_TYPE, VALUE_TYPE>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
-        constexpr bool operator() (const KeyValuePair& lhs, const KeyValuePair& rhs) const;
-    };
-
-    /**
-     */
-    template <typename KEY_TYPE, typename VALUE_TYPE>
-    struct KeyValuePair<KEY_TYPE, VALUE_TYPE>::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        constexpr strong_ordering operator() (const KeyValuePair& lhs, const KeyValuePair& rhs) const;
+        using ThreeWayComparer [[deprecated ("use Common::compare_three_way in  in 2.1a5")]] = Common::compare_three_way<KeyValuePair, KeyValuePair>;
     };
 
 #if __cpp_impl_three_way_comparison < 201907

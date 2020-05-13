@@ -113,44 +113,6 @@ namespace Stroika::Foundation::Common {
         fValue = forward<VALUE_TYPE2> (rhs.fValue);
         return *this;
     }
-#if __cpp_impl_three_way_comparison >= 201907
-    template <typename KEY_TYPE, typename VALUE_TYPE>
-    constexpr auto KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator<=> (const KeyValuePair& rhs) const
-    {
-        return ThreeWayComparer{}(*this, rhs) <=> 0;
-    }
-    template <typename KEY_TYPE, typename VALUE_TYPE>
-    constexpr bool KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator== (const KeyValuePair& rhs) const
-    {
-        return EqualsComparer{}(*this, rhs);
-    }
-#endif
-
-    /*
-     ********************************************************************************
-     ************* KeyValuePair<KEY_TYPE, VALUE_TYPE>::EqualsComparer ***************
-     ********************************************************************************
-     */
-    template <typename KEY_TYPE, typename VALUE_TYPE>
-    constexpr bool KeyValuePair<KEY_TYPE, VALUE_TYPE>::EqualsComparer::operator() (const KeyValuePair& lhs, const KeyValuePair& rhs) const
-    {
-        return lhs.fKey == rhs.fKey and lhs.fValue == rhs.fValue;
-    }
-
-    /*
-     ********************************************************************************
-     *********** KeyValuePair<KEY_TYPE, VALUE_TYPE>::ThreeWayComparer ***************
-     ********************************************************************************
-     */
-    template <typename KEY_TYPE, typename VALUE_TYPE>
-    constexpr strong_ordering KeyValuePair<KEY_TYPE, VALUE_TYPE>::ThreeWayComparer::operator() (const KeyValuePair& lhs, const KeyValuePair& rhs) const
-    {
-        strong_ordering cmp = Common::ThreeWayCompare (lhs.fKey, rhs.fKey);
-        if (cmp != kEqual) {
-            return cmp;
-        }
-        return Common::ThreeWayCompare (lhs.fValue, rhs.fValue);
-    }
 
 #if __cpp_impl_three_way_comparison < 201907
     /*
@@ -161,32 +123,36 @@ namespace Stroika::Foundation::Common {
     template <typename KEY_TYPE, typename VALUE_TYPE>
     inline bool operator< (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) < 0;
+        strong_ordering cmp = Common::ThreeWayCompare (lhs.fKey, rhs.fKey);
+        if (cmp != kEqual) {
+            return cmp < 0;
+        }
+        return Common::ThreeWayCompare (lhs.fValue, rhs.fValue) < 0;
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     inline bool operator<= (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) <= 0;
+        return operator< (lhs, rhs) or operator== (lhs, rhs);
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     inline bool operator== (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
     {
-        return typename KeyValuePair<KEY_TYPE, VALUE_TYPE>::EqualsComparer{}(lhs, rhs);
+        return lhs.fKey == rhs.fKey and lhs.fValue == rhs.fValue;
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     inline bool operator!= (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
     {
-        return not typename KeyValuePair<KEY_TYPE, VALUE_TYPE>::EqualsComparer{}(lhs, rhs);
+        return not(lhs == rhs);
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     inline bool operator>= (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) >= 0;
+        return not(lhs < rhs);
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     inline bool operator> (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) > 0;
+        return not(lhs <= rhs);
     }
 #endif
 
