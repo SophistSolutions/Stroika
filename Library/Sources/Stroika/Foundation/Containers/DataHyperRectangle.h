@@ -38,6 +38,19 @@ namespace Stroika::Foundation::Containers {
 
     /**
      *  \note   Aliases: Data-Cube, Date Cube, Hyper-Cube, Hypercube, Tensor, Matrix, Vector
+     *
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *        o operator== and operator!= are supported
+     *  
+     *          Two DataHyperRectangle are considered equal if they contain the same elements (by comparing them with ELEMENT_EQUALS_COMPARER)
+     *          in exactly the same order.
+     *
+     *          A DataHyperRectangle<T, INDEXES...> doesn't generally require a comparison for individual elements
+     *          be be defined, but obviously to compare if the containers are equal, you must
+     *          compare the individual elements (at least sometimes).
+     *
+     *          If == is predefined (on T), you can just call == - but if its not, or if you wish
+     *          to compare with an alternative comparer, just pass it as a template parameter (via DataHyperRectangle<>::EqualsComparer).
      */
     template <typename T, typename... INDEXES>
     class DataHyperRectangle : public Iterable<tuple<T, INDEXES...>> {
@@ -173,17 +186,6 @@ namespace Stroika::Foundation::Containers {
     };
 
     /**
-     *  Two DataHyperRectangle are considered equal if they contain the same elements (by comparing them with ELEMENT_EQUALS_COMPARER)
-     *  in exactly the same order.
-     *
-     *  EqualsComparer is commutative().
-     *
-     *  A DataHyperRectangle<T, INDEXES...> doesn't generally require a comparison for individual elements
-     *  be be defined, but obviously to compare if the containers are equal, you must
-     *  compare the individual elements (at least sometimes).
-     *
-     *  If == is predefined, you can just call Equals() - but if its not, or if you wish
-     *  to compare with an alternative comparer, just pass it as a template parameter.
      */
     template <typename T, typename... INDEXES>
     template <typename ELEMENT_EQUALS_COMPARER>

@@ -53,8 +53,8 @@ namespace Stroika::Foundation::Containers {
      *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
      *          the iterators are automatically updated internally to behave sensibly.
      *
-     *  \note Note About Comparisons
-     *      o   inherited from Queue<T>
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *        @see inherited from Queue<T>
      */
     template <typename T>
     class Deque : public Queue<T> {
