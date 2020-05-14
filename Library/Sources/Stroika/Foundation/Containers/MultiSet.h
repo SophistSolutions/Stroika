@@ -378,7 +378,7 @@ namespace Stroika::Foundation::Containers {
 
 #if __cpp_impl_three_way_comparison < 201907
     private:
-        template <typename D, type DT>
+        template <typename D, typename DT>
         friend bool operator== (const MultiSet<D, DT>& lhs, const MultiSet<D, DT>& rhs);
 #endif
     };
@@ -433,7 +433,7 @@ namespace Stroika::Foundation::Containers {
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif
 
-    /*
+        /*
      *  Reference Implementations (often not used except for ensure's, but can be used for
      *  quickie backends).
      *
