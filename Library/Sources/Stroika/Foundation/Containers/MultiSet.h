@@ -91,8 +91,17 @@ namespace Stroika::Foundation::Containers {
      *
      *  \note   \em Aliases         Tally (Stroika 1.0), Bag (from SmallTalk-80)
      *
-     *  \note Comparisons:
-     *        TBD
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *        o Standard Stroika Comparison equality (==, !=) support
+     *
+     *        o Multisets intrinsically know how to compare their elements (for equality) - even if equal_to<T> not defined
+     *
+     *          Two MultiSet are considered equal if they contain the same elements (by comparing them with GetEqualsComparer ())
+     *          with the same count. In short, they are equal if OccurrencesOf() each item in the LHS equals the OccurrencesOf()
+     *          the same item in the RHS.
+     *
+     *          Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
+     *          @todo - document computational complexity
      *
      *  \note Note About Iterators
      *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
@@ -327,16 +336,18 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  Return the function used to compare if two elements are equal (not to be confused with MultiSet<>::EqualsComparer)
+         *
+         *  @todo consider RENAMING this to GetElementEqualsComparer() - similarly for TYPE
          */
         nonvirtual EqualityComparerType GetEqualsComparer () const;
 
     public:
-        struct EqualsComparer;
+        using EqualsComparer [[deprecated ("use equal_to since 2.1a5")]] = equal_to<MultiSet>;
 
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
-         * simply indirect to @MultiSet<>::EqualsComparer
+         * @see comparisons section of @MutliSet documentation
          */
         nonvirtual bool operator== (const MultiSet& rhs) const;
 #endif
@@ -367,8 +378,8 @@ namespace Stroika::Foundation::Containers {
 
 #if __cpp_impl_three_way_comparison < 201907
     private:
-        template <typename D>
-        friend bool operator== (const MultiSet<D>& lhs, const MultiSet<D>& rhs);
+        template <typename D, type DT>
+        friend bool operator== (const MultiSet<D, DT>& lhs, const MultiSet<D, DT>& rhs);
 #endif
     };
 
@@ -422,7 +433,7 @@ namespace Stroika::Foundation::Containers {
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif
 
-        /*
+    /*
      *  Reference Implementations (often not used except for ensure's, but can be used for
      *  quickie backends).
      *
@@ -447,26 +458,6 @@ namespace Stroika::Foundation::Containers {
 
     protected:
         struct _UniqueElementsHelper;
-    };
-
-    /**
-     *  \brief Compare MultiSet<>s for equality. 
-     *
-     *  Two MultiSet are considered equal if they contain the same elements (by comparing them with GetEqualsComparer ())
-     *  with the same count. In short, they are equal if OccurrencesOf() each item in the LHS equals the OccurrencesOf()
-     *  the same item in the RHS.
-     *
-     *  Equals is commutative().
-     *
-     *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
-     *
-     *  @todo - document computational complexity
-     *
-     *  \note   Not to be confused with EqualityComparerType and GetEqualsComparer () which compares ELEMENTS of MultiSet<T> for equality.
-     */
-    template <typename T, typename TRAITS>
-    struct MultiSet<T, TRAITS>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
-        nonvirtual bool operator() (const MultiSet& lhs, const MultiSet& rhs) const;
     };
 
 #if __cpp_impl_three_way_comparison < 201907
