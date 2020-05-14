@@ -73,7 +73,6 @@ namespace Stroika::Foundation::Containers {
      *  @see PriorityQueues<T, TRAITS> - which allow removal based on the priority
      *          assigned to an item.
      *
-     *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
@@ -84,9 +83,15 @@ namespace Stroika::Foundation::Containers {
      *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
      *          the iterators are automatically updated internally to behave sensibly.
      *
-     *  \note Comparisons:
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *      o Standard Stroika Comparison equality (==, !=) support (iff <T> parameter has default equal_to<T> implementation)
      *      o   EqualsComparer provided as alias to SequentialEqualsComparer
      *      o   For now, no ThreeWayCompare, but probably should be
+     *
+     *          Two Queues are considered equal if they contain the same elements (by comparing them
+     *          with EQUALS_COMPARER (which defaults to equal_to<T>)
+     *          in exactly the same order (iteration).
+     *
      */
     template <typename T>
     class Queue : public Iterable<T> {
@@ -222,14 +227,6 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          * \brief Simply indirect to @Iterable<T>::SequentialEqualsComparer
-         *
-         *  Two Queues are considered equal if they contain the same elements (by comparing them
-         *  with EQUALS_COMPARER (which defaults to equal_to<T>)
-         *  in exactly the same order (iteration).
-         *
-         *  If == is predefined, you can just call Equals() - but if its not, or if you wish
-         *  to compare with an alternative comparer, just pass it as a template parameter.
-         *
          */
         template <typename T_EQUALS_COMPARER = equal_to<T>>
         using EqualsComparer = typename Iterable<T>::template SequentialEqualsComparer<T_EQUALS_COMPARER>;

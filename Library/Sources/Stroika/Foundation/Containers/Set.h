@@ -78,14 +78,16 @@ namespace Stroika::Foundation::Containers {
      *
      *      Similarly for std::initalizer_list.
      *
-     *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
-     *
      *  \note Note About Iterators
      *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
      *
      *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
      *          the iterators are automatically updated internally to behave sensibly.
      *
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *        o Standard Stroika Comparison equality (==, <=> etc) - because all sets have an equalsComparer for their elements
+     *        o ordering (<,<=> etc) not provided, because a set has no intrinsic ordering to its elements
+     *        o when comparing a Set to any Itererable<> - this is treated as 'set' equality comparison
      */
     template <typename T>
     class Set : public Iterable<T> {
@@ -196,6 +198,8 @@ namespace Stroika::Foundation::Containers {
          *  Return the function used to compare if two elements are equal
          *
          *  \note   @see also EqualsComparer{} to compare whole Set<>s
+         *
+         *  @todo rename Set<>::GetEqualsComparer() to Set<>::GetElementEqualsComparer
          */
         nonvirtual EqualityComparerType GetEqualsComparer () const;
 
@@ -486,6 +490,9 @@ namespace Stroika::Foundation::Containers {
      *  EqualsComparer is commutative ().
      *
      *  @todo - document computational complexity
+     *
+     *  \note   This EqualsComparer template is defined even though not needed to provide alternate element comparer to provide extra overloads for
+     *          operator()()
      *
      *  \note   If any argument is an Iterable, it is treated/compared as if it was a set (aka Iterable<T>::SetEquals)
      *
