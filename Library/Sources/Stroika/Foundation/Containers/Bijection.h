@@ -558,7 +558,8 @@ namespace Stroika::Foundation::Containers {
 
 #if __cpp_impl_three_way_comparison < 201907
     private:
-        friend bool operator== (const Bijection<DOMAIN_TYPE, RANGE_TYPE>& lhs, const Bijection<DOMAIN_TYPE, RANGE_TYPE>& rhs);
+        template <typename D, typename R>
+        friend bool operator== (const Bijection<D, R>& lhs, const Bijection<D, R>& rhs);
 #endif
     };
 
