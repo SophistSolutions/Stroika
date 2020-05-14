@@ -542,7 +542,7 @@ namespace Stroika::Foundation::Containers {
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline bool operator== (const Bijection<DOMAIN_TYPE, RANGE_TYPE>& lhs, const Bijection<DOMAIN_TYPE, RANGE_TYPE>& rhs)
     {
-        return _SafeReadRepAccessor<_IRep>{&lhs}._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ());
+        return typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::_SafeReadRepAccessor<_IRep>{&lhs}._ConstGetRep ().Equals (typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::_SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ());
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline bool operator!= (const Bijection<DOMAIN_TYPE, RANGE_TYPE>& lhs, const Bijection<DOMAIN_TYPE, RANGE_TYPE>& rhs)
