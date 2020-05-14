@@ -462,7 +462,6 @@ namespace Stroika::Foundation::Containers {
 
 #if __cpp_impl_three_way_comparison < 201907
     /**
-     *  Basic comparison operator overloads with the obivous meaning, and simply indirect to @MultiSet<>::EqualsComparer
      */
     template <typename T, typename TRAITS>
     bool operator== (const MultiSet<T, TRAITS>& lhs, const MultiSet<T, TRAITS>& rhs);
