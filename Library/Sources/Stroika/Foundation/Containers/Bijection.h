@@ -491,6 +491,11 @@ namespace Stroika::Foundation::Containers {
 
     protected:
         nonvirtual void _AssertRepValidType () const;
+
+#if __cpp_impl_three_way_comparison < 201907
+    private:
+        friend bool operator== (const Bijection& lhs, const Bijection& rhs);
+#endif
     };
 
     using Traversal::IteratorOwnerID;
@@ -555,12 +560,6 @@ namespace Stroika::Foundation::Containers {
     protected:
         nonvirtual Iterable<DOMAIN_TYPE> _PreImage_Reference_Implementation () const;
         nonvirtual Iterable<RANGE_TYPE> _Image_Reference_Implementation () const;
-
-#if __cpp_impl_three_way_comparison < 201907
-    private:
-        template <typename D, typename R>
-        friend bool operator== (const Bijection<D, R>& lhs, const Bijection<D, R>& rhs);
-#endif
     };
 
 #if __cpp_impl_three_way_comparison < 201907
