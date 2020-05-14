@@ -90,14 +90,22 @@ namespace Stroika::Foundation::Containers {
      *  \em Factory:
      *      @see Concrete::Bijection_Factory<> to see default implementations.
      *
-     *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
-     *
      *  \note Note About Iterators
      *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
      *
      *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
      *          the iterators are automatically updated internally to behave sensibly.
      *
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *        o operator== and operator!= are supported
+     *        o All Bijections MUST have = comparable DOMAIN_TYPE and RANGE_TYPE, so operator== for the bijection is well-defined.
+     *
+     *          Two Bijections are considered equal if they contain the same elements (Preimage) and each key is associated
+     *          with the same value. There is no need for the items to appear in the same order for the two Bijections to
+     *          be equal. There is no need for the backends to be of the same underlying representation either (stlmap
+     *          vers linkedlist).
+     *
+     *          Since a Bijection is not necessarily sorted, or in any particular order, < and > are not well defined.
      */
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     class Bijection : public Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>, public Bijection_Base {
@@ -431,11 +439,16 @@ namespace Stroika::Foundation::Containers {
         nonvirtual CONTAINER_PAIR_RANGE_DOMAIN As () const;
 
     public:
-        struct EqualsComparer;
+        using EqualsComparer [[deprecated ("use equal_to<> or == in  in 2.1a5")]] = equal_to<Bijection>;
 
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
+         *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
+         *
+         *  @todo - document computational complexity
+         *
+         *  \note   Not to be confused with EqualityComparerType and GetEqualsComparer () which compares ELEMENTS of Bijection<> for equality.
          */
         nonvirtual bool operator== (const Bijection& rhs) const;
 #endif
@@ -542,27 +555,11 @@ namespace Stroika::Foundation::Containers {
     protected:
         nonvirtual Iterable<DOMAIN_TYPE> _PreImage_Reference_Implementation () const;
         nonvirtual Iterable<RANGE_TYPE> _Image_Reference_Implementation () const;
-    };
 
-    /**
-     *  \brief Compare Bijection<>s for equality. 
-     *
-     *  Two Bijections are considered equal if they contain the same elements (Preimage) and each key is associated
-     *  with the same value. There is no need for the items to appear in the same order for the two Bijections to
-     *  be equal. There is no need for the backends to be of the same underlying representation either (stlmap
-     *  vers linkedlist).
-     *
-     *  Equals is commutative().
-     *
-     *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
-     *
-     *  @todo - document computational complexity
-     *
-     *  \note   Not to be confused with EqualityComparerType and GetEqualsComparer () which compares ELEMENTS of Bijection<> for equality.
-     */
-    template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    struct Bijection<DOMAIN_TYPE, RANGE_TYPE>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
-        nonvirtual bool operator() (const Bijection& lhs, const Bijection& rhs) const;
+#if __cpp_impl_three_way_comparison < 201907
+    private:
+        friend bool operator== (const Bijection& lhs, const Bijection& rhs);
+#endif
     };
 
 #if __cpp_impl_three_way_comparison < 201907

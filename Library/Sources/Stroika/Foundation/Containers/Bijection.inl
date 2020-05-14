@@ -403,7 +403,7 @@ namespace Stroika::Foundation::Containers {
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE>::operator== (const Bijection& rhs) const
     {
-        return EqualsComparer{}(*this, rhs);
+        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ());
     }
 #endif
 
@@ -533,17 +533,6 @@ namespace Stroika::Foundation::Containers {
         return true;
     }
 
-    /*
-     ********************************************************************************
-     *********** Bijection<DOMAIN_TYPE, RANGE_TYPE>::EqualsComparer *****************
-     ********************************************************************************
-     */
-    template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE>::EqualsComparer::operator() (const Bijection& lhs, const Bijection& rhs) const
-    {
-        return _SafeReadRepAccessor<_IRep>{&lhs}._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ());
-    }
-
 #if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
@@ -553,12 +542,12 @@ namespace Stroika::Foundation::Containers {
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline bool operator== (const Bijection<DOMAIN_TYPE, RANGE_TYPE>& lhs, const Bijection<DOMAIN_TYPE, RANGE_TYPE>& rhs)
     {
-        return typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::EqualsComparer{}(lhs, rhs);
+        return _SafeReadRepAccessor<_IRep>{&lhs}._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ());
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline bool operator!= (const Bijection<DOMAIN_TYPE, RANGE_TYPE>& lhs, const Bijection<DOMAIN_TYPE, RANGE_TYPE>& rhs)
     {
-        return not typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::EqualsComparer{}(lhs, rhs);
+        return not(lhs == rhs);
     }
 #endif
 

@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Containers {
      *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
      *          the iterators are automatically updated internally to behave sensibly.
      *
-     *  \note Note About Comparisons
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
      *      o   No comparisons are provided, because there is no intrinsic way to compare collections for equality, less etc.
      *          See inherited Iterable<>::SequentialEquals, Iterable<>::MultiSetEquals, , Iterable<>::SetEquals.
      */
