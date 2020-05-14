@@ -558,10 +558,8 @@ namespace Stroika::Foundation::Containers {
 
 #if __cpp_impl_three_way_comparison < 201907
     private:
-        //DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wnon-template-friend\"");
-        template<typename A, typename B>
-        friend bool operator== (const Bijection<A,B>& lhs, const Bijection<A,B>& rhs);
-        //DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wnon-template-friend\"");
+        template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+        friend bool operator== (const Bijection<DOMAIN_TYPE, RANGE_TYPE>& lhs, const Bijection<DOMAIN_TYPE, RANGE_TYPE>& rhs);
 #endif
     };
 
