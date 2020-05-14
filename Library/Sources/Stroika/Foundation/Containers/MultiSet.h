@@ -364,6 +364,12 @@ namespace Stroika::Foundation::Containers {
 
     protected:
         nonvirtual void _AssertRepValidType () const;
+
+#if __cpp_impl_three_way_comparison < 201907
+    private:
+        template <typename D>
+        friend bool operator== (const MultiSet<D>& lhs, const MultiSet<D>& rhs);
+#endif
     };
 
     using Traversal::IteratorOwnerID;

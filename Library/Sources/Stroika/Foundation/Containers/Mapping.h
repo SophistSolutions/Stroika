@@ -89,6 +89,17 @@ namespace Stroika::Foundation::Containers {
      *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
      *          the iterators are automatically updated internally to behave sensibly.
      *
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *        o Standard Stroika Comparison equality (==, !=) support
+     *
+     *          Two Mappings are considered equal if they contain the same elements (keys) and each key is associated
+     *          with the same value. There is no need for the items to appear in the same order for the two Mappings to
+     *          be equal. There is no need for the backends to be of the same underlying representation either (stlmap
+     *          vers linkedlist).
+     *
+     *          \req lhs and rhs arguments must have the same (or equivilent) EqualsComparers.
+     *
+     *          @todo - document computational complexity
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     class Mapping : public Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> {
@@ -464,7 +475,8 @@ namespace Stroika::Foundation::Containers {
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
-         * simply indirect to @Mapping<>::EqualsComparer
+         * simply indirect to @Mapping<>::EqualsComparer;
+         * only defined if there is a default equals comparer for mapped_type
          */
         nonvirtual bool operator== (const Mapping& rhs) const;
 #endif
@@ -580,18 +592,7 @@ namespace Stroika::Foundation::Containers {
     /**
      *  \brief Compare Mappings<>s for equality. 
      *
-     *  Two Mappings are considered equal if they contain the same elements (keys) and each key is associated
-     *  with the same value. There is no need for the items to appear in the same order for the two Mappings to
-     *  be equal. There is no need for the backends to be of the same underlying representation either (stlmap
-     *  vers linkedlist).
-     *
-     *  EqualsComparer is commutative ().
-     *
-     *  \req lhs and rhs arguments must have the same (or equivilent) EqualsComparers.
-     *
-     *  @todo - document computational complexity
-     *
-     *  \note   Not to be confused with EqualityComparerType and GetEqualsComparer () which compares ELEMENTS of Associations<T> for equality.
+     *  \note   Not to be confused with GetKeyEqualsComparer () which compares KEY ELEMENTS of Mapping for equality.
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename VALUE_EQUALS_COMPARER>

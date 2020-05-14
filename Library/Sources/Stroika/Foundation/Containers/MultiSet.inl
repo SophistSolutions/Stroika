@@ -521,7 +521,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     inline bool MultiSet<T, TRAITS>::operator== (const MultiSet& rhs) const
     {
-        return EqualsComparer{}(*this, rhs);
+        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ());
     }
 #endif
 
@@ -545,12 +545,14 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     inline bool operator== (const MultiSet<T, TRAITS>& lhs, const MultiSet<T, TRAITS>& rhs)
     {
-        return typename MultiSet<T, TRAITS>::EqualsComparer{}(lhs, rhs);
+        using M = MultiSet<T, TRAITS>;
+        using ACCESSOR = typename M::template _SafeReadRepAccessor<typename M::_IRep>;
+        return ACCESSOR{&lhs}._ConstGetRep ().Equals (ACCESSOR{&rhs}._ConstGetRep ());
     }
     template <typename T, typename TRAITS>
     inline bool operator!= (const MultiSet<T, TRAITS>& lhs, const MultiSet<T, TRAITS>& rhs)
     {
-        return not typename MultiSet<T, TRAITS>::EqualsComparer{}(lhs, rhs);
+        return not(lhs == rhs);
     }
 #endif
 
