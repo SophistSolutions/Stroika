@@ -213,17 +213,10 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual AtomInternalType _GetInternalRep () const;
 
     private:
-        AtomInternalType fValue_;
-
 #if __cpp_impl_three_way_comparison < 201907
-    private:
-        friend bool operator< (const Atom& lhs, const Atom& rhs);
-        friend bool operator<= (const Atom& lhs, const Atom& rhs);
-        friend bool operator== (const Atom& lhs, const Atom& rhs);
-        friend bool operator!= (const Atom& lhs, const Atom& rhs);
-        friend bool operator>= (const Atom& lhs, const Atom& rhs);
-        friend bool operator> (const Atom& lhs, const Atom& rhs);
-#endif 
+    public:// for operator access
+#endif
+        AtomInternalType fValue_;
 };
 
 
