@@ -39,8 +39,6 @@ branches:
 jobs:
   allow_failures:
     - env:
-        - MATRIX_EVAL="CC=clang CXX=clang++ MacOS=true" # https://stroika.atlassian.net/browse/STK-705 - retry mid december
-    - env:
         - MATRIX_EVAL="Windows=true && BuildSamples=true" # https://stroika.atlassian.net/browse/STK-708
 
   include:
@@ -125,7 +123,7 @@ jobs:
         - MATRIX_EVAL="Windows=true && BuildSamples=true"
 
     #
-    # MacOS Configuration (still not working as of 2020-01-01 - due to https://stroika.atlassian.net/browse/STK-705 but should be soon)
+    # MacOS Configuration Build Samples (still not working due to timeouts, but hopefully will soon)
     #
     - os: osx
       osx_image: xcode11.4
@@ -153,6 +151,9 @@ jobs:
       env:
         - MATRIX_EVAL="CC=clang CXX=clang++ MacOS=true BuildSamples=true RunTests=false"
 
+    #
+    # MacOS Configuration Run-Tests (still not working due to timeouts, but hopefully will soon)
+    #
     - os: osx
       osx_image: xcode11.4
       addons:
@@ -172,7 +173,6 @@ jobs:
       script:
         # We dont get output building third-party-components for a while in openssl
         - travis_wait 30 make third-party-components
-        # -k to make to try workaround wrong verison of MacOS (https://stroika.atlassian.net/browse/STK-705)
         - make run-tests
       after_failure:
         - echo "HANDLING FAILURE DUMPING DEBUG STUFF:"
