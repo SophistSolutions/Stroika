@@ -228,7 +228,6 @@ namespace Stroika::Foundation::DataExchange {
         template <typename AM>
         friend bool operator>= (const Atom<AM>& lhs, const Atom<AM>& rhs);
         template <typename AM>
-        template <typename AM>
         friend bool operator> (const Atom<AM>& lhs, const Atom<AM>& rhs);
 #endif 
 };
