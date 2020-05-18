@@ -214,6 +214,16 @@ namespace Stroika::Foundation::DataExchange {
 
     private:
         AtomInternalType fValue_;
+
+#if __cpp_impl_three_way_comparison < 201907
+    private:
+        friend bool operator< (const Atom& lhs, const Atom& rhs);
+        friend bool operator<= (const Atom<ATOM_MANAGER>& lhs, const Atom<ATOM_MANAGER>& rhs);
+        friend bool operator== (const Atom<ATOM_MANAGER>& lhs, const Atom<ATOM_MANAGER>& rhs);
+        friend bool operator!= (const Atom<ATOM_MANAGER>& lhs, const Atom<ATOM_MANAGER>& rhs);
+        friend bool operator>= (const Atom<ATOM_MANAGER>& lhs, const Atom<ATOM_MANAGER>& rhs);
+        friend bool operator> (const Atom<ATOM_MANAGER>& lhs, const Atom<ATOM_MANAGER>& rhs);
+#endif 
     };
 
 
