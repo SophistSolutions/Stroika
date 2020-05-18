@@ -170,13 +170,13 @@ jobs:
         - sw_vers
         # -mmacosx-version-min=10.15 needed for https://stackoverflow.com/questions/56924853/why-xcode-11-beta-cant-use-c17s-filesystem-header
         # Only for build speed: --Xerces no --OpenSSL no --libcurl no
-        - ./configure Release --apply-default-release-flags --append-extra-compiler-and-linker-args -mmacosx-version-min=10.15 --Xerces no --OpenSSL no --libcurl no
+        - ./configure Release --apply-default-release-flags --append-extra-compiler-and-linker-args -mmacosx-version-min=10.15 --Xerces no --OpenSSL no --libcurl no --boost no
         - cat ConfigurationFiles/Release.xml
         - clang++ --version
       script:
         # We dont get output building third-party-components for a while in openssl
         - travis_wait 30 make third-party-components
-        - make -j3 run-tests
+        - make run-tests
       after_failure:
         - echo "HANDLING FAILURE DUMPING DEBUG STUFF:"
         - echo "ENDING DEBUG STUFF DUMP"
