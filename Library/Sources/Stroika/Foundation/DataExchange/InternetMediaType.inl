@@ -104,7 +104,7 @@ namespace Stroika::Foundation::DataExchange {
     }
     inline bool InternetMediaType::operator== (const InternetMediaType& rhs) const
     {
-        return THREEWAYCOMPARE_(rhs) == 0;
+        return THREEWAYCOMPARE_ (rhs) == 0;
     }
 #endif
 
@@ -132,7 +132,7 @@ namespace Stroika::Foundation::DataExchange {
      */
     inline bool operator< (const InternetMediaType& lhs, const InternetMediaType& rhs)
     {
-        return lhs.THREEWAYCOMPARE_(rhs) < 0;
+        return lhs.THREEWAYCOMPARE_ (rhs) < 0;
     }
     inline bool operator<= (const InternetMediaType& lhs, const InternetMediaType& rhs)
     {

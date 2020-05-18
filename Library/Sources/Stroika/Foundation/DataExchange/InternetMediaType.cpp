@@ -153,28 +153,28 @@ String InternetMediaType::As () const
     return sb.str ();
 }
 
- Common::strong_ordering InternetMediaType::THREEWAYCOMPARE_ (const InternetMediaType& rhs) const
+Common::strong_ordering InternetMediaType::THREEWAYCOMPARE_ (const InternetMediaType& rhs) const
 {
-     Common::strong_ordering cmp = Common::ThreeWayCompare (fType_, rhs.fType_);
-     if (cmp != Common::kEqual) {
-         return cmp;
-     }
-     cmp = Common::ThreeWayCompare (fSubType_, rhs.fSubType_);
-     if (cmp != Common::kEqual) {
-         return cmp;
-     }
-     if (fParameters_.empty () and rhs.fParameters_.empty ()) {
-         return Common::kEqual; // very common case, shortcut
-     }
-     else {
-         // expensive for rare case, but if we must compare parameters, need some standardized way to iterate over them (key)
-         using namespace Containers;
-         using namespace Characters;
-         auto sortedMapping = [] (auto m) { return SortedMapping<String, String>{String::LessComparer{CompareOptions::eCaseInsensitive}, m}; };
+    Common::strong_ordering cmp = Common::ThreeWayCompare (fType_, rhs.fType_);
+    if (cmp != Common::kEqual) {
+        return cmp;
+    }
+    cmp = Common::ThreeWayCompare (fSubType_, rhs.fSubType_);
+    if (cmp != Common::kEqual) {
+        return cmp;
+    }
+    if (fParameters_.empty () and rhs.fParameters_.empty ()) {
+        return Common::kEqual; // very common case, shortcut
+    }
+    else {
+        // expensive for rare case, but if we must compare parameters, need some standardized way to iterate over them (key)
+        using namespace Containers;
+        using namespace Characters;
+        auto sortedMapping = [] (auto m) { return SortedMapping<String, String>{String::LessComparer{CompareOptions::eCaseInsensitive}, m}; };
 #if qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy
-         return Mapping<String, String>::SequentialThreeWayComparer{Common::ThreeWayComparer<KeyValuePair<String, String>>{}}(sortedMapping (fParameters_), sortedMapping (rhs.fParameters_));
+        return Mapping<String, String>::SequentialThreeWayComparer{Common::ThreeWayComparer<KeyValuePair<String, String>>{}}(sortedMapping (fParameters_), sortedMapping (rhs.fParameters_));
 #else
-         return Mapping<String, String>::SequentialThreeWayComparer{}(sortedMapping (fParameters_), sortedMapping (rhs.fParameters_));
+        return Mapping<String, String>::SequentialThreeWayComparer{}(sortedMapping (fParameters_), sortedMapping (rhs.fParameters_));
 #endif
-     }
- }
+    }
+}
