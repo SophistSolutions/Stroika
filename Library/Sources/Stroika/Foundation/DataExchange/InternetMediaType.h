@@ -143,7 +143,6 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual bool operator== (const InternetMediaType& rhs) const;
 #endif
 
-
     private:
         nonvirtual Common::strong_ordering THREEWAYCOMPARE_ (const InternetMediaType& rhs) const;
 
@@ -161,7 +160,6 @@ namespace Stroika::Foundation::DataExchange {
         AtomType                            fSubType_;
         Containers::Mapping<String, String> fParameters_{String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive}};
 
-
 #if __cpp_impl_three_way_comparison < 201907
     private:
         friend bool operator< (const InternetMediaType& lhs, const InternetMediaType& rhs);
@@ -176,7 +174,6 @@ namespace Stroika::Foundation::DataExchange {
     nonvirtual String InternetMediaType::As () const;
     template <>
     nonvirtual wstring InternetMediaType::As () const;
-
 
 #if __cpp_impl_three_way_comparison < 201907
     /**

@@ -214,11 +214,10 @@ namespace Stroika::Foundation::DataExchange {
 
     private:
 #if __cpp_impl_three_way_comparison < 201907
-    public:// for operator access
+    public: // for operator access
 #endif
         AtomInternalType fValue_;
-};
-
+    };
 
 #if __cpp_impl_three_way_comparison < 201907
     /**
