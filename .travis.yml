@@ -40,6 +40,9 @@ jobs:
   allow_failures:
     - env:
         - MATRIX_EVAL="Windows=true && BuildSamples=true" # https://stroika.atlassian.net/browse/STK-708
+    - env:
+        # fails just cuz of build time
+        - MATRIX_EVAL="CC=clang CXX=clang++ MacOS=true BuildSamples=false RunTests=true"
 
   include:
     ## Windows builds notes
