@@ -30,6 +30,12 @@ namespace Stroika::Foundation::DataExchange {
      *  MIME content-types are also sometimes referred to as 'Internet media type'.
      *
      *  \note - this class stores the type, subtype, and parameters, but it does NOT store any comments from the content-type
+     *
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *
+     *          NO GUARANTEE about the meaning of the ordering? for now. May use atom ordering
+     *          or case insensitive string ordering, or other. Just legal total ordering.
      */
     class InternetMediaType {
     public:
@@ -137,8 +143,12 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual bool operator== (const InternetMediaType& rhs) const;
 #endif
 
+
+    private:
+        nonvirtual Common::strong_ordering THREEWAYCOMPARE_ (const InternetMediaType& rhs) const;
+
     public:
-        struct ThreeWayComparer;
+        using ThreeWayComparer [[deprecated ("use Common::compare_three_way in  in 2.1a5")]] = Common::compare_three_way<InternetMediaType, InternetMediaType>;
 
     public:
         /**
@@ -156,15 +166,6 @@ namespace Stroika::Foundation::DataExchange {
     template <>
     nonvirtual wstring InternetMediaType::As () const;
 
-    /**
-     *  @see Common::ThreeWayComparer<> template
-     *
-     *  \note NO GUARANTEE about the meaning of the ordering? for now. May use atom ordering
-     *        or case insensitive string ordering, or other. Just legal total ordering.
-     */
-    struct InternetMediaType::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        nonvirtual Common::strong_ordering operator() (const InternetMediaType& lhs, const InternetMediaType& rhs) const;
-    };
 
 #if __cpp_impl_three_way_comparison < 201907
     /**

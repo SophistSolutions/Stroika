@@ -74,9 +74,6 @@ namespace Stroika::Foundation::DataExchange {
      *
      *  Atom can even be used with Set_Bitstring () – esp if you don’t use generic Atom<> but one with its own custom arena!
      *
-     *  \note   See Atom <ATOM_MANAGER>::ThreeWayComparer for docs on comparing, but brielfly, its by number
-     *          not print name.
-     *
      *  \em Design Choice:
      *      In some ways, this could be more powerful if the Atom construction took a ATOM_MANAGER as parameter.
      *      Then we could store the pointer, and do wholesale clearing / throwing away of atom names. But to make
@@ -120,6 +117,12 @@ namespace Stroika::Foundation::DataExchange {
      *      algorithmically generate a name or indirect to AtomManager_Default::Extract ();
      *
      *  @see Microsoft.net String::Intern () - http://msdn.microsoft.com/en-us/library/system.string.intern(v=vs.110).aspx
+     *
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *
+     *          Atom's are compared in a way that will NOT in general be the same as print name compare. 
+     *          In general, their comparison will persist  for app lifetime.
      */
     template <typename ATOM_MANAGER = AtomManager_Default>
     class Atom {
@@ -147,6 +150,9 @@ namespace Stroika::Foundation::DataExchange {
         /**
          */
         nonvirtual String GetPrintName () const;
+
+    public:
+        using ThreeWayComparer [[deprecated ("use Common::compare_three_way in  in 2.1a5")]] = Common::compare_three_way<Atom, Atom>;
 
 #if __cpp_impl_three_way_comparison >= 201907
     public:
@@ -213,15 +219,6 @@ namespace Stroika::Foundation::DataExchange {
         AtomInternalType fValue_;
     };
 
-    /**
-     *  Atom's are compared in a way that will NOT in general be the same as print name compare. The smaller values
-     *  will probably be the ones added earlier to the ATOM_MANAGER. But in general, their comparison will persist 
-     *  forever (app lifetime), and be well-defined (though not documented in this API).
-     */
-    template <typename ATOM_MANAGER>
-    struct Atom<ATOM_MANAGER>::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        constexpr Common::strong_ordering operator() (const Atom& lhs, const Atom& rhs) const;
-    };
 
 #if __cpp_impl_three_way_comparison < 201907
     /**

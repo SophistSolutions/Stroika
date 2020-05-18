@@ -97,25 +97,14 @@ namespace Stroika::Foundation::DataExchange {
     template <typename ATOM_MANAGER>
     inline strong_ordering Atom<ATOM_MANAGER>::operator<=> (const Atom& rhs) const
     {
-        return ThreeWayComparer{}(*this, rhs) <=> 0;
+        return fValue_ <=> rhs.fValue_;
     }
     template <typename ATOM_MANAGER>
     inline bool Atom<ATOM_MANAGER>::operator== (const Atom& rhs) const
     {
-        return typename Atom<ATOM_MANAGER>::ThreeWayComparer{}(*this, rhs) == 0;
+        return fValue_ == rhs.fValue_;
     }
 #endif
-
-    /*
-     ********************************************************************************
-     ****************** Atom <ATOM_MANAGER>::ThreeWayComparer ***********************
-     ********************************************************************************
-     */
-    template <typename ATOM_MANAGER>
-    constexpr Common::strong_ordering Atom<ATOM_MANAGER>::ThreeWayComparer::operator() (const Atom<ATOM_MANAGER>& lhs, const Atom<ATOM_MANAGER>& rhs) const
-    {
-        return Common::ThreeWayCompare (lhs.fValue_, rhs.fValue_);
-    }
 
 #if __cpp_impl_three_way_comparison < 201907
     /*
@@ -126,32 +115,32 @@ namespace Stroika::Foundation::DataExchange {
     template <typename ATOM_MANAGER>
     inline bool operator< (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs)
     {
-        return typename Atom<ATOM_MANAGER>::ThreeWayComparer{}(lhs, rhs) < 0;
+        return lhs.fValue_ < rhs.fValue_;
     }
     template <typename ATOM_MANAGER>
     inline bool operator<= (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs)
     {
-        return typename Atom<ATOM_MANAGER>::ThreeWayComparer{}(lhs, rhs) <= 0;
+        return lhs.fValue_ <= rhs.fValue_;
     }
     template <typename ATOM_MANAGER>
     inline bool operator== (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs)
     {
-        return typename Atom<ATOM_MANAGER>::ThreeWayComparer{}(lhs, rhs) == 0;
+        return lhs.fValue_ == rhs.fValue_;
     }
     template <typename ATOM_MANAGER>
     inline bool operator!= (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs)
     {
-        return typename Atom<ATOM_MANAGER>::ThreeWayComparer{}(lhs, rhs) != 0;
+        return lhs.fValue_ != rhs.fValue_;
     }
     template <typename ATOM_MANAGER>
     inline bool operator>= (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs)
     {
-        return typename Atom<ATOM_MANAGER>::ThreeWayComparer{}(lhs, rhs) >= 0;
+        return lhs.fValue_ >= rhs.fValue_;
     }
     template <typename ATOM_MANAGER>
     inline bool operator> (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs)
     {
-        return typename Atom<ATOM_MANAGER>::ThreeWayComparer{}(lhs, rhs) > 0;
+        return lhs.fValue_ > rhs.fValue_;
     }
 #endif
 
