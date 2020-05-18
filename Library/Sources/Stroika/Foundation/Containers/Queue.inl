@@ -148,6 +148,11 @@ namespace Stroika::Foundation::Containers {
     {
         return EqualsComparer<>{}(*this, rhs);
     }
+    template <typename T>
+    inline strong_ordering Queue<T>::operator<=> (const Queue& rhs) const
+    {
+        return ThreeWayComparer<>{}(*this, rhs);
+    }
 #endif
 
 #if __cpp_impl_three_way_comparison < 201907

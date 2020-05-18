@@ -86,12 +86,11 @@ namespace Stroika::Foundation::Containers {
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
      *      o Standard Stroika Comparison equality (==, !=) support (iff <T> parameter has default equal_to<T> implementation)
      *      o   EqualsComparer provided as alias to SequentialEqualsComparer
-     *      o   For now, no ThreeWayCompare, but probably should be
-     *
      *          Two Queues are considered equal if they contain the same elements (by comparing them
      *          with EQUALS_COMPARER (which defaults to equal_to<T>)
      *          in exactly the same order (iteration).
-     *
+     *      o   Since ordering in a Queue is well defined, we can use this ordering between elemenets to define
+     *          the obvious sequential ordering three way comparison on queues (Iterable::SequentialThreeWayComparer)
      */
     template <typename T>
     class Queue : public Iterable<T> {
@@ -231,12 +230,24 @@ namespace Stroika::Foundation::Containers {
         template <typename T_EQUALS_COMPARER = equal_to<T>>
         using EqualsComparer = typename Iterable<T>::template SequentialEqualsComparer<T_EQUALS_COMPARER>;
 
+    public:
+        /**
+         */
+        template <typename ELEMENT_COMPARER = Common::ThreeWayComparer<T>>
+        using ThreeWayComparer = typename Iterable<T>::template SequentialThreeWayComparer<ELEMENT_COMPARER>;
+
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          * simply indirect to @Queue<>::EqualsComparer (only defined if equal_to<T> is defined)
          */
         nonvirtual bool operator== (const Queue& rhs) const;
+
+    public:
+        /**
+         * simply indirect to @Queue<>::ThreeWayComparer (only defined if T::operator<=> is defined)
+         */
+        nonvirtual strong_ordering operator<=> (const Queue& rhs) const;
 #endif
 
     protected:

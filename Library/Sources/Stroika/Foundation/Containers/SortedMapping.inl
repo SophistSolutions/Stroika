@@ -117,6 +117,14 @@ namespace Stroika::Foundation::Containers {
     {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetInOrderKeyComparer ();
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    inline strong_ordering SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator<=> (const SortedMapping& rhs) const
+    {
+        using ITERABLE = typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
+        return ITERABLE::template SequentialThreeWayComparer{Common::ThreeWayComparerAdapter (GetInOrderKeyComparer ())}(*this, rhs);
+    }
+#endif
 
 }
 

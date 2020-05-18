@@ -62,6 +62,12 @@ namespace Stroika::Foundation::Containers {
      *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
      *          the iterators are automatically updated internally to behave sensibly.
      *
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *      o   Even though the base class Collection<T> provides no intrinsic comparison operators, to be sorted,
+     *          does imply a comparison operator, so a SortedCollection<T> fully supports the c++ standard operator<=> strong comparison
+     *          feature.
+     *      o   Compare sequentially using the associated GetInOrderComparer ()
+     *      o   Only supported if C++20 comparison supported (easy for C++17, but no need since close to abandoing C++17 support and not regression)
      */
     template <typename T>
     class SortedCollection : public Collection<T> {
@@ -144,6 +150,20 @@ namespace Stroika::Foundation::Containers {
          */
         using inherited::Remove;
         nonvirtual void Remove (ArgByValueType<T> item);
+
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         *  Compare sequentially using the associated GetInOrderComparer ()  
+         */
+        nonvirtual bool operator== (const SortedCollection& rhs) const;
+
+    public:
+        /**
+         *  Compare sequentially using the associated GetInOrderComparer ()  
+         */
+        nonvirtual strong_ordering operator<=> (const SortedCollection& rhs) const;
+#endif
 
     protected:
         /**

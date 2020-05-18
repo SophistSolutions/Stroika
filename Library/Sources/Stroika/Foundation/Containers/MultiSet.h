@@ -24,10 +24,6 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
- *      @todo   Add three-way-comparer support - operator<=> etc - for Multiset. I Think it can be
- *              easily defined as operator<> on key/value, followed by operator<> on value and then as a string
- *              of those operations.
- *
  *      @todo   https://stroika.atlassian.net/browse/STK-428 - See how to map EqualsComparer to CountedValue we use
  *              probably added template param to CountedValue - TRAITS.
  *
@@ -102,6 +98,9 @@ namespace Stroika::Foundation::Containers {
      *
      *          Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
      *          @todo - document computational complexity
+     *
+     *          ThreeWayComparer support is NOT provided for Multisets, because there is no intrinsic ordering among the elements
+     *          of the multiset (keys) - even if there was some way to compare the T elements.
      *
      *  \note Note About Iterators
      *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.

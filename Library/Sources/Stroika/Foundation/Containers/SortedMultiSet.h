@@ -42,6 +42,15 @@ namespace Stroika::Foundation::Containers {
      *
      *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
      *          the iterators are automatically updated internally to behave sensibly.
+     *
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *        o MultiSet (base class) are already intrinsically equals-comparable.
+     *
+     *        o Since SortedMultiSet implies an ordering on the elements of the MultiSet, we can use this to define a
+     *          three_way_compare ordering for SortedMultiSet<>
+     *
+     *        o Since this was never supported before (not a regression) - and close to end of C++17 specific development,
+     *          only implementing three way compare for C++20 or later.
      */
     template <typename T, typename TRAITS = DefaultTraits::MultiSet<T>>
     class SortedMultiSet : public MultiSet<T, TRAITS> {
@@ -115,6 +124,14 @@ namespace Stroika::Foundation::Containers {
          *  Return the function used to compare if two elements are in-order (sorted properly)
          */
         nonvirtual InOrderComparerType GetInOrderComparer () const;
+
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         *  Compare sequentially using the associated GetInOrderComparer ()  
+         */
+        nonvirtual strong_ordering operator<=> (const SortedMultiSet& rhs) const;
+#endif
 
     protected:
         /**

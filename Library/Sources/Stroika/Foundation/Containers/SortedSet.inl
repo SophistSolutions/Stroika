@@ -100,6 +100,14 @@ namespace Stroika::Foundation::Containers {
     {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetInOrderComparer ();
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    template <typename T>
+    inline strong_ordering SortedSet<T>::operator<=> (const SortedSet& rhs) const
+    {
+        using ITERABLE = typename Iterable<T>;
+        return ITERABLE::template SequentialThreeWayComparer{Common::ThreeWayComparerAdapter (GetInOrderComparer ())}(*this, rhs);
+    }
+#endif
 
 }
 

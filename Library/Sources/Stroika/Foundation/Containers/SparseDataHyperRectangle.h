@@ -28,6 +28,9 @@ namespace Stroika::Foundation::Containers {
      *  in any cell you 'get' without first setting (as if the hyper-rectangle was pre-initialized to that value).
      *
      * But default values don't show up when iterating.
+     *
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *        o Same as DataHyperRectangle<> comparisons
      */
     template <typename T, typename... INDEXES>
     class SparseDataHyperRectangle : public DataHyperRectangle<T, INDEXES...> {

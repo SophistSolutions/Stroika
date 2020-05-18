@@ -67,6 +67,14 @@ namespace Stroika::Foundation::Containers {
      *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
      *          the iterators are automatically updated internally to behave sensibly.
      *
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *      o Standard Stroika Comparison equality (==, !=) support (iff <T> parameter has default equal_to<T> implementation)
+     *      o   EqualsComparer provided as alias to SequentialEqualsComparer
+     *          Two Queues are considered equal if they contain the same elements (by comparing them
+     *          with EQUALS_COMPARER (which defaults to equal_to<T>)
+     *          in exactly the same order (iteration).
+     *      o   Since ordering in a Queue is well defined, we can use this ordering between elemenets to define
+     *          the obvious sequential ordering three way comparison on queues (Iterable::SequentialThreeWayComparer)
      */
     template <typename T>
     class Stack : public Iterable<T> {
@@ -154,12 +162,24 @@ namespace Stroika::Foundation::Containers {
         template <typename T_EQUALS_COMPARER = equal_to<T>>
         using EqualsComparer = typename Iterable<T>::template SequentialEqualsComparer<T_EQUALS_COMPARER>;
 
+    public:
+        /**
+         */
+        template <typename ELEMENT_COMPARER = Common::ThreeWayComparer<T>>
+        using ThreeWayComparer = typename Iterable<T>::template SequentialThreeWayComparer<ELEMENT_COMPARER>;
+
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          * simply indirect to @Stack<>::EqualsComparer
          */
         nonvirtual bool operator== (const Stack& rhs) const;
+
+    public:
+        /**
+         * simply indirect to @Sequence<>::operator (only defined if ???comparethreeway?<T> is defined)
+         */
+        nonvirtual strong_ordering operator<=> (const Stack& rhs) const;
 #endif
 
     public:

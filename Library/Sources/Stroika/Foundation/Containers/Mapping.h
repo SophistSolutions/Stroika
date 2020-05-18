@@ -19,10 +19,6 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
- *      @todo   Add three-way-comparer support - operator<=> etc - for Mapping. I Think it can be
- *              easily defined as operator<> on key, followed by operator<> on value and then as a string
- *              of those operations.
- *
  *      @todo   Add an "Update (iterator<T> i, Value)" method, similar to other containers
  *              like Sequence. Note - intentionally don't allow updating the key???
  *
@@ -100,6 +96,9 @@ namespace Stroika::Foundation::Containers {
      *          \req lhs and rhs arguments must have the same (or equivilent) EqualsComparers.
      *
      *          @todo - document computational complexity
+     *
+     *          ThreeWayComparer support is NOT provided for Mapping, because there is no intrinsic ordering among the elements
+     *          of the mapping (keys) - even if there was some way to compare the values.
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     class Mapping : public Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> {

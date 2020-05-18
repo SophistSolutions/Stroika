@@ -86,8 +86,13 @@ namespace Stroika::Foundation::Containers {
      *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison equality (==, <=> etc) - because all sets have an equalsComparer for their elements
-     *        o ordering (<,<=> etc) not provided, because a set has no intrinsic ordering to its elements
+     *        o ordering (<,<=> etc) not provided, because a set has no intrinsic ordering between the set elements
      *        o when comparing a Set to any Itererable<> - this is treated as 'set' equality comparison
+     *
+     *        It remains questionable whether or not we should have overloads for comparting Set<> and Iterable<>. When
+     *        also done with other containers like Sequence, this could produce ambiguity. (like comparing Set with Sequence).
+     *        But thats probably OK, becase when we have ambiguity, we can always explicitly resolve it. So keep these
+     *        overloads which are pretty convenient.
      */
     template <typename T>
     class Set : public Iterable<T> {
@@ -506,12 +511,6 @@ namespace Stroika::Foundation::Containers {
     };
 
     /**
-     *  Basic comparison operator overloads with the obivous meaning, and simply indirect to @Set<T>::EqualsComparer
-     *
-     *  \note It remains questionable whether or not we should have overloads for comparting Set<> and Iterable<>. When
-     *        also done with other containers like Sequence, this could produce ambiguity. (like comparing Set with Sequence).
-     *        But thats probably OK, becase when we have ambiguity, we can always explicitly resolve it. So keep these
-     *        overloads which are pretty convenient.
      */
 #if __cpp_impl_three_way_comparison < 201907
     template <typename T>

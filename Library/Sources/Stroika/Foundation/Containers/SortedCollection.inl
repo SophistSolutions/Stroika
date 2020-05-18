@@ -110,6 +110,18 @@ namespace Stroika::Foundation::Containers {
     {
         _SafeReadRepAccessor<_IRep>{this}._GetRep ().Remove (item);
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    template <typename T>
+    inline bool SortedCollection<T>::operator== (const SortedCollection& rhs) const
+    {
+        return typename Iterable<T>::template SequentialEqualsComparer{Common::EqualsComparerAdapter (GetInOrderComparer ())}(*this, rhs);
+    }
+    template <typename T>
+    inline strong_ordering SortedCollection<T>::operator<=> (const SortedCollection& rhs) const
+    {
+        return typename Iterable<T>::template SequentialThreeWayComparer{Common::ThreeWayComparerAdapter (GetInOrderComparer ())}(*this, rhs);
+    }
+#endif
 
 }
 
