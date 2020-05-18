@@ -167,9 +167,6 @@ namespace Stroika::Foundation::DataExchange {
 #endif
 
     public:
-        struct ThreeWayComparer;
-
-    public:
         /**
          *  This corresponds to an empty string. An 'empty' Atom can be constructed with:
          *      \code
