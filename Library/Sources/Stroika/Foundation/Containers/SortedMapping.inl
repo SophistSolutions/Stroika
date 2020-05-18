@@ -121,8 +121,8 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline strong_ordering SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator<=> (const SortedMapping& rhs) const
     {
-        using ITERABLE = Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
-        return ITERABLE::SequentialThreeWayComparer{Common::ThreeWayComparerAdapter (GetInOrderKeyComparer ())}(*this, rhs);
+        auto threeWayEltComparer = Common::ThreeWayComparerAdapter (GetInOrderKeyComparer ());
+        return typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::SequentialThreeWayComparer{threeWayEltComparer}(*this, rhs);
     }
 #endif
 

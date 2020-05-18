@@ -114,12 +114,12 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline bool SortedCollection<T>::operator== (const SortedCollection& rhs) const
     {
-        return Iterable<T>::template SequentialEqualsComparer{Common::EqualsComparerAdapter (GetInOrderComparer ())}(*this, rhs);
+        return typename Iterable<T>::SequentialEqualsComparer{Common::EqualsComparerAdapter (GetInOrderComparer ())}(*this, rhs);
     }
     template <typename T>
     inline strong_ordering SortedCollection<T>::operator<=> (const SortedCollection& rhs) const
     {
-        return Iterable<T>::template SequentialThreeWayComparer{Common::ThreeWayComparerAdapter (GetInOrderComparer ())}(*this, rhs);
+        return typename Iterable<T>::SequentialThreeWayComparer{Common::ThreeWayComparerAdapter (GetInOrderComparer ())}(*this, rhs);
     }
 #endif
 
