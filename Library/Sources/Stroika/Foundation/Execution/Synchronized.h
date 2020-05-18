@@ -12,7 +12,7 @@
 #include <shared_mutex>
 #include <type_traits>
 
-#if __has_include(<boost/thread/shared_mutex.hpp>)
+#if qHasFeature_boost
 #include <boost/thread/shared_mutex.hpp>
 #endif
 
@@ -64,7 +64,7 @@ namespace Stroika::Foundation::Execution {
     constexpr InternallySynchronized eInternallySynchronized         = InternallySynchronized::eInternallySynchronized;
     constexpr InternallySynchronized eNotKnownInternallySynchronized = InternallySynchronized::eNotKnownInternallySynchronized;
 
-#if __has_include(<boost/thread/shared_mutex.hpp>)
+#if qHasFeature_boost
     /*
      * Make the boost types play more nicely with the stdc++ types.
      */
@@ -136,7 +136,7 @@ namespace Stroika::Foundation::Execution {
          */
         static constexpr bool kSupportsTimedLocks =
             is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, recursive_timed_mutex>
-#if __has_include(<boost/thread/shared_mutex.hpp>)
+#if qHasFeature_boost
             or is_same_v<MUTEX, PRIVATE_::BOOST_HELP_::UpgradeMutex>
 #endif
             ;
@@ -145,7 +145,7 @@ namespace Stroika::Foundation::Execution {
          */
         static constexpr bool kIsUpgradableSharedToExclusive =
             false
-#if __has_include(<boost/thread/shared_mutex.hpp>)
+#if qHasFeature_boost
             or is_same_v<MUTEX, PRIVATE_::BOOST_HELP_::UpgradeMutex>
 #endif
             ;
@@ -859,7 +859,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T>
     using RWSynchronized = Synchronized<T, Synchronized_Traits<shared_timed_mutex>>;
 
-#if __has_include(<boost/thread/shared_mutex.hpp>)
+#if qHasFeature_boost
     /**
      * UpgradableRWSynchronized will always use some sort of mutex which supports multiple readers, and a single writer, and allow the UpgradeLockAtomically method
      * (Typically, using boost:::upgrade_mutex);

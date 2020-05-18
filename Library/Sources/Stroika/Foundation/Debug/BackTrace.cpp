@@ -19,7 +19,7 @@
 #define BOOST_STACKTRACE_USE_WINDBG_CACHED 1
 #endif
 
-#if __has_include(<boost/stacktrace.hpp>)
+#if qHasFeature_boost
 #include <boost/stacktrace.hpp>
 #endif
 
@@ -45,7 +45,7 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
     useSkipFrames += 1; // always skip this frame, because anyone calling BackTrace() doens't care to see its implementation in the trace
 
     [[maybe_unused]] unsigned usingMaxFrames = options.fMaxFrames.value_or (BackTrace::Options::sDefault_MaxFrames);
-#if __has_include(<boost/stacktrace.hpp>)
+#if qHasFeature_boost
     using namespace boost;
 
     auto bt = stacktrace::stacktrace ();
