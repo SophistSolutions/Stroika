@@ -40,9 +40,6 @@ jobs:
   allow_failures:
     - env:
         - MATRIX_EVAL="Windows=true && BuildSamples=true" # https://stroika.atlassian.net/browse/STK-708
-    - env:
-        # fails just cuz of build time
-        - MATRIX_EVAL="CC=clang CXX=clang++ MacOS=true BuildSamples=false RunTests=true"
 
   include:
     ## Windows builds notes
@@ -126,8 +123,8 @@ jobs:
         - MATRIX_EVAL="Windows=true && BuildSamples=true"
 
     #
-    # MacOS Configuration Build Samples (still not working due to timeouts, but hopefully will soon)
-    #
+    # MacOS Configuration Build Samples
+    #   o Build with --Xerces no --OpenSSL no, just to avoid timeouts building
     - os: osx
       osx_image: xcode11.4
       addons:
@@ -140,12 +137,11 @@ jobs:
         - system_profiler SPSoftwareDataType
         - sw_vers
         # -mmacosx-version-min=10.15 needed for https://stackoverflow.com/questions/56924853/why-xcode-11-beta-cant-use-c17s-filesystem-header
-        # Only for build speed: --Xerces no --OpenSSL no
         - ./configure Release --apply-default-release-flags --append-extra-compiler-and-linker-args -mmacosx-version-min=10.15 --Xerces no --OpenSSL no
         - cat ConfigurationFiles/Release.xml
         - clang++ --version
       script:
-        # We dont get output building third-party-components for a while in openssl
+        # travis_wait, because dont get output building third-party-components for a while in openssl
         - travis_wait 30 make third-party-components
         - make samples
       after_failure:
@@ -155,7 +151,8 @@ jobs:
         - MATRIX_EVAL="CC=clang CXX=clang++ MacOS=true BuildSamples=true RunTests=false"
 
     #
-    # MacOS Configuration Run-Tests (still not working due to timeouts, but hopefully will soon)
+    # MacOS Configuration Run-Tests
+    #   o Build with --boost no only to avoid timeout building (cuz limited  to 50 minutes)
     #
     - os: osx
       osx_image: xcode11.4
@@ -169,17 +166,15 @@ jobs:
         - system_profiler SPSoftwareDataType
         - sw_vers
         # -mmacosx-version-min=10.15 needed for https://stackoverflow.com/questions/56924853/why-xcode-11-beta-cant-use-c17s-filesystem-header
-        # Only for build speed: --Xerces no --OpenSSL no --libcurl no
-        - ./configure Release --apply-default-release-flags --append-extra-compiler-and-linker-args -mmacosx-version-min=10.15 --Xerces no --OpenSSL no --libcurl no --boost no
+        - ./configure Release --apply-default-release-flags --append-extra-compiler-and-linker-args -mmacosx-version-min=10.15 --boost no
         - cat ConfigurationFiles/Release.xml
         - clang++ --version
       script:
-        # We dont get output building third-party-components for a while in openssl
+        # travis_wait, because dont get output building third-party-components for a while in openssl
         - travis_wait 30 make third-party-components
         - make run-tests
       after_failure:
-        - echo "HANDLING FAILURE DUMPING DEBUG STUFF:"
-        - echo "ENDING DEBUG STUFF DUMP"
+        - echo "run-tests failed:"    # in the event of failure could add extra dump/log here
       env:
         - MATRIX_EVAL="CC=clang CXX=clang++ MacOS=true BuildSamples=false RunTests=true"
 
