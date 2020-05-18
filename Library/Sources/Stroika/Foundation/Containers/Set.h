@@ -18,10 +18,6 @@
  *
  *
  *  TODO:
- *      @todo   Add/FIX three-way-comparer support - operator<=> etc - for Set. I Think it can be
- *              easily defined as operator<> on ELT, followed by operator<> on value and then as a string
- *              of those operations.
- *
  *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
  *              concepts and that it USES that for the appropriate overloaded constructors.
  *
@@ -336,7 +332,7 @@ namespace Stroika::Foundation::Containers {
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
-         * simply indirect to @Set<>::EqualsComparer
+         * simply indirect to @Set<>::EqualsComparer (always defined because Set<> knows how to compare T items.
          */
         nonvirtual bool operator== (const Set& rhs) const;
         nonvirtual bool operator== (const Iterable<T>& rhs) const;
