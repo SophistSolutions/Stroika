@@ -127,12 +127,12 @@ namespace Stroika::Foundation::Configuration {
     public:
         /**
          */
-        constexpr strong_ordering operator<=> (const Version& rhs) const;
+        constexpr bool operator== (const Version& rhs) const;
 
     public:
         /**
          */
-        constexpr bool operator== (const Version& rhs) const;
+        constexpr strong_ordering operator<=> (const Version& rhs) const;
 #endif
     };
 
