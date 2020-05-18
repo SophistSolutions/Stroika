@@ -217,14 +217,21 @@ namespace Stroika::Foundation::DataExchange {
 
 #if __cpp_impl_three_way_comparison < 201907
     private:
-        friend bool operator< (const Atom& lhs, const Atom& rhs);
-        friend bool operator<= (const Atom<ATOM_MANAGER>& lhs, const Atom<ATOM_MANAGER>& rhs);
-        friend bool operator== (const Atom<ATOM_MANAGER>& lhs, const Atom<ATOM_MANAGER>& rhs);
-        friend bool operator!= (const Atom<ATOM_MANAGER>& lhs, const Atom<ATOM_MANAGER>& rhs);
-        friend bool operator>= (const Atom<ATOM_MANAGER>& lhs, const Atom<ATOM_MANAGER>& rhs);
-        friend bool operator> (const Atom<ATOM_MANAGER>& lhs, const Atom<ATOM_MANAGER>& rhs);
+        template <typename AM>
+        friend bool operator< (const Atom<AM>& lhs, const Atom<AM>& rhs);
+        template <typename AM>
+        friend bool operator<= (const Atom<AM>& lhs, const Atom<AM>& rhs);
+        template <typename AM>
+        friend bool operator== (const Atom<AM>& lhs, const Atom<AM>& rhs);
+        template <typename AM>
+        friend bool operator!= (const Atom<AM>& lhs, const Atom<AM>& rhs);
+        template <typename AM>
+        friend bool operator>= (const Atom<AM>& lhs, const Atom<AM>& rhs);
+        template <typename AM>
+        template <typename AM>
+        friend bool operator> (const Atom<AM>& lhs, const Atom<AM>& rhs);
 #endif 
-    };
+};
 
 
 #if __cpp_impl_three_way_comparison < 201907
