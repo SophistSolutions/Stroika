@@ -160,6 +160,17 @@ namespace Stroika::Foundation::DataExchange {
         AtomType                            fType_;
         AtomType                            fSubType_;
         Containers::Mapping<String, String> fParameters_{String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive}};
+
+
+#if __cpp_impl_three_way_comparison < 201907
+    private:
+        friend bool operator< (const InternetMediaType& lhs, const InternetMediaType& rhs);
+        friend bool operator<= (const InternetMediaType& lhs, const InternetMediaType& rhs);
+        friend bool operator== (const InternetMediaType& lhs, const InternetMediaType& rhs);
+        friend bool operator!= (const InternetMediaType& lhs, const InternetMediaType& rhs);
+        friend bool operator>= (const InternetMediaType& lhs, const InternetMediaType& rhs);
+        friend bool operator> (const InternetMediaType& lhs, const InternetMediaType& rhs);
+#endif
     };
     template <>
     nonvirtual String InternetMediaType::As () const;
