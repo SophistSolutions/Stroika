@@ -122,7 +122,7 @@ namespace Stroika::Foundation::Containers {
     inline strong_ordering SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator<=> (const SortedMapping& rhs) const
     {
         using ITERABLE = Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
-        return ITERABLE::template SequentialThreeWayComparer{Common::ThreeWayComparerAdapter (GetInOrderKeyComparer ())}(*this, rhs);
+        return ITERABLE::SequentialThreeWayComparer{Common::ThreeWayComparerAdapter (GetInOrderKeyComparer ())}(*this, rhs);
     }
 #endif
 

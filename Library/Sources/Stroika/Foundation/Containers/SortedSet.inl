@@ -104,7 +104,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline strong_ordering SortedSet<T>::operator<=> (const SortedSet& rhs) const
     {
-        using ITERABLE = typename Iterable<T>;
+        using ITERABLE = Iterable<T>;
         return ITERABLE::template SequentialThreeWayComparer{Common::ThreeWayComparerAdapter (GetInOrderComparer ())}(*this, rhs);
     }
 #endif
