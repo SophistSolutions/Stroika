@@ -146,15 +146,39 @@ jobs:
       script:
         # We dont get output building third-party-components for a while in openssl
         - travis_wait 30 make third-party-components
-        #- make all ECHO_BUILD_LINES=1
-        # -k to make to try workaround wrong verison of MacOS (https://stroika.atlassian.net/browse/STK-705)
-        - make all -k || true
-        - make run-tests -k || true
+        - make samples
       after_failure:
         - echo "HANDLING FAILURE DUMPING DEBUG STUFF:"
         - echo "ENDING DEBUG STUFF DUMP"
       env:
-        - MATRIX_EVAL="CC=clang CXX=clang++ MacOS=true"
+        - MATRIX_EVAL="CC=clang CXX=clang++ MacOS=true BuildSamples=true RunTests=false"
+
+    - os: osx
+      osx_image: xcode11.4
+      addons:
+        homebrew:
+          packages:
+            - gnu-sed
+            - p7zip
+          update: true
+      install:
+        - system_profiler SPSoftwareDataType
+        - sw_vers
+        # -mmacosx-version-min=10.15 needed for https://stackoverflow.com/questions/56924853/why-xcode-11-beta-cant-use-c17s-filesystem-header
+        # Only for build speed: --Xerces no --OpenSSL no
+        - ./configure Release --apply-default-release-flags --append-extra-compiler-and-linker-args -mmacosx-version-min=10.15 --Xerces no --OpenSSL no
+        - cat ConfigurationFiles/Release.xml
+        - clang++ --version
+      script:
+        # We dont get output building third-party-components for a while in openssl
+        - travis_wait 30 make third-party-components
+        # -k to make to try workaround wrong verison of MacOS (https://stroika.atlassian.net/browse/STK-705)
+        - make run-tests
+      after_failure:
+        - echo "HANDLING FAILURE DUMPING DEBUG STUFF:"
+        - echo "ENDING DEBUG STUFF DUMP"
+      env:
+        - MATRIX_EVAL="CC=clang CXX=clang++ MacOS=true BuildSamples=false RunTests=true"
 
     #
     # Linux (Ubuntu - 1804) Configuration - build all
