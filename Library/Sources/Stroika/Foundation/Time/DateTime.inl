@@ -83,11 +83,11 @@ namespace Stroika::Foundation::Time {
 #if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering DateTime::operator<=> (const DateTime& rhs) const
     {
-        return Common::ThreeWayCompare (*this, rhs) <=> 0;
+        return TWC_ (*this, rhs);
     }
     inline bool DateTime::operator== (const DateTime& rhs) const
     {
-        return Common::ThreeWayCompare (*this, rhs) == 0;
+        return TWC_ (*this, rhs) == 0;
     }
 #endif
 
@@ -99,27 +99,27 @@ namespace Stroika::Foundation::Time {
      */
     inline bool operator< (const DateTime& lhs, const DateTime& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) < 0;
+        return DateTime::TWC_ (lhs, rhs) < 0;
     }
     inline bool operator<= (const DateTime& lhs, const DateTime& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) <= 0;
+        return DateTime::TWC_ (lhs, rhs) <= 0;
     }
     inline bool operator== (const DateTime& lhs, const DateTime& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) == 0;
+        return DateTime::TWC_ (lhs, rhs) == 0;
     }
     inline bool operator!= (const DateTime& lhs, const DateTime& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) != 0;
+        return DateTime::TWC_ (lhs, rhs) != 0;
     }
     inline bool operator>= (const DateTime& lhs, const DateTime& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) >= 0;
+        return DateTime::TWC_ (lhs, rhs) >= 0;
     }
     inline bool operator> (const DateTime& lhs, const DateTime& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) > 0;
+        return DateTime::TWC_ (lhs, rhs) > 0;
     }
 #endif
 

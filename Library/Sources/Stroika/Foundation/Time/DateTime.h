@@ -69,12 +69,16 @@ namespace Stroika::Foundation::Time {
      *  \note   DateTime constructors REQUIRE valid inputs, and any operations which might overflow throw range_error
      *          instead of creating invalid values.
      *
-     *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
-     *
      *  \note   DateTime values are (optionally) associated with a particular timezone. If the value of the timezone is localetime and
      *          localtime changes, the DateTime then is relative to that new localetime. If the associated timezone is localtime, the
      *          interpretation of that timezone happens at the time a request requires it.
      *
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *
+     *          Also note - if the datetimes differ in their GetTimeZone() value, they are not necessarily 
+     *          considered different. If either one is unknown, they will both be treated as the same timezone. 
+     *          Otherwise, they will BOTH be converted to GMT, and compared as GMT.
      */
     class DateTime {
     public:
@@ -468,12 +472,25 @@ namespace Stroika::Foundation::Time {
 #endif
 
     public:
-        struct ThreeWayComparer;
+        using ThreeWayComparer [[deprecated ("use Common::compare_three_way or <=> in  in 2.1a5")]] = Common::compare_three_way<DateTime, DateTime>;
+
+    private:
+        static Common::strong_ordering TWC_ (const DateTime& lhs, const DateTime& rhs);
 
     private:
         optional<Timezone>  fTimezone_;
         Date                fDate_;
         optional<TimeOfDay> fTimeOfDay_; // for now - still can be 'empty' - but API (as of v2.1d4) disallows passing in or getting out empty TimeOfDay
+
+#if __cpp_impl_three_way_comparison < 201907
+    private:
+        friend bool operator< (const DateTime& lhs, const DateTime& rhs);
+        friend bool operator<= (const DateTime& lhs, const DateTime& rhs);
+        friend bool operator== (const DateTime& lhs, const DateTime& rhs);
+        friend bool operator!= (const DateTime& lhs, const DateTime& rhs);
+        friend bool operator>= (const DateTime& lhs, const DateTime& rhs);
+        friend bool operator> (const DateTime& lhs, const DateTime& rhs);
+#endif
     };
 
     class DateTime::FormatException : public Execution::RuntimeErrorException<> {
@@ -498,19 +515,6 @@ namespace Stroika::Foundation::Time {
 #endif
     template <>
     Date DateTime::As () const;
-
-    /**
-     *  @see Common::ThreeWayComparer<> template
-     *
-     *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
-     *
-     *  Also note - if the datetimes differ in their GetTimeZone() value, they are not necessarily 
-     *  considered different. If either one is unknown, they will both be treated as the same timezone. 
-     *  Otherwise, they will BOTH be converted to GMT, and compared as GMT.
-     */
-    struct DateTime::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        nonvirtual Common::strong_ordering operator() (const DateTime& lhs, const DateTime& rhs) const;
-    };
 
 #if __cpp_impl_three_way_comparison < 201907
     /**
