@@ -131,7 +131,8 @@ namespace Stroika::Foundation::Common {
      *              using that (after check for HasComparer_v and before default using default implementation).
      */
     template <typename T, typename... ARGS>
-    struct ThreeWayComparer {
+    struct [[deprecated ("Since Stroika 2.1a5 - use Common::compare_three_way instead")]] ThreeWayComparer
+    {
         constexpr ThreeWayComparer (ARGS... args);
         template <class TT, class UU, typename Q = T, enable_if_t<Private_::HasThreeWayComparer_v<Q>>* = nullptr>
         constexpr auto operator() (UU&& lhs, TT&& rhs) const;
@@ -178,8 +179,8 @@ namespace Stroika::Foundation::Common {
      *        or when the is cost in constructing (not constexpr) the ThreeWayComparer (luckily basically the same cases - when there are args).
      *              -- LGP 2019-05-07
      */
-    template <typename T>
-    constexpr Common::strong_ordering ThreeWayCompare (const T& lhs, const T& rhs);
+    template <typename LT, typename RT>
+    constexpr Common::strong_ordering ThreeWayCompare (LT&& lhs, RT&& rhs);
 
     /**
      *  \brief ThreeWayComparer for optional types, like builtin one, except this lets you pass in explciit 'T' comparer for the T in optional<T>
@@ -316,10 +317,14 @@ namespace Stroika::Foundation::Common {
     struct ExtractComparisonTraits<greater_equal<T>> {
         static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eInOrderOrEquals;
     };
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
     template <typename T>
     struct ExtractComparisonTraits<ThreeWayComparer<T>> {
         static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
     };
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
 #if __cpp_lib_three_way_comparison >= 201907
     template <typename T>
     struct ExtractComparisonTraits<compare_three_way<T>> {
@@ -377,8 +382,8 @@ namespace Stroika::Foundation::Common {
 
         /**
          */
-        template <typename T>
-        constexpr bool operator() (const T& lhs, const T& rhs) const;
+        template <typename LT, typename RT>
+        constexpr bool operator() (LT&& lhs, RT&& rhs) const;
     };
     template <ComparisonRelationType KIND>
     struct ComparisonRelationDeclaration<KIND, void> {

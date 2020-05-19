@@ -57,18 +57,19 @@ namespace Stroika::Foundation::Common {
     template <class TT, class UU, typename Q, enable_if_t<not Private_::HasThreeWayComparer_v<Q> and not Private_::HasThreeWayComparerTemplate_v<Q>>*>
     constexpr auto ThreeWayComparer<T, ARGS...>::operator() (UU&& lhs, TT&& rhs) const
     {
-        return compare_three_way<TT, UU>{}(forward<TT> (lhs), forward<TT> (rhs));
+        return compare_three_way<UU, TT>{}(forward<TT> (lhs), forward<TT> (rhs));
     }
 
     /*
      ********************************************************************************
-     *************************** ThreeWayCompare<T> *********************************
+     ************************* ThreeWayCompare<LT, RT> ******************************
      ********************************************************************************
      */
-    template <typename T>
-    constexpr Common::strong_ordering ThreeWayCompare (const T& lhs, const T& rhs)
+    template <typename LT, typename RT>
+    constexpr Common::strong_ordering ThreeWayCompare (LT&& lhs, RT&& rhs)
     {
-        return ThreeWayComparer<T>{}(lhs, rhs);
+        return compare_three_way<LT, RT>{}(forward<LT> (lhs), forward<RT> (rhs));
+        // soon - maybe now - replace with - return ThreeWayComparer<LT>{}(forward<LT> (lhs), forward<RT> (rhs));
     }
 
     /*
@@ -194,10 +195,10 @@ namespace Stroika::Foundation::Common {
     {
     }
     template <ComparisonRelationType KIND, typename ACTUAL_COMPARER>
-    template <typename T>
-    inline constexpr bool ComparisonRelationDeclaration<KIND, ACTUAL_COMPARER>::operator() (const T& lhs, const T& rhs) const
+    template <typename LT, typename RT>
+    inline constexpr bool ComparisonRelationDeclaration<KIND, ACTUAL_COMPARER>::operator() (LT&& lhs, RT&& rhs) const
     {
-        return fActualComparer (lhs, rhs);
+        return fActualComparer (forward<LT> (lhs), forward<RT> (rhs));
     }
 
     /*
