@@ -1276,7 +1276,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     template <typename T_EQUALS_COMPARER>
     struct Iterable<T>::SequentialEqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
-        constexpr SequentialEqualsComparer (const T_EQUALS_COMPARER& elementComparer = {}, bool useIterableSize = false);
+        constexpr SequentialEqualsComparer (T_EQUALS_COMPARER&& elementComparer = {}, bool useIterableSize = false);
         nonvirtual bool   operator() (const Iterable& lhs, const Iterable& rhs) const;
         T_EQUALS_COMPARER fElementComparer;
         bool              fUseIterableSize;
@@ -1291,7 +1291,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     template <typename T_THREEWAY_COMPARER>
     struct Iterable<T>::SequentialThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        constexpr SequentialThreeWayComparer (const T_THREEWAY_COMPARER& elementComparer = {});
+        constexpr SequentialThreeWayComparer (T_THREEWAY_COMPARER&& elementComparer = {});
         nonvirtual Common::strong_ordering operator() (const Iterable& lhs, const Iterable& rhs) const;
         T_THREEWAY_COMPARER                fElementComparer;
     };

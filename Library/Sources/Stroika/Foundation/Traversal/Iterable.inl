@@ -931,8 +931,8 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T>
     template <typename T_EQUALS_COMPARER>
-    constexpr Iterable<T>::SequentialEqualsComparer<T_EQUALS_COMPARER>::SequentialEqualsComparer (const T_EQUALS_COMPARER& elementEqualsComparer, bool useIterableSize)
-        : fElementComparer{elementEqualsComparer}
+    constexpr Iterable<T>::SequentialEqualsComparer<T_EQUALS_COMPARER>::SequentialEqualsComparer (T_EQUALS_COMPARER&& elementEqualsComparer, bool useIterableSize)
+        : fElementComparer{forward<elementEqualsComparer> (elementEqualsComparer)}
         , fUseIterableSize{useIterableSize}
     {
     }
@@ -950,8 +950,8 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T>
     template <typename T_THREEWAY_COMPARER>
-    constexpr Iterable<T>::SequentialThreeWayComparer<T_THREEWAY_COMPARER>::SequentialThreeWayComparer (const T_THREEWAY_COMPARER& elementComparer)
-        : fElementComparer{elementComparer}
+    constexpr Iterable<T>::SequentialThreeWayComparer<T_THREEWAY_COMPARER>::SequentialThreeWayComparer (T_THREEWAY_COMPARER&& elementComparer)
+        : fElementComparer{forward<T_THREEWAY_COMPARER> (elementComparer)}
     {
     }
     DISABLE_COMPILER_MSC_WARNING_START (4701)
