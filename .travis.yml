@@ -152,7 +152,7 @@ jobs:
 
     #
     # MacOS Configuration Run-Tests
-    #   o Build with --boost no  --OpenSSL no, only to avoid timeout building (cuz limited  to 50 minutes)
+    #   o Build with --boost no --OpenSSL no --libcurl no, only to avoid timeout building (cuz limited  to 50 minutes)
     #
     - os: osx
       osx_image: xcode11.4
@@ -166,7 +166,7 @@ jobs:
         - system_profiler SPSoftwareDataType
         - sw_vers
         # -mmacosx-version-min=10.15 needed for https://stackoverflow.com/questions/56924853/why-xcode-11-beta-cant-use-c17s-filesystem-header
-        - ./configure Release --apply-default-release-flags --append-extra-compiler-and-linker-args -mmacosx-version-min=10.15 --boost no --OpenSSL no
+        - ./configure Release --apply-default-release-flags --append-extra-compiler-and-linker-args -mmacosx-version-min=10.15 --boost no --OpenSSL no --libcurl no
         - cat ConfigurationFiles/Release.xml
         - clang++ --version
       script:
@@ -174,7 +174,7 @@ jobs:
         - travis_wait 30 make third-party-components
         - make run-tests
       after_failure:
-        - echo "run-tests failed:"    # in the event of failure could add extra dump/log here
+        - echo "run-tests failed:" # in the event of failure could add extra dump/log here
       env:
         - MATRIX_EVAL="CC=clang CXX=clang++ MacOS=true BuildSamples=false RunTests=true"
 
