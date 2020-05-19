@@ -172,7 +172,9 @@ namespace {
                 optional<Response>                    optResp;
                 [[maybe_unused]] static constexpr int kMaxTryCount_{10}; // for some reason, this fails occasionally, due to network issues or overload of target machine
                 [[maybe_unused]] unsigned int         tryCount{1};
-                again [[maybe_unused]]:
+#if qHasFeature_LibCurl
+                again:
+#endif
                 try {
                     optResp = c.POST (URI{L"/post"}, roundTripTestData, DataExchange::InternetMediaTypes::kOctetStream);
                 }
