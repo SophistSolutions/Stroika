@@ -13,7 +13,7 @@
 
 namespace Stroika::Foundation::Common {
 
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated\"");
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
     /*
      ********************************************************************************
      ***************************** ThreeWayComparer<T> ******************************
@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Common {
     {
         return compare_three_way<UU, TT>{}(forward<TT> (lhs), forward<TT> (rhs));
     }
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated\"");
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
 
     /*
      ********************************************************************************
