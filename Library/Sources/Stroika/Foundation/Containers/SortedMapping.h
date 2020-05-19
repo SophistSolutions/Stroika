@@ -87,6 +87,12 @@ namespace Stroika::Foundation::Containers {
          *  or initialized with any argument values.
          *
          *  The underlying data structure of the Mapping is defined by @see Factory::SortedMapping_Factory<>
+         *
+         *  \par Example Usage
+         *      \code
+         *          Mapping<int, int>       m{pair<int, int>{1, 2}, pair<int, int>{2, 4}};
+         *          SortedMapping<int, int> sm{m};
+         *      \endcode
          */
         SortedMapping ();
         template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> ()>* = nullptr>

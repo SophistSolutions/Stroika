@@ -65,6 +65,18 @@ namespace {
 }
 
 namespace {
+    namespace Test3_ConvertMapping2SortedMapping {
+        void TestAll ()
+        {
+            Mapping<int, int>       m{pair<int, int>{1, 2}, pair<int, int>{2, 4}};
+            SortedMapping<int, int> ms{m};
+            VerifyTestResult (ms.size () == 2);
+            VerifyTestResult ((*ms.begin () == pair<int, int>{1, 2}));
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
@@ -93,6 +105,8 @@ namespace {
         DoTestForConcreteContainer_<SortedMapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
             [] () { return SortedMapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}); },
             MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+
+        Test3_ConvertMapping2SortedMapping::TestAll ();
     }
 }
 
