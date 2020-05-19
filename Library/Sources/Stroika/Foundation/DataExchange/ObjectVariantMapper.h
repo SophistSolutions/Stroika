@@ -231,6 +231,11 @@ namespace Stroika::Foundation::DataExchange {
          *  Structure to capture all the details of how to map between a VariantValue and an associated C++ structure.
          *  This CAN be direclyly constructed, and passed into the ObjectVariantMapper (via the Add method), but more commonly
          *  helpers like MakeCommonSerializer () or AddClass will be used.
+         *
+         *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+         *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
+         *
+         *        o C++20 only (for c++17 only supported == and operator<)
          */
         struct TypeMappingDetails {
             type_index                  fForType;

@@ -27,7 +27,9 @@
 namespace Stroika::Foundation::DataExchange {
 
     /**
-     *
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *        o C++20 only (for c++17 only supported == and operator<)
      */
     struct StructFieldMetaInfo {
     public:
