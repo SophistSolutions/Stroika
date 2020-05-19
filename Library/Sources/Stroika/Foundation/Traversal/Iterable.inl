@@ -932,7 +932,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     template <typename T_EQUALS_COMPARER>
     constexpr Iterable<T>::SequentialEqualsComparer<T_EQUALS_COMPARER>::SequentialEqualsComparer (T_EQUALS_COMPARER&& elementEqualsComparer, bool useIterableSize)
-        : fElementComparer{forward<elementEqualsComparer> (elementEqualsComparer)}
+        : fElementComparer{forward<T_EQUALS_COMPARER> (elementEqualsComparer)}
         , fUseIterableSize{useIterableSize}
     {
     }
