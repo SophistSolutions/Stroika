@@ -447,7 +447,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     template <>
     string UserInfo::AsEncoded () const;
 
-
 #if __cpp_impl_three_way_comparison < 201907
     bool operator< (const UserInfo& lhs, const UserInfo& rhs);
     bool operator<= (const UserInfo& lhs, const UserInfo& rhs);
@@ -575,9 +574,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         friend bool operator>= (const Authority& lhs, const Authority& rhs);
         friend bool operator> (const Authority& lhs, const Authority& rhs);
 #endif
-
     };
-
 
 #if __cpp_impl_three_way_comparison < 201907
     bool operator< (const Authority& lhs, const Authority& rhs);

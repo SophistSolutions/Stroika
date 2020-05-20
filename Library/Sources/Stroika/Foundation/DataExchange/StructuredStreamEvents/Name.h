@@ -26,6 +26,10 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
     using Characters::String;
 
     /**
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *
+     *      Treat EITHER side missing namespace as 'wildcard' matching any namespace
      */
     struct Name {
         /**
@@ -61,7 +65,6 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
         Name (const String& localName, NameType type = eElement);
         Name (const String& namespaceURI, const String& localName, NameType type = eElement);
 
-        struct ThreeWayComparer;
 
 #if __cpp_impl_three_way_comparison >= 201907
         /**
@@ -77,19 +80,26 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
          *  Purely for debugging / diagnostic purposes. Don't count on this format.
          */
         nonvirtual String ToString () const;
-    };
 
-    /**
-     *  Treat EITHER side missing namespace as 'wildcard' matching any namespace
-     */
-    struct Name::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        Common::strong_ordering operator() (const Name& lhs, const Name& rhs) const;
+    private:
+        static Common::strong_ordering TWC_ (const Name& lhs, const Name& rhs);
+
+    public:
+        using ThreeWayComparer [[deprecated ("use Common::compare_three_way or <=> in  in 2.1a5")]] = Common::compare_three_way<Name, Name>;
+
+#if __cpp_impl_three_way_comparison < 201907
+    private:
+        friend bool operator< (const Name& lhs, const Name& rhs);
+        friend bool operator<= (const Name& lhs, const Name& rhs);
+        friend bool operator== (const Name& lhs, const Name& rhs);
+        friend bool operator!= (const Name& lhs, const Name& rhs);
+        friend bool operator>= (const Name& lhs, const Name& rhs);
+        friend bool operator> (const Name& lhs, const Name& rhs);
+#endif
+
     };
 
 #if __cpp_impl_three_way_comparison < 201907
-    /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
-     */
     bool operator< (const Name& lhs, const Name& rhs);
     bool operator<= (const Name& lhs, const Name& rhs);
     bool operator== (const Name& lhs, const Name& rhs);

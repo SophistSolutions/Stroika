@@ -51,20 +51,15 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
 #if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering Name::operator<=> (const Name& rhs) const
     {
-        return ThreeWayComparer{}(*this, rhs);
+        return TWC_ (*this, rhs);
     }
     inline bool Name::operator== (const Name& rhs) const
     {
-        return ThreeWayComparer{}(*this, rhs) == 0;
+        return TWC_ (*this, rhs) == 0;
     }
 #endif
 
-    /*
-     ********************************************************************************
-     ************** StructuredStreamEvents::Name::ThreeWayComparer ******************
-     ********************************************************************************
-     */
-    inline Common::strong_ordering Name::ThreeWayComparer::operator() (const Name& lhs, const Name& rhs) const
+    inline Common::strong_ordering Name::TWC_ (const Name& lhs, const Name& rhs)
     {
         // Treat EITHER side missing namespace as 'wildcard' matching any namespace
         if (lhs.fNamespaceURI.has_value () and rhs.fNamespaceURI.has_value ()) {
@@ -88,27 +83,27 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
      */
     inline bool operator< (const Name& lhs, const Name& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) < 0;
+        return Name::TWC_ (lhs, rhs) < 0;
     }
     inline bool operator<= (const Name& lhs, const Name& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) <= 0;
+        return Name::TWC_ (lhs, rhs) <= 0;
     }
     inline bool operator== (const Name& lhs, const Name& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) == 0;
+        return Name::TWC_ (lhs, rhs) == 0;
     }
     inline bool operator!= (const Name& lhs, const Name& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) != 0;
+        return Name::TWC_ (lhs, rhs) != 0;
     }
     inline bool operator>= (const Name& lhs, const Name& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) >= 0;
+        return Name::TWC_ (lhs, rhs) >= 0;
     }
     inline bool operator> (const Name& lhs, const Name& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) > 0;
+        return Name::TWC_ (lhs, rhs) > 0;
     }
 #endif
 

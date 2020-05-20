@@ -137,7 +137,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     }
     inline bool Host::operator== (const Host& rhs) const
     {
-        return TWC_(*this, rhs) == 0;
+        return TWC_ (*this, rhs) == 0;
     }
 #endif
     inline Common::strong_ordering Host::TWC_ (const Host& lhs, const Host& rhs)
@@ -149,7 +149,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         return Common::OptionalThreeWayComparer<String, Common::compare_three_way<String, String>>{
             Common::compare_three_way<String, String>{Characters::CompareOptions::eCaseInsensitive}}(lhs.AsRegisteredName (), rhs.AsRegisteredName ());
     }
-
 
 #if __cpp_impl_three_way_comparison < 201907
     /*
@@ -320,7 +319,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         }
         return Common::ThreeWayCompare (lhs.GetPort (), rhs.GetPort ());
     }
-
 
 #if __cpp_impl_three_way_comparison < 201907
     /*
