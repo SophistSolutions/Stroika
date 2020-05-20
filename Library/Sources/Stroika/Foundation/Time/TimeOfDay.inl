@@ -68,16 +68,6 @@ namespace Stroika::Foundation::Time {
         return Format ();
     }
 
-    /*
-     ********************************************************************************
-     *************************** TimeOfDay::ThreeWayComparer ************************
-     ********************************************************************************
-     */
-    constexpr Common::strong_ordering TimeOfDay::ThreeWayComparer::operator() (const TimeOfDay& lhs, const TimeOfDay& rhs) const
-    {
-        return Common::ThreeWayCompare (lhs.GetAsSecondsCount (), rhs.GetAsSecondsCount ());
-    }
-
 #if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
@@ -86,27 +76,27 @@ namespace Stroika::Foundation::Time {
      */
     constexpr bool operator< (TimeOfDay lhs, TimeOfDay rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) < 0;
+        return Common::ThreeWayCompare (lhs.GetAsSecondsCount (), rhs.GetAsSecondsCount ()) < 0;
     }
     constexpr bool operator<= (TimeOfDay lhs, TimeOfDay rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) <= 0;
+        return Common::ThreeWayCompare (lhs.GetAsSecondsCount (), rhs.GetAsSecondsCount ()) <= 0;
     }
     constexpr bool operator== (TimeOfDay lhs, TimeOfDay rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) == 0;
+        return Common::ThreeWayCompare (lhs.GetAsSecondsCount (), rhs.GetAsSecondsCount ()) == 0;
     }
     constexpr bool operator!= (TimeOfDay lhs, TimeOfDay rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) != 0;
+        return Common::ThreeWayCompare (lhs.GetAsSecondsCount (), rhs.GetAsSecondsCount ()) != 0;
     }
     constexpr bool operator>= (TimeOfDay lhs, TimeOfDay rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) >= 0;
+        return Common::ThreeWayCompare (lhs.GetAsSecondsCount (), rhs.GetAsSecondsCount ()) >= 0;
     }
     constexpr bool operator> (TimeOfDay lhs, TimeOfDay rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) > 0;
+        return Common::ThreeWayCompare (lhs.GetAsSecondsCount (), rhs.GetAsSecondsCount ()) > 0;
     }
 #endif
 

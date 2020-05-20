@@ -184,10 +184,11 @@ namespace Stroika::Foundation::Time {
      *  \note   Date constructors REQUIRE valid inputs, and any operations which might overflow throw range_error
      *          instead of creating invalid values.
      *
-     *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
-     *
      *  \note   Would like to make Date inherit from Debug::AssertExternallySynchronizedLock to assure its not accidentially modified, but
      *          thats difficult beacuse its sometimes uses as a constexpr
+     *
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
     class Date {
     public:
@@ -438,7 +439,7 @@ namespace Stroika::Foundation::Time {
 #endif
 
     public:
-        struct ThreeWayComparer;
+        using ThreeWayComparer [[deprecated ("use Common::compare_three_way or <=> in  in 2.1a5")]] = Common::compare_three_way<Date, Date>;
 
     private:
         constexpr static JulianRepType jday_ (MonthOfYear month, DayOfMonth day, Year year);
@@ -463,17 +464,7 @@ namespace Stroika::Foundation::Time {
         static const FormatException kThe;
     };
 
-    /**
-     *  @see Common::ThreeWayComparer<> template
-     */
-    struct Date::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        constexpr Common::strong_ordering operator() (const Date& lhs, const Date& rhs) const;
-    };
-
 #if __cpp_impl_three_way_comparison < 201907
-    /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
-     */
     constexpr bool operator< (const Date& lhs, const Date& rhs);
     constexpr bool operator<= (const Date& lhs, const Date& rhs);
     constexpr bool operator== (const Date& lhs, const Date& rhs);

@@ -195,17 +195,6 @@ namespace Stroika::Foundation::Time {
         return Date{UINT_MAX - 1};
     }
 
-    /*
-     ********************************************************************************
-     ***************************** Date::ThreeWayComparer ***************************
-     ********************************************************************************
-     */
-    constexpr Common::strong_ordering Date::ThreeWayComparer::operator() (const Date& lhs, const Date& rhs) const
-    {
-        // careful of signed/unsigned converstions - esp because of kMax which is very large
-        return Common::ThreeWayCompare (lhs.GetJulianRep (), rhs.GetJulianRep ());
-    }
-
 #if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
@@ -214,27 +203,27 @@ namespace Stroika::Foundation::Time {
      */
     constexpr inline bool operator< (const Date& lhs, const Date& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) < 0;
+        return Common::ThreeWayCompare (lhs.GetJulianRep (), rhs.GetJulianRep ()) < 0;
     }
     constexpr inline bool operator<= (const Date& lhs, const Date& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) <= 0;
+        return Common::ThreeWayCompare (lhs.GetJulianRep (), rhs.GetJulianRep ()) <= 0;
     }
     constexpr inline bool operator== (const Date& lhs, const Date& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) == 0;
+        return Common::ThreeWayCompare (lhs.GetJulianRep (), rhs.GetJulianRep ()) == 0;
     }
     constexpr inline bool operator!= (const Date& lhs, const Date& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) != 0;
+        return Common::ThreeWayCompare (lhs.GetJulianRep (), rhs.GetJulianRep ()) != 0;
     }
     constexpr inline bool operator>= (const Date& lhs, const Date& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) >= 0;
+        return Common::ThreeWayCompare (lhs.GetJulianRep (), rhs.GetJulianRep ()) >= 0;
     }
     constexpr inline bool operator> (const Date& lhs, const Date& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) > 0;
+        return Common::ThreeWayCompare (lhs.GetJulianRep (), rhs.GetJulianRep ()) > 0;
     }
 #endif
 }

@@ -93,6 +93,10 @@ namespace Stroika::Foundation::Time {
      *  That feature may be eventually added - https://stroika.atlassian.net/browse/STK-636
      *
      *  @see https://msdn.microsoft.com/en-us/library/system.timezone(v=vs.110).aspx
+     *
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *          o   Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *          o   Incomplete on C++17 and earlier
      */
     class Timezone {
     private:
