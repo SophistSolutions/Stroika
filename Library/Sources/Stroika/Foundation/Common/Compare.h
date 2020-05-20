@@ -69,16 +69,17 @@ namespace Stroika::Foundation::Common {
      *  For code which requires C++20 or later, simply call std::compare_three_way instead.
      */
 #if __cpp_lib_three_way_comparison < 201907L
-    template <class T, class U>
+    template <class LT, class RT>
     struct compare_three_way {
-        constexpr auto operator() (T&& lhs, U&& rhs) const
+        constexpr auto operator() (LT&& lhs, RT&& rhs) const
         {
+            using CT = common_type_t<LT, RT>;
             // ISSUE HERE - PRE C++20, no distinction made between strong_ordering, weak_ordering, and partial_ordering, because
             // this counts on cooperation with various types and mechanismns like operator<=> = default which we don't have (and declared strong_ordering=int)
-            if (equal_to<T>{}(lhs, rhs)) {
+            if (equal_to<CT>{}(forward<LT> (lhs), forward<RT> (rhs))) {
                 return Stroika::Foundation::Common::kEqual;
             }
-            return less<T>{}(lhs, rhs) ? Stroika::Foundation::Common::kLess : Stroika::Foundation::Common::kGreater;
+            return less<CT>{}(forward<LT> (lhs), forward<RT> (rhs)) ? Stroika::Foundation::Common::kLess : Stroika::Foundation::Common::kGreater;
         }
     };
 #else
