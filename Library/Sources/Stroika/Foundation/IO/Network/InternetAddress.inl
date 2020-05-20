@@ -257,13 +257,7 @@ namespace Stroika::Foundation::IO::Network {
         return ThreeWayComparer{}(*this, rhs) == 0;
     }
 #endif
-
-    /*
-     ********************************************************************************
-     ********************** InternetAddress::ThreeWayComparer ***********************
-     ********************************************************************************
-     */
-    inline Common::strong_ordering InternetAddress::ThreeWayComparer::operator() (const InternetAddress& lhs, const InternetAddress& rhs) const
+    inline Common::strong_ordering InternetAddress::TWC_ (const InternetAddress& lhs, const InternetAddress& rhs)
     {
         Common::strong_ordering cmp = Common::ThreeWayCompare (lhs.fAddressFamily_, rhs.fAddressFamily_);
         if (cmp != Common::kEqual) {
@@ -292,27 +286,27 @@ namespace Stroika::Foundation::IO::Network {
      */
     inline bool operator< (const InternetAddress& lhs, const InternetAddress& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) < 0;
+        return InternetAddress::TWC_ (lhs, rhs) < 0;
     }
     inline bool operator<= (const InternetAddress& lhs, const InternetAddress& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) <= 0;
+        return InternetAddress::TWC_ (lhs, rhs) <= 0;
     }
     inline bool operator== (const InternetAddress& lhs, const InternetAddress& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) == 0;
+        return InternetAddress::TWC_ (lhs, rhs) == 0;
     }
     inline bool operator!= (const InternetAddress& lhs, const InternetAddress& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) != 0;
+        return InternetAddress::TWC_ (lhs, rhs) != 0;
     }
     inline bool operator>= (const InternetAddress& lhs, const InternetAddress& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) >= 0;
+        return InternetAddress::TWC_ (lhs, rhs) >= 0;
     }
     inline bool operator> (const InternetAddress& lhs, const InternetAddress& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) > 0;
+        return InternetAddress::TWC_ (lhs, rhs) > 0;
     }
 #endif
 

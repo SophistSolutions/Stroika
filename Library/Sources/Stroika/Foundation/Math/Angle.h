@@ -78,16 +78,10 @@ namespace Stroika::Foundation::Math {
         nonvirtual const Angle& operator/= (RepType rhs);
 
     public:
-        struct ThreeWayComparer;
+        using ThreeWayComparer [[deprecated ("use Common::compare_three_way or <=> in  in 2.1a5")]] = Common::compare_three_way<Angle, Angle>;
 
     private:
         double fAngleInRadians_;
-    };
-
-    /**
-     */
-    struct Angle::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        constexpr Common::strong_ordering operator() (const Angle& lhs, const Angle& rhs) const;
     };
 
 #if __cpp_impl_three_way_comparison < 201907

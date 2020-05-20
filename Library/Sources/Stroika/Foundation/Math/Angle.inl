@@ -70,16 +70,6 @@ namespace Stroika::Foundation::Math {
         return *this;
     }
 
-    /*
-     ********************************************************************************
-     ************************* Angle::ThreeWayComparer ******************************
-     ********************************************************************************
-     */
-    constexpr Common::strong_ordering Angle::ThreeWayComparer::operator() (const Angle& lhs, const Angle& rhs) const
-    {
-        return Common::ThreeWayCompare (lhs.AsRadians (), rhs.AsRadians ());
-    }
-
 #if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
@@ -88,27 +78,27 @@ namespace Stroika::Foundation::Math {
      */
     constexpr bool operator< (const Angle& lhs, const Angle& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) < 0;
+        return Common::ThreeWayCompare (lhs.AsRadians (), rhs.AsRadians ()) < 0;
     }
     constexpr bool operator<= (const Angle& lhs, const Angle& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) <= 0;
+        return Common::ThreeWayCompare (lhs.AsRadians (), rhs.AsRadians ()) <= 0;
     }
     constexpr bool operator== (const Angle& lhs, const Angle& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) == 0;
+        return Common::ThreeWayCompare (lhs.AsRadians (), rhs.AsRadians ()) == 0;
     }
     constexpr bool operator!= (const Angle& lhs, const Angle& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) != 0;
+        return Common::ThreeWayCompare (lhs.AsRadians (), rhs.AsRadians ()) != 0;
     }
     constexpr bool operator>= (const Angle& lhs, const Angle& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) >= 0;
+        return Common::ThreeWayCompare (lhs.AsRadians (), rhs.AsRadians ()) >= 0;
     }
     constexpr bool operator> (const Angle& lhs, const Angle& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) > 0;
+        return Common::ThreeWayCompare (lhs.AsRadians (), rhs.AsRadians ()) > 0;
     }
 #endif
 

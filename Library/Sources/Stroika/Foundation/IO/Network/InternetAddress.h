@@ -90,7 +90,6 @@ namespace Stroika::Foundation::IO::Network {
      *      This class provides no support for site-local addresses because they have been deprecated
      *      in http://www.ietf.org/rfc/rfc3879.txt
      *
-     *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
      */
     class InternetAddress {
     public:
@@ -346,7 +345,10 @@ namespace Stroika::Foundation::IO::Network {
         nonvirtual bool IsMulticastAddress () const;
 
     public:
-        struct ThreeWayComparer;
+        using ThreeWayComparer [[deprecated ("use Common::compare_three_way or <=> in  in 2.1a5")]] = Common::compare_three_way<InternetAddress, InternetAddress>;
+
+    private:
+        static Common::strong_ordering TWC_ (const InternetAddress& lhs, const InternetAddress& rhs);
 
     private:
         AddressFamily fAddressFamily_;
@@ -359,20 +361,19 @@ namespace Stroika::Foundation::IO::Network {
             array<uint8_t, 16> fArray_16_uint_;
             array<byte, 16>    fArray_16_byte_;
         };
-    };
 
-    /**
-     *
-     *  @todo this probably SHOULD be doable as constexpr - but disabled cuz failing to compiler on clang++10 --LGP 2020-05-04
-     */
-    struct InternetAddress::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        nonvirtual Common::strong_ordering operator() (const InternetAddress& lhs, const InternetAddress& rhs) const;
+#if __cpp_impl_three_way_comparison < 201907
+    private:
+        friend bool operator< (const InternetAddress& lhs, const InternetAddress& rhs);
+        friend bool operator<= (const InternetAddress& lhs, const InternetAddress& rhs);
+        friend bool operator== (const InternetAddress& lhs, const InternetAddress& rhs);
+        friend bool operator!= (const InternetAddress& lhs, const InternetAddress& rhs);
+        friend bool operator>= (const InternetAddress& lhs, const InternetAddress& rhs);
+        friend bool operator> (const InternetAddress& lhs, const InternetAddress& rhs);
+#endif
     };
 
 #if __cpp_impl_three_way_comparison < 201907
-    /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to @InternetAddress::ThreeWayComparer ()
-     */
     bool operator< (const InternetAddress& lhs, const InternetAddress& rhs);
     bool operator<= (const InternetAddress& lhs, const InternetAddress& rhs);
     bool operator== (const InternetAddress& lhs, const InternetAddress& rhs);
