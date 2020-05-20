@@ -350,12 +350,7 @@ URI URI::Combine (const URI& uri) const
     return result;
 }
 
-/*
- ********************************************************************************
- **************************** URI::ThreeWayComparer *****************************
- ********************************************************************************
- */
-Common::strong_ordering URI::ThreeWayComparer::operator() (const URI& lhs, const URI& rhs) const
+Common::strong_ordering URI::TWC_ (const URI& lhs, const URI& rhs)
 {
     using namespace UniformResourceIdentification;
     Common::strong_ordering cmp = Common::ThreeWayCompare (lhs.GetScheme (), rhs.GetScheme ());

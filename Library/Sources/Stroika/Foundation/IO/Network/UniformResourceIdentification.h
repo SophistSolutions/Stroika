@@ -122,6 +122,10 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *      @todo   MABYE add "SCHEME REGISTER"
      *              { string, isSecure, isHttpIsh } -na dif httpish req certina methdos get GethOst etc for httpish schemes
      *
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *          o   Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *
+     *          o   schemes are case-insensitive  @see https://tools.ietf.org/html/rfc3986#section-3.1
      */
     class SchemeType : public String {
         using inherited = String;
@@ -159,23 +163,27 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         nonvirtual bool operator== (const SchemeType& rhs) const;
 #endif
 
+    private:
+        static Common::strong_ordering TWC_ (const SchemeType& lhs, const SchemeType& rhs);
+
     public:
-        struct ThreeWayComparer;
+        using ThreeWayComparer [[deprecated ("use Common::compare_three_way or <=> in  in 2.1a5")]] = Common::compare_three_way<SchemeType, SchemeType>;
 
     public:
         nonvirtual optional<PortType> GetDefaultPort () const;
-    };
 
-    /**
-     *  schemes are case-insensitive  @see https://tools.ietf.org/html/rfc3986#section-3.1
-     */
-    struct SchemeType::ThreeWayComparer : Common::compare_three_way<String, String> {
-        constexpr ThreeWayComparer ();
+#if __cpp_impl_three_way_comparison < 201907
+    private:
+        friend bool operator< (const SchemeType& lhs, const SchemeType& rhs);
+        friend bool operator<= (const SchemeType& lhs, const SchemeType& rhs);
+        friend bool operator== (const SchemeType& lhs, const SchemeType& rhs);
+        friend bool operator!= (const SchemeType& lhs, const SchemeType& rhs);
+        friend bool operator>= (const SchemeType& lhs, const SchemeType& rhs);
+        friend bool operator> (const SchemeType& lhs, const SchemeType& rhs);
+#endif
     };
 
 #if __cpp_impl_three_way_comparison < 201907
-    /**
-     */
     bool operator< (const SchemeType& lhs, const SchemeType& rhs);
     bool operator<= (const SchemeType& lhs, const SchemeType& rhs);
     bool operator== (const SchemeType& lhs, const SchemeType& rhs);
@@ -555,6 +563,14 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 #endif
 
     /**
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *
+     *          Nothing in https://tools.ietf.org/html/rfc3986#section-3.4 appears to indicate case insensative so treat as case sensitive
+     *
+     *          comparing for equals makes full sense. But comparing < really doesn't, because there is no obvious preferred order for query strings
+     *          So pick a preferred ordering (alphabetical) - and compare one after the other
+     *          @todo see https://stroika.atlassian.net/browse/STK-144 and fix when that is fixed
      */
     class Query {
     public:
@@ -596,8 +612,11 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         nonvirtual bool operator== (const Query& rhs) const;
 #endif
 
+    private:
+        static Common::strong_ordering TWC_ (const Query& lhs, const Query& rhs);
+
     public:
-        struct ThreeWayComparer;
+        using ThreeWayComparer [[deprecated ("use Common::compare_three_way or <=> in  in 2.1a5")]] = Common::compare_three_way<Query, Query>;
 
     public:
         /**
@@ -608,23 +627,19 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
     private:
         Containers::Mapping<String, String> fMap_;
-    };
 
-    /**
-     *  Nothing in https://tools.ietf.org/html/rfc3986#section-3.4 appears to indicate case insensative so treat as case sensitive
-     *
-     * comparing for equals makes full sense. But comparing < really doesn't, because there is no obvious preferred order for query strings
-     * So pick a preferred ordering (alphabetical) - and compare one after the other
-     * @todo see https://stroika.atlassian.net/browse/STK-144 and fix when that is fixed
-     */
-    struct Query::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        Common::strong_ordering operator() (const Query& lhs, const Query& rhs) const;
+#if __cpp_impl_three_way_comparison < 201907
+    private:
+        friend bool operator< (const Query& lhs, const Query& rhs);
+        friend bool operator<= (const Query& lhs, const Query& rhs);
+        friend bool operator== (const Query& lhs, const Query& rhs);
+        friend bool operator!= (const Query& lhs, const Query& rhs);
+        friend bool operator>= (const Query& lhs, const Query& rhs);
+        friend bool operator> (const Query& lhs, const Query& rhs);
+#endif
     };
 
 #if __cpp_impl_three_way_comparison < 201907
-    /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
-     */
     bool operator< (const Query& lhs, const Query& rhs);
     bool operator<= (const Query& lhs, const Query& rhs);
     bool operator== (const Query& lhs, const Query& rhs);

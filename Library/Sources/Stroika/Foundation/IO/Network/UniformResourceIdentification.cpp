@@ -322,12 +322,7 @@ String Query::ToString () const
     return Characters::ToString (fMap_);
 }
 
-/*
- ********************************************************************************
- *************************** Query::ThreeWayComparer ****************************
- ********************************************************************************
- */
-Common::strong_ordering Query::ThreeWayComparer::operator() (const Query& lhs, const Query& rhs) const
+Common::strong_ordering Query::TWC_ (const Query& lhs, const Query& rhs)
 {
     // Nothing in https://tools.ietf.org/html/rfc3986#section-3.4 appears to indicate case insensative so treat as case sensitive
 

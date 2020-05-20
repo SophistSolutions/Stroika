@@ -25,8 +25,6 @@
  *
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
- * TODO:
- *      @todo   Need LOTS of reg-tests tests!.
  */
 
 namespace Stroika::Foundation::IO::Network {
@@ -86,6 +84,8 @@ namespace Stroika::Foundation::IO::Network {
      *          This poses some difficulties for code that wants to update BOTH the authority and the path of a URI (which do you do first - tricky).
      *          But its easy enough to avoid by re-constructing the URI from scratch using the URI (individiaul components) constructor.
      *      
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
     class URI : private Debug::AssertExternallySynchronizedLock {
     public:
@@ -325,7 +325,10 @@ namespace Stroika::Foundation::IO::Network {
 #endif
 
     public:
-        struct ThreeWayComparer;
+        using ThreeWayComparer [[deprecated ("use Common::compare_three_way or <=> in  in 2.1a5")]] = Common::compare_three_way<URI, URI>;
+
+    private:
+        static Common::strong_ordering TWC_ (const URI& lhs, const URI& rhs);
 
     public:
         /**
@@ -342,6 +345,16 @@ namespace Stroika::Foundation::IO::Network {
         String               fPath_;      // Can be empty string, but documented as always 'present' even as empty so model that way
         optional<String>     fQuery_;     // ditto
         optional<String>     fFragment_;  // ditto
+
+    private:
+#if __cpp_impl_three_way_comparison < 201907
+        friend bool operator< (const URI& lhs, const URI& rhs);
+        friend bool operator<= (const URI& lhs, const URI& rhs);
+        friend bool operator== (const URI& lhs, const URI& rhs);
+        friend bool operator!= (const URI& lhs, const URI& rhs);
+        friend bool operator>= (const URI& lhs, const URI& rhs);
+        friend bool operator> (const URI& lhs, const URI& rhs);
+#endif
     };
 
     template <>
@@ -366,16 +379,7 @@ namespace Stroika::Foundation::IO::Network {
     template <>
     optional<String> URI::GetAbsPath () const;
 
-    /**
-     */
-    struct URI::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        Common::strong_ordering operator() (const URI& lhs, const URI& rhs) const;
-    };
-
 #if __cpp_impl_three_way_comparison < 201907
-    /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
-     */
     bool operator< (const URI& lhs, const URI& rhs);
     bool operator<= (const URI& lhs, const URI& rhs);
     bool operator== (const URI& lhs, const URI& rhs);

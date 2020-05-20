@@ -33,22 +33,17 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 #if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering SchemeType::operator<=> (const SchemeType& rhs) const
     {
-        return ThreeWayComparer{}(*this, rhs) <=> 0;
+        return TWC_ (*this, rhs) <=> 0;
     }
     inline bool SchemeType::operator== (const SchemeType& rhs) const
     {
-        return ThreeWayComparer{}(*this, rhs) == 0;
+        return TWC_ (*this, rhs) == 0;
     }
 #endif
-
-    /*
-     ********************************************************************************
-     ************************* SchemeType::ThreeWayComparer *************************
-     ********************************************************************************
-     */
-    constexpr SchemeType::ThreeWayComparer::ThreeWayComparer ()
-        : compare_three_way{Characters::CompareOptions::eCaseInsensitive}
+    inline Common::strong_ordering SchemeType::TWC_ (const SchemeType& lhs, const SchemeType& rhs)
     {
+        using namespace Characters;
+        return Common::compare_three_way<String, String>{CompareOptions::eCaseInsensitive}(lhs, rhs);
     }
 
 #if __cpp_impl_three_way_comparison < 201907
@@ -59,27 +54,27 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      */
     inline bool operator< (const SchemeType& lhs, const SchemeType& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) < 0;
+        return SchemeType::TWC_ (lhs, rhs) < 0;
     }
     inline bool operator<= (const SchemeType& lhs, const SchemeType& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) <= 0;
+        return SchemeType::TWC_ (lhs, rhs) <= 0;
     }
     inline bool operator== (const SchemeType& lhs, const SchemeType& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) == 0;
+        return SchemeType::TWC_ (lhs, rhs) == 0;
     }
     inline bool operator!= (const SchemeType& lhs, const SchemeType& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) != 0;
+        return SchemeType::TWC_ (lhs, rhs) != 0;
     }
     inline bool operator>= (const SchemeType& lhs, const SchemeType& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) >= 0;
+        return SchemeType::TWC_ (lhs, rhs) >= 0;
     }
     inline bool operator> (const SchemeType& lhs, const SchemeType& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) > 0;
+        return SchemeType::TWC_ (lhs, rhs) > 0;
     }
 #endif
 
@@ -411,11 +406,11 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 #if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering Query::operator<=> (const Query& rhs) const
     {
-        return ThreeWayComparer{}(*this, rhs) <=> 0;
+        return TWC_ (*this, rhs) <=> 0;
     }
     inline bool Query::operator== (const Query& rhs) const
     {
-        return ThreeWayComparer{}(*this, rhs) == 0;
+        return TWC_ (*this, rhs) == 0;
     }
 #endif
 
@@ -427,27 +422,27 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      */
     inline bool operator< (const Query& lhs, const Query& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) < 0;
+        return Query::TWC_ (lhs, rhs) < 0;
     }
     inline bool operator<= (const Query& lhs, const Query& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) <= 0;
+        return Query::TWC_ (lhs, rhs) <= 0;
     }
     inline bool operator== (const Query& lhs, const Query& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) == 0;
+        return Query::TWC_ (lhs, rhs) == 0;
     }
     inline bool operator!= (const Query& lhs, const Query& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) != 0;
+        return Query::TWC_ (lhs, rhs) != 0;
     }
     inline bool operator>= (const Query& lhs, const Query& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) >= 0;
+        return Query::TWC_ (lhs, rhs) >= 0;
     }
     inline bool operator> (const Query& lhs, const Query& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) > 0;
+        return Query::TWC_ (lhs, rhs) > 0;
     }
 #endif
 
