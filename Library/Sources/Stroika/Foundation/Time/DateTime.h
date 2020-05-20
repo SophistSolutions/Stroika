@@ -472,7 +472,7 @@ namespace Stroika::Foundation::Time {
 #endif
 
     public:
-        using ThreeWayComparer [[deprecated ("use Common::compare_three_way or <=> in  in 2.1a5")]] = Common::compare_three_way<DateTime, DateTime>;
+        struct ThreeWayComparer;
 
     private:
         static Common::strong_ordering TWC_ (const DateTime& lhs, const DateTime& rhs);
@@ -515,6 +515,13 @@ namespace Stroika::Foundation::Time {
 #endif
     template <>
     Date DateTime::As () const;
+
+    /**
+    *** @todo ADD CTOR OPTIONAL ARG FOR coercning to common TZ if in different TZs - and do EqualsCOmparer likewise
+     */
+    struct DateTime::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+        constexpr Common::strong_ordering operator() (const DateTime& lhs, const DateTime& rhs) const;
+    };
 
 #if __cpp_impl_three_way_comparison < 201907
     /**
