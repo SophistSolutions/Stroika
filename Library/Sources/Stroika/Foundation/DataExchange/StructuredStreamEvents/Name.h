@@ -65,7 +65,6 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
         Name (const String& localName, NameType type = eElement);
         Name (const String& namespaceURI, const String& localName, NameType type = eElement);
 
-
 #if __cpp_impl_three_way_comparison >= 201907
         /**
          */
@@ -96,7 +95,6 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
         friend bool operator>= (const Name& lhs, const Name& rhs);
         friend bool operator> (const Name& lhs, const Name& rhs);
 #endif
-
     };
 
 #if __cpp_impl_three_way_comparison < 201907

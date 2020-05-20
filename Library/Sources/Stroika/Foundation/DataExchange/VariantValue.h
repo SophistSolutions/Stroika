@@ -83,8 +83,24 @@ namespace Stroika::Foundation::DataExchange {
      *  So for now - we just store the largest signed and unsigned integer types and cast down to what
      *  the user users/requests.
      *
-     *  \note Comparisons:
-     *        TBD
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *          o Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *
+     *          @todo UPDATE DOCS FOR EQUALS COMPARER AND SHARE APPRORIATE DOCS FOR THREEWAY COMPARER AND SAY WHAT PART IS FOR 
+     ANY COMPARER...
+     *
+     *          EQUALSCOMPARER:
+     *
+     *          If exactTypeMatchOnly is true, no type coersion takes place, but by default types
+     *          are automatically coereced, if reasonable, so that they can be compared for equality.
+     *
+     *          When comparing two items, at least one of which is a floating point number, the other type
+     *          is coereced into a floating point number and  @Math::NearlyEquals() is used
+     *          (because often these values come from serializaiton/deserializaiton which loses a tiny bit of precision).
+     *          Note that NANs compare as equal, and Equals (L"NAN", Math::nan<double> ()) compares as true.
+     *
+     *          When comparing any other types (except Map or Array) with a String, the to types are coerceced
+     *          into Strings, and compared as strings.
      *
      *  TODO:
      *
@@ -315,6 +331,9 @@ namespace Stroika::Foundation::DataExchange {
 #endif
 
     public:
+        struct EqualsComparer;
+
+    public:
         struct ThreeWayComparer;
 
     private:
@@ -387,15 +406,21 @@ namespace Stroika::Foundation::DataExchange {
 
     /**
      */
+    struct VariantValue::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+        constexpr EqualsComparer (bool exactTypeMatchOnly = false);
+        nonvirtual bool operator() (const VariantValue& lhs, const VariantValue& rhs) const;
+        bool            fExactTypeMatchOnly;
+    };
+
+    /**
+    @todo support exactTypeMatchOnly for ThreeWayComparer
+     */
     struct VariantValue::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+        constexpr ThreeWayComparer (bool exactTypeMatchOnly = false);
         nonvirtual Common::strong_ordering operator() (const VariantValue& lhs, const VariantValue& rhs) const;
     };
 
 #if __cpp_impl_three_way_comparison < 201907
-    /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to 
-     *  @Version::ThreeWayComparer and equal_to<VariantValue>
-     */
     bool operator< (const VariantValue& lhs, const VariantValue& rhs);
     bool operator<= (const VariantValue& lhs, const VariantValue& rhs);
     bool operator== (const VariantValue& lhs, const VariantValue& rhs);
@@ -404,27 +429,6 @@ namespace Stroika::Foundation::DataExchange {
     bool operator> (const VariantValue& lhs, const VariantValue& rhs);
 #endif
 
-}
-
-namespace std {
-    /**
-     *  If exactTypeMatchOnly is true, no type coersion takes place, but by default types
-     *  are automatically coereced, if reasonable, so that they can be compared for equality.
-     *
-     *  When comparing two items, at least one of which is a floating point number, the other type
-     *  is coereced into a floating point number and  @Math::NearlyEquals() is used
-     *  (because often these values come from serializaiton/deserializaiton which loses a tiny bit of precision).
-     *  Note that NANs compare as equal, and Equals (L"NAN", Math::nan<double> ()) compares as true.
-     *
-     *  When comparing any other types (except Map or Array) with a String, the to types are coerenced
-     *  into Strings, and compared as strings.
-     */
-    template <>
-    struct equal_to<Stroika::Foundation::DataExchange::VariantValue> {
-        constexpr equal_to (bool exactTypeMatchOnly = false);
-        bool operator() (const Stroika::Foundation::DataExchange::VariantValue& lhs, const Stroika::Foundation::DataExchange::VariantValue& rhs) const;
-        bool fExactTypeMatchOnly;
-    };
 }
 
 /*

@@ -17,7 +17,7 @@ namespace Stroika::Foundation::DataExchange {
      *  NB: we use enable_shared_from_this<> for performance reasons, not for any semantic purpose
      */
     struct VariantValue::IRep_ : public conditional_t<kVariantValueUsesStroikaSharedPtr_, Memory::enable_shared_from_this<VariantValue::IRep_>, enable_shared_from_this<VariantValue::IRep_>> {
-        virtual ~IRep_ () {}
+        virtual ~IRep_ ()             = default;
         virtual Type GetType () const = 0;
     };
 
@@ -151,9 +151,29 @@ namespace Stroika::Foundation::DataExchange {
     }
     inline bool VariantValue::operator== (const VariantValue& rhs) const
     {
-        return equal_to<VariantValue>{}(*this, rhs);
+        return EqualsComparer{}(*this, rhs);
     }
 #endif
+
+    /*
+     ********************************************************************************
+     ***** Stroika::Foundation::DataExchange::VariantValue::EqualsComparer **********
+     ********************************************************************************
+     */
+    constexpr VariantValue::EqualsComparer::EqualsComparer (bool exactTypeMatchOnly)
+        : fExactTypeMatchOnly (exactTypeMatchOnly)
+    {
+    }
+
+    /*
+     ********************************************************************************
+     ************************* VariantValue::ThreeWayComparer ***********************
+     ********************************************************************************
+     */
+    constexpr VariantValue::ThreeWayComparer::ThreeWayComparer (bool exactTypeMatchOnly)
+    {
+        Require (not exactTypeMatchOnly); // NYI
+    }
 
 #if __cpp_impl_three_way_comparison < 201907
     /*
@@ -163,27 +183,27 @@ namespace Stroika::Foundation::DataExchange {
      */
     inline bool operator< (const VariantValue& lhs, const VariantValue& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) < 0;
+        return VariantValue::ThreeWayComparer{}(lhs, rhs) < 0;
     }
     inline bool operator<= (const VariantValue& lhs, const VariantValue& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) <= 0;
+        return VariantValue::ThreeWayComparer{}(lhs, rhs) <= 0;
     }
     inline bool operator== (const VariantValue& lhs, const VariantValue& rhs)
     {
-        return equal_to<VariantValue>{}(lhs, rhs);
+        return EqualsComparer{}(lhs, rhs);
     }
     inline bool operator!= (const VariantValue& lhs, const VariantValue& rhs)
     {
-        return not equal_to<VariantValue>{}(lhs, rhs);
+        return not EqualsComparer{}(lhs, rhs);
     }
     inline bool operator>= (const VariantValue& lhs, const VariantValue& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) >= 0;
+        return VariantValue::ThreeWayComparer{}(lhs, rhs) >= 0;
     }
     inline bool operator> (const VariantValue& lhs, const VariantValue& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) > 0;
+        return VariantValue::ThreeWayComparer{}(lhs, rhs) > 0;
     }
 #endif
 
@@ -207,17 +227,6 @@ namespace Stroika::Foundation::Configuration {
             {DataExchange::VariantValue::eArray, L"Array"},
             {DataExchange::VariantValue::eMap, L"Map"},
         }}};
-}
-namespace std {
-    /*
-     ********************************************************************************
-     ******** equal_to <Stroika::Foundation::DataExchange::VariantValue> ************
-     ********************************************************************************
-     */
-    constexpr std::equal_to<Stroika::Foundation::DataExchange::VariantValue>::equal_to (bool exactTypeMatchOnly)
-        : fExactTypeMatchOnly (exactTypeMatchOnly)
-    {
-    }
 }
 
 #endif /*_Stroika_Foundation_DataExchange_VariantValue_inl_*/
