@@ -137,8 +137,8 @@ jobs:
         - system_profiler SPSoftwareDataType
         - sw_vers
         # -mmacosx-version-min=10.15 needed for https://stackoverflow.com/questions/56924853/why-xcode-11-beta-cant-use-c17s-filesystem-header
-        - ./configure Release --apply-default-release-flags --append-extra-compiler-and-linker-args -mmacosx-version-min=10.15 --Xerces no --OpenSSL no
-        - cat ConfigurationFiles/Release.xml
+        - ./configure Debug --apply-default-debug-flags --append-extra-compiler-and-linker-args -mmacosx-version-min=10.15 --Xerces no --OpenSSL no
+        - cat ConfigurationFiles/Debug.xml
         - clang++ --version
       script:
         # travis_wait, because dont get output building third-party-components for a while in openssl
