@@ -250,11 +250,11 @@ namespace Stroika::Foundation::IO::Network {
 #if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering InternetAddress::operator<=> (const InternetAddress& rhs) const
     {
-        return ThreeWayComparer{}(*this, rhs) <=> 0;
+        return TWC_ (*this, rhs) <=> 0;
     }
     inline bool InternetAddress::operator== (const InternetAddress& rhs) const
     {
-        return ThreeWayComparer{}(*this, rhs) == 0;
+        return TWC_ (*this, rhs) == 0;
     }
 #endif
     inline Common::strong_ordering InternetAddress::TWC_ (const InternetAddress& lhs, const InternetAddress& rhs)
