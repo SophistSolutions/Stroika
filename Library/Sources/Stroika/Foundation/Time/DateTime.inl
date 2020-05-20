@@ -96,7 +96,7 @@ namespace Stroika::Foundation::Time {
      ************************* DateTime::ThreeWayComparer ***************************
      ********************************************************************************
      */
-    constexpr Common::strong_ordering DateTime::ThreeWayComparer::operator() (const DateTime& lhs, const DateTime& rhs) const
+    inline Common::strong_ordering DateTime::ThreeWayComparer::operator() (const DateTime& lhs, const DateTime& rhs) const
     {
         return DateTime::TWC_ (lhs, rhs);
     }

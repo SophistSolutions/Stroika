@@ -520,7 +520,7 @@ namespace Stroika::Foundation::Time {
     *** @todo ADD CTOR OPTIONAL ARG FOR coercning to common TZ if in different TZs - and do EqualsCOmparer likewise
      */
     struct DateTime::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        constexpr Common::strong_ordering operator() (const DateTime& lhs, const DateTime& rhs) const;
+        nonvirtual Common::strong_ordering operator() (const DateTime& lhs, const DateTime& rhs) const;
     };
 
 #if __cpp_impl_three_way_comparison < 201907
