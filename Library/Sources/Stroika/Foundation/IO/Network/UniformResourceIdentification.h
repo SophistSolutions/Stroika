@@ -200,6 +200,12 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *      insensitive.
      *
      *  This class is ALWAYS either (mutually exclusive) regsiterName, or internetAddress.
+     *
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *          o   Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *
+     *              note that when comparing hosts, if they are registered names, they are compared case insensitively.
+     *              @see https://tools.ietf.org/html/rfc3986#section-6.2.2.1
      */
     class Host {
     public:
@@ -282,8 +288,11 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         nonvirtual bool operator== (const Host& rhs) const;
 #endif
 
+    private:
+        static Common::strong_ordering TWC_ (const Host& lhs, const Host& rhs);
+
     public:
-        struct ThreeWayComparer;
+        using ThreeWayComparer [[deprecated ("use Common::compare_three_way or <=> in  in 2.1a5")]] = Common::compare_three_way<Host, Host>;
 
     public:
         /**
@@ -304,6 +313,16 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         String                    fEncodedName_;
         optional<String>          fRegisteredName_;
         optional<InternetAddress> fInternetAddress_;
+
+#if __cpp_impl_three_way_comparison < 201907
+    private:
+        friend bool operator< (const Host& lhs, const Host& rhs);
+        friend bool operator<= (const Host& lhs, const Host& rhs);
+        friend bool operator== (const Host& lhs, const Host& rhs);
+        friend bool operator!= (const Host& lhs, const Host& rhs);
+        friend bool operator>= (const Host& lhs, const Host& rhs);
+        friend bool operator> (const Host& lhs, const Host& rhs);
+#endif
     };
 
     template <>
@@ -311,18 +330,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     template <>
     string Host::AsEncoded () const;
 
-    /**
-     *  note that when comparing hosts, if they are registered names, they are compared case insensitively.
-     *  @see https://tools.ietf.org/html/rfc3986#section-6.2.2.1
-     */
-    struct Host::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        Common::strong_ordering operator() (const Host& lhs, const Host& rhs) const;
-    };
-
 #if __cpp_impl_three_way_comparison < 201907
-    /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
-     */
     bool operator< (const Host& lhs, const Host& rhs);
     bool operator<= (const Host& lhs, const Host& rhs);
     bool operator== (const Host& lhs, const Host& rhs);
@@ -340,6 +348,12 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *  No claims are made about case sensativity, so this is treated as case sensitive.
      *
      *  \note UserInfo may not contain an empty string (use optional<UserInfo> and nullopt for that)
+     *
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *          o   Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *
+     *          Because https://tools.ietf.org/html/rfc3986 says nothing about case sensativity or comparing userInfo,
+     *          These are compared as case-senstive strings.
      */
     class UserInfo {
     public:
@@ -393,8 +407,11 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         nonvirtual bool operator== (const UserInfo& rhs) const;
 #endif
 
+    private:
+        static Common::strong_ordering TWC_ (const UserInfo& lhs, const UserInfo& rhs);
+
     public:
-        struct ThreeWayComparer;
+        using ThreeWayComparer [[deprecated ("use Common::compare_three_way or <=> in  in 2.1a5")]] = Common::compare_three_way<UserInfo, UserInfo>;
 
     public:
         /**
@@ -413,6 +430,16 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     private:
         String fEncodedUserInfo_;
         String fUserInfo_;
+
+#if __cpp_impl_three_way_comparison < 201907
+    private:
+        friend bool operator< (const UserInfo& lhs, const UserInfo& rhs);
+        friend bool operator<= (const UserInfo& lhs, const UserInfo& rhs);
+        friend bool operator== (const UserInfo& lhs, const UserInfo& rhs);
+        friend bool operator!= (const UserInfo& lhs, const UserInfo& rhs);
+        friend bool operator>= (const UserInfo& lhs, const UserInfo& rhs);
+        friend bool operator> (const UserInfo& lhs, const UserInfo& rhs);
+#endif
     };
 
     template <>
@@ -420,18 +447,8 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     template <>
     string UserInfo::AsEncoded () const;
 
-    /**
-     *  Because https://tools.ietf.org/html/rfc3986 says nothing about case sensativity or comparing userInfo,
-     *  These are compared as case-senstive strings.
-     */
-    struct UserInfo::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        Common::strong_ordering operator() (const UserInfo& lhs, const UserInfo& rhs) const;
-    };
 
 #if __cpp_impl_three_way_comparison < 201907
-    /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
-     */
     bool operator< (const UserInfo& lhs, const UserInfo& rhs);
     bool operator<= (const UserInfo& lhs, const UserInfo& rhs);
     bool operator== (const UserInfo& lhs, const UserInfo& rhs);
@@ -444,6 +461,9 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *  \brief Authority is roughly the part of a URL where you say the hostname (and portnumber etc) - part just after //
      *
      *  Based on https://tools.ietf.org/html/rfc3986#section-3.2
+     *
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *          o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
     class Authority {
     public:
@@ -528,8 +548,11 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         nonvirtual bool operator== (const Authority& rhs) const;
 #endif
 
+    private:
+        static Common::strong_ordering TWC_ (const Authority& lhs, const Authority& rhs);
+
     public:
-        struct ThreeWayComparer;
+        using ThreeWayComparer [[deprecated ("use Common::compare_three_way or <=> in  in 2.1a5")]] = Common::compare_three_way<Authority, Authority>;
 
     public:
         /**
@@ -542,18 +565,21 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         optional<Host>     fHost_;
         optional<PortType> fPort_;
         optional<UserInfo> fUserInfo_;
-    };
-
-    /**
-     */
-    struct Authority::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        Common::strong_ordering operator() (const Authority& lhs, const Authority& rhs) const;
-    };
 
 #if __cpp_impl_three_way_comparison < 201907
-    /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
-     */
+    private:
+        friend bool operator< (const Authority& lhs, const Authority& rhs);
+        friend bool operator<= (const Authority& lhs, const Authority& rhs);
+        friend bool operator== (const Authority& lhs, const Authority& rhs);
+        friend bool operator!= (const Authority& lhs, const Authority& rhs);
+        friend bool operator>= (const Authority& lhs, const Authority& rhs);
+        friend bool operator> (const Authority& lhs, const Authority& rhs);
+#endif
+
+    };
+
+
+#if __cpp_impl_three_way_comparison < 201907
     bool operator< (const Authority& lhs, const Authority& rhs);
     bool operator<= (const Authority& lhs, const Authority& rhs);
     bool operator== (const Authority& lhs, const Authority& rhs);

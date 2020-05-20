@@ -133,20 +133,14 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 #if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering Host::operator<=> (const Host& rhs) const
     {
-        return ThreeWayComparer{}(*this, rhs) <=> 0;
+        return TWC_ (*this, rhs) <=> 0;
     }
     inline bool Host::operator== (const Host& rhs) const
     {
-        return ThreeWayComparer{}(*this, rhs) == 0;
+        return TWC_(*this, rhs) == 0;
     }
 #endif
-
-    /*
-     ********************************************************************************
-     ************************** Host::ThreeWayComparer ******************************
-     ********************************************************************************
-     */
-    inline Common::strong_ordering Host::ThreeWayComparer::operator() (const Host& lhs, const Host& rhs) const
+    inline Common::strong_ordering Host::TWC_ (const Host& lhs, const Host& rhs)
     {
         Common::strong_ordering cmp = Common::ThreeWayCompare (lhs.AsInternetAddress (), rhs.AsInternetAddress ());
         if (cmp != Common::kEqual) {
@@ -156,6 +150,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
             Common::compare_three_way<String, String>{Characters::CompareOptions::eCaseInsensitive}}(lhs.AsRegisteredName (), rhs.AsRegisteredName ());
     }
 
+
 #if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
@@ -164,27 +159,27 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      */
     inline bool operator< (const Host& lhs, const Host& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) < 0;
+        return Host::TWC_ (lhs, rhs) < 0;
     }
     inline bool operator<= (const Host& lhs, const Host& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) <= 0;
+        return Host::TWC_ (lhs, rhs) <= 0;
     }
     inline bool operator== (const Host& lhs, const Host& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) == 0;
+        return Host::TWC_ (lhs, rhs) == 0;
     }
     inline bool operator!= (const Host& lhs, const Host& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) != 0;
+        return Host::TWC_ (lhs, rhs) != 0;
     }
     inline bool operator>= (const Host& lhs, const Host& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) >= 0;
+        return Host::TWC_ (lhs, rhs) >= 0;
     }
     inline bool operator> (const Host& lhs, const Host& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) > 0;
+        return Host::TWC_ (lhs, rhs) > 0;
     }
 #endif
 
@@ -224,20 +219,14 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 #if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering UserInfo::operator<=> (const UserInfo& rhs) const
     {
-        return ThreeWayComparer{}(*this, rhs) <=> 0;
+        return TWC_ (*this, rhs) <=> 0;
     }
     inline bool UserInfo::operator== (const UserInfo& rhs) const
     {
-        return ThreeWayComparer{}(*this, rhs) == 0;
+        return TWC_ (*this, rhs) == 0;
     }
 #endif
-
-    /*
-     ********************************************************************************
-     *********************** UserInfo::ThreeWayComparer *****************************
-     ********************************************************************************
-     */
-    inline Common::strong_ordering UserInfo::ThreeWayComparer::operator() (const UserInfo& lhs, const UserInfo& rhs) const
+    inline Common::strong_ordering UserInfo::TWC_ (const UserInfo& lhs, const UserInfo& rhs)
     {
         return Common::ThreeWayCompare (lhs.AsDecoded (), rhs.AsDecoded ());
     }
@@ -250,27 +239,27 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      */
     inline bool operator< (const UserInfo& lhs, const UserInfo& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) < 0;
+        return UserInfo::TWC_ (lhs, rhs) < 0;
     }
     inline bool operator<= (const UserInfo& lhs, const UserInfo& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) <= 0;
+        return UserInfo::TWC_ (lhs, rhs) <= 0;
     }
     inline bool operator== (const UserInfo& lhs, const UserInfo& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) == 0;
+        return UserInfo::TWC_ (lhs, rhs) == 0;
     }
     inline bool operator!= (const UserInfo& lhs, const UserInfo& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) != 0;
+        return UserInfo::TWC_ (lhs, rhs) != 0;
     }
     inline bool operator>= (const UserInfo& lhs, const UserInfo& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) >= 0;
+        return UserInfo::TWC_ (lhs, rhs) >= 0;
     }
     inline bool operator> (const UserInfo& lhs, const UserInfo& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) > 0;
+        return UserInfo::TWC_ (lhs, rhs) > 0;
     }
 #endif
 
@@ -312,20 +301,14 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 #if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering Authority::operator<=> (const Authority& rhs) const
     {
-        return ThreeWayComparer{}(*this, rhs) <=> 0;
+        return TWC_ (*this, rhs) <=> 0;
     }
     inline bool Authority::operator== (const Authority& rhs) const
     {
-        return ThreeWayComparer{}(*this, rhs) == 0;
+        return TWC_ (*this, rhs) == 0;
     }
 #endif
-
-    /*
-     ********************************************************************************
-     ************************ ThreeWayComparer<Authority> ***************************
-     ********************************************************************************
-     */
-    inline Common::strong_ordering Authority::ThreeWayComparer::operator() (const Authority& lhs, const Authority& rhs) const
+    inline Common::strong_ordering Authority::TWC_ (const Authority& lhs, const Authority& rhs)
     {
         Common::strong_ordering cmp = Common::ThreeWayCompare (lhs.GetHost (), rhs.GetHost ());
         if (cmp != Common::kEqual) {
@@ -338,6 +321,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         return Common::ThreeWayCompare (lhs.GetPort (), rhs.GetPort ());
     }
 
+
 #if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
@@ -346,27 +330,27 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      */
     inline bool operator< (const Authority& lhs, const Authority& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) < 0;
+        return Authority::TWC_ (lhs, rhs) < 0;
     }
     inline bool operator<= (const Authority& lhs, const Authority& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) <= 0;
+        return Authority::TWC_ (lhs, rhs) <= 0;
     }
     inline bool operator== (const Authority& lhs, const Authority& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) == 0;
+        return Authority::TWC_ (lhs, rhs) == 0;
     }
     inline bool operator!= (const Authority& lhs, const Authority& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) != 0;
+        return Authority::TWC_ (lhs, rhs) != 0;
     }
     inline bool operator>= (const Authority& lhs, const Authority& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) >= 0;
+        return Authority::TWC_ (lhs, rhs) >= 0;
     }
     inline bool operator> (const Authority& lhs, const Authority& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) > 0;
+        return Authority::TWC_ (lhs, rhs) > 0;
     }
 #endif
 
