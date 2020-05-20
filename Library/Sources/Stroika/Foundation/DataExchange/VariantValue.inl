@@ -191,11 +191,11 @@ namespace Stroika::Foundation::DataExchange {
     }
     inline bool operator== (const VariantValue& lhs, const VariantValue& rhs)
     {
-        return EqualsComparer{}(lhs, rhs);
+        return VariantValue::EqualsComparer{}(lhs, rhs);
     }
     inline bool operator!= (const VariantValue& lhs, const VariantValue& rhs)
     {
-        return not EqualsComparer{}(lhs, rhs);
+        return not VariantValue::EqualsComparer{}(lhs, rhs);
     }
     inline bool operator>= (const VariantValue& lhs, const VariantValue& rhs)
     {
