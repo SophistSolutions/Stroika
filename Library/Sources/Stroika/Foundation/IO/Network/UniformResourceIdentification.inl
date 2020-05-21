@@ -33,7 +33,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 #if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering SchemeType::operator<=> (const SchemeType& rhs) const
     {
-        return TWC_ (*this, rhs) <=> 0;
+        return TWC_ (*this, rhs);
     }
     inline bool SchemeType::operator== (const SchemeType& rhs) const
     {
@@ -133,7 +133,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 #if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering Host::operator<=> (const Host& rhs) const
     {
-        return TWC_ (*this, rhs) <=> 0;
+        return TWC_ (*this, rhs);
     }
     inline bool Host::operator== (const Host& rhs) const
     {
@@ -217,7 +217,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 #if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering UserInfo::operator<=> (const UserInfo& rhs) const
     {
-        return TWC_ (*this, rhs) <=> 0;
+        return TWC_ (*this, rhs);
     }
     inline bool UserInfo::operator== (const UserInfo& rhs) const
     {
@@ -385,7 +385,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 #if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering Query::operator<=> (const Query& rhs) const
     {
-        return TWC_ (*this, rhs) <=> 0;
+        return TWC_ (*this, rhs);
     }
     inline bool Query::operator== (const Query& rhs) const
     {

@@ -622,11 +622,11 @@ namespace Stroika::Foundation::Characters {
 #if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering String::operator<=> (const String& rhs) const
     {
-        return ThreeWayComparer{}(*this, rhs) <=> 0;
+        return ThreeWayComparer{}(*this, rhs);
     }
     inline strong_ordering String::operator<=> (const wchar_t* rhs) const
     {
-        return ThreeWayComparer{}(*this, rhs) <=> 0;
+        return ThreeWayComparer{}(*this, rhs);
     }
     inline bool String::operator== (const String& rhs) const
     {

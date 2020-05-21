@@ -307,7 +307,7 @@ namespace Stroika::Foundation::Memory {
 #if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering BLOB::operator<=> (const BLOB& rhs) const
     {
-        return ThreeWayComparer{}(*this, rhs) <=> 0;
+        return ThreeWayComparer{}(*this, rhs);
     }
     inline bool BLOB::operator== (const BLOB& rhs) const
     {

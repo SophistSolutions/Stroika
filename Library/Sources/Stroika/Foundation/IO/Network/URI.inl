@@ -172,7 +172,7 @@ namespace Stroika::Foundation::IO::Network {
 #if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering URI::operator<=> (const URI& rhs) const
     {
-        return URI::TWC_ (*this, rhs) <=> 0;
+        return URI::TWC_ (*this, rhs);
     }
     inline bool URI::operator== (const URI& rhs) const
     {
