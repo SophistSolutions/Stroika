@@ -29,9 +29,6 @@
  *      @todo   https://stroika.atlassian.net/browse/STK-467 Lose shared_ptr<> with SignalHandlerRegistry::SafeSignalsManager::Rep_
  *              and change semantics - assert or autodelete - safe handlers on destory of safe signal mgr.
  *
- *      @todo   REDO operator== etc using non-member functions
- *              (see See coding conventions document about operator usage: Compare () and operator<, operator>, etc comments)
- *
  *      @todo   Small issue - AddSignalHandler versus SetSignalHandler (). This can be confusing. I had a bug
  *              which was we setup DEFAULT signal handlers, and then in the BasicUNIX Serviced code - did
  *              AddSignalHandler (SIGINT). Issue is that we process BOTH hanlders - one to set an event

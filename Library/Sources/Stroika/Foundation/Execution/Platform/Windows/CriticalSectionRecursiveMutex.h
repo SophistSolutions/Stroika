@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
         ~CriticalSectionRecursiveMutex ();
 
     public:
-        CriticalSectionRecursiveMutex& operator= (const CriticalSectionRecursiveMutex&) = delete;
+        nonvirtual CriticalSectionRecursiveMutex& operator= (const CriticalSectionRecursiveMutex&) = delete;
 
     public:
         nonvirtual void lock ();

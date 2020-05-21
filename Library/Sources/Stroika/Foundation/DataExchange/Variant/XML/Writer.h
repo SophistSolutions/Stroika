@@ -38,19 +38,19 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
      *  @todo
      * add options for stuff like - special for xml - assumed-outer-doc, stuff abotu namespaces, and st
      *... todo namespaces - store in string (elt name a:b) and fill in namespace object accordingly.
-        *
-        * The arguemnt VariantValue must be composed of any combination of these types:
-        *          o   VariantValue::eBoolean
-        *          o   VariantValue::eInteger
-        *          o   VariantValue::eFloat
-        *          o   VariantValue::eString
-        *          o   VariantValue::eMap
-        *          o   VariantValue::eArray
-        *  or it can be the type:
-        *          o   VariantValue::eNull
-        *
-        *  Other types are illegal an XML and will trigger a 'Require' failure.
-        */
+     *
+     * The arguemnt VariantValue must be composed of any combination of these types:
+     *          o   VariantValue::eBoolean
+     *          o   VariantValue::eInteger
+     *          o   VariantValue::eFloat
+     *          o   VariantValue::eString
+     *          o   VariantValue::eMap
+     *          o   VariantValue::eArray
+     *  or it can be the type:
+     *          o   VariantValue::eNull
+     *
+     *  Other types are illegal an XML and will trigger a 'Require' failure.
+     */
     class Writer : public Variant::Writer {
     private:
         using inherited = Variant::Writer;
@@ -69,6 +69,7 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
         nonvirtual const Rep_& GetRep_ () const;
         nonvirtual Rep_& GetRep_ ();
     };
+
 }
 
 /*

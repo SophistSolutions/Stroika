@@ -897,6 +897,19 @@ namespace Stroika::Foundation::Execution {
          */
         nonvirtual Characters::String ToString () const;
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        nonvirtual bool operator== (const Ptr& rhs) const;
+        nonvirtual bool operator== (nullptr_t) const;
+
+    public:
+        /**
+         */
+        nonvirtual strong_ordering operator<=> (const Ptr& rhs) const;
+        nonvirtual strong_ordering operator<=> (nullptr_t) const;
+#else
     public:
         nonvirtual bool operator< (const Ptr& rhs) const;
 
@@ -907,6 +920,7 @@ namespace Stroika::Foundation::Execution {
     public:
         nonvirtual bool operator!= (const Ptr& rhs) const;
         nonvirtual bool operator!= (nullptr_t) const;
+#endif
 
     public:
         /**

@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Execution {
         ~DLLLoader ();
 
     public:
-        operator DLLHandle ();
+        nonvirtual operator DLLHandle () const;
 
     public:
         nonvirtual ProcAddress GetProcAddress (const char* procName) const;

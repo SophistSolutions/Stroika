@@ -113,6 +113,7 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
     private:
         nonvirtual shared_ptr<Rep_> GetRep_ () const;
     };
+
 }
 
 /*

@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
         ~CriticalSectionMutex ();
 
     public:
-        CriticalSectionMutex& operator= (const CriticalSectionMutex&) = delete;
+        nonvirtual CriticalSectionMutex& operator= (const CriticalSectionMutex&) = delete;
 
     public:
         nonvirtual void lock ();

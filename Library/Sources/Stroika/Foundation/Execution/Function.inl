@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Execution {
     template <typename FUNCTION_SIGNATURE>
     inline strong_ordering Function<FUNCTION_SIGNATURE>::operator<=> (const Function& rhs) const
     {
-        return ThreeWayComparer{}(*this, rhs);
+        return Common::ThreeWayCompare (fOrdering_, rhs.fOrdering_);
     }
     template <typename FUNCTION_SIGNATURE>
     inline bool Function<FUNCTION_SIGNATURE>::operator== (const Function& rhs) const
@@ -57,17 +57,6 @@ namespace Stroika::Foundation::Execution {
         return fOrdering_ == rhs.fOrdering_;
     }
 #endif
-
-    /*
-     ********************************************************************************
-     *********** Function<FUNCTION_SIGNATURE>::ThreeWayComparer *********************
-     ********************************************************************************
-     */
-    template <typename FUNCTION_SIGNATURE>
-    inline Common::strong_ordering Function<FUNCTION_SIGNATURE>::ThreeWayComparer::operator() (const Function& lhs, const Function& rhs) const
-    {
-        return Common::ThreeWayCompare (lhs.fOrdering_, rhs.fOrdering_);
-    }
 
 #if __cpp_impl_three_way_comparison < 201907
     /*
@@ -78,42 +67,42 @@ namespace Stroika::Foundation::Execution {
     template <typename FUNCTION_SIGNATURE>
     inline bool operator< (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs)
     {
-        return typename Function<FUNCTION_SIGNATURE>::ThreeWayComparer{}(lhs, rhs) < 0;
+        return Common::ThreeWayCompare (lhs.fOrdering_, rhs.fOrdering_) < 0;
     }
     template <typename FUNCTION_SIGNATURE>
     inline bool operator<= (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs)
     {
-        return typename Function<FUNCTION_SIGNATURE>::ThreeWayComparer{}(lhs, rhs) <= 0;
+        return Common::ThreeWayCompare (lhs.fOrdering_, rhs.fOrdering_) <= 0;
     }
     template <typename FUNCTION_SIGNATURE>
     inline bool operator== (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs)
     {
-        return typename Function<FUNCTION_SIGNATURE>::ThreeWayComparer{}(lhs, rhs) == 0;
+        return Common::ThreeWayCompare (lhs.fOrdering_, rhs.fOrdering_) == 0;
     }
     template <typename FUNCTION_SIGNATURE>
     inline bool operator== (const Function<FUNCTION_SIGNATURE>& lhs, nullptr_t)
     {
-        return typename Function<FUNCTION_SIGNATURE>::ThreeWayComparer{}(lhs, nullptr) == 0;
+        return Common::ThreeWayCompare (lhs.fOrdering_, nullptr) == 0;
     }
     template <typename FUNCTION_SIGNATURE>
     inline bool operator!= (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs)
     {
-        return typename Function<FUNCTION_SIGNATURE>::ThreeWayComparer{}(lhs, rhs) != 0;
+        return Common::ThreeWayCompare (lhs.fOrdering_, rhs.fOrdering_) != 0;
     }
     template <typename FUNCTION_SIGNATURE>
     inline bool operator!= (const Function<FUNCTION_SIGNATURE>& lhs, nullptr_t)
     {
-        return typename Function<FUNCTION_SIGNATURE>::ThreeWayComparer{}(lhs, nullptr) != 0;
+        return Common::ThreeWayCompare (lhs.fOrdering_, nullptr) != 0;
     }
     template <typename FUNCTION_SIGNATURE>
     inline bool operator> (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs)
     {
-        return typename Function<FUNCTION_SIGNATURE>::ThreeWayComparer{}(lhs, rhs) > 0;
+        return Common::ThreeWayCompare (lhs.fOrdering_, rhs.fOrdering_) > 0;
     }
     template <typename FUNCTION_SIGNATURE>
     inline bool operator>= (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs)
     {
-        return typename Function<FUNCTION_SIGNATURE>::ThreeWayComparer{}(lhs, rhs) >= 0;
+        return Common::ThreeWayCompare (lhs.fOrdering_, rhs.fOrdering_) >= 0;
     }
 #endif
 

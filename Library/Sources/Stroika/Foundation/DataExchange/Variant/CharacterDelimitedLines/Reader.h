@@ -42,19 +42,19 @@ namespace Stroika::Foundation::DataExchange::Variant::CharacterDelimitedLines {
      *           application/x-cd-image:*.iso
      *           application/x-abiword:*.abw.crashed
      *...
-        *      \code
-        *          Bijection<InternetMediaType, FileSuffixType> results{};
-        *          for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{':'}}.ReadMatrix (IO::FileSystem::FileInputStream::New (L"/usr/share/mime/globs"))) {
-        *              if (line.length () == 2) {
-        *                  String glob = line[1];
-        *                  if (glob.StartsWith ('*')) {
-        *                      glob = glob.SubString (1);
-        *                  }
-        *                  results.Add (InternetMediaType{line[0]}, glob);
-        *              }
-        *          }
-        *      \endcode
-        */
+     *      \code
+     *          Bijection<InternetMediaType, FileSuffixType> results{};
+     *          for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{':'}}.ReadMatrix (IO::FileSystem::FileInputStream::New (L"/usr/share/mime/globs"))) {
+     *              if (line.length () == 2) {
+     *                  String glob = line[1];
+     *                  if (glob.StartsWith ('*')) {
+     *                      glob = glob.SubString (1);
+     *                  }
+     *                  results.Add (InternetMediaType{line[0]}, glob);
+     *              }
+     *          }
+     *      \endcode
+     */
     class Reader : public Variant::Reader {
     private:
         using inherited = Variant::Reader;
@@ -69,6 +69,7 @@ namespace Stroika::Foundation::DataExchange::Variant::CharacterDelimitedLines {
         nonvirtual Iterable<Sequence<String>> ReadMatrix (const Streams::InputStream<std::byte>::Ptr& in) const;
         nonvirtual Iterable<Sequence<String>> ReadMatrix (const Streams::InputStream<Character>::Ptr& in) const;
     };
+
 }
 
 /*

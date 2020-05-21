@@ -6,6 +6,10 @@
 
 #include "../../StroikaPreComp.h"
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #include <istream>
 
 #include "../../Configuration/Common.h"
@@ -16,18 +20,28 @@
 namespace Stroika::Foundation::DataExchange::XML {
 
     /**
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
     struct NamespaceDefinition {
         NamespaceDefinition (const wstring& uri, const wstring& prefix = wstring ());
 
         wstring fURI;    // required non-null
         wstring fPrefix; // can be nullptr
+
+#if __cpp_impl_three_way_comparison >= 201907
+        auto operator<=> (const NamespaceDefinition& rhs) const = default;
+#endif
     };
+#if __cpp_impl_three_way_comparison < 201907
     // order by URI, but equal requires both equal
     bool operator< (const NamespaceDefinition& lhs, const NamespaceDefinition& rhs);
     bool operator== (const NamespaceDefinition& lhs, const NamespaceDefinition& rhs);
+#endif
 
     /**
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
     class NamespaceDefinitionsList {
     public:
@@ -46,12 +60,16 @@ namespace Stroika::Foundation::DataExchange::XML {
     private:
         vector<NamespaceDefinition> fNamespaces;
 
+#if __cpp_impl_three_way_comparison < 201907
     private:
         friend bool operator< (const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs);
         friend bool operator== (const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs);
+#endif
     };
+#if __cpp_impl_three_way_comparison < 201907
     bool operator< (const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs);
     bool operator== (const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs);
+#endif
 
 }
 

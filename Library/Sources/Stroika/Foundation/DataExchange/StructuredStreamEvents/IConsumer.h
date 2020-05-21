@@ -45,6 +45,9 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
      */
     class IConsumer {
     public:
+        virtual ~IConsumer () = default;
+
+    public:
         /**
          *  \note   The default implementation ignores this.
          */

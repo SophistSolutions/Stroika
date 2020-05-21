@@ -53,6 +53,9 @@ namespace Stroika::Foundation::Execution {
      *
      *  \note   This was implemented using a shared_ptr<function<...>> instead of a directly aggregated function object
      *          until Stroika v2.1d8.
+     *
+     *  \note   <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *          o Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
     template <typename FUNCTION_SIGNATURE>
     class Function {
@@ -109,20 +112,29 @@ namespace Stroika::Foundation::Execution {
     private:
         STDFUNCTION fFun_;
         void*       fOrdering_{}; // captured early when we have the right type info, so we can safely compare (since Stroika v2.1d8)
-    };
 
-    /**
-     *  @see Common::ThreeWayComparer<> template
-     */
-    template <typename FUNCTION_SIGNATURE>
-    struct Function<FUNCTION_SIGNATURE>::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        nonvirtual Common::strong_ordering operator() (const Function& lhs, const Function& rhs) const;
+#if __cpp_impl_three_way_comparison < 201907
+    private:
+        template <typename FS>
+        bool operator< (const Function<FS>& lhs, const Function<FS>& rhs);
+        template <typename FS>
+        bool operator<= (const Function<FS>& lhs, const Function<FS>& rhs);
+        template <typename FS>
+        bool operator== (const Function<FS>& lhs, const Function<FS>& rhs);
+        template <typename FS>
+        bool operator== (const Function<FS>& lhs, nullptr_t);
+        template <typename FS>
+        bool operator!= (const Function<FS>& lhs, const Function<FS>& rhs);
+        template <typename FS>
+        bool operator!= (const Function<FS>& lhs, nullptr_t);
+        template <typename FS>
+        bool operator> (const Function<FS>& lhs, const Function<FS>& rhs);
+        template <typename FS>
+        bool operator>= (const Function<FS>& lhs, const Function<FS>& rhs);
+#endif
     };
 
 #if __cpp_impl_three_way_comparison < 201907
-    /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to @Function<FUNCTION_SIGNATURE>::ThreeWayComparer ()
-     */
     template <typename FUNCTION_SIGNATURE>
     bool operator< (const Function<FUNCTION_SIGNATURE>& lhs, const Function<FUNCTION_SIGNATURE>& rhs);
     template <typename FUNCTION_SIGNATURE>

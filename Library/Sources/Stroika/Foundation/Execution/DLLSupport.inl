@@ -19,7 +19,7 @@ namespace Stroika::Foundation::Execution {
      *********************************** DLLLoader **********************************
      ********************************************************************************
      */
-    inline DLLLoader::operator DLLHandle ()
+    inline DLLLoader::operator DLLHandle () const
     {
         EnsureNotNull (fModule);
         return fModule;

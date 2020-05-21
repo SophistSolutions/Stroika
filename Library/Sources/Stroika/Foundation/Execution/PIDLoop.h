@@ -55,6 +55,10 @@ namespace Stroika::Foundation::Execution {
         using ValueType = CONTROL_VAR_TYPE;
 
     public:
+        /**
+         *  \note   <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+         *          o Standard Stroika Comparison support (operator<=>,operator==, etc);
+         */
         struct ControlParams {
             ControlParams () = default;
             ControlParams (ValueType p, ValueType i, ValueType d);
