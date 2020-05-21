@@ -1424,6 +1424,19 @@ clang says:
 
 #endif
 
+#ifndef qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
+
+#if defined(__clang__) && defined(__APPLE__)
+#define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
+#elif defined(__clang__) && !defined(__APPLE__)
+// First noted in C++20 mode on clang++-10
+#define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
+#else
+#define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy 0
+#endif
+
+#endif
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
 

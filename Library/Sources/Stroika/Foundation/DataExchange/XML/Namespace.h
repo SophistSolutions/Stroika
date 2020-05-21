@@ -30,7 +30,13 @@ namespace Stroika::Foundation::DataExchange::XML {
         wstring fPrefix; // can be nullptr
 
 #if __cpp_impl_three_way_comparison >= 201907
+#if qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
+#endif
         auto operator<=> (const NamespaceDefinition& rhs) const = default;
+#if qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
+#endif
 #endif
     };
 #if __cpp_impl_three_way_comparison < 201907
