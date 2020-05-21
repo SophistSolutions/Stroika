@@ -67,8 +67,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *               / \ /                        \
      *               urn:example:animal:ferret:nose
      *
-     *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
-     *
      *  \par Empty String versus optional 'missing' !has_value
      *
      *      For the various optional peices of a URL (or URI), we could represent this as

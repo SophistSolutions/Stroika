@@ -64,8 +64,9 @@ namespace Stroika::Foundation::IO::FileSystem {
 #if qPlatform_Windows
     class DirectoryChangeWatcher {
     private:
-        DirectoryChangeWatcher (const DirectoryChangeWatcher&); // declare but not defined, to prevent copies
-        void operator= (const DirectoryChangeWatcher&);         // ''
+        DirectoryChangeWatcher (const DirectoryChangeWatcher&) = delete;
+        void operator= (const DirectoryChangeWatcher&) = delete;
+
     public:
         DirectoryChangeWatcher (const String& directoryName, bool watchSubTree = false, DWORD notifyFilter = FILE_NOTIFY_CHANGE_LAST_WRITE);
         virtual ~DirectoryChangeWatcher ();

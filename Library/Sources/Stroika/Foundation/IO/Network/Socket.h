@@ -400,9 +400,6 @@ namespace Stroika::Foundation::IO::Network {
     };
 
 #if __cpp_impl_three_way_comparison < 201907
-    /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
-     */
     bool operator< (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
     bool operator<= (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
     bool operator== (const Socket::Ptr& lhs, const Socket::Ptr& rhs);

@@ -27,7 +27,10 @@ namespace Stroika::Foundation::IO::Network {
     using Characters::String;
 
     /**
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      *
+     *      Compare the significant bits of the CIDR.
      */
     class CIDR {
     public:
@@ -80,7 +83,6 @@ namespace Stroika::Foundation::IO::Network {
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
-         *  Compare CIDRs. This SHOULD only pay attention to the 'significant bits' of the base address, but currently doesn't (@todo fix/bug)
          */
         nonvirtual strong_ordering operator<=> (const CIDR& rhs) const;
 #endif

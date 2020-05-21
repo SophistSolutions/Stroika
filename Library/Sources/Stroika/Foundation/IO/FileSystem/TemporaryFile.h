@@ -74,8 +74,8 @@ namespace Stroika::Foundation::IO::FileSystem {
 
     class ScopedTmpFile {
     private:
-        ScopedTmpFile (const ScopedTmpFile&);
-        ScopedTmpFile& operator= (const ScopedTmpFile&);
+        ScopedTmpFile (const ScopedTmpFile&) = delete;
+        ScopedTmpFile& operator= (const ScopedTmpFile&) = delete;
 
     public:
         ScopedTmpFile (const String& fileNameBase);
