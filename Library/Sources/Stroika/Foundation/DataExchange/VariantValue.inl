@@ -151,6 +151,7 @@ namespace Stroika::Foundation::DataExchange {
     }
     inline bool VariantValue::operator== (const VariantValue& rhs) const
     {
+        Ensure (EqualsComparer{}(*this, rhs) == (ThreeWayComparer{}(*this, rhs) == 0)); // These must return the same answer
         return EqualsComparer{}(*this, rhs);
     }
 #endif
