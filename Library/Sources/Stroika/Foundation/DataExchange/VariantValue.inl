@@ -147,7 +147,7 @@ namespace Stroika::Foundation::DataExchange {
 #if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering VariantValue::operator<=> (const VariantValue& rhs) const
     {
-        return ThreeWayComparer{}(*this, rhs) <=> 0;
+        return ThreeWayComparer{}(*this, rhs);
     }
     inline bool VariantValue::operator== (const VariantValue& rhs) const
     {

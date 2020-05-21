@@ -99,7 +99,7 @@ namespace Stroika::Foundation::IO::Network::SystemFirewall {
             return not(*this == rhs);
         }
 #else
-        strong_ordering operator<=> (const Rule&) const = default;
+        nonvirtual strong_ordering operator<=> (const Rule&) const = default;
 #endif
     };
 

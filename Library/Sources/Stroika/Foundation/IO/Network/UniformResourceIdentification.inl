@@ -142,8 +142,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 #endif
     inline Common::strong_ordering Host::TWC_ (const Host& lhs, const Host& rhs)
     {
-        Common::strong_ordering cmp = Common::ThreeWayCompare (lhs.AsInternetAddress (), rhs.AsInternetAddress ());
-        if (cmp != Common::kEqual) {
+        if (Common::strong_ordering cmp = Common::ThreeWayCompare (lhs.AsInternetAddress (), rhs.AsInternetAddress ()); cmp != Common::kEqual) {
             return cmp;
         }
         return Common::OptionalThreeWayComparer<String, Common::compare_three_way<String, String>>{
@@ -300,7 +299,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 #if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering Authority::operator<=> (const Authority& rhs) const
     {
-        return TWC_ (*this, rhs) <=> 0;
+        return TWC_ (*this, rhs);
     }
     inline bool Authority::operator== (const Authority& rhs) const
     {
@@ -309,12 +308,10 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 #endif
     inline Common::strong_ordering Authority::TWC_ (const Authority& lhs, const Authority& rhs)
     {
-        Common::strong_ordering cmp = Common::ThreeWayCompare (lhs.GetHost (), rhs.GetHost ());
-        if (cmp != Common::kEqual) {
+        if (auto cmp = Common::ThreeWayCompare (lhs.GetHost (), rhs.GetHost ()); cmp != Common::kEqual) {
             return cmp;
         }
-        cmp = Common::ThreeWayCompare (lhs.GetUserInfo (), rhs.GetUserInfo ());
-        if (cmp != Common::kEqual) {
+        if (auto cmp = Common::ThreeWayCompare (lhs.GetUserInfo (), rhs.GetUserInfo ()); cmp != Common::kEqual) {
             return cmp;
         }
         return Common::ThreeWayCompare (lhs.GetPort (), rhs.GetPort ());

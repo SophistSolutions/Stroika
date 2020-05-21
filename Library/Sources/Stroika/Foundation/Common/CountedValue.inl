@@ -43,11 +43,10 @@ namespace Stroika::Foundation::Common {
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     constexpr auto CountedValue<VALUE_TYPE, COUNTER_TYPE>::operator<=> (const CountedValue& rhs) const
     {
-        Common::strong_ordering cmp = Common::ThreeWayCompare (fValue, rhs.fValue);
-        if (cmp != Common::kEqual) {
+        if (auto cmp = fValue <=> rhs.fValue) {
             return cmp;
         }
-        return Common::ThreeWayCompare (fCount, rhs.fCount);
+        return fCount <=> rhs.fCount;
     }
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     constexpr bool CountedValue<VALUE_TYPE, COUNTER_TYPE>::operator== (const CountedValue& rhs) const

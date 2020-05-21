@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Execution {
     template <typename FUNCTION_SIGNATURE>
     inline strong_ordering Function<FUNCTION_SIGNATURE>::operator<=> (const Function& rhs) const
     {
-        return Common::ThreeWayCompare (fOrdering_, rhs.fOrdering_);
+        return fOrdering_ <=> rhs.fOrdering_;
     }
     template <typename FUNCTION_SIGNATURE>
     inline bool Function<FUNCTION_SIGNATURE>::operator== (const Function& rhs) const

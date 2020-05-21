@@ -58,18 +58,15 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
         return TWC_ (*this, rhs) == 0;
     }
 #endif
-
     inline Common::strong_ordering Name::TWC_ (const Name& lhs, const Name& rhs)
     {
         // Treat EITHER side missing namespace as 'wildcard' matching any namespace
         if (lhs.fNamespaceURI.has_value () and rhs.fNamespaceURI.has_value ()) {
-            Common::strong_ordering cmp = Common::ThreeWayCompare (*lhs.fNamespaceURI, *rhs.fNamespaceURI);
-            if (cmp != Common::kEqual) {
+            if (auto cmp = Common::ThreeWayCompare (*lhs.fNamespaceURI, *rhs.fNamespaceURI); cmp != Common::kEqual) {
                 return cmp;
             }
         }
-        Common::strong_ordering cmp = Common::ThreeWayCompare (lhs.fLocalName, rhs.fLocalName);
-        if (cmp != Common::kEqual) {
+        if (auto cmp = Common::ThreeWayCompare (lhs.fLocalName, rhs.fLocalName); cmp != Common::kEqual) {
             return cmp;
         }
         return Common::ThreeWayCompare (lhs.fType, rhs.fType);
