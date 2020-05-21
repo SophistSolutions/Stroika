@@ -116,21 +116,21 @@ namespace Stroika::Foundation::Execution {
 #if __cpp_impl_three_way_comparison < 201907
     private:
         template <typename FS>
-        bool operator< (const Function<FS>& lhs, const Function<FS>& rhs);
+        friend bool operator< (const Function<FS>& lhs, const Function<FS>& rhs);
         template <typename FS>
-        bool operator<= (const Function<FS>& lhs, const Function<FS>& rhs);
+        friend bool operator<= (const Function<FS>& lhs, const Function<FS>& rhs);
         template <typename FS>
-        bool operator== (const Function<FS>& lhs, const Function<FS>& rhs);
+        friend bool operator== (const Function<FS>& lhs, const Function<FS>& rhs);
         template <typename FS>
-        bool operator== (const Function<FS>& lhs, nullptr_t);
+        friend bool operator== (const Function<FS>& lhs, nullptr_t);
         template <typename FS>
-        bool operator!= (const Function<FS>& lhs, const Function<FS>& rhs);
+        friend bool operator!= (const Function<FS>& lhs, const Function<FS>& rhs);
         template <typename FS>
-        bool operator!= (const Function<FS>& lhs, nullptr_t);
+        friend bool operator!= (const Function<FS>& lhs, nullptr_t);
         template <typename FS>
-        bool operator> (const Function<FS>& lhs, const Function<FS>& rhs);
+        friend bool operator> (const Function<FS>& lhs, const Function<FS>& rhs);
         template <typename FS>
-        bool operator>= (const Function<FS>& lhs, const Function<FS>& rhs);
+        friend bool operator>= (const Function<FS>& lhs, const Function<FS>& rhs);
 #endif
     };
 
