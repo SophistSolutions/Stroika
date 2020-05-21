@@ -146,12 +146,12 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline bool Queue<T>::operator== (const Queue& rhs) const
     {
-        return EqualsComparer{}(*this, rhs);
+        return EqualsComparer<>{}(*this, rhs);
     }
     template <typename T>
     inline strong_ordering Queue<T>::operator<=> (const Queue& rhs) const
     {
-        return ThreeWayComparer{}(*this, rhs);
+        return ThreeWayComparer<>{}(*this, rhs);
     }
 #endif
 
