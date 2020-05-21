@@ -405,6 +405,7 @@ namespace Stroika::Foundation::DataExchange {
     Sequence<VariantValue> VariantValue::As () const;
 
     /**
+     *  Not default, and not sure useful, but you can pass in exactTypeMatchOnly to prevent type coercion before comparison.
      */
     struct VariantValue::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
         constexpr EqualsComparer (bool exactTypeMatchOnly = false);
@@ -413,11 +414,12 @@ namespace Stroika::Foundation::DataExchange {
     };
 
     /**
-    @todo support exactTypeMatchOnly for ThreeWayComparer
+     *  Not default, and not sure useful, but you can pass in exactTypeMatchOnly to prevent type coercion.
      */
     struct VariantValue::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         constexpr ThreeWayComparer (bool exactTypeMatchOnly = false);
         nonvirtual Common::strong_ordering operator() (const VariantValue& lhs, const VariantValue& rhs) const;
+        bool                               fExactTypeMatchOnly;
     };
 
 #if __cpp_impl_three_way_comparison < 201907

@@ -171,8 +171,8 @@ namespace Stroika::Foundation::DataExchange {
      ********************************************************************************
      */
     constexpr VariantValue::ThreeWayComparer::ThreeWayComparer (bool exactTypeMatchOnly)
+        : fExactTypeMatchOnly (exactTypeMatchOnly)
     {
-        Require (not exactTypeMatchOnly); // NYI
     }
 
 #if __cpp_impl_three_way_comparison < 201907

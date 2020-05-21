@@ -807,6 +807,12 @@ Common::strong_ordering VariantValue::ThreeWayComparer::operator() (const Varian
 {
     VariantValue::Type lt = lhs.GetType ();
     VariantValue::Type rt = rhs.GetType ();
+    if (fExactTypeMatchOnly) {
+        // No obvious way to compare elements of different type, so just use the ordering of the types (new in Stroika v2.1d5, and ONLY if new (not default) fExactTypeMatchOnly flag set
+        if (lt != rt) {
+            return Common::ThreeWayCompare (lt, rt);
+        }
+    }
     switch (lt) {
         case VariantValue::eNull:
             return rt == VariantValue::eNull ? Common::kEqual : Common::kGreater;
