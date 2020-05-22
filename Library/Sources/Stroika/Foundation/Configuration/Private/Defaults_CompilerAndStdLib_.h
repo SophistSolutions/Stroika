@@ -319,6 +319,20 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 
 #endif
 
+
+
+#ifndef qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy
+
+#if defined(_MSC_VER)
+// first/only found broken in _MSC_VER_2k19_16Pt6_ - and only in RELEASE and 32-bit builds
+#define qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy ((_MSC_VER == _MSC_VER_2k19_16Pt6_) && !qDebug /*&& defined (_M_IX86)*/)
+#else
+#define qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy 0
+#endif
+
+#endif
+
+
 /*
 1>c:\sandbox\stroika\devroot\tests\testcommon\commontests_multiset.h(95): error C2061: syntax error: identifier 'CountedValue<unsigned int,unsigned int>'
 1>c:\sandbox\stroika\devroot\tests\testcommon\commontests_multiset.h(190): note: see reference to function template instantiation 'void CommonTests::MultiSetTests::PRIVATE_::Test1_MiscStarterTests_::MultiSetIteratorTests_<DEFAULT_TESTING_SCHEMA>(const DEFAULT_TESTING_SCHEMA &,Stroika::Foundation::Containers::MultiSet<size_t,Stroika::Foundation::Containers::DefaultTraits::MultiSet<T>> &)' being compiled
