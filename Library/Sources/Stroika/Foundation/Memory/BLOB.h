@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Memory {
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      *  
-     *  This is like memcmp() - bytewise unsigned comparison
+     *      This is like memcmp() - bytewise unsigned comparison
      */
     class BLOB : private Debug::AssertExternallySynchronizedLock {
     public:

@@ -207,15 +207,17 @@ namespace Stroika::Foundation::Memory {
         return *ptr;
     }
     template <typename T, typename TRAITS>
-    inline bool SharedByValue<T, TRAITS>::operator== (const SharedByValue<T, TRAITS>& rhs) const
+    constexpr bool SharedByValue<T, TRAITS>::operator== (nullptr_t) const
     {
-        return fSharedImpl_ == rhs.fSharedImpl_;
+        return fSharedImpl_ == nullptr;
     }
+#if __cpp_impl_three_way_comparison < 201907
     template <typename T, typename TRAITS>
-    inline bool SharedByValue<T, TRAITS>::operator!= (const SharedByValue<T, TRAITS>& rhs) const
+    constexpr bool SharedByValue<T, TRAITS>::operator!= (nullptr_t) const
     {
-        return fSharedImpl_ != rhs.fSharedImpl_;
+        return fSharedImpl_ != nullptr;
     }
+#endif
     template <typename T, typename TRAITS>
     inline typename SharedByValue<T, TRAITS>::element_copier_type SharedByValue<T, TRAITS>::GetCopier () const
     {

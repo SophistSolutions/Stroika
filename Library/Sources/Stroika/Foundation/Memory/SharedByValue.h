@@ -22,9 +22,6 @@
  *      @todo   FLESH OUT HIGHLY EXPERIEMNTAL AND INCOMPLETE SHARED_IMPL_COPIER (HOPEFULLY WILL BE PART OF
  *              ENVELOPE THREAD SAFETY FIX). AND DOCUMENT!!!!
  *
- *      @todo   REDO operator== etc using non-member functions
- *              (see See coding conventions document about operator usage: Compare () and operator<, operator>, etc comments)
- *
  *      @todo   DOCUMENT (and debug if needed) the new experiemental variadic template
  *              COPY code.
  *
@@ -108,6 +105,14 @@ namespace Stroika::Foundation::Memory {
      *      \endcode
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *      o   Only comparison (operator==/!=) with nullptr is supported.
+     *
+     *      Earlier versions of Stroika (before 2.1a5) supported operator==(SharedByValue) - and this kind of makes sense
+     *      but is a little ambiguous if its measuring pointer (shared reference) equality or actual value equality.
+     *
+     *      Better to let the caller use opeartor<=> on cget() or *cget() to make clear their intentions.
      */
     template <typename T, typename TRAITS = SharedByValue_Traits<T>>
     class SharedByValue {
@@ -153,7 +158,7 @@ namespace Stroika::Foundation::Memory {
         /**
          * get () returns the real underlying ptr we store. It can be nullptr. This should
          * rarely be used - use operator-> in preference. This is only for dealing with cases where
-         * the ptr could legitimately be nil.
+         * the ptr could legitimately be null.
          *
          *  Note that the COPY_ARGS in the non-const overload of get () MUST match the parameters passed
          *  to the element_copier_type::Copy () function specified in the SharedByValue traits object.
@@ -200,12 +205,14 @@ namespace Stroika::Foundation::Memory {
     public:
         /**
          */
-        nonvirtual bool operator== (const SharedByValue& rhs) const;
+        constexpr bool operator== (nullptr_t) const;
 
+#if __cpp_impl_three_way_comparison < 201907
     public:
         /**
          */
-        nonvirtual bool operator!= (const SharedByValue& rhs) const;
+        constexpr bool operator!= (nullptr_t) const;
+#endif
 
     public:
         /**
