@@ -631,7 +631,7 @@ namespace Stroika::Foundation::Traversal {
     private:
         static RepSmartPtr Clone_ (const IRep& rep);
 
-#if __cpp_impl_three_way_comparison >= 201907
+#if __cpp_impl_three_way_comparison < 201907
     private:
         template <typename T2, typename IT2>
         friend bool operator== (const Iterator<T2, IT2>& lhs, const Iterator<T2, IT2>& rhs)
