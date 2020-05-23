@@ -96,7 +96,7 @@ namespace Stroika::Foundation::Time {
      *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
      *          o   Standard Stroika Comparison support (operator<=>,operator==, etc);
-     *          o   Incomplete on C++17 and earlier
+     *          o   comparison of < not 100% intuitive, but unambiguous, so these can be compared (by numeric value of flags/offets).
      */
     class Timezone {
     private:
@@ -253,8 +253,7 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          */
-        nonvirtual constexpr bool operator== (const Timezone& rhs) const = default;
-
+        nonvirtual constexpr auto operator<=> (const Timezone& rhs) const = default;
 #else
     public:
         /**
@@ -266,6 +265,11 @@ namespace Stroika::Foundation::Time {
          */
         nonvirtual constexpr bool operator!= (const Timezone& rhs) const;
 
+
+    public:
+        /**
+         */
+        nonvirtual constexpr bool operator< (const Timezone& rhs) const;
 #endif
 
     public:
