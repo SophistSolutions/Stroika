@@ -80,6 +80,9 @@ namespace Stroika::Foundation::Streams {
      *      but if you call InputOutputStream<ELEMENT_TYPE>::IsSeekable () - that  method requires they both be the same.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
+     *
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *      o   only operator== (nullptr_t) is supported
      */
     template <typename ELEMENT_TYPE>
     class InputOutputStream<ELEMENT_TYPE>::Ptr : public InputStream<ELEMENT_TYPE>::Ptr, public OutputStream<ELEMENT_TYPE>::Ptr {
@@ -189,6 +192,7 @@ namespace Stroika::Foundation::Streams {
          */
         nonvirtual bool operator== (nullptr_t) const;
 
+#if __cpp_impl_three_way_comparison < 201907
     public:
         /**
          *  \brief return true iff stream ptr is not nullptr
@@ -196,6 +200,7 @@ namespace Stroika::Foundation::Streams {
          *  @see reset()
          */
         nonvirtual bool operator!= (nullptr_t) const;
+#endif
 
     protected:
         /**

@@ -72,12 +72,14 @@ namespace Stroika::Foundation::Streams {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         return fRep_.get () == nullptr;
     }
+#if __cpp_impl_three_way_comparison < 201907
     template <typename ELEMENT_TYPE>
     inline bool Stream<ELEMENT_TYPE>::Ptr::operator!= (nullptr_t) const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         return fRep_.get () != nullptr;
     }
+#endif
     template <typename ELEMENT_TYPE>
     inline Stream<ELEMENT_TYPE>::Ptr::operator bool () const
     {
@@ -85,6 +87,7 @@ namespace Stroika::Foundation::Streams {
         return fRep_.get () != nullptr;
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      ********************************* Operators ************************************
@@ -100,6 +103,7 @@ namespace Stroika::Foundation::Streams {
     {
         return s != nullptr;
     }
+#endif
 
 }
 

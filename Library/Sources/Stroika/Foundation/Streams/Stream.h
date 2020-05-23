@@ -142,6 +142,9 @@ namespace Stroika::Foundation::Streams {
      *  @see Stream<ELEMENT_TYPE>
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
+     *
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *      o   Support operator==(nullptr_t) only
      */
     template <typename ELEMENT_TYPE>
     class Stream<ELEMENT_TYPE>::Ptr : protected Debug::AssertExternallySynchronizedLock {
@@ -184,6 +187,7 @@ namespace Stroika::Foundation::Streams {
          */
         nonvirtual bool operator== (nullptr_t) const;
 
+#if __cpp_impl_three_way_comparison < 201907
     public:
         /**
          *  \brief return true iff stream ptr is not nullptr
@@ -191,6 +195,7 @@ namespace Stroika::Foundation::Streams {
          *  @see reset()
          */
         nonvirtual bool operator!= (nullptr_t) const;
+#endif
 
     public:
         /**
@@ -244,10 +249,12 @@ namespace Stroika::Foundation::Streams {
         bool fSeekable_{false};
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     template <typename ELEMENT_TYPE>
     bool operator== (nullptr_t, const typename Stream<ELEMENT_TYPE>::Ptr& s);
     template <typename ELEMENT_TYPE>
     bool operator!= (nullptr_t, const typename Stream<ELEMENT_TYPE>::Ptr& s);
+#endif
 
     /**
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Thread-Safety-Rules-Depends-On-Subtype">Thread-Safety-Rules-Depends-On-Subtype/a>
