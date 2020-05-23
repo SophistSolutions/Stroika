@@ -121,7 +121,7 @@ namespace {
         // par Example Usage from doc header
         SharedByValue<vector<byte>> b{BLOB::Hex ("abcd1245").Repeat (100).As<vector<byte>> ()};
         SharedByValue<vector<byte>> c = b; // copied by reference until 'c' or 'b' changed values
-        VerifyTestResult (c == b);
+        VerifyTestResult (c.cget () == b.cget ());
     }
     void Test_4_Optional_Of_Mapping_Copy_Problem_ ()
     {
