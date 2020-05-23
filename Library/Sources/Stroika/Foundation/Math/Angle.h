@@ -67,6 +67,11 @@ namespace Stroika::Foundation::Math {
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
+         *
+         *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+         *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
+         *      o   partial_ordering because floating point admits only partial ordering.
+         *      
          */
         nonvirtual partial_ordering operator<=> (const Angle& rhs) const = default;
 #endif

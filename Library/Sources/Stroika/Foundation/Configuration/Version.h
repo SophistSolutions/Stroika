@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Configuration {
      *  @see Stroika_Make_FULL_VERSION for the mapping
      *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
-     *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
     struct Version {
     public:

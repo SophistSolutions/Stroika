@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Common {
      *  \note   moderately interoperable with pair<>
      *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
-     *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
     template <typename KEY_TYPE, typename VALUE_TYPE>
     struct KeyValuePair {
@@ -95,9 +95,9 @@ namespace Stroika::Foundation::Common {
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
+         // @todo understand why constexpr doesnt work here on g++10 and clang++10
+            //constexpr
          */
-        // @todo understand why constexpr doesnt work here on g++10 and clang++10
-        //constexpr
         auto operator<=> (const KeyValuePair&) const = default;
 #endif
 

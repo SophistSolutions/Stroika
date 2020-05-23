@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Containers {
      *          the iterators are automatically updated internally to behave sensibly.
      *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
-     *        @see inherited from Queue<T>
+     *      @see inherited from Queue<T>
      */
     template <typename T>
     class Deque : public Queue<T> {

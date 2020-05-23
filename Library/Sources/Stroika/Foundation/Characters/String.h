@@ -297,8 +297,8 @@ namespace Stroika::Foundation::Characters {
      *          @see "Test of STATIC FILE SCOPE INITIALIZATION"
      *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
-     *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
-     *        o String::EqualsComparer, String::ThreeWayComparer and String::LessComparer provided with construction parameters to allow case insensitive compares 
+     *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *      o   String::EqualsComparer, String::ThreeWayComparer and String::LessComparer provided with construction parameters to allow case insensitive compares 
      */
     class String : public Traversal::Iterable<Character> {
     private:

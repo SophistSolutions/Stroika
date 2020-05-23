@@ -84,7 +84,7 @@ namespace Stroika::Foundation::Containers {
      *          the iterators are automatically updated internally to behave sensibly.
      *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
-     *      o Standard Stroika Comparison equality (==, !=) support (iff <T> parameter has default equal_to<T> implementation)
+     *      o   Standard Stroika Comparison equality (==, !=) support (iff <T> parameter has default equal_to<T> implementation)
      *      o   EqualsComparer provided as alias to SequentialEqualsComparer
      *          Two Queues are considered equal if they contain the same elements (by comparing them
      *          with EQUALS_COMPARER (which defaults to equal_to<T>)

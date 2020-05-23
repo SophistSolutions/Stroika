@@ -97,8 +97,8 @@ namespace Stroika::Foundation::Containers {
      *          the iterators are automatically updated internally to behave sensibly.
      *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
-     *        o operator== and operator!= are supported
-     *        o All Bijections MUST have = comparable DOMAIN_TYPE and RANGE_TYPE, so operator== for the bijection is well-defined.
+     *      o   operator== and operator!= are supported
+     *      o   All Bijections MUST have = comparable DOMAIN_TYPE and RANGE_TYPE, so operator== for the bijection is well-defined.
      *
      *          Two Bijections are considered equal if they contain the same elements (Preimage) and each key is associated
      *          with the same value. There is no need for the items to appear in the same order for the two Bijections to

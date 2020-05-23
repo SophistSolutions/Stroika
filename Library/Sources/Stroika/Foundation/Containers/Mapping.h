@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Containers {
      *          the iterators are automatically updated internally to behave sensibly.
      *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
-     *        o Standard Stroika Comparison equality (==, !=) support
+     *      o   Standard Stroika Comparison equality (==, !=) support
      *
      *          Two Mappings are considered equal if they contain the same elements (keys) and each key is associated
      *          with the same value. There is no need for the items to appear in the same order for the two Mappings to

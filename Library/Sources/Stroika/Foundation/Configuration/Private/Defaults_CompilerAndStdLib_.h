@@ -319,8 +319,6 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 
 #endif
 
-
-
 #ifndef qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy
 
 #if defined(_MSC_VER)
@@ -331,7 +329,6 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 #endif
 
 #endif
-
 
 /*
 1>c:\sandbox\stroika\devroot\tests\testcommon\commontests_multiset.h(95): error C2061: syntax error: identifier 'CountedValue<unsigned int,unsigned int>'

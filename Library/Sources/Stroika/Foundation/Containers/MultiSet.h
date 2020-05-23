@@ -88,9 +88,9 @@ namespace Stroika::Foundation::Containers {
      *  \note   \em Aliases         Tally (Stroika 1.0), Bag (from SmallTalk-80)
      *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
-     *        o Standard Stroika Comparison equality (==, !=) support
+     *      o   Standard Stroika Comparison equality (==, !=) support
      *
-     *        o Multisets intrinsically know how to compare their elements (for equality) - even if equal_to<T> not defined
+     *      o   Multisets intrinsically know how to compare their elements (for equality) - even if equal_to<T> not defined
      *
      *          Two MultiSet are considered equal if they contain the same elements (by comparing them with GetEqualsComparer ())
      *          with the same count. In short, they are equal if OccurrencesOf() each item in the LHS equals the OccurrencesOf()

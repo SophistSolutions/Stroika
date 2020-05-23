@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Containers {
      *  find all items.
      *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
-     *        @see inherited from DataHyperRectangle<>
+     *      @see inherited from DataHyperRectangle<>
      */
     template <typename T, typename... INDEXES>
     class DenseDataHyperRectangle : public DataHyperRectangle<T, INDEXES...> {

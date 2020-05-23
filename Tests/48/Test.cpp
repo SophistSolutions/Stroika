@@ -747,8 +747,8 @@ namespace {
         }
         {
 #if qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy
-            Date d1 = DateTime::Now ().GetDate () - 1;
-            Date d2 = DateTime::Now ().GetDate () + 1;
+            Date      d1 = DateTime::Now ().GetDate () - 1;
+            Date      d2 = DateTime::Now ().GetDate () + 1;
             String    t1 = Characters::ToString (d1);
             DateRange dr{d1, d2};
             //Stroika::Foundation::Debug::Emitter::Get ().EmitTraceMessage (L"drContains=%d", dr.Contains (dr.GetMidpoint ()));
