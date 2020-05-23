@@ -59,20 +59,12 @@
   </PropertyGroup>
   <ItemDefinitionGroup />
   <ItemGroup>
-    <None Include="..\..\Sources\Stroika\Frameworks\Makefile" />
-    <None Include="..\..\Sources\Stroika\Frameworks\ReadMe.md" />
-    <None Include="..\..\Sources\Stroika\Frameworks\ToDo.md" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\StroikaPreComp.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\ChunkedArrayTextStore.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\HandySimple.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\BiDiLayoutEngine.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\ChunkedArrayTextStore.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Command.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\FlavorPackage.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\GDI.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\HandySimple.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\HiddenText.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\IdleManager.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\LineBasedPartition.cpp" />
@@ -87,7 +79,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextImager.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextInteractor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextStore.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SpellCheckEngine.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SpellCheckEngine_Basic.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StandardStyledTextImager.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StandardStyledTextInteractor.cpp" />
@@ -101,16 +92,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_PlainText.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_RTF.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_STYLText.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Support.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SyntaxColoring.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\TextBreaks.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\TextImager.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\TextInteractor.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\TextInteractorMixins.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\TextStore.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\WordProcessor.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\WordWrappedTextImager.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\WordWrappedTextInteractor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\BiDiLayoutEngine.h" />
@@ -150,6 +131,62 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_PlainText.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_RTF.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_STYLText.h" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\BiDiLayoutEngine.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\ChunkedArrayTextStore.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\Command.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\FlavorPackage.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\GDI.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\HandySimple.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\HiddenText.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\IdleManager.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\LineBasedPartition.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\Makefile" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\Marker.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\MarkerCover.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\MultiRowTextImager.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\PartitioningTextImager.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\SimpleLed.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextImager.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextInteractor.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\SimpleTextStore.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\SpellCheckEngine.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\SpellCheckEngine_Basic.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\StandardStyledTextImager.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\StandardStyledTextInteractor.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\StdDialogs.inc.r" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\StdDialogs.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextEmbeddedObjects.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextImager.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\Support.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\SyntaxColoring.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\TextBreaks.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\TextImager.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\TextInteractor.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\TextInteractorMixIns.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\TextStore.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\WordProcessor.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\WordWrappedTextImager.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\WordWrappedTextInteractor.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Modbus\IModbusService.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Modbus\Makefile" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Modbus\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Modbus\Server.inl" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Support.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\SyntaxColoring.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\TextBreaks.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\TextImager.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\TextInteractor.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\TextInteractorMixins.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\TextStore.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\WordProcessor.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\WordWrappedTextImager.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\WordWrappedTextInteractor.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Modbus\IModbusService.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Modbus\Server.cpp" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Support.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\SyntaxColoring.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\TextBreaks.h" />
@@ -160,17 +197,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\WordProcessor.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\WordWrappedTextImager.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\WordWrappedTextInteractor.h" />
-    <None Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC.inl" />
-    <None Include="..\..\Sources\Stroika\Frameworks\Led\ReadMe.md" />
-    <None Include="..\..\Sources\Stroika\Frameworks\Led\StdDialogs.inc.r" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\Sources\Stroika\Frameworks\Modbus\IModbusService.inl" />
-    <None Include="..\..\Sources\Stroika\Frameworks\Modbus\Makefile" />
-    <None Include="..\..\Sources\Stroika\Frameworks\Modbus\ReadMe.md" />
-    <None Include="..\..\Sources\Stroika\Frameworks\Modbus\Server.inl" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Modbus\IModbusService.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Modbus\Server.cpp" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Modbus\IModbusService.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Modbus\Server.h" />
   </ItemGroup>
