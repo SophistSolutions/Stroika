@@ -201,13 +201,28 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename ITERATOR_TRAITS>
     inline bool operator== (const Iterator<T, ITERATOR_TRAITS>& lhs, const Iterator<T, ITERATOR_TRAITS>& rhs)
     {
-        return lhs.Equals (rhs);
+        bool lDone = lhs.Done ();
+        bool rDone = rhs.Done ();
+        if (lDone != rDone)
+            [[LIKELY_ATTR]]
+            {
+                return false;
+            }
+        if (lDone) {
+            Assert (rDone);
+            return true;
+        }
+        Assert (not lDone and not rDone);
+        const Iterator<T, ITERATOR_TRAITS>::IRep* lhsRep = lhs.fIterator_.get ();
+        const Iterator<T, ITERATOR_TRAITS>::IRep* rhsRep = rhs.fIterator_.get ();
+        Ensure (lhsRep->Equals (rhsRep) == rhsRep->Equals (lhsRep));
+        return lhsRep->Equals (rhsRep);
     }
 
     template <typename T, typename ITERATOR_TRAITS>
     inline bool operator!= (const Iterator<T, ITERATOR_TRAITS>& lhs, const Iterator<T, ITERATOR_TRAITS>& rhs)
     {
-        return not lhs.Equals (rhs);
+        return not(lhs == rhs);
     }
 #endif
 
