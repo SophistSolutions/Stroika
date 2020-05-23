@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Memory {
         }
     }
     template <typename T, typename OP, enable_if_t<is_convertible_v<OP, function<T (T, T)>>>*>
-    void AccumulateIf (optional<T>* lhsOptionalValue, const T& rhsValue, const OP& op)
+    inline void AccumulateIf (optional<T>* lhsOptionalValue, const T& rhsValue, const OP& op)
     {
         if (lhsOptionalValue->has_value ()) {
             *lhsOptionalValue = op (**lhsOptionalValue, rhsValue);
@@ -117,17 +117,6 @@ namespace Stroika::Foundation::Memory {
     inline optional<T> OptionalValue (const optional<T>& l, const optional<T>& r)
     {
         return l.has_value () ? l : r;
-    }
-
-    /*
-     ********************************************************************************
-     ************************************ operator< *********************************
-     ********************************************************************************
-     */
-    template <typename T, typename TRAITS, typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T>
-    inline bool operator< (const Optional<T, TRAITS>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T& rhs)
-    {
-        return lhs.Compare (rhs) < 0;
     }
 
     /*

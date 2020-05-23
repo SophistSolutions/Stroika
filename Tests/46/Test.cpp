@@ -321,32 +321,6 @@ namespace {
 }
 
 namespace {
-    namespace Test8PRIVATE_ {
-        template <typename T>
-        using InPlace_Traits = Optional_Traits_Inplace_Storage<T>;
-        template <typename T>
-        using Indirect_Traits = Optional_Traits_Blockallocated_Indirect_Storage<T>;
-        template <typename OPTIONALOFT>
-        void BasicOTest_ ()
-        {
-            {
-                OPTIONALOFT o1;
-                OPTIONALOFT o2{typename OPTIONALOFT::value_type ()};
-                OPTIONALOFT o3 = o1;
-                o3             = o2;
-                VerifyTestResult (o3 == o2);
-            }
-            {
-                OPTIONALOFT o1{typename OPTIONALOFT::value_type ()};
-                VerifyTestResult (o1.has_value ());
-                OPTIONALOFT o2 = move (o1);
-                VerifyTestResult (o2 == typename OPTIONALOFT::value_type ());
-            }
-        }
-    }
-}
-
-namespace {
     namespace Test9_SmallStackBuffer_ {
         void DoTest ()
         {
