@@ -325,7 +325,7 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 
 #if defined(_MSC_VER)
 // first/only found broken in _MSC_VER_2k19_16Pt6_ - and only in RELEASE and 32-bit builds
-#define qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy ((_MSC_VER == _MSC_VER_2k19_16Pt6_) && !qDebug /*&& defined (_M_IX86)*/)
+#define qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy ((_MSC_VER == _MSC_VER_2k19_16Pt6_) && !qDebug && defined (_M_IX86))
 #else
 #define qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy 0
 #endif
