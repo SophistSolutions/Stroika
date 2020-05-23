@@ -40,6 +40,9 @@ namespace Stroika::Foundation::Traversal {
     /**
      *
      *  \note   NOT internally threadsafe. To use from multiple threads, use Synchronized<DisjointRange>, or otherwise protect.
+     *
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *      o   operator==, operator!= supported, but this assumes operator== is defined on 'T'
      */
     template <typename T, typename RANGE_TYPE = Range<T>>
     class DisjointRange {

@@ -40,10 +40,6 @@
  *
  *          @todo   Consider if we want to re-instate Range<T, TRAITS>::Overlaps - but think through and document
  *                  definition clearly.
- *
- *          @todo   Document why no operator< support (compare interface) - cuz no obvious well-ordering?
- *                  Could well order on LHS, and then when equal on RHS, but that wouldn't make sense for
- *                  all applicaitons.
  */
 
 namespace Stroika::Foundation::Traversal {
@@ -149,6 +145,9 @@ namespace Stroika::Foundation::Traversal {
      *
      *  This Range<> template is similar to Ruby range, and fairly DIFFERENT from the std::range<> template.
      *
+     *  This notion of range is **NOT THE SAME as std::range**, though is similar (obviously from the name) and
+     *  @todo should consider better integration!
+     *
      *  Somewhat inspired by, and at least influenced by, the definition in
      *      http://ruby-doc.org/core-2.0/Range.html
      *  However - where Ruby has one type "Range" - we have "Range" and DiscreteRange" - and some ruby Range methods/properties
@@ -164,8 +163,13 @@ namespace Stroika::Foundation::Traversal {
      *      Range<int> (1,1) == Range<int> (3,3) would be true, since the are both empty.
      *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
-     *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
-     *
+     *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *      o   Depends on operator== being defined on T
+     *      
+     *      o   no operator<, operator<=> support (compare interface) - cuz no obvious well-ordering?
+     *          Could well order on LHS, and then when equal on RHS, but that wouldn't make sense for
+     *          all applicaitons.
+     *      
      *  @see DiscreteRange
      *  @see DisjointRange
      *  @see DisjointDiscreteRange

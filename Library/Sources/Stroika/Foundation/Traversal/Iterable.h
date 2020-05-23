@@ -180,7 +180,7 @@ namespace Stroika::Foundation::Traversal {
      *      sequence of numbers each time you make an iterate and run.
      *
      *  *Design Note*:
-     *      Comparisons (operator==, operator<=>, etc):
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
      *          Chose NOT to include an equal_to<Iterable<T>> partial specialization here, but instead duplicatively in
      *          each subclass, so that it could more easily be implemented efficiently (not a biggie), but more
      *          importantly because it doesn't appear to me to make sense so say that a Stack<T> == Set<T>, even if

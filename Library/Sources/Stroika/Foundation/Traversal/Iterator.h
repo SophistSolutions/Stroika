@@ -490,7 +490,7 @@ namespace Stroika::Foundation::Traversal {
          *  @see operator== ().
          *  @see operator!= ().
          */
-        nonvirtual bool Equals (const Iterator& rhs) const;
+        nonvirtual [[deprecated ("Since Stroika 2.1a5 deprecated - use ==, or != instead")]] bool Equals (const Iterator& rhs) const;
 
 #if __cpp_impl_three_way_comparison >= 201907
     public:
