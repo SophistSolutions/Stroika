@@ -852,19 +852,6 @@ Duration DateTime::Difference (const DateTime& rhs) const
     }
 }
 
-Common::strong_ordering DateTime::TWC_ (const DateTime& lhs, const DateTime& rhs)
-{
-    if (lhs.GetTimezone () == rhs.GetTimezone () or (lhs.GetTimezone () == Timezone::Unknown ()) or (rhs.GetTimezone () == Timezone::Unknown ())) {
-        if (auto cmp = Common::ThreeWayCompare (lhs.GetDate (), rhs.GetDate ()); cmp != Common::kEqual) {
-            return cmp;
-        }
-        return Common::ThreeWayCompare (lhs.GetTimeOfDay (), rhs.GetTimeOfDay ());
-    }
-    else {
-        return TWC_ (lhs.AsUTC (), rhs.AsUTC ());
-    }
-}
-
 /*
  ********************************************************************************
  ************************** DateTime operators  *********************************

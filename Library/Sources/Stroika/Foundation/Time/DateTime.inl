@@ -83,11 +83,11 @@ namespace Stroika::Foundation::Time {
 #if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering DateTime::operator<=> (const DateTime& rhs) const
     {
-        return TWC_ (*this, rhs);
+        return ThreeWayComparer{}(*this, rhs);
     }
     inline bool DateTime::operator== (const DateTime& rhs) const
     {
-        return TWC_ (*this, rhs) == 0;
+        return ThreeWayComparer{}(*this, rhs) == 0;
     }
 #endif
 
@@ -96,9 +96,24 @@ namespace Stroika::Foundation::Time {
      ************************* DateTime::ThreeWayComparer ***************************
      ********************************************************************************
      */
+    constexpr DateTime::ThreeWayComparer::ThreeWayComparer (bool coerceToCommonTimezone)
+        : fCoerceToCommonTimezone{coerceToCommonTimezone}
+    {
+    }
     inline Common::strong_ordering DateTime::ThreeWayComparer::operator() (const DateTime& lhs, const DateTime& rhs) const
     {
-        return DateTime::TWC_ (lhs, rhs);
+        if (lhs.GetTimezone () == rhs.GetTimezone () or (lhs.GetTimezone () == Timezone::Unknown ()) or (rhs.GetTimezone () == Timezone::Unknown ())) {
+            if (auto cmp = Common::ThreeWayCompare (lhs.GetDate (), rhs.GetDate ()); cmp != Common::kEqual) {
+                return cmp;
+            }
+            return Common::ThreeWayCompare (lhs.GetTimeOfDay (), rhs.GetTimeOfDay ());
+        }
+        else if (fCoerceToCommonTimezone) {
+            return operator() (lhs.AsUTC (), rhs.AsUTC ());
+        }
+        else {
+            return Common::ThreeWayCompare (lhs.GetTimezone (), rhs.GetTimezone ());
+        }
     }
 
 #if __cpp_impl_three_way_comparison < 201907
@@ -109,27 +124,27 @@ namespace Stroika::Foundation::Time {
      */
     inline bool operator< (const DateTime& lhs, const DateTime& rhs)
     {
-        return DateTime::TWC_ (lhs, rhs) < 0;
+        return DateTime::ThreeWayComparer{}(lhs, rhs) < 0;
     }
     inline bool operator<= (const DateTime& lhs, const DateTime& rhs)
     {
-        return DateTime::TWC_ (lhs, rhs) <= 0;
+        return DateTime::ThreeWayComparer{}(lhs, rhs) <= 0;
     }
     inline bool operator== (const DateTime& lhs, const DateTime& rhs)
     {
-        return DateTime::TWC_ (lhs, rhs) == 0;
+        return DateTime::ThreeWayComparer{}(lhs, rhs) == 0;
     }
     inline bool operator!= (const DateTime& lhs, const DateTime& rhs)
     {
-        return DateTime::TWC_ (lhs, rhs) != 0;
+        return DateTime::ThreeWayComparer{}(lhs, rhs) != 0;
     }
     inline bool operator>= (const DateTime& lhs, const DateTime& rhs)
     {
-        return DateTime::TWC_ (lhs, rhs) >= 0;
+        return DateTime::ThreeWayComparer{}(lhs, rhs) >= 0;
     }
     inline bool operator> (const DateTime& lhs, const DateTime& rhs)
     {
-        return DateTime::TWC_ (lhs, rhs) > 0;
+        return DateTime::ThreeWayComparer{}(lhs, rhs) > 0;
     }
 #endif
 

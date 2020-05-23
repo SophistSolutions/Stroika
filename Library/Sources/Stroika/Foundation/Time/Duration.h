@@ -126,7 +126,8 @@ namespace Stroika::Foundation::Time {
      *      whose lifetime is controlled (an object). So now - just call As<String> ().c_str () or
      *      As<wstring> ().c_str ()
      *
-     *  \note   comparisons (operator <=>) inherited from chrono::duration
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *      o   comparisons (operator <=>) inherited from chrono::duration
      */
     class Duration final : public chrono::duration<double> {
     private:
@@ -355,9 +356,6 @@ namespace Stroika::Foundation::Time {
     public:
         class FormatException;
 
-    public:
-        struct ThreeWayComparer;
-
     private:
         static InternalNumericFormatType_ ParseTime_ (const string& s);
         static string                     UnParseTime_ (InternalNumericFormatType_ t);
@@ -443,16 +441,6 @@ namespace Stroika::Foundation::Time {
 #endif
     Duration operator"" _duration (const char16_t* str, size_t len) noexcept;
     Duration operator"" _duration (const char32_t* str, size_t len) noexcept;
-
-    /**
-     *  @see Common::ThreeWayComparer<> template
-     *
-     *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
-     *  this comparison function - see the notes about 'empty' in the class description.
-     */
-    struct Duration::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        nonvirtual Common::strong_ordering operator() (const Duration& lhs, const Duration& rhs) const;
-    };
 
     /**
      *  Return the sum of the two durations.

@@ -248,11 +248,11 @@ namespace Stroika::Foundation::Time {
     {
         return Format ();
     }
-    /*todo constexpr*/ inline Duration Duration::min ()
+    inline /*constexpr*/ Duration Duration::min ()
     {
         return Duration{numeric_limits<InternalNumericFormatType_>::lowest ()};
     }
-    /*todo constexpr*/ inline Duration Duration::max ()
+    inline /*constexpr*/ Duration Duration::max ()
     {
         return Duration{numeric_limits<InternalNumericFormatType_>::max ()};
     }
@@ -283,16 +283,6 @@ namespace Stroika::Foundation::Time {
     inline Duration operator"" _duration (const char32_t* str, size_t len) noexcept
     {
         return Duration{Characters::String{str, str + len}};
-    }
-
-    /*
-     ********************************************************************************
-     ************************** Duration::ThreeWayComparer **************************
-     ********************************************************************************
-     */
-    inline Common::strong_ordering Duration::ThreeWayComparer::operator() (const Duration& lhs, const Duration& rhs) const
-    {
-        return Common::ThreeWayCompare (lhs.As<Duration::InternalNumericFormatType_> (), rhs.As<Duration::InternalNumericFormatType_> ());
     }
 
     /*

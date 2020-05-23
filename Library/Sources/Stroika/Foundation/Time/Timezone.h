@@ -265,7 +265,6 @@ namespace Stroika::Foundation::Time {
          */
         nonvirtual constexpr bool operator!= (const Timezone& rhs) const;
 
-
     public:
         /**
          */

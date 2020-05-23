@@ -79,6 +79,8 @@ namespace Stroika::Foundation::Time {
      *          Also note - if the datetimes differ in their GetTimeZone() value, they are not necessarily 
      *          considered different. If either one is unknown, they will both be treated as the same timezone. 
      *          Otherwise, they will BOTH be converted to GMT, and compared as GMT.
+     *
+     *          This coertion to GMT can be avoided by optional constructor argument to DateTime::ThreeWayComparer
      */
     class DateTime {
     public:
@@ -475,9 +477,6 @@ namespace Stroika::Foundation::Time {
         struct ThreeWayComparer;
 
     private:
-        static Common::strong_ordering TWC_ (const DateTime& lhs, const DateTime& rhs);
-
-    private:
         optional<Timezone>  fTimezone_;
         Date                fDate_;
         optional<TimeOfDay> fTimeOfDay_; // for now - still can be 'empty' - but API (as of v2.1d4) disallows passing in or getting out empty TimeOfDay
@@ -517,16 +516,19 @@ namespace Stroika::Foundation::Time {
     Date DateTime::As () const;
 
     /**
-    *** @todo ADD CTOR OPTIONAL ARG FOR coercning to common TZ if in different TZs - and do EqualsCOmparer likewise
      */
     struct DateTime::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+        /**
+         */
+        constexpr ThreeWayComparer (bool coerceToCommonTimezone = true);
+
+        /**
+         */
         nonvirtual Common::strong_ordering operator() (const DateTime& lhs, const DateTime& rhs) const;
+        bool                               fCoerceToCommonTimezone;
     };
 
 #if __cpp_impl_three_way_comparison < 201907
-    /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare
-     */
     bool operator< (const DateTime& lhs, const DateTime& rhs);
     bool operator<= (const DateTime& lhs, const DateTime& rhs);
     bool operator== (const DateTime& lhs, const DateTime& rhs);
