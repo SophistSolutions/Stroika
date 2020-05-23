@@ -150,8 +150,9 @@ namespace Stroika::Foundation::Traversal {
     {
         return not Done ();
     }
+#if __cpp_impl_three_way_comparison >= 201907
     template <typename T, typename ITERATOR_TRAITS>
-    inline bool Iterator<T, ITERATOR_TRAITS>::Equals (const Iterator& rhs) const
+    inline bool Iterator<T, ITERATOR_TRAITS>::operator== (const Iterator& rhs) const
     {
         Require (GetOwner () == rhs.GetOwner () or GetOwner () == kUnknownIteratorOwnerID or rhs.GetOwner () == kUnknownIteratorOwnerID);
         /*
@@ -178,12 +179,6 @@ namespace Stroika::Foundation::Traversal {
         const Iterator<T, ITERATOR_TRAITS>::IRep* rhsRep = rhs.fIterator_.get ();
         Ensure (lhsRep->Equals (rhsRep) == rhsRep->Equals (lhsRep));
         return lhsRep->Equals (rhsRep);
-    }
-#if __cpp_impl_three_way_comparison >= 201907
-    template <typename T, typename ITERATOR_TRAITS>
-    inline bool Iterator<T, ITERATOR_TRAITS>::operator== (const Iterator& rhs) const
-    {
-        return this->Equals (rhs);
     }
 #endif
     template <typename T, typename ITERATOR_TRAITS>
