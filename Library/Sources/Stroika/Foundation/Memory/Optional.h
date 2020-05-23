@@ -49,13 +49,6 @@
  *
  *      @todo   See if I can get operator* working with ConstHolder_ (maybe more efficient). Or could return const&
  *              in release builds and T in DEBUG builds (so we can do context based debug lock/check).
- *
- *      @todo   FIX operator<, etc to match what we did for operator== and operator!=, and document!!!
- *              since COMPARE is part of traits we do NOT want to allow compare with different traits (so MUST FIX EUQalas as well)
- *
- *      @todo   COULD make operator==, operator<, etc compares more efficeint when comparing with T
- *              by adding a slew (3x) more overloads. (DID TO SOME EXTENT BUT COULD IMPROVE); And could improve iterop
- *              by adding operator XXX (where XXX is ==, etc) with (T, OPTIONAL);
  */
 
 namespace Stroika::Foundation::Characters {

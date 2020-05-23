@@ -78,8 +78,10 @@ namespace Stroika::Foundation::Memory {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
-     *  \note Comparisons:
-     *        TBD - ref common docs
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *  
+     *  This is like memcmp() - bytewise unsigned comparison
      */
     class BLOB : private Debug::AssertExternallySynchronizedLock {
     public:
@@ -91,8 +93,7 @@ namespace Stroika::Foundation::Memory {
          */
         BLOB ();
         BLOB (const BLOB& src) = default;
-        BLOB (BLOB&& src)
-        noexcept;
+        BLOB (BLOB&& src) noexcept;
         template <typename CONTAINER_OF_BYTE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_BYTE> and (is_convertible_v<typename CONTAINER_OF_BYTE::value_type, byte> or is_convertible_v<typename CONTAINER_OF_BYTE::value_type, uint8_t>)>* = nullptr>
         BLOB (const CONTAINER_OF_BYTE& data);
         BLOB (const byte* start, const byte* end);
@@ -294,11 +295,14 @@ namespace Stroika::Foundation::Memory {
         nonvirtual bool operator== (const BLOB& rhs) const;
 #endif
 
+    private:
+        static Common::strong_ordering TWC_ (const BLOB& lhs, const BLOB& rhs);
+
     public:
         using EqualsComparer [[deprecated ("use std::equal_to (or just ==) in in 2.1a5")]] = std::equal_to<BLOB>;
 
     public:
-        struct ThreeWayComparer;
+        using ThreeWayComparer [[deprecated ("use Common::compare_three_way in  in 2.1a5")]] = Common::compare_three_way<BLOB, BLOB>;
 
     public:
         /**
@@ -379,13 +383,6 @@ namespace Stroika::Foundation::Memory {
         virtual pair<const byte*, const byte*> GetBounds () const = 0;
 
         nonvirtual const _IRep& operator= (const _IRep&) = delete;
-    };
-
-    /**
-     *  This is like memcmp() - bytewise unsigned comparison
-     */
-    struct BLOB::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        nonvirtual Common::strong_ordering operator() (const BLOB& lhs, const BLOB& rhs) const;
     };
 
     /**

@@ -307,7 +307,7 @@ namespace Stroika::Foundation::Memory {
 #if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering BLOB::operator<=> (const BLOB& rhs) const
     {
-        return ThreeWayComparer{}(*this, rhs);
+        return TWC_ (*this, rhs);
     }
     inline bool BLOB::operator== (const BLOB& rhs) const
     {
@@ -334,13 +334,7 @@ namespace Stroika::Foundation::Memory {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         return BLOB ({*this, rhs});
     }
-
-    /*
-     ********************************************************************************
-     ************************* BLOB::ThreeWayComparer *******************************
-     ********************************************************************************
-     */
-    inline Common::strong_ordering BLOB::ThreeWayComparer::operator() (const BLOB& lhs, const BLOB& rhs) const
+    inline Common::strong_ordering BLOB::TWC_ (const BLOB& lhs, const BLOB& rhs)
     {
         shared_lock<const AssertExternallySynchronizedLock> critSecL{lhs}; // this pattern of double locking might risk a deadlock for real locks, but these locks are fake to assure externally locked
         shared_lock<const AssertExternallySynchronizedLock> critSecR{rhs};
@@ -359,6 +353,7 @@ namespace Stroika::Foundation::Memory {
         return (lSize < rSize) ? Common::kLess : Common::kGreater;
     }
 
+
     /*
      ********************************************************************************
      ****************************** BLOB operators **********************************
@@ -367,11 +362,11 @@ namespace Stroika::Foundation::Memory {
 #if __cpp_impl_three_way_comparison < 201907
     inline bool operator< (const BLOB& lhs, const BLOB& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) < 0;
+        return BLOB::TWC_ (lhs, rhs) < 0;
     }
     inline bool operator<= (const BLOB& lhs, const BLOB& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) <= 0;
+        return BLOB::TWC_ (lhs, rhs) <= 0;
     }
     inline bool operator!= (const BLOB& lhs, const BLOB& rhs)
     {
@@ -379,30 +374,15 @@ namespace Stroika::Foundation::Memory {
     }
     inline bool operator>= (const BLOB& lhs, const BLOB& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) >= 0;
+        return BLOB::TWC_ (lhs, rhs) >= 0;
     }
     inline bool operator> (const BLOB& lhs, const BLOB& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) > 0;
+        return BLOB::TWC_ (lhs, rhs) > 0;
     }
     inline bool operator== (const BLOB& lhs, const BLOB& rhs)
     {
-        shared_lock<const BLOB::AssertExternallySynchronizedLock> critSecL{lhs}; // this pattern of double locking might risk a deadlock for real locks, but these locks are fake to assure externally locked
-        shared_lock<const BLOB::AssertExternallySynchronizedLock> critSecR{rhs};
-        if (lhs.fRep_ == rhs.fRep_) {
-            return true; // cheap optimization for not super uncommon case
-        }
-        pair<const byte*, const byte*> l     = lhs.fRep_->GetBounds ();
-        pair<const byte*, const byte*> r     = rhs.fRep_->GetBounds ();
-        size_t                         lSize = l.second - l.first;
-        size_t                         rSize = r.second - r.first;
-        if (lSize != rSize) {
-            return false;
-        }
-        if (lSize == 0) {
-            return true; // see http://stackoverflow.com/questions/16362925/can-i-pass-a-null-pointer-to-memcmp -- illegal to pass nullptr to memcmp() even if size 0
-        }
-        return ::memcmp (l.first, r.first, lSize) == 0;
+        return BLOB::TWC_ (lhs, rhs) == 0;
     }
 #endif
 

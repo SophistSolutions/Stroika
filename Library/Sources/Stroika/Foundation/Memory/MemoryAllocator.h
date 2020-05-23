@@ -16,9 +16,6 @@
 /**
  *  \file
  *
- *      @todo   REDO operator== etc using non-member functions
- *              (see See coding conventions document about operator usage: Compare () and operator<, operator>, etc comments)
- *
  */
 
 namespace Stroika::Foundation::Memory {
@@ -68,6 +65,10 @@ namespace Stroika::Foundation::Memory {
      *          is fine (false), but if they had data, obviously it would be different. Perhaps that choice should be
      *          parametized (as it is with normal C++ allocators). Or maybe leave subclassing this STLAllocator<> as a way
      *          todo that? Thats probably good enuf...
+     *
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *          o   only operator== is defined, and is boring 
+     *          @see https://en.cppreference.com/w/cpp/memory/allocator/operator_cmp
      */
     template <typename T, typename BASE_ALLOCATOR = SimpleAllocator_CallLIBCMallocFree>
     class STLAllocator {
@@ -131,8 +132,10 @@ namespace Stroika::Foundation::Memory {
         nonvirtual size_t max_size () const noexcept;
 
     public:
-        nonvirtual bool operator== (const STLAllocator<T, BASE_ALLOCATOR>& rhs) const;
-        nonvirtual bool operator!= (const STLAllocator<T, BASE_ALLOCATOR>& rhs) const;
+        nonvirtual bool operator== (const STLAllocator& rhs) const;
+#if __cpp_impl_three_way_comparison < 201907
+        nonvirtual bool operator!= (const STLAllocator& rhs) const;
+#endif
     };
 
     /**

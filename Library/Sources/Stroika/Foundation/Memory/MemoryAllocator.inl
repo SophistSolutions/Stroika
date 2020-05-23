@@ -100,15 +100,18 @@ namespace Stroika::Foundation::Memory {
         return numeric_limits<size_type>::max () / sizeof (T);
     }
     template <typename T, typename BASE_ALLOCATOR>
-    inline bool STLAllocator<T, BASE_ALLOCATOR>::operator== (const STLAllocator<T, BASE_ALLOCATOR>& /*rhs*/) const
+    inline bool STLAllocator<T, BASE_ALLOCATOR>::operator== (const STLAllocator& /*rhs*/) const
     {
+        // @see https://en.cppreference.com/w/cpp/memory/allocator/operator_cmp - stateless allocators are always equal
         return true;
     }
+#if __cpp_impl_three_way_comparison < 201907
     template <typename T, typename BASE_ALLOCATOR>
-    inline bool STLAllocator<T, BASE_ALLOCATOR>::operator!= (const STLAllocator<T, BASE_ALLOCATOR>& rhs) const
+    inline bool STLAllocator<T, BASE_ALLOCATOR>::operator!= (const STLAllocator& rhs) const
     {
         return not(*this == rhs);
     }
+#endif
 
 }
 
