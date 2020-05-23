@@ -353,7 +353,6 @@ namespace Stroika::Foundation::Memory {
         return (lSize < rSize) ? Common::kLess : Common::kGreater;
     }
 
-
     /*
      ********************************************************************************
      ****************************** BLOB operators **********************************
