@@ -634,7 +634,7 @@ namespace Stroika::Foundation::Traversal {
 #if __cpp_impl_three_way_comparison < 201907
     private:
         template <typename T2, typename IT2>
-        friend bool operator== (const Iterator<T2, IT2>& lhs, const Iterator<T2, IT2>& rhs)
+        friend bool operator== (const Iterator<T2, IT2>& lhs, const Iterator<T2, IT2>& rhs);
 #endif
     };
 
