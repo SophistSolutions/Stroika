@@ -213,8 +213,8 @@ namespace Stroika::Foundation::Traversal {
             return true;
         }
         Assert (not lDone and not rDone);
-        const Iterator<T, ITERATOR_TRAITS>::IRep* lhsRep = lhs.fIterator_.get ();
-        const Iterator<T, ITERATOR_TRAITS>::IRep* rhsRep = rhs.fIterator_.get ();
+        typename const Iterator<T, ITERATOR_TRAITS>::IRep* lhsRep = lhs.fIterator_.get ();
+        typename const Iterator<T, ITERATOR_TRAITS>::IRep* rhsRep = rhs.fIterator_.get ();
         Ensure (lhsRep->Equals (rhsRep) == rhsRep->Equals (lhsRep));
         return lhsRep->Equals (rhsRep);
     }
