@@ -222,7 +222,7 @@ namespace Stroika::Foundation::Memory {
         }
     }
     template <typename T>
-    inline SharedPtr<T>::SharedPtr (const SharedPtr<T>& from) noexcept
+    inline SharedPtr<T>::SharedPtr (const SharedPtr& from) noexcept
         : fEnvelope_ (from.fEnvelope_)
     {
         if (fEnvelope_.GetPtr () != nullptr) {
@@ -230,7 +230,7 @@ namespace Stroika::Foundation::Memory {
         }
     }
     template <typename T>
-    inline SharedPtr<T>::SharedPtr (SharedPtr<T>&& from) noexcept
+    inline SharedPtr<T>::SharedPtr (SharedPtr&& from) noexcept
         : fEnvelope_ (move (from.fEnvelope_))
     {
         Assert (from.fEnvelope_.GetPtr () == nullptr);
@@ -271,7 +271,7 @@ namespace Stroika::Foundation::Memory {
         return Envelope_ (from, from == nullptr ? nullptr : ManuallyBlockAllocated<Private_::ReferenceCounterContainerType_>::New ());
     }
     template <typename T>
-    SharedPtr<T>& SharedPtr<T>::operator= (const SharedPtr<T>& rhs) noexcept
+    SharedPtr<T>& SharedPtr<T>::operator= (const SharedPtr& rhs) noexcept
     {
         if (rhs.fEnvelope_.GetPtr () != fEnvelope_.GetPtr ()) {
             if (fEnvelope_.GetPtr () != nullptr) {
@@ -298,7 +298,7 @@ namespace Stroika::Foundation::Memory {
         return *this;
     }
     template <typename T>
-    SharedPtr<T>& SharedPtr<T>::operator= (SharedPtr<T>&& rhs) noexcept
+    SharedPtr<T>& SharedPtr<T>::operator= (SharedPtr&& rhs) noexcept
     {
         if (rhs.fEnvelope_.GetPtr () != fEnvelope_.GetPtr ()) {
             if (fEnvelope_.GetPtr () != nullptr) {
@@ -409,7 +409,7 @@ namespace Stroika::Foundation::Memory {
         return SharedPtr<T2> (typename SharedPtr<T2>::Envelope_ (fEnvelope_, dynamic_cast<T2*> (get ())));
     }
     template <typename T>
-    inline void SharedPtr<T>::swap (SharedPtr<T>& rhs)
+    inline void SharedPtr<T>::swap (SharedPtr& rhs)
     {
         swap (fEnvelope_, rhs.fEnvelope_);
     }
@@ -434,8 +434,26 @@ namespace Stroika::Foundation::Memory {
         // respect the stl-ish names
         return IsUnique ();
     }
+#if __cpp_impl_three_way_comparison >= 201907
     template <typename T>
-    inline bool SharedPtr<T>::operator< (const SharedPtr<T>& rhs) const noexcept
+    constexpr bool SharedPtr<T>::operator== (const SharedPtr& rhs) const
+    {
+        return fEnvelope_.GetPtr () == rhs.fEnvelope_.GetPtr ();
+    }
+    template <typename T>
+    constexpr bool SharedPtr<T>::operator== (nullptr_t) const
+    {
+        return fEnvelope_.GetPtr () == nullptr;
+    }
+    template <typename T>
+    constexpr strong_ordering SharedPtr<T>::operator<=> (const SharedPtr& rhs) const
+    {
+        return fEnvelope_.GetPtr () <=> rhs.fEnvelope_.GetPtr ();
+    }
+#endif
+#if __cpp_impl_three_way_comparison < 201907
+    template <typename T>
+    inline bool SharedPtr<T>::operator< (const SharedPtr& rhs) const noexcept
     {
         // not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
         // this does the same thing...
@@ -443,7 +461,7 @@ namespace Stroika::Foundation::Memory {
         return fEnvelope_.GetPtr () < rhs.fEnvelope_.GetPtr ();
     }
     template <typename T>
-    inline bool SharedPtr<T>::operator<= (const SharedPtr<T>& rhs) const noexcept
+    inline bool SharedPtr<T>::operator<= (const SharedPtr& rhs) const noexcept
     {
         // not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
         // this does the same thing...
@@ -451,7 +469,7 @@ namespace Stroika::Foundation::Memory {
         return fEnvelope_.GetPtr () <= rhs.fEnvelope_.GetPtr ();
     }
     template <typename T>
-    inline bool SharedPtr<T>::operator> (const SharedPtr<T>& rhs) const noexcept
+    inline bool SharedPtr<T>::operator> (const SharedPtr& rhs) const noexcept
     {
         // not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
         // this does the same thing...
@@ -459,7 +477,7 @@ namespace Stroika::Foundation::Memory {
         return fEnvelope_.GetPtr () > rhs.fEnvelope_.GetPtr ();
     }
     template <typename T>
-    inline bool SharedPtr<T>::operator>= (const SharedPtr<T>& rhs) const noexcept
+    inline bool SharedPtr<T>::operator>= (const SharedPtr& rhs) const noexcept
     {
         // not technically legal to compare pointers this way, but its is legal to convert to int, and then compare, and
         // this does the same thing...
@@ -467,12 +485,12 @@ namespace Stroika::Foundation::Memory {
         return fEnvelope_.GetPtr () >= rhs.fEnvelope_.GetPtr ();
     }
     template <typename T>
-    inline bool SharedPtr<T>::operator== (const SharedPtr<T>& rhs) const noexcept
+    inline bool SharedPtr<T>::operator== (const SharedPtr& rhs) const noexcept
     {
         return fEnvelope_.GetPtr () == rhs.fEnvelope_.GetPtr ();
     }
     template <typename T>
-    inline bool SharedPtr<T>::operator!= (const SharedPtr<T>& rhs) const noexcept
+    inline bool SharedPtr<T>::operator!= (const SharedPtr& rhs) const noexcept
     {
         return fEnvelope_.GetPtr () != rhs.fEnvelope_.GetPtr ();
     }
@@ -486,6 +504,7 @@ namespace Stroika::Foundation::Memory {
     {
         return get () != nullptr;
     }
+#endif
     template <typename T>
     inline SharedPtr<T>::operator bool () const noexcept
     {

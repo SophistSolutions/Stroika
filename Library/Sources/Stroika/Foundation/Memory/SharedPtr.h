@@ -6,6 +6,10 @@
 
 #include "../StroikaPreComp.h"
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #include <atomic>
 #include <cstdint>
 #include <type_traits>
@@ -16,9 +20,6 @@
  *  \file
  *
  *  TODO:
- *      @todo   REDO operator== etc using non-member functions
- *              (see See coding conventions document about operator usage: Compare () and operator<, operator>, etc comments)
- *
  *      @todo   I THINK should be able todo SharedPtr::Envolpe<> template specialization for
  *              enabled_shared_from_this, which stores and copies only ONE POINTER> That could
  *              make for much faster atomic copies etc (maybe losing the spinlock).
@@ -85,7 +86,7 @@ namespace Stroika::Foundation::Memory {
      *       >  Doesnt support weak ptr.
      *
      *       >  Emprically appears faster than std::shared_ptr<> (probably due to block
-     *          allocation of envelope and not suppoprting weak_ptr)
+     *          allocation of envelope and not supporting weak_ptr)
      *
      *  This class is for keeping track of a data structure with reference counts,
      *  and disposing of that structure when the reference count drops to zero.
@@ -150,8 +151,8 @@ namespace Stroika::Foundation::Memory {
         SharedPtr (nullptr_t) noexcept;
         template <typename T2, enable_if_t<is_convertible_v<T2*, T*>>* = nullptr>
         explicit SharedPtr (T2* from);
-        SharedPtr (const SharedPtr<T>& from) noexcept;
-        SharedPtr (SharedPtr<T>&& from) noexcept;
+        SharedPtr (const SharedPtr& from) noexcept;
+        SharedPtr (SharedPtr&& from) noexcept;
         template <typename T2, enable_if_t<is_convertible_v<T2*, T*>>* = nullptr>
         SharedPtr (const SharedPtr<T2>& from) noexcept;
         template <typename T2, enable_if_t<is_convertible_v<T2*, T*>>* = nullptr>
@@ -167,8 +168,8 @@ namespace Stroika::Foundation::Memory {
         static Envelope_ mkEnvelope_ (T2* from, enable_if_t<!is_convertible_v<T2*, Private_::ReferenceCounterContainerType_*>>* = nullptr);
 
     public:
-        nonvirtual SharedPtr<T>& operator= (const SharedPtr<T>& rhs) noexcept;
-        nonvirtual SharedPtr<T>& operator= (SharedPtr<T>&& rhs) noexcept;
+        nonvirtual SharedPtr& operator= (const SharedPtr& rhs) noexcept;
+        nonvirtual SharedPtr& operator= (SharedPtr&& rhs) noexcept;
 
     public:
         ~SharedPtr ();
@@ -246,7 +247,7 @@ namespace Stroika::Foundation::Memory {
     public:
         /**
          */
-        nonvirtual void swap (SharedPtr<T>& rhs);
+        nonvirtual void swap (SharedPtr& rhs);
 
     public:
         /**
@@ -274,17 +275,32 @@ namespace Stroika::Foundation::Memory {
          */
         nonvirtual ReferenceCountType use_count () const noexcept;
 
+#if __cpp_impl_three_way_comparison >= 201907
     public:
-        nonvirtual bool operator< (const SharedPtr<T>& rhs) const noexcept;
-        nonvirtual bool operator<= (const SharedPtr<T>& rhs) const noexcept;
-        nonvirtual bool operator> (const SharedPtr<T>& rhs) const noexcept;
-        nonvirtual bool operator>= (const SharedPtr<T>& rhs) const noexcept;
-        nonvirtual bool operator== (const SharedPtr<T>& rhs) const noexcept;
-        nonvirtual bool operator!= (const SharedPtr<T>& rhs) const noexcept;
+        /**
+         */
+        constexpr bool operator== (const SharedPtr& rhs) const;
+        constexpr bool operator== (nullptr_t) const;
+
+    public:
+        /**
+         */
+        constexpr strong_ordering operator<=> (const SharedPtr& rhs) const;
+#endif
+
+#if __cpp_impl_three_way_comparison < 201907
+    public:
+        nonvirtual bool operator< (const SharedPtr& rhs) const noexcept;
+        nonvirtual bool operator<= (const SharedPtr& rhs) const noexcept;
+        nonvirtual bool operator> (const SharedPtr& rhs) const noexcept;
+        nonvirtual bool operator>= (const SharedPtr& rhs) const noexcept;
+        nonvirtual bool operator== (const SharedPtr& rhs) const noexcept;
+        nonvirtual bool operator!= (const SharedPtr& rhs) const noexcept;
 
     public:
         nonvirtual bool operator== (nullptr_t) const noexcept;
         nonvirtual bool operator!= (nullptr_t) const noexcept;
+#endif
 
     public:
         /**
