@@ -137,8 +137,8 @@ namespace Stroika::Frameworks::Led {
         nonvirtual TextStore& GetTextStore () const;
 
         /*
-            *  Trivial wrappers on owned TextStore
-            */
+     *  Trivial wrappers on owned TextStore
+     */
     public:
         nonvirtual size_t FindNextCharacter (size_t afterPos) const;
         nonvirtual size_t FindPreviousCharacter (size_t beforePos) const;
@@ -206,8 +206,8 @@ namespace Stroika::Frameworks::Led {
     */
     class Marker {
     public:
-        Marker ();
-        virtual ~Marker ();
+        Marker ()          = default;
+        virtual ~Marker () = default;
 
         // Methods private and not actually implemented. Just declared to prevent users from accidentally copying instances of this class. Not intended to be
         // used that way.
@@ -252,7 +252,7 @@ namespace Stroika::Frameworks::Led {
         // ANY subclass of TextStore which implements the marker store.
     public:
         class HookData;
-        HookData* fTextStoreHook;
+        HookData* fTextStoreHook{nullptr};
     };
 
     /*

@@ -53,14 +53,9 @@ namespace Stroika::Frameworks::Led {
     {
     }
 
-    //  class   Marker;
-    inline Marker::Marker ()
-        : fTextStoreHook (nullptr)
-    {
-    }
-    inline Marker::~Marker ()
-    {
-    }
+
+
+
     /*
     @METHOD:        Marker::AboutToUpdateText
     @DESCRIPTION:   <p>Notification callback which is called by a @'TextStore' when the text is updated. You override this
