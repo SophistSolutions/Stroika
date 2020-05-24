@@ -11,9 +11,6 @@
 #include "../../Foundation/DataExchange/InternetMediaType.h"
 
 /*
- */
-
-/*
  * TODO:
  *
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
