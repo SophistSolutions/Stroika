@@ -40,8 +40,8 @@ namespace Stroika::Frameworks::Led {
         virtual ~MultiRowTextImager ();
 
     private:
-        MultiRowTextImager (const MultiRowTextImager&);        // don't call. not implemented
-        nonvirtual void operator= (const MultiRowTextImager&); // don't call. not implemented
+        MultiRowTextImager (const MultiRowTextImager&) = delete;
+        nonvirtual void operator= (const MultiRowTextImager&) = delete;
 
     private:
         using inherited = PartitioningTextImager;
@@ -325,8 +325,8 @@ namespace Stroika::Frameworks::Led {
             RowHeight_*  fRowHeightArray;
 
         private:
-            Rep (const Rep&);            //  intentionally not defined
-            void operator= (const Rep&); //  ditto
+            Rep (const Rep&) = delete;
+            void operator= (const Rep&) = delete;
         };
 
     private:

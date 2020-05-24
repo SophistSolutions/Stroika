@@ -16,6 +16,10 @@
     easily.</p>
  */
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
@@ -104,10 +108,10 @@ namespace Stroika::Frameworks::Led {
     */
     class Led_TabStopList {
     protected:
-        Led_TabStopList ();
+        Led_TabStopList () = default;
 
     public:
-        virtual ~Led_TabStopList ();
+        virtual ~Led_TabStopList () = default;
 
     public:
         /*
@@ -255,7 +259,15 @@ namespace Stroika::Frameworks::Led {
     public:
         COORD_TYPE v;
         COORD_TYPE h;
+
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        constexpr strong_ordering operator<=> (const Point_Base& rhs) const = default;
+#endif
     };
+#if __cpp_impl_three_way_comparison < 201907
     template <typename COORD_TYPE>
     bool operator== (const Point_Base<COORD_TYPE>& lhs, const Point_Base<COORD_TYPE>& rhs);
     template <typename COORD_TYPE>
@@ -270,10 +282,11 @@ namespace Stroika::Frameworks::Led {
     bool operator>= (const Point_Base<COORD_TYPE>& lhs, const Point_Base<COORD_TYPE>& rhs);
     template <typename COORD_TYPE>
     Point_Base<COORD_TYPE> operator+ (const Point_Base<COORD_TYPE>& lhs, const Point_Base<COORD_TYPE>& rhs);
+#endif
 
     /*
-    @CLASS:         Rect_Base
-    @DESCRIPTION:
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
     */
     template <typename POINT_TYPE, typename SIZE_TYPE>
     struct Rect_Base {
@@ -319,12 +332,21 @@ namespace Stroika::Frameworks::Led {
         nonvirtual const Rect_Base<POINT_TYPE, SIZE_TYPE>& operator+= (const POINT_TYPE& delta);
         nonvirtual const Rect_Base<POINT_TYPE, SIZE_TYPE>& operator-= (const POINT_TYPE& delta);
         nonvirtual const Rect_Base<POINT_TYPE, SIZE_TYPE>& operator*= (const THIS_TYPE& intersectWith);
+
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        constexpr strong_ordering operator<=> (const Rect_Base& rhs) const = default;
+#endif
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     template <typename POINT_TYPE, typename SIZE_TYPE>
     bool operator== (const Rect_Base<POINT_TYPE, SIZE_TYPE>& lhs, const Rect_Base<POINT_TYPE, SIZE_TYPE>& rhs);
     template <typename POINT_TYPE, typename SIZE_TYPE>
     bool operator!= (const Rect_Base<POINT_TYPE, SIZE_TYPE>& lhs, const Rect_Base<POINT_TYPE, SIZE_TYPE>& rhs);
+#endif
 
 #if qNestedTemplateCTORInTemplateBug
     struct Led_Point;
@@ -527,8 +549,8 @@ namespace Stroika::Frameworks::Led {
         nonvirtual ColorValue GetBlue () const;
 
         /*
-            *  Some useful predefined values.
-            */
+     *  Some useful predefined values.
+     */
     public:
         static const Led_Color kBlack;
         static const Led_Color kWhite;
@@ -560,9 +582,17 @@ namespace Stroika::Frameworks::Led {
         ColorValue fRed;
         ColorValue fGreen;
         ColorValue fBlue;
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        constexpr strong_ordering operator<=> (const Led_Color& rhs) const = default;
+#endif
     };
+#if __cpp_impl_three_way_comparison < 201907
     bool operator== (Led_Color lhs, Led_Color rhs);
     bool operator!= (Led_Color lhs, Led_Color rhs);
+#endif
 
     Led_Color operator* (Led_Color lhs, float factor);
     Led_Color operator/ (Led_Color lhs, float divBy);
@@ -821,6 +851,18 @@ namespace Stroika::Frameworks::Led {
             FontNameSpecifier ();
             FontNameSpecifier (const Led_SDK_Char* from);
             Led_SDK_Char fName[LF_FACESIZE];
+#if qPlatform_Windows
+            bool         operator== (const Led_FontSpecification::FontNameSpecifier& rhs) const
+            {
+                return (::_tcscmp (fName, rhs.fName) == 0);
+            }
+#if __cpp_impl_three_way_comparison < 201907
+            bool operator== (const Led_FontSpecification::FontNameSpecifier& rhs) const
+            {
+                return not(*this == rhs);
+            }
+#endif
+#endif
         };
 #elif qStroika_FeatureSupported_XWindows
         using FontNameSpecifier = Led_SDK_String;
@@ -898,6 +940,18 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void   SetFromOSRep (const string& osRep);
 #endif
 
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        strong_ordering operator<=> (const Led_FontSpecification& rhs) const;
+
+    public:
+        /**
+         */
+        bool operator== (const Led_FontSpecification& rhs) const;
+#endif
+
     public:
         nonvirtual void MergeIn (const Led_IncrementalFontSpecification& addInTheseAttributes);
 
@@ -919,6 +973,7 @@ namespace Stroika::Frameworks::Led {
         SubOrSuperScript fSubOrSuperScript;
         Led_Color        fTextColor;
     };
+#if __cpp_impl_three_way_comparison < 201907
 #if qPlatform_Windows
     bool operator== (const Led_FontSpecification::FontNameSpecifier& lhs, const Led_FontSpecification::FontNameSpecifier& rhs);
     bool operator!= (const Led_FontSpecification::FontNameSpecifier& lhs, const Led_FontSpecification::FontNameSpecifier& rhs);
@@ -926,6 +981,7 @@ namespace Stroika::Frameworks::Led {
 
     bool operator== (const Led_FontSpecification& lhs, const Led_FontSpecification& rhs);
     bool operator!= (const Led_FontSpecification& lhs, const Led_FontSpecification& rhs);
+#endif
 
     /*
     @CLASS:         Led_IncrementalFontSpecification
@@ -1061,6 +1117,11 @@ namespace Stroika::Frameworks::Led {
                                                             // for. Makes MergeIn() just copy flat out!
 #endif
 
+#if __cpp_impl_three_way_comparison < 201907
+        bool operator<=> (const Led_IncrementalFontSpecification& rhs) = delete;
+        bool operator== (const Led_IncrementalFontSpecification& rhs);
+#endif
+
     public:
         nonvirtual void MergeIn (const Led_IncrementalFontSpecification& addInTheseAttributes);
 
@@ -1084,8 +1145,10 @@ namespace Stroika::Frameworks::Led {
         bool fTextColorValid : 1;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     bool operator== (const Led_IncrementalFontSpecification& lhs, const Led_IncrementalFontSpecification& rhs);
     bool operator!= (const Led_IncrementalFontSpecification& lhs, const Led_IncrementalFontSpecification& rhs);
+#endif
 
     Led_IncrementalFontSpecification Intersection (const Led_IncrementalFontSpecification& lhs, const Led_IncrementalFontSpecification& rhs);
 

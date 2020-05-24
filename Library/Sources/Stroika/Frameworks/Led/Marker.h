@@ -114,8 +114,8 @@ namespace Stroika::Frameworks::Led {
         // Methods private and not actually implemented. Just declared to prevent users from accidentally copying instances of this class. Not intended to be
         // used that way.
     private:
-        MarkerOwner (const MarkerOwner&);
-        const MarkerOwner& operator= (const MarkerOwner&);
+        MarkerOwner (const MarkerOwner&) = delete;
+        const MarkerOwner& operator= (const MarkerOwner&) = delete;
 
     public:
         class UpdateInfo;
@@ -212,8 +212,8 @@ namespace Stroika::Frameworks::Led {
         // Methods private and not actually implemented. Just declared to prevent users from accidentally copying instances of this class. Not intended to be
         // used that way.
     private:
-        Marker (const Marker&);
-        const Marker& operator= (const Marker&);
+        Marker (const Marker&) = delete;
+        Marker& operator= (const Marker&) = delete;
 
         // These methods are only legal to call when the marker has been added to a marker owner...
     public:
@@ -324,7 +324,7 @@ namespace Stroika::Frameworks::Led {
     */
     template <typename MARKER>
     struct LessThan {
-        bool operator() (const MARKER* lhs, const MARKER* rhs)
+        bool operator() (const MARKER* lhs, const MARKER* rhs) const
         {
             RequireNotNull (lhs);
             RequireNotNull (rhs);

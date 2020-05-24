@@ -59,8 +59,8 @@ namespace Stroika::Frameworks::Led {
 
         // prevent accidental copying
     private:
-        MarkerCover (const MarkerCover&);
-        void operator= (const MarkerCover&);
+        MarkerCover (const MarkerCover&) = delete;
+        void operator= (const MarkerCover&) = delete;
 
     public:
         virtual TextStore* PeekAtTextStore () const override;

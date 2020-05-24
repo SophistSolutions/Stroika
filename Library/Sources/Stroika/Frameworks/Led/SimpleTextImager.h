@@ -50,8 +50,8 @@ namespace Stroika::Frameworks::Led {
         virtual ~SimpleTextImager ();
 
     private:
-        SimpleTextImager (const SimpleTextImager&);          // don't call. not implemented
-        nonvirtual void operator= (const SimpleTextImager&); // don't call. not implemented
+        SimpleTextImager (const SimpleTextImager&) = delete;
+        nonvirtual void operator= (const SimpleTextImager&) = delete;
 
     protected:
         virtual void    HookLosingTextStore () override;

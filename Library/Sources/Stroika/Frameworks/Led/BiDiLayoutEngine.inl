@@ -45,6 +45,7 @@ namespace Stroika::Frameworks::Led {
 #endif
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      *********************** TextLayoutBlock::ScriptRunElt **************************
@@ -62,6 +63,7 @@ namespace Stroika::Frameworks::Led {
     {
         return not(*this == rhs);
     }
+#endif
 
 }
 

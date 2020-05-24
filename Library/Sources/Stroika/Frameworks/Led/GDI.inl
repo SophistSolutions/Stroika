@@ -13,12 +13,10 @@
 namespace Stroika::Frameworks::Led {
 
     /*
-        ********************************************************************************
-        ***************************** Implementation Details ***************************
-        ********************************************************************************
-        */
-
-    //struct    Point_Base
+     ********************************************************************************
+     ************************************ Point_Base ********************************
+     ********************************************************************************
+     */
     template <typename COORD_TYPE>
     inline Point_Base<COORD_TYPE>::Point_Base ()
         : v (COORD_TYPE (0))
@@ -31,6 +29,7 @@ namespace Stroika::Frameworks::Led {
         , h (newH)
     {
     }
+#if __cpp_impl_three_way_comparison < 201907
     template <typename COORD_TYPE>
     inline bool operator== (const Point_Base<COORD_TYPE>& lhs, const Point_Base<COORD_TYPE>& rhs)
     {
@@ -61,6 +60,7 @@ namespace Stroika::Frameworks::Led {
     {
         return ((lhs.v >= rhs.v) and (lhs.h >= rhs.h));
     }
+#endif
     template <typename COORD_TYPE>
     inline Point_Base<COORD_TYPE> operator+ (const Point_Base<COORD_TYPE>& lhs, const Point_Base<COORD_TYPE>& rhs)
     {
@@ -70,13 +70,21 @@ namespace Stroika::Frameworks::Led {
         return result;
     }
 
-    //struct    Led_Point
+    /*
+     ********************************************************************************
+     ************************************ Led_Point *********************************
+     ********************************************************************************
+     */
     inline Led_Point operator- (const Led_Point& lhs, const Led_Point& rhs)
     {
         return (Led_Point (lhs.v - rhs.v, lhs.h - rhs.h));
     }
 
-    //struct    Rect_Base<POINT_TYPE,SIZE_TYPE>
+    /*
+     ********************************************************************************
+     ************************************ Rect_Base *********************************
+     ********************************************************************************
+     */
     template <typename POINT_TYPE, typename SIZE_TYPE>
     /*
     @METHOD:        Rect_Base<POINT_TYPE,SIZE_TYPE>::Rect_Base
@@ -274,6 +282,7 @@ namespace Stroika::Frameworks::Led {
         }
         return *this;
     }
+#if __cpp_impl_three_way_comparison < 201907
     template <typename POINT_TYPE, typename SIZE_TYPE>
     inline bool operator== (const Rect_Base<POINT_TYPE, SIZE_TYPE>& lhs, const Rect_Base<POINT_TYPE, SIZE_TYPE>& rhs)
     {
@@ -284,8 +293,13 @@ namespace Stroika::Frameworks::Led {
     {
         return ((lhs.GetLeft () != rhs.GetLeft ()) or (lhs.GetRight () != rhs.GetRight ()) or (lhs.GetTop () != rhs.GetTop ()) or (lhs.GetBottom () != rhs.GetBottom ()));
     }
+#endif
 
-    //class Led_TWIPS
+    /*
+     ********************************************************************************
+     ************************************ Led_TWIPS *********************************
+     ********************************************************************************
+     */
     inline Led_TWIPS::Led_TWIPS (long v)
         : fValue (v)
     {
@@ -318,6 +332,11 @@ namespace Stroika::Frameworks::Led {
         return Led_TWIPS (static_cast<long> (lhs) - static_cast<long> (rhs));
     }
 
+    /*
+     ********************************************************************************
+     ************************************ auto_gdi_ptr ******************************
+     ********************************************************************************
+     */
 #if qPlatform_Windows
     //class auto_gdi_ptr
     inline auto_gdi_ptr::auto_gdi_ptr (HGDIOBJ gdiObj)
@@ -330,7 +349,11 @@ namespace Stroika::Frameworks::Led {
     }
 #endif
 
-    //class Led_Region
+    /*
+     ********************************************************************************
+     ************************************ Led_Region ********************************
+     ********************************************************************************
+     */
     inline Led_Region::Led_Region ()
 #if qPlatform_MacOS
         : fRgn (::NewRgn ())
@@ -464,14 +487,17 @@ namespace Stroika::Frameworks::Led {
 #endif
         return result;
     }
+    inline Led_Rect operator* (const Led_Rect& lhs, const Led_Rect& rhs)
+    {
+        Led_Rect tmp = lhs;
+        return tmp *= rhs;
+    }
 
-    // class Led_TabStopList::Led_TabStopList
-    inline Led_TabStopList::Led_TabStopList ()
-    {
-    }
-    inline Led_TabStopList::~Led_TabStopList ()
-    {
-    }
+    /*
+     ********************************************************************************
+     ************************************ Led_TabStopList ***************************
+     ********************************************************************************
+     */
     inline Led_Distance Led_TabStopList::ComputeTabStopAfterPosition (Led_Tablet tablet, Led_Distance afterPos) const
     {
         RequireNotNull (tablet);
@@ -479,7 +505,11 @@ namespace Stroika::Frameworks::Led {
     }
 
 #if qPlatform_Windows
-    // class Led_Bitmap
+    /*
+     ********************************************************************************
+     ************************************ Led_Bitmap ********************************
+     ********************************************************************************
+     */
     inline Led_Bitmap::Led_Bitmap ()
         : m_hObject (nullptr)
         , fImageSize (Led_Size (0, 0))
@@ -510,7 +540,11 @@ namespace Stroika::Frameworks::Led {
     }
 #endif
 
-//class Led_Tablet_
+    /*
+     ********************************************************************************
+     *********************************** Led_Tablet_ ********************************
+     ********************************************************************************
+     */
 #if qPlatform_MacOS
     inline Led_Tablet_::operator GrafPtr () const
     {
@@ -914,7 +948,11 @@ namespace Stroika::Frameworks::Led {
 #endif
     }
 
-    //class Led_GDIGlobals
+    /*
+     ********************************************************************************
+     *********************************** Led_GDIGlobals *****************************
+     ********************************************************************************
+     */
     inline Led_GDIGlobals& Led_GDIGlobals::Get ()
     {
         if (sThe == nullptr) {
@@ -931,6 +969,11 @@ namespace Stroika::Frameworks::Led {
         return fLogPixelsV;
     }
 
+    /*
+     ********************************************************************************
+     *********************************** Led_Rect ***********************************
+     ********************************************************************************
+     */
     inline Led_Rect operator- (const Led_Rect& lhs, const Led_Point& rhs)
     {
         return (Led_Rect (lhs.GetTop () - rhs.v, lhs.GetLeft () - rhs.h, lhs.GetHeight (), lhs.GetWidth ()));
@@ -944,6 +987,11 @@ namespace Stroika::Frameworks::Led {
         return (Led_Rect (r.GetTop () + p.v, r.GetLeft () + p.h, r.GetHeight (), r.GetWidth ()));
     }
 
+    /*
+     ********************************************************************************
+     *********************************** Intersect **********************************
+     ********************************************************************************
+     */
     inline bool Intersect (const Led_Rect& lhs, const Led_Rect& rhs)
     {
 #if qPlatform_MacOS && qDebug
@@ -1040,16 +1088,22 @@ namespace Stroika::Frameworks::Led {
 #endif
     }
 
+    /*
+     ********************************************************************************
+     ******************************** Intersection **********************************
+     ********************************************************************************
+     */
     inline Led_Rect Intersection (const Led_Rect& lhs, const Led_Rect& rhs)
     {
         Led_Rect tmp = lhs;
         return tmp *= rhs;
     }
-    inline Led_Rect operator* (const Led_Rect& lhs, const Led_Rect& rhs)
-    {
-        Led_Rect tmp = lhs;
-        return tmp *= rhs;
-    }
+
+    /*
+     ********************************************************************************
+     ************************************ Led_Size **********************************
+     ********************************************************************************
+     */
     inline Led_Size operator+ (Led_Size lhs, Led_Size rhs)
     {
         return (Led_Size (lhs.v + rhs.v, lhs.h + rhs.h));
@@ -1058,6 +1112,12 @@ namespace Stroika::Frameworks::Led {
     {
         return (Led_Size (lhs * rhs.v, lhs * rhs.h));
     }
+
+    /*
+     ********************************************************************************
+     *********************************** InsetRect **********************************
+     ********************************************************************************
+     */
     /*
     @METHOD:        InsetRect
     @DESCRIPTION:   <p>Utility routine to convert shrink (if vBy/hBy posative), or expand (if negative) the given @'Led_Rect'.
@@ -1068,6 +1128,12 @@ namespace Stroika::Frameworks::Led {
         return Led_Rect (r.GetTop () + vBy, r.GetLeft () + hBy,
                          max (0L, Led_Coordinate (r.GetHeight ()) - 2 * vBy), max (0L, Led_Coordinate (r.GetWidth ()) - 2 * hBy));
     }
+
+    /*
+     ********************************************************************************
+     *********************************** EnsureRectInRect ***************************
+     ********************************************************************************
+     */
     /*
     @METHOD:        EnsureRectInRect
     @DESCRIPTION:   <p>Utility routine to ensure the first rect is entirely enclosed in the second (enclosing) rectangle.
@@ -1090,6 +1156,12 @@ namespace Stroika::Frameworks::Led {
         DISABLE_COMPILER_MSC_WARNING_END (4018)
         return Led_Rect (winTop, winLeft, winHeight, winWidth);
     }
+
+    /*
+     ********************************************************************************
+     ********************************* EnsureRectOnScreen ***************************
+     ********************************************************************************
+     */
     /*
     @METHOD:        EnsureRectOnScreen
     @DESCRIPTION:   <p>Utility routine to ensure the first rect (typically used for a window) fits on the sceen.
@@ -1114,6 +1186,11 @@ namespace Stroika::Frameworks::Led {
 #endif
     }
 
+    /*
+     ********************************************************************************
+     ************************************* Led_Point ********************************
+     ********************************************************************************
+     */
 #if qPlatform_MacOS
     inline Led_Point AsLedPoint (Point p)
     {
@@ -1278,7 +1355,11 @@ namespace Stroika::Frameworks::Led {
 #endif
     }
 
-    //  class   Led_FontMetrics
+    /*
+     ********************************************************************************
+     ******************************* Led_FontMetrics ********************************
+     ********************************************************************************
+     */
     inline Led_FontMetrics::Led_FontMetrics ()
         : fPlatformSpecific ()
     {
@@ -1387,7 +1468,11 @@ namespace Stroika::Frameworks::Led {
     }
 #endif
 
-    //  class   Led_Color
+    /*
+     ********************************************************************************
+     ************************************* Led_Color ********************************
+     ********************************************************************************
+     */
     inline Led_Color::Led_Color (ColorValue redValue, ColorValue greenValue, ColorValue blueValue)
         : fRed (redValue)
         , fGreen (greenValue)
@@ -1436,6 +1521,7 @@ namespace Stroika::Frameworks::Led {
         return RGB (fRed >> 8, fGreen >> 8, fBlue >> 8);
     }
 #endif
+#if __cpp_impl_three_way_comparison < 201907
     inline bool operator== (Led_Color lhs, Led_Color rhs)
     {
         return (lhs.GetRed () == rhs.GetRed () and lhs.GetGreen () == rhs.GetGreen () and lhs.GetBlue () == rhs.GetBlue ());
@@ -1444,6 +1530,7 @@ namespace Stroika::Frameworks::Led {
     {
         return not(lhs == rhs);
     }
+#endif
     inline Led_Color operator* (Led_Color lhs, float factor)
     {
         using CV = Led_Color::ColorValue;
@@ -1511,12 +1598,17 @@ namespace std {
 
 namespace Stroika::Frameworks::Led {
 
-//  class   Led_FontSpecification
+    /*
+     ********************************************************************************
+     ****************** Led_FontSpecification::FontNameSpecifier ********************
+     ********************************************************************************
+     */
 #if qPlatform_Windows
     inline Led_FontSpecification::FontNameSpecifier::FontNameSpecifier ()
     {
         fName[0] = '\0';
     }
+#if __cpp_impl_three_way_comparison < 201907
     inline bool operator== (const Led_FontSpecification::FontNameSpecifier& lhs, const Led_FontSpecification::FontNameSpecifier& rhs)
     {
         return (::_tcscmp (lhs.fName, rhs.fName) == 0);
@@ -1526,6 +1618,13 @@ namespace Stroika::Frameworks::Led {
         return (::_tcscmp (lhs.fName, rhs.fName) != 0);
     }
 #endif
+#endif
+
+    /*
+     ********************************************************************************
+     ****************************** Led_FontSpecification ***************************
+     ********************************************************************************
+     */
     inline Led_FontSpecification::Led_FontSpecification ()
         :
 #if qPlatform_MacOS
@@ -1902,6 +2001,153 @@ namespace Stroika::Frameworks::Led {
         LightSetOSRep (logFont);
     }
 #endif
+#if __cpp_impl_three_way_comparison >= 201907
+    inline bool Led_FontSpecification::operator== (const Led_FontSpecification& rhs) const
+    {
+        const Led_FontSpecification& lhs = *this;
+        // FontName Info
+        if (lhs.GetFontNameSpecifier () != rhs.GetFontNameSpecifier ()) {
+            return false;
+        }
+
+// Style Info
+#if qPlatform_MacOS
+        Style lhsStyle;
+        Style rhsStyle;
+        lhs.GetOSRep (nullptr, nullptr, &lhsStyle);
+        rhs.GetOSRep (nullptr, nullptr, &rhsStyle);
+        if (lhsStyle != rhsStyle) {
+            return false;
+        }
+#elif qPlatform_Windows
+        if (lhs.GetStyle_Bold () != rhs.GetStyle_Bold ()) {
+            return false;
+        }
+        if (lhs.GetStyle_Italic () != rhs.GetStyle_Italic ()) {
+            return false;
+        }
+        if (lhs.GetStyle_Underline () != rhs.GetStyle_Underline ()) {
+            return false;
+        }
+        if (lhs.GetStyle_Strikeout () != rhs.GetStyle_Strikeout ()) {
+            return false;
+        }
+#elif qStroika_FeatureSupported_XWindows
+        if (lhs.GetStyle_Bold () != rhs.GetStyle_Bold ()) {
+            return false;
+        }
+        if (lhs.GetStyle_Italic () != rhs.GetStyle_Italic ()) {
+            return false;
+        }
+        if (lhs.GetStyle_Underline () != rhs.GetStyle_Underline ()) {
+            return false;
+        }
+#endif
+        if (lhs.GetStyle_SubOrSuperScript () != rhs.GetStyle_SubOrSuperScript ()) {
+            return false;
+        }
+
+        // Color Info
+        if (lhs.GetTextColor () != rhs.GetTextColor ()) {
+            return false;
+        }
+
+// Size Info
+#if qPlatform_Windows
+        // Speed tweek to avoid divide and getdevicecaps crap...
+        if (lhs.PeekAtTMHeight () == rhs.PeekAtTMHeight ()) {
+            return true;
+        }
+        else if ((lhs.PeekAtTMHeight () > 0) == (rhs.PeekAtTMHeight () > 0)) {
+            return false; // if same sign, we can just compare for equality, and since they
+            // ABOVE didn't compare equal, they must be different point sizes
+            // (or at least very close depending a little on resoution...)
+            // If their signs DIFFER, we must fall through into the scaling crap (GetPointSize).
+        }
+#endif
+        if (lhs.GetPointSize () != rhs.GetPointSize ()) {
+            return false;
+        }
+
+        return true;
+    }
+    inline bool operator!= (const Led_FontSpecification& lhs, const Led_FontSpecification& rhs)
+    {
+        return not(lhs == rhs);
+    }
+#endif
+    inline void Led_FontSpecification::MergeIn (const Led_IncrementalFontSpecification& addInTheseAttributes)
+    {
+        // Font Name
+        if (addInTheseAttributes.GetFontNameSpecifier_Valid ()) {
+            SetFontNameSpecifier (addInTheseAttributes.GetFontNameSpecifier ());
+        }
+
+        // Font Styles
+        if (addInTheseAttributes.GetStyle_Bold_Valid ()) {
+            SetStyle_Bold (addInTheseAttributes.GetStyle_Bold ());
+        }
+        if (addInTheseAttributes.GetStyle_Italic_Valid ()) {
+            SetStyle_Italic (addInTheseAttributes.GetStyle_Italic ());
+        }
+        if (addInTheseAttributes.GetStyle_Underline_Valid ()) {
+            SetStyle_Underline (addInTheseAttributes.GetStyle_Underline ());
+        }
+        if (addInTheseAttributes.GetStyle_SubOrSuperScript_Valid ()) {
+            SetStyle_SubOrSuperScript (addInTheseAttributes.GetStyle_SubOrSuperScript ());
+        }
+#if qPlatform_MacOS
+        if (addInTheseAttributes.GetStyle_Outline_Valid ()) {
+            SetStyle_Outline (addInTheseAttributes.GetStyle_Outline ());
+        }
+        if (addInTheseAttributes.GetStyle_Shadow_Valid ()) {
+            SetStyle_Shadow (addInTheseAttributes.GetStyle_Shadow ());
+        }
+        if (addInTheseAttributes.GetStyle_Condensed_Valid ()) {
+            SetStyle_Condensed (addInTheseAttributes.GetStyle_Condensed ());
+        }
+        if (addInTheseAttributes.GetStyle_Extended_Valid ()) {
+            SetStyle_Extended (addInTheseAttributes.GetStyle_Extended ());
+        }
+#elif qPlatform_Windows
+        if (addInTheseAttributes.GetStyle_Strikeout_Valid ()) {
+            SetStyle_Strikeout (addInTheseAttributes.GetStyle_Strikeout ());
+        }
+#endif
+
+        // Font Size
+        if (addInTheseAttributes.GetPointSize_Valid ()) {
+#if qPlatform_Windows
+            // speed tweek - avoid costly conversion to 'points'. All we want todo is copy the tmHeight field!
+            PokeAtTMHeight (addInTheseAttributes.PeekAtTMHeight ());
+#else
+            SetPointSize (addInTheseAttributes.GetPointSize ());
+#endif
+        }
+        if (addInTheseAttributes.GetPointSizeIncrement_Valid ()) {
+            short pointSize = GetPointSize ();
+            pointSize += addInTheseAttributes.GetPointSizeIncrement ();
+            if (pointSize <= 0) { // never let point size get any smaller...
+                pointSize = 1;
+            }
+            SetPointSize (pointSize);
+        }
+
+        // Text Color
+        if (addInTheseAttributes.GetTextColor_Valid ()) {
+            SetTextColor (addInTheseAttributes.GetTextColor ());
+        }
+
+#if qPlatform_Windows
+        // could have done somewhat earlier, but if so, must be more careful about what else gets changed... (like textcolor not part of this guy)
+        if (addInTheseAttributes.GetDidSetOSRepCallFlag ()) {
+            LOGFONT lf;
+            addInTheseAttributes.GetOSRep (&lf);
+            SetOSRep (lf);
+        }
+#endif
+    }
+#if __cpp_impl_three_way_comparison < 201907
     inline bool operator== (const Led_FontSpecification& lhs, const Led_FontSpecification& rhs)
     {
         // FontName Info
@@ -1974,8 +2220,13 @@ namespace Stroika::Frameworks::Led {
     {
         return not(lhs == rhs);
     }
+#endif
 
-    //  class   Led_IncrementalFontSpecification
+    /*
+     ********************************************************************************
+     ********************** Led_IncrementalFontSpecification ************************
+     ********************************************************************************
+     */
     inline Led_IncrementalFontSpecification::Led_IncrementalFontSpecification ()
         : Led_FontSpecification ()
         , fFontSpecifierValid (false)
@@ -2475,78 +2726,6 @@ namespace Stroika::Frameworks::Led {
     }
 #endif
 
-    inline void Led_FontSpecification::MergeIn (const Led_IncrementalFontSpecification& addInTheseAttributes)
-    {
-        // Font Name
-        if (addInTheseAttributes.GetFontNameSpecifier_Valid ()) {
-            SetFontNameSpecifier (addInTheseAttributes.GetFontNameSpecifier ());
-        }
-
-        // Font Styles
-        if (addInTheseAttributes.GetStyle_Bold_Valid ()) {
-            SetStyle_Bold (addInTheseAttributes.GetStyle_Bold ());
-        }
-        if (addInTheseAttributes.GetStyle_Italic_Valid ()) {
-            SetStyle_Italic (addInTheseAttributes.GetStyle_Italic ());
-        }
-        if (addInTheseAttributes.GetStyle_Underline_Valid ()) {
-            SetStyle_Underline (addInTheseAttributes.GetStyle_Underline ());
-        }
-        if (addInTheseAttributes.GetStyle_SubOrSuperScript_Valid ()) {
-            SetStyle_SubOrSuperScript (addInTheseAttributes.GetStyle_SubOrSuperScript ());
-        }
-#if qPlatform_MacOS
-        if (addInTheseAttributes.GetStyle_Outline_Valid ()) {
-            SetStyle_Outline (addInTheseAttributes.GetStyle_Outline ());
-        }
-        if (addInTheseAttributes.GetStyle_Shadow_Valid ()) {
-            SetStyle_Shadow (addInTheseAttributes.GetStyle_Shadow ());
-        }
-        if (addInTheseAttributes.GetStyle_Condensed_Valid ()) {
-            SetStyle_Condensed (addInTheseAttributes.GetStyle_Condensed ());
-        }
-        if (addInTheseAttributes.GetStyle_Extended_Valid ()) {
-            SetStyle_Extended (addInTheseAttributes.GetStyle_Extended ());
-        }
-#elif qPlatform_Windows
-        if (addInTheseAttributes.GetStyle_Strikeout_Valid ()) {
-            SetStyle_Strikeout (addInTheseAttributes.GetStyle_Strikeout ());
-        }
-#endif
-
-        // Font Size
-        if (addInTheseAttributes.GetPointSize_Valid ()) {
-#if qPlatform_Windows
-            // speed tweek - avoid costly conversion to 'points'. All we want todo is copy the tmHeight field!
-            PokeAtTMHeight (addInTheseAttributes.PeekAtTMHeight ());
-#else
-            SetPointSize (addInTheseAttributes.GetPointSize ());
-#endif
-        }
-        if (addInTheseAttributes.GetPointSizeIncrement_Valid ()) {
-            short pointSize = GetPointSize ();
-            pointSize += addInTheseAttributes.GetPointSizeIncrement ();
-            if (pointSize <= 0) { // never let point size get any smaller...
-                pointSize = 1;
-            }
-            SetPointSize (pointSize);
-        }
-
-        // Text Color
-        if (addInTheseAttributes.GetTextColor_Valid ()) {
-            SetTextColor (addInTheseAttributes.GetTextColor ());
-        }
-
-#if qPlatform_Windows
-        // could have done somewhat earlier, but if so, must be more careful about what else gets changed... (like textcolor not part of this guy)
-        if (addInTheseAttributes.GetDidSetOSRepCallFlag ()) {
-            LOGFONT lf;
-            addInTheseAttributes.GetOSRep (&lf);
-            SetOSRep (lf);
-        }
-#endif
-    }
-
     inline void Led_IncrementalFontSpecification::MergeIn (const Led_IncrementalFontSpecification& addInTheseAttributes)
     {
         // Font Name
@@ -2611,6 +2790,7 @@ namespace Stroika::Frameworks::Led {
 #endif
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     inline bool operator== (const Led_IncrementalFontSpecification& lhs, const Led_IncrementalFontSpecification& rhs)
     {
         // Either make this non-portable, or somehow do some hack to make this test FASTER than it looks like
@@ -2751,6 +2931,7 @@ namespace Stroika::Frameworks::Led {
     {
         return not(lhs == rhs);
     }
+#endif
 
     //  class   Led_InstalledFonts
     inline const vector<Led_SDK_String>& Led_InstalledFonts::GetUsableFontNames () const

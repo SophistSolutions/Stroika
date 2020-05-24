@@ -771,8 +771,8 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         ~StyledTextIOWriterSinkStream_Memory ();
 
     private: // prevent accidental copying
-        StyledTextIOWriterSinkStream_Memory (const StyledTextIOWriterSinkStream_Memory&);
-        void operator= (const StyledTextIOWriterSinkStream_Memory&);
+        StyledTextIOWriterSinkStream_Memory (const StyledTextIOWriterSinkStream_Memory&) = delete;
+        void operator= (const StyledTextIOWriterSinkStream_Memory&) = delete;
 
     public:
         virtual size_t current_offset () const override;
