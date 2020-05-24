@@ -147,6 +147,7 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\..\Makefile" />
+    <None Include="..\..\ReadMe.md" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\ActiveLedIt.cpp">

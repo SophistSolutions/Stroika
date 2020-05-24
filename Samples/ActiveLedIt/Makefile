@@ -95,12 +95,17 @@ $(ObjDir)ActiveLedIt.res:
 	@$(call DEFAULT_RC_LINE,$(SrcDir)Sources/ActiveLedIt.rc,$(ObjDir)ActiveLedIt.res) > $(ObjDir)RC-Build.out 2>&1
 
 
+# without this the regsvr32 will fail; tried adding explict dllexport() in c++ code but couldnt find the right syntax to make it work
+EXTRA_SUFFIX_LINKER_ARGS += /DEF:Sources/ActiveLedIt.def
+
 $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs) $(ObjDir)ActiveLedIt.tlb
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@`" "... "
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
 	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_LINK_LINE,$@)';\
 	fi
 	@$(call DEFAULT_LINK_LINE,$@)
+
+
 
 
 $(TARGETDIR)ActiveLedIt.cab: $(TARGETEXE)
@@ -129,7 +134,7 @@ register:	$(TARGETEXE)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Registering `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(TARGETEXE)`" "... "
 	@#NOTE - if you run into errors - this typically needs to be run as administrator (run as administrator shell that invokes this)
 	@#regsvr32 /s /c "$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(TARGETEXE))"
-	@regsvr32 /c "$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(TARGETEXE))"
+	regsvr32 /c "$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(TARGETEXE))"
 
 
 launch-sample:

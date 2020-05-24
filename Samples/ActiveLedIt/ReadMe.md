@@ -2,9 +2,28 @@
 
 ## Install
 
-- To install on a Windows machine (**developers**)
-  - Build 
-  - in an 'administrator' command shell
-    - regsvr32 ..\..\Builds\Debug-U-32\Samples-ActiveLedIt\SophistSolutions.ActiveLedIt.dll
-  - Open any of the sample html files (Samples folder) in InternetExplorer 11 or earlier (last tested IE 11)
-  - When prompted about running activex controls, say yes, and the samples should load
+~~~
+make CONFIGURATION=Debug-U-32 register
+~~~
+
+
+## Run
+
+~~~
+make CONFIGURATION=Debug-U-32 launch-sample
+~~~
+
+
+## 
+@todo - NOT WORKING AS OF 2020-05-24 - Stroika 2.1a5x
+
+Not sure when the last time I tried this successfully was. I think about a year ago
+
+
+## Visual studio debug
+CONFIGURE
+
+ "C:\Program Files\Internet Explorer\iexplore.exe"
+
+ COMMANDLINE ARGUMENTS
+ $(ProjectDir)\..\..\..\..\Samples\ActiveLedIt\Samples\HTML-JavaScript\CommandSupportTester.html
