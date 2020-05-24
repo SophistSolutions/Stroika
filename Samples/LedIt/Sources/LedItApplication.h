@@ -15,6 +15,9 @@
 
 #include <LDocApplication.h>
 #elif qPlatform_Windows
+
+#include "Stroika/Foundation/Execution/Platform/Windows/COM.h"
+
 DISABLE_COMPILER_MSC_WARNING_START (5054)
 #include <afxole.h>
 DISABLE_COMPILER_MSC_WARNING_END (5054)
@@ -251,6 +254,10 @@ private:
 
 private:
     static GtkItemFactoryEntry kMenuItemResources[];
+#endif
+#if qPlatform_Windows
+private:
+    Execution::Platform::Windows::COMInitializer fCOMInitializer_{COINIT_APARTMENTTHREADED};
 #endif
 #if qPlatform_Windows || qStroika_FeatureSupported_XWindows
 public:

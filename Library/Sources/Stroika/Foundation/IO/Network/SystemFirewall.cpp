@@ -16,6 +16,7 @@
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Finally.h"
 #if qPlatform_Windows
+#include "Stroika/Foundation/Execution/Platform/Windows/COM.h"
 #include "Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
 
@@ -173,21 +174,7 @@ bool SystemFirewall::Manager::Register (const Rule& rule)
     }
 
 #if qPlatform_Windows
-    // Initialize COM
-    HRESULT                 hrComInit = CoInitializeEx (0, COINIT_APARTMENTTHREADED);
-    [[maybe_unused]] auto&& cleanupCO = Execution::Finally ([hrComInit] () noexcept {
-        if (SUCCEEDED (hrComInit)) {
-            CoUninitialize ();
-        }
-    });
-
-    // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been
-    // initialized with a different mode. Since we don't care what the mode is,
-    // we'll just use the existing mode.
-    if (hrComInit != RPC_E_CHANGED_MODE) {
-        ThrowIfErrorHRESULT (hrComInit);
-    }
-
+    COMInitializer          comInitializeContext{COINIT_APARTMENTTHREADED};
     INetFwPolicy2*          pNetFwPolicy2     = nullptr;
     INetFwRules*            pFwRules          = nullptr;
     INetFwRule*             pFwRule           = nullptr;
@@ -236,21 +223,7 @@ optional<Rule> SystemFirewall::Manager::Lookup (const String& ruleName)
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"SystemFirewall::Manager::Lookup", L"ruleName=%s", ruleName.c_str ())};
 #if qPlatform_Windows
-    // Initialize COM.
-    HRESULT                 hrComInit = CoInitializeEx (0, COINIT_APARTMENTTHREADED);
-    [[maybe_unused]] auto&& cleanupCO = Execution::Finally ([hrComInit] () noexcept {
-        if (SUCCEEDED (hrComInit)) {
-            CoUninitialize ();
-        }
-    });
-
-    // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been
-    // initialized with a different mode. Since we don't care what the mode is,
-    // we'll just use the existing mode.
-    if (hrComInit != RPC_E_CHANGED_MODE) {
-        ThrowIfErrorHRESULT (hrComInit);
-    }
-
+    COMInitializer          comInitializeContext{COINIT_APARTMENTTHREADED};
     INetFwPolicy2*          pNetFwPolicy2     = nullptr;
     INetFwRules*            pFwRules          = nullptr;
     [[maybe_unused]] auto&& cleanupCOMObjects = Execution::Finally ([=] () noexcept {
@@ -289,21 +262,7 @@ Traversal::Iterable<Rule> SystemFirewall::Manager::LookupAll ()
     Debug::TraceContextBumper ctx{L"SystemFirewall::Manager::LookupAll"};
     Collection<Rule>          rules;
 #if qPlatform_Windows
-    // Initialize COM.
-    HRESULT                 hrComInit = CoInitializeEx (0, COINIT_APARTMENTTHREADED);
-    [[maybe_unused]] auto&& cleanupCO = Execution::Finally ([hrComInit] () noexcept {
-        if (SUCCEEDED (hrComInit)) {
-            CoUninitialize ();
-        }
-    });
-
-    // Ignore RPC_E_CHANGED_MODE; this just means that COM has already been
-    // initialized with a different mode. Since we don't care what the mode is,
-    // we'll just use the existing mode.
-    if (hrComInit != RPC_E_CHANGED_MODE) {
-        ThrowIfErrorHRESULT (hrComInit);
-    }
-
+    COMInitializer          comInitializeContext{COINIT_APARTMENTTHREADED};
     INetFwPolicy2*          pNetFwPolicy2     = nullptr;
     INetFwRules*            pFwRules          = nullptr;
     IEnumVARIANT*           pEnum             = nullptr;

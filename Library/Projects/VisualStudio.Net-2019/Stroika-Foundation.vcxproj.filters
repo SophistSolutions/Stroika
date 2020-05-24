@@ -2037,6 +2037,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InternallySynchronizedOutputStream.h">
       <Filter>Sources\Streams</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\COM.h">
+      <Filter>Sources\Execution\Platform\Windows</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -3320,6 +3323,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\InternallySynchronizedOutputStream.inl">
       <Filter>Sources\Streams</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\COM.inl">
+      <Filter>Sources\Execution\Platform\Windows</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

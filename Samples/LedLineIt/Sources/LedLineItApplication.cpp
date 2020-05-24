@@ -7,6 +7,7 @@
 #include <afx.h>
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
+
 #include "Stroika/Frameworks/Led/Platform/Windows_FileRegistration.h"
 #include "Stroika/Frameworks/Led/StdDialogs.h"
 
@@ -298,12 +299,6 @@ LedLineItApplication::LedLineItApplication ()
     Require (sThe == NULL);
     sThe = this;
 
-#if qPlatform_Windows
-    // The Windows/Boost stacktrace code calls CoInitializeEx(MULTITHRADED). Must do this before that call;
-    // See matching call in LedLineItApplication::~LedLineItApplication --LGP 2020-05-24
-    ::OleInitialize (NULL);
-#endif
-
 #if qIncludeBasicSpellcheckEngine && qDebug
     SpellCheckEngine_Basic::RegressionTest ();
 #endif
@@ -323,10 +318,6 @@ LedLineItApplication::~LedLineItApplication ()
 {
     Require (sThe == this);
     sThe = NULL;
-#if qPlatform_Windows
-    // See matching call in LedLineItApplication::LedLineItApplication
-    ::OleUninitialize ();
-#endif
 }
 
 LedLineItApplication& LedLineItApplication::Get ()

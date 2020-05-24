@@ -669,12 +669,6 @@ LedItApplication::LedItApplication ()
     Require (sThe == NULL);
     sThe = this;
 
-#if qPlatform_Windows
-    // The Windows/Boost stacktrace code calls CoInitializeEx(MULTITHRADED). Must do this before that call;
-    // See matching call in LedItApplication::~LedItApplication --LGP 2020-05-24
-    ::OleInitialize (NULL);
-#endif
-
 #if qIncludeBasicSpellcheckEngine && qDebug
     SpellCheckEngine_Basic::RegressionTest ();
 #endif
@@ -810,10 +804,6 @@ LedItApplication::~LedItApplication ()
     sThe = NULL;
 #if qStroika_FeatureSupported_XWindows
     delete fDocument;
-#endif
-#if qPlatform_Windows
-    // See matching call in LedItApplication::LedItApplication
-    ::OleUninitialize ();
 #endif
 }
 
