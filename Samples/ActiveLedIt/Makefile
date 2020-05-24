@@ -134,7 +134,7 @@ register:	$(TARGETEXE)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Registering `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(TARGETEXE)`" "... "
 	@#NOTE - if you run into errors - this typically needs to be run as administrator (run as administrator shell that invokes this)
 	@#regsvr32 /s /c "$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(TARGETEXE))"
-	regsvr32 /c "$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(TARGETEXE))"
+	@regsvr32 /c "$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(TARGETEXE))"
 
 
 launch-sample:
