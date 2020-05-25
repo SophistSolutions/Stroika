@@ -45,13 +45,16 @@ namespace Stroika::Foundation::Containers {
      *          the iterators are automatically updated internally to behave sensibly.
      *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
-     *        o Mappings (base class) are already intrinsically equals-comparable.
+     *      o   Mappings (base class) are already intrinsically equals-comparable.
      *
-     *        o Since SortedMapping implies an ordering on the elements of the mapping, we can use this to define a
+     *      o   Since SortedMapping implies an ordering on the elements of the mapping, we can use this to define a
      *          three_way_compare ordering for SortedMapping<>
      *
-     *        o Since this was never supported before (not a regression) - and close to end of C++17 specific development,
+     *      o   Since this was never supported before (not a regression) - and close to end of C++17 specific development,
      *          only implementing three way compare for C++20 or later.
+     *
+     *      o   Note we don't need todo a comparison on value, since value uniquely defined by KEY, and we have a total ordering
+     *          on the KEYS.
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     class SortedMapping : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE> {
@@ -126,8 +129,8 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-        *  Return the function used to compare if two elements are in-order (sorted properly)
-        */
+         *  Return the function used to compare if two elements are in-order (sorted properly)
+         */
         nonvirtual KeyInOrderKeyComparerType GetInOrderKeyComparer () const;
 
 #if __cpp_impl_three_way_comparison >= 201907
