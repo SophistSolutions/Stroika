@@ -407,7 +407,7 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T>
-    template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> /*and Common::IsEqualsComparer<EQUALS_COMPARER> ()*/>*>
+    template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>*>
     inline bool Iterable<T>::SequentialEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer, bool useIterableSize) const
     {
         return SequentialEquals (*this, rhs, equalsComparer, useIterableSize);
