@@ -87,33 +87,12 @@ namespace Stroika::Foundation::Common {
     using compare_three_way = std::compare_three_way<T, U>;
 #endif
 
-    template <typename T, typename... ARGS>
-    struct [[deprecated ("Since Stroika 2.1a5 - use Common::compare_three_way instead")]] ThreeWayComparer
-    {
-        constexpr ThreeWayComparer (ARGS... args);
-        template <class TT, class UU, typename Q = T, enable_if_t<Private_::HasThreeWayComparer_v<Q>>* = nullptr>
-        constexpr auto operator() (UU&& lhs, TT&& rhs) const;
-        template <class TT, class UU, typename Q = T, enable_if_t<Private_::HasThreeWayComparerTemplate_v<Q>>* = nullptr>
-        constexpr auto operator() (UU&& lhs, TT&& rhs) const;
-        template <class TT, class UU, typename Q = T, enable_if_t<not Private_::HasThreeWayComparer_v<Q> and not Private_::HasThreeWayComparerTemplate_v<Q>>* = nullptr>
-        constexpr auto operator() (UU&& lhs, TT&& rhs) const;
-        tuple<ARGS...> fArgs_;
-    };
-
     /**
-
-
-    &&& @todo see if this can be deprecated and if 
-
-        return three_way_compare{} (lhs,rhs) works/deduces right types - not sure how it would be I've seen examples in docs of this
-
-        Butif cannot get the above deduction to work, keep this just for the deduction. But I HTINK deduction guides should work...
-
      *  \brief trivial wrapper calling ThreeWayComparer<T>{}(lhs,rhs) i.e. std::compare_three_way{} (lhs, rhs)
      *
      *  Since the type of ThreeWayComparer cannot be deduced, you must write a painful:
      *      \code
-     *          ThreeWayComparer<T>{} (lhs, rhs);   // this often looks much worse when 'T' is a long typename
+     *          Common::compare_three_ways<T1,T2>{} (lhs, rhs);   // this often looks much worse when 'T' is a long typename
      *      \endcode
      *
      *  This helper function allows for the type deduction, at the cost of not working with arguments to
@@ -274,16 +253,6 @@ namespace Stroika::Foundation::Common {
     struct ExtractComparisonTraits<greater_equal<T>> {
         static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eInOrderOrEquals;
     };
-    DISABLE_COMPILER_MSC_WARNING_START (4996);
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
-    template <typename T>
-    struct ExtractComparisonTraits<ThreeWayComparer<T>> {
-        static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
-    };
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-    DISABLE_COMPILER_MSC_WARNING_END (4996);
 #if __cpp_lib_three_way_comparison >= 201907
     template <typename T>
     struct ExtractComparisonTraits<compare_three_way<T>> {
@@ -447,6 +416,30 @@ namespace Stroika::Foundation::Common {
     };
 
     ///////////////////// DEPRECATED //////////////////////////
+
+    template <typename T, typename... ARGS>
+    struct [[deprecated ("Since Stroika 2.1a5 - use Common::compare_three_way instead")]] ThreeWayComparer
+    {
+        constexpr ThreeWayComparer (ARGS... args);
+        template <class TT, class UU, typename Q = T, enable_if_t<Private_::HasThreeWayComparer_v<Q>>* = nullptr>
+        constexpr auto operator() (UU&& lhs, TT&& rhs) const;
+        template <class TT, class UU, typename Q = T, enable_if_t<Private_::HasThreeWayComparerTemplate_v<Q>>* = nullptr>
+        constexpr auto operator() (UU&& lhs, TT&& rhs) const;
+        template <class TT, class UU, typename Q = T, enable_if_t<not Private_::HasThreeWayComparer_v<Q> and not Private_::HasThreeWayComparerTemplate_v<Q>>* = nullptr>
+        constexpr auto operator() (UU&& lhs, TT&& rhs) const;
+        tuple<ARGS...> fArgs_;
+    };
+
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
+    template <typename T>
+    struct ExtractComparisonTraits<ThreeWayComparer<T>> {
+        static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
+    };
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
 
     template <typename TYPE>
     [[deprecated ("Since Stroika 2.1a5 - use CompareResultNormalizer or ThreeWayCompare")]] constexpr strong_ordering ThreeWayCompareNormalizer (TYPE lhs, TYPE rhs)
