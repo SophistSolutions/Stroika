@@ -93,7 +93,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // MultiSet<T, TRAITS>::_IRep overrides
     public:
-        virtual EqualityComparerType GetEqualsComparer () const override
+        virtual EqualityComparerType GetElementEqualsComparer () const override
         {
             return EqualityComparerType{Common::EqualsComparerAdapter (fData_.key_comp ())};
         }
@@ -199,7 +199,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // SortedMultiSet<T,TRAITS>::_IRep overrides
     public:
-        virtual InOrderComparerType GetInOrderComparer () const override
+        virtual InOrderComparerType GetElementInOrderComparer () const override
         {
             return InOrderComparerType{fData_.key_comp ()};
         }

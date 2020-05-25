@@ -92,7 +92,7 @@ namespace Stroika::Foundation::Containers {
      *
      *      o   Multisets intrinsically know how to compare their elements (for equality) - even if equal_to<T> not defined
      *
-     *          Two MultiSet are considered equal if they contain the same elements (by comparing them with GetEqualsComparer ())
+     *          Two MultiSet are considered equal if they contain the same elements (by comparing them with GetElementEqualsComparer ())
      *          with the same count. In short, they are equal if OccurrencesOf() each item in the LHS equals the OccurrencesOf()
      *          the same item in the RHS.
      *
@@ -148,7 +148,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  This is the type returned by GetEqualsComparer () and CAN be used as the argument to a MultiSet<> as EqualityComparer, but
+         *  This is the type returned by GetElementEqualsComparer () and CAN be used as the argument to a MultiSet<> as EqualityComparer, but
          *  we allow any template in the Set<> CTOR for an equalityComparer that follows the Common::IsEqualsComparer () concept (need better name).
          */
         using EqualityComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool (T, T)>>;
@@ -308,6 +308,7 @@ namespace Stroika::Foundation::Containers {
          *      \code
          *          MultiSet<T> t;
          *          for (T i : t.Elements ()) {
+         *              // Like a collection iteration - if item t.OccurancesOf(i) == 3, then this will be encountered 3 times in the iteration
          *          }
          *      \endcode
          *
@@ -322,9 +323,10 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \par Example Usage
          *      \code
-         *      MultiSet<T> t;
-         *      for (T i : t.UniqueElements ()) {
-         *      }
+         *          MultiSet<T> t;
+         *          for (T i : t.UniqueElements ()) {
+         *              // Like a set iteration - if item t.OccurancesOf(i) == 3, then this will be encountered 1 times in the iteration
+         *          }
          *      \endcode
          *
          *  UniqueElements () makes no guarantess about whether or not modifications to the underlying MultiSet<>
@@ -338,7 +340,13 @@ namespace Stroika::Foundation::Containers {
          *
          *  @todo consider RENAMING this to GetElementEqualsComparer() - similarly for TYPE
          */
-        nonvirtual EqualityComparerType GetEqualsComparer () const;
+        nonvirtual EqualityComparerType GetElementEqualsComparer () const;
+
+    public:
+        [[deprecated ("Use GetElementEqualsComparer since Stroika 2.1a5")]] EqualityComparerType GetEqualsComparer () const
+        {
+            return GetElementEqualsComparer ();
+        }
 
     public:
         using EqualsComparer [[deprecated ("use equal_to since 2.1a5")]] = equal_to<MultiSet>;
@@ -413,7 +421,7 @@ namespace Stroika::Foundation::Containers {
         _IRep () = default;
 
     public:
-        virtual EqualityComparerType  GetEqualsComparer () const                                             = 0;
+        virtual EqualityComparerType  GetElementEqualsComparer () const                                      = 0;
         virtual _MultiSetRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const                 = 0;
         virtual bool                  Equals (const _IRep& rhs) const                                        = 0;
         virtual bool                  Contains (ArgByValueType<T> item) const                                = 0;

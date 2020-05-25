@@ -40,7 +40,6 @@ namespace Stroika::Foundation::Containers {
     {
         _AssertRepValidType ();
     }
-
     template <typename T, typename TRAITS>
     SortedMultiSet<T, TRAITS>::SortedMultiSet (const initializer_list<T>& src)
         : SortedMultiSet ()
@@ -110,11 +109,16 @@ namespace Stroika::Foundation::Containers {
         _SafeReadRepAccessor<_IRep>{this};
 #endif
     }
+    template <typename T, typename TRAITS>
+    inline auto SortedMultiSet<T, TRAITS>::GetElementInOrderComparer () const -> InOrderComparerType
+    {
+        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetElementInOrderComparer ();
+    }
 #if __cpp_impl_three_way_comparison >= 201907
     template <typename T, typename TRAITS>
     inline strong_ordering SortedMultiSet<T, TRAITS>::operator<=> (const SortedMultiSet& rhs) const
     {
-        return typename Iterable<CountedValue<T>>::SequentialThreeWayComparer{Common::ThreeWayComparerAdapter (GetInOrderComparer ())}(*this, rhs);
+        return typename Iterable<CountedValue<T>>::SequentialThreeWayComparer{Common::ThreeWayComparerAdapter (GetElementInOrderComparer ())}(*this, rhs);
     }
 #endif
 

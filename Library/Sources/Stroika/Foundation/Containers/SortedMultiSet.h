@@ -75,7 +75,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  Ordering reletion applied to sort a 'SortedMultiSet'. Returned by GetInOrderComparer ();
+         *  Ordering reletion applied to sort a 'SortedMultiSet'. Returned by GetElementInOrderComparer ();
          */
         using InOrderComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (T, T)>>;
 
@@ -123,12 +123,18 @@ namespace Stroika::Foundation::Containers {
         /**
          *  Return the function used to compare if two elements are in-order (sorted properly)
          */
-        nonvirtual InOrderComparerType GetInOrderComparer () const;
+        nonvirtual InOrderComparerType GetElementInOrderComparer () const;
+
+    public:
+        [[deprecated ("use GetElementInOrderComparer since Stroika 2.1a5")]] InOrderComparerType GetInOrderComparer () const
+        {
+            return GetElementInOrderComparer ();
+        }
 
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
-         *  Compare sequentially using the associated GetInOrderComparer ()  
+         *  Compare sequentially using the associated GetElementInOrderComparer ()  
          */
         nonvirtual strong_ordering operator<=> (const SortedMultiSet& rhs) const;
 #endif
@@ -161,7 +167,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     class SortedMultiSet<T, TRAITS>::_IRep : public MultiSet<T, TRAITS>::_IRep {
     public:
-        virtual InOrderComparerType GetInOrderComparer () const = 0;
+        virtual InOrderComparerType GetElementInOrderComparer () const = 0;
     };
 }
 
