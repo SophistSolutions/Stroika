@@ -257,7 +257,7 @@ namespace Stroika::Foundation::IO::Network {
         return TWC_ (*this, rhs) == 0;
     }
 #endif
-    inline Common::strong_ordering InternetAddress::TWC_ (const InternetAddress& lhs, const InternetAddress& rhs)
+    constexpr Common::strong_ordering InternetAddress::TWC_ (const InternetAddress& lhs, const InternetAddress& rhs)
     {
         if (auto cmp = Common::ThreeWayCompare (lhs.fAddressFamily_, rhs.fAddressFamily_); cmp != Common::kEqual) {
             return cmp;

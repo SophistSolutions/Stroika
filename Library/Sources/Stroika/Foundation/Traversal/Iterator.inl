@@ -232,7 +232,7 @@ namespace Stroika::Foundation::Traversal {
      ********************************************************************************
      */
     template <typename ITERATOR>
-    inline typename iterator_traits<ITERATOR>::pointer Iterator2Pointer (ITERATOR i)
+    constexpr typename iterator_traits<ITERATOR>::pointer Iterator2Pointer (ITERATOR i)
     {
         // this overload wont always work.. I hope it gives good compiler error message??? --LGP 2014-10-07
         //

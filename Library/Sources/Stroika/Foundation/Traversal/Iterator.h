@@ -742,7 +742,7 @@ namespace Stroika::Foundation::Traversal {
      *  \note This returns a const pointer for a const_iterator, and a pointer for a regular (non-cost) iterator.
      */
     template <typename ITERATOR>
-    typename iterator_traits<ITERATOR>::pointer Iterator2Pointer (ITERATOR i);
+    constexpr typename iterator_traits<ITERATOR>::pointer Iterator2Pointer (ITERATOR i);
 
 }
 

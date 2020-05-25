@@ -175,7 +175,7 @@ namespace Stroika::Foundation::Containers {
         /**
          * simply indirect to @Sequence<>::operator (only defined if ???comparethreeway?<T> is defined)
          */
-        nonvirtual strong_ordering operator<=> (const Stack& rhs) const;
+        nonvirtual auto operator<=> (const Stack& rhs) const;
 #endif
 
     public:
