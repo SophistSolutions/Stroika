@@ -110,7 +110,7 @@ namespace Stroika::Foundation::Containers {
 #endif
     }
     template <typename T, typename TRAITS>
-    inline auto SortedMultiSet<T, TRAITS>::GetElementInOrderComparer () const -> InOrderComparerType
+    inline auto SortedMultiSet<T, TRAITS>::GetElementInOrderComparer () const -> ElementInOrderComparerType
     {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetElementInOrderComparer ();
     }

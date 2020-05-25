@@ -151,7 +151,10 @@ namespace Stroika::Foundation::Containers {
          *  This is the type returned by GetElementEqualsComparer () and CAN be used as the argument to a MultiSet<> as EqualityComparer, but
          *  we allow any template in the Set<> CTOR for an equalityComparer that follows the Common::IsEqualsComparer () concept (need better name).
          */
-        using EqualityComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool (T, T)>>;
+        using ElementEqualityComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool (T, T)>>;
+
+    public:
+        using EqualityComparerType [[deprecated ("Since Stroika v2.1a5 - use ElementEqualityComparerType")]] = ElementEqualityComparerType;
 
     public:
         /**
@@ -340,10 +343,10 @@ namespace Stroika::Foundation::Containers {
          *
          *  @todo consider RENAMING this to GetElementEqualsComparer() - similarly for TYPE
          */
-        nonvirtual EqualityComparerType GetElementEqualsComparer () const;
+        nonvirtual ElementEqualityComparerType GetElementEqualsComparer () const;
 
     public:
-        [[deprecated ("Use GetElementEqualsComparer since Stroika 2.1a5")]] EqualityComparerType GetEqualsComparer () const
+        [[deprecated ("Use GetElementEqualsComparer since Stroika 2.1a5")]] ElementEqualityComparerType GetEqualsComparer () const
         {
             return GetElementEqualsComparer ();
         }
@@ -421,15 +424,15 @@ namespace Stroika::Foundation::Containers {
         _IRep () = default;
 
     public:
-        virtual EqualityComparerType  GetElementEqualsComparer () const                                      = 0;
-        virtual _MultiSetRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const                 = 0;
-        virtual bool                  Equals (const _IRep& rhs) const                                        = 0;
-        virtual bool                  Contains (ArgByValueType<T> item) const                                = 0;
-        virtual void                  Add (ArgByValueType<T> item, CounterType count)                        = 0;
-        virtual void                  Remove (ArgByValueType<T> item, CounterType count)                     = 0;
-        virtual void                  Remove (const Iterator<CountedValue<T>>& i)                            = 0;
-        virtual void                  UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) = 0;
-        virtual CounterType           OccurrencesOf (ArgByValueType<T> item) const                           = 0;
+        virtual ElementEqualityComparerType GetElementEqualsComparer () const                                      = 0;
+        virtual _MultiSetRepSharedPtr       CloneEmpty (IteratorOwnerID forIterableEnvelope) const                 = 0;
+        virtual bool                        Equals (const _IRep& rhs) const                                        = 0;
+        virtual bool                        Contains (ArgByValueType<T> item) const                                = 0;
+        virtual void                        Add (ArgByValueType<T> item, CounterType count)                        = 0;
+        virtual void                        Remove (ArgByValueType<T> item, CounterType count)                     = 0;
+        virtual void                        Remove (const Iterator<CountedValue<T>>& i)                            = 0;
+        virtual void                        UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) = 0;
+        virtual CounterType                 OccurrencesOf (ArgByValueType<T> item) const                           = 0;
         // Subtle point - shared rep argument to Elements() allows shared ref counting
         // without the cost of a clone or enable_shared_from_this
         virtual Iterable<T> Elements (const _MultiSetRepSharedPtr& rep) const = 0;

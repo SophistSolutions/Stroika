@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         using _APPLY_ARGTYPE        = typename inherited::_APPLY_ARGTYPE;
         using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
         using CounterType           = typename inherited::CounterType;
-        using EqualityComparerType  = typename MultiSet<T, TRAITS>::EqualityComparerType;
+        using ElementEqualityComparerType  = typename MultiSet<T, TRAITS>::ElementEqualityComparerType;
 
     public:
         Rep_ (const EQUALS_COMPARER& equalsComparer)
@@ -108,9 +108,9 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // MultiSet<T, TRAITS>::_IRep overrides
     public:
-        virtual EqualityComparerType GetElementEqualsComparer () const override
+        virtual ElementEqualityComparerType GetElementEqualsComparer () const override
         {
-            return EqualityComparerType{fEqualsComparer_};
+            return ElementEqualityComparerType{fEqualsComparer_};
         }
         virtual _MultiSetRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
         {

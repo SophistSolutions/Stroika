@@ -198,8 +198,6 @@ namespace Stroika::Foundation::Containers {
      *      So now (as of v2.0a20) - we just have the EQUALS_COMPARER be a templated param to the
      *      methods that need it.
      *
-     *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
-     *
      *  \note Note About Iterators
      *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
      *

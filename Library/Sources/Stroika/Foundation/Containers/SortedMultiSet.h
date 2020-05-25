@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  Ordering reletion applied to sort a 'SortedMultiSet'. Returned by GetElementInOrderComparer ();
          */
-        using InOrderComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (T, T)>>;
+        using ElementInOrderComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (T, T)>>;
 
     public:
         /**
@@ -123,10 +123,10 @@ namespace Stroika::Foundation::Containers {
         /**
          *  Return the function used to compare if two elements are in-order (sorted properly)
          */
-        nonvirtual InOrderComparerType GetElementInOrderComparer () const;
+        nonvirtual ElementInOrderComparerType GetElementInOrderComparer () const;
 
     public:
-        [[deprecated ("use GetElementInOrderComparer since Stroika 2.1a5")]] InOrderComparerType GetInOrderComparer () const
+        [[deprecated ("use GetElementInOrderComparer since Stroika 2.1a5")]] ElementInOrderComparerType GetInOrderComparer () const
         {
             return GetElementInOrderComparer ();
         }
@@ -167,7 +167,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     class SortedMultiSet<T, TRAITS>::_IRep : public MultiSet<T, TRAITS>::_IRep {
     public:
-        virtual InOrderComparerType GetElementInOrderComparer () const = 0;
+        virtual ElementInOrderComparerType GetElementInOrderComparer () const = 0;
     };
 }
 

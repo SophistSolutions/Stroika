@@ -18,10 +18,6 @@
  *
  *
  *  TODO:
- *      @todo   Add three-way-comparer support - operator<=> etc - for Queue. I Think it can be
- *              easily defined as operator<> on ELT, followed by operator<> on value and then as a string
- *              of those operations.
- *
  *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
  *              concepts and that it USES that for the appropriate overloaded constructors.
  *
@@ -89,7 +85,7 @@ namespace Stroika::Foundation::Containers {
      *          Two Queues are considered equal if they contain the same elements (by comparing them
      *          with EQUALS_COMPARER (which defaults to equal_to<T>)
      *          in exactly the same order (iteration).
-     *      o   Since ordering in a Queue is well defined, we can use this ordering between elemenets to define
+     *      o   Since ordering in a Queue is well defined, we can use this ordering between elements to define
      *          the obvious sequential ordering three way comparison on queues (Iterable::SequentialThreeWayComparer)
      */
     template <typename T>

@@ -58,9 +58,6 @@ namespace Stroika::Foundation::Containers {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
-     *  \note Comparisons:
-     *        TBD
-     *
      *  \note Note About Iterators
      *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
      *
@@ -73,7 +70,7 @@ namespace Stroika::Foundation::Containers {
      *          Two Queues are considered equal if they contain the same elements (by comparing them
      *          with EQUALS_COMPARER (which defaults to equal_to<T>)
      *          in exactly the same order (iteration).
-     *      o   Since ordering in a Queue is well defined, we can use this ordering between elemenets to define
+     *      o   Since ordering in a Queue is well defined, we can use this ordering between elements to define
      *          the obvious sequential ordering three way comparison on queues (Iterable::SequentialThreeWayComparer)
      */
     template <typename T>
@@ -157,7 +154,6 @@ namespace Stroika::Foundation::Containers {
          *
          *  Two Stack are considered equal if they contain the same elements in the same order.
          *  That is - @Iterable<T>::SequenceEquals.
-         *
          */
         template <typename T_EQUALS_COMPARER = equal_to<T>>
         using EqualsComparer = typename Iterable<T>::template SequentialEqualsComparer<T_EQUALS_COMPARER>;

@@ -411,7 +411,7 @@ namespace Stroika::Foundation::Containers {
         return ss->UniqueElements (ss);
     }
     template <typename T, typename TRAITS>
-    inline auto MultiSet<T, TRAITS>::GetElementEqualsComparer () const -> EqualityComparerType
+    inline auto MultiSet<T, TRAITS>::GetElementEqualsComparer () const -> ElementEqualityComparerType
     {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetElementEqualsComparer ();
     }

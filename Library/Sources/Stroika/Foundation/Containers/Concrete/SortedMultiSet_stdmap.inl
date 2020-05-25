@@ -40,8 +40,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         using _APPLY_ARGTYPE        = typename inherited::_APPLY_ARGTYPE;
         using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
         using CounterType           = typename inherited::CounterType;
-        using EqualityComparerType  = typename MultiSet<T, TRAITS>::EqualityComparerType;
-        using InOrderComparerType   = typename SortedMultiSet<T, TRAITS>::InOrderComparerType;
+        using ElementEqualityComparerType  = typename MultiSet<T, TRAITS>::ElementEqualityComparerType;
+        using ElementInOrderComparerType   = typename SortedMultiSet<T, TRAITS>::ElementInOrderComparerType;
 
     public:
         Rep_ (const INORDER_COMPARER& inorderComparer)
@@ -93,9 +93,9 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // MultiSet<T, TRAITS>::_IRep overrides
     public:
-        virtual EqualityComparerType GetElementEqualsComparer () const override
+        virtual ElementEqualityComparerType GetElementEqualsComparer () const override
         {
-            return EqualityComparerType{Common::EqualsComparerAdapter (fData_.key_comp ())};
+            return ElementEqualityComparerType{Common::EqualsComparerAdapter (fData_.key_comp ())};
         }
         virtual _MultiSetRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
         {
@@ -199,9 +199,9 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // SortedMultiSet<T,TRAITS>::_IRep overrides
     public:
-        virtual InOrderComparerType GetElementInOrderComparer () const override
+        virtual ElementInOrderComparerType GetElementInOrderComparer () const override
         {
-            return InOrderComparerType{fData_.key_comp ()};
+            return ElementInOrderComparerType{fData_.key_comp ()};
         }
 
     private:
