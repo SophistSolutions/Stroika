@@ -243,7 +243,7 @@ namespace Stroika::Foundation::Containers {
         /**
          * simply indirect to @Queue<>::ThreeWayComparer (only defined if T::operator<=> is defined)
          */
-        nonvirtual strong_ordering operator<=> (const Queue& rhs) const;
+        nonvirtual auto operator<=> (const Queue& rhs) const;
 #endif
 
     protected:
