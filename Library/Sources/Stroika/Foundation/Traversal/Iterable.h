@@ -472,7 +472,7 @@ namespace Stroika::Foundation::Traversal {
          *
          * OR
          *      \code
-         *          for (T& i : c) {
+         *          for (const T& i : c) {
          *              if (*i = T{}) {
          *                  break;
          *              }
