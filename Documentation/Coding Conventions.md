@@ -118,7 +118,7 @@ Or for Stream classes, the &#39;stream quasi namespace&#39; contains a New metho
 
 ---
 
-## <a name="Comparisons"></a> Comparisons: shapceship, operator==, operator<=> and operator<, operator>, etc…
+## <a name="Comparisons"></a> Comparisons: spaceship operator, operator==, operator<=> and operator<, operator>, etc…
 
 - Note this has materially changed in Stroika v2.1, due to the upcoming
   changes in C++20 to support the spaceship operator and automatic compare
@@ -128,7 +128,9 @@ Stroika types generally support the c++20 operator== and operator<=> semantics a
 
 But sometimes you want to have a compare functor that takes parameters (e.g. string optionally case insensitive).
 
-Stroika types follow the convention of providing a ThreeWayComparer function object and an EqualsComparer object. If-and-only-if the comparitors can be parameterized, they are available as nested members of the given type T. These are **not** available (as nested members) if they cannot be parameterized.
+Stroika types follow the convention of providing a ThreeWayComparer function object and an EqualsComparer object for type T, as static members of that type T If-and-only-if the comparitors can be parameterized. These are **not** available (as nested members) if they cannot be parameterized.
+
+But in either case (whether parameterizable or not) they are supported with operator <=> and operator== (assuming C++20 or later) or the equivilent in C++17 and earlier.
 
 One subtlety that does occasionally need to be accomodated (especailly pre-C++20) is telling a less comparer from an equals comparer, etc in overloads. This is done with Common::ComparisonRelationType and Common::ComparisonRelationDeclaration.
 
@@ -146,6 +148,7 @@ For a class T, where the compare functions are NOT paramterized:
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
+         * assumes strong_ordering, but use right ordering or auto if appropriate (mostly for templates)
          */
         constexpr strong_ordering operator<=> (const T& rhs) const;
 
