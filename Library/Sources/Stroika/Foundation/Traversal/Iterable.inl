@@ -957,7 +957,7 @@ namespace Stroika::Foundation::Traversal {
     DISABLE_COMPILER_MSC_WARNING_START (4701)
     template <typename T>
     template <typename T_THREEWAY_COMPARER>
-    inline Common::strong_ordering Iterable<T>::SequentialThreeWayComparer<T_THREEWAY_COMPARER>::operator() (const Iterable& lhs, const Iterable& rhs) const
+    inline auto Iterable<T>::SequentialThreeWayComparer<T_THREEWAY_COMPARER>::operator() (const Iterable& lhs, const Iterable& rhs) const
     {
         auto li = lhs.begin ();
         auto le = lhs.end ();

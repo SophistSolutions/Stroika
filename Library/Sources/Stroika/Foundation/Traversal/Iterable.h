@@ -387,7 +387,7 @@ namespace Stroika::Foundation::Traversal {
     public:
         /**
          *  SetEquals () - very inefficiently - but with constant small memory overhead - returns true if
-         *  each element in the each iterable is contained in the other. They lengths CAN be different
+         *  each element in the each iterable is contained in the other. The lengths CAN be different
          *  and the two Iterables<> be SetEquals().
          *
          *  \em Performance:
@@ -1292,8 +1292,8 @@ namespace Stroika::Foundation::Traversal {
     template <typename T_THREEWAY_COMPARER>
     struct Iterable<T>::SequentialThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         constexpr SequentialThreeWayComparer (const T_THREEWAY_COMPARER& elementComparer = {});
-        nonvirtual Common::strong_ordering operator() (const Iterable& lhs, const Iterable& rhs) const;
-        T_THREEWAY_COMPARER                fElementComparer;
+        nonvirtual auto     operator() (const Iterable& lhs, const Iterable& rhs) const;
+        T_THREEWAY_COMPARER fElementComparer;
     };
 
 }
