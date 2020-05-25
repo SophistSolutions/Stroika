@@ -87,50 +87,6 @@ namespace Stroika::Foundation::Common {
     using compare_three_way = std::compare_three_way<T, U>;
 #endif
 
-    /**
-     * @todo  MAYBE DEPRECATE THIS - IN FAVOR OF Common::compare_three_way
-
-     RATIONALE TO KEEP THIS:
-            EITHER we need nested class approach T::ThreeWayCompare - even in c++20 - for things like String::EqualsComparer (with extra args)
-            OR we need this 
-
-            CONSIDERING. RARE ISSUE where we need the extra params. More modular to do T::Comparer... C++ DOES appear to allow specialization 
-            of stuff in std namespace for this purpose???
-
-            TRY in a few places, like String/Character to see how it goes...
-
-     *
-     *  \brief - std::compare_three_way - Stand-in until C++20, three way compare - used for Calling three-way-comparer
-     *
-     *  Not every class implements the three-way comparer (spaceship operator) - especailly before C++20.
-     *
-     *  \note   Common::ThreeWayComparer<> will work for any type for which:
-     *          o   Common::ThreeWayComparer<> has already been explicitly specialized
-     *          o   has function (three way comparer object) member ThreeWayComparer (e.g. String::ThreeWayComparer)
-     *          o   has a spaceship operator defined for it (C++20 or later - and NYI)
-     *          o   has less<> and equal_to<> defined (either explicitly, or implicitly by
-     *              having < and == work with it)   
-     *              
-     *  \par Example Usage
-     *      \code
-     *          int Common::ThreeWayComparer<Authority>::operator() (const Authority& lhs, const Authority& rhs) const
-     *          {
-     *              if (int cmp = Common::ThreeWayCompare (lhs.GetHost (), rhs.GetHost ())) {
-     *                  return cmp;
-     *              }
-     *              if (int cmp = Common::ThreeWayCompare (lhs.GetUserInfo (), rhs.GetUserInfo ())) {
-     *                  return cmp;
-     *              }
-     *              return Common::ThreeWayCompare (lhs.GetPort (), rhs.GetPort ());
-     *          }
-     *      \endcode
-     *
-     *  \note TODO
-     *      @todo   Consider if this is needed - MAYBE OK (with both pre/post C++20) to use three_way_compare function cuz its impl
-     *              should be Ok - just use Stroika::Foundation::Common::compare_three_way for portability.
-     *      @todo   Support spaceship operator - like we do with HasComparer_v - detecting if class Q has spaceship operator and
-     *              using that (after check for HasComparer_v and before default using default implementation).
-     */
     template <typename T, typename... ARGS>
     struct [[deprecated ("Since Stroika 2.1a5 - use Common::compare_three_way instead")]] ThreeWayComparer
     {
