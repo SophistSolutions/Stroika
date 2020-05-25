@@ -99,9 +99,9 @@ namespace Stroika::Foundation::Containers {
     }
 #endif
     template <typename T>
-    inline auto Set<T>::GetEqualsComparer () const -> EqualityComparerType
+    inline auto Set<T>::GetElementEqualsComparer () const -> EqualityComparerType
     {
-        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetEqualsComparer ();
+        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetElementEqualsComparer ();
     }
     template <typename T>
     inline bool Set<T>::Contains (ArgByValueType<T> item) const
@@ -231,7 +231,7 @@ namespace Stroika::Foundation::Containers {
     Set<T> Set<T>::Intersection (const Iterable<T>& rhs) const
     {
         using namespace Stroika::Foundation::Common;
-        Set<T> result{this->GetEqualsComparer ()};
+        Set<T> result{this->GetElementEqualsComparer ()};
         for (T i : rhs) {
             if (Contains (i)) {
                 result.Add (i);
@@ -257,7 +257,7 @@ namespace Stroika::Foundation::Containers {
     Set<T> Set<T>::Difference (const Set<T>& rhs) const
     {
         using namespace Stroika::Foundation::Common;
-        Set<T> result{this->GetEqualsComparer ()};
+        Set<T> result{this->GetElementEqualsComparer ()};
         for (T i : *this) {
             if (not rhs.Contains (i)) {
                 result.Add (i);

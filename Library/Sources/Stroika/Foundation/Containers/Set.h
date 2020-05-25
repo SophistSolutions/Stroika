@@ -113,7 +113,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  This is the type returned by GetEqualsComparer () and CAN be used as the argument to a Set<> as EqualityComparer, but
+         *  This is the type returned by GetElementEqualsComparer () and CAN be used as the argument to a Set<> as EqualityComparer, but
          *  we allow any template in the Set<> CTOR for an equalityComparer that follows the Common::IsEqualsComparer () concept.
          *
          *  \note   @see also EqualsComparer{} to compare whole Set<>s
@@ -200,9 +200,15 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note   @see also EqualsComparer{} to compare whole Set<>s
          *
-         *  @todo rename Set<>::GetEqualsComparer() to Set<>::GetElementEqualsComparer
+         *  @todo rename Set<>::GetElementEqualsComparer() to Set<>::GetElementEqualsComparer
          */
-        nonvirtual EqualityComparerType GetEqualsComparer () const;
+        nonvirtual EqualityComparerType GetElementEqualsComparer () const;
+
+    public:
+        [[deprecated ("use GetElementEqualsComparer since Stroika 2.1a5")]] EqualityComparerType GetEqualsComparer () const
+        {
+            return GetElementEqualsComparer ();
+        }
 
     public:
         /**
@@ -454,7 +460,7 @@ namespace Stroika::Foundation::Containers {
         using _SetRepSharedPtr = typename Set<T>::_SetRepSharedPtr;
 
     public:
-        virtual EqualityComparerType GetEqualsComparer () const                             = 0;
+        virtual EqualityComparerType GetElementEqualsComparer () const                      = 0;
         virtual _SetRepSharedPtr     CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
         virtual bool                 Equals (const typename Iterable<T>::_IRep& rhs) const  = 0;
         virtual bool                 Contains (ArgByValueType<T> item) const                = 0;
@@ -497,7 +503,7 @@ namespace Stroika::Foundation::Containers {
      *
      *  \note   If any argument is an Iterable, it is treated/compared as if it was a set (aka Iterable<T>::SetEquals)
      *
-     *  \note   Not to be confused with EqualityComparerType and GetEqualsComparer () which compares ELEMENTS of Set<T> for equality.
+     *  \note   Not to be confused with EqualityComparerType and GetElementEqualsComparer () which compares ELEMENTS of Set<T> for equality.
      */
     template <typename T>
     struct Set<T>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {

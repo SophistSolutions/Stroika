@@ -113,7 +113,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // Set<T>::_IRep overrides
     public:
-        virtual EqualityComparerType GetEqualsComparer () const override
+        virtual EqualityComparerType GetElementEqualsComparer () const override
         {
             return EqualityComparerType{fEqualsComparer_};
         }

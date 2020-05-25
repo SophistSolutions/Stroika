@@ -67,6 +67,12 @@ namespace Stroika::Foundation::Debug {
          *
          *          This DOES - however - however, call STL routines and C-library routines, like string::CTOR {}
          *
+         *  \note   On Windows, this maybe implemented using Boost, and may use COM, initializing it with unfriendly
+         *          values (like MultiThreading init).
+         *
+         *          You can construct a Execution::Platform::Windows::COMInitializer before any invocations to Capture()
+         *          (stacktrace) - to avoid problems caused by this (only really affects COM-based applications).
+         *
          *  \note in C++20 we will transition to http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p0881r3.html
          *        but for now, typically delegate to https://www.boost.org/doc/libs/1_65_1/doc/html/stacktrace.html
          *
