@@ -145,8 +145,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         if (Common::strong_ordering cmp = Common::ThreeWayCompare (lhs.AsInternetAddress (), rhs.AsInternetAddress ()); cmp != Common::kEqual) {
             return cmp;
         }
-        return Common::OptionalThreeWayComparer<String, Common::compare_three_way<String, String>>{
-            Common::compare_three_way<String, String>{Characters::CompareOptions::eCaseInsensitive}}(lhs.AsRegisteredName (), rhs.AsRegisteredName ());
+        return Common::OptionalThreeWayComparer<String, String::ThreeWayComparer>{String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive}}(lhs.AsRegisteredName (), rhs.AsRegisteredName ());
     }
 
 #if __cpp_impl_three_way_comparison < 201907
