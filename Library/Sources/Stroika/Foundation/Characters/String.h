@@ -1507,9 +1507,6 @@ namespace Stroika::Foundation::Characters {
     };
 
 #if __cpp_impl_three_way_comparison < 201907
-    /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::compare_three_way<String, String>
-     */
     bool operator< (const String& lhs, const String& rhs);
     bool operator< (const String& lhs, const wchar_t* rhs);
     bool operator< (const wchar_t* lhs, const String& rhs);
