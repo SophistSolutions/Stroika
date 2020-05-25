@@ -854,6 +854,38 @@ Duration DateTime::Difference (const DateTime& rhs) const
 
 /*
  ********************************************************************************
+ ************************* DateTime::ThreeWayComparer ***************************
+ ********************************************************************************
+ */
+Common::strong_ordering DateTime::ThreeWayComparer::operator() (const DateTime& lhs, const DateTime& rhs) const
+{
+    if (lhs.GetTimezone () == rhs.GetTimezone () or (lhs.GetTimezone () == Timezone::Unknown ()) or (rhs.GetTimezone () == Timezone::Unknown ())) {
+        if (auto cmp = Common::ThreeWayCompare (lhs.GetDate (), rhs.GetDate ()); cmp != Common::kEqual) {
+            return cmp;
+        }
+        return Common::ThreeWayCompare (lhs.GetTimeOfDay (), rhs.GetTimeOfDay ());
+    }
+    else if (fCoerceToCommonTimezone) {
+        return operator() (lhs.AsUTC (), rhs.AsUTC ());
+    }
+    else {
+        // if not coercing to common timezone, unclear how best to compare times. Probably default to the way we already compare datetime
+        // with first index being date, and then time, and only if those are the same use timezone as tie breaker
+        //
+        // This isn't a clearly good choice, so leave open the possability of changing this in the future -- LGP 2020-05-24
+        if (auto cmp = Common::ThreeWayCompare (lhs.GetDate (), rhs.GetDate ()); cmp != Common::kEqual) {
+            return cmp;
+        }
+        if (auto cmp = Common::ThreeWayCompare (lhs.GetTimeOfDay (), rhs.GetTimeOfDay ()); cmp != Common::kEqual) {
+            return cmp;
+        }
+        return Common::ThreeWayCompare (lhs.GetTimezone (), rhs.GetTimezone ());
+    }
+}
+
+
+/*
+ ********************************************************************************
  ************************** DateTime operators  *********************************
  ********************************************************************************
  */
@@ -861,11 +893,6 @@ DateTime Time::operator+ (const DateTime& lhs, const Duration& rhs)
 {
     // Define in .cpp file to avoid #include Duration in DateTime.h
     return lhs.Add (rhs);
-}
-
-Duration Time::operator- (const DateTime& lhs, const DateTime& rhs)
-{
-    return lhs.Difference (rhs);
 }
 
 DateTime Time::operator- (const DateTime& lhs, const Duration& rhs)

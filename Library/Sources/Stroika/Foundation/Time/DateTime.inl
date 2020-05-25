@@ -100,28 +100,17 @@ namespace Stroika::Foundation::Time {
         : fCoerceToCommonTimezone{coerceToCommonTimezone}
     {
     }
-    inline Common::strong_ordering DateTime::ThreeWayComparer::operator() (const DateTime& lhs, const DateTime& rhs) const
-    {
-        if (lhs.GetTimezone () == rhs.GetTimezone () or (lhs.GetTimezone () == Timezone::Unknown ()) or (rhs.GetTimezone () == Timezone::Unknown ())) {
-            if (auto cmp = Common::ThreeWayCompare (lhs.GetDate (), rhs.GetDate ()); cmp != Common::kEqual) {
-                return cmp;
-            }
-            return Common::ThreeWayCompare (lhs.GetTimeOfDay (), rhs.GetTimeOfDay ());
-        }
-        else if (fCoerceToCommonTimezone) {
-            return operator() (lhs.AsUTC (), rhs.AsUTC ());
-        }
-        else {
-            return Common::ThreeWayCompare (lhs.GetTimezone (), rhs.GetTimezone ());
-        }
-    }
 
-#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      ************************** DateTime operators **********************************
      ********************************************************************************
      */
+    inline Duration Time::operator- (const DateTime& lhs, const DateTime& rhs)
+    {
+        return lhs.Difference (rhs);
+    }
+#if __cpp_impl_three_way_comparison < 201907
     inline bool operator< (const DateTime& lhs, const DateTime& rhs)
     {
         return DateTime::ThreeWayComparer{}(lhs, rhs) < 0;
