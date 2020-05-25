@@ -73,9 +73,11 @@ namespace Stroika::Foundation::Debug {
          *          You can construct a Execution::Platform::Windows::COMInitializer before any invocations to Capture()
          *          (stacktrace) - to avoid problems caused by this (only really affects COM-based applications).
          *
-         *  \note in C++20 we will transition to http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p0881r3.html
-         *        but for now, typically delegate to https://www.boost.org/doc/libs/1_65_1/doc/html/stacktrace.html
+         *  \note   There was a proposal to add something like this to C++20 (http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p0881r5.html)
+         *          but it doesn't appear to have made the cat.
          *
+         *          For now, typically delegate to https://www.boost.org/doc/libs/1_65_1/doc/html/stacktrace.html
+         *      
          *  \note The first few frames are internal to the implementation of BackTrace() so not interesting
          */
         wstring Capture (const Options& options = {});
