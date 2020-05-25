@@ -37,12 +37,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = IImplRepBase_;
 
     public:
-        using _IterableRepSharedPtr = typename Iterable<CountedValue<T>>::_IterableRepSharedPtr;
-        using _MultiSetRepSharedPtr = typename inherited::_MultiSetRepSharedPtr;
-        using _APPLY_ARGTYPE        = typename inherited::_APPLY_ARGTYPE;
-        using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
-        using CounterType           = typename inherited::CounterType;
-        using ElementEqualityComparerType  = typename MultiSet<T, TRAITS>::ElementEqualityComparerType;
+        using _IterableRepSharedPtr       = typename Iterable<CountedValue<T>>::_IterableRepSharedPtr;
+        using _MultiSetRepSharedPtr       = typename inherited::_MultiSetRepSharedPtr;
+        using _APPLY_ARGTYPE              = typename inherited::_APPLY_ARGTYPE;
+        using _APPLYUNTIL_ARGTYPE         = typename inherited::_APPLYUNTIL_ARGTYPE;
+        using CounterType                 = typename inherited::CounterType;
+        using ElementEqualityComparerType = typename MultiSet<T, TRAITS>::ElementEqualityComparerType;
 
     public:
         Rep_ (const EQUALS_COMPARER& equalsComparer)
