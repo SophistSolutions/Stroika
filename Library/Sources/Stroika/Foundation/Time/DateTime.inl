@@ -106,10 +106,6 @@ namespace Stroika::Foundation::Time {
      ************************** DateTime operators **********************************
      ********************************************************************************
      */
-    inline Duration Time::operator- (const DateTime& lhs, const DateTime& rhs)
-    {
-        return lhs.Difference (rhs);
-    }
 #if __cpp_impl_three_way_comparison < 201907
     inline bool operator< (const DateTime& lhs, const DateTime& rhs)
     {

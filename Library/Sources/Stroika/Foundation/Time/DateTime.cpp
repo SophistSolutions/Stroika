@@ -883,7 +883,6 @@ Common::strong_ordering DateTime::ThreeWayComparer::operator() (const DateTime& 
     }
 }
 
-
 /*
  ********************************************************************************
  ************************** DateTime operators  *********************************
@@ -899,6 +898,12 @@ DateTime Time::operator- (const DateTime& lhs, const Duration& rhs)
 {
     // Define in .cpp file to avoid #include Duration in DateTime.h
     return lhs.Add (-rhs);
+}
+
+Duration Time::operator- (const DateTime& lhs, const DateTime& rhs)
+{
+    // Define in .cpp file to avoid #include Duration in DateTime.h
+    return lhs.Difference (rhs);
 }
 
 /*
