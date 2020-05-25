@@ -350,7 +350,8 @@ namespace Stroika::Foundation::IO::Network {
         using ThreeWayComparer [[deprecated ("use Common::compare_three_way or <=> in  in 2.1a5")]] = Common::compare_three_way<InternetAddress, InternetAddress>;
 
     private:
-        static constexpr Common::strong_ordering TWC_ (const InternetAddress& lhs, const InternetAddress& rhs); // utility code share between c++17 and c++20 versions
+        // @todo debug why this cannot be constexpr in clang++-10-debug-libc++-c++2a builds - issue is comparing strong_ordering elts?? crazy
+        static Common::strong_ordering TWC_ (const InternetAddress& lhs, const InternetAddress& rhs); // utility code share between c++17 and c++20 versions
 
     private:
         AddressFamily fAddressFamily_;
