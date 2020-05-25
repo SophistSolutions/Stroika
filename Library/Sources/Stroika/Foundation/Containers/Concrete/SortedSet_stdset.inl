@@ -40,12 +40,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = IImplRepBase_;
 
     public:
-        using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
-        using _SetSharedPtrIRep     = typename Set<T>::_SetRepSharedPtr;
-        using _APPLY_ARGTYPE        = typename inherited::_APPLY_ARGTYPE;
-        using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
-        using EqualityComparerType  = typename Set<T>::EqualityComparerType;
-        using InOrderComparerType   = typename SortedSet<T>::InOrderComparerType;
+        using _IterableRepSharedPtr       = typename Iterable<T>::_IterableRepSharedPtr;
+        using _SetSharedPtrIRep           = typename Set<T>::_SetRepSharedPtr;
+        using _APPLY_ARGTYPE              = typename inherited::_APPLY_ARGTYPE;
+        using _APPLYUNTIL_ARGTYPE         = typename inherited::_APPLYUNTIL_ARGTYPE;
+        using ElementEqualityComparerType = typename Set<T>::ElementEqualityComparerType;
+        using ElementInOrderComparerType  = typename SortedSet<T>::ElementInOrderComparerType;
 
     public:
         Rep_ (const INORDER_COMPARER& inorderComparer)
@@ -101,9 +101,9 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // Set<T>::_IRep overrides
     public:
-        virtual EqualityComparerType GetElementEqualsComparer () const override
+        virtual ElementEqualityComparerType GetElementEqualsComparer () const override
         {
-            return EqualityComparerType{Common::EqualsComparerAdapter (fData_.key_comp ())};
+            return ElementEqualityComparerType{Common::EqualsComparerAdapter (fData_.key_comp ())};
         }
         virtual _SetSharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
         {
@@ -165,9 +165,9 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // SortedSet<T>::_IRep overrides
     public:
-        virtual InOrderComparerType GetInOrderComparer () const override
+        virtual ElementInOrderComparerType GetInOrderComparer () const override
         {
-            return InOrderComparerType{fData_.key_comp ()};
+            return ElementInOrderComparerType{fData_.key_comp ()};
         }
 
     private:
@@ -205,7 +205,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    SortedSet_stdset<T>::SortedSet_stdset (const InOrderComparerType& inOrderComparer, const initializer_list<T>& src)
+    SortedSet_stdset<T>::SortedSet_stdset (const ElementInOrderComparerType& inOrderComparer, const initializer_list<T>& src)
         : SortedSet_stdset (inOrderComparer)
     {
         this->AddAll (src);
@@ -221,7 +221,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Set<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
-    SortedSet_stdset<T>::SortedSet_stdset (const InOrderComparerType& inOrderComparer, CONTAINER_OF_ADDABLE&& src)
+    SortedSet_stdset<T>::SortedSet_stdset (const ElementInOrderComparerType& inOrderComparer, CONTAINER_OF_ADDABLE&& src)
         : SortedSet_stdset (inOrderComparer)
     {
         this->AddAll (forward<CONTAINER_OF_ADDABLE> (src));
@@ -237,7 +237,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T>
     template <typename COPY_FROM_ITERATOR_OF_T>
-    inline SortedSet_stdset<T>::SortedSet_stdset (const InOrderComparerType& inOrderComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+    inline SortedSet_stdset<T>::SortedSet_stdset (const ElementInOrderComparerType& inOrderComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
         : SortedSet_stdset (inOrderComparer)
     {
         this->AddAll (start, end);

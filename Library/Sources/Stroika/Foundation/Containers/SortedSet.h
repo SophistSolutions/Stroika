@@ -83,7 +83,10 @@ namespace Stroika::Foundation::Containers {
         /**
          *  Ordering reletion applied to sort a 'SortedSet'. Returned by GetInOrderComparer ();
          */
-        using InOrderComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (T, T)>>;
+        using ElementInOrderComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (T, T)>>;
+
+    public:
+        using InOrderComparerType [[deprecated ("Since Stroika v2.1a5 use ElementInOrderComparerType")]] = ElementInOrderComparerType;
 
     public:
         /**
@@ -122,7 +125,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  Return the function used to compare if two elements are in-order (sorted properly)
          */
-        nonvirtual InOrderComparerType GetInOrderComparer () const;
+        nonvirtual ElementInOrderComparerType GetInOrderComparer () const;
 
 #if __cpp_impl_three_way_comparison >= 201907
     public:
@@ -157,7 +160,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     class SortedSet<T>::_IRep : public Set<T>::_IRep {
     public:
-        virtual InOrderComparerType GetInOrderComparer () const = 0;
+        virtual ElementInOrderComparerType GetInOrderComparer () const = 0;
     };
 
 }

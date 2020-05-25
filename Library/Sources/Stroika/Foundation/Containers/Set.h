@@ -118,7 +118,10 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note   @see also EqualsComparer{} to compare whole Set<>s
          */
-        using EqualityComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool (T, T)>>;
+        using ElementEqualityComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool (T, T)>>;
+
+    public:
+        using EqualityComparerType [[deprecated ("Since Stroika 2.1a5 use ElementEqualityComparerType")]] = ElementEqualityComparerType;
 
     public:
         /**
@@ -202,10 +205,10 @@ namespace Stroika::Foundation::Containers {
          *
          *  @todo rename Set<>::GetElementEqualsComparer() to Set<>::GetElementEqualsComparer
          */
-        nonvirtual EqualityComparerType GetElementEqualsComparer () const;
+        nonvirtual ElementEqualityComparerType GetElementEqualsComparer () const;
 
     public:
-        [[deprecated ("use GetElementEqualsComparer since Stroika 2.1a5")]] EqualityComparerType GetEqualsComparer () const
+        [[deprecated ("use GetElementEqualsComparer since Stroika 2.1a5")]] ElementEqualityComparerType GetEqualsComparer () const
         {
             return GetElementEqualsComparer ();
         }
@@ -460,14 +463,14 @@ namespace Stroika::Foundation::Containers {
         using _SetRepSharedPtr = typename Set<T>::_SetRepSharedPtr;
 
     public:
-        virtual EqualityComparerType GetElementEqualsComparer () const                      = 0;
-        virtual _SetRepSharedPtr     CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-        virtual bool                 Equals (const typename Iterable<T>::_IRep& rhs) const  = 0;
-        virtual bool                 Contains (ArgByValueType<T> item) const                = 0;
-        virtual optional<T>          Lookup (ArgByValueType<T> item) const                  = 0;
-        virtual void                 Add (ArgByValueType<T> item)                           = 0;
-        virtual void                 Remove (ArgByValueType<T> item)                        = 0;
-        virtual void                 Remove (const Iterator<T>& i)                          = 0;
+        virtual ElementEqualityComparerType GetElementEqualsComparer () const                      = 0;
+        virtual _SetRepSharedPtr            CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+        virtual bool                        Equals (const typename Iterable<T>::_IRep& rhs) const  = 0;
+        virtual bool                        Contains (ArgByValueType<T> item) const                = 0;
+        virtual optional<T>                 Lookup (ArgByValueType<T> item) const                  = 0;
+        virtual void                        Add (ArgByValueType<T> item)                           = 0;
+        virtual void                        Remove (ArgByValueType<T> item)                        = 0;
+        virtual void                        Remove (const Iterator<T>& i)                          = 0;
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif
@@ -503,7 +506,7 @@ namespace Stroika::Foundation::Containers {
      *
      *  \note   If any argument is an Iterable, it is treated/compared as if it was a set (aka Iterable<T>::SetEquals)
      *
-     *  \note   Not to be confused with EqualityComparerType and GetElementEqualsComparer () which compares ELEMENTS of Set<T> for equality.
+     *  \note   Not to be confused with ElementEqualityComparerType and GetElementEqualsComparer () which compares ELEMENTS of Set<T> for equality.
      */
     template <typename T>
     struct Set<T>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {

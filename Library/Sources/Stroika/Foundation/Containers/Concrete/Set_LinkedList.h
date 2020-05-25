@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        using EqualityComparerType = typename inherited::EqualityComparerType;
+        using ElementEqualityComparerType = typename inherited::ElementEqualityComparerType;
 
     public:
         /**
@@ -45,15 +45,15 @@ namespace Stroika::Foundation::Containers::Concrete {
         explicit Set_LinkedList (const EQUALS_COMPARER& equalsComparer);
         Set_LinkedList (const Set_LinkedList& src) = default;
         Set_LinkedList (const initializer_list<T>& src);
-        Set_LinkedList (const EqualityComparerType& equalsComparer, const initializer_list<T>& src);
+        Set_LinkedList (const ElementEqualityComparerType& equalsComparer, const initializer_list<T>& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Set_LinkedList<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         Set_LinkedList (CONTAINER_OF_ADDABLE&& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Set_LinkedList<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
-        Set_LinkedList (const EqualityComparerType& equalsComparer, CONTAINER_OF_ADDABLE&& src);
+        Set_LinkedList (const ElementEqualityComparerType& equalsComparer, CONTAINER_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_OF_T>
         Set_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
         template <typename COPY_FROM_ITERATOR_OF_T>
-        Set_LinkedList (const EqualityComparerType& equalsComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+        Set_LinkedList (const ElementEqualityComparerType& equalsComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
     public:
         /**

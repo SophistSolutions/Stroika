@@ -40,11 +40,11 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = IImplRepBase_;
 
     public:
-        using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
-        using _SetRepSharedPtr      = typename inherited::_SetRepSharedPtr;
-        using _APPLY_ARGTYPE        = typename inherited::_APPLY_ARGTYPE;
-        using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
-        using EqualityComparerType  = typename Set<T>::EqualityComparerType;
+        using _IterableRepSharedPtr       = typename Iterable<T>::_IterableRepSharedPtr;
+        using _SetRepSharedPtr            = typename inherited::_SetRepSharedPtr;
+        using _APPLY_ARGTYPE              = typename inherited::_APPLY_ARGTYPE;
+        using _APPLYUNTIL_ARGTYPE         = typename inherited::_APPLYUNTIL_ARGTYPE;
+        using ElementEqualityComparerType = typename Set<T>::ElementEqualityComparerType;
 
     public:
         Rep_ (const EQUALS_COMPARER& equalsComparer)
@@ -113,9 +113,9 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // Set<T>::_IRep overrides
     public:
-        virtual EqualityComparerType GetElementEqualsComparer () const override
+        virtual ElementEqualityComparerType GetElementEqualsComparer () const override
         {
-            return EqualityComparerType{fEqualsComparer_};
+            return ElementEqualityComparerType{fEqualsComparer_};
         }
         virtual _SetRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
         {
@@ -217,7 +217,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    inline Set_LinkedList<T>::Set_LinkedList (const EqualityComparerType& equalsComparer, const initializer_list<T>& src)
+    inline Set_LinkedList<T>::Set_LinkedList (const ElementEqualityComparerType& equalsComparer, const initializer_list<T>& src)
         : Set_LinkedList (equalsComparer)
     {
         this->AddAll (src);
@@ -233,7 +233,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Set_LinkedList<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
-    inline Set_LinkedList<T>::Set_LinkedList (const EqualityComparerType& equalsComparer, CONTAINER_OF_ADDABLE&& src)
+    inline Set_LinkedList<T>::Set_LinkedList (const ElementEqualityComparerType& equalsComparer, CONTAINER_OF_ADDABLE&& src)
         : Set_LinkedList (equalsComparer)
     {
         this->AddAll (forward<CONTAINER_OF_ADDABLE> (src));
@@ -249,7 +249,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T>
     template <typename COPY_FROM_ITERATOR_OF_T>
-    inline Set_LinkedList<T>::Set_LinkedList (const EqualityComparerType& equalsComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+    inline Set_LinkedList<T>::Set_LinkedList (const ElementEqualityComparerType& equalsComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
         : Set_LinkedList (equalsComparer)
     {
         AddAll (start, end);

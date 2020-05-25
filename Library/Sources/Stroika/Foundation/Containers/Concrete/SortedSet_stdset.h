@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        using InOrderComparerType = typename inherited::InOrderComparerType;
+        using ElementInOrderComparerType = typename inherited::ElementInOrderComparerType;
 
     public:
         /**
@@ -48,15 +48,15 @@ namespace Stroika::Foundation::Containers::Concrete {
         explicit SortedSet_stdset (const INORDER_COMPARER& inorderComparer);
         SortedSet_stdset (const SortedSet_stdset& src) = default;
         SortedSet_stdset (const initializer_list<T>& src);
-        SortedSet_stdset (const InOrderComparerType& inOrderComparer, const initializer_list<T>& src);
+        SortedSet_stdset (const ElementInOrderComparerType& inOrderComparer, const initializer_list<T>& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Set<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         SortedSet_stdset (CONTAINER_OF_ADDABLE&& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Set<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
-        SortedSet_stdset (const InOrderComparerType& inOrderComparer, CONTAINER_OF_ADDABLE&& src);
+        SortedSet_stdset (const ElementInOrderComparerType& inOrderComparer, CONTAINER_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_OF_T>
         SortedSet_stdset (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
         template <typename COPY_FROM_ITERATOR_OF_T>
-        SortedSet_stdset (const InOrderComparerType& inOrderComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+        SortedSet_stdset (const ElementInOrderComparerType& inOrderComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
     public:
         /**

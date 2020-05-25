@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        using EqualityComparerType = typename inherited::EqualityComparerType;
+        using ElementEqualityComparerType = typename inherited::ElementEqualityComparerType;
 
     public:
         /**
@@ -45,15 +45,15 @@ namespace Stroika::Foundation::Containers::Concrete {
         explicit Set_stdset (const INORDER_COMPARER& inorderComparer);
         Set_stdset (const Set_stdset& src) = default;
         Set_stdset (const initializer_list<T>& src);
-        Set_stdset (const EqualityComparerType& equalsComparer, const initializer_list<T>& src);
+        Set_stdset (const ElementEqualityComparerType& equalsComparer, const initializer_list<T>& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and not is_base_of_v<Set_stdset<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         Set_stdset (CONTAINER_OF_ADDABLE&& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and not is_base_of_v<Set_stdset<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
-        Set_stdset (const EqualityComparerType& equalsComparer, CONTAINER_OF_ADDABLE&& src);
+        Set_stdset (const ElementEqualityComparerType& equalsComparer, CONTAINER_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_T>
         Set_stdset (COPY_FROM_ITERATOR_T start, COPY_FROM_ITERATOR_T end);
         template <typename COPY_FROM_ITERATOR_T>
-        Set_stdset (const EqualityComparerType& equalsComparer, COPY_FROM_ITERATOR_T start, COPY_FROM_ITERATOR_T end);
+        Set_stdset (const ElementEqualityComparerType& equalsComparer, COPY_FROM_ITERATOR_T start, COPY_FROM_ITERATOR_T end);
 
     public:
         /**

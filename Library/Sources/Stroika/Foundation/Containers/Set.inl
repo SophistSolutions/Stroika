@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Containers {
     }
 #endif
     template <typename T>
-    inline auto Set<T>::GetElementEqualsComparer () const -> EqualityComparerType
+    inline auto Set<T>::GetElementEqualsComparer () const -> ElementEqualityComparerType
     {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetElementEqualsComparer ();
     }
