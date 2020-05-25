@@ -328,7 +328,7 @@ namespace Stroika::Foundation::IO::Network {
         using ThreeWayComparer [[deprecated ("use Common::compare_three_way or <=> in  in 2.1a5")]] = Common::compare_three_way<URI, URI>;
 
     private:
-        static Common::strong_ordering TWC_ (const URI& lhs, const URI& rhs);
+        static Common::strong_ordering TWC_ (const URI& lhs, const URI& rhs); // utility code share between c++17 and c++20 versions
 
     public:
         /**

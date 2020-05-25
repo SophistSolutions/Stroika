@@ -350,7 +350,7 @@ namespace Stroika::Foundation::IO::Network {
         using ThreeWayComparer [[deprecated ("use Common::compare_three_way or <=> in  in 2.1a5")]] = Common::compare_three_way<InternetAddress, InternetAddress>;
 
     private:
-        static Common::strong_ordering TWC_ (const InternetAddress& lhs, const InternetAddress& rhs);
+        static Common::strong_ordering TWC_ (const InternetAddress& lhs, const InternetAddress& rhs); // utility code share between c++17 and c++20 versions
 
     private:
         AddressFamily fAddressFamily_;

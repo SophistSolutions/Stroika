@@ -297,7 +297,7 @@ namespace Stroika::Foundation::Memory {
 #endif
 
     private:
-        static Common::strong_ordering TWC_ (const BLOB& lhs, const BLOB& rhs);
+        static Common::strong_ordering TWC_ (const BLOB& lhs, const BLOB& rhs); // utility code share between c++17 and c++20 versions
 
     public:
         using EqualsComparer [[deprecated ("use std::equal_to (or just ==) in in 2.1a5")]] = std::equal_to<BLOB>;

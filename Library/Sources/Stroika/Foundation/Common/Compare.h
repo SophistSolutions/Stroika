@@ -101,10 +101,10 @@ namespace Stroika::Foundation::Common {
      *
      *  \par Example Usage
      *      \code
-     *          if (int cmp = Common::ThreeWayCompare (lhs.GetHost (), rhs.GetHost ())) {
+     *          if (auto cmp = Common::ThreeWayCompare (lhs.GetHost (), rhs.GetHost ()); cmp != Common::kEqual) {
      *             return cmp;
      *          }
-     *          if (int cmp = Common::ThreeWayCompare (lhs.GetUserInfo (), rhs.GetUserInfo ())) {
+     *          if (auto cmp = Common::ThreeWayCompare (lhs.GetUserInfo (), rhs.GetUserInfo ()); cmp != Common::kEqual) {
      *             return cmp;
      *          }
      *          return Common::ThreeWayCompare (lhs.GetPort (), rhs.GetPort ());

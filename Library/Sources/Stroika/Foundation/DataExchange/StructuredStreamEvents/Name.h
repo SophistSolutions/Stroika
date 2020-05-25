@@ -81,7 +81,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
         nonvirtual String ToString () const;
 
     private:
-        static Common::strong_ordering TWC_ (const Name& lhs, const Name& rhs);
+        static Common::strong_ordering TWC_ (const Name& lhs, const Name& rhs); // utility code share between c++17 and c++20 versions
 
     public:
         using ThreeWayComparer [[deprecated ("use Common::compare_three_way or <=> in  in 2.1a5")]] = Common::compare_three_way<Name, Name>;
