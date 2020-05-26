@@ -150,7 +150,7 @@ ifeq ($(CONFIGURATION),)
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@rm -rf $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tests/
-	@rm -rf $(StroikaRoot)Builds/$(CONFIGURATION)/Test??
+	@rm -rf $(StroikaRoot)Builds/$(CONFIGURATION)/Tests/
 endif
 
 

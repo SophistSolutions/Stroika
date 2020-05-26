@@ -202,5 +202,5 @@ ifeq ($(CONFIGURATION),)
 	@rm -rf $(StroikaRoot)Builds/*/ThirdPartyComponents/lib/{lzma}* $(StroikaRoot)Builds/*/ThirdPartyComponents/include/lzma
 	@rm -rf CURRENT
 else
-	@rm -f $(PRODUCED_OUTPUT_ARTIFACTS)
+	@rm -rf $(PRODUCED_OUTPUT_ARTIFACTS) $(PER_CONFIGURATION_BUILDS_DIR)include/lzma
 endif

@@ -34,6 +34,9 @@ clean::
 
 
 clobber::	clean
+	@rm -rf $(TARGETDIR)
+	@#rm -f $(TARGETEXE)
+	
 
 
 list-objs::

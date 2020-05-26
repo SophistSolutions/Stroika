@@ -148,7 +148,7 @@ ifeq ($(CONFIGURATION),)
 	@rm -rf CURRENT ORIGS
 	@rm -rf  $(StroikaRoot)Builds/*/ThirdPartyComponents/include/sqlite $(StroikaRoot)Builds/*/ThirdPartyComponents/lib/*sqlite.*
 else
-	@rm -f $(PRODUCED_OUTPUT_ARTIFACTS)
+	@rm -rf $(PRODUCED_OUTPUT_ARTIFACTS) $(PER_CONFIGURATION_BUILDS_DIR)include/sqlite
 endif
 
 	

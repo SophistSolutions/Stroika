@@ -196,7 +196,7 @@ ifeq ($(CONFIGURATION),)
 	@rm -rf $(StroikaRoot)Builds/*/ThirdPartyComponents/lib/*xerces* $(StroikaRoot)Builds/*/ThirdPartyComponents/include/*xerces*
 	@rm -rf CURRENT
 else
-	@rm -f $(PRODUCED_OUTPUT_ARTIFACTS)
+	@rm -fr $(PRODUCED_OUTPUT_ARTIFACTS) $(PER_CONFIGURATION_BUILDS_DIR)include/xercesc
 endif
 
 

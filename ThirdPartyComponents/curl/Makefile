@@ -255,5 +255,5 @@ ifeq ($(CONFIGURATION),)
 	@rm -rf CURRENT ORIGs
 	@rm -rf $(StroikaRoot)Builds/*/ThirdPartyComponents/lib/{libcurl}* $(StroikaRoot)Builds/*/ThirdPartyComponents/include/curl
 else
-	@rm -f $(PRODUCED_OUTPUT_ARTIFACTS)
+	@rm -rf $(PRODUCED_OUTPUT_ARTIFACTS) $(PER_CONFIGURATION_BUILDS_DIR)include/curl
 endif
