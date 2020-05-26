@@ -167,8 +167,7 @@ checkin from one spot.
   ```bash
   cd /tmp
   git clone git@github.com:SophistSolutions/Stroika.git stkbldtest --branch v2.1-Dev
-  cd stkbldtest
-   ./ScriptsLib/RegressionTests
+  USE_TEST_BASENAME=WSL_Ununtu_Simple cd stkbldtest && ./ScriptsLib/RegressionTests
   ```
 
 ## Checkin results
