@@ -421,7 +421,11 @@ namespace {
                     thread2.Start ();
                     thread1.WaitForDone ();
                     thread2.WaitForDone ();
+#if qCompilerAndStdLib_TemplateEqualsCompareOverload_Buggy
+                    VerifyTestResult (updaterValue.load () == 2 * 10);
+#else
                     VerifyTestResult (updaterValue == 2 * 10);
+#endif
                 }
             }
             void Test2_LongWritesBlock_ ()

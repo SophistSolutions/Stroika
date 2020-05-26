@@ -198,6 +198,34 @@ namespace Stroika::Foundation::Execution {
         NoteLockStateChanged_ (L"Unlocked");
         fMutex_.unlock ();
     }
+#if __cpp_impl_three_way_comparison >= 201907
+    template <typename T, typename TRAITS>
+    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex>*>
+    inline bool Synchronized<T, TRAITS>::operator== (const Synchronized& rhs) const
+    {
+        return load () == rhs.load ();
+    }
+#if !qCompilerAndStdLib_TemplateEqualsCompareOverload_Buggy
+    template <typename T, typename TRAITS>
+    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex>*>
+    inline bool Synchronized<T, TRAITS>::operator== (const T& rhs) const
+    {
+        return load () == rhs;
+    }
+#endif
+    template <typename T, typename TRAITS>
+    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex>*>
+    inline auto Synchronized<T, TRAITS>::operator<=> (const Synchronized& rhs) const
+    {
+        return load () <=> rhs.load ();
+    }
+    template <typename T, typename TRAITS>
+    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex>*>
+    inline auto Synchronized<T, TRAITS>::operator<=> (const T& rhs) const
+    {
+        return load () <=> rhs;
+    }
+#endif
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kSupportSharedLocks>*>
     inline void Synchronized<T, TRAITS>::UpgradeLockNonAtomically ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout)
@@ -491,6 +519,7 @@ namespace Stroika::Foundation::Execution {
         rwref () = std::move (v);
     }
 
+#if __cpp_impl_three_way_comparison < 201907
     /*
      ********************************************************************************
      *********************************** operator< **********************************
@@ -608,6 +637,7 @@ namespace Stroika::Foundation::Execution {
     {
         return lhs.load () > rhs;
     }
+#endif
 
     /*
      ********************************************************************************

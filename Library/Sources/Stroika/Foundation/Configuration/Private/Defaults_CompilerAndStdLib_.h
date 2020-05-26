@@ -1683,6 +1683,17 @@ NOTE:
 
 #endif
 
+#ifndef qCompilerAndStdLib_TemplateEqualsCompareOverload_Buggy
+
+#if defined(_MSC_VER)
+// first noted broken in _MSC_VER_2k19_16Pt6_
+#define qCompilerAndStdLib_TemplateEqualsCompareOverload_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt6_)
+#else
+#define qCompilerAndStdLib_TemplateEqualsCompareOverload_Buggy 0
+#endif
+
+#endif
+
 /*
 \sandbox\stroika\devroot\tests\13\test.cpp(64): error C2794: 'CombinedType': is not a member of any direct or indirect base class of 'Stroika::Foundation::Containers::Private_DataHyperRectangle_::NTemplate<int,Stroika::Foundation::Containers::DataHyperRectangle>::Helper_<__make_integer_sequence_t<_IntSeq,_T,2>>'
 5>        with

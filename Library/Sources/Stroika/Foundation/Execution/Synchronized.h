@@ -12,6 +12,10 @@
 #include <shared_mutex>
 #include <type_traits>
 
+#if defined(__cpp_impl_three_way_comparison)
+#include <compare>
+#endif
+
 #if qHasFeature_boost
 #include <boost/thread/shared_mutex.hpp>
 #endif
@@ -37,8 +41,6 @@
  *      @todo   https://stroika.atlassian.net/browse/STK-613 - Synchronized<>::ReadableReference and WritableReference could be more efficent if not subclassing each other
  *
  *      @todo   https://stroika.atlassian.net/browse/STK-657 - experiment with some sort of shared_recursive_mutex - not sure good idea in general, but maybe a limited form can be used in synchronized
- *
- *      @todo   More operator<, and other operator overloads
  *
  *      @todo   Tons of cleanups, orthoganality, docs, etc.
  *
@@ -258,6 +260,10 @@ namespace Stroika::Foundation::Execution {
      *          have no read locks - all locks write locks).
      *
      *          So ONLY support operator-> const overload (brevity and more common than for write). To write - use rwget().
+     *
+     *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
+     *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *          (but these are ONLY defined if TRAITS::kIsRecursiveMutex)
      */
     template <typename T, typename TRAITS = Synchronized_Traits<>>
     class Synchronized
@@ -456,6 +462,26 @@ namespace Stroika::Foundation::Execution {
          */
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveMutex>* = nullptr>
         nonvirtual void unlock () const;
+
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveMutex>* = nullptr>
+        nonvirtual bool operator== (const Synchronized& rhs) const;
+#if !qCompilerAndStdLib_TemplateEqualsCompareOverload_Buggy
+        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveMutex>* = nullptr>
+        nonvirtual bool operator== (const T& rhs) const;
+#endif
+
+    public:
+        /**
+         */
+        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveMutex>* = nullptr>
+        nonvirtual auto operator<=> (const Synchronized& rhs) const;
+        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveMutex>* = nullptr>
+        nonvirtual auto operator<=> (const T& rhs) const;
+#endif
 
     public:
         /**
@@ -749,6 +775,7 @@ namespace Stroika::Foundation::Execution {
         friend class Synchronized<T, TRAITS>;
     };
 
+#if __cpp_impl_three_way_comparison < 201907
     /**
      */
     template <typename T, typename TRAITS>
@@ -794,6 +821,7 @@ namespace Stroika::Foundation::Execution {
      */
     template <typename T, typename TRAITS>
     bool operator> (const Synchronized<T, TRAITS>& lhs, T rhs);
+#endif
 
     /**
      */
