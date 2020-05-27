@@ -12,6 +12,6 @@ echo "Running WSL build (usually takes about 2 hrs)"
 (cd /tmp/stkbldtest && ./ScriptsLib/RegressionTests)
 
 echo "Done with build, so copying out results"
-cp /tmp/stkbldtest/Stroika/Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_BASENAME-$VERSION-OUT.txt Tests/HistoricalRegressionTestResults/
-cp /tmp/stkbldtest/Stroika/Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$VERSION.txt Tests/HistoricalPerformanceRegressionTestResults/
+cp /tmp/stkbldtest/Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_BASENAME-$VERSION-OUT.txt Tests/HistoricalRegressionTestResults/
+cp /tmp/stkbldtest/Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$VERSION.txt Tests/HistoricalPerformanceRegressionTestResults/
 echo "/tmp/stkbldtest still around to examine/post-mortem"
