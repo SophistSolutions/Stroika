@@ -1,0 +1,17 @@
+#!/bin/bash
+
+export USE_TEST_BASENAME="${USE_TEST_BASENAME:-WSL_Ubuntu_Simple}"
+BRANCH="${BRANCH:-v2.1-Dev}"
+VERSION=`./ScriptsLib/ExtractVersionInformation STROIKA_VERSION FullVersionString`
+
+echo "Clearing and checking out $BRANCH"
+(cd /tmp && rm -rf stkbldtest/)
+(cd /tmp && git clone git@github.com:SophistSolutions/Stroika.git stkbldtest --branch $BRANCH)
+
+echo "Running WSL build (usually takes about 2 hrs)"
+(cd /tmp/stkbldtest && ./ScriptsLib/RegressionTests)
+
+echo "Done with build, so copying out results"
+cp /tmp/stkbldtest/Stroika/Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_BASENAME-$VERSION-OUT.txt Tests/HistoricalRegressionTestResults/
+cp /tmp/stkbldtest/Stroika/Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$VERSION.txt Tests/HistoricalPerformanceRegressionTestResults/
+echo "/tmp/stkbldtest still around to examine/post-mortem"

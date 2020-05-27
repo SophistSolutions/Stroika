@@ -165,9 +165,7 @@ checkin from one spot.
   (inside WSL bash prompt)
 
   ```bash
-  cd /tmp
-  git clone git@github.com:SophistSolutions/Stroika.git stkbldtest --branch v2.1-Dev
-  cd stkbldtest && USE_TEST_BASENAME=WSL_Ununtu_Simple ./ScriptsLib/RegressionTests
+  sh ScriptsLib\RunLocalWSLRegressionTests
   ```
 
 ## Checkin results
