@@ -42,7 +42,7 @@ BEGIN
             VALUE	"FileDescription",	"ActiveLedIt! ActiveX Control\0"
 			VALUE	"FileVersion",		qLed_ShortVersionString "\0"
             VALUE	"InternalName",		"ActiveLedIt!\0"
-			VALUE	"LegalCopyright",	"Copyright\251 Sophist Solutions 1994-2019\0"
+			VALUE	"LegalCopyright",	"Copyright\251 Sophist Solutions 1994-2020\0"
 //			VALUE	"LegalTrademarks",	"\0"
             VALUE	"OriginalFilename",	"ActiveLedIt.ocx\0"
             VALUE	"ProductName",		"ActiveLedIt ActiveX Control\0"
