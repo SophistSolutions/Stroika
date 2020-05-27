@@ -46,6 +46,8 @@ endif
 
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 
+#OCX ActiveX controls are DLLs. I THINK MSFT requires this to somehow get defined (but unclear where/for what)
+CXXFLAGS +=   /D_WINDLL
 
 
 all:
@@ -63,7 +65,11 @@ check:
 # Cannot be done generically through configuration cuz a given build of Stroika might contain EXEs targetting multiple subsystems
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 EXTRA_SUFFIX_LINKER_ARGS+= /SUBSYSTEM:Windows
-EXTRA_SUFFIX_LINKER_ARGS+= /ENTRY:wWinMainCRTStartup
+# OCX is a DLL, doesnt seem needed but examples pass this arg
+EXTRA_SUFFIX_LINKER_ARGS+= /DLL
+#flags from sample MSBUILD ActiveLedIt build link line I dont think are needed
+#EXTRA_SUFFIX_LINKER_ARGS+= /DYNAMICBASE
+#EXTRA_SUFFIX_LINKER_ARGS+= /MACHINE:X86 /SAFESEH:NO 
 endif
 
 MIDL_OUTPUT_=$(ObjDir)ActiveLedIt.tlb $(ObjDir)ActiveLedIt_i.c $(ObjDir)ActiveLedIt_h.h
@@ -75,6 +81,8 @@ $(Objs):	$(ObjDir)ActiveLedIt_i.c $(ObjDir)ActiveLedIt_h.h
 
 MIDL_FLAGS +=	/env win32
 RC_FLAGS+=	/I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(ObjDir))"
+# not sure if TLBID matters, but old msbuild script set it
+EXTRA_SUFFIX_LINKER_ARGS+=/TLBID:1
 
 $(ObjDir)ActiveLedIt.tlb:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running MIDL compiler on "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(SrcDir)/Sources/ActiveLedIt.odl` "; see "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(ObjDir)MIDL-Build.out`" ..."

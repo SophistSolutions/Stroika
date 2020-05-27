@@ -2,23 +2,25 @@
 
 ## Install
 
-```
+```cmd
 make CONFIGURATION=Debug-U-32 register
 ```
 
+NOTE: you probably need to run as administrator to register
+
 ## Run
 
-```
+```cmd
 make CONFIGURATION=Debug-U-32 launch-sample
 ```
 
-##
+## Status
 
-@todo - NOT WORKING AS OF 2020-05-24 - Stroika 2.1a5x
+### **WORKING AS OF 2020-05-26 - Stroika 2.1a5x**
 
-Not sure when the last time I tried this successfully was. I think about a year ago
+WinVER = 1909
 
-About 6 months ago, MSFT changed the default version of MSIE - and may have switched to soemthign not suporting activex controls?
+make CONFIGURATION=Debug-U-32 register (must do in administrator command prompt)
 
 ## Visual studio debug
 
