@@ -86,6 +86,8 @@ namespace {
                 /*
                  *  "Valgrind's memory management: out of memory:"
                  *  This only happens with DEBUG builds and valgrind/helgrind. So run with less memory used, and it works better.
+                 *
+                 *  @see https://stroika.atlassian.net/browse/STK-713 if you see hang here
                  */
                 Memory::BLOB                     testBLOB = (Debug::IsRunningUnderValgrind () && qDebug) ? k1K_ : k16MB_;
                 Streams::MemoryStream<byte>::Ptr myStdIn  = Streams::MemoryStream<byte>::New (testBLOB);
