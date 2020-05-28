@@ -1,18 +1,20 @@
-﻿# About
+﻿# Stroika Release Notes
+
+## About
 
 These release notes are a summary of
 major user (developer)-impactful changes - especially those they need
 to be aware of when upgrading.
 
-# History
+## History
 
-## 2.1a5x {2020-05-2x}
+### 2.1a5x {2020-05-2x}
 
 - new Comparison API
   Support new C++20 spaceship operator, but in a way that is backwards compatible with C++17
 
   - Documented approach in <Documentation/Coding Contentions.md#Comparisons Rationale>
-  - use **cpp_impl_three_way_comparison instead of **cpp_lib_three_way_comparison EXCEPT where counting on std c++ library support, as in optional<> usage in default implementations; and upped version# compare to 201907 (according to https://en.cppreference.com/w/User:D41D8CD98F/feature_testing_macros)
+  - use _cpp_impl_three_way_comparison_ instead of _cpp_lib_three_way_comparison_ EXCEPT where counting on std c++ library support, as in optional<> usage in default implementations; and upped version# compare to 201907 (according to https://en.cppreference.com/w/User:D41D8CD98F/feature_testing_macros)
   - #include <compare> as appropriate
   - use compare_three_way{} if available
   - Containers, Strings, DateTime, many with parameterized compare classes, and many others without
@@ -71,7 +73,7 @@ to be aware of when upgrading.
   - NeighborManager - now maps to proper interface ids
   - CIDR
 
-    - CIDR CTOR now takes optional<unsigned int> second arg, so a few construction cases a little simpler to call (and unix code compiles with less change)
+    - CTOR now takes optional<unsigned int> second arg, so a few construction cases a little simpler to call (and unix code compiles with less change)
 
   - Transfer
     - changed IO::Network::Transfer::Connection::Options fMaxAutomaticRedirects default from 0 to 1 (with docs explanations)
@@ -3172,7 +3174,7 @@ Date: Tue May 26 21:15:28 2020 -0400
 
 #endif
 
-## 2.1a4 {2020-01-10}
+### 2.1a4 {2020-01-10}
 
 - **TLDR**
 
@@ -3208,7 +3210,7 @@ Date: Tue May 26 21:15:28 2020 -0400
 
 ---
 
-## 2.1a3 {2020-01-04}
+### 2.1a3 {2020-01-04}
 
 - **TLDR**
 
@@ -3286,7 +3288,7 @@ Date: Tue May 26 21:15:28 2020 -0400
 
 ---
 
-## 2.1a2 {2019-11-25}
+### 2.1a2 {2019-11-25}
 
 - **Major Changes**
 
@@ -3415,7 +3417,7 @@ Date: Tue May 26 21:15:28 2020 -0400
 
 ---
 
-## 2.1a1 {2019-09-04}
+### 2.1a1 {2019-09-04}
 
 - <https://github.com/SophistSolutions/Stroika/compare/v2.1d27...v2.1a1>
 
@@ -3464,7 +3466,7 @@ Date: Tue May 26 21:15:28 2020 -0400
 
 ---
 
-## 2.1d27 {2019-08-27}
+### 2.1d27 {2019-08-27}
 
 - <https://github.com/SophistSolutions/Stroika/compare/v2.1d26...v2.1d27>
 
@@ -3609,7 +3611,7 @@ Date: Tue May 26 21:15:28 2020 -0400
 
 ---
 
-## 2.1d26 {2019-06-17}
+### 2.1d26 {2019-06-17}
 
 - <https://github.com/SophistSolutions/Stroika/compare/v2.1d25...v2.1d26>
 
@@ -3664,7 +3666,7 @@ Date: Tue May 26 21:15:28 2020 -0400
 
 ---
 
-## 2.1d25 {2019-06-07}
+### 2.1d25 {2019-06-07}
 
 - <https://github.com/SophistSolutions/Stroika/compare/v2.1d24...v2.1d25>
 
@@ -3749,7 +3751,7 @@ Date: Tue May 26 21:15:28 2020 -0400
 
 ---
 
-## 2.1d24 {2019-05-24}
+### 2.1d24 {2019-05-24}
 
 - <https://github.com/SophistSolutions/Stroika/compare/v2.1d23...v2.1d24>
 
@@ -3857,7 +3859,7 @@ Date: Tue May 26 21:15:28 2020 -0400
 
 ---
 
-## 2.1d23 {2019-04-27}
+### 2.1d23 {2019-04-27}
 
 - https://github.com/SophistSolutions/Stroika/compare/v2.1d22...v2.1d23
 
@@ -4010,7 +4012,7 @@ Date: Tue May 26 21:15:28 2020 -0400
 
 ---
 
-## 2.1d22 {2019-03-23}
+### 2.1d22 {2019-03-23}
 
 - https://github.com/SophistSolutions/Stroika/compare/v2.1d21...v2.1d22
 
@@ -4119,7 +4121,7 @@ Date: Tue May 26 21:15:28 2020 -0400
 
 ---
 
-## 2.1d21 {2019-03-10}
+### 2.1d21 {2019-03-10}
 
 - https://github.com/SophistSolutions/Stroika/compare/v2.1d20...v2.1d21
 
@@ -4158,7 +4160,7 @@ Date: Tue May 26 21:15:28 2020 -0400
 
 ---
 
-## 2.1d20 {2019-03-09}
+### 2.1d20 {2019-03-09}
 
 - https://github.com/SophistSolutions/Stroika/compare/v2.1d19...v2.1d20
 
@@ -4197,7 +4199,7 @@ Date: Tue May 26 21:15:28 2020 -0400
 
 ---
 
-## 2.1d19 {2019-03-08}
+### 2.1d19 {2019-03-08}
 
 - https://github.com/SophistSolutions/Stroika/compare/v2.1d18...v2.1d19
 
@@ -4239,7 +4241,7 @@ Date: Tue May 26 21:15:28 2020 -0400
 
 ---
 
-## 2.1d18 {2019-03-06}
+### 2.1d18 {2019-03-06}
 
 - https://github.com/SophistSolutions/Stroika/compare/v2.1d17...v2.1d18
 
@@ -4457,7 +4459,7 @@ Date: Tue May 26 21:15:28 2020 -0400
 
 ---
 
-## 2.1d17 {2019-01-28}
+### 2.1d17 {2019-01-28}
 
 - https://github.com/SophistSolutions/Stroika/compare/v2.1d16...v2.1d17
 
