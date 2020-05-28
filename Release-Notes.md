@@ -23,7 +23,20 @@ to be aware of when upgrading.
 
   - ApplyConfigurations
 
+  - Configure
+
+    - configure process now (for visual studio.net only so far) stores BUILD_TOOLS_ROOT default value --build-tools-root parameter
+    - configure: fixed docstring on argment --target-platforms (was --targetPlatforms);
+    - _BIG IMRPVOEMENT_ renamed: Library/Projects/VisualStudio.Net-2019(and 2017)/SetupBuildCommonVars.pl -> ScriptsLib/Configure-VisualStudio-Support.pl
+      Updated configure to use this, and handle via extra args VSDIR (soon sb able to spec that on cofnigure cmd line).
+    - a little caching in configure script so runs 4x faster on window (visual studio)
+    - GetDefaultToolsBuildDir() now supports platform with version# like VisualStudio.Net-2017 or none VisualStudio.Net
+
   - cygpath gets unahppy with empty strings, so handle that in cygpath wrappers
+
+  - Makefile shared variables/templates
+
+    - renamed FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE -> FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE (deprecating older name)
 
   - RegressionTests
 
@@ -31,8 +44,10 @@ to be aware of when upgrading.
 
   - Docker
 
-    - DockerBuildContainers/Windows-VS2k19/Dockerfile
-      (switch to cygwin - msts one not working - cygwin working well)
+    - DockerBuildContainers/Windows-Cygwin-VS2k19/Dockerfile (sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19)
+
+      - Also have draft for msys/mingw, but this not working
+      - Getting-Started-With-Stroika.md
 
     - cleanup makefile for docker images so builds windows specific ones iff on windows
 
@@ -44,412 +59,75 @@ to be aware of when upgrading.
     - Generally - because of the cost / budget limits, this isn't very useful, and I may abandon.
     - Nice thing about the CircleCI builds, is they are all done with docker
 
-  - TravisCI
+  - ScriptsLib
 
-  - Compiler bug workarounds
+    - migrated (and cleaned up) code for RunSystemWithVCVarsSetInEnvironment to RunArgumentsWithCommonBuildVars script
 
-    - attempt workaround for qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy
-    - qCompilerAndStdLib_strong_ordering_equals_Buggy bug workaround
+  - TravisCI (<https://travis-ci.com/github/SophistSolutions/Stroika/builds>)
+
+    - got builds / CI working fairly well with TravisCI
+    - Windows, Unix and MacOS
+    - Main issue here is the limit of 50 minute build+test, so we need to trim down set of libs etc to get it to complete without timing out'
+    - and some issue executing EXEs on Windows - https://stroika.atlassian.net/browse/STK-712 https://stroika.atlassian.net/browse/STK-708 - windows only
+
+  - Compiler Suported and bug workarounds
+
+    - Compilers
+
+      - MSVC - 15.9.x
+
+    - Bug workaround defines changes
+      - attempt workaround for qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy
+      - qCompilerAndStdLib_strong_ordering_equals_Buggy bug workaround
 
   - ThirdPartyComponents
+
+    - Boost
+      - small cleanups to boost/Makefile (e.g use of revised RunArgumentsWithCommonBuildVars API)
+    - libcurl
+      - use 7.69.1
     - OpenSSL
       - use 1.1.1f
       - makefile cleanups
+      - makefile use of ScriptsLib/RunArgumentsWithCommonBuildVars
+      - fixed build backup FETCHURL dir for old versions of openssl
+    - sqlite
+      - use 3.32.1
     - Xerces
       - tweaks to windows xerces makefile
       - fixed x86 config cmake args for xerces makefile
       - CMAKE_CURRENT_SOURCE_DIR/CMAKE_PER_TARGET_BUILD_DIR
+      - small cleanups to xerces makefile so builds using vs2k19 instead of 17, which may make windows docker builds fully work
+    - ZLib
+      - simplify makefile for zlib (and fixed so using more of config with nmake and much simpler way to pass args - using nmake /E so env vars with env script passed along instead of quoting nightmare with RunArgumentsWithCommonBuildVars
 
 - IO::Network
 
   - draft regression tests Test6*Neighbors*
   - added IO::Network::Interface::SystemIDType
   - cleanup networks regression tests
-  - new class IO::Network::SystemInterfacesMgr (part of refactoring)
-  - [[deprecated ("use SystemInterfacesMgr{}.GetAll - deprecated in in 2.1a5")]]Traversal::Iterable<Interface> GetInterfaces ()
-  - [[deprecated ("use SystemInterfacesMgr{}.GetById - deprecated in in 2.1a5")]optional<Interface> GetInterfaceById
-  - New API SystemInterfacesMgr::GetContainingAddress()
-  - lose class IO::Network::Interface::Binding (and replace it with deprecated using = CIDR for backward compat); and change the fBindings list in the Interace to be a list of CIDR (thats what the old bindings class amounted to)
+  - Interfaces
+
+    - new class IO::Network::SystemInterfacesMgr (part of refactoring)
+    - [[deprecated ("use SystemInterfacesMgr{}.GetAll - deprecated in in 2.1a5")]]Traversal::Iterable<Interface> GetInterfaces ()
+    - [[deprecated ("use SystemInterfacesMgr{}.GetById - deprecated in in 2.1a5")]optional<Interface> GetInterfaceById
+    - New API SystemInterfacesMgr::GetContainingAddress()
+    - lose class IO::Network::Interface::Binding (and replace it with deprecated using = CIDR for backward compat); and change the fBindings list in the Interace to be a list of CIDR (thats what the old bindings class amounted to)
+    - various fixes to reporting
+    - WLANAPI
+      - Added support for WLANAPI\_ wrapper on wlanapi.dll instead of calling apis directly. These dont work and cause link error (runtimebinding failure) on docker cuz of absense of lan services module being installed. Untested so far, but this should work either way
+
   - NeighborManager - now maps to proper interface ids
   - CIDR
 
     - CTOR now takes optional<unsigned int> second arg, so a few construction cases a little simpler to call (and unix code compiles with less change)
 
   - Transfer
+
     - changed IO::Network::Transfer::Connection::Options fMaxAutomaticRedirects default from 0 to 1 (with docs explanations)
+    - probably fixed https://stroika.atlassian.net/browse/STK-706 sporadic corruption with webserver ConnectionManager (issue was incomplete object passed as this lambda to start of new thread)
 
 #if 0
-
-    Added support for WLANAPI_ wrapper on wlanapi.dll instead of calling apis directly. These dont work and cause link error (runtimebinding failure) on docker cuz of absense of lan services module being installed. Untested so far, but this should work either way
-
-commit 1e1402e05d553b8db1fd5c4a643b555e55aff650
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jan 22 15:36:16 2020 -0500
-
-    Docs for DockerBuildContainers/Windows-VS2k19/Getting-Started-With-Stroika.md
-
-commit 63939f3b6e63ddc46b595b7ccac2264124dcff6a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jan 22 15:39:04 2020 -0500
-
-    docs DockerBuildContainers/Windows-VS2k19/Dockerfile
-
-commit 2c88e159b7089186ee6a1f673c814812ad933678
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jan 23 07:22:50 2020 -0500
-
-    tweak debug printout, and logging for wirelessinfo from IO::Network::Interface object (getallinteraces)
-
-commit 0539baacd9ad5af6a2f8e01279fc79f283de7081
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jan 23 07:34:55 2020 -0500
-
-    fixed another small bug in windows system get all intwork interfaces code (error handling on wireless interace); and more dbg trace messages on unexpected results from that code
-
-commit 4cbb03a42c6599136da8f135ef53f53cce1d3357
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jan 23 07:49:13 2020 -0500
-
-    fixed missing conversion to useof WLANAPI_; and lose #pragma comment(lib, wlanapi.lib) to address issue of running on docker container
-
-commit 559ce5e6f6e2184b9710c38cb674a17d8c55740d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jan 23 08:09:32 2020 -0500
-
-    https://stroika.atlassian.net/browse/STK-706 more debug messages
-
-commit fc68e7e82f6bfc64278e89286533a49a208d2620
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jan 23 08:59:23 2020 -0500
-
-    probably fixed https://stroika.atlassian.net/browse/STK-706 sporadic corruption with webserver ConnectionManager (issue was incomplete object passed as this lambda to start of new thread)
-
-commit 720e42a67498a8fa613688b0e28c93dd7d2bff62
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jan 23 10:18:50 2020 -0500
-
-    delete debugging code for https://stroika.atlassian.net/browse/STK-706 since now appears fixed
-
-commit 6af1bebce31bae4ecb963adfe04881fe76f9057a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jan 23 19:56:29 2020 -0500
-
-    small cleanups to xerces makefile so builds using vs2k19 instead of 17, which may make windows docker builds fully work
-
-commit d9157d8e81cfff5ddb49a4e03607f7b16bbfca58
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jan 23 19:59:24 2020 -0500
-
-    updated docs on running builds under windows docker
-
-commit eeb3918bcbfd8be3bb11e6e98d48624a9e7ea331
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jan 23 20:51:54 2020 -0500
-
-    use SystemInterfacesMgr instead of deprepcated IO::Network::GetInterfaces ()
-
-commit 455eef6f843cca0ef7755a614a766c77dacdee68
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jan 23 20:52:35 2020 -0500
-
-    now that I changed generator name, I muse pass -A param for 64 bit builds on cmake for xerces
-
-commit 926c525ace2bace35e0467bdea3595aa2924d8d6
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jan 25 14:50:13 2020 -0500
-
-    small improvements to ### USED TO RUN ScriptsLib\RunArgumentsWithCommonBuildVars
-
-commit ff9db5f9a372f6163a9a39a03156181a6f98f3c3
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jan 25 17:03:04 2020 -0500
-
-    more progress on winbuild for docker ci (experiments)
-
-commit 59b30eca8a539edafd329baa41495068970eee54
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jan 25 17:05:01 2020 -0500
-
-commit 702c349d8c86212bb68d7f8df97cf57aa247fcf7
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jan 26 06:56:58 2020 -0500
-
-    simplify thirdpartycomponents makefile for zlib (and fixed so using more of config with nmake and much simpler way to pass args - using nmake /E so env vars with env script passed along instead of quoting nightmare with RunArgumentsWithCommonBuildVars
-
-commit dbb0fce72e9fc1c5d425ada4bb35b3d67dadd434
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jan 26 13:13:43 2020 -0500
-
-    small cleanups to ThirdPartyComponents/boost/Makefile (e.g use of revised RunArgumentsWithCommonBuildVars API)
-
-commit bc0bc3a1ad0faaea21b1b3f3a246ed22f9450d17
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jan 26 13:23:50 2020 -0500
-
-    renamed FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ->  FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE (deprecating older name)
-
-commit f4171ff86e8bab2cf33807f2f7c9d39f00396f12
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jan 26 13:46:55 2020 -0500
-
-    cosmetic makefile cleanup
-
-commit ff3a0e05fa791fffcfc7fdfafb9a760b9692b1d1
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jan 26 14:22:17 2020 -0500
-
-    start minor cleanup to RunArgumentsWithCommonBuildVars usage
-
-commit ca2b4510091015ab9a9ac2b3f08c96790cb6a2d0
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jan 26 14:35:48 2020 -0500
-
-    small cleanups to openssl makefile use of ScriptsLib/RunArgumentsWithCommonBuildVars
-
-commit 36ca07a6367d154380e57dbad45c3e922dba5f25
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jan 26 21:46:19 2020 -0500
-
-    fixed regressions in recent openssl thirdpartycomponents makefiles
-
-commit ddcb0e4b237591362724c7dbff2e56d63849d8ca
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jan 27 10:14:20 2020 -0500
-
-    hopefully fixed zlib thirdparty products makefile recent regression
-
-commit 5493bbf71912a591936824a86b4c52b3a24b2592
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jan 28 10:05:16 2020 -0500
-
-    attempt at disabling some workflows on dev branch except for manual build (not sure how to do that yet)
-
-commit a5d72517d22c3178a14171f9ca7dd292931fc9b7
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jan 28 10:09:11 2020 -0500
-
-    attempt at disabling some workflows on dev branch except for manual build (not sure how to do that yet)
-
-commit 77d1b83a6154d5a8d59f42bf417b07c29178a4a7
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jan 28 11:48:21 2020 -0500
-
-    silecen warnings for newer compilers in the 15.9.x range
-
-commit 6de54a63c26a538a3b149382ff0e0d4d81653f53
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 1 11:42:54 2020 -0500
-
-commit 5edcecfbecbee53455f64ebd6c48227983d627de
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 1 11:43:14 2020 -0500
-
-    small docs cleanups to VisualStudio.Net-2019/SetupBuildCommonVars.pl and ScriptsLib/RunArgumentsWithCommonBuildVars
-
-commit c88220e3da9ec31ab42b44d8d47761c557db3b7c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 1 11:52:35 2020 -0500
-
-    comments about openssl makefile build warnings - comment reason OK - for windows
-
-commit 76c4cd527488da7206f0dc92a1b39549c050d0cc
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 1 13:09:47 2020 -0500
-
-    configure process now (for visual studio.net only so far) stores BUILD_TOOLS_ROOT default value
-
-commit 71dc91e10f7139579407bac356091b5dd05b78af
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 1 13:15:42 2020 -0500
-
-    configure: fixed docstring on argment --target-platforms  (was --targetPlatforms); added support for --build-tools-root parameter
-
-commit 72ac33431f40b0dad52f438e1e03d630c323bd9a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 1 13:41:22 2020 -0500
-
-    migrated (and cleaned up) code for RunSystemWithVCVarsSetInEnvironment to RunArgumentsWithCommonBuildVars script
-
-commit c166cfa3a9b410c9b5b400d8c337a090923eba59
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 1 14:48:54 2020 -0500
-
-    more cleanups of VisualStudio.Net-2019/SetupBuildCommonVars.pl
-
-commit a98f64fea1db62308913ea9d2b972c5d3c0b7fa6
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 1 15:49:29 2020 -0500
-
-    fixed typo(regression) in ../../ScriptsLib/RunArgumentsWithCommonBuildVars
-
-commit 1babb360956077bda78d9ea761440f0a3ffc9d9b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 1 16:35:58 2020 -0500
-
-    perl script cleanup - use local instead of my in a few places
-
-commit ee90e9ca86d1a6d7295df37da4398f19984f9a1d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 1 16:53:25 2020 -0500
-
-    BIG CONOFIGRE IMRPVOEMENT
-
-    renamed:    Library/Projects/VisualStudio.Net-2019(and 2017)/SetupBuildCommonVars.pl -> ScriptsLib/Configure-VisualStudio-Support.pl
-    Updated configure to use this, and handle via extra args VSDIR (soon sb able to spec that on  cofnigure cmd line).
-
-commit e154243eb140dbd63727f68c1971c962e46f4ceb
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 1 17:12:09 2020 -0500
-
-    a little caching in configure script so runs 4x faster on window (visual studio)
-
-commit 9f6b031e993e44df1d63f9f7d6d086519401197f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 1 17:28:32 2020 -0500
-
-    configure scripts: GetDefaultToolsBuildDir() now supports  platofrm with version# like VisualStudio.Net-2017 or none VisualStudio.Net
-
-commit f28b0c787ca50c6cc7024e7cb1d3cab7ad2a82ca
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 1 22:50:30 2020 -0500
-
-    windows docker image cleanup - configure flags to use any vs2k19 version and set to 16.4.4"
-
-commit fe7a907a6619f82ccb6b01890c39306b69ede69e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 2 18:03:27 2020 -0500
-
-    renamed DockerBuildContainers/Windows-VS2k19 (and sophistsolutionsinc/stroika-buildvm-windows-vs2k19) to DockerBuildContainers/Windows-Cygwin-VS2k19 (and sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19)
-
-commit b0c85330ca3e73bb396f09481954c23920494c88
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 2 18:14:55 2020 -0500
-
-    fixed missing file from last checkin/rename
-
-commit 0a1eb363fbfe9000350faa2e329c047f35073f3d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Feb 4 23:04:06 2020 -0500
-
-    travisci - tweak path setting on windows build
-
-commit a6acca2209f50aa823a6815845380a52e25cebe1
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Feb 4 23:07:11 2020 -0500
-
-    preliminary but not yet functioning dockerfile for mingw
-
-commit cbf95a2be8947a01c12d5fa75d35b576c4afcf99
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Feb 5 10:20:14 2020 -0500
-
-    travisci windows build test
-
-commit f05420b398d80751bfdc4777e8cd48002a90bce4
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Feb 5 10:21:43 2020 -0500
-
-    travisci set MAKEFLAGS smaller cuz getting errors extracting libcurl on TPP (test)
-
-commit caf2fc51a1ebd2a0b3cb9b6f2068ffe2cfef6d2e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Feb 5 10:28:23 2020 -0500
-
-    travisci windows build test
-
-commit 57cfa1b7b21eafdb387b36b49b7012e8a6f4b0a1
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Feb 5 22:57:32 2020 -0500
-
-    travisci windows build attempts
-
-commit d827cd2a2a839461cd6f4dcafb995f159386da98
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Feb 5 22:59:46 2020 -0500
-
-    travisci windows build attempts
-
-commit 4339896394f3f6c2f47ec0ba53b839f9c93adc22
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Feb 5 23:09:53 2020 -0500
-
-    more attempts at getting travisci windows builds working
-
-commit 342c8a004ee11af747939ae4de638c7bebd0ca8f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Feb 6 08:46:45 2020 -0500
-
-    fixed missing -p on mkdir that occasionally caused failure to build on travisci
-
-commit db3af54ed01f6e6f2cbdb0c80b1d061c31d3a46c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Feb 6 08:58:07 2020 -0500
-
-    more tweaks to travisci build file in hopes of getting anything working on windows
-
-commit 60101caf5533dd834f3b45f64cc7f173f54e15e3
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Feb 6 13:06:03 2020 -0500
-
-    travisci: try next cyg-get attempt
-
-commit b84fed09b69ebbea8315e91d47a16ce4fdaa9d1e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Feb 6 13:25:00 2020 -0500
-
-    travisci windows build attempts
-
-commit 30c4ef65603e61210b833e08eedd70eeb75bbb2f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Feb 6 20:59:41 2020 -0500
-
-    travisci for windows: another attempt at invoking cygwin
-
-commit c49b9454e4a2beaaf4c5b73d14ede01842d90bdf
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Feb 6 21:03:17 2020 -0500
-
-    travisci for macos try xcode 11.4 - to see if it comes with new os
-
-commit 4e3f86ea0b73ce50d3776ec581c8a2e9f0fd6934
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Feb 6 21:07:06 2020 -0500
-
-    typo fixed
-
-commit c81d91e821580397941e03a8639d7a2508cf76f8
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Feb 6 21:21:42 2020 -0500
-
-    travisci print macos version
-
-commit 82b5060800b6712472b3e9992f378fda63471e0a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Feb 6 21:25:51 2020 -0500
-
-    travisci: more build tweaks
-
-commit 2f83eadac9ea194b479ee25cd2571641dbacb4f4
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Feb 6 21:27:22 2020 -0500
-
-    travisci: more build tweaks
-
-commit 505c1836cac84b0c283d657a9fb3848c09df0760
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Feb 6 21:51:24 2020 -0500
-
-    travisci - xcode 11.4 doesnt exist yet, so revert to 11.3
-
-commit c9787ad5e778b8be01205e8a604a93477d059513
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Feb 6 21:51:44 2020 -0500
-
-    travisci - xcode 11.4 doesnt exist yet, so revert to 11.3
-
-commit f68fccee715e80e3d0c57ee58532a9397bcd6422
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 8 15:24:14 2020 -0500
 
     IO::Network::Transfer::Connection GET/Send etc document Ensure (result.GetSucceeded ())
 
@@ -537,102 +215,6 @@ Date: Sat Feb 22 11:20:20 2020 -0500
 
     fixed use of const && - doesnt make sense to use
 
-commit 52e209f4624a303b6f3affcf20df4726e73b8dd8
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 22 11:28:14 2020 -0500
-
-    try docker on travisci for windows build
-
-commit 1904929ddd154bff60e94498df211b366959b69c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 22 11:31:32 2020 -0500
-
-    travisci looks like docker may work on travisci builds for windows, so trying that more fully
-
-commit 3c001fe672e0148f8915ee4c5a883006c0a0ff36
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 22 11:50:00 2020 -0500
-
-    try travis_wait on docker pull for windows build
-
-commit 66375a834fd0c29cd9e2d2a255e6a702e4d5ffc1
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 22 16:21:04 2020 -0500
-
-    travisci: tweaks to windows build so has a better chance for job to succeed/finish
-
-commit 7ac57b49ee7ad766265f98d771c17c22d49f8fa7
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 22 16:31:03 2020 -0500
-
-    travisci attempted reformatting
-
-commit 0522bddfce4a834bb47bf6f7bd03b1d6f147688b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 22 17:05:54 2020 -0500
-
-    Attempt to break travisci lineinto parts didnt work
-
-commit 185b12406f5601bfff6505d905d3044ac6f8d96a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 22 21:08:31 2020 -0500
-
-    travisci: use travis_wait for windows build (and back to trying -j4)
-
-commit 343925a25d61a3a1cb090c4a48c9295d00f3278c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 22 23:12:04 2020 -0500
-
-    travisci: use travis_wait for windows build
-
-commit 887de6e5aff7b877f609c6d05d78e0b4e51afc08
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 23 10:02:20 2020 -0500
-
-    travisci: use travis_wait for windows build
-
-commit ea759b244cdb2fff91e657e429acc8d9708f8ef6
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 23 11:27:44 2020 -0500
-
-    travisci: use travis_wait for windows build
-
-commit bf35a6c9b28e7745487b7c33f99dea0e7df73059
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 23 17:09:28 2020 -0500
-
-    travisci: use travis_wait for windows build
-
-commit dce66d76d34be885782a5473c88672ed9731a5ca
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 23 19:45:50 2020 -0500
-
-    small docs cleanups on building stroika
-
-commit 17b05f31c8038972741cbb88f28b5cd5b4737944
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 23 19:46:52 2020 -0500
-
-    travisci windows docker build small fixes to names/tests run
-
-commit 1d6d878b3c86b28cb98859aad08a588716c5a41f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 23 21:35:29 2020 -0500
-
-    small celanups to travisci builds
-
-commit 64606cf07809d05ed73434d625817573955bef58
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 23 21:38:23 2020 -0500
-
-    travisci: dont need allowfail on windows for travisci anymore; and abandon non-docker windows build since never got that close to working, and the docker version is stricly better due to my controlling environemnt of build (dockerfile instead of whatever happens to be on travisci system)
-
-commit 49d8c48ffd849073a3f2e656160596b13daddd9d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 23 21:39:37 2020 -0500
-
-    travisci: dont need allowfail on windows for travisci anymore; and abandon non-docker windows build since never got that close to working, and the docker version is stricly better due to my controlling environemnt of build (dockerfile instead of whatever happens to be on travisci system)
-
 commit ad0285677913a123ea966b713c577738a50b503b
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Tue Feb 25 09:07:03 2020 -0500
@@ -711,95 +293,17 @@ Date: Sun Mar 8 11:21:36 2020 -0400
 
     several fixes to ScriptsLib/RunLocalWindowsDockerRegressionTests so now runs much better - mostly using better name for container, and doing innocuous run (so can re-connect/restart later) and doing builds etc via docker exec, not docker run
 
-commit cce3a4a187adb0c330f3f2cb69c7b824f6daa148
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 8 13:36:15 2020 -0400
-
-    more experiments with docker pull max-concurrent-downloads=20
-
 commit 045c81f889e19d936a115c59d21132ddbcd17ad9
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Sun Mar 8 16:36:26 2020 -0400
 
     DockerBuildContainers/Windows-Cygwin-VS2k19/Dockerfile: VS_16_4_5 and otehr cleanups
 
-commit 6d31976f2ae36223b304c90ecf630ac4c87bd063
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 8 16:51:44 2020 -0400
-
-    travisci build scripts cleanups - more logging of type of vm etc, and cleanup docker calls
-
-commit 34846f79157ef3e424ec1d3acb5bc2c2c35a96b4
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 8 17:15:35 2020 -0400
-
-    more tweaks to .travisci build
-
-commit e6ed34b99211a38825142c7bf94084b4ae4c3dd5
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 8 17:22:36 2020 -0400
-
-    more tweaks to travisci config file
-
-commit 2b53d2c16d49f34169cbe688c95a883a7cdf136b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 8 17:24:30 2020 -0400
-
-    more tweaks to travisci config file
-
-commit 82698a6cab6fce172082fa3204c3d89805f5a763
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 8 17:34:52 2020 -0400
-
-    more travisci attempts at fixes (homebrew change macos, and attempt to print# cpus on windows)
-
-commit a8b178e906c518d98858c1955ae7a87ed0a8b7d5
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 8 18:03:40 2020 -0400
-
-    travisci cleanups to macos run; and windows builds (still not really working)
-
-commit 2b6e30013532eb29cad8eec93c816d0ddaed0420
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 8 20:02:58 2020 -0400
-
-    travisci: tweak macos buiod (still not close); disable -j2 to test; and add dbg messages in windows buio;d
-
-commit 6c8ae92e8b95865244cff662a9a68096cf7419dd
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 8 20:07:21 2020 -0400
-
-    fixed typo
-
-commit d8eecb36927ab3bae0a8cc7f1ead7a4fc492b56b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 8 20:18:43 2020 -0400
-
-    fixed typo
-
 commit 845ff346f3d478898e8cc2a21b950df55b0c9ef7
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Sun Mar 8 20:59:44 2020 -0400
 
     define BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED to build stacktrace code on macos (still testing)
-
-commit c31f8402fa49c2a82bb5d053585abf928588274c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 8 21:04:14 2020 -0400
-
-    travisci: renabled MAKEFLAGS set since did help; and fixed a couple typos
-
-commit 7616f07f3dbda311298a2eb3168a0525d075e389
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 8 21:43:28 2020 -0400
-
-    TravisCI: experiment with -j3, tweak macos build (still not working), note --storage-opt not working on windows (not needed now), and testing no -it on run for windows
-
-commit d8d3539f18839dc9751bc7338e8227a69826826e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Mar 9 10:50:50 2020 -0400
-
-    travisci more experiements getting windows build working
 
 commit 7361e0dfb39f8f9a46c310e175bdaddca708a0a0
 Author: Lewis Pringle <lewis@sophists.com>
@@ -812,42 +316,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date: Mon Mar 9 11:36:27 2020 -0400
 
     improved ScriptsLib/RunLocalWindowsDockerRegressionTests
-
-commit 56a9628e30a7359bb2d2b1d30061ebc024532696
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Mar 9 11:42:38 2020 -0400
-
-    more fiddling with travisci build config
-
-commit 91acc8c9a27cc79e05b964c97dbd61193fdaa336
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Mar 9 12:00:55 2020 -0400
-
-    retrying -j3 build test with travisci
-
-commit 59b44ca85c7c917aacf0e69021e6b16d315ef6ed
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Mar 9 13:40:11 2020 -0400
-
-    travisci - more cleanups - with -j (--jobs= now) args etc, and windows docker build
-
-commit cc25be25bd8ed5ec335512406f6e77f294ce118f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Mar 9 13:51:10 2020 -0400
-
-    travisci - comments and added after_failure rule to debug
-
-commit 6c32fc8099746c077ab975cbc06b889f0ae9f95a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Mar 11 10:30:32 2020 -0400
-
-    TRAVISCI: attempt to debug why candle run under windows docker under travisci not working
-
-commit 86cae6c5cb7e0dc89612c97e7f63c6f18388ed54
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Mar 11 10:31:51 2020 -0400
-
-    try --jobs=3 again for travisci
 
 commit d2627d441d6729ca33c345f42360dd5c70a81ef5
 Author: Lewis Pringle <lewis@sophists.com>
@@ -873,12 +341,6 @@ Date: Sun Mar 15 14:12:34 2020 -0400
 
     create jira ticket https://stroika.atlassian.net/browse/STK-708 to track travis build problem and mark that samples build as can fail, so move on and ignore travis issues for now
 
-commit 39d4b7cd6b71801908fa43b64a071cd7a3df09f7
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 15 14:21:20 2020 -0400
-
-    travisci another guess at allow_failures feature
-
 commit 2f0b36ef644e69ad280b59197d3c73935fc92c66
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Sun Mar 15 21:56:02 2020 -0400
@@ -901,13 +363,9 @@ commit d06a5330eb536ec96b281b25a1761bb4e090303f
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Tue Mar 17 15:56:50 2020 -0400
 
-    openssl use 1.1.1e
-
 commit 9620c3e6fc61b73f67400ca3b1202b65372e51dd
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Tue Mar 17 15:59:32 2020 -0400
-
-    libcurl 7.69.1
 
 commit 04efbdb15ebdee8ed31c41b5bc8e0faac94620d3
 Author: Lewis Pringle <lewis@sophists.com>
@@ -969,18 +427,6 @@ Date: Fri Mar 20 13:07:42 2020 -0400
 
     added GLIBCXX_9x_ define to config
 
-commit 0f0c747cd3dafd9db1be591bc6763c2354e430b4
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Mar 20 13:08:05 2020 -0400
-
-    cosmetic
-
-commit 7fdb620b58fc6add6917beab598f0609c9b8c121
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Mar 20 13:08:24 2020 -0400
-
-    added regtest
-
 commit f915f34bde596159911f01214c9ec649054094c3
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Fri Mar 20 13:31:29 2020 -0400
@@ -993,107 +439,11 @@ Date: Fri Mar 20 13:41:07 2020 -0400
 
     tweak timiongs for occasional errors in threads regtest
 
-commit f69561839c1373fceb70974346b928e9eb4bc1c5
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Mar 20 16:04:27 2020 -0400
-
-    make format-code
-
-commit 5ff29c3da46f963c022fce3952252dcb2acefed5
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Mar 20 18:20:03 2020 -0400
-
-    fixed missing virtual ~Table () = default;
-
 commit 2b9dfadbb8d27049ba021ca644dcd8c5a6717a1c
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Fri Mar 20 21:07:15 2020 -0400
 
     cosmetic; and fixed backewards(regression) change to regtest - had limits qDebug backwards
-
-commit 7963ff3286e1c98fc75dcac4c1e904cff5b2a7b0
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Mar 21 11:41:02 2020 -0400
-
-    travisci: fix passing makeflags to container for windows
-
-commit f623d6761cbbe021a046040885294af1d2e99f9e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Mar 21 11:43:51 2020 -0400
-
-    more attempts to debug why tests running is failing on travisci windows
-
-commit 98978f6b8cf5dc0fa70dbf2f64cb6a9fe8836c14
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Mar 21 11:51:14 2020 -0400
-
-    travisci windows - trying using unblcokfile to fix issue with build of samples/installers
-
-commit 1dd4c891f969d2f3462b0544fcbef80b13b695bb
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Mar 21 11:56:15 2020 -0400
-
-    silence warning
-
-commit 33e2ddf65ca278cb3a323660dfbc9c8c96e12c1c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Mar 21 16:52:34 2020 -0400
-
-    travisci - enable building boost to test (and todo comments)
-
-commit 782a05b2bb10da9f463ae3cc390698458dbed7f6
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Mar 21 19:09:06 2020 -0400
-
-    travisci windows debugging: added echo status lines to sh commands; more explicit path to test.exe
-
-commit 45c8b883444ce1d56114b1aa7a150f0e8cf993c6
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Mar 21 19:51:24 2020 -0400
-
-    travisci - more tweaks to debug windows build script
-
-commit f9724960993e69f856834e6a750ca62f4206cfcc
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Mar 21 22:10:45 2020 -0400
-
-    travisci - more tweaks to debug windows build script
-
-commit c864fa633c20e5890ba313958b89bf374b18e319
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 22 20:18:46 2020 -0400
-
-    try using --tty intead of --interactive for docker run inside windows TRAVISCI
-
-commit a17933484be6139a23e5907607dab1bf4ee1145d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 22 21:02:17 2020 -0400
-
-    travisci: re-nable test of sqlite - I think we have enuf time; and use more direct args to docker exec instead of sh -c calls"
-
-commit dec8865c616e823f00dc2c622454676f5b6ae8f5
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 22 21:07:48 2020 -0400
-
-    attempt at powershel set prefs disbale scanning to workaround issue running windows exes (long shot)
-
-commit c28006cef5e601a68239906569439dfe91cb0e16
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 22 23:42:57 2020 -0400
-
-    docker exec appears to require sh -c for call to configure
-
-commit 91583225fb3be7ba43e35b4d13621c0dd75efcf2
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Mar 23 10:58:49 2020 -0400
-
-    travisci: lose more failed tests for running executables and try a couple ohters (-tty and --interactive)
-
-commit a0eb382ea4e0be6d35cc66e55dddde21d7b5f4af
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Mar 23 13:45:21 2020 -0400
-
-    try sophistsolutionsinc/stroika-buildvm-windows-1809-cygwin-vs2k19 to see if running old docker container works
 
 commit c71412ba06198eb6cdfd6eb65a03bc3be0143e39
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1112,18 +462,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date: Mon Mar 23 15:40:47 2020 -0400
 
     added systeminfo call (for windows) to print system stats in /ScriptsLib/RegressionTests
-
-commit 598ea204f681d67fc2bf0dbd7fadc82417889c57
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Mar 23 17:25:47 2020 -0400
-
-    cosmetic
-
-commit deb180f7e72a441237a49fc0792d120534ae173d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Mar 24 12:24:26 2020 -0400
-
-    undo some cleanups to travisci script since they didnt work
 
 commit 0b2fc3fb0fd922eb6a317d066be7c8367cc0a919
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1185,18 +523,6 @@ Date: Fri Mar 27 11:53:09 2020 -0400
 
     more tweaks to regressiont test output to capture version of VM running tests
 
-commit 31baf4e8241fd22ebb3e110fd4f33ae2d2aa9e06
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Mar 27 11:53:29 2020 -0400
-
-    travisci: macos build - attempt -k to see if we get further
-
-commit d2685da0accf3998299273229bfc596b51408eef
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Mar 27 11:54:33 2020 -0400
-
-    travisci: macos build - attempt -k to see if we get further
-
 commit f5ab36bdbd7ff10e17fb4a59e343b17ea18c03ad
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Sat Mar 28 11:18:49 2020 -0400
@@ -1219,12 +545,6 @@ Date: Sun Mar 29 17:03:56 2020 -0400
             >       Execution/WaitForIOReady uses TRAITs which are overidden (template specialized)
                     for the various socket types.
 
-commit 7fb9f36ca5eef382e5c12185e2d9daecf7e9061e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 29 17:06:36 2020 -0400
-
-    cosmetic
-
 commit 19c0f12091c8c702ac3f29ba2359b18f66d84ea0
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Mon Mar 30 13:29:24 2020 -0400
@@ -1237,18 +557,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date: Mon Mar 30 21:12:59 2020 -0400
 
     WaitForIOReady code - lose default CTOR; add optional Pollable2Wakeup parameter
-
-commit 3d8846048d9aed02e0f9269b5160c6c1d441867c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Mar 30 21:37:33 2020 -0400
-
-    cleanups to WaitForIOReady code
-
-commit bec78c57b7037db581a4dfa3b8d32c8ca46af5b2
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Mar 31 20:31:09 2020 -0400
-
-    cosmetic
 
 commit a3ad396258a8a20da587b3885c2cab95f8b5957c
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1326,8 +634,6 @@ Date: Sat Apr 4 18:21:04 2020 -0400
 commit e8686f09678fbcfee6a5845d605520927bc6847f
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Sat Apr 4 20:33:13 2020 -0400
-
-    fixed openssl build backup FETCHURL dir for old versions of openssl
 
 commit 6d6293e18264c6f2064012f1ba4cbcf0bc6fde5e
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2614,35 +1920,11 @@ Date: Mon May 18 21:27:03 2020 -0400
 
     tweak Iterable<>::SequentialThreeWayComparer and SequentialEqualsComparer CTOR args - perfect forwarding
 
-commit 20a938ab5784c576bef5f1157ef10dad5320acc4
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 18 21:46:17 2020 -0400
-
-    fixed typo
-
 commit 0088d8de6ed5674dd2761635c50add492d439aa1
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Mon May 18 22:03:49 2020 -0400
 
     play with rvalue refernces uses in Iterable<T>::SequentialEqualsComparer<T_EQUALS_COMPARER>
-
-commit 629df3e4713e03579e45720f491139864c3f515f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 19 11:02:33 2020 -0400
-
-    travisci: adjust builds configure for macos so builds in less than 50 minutes
-
-commit c628b703381468190dc0f613d49f2711926b0e23
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 19 14:59:23 2020 -0400
-
-    travisci - lose more items from thirdpartycomponents build so compltes in less than 50 minutes for macos
-
-commit 230cafa43986bc5d40115c658da29d5d8374759b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 19 15:59:49 2020 -0400
-
-    progress on DateTime spaceship operator new comparer code (incomplete)
 
 commit dff62228f2641bb0fc39cc3b7366f330171cee2f
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2698,59 +1980,11 @@ Date: Wed May 20 14:18:11 2020 -0400
 
     travisci: lose another ThirdPartyComponent from build on macos regtests (due to run timeout)
 
-commit ee9a91af490086580b41b9d87e47393d2042bef7
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed May 20 14:35:18 2020 -0400
-
-    adopt to new Compare system in DataExchange::VariantValue
-
-commit 7f13d72c9c8f444158e4cb9b4e94968d05600d7b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed May 20 14:36:34 2020 -0400
-
-    adopt to new Compare system in DataExchange::VariantValue
-
 commit 9a47ec102fb603cae2db93c71e564a8dcd788984
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Wed May 20 18:37:48 2020 -0400
 
     travisci: in HOPES of fixing build time issue for macos - samples - try switching to DEBUG config and see if thats faster to build
-
-commit 055107b22e036c029c160d0796ec4068e8d21f99
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed May 20 20:02:50 2020 -0400
-
-    cosmetic cleanups; and a bunch more support for new Comparison usage for Stroika
-
-commit 07c921613d45924a6dfbd2ebbcfd8c0cbb93d539
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed May 20 20:06:14 2020 -0400
-
-    fixed typo
-
-commit 71ba6d06a14eabad38021165ceda9e114afbe0e9
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed May 20 21:18:30 2020 -0400
-
-    more cosmetic cleanups of three way compare code
-
-commit 8e7d29ba857df8781f026f2ec4f058a5bc256eea
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed May 20 21:35:20 2020 -0400
-
-    more cleanups - mostly to comparisons code/docs
-
-commit 14e9d6e38f32d7771219245103c163a86e966979
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed May 20 21:38:34 2020 -0400
-
-    fixed syntax error
-
-commit ac8d333e19271404e14b0f7f1286067ba2e9446c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed May 20 21:41:39 2020 -0400
-
-    lose  <=> 0 - I believe this always a no-op
 
 commit 8729ca9ae381b819b78b0d066d815d7fab04d940
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2800,41 +2034,11 @@ Date: Fri May 22 21:40:06 2020 -0400
 
     tweak define for qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy
 
-commit d4357fa5ae8c5745b2afed4649bcb5b12ecba310
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri May 22 23:53:37 2020 -0400
-
-    cosmetic, and Math::Angle docs for new comparisons
-
-commit e13d5f8fdf242d264f3e4883057a1b265b3aa7c8
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat May 23 11:31:32 2020 -0400
-
-    more operator== compare cleanups - docs mostly
-
-commit 8776658af3d7bb2046737c4b7af5fb3a9d65cea8
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat May 23 12:30:17 2020 -0400
-
-    cosmetic
-
 commit 0b0aefd97c9a52d4eb932c549daf8dfcb7d3c413
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Sat May 23 12:30:46 2020 -0400
 
     lose some obsolete (old) Memory::Optional code
-
-commit 2819a51b815f7c157e9e72b1189c117eb2484487
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat May 23 12:53:27 2020 -0400
-
-    Cleanedup SharedByValue operator== semantics (now only support nullptr_t and documented why/how to do diff)
-
-commit 129c7e85092ba5b6c3e5ac25b03178b4f53a5627
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat May 23 13:14:40 2020 -0400
-
-    fixed typo
 
 commit 2901e0e005a0a6ba43a11743afffa3c2128fe793
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2842,125 +2046,11 @@ Date: Sat May 23 13:22:57 2020 -0400
 
     fixed regttest for change in API ofr SharedByValue operator==
 
-commit f6cba89db8f39cd8e390dc42b8d03bcbc2706fe3
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat May 23 13:23:54 2020 -0400
-
-    SharedPtr new comparer support
-
-commit 542c3b48f9cf6fa61a0bc9f5c5ebcbf8626e89c7
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat May 23 14:50:36 2020 -0400
-
-    time::timezone supports operator<=>
-
-commit ce152af359e7f16637d814b498a69c1caf7e8d4a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat May 23 14:52:04 2020 -0400
-
-    updated VisualStudio.Net-2019/Stroika-Foundation.vcxproj for a few files tha thad changed names/spelling errors
-
-commit 9ecfd190290034e313a6e4f97b03029f46936b86
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat May 23 14:52:50 2020 -0400
-
-    cleanup Streams use of Comparer apis
-
-commit f483d6fc8b89243190a766f0224fd7b695beb77b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat May 23 15:01:14 2020 -0400
-
-    finished cleanup of Time:: support for comparers
-
-commit d4114936a1c4139e84a2dcd070d4bf79ebea59e9
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat May 23 15:41:01 2020 -0400
-
-    fixed issue with BLOB::(internal) threewaycompare routine - for case of null/empty blob on one side (regression due to code factoring)
-
-commit 9ce8d80f8f35fa210c73a8f536217c8148e748d7
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat May 23 15:59:42 2020 -0400
-
-    finished review of Foundation use of comparers
-
-commit ecc935f2249cc6d3602d0e411a872f4d6a8c1f02
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat May 23 17:04:40 2020 -0400
-
-    more cleanups to Iterator for Equals - deprecate named method
-
-commit 7cf9acbccb95903cb270a0fa22a24aa6f7337ae3
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat May 23 17:07:52 2020 -0400
-
-    try to fix warning about deprecated Iterator method
-
-commit 1255692c99ef76e51c8c25964d66c37d8394352f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat May 23 17:09:19 2020 -0400
-
-    try to fix warning about deprecated Iterator method
-
-commit c540d4472e114201f84fdd4d580239b3b14d7259
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat May 23 17:10:02 2020 -0400
-
-    try to fix warning about deprecated Iterator method
-
-commit 846225c1050911b7b3ef3aee5ab9111349d094c1
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat May 23 17:13:09 2020 -0400
-
-    try to fix warning about deprecated Iterator method
-
-commit cd6d53584a127fe6e831dab6614c675ce0d84a40
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat May 23 17:14:14 2020 -0400
-
-    try to fix warning about deprecated Iterator method
-
-commit d0e033b29d6a78b3e2f5e288d96df8817b0e26ea
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat May 23 17:15:08 2020 -0400
-
-    try to fix warning about deprecated Iterator method
-
-commit 7c77c37715e20e97aef8133d516cf3a04a77ddd0
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat May 23 17:21:59 2020 -0400
-
-    tweaks to vs2k19 vscproj file
-
-commit 7125e2576c21cd0ae4fbb9a5a8c3b99c88a9859e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat May 23 17:28:44 2020 -0400
-
-    cosmetic
-
-commit 25f5382e6e52206ab8a9945f3d01cf6b5a660000
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 24 09:19:37 2020 -0400
-
-    various code cleanups (=delete instead of don't call comment etc); and new Comparer support in Led code
-
-commit 61346ced529d2b76287f660c7a4e764ae9f53efb
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 24 09:52:35 2020 -0400
-
-    FUNCTION_CONVERT_FILEPATH_TO_COMPILER_FULLYNATIVE for windows - some apps require this format
-
 commit b0e7b8b38a0f9701a785e6ea1b01fef79ae9ecea
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Sun May 24 11:04:08 2020 -0400
 
     ::OleInitialize () workaround for LedItMFC / LedLineItMFC - (due to interaction wtih boost stacktrace code)
-
-commit 2ed79c598da600c1cf1b7c83dff6c52c5fecd6aa
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 24 11:04:39 2020 -0400
-
-    UNDO FUNCTION_CONVERT_FILEPATH_TO_COMPILER_FULLYNATIVE - was another issue
 
 commit 4b38d333a6b4883720f42c6fdca887bab0dce218
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2974,18 +2064,6 @@ Date: Sun May 24 11:18:48 2020 -0400
 
     documentation on possible causes of issues with activeledit
 
-commit 38e48a8b1f3bd628b20fb68d4e3a77974dea53db
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 24 16:41:37 2020 -0400
-
-    cosmetic
-
-commit f7eacc303c1fd08c6841d8bc796ab083f029ca6f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 24 16:52:10 2020 -0400
-
-    cleanups
-
 commit 1ea5811cd3e0dba79cba9199a796794872ff3abf
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Sun May 24 19:51:10 2020 -0400
@@ -2998,35 +2076,11 @@ Date: Sun May 24 20:17:36 2020 -0400
 
     renamed Set<>GetEqualsComparer -> GetElementEqualsComparer and deprecated old name
 
-commit 62473c941e799efd27118b9be3d7bc919d7a16a3
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 24 20:17:58 2020 -0400
-
-    Added files forgot to checkin
-
-commit 6da4c7b0a1f0723c2701eb7d443c648837419610
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 24 20:18:20 2020 -0400
-
-    cosmetic
-
-commit 79a26329d56316aa2ead90f17ece86478da25d37
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 24 20:18:54 2020 -0400
-
-    fixup call to old style  Common::compare_three_way<String, String> with extra args and use String::ThreeWayComparer instead
-
 commit 182bd6b01149cc94d294056a99fb06aa54a4d34c
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Sun May 24 21:05:32 2020 -0400
 
     renamed Multiset GetEqualsComparer -> GetElementEqualsComparer and renmaed SortedMultiset GetInOrderComparer -> GetElementInOrderComparer
-
-commit 136a944259b330e05eeafd868da8c8370bc89114
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 24 21:09:53 2020 -0400
-
-    comments
 
 commit 0e41d7cc6677a9eb7348afcca3fffe38e91e4279
 Author: Lewis Pringle <lewis@sophists.com>
@@ -3040,65 +2094,11 @@ Date: Sun May 24 23:44:02 2020 -0400
 
     renamed MultiSet<>::EqualityComparerType -> ElementEqualityComparerType  and deprecate old name
 
-commit e28fc35e15f6755be39fafa58ed28c48de443ebd
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 24 23:55:13 2020 -0400
-
-    cosmetic
-
 commit 355bc256b7c7a78bf5d13c395fea75d028425bae
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Sun May 24 23:55:41 2020 -0400
 
     datetime cleanups; and slightl change in sematnics for DateTime::ThreeWayComparer in non-default case (irrelevant)
-
-commit 3ed2e4b383d22bf37d8d64c6119b76329ca865cf
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 24 23:58:12 2020 -0400
-
-    undo one of those DateTime cleanups
-
-commit e58ceb8745a2f5cbc21e42f122ffeb001de5f2e2
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 25 00:00:58 2020 -0400
-
-    cleanup
-
-commit 89fa8b8b96a721015784a76dd03a8be1ea0bcbec
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 25 11:35:21 2020 -0400
-
-    Queue - operator<=> uses auto return not string_ordering
-
-commit 8e277e5705f59701fe53e107dd4438208fe5066e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 25 11:35:59 2020 -0400
-
-    more cleanups to deprecated ThreeWayComparer
-
-commit 51930741c5cd7d0693fd01d44805afc13131b9f1
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 25 11:48:43 2020 -0400
-
-    docs
-
-commit 11e0d58487b29a9cef31e0c7d67b7e36e10bb8d4
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 25 11:51:21 2020 -0400
-
-    Iterable<T>::SequentialThreeWayComparer<T_THREEWAY_COMPARER> now returns auto instead of hardwired Common::strong_ordering
-
-commit c7a55460653d05d138ff9199fae3161062716588
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 25 11:56:23 2020 -0400
-
-    docs
-
-commit 6df88aeed8f7c08fa17292aed87f4b474251eccd
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 25 13:32:32 2020 -0400
-
-    Comments
 
 commit 1e17ec3bfa8c8c727810fb4717359497e11373e8
 Author: Lewis Pringle <lewis@sophists.com>
@@ -3106,41 +2106,15 @@ Date: Mon May 25 13:47:31 2020 -0400
 
     use constexpr in a few more places (Iterator2Pointer, InternetAddress::TWC_; Stack<T>::operator<=> uses auto return;
 
-commit 58e881ea50b52c546d631421a35572d701a0d56c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 25 13:57:28 2020 -0400
-
-    docs
-
-commit 8b643c3dccf3fe6a89241062d4fcff7a6314bb47
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 25 14:08:57 2020 -0400
-
-    InternetAddress::TWC_ loses constexpr with @todo comment to dig into why (seems bug with clang)
-
-commit cadf7963cd06991c5c1b58d26dd49d1ec7d3ae61
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 25 14:09:34 2020 -0400
-
-    re-enabled (til I see where breaking) IsEqualsComparer check for Iterable<T>::SequentialEquals()
-
 commit 2dc7a4710b4ab3b99bd44c14286b5522e227c0ed
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Mon May 25 21:38:25 2020 -0400
 
     Added WSL build to Documentation/Regression-Tests.md
 
-commit a1c7e13167a4f74d97429f09ebf12296b62800f4
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 25 22:03:19 2020 -0400
-
-    tweak WSL regression test script
-
 commit 29ec40006a100235ba46045ed00092cde99d2da9
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Mon May 25 22:05:49 2020 -0400
-
-    sqlite 3.32.1
 
 commit 096ac5361e1389ff80a5661a457301eaf63dde6d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -3173,6 +2147,8 @@ Date: Tue May 26 21:15:28 2020 -0400
     fixed version# macro generation for Led so about boxes show the right Led version
 
 #endif
+
+---
 
 ### 2.1a4 {2020-01-10}
 
