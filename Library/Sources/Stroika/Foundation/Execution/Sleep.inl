@@ -67,6 +67,8 @@ namespace Stroika::Foundation::Execution {
 #else
         AssertNotImplemented ();
 #endif
+        Ensure (*remainingInSleep <= seconds2Wait);
+        Ensure (*remainingInSleep >= 0);
         CheckForThreadInterruption ();
     }
 

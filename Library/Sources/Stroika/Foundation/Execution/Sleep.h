@@ -41,6 +41,9 @@ namespace Stroika::Foundation::Execution {
      *
      *  \req    seconds2Wait >= 0
      *
+     *  \ens    *remainingInSleep <= seconds2Wait
+     *  \ens    *remainingInSleep >= 0
+     *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      *
      *  \note   ***Cancelation Point***
