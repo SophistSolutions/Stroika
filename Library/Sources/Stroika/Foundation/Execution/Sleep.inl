@@ -41,13 +41,28 @@ namespace Stroika::Foundation::Execution {
             timespec   ts;
             ts.tv_sec  = static_cast<time_t> (seconds2Wait);
             ts.tv_nsec = static_cast<long> (kNanoSecondsPerSecond * (seconds2Wait - ts.tv_sec));
+            Assert (0 <= ts.tv_sec);
             Assert (0 <= ts.tv_nsec and ts.tv_nsec < kNanoSecondsPerSecond);
             timespec nextTS;
             if (::nanosleep (&ts, &nextTS) == 0) {
                 *remainingInSleep = 0;
             }
             else {
-                *remainingInSleep = nextTS.tv_sec + static_cast<Time::DurationSecondsType> (ts.tv_nsec) / kNanoSecondsPerSecond;
+                // https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/time.h.html doesn't clearly document allowed range for timespec
+                // https://pubs.opengroup.org/onlinepubs/9699919799/functions/nanosleep.html doesn't clearly document allowed range for output timespec
+                // value (can it go negative)
+                // On WSL 1 (WinVer 1909) nextTS sometimes goes negative (or blows up to be very large?), so check)
+                WeakAssert (0 <= ts.tv_nsec and ts.tv_nsec < kNanoSecondsPerSecond); // not sure this should happen? - log for now... -- LGP 2020-05-29
+                WeakAssert (nextTS.tv_sec >= 0);                                     // ""
+                if ((nextTS.tv_sec < 0) or not(0 <= ts.tv_nsec and ts.tv_nsec < kNanoSecondsPerSecond)) {
+                    *remainingInSleep = 0;
+                }
+                else {
+                    *remainingInSleep = nextTS.tv_sec + static_cast<Time::DurationSecondsType> (ts.tv_nsec) / kNanoSecondsPerSecond;
+                }
+                if (*remainingInSleep <= seconds2Wait) {
+                    DbgTrace (L"*remainingInSleep <= seconds2Wait failure: remainingInSleep=%f, seconds2Wait=%f, nextTS.tv_sec=%ld, ts.tv_nsec=%ld, ts.tv_sec=%ld, nextTS.tv_nsec=%ld", *remainingInSleep, seconds2Wait, nextTS.tv_sec, ts.tv_nsec, ts.tv_sec, nextTS.tv_nsec);
+                }
             }
         }
 #elif qPlatform_Windows
