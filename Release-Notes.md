@@ -15,13 +15,31 @@ to be aware of when upgrading.
 
   - Documented approach in <Documentation/Coding Contentions.md#Comparisons Rationale>
   - use _cpp_impl_three_way_comparison_ instead of _cpp_lib_three_way_comparison_ EXCEPT where counting on std c++ library support, as in optional<> usage in default implementations; and upped version# compare to 201907 (according to https://en.cppreference.com/w/User:D41D8CD98F/feature_testing_macros)
-  - #include <compare> as appropriate
+  - #include \<compare\> as appropriate
   - use compare_three_way{} if available
   - Containers, Strings, DateTime, many with parameterized compare classes, and many others without
+  - renamed CompareResultNormalizeHelper -> CompareResultNormalizer and deprecated old name
+  - deprecated ThreeWayCompareNormalizer
+  - lose (deprecate) mkEqualsComparerAdapter, mkInOrderComparerAdapter, mkThreeWayComparerAdapter - and use class adapters directly now that class deduction works better in C++17
+  - renamed Common::OptionalThreeWayCompare -> Common::OptionalThreeWayComparer
+  - struct ExtractComparisonTraits\<compare_three_way\<T\>\>
+  - resolved https://stroika.atlassian.net/browse/STK-692 - threewaycompare/spaceship operator cleanups
+  - Stroika::Foundation::Common::compare_three_way helper
+  - deprecated ThreeWayComparerDefaultImplementation
+  - DEPRECATED ThreeWayComparer (just use compare_three_way instead)
+  - fancier ComparisonRelationDeclaration with two template args intead of one
 
 - Build System
 
   - ApplyConfigurations
+
+    - modified ApplyConfigurations to write new file Library/Projects/VisualStudio.Net-2019/Microsoft.Cpp.stroika.AllConfigs.props from configuration info; then added import of that props file into Stroika-Frameworks.vcxproj and Stroika-Foundation.vcxproj : This LARGELY **fixes intellensense for the new configuration/makefile build process** (in visual studio - still simlar todo for vs2k17 and vscode)
+    - lose remnants of Stroika-Current-Configuration.h - no longer generate the file, and no longer (even conditionally) include it
+    - lose configure flag ENABLE_GLIBCXX_DEBUG (from file and ApplyConfiguraitons and .mk file - still works with -- flags to configure)
+
+  - build docs improvements
+
+  - Slightly more aggressive make clobber
 
   - Configure
 
@@ -31,25 +49,41 @@ to be aware of when upgrading.
       Updated configure to use this, and handle via extra args VSDIR (soon sb able to spec that on cofnigure cmd line).
     - a little caching in configure script so runs 4x faster on window (visual studio)
     - GetDefaultToolsBuildDir() now supports platform with version# like VisualStudio.Net-2017 or none VisualStudio.Net
+    - lose ENABLE_TRACE2FILE flag from configure (file format) and Configuration.mk - etc - just sets a /D build flag
+    - improve --only-if-has-compiler warning message generation in configure
 
+  - use Library/Projects/VisualStudio.Net instead of Library/Projects/VisualStudio.Net-2019 and support vs2k17
   - cygpath gets unahppy with empty strings, so handle that in cygpath wrappers
-
   - Makefile shared variables/templates
 
     - renamed FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE -> FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE (deprecating older name)
 
   - RegressionTests
 
-    - ScriptsLib/RunLocalWSLRegressionTests
+    - in regressiontest script output OS version info for macos, systeminfo call (for windows), and vswhere to print version of visual studio being used/tested
+    - new ScriptsLib/RunLocalWSLRegressionTests
+    - cleanup regression tests Test*5_SSLCertCheckTests*: workaround issue with https://testssl-valid.disig.sk/index.en.html and use badssl.com intead;
+    - upped timeout in regtests to avoid failures under docker windows (esp debug builds)
+    - workaround WSL bug that arp -a doesnt work - just in regression test so warning not failure
+    - translate (most) HTTP 500 errors in the curl tests to WARNINGS (not test failures)
+    - added docker ubuntu 20.04 to regression tests
+    - lost regression tests for ubuntu 1810 since 1810
+    - Test*RegressionDueToBugInCompareURIsC20Spaceship* / qCompilerAndStdLib_operatorCompareWithOperatorBoolConvertAutoGen_Buggy docs and test but no longer need a workaround
+    - Added WSL build to Documentation/Regression-Tests.md
 
   - Docker
 
     - DockerBuildContainers/Windows-Cygwin-VS2k19/Dockerfile (sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19)
-
       - Also have draft for msys/mingw, but this not working
       - Getting-Started-With-Stroika.md
-
+      - VS2k19 docker windows container to use VS_16_6_0
     - cleanup makefile for docker images so builds windows specific ones iff on windows
+    - docker build on windows does NOT require -m 2G flag
+    - improved docs/examples on running docker on windows
+    - dockerfiles for ubuntu 20.04
+    - dockerfile centos8 dockerfile fixes
+    - lose dockerfiles for ubuntu 18.10 since we desupported (cuz desupported on dockerhub)
+    - lose support for Ubuntu 1904, since no longer a supported version of Ubuntu
 
   - CircleCI
 
@@ -61,7 +95,14 @@ to be aware of when upgrading.
 
   - ScriptsLib
 
+    - changed GetMessageForMissingTool messages for apt-get to include suggested -y
     - migrated (and cleaned up) code for RunSystemWithVCVarsSetInEnvironment to RunArgumentsWithCommonBuildVars script
+    - ScriptsLib/RunLocalWindowsDockerRegressionTests
+    - refactored WebGet script a little (subroutine); and made it support file:/// urls (since wget doesn't apparently)
+
+  - Tests (Makefile)
+
+    - automate computing variable USING_BLOCK_ALLOCATION and having the tests makefile automatically add the blockallocation suppressions so no need to hardwire in RegressionTest script
 
   - TravisCI (<https://travis-ci.com/github/SophistSolutions/Stroika/builds>)
 
@@ -74,26 +115,43 @@ to be aware of when upgrading.
 
     - Compilers
 
-      - MSVC - 15.9.x
+      - MSVC - 15.9.x compiler bug define support
+      - MSVC - 16.5.x compiler bug define support
+      - GCC - LIBCXX*9x* library bug define support
+      - gcc 9.3 compiler bug define support
+      - g++10 compiler bug define support
+      - Support clang-9 for basic-unix-test-configurations
+      - Support clang-10 for basic-unix-test-configurations
 
     - Bug workaround defines changes
       - attempt workaround for qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy
       - qCompilerAndStdLib_strong_ordering_equals_Buggy bug workaround
+      - qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy bug workaround
+      - qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy bug define and workaround
+      - qCompilerAndStdLib_TemplateEqualsCompareOverload_Buggy
 
   - ThirdPartyComponents
 
     - Boost
+
+      - use 1.73.0
       - small cleanups to boost/Makefile (e.g use of revised RunArgumentsWithCommonBuildVars API)
+      - changed mirror for boost to sophists.com cuz I cannot find another working one
+      - tweak boost/ConfigureAndBuild file and user-config.jam
+      - workaround https://stroika.atlassian.net/browse/STK-711 - issue g++-10 --std=c++2a with building boost 1.72
+      - use qHasFeature_boost check not \_\_has_include(<boost/thread/shared_mutex.hpp>) because of we compiled with !qHasFeature_boost - dont use boost even if system installed
+
     - libcurl
-      - use 7.69.1
+      - use 7.70.0
     - OpenSSL
-      - use 1.1.1f
+      - use 1.1.1g
       - makefile cleanups
       - makefile use of ScriptsLib/RunArgumentsWithCommonBuildVars
       - fixed build backup FETCHURL dir for old versions of openssl
     - sqlite
       - use 3.32.1
     - Xerces
+      - use 3.2.3
       - tweaks to windows xerces makefile
       - fixed x86 config cmake args for xerces makefile
       - CMAKE_CURRENT_SOURCE_DIR/CMAKE_PER_TARGET_BUILD_DIR
@@ -101,2052 +159,158 @@ to be aware of when upgrading.
     - ZLib
       - simplify makefile for zlib (and fixed so using more of config with nmake and much simpler way to pass args - using nmake /E so env vars with env script passed along instead of quoting nightmare with RunArgumentsWithCommonBuildVars
 
-- IO::Network
+- Code Cleanups
 
-  - draft regression tests Test6*Neighbors*
-  - added IO::Network::Interface::SystemIDType
-  - cleanup networks regression tests
-  - Interfaces
+  - fixed use of const && - doesnt make sense to use
+  - replace use of is_pod\<T\> with is_trivial\<\> && is_standard_layout\<\> since is_pod<> deprecated in C++20 (and that is equiv)
+  - fixes for c++20
+  - new clang-format 11
+  - lose use of std:: result_of_t which was deprecated and removed in C++20 (and broken in msvc 16.6 - but they may not be wrong) - and replaced with roughly equivilent invoke_result_t
 
-    - new class IO::Network::SystemInterfacesMgr (part of refactoring)
-    - [[deprecated ("use SystemInterfacesMgr{}.GetAll - deprecated in in 2.1a5")]]Traversal::Iterable<Interface> GetInterfaces ()
-    - [[deprecated ("use SystemInterfacesMgr{}.GetById - deprecated in in 2.1a5")]optional<Interface> GetInterfaceById
-    - New API SystemInterfacesMgr::GetContainingAddress()
-    - lose class IO::Network::Interface::Binding (and replace it with deprecated using = CIDR for backward compat); and change the fBindings list in the Interace to be a list of CIDR (thats what the old bindings class amounted to)
-    - various fixes to reporting
-    - WLANAPI
+- Library/Foundation
+
+  - Containers
+
+    - fixed Bijection<> image/preimage iterators to properly manage shared vs non-shared context in their lambda closures
+    - Added Collection<>::Remove(PREDICATE) and RemoveAll(PREDICATE) functions
+    - USE Iterable\<T\>::SequentialEqualsComparer as the implementation for EqualsComparer in Stack, Queue, Sequence
+    - renamed Set\<\>GetEqualsComparer -> GetElementEqualsComparer and deprecated old name
+    - renamed Multiset GetEqualsComparer -> GetElementEqualsComparer and renmaed SortedMultiset GetInOrderComparer -> GetElementInOrderComparer
+    - renamed Set\<\> EqualityComparerType -> ElementEqualityComparerType (deprecating old name)
+    - renamed MultiSet\<\>::EqualityComparerType -> ElementEqualityComparerType and deprecate old name
+
+  - Debug
+
+    - BackTrace
+      - try using boost preferentially for Debug::BackTrace()
+      - Debug::BackTrace() replaced with Debug::BackTrace::Capture () - and new options argument (allowing param to skip initial; and implementation using boost provided (if available) - which works on windows; **NOT BACKWARDS COMPATIBLE API CHANGE** - replace call to Debug::BackTrace() with Debug::BackTrace::Capture()
+      - added static inline defaults (not const so easy to change per app/inside app defaults for showing source lines etc) for Debug::BackTrace code, and added regtests so it gets executed each way (but you ahve to look at logs to see if its working)
+      - define BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED to build stacktrace code on macos (still testing)
+      - for building windows - set BOOST_STACKTRACE_USE_WINDBG_CACHED when building BackTrace.cpp, since dramatically faster
+
+  - DataExchange
+
+    - Support fExactTypeMatchOnly on VariantValue::ThreeWayComparer
+
+  - Execution
+
+    - Syncrhonized\<\>
+
+      - Added Synchronized\<T, TRAITS\>::try_lock () implementation
+
+    - WaitForIOReady
+
+      - _Major change_
+        - DEPRECATED IO/Network/WaitForSocketIOReady (in favor of direct use of Execution/WaitForIOReady
+        - Execution/WaitForIOReady\<\> is now a TEMPLATE on type T
+        - Execution/WaitForIOReady uses TRAITs which are overidden (template specialized) for the various socket types.
+      - WaitForIOReady no longer updatable and no longer threadsafe. Instead use new Execution::UpdatableWaitForIOReady class which does this stuff
+      - WaitForIOReady code - lose default CTOR; add optional Pollable2Wakeup parameter
+      - new UpdatableWaitForIOReady module
+      - Added new EventFD and used in Execution/UpdatableWaitForIORead
+      - mostly cosmetic cleanups to WaitForIOReady code but also upped qStroika_Foundation_Exececution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks and lose unused EventFD method
+
+    - added new utility Execution::Platform::Windows::COMInitializer; and used it in Firewall code, and LedIt/LedLineIt samples (in place of direct calls to CoIniitializeEx/OleInitialize()
+
+  - IO::FileSystem
+
+    - added new overload of IO::FileSystem::Exception::ThrowSystemErrNo() taking no errno (using thread-local global errno/GetLastError()); and some costmetic docs/cleanups to trace messages
+    - In FileInputStream/FileOutputStream - on open - use FileSystem::Exception::Throw* calls intead of Execution::Throw* calls, so we throw an std::filesystem_error (subclasss) - and pass along path objects, so that can be caught and examined in the failure
+
+  - IO::Network
+
+    - draft regression tests Test6*Neighbors*
+    - added IO::Network::Interface::SystemIDType
+    - cleanup networks regression tests
+    - simplified IO/Network/Listener use of WaitForIOReady now that its templated (no longer need bijection)
+    - fixed listener move CTOR to not use const
+    - added IsCleintError/IsServerError methods to IO/Network/HTTP/Exception
+    - URI
+
+      - make IO::Network::Uri operator bool EXPLICIT operator bool to workaround appearent qCompilerAndStdLib_operatorCompareWithOperatorBoolConvertAutoGen_Buggy - not sure if this is best - lookinginto
+
+    - Sockets
+
+      - new utility helper ConnectionOrientedStreamSocket::NewConnection()
+      - SocketAddress: added kAnyPort member; made it default arg for one SocketAddress CTOR (with internetaddress) and made that CTOR explicit (since down to one required param)
+      - Added ConnectionOrientedStreamSocket::Ptr::Write() overload
+
+    - Interfaces
+
+      - new class IO::Network::SystemInterfacesMgr (part of refactoring)
+      - [[deprecated ("use SystemInterfacesMgr{}.GetAll - deprecated in in 2.1a5")]]Traversal::Iterable\<Interface\> GetInterfaces ()
+      - [[deprecated ("use SystemInterfacesMgr{}.GetById - deprecated in in 2.1a5")]optional\<Interface\> GetInterfaceById
+      - New API SystemInterfacesMgr::GetContainingAddress()
+      - lose class IO::Network::Interface::Binding (and replace it with deprecated using = CIDR for backward compat); and change the fBindings list in the Interace to be a list of CIDR (thats what the old bindings class amounted to)
+      - various fixes to reporting
+      - WLANAPI
       - Added support for WLANAPI\_ wrapper on wlanapi.dll instead of calling apis directly. These dont work and cause link error (runtimebinding failure) on docker cuz of absense of lan services module being installed. Untested so far, but this should work either way
 
-  - NeighborManager - now maps to proper interface ids
-  - CIDR
+    - InternetAddress
 
-    - CTOR now takes optional<unsigned int> second arg, so a few construction cases a little simpler to call (and unix code compiles with less change)
+      - refactoring - moved private utilitiy from CIDR class to InternetAddress::KeepSignifcantBits ()
 
-  - Transfer
+    - NeighborManager
 
-    - changed IO::Network::Transfer::Connection::Options fMaxAutomaticRedirects default from 0 to 1 (with docs explanations)
-    - probably fixed https://stroika.atlassian.net/browse/STK-706 sporadic corruption with webserver ConnectionManager (issue was incomplete object passed as this lambda to start of new thread)
+      - now maps to proper interface ids
+      - cleanups designed so it will try fallback strategies; goal was to workaround lack of /proc/net/arp on WSL. But sadly that didnt help cuz it turns out arp-a and ip show neighbors dont work either
 
-#if 0
+    - CIDR
 
-    IO::Network::Transfer::Connection GET/Send etc document Ensure (result.GetSucceeded ())
+      - CTOR now takes optional\<unsigned int\> second arg, so a few construction cases a little simpler to call (and unix code compiles with less change)
+      - use new InternetAddress::KeepSignifcantBits to fix CIDR compare <=> and == methods to only check significant bits
 
-commit 6efa707ebfeebf37c71e44bfd5d95b156b5ad1e7
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 8 15:34:11 2020 -0500
+    - Transfer
 
-    HTTP PATCH definition in HTTP wrapper classes, and IO::Network::Transfer::Client
+      - changed IO::Network::Transfer::Connection::Options fMaxAutomaticRedirects default from 0 to 1 (with docs explanations)
+      - probably fixed https://stroika.atlassian.net/browse/STK-706 sporadic corruption with webserver ConnectionManager (issue was incomplete object passed as this lambda to start of new thread)
+      - IO::Network::Transfer::Connection GET/Send etc document Ensure (result.GetSucceeded ())
+      - IO::Network::Transfer Response ToString() (and other related sub-element) support
 
-commit cbadd087f7fbfff6a2eeb6a6b4fb82839f521857
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 8 15:38:41 2020 -0500
+  - Memory
 
-    cleanup regression tests Test_5_SSLCertCheckTests_: workaround issue with https://testssl-valid.disig.sk/index.en.html  and use badssl.com inteead;
+    - lose some obsolete (old) Memory::Optional code
 
-commit 7b5a9ec76d77b4de992ed9721d3479f89773adc2
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 8 18:23:07 2020 -0500
+  - Time
 
-    docker build on windows does NOT require -m 2G flag
+    - datetime cleanups; and slightly change in sematnics for DateTime::ThreeWayComparer in non-default case (irrelevant)
 
-commit a4f1e9f1b21dbd1550fe835dce4c3b97f1bf26ff
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 9 13:08:24 2020 -0500
+  - Traversal
 
-    docs on docker run for sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
-
-commit 72a3517e9c0f5141124bbe5e1911acfd5c39f367
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 9 16:42:38 2020 -0500
-
-    modified ApplyConfigurations to write new file  Library/Projects/VisualStudio.Net-2019/Microsoft.Cpp.stroika.AllConfigs.props from configuraiton info; then added import of that props file into Stroika-Frameworks.vcxproj     and Stroika-Foundation.vcxproj   : This LARGELY fixes intellensense for the new configuration/makefile build process (in visual studio - still simlar todo for vs2k17 and vscode)
-
-commit ae17d79d1e06cbeae2198a36343e11796b7f4de3
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 9 16:52:55 2020 -0500
-
-    lose remnants of Stroika-Current-Configuration.h - no longer generate the file, and no longer (even conditionally) include it
-
-commit 71cfbdb8a0b3e46990d9ff463d2c7a88606eb1b5
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 9 21:15:35 2020 -0500
-
-    use Library/Projects/VisualStudio.Net instead of Library/Projects/VisualStudio.Net-2019 and support vs2k17
-
-commit f34dff10627c9f2566012f5439a2270f53ce3563
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 9 21:16:06 2020 -0500
-
-    test project file uses Microsoft.Cpp.stroika.AllConfigs.props
-
-commit 1b84df4b201add84106c6f717ea278c6782c21a6
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 9 22:18:17 2020 -0500
-
-    Added support for Microsoft.Cpp.stroika.AllConfigs.prop (and therefore intellisense) for each sample project (2k17 and 2k19)
-
-commit 4327411bcfd22eaf0c0e78e2b20228ec41f68d94
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Feb 10 10:13:06 2020 -0500
-
-    lose ENABLE_TRACE2FILE flag from configure (file format) and Configuration.mk - etc - just sets a /D build flag
-
-commit 3903513658b2e4943c099a6c2cec3e726853fbae
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Feb 10 14:18:48 2020 -0500
-
-    cosmetic change to yaml file (vscode preferred indent)
-
-commit efdd13ea6beb9624d5cd66c1cdfe383bc9c9ef07
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Feb 10 14:20:51 2020 -0500
-
-    lose configure flag ENABLE_GLIBCXX_DEBUG (from file and ApplyConfiguraitons and .mk file - still works with -- flags to configure
-
-commit 431de0fd800fcc2526796899a2d487875da1e59a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 22 11:19:52 2020 -0500
-
-    use enum class in a few more places to silence MSFT (mostly crazy) warnings/analyze feature
-
-commit 61a2f37631308eaf248a2fa10c9677b294ccdd81
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 22 11:20:20 2020 -0500
-
-    fixed use of const && - doesnt make sense to use
-
-commit ad0285677913a123ea966b713c577738a50b503b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Feb 25 09:07:03 2020 -0500
-
-    draft ScriptsLib/RunLocalWindowsDockerRegressionTests script
-
-commit 226431d8058aad9d0ea7d1725ce94374383128e9
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 29 21:50:27 2020 -0500
-
-    try using boost preferentially for Debug::BackTrace()
-
-commit 533db678e41bb8924a1ce51f36343a1ae3ffc249
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 1 13:08:16 2020 -0500
-
-    Debug::BackTrace() replaced with Debug::BackTrace::Capture () - and new options argument (allowing param to skip initial; and implementation using boost provided (if available) - which works on windows; **NOT BACKWARDS COMPATIBLE API CHANGE** - replace call to Debug::BackTrace() with Debug::BackTrace::Capture()
-
-commit 9078f387c403d52573edb22703330d1695bfcfb9
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 1 15:44:20 2020 -0500
-
-    added static inline defaults (not const so easy to change per app/inside app defaults for showing source lines etc) for Debug::BackTrace code, and added regtests so it gets executed each way (but you ahve to look at logs to see if its working)
-
-commit 68c469f35e3923ee70382f94387393f06a2f8dc3
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 1 16:42:45 2020 -0500
-
-    refactored WebGet script a little (subroutine); and made it support file:/// urls (since wget doesn't apparently)
-
-commit e18f78263158cbe72c7dd104d9c9d08a93eb9e1d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 1 17:10:17 2020 -0500
-
-    changed mirror for boost to sophists.com cuz I cannot find another working one
-
-commit 6449a9ebb15019da4b528a78e6e86dbc4e1609fe
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 1 21:28:05 2020 -0500
-
-    react to name change: Debug::BackTrace::Capture ()
-
-commit 10edbfe8bd7ad0f3628d77f3eb1b483d2d916562
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 1 21:29:57 2020 -0500
-
-    react to name change: Debug::BackTrace::Capture ()
-
-commit b68b172389e62a2a575ac0b470024dfbce1de94f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 1 21:43:23 2020 -0500
-
-    temporary workaround regression in BackTrace code due to using internal code for boost/__DBGENG_H__ workaround
-
-commit feb70096077cdb62b47b565176cf566b489eb34a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Mar 4 10:46:51 2020 -0500
-
-    small cleanups to BackTrace code (calls to boost) - making more platform-independent
-
-commit 8b387a962a2bf3b1251c6b17806a7220996986e1
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Mar 5 08:36:51 2020 -0500
-
-    improve dbgtrace lines in regtest
-
-commit c72b3f6f2ce0b89ae385f16cdadcdf1d8a888399
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 8 11:19:57 2020 -0400
-
-    increased thread test timeout because failed (on debug builds) under docker / windows
-
-commit 0060467f65c695bc7cc9e8aa44558777a96f291a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 8 11:21:36 2020 -0400
-
-    several fixes to ScriptsLib/RunLocalWindowsDockerRegressionTests so now runs much better - mostly using better name for container, and doing innocuous run (so can re-connect/restart later) and doing builds etc via docker exec, not docker run
-
-commit 045c81f889e19d936a115c59d21132ddbcd17ad9
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 8 16:36:26 2020 -0400
-
-    DockerBuildContainers/Windows-Cygwin-VS2k19/Dockerfile: VS_16_4_5 and otehr cleanups
-
-commit 845ff346f3d478898e8cc2a21b950df55b0c9ef7
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 8 20:59:44 2020 -0400
-
-    define BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED to build stacktrace code on macos (still testing)
-
-commit 7361e0dfb39f8f9a46c310e175bdaddca708a0a0
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Mar 9 10:54:20 2020 -0400
-
-    upped timeout in regtests (threads) 3 to 6 cuz slower under docker windows (esp debug builds)
-
-commit d1ce5d167519833232c8cd3574b5e4f4432bf307
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Mar 9 11:36:27 2020 -0400
-
-    improved ScriptsLib/RunLocalWindowsDockerRegressionTests
-
-commit d2627d441d6729ca33c345f42360dd5c70a81ef5
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Mar 11 20:15:55 2020 -0400
-
-    another attempt at getting windows msi build candle working
-
-commit 922b282c09fc57d76a7ba7d4d8a5c031b63655dd
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Mar 11 21:50:36 2020 -0400
-
-    use VS2k 16.4.6 in docker windows builds
-
-commit d5d40b5bba37979a06e14dd4f943fd845fc35463
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Mar 11 21:51:11 2020 -0400
-
-    change timeout for docker pull (make longer) and back to MAKEFLAGS="--jobs=2"
-
-commit 17c7098088c327af8e867245a27e7d2b46190e72
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 15 14:12:34 2020 -0400
-
-    create jira ticket https://stroika.atlassian.net/browse/STK-708 to track travis build problem and mark that samples build as can fail, so move on and ignore travis issues for now
-
-commit 2f0b36ef644e69ad280b59197d3c73935fc92c66
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 15 21:56:02 2020 -0400
-
-    ScriptsLib/RunLocalWindowsDockerRegressionTests progress/cleanups - working still
-
-commit b636c25866e15279677d72201f741ad0010fa125
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 15 21:56:59 2020 -0400
-
-    ScriptsLib/RunLocalWindowsDockerRegressionTests
-
-commit 0f57aa225a334c97eb9f035b49205ba75236325e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Mar 17 13:36:36 2020 -0400
-
-    tweaked performace fail critical thresholds so tests pass on win docker run
-
-commit d06a5330eb536ec96b281b25a1761bb4e090303f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Mar 17 15:56:50 2020 -0400
-
-commit 9620c3e6fc61b73f67400ca3b1202b65372e51dd
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Mar 17 15:59:32 2020 -0400
-
-commit 04efbdb15ebdee8ed31c41b5bc8e0faac94620d3
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Mar 17 16:01:56 2020 -0400
-
-    sqlite 3310100
-
-commit 7730ec9abdc5b976ac7d79e8804c5eeef5d630ca
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Mar 17 16:25:42 2020 -0400
-
-    fixed regression in sqlite makefile checkin
-
-commit 1d33b493e0aa7b2f950ea7f84e69e3eed3c662d7
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Mar 18 10:17:11 2020 -0400
-
-    replace use of is_pod<T> with is_trivial<> && is_standard_layout<> since is_pod<> deprecated in C++20 (and that is equiv)
-
-commit bca379e3943215425674ef7dd6df234298e37c3f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Mar 19 10:00:45 2020 -0400
-
-    compiler bug define supports for _MSC_VER_2k19_16Pt5_
-
-commit 29b543b9e7f9bc64be09bd99a3f41e2a087a2d98
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Mar 19 14:38:19 2020 -0400
-
-    cleanups to Foundation/IO/Network/Neighbors.cpp designed so it will try fallback strategies; goal was to workaround lack of /proc/net/arp on WSL. But sadly that didnt help cuz it turns out arp-a and ip show neighbors dont work either
-
-commit 08edfbd17e66c6da528cd8cde8aa83fe1ae5aae2
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Mar 20 11:22:34 2020 -0400
-
-    added new overload of IO::FileSystem::Exception::ThrowSystemErrNo() taking no errno (using thread-local global errno/GetLastError()); and some costmetic docs/cleanups to trace messages
-
-commit eadd2f08a236cfe5bdb76bb2f4e1c5b371aeee1a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Mar 20 11:27:04 2020 -0400
-
-    In FileInputStream/FileOutputStream - on open - use FileSystem::Exception::Throw* calls intead of Execution::Throw* calls, so we throw an std::filesystem_error (subclasss) - and pass along path objects, so that can be caught and examined in the failure
-
-commit 21036487486676b58e316c48768d54cc9a53871a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Mar 20 11:45:51 2020 -0400
-
-    remove comments about maybe additional tracing - SB done in subcsequent Throw (sufficeintly)
-
-commit 4a7599309e96610372e64f74e3cce90ad86176d0
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Mar 20 12:20:12 2020 -0400
-
-    minor improvment to regressiontest
-
-commit ca26a55cbcfe548cc487b1ddb599a50ac7620ca1
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Mar 20 13:07:42 2020 -0400
-
-    added GLIBCXX_9x_ define to config
-
-commit f915f34bde596159911f01214c9ec649054094c3
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Mar 20 13:31:29 2020 -0400
-
-    workaround WSL bug that arp -a doesnt work - just in regression test so warning not failure
-
-commit 0ef01e95f3f8de53c5245bc2a26225fc7c09e59c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Mar 20 13:41:07 2020 -0400
-
-    tweak timiongs for occasional errors in threads regtest
-
-commit 2b9dfadbb8d27049ba021ca644dcd8c5a6717a1c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Mar 20 21:07:15 2020 -0400
-
-    cosmetic; and fixed backewards(regression) change to regtest - had limits qDebug backwards
-
-commit c71412ba06198eb6cdfd6eb65a03bc3be0143e39
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Mar 23 15:23:16 2020 -0400
-
-    travisci: removed workarounds/tests for windows builds (mostly) - still broken - and added link to travis community discussion about the problem
-
-commit 8d148f8483223d66e40a5e6ed9bf364defd6e690
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Mar 23 15:25:04 2020 -0400
-
-    docker windows build script chagnes to add config variables to try different base versions of windows - didn't help with travisci build problem, so abamdon some of changes, but keep the refactoring/varaiables
-
-commit 03808f9f1f60af1cab4b60a6cf5fb81743bb3e08
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Mar 23 15:40:47 2020 -0400
-
-    added systeminfo call (for windows) to print system stats in /ScriptsLib/RegressionTests
-
-commit 0b2fc3fb0fd922eb6a317d066be7c8367cc0a919
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Mar 24 12:57:15 2020 -0400
-
-    improved docs/examples on running docker on windows
-
-commit c09332a6b8ee246168b59c462821e83058a4f3f6
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Mar 25 10:43:39 2020 -0400
-
-    vscode prettier on docs files
-
-commit 8692afd98873cae0207977f2ae1fff0769b6bfa9
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Mar 25 10:46:09 2020 -0400
-
-    Add item todo on regression tests
-
-commit 44e788b2164e48fb9b38a25ee8704845b4bc807e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Mar 25 13:38:49 2020 -0400
-
-    updated dockerfile for DockerBuildContainers/Windows-Cygwin-VS2k19 to use VS_16_5_1
-
-commit dfb27d428a05d9c456a58916879c9cb79b191227
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Mar 25 13:39:31 2020 -0400
-
-    updated regressiontests script for windows to run vswhere to print version of visual studio being used/tested
-
-commit cd6f74aff9f995e2ea44a095f6fe188fc1940aae
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Mar 26 22:57:56 2020 -0400
-
-    tweak performance test fail threshold for running under docker windows
-
-commit 697a4fc9bfd16a55c2aa4c303158e57ad3e9955b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Mar 27 10:07:53 2020 -0400
-
-    tweak limit on performance regtest to avoid occasional false positive
-
-commit 3ac952af2baf25605be23c892a1c46ada667021b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Mar 27 10:12:21 2020 -0400
-
-    in regressiontest script output OS version info for macos too
-
-commit 60527a04be037dd98a3e1b5cd85e2aa61dc1d191
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Mar 27 10:18:52 2020 -0400
-
-    added test case fixups for Execution::RequiredComponentMissingException if  !qHasFeature_LibCurl && !qHasFeature_WinHTTP
-
-commit c7d8aa435ab9a458da49b2472b5a2d2a8a770cde
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Mar 27 11:53:09 2020 -0400
-
-    more tweaks to regressiont test output to capture version of VM running tests
-
-commit f5ab36bdbd7ff10e17fb4a59e343b17ea18c03ad
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Mar 28 11:18:49 2020 -0400
-
-    changed GetMessageForMissingTool messages for apt-get to include suggested -y
-
-commit ea28ed1db12c8b2ccb31c36626d88b938301e829
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 29 13:00:36 2020 -0400
-
-    Added assertions
-
-commit ae8f8e8208300bfd52ec9af7d5b0425d3691ad66
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 29 17:03:56 2020 -0400
-
-    Major change to Foundation/Execution/WaitForIOReady:
-            >       DEPRECATED IO/Network/WaitForSocketIOReady (in favor of direct use of Execution/WaitForIOReady
-            >       Execution/WaitForIOReady<> is now a TEMPLATE on type T
-            >       Execution/WaitForIOReady uses TRAITs which are overidden (template specialized)
-                    for the various socket types.
-
-commit 19c0f12091c8c702ac3f29ba2359b18f66d84ea0
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Mar 30 13:29:24 2020 -0400
-
-    WaitForUIReady no longer updatable and no longer threadsafe. Instead use new
-    Execution::UpdatableWaitForIOReady class which does this stuff.
-
-commit 1c9a54f0c13b26d668b74a5e035840d49cbd11d5
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Mar 30 21:12:59 2020 -0400
-
-    WaitForIOReady code - lose default CTOR; add optional Pollable2Wakeup parameter
-
-commit a3ad396258a8a20da587b3885c2cab95f8b5957c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Mar 31 20:31:58 2020 -0400
-
-    cleanup ugly code in Frameworks/WebServer/FileSystemRouter which I BELIEVE triggered VS2k compiler bug(bad codegen) - but horrible code so no point in tracking it down
-
-commit 8c87d12a53e59dda5557accfee559f0624aa9fc0
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Mar 31 21:33:01 2020 -0400
-
-    for building windows - set BOOST_STACKTRACE_USE_WINDBG_CACHED when building BackTrace.cpp, since dramatically faster
-
-commit 8b5864c0779a8bf918d41f80ae86d48e218e4f93
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Apr 2 10:14:56 2020 -0400
-
-    docs about iterators
-
-commit 1c7b86c8b4f432681df4ccbb34c6503aea455ca9
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Apr 2 10:16:22 2020 -0400
-
-    simplified, and corrected serious bug, with CreateGeneratorIterator/CreateGenerator
-
-commit 8c1ce894810006bbb2155973eb8287fec76f6fe6
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Apr 2 11:17:45 2020 -0400
-
-    first draft of Test19_CreateGeneratorBug_ with regtest for first fix
-
-commit df97ad1ce67af32d5ae662fd4fc0500f479eefb3
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Apr 2 11:21:26 2020 -0400
-
-    checked in - for now disabled - regtest with Test19_CreateGeneratorBug_ - still failing
-
-commit 98e0d64c9748ac6ce5efc1d45a3e5ae62e80dd8c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 4 18:08:31 2020 -0400
-
-    fixed Bijection<> image/preimage iterators to properly manage shared vs non-shared context in their lambda closures
-
-commit 7d4837fde9b8b5f4f010f0e0859ecb00c4749c7d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 4 18:10:34 2020 -0400
-
-    docs / design note about iteratables<> - not necessarily doing COW the way containers do
-
-commit a7d4e88a0aed383e497088b2525fb2a5bc33fb64
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 4 18:13:17 2020 -0400
-
-    lose helper Iterable<T>::Distinct_mkGenerator_ - just fold the getNext callback into each usage function
-
-commit c7d1794909542fc7a2c86b8f2eff96292ecf8544
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 4 18:14:42 2020 -0400
-
-    Fixed several Iterable<> methods, Select(), Where:
+    - docs about iterators
+    - docs / design note about iteratables\<\> - not necessarily doing COW the way containers do
+    - simplified, and corrected **serious bug**, with CreateGeneratorIterator/CreateGenerator
+      - Test19*CreateGeneratorBug* with regtest ; closure handling in getNext CreateGenerator usage - all fixed now I htink
+    - Fixed several Iterable\<\> methods, Select(), Where:
       to properly manage shared vs non-shared context in their lambda closures
+    - code cleanups - using Traversal::Iterator2Pointer () in place of &\* in a few places
+    - Range/DiscreteRange etc cleanups (mostly constexpr)
+    - Deprecate Iterable\<\>::SequenceEquals () - use SequentialEquals instead
+    - NEW Iterable\<T\>::SequentialEqualsComparer class
+    - use constexpr in a few more places Iterator2Pointer
 
-commit 54f99c1fe441e4b158eec5362ef64ba2ef96cfba
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 4 18:18:12 2020 -0400
+- Frameworks
 
-    cleanup/enhance regressiontests for recent bug with Iterable<> closure handling in getNext CreateGenerator usage - all fixed now I htink
+  - WebServer
+    - cleanup ugly code in Frameworks/WebServer/FileSystemRouter which I BELIEVE triggered VS2k compiler bug(bad codegen) - but horrible code so no point in tracking it down
+    - Simplify Frameworks/WebServer/ConnectionManager now that we have improved WaitForIOReady: no longer need the bijection
+    - Frameworks/WebServer/ConnectionManager code cleanups: use Synchonized not RWSynchonized for openconnecitons (active/inactive) since must write as often as read; and started adding scoped_lock use but realized I need to fix something in Syncrhonized class first"
+    - in Frameworks/WebServer/ConnectionManager - re-enable use of scoped_lock now that we have implemented Synchronized<T, TRAITS>::try_lock ()
+    - ConnectionManager now uses new UpdatableWaitForIOReady<> - to eliminate thread interrupts and **greatly impove webserver performance**
+  - Led
 
-commit 2d3edf0be982846aa472b355eaab194b29b74d7a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 4 18:21:04 2020 -0400
+    - fixed version# macro generation for Led so about boxes show the right Led version
 
-     DefaultNames<Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor> definition; minor cosmetic cleanups; dbgtraces (commented out) used to debug another issue that just happen to show up here
+- Samples
 
-commit e8686f09678fbcfee6a5845d605520927bc6847f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 4 20:33:13 2020 -0400
+  - ActiveLedIt
 
-commit 6d6293e18264c6f2064012f1ba4cbcf0bc6fde5e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 4 21:09:14 2020 -0400
+    - lose extra rm rule that fails in Samples/ActiveLedIt/Makefile - cuz not in other samples anyhow
+    - Fixed registration, .def file link and other build issues
+    - Document more clearly how to run / test
+    - document status of ActiveLedIt and that its all working
 
-    simplified IO/Network/Listener use of WaitForIOReady now that its templated (no longer need bijection)
-
-commit c3088d5d673195f0e5f71ed15e38df26bf6546cc
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 4 21:19:22 2020 -0400
-
-    fixed listener move CTOR to not use const
-
-commit 1c3c338e63198139bab2496eff91a7a0fd2841f3
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Apr 5 12:14:57 2020 -0400
-
-    translate (most) HTTP 500 errors in the curl tests to WARNINGS (not test failures)
-
-commit 0b5581672660319f1dec188c54770b31b2560174
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Apr 5 18:47:08 2020 -0400
-
-    added IsCleintError/IsServerError methods to IO/Network/HTTP/Exception
-
-commit 673b3e8d5638d8152486e8f231ecedd5ebee4712
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Apr 6 11:03:01 2020 -0400
-
-    Simplify Frameworks/WebServer/ConnectionManager now that we have improved WaitForIOReady: no longer need the bijection
-
-commit 0466bf136714ea72cbf30a1b0346fb46845b1433
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Apr 6 18:04:17 2020 -0400
-
-    Frameworks/WebServer/ConnectionManager code cleanups: use Synchonized not RWSynchonized for openconnecitons (active/inactive) since must write as often as read; and started adding scoped_lock use but realized I need to fix something in Syncrhonized class first"
-
-commit 54ba55cbcefac4a537301459f9412d6563b38d5e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Apr 6 19:31:27 2020 -0400
-
-    Added Synchronized<T, TRAITS>::try_lock () implementation
-
-commit 643acd6235166fb81aa841052523dc1993707eee
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Apr 6 19:32:05 2020 -0400
-
-    in Frameworks/WebServer/ConnectionManager - re-enable use of scoped_lock now that we have implemented Synchronized<T, TRAITS>::try_lock ()
-
-commit f328d322b0e85c04cae3ddf00838b65e32f42aee
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Apr 6 19:35:28 2020 -0400
-
-    cosmetic
-
-commit 04976df94b9eece0b259aeb67ab202ba0a52fef6
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Apr 6 20:01:45 2020 -0400
-
-    cosmetic Frameworks/WebServer/ConnectionManager cleanups
-
-commit 98711d1187752c0734affa067a266cdd1b45e22e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Apr 6 20:24:15 2020 -0400
-
-    factored UpdatableWaitForIOReady into separate module
-
-commit 5a34a53495c547ce26292dd60051009222c9ec1d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Apr 6 20:46:59 2020 -0400
-
-    fix spelling error
-
-commit a1ecb37f0b150610e8bcd071b1667aa58133c403
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Apr 6 21:02:45 2020 -0400
-
-    new utility helper ConnectionOrientedStreamSocket::NewConnection()
-
-commit 5a2bc3cbf2531a80406ecc90152853abcb4fa371
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Apr 7 10:38:10 2020 -0400
-
-    SocketAddress: added kAnyPort member; made it default arg for one SocketAddress CTOR (with internetaddress) and made that CTOR explicit (since down to one required param)
-
-commit 1fa9136f4c0535e19540e2c15bd26c7c58938f7d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Apr 7 10:38:42 2020 -0400
-
-    Added ConnectionOrientedStreamSocket::Ptr::Write() overload
-
-commit 110aeea32c909e81fc4b8224ba4c1d036960a28d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Apr 7 10:39:16 2020 -0400
-
-    fixed typo
-
-commit de8d07bdd7536f045ea354b99787b7f45f45531d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Apr 7 10:40:04 2020 -0400
-
-    Added rough draft (I think now testable) of Execution/WaitForIOReady SUPPORT CLASS
-    EventFD
-    At least close to ready to test.
-
-commit da2ea4a03351355940659006db4659a6d5d9c01a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Apr 7 10:55:01 2020 -0400
-
-    fixed typo
-
-commit 2f61deb1b679d7a8c076e9262ccc51789683093d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Apr 7 10:55:34 2020 -0400
-
-    progress hooking into Execution/UpdatableWaitForIOReady EventFD code (incomplete but close)
-
-commit 2c58787fb6a2afab7e3556621747dee348faabca
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Apr 7 15:47:53 2020 -0400
-
-    UpdatableWaitForIOReady<T, TRAITS>::WaitQuietlyUntil fix for fEventFD_.Clear ():
-
-commit fc8d9024b0e0a694790ed8fa7b07a3eb3500d9d1
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Apr 7 20:05:33 2020 -0400
-
-    small tweaks to UpdatableWaitForIOReady<T, TRAITS
-
-commit 4a07e40bbb1154dae43d34330507fe88cd3b5143
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Apr 8 20:33:58 2020 -0400
-
-    fixed some bugs with UpdatableWaitForIOReady<T, TRAITS> - ready to test
-
-commit 3250f05a360357caa2f8060df598784e89f7eef2
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Apr 8 21:22:41 2020 -0400
-
-    ConnectionManager now uses new UpdatableWaitForIOReady<> - to eliminate  thread interrupts and hopefully impove webserver performance
-
-commit 82ddce53c6e70628bd3eb8e0a4e6949d4e0d4c1a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Apr 8 21:32:21 2020 -0400
-
-    Travisci file uses xcode11.4 now
-
-commit 09a9205e11ba04cbc1de0b208cfadeaf81301521
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Apr 9 10:49:50 2020 -0400
-
-    mostly cosmetic cleanups to WaitForIOReady code but also upped qStroika_Foundation_Exececution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks and lose unused EventFD method
-
-commit 00607599cd574660445e19bc10b557bba997b461
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Apr 9 10:57:46 2020 -0400
-
-    UpdatableWaitForIOReady<T, TRAITS> docs/cleanups and lose some unimplemented/unyused methods
-
-commit c494263cb617b19df7b12fcc870dc465f5b10d11
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Apr 9 11:00:04 2020 -0400
-
-    fixed minor bug - UpdatableWaitForIOReady<T, TRAITS>
-
-commit 7b770c420ef3d73b012e968819ee3d99457656d0
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Apr 9 13:55:28 2020 -0400
-
-    Added Collection<>::Remove(PREDICATE) and RemoveAll(PREDICATE) functions
-
-commit 7762468106b1969f99ac3cd0f59ae06f0bfd9ed4
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Apr 9 13:56:00 2020 -0400
-
-    Fixed Foundation/Execution/UpdatableWaitForIOReady use of RemoveAll/Add APIS and docs
-
-commit ddc3507640013f012018853e92fd59b4d7c841d7
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Apr 9 14:54:14 2020 -0400
-
-    HTTP server ConnectionManager: lose redundant fInactiveOpenConnections_; renamed fSockSetPoller_ => fInactiveSockSetPoller_;  added asserts to double check that swaps back and forth between active/inactive work correctly
-
-commit 7aa6d239194e303366e73935dbedde4a97546932
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Apr 9 15:13:59 2020 -0400
-
-    todo comments
-
-commit 2aa5f9734dd785de510e5a1d1107bf4729fe3f7c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Apr 9 15:49:30 2020 -0400
-
-    fixed typo
-
-commit dc1cc5db95e86e28e7a35dfc2f374b9c616be53f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Apr 10 10:30:41 2020 -0400
-
-    progress on dockerfiles - added draft of ubuntu 2004 and other small cleanups
-
-commit e0dad0c712e18eaecfa67e9fdb3eff9645ed246b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Apr 10 13:11:12 2020 -0400
-
-    centos8 dockerfile fixes
-
-commit afc85e6b03d34eced8aa431c745f58379283c86f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Apr 10 13:12:44 2020 -0400
-
-    attempts at fix to ubuntu 20.04 dockerfile
-
-commit 793200d8d90bdbcb6a6d5f6f84affae1bea9edf7
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Apr 10 13:20:46 2020 -0400
-
-    Comments
-
-commit 8bcb39a9dbc36e7e4f12c358c0b6c50fbbd4b50d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Apr 10 13:28:30 2020 -0400
-
-    more tweaks to centos8 dockerfile
-
-commit c839fbcbe8abffa2a2125879470d78532fa3182f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Apr 10 13:32:08 2020 -0400
-
-    more tweaks to centos8 dockerfile
-
-commit 1f6a7fce25cc2a8525b4c0e25db3a573c29ecd0d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Apr 10 13:35:38 2020 -0400
-
-    more tweaks to centos8 dockerfile
-
-commit 0cdde19dddfe8d50a295b7080eb0b03095157b69
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Apr 10 16:09:47 2020 -0400
-
-    Ubuntu2004-RegressionTests/Dockerfile
-
-commit 5fb3865259a9e17fdff6a29b455c6db4be66593c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Apr 10 16:13:49 2020 -0400
-
-    DockerBuildContainers/Ubuntu2004-RegressionTests/Dockerfile tweaks
-
-commit 7dae4fe5420584754258773212becdff72dba3eb
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 11 09:58:57 2020 -0400
-
-    added docker 2004 to regression tests
-
-commit 2786fc8a5d27d4a151a745e6390ff76351516548
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 11 10:07:49 2020 -0400
-
-    lose support for DockerFile for ubuntu 1810 since 1810 no longer supported by ubuntu/dockerhub
-
-commit 8962e176695471ae36a5d9715961ec8d28bc8060
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 11 10:09:06 2020 -0400
-
-    fixed missing push build docker image for 2004"
-
-commit 5d830936ce6a704c33f82a326b054a1eab1f23ab
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 11 10:44:12 2020 -0400
-
-    tested / updated config defines for gcc 9.3
-
-commit cd90c12373d33f4b42a63c9476c3c44cd4e6c3d5
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 11 10:45:58 2020 -0400
-
-    Added g++10 configuration to makedefile basic-unix-test-configurations
-
-commit fd387097994da87d0bc73855f149351504263dd6
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 11 10:52:06 2020 -0400
-
-    Added gcc arm 9/10 raspbeerry pi configurations to possible builds (raspberrypi-cross-compile-test-configurations)
-
-commit 828ab6e750d33d2fac699bf807e41081e786cd12
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 11 10:57:52 2020 -0400
-
-    bug define qCompilerAndStdLib_GlobalNamespaceLookupWCSCOMPARE_Buggy for gcc 10
-
-commit eed37ddb2b9bacd9fdce719eb9d11e60ad25bc0d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 11 10:59:16 2020 -0400
-
-    fixed typo
-
-commit c2ad50481740556d751e4aaeee78879a8d7dd40f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 11 12:29:27 2020 -0400
-
-    lose unneeded use of CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ; and support g++-10 in compiler bug defines
-
-commit aa292a8b574adeedc4049c5af7b2636ebb3d845f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 11 14:38:09 2020 -0400
-
-    qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy is broken in g++-10 as well
-
-commit 36f4e28fa86d263121dd520659402791f3f31aef
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 11 14:38:33 2020 -0400
-
-    cosmetic trace cleanups
-
-commit 80cf592b4251f356471fce9729a533223bc5298a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 11 14:38:54 2020 -0400
-
-    VSCode/Stroika.code-workspace changes
-
-commit adae0806ec15cad432be0137955f3a0550fdf609
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 11 14:42:18 2020 -0400
-
-    Support clang-9 and clang-10 for basic-unix-test-configurations
-
-commit 9e7d9afdc7e071ba2cb9b2d3d0a571665a03d936
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 11 15:10:26 2020 -0400
-
-    qCompilerAndStdLib_GlobalNamespaceLookupWCSCOMPARE_Buggy not a bug so removed - just must include #include <wchar.h>:
-
-commit d84207b09db8496ef5ce1bd783094db0a7862a9a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 11 15:12:56 2020 -0400
-
-    for clang++-10 (cannot test 9 yet) dont need lc++fs
-
-commit 18bf1c742563bd86c3876b5efd6b297d64bf1192
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 11 15:20:20 2020 -0400
-
-    silcence warning
-
-commit 43127ff745d91740eff327e70771a9f1eee6819b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 11 15:30:45 2020 -0400
-
-    for https://stroika.atlassian.net/browse/STK-601 - keep disabling undefined test in clang++10 (and equiv for darwin clang++12 guessing ahead cannot test this yet)
-
-commit bf48bba20cd82bf0182621889ea776da4d9a459c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 11 16:13:24 2020 -0400
-
-    it appears you must apply Stroika_Foundation_Debug_ATTRIBUTE_ForLambdas_NO_SANITIZE () after catpure but before arg list for lamnda function
-
-commit 7a96026afcca1bb6c8bb788cc2924f0f119113d9
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 11 16:37:37 2020 -0400
-
-    undid last (wrong) fix for positio of Stroika_Foundation_Debug_ATTRIBUTE_ForLambdas_NO_SANITIZE (address) - now well documented on cplusplusreferecne i lamnda section; and fixed clang++-9 compiler bug defines
-
-commit 6d89daa6190c263c770bcd40e0b73c767b42f969
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 11 16:57:02 2020 -0400
-
-    Compiler bug defines for clang++-10
-
-commit 27b6eafdf6b5605bf3e4f5720fcb1f8b49203676
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 11 17:27:24 2020 -0400
-
-    fixed configuration for -lc++fs configure fix
-
-commit f8df92487b23823a5aac899e12d7dce0b836a061
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 11 20:11:39 2020 -0400
-
-    fix for c++20
-
-commit d5e523dd30060adb6526d951fd3df660fd1b3396
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 11 20:13:49 2020 -0400
-
-    fix for c++20
-
-commit e32f0392b0861de2a7f0740621b51df9be410b46
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 11 20:30:07 2020 -0400
-
-    lose install libc++abi-7-dev libc++-7-dev thru -10 - just to test
-
-commit 97cc0636b21404abac1578f56772b65dc4f55c03
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 11 21:05:45 2020 -0400
-
-    Posted query abotu why I cannot install multiple version of clang++ libc++ at the same time - but for now just instlal the latest
-
-commit 8b2c9ca865f641910f75482a4bdf26b38c010e1d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 11 21:06:25 2020 -0400
-
-    fixed 'optional configure' code to not genrate libc++ code when its not installed (kludge to look in hardwired place but good enuf for now)
-
-commit dfbefe3f39fdb94b5c2fcea028648caaa39e13f1
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 11 21:11:34 2020 -0400
-
-    improve --only-if-has-compiler warning message generation in configure
-
-commit db0681c9f156783e5ce1ab24951a3cebed1d1abf
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 11 21:13:29 2020 -0400
-
-    Posted query abotu why I cannot install multiple version of clang++ libc++ at the same time - but for now just instlal the latest
-
-commit 499715c9c73e967f300f36adc7fe4e3e8729babe
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Apr 12 11:54:57 2020 -0400
-
-    revert to xcode 11.3 to capture boost/ConfigureAndBuild file and user-config.jam
-
-commit 7d2ed5c6da61f283ae2253d7708705e26321c9e2
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Apr 12 12:09:32 2020 -0400
-
-    Travisci: more macos debugging
-
-commit 194f12ec1130c1c626bb03ee719721ec8f2fa868
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Apr 12 18:39:53 2020 -0400
-
-    some changes to boost build Makefile (intended to fix issue with XCode 11.4 - macos, but not yet tested elsewehre)
-
-commit a4edfccd1a65f31b609b98f51c3bcc6a29871d60
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Apr 12 18:40:36 2020 -0400
-
-    back to 11.4 xcode trvis build
-
-commit f0cbf06c640d3cde67c8c03c2200c7b3802416e1
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Apr 12 19:00:44 2020 -0400
-
-    travisci lose log lines cuz of log length error
-
-commit b40da56db8a9163b299033703f9a947b39f02b60
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Apr 12 20:51:41 2020 -0400
-
-    workaround https://stroika.atlassian.net/browse/STK-711 - issue g++-10 --std=c++2a with building boost 1.72
-
-commit 4b48c5b0cb1d5def926328d8c887d7abe3fe2071
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Apr 12 20:53:06 2020 -0400
-
-    fixed typo C++2a
-
-commit 6b846e0fae17ce56a43862704d6d01b65e1540e0
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Apr 12 20:54:06 2020 -0400
-
-    fixed typo C++2a
-
-commit 537ce5c925dc9747c333b969218b5ccf858f883a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Apr 12 20:55:29 2020 -0400
-
-    fixed typo C++2a
-
-commit 70fd4fe5cc12b4cc739b54dc0e22928a77d5ceb9
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Apr 12 20:56:13 2020 -0400
-
-    fixed typo C++2a
-
-commit 3d6efa07dbd6e0e8d7cb531c21aac90ccf09e04f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Apr 12 21:09:46 2020 -0400
-
-    temporarily disable build of g++-10-debug-c++2a due to bugs - and fix in next pass - but first see if things work OK without it
-
-commit 83e7d24b93add8a3d10fe6d5431bc8e59c3d0b65
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Apr 13 09:29:13 2020 -0400
-
-    note bug define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy broken all the way up to clang libc++ 10.0
-
-commit 5b119f21cf58da2e67f9d71faf4af6ae9c84fbe8
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Apr 13 09:29:49 2020 -0400
-
-    DISABLE_COMPILER_CLANG_WARNING_START  implicit-int-float-conversion in a few places
-
-commit ed08666c517b0a8089e1b39291e2c920e08a12e6
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Apr 13 09:30:12 2020 -0400
-
-    DISABLE_COMPILER_CLANG_WARNING_START  for deprecated-volatile in a few places
-
-commit fd92fe35cbeac540c20a947f7c81171686589b04
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Apr 14 09:05:26 2020 -0400
-
-    lose dockerfiles for ubuntu1810 since we desupported (cuz desupported on dockerhub)
-
-commit ed36b03b334d5acc493f96d7ab256eacf114034b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Apr 14 09:16:43 2020 -0400
-
-    fixed recent addition of DISABLE_COMPILER_CLANG_WARNING_START to ONLY add #if newer clang compiler
-
-commit 18b334d6969b6aa899735c82db762872d82fdbed
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Apr 14 09:42:28 2020 -0400
-
-    Added draft String::operator<=>()
-
-commit dbca965145b377e7c7fe094aa9807df59af6ca68
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Apr 14 09:44:50 2020 -0400
-
-    tweak timing in regtest (wstringstream v StringBuilder) to avoid warning when running under windows local docker
-
-commit 792e2091c588134b91c8f580aa2db95d2e61d576
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Apr 14 11:06:14 2020 -0400
-
-    avoid gcc10 warning about volatile deprecated
-
-commit 70088cd794f81dabe583e112326e5ea7cb3c6618
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Apr 14 12:38:10 2020 -0400
-
-    re-enable configuraiton g++-10-debug-c++2a
-
-commit 877c87d54c58d2d882111cad722c73b4ea5ca59c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Apr 14 12:45:18 2020 -0400
-
-    remove needlessly ambiguous (reversed) warning
-
-commit 455154d9d8a2e2cecd03be327d628638c54609df
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Apr 14 13:08:00 2020 -0400
-
-    make format-code
-
-commit c3a03aa365470bb41395c905f2bb7b7a0acd6a4a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Apr 14 19:56:54 2020 -0400
-
-    Tweak DISABLE_COMPILER_CLANG_WARNING_START () calls for each compiler version
-
-commit 3e02de241aa23d4b372d46697400dee9c5d162a0
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Apr 14 19:57:42 2020 -0400
-
-    cleanup compiler warnings
-
-commit 45e32e7c0ff085a1849d350d10e80ae5d6489b34
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Apr 15 13:19:28 2020 -0400
-
-    more ifdef cleanups around compiler warning suppressions
-
-commit b1ad8739c90313e5655af0d83299a5b947277b97
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Apr 15 13:20:07 2020 -0400
-
-    more ifdef cleanups around compiler warning suppressions
-
-commit d47a8dfa1ff0e9e904e8ce377ca5d0182f7a2005
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Apr 15 20:26:34 2020 -0400
-
-    maybe udnerstood issue with spaceship operator in Version code - maybe with userdefined spaceship it doesnt map to operator== (strange design choice). Anyhow, testing
-
-commit 3ba32dc0dabc4afb7a7010ff814bc5989fbaad18
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Apr 15 20:34:18 2020 -0400
-
-    updated Stroika-Dev configuration to using ubuntu2004
-
-
-    refactoring - moved private utilitiy from CIDR class to InternetAddress::KeepSignifcantBits ()
-
-commit 1591e41ebd30b8af6afc50d8d27a5a53e7246c2d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Apr 17 17:13:32 2020 -0400
-
-    use new InternetAddress::KeepSignifcantBits to fix CIDR compare <=> and == methods to only check significant bits
-
-commit 010c23ddb1a8414d261ec610f1c68d15674503e8
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 18 12:50:45 2020 -0400
-
-    cleanup small issue with BLOB::operator== () code and test case
-
-commit 6ee266f6405759277c63a27ac8b32c09abc1f94b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 18 13:13:50 2020 -0400
-
-    __cpp_impl_three_way_comparison support for URI and related classes
-
-commit 14b1278f435f48934ef6cdd2e6bd96c09d4240c7
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 18 13:13:56 2020 -0400
-
-    __cpp_impl_three_way_comparison support for URI and related classes
-
-commit 6d4ecf89ed09010fcd7fdd1634464a32b7e9ed5b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 18 13:25:31 2020 -0400
-
-    fix small regression with UniformResourceIdentification comparer code
-
-commit c017e37aac11ae5ae25f62c26e22b48061725ea8
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 18 13:36:41 2020 -0400
-
-    __cpp_impl_three_way_comparison for iterator
-
-commit d414406781e1d795a94cb85879110930c68d199a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 18 13:39:52 2020 -0400
-
-    docs
-
-commit e16a828ea2cdd8040d43127c75f4f274450785f2
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 18 13:42:07 2020 -0400
-
-    typo fixed
-
-commit 1408bcd715862df4198b7a63788f1df549508abc
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 18 13:49:40 2020 -0400
-
-    fixed typo
-
-commit 785c4256910dc72e732bf6dbd00beff7fc044637
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 18 14:17:01 2020 -0400
-
-    code cleanups - using Traversal::Iterator2Pointer () in place of &* in a few places
-
-commit 512ba4eeb566987e16332db4cad20fd681115522
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Apr 19 18:57:08 2020 -0400
-
-    dbgtrace code (disabled) but tweaked
-
-commit af5312ffdc7d61f710a78f4502feb762b35514e8
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Apr 19 18:59:32 2020 -0400
-
-    IO::Network::Transfer Response ToString() (and other related sub-element) support
-
-commit 2f168fa093bfc13894ee7cce8eb7e82257a9c94d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Apr 19 19:02:06 2020 -0400
-
-    minor tweaks to regression test
-
-commit 7ebbec7f49632899e0d0f2524b0033422080e5aa
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Apr 19 19:21:42 2020 -0400
-
-    cosmetic
-
-commit cadde37c1b32591044d7bf7d32274b4cce7aa0ca
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Apr 19 19:35:28 2020 -0400
-
-    cosmetic
-
-commit 6e4ae25941265b46e6dc108f3f074a5a353c320e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Apr 19 19:36:25 2020 -0400
-
-    make IO::Network::Uri operator bool EXPLICIT operator bool to workaround appearent qCompilerAndStdLib_operatorCompareWithOperatorBoolConvertAutoGen_Buggy - not sure if this is best - lookinginto
-
-commit 8666384e73d0a0b6e234d2859e399cca026e9542
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Apr 19 20:08:18 2020 -0400
-
-    Test_RegressionDueToBugInCompareURIsC20Spaceship_ / qCompilerAndStdLib_operatorCompareWithOperatorBoolConvertAutoGen_Buggy docs and test but no longer need a workaround
-
-commit d0415457a183205c4911e6945d1b76e923beb39c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Apr 20 11:08:48 2020 -0400
-
-    more updating for __cpp_impl_three_way_comparison support (Led library and a few others)
-
-commit 60922b74ff65a639108d980c651f6dc86c1e5b4e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Apr 20 11:13:39 2020 -0400
-
-    comments
-
-commit a2792ef48110cef3fbee37f7204939571eb39590
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Apr 20 13:22:20 2020 -0400
-
-    fixed typo in __cpp_impl_three_way_comparison changes
-
-commit aab49b9fa0c938ddce00f9198de20ac4430f5e01
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Apr 20 13:26:14 2020 -0400
-
-    cosmetic
-
-commit 3d74e557ff0c0335e11f2c7982dde7813a42618b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Apr 21 11:26:58 2020 -0400
-
-    start __cpp_impl_three_way_comparison support for Range
-
-commit ec4a773443993bfece3d82d10c7479516a960ae1
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Apr 21 11:34:06 2020 -0400
-
-    Minor cleanups to Range<> template class
-
-commit ece4d3a71459ce591bbd82c08b6d108d9b4a77e3
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Apr 21 11:42:02 2020 -0400
-
-    make format-code
-
-commit 78fcd440af57e0f11642bd2e066dce031d9d1851
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Apr 21 11:51:30 2020 -0400
-
-    use reference capture in DisjointRange (small tweak)
-
-commit ede4097ed4078047dfd350d728f2f7b9ab7a7505
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Apr 21 12:02:37 2020 -0400
-
-    fixed regression in Range changes
-
-commit 0454d234829d97088bbaa5a09000c1621425aabd
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Apr 21 13:22:34 2020 -0400
-
-    DiscreteRange cleanups; and use constexpr much more
-
-commit 1c147e0dc7aec6c04599b28708a1014273171f3c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Apr 21 13:57:59 2020 -0400
-
-    (mostly constexpr) cleanups to Range/DiscreteRange classes
-
-commit 7a2d6c2bcd51c869ac9032778ec8a2332cceef77
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Apr 25 21:20:57 2020 -0400
-
-    Added optional tests makefile entry EXTRA_VALGRIND_SUPPRESSIONS, and use that from regression tests so we get all teh defaults + some
-
-commit cf89bff58d75392d413e358224eecf12754cc55b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Apr 26 17:57:48 2020 -0400
-
-    lose support for Ubuntu 1904, since no longer a supported version of Ubuntu
-
-commit b3b6dd69151129548818c0f0aa98f4f60a0945ee
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Apr 26 18:02:25 2020 -0400
-
-    lose support for Ubuntu 1904, since no longer a supported version of Ubuntu
-
-commit aa6eaf5d66d6299f1e1ff772c53e26c99975f3fe
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Apr 26 18:20:51 2020 -0400
-
-    __cpp_impl_three_way_comparison support in reset of Range related code
-
-commit c9fa09e8436f00cd2b6938eecdc843a76f405bd6
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Apr 27 11:09:30 2020 -0400
-
-    automate computing variable USING_BLOCK_ALLOCATION and having the tests makefile automatically add the blockallocation suppressions so no need to hardwire in RegressionTest script
-
-commit 28660524f1ce357c0aed635e8742f91142018e91
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Apr 28 14:38:33 2020 -0400
-
-    hopefully fix dockerfile for centos8 - very flakey installs
-
-commit 28a12111c3132957e5af382837ef8b68cf49cea1
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Apr 28 19:24:00 2020 -0400
-
-    lose extra rm rule that fails in Samples/ActiveLedIt/Makefile - cuz not in other samples anyhow
-
-commit 9ac6c89c1cfabb4f5c015aa7bda6d31485b19449
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Apr 28 20:55:49 2020 -0400
-
-    jira tickets about issues with traviscci"
-
-commit 9959387cb39bb69ff48cd4598a111784fe728fec
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Apr 29 10:05:31 2020 -0400
-
-    more progress on __cpp_impl_three_way_comparison for containers (about 1/3 done)
-
-commit e00d43c3ac8c9a532afd757fc824c70249abb233
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Apr 30 08:43:34 2020 -0400
-
-    hopefully fix c++ compile error
-
-commit 4d1d36d94d938a2d67078d7cbca60effd32ad629
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Apr 30 10:30:23 2020 -0400
-
-    hopefully fix c++ compile error
-
-commit 66d03d1054675a8ff629dc3df143e24b0c6b3011
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Apr 30 10:49:03 2020 -0400
-
-    more work on (incomplete) __cpp_impl_three_way_comparison for containers - maybe 1/2 done
-
-commit 3e361dd5708e32c8d47d03f23436501d690308c9
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Apr 30 11:57:57 2020 -0400
-
-    more progress on __cpp_impl_three_way_comparison for containers
-
-commit 3b2daafa1144da636e1b569f7fcd7297cad59fe1
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Apr 30 13:49:55 2020 -0400
-
-    use libcurl 7.70.0
-
-commit 03214026c4c004916bfd9466607790360a0139ec
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Apr 30 13:52:00 2020 -0400
-
-    openssl 1.1.1g
-
-commit cc703f314e9ca0e697179ce9d8e5a09c204ee177
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Apr 30 13:53:33 2020 -0400
-
-    boost 1.73.0
-
-commit 358658f3939826e91e47ab36f7faab3e8de541eb
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Apr 30 13:57:15 2020 -0400
-
-    xerces 3.2.3
-
-commit a5e9e0d898b268f60a50c52a0f443a1f24857cb1
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Apr 30 14:01:45 2020 -0400
-
-    revert version of xerces used to 3.2.2 for now - trouble building on unix
-
-commit 148462570d886715cbb39b200fa78d72f6a136e2
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri May 1 19:31:26 2020 -0400
-
-    retry xerces 3.2.3 (works on windows)
-
-commit a4196344e13880f84d7e90c961ba4c9d1475ebf5
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri May 1 19:55:56 2020 -0400
-
-    workaround issue with new xerces 3.2.3 (really my workaround for 3.2.2 no longer needed)
-
-commit 41303ec970aab9d5503c70b18325347b9a32e4d7
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 3 20:34:54 2020 -0400
-
-    qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy bug workaaround
-
-    Deprecate Iterable<>::SequenceEquals () - use SequentialEquals instead
-
-    NEW Iterable<T>::SequentialEqualsComparer class
-
-    USE Iterable<T>::SequentialEqualsComparer as the implementation for EqualsComparer in Stack, Queue, Sequence
-
-    Containers comments
-
-commit 7875ddb36c98aed01ed35d38d16bb95e8a0f6027
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 4 22:54:11 2020 -0400
-
-    qCompilerAndStdLib_strong_ordering_equals_Buggy bug workaround
-
-commit 5a0e6981a8072ce79d465a297b5c9fdfc15a11dd
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 5 07:01:21 2020 -0400
-
-    fix qCompilerAndStdLib_strong_ordering_equals_Buggy BWA
-
-commit f6220be4a3b51e7822ce68119e7a647c9baa3047
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 5 07:55:54 2020 -0400
-
-    renamed CompareResultNormalizeHelper -> CompareResultNormalizer and deprecated old name
-
-commit fba51f0278fd626c46accff38980aabfb9355f9c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 5 08:43:16 2020 -0400
-
-    deprecated ThreeWayCompareNormalizer
-
-commit 963567cd294463b17786ed95d67fffa4142f7c3d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 5 10:23:06 2020 -0400
-
-    lose (deprecate) mkEqualsComparerAdapter, mkInOrderComparerAdapter, mkThreeWayComparerAdapter - and use class adapters directly now that class deduction works better in C++17
-
-commit 250496ace972c667620b632ee39f10ec37ab074e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 5 13:52:57 2020 -0400
-
-    comments
-
-commit 59165524551e9f4220541fb4e14937e8c0715c19
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 5 13:56:08 2020 -0400
-
-    renamed Common::OptionalThreeWayCompare -> Common::OptionalThreeWayComparer
-
-commit b26310cb9b11d2dbb15977749aa448cb567cdf01
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 5 14:14:08 2020 -0400
-
-    struct ExtractComparisonTraits<compare_three_way<T>>
-
-commit 85f3c1e99ae7540f72a551bc34f89a484ed21d30
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 5 14:36:00 2020 -0400
-
-     @todo https://stroika.atlassian.net/browse/STK-692 - debug threewaycompare/spaceship operator cleanups
-
-commit b4674603042a89f15d30932449b70ce3512eb76b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 5 18:14:44 2020 -0400
-
-    Comments cleanups
-
-commit 424a64c6d3d8122f90ff6e9899c008f6da92602e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 5 18:19:17 2020 -0400
-
-    __cpp_impl_three_way_comparison cleanups for Sequence
-
-commit e39ec1c81aa02eef76f9e8a96f70d2449ae500ce
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 5 18:22:05 2020 -0400
-
-    cosmetic
-
-commit 0535b5cf03bdffd2c78499d592fac462afa1a897
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 5 20:56:58 2020 -0400
-
-    __cpp_impl_three_way_comparison functionality on Function<> and StructuredStreamEvents::Name
-
-commit 73c6659683f36c4f85e8cabfdf65bf44bc78f455
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 5 21:58:02 2020 -0400
-
-    comments
-
-commit d80d575324ba3acfcb7b9d99e279a5b990940508
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed May 6 09:21:23 2020 -0400
-
-    cleanup __cpp_impl_three_way_comparison for String code; and other small cleanups
-
-commit f32d9540f8652f0c11a2094e3f812bef383fcd96
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed May 6 09:30:48 2020 -0400
-
-    cosmetic
-
-commit 6fe9628318901b68b4628e6ede872dc04a7f4bf4
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed May 6 21:04:00 2020 -0400
-
-    Draft docs cleanup on C++ comparison logic
-
-commit 64b781badb1b76dd3ab7a4fede134af0f2591f36
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed May 6 21:13:17 2020 -0400
-
-    Stroika::Foundation::Common::compare_three_way helper
-
-commit 54f8c63f7d224374b8750441ad55b7f9e76ef606
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed May 6 21:35:04 2020 -0400
-
-    cleanup deprecated code in Compare.h
-
-commit 07be04d27d1980a4fa60c8d240aad0782127e3ec
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed May 6 22:03:31 2020 -0400
-
-    deprecated ThreeWayComparerDefaultImplementation - and failed to workaround clang-format issue
-
-commit 3a64c0b1e3590e71db1e7a5cc0b123ef24f6ec4e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed May 6 22:33:28 2020 -0400
-
-    ThreeWayComparerDefaultImplementation<T> deprecation cleanup
-
-commit 88484bf4fd43df23cae038870ab97530d6828d13
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed May 6 22:37:28 2020 -0400
-
-    new clang-format 11
-
-commit c10175fcdfe613dbc2ec301bde1aef687949ab55
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed May 6 22:38:28 2020 -0400
-
-    new clang-format 11
-
-commit ad06bf6be8c9bcd4f0f24575ed73c7aac20c2f74
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu May 7 10:52:55 2020 -0400
-
-    cosmetic
-
-commit 026d5ff1bfe441f3a360a8cc776a3199a44e6b0c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu May 7 11:13:41 2020 -0400
-
-    Cleanups to Common::ThreeWayComparer - maybe in preps to deprecate -  experimenting
-
-commit 15809595cc86248de636543cd5918df84f4d4337
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu May 7 11:37:38 2020 -0400
-
-    experimenting with approach of specailizing compare_three_way<> - did on Character
-
-commit ec00b6af952c2ef27affc948edc2de2d8000fbbb
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri May 8 10:49:36 2020 -0400
-
-    more cleanup (doc style and equal_to specialization) for Character, and deprecated Characters::ThreeWayCompare (experimenign with new style - just specialize)
-
-commit eec4a58f1c8b79506f1ac317e9df02f6cfd85541
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri May 8 10:54:05 2020 -0400
-
-    cosmeticdocs about 3 way compare
-
-commit c9188f5bb9e781d8f8c0bb7a6d7932fdbc889df0
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri May 8 11:25:32 2020 -0400
-
-    tweak Library/Sources/Stroika/Foundation/Characters/Character support for new style euqal_to etc
-
-commit 0836efa42a22bb8aa94cbb470b3f49459321f71c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri May 8 11:31:16 2020 -0400
-
-    Characeter compare code not yet constexpr
-
-commit 3e51a45fd38698f53dc83a1cab5ffaef2135ddcc
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri May 8 11:34:01 2020 -0400
-
-    maybe workaround ordering issue with Character::ThreeWayComparer use
-
-commit 6645345dc762b5ee11bf623b4d7d77dea606e852
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri May 8 11:35:06 2020 -0400
-
-    maybe workaround ordering issue with Character::ThreeWayComparer use
-
-commit 975344a1235202be7d51d8b0299c39ad5d4fab2a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 10 00:04:07 2020 -0400
-
-    new style String support for threewaycompare
-
-commit 38d9f1ab50b41c8917e8db34405616f3233118b0
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 10 00:06:49 2020 -0400
-
-    new style String support for threewaycompare
-
-commit 57d23645f7521415b4e52a156aa438c9729df737
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 10 00:07:29 2020 -0400
-
-    new style String support for threewaycompare
-
-commit 4e8919021e82f805e14f1bcc02ac1b41337424e0
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 10 00:10:16 2020 -0400
-
-    new style String support for threewaycompare
-
-commit 4a1e1d67272e9f47ea3c4ecded19fe72025cba7a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 10 10:47:03 2020 -0400
-
-    convert more to direct use of Common::compare_three_way<> and equal_to<> in place of nested T::ThreeWayCompare
-
-commit 8587eba359c14b82ad4dcae280f7485f3b54551b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 10 11:11:04 2020 -0400
-
-    EqualsComparer convert to new desgin in a few more classes (Range/Character/BLOB)
-
-commit aa9e47bdc90ee8bf24996b8e764f9140c473ff47
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 10 11:16:18 2020 -0400
-
-    tweak last checkin
-
-commit 6d912845ee34dca4c39628e001de7f23f873f264
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 10 11:17:21 2020 -0400
-
-    tweak last checkin
-
-commit 817df259e490fbafae951251d9d7107a0205030c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 10 11:23:28 2020 -0400
-
-    more tweaks to use of equal_to
-
-commit e19b28f72369ee5554c1be2d14bb11186aac5cac
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 10 12:13:23 2020 -0400
-
-    more cleanups switching from T::EqualsComparer to equal_to<T>
-
-commit 0e3b33bf1e25f84d1efaea775bbf9d7b659966d0
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 11 09:02:51 2020 -0400
-
-    more progress experimenting on Equals/ThreeWay comparer design approach - maybe settling in on workable appraoch for Chracter class
-
-commit d1133321b43440ab28f17e520746580a89664a2f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 11 09:36:34 2020 -0400
-
-    more revisions of docs and approach to comparison functions in Character and Version classes (to test/experiment with ideas)
-
-commit 04163ea1cd91b9223bd596d5413d5d1b36215031
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 11 10:21:14 2020 -0400
-
-    added annchor for comparison docs and start adding refs to that in C++ header docs for various comparisons functions that have been converted
-
-commit 49e38f50a5aebb3b23771497cd860ba9da96b624
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 11 10:27:49 2020 -0400
-
-    fixed typo
-
-commit 52af19034741c92e67b6eacea71db25d3ccb30be
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 11 10:36:46 2020 -0400
-
-    cosmetic
-
-commit b2f25af48d3b0fe7524c7932b5e68aac27fbf7b4
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 11 20:25:36 2020 -0400
-
-    More revisions to String comparer code (mostly usage of said)
-
-commit 308880dbc79bde8d97d19ba724db2c28f978ed00
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 11 22:14:39 2020 -0400
-
-    fixed typo
-
-commit 2aa830386e15c47eddd1176d92e8941e700b8ffd
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 12 14:24:40 2020 -0400
-
-    more compare code updates
-
-commit f01a5a2944403df186003a73c8463f71bc105654
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 12 20:02:36 2020 -0400
-
-    vis2k29 16.5.5 in docker image
-
-commit 09bc1c79ed3989d1737385a47a1541c9697aeba7
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 12 20:03:15 2020 -0400
-
-    Comparisons support LRUCache
-
-commit 519851179126d626c3da59d2ae9acf4074a30484
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 12 20:03:30 2020 -0400
-
-    comments
-
-commit 361875ab4472963bfb2077e0ed22c12cd2f8906e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 12 20:03:59 2020 -0400
-
-    new comparisons support for Foundation/Common/CountedValue
-
-commit b7fd0661d5b7e75cdc84a9cacefe5637b1bbbbf7
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 12 20:07:26 2020 -0400
-
-    fixed typo
-
-commit 3e1469d992cfa2ac8803dd1f79865ed71396b120
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 12 20:08:46 2020 -0400
-
-    fix logic regresison in compare changes for CountedValue
-
-commit 77e3e63fbfa87211d7d37a0ec74d32f0b1719574
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed May 13 11:53:36 2020 -0400
-
-    progress converting to new threewaycompare/comparer design - docs etc - and updated through Foundation::Common
-
-commit c10b9c055520c0eef1ae1cd1da1deafeb3fff677
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed May 13 11:58:05 2020 -0400
-
-    build docs
-
-commit b2db9fd728063065de8284f38baf7ca342b6755a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 17 21:27:53 2020 -0400
-
-    finished getting Containers upgraded to new (stroika approach to) C++20 comparer functions
-
-commit 388c8115e5d9c02e9f77cf053e9f2df7080c21eb
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 17 21:34:31 2020 -0400
-
-    travisci sepearate builds of samples/tests so can build fast enuf for travisci limit
-
-commit 32c2c118be19b248b064bb9ad11a0c6a44fee5f9
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 18 10:01:04 2020 -0400
-
-    travisci more tweaks to build scripts so maybe completes in 50 minuute limit
-
-commit becfa1a4ae9f5b2391fe37749dadb820bc2261a7
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 18 10:54:30 2020 -0400
-
-    more progress on conversion to new style comparison operations/docs
-
-commit 1c7ae361057bbb4bc109744c5b9c8c6ca5645b4f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 18 16:54:08 2020 -0400
-
-    use qHasFeature_boost check not __has_include(<boost/thread/shared_mutex.hpp>) because of we compiled with !qHasFeature_boost - dont use boost even if system installed
-
-commit f1eb46086a4dd4cc40b0cc14a290e3290e777584
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 18 19:39:15 2020 -0400
-
-    travisci: comments cleanups on how macos build now working (and removed it from the canfail list)
-
-commit 2cdf949cc650470b6e91d77b96387e09a6bb632c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 18 21:25:10 2020 -0400
-
-    tweak new regression test added
-
-commit b4df3ae07921e25e4e056b1d760d642e02ce2c3d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 18 21:27:03 2020 -0400
-
-    tweak Iterable<>::SequentialThreeWayComparer and SequentialEqualsComparer CTOR args - perfect forwarding
-
-commit 0088d8de6ed5674dd2761635c50add492d439aa1
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 18 22:03:49 2020 -0400
-
-    play with rvalue refernces uses in Iterable<T>::SequentialEqualsComparer<T_EQUALS_COMPARER>
-
-commit dff62228f2641bb0fc39cc3b7366f330171cee2f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 19 16:03:30 2020 -0400
-
-    iterable<>::SequentialThreeWayComparer now uses Common::compare_three_way instead of deprecated Common::ThreeWayComparer
-
-commit c73deec6b7d7865770ce1c0dc5e28c573d763011
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 19 16:04:55 2020 -0400
-
-    DEPRECATED ThreeWayComparer (just use  compare_three_way instead); fancier ComparisonRelationDeclaration with two template args intead of one
-
-commit d5b019eea53f42cd80eb2b847b3d629460dafa02
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 19 16:32:17 2020 -0400
-
-    use Common::compare_three_way instead of deprecated Common::ThreeWayComparer
-
-commit 35ee9a25b015dfa641a7d7e32783dfdb991706bf
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 19 17:21:35 2020 -0400
-
-    use Common::compare_three_way intead of derepcated Common::ThreeWayComparer
-
-commit a681b10e3b820dd340ea3b4a787fee6de5b9c5e2
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 19 23:16:28 2020 -0400
-
-    fixed typoin InternetAddress compare fixes
-
-commit 1ae49121a304077baac397ba69f78633384c68b6
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed May 20 10:21:35 2020 -0400
-
-    some progress on URI-related comparison functions (incomplete)
-
-commit 195115abc2d4466a8c3b1c68ca53ee10dbd21083
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed May 20 11:05:07 2020 -0400
-
-    hopefully finished URI (related) code conversion to new conversions design
-
-commit c9aad74be3acef45ae49cb5fa55cc5c9b8b3aef9
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed May 20 14:15:45 2020 -0400
-
-    StructuredStreamEvents/Name support new three way compare new stroika style & comsetic
-
-commit 8365d53912fe5960c65e3ff6c719fd1a6a40f913
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed May 20 14:18:11 2020 -0400
-
-    travisci: lose another ThirdPartyComponent from build on macos regtests (due to run timeout)
-
-commit 9a47ec102fb603cae2db93c71e564a8dcd788984
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed May 20 18:37:48 2020 -0400
-
-    travisci: in HOPES of fixing build time issue for macos - samples - try switching to DEBUG config and see if thats faster to build
-
-commit 8729ca9ae381b819b78b0d066d815d7fab04d940
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed May 20 21:53:14 2020 -0400
-
-    workaround qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
-
-commit 25a81c3c604a61d454527ca2144fff503ee7c3fe
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu May 21 10:13:50 2020 -0400
-
-    Support fExactTypeMatchOnly on VariantValue::ThreeWayComparer
-
-commit 3902bd317c8f03b13ebda77269e90d26e77a0406
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu May 21 10:21:07 2020 -0400
-
-    added assertion
-
-commit 0c8a5fba82910842fe326628582d6e742ae7c525
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu May 21 10:31:51 2020 -0400
-
-    lose use of std:: result_of_t which was deprecated and removed in C++20 (and broken in msvc 16.6 - but they may not be wrong) - and replaced with roughly equivilent invoke_result_t
-
-commit 15075fdd7740688c2f4607599371e43cc07c0096
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu May 21 10:36:41 2020 -0400
-
-    upgrade docker windows container to use VS_16_6_0
-
-commit 91a2ca51ad247a6bffc81cbc72ab8715c869d36f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu May 21 13:15:40 2020 -0400
-
-    support _MS_VS_2k19_16Pt5P0_ VS2k19 16.6 release (16.6.0 tested)
-
-commit d50d4917adb2c195992e2139804d814f4fff3867
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu May 21 22:26:54 2020 -0400
-
-    draft of qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy bug define and workaround
-
-commit fd80858d0acc3a4092faab61e7b033b0f593799f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri May 22 21:40:06 2020 -0400
-
-    tweak define for qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy
-
-commit 0b0aefd97c9a52d4eb932c549daf8dfcb7d3c413
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat May 23 12:30:46 2020 -0400
-
-    lose some obsolete (old) Memory::Optional code
-
-commit 2901e0e005a0a6ba43a11743afffa3c2128fe793
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat May 23 13:22:57 2020 -0400
-
-    fixed regttest for change in API ofr SharedByValue operator==
-
-commit b0e7b8b38a0f9701a785e6ea1b01fef79ae9ecea
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 24 11:04:08 2020 -0400
-
-    ::OleInitialize () workaround for LedItMFC / LedLineItMFC - (due to interaction wtih boost stacktrace code)
-
-commit 4b38d333a6b4883720f42c6fdca887bab0dce218
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 24 11:07:32 2020 -0400
-
-    ActiveLedIt - close to working activeledit - it now registers - but doesn't run. Still something misconfigured. Probably bug due to conversion I did a while back converting to makefile builds (but I thought I tested then). Anyhow better documented testing process - debug later as NOT very important
-
-commit 181234a9de4dcb4b11d5f524dc7047570c464ad3
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 24 11:18:48 2020 -0400
-
-    documentation on possible causes of issues with activeledit
-
-commit 1ea5811cd3e0dba79cba9199a796794872ff3abf
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 24 19:51:10 2020 -0400
-
-    added new utility Execution::Platform::Windows::COMInitializer; and used it in Firewall code, and LedIt/LedLineIt samples (in place of direct calls to CoIniitializeEx/OleInitialize()
-
-commit 12bd9ff8afbd9e20868d4ce1215b185e23dcb274
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 24 20:17:36 2020 -0400
-
-    renamed Set<>GetEqualsComparer -> GetElementEqualsComparer and deprecated old name
-
-commit 182bd6b01149cc94d294056a99fb06aa54a4d34c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 24 21:05:32 2020 -0400
-
-    renamed Multiset GetEqualsComparer -> GetElementEqualsComparer and renmaed SortedMultiset GetInOrderComparer -> GetElementInOrderComparer
-
-commit 0e41d7cc6677a9eb7348afcca3fffe38e91e4279
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 24 23:28:05 2020 -0400
-
-    renamed Set<> EqualityComparerType -> ElementEqualityComparerType (deprecating old name)
-
-commit 769485c0be7901cb7c0369e07ab5b42227af51a0
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 24 23:44:02 2020 -0400
-
-    renamed MultiSet<>::EqualityComparerType -> ElementEqualityComparerType  and deprecate old name
-
-commit 355bc256b7c7a78bf5d13c395fea75d028425bae
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 24 23:55:41 2020 -0400
-
-    datetime cleanups; and slightl change in sematnics for DateTime::ThreeWayComparer in non-default case (irrelevant)
-
-commit 1e17ec3bfa8c8c727810fb4717359497e11373e8
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 25 13:47:31 2020 -0400
-
-    use constexpr in a few more places (Iterator2Pointer, InternetAddress::TWC_; Stack<T>::operator<=> uses auto return;
-
-commit 2dc7a4710b4ab3b99bd44c14286b5522e227c0ed
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 25 21:38:25 2020 -0400
-
-    Added WSL build to Documentation/Regression-Tests.md
-
-commit 29ec40006a100235ba46045ed00092cde99d2da9
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 25 22:05:49 2020 -0400
-
-commit 096ac5361e1389ff80a5661a457301eaf63dde6d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 26 14:51:36 2020 -0400
-
-    Synchronized<> now supports new Comparisons API; and added qCompilerAndStdLib_TemplateEqualsCompareOverload_Buggy to workaround one issue with that
-
-commit fb1b19be9aff25005f5d75e1de585adada3503b8
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 26 19:54:32 2020 -0400
-
-    Slightly more aggressive make clobber
-
-commit 44cb35fbaf24eeef65442ec74718d0b4296f6c7c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 26 19:54:58 2020 -0400
-
-    tweak build script for WSL_Ununtu_Simple
-
-commit 5d7b6ca1539ea25e88ed9287474ca4e23596068b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 26 20:45:14 2020 -0400
-
-    document status of ActiveLedIt and that its all working
-
-commit 6edf099f28148e913f81fb2b9fac5f66ae5f2daf
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 26 21:15:28 2020 -0400
-
-    fixed version# macro generation for Led so about boxes show the right Led version
-
-#endif
+  - *Led*It - Execution::Platform::Windows::COMInitializer workaround for LedItMFC / LedLineItMFC - (due to interaction wtih boost stacktrace code)
 
 ---
 
