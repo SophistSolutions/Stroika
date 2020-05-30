@@ -60,9 +60,6 @@ namespace Stroika::Foundation::Execution {
                 else {
                     *remainingInSleep = nextTS.tv_sec + static_cast<Time::DurationSecondsType> (ts.tv_nsec) / kNanoSecondsPerSecond;
                 }
-                if (*remainingInSleep <= seconds2Wait) {
-                    DbgTrace (L"*remainingInSleep <= seconds2Wait failure: remainingInSleep=%f, seconds2Wait=%f, nextTS.tv_sec=%ld, ts.tv_nsec=%ld, ts.tv_sec=%ld, nextTS.tv_nsec=%ld", *remainingInSleep, seconds2Wait, nextTS.tv_sec, ts.tv_nsec, ts.tv_sec, nextTS.tv_nsec);
-                }
             }
         }
 #elif qPlatform_Windows
