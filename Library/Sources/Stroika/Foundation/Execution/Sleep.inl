@@ -52,13 +52,13 @@ namespace Stroika::Foundation::Execution {
                 // https://pubs.opengroup.org/onlinepubs/9699919799/functions/nanosleep.html doesn't clearly document allowed range for output timespec
                 // value (can it go negative)
                 // On WSL 1 (WinVer 1909) nextTS sometimes goes negative (or blows up to be very large?), so check)
-                WeakAssert (0 <= ts.tv_nsec and ts.tv_nsec < kNanoSecondsPerSecond); // not sure this should happen? - log for now... -- LGP 2020-05-29
-                WeakAssert (nextTS.tv_sec >= 0);                                     // ""
-                if ((nextTS.tv_sec < 0) or not(0 <= ts.tv_nsec and ts.tv_nsec < kNanoSecondsPerSecond)) {
+                WeakAssert (0 <= nextTS.tv_nsec and nextTS.tv_nsec < kNanoSecondsPerSecond); // not sure this should happen? - log for now... -- LGP 2020-05-29
+                WeakAssert (nextTS.tv_sec >= 0);                                             // ""
+                if ((nextTS.tv_sec < 0) or not(0 <= nextTS.tv_nsec and nextTS.tv_nsec < kNanoSecondsPerSecond)) {
                     *remainingInSleep = 0;
                 }
                 else {
-                    *remainingInSleep = nextTS.tv_sec + static_cast<Time::DurationSecondsType> (ts.tv_nsec) / kNanoSecondsPerSecond;
+                    *remainingInSleep = nextTS.tv_sec + static_cast<Time::DurationSecondsType> (nextTS.tv_nsec) / kNanoSecondsPerSecond;
                 }
             }
         }
