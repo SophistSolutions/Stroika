@@ -59,8 +59,6 @@
 #elif defined(_POSIX_SOURCE) || defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 // Not really sure which defines to look for --LGP 2011-09-13
 #define qPlatform_POSIX 1
-#else
-#define qPlatform_POSIX 0
 #endif
 #endif
 
@@ -69,8 +67,6 @@
 // not sure
 #if qPlatform_POSIX && defined(__linux)
 #define qPlatform_Linux 1
-#else
-#define qPlatform_Linux 0
 #endif
 #endif
 
@@ -78,9 +74,21 @@
 #if !defined(qPlatform_MacOS)
 #if defined(__APPLE__) && defined(__MACH__)
 #define qPlatform_MacOS 1
-#else
+#endif
+#endif
+
+// Have all these default to 0, if not oetherwise defined, so you can use if constexpr (qPlatform_Linux), etc
+#if !qPlatform_MacOS
 #define qPlatform_MacOS 0
 #endif
+#if !qPlatform_Windows
+#define qPlatform_Windows 0
+#endif
+#if !qPlatform_Linux
+#define qPlatform_Linux 0
+#endif
+#if! qPlatform_POSIX
+#define qPlatform_POSIX 0
 #endif
 
 #if qPlatform_Windows && qPlatform_POSIX
