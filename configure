@@ -153,7 +153,7 @@ my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
 my $INCLUDE_SYMBOLS_LIB = true;
 my $INCLUDE_SYMBOLS_EXE = DEFAULT_BOOL_OPTIONS;
 my $MALLOC_GUARD = DEFAULT_BOOL_OPTIONS;
-my $COPTIMIZE_FLAGS = "";   ### DEPRECATED
+my $COPTIMIZE_FLAGS = "";
 my $STATIC_LINK_GCCRUNTIME = DEFAULT_BOOL_OPTIONS;
 my $STATIC_LINK_SANITIZERS = DEFAULT_BOOL_OPTIONS;
 my $COMPILER_DRIVER = "";
@@ -875,7 +875,7 @@ sub	SetDefaultForCompilerDriver_
 			}
 		}
 		if (IsMSVCCompiler_ ($COMPILER_DRIVER_CPlusPlus)) {
-			$COPTIMIZE_FLAGS .= " /O2 /Oi /Oy ";
+			$COPTIMIZE_FLAGS = "/O2 /Oi /Oy";
 		}
 		if ($ENABLE_TRACE2FILE == DEFAULT_BOOL_OPTIONS) {
 			$ENABLE_TRACE2FILE = 0;
@@ -1109,13 +1109,7 @@ sub	ParseCommandLine_Remaining_
 	my @args = GetAppArgs_ ();
 	for (my $i = 1; $i <= $#args; $i++) {
 		my $var = $args[$i];
-		if (lc ($var) eq "-c-define" or lc ($var) eq "--c-define") {
-			$i++;
-			$var = $args[$i];
-			push (@useExtraCDefines, $var);
-			print ("DEPRECATED: $var - use --append-CPPFLAGS instead - since Stroika v2.1a2 - except new format - no #define etc\n");
-		}
-		elsif (lc ($var) eq "-make-define" or lc ($var) eq "--make-define") {
+		if (lc ($var) eq "-make-define" or lc ($var) eq "--make-define") {
 			$i++;
 			$var = $args[$i];
 			push (@useExtraMakeDefines, $var);
@@ -1331,12 +1325,6 @@ sub	ParseCommandLine_Remaining_
 				print ("UNRECOGNIZED static-link-gccruntime ARG: $var\n");
 				DoHelp_ (1);
 			}
-		}
-		elsif ((lc ($var) eq "-cpp-optimize-flag") or (lc ($var) eq "--cpp-optimize-flag")) {
-			print ("DEPRECATED: $var\n");# DEPRECATED in 2.1a2
-			$i++;
-			$var = $args[$i];
-			$COPTIMIZE_FLAGS = $var;
 		}
 		elsif ((lc ($var) eq "-ar") or (lc ($var) eq "--ar")) {
 			$i++;
@@ -1767,7 +1755,7 @@ sub GetDefaultCZZFLAGS_flags_
 	}
 
 	if (not ($doCFLAGS eq 0)) {
-		if (not ($COPTIMIZE_FLAGS eq "")) {### DEPRECATED
+		if (not ($COPTIMIZE_FLAGS eq "")) {
 			push @flags, $COPTIMIZE_FLAGS;
 		}
 
