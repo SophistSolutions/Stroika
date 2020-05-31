@@ -87,7 +87,7 @@
 #if !qPlatform_Linux
 #define qPlatform_Linux 0
 #endif
-#if! qPlatform_POSIX
+#if !qPlatform_POSIX
 #define qPlatform_POSIX 0
 #endif
 
