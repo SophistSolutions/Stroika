@@ -34,11 +34,11 @@ namespace Stroika::Foundation::Execution {
         Require (seconds2Wait >= 0.0);
         RequireNotNull (remainingInSleep); // else call the over overload
         CheckForThreadInterruption ();
-        // @todo lose if the #if stuff and use just if constexpr (but not working on msvc)
+        // @todo lose if the #if stuff and use just if constexpr (but not working on msvc - complains about nanosleep undefined)
 #if qPlatform_POSIX
         if constexpr (qPlatform_POSIX) {
-            const long kNanoSecondsPerSecond = 1000L * 1000L * 1000L;
-            timespec   ts;
+            constexpr long kNanoSecondsPerSecond = 1000L * 1000L * 1000L;
+            timespec       ts;
             ts.tv_sec  = static_cast<time_t> (seconds2Wait);
             ts.tv_nsec = static_cast<long> (kNanoSecondsPerSecond * (seconds2Wait - ts.tv_sec));
             Assert (0 <= ts.tv_sec);
@@ -48,18 +48,25 @@ namespace Stroika::Foundation::Execution {
                 *remainingInSleep = 0;
             }
             else {
+                // See https://github.com/microsoft/WSL/issues/4898 - workaround nanosleep EINVAL on Windows/WSL 1 with newer libc (like with ubuntu 20.04)
+#if _POSIX_C_SOURCE >= 200809L
+                if (errno == EINVAL) {
+                    int useErrNo = ::clock_nanosleep (CLOCK_MONOTONIC, 0, &ts, &nextTS);
+                    if (useErrNo == 0) {
+                        *remainingInSleep = 0;
+                    }
+                    else {
+                        errno = useErrNo; // OK to fallthru, rest of logic fine
+                    }
+                }
+#endif
+                Assert (errno == EINTR); // only in this case do they guarantee nextTS set properly
                 // https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/time.h.html doesn't clearly document allowed range for timespec
                 // https://pubs.opengroup.org/onlinepubs/9699919799/functions/nanosleep.html doesn't clearly document allowed range for output timespec
                 // value (can it go negative)
-                // On WSL 1 (WinVer 1909) nextTS sometimes goes negative (or blows up to be very large?), so check)
-                WeakAssert (0 <= nextTS.tv_nsec and nextTS.tv_nsec < kNanoSecondsPerSecond); // not sure this should happen? - log for now... -- LGP 2020-05-29
+                WeakAssert (0 <= nextTS.tv_nsec and nextTS.tv_nsec < kNanoSecondsPerSecond); // docs not clear but I think this should always be true (on EINTR)... -- LGP 2020-05-29
                 WeakAssert (nextTS.tv_sec >= 0);                                             // ""
-                if ((nextTS.tv_sec < 0) or not(0 <= nextTS.tv_nsec and nextTS.tv_nsec < kNanoSecondsPerSecond)) {
-                    *remainingInSleep = 0;
-                }
-                else {
-                    *remainingInSleep = nextTS.tv_sec + static_cast<Time::DurationSecondsType> (nextTS.tv_nsec) / kNanoSecondsPerSecond;
-                }
+                *remainingInSleep = nextTS.tv_sec + static_cast<Time::DurationSecondsType> (nextTS.tv_nsec) / kNanoSecondsPerSecond;
             }
         }
 #elif qPlatform_Windows
@@ -99,7 +106,6 @@ namespace Stroika::Foundation::Execution {
             Sleep (waitMoreSeconds);
         }
     }
-
 }
 
 #endif /*_Stroika_Foundation_Execution_Sleep_inl_*/
