@@ -16,6 +16,7 @@
 #include <time.h>
 #include <unistd.h>
 #endif
+#include <cerrno>
 
 #include "../Debug/Assertions.h"
 
