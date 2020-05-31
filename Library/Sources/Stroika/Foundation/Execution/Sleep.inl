@@ -45,26 +45,23 @@ namespace Stroika::Foundation::Execution {
             Assert (0 <= ts.tv_sec);
             Assert (0 <= ts.tv_nsec and ts.tv_nsec < kNanoSecondsPerSecond);
             timespec nextTS;
-            if (::nanosleep (&ts, &nextTS) == 0) {
+            int      nanoSleepResult = ::nanosleep (&ts, &nextTS);
+
+            // See https://github.com/microsoft/WSL/issues/4898 - workaround nanosleep EINVAL on Windows/WSL 1 with newer libc (like with ubuntu 20.04)
+#if _POSIX_C_SOURCE >= 200809L
+            if (nanoSleepResult < 0 and errno == EINVAL) {
+                if ((errno = ::clock_nanosleep (CLOCK_MONOTONIC, 0, &ts, &nextTS)) == 0) {
+                    nanoSleepResult = 0;
+                }
+            }
+#endif
+            if (nanoSleepResult == 0) {
                 *remainingInSleep = 0;
             }
             else {
-                // See https://github.com/microsoft/WSL/issues/4898 - workaround nanosleep EINVAL on Windows/WSL 1 with newer libc (like with ubuntu 20.04)
-#if _POSIX_C_SOURCE >= 200809L
-                if (errno == EINVAL) {
-                    int useErrNo = ::clock_nanosleep (CLOCK_MONOTONIC, 0, &ts, &nextTS);
-                    if (useErrNo == 0) {
-                        *remainingInSleep = 0;
-                    }
-                    else {
-                        errno = useErrNo; // OK to fallthru, rest of logic fine
-                    }
-                }
-#endif
                 Assert (errno == EINTR); // only in this case do they guarantee nextTS set properly
                 // https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/time.h.html doesn't clearly document allowed range for timespec
-                // https://pubs.opengroup.org/onlinepubs/9699919799/functions/nanosleep.html doesn't clearly document allowed range for output timespec
-                // value (can it go negative)
+                // https://pubs.opengroup.org/onlinepubs/9699919799/functions/nanosleep.html doesn't clearly document allowed range for output timespec (can results go negative)
                 WeakAssert (0 <= nextTS.tv_nsec and nextTS.tv_nsec < kNanoSecondsPerSecond); // docs not clear but I think this should always be true (on EINTR)... -- LGP 2020-05-29
                 WeakAssert (nextTS.tv_sec >= 0);                                             // ""
                 *remainingInSleep = nextTS.tv_sec + static_cast<Time::DurationSecondsType> (nextTS.tv_nsec) / kNanoSecondsPerSecond;
