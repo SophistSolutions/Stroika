@@ -32,7 +32,7 @@ modern, reliable and threaded applications easier to write.
 
 - Stroika v2.0 is very stable, nearly complete, and requires C++14 or later. Stroika v2.0 is used to power a wide variety of open source and commercial applications.
 
-- Stroika v2.1 is more actively evolving, and requires C++17 or later.
+- Stroika v2.1 is more actively evolving, and requires C++17 or later. Version 2.1 also supports most c++20 features (such as concepts, three-way-comparison etc, if available).
 
 ### Compilers / Platforms tested
 
