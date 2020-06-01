@@ -86,9 +86,6 @@ namespace Stroika::Foundation::Containers {
         using ElementInOrderComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (T, T)>>;
 
     public:
-        using InOrderComparerType [[deprecated ("Since Stroika v2.1a5 use ElementInOrderComparerType")]] = ElementInOrderComparerType;
-
-    public:
         /**
          *  All constructors either copy their source comparer (copy/move CTOR), or use the default INORDER comparer for 'T'.
          *

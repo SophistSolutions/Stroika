@@ -125,12 +125,6 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual ElementInOrderComparerType GetElementInOrderComparer () const;
 
-    public:
-        [[deprecated ("use GetElementInOrderComparer since Stroika 2.1a5")]] ElementInOrderComparerType GetInOrderComparer () const
-        {
-            return GetElementInOrderComparer ();
-        }
-
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**

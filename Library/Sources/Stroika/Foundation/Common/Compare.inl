@@ -13,55 +13,6 @@
 
 namespace Stroika::Foundation::Common {
 
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-    /*
-     ********************************************************************************
-     ***************************** ThreeWayComparer<T> ******************************
-     ********************************************************************************
-     */
-    template <typename T, typename... ARGS>
-    constexpr ThreeWayComparer<T, ARGS...>::ThreeWayComparer (ARGS... args)
-        : fArgs_ (make_tuple (args...))
-    {
-    }
-    template <typename T, typename... ARGS>
-    template <class TT, class UU, typename Q, enable_if_t<Private_::HasThreeWayComparer_v<Q>>*>
-    constexpr auto ThreeWayComparer<T, ARGS...>::operator() (UU&& lhs, TT&& rhs) const
-    {
-#if qCompilerAndStdLib_make_from_tuple_Buggy
-        if constexpr (tuple_size_v<decltype (fArgs_)> == 0) {
-            return typename Q::ThreeWayComparer{}(lhs, rhs);
-        }
-        else {
-            return make_from_tuple<typename Q::ThreeWayComparer> (fArgs_) (lhs, rhs);
-        }
-#else
-        return make_from_tuple<typename Q::ThreeWayComparer> (fArgs_) (lhs, rhs);
-#endif
-    }
-    template <typename T, typename... ARGS>
-    template <class TT, class UU, typename Q, enable_if_t<Private_::HasThreeWayComparerTemplate_v<Q>>*>
-    constexpr auto ThreeWayComparer<T, ARGS...>::operator() (UU&& lhs, TT&& rhs) const
-    {
-#if qCompilerAndStdLib_make_from_tuple_Buggy
-        if constexpr (tuple_size_v<decltype (fArgs_)> == 0) {
-            return typename Q::template ThreeWayComparer<>{}(lhs, rhs);
-        }
-        else {
-            return make_from_tuple<typename Q::template ThreeWayComparer<>> (fArgs_) (lhs, rhs);
-        }
-#else
-        return make_from_tuple<typename Q::template ThreeWayComparer<>> (fArgs_) (lhs, rhs);
-#endif
-    }
-    template <typename T, typename... ARGS>
-    template <class TT, class UU, typename Q, enable_if_t<not Private_::HasThreeWayComparer_v<Q> and not Private_::HasThreeWayComparerTemplate_v<Q>>*>
-    constexpr auto ThreeWayComparer<T, ARGS...>::operator() (UU&& lhs, TT&& rhs) const
-    {
-        return compare_three_way<UU, TT>{}(forward<TT> (lhs), forward<TT> (rhs));
-    }
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-
     /*
      ********************************************************************************
      ************************* ThreeWayCompare<LT, RT> ******************************

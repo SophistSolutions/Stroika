@@ -438,9 +438,6 @@ namespace Stroika::Foundation::Containers {
         template <typename CONTAINER_PAIR_RANGE_DOMAIN>
         nonvirtual CONTAINER_PAIR_RANGE_DOMAIN As () const;
 
-    public:
-        using EqualsComparer [[deprecated ("use equal_to<> or == in  in 2.1a5")]] = equal_to<Bijection>;
-
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**

@@ -20,8 +20,8 @@ using namespace Time;
  ********************************************************************************
  */
 Time::Private_::DurationRange_ModuleData_::DurationRange_ModuleData_ ()
-    : fLowerBound (Execution::ModuleInitializer<Time::Private_::Duration_ModuleData_>::Actual ().fMin)
-    , fUpperBound (Execution::ModuleInitializer<Time::Private_::Duration_ModuleData_>::Actual ().fMax)
+    : fLowerBound (Duration::min ())
+    , fUpperBound (Duration::max ())
 {
 }
 

@@ -147,9 +147,6 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual Common::strong_ordering THREEWAYCOMPARE_ (const InternetMediaType& rhs) const;
 
     public:
-        using ThreeWayComparer [[deprecated ("use Common::compare_three_way in  in 2.1a5")]] = Common::compare_three_way<InternetMediaType, InternetMediaType>;
-
-    public:
         /**
          *  @see Characters::ToString ();
          */

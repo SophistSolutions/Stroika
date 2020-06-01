@@ -100,12 +100,6 @@ namespace Stroika::Foundation::Common {
          */
         auto operator<=> (const KeyValuePair&) const = default;
 #endif
-
-    public:
-        using EqualsComparer [[deprecated ("use equal_to or == in  in 2.1a5")]] = std::equal_to<KeyValuePair>;
-
-    public:
-        using ThreeWayComparer [[deprecated ("use Common::compare_three_way in  in 2.1a5")]] = Common::compare_three_way<KeyValuePair, KeyValuePair>;
     };
 
 #if __cpp_impl_three_way_comparison < 201907

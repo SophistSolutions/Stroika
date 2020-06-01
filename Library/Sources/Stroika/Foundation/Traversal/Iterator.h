@@ -451,6 +451,7 @@ namespace Stroika::Foundation::Traversal {
          */
         nonvirtual IteratorOwnerID GetOwner () const;
 
+#if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          *  \brief Equals () checks if two iterators are equal to one another (point to the same position in the sequence).
@@ -486,19 +487,6 @@ namespace Stroika::Foundation::Traversal {
          *          }
          *
          *  Note that Equals is *commutative*.
-         *
-         *  @see operator== ().
-         *  @see operator!= ().
-         */
-        nonvirtual [[deprecated ("Since Stroika 2.1a5 deprecated - use ==, or != instead")]] bool Equals (const Iterator& rhs) const
-        {
-            return *this == rhs;
-        }
-
-#if __cpp_impl_three_way_comparison >= 201907
-    public:
-        /**
-         *  @todo - in C++20 (stk 2.2), DEPRECATE Equals() in favor of this method
          */
         nonvirtual bool operator== (const Iterator& rhs) const;
 #endif

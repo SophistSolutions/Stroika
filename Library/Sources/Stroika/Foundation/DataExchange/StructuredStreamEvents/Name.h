@@ -83,9 +83,6 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
     private:
         static Common::strong_ordering TWC_ (const Name& lhs, const Name& rhs); // utility code share between c++17 and c++20 versions
 
-    public:
-        using ThreeWayComparer [[deprecated ("use Common::compare_three_way or <=> in  in 2.1a5")]] = Common::compare_three_way<Name, Name>;
-
 #if __cpp_impl_three_way_comparison < 201907
     private:
         friend bool operator< (const Name& lhs, const Name& rhs);

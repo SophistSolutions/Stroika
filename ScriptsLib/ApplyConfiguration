@@ -363,16 +363,12 @@ sub WriteStroikaConfigMakeHeader
 			if (not ($tmp eq "")) {
 				$tmp		=	trim (`cygpath --mixed "$tmp"`);
 			}
-			print (OUT "###DEPRECATED - 2020-01-07\n");
-			print (OUT "WIN_Linker=$tmp\n");
 		}
 		{
 			my $tmp = GetConfigurationParameter($activeConfiguration, "LIBTOOL");
 			if (not ($tmp eq "")) {
 				$tmp		=	trim (`cygpath --mixed "$tmp"`);
 			}
-			print (OUT "###DEPRECATED - 2020-01-07\n");
-			print (OUT "WIN_LIBTOOL=$tmp\n");
 		}
 		{
 			#Lib tool requires queer ARCH arguments (and probably Link) - so correct here
@@ -387,24 +383,18 @@ sub WriteStroikaConfigMakeHeader
 			if (not ($tmp eq "")) {
 				$tmp		=	trim (`cygpath --mixed "$tmp"`);
 			}
-			print (OUT "###DEPRECATED - 2020-01-07\n");
-			print (OUT "WIN_CC=$tmp\n");
 		}
 		{
 			my $tmp = GetConfigurationParameter($activeConfiguration, "AS");
 			if (not ($tmp eq "")) {
 				$tmp		=	trim (`cygpath --mixed "$tmp"`);
 			}
-			print (OUT "###DEPRECATED - 2020-01-07\n");
-			print (OUT "WIN_AS=$tmp\n");
 		}
 		{
 			my $tmp = GetConfigurationParameter($activeConfiguration, "CXX");
 			if (not ($tmp eq "")) {
 				$tmp		=	trim (`cygpath --mixed "$tmp"`);
 			}
-			print (OUT "###DEPRECATED - 2020-01-07\n");
-			print (OUT "WIN_CXX=$tmp\n");
 		}
 		{
 			my $LIBS_PATH = GetConfigurationParameter($activeConfiguration, "LIBS_PATH");
@@ -440,7 +430,6 @@ sub WriteStroikaConfigMakeHeader
 		print (OUT "OUT_ARG_PREFIX_NATIVE=-o \n");
 	}
 
-	print (OUT "###FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE DEPRECATED\n");
 	if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
 		print (OUT "FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE=\$(shell cygpath --mixed \$1)\n");
 		print (OUT "FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE=\$(shell cygpath --mixed \$1)\n");

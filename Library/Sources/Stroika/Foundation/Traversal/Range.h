@@ -324,9 +324,6 @@ namespace Stroika::Foundation::Traversal {
 #endif
 
     public:
-        using EqualsComparer [[deprecated ("use std::equal_to (or just ==) in in 2.1a5")]] = std::equal_to<Range>;
-
-    public:
         /**
          *  Returns true iff there are any points shared in common between this range and the rhs range.
          */

@@ -154,9 +154,6 @@ namespace Stroika::Foundation::Containers {
         using ElementEqualityComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool (T, T)>>;
 
     public:
-        using EqualityComparerType [[deprecated ("Since Stroika v2.1a5 - use ElementEqualityComparerType")]] = ElementEqualityComparerType;
-
-    public:
         /**
          *  All constructors either copy their source comparer (copy/move CTOR), or use the provided argument comparer
          *  (which in turn defaults to equal_to<T>).
@@ -344,15 +341,6 @@ namespace Stroika::Foundation::Containers {
          *  @todo consider RENAMING this to GetElementEqualsComparer() - similarly for TYPE
          */
         nonvirtual ElementEqualityComparerType GetElementEqualsComparer () const;
-
-    public:
-        [[deprecated ("Use GetElementEqualsComparer since Stroika 2.1a5")]] ElementEqualityComparerType GetEqualsComparer () const
-        {
-            return GetElementEqualsComparer ();
-        }
-
-    public:
-        using EqualsComparer [[deprecated ("use equal_to since 2.1a5")]] = equal_to<MultiSet>;
 
 #if __cpp_impl_three_way_comparison >= 201907
     public:

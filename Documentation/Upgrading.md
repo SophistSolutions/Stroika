@@ -14,6 +14,7 @@ To mitigate the downsides, Stroika follows a few pattern:
 Thus the obvious upgrade process from using one verison of Stroika to another would be:
 
 - For each major-minor-stage version of Stroika between the one you currently use, and the target version (you wish to upgrade to)
+
   - Upgrade to the last version of that stage
   - Address any warnings about use of deprecated features
   - IF NEEDED, review release notes for that range of releases (hopefully such review will be rare)
@@ -22,8 +23,10 @@ Thus the obvious upgrade process from using one verison of Stroika to another wo
 
 ### Example
 
-So for exmaple, if upgrading from use of 2.0b23 to v2.1d19
+So for exmaple, if upgrading from use of 2.0b23 to v2.1b3
 
 - Upgrade to v2.0a125
 - Upgrade to v2.0b7
-- Upgrade to v2.1d19
+- Upgrade to v2.1d27
+- Upgrade to v2.1a5
+- Upgrade to v2.1b3

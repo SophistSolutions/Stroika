@@ -15,7 +15,6 @@
 #include "../../../../Foundation/Execution/Thread.h"
 #include "../../../../Foundation/Execution/WaitForIOReady.h"
 #include "../../../../Foundation/IO/Network/ConnectionlessSocket.h"
-#include "../../../../Foundation/IO/Network/WaitForSocketIOReady.h"
 #include "../../../../Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
 #include "../../../../Foundation/Streams/TextReader.h"
 #include "../Advertisement.h"

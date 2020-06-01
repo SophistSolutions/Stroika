@@ -299,17 +299,6 @@ namespace Stroika::Foundation::Time {
         return Duration (rhs.As<Time::DurationSecondsType> () * lhs);
     }
 
-    namespace Private_ {
-        struct Duration_ModuleData_ { // DEPRECATED in 2.1a1
-            Duration_ModuleData_ ();
-            Duration fMin; // DEPRECATED in 2.1a1
-            Duration fMax; // DEPRECATED in 2.1a1
-        };
-    }
-
 }
 
-namespace {
-    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Time::Private_::Duration_ModuleData_> _Stroika_Foundation_Time_Duration_ModuleData_; // this object constructed for the CTOR/DTOR per-module side-effects
-}
 #endif /*_Stroika_Foundation_Time_Duration_inl_*/

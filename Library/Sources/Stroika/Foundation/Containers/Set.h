@@ -121,9 +121,6 @@ namespace Stroika::Foundation::Containers {
         using ElementEqualityComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool (T, T)>>;
 
     public:
-        using EqualityComparerType [[deprecated ("Since Stroika 2.1a5 use ElementEqualityComparerType")]] = ElementEqualityComparerType;
-
-    public:
         /**
          *  \brief check if the argument type can be passed as argument to the arity/1 overload of Add ()
          *
@@ -206,12 +203,6 @@ namespace Stroika::Foundation::Containers {
          *  @todo rename Set<>::GetElementEqualsComparer() to Set<>::GetElementEqualsComparer
          */
         nonvirtual ElementEqualityComparerType GetElementEqualsComparer () const;
-
-    public:
-        [[deprecated ("use GetElementEqualsComparer since Stroika 2.1a5")]] ElementEqualityComparerType GetEqualsComparer () const
-        {
-            return GetElementEqualsComparer ();
-        }
 
     public:
         /**

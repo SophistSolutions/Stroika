@@ -260,9 +260,6 @@ namespace Stroika::Foundation::Time {
 #endif
 
     public:
-        using ThreeWayComparer [[deprecated ("use Common::compare_three_way or <=> in  in 2.1a5")]] = Common::compare_three_way<TimeOfDay, TimeOfDay>;
-
-    public:
         /**
          *  @see Characters::ToString ()
          */

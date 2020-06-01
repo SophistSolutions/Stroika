@@ -253,7 +253,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Date.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DateTime.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Duration.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DurationRange.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Realtime.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\TimeOfDay.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Timezone.cpp" />
@@ -598,7 +597,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Response.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\UniformResourceIdentification.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\URI.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\WaitForSocketIOReady.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Linguistics\MessageUtilities.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Linguistics\Words.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Angle.h" />
@@ -1010,7 +1008,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Response.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\UniformResourceIdentification.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\URI.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\WaitForSocketIOReady.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Linguistics\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Linguistics\MessageUtilities.inl" />

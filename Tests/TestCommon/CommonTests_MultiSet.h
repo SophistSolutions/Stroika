@@ -390,11 +390,9 @@ namespace CommonTests {
                     VerifyTestResult (s.size () == 2);
                     CONCRETE_CONTAINER s3 = s;
                     VerifyTestResult (s == s3);
-                    VerifyTestResult (typename CONCRETE_CONTAINER::EqualsComparer{}(s, s3));
                     VerifyTestResult (not(s != s3));
 
                     VerifyTestResult (s != s2);
-                    VerifyTestResult (not typename CONCRETE_CONTAINER::EqualsComparer{}(s, s2));
                     VerifyTestResult (not(s == s2));
                 }
             }

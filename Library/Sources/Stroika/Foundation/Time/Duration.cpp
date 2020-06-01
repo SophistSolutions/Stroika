@@ -44,25 +44,9 @@ const Duration::FormatException Duration::FormatException::kThe;
 
 /*
  ********************************************************************************
- ********************* Private_::Duration_ModuleData_ ***************************
- ********************************************************************************
- */
-
-// DEPRECATED in 2.1a1
-Time::Private_::Duration_ModuleData_::Duration_ModuleData_ ()
-    : fMin (numeric_limits<Duration::InternalNumericFormatType_>::lowest ())
-    , fMax (numeric_limits<Duration::InternalNumericFormatType_>::max ())
-{
-}
-
-/*
- ********************************************************************************
  *********************************** Duration ***********************************
  ********************************************************************************
  */
-const Duration& Duration::kMin = Execution::ModuleInitializer<Time::Private_::Duration_ModuleData_>::Actual ().fMin; // DEPRECATED in 2.1a1
-const Duration& Duration::kMax = Execution::ModuleInitializer<Time::Private_::Duration_ModuleData_>::Actual ().fMax; // DEPRECATED in 2.1a1
-
 const Duration::PrettyPrintInfo Duration::kDefaultPrettyPrintInfo = {
     {
         L"year"sv,

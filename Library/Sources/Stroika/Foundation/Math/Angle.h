@@ -82,9 +82,6 @@ namespace Stroika::Foundation::Math {
         nonvirtual const Angle& operator*= (RepType rhs);
         nonvirtual const Angle& operator/= (RepType rhs);
 
-    public:
-        using ThreeWayComparer [[deprecated ("use Common::compare_three_way or <=> in  in 2.1a5")]] = Common::compare_three_way<Angle, Angle>;
-
     private:
         double fAngleInRadians_;
     };

@@ -165,9 +165,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         static Common::strong_ordering TWC_ (const SchemeType& lhs, const SchemeType& rhs); // utility code share between c++17 and c++20 versions
 
     public:
-        using ThreeWayComparer [[deprecated ("use Common::compare_three_way or <=> in  in 2.1a5")]] = Common::compare_three_way<SchemeType, SchemeType>;
-
-    public:
         nonvirtual optional<PortType> GetDefaultPort () const;
 
 #if __cpp_impl_three_way_comparison < 201907
@@ -290,9 +287,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         static Common::strong_ordering TWC_ (const Host& lhs, const Host& rhs); // utility code share between c++17 and c++20 versions
 
     public:
-        using ThreeWayComparer [[deprecated ("use Common::compare_three_way or <=> in  in 2.1a5")]] = Common::compare_three_way<Host, Host>;
-
-    public:
         /**
          *  For debugging purposes: don't count on the format.
          *  @see Characters::ToString ()
@@ -407,9 +401,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
     private:
         static Common::strong_ordering TWC_ (const UserInfo& lhs, const UserInfo& rhs); // utility code share between c++17 and c++20 versions
-
-    public:
-        using ThreeWayComparer [[deprecated ("use Common::compare_three_way or <=> in  in 2.1a5")]] = Common::compare_three_way<UserInfo, UserInfo>;
 
     public:
         /**
@@ -549,9 +540,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         static Common::strong_ordering TWC_ (const Authority& lhs, const Authority& rhs); // utility code share between c++17 and c++20 versions
 
     public:
-        using ThreeWayComparer [[deprecated ("use Common::compare_three_way or <=> in  in 2.1a5")]] = Common::compare_three_way<Authority, Authority>;
-
-    public:
         /**
          *  For debugging purposes: don't count on the format.
          *  @see Characters::ToString ()
@@ -635,9 +623,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
     private:
         static Common::strong_ordering TWC_ (const Query& lhs, const Query& rhs); // utility code share between c++17 and c++20 versions
-
-    public:
-        using ThreeWayComparer [[deprecated ("use Common::compare_three_way or <=> in  in 2.1a5")]] = Common::compare_three_way<Query, Query>;
 
     public:
         /**
