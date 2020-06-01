@@ -22,13 +22,12 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 # CHECK FOR UPDATED VERSIONS https://www.openssl.org/source/
 #
 
+# works mostly bug regtests fail with error:060000CA:digital envelope routines::fetch failed
+#VERSION=3.0.0-alpha2
+
 VERSION=1.1.1g
 #VERSION=1.1.1f
 #VERSION=1.1.1e
-#VERSION=1.1.1d
-### 1.1.1c BUILDS AND WORKS but has DPURIFY broken - see ### https://stroika.atlassian.net/browse/STK-697 fixed in 1.1.1d
-#VERSION=1.1.1b
-
 
 BASENAME=openssl-$(VERSION)
 EXTRACTED_DIRNAME=$(BASENAME)
