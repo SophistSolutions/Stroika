@@ -322,9 +322,6 @@ namespace Stroika::Foundation::IO::Network {
          */
         nonvirtual bool IsOpen () const;
 
-    public:
-        using ThreeWayComparer [[deprecated ("use Common::compare_three_way in  in 2.1a5")]] = Common::compare_three_way<Ptr, Ptr>;
-
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**

@@ -151,9 +151,6 @@ namespace Stroika::Foundation::DataExchange {
          */
         nonvirtual String GetPrintName () const;
 
-    public:
-        using ThreeWayComparer [[deprecated ("use Common::compare_three_way in  in 2.1a5")]] = Common::compare_three_way<Atom, Atom>;
-
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**

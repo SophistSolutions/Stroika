@@ -449,12 +449,6 @@ namespace Stroika::Foundation::Traversal {
         struct SequentialThreeWayComparer;
 
     public:
-        template <typename EQUALS_COMPARER = equal_to<T>>
-        [[deprecated ("Since Stroika 2.1a5 - use SequentialEquals (....true)")]] static bool SequenceEquals (const Iterable& lhs, const Iterable& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{});
-        template <typename EQUALS_COMPARER = equal_to<T>>
-        [[deprecated ("Since Stroika 2.1a5 - use SequentialEquals (....true)")]] bool SequenceEquals (const Iterable& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
-
-    public:
         /**
          * \brief Support for ranged for, and STL syntax in general
          *

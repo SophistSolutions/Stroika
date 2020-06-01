@@ -77,12 +77,6 @@ namespace Stroika::Foundation::Common {
          */
         constexpr bool operator== (const CountedValue&) const;
 #endif
-
-    public:
-        using EqualsComparer [[deprecated ("use equal_to<> or == in  in 2.1a5")]] = equal_to<CountedValue>;
-
-    public:
-        using ThreeWayComparer [[deprecated ("use Common::compare_three_way in  in 2.1a5")]] = Common::compare_three_way<CountedValue, CountedValue>;
     };
 
 #if __cpp_impl_three_way_comparison < 201907

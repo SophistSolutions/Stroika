@@ -123,9 +123,6 @@ namespace Stroika::Foundation::Traversal {
 #endif
 
     public:
-        using EqualsComparer [[deprecated ("use std::equal_to (or just ==) in in 2.1a5")]] = std::equal_to<DisjointRange>;
-
-    public:
         /**
          */
         nonvirtual bool Intersects (const RangeType& rhs) const;

@@ -64,9 +64,6 @@ namespace Stroika::Foundation::Common {
 #endif
 
     public:
-        using ThreeWayComparer [[deprecated ("use Common::compare_three_way in  in 2.1a5")]] = Common::compare_three_way<GUID, GUID>;
-
-    public:
         /**
          *  @see Characters::ToString ()
          */

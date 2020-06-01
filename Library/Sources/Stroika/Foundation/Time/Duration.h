@@ -90,10 +90,6 @@
 
 namespace Stroika::Foundation::Time {
 
-    namespace Private_ {
-        struct Duration_ModuleData_;
-    }
-
     /**
      * (basic) support for ISO 8601 Durations
      *      http://en.wikipedia.org/wiki/ISO_8601#Durations
@@ -318,18 +314,6 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          * Duration::kMin is the least duration this Duration class supports representing.
-         */
-        [[deprecated ("use Duration::min () - deprecated in  in 2.1a1")]] static const Duration& kMin;
-
-    public:
-        /**
-         * Duration::kMax is the largest duration this Duration class supports representing.
-         */
-        [[deprecated ("use Duration::max ()- deprecated in  in 2.1a1")]] static const Duration& kMax;
-
-    public:
-        /**
-         * Duration::kMin is the least duration this Duration class supports representing.
          *
          *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
          *
@@ -359,9 +343,6 @@ namespace Stroika::Foundation::Time {
     private:
         static InternalNumericFormatType_ ParseTime_ (const string& s);
         static string                     UnParseTime_ (InternalNumericFormatType_ t);
-
-    private:
-        friend Stroika::Foundation::Time::Private_::Duration_ModuleData_;
 
     private:
         /**

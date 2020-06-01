@@ -136,8 +136,6 @@ namespace Stroika::Foundation::IO::Network {
          */
         optional<uint64_t> fReceiveLinkSpeedBaud;
 
-        using Binding [[deprecated ("use CIDR - Binding deprecated in  in 2.1a5")]] = CIDR;
-
         /**
          *  \note intentionally omitted fields 'Description' because included in parent object, connectionInfo state (cuz same as wireless adapater info state),
          *        and....
@@ -321,16 +319,6 @@ namespace Stroika::Foundation::IO::Network {
          */
         nonvirtual optional<Interface> GetContainingAddress (const InternetAddress& ia);
     };
-
-    [[deprecated ("use SystemInterfacesMgr{}.GetAll - deprecated in  in 2.1a5")]] inline Traversal::Iterable<Interface> GetInterfaces ()
-    {
-        return SystemInterfacesMgr{}.GetAll ();
-    }
-
-    [[deprecated ("use SystemInterfacesMgr{}.GetById - deprecated in  in 2.1a5")]] inline optional<Interface> GetInterfaceById (const Interface::SystemIDType& internalInterfaceID)
-    {
-        return SystemInterfacesMgr{}.GetById (internalInterfaceID);
-    }
 
 }
 

@@ -64,9 +64,6 @@ namespace Stroika::Foundation::Execution {
          */
         class WaitForIOReady_Base {
         public:
-            using FileDescriptorType [[deprecated ("use SDKPollableType in  in 2.1a5")]] = WaitForIOReady_Support::SDKPollableType;
-
-        public:
             /**
              *  This is the underlying native type 'T' objects mustbe converted to in order to be used with the OLD poll/select feature.
              */

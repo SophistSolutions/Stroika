@@ -413,18 +413,6 @@ namespace Stroika::Foundation::Traversal {
         return SequentialEquals (*this, rhs, equalsComparer, useIterableSize);
     }
     template <typename T>
-    template <typename EQUALS_COMPARER>
-    inline bool Iterable<T>::SequenceEquals (const Iterable& lhs, const Iterable& rhs, const EQUALS_COMPARER& equalsComparer)
-    {
-        return SequentialEquals (lhs, rhs, equalsComparer, true);
-    }
-    template <typename T>
-    template <typename EQUALS_COMPARER>
-    inline bool Iterable<T>::SequenceEquals (const Iterable& rhs, const EQUALS_COMPARER& equalsComparer) const
-    {
-        return SequentialEquals (*this, rhs, equalsComparer, true);
-    }
-    template <typename T>
     Iterable<T> Iterable<T>::Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const
     {
         RequireNotNull (includeIfTrue);

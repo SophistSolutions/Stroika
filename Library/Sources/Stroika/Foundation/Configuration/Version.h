@@ -120,9 +120,6 @@ namespace Stroika::Foundation::Configuration {
          */
         nonvirtual Characters::String ToString () const;
 
-    public:
-        using ThreeWayComparer [[deprecated ("use Common::compare_three_way in  in 2.1a5")]] = Common::compare_three_way<Version, Version>;
-
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**

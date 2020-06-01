@@ -26,9 +26,11 @@
  *  \version    <a href="Code-Status.md">Alpha-Late</a>
  *
  * TODO:
- *      @todo   Complete removal of deprecated empty and no-arg constructor
+ *      @todo   Complete removal of deprecated 'empty' and no-arg constructor
  *
- *      @todo   Consider losing eEmptyDayOfMonth and eEmptyMonthOfYear and using optional instead
+ *              Consider losing eEmptyDayOfMonth and eEmptyMonthOfYear and using optional instead
+ *
+ *              Several comments and names still use the word empty
  *
  *      @todo   https://stroika.atlassian.net/browse/STK-668 - Date class should support the full Julian Date Range -
  *              not just Gregorian calendar
@@ -173,13 +175,6 @@ namespace Stroika::Foundation::Time {
      *      ->  a particular year might be a leap year."
      *
      *          NB: Date implies NO NOTION of timezone.
-     *
-     *      'empty' concept:
-     *          *** DEPRECATED ***
-     *          Treat it as DISTINCT from any other Date. However, when converting it to a number of seconds
-     *          or days (JulienRep), treat empty as Date::kMin. For format routine, return empty string.
-     *          And for COMPARIONS (=,<,<=, etc) treat it as LESS THAN Date::kMin. This is a bit like the floating
-     *          point concept of negative infinity.
      *
      *  \note   Date constructors REQUIRE valid inputs, and any operations which might overflow throw range_error
      *          instead of creating invalid values.
@@ -437,9 +432,6 @@ namespace Stroika::Foundation::Time {
          */
         constexpr strong_ordering operator<=> (const Date& rhs) const = default;
 #endif
-
-    public:
-        using ThreeWayComparer [[deprecated ("use Common::compare_three_way or <=> in  in 2.1a5")]] = Common::compare_three_way<Date, Date>;
 
     private:
         constexpr static JulianRepType jday_ (MonthOfYear month, DayOfMonth day, Year year);
