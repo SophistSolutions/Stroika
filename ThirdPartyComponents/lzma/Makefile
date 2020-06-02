@@ -126,6 +126,8 @@ endif
 
 check_prerequisites_:
 	@{ type 7za > /dev/null 2>&1; } || { ../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) && ../../ScriptsLib/GetMessageForMissingTool 7za && exit 1; }
+	@#This weird redundant check for 7za is due to running WSL2 where the same stuff is in the path and there is a cygwin version in the path, but it wont work, so do this test which properly fails to trigger the error message about needing 7za installed under WSL2
+	@{ 7za --help > /dev/null 2>&1; } || { ../../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) && ../../ScriptsLib/GetMessageForMissingTool 7za && exit 1; }
 
 
 doBuilds_:
