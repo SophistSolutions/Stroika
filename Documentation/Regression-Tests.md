@@ -157,7 +157,7 @@ checkin from one spot.
 
 - Must be done on Windows machine (currently doesnt work on - even windows - vm)
 
-  ```bash
+  ```dos
   sh ScriptsLib\RunLocalWindowsDockerRegressionTests
   ```
 
@@ -165,7 +165,7 @@ checkin from one spot.
   (inside WSL bash prompt)
 
   ```bash
-  sh ScriptsLib\RunLocalWSLRegressionTests
+  ScriptsLib/RunLocalWSLRegressionTests
   ```
 
 ## Checkin results
