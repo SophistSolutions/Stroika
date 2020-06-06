@@ -342,14 +342,14 @@ This may change – as I see more alternatives and gain more experience.
 
 Tried and rejected approaches:
 
-- typename ENABLE_IF= typename enable_if_t\&lt;TEST\&gt;
+- typename ENABLE_IF= typename enable_if_t\<TEST\>
   - The problem with this approach is that you cannot repeat the enable_if in the implementation (.inl) file definition – just in the declaration. This is confusing.
 - Enable_if_t\&lt;TEST,int\&gt; = 0
   - Value – not type; this works well, since the identical enable_if_t\&lt;\&gt; line can be included in the .inl file in the definition. But its needlessly confusing to define the &#39;int&#39; type on the enable_if_t.
 
 USE:
 
-enable_if_t\&lt;is_function_v\&lt;FUNCTION\&gt;\&gt;\* = nullptr
+enable_if_t\<is_function_v\<FUNCTION\>\>\* = nullptr
 
 Reasons:
 

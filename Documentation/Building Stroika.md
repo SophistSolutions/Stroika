@@ -12,16 +12,22 @@ This build process is cross-platform. It supports cross-compiling, and builds on
 
 ## Quick Start
 
-    wget https://github.com/SophistSolutions/Stroika/archive/v2.1-Release.tar.gz
-    tar xf v2.1-Release.tar.gz && mv Stroika-2.1-Release Stroika-Dev
+```bash
+wget https://github.com/SophistSolutions/Stroika/archive/v2.1-Release.tar.gz
+tar xf v2.1-Release.tar.gz && mv Stroika-2.1-Release Stroika-Dev
+```
 
 or
 
-    git clone https://github.com/SophistSolutions/Stroika.git Stroika-Dev
+```bash
+git clone https://github.com/SophistSolutions/Stroika.git Stroika-Dev
+```
 
 followed by:
 
-    make --directory Stroika-Dev all run-tests
+```bash
+make --directory Stroika-Dev all run-tests
+```
 
 If you have a relatively standard POSIX like c++ build environement, you maybe done at this point. If you got errors, or want to know more, read on.
 
@@ -215,77 +221,78 @@ $(TARGETEXE): $(Objs) $(StroikaLibs)
 ```text
 Usage:
   configure CONFIGURATION-NAME [OPTIONS]* where options can be:
-    --arch {ARCH}                                   /* for high level architecture - first section of gcc -machine - e.g. x86, x86_64, arm - usually auto-detected */
-    [--config-tag {TAG-NAME}]*                      /* Add TAG-NAME to the list of tags associated with this configuration (for now limit one). Maybe repeated */
-    --platform {PLATFORM}                           /* Specifies the ProjectPlatformSubdir (Unix, VisualStudio.Net-2017, VisualStudio.Net-2019) - usually auto-detected */
-    --targetPlatforms {TARGET_PLATFORMS}            /* Specifies the TargetPlatforms- system compiling Stroika for - (set of ENUM where ENUM=(Windows, POSIX, Linux, MacOS)) - usually auto-detected */
-    --assertions { enable|disable|default }         /* Enables/disable assertion feature (setting qDebug) */
-    --block-allocation { enable|disable|default }   /* Enables/disable block-allocation (a feature that improves performance, but messes up valgrind) */
-    --valgrind { enable|disable|default }           /* Enables/disable valgrind-specific runtime code (so far only needed for clean helgrind use) */
-    --GLIBCXX_DEBUG { enable|disable|default }      /* Enables/Disables GLIBCXX_DEBUG (G++-specific) */
-    --cppstd-version {FLAG}                         /* Sets can be c++17, or c++2a */
-    --stdlib {LIB}                                  /* libc++ (clang lib), libstdc++ (gcc and often clang) */
-    --ActivePerl {use|no}                           /* Enables/disables use of ActivePerl (Windows Only) - JUST USED TO BUILD OPENSSL for Windows*/
-    --LibCurl {build-only|use|use-system|no}        /* Enables/disables use of LibCurl for this configuration [default TBD]*/
-    --boost {build-only|use|use-system|no}          /* Enables/disables use of boost for this configuration [default use] */
-    --OpenSSL {build-only|use|use-system|no}        /* Enables/disables use of OpenSSL for this configuration [default use] */
-    --OpenSSL-ExtraArgs { purify? }                 /* Optionally configure extra OpenSSL features (see Stroika/OpenSSL makefile) */
-    --WinHTTP {use-system|no}                       /* Enables/disables use of WinHTTP for this configuration [default use-system on windows, and no otherwise] */
-    --ATLMFC {use-system|no}                        /* Enables/disables use of ATLMFC for this configuration [default use-system on windows, and no otherwise] */
-    --Xerces {build-only|use|use-system|no}         /* Enables/disables use of Xerces for this configuration [default use] */
-    --sqlite {build-only|use|use-system|no}         /* Enables/disables use of sqlite for this configuration [default use] */
-    --ZLib {build-only|use|use-system|no}           /* Enables/disables use of ZLib for this configuration [default use] */
-    --WIX {use|use-system|no}                       /* Enables/disables use of WIX (Windows Only) - to build windows installers*/
-    --lzma {build-only|use|use-system|no}           /* Enables/disables use of LZMA SDK for this configuration [default use] */
-    --trace2file { enable|disable|default }         /* Enables/disable trace2file feature */
-    --static-link-gccruntime { enable|disable }     /* Enables/disable gcc runtime static link (only applies if gcc family compiler) */
-    --make-define {ARG}                             /* Define makefile define for the given configuration: text of arg appears as line in Configuration.mk */
-    --compiler-driver {ARG}                         /* default is gcc */
-    --ar {ARG}                                      /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ar */
-    --as {ARG}                                      /* default is 'as' on unix, and retrieved from visual studio on visual studio */
-    --ranlib {ARG}                                  /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ranlib */
-    --strip {ARG}                                   /* sets program to do stripping; default is undefined, but for POSIX, defaults to strip */
-    --append-CFLAGS {ARG}                           /* Appends ARG to CFLAGS */
-    --remove-CFLAGS {ARG}                           /* Remove ARG from CFLAGS (including default added args; processed after all adds applied) */
-    --replace-all-CFLAGS {ARG}                      /* OVERRIDES DEFAULTS- and sets CFLAGS to just these values */
-    --append-CPPFLAGS {ARG}                         /* Appends ARG to CPPFLAGS; alias for append-CFLAGS AND append-CXXFLAGS, elg --append-CPPFLAGS -DA=B */
-    --remove-CPPFLAGS {ARG}                         /* Remove ARG from CPPFLAGS (including default added args; processed after all adds applied) */
-    --replace-all-CPPFLAGS {ARG}                    /* OVERRIDES DEFAULTS- and sets CPPFLAGS to just these values */
-    --append-CXXFLAGS {ARG}                         /* Appends ARG to CXXFLAGS */
-    --remove-CXXFLAGS {ARG}                         /* Remove ARG from CXXFLAGS (including default added args; processed after all adds applied) */
-    --replace-all-CXXFLAGS {ARG}                    /* OVERRIDES DEFAULTS- and sets CXXFLAGS to just these values */
-    --SharedSymbolVisibility {ARG}                  /* alias for append-CFLAGS AND append-CXXFLAGS with -fvisibility=XXX (defaults to hidden on gcc/clang/unix compilers) */
-    --append-extra-prefix-linker-args {ARG}         /* Appends ARG to 'extra prefix linker args */
-    --append-extra-suffix-linker-args {ARG}         /* Appends ARG to 'extra suffix linker args */
-    --append-extra-compiler-and-linker-args {ARG}   /* Appends ARG to 'extra compiler' and 'extra linker' args */
-    --includes-path {ARG}                           /* Sets INCLUDES_PATH variable (: separated, since unix standard and allows spaces) */
-    --append-includes-path {ARG}                    /* Appends ARG to 'INCLUDES_PATH */
-    --libs-path {ARG}                               /* Sets LIBS_PATH variable (':' separated, since unix standard and allows spaces) */
-    --append-libs-path {ARG}                        /* Appends ARG to 'LIBS_PATH */
-    --lib-dependencies {ARG}                        /* Sets LIB_DEPENDENCIES variable (space separated) */
-    --append-lib-dependencies {ARG}                 /* Appends ARG to 'LIB_DEPENDENCIES */
-    --run-prefix {ARG}                              /* Sets variable RUN_PREFIX with stuff injected before run for built executables,
-                                                        such as LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3 */
-    --append-run-prefix {ARG}                       /* Appends ARG to 'extra linker */
-    --pg {ARG}                                      /* Turn on -pg option (profile for UNIX/gcc platform) on linker/compiler */
-    --lto { enable|disable }                        /* Turn on link time code gen on linker/compiler (for now only gcc/unix stack) */
-    --cross-compiling {true|false}                  /* Defaults generally to false, but set explicitly to control if certain tests will be run */
-    --apply-default-debug-flags                     /*  */
-    --apply-default-release-flags                   /*  */
-    --only-if-has-compiler                          /* Only generate this configuration if the compiler appears to exist (test run)*/
-    --debug-symbols {true|false}                    /* --debug-symbols-lib AND --debug-symbols-exe at the same time */
-    --debug-symbols-lib {true|false}                /* defaults to true, but can be disabled if makes compile/link/etc too big/slow */
-    --debug-symbols-exe {true|false}                /* defaults to true, but can be disabled if makes compile/link/etc too big/slow */
-    --malloc-guard {true|false}                     /* defaults to false (for now experimental and only works with GCC) */
-    --runtime-stack-check {true|false}              /* gcc -fstack-protector-all */
-    --sanitize {none|thread|address|undefined|leak} /* if arg none, reset to none, else adds arg to sanitized feature (gcc/clang only) -
-                                                        any arg you can pass to -fsanitize=XXXX */
-                                                    /* see https://gcc.gnu.org/onlinedocs/gcc-6.1.0/gcc.pdf (search -fsanitize=; eg. --sanitize address,undefined */
-    --no-sanitize {thread|vptr|etc...}              /* any from --sanitize or all */
+	    --arch {ARCH}                                   /* for high level architecture - first section of gcc -machine - e.g. x86, x86_64, arm - usually auto-detected */
+	    [--config-tag {TAG-NAME}]*                      /* Add TAG-NAME to the list of tags associated with this configuration (for now limit one). Maybe repeated */
+	    --platform {PLATFORM}                           /* Specifies the ProjectPlatformSubdir (Unix, VisualStudio.Net-2017, VisualStudio.Net-2019) - usually auto-detected */
+	    --target-platforms {TARGET_PLATFORMS}           /* Specifies the target-platforms- system compiling Stroika for - (set of ENUM where ENUM=(Windows, POSIX, Linux, MacOS)) - usually auto-detected */
+	    --build-tools-root {BUILD_TOOLS_ROOT}           /* Specifies the BUILD_TOOLS_ROOT - initially just for visual studio - usually auto-detected */
+	    --assertions { enable|disable|default }         /* Enables/disable assertion feature (setting qDebug) */
+	    --block-allocation { enable|disable|default }   /* Enables/disable block-allocation (a feature that improves performance, but messes up valgrind) */
+	    --valgrind { enable|disable|default }           /* Enables/disable valgrind-specific runtime code (so far only needed for clean helgrind use) */
+	    --GLIBCXX_DEBUG { enable|disable|default }      /* Enables/Disables GLIBCXX_DEBUG (G++-specific) */
+	    --cppstd-version {FLAG}                         /* Sets can be c++17, or c++2a */
+	    --stdlib {LIB}                                  /* libc++ (clang lib), libstdc++ (gcc and often clang) */
+	    --ActivePerl {use|no}                           /* Enables/disables use of ActivePerl (Windows Only) - JUST USED TO BUILD OPENSSL for Windows*/
+	    --LibCurl {build-only|use|use-system|no}        /* Enables/disables use of LibCurl for this configuration [default TBD]*/
+	    --boost {build-only|use|use-system|no}          /* Enables/disables use of boost for this configuration [default use] */
+	    --OpenSSL {build-only|use|use-system|no}        /* Enables/disables use of OpenSSL for this configuration [default use] */
+	    --OpenSSL-ExtraArgs { purify? }                 /* Optionally configure extra OpenSSL features (see Stroika/OpenSSL makefile) */
+	    --WinHTTP {use-system|no}                       /* Enables/disables use of WinHTTP for this configuration [default use-system on windows, and no otherwise] */
+	    --ATLMFC {use-system|no}                        /* Enables/disables use of ATLMFC for this configuration [default use-system on windows, and no otherwise] */
+	    --Xerces {build-only|use|use-system|no}         /* Enables/disables use of Xerces for this configuration [default use] */
+	    --sqlite {build-only|use|use-system|no}         /* Enables/disables use of sqlite for this configuration [default use] */
+	    --ZLib {build-only|use|use-system|no}           /* Enables/disables use of ZLib for this configuration [default use] */
+	    --WIX {use|use-system|no}                       /* Enables/disables use of WIX (Windows Only) - to build windows installers*/
+	    --lzma {build-only|use|use-system|no}           /* Enables/disables use of LZMA SDK for this configuration [default use] */
+	    --trace2file { enable|disable|default }         /* Enables/disable trace2file feature */
+	    --static-link-gccruntime { enable|disable }     /* Enables/disable gcc runtime static link (only applies if gcc family compiler) */
+	    --make-define {ARG}                             /* Define makefile define for the given configuration: text of arg appears as line in Configuration.mk */
+	    --compiler-driver {ARG}                         /* default is gcc */
+	    --ar {ARG}                                      /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ar */
+	    --as {ARG}                                      /* default is 'as' on unix, and retrieved from visual studio on visual studio */
+	    --ranlib {ARG}                                  /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ranlib */
+	    --strip {ARG}                                   /* sets program to do stripping; default is undefined, but for POSIX, defaults to strip */
+	    --append-CFLAGS {ARG}                           /* Appends ARG to CFLAGS */
+	    --remove-CFLAGS {ARG}                           /* Remove ARG from CFLAGS (including default added args; processed after all adds applied) */
+	    --replace-all-CFLAGS {ARG}                      /* OVERRIDES DEFAULTS- and sets CFLAGS to just these values */
+	    --append-CPPFLAGS {ARG}                         /* Appends ARG to CPPFLAGS; alias for append-CFLAGS AND append-CXXFLAGS, elg --append-CPPFLAGS -DA=B */
+	    --remove-CPPFLAGS {ARG}                         /* Remove ARG from CPPFLAGS (including default added args; processed after all adds applied) */
+	    --replace-all-CPPFLAGS {ARG}                    /* OVERRIDES DEFAULTS- and sets CPPFLAGS to just these values */
+	    --append-CXXFLAGS {ARG}                         /* Appends ARG to CXXFLAGS */
+	    --remove-CXXFLAGS {ARG}                         /* Remove ARG from CXXFLAGS (including default added args; processed after all adds applied) */
+	    --replace-all-CXXFLAGS {ARG}                    /* OVERRIDES DEFAULTS- and sets CXXFLAGS to just these values */
+	    --SharedSymbolVisibility {ARG}                  /* alias for append-CFLAGS AND append-CXXFLAGS with -fvisibility=XXX (defaults to hidden on gcc/clang/unix compilers) */
+	    --append-extra-prefix-linker-args {ARG}         /* Appends ARG to 'extra prefix linker args */
+	    --append-extra-suffix-linker-args {ARG}         /* Appends ARG to 'extra suffix linker args */
+	    --append-extra-compiler-and-linker-args {ARG}   /* Appends ARG to 'extra compiler' and 'extra linker' args */
+	    --includes-path {ARG}                           /* Sets INCLUDES_PATH variable (: separated, since unix standard and allows spaces) */
+	    --append-includes-path {ARG}                    /* Appends ARG to 'INCLUDES_PATH */
+	    --libs-path {ARG}                               /* Sets LIBS_PATH variable (':' separated, since unix standard and allows spaces) */
+	    --append-libs-path {ARG}                        /* Appends ARG to 'LIBS_PATH */
+	    --lib-dependencies {ARG}                        /* Sets LIB_DEPENDENCIES variable (space separated) */
+	    --append-lib-dependencies {ARG}                 /* Appends ARG to 'LIB_DEPENDENCIES */
+	    --run-prefix {ARG}                              /* Sets variable RUN_PREFIX with stuff injected before run for built executables,
+	                                                       such as LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3 */
+	    --append-run-prefix {ARG}                       /* Appends ARG to 'extra linker */
+	    --pg {ARG}                                      /* Turn on -pg option (profile for UNIX/gcc platform) on linker/compiler */
+	    --lto { enable|disable }                        /* Turn on link time code gen on linker/compiler (for now only gcc/unix stack) */
+	    --cross-compiling {true|false}                  /* Defaults generally to false, but set explicitly to control if certain tests will be run */
+	    --apply-default-debug-flags                     /*  */
+	    --apply-default-release-flags                   /*  */
+	    --only-if-has-compiler                          /* Only generate this configuration if the compiler appears to exist (test run)*/
+	    --debug-symbols {true|false}                    /* --debug-symbols-lib AND --debug-symbols-exe at the same time */
+	    --debug-symbols-lib {true|false}                /* defaults to true, but can be disabled if makes compile/link/etc too big/slow */
+	    --debug-symbols-exe {true|false}                /* defaults to true, but can be disabled if makes compile/link/etc too big/slow */
+	    --malloc-guard {true|false}                     /* defaults to false (for now experimental and only works with GCC) */
+	    --runtime-stack-check {true|false}              /* gcc -fstack-protector-all */
+	    --sanitize {none|thread|address|undefined|leak} /* if arg none, reset to none, else adds arg to sanitized feature (gcc/clang only) -
+	                                                       any arg you can pass to -fsanitize=XXXX */
+	                                                    /* see https://gcc.gnu.org/onlinedocs/gcc-6.1.0/gcc.pdf (search -fsanitize=; eg. --sanitize address,undefined */
+	    --no-sanitize {thread|vptr|etc...}              /* any from --sanitize or all */
 
 Configure's behavior is also influenced by the following environment variables:
-            CC, CXX, PLATFORM, TARGET_PLATFORMS, ARCH, AS, AR, RANLIB, STRIP; these just simpulate adding the obvoius associated argument to configure
-            EXTRA_CONFIGURE_ARGS= a space separated list of arguments added to the beginning of the configure command
+	    CC, CXX, PLATFORM, TARGET_PLATFORMS, ARCH, AS, AR, RANLIB, STRIP; these just simpulate adding the obvoius associated argument to configure
+	    EXTRA_CONFIGURE_ARGS= a space separated list of arguments added to the beginning of the configure command
 ```
 
 ### Amending a configuration
