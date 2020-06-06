@@ -1,31 +1,29 @@
-﻿# ***Setup RaspberryPi to be target for remote raspberry pi testing (and debugging)***
+﻿# **_Setup RaspberryPi to be target for remote raspberry pi testing (and debugging)_**
 
-* install Base rasberrian default OS
+- install Base rasberrian default OS
 
-* sudo raspi-config
+- sudo raspi-config
   interface options/select ssh and enable
-	
-* sudo adduser lewis
 
-* sudo usermod -a -G sudo lewis
+- sudo adduser lewis
 
-* copy my dev id_rsa.pub to raspberrypi:~/.ssh/authorized_keys (and set chmod permissions 700/600)
+- sudo usermod -a -G sudo lewis
 
-* sudo apt-get install apt-file
+- copy my dev id_rsa.pub to raspberrypi:~/.ssh/authorized_keys (and set chmod permissions 700/600)
 
-* sudo vi /etc/apt/sources.list
-       add lines()
-       #added for latest libc
-       deb http://deb.debian.org/debian testing main
+- sudo apt-get install apt-file
 
-* sudo apt update
+- sudo vi /etc/apt/sources.list
+  add lines()
+  #added for latest libc
+  deb http://deb.debian.org/debian testing main
 
-* sudo apt upgrade
+- sudo apt update
 
-* sudo apt-get install gdb valgrind libubsan1 libasan5
-  
-  NB:  may not longer need libubsan1 libasan5 sine these sb staticly linked;
+- sudo apt upgrade
+
+- sudo apt-get install gdb valgrind libubsan1 libasan5
+
+  NB: may not longer need libubsan1 libasan5 sine these sb staticly linked;
   valgrind just needed to run (valgrind) regtests, and gdb not really needed at all, but if you are going to test
   on a raspberrypi, you probably will end up wanting to run a debugger there
-
-

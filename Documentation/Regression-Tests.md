@@ -8,7 +8,7 @@ my local network.
 To simply run the regression tests on your system, use (on that sysmtem)
 
 ```bash
-    ./ScriptsLib/RegressionTests
+./ScriptsLib/RegressionTests
 ```
 
 ## File Output (for each \$TEST_TARGET)
@@ -171,6 +171,6 @@ checkin from one spot.
 ## Checkin results
 
 ```bash
-VER=2.1a2 sh -c 'mv Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-*$VER*.txt Tests/HistoricalPerformanceRegressionTestResults/2.1/ && git add Tests/HistoricalPerformanceRegressionTestResults/2.1/PerformanceDump-*$VER.txt'
-VER=2.1a2 sh -c 'mv Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-*-$VER-OUT.txt Tests/HistoricalRegressionTestResults/2.1/ && git add Tests/HistoricalRegressionTestResults/2.1/REGRESSION-TESTS-*-$VER-OUT.txt'
+VER=2.1b1 sh -c 'mv Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-*$VER*.txt Tests/HistoricalPerformanceRegressionTestResults/2.1/ && git add Tests/HistoricalPerformanceRegressionTestResults/2.1/PerformanceDump-*$VER.txt'
+VER=2.1b1 sh -c 'mv Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-*-$VER-OUT.txt Tests/HistoricalRegressionTestResults/2.1/ && git add Tests/HistoricalRegressionTestResults/2.1/REGRESSION-TESTS-*-$VER-OUT.txt'
 ```
