@@ -8,7 +8,47 @@ to be aware of when upgrading.
 
 ## History
 
-### 2.1a5x {2020-05-2x}
+### 2.1b1 {2020-06-07}
+
+- **TLDR**
+
+  - Docs
+  - Lose old deprecated code
+
+- Documentation
+
+  Various docs cleanups/reviews
+
+- Builds / Misc
+
+  - Remove old deprecated code
+
+    - lose deprecated code from configure script
+    - lose deprecated files Library/Projects/Unix/SharedBuildRules-Default.mk and Library/Projects/Unix/SharedMakeVariables-Default.mk
+    - lose most things which had been deprecated - configuration definitions (e..g WIN_CXX=WIN_LIBTOOL= etc, and Iterable\<T\>::SequenceEquals, etc...
+
+  - Check prerequisites
+
+    - tweak makefile for checking prerequisites, so works better on Windows/WSL systems (check more)
+
+- ThirdPartyComponents
+
+  - OpenSSL
+
+    - experimented with openssl 3.0 alpha
+
+      Didn't fully work, but built and mostly worked; didn't change what version we build with
+
+---
+
+## 2.1a5 {2020-05-31}
+
+- **TLDR**
+
+  - New comparison API (spaceship operator)
+  - Docker (windows builds, and much more)
+  - CI systems (builds on travisci, and circleci, multiple platforms)
+  - WaitForIOReady improvements, which make webserver much faster
 
 - new Comparison API
   Support new C++20 spaceship operator, but in a way that is backwards compatible with C++17
@@ -133,14 +173,12 @@ to be aware of when upgrading.
   - ThirdPartyComponents
 
     - Boost
-
       - use 1.73.0
       - small cleanups to boost/Makefile (e.g use of revised RunArgumentsWithCommonBuildVars API)
       - changed mirror for boost to sophists.com cuz I cannot find another working one
       - tweak boost/ConfigureAndBuild file and user-config.jam
       - workaround https://stroika.atlassian.net/browse/STK-711 - issue g++-10 --std=c++2a with building boost 1.72
       - use qHasFeature_boost check not \_\_has_include(<boost/thread/shared_mutex.hpp>) because of we compiled with !qHasFeature_boost - dont use boost even if system installed
-
     - libcurl
       - use 7.70.0
     - OpenSSL
