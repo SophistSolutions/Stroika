@@ -75,7 +75,7 @@ endif
 FETCHURLS=
 FETCHURLS+=https://dl.bintray.com/boostorg/release/$(VERSION_WITH_DOTS)/source/boost_$(VERSION).tar.gz
 FETCHURLS+=https://sourceforge.net/projects/boost/files/boost/$(VERSION_WITH_DOTS)/boost_$(VERSION).tar.gz/download
-FETCHURLS+=ftp://ftp.sophists.com/Pub/Mirror/boost_$(VERSION).tar.gz
+#FETCHURLS+=ftp://ftp.sophists.com/Pub/Mirror/boost_$(VERSION).tar.gz
 #(reasonable but breaks github 100mb limit)FETCHURLS+=file:///../Mirror/boost_$(VERSION).tar.gz
 ### the github.com/boostorg/boost/archive appear not fully compatible/real mirror of above - very different size and my build scripts dont work
 #FETCHURLS+=https://github.com/boostorg/boost/archive/boost-$(VERSION_WITH_DOTS).tar.gz
