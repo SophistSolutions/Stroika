@@ -39,6 +39,11 @@ to be aware of when upgrading.
 
       Didn't fully work, but built and mostly worked; didn't change what version we build with
 
+- RegressionTest output
+  Ignoring warnins about boost download - it periodically has issues with 'forbidden' http errors, but I've setup sourceforge backup mirror and that seems to work well.
+
+  A few other minor warnings/false positive errors also ignorable in the regression test output
+
 ---
 
 ## 2.1a5 {2020-05-31}
