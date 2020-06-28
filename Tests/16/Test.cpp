@@ -151,6 +151,25 @@ namespace {
 }
 
 namespace {
+    namespace AddVsAddIf_Test_9_ {
+        void DoAll ()
+        {
+            {
+                Mapping<int, int> m;
+                m.Add (1,2);
+                VerifyTestResult (m[1] == 2);
+                m.Add (1,3);
+                VerifyTestResult (m[1] == 3);
+                VerifyTestResult (not m.AddIf (1,4));
+                VerifyTestResult (m[1] == 3);
+                VerifyTestResult (m.AddIf (2,3));
+                VerifyTestResult (m[2] == 3);
+            }
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
@@ -207,6 +226,7 @@ namespace {
         Where_Test_6_::DoAll ();
         WithKeys_Test_7_::DoAll ();
         ClearBug_Test_8_::DoAll ();
+        AddVsAddIf_Test_9_::DoAll ();
     }
 }
 
