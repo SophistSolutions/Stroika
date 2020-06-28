@@ -343,9 +343,27 @@ namespace Stroika::Foundation::Containers {
          *        This behavior is analagous to the new std-c++17 std::map::insert_or_assign () - @see http://en.cppreference.com/w/cpp/container/map/insert_or_assign
          *
          *  \note mutates container
+         *
+         *  \see Add ();
          */
         nonvirtual void Add (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt);
         nonvirtual void Add (ArgByValueType<KeyValuePair<key_type, mapped_type>> p);
+
+    public:
+        /**
+         *  Add the association between key and newElt. If key was already associated with something
+         *  else, change nothing and return false. If the key was NOT already associated, add the 
+         *  element (updating the size of the container by one).
+         *
+         *  \note This behavior when the entry already exists is similar to std::map::insert (@see http://en.cppreference.com/w/cpp/container/map/insert)
+         *        "Inserts element(s) into the container, if the container doesn't already contain an element with an equivalent key".
+         *
+         *  \note mutates container
+         *
+         *  \see Add ();
+         */
+        nonvirtual bool AddIf (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt);
+        nonvirtual bool AddIf (ArgByValueType<KeyValuePair<key_type, mapped_type>> p);
 
     public:
         /**
@@ -577,6 +595,7 @@ namespace Stroika::Foundation::Containers {
         // 'item' arg CAN be nullptr
         virtual bool Lookup (ArgByValueType<KEY_TYPE> key, optional<mapped_type>* item) const = 0;
         virtual void Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt)   = 0;
+        virtual bool AddIf (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt) = 0;
         virtual void Remove (ArgByValueType<KEY_TYPE> key)                                    = 0;
         virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i)    = 0;
 #if qDebug

@@ -157,6 +157,17 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             fData_.InsertAt (fData_.GetLength (), KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE> (key, newElt));
         }
+        virtual bool AddIf (ArgByValueType<KEY_TYPE> key, ArgByValueType<MAPPED_VALUE_TYPE> newElt) override
+        {
+            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
+                if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
+                    return false;
+                }
+            }
+            fData_.InsertAt (fData_.GetLength (), KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE> (key, newElt));
+            return true;
+        }
         virtual void Remove (ArgByValueType<KEY_TYPE> key) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};

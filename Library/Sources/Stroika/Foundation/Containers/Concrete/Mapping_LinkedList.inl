@@ -169,6 +169,18 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             fData_.Append (KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE> (key, newElt));
         }
+        virtual bool AddIf (ArgByValueType<KEY_TYPE> key, ArgByValueType<MAPPED_VALUE_TYPE> newElt) override
+        {
+            using Traversal::kUnknownIteratorOwnerID;
+            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
+                if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
+                    return false;
+                }
+            }
+            fData_.Append (KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE> (key, newElt));
+            return true;
+        }
         virtual void Remove (ArgByValueType<KEY_TYPE> key) override
         {
             using Traversal::kUnknownIteratorOwnerID;

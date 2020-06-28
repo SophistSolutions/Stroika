@@ -227,6 +227,16 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (p.fKey, p.fValue);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    inline bool Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::AddIf (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt)
+    {
+        return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().AddIf (key, newElt);
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    inline bool Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::AddIf (ArgByValueType<KeyValuePair<key_type, mapped_type>> p)
+    {
+        return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().AddIf (p.fKey, p.fValue);
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
     void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
     {

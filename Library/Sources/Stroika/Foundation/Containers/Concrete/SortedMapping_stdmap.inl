@@ -160,19 +160,16 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             fData_.Invariant ();
-#if 1
-            (void)fData_.insert_or_assign (key, newElt);
-#else
-            auto i = fData_.find (key);
-            if (i == fData_.end ()) {
-                i = fData_.insert (pair<KEY_TYPE, MAPPED_VALUE_TYPE> (key, newElt)).first;
-                // no need to patch map<>
-            }
-            else {
-                i->second = newElt;
-            }
-#endif
+            (void)fData_.insert_or_assign (key, newElt); // according to https://en.cppreference.com/w/cpp/container/map/insert_or_assign - no iterator references are invalidated
             fData_.Invariant ();
+        }
+        virtual bool AddIf (ArgByValueType<KEY_TYPE> key, ArgByValueType<MAPPED_VALUE_TYPE> newElt) override
+        {
+            lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+            fData_.Invariant ();
+            auto result = fData_.insert ({key, newElt}); // according to https://en.cppreference.com/w/cpp/container/map/insert no iterator references are invalidated
+            fData_.Invariant ();
+            return result.second;
         }
         virtual void Remove (ArgByValueType<KEY_TYPE> key) override
         {
