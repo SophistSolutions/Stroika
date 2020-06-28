@@ -135,6 +135,7 @@ namespace {
         }
         void DoRegressionTests_ ()
         {
+            Debug::TraceContextBumper ctx{"Base64Test::DoRegressionTests_"}; 
 
             {
                 const char kSrc[] =
@@ -181,6 +182,8 @@ namespace {
     namespace MD5Test {
         void DoRegressionTests_ ()
         {
+            Debug::TraceContextBumper ctx{"MD5Test::DoRegressionTests_"};
+
             // really this is a test of high level tools used in orig Cryptography::MD5 module, but these are really
             // generic utilities...
             using DIGESTER_ = Digest::Digester<Digest::Algorithm::MD5>;
@@ -219,6 +222,8 @@ namespace {
 
         void DoRegressionTests_ ()
         {
+            Debug::TraceContextBumper ctx{"Hash_CRC32::DoRegressionTests_"};
+
             // @todo -- RETHINK IF RESULTS SB SAME REGARDLESS OF ENDIAN - NOT CONSISTENT!!!! --LGP 2015-08-26 -- AIX
             {
                 // This result identical to that computed by http://www.zorc.breitbandkatze.de/crc.html -- LGP 2013-10-31
@@ -237,6 +242,8 @@ namespace {
 
         void DoRegressionTests_ ()
         {
+            Debug::TraceContextBumper ctx{"Hash_Jenkins::DoRegressionTests_"};
+
             // @todo -- RETHINK IF RESULTS SB SAME REGARDLESS OF ENDIAN - NOT CONSISTENT!!!! --LGP 2015-08-26 -- AIX
             using Configuration::Endian;
             using Configuration::EndianConverter;
@@ -263,6 +270,8 @@ namespace {
 
         void DoRegressionTests_ ()
         {
+            Debug::TraceContextBumper ctx{"Hash_MD5::DoRegressionTests_"};
+
             using USE_DIGESTER_ = Digester<Algorithm::MD5>;
             {
                 const char kSrc[]        = "This is a very good test of a very good test";
@@ -280,6 +289,8 @@ namespace {
 
         void DoRegressionTests_ ()
         {
+            Debug::TraceContextBumper ctx{"Hash_SuperFastHash::DoRegressionTests_"};
+
             // @todo -- RETHINK IF RESULTS SB SAME REGARDLESS OF ENDIAN - NOT CONSISTENT!!!! --LGP 2015-08-26 -- AIX
             using USE_DIGESTER_ = Digester<Algorithm::SuperFastHash>;
             {
@@ -308,6 +319,8 @@ namespace {
 
         void DoRegressionTests_ ()
         {
+            Debug::TraceContextBumper ctx{"AllSSLEncrytionRoundtrip::DoRegressionTests_"};
+
 #if qHasFeature_OpenSSL
             using Memory::BLOB;
             using namespace Stroika::Foundation::Cryptography::Encoding;
@@ -359,6 +372,8 @@ namespace {
 
         void DoRegressionTests_ ()
         {
+            Debug::TraceContextBumper ctx{"OpenSSLDeriveKeyTests_::DoRegressionTests_"};
+
 #if qHasFeature_OpenSSL
             using Characters::String;
             using Memory::BLOB;
@@ -413,6 +428,8 @@ namespace {
 
         void DoRegressionTests_ ()
         {
+            Debug::TraceContextBumper ctx{"OpenSSLEncryptDecryptTests_::DoRegressionTests_"};
+
 #if qHasFeature_OpenSSL
             using Characters::String;
             using Memory::BLOB;
@@ -468,6 +485,8 @@ namespace {
 
         void DoRegressionTests_ ()
         {
+            Debug::TraceContextBumper ctx{"AESTest_::DoRegressionTests_"};
+
             {
                 /**
                  *      echo -n "This is a very good test of a very good test" | od -t x1 --width=100
@@ -493,6 +512,7 @@ namespace {
 namespace {
     void DoRegressionTests_ ()
     {
+        Debug::TraceContextBumper ctx{"DoRegressionTests_"}; 
         Base64Test::DoRegressionTests_ ();
         MD5Test::DoRegressionTests_ ();
         Hash_CRC32::DoRegressionTests_ ();
