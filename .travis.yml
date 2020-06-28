@@ -155,7 +155,7 @@ jobs:
     #   o Build with --boost no --OpenSSL no --libcurl no --Xerces no, only to avoid timeout building (cuz limited  to 50 minutes)
     #
     - os: osx
-      osx_image: xcode11.4
+      osx_image: xcode11.5
       addons:
         homebrew:
           packages:
