@@ -359,7 +359,7 @@ namespace {
                         for (DigestAlgorithm di = DigestAlgorithm::eSTART; di != DigestAlgorithm::eEND; di = Configuration::Inc (di)) {
                             try {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                                Debug::TraceContextBumper ctx{L"", L"ci=%s, di=%s", Characters::ToString (ci).c_str (), Characters::ToString (di).c_str ()};
+                                Debug::TraceContextBumper ctx{L"roundtriptesting", L"ci=%s, di=%s", Characters::ToString (ci).c_str (), Characters::ToString (di).c_str ()};
 #endif
                                 OpenSSLCryptoParams cryptoParams{ci, OpenSSL::EVP_BytesToKey{ci, di, passphrase}};
                                 roundTripTester_ (cryptoParams, inputMessage);
