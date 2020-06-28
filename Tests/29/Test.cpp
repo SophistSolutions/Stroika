@@ -13,6 +13,7 @@
 #endif
 #endif
 
+#include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Configuration/Endian.h"
 #include "Stroika/Foundation/Containers/Common.h"
@@ -40,6 +41,9 @@ using std::byte;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Cryptography;
 using namespace Stroika::Foundation::Streams;
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 namespace {
     uint32_t ToLE_ (uint32_t n)
@@ -135,7 +139,7 @@ namespace {
         }
         void DoRegressionTests_ ()
         {
-            Debug::TraceContextBumper ctx{"Base64Test::DoRegressionTests_"}; 
+            Debug::TraceContextBumper ctx{"Base64Test::DoRegressionTests_"};
 
             {
                 const char kSrc[] =
@@ -353,9 +357,16 @@ namespace {
                 for (BLOB inputMessage : kTestMessages_) {
                     for (CipherAlgorithm ci = CipherAlgorithm::eSTART; ci != CipherAlgorithm::eEND; ci = Configuration::Inc (ci)) {
                         for (DigestAlgorithm di = DigestAlgorithm::eSTART; di != DigestAlgorithm::eEND; di = Configuration::Inc (di)) {
-                            //DbgTrace (L"ci=%s, di=%s", Characters::ToString (ci).c_str (), Characters::ToString(di).c_str ());
-                            OpenSSLCryptoParams cryptoParams{ci, OpenSSL::EVP_BytesToKey{ci, di, passphrase}};
-                            roundTripTester_ (cryptoParams, inputMessage);
+                            try {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                                Debug::TraceContextBumper ctx{L"ci=%s, di=%s", Characters::ToString (ci).c_str (), Characters::ToString (di).c_str ()};
+#endif
+                                OpenSSLCryptoParams cryptoParams{ci, OpenSSL::EVP_BytesToKey{ci, di, passphrase}};
+                                roundTripTester_ (cryptoParams, inputMessage);
+                            }
+                            catch (...) {
+                                Stroika::TestHarness::WarnTestIssue (Characters::Format (L"For Test (%s, %s): Ignorning %s", Characters::ToString (ci).c_str (), Characters::ToString (di).c_str (), Characters::ToString (current_exception ()).c_str ()).c_str ());
+                            }
                         }
                     }
                 }
@@ -512,7 +523,7 @@ namespace {
 namespace {
     void DoRegressionTests_ ()
     {
-        Debug::TraceContextBumper ctx{"DoRegressionTests_"}; 
+        Debug::TraceContextBumper ctx{"DoRegressionTests_"};
         Base64Test::DoRegressionTests_ ();
         MD5Test::DoRegressionTests_ ();
         Hash_CRC32::DoRegressionTests_ ();

@@ -583,7 +583,7 @@ namespace {
                             e.code () == errc::no_such_file_or_directory
 #endif
                         ) {
-                            TestHarness::WarnTestIssue ((L"Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure: " + Characters::ToString (current_exception ())).AsNarrowSDKString ().c_str ()); // hopefully fixed soon on WSL - arp -a --LGP 2020-03-19
+                            TestHarness::WarnTestIssue ((L"Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure: " + Characters::ToString (current_exception ())).c_str ()); // hopefully fixed soon on WSL - arp -a --LGP 2020-03-19
                             return;
                         }
 #endif

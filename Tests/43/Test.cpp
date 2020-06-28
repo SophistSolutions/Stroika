@@ -68,7 +68,7 @@ namespace {
                 }
                 catch (const IO::Network::HTTP::Exception& e) {
                     if (e.IsServerError ()) {
-                        Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).AsNarrowSDKString ().c_str ());
+                        Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                     }
                     else {
                         Execution::ReThrow ();
@@ -295,7 +295,7 @@ namespace {
                 }
                 catch (const IO::Network::HTTP::Exception& e) {
                     if (e.IsServerError ()) {
-                        Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).AsNarrowSDKString ().c_str ());
+                        Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                     }
                     else {
                         Execution::ReThrow ();
@@ -310,7 +310,7 @@ namespace {
                         return;
                     }
 #endif
-                    Stroika::TestHarness::WarnTestIssue (Characters::ToString (current_exception ()).AsNarrowSDKString ().c_str ());
+                    Stroika::TestHarness::WarnTestIssue (Characters::ToString (current_exception ()).c_str ());
                 }
 #endif
                 catch (const Execution::RequiredComponentMissingException&) {
@@ -319,11 +319,11 @@ namespace {
                     // This is more like the absence of a feature beacuse of the missing component.
                     DbgTrace (L"ignore RequiredComponentMissingException cuz no curl/winhttp");
 #else
-                    Stroika::TestHarness::WarnTestIssue (Characters::ToString (current_exception ()).AsNarrowSDKString ().c_str ());
+                    Stroika::TestHarness::WarnTestIssue (Characters::ToString (current_exception ()).c_str ());
 #endif
                 }
                 catch (...) {
-                    Stroika::TestHarness::WarnTestIssue (Characters::ToString (current_exception ()).AsNarrowSDKString ().c_str ());
+                    Stroika::TestHarness::WarnTestIssue (Characters::ToString (current_exception ()).c_str ());
                 }
             }
         }
@@ -388,7 +388,7 @@ namespace {
             }
             catch (const IO::Network::HTTP::Exception& e) {
                 if (e.IsServerError ()) {
-                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).AsNarrowSDKString ().c_str ());
+                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                 }
                 else {
                     Execution::ReThrow ();
@@ -435,7 +435,7 @@ namespace {
             }
             catch (const IO::Network::HTTP::Exception& e) {
                 if (e.IsServerError ()) {
-                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).AsNarrowSDKString ().c_str ());
+                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                 }
                 else {
                     Execution::ReThrow ();
@@ -510,7 +510,7 @@ namespace {
             }
             catch (...) {
                 // if transient issue, ignore
-                Stroika::TestHarness::WarnTestIssue (Characters::Format (L"badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: %s", Characters::ToString (current_exception ()).c_str ()).AsNarrowSDKString ().c_str ());
+                Stroika::TestHarness::WarnTestIssue (Characters::Format (L"badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: %s", Characters::ToString (current_exception ()).c_str ()).c_str ());
             }
             try {
                 o.fFailConnectionIfSSLCertificateInvalid = false;
@@ -525,7 +525,7 @@ namespace {
             }
             catch (...) {
                 // if transient issue, ignore
-                Stroika::TestHarness::WarnTestIssue (Characters::Format (L"badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: %s", Characters::ToString (current_exception ()).c_str ()).AsNarrowSDKString ().c_str ());
+                Stroika::TestHarness::WarnTestIssue (Characters::Format (L"badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: %s", Characters::ToString (current_exception ()).c_str ()).c_str ());
             }
 
             // BAD SSL SITE
@@ -551,7 +551,7 @@ namespace {
 #endif
             }
             catch (...) {
-                Stroika::TestHarness::WarnTestIssue (Characters::Format (L"badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: %s", Characters::ToString (current_exception ()).c_str ()).AsNarrowSDKString ().c_str ());
+                Stroika::TestHarness::WarnTestIssue (Characters::Format (L"badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: %s", Characters::ToString (current_exception ()).c_str ()).c_str ());
             }
         }
     }
@@ -582,7 +582,7 @@ namespace {
                     }
                     catch (const IO::Network::HTTP::Exception& e) {
                         if (e.IsServerError ()) {
-                            Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).AsNarrowSDKString ().c_str ());
+                            Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                         }
                         else {
                             Execution::ReThrow ();
@@ -690,7 +690,7 @@ namespace {
             }
             catch (const IO::Network::HTTP::Exception& e) {
                 if (e.IsServerError ()) {
-                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).AsNarrowSDKString ().c_str ());
+                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                 }
                 else {
                     Execution::ReThrow ();

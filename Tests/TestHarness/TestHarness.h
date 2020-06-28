@@ -22,6 +22,7 @@ namespace Stroika::TestHarness {
 #define VerifyTestResultWarning(c) Stroika::TestHarness::Test_ (!!(c), false, #c, __FILE__, __LINE__)
 
     void WarnTestIssue (const char* issue);
+    void WarnTestIssue (const wchar_t* issue);
 
 }
 #endif /*_Stroika_TestHarness_h_*/

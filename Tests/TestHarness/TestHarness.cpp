@@ -106,3 +106,11 @@ void TestHarness::WarnTestIssue (const char* issue)
     cerr << "WARNING: REGRESSION TEST ISSUE: '" << issue << "'" << endl;
     DbgTrace ("WARNING: REGRESSION TEST ISSUE: '%s", issue);
 }
+
+void TestHarness::WarnTestIssue (const wchar_t* issue)
+{
+    using namespace Characters;
+    string r;
+    WideStringToNarrow (issue, issue + wcslen (issue), GetDefaultSDKCodePage (), &r);
+    WarnTestIssue (r.c_str ());
+}
