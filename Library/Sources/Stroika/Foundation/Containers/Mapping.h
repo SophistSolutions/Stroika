@@ -22,11 +22,6 @@
  *      @todo   Add an "Update (iterator<T> i, Value)" method, similar to other containers
  *              like Sequence. Note - intentionally don't allow updating the key???
  *
- *      @todo   Consider adding optional way to add that ASSERTS (or throws?) AddIfNotPresnet()??? --
- *              if the value not presnet.
- *
- *              See Set<>::AddIf()
- *
  *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
  *              concepts and that it USES that for the appropriate overloaded constructors.
  *
@@ -361,6 +356,9 @@ namespace Stroika::Foundation::Containers {
          *  \note mutates container
          *
          *  \see Add ();
+         *
+         *  \note Similar to Set<>::AddIf() - but here there is the ambiguity about whether to change what is mapped to (which we do differntly
+         *        between Add and AddIf) and no such issue exists with Set<>::AddIf. But return true if they make a change.
          */
         nonvirtual bool AddIf (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt);
         nonvirtual bool AddIf (ArgByValueType<KeyValuePair<key_type, mapped_type>> p);
@@ -375,6 +373,17 @@ namespace Stroika::Foundation::Containers {
         nonvirtual void AddAll (CONTAINER_OF_KEYVALUE&& items);
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
         nonvirtual void AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
+
+    public:
+        /**
+         *  \note   LikeAddAll, but if the items are already present, dont add. Returns numer of items added. Calls AddIf
+         *
+         *  \note mutates container
+         */
+        template <typename CONTAINER_OF_KEYVALUE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_KEYVALUE>>* = nullptr>
+        nonvirtual unsigned int AddAllIf (CONTAINER_OF_KEYVALUE&& items);
+        template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+        nonvirtual unsigned int AddAllIf (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
     public:
         /**

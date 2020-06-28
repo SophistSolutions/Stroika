@@ -256,6 +256,29 @@ namespace Stroika::Foundation::Containers {
         AddAll (std::begin (items), std::end (items));
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+    unsigned int Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAllIf (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+    {
+        unsigned int cntAdded{};
+        for (auto i = start; i != end; ++i) {
+            if (AddIf (*i)) {
+                cntAdded++;
+            }
+        }
+        return cntAdded;
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <typename CONTAINER_OF_KEYVALUE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_KEYVALUE>>*>
+    inline unsigned int Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAllIf (CONTAINER_OF_KEYVALUE&& items)
+    {
+        /*
+         *  Note - unlike other containers - we don't need to check for this != &s because if we
+         *  attempt to add items that already exist, it would do nothing to our iteration
+         *  and therefore not lead to an infinite loop.
+         */
+        return AddAllIf (std::begin (items), std::end (items));
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Remove (ArgByValueType<key_type> key)
     {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (key);
