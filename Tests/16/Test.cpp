@@ -156,13 +156,13 @@ namespace {
         {
             {
                 Mapping<int, int> m;
-                m.Add (1,2);
+                m.Add (1, 2);
                 VerifyTestResult (m[1] == 2);
-                m.Add (1,3);
+                m.Add (1, 3);
                 VerifyTestResult (m[1] == 3);
-                VerifyTestResult (not m.AddIf (1,4));
+                VerifyTestResult (not m.AddIf (1, 4));
                 VerifyTestResult (m[1] == 3);
-                VerifyTestResult (m.AddIf (2,3));
+                VerifyTestResult (m.AddIf (2, 3));
                 VerifyTestResult (m[2] == 3);
             }
         }

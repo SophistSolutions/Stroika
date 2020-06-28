@@ -339,18 +339,22 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          *
-         *  \see Add ();
+         *  \see AddIf () for more general interface which returns results about changes, and makes conditional the overwrite mapping behavior.
          */
         nonvirtual void Add (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt);
         nonvirtual void Add (ArgByValueType<KeyValuePair<key_type, mapped_type>> p);
 
     public:
         /**
-         *  Add the association between key and newElt. If key was already associated with something
-         *  else, change nothing and return false. If the key was NOT already associated, add the 
-         *  element (updating the size of the container by one).
+         *  Add the association between key and newElt. 
          *
-         *  \note This behavior when the entry already exists is similar to std::map::insert (@see http://en.cppreference.com/w/cpp/container/map/insert)
+         *  If replaceExistingMapping, unconditionally update the mapping (whether there was a pre-existing mapping or not)
+         *  if not replaceExistingMapping (THE DEFAULT for AddIf) - add the mapping from key to value only if there was no mapping for key.
+         *
+         *  In either case, return true if a new mapping was added (mapping object enlarged by one).
+         *
+         *  \note This behavior when the entry already exists (and replaceExistingMapping is default value false) is similar 
+         *        to std::map::insert (@see http://en.cppreference.com/w/cpp/container/map/insert)
          *        "Inserts element(s) into the container, if the container doesn't already contain an element with an equivalent key".
          *
          *  \note mutates container
@@ -360,30 +364,21 @@ namespace Stroika::Foundation::Containers {
          *  \note Similar to Set<>::AddIf() - but here there is the ambiguity about whether to change what is mapped to (which we do differntly
          *        between Add and AddIf) and no such issue exists with Set<>::AddIf. But return true if they make a change.
          */
-        nonvirtual bool AddIf (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt);
-        nonvirtual bool AddIf (ArgByValueType<KeyValuePair<key_type, mapped_type>> p);
+        nonvirtual bool AddIf (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt, bool replaceExistingMapping = false);
+        nonvirtual bool AddIf (ArgByValueType<KeyValuePair<key_type, mapped_type>> p, bool replaceExistingMapping = false);
 
     public:
         /**
+         *  \summary Add all the argument (container or bound range of iterators) elements; if replaceExistingMapping true (default) force replace on each. Return count of added items (not count of updated items)
+         *
          *  \note   AddAll/2 is alias for .net AddRange ()
          *
          *  \note mutates container
          */
         template <typename CONTAINER_OF_KEYVALUE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_KEYVALUE>>* = nullptr>
-        nonvirtual void AddAll (CONTAINER_OF_KEYVALUE&& items);
+        nonvirtual unsigned int AddAll (CONTAINER_OF_KEYVALUE&& items, bool replaceExistingMapping = true);
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-        nonvirtual void AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
-
-    public:
-        /**
-         *  \note   LikeAddAll, but if the items are already present, dont add. Returns numer of items added. Calls AddIf
-         *
-         *  \note mutates container
-         */
-        template <typename CONTAINER_OF_KEYVALUE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_KEYVALUE>>* = nullptr>
-        nonvirtual unsigned int AddAllIf (CONTAINER_OF_KEYVALUE&& items);
-        template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-        nonvirtual unsigned int AddAllIf (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
+        nonvirtual unsigned int AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end, bool replaceExistingMapping = true);
 
     public:
         /**
@@ -603,10 +598,10 @@ namespace Stroika::Foundation::Containers {
         // always clear/set item, and ensure return value == item->IsValidItem());
         // 'item' arg CAN be nullptr
         virtual bool Lookup (ArgByValueType<KEY_TYPE> key, optional<mapped_type>* item) const = 0;
-        virtual void Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt)   = 0;
-        virtual bool AddIf (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt) = 0;
-        virtual void Remove (ArgByValueType<KEY_TYPE> key)                                    = 0;
-        virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i)    = 0;
+        // return true if NEW mapping added (container enlarged) - if replaceExistingMapping we unconditionally update but can still return false
+        virtual bool Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt, bool replaceExistingMapping) = 0;
+        virtual void Remove (ArgByValueType<KEY_TYPE> key)                                                               = 0;
+        virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i)                               = 0;
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif
