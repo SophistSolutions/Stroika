@@ -361,6 +361,10 @@ namespace Stroika::Foundation::Containers {
          *
          *  \see Add ();
          *
+         *  \note - this returns true if a CLEAR change happened. But mappings dont have a VALUE_COMPARER by default. So no way
+         *          to return if the MAPPING ITSELF changed. @todo - CONSIDER adding optional VALUE_COMPARER to AddIf, so it can return
+         *          true if the mapping CHANGES (mapped to value changes). May need a different name (meaning maybe we've picked a bad name here)
+         *
          *  \note Similar to Set<>::AddIf() - but here there is the ambiguity about whether to change what is mapped to (which we do differntly
          *        between Add and AddIf) and no such issue exists with Set<>::AddIf. But return true if they make a change.
          */
