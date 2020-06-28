@@ -15,10 +15,10 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 
 
-VERSION=7.70.0
+VERSION=7.71.0
+#VERSION=7.70.0
 #VERSION=7.69.1
 #VERSION=7.68.0
-#VERSION=7.67.0
 BASENAME=curl-$(VERSION)
 ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 TARFILE=$(BASENAME).tar
