@@ -22,8 +22,10 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 # CHECK FOR UPDATED VERSIONS https://www.openssl.org/source/
 #
 
-# works mostly bug regtests fail with error:060000CA:digital envelope routines::fetch failed
-#VERSION=3.0.0-alpha2
+# alpha2 works mostly bug regtests fail with error:060000CA:digital envelope routines::fetch failed
+# alpha4 fails on openssl regtests (make tests hangs on unix)
+#VERSION=3.0.0-alpha4
+
 
 VERSION=1.1.1g
 #VERSION=1.1.1f
