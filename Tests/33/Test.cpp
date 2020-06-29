@@ -165,25 +165,25 @@ namespace {
                 DbgTrace (L"ASSOCFILESUFFIXES(%s)=%s", label.c_str (), Characters::ToString (r.GetAssociatedFileSuffixes (i)).c_str ());
                 DbgTrace (L"GetAssociatedPrettyName(%s)=%s", label.c_str (), Characters::ToString (r.GetAssociatedPrettyName (i)).c_str ());
             };
-            auto checkCT = [] (InternetMediaType i, const String& fileSuffix) {
+            auto checkCT = [] (InternetMediaType i, const Set<String>& possibleFileSuffixes) {
                 [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::sThe;
                 using namespace Characters;
-                if (r.GetPreferredAssociatedFileSuffix (i) != fileSuffix) {
+                if (not possibleFileSuffixes.Contains (r.GetPreferredAssociatedFileSuffix (i).value_or (L""))) {
                     Stroika::TestHarness::WarnTestIssue (
-                        Format (L"File suffix mismatch for %s: got %s, expected %s", ToString (i).c_str (), ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str (), fileSuffix.c_str ()).c_str ());
+                        Format (L"File suffix mismatch for %s: got %s, expected %s", ToString (i).c_str (), ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str (), ToString(possibleFileSuffixes).c_str ()).c_str ());
                 }
-                if (r.GetAssociatedContentType (fileSuffix) != i) {
-                    Stroika::TestHarness::WarnTestIssue (Format (L"GetAssociatedContentType for fileSuffix '%s' (expected %s)", fileSuffix.c_str (), ToString (i).c_str ()).c_str ());
+                if (not possibleFileSuffixes.Any ([&] (String suffix) -> bool { return r.GetAssociatedContentType (suffix) == i; }))    {
+                    Stroika::TestHarness::WarnTestIssue (Format (L"GetAssociatedContentType for fileSuffixes %s (expected %s)", ToString(possibleFileSuffixes).c_str (), ToString (i).c_str ()).c_str ());
                 }
             };
             dumpCT (L"PLAINTEXT", InternetMediaTypes::kText_PLAIN);
-            checkCT (InternetMediaTypes::kText_PLAIN, L".txt");
+            checkCT (InternetMediaTypes::kText_PLAIN, {L".txt"});
             dumpCT (L"HTML", InternetMediaTypes::kText_HTML);
-            checkCT (InternetMediaTypes::kText_HTML, L".html");
+            checkCT (InternetMediaTypes::kText_HTML, {L".html", L".htm"});
             dumpCT (L"JSON", InternetMediaTypes::kJSON);
-            checkCT (InternetMediaTypes::kJSON, L".json");
+            checkCT (InternetMediaTypes::kJSON, {L".json"});
             dumpCT (L"PNG", InternetMediaTypes::kImage_PNG);
-            checkCT (InternetMediaTypes::kImage_PNG, L".png");
+            checkCT (InternetMediaTypes::kImage_PNG, {L".png"});
         }
     }
 }
