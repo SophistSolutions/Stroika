@@ -33,96 +33,312 @@ using namespace Stroika::Foundation::Execution;
 
 using FileSuffixType = InternetMediaTypeRegistry::FileSuffixType;
 
-namespace {
-    struct MIMEDB_ {
+/*
+ ********************************************************************************
+ ******************** InternetMediaTypeRegistry::FrontendRep_ *******************
+ ********************************************************************************
+ */
+
+/**
+ *  @todo NYI UPDATING the frontend. Implement APIs to externally add mappings and be sure copying the InternetMediaTypeRegistry and using that
+ *  in isolation works as well (use COW)
+ */
+//
+struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFrontendRep_ {
+
+    using IBackendRep = InternetMediaTypeRegistry::IBackendRep;
+
+    struct Data_ {
+        shared_ptr<IBackendRep> fBackendRep;
+
         // NOTE - we cannot use Bijection, because multiple media-types can map to a single filetype and not all mediatypes have a filetype
         Mapping<FileSuffixType, InternetMediaType> fSuffix2MediaTypeMap;
         Mapping<InternetMediaType, FileSuffixType> fMediaType2PreferredSuffixMap;
         Mapping<InternetMediaType, String>         fMediaType2PrettyName;
+    };
+    mutable Synchronized<Data_> fData_; // lazy construct on first call to usage
 
-        MIMEDB_ ()
-        {
-#if qPlatform_POSIX
-            // On POSIX systems, try these two locations to load MIME DB from files. DONT do on demand (per lookup)
-            // because you have to parse the entire files for these requests.
-            //
-            // Note - if one works, we assume that's good enuf, and don't waste time reading the other. That could be
-            // a mistake, and maybe we should read both?
-            if (LoadFromUserShare ()) {
-                return;
-            }
-            if (LoadFromEtcMimeDotTypes ()) {
-                return;
-            }
-#endif
+    // NULL IS allowed - use that to on-dempand construct the backend
+    FrontendRep_ (const shared_ptr<IBackendRep>& backendRep)
+        : fData_{Data_{backendRep == nullptr ? nullptr : backendRep}}
+    {
+    }
+    virtual optional<FileSuffixType> GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const override
+    {
+        auto lockedData = fData_.rwget ();
+        CheckData_ (&lockedData);
+        if (auto o = lockedData->fMediaType2PreferredSuffixMap.Lookup (ct)) {
+            return *o;
         }
+        return lockedData->fBackendRep->GetPreferredAssociatedFileSuffix (ct);
+    }
+    virtual Set<FileSuffixType> GetAssociatedFileSuffixes (const InternetMediaType& ct) const override
+    {
+        auto lockedData = fData_.rwget ();
+        CheckData_ (&lockedData);
+        // @todo fetch all suffixes
+        Set<String> result;
+        if (auto i = GetPreferredAssociatedFileSuffix (ct)) {
+            result += *i;
+        }
+        return result;
+    }
+    virtual optional<String> GetAssociatedPrettyName (const InternetMediaType& ct) const override
+    {
+        auto lockedData = fData_.rwget ();
+        CheckData_ (&lockedData);
+        return lockedData->fBackendRep->GetAssociatedPrettyName (ct);
+    }
+    virtual optional<InternetMediaType> GetAssociatedContentType (const FileSuffixType& fileSuffix) const override
+    {
+        Require (fileSuffix[0] == '.');
+        auto lockedData = fData_.rwget ();
+        CheckData_ (&lockedData);
+        if (auto o = lockedData->fSuffix2MediaTypeMap.Lookup (fileSuffix)) {
+            return *o;
+        }
+        return lockedData->fBackendRep->GetAssociatedContentType (fileSuffix);
+    }
+    static void CheckData_ (Synchronized<Data_>::WritableReference* lockedData)
+    {
+        if (lockedData->rwref ().fBackendRep == nullptr) {
+            lockedData->rwref ().fBackendRep = InternetMediaTypeRegistry::DefaultBackend ();
+        }
+    }
+};
 
-        // return true if successful, and false (ignore) failure
-        bool LoadFromUserShare ()
-        {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{L"{}MIMEDB_::LoadFromUserShare"};
+/*
+ ********************************************************************************
+ *************************** InternetMediaTypeRegistry **************************
+ ********************************************************************************
+ */
+InternetMediaTypeRegistry InternetMediaTypeRegistry::sThe;
+
+InternetMediaTypeRegistry::InternetMediaTypeRegistry (const shared_ptr<IBackendRep>& backendRep)
+    : fFrontEndRep_{make_shared<FrontendRep_> (backendRep)}
+{
+}
+
+shared_ptr<InternetMediaTypeRegistry::IBackendRep> InternetMediaTypeRegistry::DefaultBackend ()
+{
+    Debug::TraceContextBumper ctx{"InternetMediaTypeRegistry::DefaultBackend"};
+#if qPlatform_Windows
+    return WindowsRegistryDefaultBackend ();
 #endif
-            try {
-                for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{':'}}.ReadMatrix (IO::FileSystem::FileInputStream::New (L"/usr/share/mime/globs"))) {
-                    if (line.length () == 2) {
-                        String glob = line[1];
-                        if (glob.StartsWith ('*')) {
-                            glob = glob.SubString (1);
-                        }
-                        fSuffix2MediaTypeMap.Add (glob, InternetMediaType{line[0]});
-                        fMediaType2PreferredSuffixMap.Add (InternetMediaType{line[0]}, glob);
+    try {
+        return UsrSharedDefaultBackend ();
+    }
+    catch (...) {
+        // LOG/WRN
+    }
+    return EtcMimeTypesDefaultBackend ();
+}
+
+#if qPlatform_Windows
+auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<IBackendRep>
+{
+    Debug::TraceContextBumper ctx{"InternetMediaTypeRegistry::WindowsRegistryDefaultBackend"};
+    struct WinRep_ : IBackendRep {
+        struct MIMEDB_ {
+            // NOTE - we cannot use Bijection, because multiple media-types can map to a single filetype and not all mediatypes have a filetype
+            Mapping<FileSuffixType, InternetMediaType> fSuffix2MediaTypeMap;
+            Mapping<InternetMediaType, FileSuffixType> fMediaType2PreferredSuffixMap;
+            Mapping<InternetMediaType, String>         fMediaType2PrettyName;
+        };
+        mutable Synchronized<MIMEDB_> fCache_; // fill on demand
+        // redo using internallysycnrhonized lrucache code
+
+        virtual optional<FileSuffixType> GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const override
+        {
+            // only do registry lookup if needed, since (probably) more costly than local map lookup
+            if (auto fs = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (Characters::Format (L"MIME\\Database\\Content Type\\%s\\Extension", ct.As<String> ().c_str ()))) {
+                fCache_.rwget ()->fMediaType2PreferredSuffixMap.Add (ct, fs.As<String> ());
+                return fs.As<String> ();
+            }
+            return nullopt;
+        }
+        virtual Set<FileSuffixType> GetAssociatedFileSuffixes (const InternetMediaType& ct) const override
+        {
+            // @todo fetch all suffixes
+            Set<String> result;
+            if (auto i = GetPreferredAssociatedFileSuffix (ct)) {
+                result += *i;
+            }
+            return result;
+        }
+        virtual optional<String> GetAssociatedPrettyName (const InternetMediaType& ct) const override
+        {
+            if (optional<FileSuffixType> fileSuffix = GetPreferredAssociatedFileSuffix (ct)) {
+                if (auto fileTypeID = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (*fileSuffix + L"\\")) {
+                    if (auto prettyName = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (fileTypeID.As<String> () + L"\\")) {
+                        return prettyName.As<String> ();
                     }
                 }
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"succeeded with %d fSuffix2MediaTypeMap entries, and %d fMediaType2PreferredSuffixMap entries", fSuffix2MediaTypeMap.size (), fMediaType2PreferredSuffixMap.size ());
-#endif
-                return true;
             }
-            catch (...) {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"failure ignored");
-#endif
-                return false;
-            }
+            return nullopt;
         }
+        virtual optional<InternetMediaType> GetAssociatedContentType (const FileSuffixType& fileSuffix) const override
+        {
+            Require (fileSuffix[0] == '.');
+            using Characters::Format;
+            using Configuration::Platform::Windows::RegistryKey;
+            // only do registry lookup if needed, since (probably) more costly than local map lookup
+            if (auto oct = RegistryKey{HKEY_CLASSES_ROOT}.Lookup (Format (L"%s\\Content Type", fileSuffix.c_str ()))) {
+                InternetMediaType mediaType{oct.As<String> ()};
+                fCache_.rwget ()->fSuffix2MediaTypeMap.Add (fileSuffix, mediaType);
+                return mediaType;
+            }
+            return nullopt;
+        }
+    };
+    return make_shared<WinRep_> ();
+}
+#endif
 
-        // return true if successful, and false (ignore) failure
-        bool LoadFromEtcMimeDotTypes ()
+auto InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend () -> shared_ptr<IBackendRep>
+{
+    Debug::TraceContextBumper ctx{"InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend"};
+    /*
+     *  Use the file /etc/mime.types
+     *
+     *  not sure this is useful - not sure who uses it that doesn't support /usr/share/mime...
+     *
+     *  And this is much less complete.
+     *
+     *  Preload the entire DB since its not practical to scan looking for the intended record (due to the time this would take).
+     */
+    struct EtcMimeTypesRep_ : IBackendRep {
+        // NOTE - we cannot use Bijection, because multiple media-types can map to a single filetype and not all mediatypes have a filetype
+        Mapping<FileSuffixType, InternetMediaType> fSuffix2MediaTypeMap_;
+        Mapping<InternetMediaType, FileSuffixType> fMediaType2PreferredSuffixMap_;
+
+        EtcMimeTypesRep_ ()
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{L"{}MIMEDB_::LoadFromEtcMimeDotTypes"};
+            Debug::TraceContextBumper ctx{L"InternetMediaTypeRegistry::{}::EtcMimeTypesRep_::CTOR"};
 #endif
-            try {
-                for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{' ', '\t'}}.ReadMatrix (IO::FileSystem::FileInputStream::New (L"/etc/mime.types"))) {
-                    if (line.length () >= 2 and not line[0].StartsWith (L"#")) {
-                        InternetMediaType ct{line[0]};
-                        // a line starts with a content type, but then contains any number of file suffixes (without the leading .)
-                        for (size_t i = 1; i < line.length (); ++i) {
-                            String suffix = L"."sv + line[i];
-                            fSuffix2MediaTypeMap.Add (suffix, ct);
-                            fMediaType2PreferredSuffixMap.Add (ct, suffix);
-                        }
+            for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{' ', '\t'}}.ReadMatrix (IO::FileSystem::FileInputStream::New (L"/etc/mime.types"))) {
+                if (line.length () >= 2 and not line[0].StartsWith (L"#")) {
+                    InternetMediaType ct{line[0]};
+                    // a line starts with a content type, but then contains any number of file suffixes (without the leading .)
+                    for (size_t i = 1; i < line.length (); ++i) {
+                        String suffix = L"."sv + line[i];
+                        fSuffix2MediaTypeMap_.Add (suffix, ct);
+                        fMediaType2PreferredSuffixMap_.AddIf (ct, suffix, false);
                     }
                 }
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"succeeded with %d fSuffix2MediaTypeMap entries, and %d fMediaType2PreferredSuffixMap entries", fSuffix2MediaTypeMap.size (), fMediaType2PreferredSuffixMap.size ());
-#endif
-                return true;
             }
-            catch (...) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"failure ignored");
+            DbgTrace (L"succeeded with %d fSuffix2MediaTypeMap entries, and %d fMediaType2PreferredSuffixMap entries", fSuffix2MediaTypeMap_.size (), fMediaType2PreferredSuffixMap_.size ());
 #endif
-                return false;
-            }
         }
+        virtual optional<FileSuffixType> GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const override
+        {
+            if (auto o = fMediaType2PreferredSuffixMap_.Lookup (ct)) {
+                return *o;
+            }
+            return nullopt;
+        }
+        virtual Set<FileSuffixType> GetAssociatedFileSuffixes (const InternetMediaType& ct) const override
+        {
+            // @todo fetch all suffixes - but we don't currently store that.
+            Set<String> result;
+            if (auto i = fMediaType2PreferredSuffixMap_.Lookup (ct)) {
+                result += *i;
+            }
+            return result;
+        }
+        virtual optional<String> GetAssociatedPrettyName (const InternetMediaType& /*ct*/) const override
+        {
+            return nullopt; // not supported in this file
+        }
+        virtual optional<InternetMediaType> GetAssociatedContentType (const FileSuffixType& fileSuffix) const override
+        {
+            Require (fileSuffix[0] == '.');
+            if (auto o = fSuffix2MediaTypeMap_.Lookup (fileSuffix)) {
+                return *o;
+            }
+            return nullopt;
+        }
+    };
+    return make_shared<EtcMimeTypesRep_> ();
+}
 
-        optional<String> LookupAndUpdateFromUsrShareMimePrettyName (const InternetMediaType& ct)
+auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBackendRep>
+{
+    Debug::TraceContextBumper ctx{"InternetMediaTypeRegistry::UsrSharedDefaultBackend"};
+    /*
+     *  Documented to some small degree in https://www.linuxtopia.org/online_books/linux_desktop_guides/gnome_2.14_admin_guide/mimetypes-database.html
+     *
+     *  @todo Consider ALSO checking ~/... location and /usr/local ... location...
+     */
+    struct UsrShareMIMERep_ : IBackendRep {
+        // NOTE - we cannot use Bijection, because multiple media-types can map to a single filetype and not all mediatypes have a filetype
+        Mapping<FileSuffixType, InternetMediaType>               fSuffix2MediaTypeMap;
+        Mapping<InternetMediaType, FileSuffixType>               fMediaType2PreferredSuffixMap;
+        mutable Synchronized<Mapping<InternetMediaType, String>> fMediaType2PrettyNameCache; // incrementally build as needed
+
+        UsrShareMIMERep_ ()
+        {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx{L"InternetMediaTypeRegistry::{}UsrShareMIMERep_::CTOR"};
+#endif
+            for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{':'}}.ReadMatrix (IO::FileSystem::FileInputStream::New (L"/usr/share/mime/globs"))) {
+                if (line.length () == 2) {
+                    String glob = line[1];
+                    if (glob.StartsWith ('*')) {
+                        glob = glob.SubString (1);
+                    }
+                    // @todo also keep mapping of suffix media type to all file suffixes - maybe use addif here?
+                    fSuffix2MediaTypeMap.AddIf (glob, InternetMediaType{line[0]}, false);
+
+                    // &&& and fix other code - other sources
+                    // @todo use AddIf() and also keep mapping of suffix media type to all file suffixes
+
+                    fMediaType2PreferredSuffixMap.AddIf (InternetMediaType{line[0]}, glob, false);
+                }
+            }
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"succeeded with %d fSuffix2MediaTypeMap entries, and %d fMediaType2PreferredSuffixMap entries", fSuffix2MediaTypeMap_.size (), fMediaType2PreferredSuffixMap_.size ());
+#endif
+        }
+        virtual optional<FileSuffixType> GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const override
+        {
+            if (auto o = fMediaType2PreferredSuffixMap.Lookup (ct)) {
+                return *o;
+            }
+            return nullopt;
+        }
+        virtual Set<FileSuffixType> GetAssociatedFileSuffixes (const InternetMediaType& ct) const override
+        {
+            // @todo fetch all suffixes
+            Set<String> result;
+            if (auto i = fMediaType2PreferredSuffixMap.Lookup (ct)) {
+                result += *i;
+            }
+            return result;
+        }
+        virtual optional<String> GetAssociatedPrettyName (const InternetMediaType& ct) const override
+        {
+            return LookupAndUpdateFromUsrShareMimePrettyName_ (ct);
+        }
+        virtual optional<InternetMediaType> GetAssociatedContentType (const FileSuffixType& fileSuffix) const override
+        {
+            Require (fileSuffix[0] == '.');
+            if (auto o = fSuffix2MediaTypeMap.Lookup (fileSuffix)) {
+                return *o;
+            }
+            return nullopt;
+        }
+        optional<String> LookupAndUpdateFromUsrShareMimePrettyName_ (const InternetMediaType& ct) const
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{L"{}MIMEDB_::LookupAndUpdateFromUsrShareMimePrettyName"};
 #endif
+            // @todo combine lock calls in this procedure
+            if (auto o = fMediaType2PrettyNameCache.cget ()->Lookup (ct)) {
+                return *o;
+            }
             // SAX parse /usr/share/mime/TYPE/SUBTYPE.xml file and look for <comment> element (default with no language for now)
             // Simpler - just take the first - seems empirically fine/OK
             try {
@@ -153,7 +369,7 @@ namespace {
                 myHander_ handler;
                 DataExchange::XML::SAXParse (IO::FileSystem::FileInputStream::New (L"/usr/share/mime/" + ct.GetType () + L"/" + ct.GetSubType () + L".xml"), handler);
                 if (handler.fResult) {
-                    fMediaType2PrettyName.Add (ct, *handler.fResult);
+                    fMediaType2PrettyNameCache.rwget ()->Add (ct, *handler.fResult);
                     return *handler.fResult;
                 }
             }
@@ -165,32 +381,7 @@ namespace {
             return nullopt;
         }
     };
-
-    RWSynchronized<MIMEDB_>& GetMIMEDB_ ()
-    {
-        static RWSynchronized<MIMEDB_> sPrivateDB_; // lazy construct on first call to usage
-        return sPrivateDB_;
-    }
-}
-
-/*
- ********************************************************************************
- *************************** InternetMediaTypeRegistry **************************
- ********************************************************************************
- */
-optional<FileSuffixType> InternetMediaTypeRegistry::GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const
-{
-    if (auto o = GetMIMEDB_ ().cget ()->fMediaType2PreferredSuffixMap.Lookup (ct)) {
-        return *o;
-    }
-#if qPlatform_Windows
-    // only do registry lookup if needed, since (probably) more costly than local map lookup
-    if (auto fs = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (Characters::Format (L"MIME\\Database\\Content Type\\%s\\Extension", ct.As<String> ().c_str ()))) {
-        GetMIMEDB_ ().rwget ()->fMediaType2PreferredSuffixMap.Add (ct, fs.As<String> ());
-        return fs.As<String> ();
-    }
-#endif
-    return nullopt;
+    return make_shared<UsrShareMIMERep_> ();
 }
 
 Set<InternetMediaType> InternetMediaTypeRegistry::GetMoreGeneralTypes (const InternetMediaType& ct) const
@@ -205,11 +396,6 @@ Set<InternetMediaType> InternetMediaTypeRegistry::GetMoreSpecificTypes (const In
     return Set<InternetMediaType>{ct};
 }
 
-Set<String> InternetMediaTypeRegistry::GetAssociatedFileSuffixes (const InternetMediaType& ct) const
-{
-    return GetAssociatedFileSuffixes (Iterable<InternetMediaType>{ct});
-}
-
 Set<String> InternetMediaTypeRegistry::GetAssociatedFileSuffixes (const Iterable<InternetMediaType>& cts) const
 {
     Set<InternetMediaType> mediaTypes;
@@ -218,33 +404,11 @@ Set<String> InternetMediaTypeRegistry::GetAssociatedFileSuffixes (const Iterable
     });
     Set<String> result;
     for (auto ct : mediaTypes) {
-        if (auto i = GetPreferredAssociatedFileSuffix (ct)) {
-            result += *i;
+        for (auto i : GetAssociatedFileSuffixes (ct)) {
+            result += i;
         }
     }
     return result;
-}
-
-optional<String> InternetMediaTypeRegistry::GetAssociatedPrettyName (const InternetMediaType& ct) const
-{
-    if (auto o = GetMIMEDB_ ().cget ()->fMediaType2PrettyName.Lookup (ct)) {
-        return *o;
-    }
-#if qPlatform_Windows
-    if (optional<FileSuffixType> fileSuffix = GetPreferredAssociatedFileSuffix (ct)) {
-        if (auto fileTypeID = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (*fileSuffix + L"\\")) {
-            if (auto prettyName = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (fileTypeID.As<String> () + L"\\")) {
-                return prettyName.As<String> ();
-            }
-        }
-    }
-#endif
-#if qPlatform_POSIX
-    if (auto o = GetMIMEDB_ ().rwget ()->LookupAndUpdateFromUsrShareMimePrettyName (ct)) {
-        return *o;
-    }
-#endif
-    return nullopt;
 }
 
 optional<InternetMediaType> InternetMediaTypeRegistry::GetAssociatedContentType (const FileSuffixType& fileNameOrSuffix) const
@@ -254,18 +418,5 @@ optional<InternetMediaType> InternetMediaTypeRegistry::GetAssociatedContentType 
         return nullopt;
     }
     Assert (suffix[0] == '.');
-    if (auto o = GetMIMEDB_ ().cget ()->fSuffix2MediaTypeMap.Lookup (suffix)) {
-        return *o;
-    }
-#if qPlatform_Windows
-    using Characters::Format;
-    using Configuration::Platform::Windows::RegistryKey;
-    // only do registry lookup if needed, since (probably) more costly than local map lookup
-    if (auto oct = RegistryKey{HKEY_CLASSES_ROOT}.Lookup (Format (L"%s\\Content Type", suffix.c_str ()))) {
-        InternetMediaType mediaType{oct.As<String> ()};
-        GetMIMEDB_ ().rwget ()->fSuffix2MediaTypeMap.Add (suffix, mediaType);
-        return mediaType;
-    }
-#endif
-    return nullopt;
+    return fFrontEndRep_->GetAssociatedContentType (suffix);
 }

@@ -158,7 +158,7 @@ namespace {
                 VerifyTestResult (ct1.IsTextFormat ());
             }
             auto dumpCT = [] (const String& label, InternetMediaType i) {
-                [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Default ();
+                [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::sThe;
                 DbgTrace (L"SUFFIX(%s)=%s", label.c_str (), Characters::ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str ());
                 DbgTrace (L"MOREGEN(%s)=%s", label.c_str (), Characters::ToString (r.GetMoreGeneralTypes (i)).c_str ());
                 DbgTrace (L"MORESPECIFIC(%s)=%s", label.c_str (), Characters::ToString (r.GetMoreSpecificTypes (i)).c_str ());
@@ -166,9 +166,15 @@ namespace {
                 DbgTrace (L"GetAssociatedPrettyName(%s)=%s", label.c_str (), Characters::ToString (r.GetAssociatedPrettyName (i)).c_str ());
             };
             auto checkCT = [] (InternetMediaType i, const String& fileSuffix) {
-                [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Default ();
-                VerifyTestResultWarning (r.GetPreferredAssociatedFileSuffix (i) == fileSuffix);
-                VerifyTestResultWarning (r.GetAssociatedContentType (fileSuffix) == i);
+                [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::sThe;
+                using namespace Characters;
+                if (r.GetPreferredAssociatedFileSuffix (i) != fileSuffix) {
+                    Stroika::TestHarness::WarnTestIssue (
+                        Format (L"File suffix mismatch for %s: got %s, expected %s", ToString (i).c_str (), ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str (), fileSuffix.c_str ()).c_str ());
+                }
+                if (r.GetAssociatedContentType (fileSuffix) != i) {
+                    Stroika::TestHarness::WarnTestIssue (Format (L"GetAssociatedContentType for fileSuffix '%s' (expected %s)", fileSuffix.c_str (), ToString (i).c_str ()).c_str ());
+                }
             };
             dumpCT (L"PLAINTEXT", InternetMediaTypes::kText_PLAIN);
             checkCT (InternetMediaTypes::kText_PLAIN, L".txt");

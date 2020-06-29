@@ -16,9 +16,20 @@ namespace Stroika::Foundation::DataExchange {
      ************************** InternetMediaTypeRegistry ***************************
      ********************************************************************************
      */
-    inline const InternetMediaTypeRegistry InternetMediaTypeRegistry::Default ()
+    inline optional<InternetMediaTypeRegistry::FileSuffixType> InternetMediaTypeRegistry::GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const
     {
-        return InternetMediaTypeRegistry{};
+        AssertNotNull (fFrontEndRep_);
+        return fFrontEndRep_->GetPreferredAssociatedFileSuffix (ct);
+    }
+    inline Set<String> InternetMediaTypeRegistry::GetAssociatedFileSuffixes (const InternetMediaType& ct) const
+    {
+        AssertNotNull (fFrontEndRep_);
+        return fFrontEndRep_->GetAssociatedFileSuffixes (ct);
+    }
+    inline optional<String> InternetMediaTypeRegistry::GetAssociatedPrettyName (const InternetMediaType& ct) const
+    {
+        AssertNotNull (fFrontEndRep_);
+        return fFrontEndRep_->GetAssociatedPrettyName (ct);
     }
 
 }
