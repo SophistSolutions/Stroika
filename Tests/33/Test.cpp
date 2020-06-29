@@ -170,10 +170,10 @@ namespace {
                 using namespace Characters;
                 if (not possibleFileSuffixes.Contains (r.GetPreferredAssociatedFileSuffix (i).value_or (L""))) {
                     Stroika::TestHarness::WarnTestIssue (
-                        Format (L"File suffix mismatch for %s: got %s, expected %s", ToString (i).c_str (), ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str (), ToString(possibleFileSuffixes).c_str ()).c_str ());
+                        Format (L"File suffix mismatch for %s: got %s, expected %s", ToString (i).c_str (), ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str (), ToString (possibleFileSuffixes).c_str ()).c_str ());
                 }
-                if (not possibleFileSuffixes.Any ([&] (String suffix) -> bool { return r.GetAssociatedContentType (suffix) == i; }))    {
-                    Stroika::TestHarness::WarnTestIssue (Format (L"GetAssociatedContentType for fileSuffixes %s (expected %s)", ToString(possibleFileSuffixes).c_str (), ToString (i).c_str ()).c_str ());
+                if (not possibleFileSuffixes.Any ([&] (String suffix) -> bool { return r.GetAssociatedContentType (suffix) == i; })) {
+                    Stroika::TestHarness::WarnTestIssue (Format (L"GetAssociatedContentType for fileSuffixes %s (expected %s)", ToString (possibleFileSuffixes).c_str (), ToString (i).c_str ()).c_str ());
                 }
             };
             dumpCT (L"PLAINTEXT", InternetMediaTypes::kText_PLAIN);
