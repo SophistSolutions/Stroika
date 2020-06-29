@@ -157,22 +157,27 @@ namespace {
                 VerifyTestResult (ct1 == ct2);
                 VerifyTestResult (ct1.IsTextFormat ());
             }
-            {
+            auto dumpCT = [] (const String& label, InternetMediaType i) {
                 [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Default ();
-                DbgTrace (L"SUFFIX(JSON)=%s", Characters::ToString (r.GetPreferredAssociatedFileSuffix (InternetMediaTypes::kJSON)).c_str ());
-                DbgTrace (L"MOREGEN(JSON)=%s", Characters::ToString (r.GetMoreGeneralTypes (InternetMediaTypes::kJSON)).c_str ());
-                DbgTrace (L"MORESPECIFIC(JSON)=%s", Characters::ToString (r.GetMoreSpecificTypes (InternetMediaTypes::kJSON)).c_str ());
-                DbgTrace (L"ASSOCFILESUFFIXES(JSON)=%s", Characters::ToString (r.GetAssociatedFileSuffixes (InternetMediaTypes::kJSON)).c_str ());
-                DbgTrace (L"GetAssociatedPrettyName(JSON)=%s", Characters::ToString (r.GetAssociatedPrettyName (InternetMediaTypes::kJSON)).c_str ());
-            }
-            {
+                DbgTrace (L"SUFFIX(%s)=%s", label.c_str (), Characters::ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str ());
+                DbgTrace (L"MOREGEN(%s)=%s", label.c_str (), Characters::ToString (r.GetMoreGeneralTypes (i)).c_str ());
+                DbgTrace (L"MORESPECIFIC(%s)=%s", label.c_str (), Characters::ToString (r.GetMoreSpecificTypes (i)).c_str ());
+                DbgTrace (L"ASSOCFILESUFFIXES(%s)=%s", label.c_str (), Characters::ToString (r.GetAssociatedFileSuffixes (i)).c_str ());
+                DbgTrace (L"GetAssociatedPrettyName(%s)=%s", label.c_str (), Characters::ToString (r.GetAssociatedPrettyName (i)).c_str ());
+            };
+            auto checkCT = [] (InternetMediaType i, const String& fileSuffix) {
                 [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Default ();
-                DbgTrace (L"SUFFIX(PNG)=%s", Characters::ToString (r.GetPreferredAssociatedFileSuffix (InternetMediaTypes::kImage_PNG)).c_str ());
-                DbgTrace (L"MOREGEN(PNG)=%s", Characters::ToString (r.GetMoreGeneralTypes (InternetMediaTypes::kImage_PNG)).c_str ());
-                DbgTrace (L"MORESPECIFIC(PNG)=%s", Characters::ToString (r.GetMoreSpecificTypes (InternetMediaTypes::kImage_PNG)).c_str ());
-                DbgTrace (L"ASSOCFILESUFFIXES(PNG)=%s", Characters::ToString (r.GetAssociatedFileSuffixes (InternetMediaTypes::kImage_PNG)).c_str ());
-                DbgTrace (L"GetAssociatedPrettyName(PNG)=%s", Characters::ToString (r.GetAssociatedPrettyName (InternetMediaTypes::kImage_PNG)).c_str ());
-            }
+                VerifyTestResultWarning (r.GetPreferredAssociatedFileSuffix (i) == fileSuffix);
+                VerifyTestResultWarning (r.GetAssociatedContentType (fileSuffix) == i);
+            };
+            dumpCT (L"PLAINTEXT", InternetMediaTypes::kText_PLAIN);
+            checkCT (InternetMediaTypes::kText_PLAIN, L".txt");
+            dumpCT (L"HTML", InternetMediaTypes::kText_HTML);
+            checkCT (InternetMediaTypes::kText_HTML, L".html");
+            dumpCT (L"JSON", InternetMediaTypes::kJSON);
+            checkCT (InternetMediaTypes::kJSON, L".json");
+            dumpCT (L"PNG", InternetMediaTypes::kImage_PNG);
+            checkCT (InternetMediaTypes::kImage_PNG, L".png");
         }
     }
 }
