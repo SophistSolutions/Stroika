@@ -247,7 +247,7 @@ namespace Stroika::Foundation::Cache {
             return 0; // avoid referencing hash function
         }
         else {
-            return fHashFunction_ (k) % fHashtableSize_;
+            return fHashFunction_(k) % fHashtableSize_;
         }
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
