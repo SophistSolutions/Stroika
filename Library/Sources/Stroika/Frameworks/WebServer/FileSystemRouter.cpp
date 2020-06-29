@@ -44,7 +44,10 @@ namespace {
         }
         void HandleMessage (Message* m)
         {
-            static const DataExchange::InternetMediaTypeRegistry kMediaTypesRegistry_ = DataExchange::InternetMediaTypeRegistry::Default ();
+            /*
+             * @todo rewrite to incrementally copy file from stream, not read all into RAM
+             */
+            using DataExchange::InternetMediaTypeRegistry;
             // super primitive draft
             RequireNotNull (m);
             String fn{ExtractFileName_ (m)};
@@ -55,7 +58,7 @@ namespace {
                 Response&              response = *m->PeekResponse ();
                 InputStream<byte>::Ptr in{FileInputStream::New (fn)};
                 response.write (in.ReadAll ());
-                if (optional<InternetMediaType> oMediaType = kMediaTypesRegistry_.GetAssociatedContentType (fn)) {
+                if (optional<InternetMediaType> oMediaType = InternetMediaTypeRegistry::sThe.GetAssociatedContentType (fn)) {
                     response.SetContentType (*oMediaType);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace (L"content-type: %s", oMediaType->ToString ().c_str ());
