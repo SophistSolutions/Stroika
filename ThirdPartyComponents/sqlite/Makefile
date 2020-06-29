@@ -15,8 +15,7 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 
-VERSION=3320100
-#VERSION=3320300	(disabled cuz failed on macosx)
+VERSION=3320300
 #VERSION=3320100
 #VERSION=3310100
 #VERSION=3300100
@@ -29,7 +28,6 @@ FETCHURLS=
 FETCHURLS+=https://www.sqlite.org/2020/$(AMALGAMATION_WITH_VERSION).zip
 FETCHURLS+=https://www.sqlite.org/2019/$(AMALGAMATION_WITH_VERSION).zip
 FETCHURLS+=https://www.sqlite.org/2018/$(AMALGAMATION_WITH_VERSION).zip
-FETCHURLS+=https://www.sqlite.org/2017/$(AMALGAMATION_WITH_VERSION).zip
 
 
 PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)/
