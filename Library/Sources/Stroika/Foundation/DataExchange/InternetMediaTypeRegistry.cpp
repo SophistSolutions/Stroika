@@ -153,12 +153,12 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
      */
     Debug::TraceContextBumper ctx{"InternetMediaTypeRegistry::WindowsRegistryDefaultBackend"};
     struct WinRep_ : IBackendRep {
-        // underlying windows code fast so use small cache sizes 
+        // underlying windows code fast so use small cache sizes
         // @todo (debug why cache case not working) {25,7}
         mutable Cache::SynchronizedLRUCache<FileSuffixType, optional<String>>            fFileSuffix2PrettyNameCache_{25};
         mutable Cache::SynchronizedLRUCache<FileSuffixType, optional<InternetMediaType>> fSuffix2MediaTypeCache_{25};
         mutable Cache::SynchronizedLRUCache<InternetMediaType, optional<FileSuffixType>> fContentType2FileSuffixCache_{25};
-        virtual optional<FileSuffixType> GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const override
+        virtual optional<FileSuffixType>                                                 GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const override
         {
             return fContentType2FileSuffixCache_.LookupValue (ct, [] (const InternetMediaType& ct) -> optional<FileSuffixType> {
                 if (auto fs = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (Characters::Format (L"MIME\\Database\\Content Type\\%s\\Extension", ct.As<String> ().c_str ()))) {
