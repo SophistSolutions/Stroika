@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Cache {
          *  The main reason for this class, is this logic: unlocking the shared lock and then fetching the new value (with a write lock).
          */
         // Avoid issue with Lookup updating the stats object - if there is one - with whichKindOfLocker
-        using whichKindOfLocker = conditional_t<is_same_v<Statistics::Stats_Null, STATS_TYPE>, shared_lock<decltype (fMutex_)>, lock_guard<decltype (fMutex_)>>;
+        using whichKindOfLocker = conditional_t<is_same_v<Statistics::Stats_Null, STATS_TYPE>, shared_lock<decltype (fMutex_)>, unique_lock<decltype (fMutex_)>>;
         auto&& lock             = whichKindOfLocker{fMutex_};
         if (optional<VALUE> o = inherited::Lookup (key)) {
             return *o;
@@ -111,6 +111,7 @@ namespace Stroika::Foundation::Cache {
                 [[maybe_unused]] auto&& newRWLock = lock_guard{fMutex_};
                 VALUE                   v         = valueFetcher (key);
                 inherited::Add (key, v);
+                return v;
             }
             else {
                 // Avoid needlessly blocking lookups (shared_lock above) until after we've filled the cache (typically slow)
