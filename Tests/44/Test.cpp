@@ -48,8 +48,8 @@ namespace {
     void Test2_DirectoryIterable_ ()
     {
         Debug::TraceContextBumper ctx ("Test2_DirectoryIterable_");
-        for (String filename : DirectoryIterable (WellKnownLocations::GetTemporary ())) {
-            DbgTrace (L"filename = %s", filename.c_str ());
+        for (filesystem::path filename : DirectoryIterable (WellKnownLocations::GetTemporary ())) {
+            DbgTrace (L"filename = %s", Characters::ToString (filename).c_str ());
         }
         {
             Debug::TraceContextBumper                      ctx1 ("test-known-dir");
