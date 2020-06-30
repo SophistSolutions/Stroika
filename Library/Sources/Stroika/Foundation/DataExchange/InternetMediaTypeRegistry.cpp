@@ -140,7 +140,7 @@ shared_ptr<InternetMediaTypeRegistry::IBackendRep> InternetMediaTypeRegistry::De
     catch (...) {
         // LOG/WRN
     }
-    return BakedInDefaultBackend ();    // always works (but sucks)
+    return BakedInDefaultBackend (); // always works (but sucks)
 }
 
 #if qPlatform_Windows
@@ -442,7 +442,7 @@ auto InternetMediaTypeRegistry::BakedInDefaultBackend () -> shared_ptr<IBackendR
 
         BakedInTypesRep_ ()
         {
-            for (auto i : initializer_list<pair<InternetMediaType, FileSuffixType>> {
+            for (auto i : initializer_list<pair<InternetMediaType, FileSuffixType>>{
                      {InternetMediaTypes::kText_PLAIN, L".txt"},
                      {InternetMediaTypes::kText_HTML, L".htm"},
                      {InternetMediaTypes::kText_HTML, L".html"},
