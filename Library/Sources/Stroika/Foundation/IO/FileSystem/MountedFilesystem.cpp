@@ -93,7 +93,7 @@ namespace {
         [[maybe_unused]] auto&&           critSec = lock_guard{sMutex_};
         [[maybe_unused]] auto&&           cleanup = Execution::Finally ([&] () noexcept { ::endfsent (); });
         while (fstab* fs = ::getfsent ()) {
-            results += MountedFilesystemType{fs->fs_file, Containers::Set<String>{String::FromNarrowSDKString (fs->fs_spec)}, String::FromNarrowSDKString (fs->fs_vfstype)};
+            results += MountedFilesystemType{fs->fs_file, Containers::Set<filesystem::path>{fs->fs_spec}, String::FromNarrowSDKString (fs->fs_vfstype)};
         }
         return results;
     }
