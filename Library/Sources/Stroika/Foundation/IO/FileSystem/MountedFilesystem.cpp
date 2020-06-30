@@ -93,7 +93,7 @@ namespace {
         [[maybe_unused]] auto&&           critSec = lock_guard{sMutex_};
         [[maybe_unused]] auto&&           cleanup = Execution::Finally ([&] () noexcept { ::endfsent (); });
         while (fstab* fs = ::getfsent ()) {
-            results += MountedFilesystemType{String::FromNarrowSDKString (fs->fs_file), Containers::Set<String>{String::FromNarrowSDKString (fs->fs_spec)}, String::FromNarrowSDKString (fs->fs_vfstype)};
+            results += MountedFilesystemType{fs->fs_file, Containers::Set<String>{String::FromNarrowSDKString (fs->fs_spec)}, String::FromNarrowSDKString (fs->fs_vfstype)};
         }
         return results;
     }
@@ -132,7 +132,7 @@ namespace {
                 if (devName.StartsWith (L"/")) {
                     IgnoreExceptionsExceptThreadInterruptForCall (devName = IO::FileSystem::FromPath (filesystem::canonical (IO::FileSystem::ToPath (devName))));
                 }
-                String                       mountedAt = line[1];
+                filesystem::path             mountedAt = ToPath (line[1]);
                 String                       fstype    = line[2];
                 static const String_Constant kNone_{L"none"};
                 results.Add (MountedFilesystemType{mountedAt, devName == kNone_ ? Set<String>{} : Set<String>{devName}, fstype}); // special name none often used when there is no name
@@ -262,7 +262,7 @@ namespace {
                 }
                 else {
                     for (const TCHAR* NameIdx = volPathsBuf; NameIdx[0] != L'\0'; NameIdx += Characters::CString::Length (NameIdx) + 1) {
-                        v.fMountedOn = String::FromSDKString (NameIdx);
+                        v.fMountedOn = filesystem::path (NameIdx);
                         results.Add (v);
                     }
                 }
@@ -289,7 +289,7 @@ String MountedFilesystemType::ToString () const
 {
     StringBuilder sb;
     sb += L"{";
-    sb += L"Mounted-On: '" + fMountedOn + L"', ";
+    sb += L"Mounted-On: " + Characters::ToString (fMountedOn) + L", ";
     if (fDevicePaths) {
         sb += L"Device-Paths: " + Characters::ToString (*fDevicePaths) + L", ";
     }

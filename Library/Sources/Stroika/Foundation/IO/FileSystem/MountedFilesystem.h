@@ -48,7 +48,7 @@ namespace Stroika::Foundation::IO::FileSystem {
          *
          *  On unix, it mighth be a place like '/', or '/mnt/usbdisk1'.
          */
-        String fMountedOn;
+        filesystem::path fMountedOn;
 
         /**
          * on UNIX, this is the device path to the raw disk mounted onto.
