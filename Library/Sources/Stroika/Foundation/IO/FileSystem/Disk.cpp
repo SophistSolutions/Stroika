@@ -15,6 +15,8 @@
 #include "../../Characters/ToString.h"
 #include "../../Memory/SmallStackBuffer.h"
 
+#include "PathName.h"
+
 #include "Disk.h"
 
 using namespace Stroika::Foundation;
@@ -222,12 +224,12 @@ namespace {
 #endif
 
 namespace {
-    String GetPhysNameForDriveNumber_ (unsigned int i)
+    filesystem::path GetPhysNameForDriveNumber_ (unsigned int i)
     {
         // This format is NOT super well documented, and was mostly derived from reading the remarks section
         // of https://msdn.microsoft.com/en-us/library/windows/desktop/aa363216%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396
         // (DeviceIoControl function)
-        return Characters::Format (L"\\\\.\\PhysicalDrive%d", i);
+        return IO::FileSystem::ToPath (Characters::Format (L"\\\\.\\PhysicalDrive%d", i));
     }
 }
 Collection<DiskInfoType> FileSystem::GetAvailableDisks ()
