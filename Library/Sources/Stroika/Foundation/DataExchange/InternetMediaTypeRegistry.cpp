@@ -134,7 +134,13 @@ shared_ptr<InternetMediaTypeRegistry::IBackendRep> InternetMediaTypeRegistry::De
     catch (...) {
         // LOG/WRN
     }
-    return EtcMimeTypesDefaultBackend ();
+    try {
+        return EtcMimeTypesDefaultBackend ();
+    }
+    catch (...) {
+        // LOG/WRN
+    }
+    return BakedInDefaultBackend ();    // always works (but sucks)
 }
 
 #if qPlatform_Windows
@@ -424,6 +430,57 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
         }
     };
     return make_shared<UsrShareMIMERep_> ();
+}
+
+auto InternetMediaTypeRegistry::BakedInDefaultBackend () -> shared_ptr<IBackendRep>
+{
+    Debug::TraceContextBumper ctx{"InternetMediaTypeRegistry::BakedInDefaultBackend"};
+    struct BakedInTypesRep_ : IBackendRep {
+        // NOTE - we cannot use Bijection, because multiple media-types can map to a single filetype and not all mediatypes have a filetype
+        Mapping<FileSuffixType, InternetMediaType> fSuffix2MediaTypeMap_;
+        Mapping<InternetMediaType, FileSuffixType> fMediaType2PreferredSuffixMap_;
+
+        BakedInTypesRep_ ()
+        {
+            for (auto i : initializer_list<pair<InternetMediaType, FileSuffixType>> {
+                     {InternetMediaTypes::kText_PLAIN, L".txt"},
+                     {InternetMediaTypes::kText_HTML, L".htm"},
+                     {InternetMediaTypes::kText_HTML, L".html"},
+                     {InternetMediaTypes::kJSON, L".json"},
+                 }) {
+                fSuffix2MediaTypeMap_.AddIf (i.second, i.first);
+                fMediaType2PreferredSuffixMap_.AddIf (i.first, i.second);
+            }
+        }
+        virtual optional<FileSuffixType> GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const override
+        {
+            if (auto o = fMediaType2PreferredSuffixMap_.Lookup (ct)) {
+                return *o;
+            }
+            return nullopt;
+        }
+        virtual Set<FileSuffixType> GetAssociatedFileSuffixes (const InternetMediaType& ct) const override
+        {
+            Set<String> result;
+            if (auto i = fMediaType2PreferredSuffixMap_.Lookup (ct)) {
+                result += *i;
+            }
+            return result;
+        }
+        virtual optional<String> GetAssociatedPrettyName (const InternetMediaType& /*ct*/) const override
+        {
+            return nullopt; // not supported in this file
+        }
+        virtual optional<InternetMediaType> GetAssociatedContentType (const FileSuffixType& fileSuffix) const override
+        {
+            Require (fileSuffix[0] == '.');
+            if (auto o = fSuffix2MediaTypeMap_.Lookup (fileSuffix)) {
+                return *o;
+            }
+            return nullopt;
+        }
+    };
+    return make_shared<BakedInTypesRep_> ();
 }
 
 Set<InternetMediaType> InternetMediaTypeRegistry::GetMoreGeneralTypes (const InternetMediaType& ct) const

@@ -89,6 +89,16 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
+         *  Provides a handfull of hardwired values - enough to pass regression tests, but not a good choice.
+         *
+         *  Available everywhere
+         *
+         *  This is a terrible choice, but better than nothing.
+         */
+        static shared_ptr<IBackendRep> BakedInDefaultBackend ();
+
+    public:
+        /**
          *  Return the current global variable - current internet media type registry. Typically - use this.
 
          **** IN FUTURE VERISONS - THIS WILL BE CUSTOMIZABLE/EDITABLE, or copy copyable to a private copy you can edit/use
