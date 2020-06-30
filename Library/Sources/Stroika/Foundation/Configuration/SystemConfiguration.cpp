@@ -223,7 +223,7 @@ SystemConfiguration::BootInformation Configuration::GetSystemConfiguration_BootI
     {
         // @todo - I don't think /proc/uptime is POSIX ... NOT SURE HOW TO DEFINE THIS - MAYBE ONLY .... on LINUX?
         bool                  succeeded{false};
-        const String_Constant kProcUptimeFileName_{L"/proc/uptime"};
+        static const filesystem::path kProcUptimeFileName_{"/proc/uptime"};
         if (IO::FileSystem::Default ().Access (kProcUptimeFileName_)) {
             /*
              *  From https://www.centos.org/docs/5/html/5.1/Deployment_Guide/s2-proc-uptime.html
