@@ -330,7 +330,7 @@ namespace {
             Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> result;
             for (IO::FileSystem::MountedFilesystemType mi : IO::FileSystem::GetMountedFilesystems ()) {
                 MountedFilesystemInfoType vi;
-                String                    deviceName = (not mi.fDevicePaths.has_value () or mi.fDevicePaths->empty ()) ? String{} : mi.fDevicePaths->Nth (0);
+                String                    deviceName = (not mi.fDevicePaths.has_value () or mi.fDevicePaths->empty ()) ? String{} : IO::FileSystem::FromPath (mi.fDevicePaths->Nth (0));
                 if (not deviceName.empty ()) {
                     vi.fDeviceOrVolumeName = deviceName;
                 }
@@ -518,7 +518,7 @@ namespace {
                 if (v.fSizeInBytes and v.fUsedSizeInBytes) {
                     v.fAvailableSizeInBytes = *v.fSizeInBytes - *v.fUsedSizeInBytes;
                 }
-                result.Add (l[5].Trim (), v);
+                result.Add (IO::FileSystem::ToPath (l[5].Trim ()), v);
             }
             // Sometimes (with busy box df especially) we get bogus error return. So only rethrow if we found no good data
             if (runException and result.empty ()) {
