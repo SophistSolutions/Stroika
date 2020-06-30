@@ -27,6 +27,7 @@
 #include "../Containers/SortedMapping.h"
 #include "../Containers/SortedSet.h"
 #include "../Execution/Synchronized.h"
+#include "../IO/FileSystem/Common.h"
 #include "../IO/Network/InternetAddress.h"
 #include "../IO/Network/URI.h"
 #include "../Memory/Common.h"
@@ -398,6 +399,7 @@ namespace Stroika::Foundation::DataExchange {
          *      o   signed char, short int, int, long int, long long int
          *      o   unsigned char, unsigned short int, unsigned int, unsigned long int, unsigned long long int
          *      o   float, double, long double
+         *      o   std::filesystem::path
          *      o   Date
          *      o   DateTime
          *      o   Duration
@@ -875,6 +877,8 @@ namespace Stroika::Foundation::DataExchange {
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<double> ();
     template <>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<long double> ();
+    template <>
+    ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<filesystem::path> ();
     template <>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Time::Date> ();
     template <>

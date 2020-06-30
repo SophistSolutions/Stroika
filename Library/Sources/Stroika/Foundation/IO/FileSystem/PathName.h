@@ -144,19 +144,20 @@ namespace Stroika::Foundation::IO::FileSystem {
      *
      *  \req argument not empty string
      */
-    bool IsDirectoryName (const String& pathName);
+    [[deprecated ("Since Stroika 2.1b2, use filesystem::is_directory (not same - looks and sees if thing in filesystem is dir)")]] bool IsDirectoryName (const String& pathName);
 
     /**
      *  Convert Stroika String to std::filesystem::path
      */
-    path ToPath (const String& p);
+    path           ToPath (const String& p);
+    optional<path> ToPath (const optional<String>& p);
 
     /**
      *  Convert  std::filesystem::path to String Stroika String
-     *  \note like Characters::ToString () - but is for formatting display purposes, so may
-     *        surround the name with quotes - this does a straight conversion.
+     *  \note UNLIKE Characters::ToString () - so will NOT surround the name with quotes - this does a straight conversion.
      */
-    String FromPath (const path& p);
+    String           FromPath (const path& p);
+    optional<String> FromPath (const optional<path>& p);
 
 }
 

@@ -50,7 +50,7 @@ namespace {
             using DataExchange::InternetMediaTypeRegistry;
             // super primitive draft
             RequireNotNull (m);
-            String fn{ExtractFileName_ (m)};
+            filesystem::path fn{ExtractFileName_ (m)};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}...FileSystemRouter...HandleMessage", L"relURL='%s', serving fn='%s'", m->PeekRequest ()->GetURL ().GetAuthorityRelativeResource ().c_str (), fn.c_str ())};
 #endif
@@ -58,7 +58,7 @@ namespace {
                 Response&              response = *m->PeekResponse ();
                 InputStream<byte>::Ptr in{FileInputStream::New (fn)};
                 response.write (in.ReadAll ());
-                if (optional<InternetMediaType> oMediaType = InternetMediaTypeRegistry::sThe.GetAssociatedContentType (fn)) {
+                if (optional<InternetMediaType> oMediaType = InternetMediaTypeRegistry::sThe.GetAssociatedContentType (FromPath (fn))) {
                     response.SetContentType (*oMediaType);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace (L"content-type: %s", oMediaType->ToString ().c_str ());
@@ -77,7 +77,7 @@ namespace {
                 }
             }
         }
-        String ExtractFileName_ (const Message* m) const
+        filesystem::path ExtractFileName_ (const Message* m) const
         {
             const Request& request        = *m->PeekRequest ();
             String         urlHostRelPath = request.GetURL ().GetAbsPath<String> ().SubString (1);
@@ -96,7 +96,7 @@ namespace {
                 //@todo tmphack - need to try a bunch and look for 'access'
                 urlHostRelPath += fDefaultIndexFileNames[0];
             }
-            return (fFSRoot_ / filesystem::path (urlHostRelPath.As<wstring> ())).wstring ();
+            return (fFSRoot_ / filesystem::path (urlHostRelPath.As<wstring> ()));
         }
     };
 }

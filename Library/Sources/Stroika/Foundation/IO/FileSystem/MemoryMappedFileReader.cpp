@@ -42,7 +42,7 @@ using Execution::Platform::Windows::ThrowIfZeroGetLastError;
  ***************************** MemoryMappedFileReader ***************************
  ********************************************************************************
  */
-MemoryMappedFileReader::MemoryMappedFileReader (const String& fileName)
+MemoryMappedFileReader::MemoryMappedFileReader (const filesystem::path& fileName)
     : fFileDataStart_ (nullptr)
     , fFileDataEnd_ (nullptr)
 #if qPlatform_Windows
@@ -52,7 +52,7 @@ MemoryMappedFileReader::MemoryMappedFileReader (const String& fileName)
 {
 #if qPlatform_POSIX
     int fd = -1;
-    Execution::ThrowPOSIXErrNoIfNegative (fd = open (fileName.AsNarrowSDKString ().c_str (), O_RDONLY));
+    Execution::ThrowPOSIXErrNoIfNegative (fd = open (fileName.c_str (), O_RDONLY));
     size_t fileLength = IO::FileSystem::Default ().GetFileSize (fileName);
     //WRONG BUT NOT GROSSLY - @todo fix -- AssertNotImplemented (); // size of file - compute -- must check for overlflow and throw...
     //  offset must be a multiple of the page size as returned by sysconf(_SC_PAGE_SIZE). from http://linux.die.net/man/2/mmap
@@ -62,7 +62,7 @@ MemoryMappedFileReader::MemoryMappedFileReader (const String& fileName)
 #elif qPlatform_Windows
     try {
         // FILE_READ_DATA fails on WinME - generates ERROR_INVALID_PARAMETER - so use GENERIC_READ
-        fFileHandle_ = ::CreateFile (fileName.AsSDKString ().c_str (), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+        fFileHandle_ = ::CreateFile (fileName.c_str (), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
         if (fFileHandle_ == INVALID_HANDLE_VALUE) {
             Execution::ThrowSystemErrNo ();
         }

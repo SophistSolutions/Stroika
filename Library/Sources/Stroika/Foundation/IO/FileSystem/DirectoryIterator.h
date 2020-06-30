@@ -32,8 +32,10 @@ namespace Stroika::Foundation::IO::FileSystem {
      *  \note   DirectoryIterable will NOT return the special values '.' and '..' which would be returned from readdir
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *
+     *  \note PROBBALY GOING TO DEPRECATE IN FAVOR OF https://en.cppreference.com/w/cpp/filesystem/directory_iterator -- LGP 2020-06-29
      */
-    class DirectoryIterator : public Traversal::Iterator<String> {
+    class DirectoryIterator : public Traversal::Iterator<filesystem::path> {
     public:
         /**
          */
@@ -50,7 +52,7 @@ namespace Stroika::Foundation::IO::FileSystem {
     public:
         /**
          */
-        DirectoryIterator (const String& directory, IteratorReturnType iteratorReturns = IteratorReturnType::eDEFAULT);
+        DirectoryIterator (const filesystem::path& directory, IteratorReturnType iteratorReturns = IteratorReturnType::eDEFAULT);
 
     private:
         class Rep_;

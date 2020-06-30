@@ -187,7 +187,7 @@ namespace {
              *          We couuld read data and form a map so lookups faster. Or at least keep a list of items alreayd found and not
              *          look for them more, and stop when none left to look for (wont work if some like sreclaimable not found).
              */
-            static const String_Constant                           kProcMemInfoFileName_{L"/proc/meminfo"};
+            static const filesystem::path                          kProcMemInfoFileName_{"/proc/meminfo"};
             DataExchange::Variant::CharacterDelimitedLines::Reader reader{{':', ' ', '\t'}};
             // Note - /procfs files always unseekable
             optional<uint64_t> memTotal;
@@ -249,9 +249,9 @@ namespace {
                 return 0;
             };
             {
-                static const String_Constant kProcVMStatFileName_{L"/proc/vmstat"};
-                optional<uint64_t>           pgfault;
-                optional<uint64_t>           pgpgout;
+                static const filesystem::path kProcVMStatFileName_{"/proc/vmstat"};
+                optional<uint64_t>            pgfault;
+                optional<uint64_t>            pgpgout;
                 {
                     unsigned int nFound{};
                     // Note - /procfs files always unseekable

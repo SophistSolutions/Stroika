@@ -28,6 +28,7 @@
 
 #include "FileInputStream.h"
 #include "FileSystem.h"
+#include "PathName.h"
 
 #include "MountedFilesystem.h"
 
@@ -47,8 +48,8 @@ namespace {
     // This is quirky, and only works for Linux, and /proc/mounts
     struct Watcher_Proc_Mounts_ {
         int mfd;
-        Watcher_Proc_Mounts_ (const String& fn)
-            : mfd (::open (fn.AsNarrowSDKString ().c_str (), O_RDONLY, 0))
+        Watcher_Proc_Mounts_ (const filesystem::path& fn)
+            : mfd (::open (fn.c_str (), O_RDONLY, 0))
         {
         }
         ~Watcher_Proc_Mounts_ ()
@@ -129,7 +130,7 @@ namespace {
                 // procfs/mounts often contains symbolic links to device files
                 // e.g. /dev/disk/by-uuid/e1d70192-1bb0-461d-b89f-b054e45bfa00
                 if (devName.StartsWith (L"/")) {
-                    IgnoreExceptionsExceptThreadInterruptForCall (devName = IO::FileSystem::Default ().CanonicalizeName (devName));
+                    IgnoreExceptionsExceptThreadInterruptForCall (devName = IO::FileSystem::FromPath (filesystem::canonical (IO::FileSystem::ToPath (devName))));
                 }
                 String                       mountedAt = line[1];
                 String                       fstype    = line[2];
@@ -145,7 +146,7 @@ namespace {
     Collection<MountedFilesystemType> ReadMountInfo_FromProcFSMounts_ ()
     {
         // Note - /procfs files always unseekable
-        static const String_Constant kUseFile2List_{L"/proc/mounts"};
+        static const filesystem::path kUseFile2List_{"/proc/mounts"};
         // https://stroika.atlassian.net/browse/STK-665
         // kUseWatcher_ seems safe and much faster. But on gcc8, produces a mysterious error with address sanitizer, do disable
         // for now
@@ -174,7 +175,7 @@ namespace {
     Collection<MountedFilesystemType> ReadMountInfo_ETC_MTAB_ ()
     {
         // Note - /procfs files always unseekable and this is sklink to /procfs
-        static const String_Constant kUseFile2List_{L"/etc/mtab"};
+        static const filesystem::path kUseFile2List_{"/etc/mtab"};
         return ReadMountInfo_MTabLikeFile_ (FileInputStream::New (kUseFile2List_, FileInputStream::eNotSeekable));
     }
 }

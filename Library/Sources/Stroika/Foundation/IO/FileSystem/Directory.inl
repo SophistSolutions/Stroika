@@ -9,21 +9,23 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "PathName.h"
+
 namespace Stroika::Foundation::IO::FileSystem {
 
     template <>
     inline String Directory::As () const
     {
-        return fFileFullPath_;
+        return FromPath (fFileFullPath_);
     }
     template <>
     inline wstring Directory::As () const
     {
-        return fFileFullPath_.As<wstring> ();
+        return FromPath (fFileFullPath_).As<wstring> ();
     }
     inline SDKString Directory::AsSDKString () const
     {
-        return fFileFullPath_.AsSDKString ();
+        return FromPath (fFileFullPath_).AsSDKString ();
     }
 
 }

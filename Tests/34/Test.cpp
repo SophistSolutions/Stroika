@@ -42,7 +42,7 @@ namespace {
             using PersistenceScanAuxDataType_ = Mapping<String, String>;
             struct DB {
             public:
-                DB (const String& testDBFile)
+                DB (const filesystem::path& testDBFile)
                 {
                     bool created = false;
                     try {
@@ -209,7 +209,7 @@ namespace {
             };
             {
                 // re-open the file several times and assure right number of records present
-                String dbFileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"foo.db";
+                filesystem::path dbFileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "foo.db";
                 IO::FileSystem::Default ().RemoveFileIf (dbFileName);
                 for (unsigned int i = 0; i < 5; ++i) {
                     PRIVATE_::DB db{dbFileName};

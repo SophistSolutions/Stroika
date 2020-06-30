@@ -37,6 +37,7 @@
 #include "../../Foundation/Execution/Synchronized.h"
 #include "../../Foundation/Execution/Throw.h"
 #include "../../Foundation/Execution/TimeOutException.h"
+#include "../../Foundation/IO/FileSystem/PathName.h"
 #include "../../Foundation/IO/FileSystem/WellKnownLocations.h"
 #include "../../Foundation/Memory/SmallStackBuffer.h"
 #include "../../Foundation/Streams/iostream/FStreamSupport.h"
@@ -690,7 +691,7 @@ void Main::BasicUNIXServiceImpl::_RunAsService ()
     [[maybe_unused]] auto&& cleanup = Execution::Finally (
         [this] () noexcept {
             Thread::SuppressInterruptionInContext suppressThreadInterupts;
-            (void)::unlink (_GetPIDFileName ().AsSDKString ().c_str ());
+            (void)::unlink (_GetPIDFileName ().c_str ());
         });
     {
         ofstream out;
@@ -698,10 +699,10 @@ void Main::BasicUNIXServiceImpl::_RunAsService ()
         out << Execution::GetCurrentProcessID () << endl;
     }
     if (_GetServicePID () <= 0) {
-        Execution::Throw (Execution::Exception (Characters::Format (L"Unable to create process ID tracking file %s", _GetPIDFileName ().c_str ())));
+        Execution::Throw (Execution::Exception (Characters::Format (L"Unable to create process ID tracking file %s", IO::FileSystem::FromPath (_GetPIDFileName ()).c_str ())));
     }
     if (_GetServicePID () != Execution::GetCurrentProcessID ()) {
-        Execution::Throw (Execution::Exception (Characters::Format (L"Unable to create process ID tracking file %s (race?)", _GetPIDFileName ().c_str ())));
+        Execution::Throw (Execution::Exception (Characters::Format (L"Unable to create process ID tracking file %s (race?)", IO::FileSystem::FromPath (_GetPIDFileName ()).c_str ())));
     }
     fRunThread_.load ().Join ();
 }
@@ -770,7 +771,7 @@ void Main::BasicUNIXServiceImpl::_Stop (Time::DurationSecondsType timeout)
         }
         // in case not cleanly stopped before
         // @todo RETHINK - not really necessary and a possible race (if lots of starts/stops done)
-        (void)::unlink (_GetPIDFileName ().AsSDKString ().c_str ());
+        (void)::unlink (_GetPIDFileName ().c_str ());
     }
 }
 
@@ -783,12 +784,12 @@ void Main::BasicUNIXServiceImpl::_ForcedStop (Time::DurationSecondsType timeout)
         Execution::ThrowPOSIXErrNoIfNegative (::kill (_GetServicePID (), SIGKILL));
     }
     // REALY should WAIT for server to stop and only do this it fails -
-    (void)::unlink (_GetPIDFileName ().AsSDKString ().c_str ());
+    (void)::unlink (_GetPIDFileName ().c_str ());
 }
 
 pid_t Main::BasicUNIXServiceImpl::_GetServicePID () const
 {
-    ifstream in (_GetPIDFileName ().AsSDKString ().c_str ());
+    ifstream in (_GetPIDFileName ().c_str ());
     if (in) {
         pid_t n = 0;
         in >> n;
@@ -813,16 +814,16 @@ void Main::BasicUNIXServiceImpl::SetupSignalHanlders_ (bool install)
     }
 }
 
-String Main::BasicUNIXServiceImpl::_GetPIDFileName () const
+filesystem::path Main::BasicUNIXServiceImpl::_GetPIDFileName () const
 {
-    return IO::FileSystem::WellKnownLocations::GetRuntimeVariableData () + fAppRep_.load ()->GetServiceDescription ().fRegistrationName + L".pid"sv;
+    return IO::FileSystem::WellKnownLocations::GetRuntimeVariableData () / IO::FileSystem::ToPath (fAppRep_.load ()->GetServiceDescription ().fRegistrationName + L".pid"sv);
 }
 
 void Main::BasicUNIXServiceImpl::_CleanupDeadService ()
 {
     Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::_CleanupDeadService");
     // REALY should WAIT for server to stop and only do this it fails -
-    (void)::unlink (_GetPIDFileName ().AsSDKString ().c_str ());
+    (void)::unlink (_GetPIDFileName ().c_str ());
 }
 
 void Main::BasicUNIXServiceImpl::SignalHandler_ (SignalID signum)

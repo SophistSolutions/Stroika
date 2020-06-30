@@ -252,7 +252,7 @@ namespace {
             using Characters::String2Float;
             using IO::FileSystem::FileInputStream;
             DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
-            const String_Constant                                  kFileName_{L"/proc/stat"};
+            static const filesystem::path                          kFileName_{"/proc/stat"};
             // Note - /procfs files always unseekable
             for (Sequence<String> line : reader.ReadMatrix (FileInputStream::New (kFileName_, FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

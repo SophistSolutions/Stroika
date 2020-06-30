@@ -9,6 +9,7 @@
 #include "../Containers/MultiSet.h"
 #include "../Cryptography/Encoding/Algorithm/Base64.h"
 #include "../Debug/Trace.h"
+#include "../IO/FileSystem/PathName.h"
 #include "../Time/Date.h"
 #include "../Time/DateRange.h"
 #include "../Time/DateTime.h"
@@ -173,6 +174,20 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<long double> ()
 }
 
 template <>
+TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<filesystem::path> ()
+{
+    FromObjectMapperType<filesystem::path> fromObjectMapper = [] (const ObjectVariantMapper&, const filesystem::path* fromObjOfTypeT) -> VariantValue {
+        RequireNotNull (fromObjOfTypeT);
+        return VariantValue (IO::FileSystem::FromPath (*fromObjOfTypeT));
+    };
+    ToObjectMapperType<filesystem::path> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, filesystem::path* intoObjOfTypeT) -> void {
+        RequireNotNull (intoObjOfTypeT);
+        *intoObjOfTypeT = IO::FileSystem::ToPath (d.As<String> ());
+    };
+    return TypeMappingDetails{typeid (filesystem::path), fromObjectMapper, toObjectMapper};
+}
+
+template <>
 TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Time::Date> ()
 {
     return mkSerializerInfo_<Time::Date, Time::Date> ();
@@ -334,6 +349,7 @@ namespace {
             ObjectVariantMapper::MakeCommonSerializer<float> (),
             ObjectVariantMapper::MakeCommonSerializer<double> (),
             ObjectVariantMapper::MakeCommonSerializer<long double> (),
+            ObjectVariantMapper::MakeCommonSerializer<filesystem::path> (),
             ObjectVariantMapper::MakeCommonSerializer<Date> (),
             ObjectVariantMapper::MakeCommonSerializer<DateTime> (),
             ObjectVariantMapper::MakeCommonSerializer<String> (),
@@ -361,6 +377,7 @@ namespace {
             ObjectVariantMapper::MakeCommonSerializer<optional<float>> (),
             ObjectVariantMapper::MakeCommonSerializer<optional<double>> (),
             ObjectVariantMapper::MakeCommonSerializer<optional<long double>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<filesystem::path>> (),
             ObjectVariantMapper::MakeCommonSerializer<optional<Date>> (),
             ObjectVariantMapper::MakeCommonSerializer<optional<DateTime>> (),
             ObjectVariantMapper::MakeCommonSerializer<optional<String>> (),

@@ -130,12 +130,12 @@ namespace {
         Variant::JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
-            IO::FileSystem::FileOutputStream::Ptr tmpFileStream = IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt");
+            IO::FileSystem::FileOutputStream::Ptr tmpFileStream = IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () / "t.txt");
             Variant::JSON::Writer ().Write (v, tmpFileStream);
         }
 
         if (kWrite2FileAsWell_) {
-            IO::FileSystem::FileInputStream::Ptr tmpFileStream = IO::FileSystem::FileInputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt");
+            IO::FileSystem::FileInputStream::Ptr tmpFileStream = IO::FileSystem::FileInputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () / "t.txt");
             SharedContactsConfig_                tmp2          = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (tmpFileStream));
         }
 
@@ -201,7 +201,7 @@ namespace {
         Variant::JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
-            String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt";
+            filesystem::path fileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "t.txt"sv;
             Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
             [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
         }
@@ -259,7 +259,7 @@ namespace {
         Variant::JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
-            String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"4.txt";
+            filesystem::path fileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "4.txt"sv;
             Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
             [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
         }
@@ -334,7 +334,7 @@ namespace {
             Variant::JSON::Writer ().Write (v, tmpStream);
 
             if (kWrite2FileAsWell_) {
-                String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"5.txt";
+                filesystem::path fileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "5.txt"sv;
                 Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
                 [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
             }
@@ -365,7 +365,7 @@ namespace {
             Variant::JSON::Writer ().Write (v, tmpStream);
 
             if (kWrite2FileAsWell_) {
-                String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"5.txt";
+                filesystem::path fileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "5.txt"sv;
                 Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
                 [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
             }
@@ -426,7 +426,7 @@ namespace {
         Variant::JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
-            String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"6.txt";
+            filesystem::path fileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "6.txt"sv;
             Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
             [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
         }
@@ -476,7 +476,7 @@ namespace {
         Variant::JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
-            String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"7.txt";
+            filesystem::path fileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "7.txt"sv;
             Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
             [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
         }
@@ -569,7 +569,7 @@ namespace {
         Variant::JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
-            String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"8.txt";
+            filesystem::path fileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "8.txt"sv;
             Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
             [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
         }
@@ -705,7 +705,7 @@ namespace {
         Variant::JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
-            String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"10.txt";
+            filesystem::path fileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "10.txt"sv;
             Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
             [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
         }
@@ -857,7 +857,7 @@ namespace {
             Variant::JSON::Writer ().Write (v, tmpStream);
 
             if (kWrite2FileAsWell_) {
-                String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"12.txt";
+                filesystem::path fileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "12.txt"sv;
                 Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
                 [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
             }

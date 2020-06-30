@@ -29,7 +29,7 @@ namespace Stroika::Foundation::IO::FileSystem {
      */
     class MemoryMappedFileReader {
     public:
-        MemoryMappedFileReader (const String& fileName);
+        MemoryMappedFileReader (const filesystem::path& fileName);
         MemoryMappedFileReader (const MemoryMappedFileReader&) = delete;
         ~MemoryMappedFileReader ();
 

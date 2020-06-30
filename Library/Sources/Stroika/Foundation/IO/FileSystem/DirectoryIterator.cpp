@@ -38,11 +38,11 @@ using Execution::ThrowPOSIXErrNo;
 // from https://www.gnu.org/software/libc/manual/html_node/Reading_002fClosing-Directory.html -
 // To distinguish between an end-of-directory condition or an error, you must set errno to zero before calling readdir.
 
-class DirectoryIterator::Rep_ : public Iterator<String>::IRep, private Debug::AssertExternallySynchronizedLock {
+class DirectoryIterator::Rep_ : public Iterator<filesystem::path>::IRep, private Debug::AssertExternallySynchronizedLock {
 private:
     IteratorReturnType fIteratorReturnType_;
     String             fDirName_;
-    String             fReportPrefix_;
+    filesystem::path   fReportPrefix_;
 #if qPlatform_POSIX
     DIR*    fDirIt_{nullptr};
     dirent* fCur_{nullptr};
@@ -55,7 +55,7 @@ public:
     Rep_ (const String& dir, IteratorReturnType iteratorReturns)
         : fIteratorReturnType_ (iteratorReturns)
         , fDirName_ (dir)
-        , fReportPrefix_ (mkReportPrefix_ (dir, iteratorReturns))
+        , fReportPrefix_ (mkReportPrefix_ (ToPath (dir), iteratorReturns))
 #if qPlatform_POSIX
         , fDirIt_
     {
@@ -78,13 +78,13 @@ public:
             }
         }
         if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR ("..")))) {
-            optional<String> tmphack;
+            optional<filesystem::path> tmphack;
             More (&tmphack, true);
         }
 #elif qPlatform_Windows
         fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
         while (fHandle_ != INVALID_HANDLE_VALUE and (CString::Equals (fFindFileData_.cFileName, SDKSTR (".")) or CString::Equals (fFindFileData_.cFileName, SDKSTR ("..")))) {
-            optional<String> tmphack;
+            optional<filesystem::path> tmphack;
             More (&tmphack, true);
         }
 #endif
@@ -93,7 +93,7 @@ public:
     Rep_ (const String& dirName, const optional<ino_t>& curInode, IteratorReturnType iteratorReturns)
         : fIteratorReturnType_ (iteratorReturns)
         , fDirName_ (dirName)
-        , fReportPrefix_ (mkReportPrefix_ (dirName, iteratorReturns))
+        , fReportPrefix_ (mkReportPrefix_ (ToPath (dirName), iteratorReturns))
         , fDirIt_{::opendir (dirName.AsSDKString ().c_str ())}
     {
         if (fDirIt_ == nullptr) {
@@ -113,7 +113,7 @@ public:
     Rep_ (const String& dir, const optional<String>& name, IteratorReturnType iteratorReturns)
         : fIteratorReturnType_ (iteratorReturns)
         , fDirName_ (dir)
-        , fReportPrefix_ (mkReportPrefix_ (dir, iteratorReturns))
+        , fReportPrefix_ (mkReportPrefix_ (ToPath (dir), iteratorReturns))
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"DirectoryIterator::Rep_::CTOR", L"'%s',name=%s", dir.c_str (), name.c_str ()};
@@ -121,7 +121,7 @@ public:
         if (name) {
             fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
             while (fHandle_ != INVALID_HANDLE_VALUE and String::FromSDKString (fFindFileData_.cFileName) != name) {
-                optional<String> tmphack;
+                optional<filesystem::path> tmphack;
                 More (&tmphack, true);
             }
         }
@@ -139,7 +139,7 @@ public:
         }
 #endif
     }
-    virtual void More (optional<String>* result, bool advance) override
+    virtual void More (optional<filesystem::path>* result, bool advance) override
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         RequireNotNull (result);
@@ -162,7 +162,7 @@ public:
             }
         }
         if (fCur_ != nullptr) {
-            *result = fReportPrefix_ + String::FromSDKString (fCur_->d_name);
+            *result = fReportPrefix_ / fCur_->d_name;
         }
 #elif qPlatform_Windows
         if (advance) {
@@ -178,11 +178,11 @@ public:
             }
         }
         if (fHandle_ != INVALID_HANDLE_VALUE) {
-            *result = fReportPrefix_ + String::FromSDKString (fFindFileData_.cFileName);
+            *result = fReportPrefix_ / fFindFileData_.cFileName;
         }
 #endif
     }
-    virtual bool Equals (const Iterator<String>::IRep* rhs) const override
+    virtual bool Equals (const Iterator<filesystem::path>::IRep* rhs) const override
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         RequireNotNull (rhs);
@@ -245,18 +245,18 @@ public:
     }
 
 private:
-    static String mkReportPrefix_ (const String& dirName, IteratorReturnType iteratorReturns)
+    static filesystem::path mkReportPrefix_ (const filesystem::path& dirName, IteratorReturnType iteratorReturns)
     {
         switch (iteratorReturns) {
             case IteratorReturnType::eFilenameOnly:
-                return String{};
+                return filesystem::path{};
             case IteratorReturnType::eDirPlusFilename:
-                return AssureDirectoryPathSlashTerminated (dirName);
+                return dirName;
             case IteratorReturnType::eFullPathName:
-                return AssureDirectoryPathSlashTerminated (IO::FileSystem::Default ().GetFullPathName (dirName));
+                return IO::FileSystem::Default ().GetFullPathName (dirName);
             default:
                 AssertNotReached ();
-                return String{};
+                return filesystem::path{};
         }
     }
 };
@@ -266,7 +266,7 @@ private:
  ******************** IO::FileSystem::DirectoryIterator *************************
  ********************************************************************************
  */
-DirectoryIterator::DirectoryIterator (const String& directoryName, IteratorReturnType iteratorReturns)
-    : Iterator<String> (MakeSmartPtr<Rep_> (directoryName, iteratorReturns))
+DirectoryIterator::DirectoryIterator (const filesystem::path& directoryName, IteratorReturnType iteratorReturns)
+    : Iterator<filesystem::path> (MakeSmartPtr<Rep_> (ToString (directoryName), iteratorReturns))
 {
 }

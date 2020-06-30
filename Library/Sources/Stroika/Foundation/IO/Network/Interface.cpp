@@ -283,7 +283,7 @@ namespace {
             try {
 #if qPlatform_Linux
                 DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
-                const String_Constant                                  kFileName_{L"/proc/net/route"};
+                static const filesystem::path                          kFileName_{"/proc/net/route"};
                 /*
                  * EXAMPLE OUTPUT:
                  *        cat /proc/net/route
@@ -411,7 +411,7 @@ namespace {
 #if qPlatform_Linux
                 auto checkCarrierKnownSet = [] (const char* id) -> bool {
                     try {
-                        auto         fs = FileInputStream::New (String::FromNarrowSDKString (string{"/sys/class/net/"} + id), FileInputStream::eNotSeekable);
+                        auto         fs = FileInputStream::New (filesystem::path ("/sys/class/net") / id, FileInputStream::eNotSeekable);
                         Memory::BLOB b  = fs.ReadAll ();
                         if (b.size () >= 1 and b[0] == static_cast<byte> ('1')) {
                             return true;

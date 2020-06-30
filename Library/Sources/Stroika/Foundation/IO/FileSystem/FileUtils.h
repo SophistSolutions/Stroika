@@ -34,9 +34,11 @@ namespace Stroika::Foundation::IO::FileSystem {
 
     String FileSizeToDisplayString (FileOffset_t bytes);
 
-    void SetFileAccessWideOpened (const String& filePathName);
+    void SetFileAccessWideOpened (const filesystem::path& filePathName);
 
     /*
+     * Possibly useful, even after using std::filesystem, as I dont think supported in std::filesystem.
+     *
         * CreateDirectory makes sure the directory with the given name exists on the filesystem. If it already exists, this is NOT an error.
         * If it already exists, but is a FILE (anything but a directory) - then it is an error).
         *
@@ -48,17 +50,21 @@ namespace Stroika::Foundation::IO::FileSystem {
         *          TODO:
         *              (o) We need an overload which takes the directory permissions as argument.
         */
-    void CreateDirectory (const String& directoryPath, bool createParentComponentsIfNeeded = true);
+    void CreateDirectory (const filesystem::path& directoryPath, bool createParentComponentsIfNeeded = true);
 
-    void CreateDirectoryForFile (const String& filePath);
+    void CreateDirectoryForFile (const filesystem::path& filePath);
 
-    String GetVolumeName (const String& driveLetterAbsPath);
+    /**
+     * Possibly useful, even after using std::filesystem, as I dont think supported in std::filesystem.
+     * but @todo DOCUMENT WHAT THIS DOES ***
+     */
+    String GetVolumeName (const filesystem::path& driveLetterAbsPath);
 
-    vector<String> FindFiles (const String& path, const String& fileNameToMatch = L"*.*");
+    vector<String> FindFiles (const filesystem::path& path, const String& fileNameToMatch = L"*.*");
 
-    vector<String> FindFilesOneDirUnder (const String& path, const String& fileNameToMatch = L"*.*");
+    vector<String> FindFilesOneDirUnder (const filesystem::path& path, const String& fileNameToMatch = L"*.*");
 
-    void CopyFile (const String& srcFile, const String& destPath);
+    void CopyFile (const filesystem::path& srcFile, const filesystem::path& destPath);
 
 // COULD be made portable but alot of changes needed
 #if qPlatform_Windows
@@ -68,7 +74,7 @@ namespace Stroika::Foundation::IO::FileSystem {
         void operator= (const DirectoryChangeWatcher&) = delete;
 
     public:
-        DirectoryChangeWatcher (const String& directoryName, bool watchSubTree = false, DWORD notifyFilter = FILE_NOTIFY_CHANGE_LAST_WRITE);
+        DirectoryChangeWatcher (const filesystem::path& directoryName, bool watchSubTree = false, DWORD notifyFilter = FILE_NOTIFY_CHANGE_LAST_WRITE);
         virtual ~DirectoryChangeWatcher ();
 
     protected:

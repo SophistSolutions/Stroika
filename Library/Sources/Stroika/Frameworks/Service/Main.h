@@ -720,7 +720,7 @@ namespace Stroika::Frameworks::Service {
         virtual pid_t                                       _GetServicePID () const override;
 
     protected:
-        virtual String _GetPIDFileName () const;
+        virtual filesystem::path _GetPIDFileName () const;
 
     protected:
         // Called internally when - for example - asked to start and we find there are already lock files etc from

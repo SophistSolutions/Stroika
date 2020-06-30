@@ -10,6 +10,7 @@
 
 #include "../Characters/String.h"
 #include "../Configuration/Version.h"
+#include "../IO/FileSystem/Common.h"
 #include "../Memory/BLOB.h"
 
 #include "Variant/Reader.h"
@@ -95,7 +96,7 @@ namespace Stroika::Foundation::DataExchange {
     public:
         /**
          */
-        using ModuleNameToFileNameMapperType = function<String (const String& moduleName, const String& fileSuffix)>;
+        using ModuleNameToFileNameMapperType = function<filesystem::path (const String& moduleName, const String& fileSuffix)>;
 
     public:
         /**
@@ -229,8 +230,8 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual void Write (const T& optionsObject);
 
     private:
-        nonvirtual String GetReadFilePath_ () const;
-        nonvirtual String GetWriteFilePath_ () const;
+        nonvirtual filesystem::path GetReadFilePath_ () const;
+        nonvirtual filesystem::path GetWriteFilePath_ () const;
 
     private:
         String                            fModuleName_;
@@ -259,10 +260,10 @@ namespace Stroika::Foundation::DataExchange {
             eWritingConfigFile_BecauseSomethingChanged,
             eFailedToWriteInUseValues,
         };
-        Msg              fMsg;
-        optional<String> fFileName;
+        Msg                        fMsg;
+        optional<filesystem::path> fFileName;
 
-        LoggerMessage (Msg msg, String fn);
+        LoggerMessage (Msg msg, const filesystem::path& fn);
         nonvirtual String FormatMessage () const;
     };
 

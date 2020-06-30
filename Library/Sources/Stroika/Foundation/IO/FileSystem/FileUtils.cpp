@@ -81,7 +81,7 @@ String IO::FileSystem::FileSizeToDisplayString (FileOffset_t bytes)
  *      Add 'Everyone' to have FULL ACCESS to the given argument file
  *
  */
-void IO::FileSystem::SetFileAccessWideOpened (const String& filePathName)
+void IO::FileSystem::SetFileAccessWideOpened (const filesystem::path& filePathName)
 {
 #if qPlatform_Windows
     static PACL pACL = nullptr; // Don't bother with ::LocalFree (pACL); - since we cache keeping this guy around for speed
@@ -115,13 +115,13 @@ void IO::FileSystem::SetFileAccessWideOpened (const String& filePathName)
 
     // Try to modify the object's DACL.
     [[maybe_unused]] DWORD dwRes = ::SetNamedSecurityInfo (
-        const_cast<SDKChar*> (filePathName.AsSDKString ().c_str ()), // name of the object
-        SE_FILE_OBJECT,                                              // type of object
-        DACL_SECURITY_INFORMATION,                                   // change only the object's DACL
-        nullptr, nullptr,                                            // don't change owner or group
-        pACL,                                                        // DACL specified
-        nullptr);                                                    // don't change SACL
-                                                                     // ignore error from this routine for now  - probably means either we don't have permissions or OS too old to support...
+        const_cast<SDKChar*> (filePathName.c_str ()), // name of the object
+        SE_FILE_OBJECT,                               // type of object
+        DACL_SECURITY_INFORMATION,                    // change only the object's DACL
+        nullptr, nullptr,                             // don't change owner or group
+        pACL,                                         // DACL specified
+        nullptr);                                     // don't change SACL
+                                                      // ignore error from this routine for now  - probably means either we don't have permissions or OS too old to support...
 #elif qPlatform_POSIX
     ////TODO: Somewhat PRIMITIVE - TMPHACK
     if (filePathName.empty ())
@@ -130,7 +130,7 @@ void IO::FileSystem::SetFileAccessWideOpened (const String& filePathName)
             Execution::Throw (Exception (make_error_code (errc::no_such_file_or_directory), L"bad filename"_k));
         }
     struct stat s;
-    IO::FileSystem::Exception::ThrowPOSIXErrNoIfNegative (::stat (filePathName.AsSDKString ().c_str (), &s), path (filePathName.As<wstring> ()));
+    IO::FileSystem::Exception::ThrowPOSIXErrNoIfNegative (::stat (filePathName.generic_string ().c_str (), &s), filePathName);
 
     mode_t desiredMode = (S_IRUSR | S_IRGRP | S_IROTH) | (S_IWUSR | S_IWGRP | S_IWOTH);
     if (S_ISDIR (s.st_mode)) {
@@ -140,9 +140,9 @@ void IO::FileSystem::SetFileAccessWideOpened (const String& filePathName)
     int result = 0;
     // Don't call chmod if mode is already open (because doing so could fail even though we already have what we wnat if were not the owner)
     if ((s.st_mode & desiredMode) != desiredMode) {
-        result = ::chmod (filePathName.AsSDKString ().c_str (), desiredMode);
+        result = ::chmod (filePathName.generic_string ().c_str (), desiredMode);
     }
-    IO::FileSystem::Exception::ThrowPOSIXErrNoIfNegative (result, path (filePathName.As<wstring> ()));
+    IO::FileSystem::Exception::ThrowPOSIXErrNoIfNegative (result, filePathName);
 #else
     AssertNotImplemented ();
 #endif
@@ -153,8 +153,9 @@ void IO::FileSystem::SetFileAccessWideOpened (const String& filePathName)
  ************************ FileSystem::CreateDirectory ***************************
  ********************************************************************************
  */
-void IO::FileSystem::CreateDirectory (const String& directoryPath, bool createParentComponentsIfNeeded)
+void IO::FileSystem::CreateDirectory (const filesystem::path& directoryPathOrig, bool createParentComponentsIfNeeded)
 {
+    String directoryPath = FromPath (directoryPathOrig);
     /*
      * TODO:
      *      (o)     This implementation is HORRIBLE!!!! Major cleanup required!
@@ -167,7 +168,7 @@ void IO::FileSystem::CreateDirectory (const String& directoryPath, bool createPa
         size_t index = directoryPath.find ('\\');
         while (index != -1 and index + 1 < directoryPath.length ()) {
             String parentPath = directoryPath.substr (0, index);
-            IgnoreExceptionsForCall (CreateDirectory (parentPath, false));
+            IgnoreExceptionsForCall (CreateDirectory (ToPath (parentPath), false));
             index = directoryPath.find ('\\', index + 1);
         }
     }
@@ -197,7 +198,7 @@ void IO::FileSystem::CreateDirectory (const String& directoryPath, bool createPa
         // Now go in reverse order - checking if the exist - and if so - stop going back
         for (auto i = paths.rbegin (); i != paths.rend (); ++i) {
             //NB: this avoids matching files - we know dir - cuz name ends in /
-            if (access (i->AsSDKString ().c_str (), R_OK) == 0) {
+            if (access (ToPath (*i).generic_string ().c_str (), R_OK) == 0) {
                 // ignore this one
             }
             else {
@@ -205,16 +206,16 @@ void IO::FileSystem::CreateDirectory (const String& directoryPath, bool createPa
                 int skipThisMany = (i - paths.rbegin ());
                 Assert (skipThisMany < paths.size ());
                 for (auto ii = paths.begin () + skipThisMany; ii != paths.end (); ++ii) {
-                    CreateDirectory (*ii, false);
+                    CreateDirectory (ToPath (*ii), false);
                 }
                 break;
             }
         }
     }
     // Horrible - needs CLEANUP!!! -- LGP 2011-09-26
-    if (::mkdir (directoryPath.AsSDKString ().c_str (), 0755) != 0) {
+    if (::mkdir (directoryPathOrig.generic_string ().c_str (), 0755) != 0) {
         if (errno != EEXIST) {
-            IO::FileSystem::Exception::ThrowPOSIXErrNo (errno, ToPath (directoryPath));
+            IO::FileSystem::Exception::ThrowPOSIXErrNo (errno, directoryPathOrig);
         }
     }
 #else
@@ -227,19 +228,19 @@ void IO::FileSystem::CreateDirectory (const String& directoryPath, bool createPa
  ******************* FileSystem::CreateDirectoryForFile *************************
  ********************************************************************************
  */
-void IO::FileSystem::CreateDirectoryForFile (const String& filePath)
+void IO::FileSystem::CreateDirectoryForFile (const filesystem::path& filePath)
 {
     if (filePath.empty ())
         [[UNLIKELY_ATTR]]
         {
             // NOT sure this is the best exception to throw here?
-            Execution::Throw (IO::FileSystem::Exception (make_error_code (errc::no_such_file_or_directory), path (filePath.As<wstring> ())));
+            Execution::Throw (IO::FileSystem::Exception (make_error_code (errc::no_such_file_or_directory), filePath));
         }
     if (IO::FileSystem::Default ().Access (filePath)) {
         // were done
         return;
     }
-    CreateDirectory (GetFileDirectory (filePath), true);
+    CreateDirectory (ToPath (GetFileDirectory (FromPath (filePath))), true);
 }
 
 /*
@@ -247,7 +248,7 @@ void IO::FileSystem::CreateDirectoryForFile (const String& filePath)
  ************************** FileSystem::GetVolumeName ***************************
  ********************************************************************************
  */
-String IO::FileSystem::GetVolumeName (const String& driveLetterAbsPath)
+String IO::FileSystem::GetVolumeName (const filesystem::path& driveLetterAbsPath)
 {
 #if qPlatform_Windows
     // SEM_FAILCRITICALERRORS needed to avoid dialog in call to GetVolumeInformation
@@ -257,7 +258,7 @@ String IO::FileSystem::GetVolumeName (const String& driveLetterAbsPath)
     SDKChar volNameBuf[1024]{};
     SDKChar igBuf[1024]{};
     BOOL    result = ::GetVolumeInformation (
-        AssureDirectoryPathSlashTerminated (driveLetterAbsPath).AsSDKString ().c_str (),
+        driveLetterAbsPath.c_str (),
         volNameBuf,
         static_cast<DWORD> (NEltsOf (volNameBuf)),
         nullptr,
@@ -279,7 +280,7 @@ String IO::FileSystem::GetVolumeName (const String& driveLetterAbsPath)
  ******************************* FileSystem::CopyFile ***************************
  ********************************************************************************
  */
-void IO::FileSystem::CopyFile (const String& srcFile, const String& destPath)
+void IO::FileSystem::CopyFile (const filesystem::path& srcFile, const filesystem::path& destPath)
 {
 #if qPlatform_Windows
     // see if can be/should be rewritten to use Win32 API of same name!!!
@@ -287,7 +288,7 @@ void IO::FileSystem::CopyFile (const String& srcFile, const String& destPath)
     // If I DON'T do that remapping to Win32 API, then redo this at least to copy / rename through tmpfile
     IO::FileSystem::Default ().CheckAccess (srcFile, IO::AccessMode::eRead);
     CreateDirectoryForFile (destPath);
-    ThrowIfZeroGetLastError (::CopyFile (destPath.AsSDKString ().c_str (), srcFile.AsSDKString ().c_str (), false));
+    ThrowIfZeroGetLastError (::CopyFile (destPath.c_str (), srcFile.c_str (), false));
 #else
     AssertNotImplemented ();
 #endif
@@ -298,14 +299,14 @@ void IO::FileSystem::CopyFile (const String& srcFile, const String& destPath)
  ***************************** FileSystem::FindFiles ****************************
  ********************************************************************************
  */
-vector<String> IO::FileSystem::FindFiles (const String& path, const String& fileNameToMatch)
+vector<String> IO::FileSystem::FindFiles (const filesystem::path& path, const String& fileNameToMatch)
 {
     vector<String> result;
     if (path.empty ()) {
         return result;
     }
 #if qPlatform_Windows
-    String          usePath       = AssureDirectoryPathSlashTerminated (path);
+    String          usePath       = AssureDirectoryPathSlashTerminated (FromPath (path));
     String          matchFullPath = usePath + (fileNameToMatch.empty () ? L"*" : fileNameToMatch);
     WIN32_FIND_DATA fd{};
     HANDLE          hFind = ::FindFirstFile (matchFullPath.AsSDKString ().c_str (), &fd);
@@ -335,7 +336,7 @@ vector<String> IO::FileSystem::FindFiles (const String& path, const String& file
  ************************* FileSystem::FindFilesOneDirUnder *********************
  ********************************************************************************
  */
-vector<String> IO::FileSystem::FindFilesOneDirUnder (const String& path, const String& fileNameToMatch)
+vector<String> IO::FileSystem::FindFilesOneDirUnder (const filesystem::path& path, const String& fileNameToMatch)
 {
     if (path.empty ()) {
         return vector<String> ();
@@ -343,7 +344,7 @@ vector<String> IO::FileSystem::FindFilesOneDirUnder (const String& path, const S
 
     Containers::Set<String> resultSet;
 #if qPlatform_Windows
-    String          usePath = AssureDirectoryPathSlashTerminated (path);
+    String          usePath = AssureDirectoryPathSlashTerminated (FromPath (path));
     WIN32_FIND_DATA fd;
     memset (&fd, 0, sizeof (fd));
     HANDLE hFind = ::FindFirstFile ((usePath + L"*").AsSDKString ().c_str (), &fd);
@@ -355,7 +356,7 @@ vector<String> IO::FileSystem::FindFilesOneDirUnder (const String& path, const S
                 static const String kDOT     = L"."sv;
                 static const String kDOTDOT  = L".."sv;
                 if ((fileName != kDOT) and (fileName != kDOTDOT)) {
-                    resultSet += Containers::Set<String> (FindFiles (usePath + fileName, fileNameToMatch));
+                    resultSet += Containers::Set<String> (FindFiles (ToPath (usePath) / ToPath (fileName), fileNameToMatch));
                 }
             }
         } while (::FindNextFile (hFind, &fd));
@@ -373,8 +374,8 @@ vector<String> IO::FileSystem::FindFilesOneDirUnder (const String& path, const S
  ********************* FileSystem::DirectoryChangeWatcher ***********************
  ********************************************************************************
  */
-IO::FileSystem::DirectoryChangeWatcher::DirectoryChangeWatcher (const String& directoryName, bool watchSubTree, DWORD notifyFilter)
-    : fDirectory (directoryName)
+IO::FileSystem::DirectoryChangeWatcher::DirectoryChangeWatcher (const filesystem::path& directoryName, bool watchSubTree, DWORD notifyFilter)
+    : fDirectory (FromPath (directoryName))
     , fWatchSubTree (watchSubTree)
     , fThread ()
     , fDoneEvent (::CreateEvent (nullptr, false, false, nullptr))

@@ -74,7 +74,7 @@ namespace Stroika::Foundation::IO::FileSystem {
      */
     class ThroughTmpFileWriter {
     public:
-        ThroughTmpFileWriter (const String& realFileName, const String& tmpSuffix = Characters::String_Constant{L".tmp"});
+        ThroughTmpFileWriter (const filesystem::path& realFileName, const String& tmpSuffix = Characters::String_Constant{L".tmp"});
         ThroughTmpFileWriter (const ThroughTmpFileWriter&) = delete;
         ~ThroughTmpFileWriter ();
 
@@ -84,18 +84,18 @@ namespace Stroika::Foundation::IO::FileSystem {
     public:
         /**
          */
-        nonvirtual String GetTmpFilePath () const;
+        nonvirtual filesystem::path GetTmpFilePath () const;
 
     public:
         /**
          */
-        nonvirtual String GetRealFilePath () const;
+        nonvirtual filesystem::path GetRealFilePath () const;
 
     public:
         /**
          *  Before commit this returns the tmpfile name. After commit returns the eventual file name.
          */
-        nonvirtual String GetFilePath () const;
+        nonvirtual filesystem::path GetFilePath () const;
 
     public:
         /**
@@ -105,8 +105,8 @@ namespace Stroika::Foundation::IO::FileSystem {
         nonvirtual void Commit ();
 
     private:
-        String fRealFilePath_;
-        String fTmpFilePath_;
+        filesystem::path fRealFilePath_;
+        filesystem::path fTmpFilePath_;
     };
 
 }

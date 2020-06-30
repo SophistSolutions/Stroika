@@ -291,87 +291,87 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
         using Characters::String2Int;
         using IO::FileSystem::FileInputStream;
         using Streams::TextReader;
-        const String kProcCPUInfoFileName_{L"/proc/cpuinfo"sv};
+        static const filesystem::path kProcCPUInfoFileName_{"/proc/cpuinfo"sv};
         /*
-        * Example 1:
-        *
-        *       #uname -a && cat /proc/cpuinfo
-        *       Linux lewis-UbuntuDevVM3 3.19.0-58-generic #64-Ubuntu SMP Thu Mar 17 18:30:04 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux
-        *       processor   : 0
-        *       vendor_id   : GenuineIntel
-        *       cpu family  : 6
-        *       model       : 60
-        *       model name  : Intel(R) Core(TM) i7-4810MQ CPU @ 2.80GHz
-        *       stepping    : 3
-        *       cpu MHz     : 2793.309
-        *       cache size  : 6144 KB
-        *       physical id : 0
-        *       siblings    : 2
-        *       core id     : 0
-        *       cpu cores   : 2
-        *       apicid      : 0
-        *       initial apicid  : 0
-        *       fpu     : yes
-        *       fpu_exception   : yes
-        *       cpuid level : 13
-        *       wp      : yes
-        *       flags       : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc pni pclmulqdq ssse3 cx16 sse4_1 sse4_2 movbe popcnt aes xsave avx rdrand lahf_lm abm
-        *       bugs        :
-        *       bogomips    : 5586.61
-        *       clflush size    : 64
-        *       cache_alignment : 64
-        *       address sizes   : 39 bits physical, 48 bits virtual
-        *       power management:
-        *
-        *       processor   : 1
-        *       vendor_id   : GenuineIntel
-        *       cpu family  : 6
-        *       model       : 60
-        *       model name  : Intel(R) Core(TM) i7-4810MQ CPU @ 2.80GHz
-        *       stepping    : 3
-        *       cpu MHz     : 2793.309
-        *       cache size  : 6144 KB
-        *       physical id : 0
-        *       siblings    : 2
-        *       core id     : 1
-        *       cpu cores   : 2
-        *       apicid      : 1
-        *       initial apicid  : 1
-        *       fpu     : yes
-        *       fpu_exception   : yes
-        *       cpuid level : 13
-        *       wp      : yes
-        *       flags       : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc pni pclmulqdq ssse3 cx16 sse4_1 sse4_2 movbe popcnt aes xsave avx rdrand lahf_lm abm
-        *       bugs        :
-        *       bogomips    : 5586.61
-        *       clflush size    : 64
-        *       cache_alignment : 64
-        *       address sizes   : 39 bits physical, 48 bits virtual
-        *       power management:
-        *
-        * Example 2:
-        *
-        *       root@q7imx6:/opt/BLKQCL# uname -a
-        *       Linux q7imx6 3.0.35.Q7_IMX6-14.03.01 #2 SMP PREEMPT Thu May 5 01:12:05 UTC 2016 armv7l GNU/Linux
-        *       root@q7imx6:/opt/BLKQCL# cat /proc/cpuinfo
-        *       Processor       : ARMv7 Processor rev 10 (v7l)
-        *       processor       : 0
-        *       BogoMIPS        : 1988.28
-        *
-        *       processor       : 1
-        *       BogoMIPS        : 1988.28
-        *
-        *       Features        : swp half thumb fastmult vfp edsp neon vfpv3
-        *       CPU implementer : 0x41
-        *       CPU architecture: 7
-        *       CPU variant     : 0x2
-        *       CPU part        : 0xc09
-        *       CPU revision    : 10
-        *
-        *       Hardware        : MSC Q7-IMX6 Module
-        *       Revision        : 63000
-        *       Serial          : 0000000000000000
-        */
+         * Example 1:
+         *
+         *       #uname -a && cat /proc/cpuinfo
+         *       Linux lewis-UbuntuDevVM3 3.19.0-58-generic #64-Ubuntu SMP Thu Mar 17 18:30:04 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux
+         *       processor   : 0
+         *       vendor_id   : GenuineIntel
+         *       cpu family  : 6
+         *       model       : 60
+         *       model name  : Intel(R) Core(TM) i7-4810MQ CPU @ 2.80GHz
+         *       stepping    : 3
+         *       cpu MHz     : 2793.309
+         *       cache size  : 6144 KB
+         *       physical id : 0
+         *       siblings    : 2
+         *       core id     : 0
+         *       cpu cores   : 2
+         *       apicid      : 0
+         *       initial apicid  : 0
+         *       fpu     : yes
+         *       fpu_exception   : yes
+         *       cpuid level : 13
+         *       wp      : yes
+         *       flags       : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc pni pclmulqdq ssse3 cx16 sse4_1 sse4_2 movbe popcnt aes xsave avx rdrand lahf_lm abm
+         *       bugs        :
+         *       bogomips    : 5586.61
+         *       clflush size    : 64
+         *       cache_alignment : 64
+         *       address sizes   : 39 bits physical, 48 bits virtual
+         *       power management:
+         *
+         *       processor   : 1
+         *       vendor_id   : GenuineIntel
+         *       cpu family  : 6
+         *       model       : 60
+         *       model name  : Intel(R) Core(TM) i7-4810MQ CPU @ 2.80GHz
+         *       stepping    : 3
+         *       cpu MHz     : 2793.309
+         *       cache size  : 6144 KB
+         *       physical id : 0
+         *       siblings    : 2
+         *       core id     : 1
+         *       cpu cores   : 2
+         *       apicid      : 1
+         *       initial apicid  : 1
+         *       fpu     : yes
+         *       fpu_exception   : yes
+         *       cpuid level : 13
+         *       wp      : yes
+         *       flags       : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc pni pclmulqdq ssse3 cx16 sse4_1 sse4_2 movbe popcnt aes xsave avx rdrand lahf_lm abm
+         *       bugs        :
+         *       bogomips    : 5586.61
+         *       clflush size    : 64
+         *       cache_alignment : 64
+         *       address sizes   : 39 bits physical, 48 bits virtual
+         *       power management:
+         *
+         * Example 2:
+         *
+         *       root@q7imx6:/opt/BLKQCL# uname -a
+         *       Linux q7imx6 3.0.35.Q7_IMX6-14.03.01 #2 SMP PREEMPT Thu May 5 01:12:05 UTC 2016 armv7l GNU/Linux
+         *       root@q7imx6:/opt/BLKQCL# cat /proc/cpuinfo
+         *       Processor       : ARMv7 Processor rev 10 (v7l)
+         *       processor       : 0
+         *       BogoMIPS        : 1988.28
+         *
+         *       processor       : 1
+         *       BogoMIPS        : 1988.28
+         *
+         *       Features        : swp half thumb fastmult vfp edsp neon vfpv3
+         *       CPU implementer : 0x41
+         *       CPU architecture: 7
+         *       CPU variant     : 0x2
+         *       CPU part        : 0xc09
+         *       CPU revision    : 10
+         *
+         *       Hardware        : MSC Q7-IMX6 Module
+         *       Revision        : 63000
+         *       Serial          : 0000000000000000
+         */
         // Note - /procfs files always unseekable
         optional<String>       foundProcessor;
         optional<unsigned int> currentProcessorID;

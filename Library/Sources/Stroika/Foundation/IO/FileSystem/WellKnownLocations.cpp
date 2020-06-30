@@ -68,7 +68,7 @@ String FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
         result += String_Constant (L"\\");
     }
     Ensure (result[result.size () - 1] == '\\');
-    Ensure (not createIfNotPresent or Directory (result).Exists ());
+    Ensure (not createIfNotPresent or filesystem::is_directory (ToPath (result)));
     return result;
 #else
     AssertNotImplemented ();
@@ -81,10 +81,10 @@ String FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
  ********* FileSystem::WellKnownLocations::GetSpoolDirectory ********************
  ********************************************************************************
  */
-String FileSystem::WellKnownLocations::GetSpoolDirectory ()
+filesystem::path FileSystem::WellKnownLocations::GetSpoolDirectory ()
 {
 #if qPlatform_POSIX
-    static const String_Constant kVarSpool_{L"/var/spool/"};
+    static const filesystem::path kVarSpool_{"/var/spool/"sv};
     return kVarSpool_;
 #elif qPlatform_Windows
     /// Not sure what better than FOLDERID_ProgramData / "Spool"???
@@ -100,11 +100,11 @@ String FileSystem::WellKnownLocations::GetSpoolDirectory ()
         result += SDKSTR ("\\");
     }
     Ensure (result[result.size () - 1] == '\\');
-    if (Directory (String::FromSDKString (result)).Exists ()) {
-        return String::FromSDKString (result);
+    if (filesystem::is_directory (filesystem::path (result))) {
+        return filesystem::path (result);
     }
     else {
-        return String ();
+        return filesystem::path ();
     }
 #else
     AssertNotImplemented ();
@@ -117,11 +117,11 @@ String FileSystem::WellKnownLocations::GetSpoolDirectory ()
  ******** FileSystem::WellKnownLocations::GetApplicationData ********************
  ********************************************************************************
  */
-String FileSystem::WellKnownLocations::GetApplicationData (bool createIfNotPresent)
+filesystem::path FileSystem::WellKnownLocations::GetApplicationData (bool createIfNotPresent)
 {
 #if qPlatform_POSIX
     // USED UNTIL STROIKA v2.0a207 - so watch out for older apps - backward compat - static String kVarLib_ = String_Constant{ L"/var/lib/" };
-    static const String_Constant kVarLib_{L"/var/opt/"};
+    static const filesystem::path kVarLib_{"/var/opt/"};
     return kVarLib_;
 #elif qPlatform_Windows
     SDKChar fileBuf[MAX_PATH]{};
@@ -136,8 +136,8 @@ String FileSystem::WellKnownLocations::GetApplicationData (bool createIfNotPrese
         result += SDKSTR ("\\");
     }
     Ensure (result[result.size () - 1] == '\\');
-    Ensure (not createIfNotPresent or Directory (String::FromSDKString (result)).Exists ());
-    return String::FromSDKString (result);
+    Ensure (not createIfNotPresent or filesystem::is_directory (result));
+    return result;
 #else
     AssertNotImplemented ();
     return String ();
@@ -149,10 +149,10 @@ String FileSystem::WellKnownLocations::GetApplicationData (bool createIfNotPrese
  ******** FileSystem::WellKnownLocations::GetRuntimeVariableData ****************
  ********************************************************************************
  */
-String FileSystem::WellKnownLocations::GetRuntimeVariableData ()
+filesystem::path FileSystem::WellKnownLocations::GetRuntimeVariableData ()
 {
 #if qPlatform_POSIX
-    static const String_Constant kResult_{L"/var/run/"};
+    static const filesystem::path kResult_{L"/var/run/"};
     return kResult_;
 #elif qPlatform_Windows
     return GetTemporary ();
@@ -168,21 +168,20 @@ String FileSystem::WellKnownLocations::GetRuntimeVariableData ()
  ************** FileSystem::WellKnownLocations::GetWinSxS ***********************
  ********************************************************************************
  */
-String FileSystem::WellKnownLocations::GetWinSxS ()
+filesystem::path FileSystem::WellKnownLocations::GetWinSxS ()
 {
     wchar_t fileBuf[MAX_PATH]{};
     Verify (::SHGetSpecialFolderPathW (nullptr, fileBuf, CSIDL_WINDOWS, false));
-    String result = fileBuf;
+    filesystem::path result = fileBuf;
     // Assure non-empty result
     if (result.empty ()) {
         return result;
     }
-    result = AssureDirectoryPathSlashTerminated (result) + String_Constant (L"WinSxS");
-    result = AssureDirectoryPathSlashTerminated (result);
-    if (not Directory (result).Exists ()) {
+    result /= "WinSxS";
+    if (not filesystem::is_directory (result)) {
         result.clear ();
     }
-    Ensure (result.empty () or Directory (result).Exists ());
+    Ensure (result.empty () or filesystem::is_directory (result));
     return result;
 }
 #endif
@@ -237,12 +236,12 @@ namespace {
     }
 }
 
-String FileSystem::WellKnownLocations::GetTemporary ()
+filesystem::path FileSystem::WellKnownLocations::GetTemporary ()
 {
     // Cacheable because the environment variables should be set externally.
     // This has the defect that it misses setenv calls, but that SB so rare,
     // and not clearly a bug we ignore subsequent changes...
-    static String kCachedResult_ = String::FromSDKString (GetTemporary_ ());
+    static filesystem::path kCachedResult_ = GetTemporary_ ();
     return kCachedResult_;
 }
 

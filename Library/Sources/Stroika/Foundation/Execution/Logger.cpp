@@ -475,7 +475,7 @@ struct Logger::FileAppender::Rep_ {
     using FileOutputStream = IO::FileSystem::FileOutputStream;
 
 public:
-    Rep_ (const String& fileName, bool truncateOnOpen)
+    Rep_ (const filesystem::path& fileName, bool truncateOnOpen)
         : fOut_ (StreamAppender (FileOutputStream::New (fileName, truncateOnOpen ? FileOutputStream::eStartFromStart : FileOutputStream::eAppend)))
     {
     }
@@ -488,7 +488,7 @@ private:
     StreamAppender fOut_; // no need to synchronize since our Logger::StreamAppender class is internally synchronized
 };
 
-Logger::FileAppender::FileAppender (const String& fileName, bool truncateOnOpen)
+Logger::FileAppender::FileAppender (const filesystem::path& fileName, bool truncateOnOpen)
     : fRep_ (make_shared<Rep_> (fileName, truncateOnOpen))
 {
 }

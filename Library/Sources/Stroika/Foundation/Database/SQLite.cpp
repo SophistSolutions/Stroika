@@ -183,17 +183,17 @@ Connection::Connection (const URI& dbURL, const function<void (Connection&)>& db
         }
 }
 
-Connection::Connection (const String& dbPath, const function<void (Connection&)>& dbInitializer)
+Connection::Connection (const filesystem::path& dbPath, const function<void (Connection&)>& dbInitializer)
 {
-    TraceContextBumper ctx ("SQLite::Connection::Connection");
+    TraceContextBumper ctx{"SQLite::Connection::Connection"};
     // @todo - code cleanup!!!
     int e;
-    if ((e = ::sqlite3_open_v2 (dbPath.AsUTF8 ().c_str (), &fDB_, SQLITE_OPEN_READWRITE, nullptr)) == SQLITE_CANTOPEN) {
+    if ((e = ::sqlite3_open_v2 (dbPath.generic_string ().c_str (), &fDB_, SQLITE_OPEN_READWRITE, nullptr)) == SQLITE_CANTOPEN) {
         if (fDB_ != nullptr) {
             Verify (::sqlite3_close (fDB_) == SQLITE_OK);
             fDB_ = nullptr;
         }
-        if ((e = ::sqlite3_open_v2 (dbPath.AsUTF8 ().c_str (), &fDB_, SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, nullptr)) == SQLITE_OK) {
+        if ((e = ::sqlite3_open_v2 (dbPath.generic_string ().c_str (), &fDB_, SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, nullptr)) == SQLITE_OK) {
             try {
                 dbInitializer (*this);
             }

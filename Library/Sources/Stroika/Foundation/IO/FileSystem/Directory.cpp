@@ -28,8 +28,10 @@
 #include "../../Containers/Common.h"
 #include "../../Debug/Trace.h"
 #include "../../Memory/SmallStackBuffer.h"
+
 #include "FileSystem.h"
 #include "FileUtils.h"
+#include "PathName.h"
 #include "WellKnownLocations.h"
 
 #include "Directory.h"
@@ -46,7 +48,7 @@ using namespace Stroika::Foundation::IO::FileSystem;
  ************************** IO::FileSystem::Directory ***************************
  ********************************************************************************
  */
-Directory::Directory (const String& fileFullPath)
+Directory::Directory (const filesystem::path& fileFullPath)
     : fFileFullPath_ (fileFullPath)
 {
 }
@@ -63,6 +65,9 @@ void Directory::AssureDeleted (bool autoDeleteContentsAsNeeded) const
 
 bool Directory::Exists () const
 {
+    std::error_code ignored{};
+    return filesystem::is_directory (fFileFullPath_, ignored);
+#if 0
 #if qPlatform_Windows
     DWORD attribs = ::GetFileAttributesW (fFileFullPath_.c_str ());
     if (attribs == INVALID_FILE_ATTRIBUTES) {
@@ -79,5 +84,6 @@ bool Directory::Exists () const
 #else
     AssertNotImplemented ();
     return false;
+#endif
 #endif
 }

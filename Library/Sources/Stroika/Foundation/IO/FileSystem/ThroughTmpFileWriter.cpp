@@ -21,6 +21,8 @@
 #include "../../Containers/Common.h"
 #include "../../Debug/Trace.h"
 
+#include "Exception.h"
+
 #include "ThroughTmpFileWriter.h"
 
 using namespace Stroika::Foundation;
@@ -40,9 +42,9 @@ using Execution::Platform::Windows::ThrowIfZeroGetLastError;
  ************************ FileSystem::ThroughTmpFileWriter **********************
  ********************************************************************************
  */
-ThroughTmpFileWriter::ThroughTmpFileWriter (const String& realFileName, const String& tmpSuffix)
-    : fRealFilePath_ (realFileName)
-    , fTmpFilePath_ (realFileName + tmpSuffix)
+ThroughTmpFileWriter::ThroughTmpFileWriter (const filesystem::path& realFileName, const String& tmpSuffix)
+    : fRealFilePath_{realFileName}
+    , fTmpFilePath_{realFileName.generic_wstring () + tmpSuffix.As<wstring> ()}
 {
     Require (not realFileName.empty ());
     Require (not tmpSuffix.empty ());
@@ -56,7 +58,7 @@ ThroughTmpFileWriter::~ThroughTmpFileWriter ()
 #if qPlatform_Windows
         (void)::DeleteFileW (fTmpFilePath_.c_str ());
 #elif qPlatform_POSIX
-        (void)::unlink (fTmpFilePath_.AsSDKString ().c_str ());
+        (void)::unlink (fTmpFilePath_.c_str ());
 #else
         AssertNotImplemented ();
 #endif
@@ -71,7 +73,7 @@ void ThroughTmpFileWriter::Commit ()
     auto            activity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"committing temporary file %s to %s", Characters::ToString (fTmpFilePath_).c_str (), Characters::ToString (fRealFilePath_).c_str ()); });
     DeclareActivity currentActivity{&activity};
 #if qPlatform_POSIX
-    ThrowPOSIXErrNoIfNegative (::rename (fTmpFilePath_.AsSDKString ().c_str (), fRealFilePath_.AsSDKString ().c_str ()));
+    FileSystem::Exception::ThrowPOSIXErrNoIfNegative (::rename (fTmpFilePath_.c_str (), fRealFilePath_.c_str ()), fTmpFilePath_, fRealFilePath_);
 #elif qPlatform_Windows
     try {
         ThrowIfZeroGetLastError (::MoveFileExW (fTmpFilePath_.c_str (), fRealFilePath_.c_str (), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH));

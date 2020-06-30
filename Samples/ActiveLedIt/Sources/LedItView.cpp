@@ -73,7 +73,7 @@ namespace {
                   // override the default name mapper to assure folder created, since no installer for activex controls
                   [] (const String& moduleName, const String& fileSuffix) {
                       static const auto kDefaultMapper_ = OptionsFile::mkFilenameMapper (L"ActiveLedIt"sv);
-                      String            fileName        = kDefaultMapper_ (moduleName, fileSuffix);
+                      filesystem::path  fileName        = kDefaultMapper_ (moduleName, fileSuffix);
                       IO::FileSystem::CreateDirectoryForFile (fileName);
                       return fileName;
                   }}

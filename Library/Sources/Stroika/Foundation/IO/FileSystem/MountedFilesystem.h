@@ -19,7 +19,7 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  * TODO:
- *      @todo   Better integrate with non -performance data from Frameowrks/Instrumnet/Filesystem
+ *      @todo   Better integrate with non -performance data from Frameworks/Instrument/Filesystem
  *
  *      @todo   Consider adding the concept of Volume - as it exists mostly on windows, but to some extent on UNIX (LVM)
  *              Not sure needed/helpful, but maybe.

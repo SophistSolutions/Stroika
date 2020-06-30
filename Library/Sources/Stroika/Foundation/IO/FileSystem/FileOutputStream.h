@@ -137,14 +137,14 @@ namespace Stroika::Foundation::IO::FileSystem {
          *
          *  \note   The overloads taking no BufferFlag produce a non-buffered stream.
          */
-        static Ptr                     New (const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
-        static Ptr                     New (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+        static Ptr                     New (const filesystem::path& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+        static Ptr                     New (const filesystem::path& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT);
         static Ptr                     New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = kSeekableFlag_DEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
-        static Ptr                     New (Execution::InternallySynchronized internallySynchronized, const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
-        static Ptr                     New (Execution::InternallySynchronized internallySynchronized, const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+        static Ptr                     New (Execution::InternallySynchronized internallySynchronized, const filesystem::path& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+        static Ptr                     New (Execution::InternallySynchronized internallySynchronized, const filesystem::path& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT);
         static Ptr                     New (Execution::InternallySynchronized internallySynchronized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = kSeekableFlag_DEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
-        static OutputStream<byte>::Ptr New (const String& fileName, FlushFlag flushFlag, BufferFlag bufferedFlag);
-        static OutputStream<byte>::Ptr New (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag, BufferFlag bufferedFlag);
+        static OutputStream<byte>::Ptr New (const filesystem::path& fileName, FlushFlag flushFlag, BufferFlag bufferedFlag);
+        static OutputStream<byte>::Ptr New (const filesystem::path& fileName, AppendFlag appendFlag, FlushFlag flushFlag, BufferFlag bufferedFlag);
         static OutputStream<byte>::Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag, BufferFlag bufferedFlag);
 
     private:

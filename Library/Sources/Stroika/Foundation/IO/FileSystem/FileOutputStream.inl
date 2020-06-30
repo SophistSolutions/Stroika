@@ -19,7 +19,7 @@ namespace Stroika::Foundation::IO::FileSystem {
      ******************************* FileOutputStream *******************************
      ********************************************************************************
      */
-    inline Streams::OutputStream<byte>::Ptr FileOutputStream::New (const String& fileName, FlushFlag flushFlag, BufferFlag bufferedFlag)
+    inline Streams::OutputStream<byte>::Ptr FileOutputStream::New (const filesystem::path& fileName, FlushFlag flushFlag, BufferFlag bufferedFlag)
     {
         if (bufferedFlag == eBuffered) {
             return Streams::BufferedOutputStream<byte>::New (FileOutputStream::New (fileName, flushFlag));
@@ -28,7 +28,7 @@ namespace Stroika::Foundation::IO::FileSystem {
             return FileOutputStream::New (fileName, flushFlag);
         }
     }
-    inline Streams::OutputStream<byte>::Ptr FileOutputStream::New (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag, BufferFlag bufferedFlag)
+    inline Streams::OutputStream<byte>::Ptr FileOutputStream::New (const filesystem::path& fileName, AppendFlag appendFlag, FlushFlag flushFlag, BufferFlag bufferedFlag)
     {
         if (bufferedFlag == eBuffered) {
             return Streams::BufferedOutputStream<byte>::New (FileOutputStream::New (fileName, appendFlag, flushFlag));

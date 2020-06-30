@@ -36,6 +36,7 @@
 #include "../../../Foundation/IO/FileSystem/Disk.h"
 #include "../../../Foundation/IO/FileSystem/FileInputStream.h"
 #include "../../../Foundation/IO/FileSystem/FileSystem.h"
+#include "../../../Foundation/IO/FileSystem/PathName.h"
 #include "../../../Foundation/Streams/MemoryStream.h"
 #include "../../../Foundation/Streams/TextReader.h"
 
@@ -422,7 +423,7 @@ namespace {
         }
 
     private:
-        optional<String> GetSysBlockDirPathForDevice_ (const String& deviceName)
+        optional<filesystem::path> GetSysBlockDirPathForDevice_ (const String& deviceName)
         {
             Require (not deviceName.empty ());
             Require (not deviceName.Contains (L"/"));
@@ -431,12 +432,13 @@ namespace {
             //
             // I don't understand this well yet, but this appears to temporarily allow us to limp along --LGP 2015-07-10
             //tmphack
-            String tmp{L"/sys/block/" + deviceName + L"/"};
+            static const filesystem::path kSysBlock_{"/sys/block"};
+            filesystem::path              tmp{kSysBlock_ / IO::FileSystem::ToPath (deviceName)};
             if (IO::FileSystem::Default ().Access (tmp)) {
                 return tmp;
             }
             //tmphack - try using one char less
-            tmp = L"/sys/block/" + deviceName.SubString (0, -1) + L"/";
+            tmp = kSysBlock_ / IO::FileSystem::ToPath (deviceName.SubString (0, -1));
             if (IO::FileSystem::Default ().Access (tmp)) {
                 return tmp;
             }
@@ -448,9 +450,9 @@ namespace {
         {
             auto o = fDeviceName2SectorSizeMap_.Lookup (deviceName);
             if (not o.has_value ()) {
-                optional<String> blockDeviceInfoPath = GetSysBlockDirPathForDevice_ (deviceName);
+                optional<filesystem::path> blockDeviceInfoPath = GetSysBlockDirPathForDevice_ (deviceName);
                 if (blockDeviceInfoPath) {
-                    String fn = *blockDeviceInfoPath + L"queue/hw_sector_size";
+                    filesystem::path fn = *blockDeviceInfoPath / "queue/hw_sector_size";
                     try {
                         o = String2Int<uint32_t> (TextReader::New (FileInputStream::New (fn, FileInputStream::eNotSeekable)).ReadAll ().Trim ());
                         fDeviceName2SectorSizeMap_.Add (deviceName, *o);
@@ -593,7 +595,7 @@ namespace {
             using Characters::String2Float;
             Mapping<dev_t, PerfStats_>                             result;
             DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
-            const String_Constant                                  kProcMemInfoFileName_{L"/proc/diskstats"};
+            static const filesystem::path                          kProcMemInfoFileName_{"/proc/diskstats"};
             // Note - /procfs files always unseekable
             for (Sequence<String> line : reader.ReadMatrix (FileInputStream::New (kProcMemInfoFileName_, FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -625,9 +627,9 @@ namespace {
                     constexpr bool   kAlsoReadQLen_{true};
                     optional<double> weightedTimeInQSeconds;
                     if (kAlsoReadQLen_) {
-                        optional<String> sysBlockInfoPath = GetSysBlockDirPathForDevice_ (devName);
+                        optional<filesystem::path> sysBlockInfoPath = GetSysBlockDirPathForDevice_ (devName);
                         if (sysBlockInfoPath) {
-                            for (Sequence<String> ll : reader.ReadMatrix (FileInputStream::New (*sysBlockInfoPath + L"stat", FileInputStream::eNotSeekable))) {
+                            for (Sequence<String> ll : reader.ReadMatrix (FileInputStream::New (*sysBlockInfoPath / "stat", FileInputStream::eNotSeekable))) {
                                 if (ll.size () >= 11) {
                                     weightedTimeInQSeconds = String2Float (ll[11 - 1]) / 1000.0; // we record in seconds, but the value in file in milliseconds
                                     break;

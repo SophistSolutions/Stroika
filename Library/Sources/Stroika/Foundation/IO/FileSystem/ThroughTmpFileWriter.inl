@@ -12,16 +12,16 @@
 namespace Stroika::Foundation::IO::FileSystem {
 
     /*
-        ********************************************************************************
-        ********************* FileSystem::ThroughTmpFileWriter *************************
-        ********************************************************************************
-        */
-    inline String ThroughTmpFileWriter::GetTmpFilePath () const
+     ********************************************************************************
+     ********************* FileSystem::ThroughTmpFileWriter *************************
+     ********************************************************************************
+     */
+    inline filesystem::path ThroughTmpFileWriter::GetTmpFilePath () const
     {
         Require (not fTmpFilePath_.empty ()); // cannot access after Commit ()
         return fTmpFilePath_;
     }
-    inline String ThroughTmpFileWriter::GetRealFilePath () const
+    inline filesystem::path ThroughTmpFileWriter::GetRealFilePath () const
     {
         Require (not fRealFilePath_.empty ());
         return fRealFilePath_;
@@ -29,7 +29,7 @@ namespace Stroika::Foundation::IO::FileSystem {
     /**
      *  Before commit this returns the tmpfile name. After commit returns the eventual file name.
      */
-    inline String ThroughTmpFileWriter::GetFilePath () const
+    inline filesystem::path ThroughTmpFileWriter::GetFilePath () const
     {
         Require (not fRealFilePath_.empty ());
         if (not fTmpFilePath_.empty ()) {

@@ -94,7 +94,7 @@ namespace Stroika::Foundation::IO::FileSystem {
          *  \note   Similar to IO.File.Exists () in .net https://msdn.microsoft.com/en-us/library/system.io.file.exists(v=vs.110).aspx
          *  \note   Similar to POSIX access () - https://linux.die.net/man/2/access
          */
-        nonvirtual bool Access (const String& fileFullPath, AccessMode accessMode = AccessMode::eRead) const noexcept;
+        nonvirtual bool Access (const filesystem::path& fileFullPath, AccessMode accessMode = AccessMode::eRead) const noexcept;
 
     public:
         /**
@@ -116,14 +116,14 @@ namespace Stroika::Foundation::IO::FileSystem {
          *          }
          *      \endcode
          */
-        nonvirtual void CheckAccess (const String& fileFullPath, AccessMode accessMode = AccessMode::eRead);
-        nonvirtual void CheckAccess (const String& fileFullPath, bool checkCanRead, bool checkCanWrite);
+        nonvirtual void CheckAccess (const filesystem::path& fileFullPath, AccessMode accessMode = AccessMode::eRead);
+        nonvirtual void CheckAccess (const filesystem::path& fileFullPath, bool checkCanRead, bool checkCanWrite);
 
     public:
         /**
          *  Walk the (environment variable) PATH and return the full path to the named executable, if any.
          */
-        nonvirtual optional<String> FindExecutableInPath (const String& filename) const;
+        nonvirtual optional<filesystem::path> FindExecutableInPath (const filesystem::path& filename) const;
 
     public:
         /**
@@ -137,7 +137,7 @@ namespace Stroika::Foundation::IO::FileSystem {
          *
          *  @see CanonicalizeName
          */
-        nonvirtual String ResolveShortcut (const String& path2FileOrShortcut);
+        nonvirtual filesystem::path ResolveShortcut (const filesystem::path& path2FileOrShortcut);
 
     public:
         /**
@@ -156,8 +156,8 @@ namespace Stroika::Foundation::IO::FileSystem {
          *
          *  @todo consider if this should assureDirectoryEndsInSlash - tricky cuz noit sre ure we know if its a dir
          */
-        nonvirtual String CanonicalizeName (const String& path2FileOrShortcut, bool throwIfComponentsNotFound = true);
-        nonvirtual String CanonicalizeName (const String& path2FileOrShortcut, const String& relativeToDirectory, bool throwIfComponentsNotFound = true); //nyi
+        [[deprecated ("Since Stroika 2.1b2, use filesystem::path::canonical (or weakly_canonical)")]] nonvirtual filesystem::path CanonicalizeName (const filesystem::path& path2FileOrShortcut, bool throwIfComponentsNotFound = true);
+        [[deprecated ("Since Stroika 2.1b2, use filesystem::path::canonical (or weakly_canonical)")]] nonvirtual filesystem::path CanonicalizeName (const filesystem::path& path2FileOrShortcut, const filesystem::path& relativeToDirectory, bool throwIfComponentsNotFound = true); //nyi
 
     public:
         /**
@@ -169,7 +169,7 @@ namespace Stroika::Foundation::IO::FileSystem {
          *  \note   On Windows, this uses the Windows SDK GetFullPathName, but thats not available on all platforms, where it is
          *          manually simulated.
          */
-        nonvirtual String GetFullPathName (const String& pathname);
+        nonvirtual filesystem::path GetFullPathName (const filesystem::path& pathname);
 
     public:
         /**
@@ -201,16 +201,16 @@ namespace Stroika::Foundation::IO::FileSystem {
          *
          *  This works with DOS filenames, as well as UNC filenames (and UNCW file names)
          */
-        nonvirtual Components GetPathComponents (const String& fileName);
+        [[deprecated ("Since Stroika 2.1b2 - use filesystem::path::begin ()")]] nonvirtual Components GetPathComponents (const filesystem::path& fileName);
 
     public:
-        nonvirtual FileOffset_t GetFileSize (const String& fileName);
+        nonvirtual FileOffset_t GetFileSize (const filesystem::path& fileName);
 
     public:
-        nonvirtual DateTime GetFileLastModificationDate (const String& fileName);
+        nonvirtual DateTime GetFileLastModificationDate (const filesystem::path& fileName);
 
     public:
-        nonvirtual DateTime GetFileLastAccessDate (const String& fileName);
+        nonvirtual DateTime GetFileLastAccessDate (const filesystem::path& fileName);
 
     public:
         /**
@@ -219,7 +219,7 @@ namespace Stroika::Foundation::IO::FileSystem {
          *
          *  @see RemoveFileIf
          */
-        nonvirtual void RemoveFile (const String& fileName);
+        nonvirtual void RemoveFile (const filesystem::path& fileName);
 
     public:
         /**
@@ -230,7 +230,7 @@ namespace Stroika::Foundation::IO::FileSystem {
          *
          *  @see RemoveFile
          */
-        nonvirtual bool RemoveFileIf (const String& fileName);
+        nonvirtual bool RemoveFileIf (const filesystem::path& fileName);
 
     public:
         /**
@@ -241,7 +241,7 @@ namespace Stroika::Foundation::IO::FileSystem {
          *
          *  In any case, this will fail if the directory is not removed.
          */
-        nonvirtual void RemoveDirectory (const String& directory, RemoveDirectoryPolicy policy = RemoveDirectoryPolicy::eDEFAULT);
+        nonvirtual void RemoveDirectory (const filesystem::path& directory, RemoveDirectoryPolicy policy = RemoveDirectoryPolicy::eDEFAULT);
 
     public:
         /**
@@ -255,7 +255,7 @@ namespace Stroika::Foundation::IO::FileSystem {
          *
          *  return true iff it existed, and this succcessfully deleted it.
          */
-        nonvirtual bool RemoveDirectoryIf (const String& directory, RemoveDirectoryPolicy policy = RemoveDirectoryPolicy::eDEFAULT);
+        nonvirtual bool RemoveDirectoryIf (const filesystem::path& directory, RemoveDirectoryPolicy policy = RemoveDirectoryPolicy::eDEFAULT);
 
     public:
         /**
@@ -267,7 +267,7 @@ namespace Stroika::Foundation::IO::FileSystem {
             'linkName' is the full path to the symbolic link file to be created
             'target' is the file POINTED TO by the symbolic link
         */
-        nonvirtual void CreateSymbolicLink (const String& linkName, const String& target);
+        nonvirtual void CreateSymbolicLink (const filesystem::path& linkName, const filesystem::path& target);
 
     public:
         /**
@@ -275,13 +275,13 @@ namespace Stroika::Foundation::IO::FileSystem {
          *
          *  \ensure returns a 'slash terminated' pathname
          */
-        nonvirtual String GetCurrentDirectory () const;
+        nonvirtual filesystem::path GetCurrentDirectory () const;
 
     public:
         /**
          *  Wrapper on platform SetCurrentDirectory () or chdir ()
          */
-        nonvirtual void SetCurrentDirectory (const String& newDir);
+        nonvirtual void SetCurrentDirectory (const filesystem::path& newDir);
     };
 
     /**

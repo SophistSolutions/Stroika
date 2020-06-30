@@ -44,11 +44,12 @@ namespace Stroika::Foundation::IO::FileSystem {
     public:
         // If the argument name is not already '/'-terminated, this CTOR will adjust it
         // CTOR does not create or check for the existence of the given directory (no IO)
-        Directory (const String& fileFullPath);
+        Directory (const filesystem::path& fileFullPath);
 
+#if 0
     public:
         nonvirtual void Create () const; // fails if exists
-
+#endif
     public:
         /**
          *  Checks if the directory named in the object CTOR exists. If yes, this has no effect.
@@ -62,13 +63,15 @@ namespace Stroika::Foundation::IO::FileSystem {
         // @todo cleanup / clarify docs (first is from old code second is my guess at new code at one point)
         // returns true iff given path exists, is accessible, and is a directory
         // returns true iff exsits AND is directory (what about slink?)
-        nonvirtual bool Exists () const;
+        [[deprecated ("Since Stroika 2.1b2 - use filesystem::is_directory()")]] nonvirtual bool Exists () const;
 
+#if 0
     public:
         /**
          *   fails if exists after the operaotion - Fails if doest exist
          */
         nonvirtual void Delete () const;
+#endif
 
     public:
         nonvirtual void AssureDeleted (bool autoDeleteContentsAsNeeded = true) const;
@@ -84,7 +87,7 @@ namespace Stroika::Foundation::IO::FileSystem {
         nonvirtual SDKString AsSDKString () const;
 
     private:
-        String fFileFullPath_;
+        filesystem::path fFileFullPath_;
     };
 
 }

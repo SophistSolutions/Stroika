@@ -47,9 +47,10 @@ namespace Stroika::Foundation::IO::FileSystem {
     using Time::DateTime;
 
     /**
-     *  @todo MAYBE MAKE UNSINGED???
+     *  @todo MAYBE MAKE UNSIGNED???
      */
     using FileOffset_t = int64_t;
+
 }
 
 /*

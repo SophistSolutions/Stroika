@@ -227,7 +227,7 @@ namespace {
             RequireNotNull (interfaceResults);
             RequireNotNull (accumSummary);
             DataExchange::Variant::CharacterDelimitedLines::Reader reader{{':', ' ', '\t'}};
-            static const String_Constant                           kProcFileName_{L"/proc/net/dev"};
+            static const filesystem::path                          kProcFileName_{"/proc/net/dev"};
             //static    const String_Constant kProcFileName_ { L"c:\\Sandbox\\VMSharedFolder\\proc-net-dev" };
             // Note - /procfs files always unseekable
             unsigned int nLine  = 0;
@@ -282,7 +282,7 @@ namespace {
             AssertNotReached (); // don't use this for now
             RequireNotNull (accumSummary);
             DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
-            static const String_Constant                           kProcFileName_{L"/proc/net/netstat"};
+            static const filesystem::path                          kProcFileName_{"/proc/net/netstat"};
             // Note - /procfs files always unseekable
             bool                    firstTime = true;
             Mapping<String, size_t> labelMap;
@@ -314,7 +314,7 @@ namespace {
         {
             RequireNotNull (accumSummary);
             DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
-            static const String_Constant                           kProcFileName_{L"/proc/net/snmp"};
+            static const filesystem::path                          kProcFileName_{"/proc/net/snmp"};
             // Note - /procfs files always unseekable
             bool                    firstTime = true;
             Mapping<String, size_t> labelMap;

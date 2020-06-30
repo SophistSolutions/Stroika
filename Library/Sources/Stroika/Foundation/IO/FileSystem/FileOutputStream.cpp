@@ -53,34 +53,34 @@ class FileOutputStream::Rep_ : public Streams::OutputStream<byte>::_IRep, privat
 public:
     Rep_ ()            = delete;
     Rep_ (const Rep_&) = delete;
-    Rep_ (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag)
-        : fFD_ (-1)
-        , fFlushFlag (flushFlag)
-        , fFileName_ (fileName)
+    Rep_ (const filesystem::path& fileName, AppendFlag appendFlag, FlushFlag flushFlag)
+        : fFD_{-1}
+        , fFlushFlag{flushFlag}
+        , fFileName_{fileName}
     {
         auto            activity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"opening %s for write access", Characters::ToString (fFileName_).c_str ()); });
         DeclareActivity currentActivity{&activity};
 #if qPlatform_Windows
         int     appendFlag2Or = appendFlag == eStartFromStart ? _O_TRUNC : _O_APPEND;
-        errno_t e             = ::_wsopen_s (&fFD_, fileName.c_str (), _O_WRONLY | _O_CREAT | _O_BINARY | appendFlag2Or, _SH_DENYNO, _S_IREAD | _S_IWRITE);
+        errno_t e             = ::_wsopen_s (&fFD_, fileName.generic_wstring ().c_str (), _O_WRONLY | _O_CREAT | _O_BINARY | appendFlag2Or, _SH_DENYNO, _S_IREAD | _S_IWRITE);
         if (e != 0) {
-            FileSystem::Exception::ThrowPOSIXErrNo (e, path (fileName.As<wstring> ()));
+            FileSystem::Exception::ThrowPOSIXErrNo (e, fileName);
         }
         if (fFD_ == -1) {
             ThrowSystemErrNo ();
-            FileSystem::Exception::ThrowSystemErrNo (path (fileName.As<wstring> ()));
+            FileSystem::Exception::ThrowSystemErrNo (fileName);
         }
 #else
         int          appendFlag2Or = appendFlag == eStartFromStart ? O_TRUNC : O_APPEND;
         const mode_t kCreateMode_  = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
-        FileSystem::Exception::ThrowPOSIXErrNoIfNegative (fFD_ = ::open (fileName.AsNarrowSDKString ().c_str (), O_WRONLY | O_CREAT | appendFlag2Or, kCreateMode_), path (fileName.As<wstring> ()));
+        FileSystem::Exception::ThrowPOSIXErrNoIfNegative (fFD_ = ::open (fileName.generic_string ().c_str (), O_WRONLY | O_CREAT | appendFlag2Or, kCreateMode_), fileName);
 #endif
     }
     Rep_ (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag)
-        : fFD_ (fd)
-        , fFlushFlag (flushFlag)
-        , fAdoptFDPolicy_ (adoptFDPolicy)
-        , fSeekable_ (seekableFlag == SeekableFlag::eSeekable)
+        : fFD_{fd}
+        , fFlushFlag{flushFlag}
+        , fAdoptFDPolicy_{adoptFDPolicy}
+        , fSeekable_{seekableFlag == SeekableFlag::eSeekable}
     {
     }
     ~Rep_ ()
@@ -143,10 +143,10 @@ public:
             lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
             auto                                               activity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"flushing data to %s", Characters::ToString (fFileName_).c_str ()); });
             DeclareActivity                                    currentActivity{&activity};
-#if qPlatform_Windows
-            ThrowIfZeroGetLastError (::FlushFileBuffers (reinterpret_cast<HANDLE> (::_get_osfhandle (fFD_))));
-#elif qPlatform_POSIX
+#if qPlatform_POSIX
             ThrowPOSIXErrNoIfNegative (::fsync (fFD_));
+#elif qPlatform_Windows
+            ThrowIfZeroGetLastError (::FlushFileBuffers (reinterpret_cast<HANDLE> (::_get_osfhandle (fFD_))));
 #else
             AssertNotImplemented ();
 #endif
@@ -155,10 +155,10 @@ public:
     virtual Streams::SeekOffsetType GetWriteOffset () const override
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-#if qPlatform_Windows
-        return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, 0, SEEK_CUR)));
-#elif qPlatform_Linux
+#if qPlatform_Linux
         return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, 0, SEEK_CUR)));
+#elif qPlatform_Windows
+        return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, 0, SEEK_CUR)));
 #else
         return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, 0, SEEK_CUR)));
 #endif
@@ -175,28 +175,28 @@ public:
                     {
                         Execution::Throw (range_error ("seek"));
                     }
-#if qPlatform_Windows
-                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_SET)));
-#elif qPlatform_Linux
+#if qPlatform_Linux
                 return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_SET)));
+#elif qPlatform_Windows
+                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_SET)));
 #else
                 return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_SET)));
 #endif
             } break;
             case Whence::eFromCurrent: {
-#if qPlatform_Windows
-                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_CUR)));
-#elif qPlatform_Linux
+#if qPlatform_Linux
                 return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_CUR)));
+#elif qPlatform_Windows
+                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_CUR)));
 #else
                 return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_CUR)));
 #endif
             } break;
             case Whence::eFromEnd: {
-#if qPlatform_Windows
-                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_END)));
-#elif qPlatform_Linux
+#if qPlatform_Linux
                 return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_END)));
+#elif qPlatform_Windows
+                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_END)));
 #else
                 return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_END)));
 #endif
@@ -207,19 +207,19 @@ public:
     }
 
 private:
-    int              fFD_;
-    FlushFlag        fFlushFlag;
-    AdoptFDPolicy    fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
-    bool             fSeekable_{true};
-    optional<String> fFileName_;
+    int                        fFD_;
+    FlushFlag                  fFlushFlag;
+    AdoptFDPolicy              fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
+    bool                       fSeekable_{true};
+    optional<filesystem::path> fFileName_;
 };
 
-auto FileOutputStream::New (const String& fileName, FlushFlag flushFlag) -> Ptr
+auto FileOutputStream::New (const filesystem::path& fileName, FlushFlag flushFlag) -> Ptr
 {
     return make_shared<Rep_> (fileName, AppendFlag::eDEFAULT, flushFlag);
 }
 
-auto FileOutputStream::New (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag) -> Ptr
+auto FileOutputStream::New (const filesystem::path& fileName, AppendFlag appendFlag, FlushFlag flushFlag) -> Ptr
 {
     return make_shared<Rep_> (fileName, appendFlag, flushFlag);
 }
@@ -229,7 +229,7 @@ auto FileOutputStream::New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, 
     return make_shared<Rep_> (fd, adoptFDPolicy, seekableFlag, flushFlag);
 }
 
-auto FileOutputStream::New (Execution::InternallySynchronized internallySynchronized, const String& fileName, FlushFlag flushFlag) -> Ptr
+auto FileOutputStream::New (Execution::InternallySynchronized internallySynchronized, const filesystem::path& fileName, FlushFlag flushFlag) -> Ptr
 {
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
@@ -242,7 +242,7 @@ auto FileOutputStream::New (Execution::InternallySynchronized internallySynchron
     }
 }
 
-auto FileOutputStream::New (Execution::InternallySynchronized internallySynchronized, const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag) -> Ptr
+auto FileOutputStream::New (Execution::InternallySynchronized internallySynchronized, const filesystem::path& fileName, AppendFlag appendFlag, FlushFlag flushFlag) -> Ptr
 {
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:

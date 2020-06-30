@@ -451,15 +451,15 @@ namespace {
             ///proc/[pid]/stat
             //  Status information about the process. This is used by ps(1). It is defined in /usr/src/linux/fs/proc/array.c.
             //
-            static const String_Constant kCWDFilename_{L"cwd"};
-            static const String_Constant kEXEFilename_{L"exe"};
-            static const String_Constant kEnvironFilename_{L"environ"};
-            static const String_Constant kRootFilename_{L"root"};
-            static const String_Constant kCmdLineFilename_{L"cmdline"};
-            static const String_Constant kStatFilename_{L"stat"};
-            static const String_Constant kStatusFilename_{L"status"};
-            static const String_Constant kIOFilename_{L"io"};
-            static const String_Constant kNetTCPFilename_{L"net/tcp"};
+            static const filesystem::path kCWDFilename_{"cwd"};
+            static const filesystem::path kEXEFilename_{"exe"};
+            static const filesystem::path kEnvironFilename_{"environ"};
+            static const filesystem::path kRootFilename_{"root"};
+            static const filesystem::path kCmdLineFilename_{"cmdline"};
+            static const filesystem::path kStatFilename_{"stat"};
+            static const filesystem::path kStatusFilename_{"status"};
+            static const filesystem::path kIOFilename_{"io"};
+            static const filesystem::path kNetTCPFilename_{"net/tcp"};
 
             ProcessMapType results;
 
@@ -475,14 +475,14 @@ namespace {
              *  the lightweight process thread ids,  so we don't need to specially filter them out. However, I've not found
              *  this claim documented anywhere, so beware...
              */
-            for (String dir : IO::FileSystem::DirectoryIterable (L"/proc"sv)) {
-                bool isAllNumeric = not dir.FindFirstThat ([] (Character c) -> bool { return not c.IsDigit (); });
+            for (filesystem::path dir : IO::FileSystem::DirectoryIterable ("/proc")) {
+                bool isAllNumeric = not IO::FileSystem::FromPath (dir).FindFirstThat ([] (Character c) -> bool { return not c.IsDigit (); });
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ExtractFromProcFS_::reading proc files");
-                DbgTrace (L"isAllNumeric=%d, dir= %s", isAllNumeric, dir.c_str ());
+                DbgTrace (L"isAllNumeric=%d, dir= %s", isAllNumeric, ToString (dir).c_str ());
 #endif
                 if (isAllNumeric) {
-                    pid_t               pid{String2Int<pid_t> (dir)};
+                    pid_t               pid{String2Int<pid_t> (IO::FileSystem::FromPath (dir))};
                     DurationSecondsType now{Time::GetTickCount ()};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace ("reading for pid = %d", pid);
@@ -498,19 +498,19 @@ namespace {
                         }
                     }
 
-                    String processDirPath = IO::FileSystem::AssureDirectoryPathSlashTerminated (String_Constant (L"/proc/") + dir);
-                    bool   grabStaticData = fOptions_.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not fStaticSuppressedAgain.Contains (pid);
+                    filesystem::path processDirPath = filesystem::path{"/proc"} / dir;
+                    bool             grabStaticData = fOptions_.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not fStaticSuppressedAgain.Contains (pid);
 
                     ProcessType processDetails;
 
                     if (grabStaticData) {
-                        processDetails.fEXEPath = OptionallyResolveShortcut_ (processDirPath + kEXEFilename_);
-                        if (processDetails.fEXEPath and processDetails.fEXEPath->EndsWith (L" (deleted)")) {
-                            processDetails.fEXEPath = processDetails.fEXEPath->SubString (0, -10);
+                        processDetails.fEXEPath = OptionallyResolveShortcut_ (processDirPath / kEXEFilename_);
+                        if (processDetails.fEXEPath and IO::FileSystem::FromPath (*processDetails.fEXEPath).EndsWith (L" (deleted)")) {
+                            processDetails.fEXEPath = IO::FileSystem::ToPath (IO::FileSystem::FromPath (*processDetails.fEXEPath).SubString (0, -10));
                         }
 
                         if (fOptions_.fProcessNameReadPolicy == Options::eAlways or (fOptions_.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and not processDetails.fEXEPath.has_value ())) {
-                            processDetails.fProcessName = OptionallyReadIfFileExists_<String> (processDirPath + L"comm", [] (const Streams::InputStream<byte>::Ptr& in) { return TextReader::New (in).ReadAll ().Trim (); });
+                            processDetails.fProcessName = OptionallyReadIfFileExists_<String> (processDirPath / "comm", [] (const Streams::InputStream<byte>::Ptr& in) { return TextReader::New (in).ReadAll ().Trim (); });
                         }
 
                         /*
@@ -524,27 +524,27 @@ namespace {
                         processDetails.fKernelProcess = not processDetails.fEXEPath.has_value ();
                         // Note - many kernel processes have commandline, so don't filter here based on that
                         if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, ValueOrDefault (processDetails.fEXEPath))) {
-                            processDetails.fCommandLine = ReadCmdLineString_ (processDirPath + kCmdLineFilename_);
+                            processDetails.fCommandLine = ReadCmdLineString_ (processDirPath / kCmdLineFilename_);
                         }
                         // kernel process cannot chroot (as far as I know) --LGP 2015-05-21
                         if (fOptions_.fCaptureRoot and processDetails.fKernelProcess == false) {
-                            processDetails.fRoot = OptionallyResolveShortcut_ (processDirPath + kRootFilename_);
+                            processDetails.fRoot = OptionallyResolveShortcut_ (processDirPath / kRootFilename_);
                         }
                         // kernel process cannot have environment variables (as far as I know) --LGP 2015-05-21
                         if (fOptions_.fCaptureEnvironmentVariables and processDetails.fKernelProcess == false) {
-                            processDetails.fEnvironmentVariables = OptionallyReadFileStringsMap_ (processDirPath + kEnvironFilename_);
+                            processDetails.fEnvironmentVariables = OptionallyReadFileStringsMap_ (processDirPath / kEnvironFilename_);
                         }
                     }
 
                     // kernel process cannot have current directory (as far as I know) --LGP 2015-05-21
                     if (fOptions_.fCaptureCurrentWorkingDirectory and processDetails.fKernelProcess == false) {
-                        processDetails.fCurrentWorkingDirectory = OptionallyResolveShortcut_ (processDirPath + kCWDFilename_);
+                        processDetails.fCurrentWorkingDirectory = OptionallyResolveShortcut_ (processDirPath / kCWDFilename_);
                     }
 
                     static const double kClockTick_ = ::sysconf (_SC_CLK_TCK);
 
                     try {
-                        StatFileInfo_ stats = ReadStatFile_ (processDirPath + kStatFilename_);
+                        StatFileInfo_ stats = ReadStatFile_ (processDirPath / kStatFilename_);
 
                         processDetails.fRunStatus = cvtStatusCharToStatus_ (stats.state);
 
@@ -591,7 +591,7 @@ namespace {
                          * Probably best to compute fPrivateBytes from:
                          *       grep  Private /proc/1912/smaps
                          */
-                        processDetails.fPrivateBytes = ReadPrivateBytes_ (processDirPath + L"smaps");
+                        processDetails.fPrivateBytes = ReadPrivateBytes_ (processDirPath / "smaps");
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"loaded processDetails.fProcessStartedAt=%s wuit stats.start_time = %lld", ValueOrDefault (processDetails.fProcessStartedAt).Format ().c_str (), stats.start_time);
@@ -602,7 +602,7 @@ namespace {
                     }
 
                     if (fOptions_.fCaptureTCPStatistics) {
-                        IgnoreExceptionsForCall (processDetails.fTCPStats = ReadTCPStats_ (processDirPath + kNetTCPFilename_));
+                        IgnoreExceptionsForCall (processDetails.fTCPStats = ReadTCPStats_ (processDirPath / kNetTCPFilename_));
                     }
 
                     if (grabStaticData) {
@@ -612,7 +612,7 @@ namespace {
                                 processDetails.fUserName = L"root"sv;
                             }
                             else {
-                                proc_status_data_ stats  = Readproc_proc_status_data_ (processDirPath + kStatusFilename_);
+                                proc_status_data_ stats  = Readproc_proc_status_data_ (processDirPath / kStatusFilename_);
                                 processDetails.fUserName = Execution::Platform::POSIX::uid_t2UserName (stats.ruid);
                             }
                         }
@@ -622,7 +622,7 @@ namespace {
 
                     try {
                         // @todo maybe able to optimize and not check this if processDetails.fKernelProcess == true
-                        optional<proc_io_data_> stats = Readproc_io_data_ (processDirPath + kIOFilename_);
+                        optional<proc_io_data_> stats = Readproc_io_data_ (processDirPath / kIOFilename_);
                         if (stats.has_value ()) {
                             processDetails.fCombinedIOReadBytes  = (*stats).read_bytes;
                             processDetails.fCombinedIOWriteBytes = (*stats).write_bytes;
@@ -652,14 +652,14 @@ namespace {
             return results;
         }
         template <typename T>
-        optional<T> OptionallyReadIfFileExists_ (const String& fullPath, const function<T (const Streams::InputStream<byte>::Ptr&)>& reader)
+        optional<T> OptionallyReadIfFileExists_ (const filesystem::path& fullPath, const function<T (const Streams::InputStream<byte>::Ptr&)>& reader)
         {
             if (IO::FileSystem::Default ().Access (fullPath)) {
                 IgnoreExceptionsExceptThreadInterruptForCall (return reader (FileInputStream::New (fullPath, FileInputStream::eNotSeekable)));
             }
             return nullopt;
         }
-        Sequence<String> ReadFileStrings_ (const String& fullPath)
+        Sequence<String> ReadFileStrings_ (const filesystem::path& fullPath)
         {
             Sequence<String>                results;
             Streams::InputStream<byte>::Ptr in = FileInputStream::New (fullPath, FileInputStream::eNotSeekable);
@@ -675,7 +675,7 @@ namespace {
             }
             return results;
         }
-        Mapping<String, String> ReadFileStringsMap_ (const String& fullPath)
+        Mapping<String, String> ReadFileStringsMap_ (const filesystem::path& fullPath)
         {
             Mapping<String, String> results;
             for (String i : ReadFileStrings_ (fullPath)) {
@@ -687,7 +687,7 @@ namespace {
             return results;
         }
         // if fails (cuz not readable) don't throw but return missing, but avoid noisy stroika exception logging
-        optional<String> ReadCmdLineString_ (const String& fullPath2CmdLineFile)
+        optional<String> ReadCmdLineString_ (const filesystem::path& fullPath2CmdLineFile)
         {
             // this reads /proc format files - meaning that a trialing nul-byte is the EOS
             auto ReadFileString_ = [] (const Streams::InputStream<byte>::Ptr& in) -> String {
@@ -720,14 +720,14 @@ namespace {
             return nullopt;
         }
         // if fails (cuz not readable) don't throw but return missing, but avoid noisy stroika exception logging
-        optional<String> OptionallyResolveShortcut_ (const String& shortcutPath)
+        optional<filesystem::path> OptionallyResolveShortcut_ (const filesystem::path& shortcutPath)
         {
             if (IO::FileSystem::Default ().Access (shortcutPath)) {
                 IgnoreExceptionsExceptThreadInterruptForCall (return IO::FileSystem::Default ().ResolveShortcut (shortcutPath));
             }
             return nullopt;
         }
-        optional<Mapping<String, String>> OptionallyReadFileStringsMap_ (const String& fullPath)
+        optional<Mapping<String, String>> OptionallyReadFileStringsMap_ (const filesystem::path& fullPath)
         {
             if (IO::FileSystem::Default ().Access (fullPath)) {
                 IgnoreExceptionsExceptThreadInterruptForCall (return ReadFileStringsMap_ (fullPath));
@@ -886,7 +886,7 @@ namespace {
             unsigned long      minflt;
             unsigned long      majflt;
         };
-        StatFileInfo_ ReadStatFile_ (const String& fullPath)
+        StatFileInfo_ ReadStatFile_ (const filesystem::path& fullPath)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx (L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadStatFile_", L"fullPath=%s", fullPath.c_str ());
@@ -1010,7 +1010,7 @@ namespace {
             uint64_t read_bytes;
             uint64_t write_bytes;
         };
-        optional<proc_io_data_> Readproc_io_data_ (const String& fullPath)
+        optional<proc_io_data_> Readproc_io_data_ (const filesystem::path& fullPath)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx (L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::Readproc_io_data_", L"fullPath=%s", fullPath.c_str ());
@@ -1041,7 +1041,7 @@ namespace {
             }
             return result;
         }
-        optional<ProcessType::TCPStats> ReadTCPStats_ (const String& fullPath)
+        optional<ProcessType::TCPStats> ReadTCPStats_ (const filesystem::path& fullPath)
         {
             /**
              *  root@q7imx6:/opt/BLKQCL# cat /proc/3431/net/tcp
@@ -1085,7 +1085,7 @@ namespace {
             }
             return stats;
         }
-        optional<MemorySizeType> ReadPrivateBytes_ (const String& fullPath)
+        optional<MemorySizeType> ReadPrivateBytes_ (const filesystem::path& fullPath)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx (L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadPrivateBytes_", L"fullPath=%s", fullPath.c_str ());
@@ -1123,7 +1123,7 @@ namespace {
         struct proc_status_data_ {
             uid_t ruid;
         };
-        proc_status_data_ Readproc_proc_status_data_ (const String& fullPath)
+        proc_status_data_ Readproc_proc_status_data_ (const filesystem::path& fullPath)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx (L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::Readproc_proc_status_data_", L"fullPath=%s", fullPath.c_str ());
@@ -1232,7 +1232,7 @@ namespace {
                     // Fake but usable answer
                     Sequence<String> t = cmdLine.Tokenize ();
                     if (not t.empty () and not t[0].empty () and t[0][0] == '/') {
-                        processDetails.fEXEPath = t[0];
+                        processDetails.fEXEPath = IO::FileSystem::ToPath (t[0]);
                     }
                 }
                 if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, ValueOrDefault (processDetails.fEXEPath))) {
@@ -1263,7 +1263,7 @@ namespace {
     PVOID GetPebAddress_ (HANDLE ProcessHandle)
     {
         static LONG (WINAPI * NtQueryInformationProcess) (HANDLE ProcessHandle, ULONG ProcessInformationClass, PVOID ProcessInformation, ULONG ProcessInformationLength, PULONG ReturnLength) = (LONG (WINAPI*) (HANDLE, ULONG, PVOID, ULONG, PULONG))::GetProcAddress (::LoadLibraryA ("NTDLL.DLL"), "NtQueryInformationProcess");
-        PROCESS_BASIC_INFORMATION pbi;
+        PROCESS_BASIC_INFORMATION pbi{};
         NtQueryInformationProcess (ProcessHandle, 0, &pbi, sizeof (pbi), NULL);
         return pbi.PebBaseAddress;
     }
@@ -1473,11 +1473,11 @@ namespace {
                     if (hProcess != nullptr) {
                         [[maybe_unused]] auto&& cleanup = Execution::Finally ([hProcess] () noexcept { Verify (::CloseHandle (hProcess)); });
                         if (grabStaticData) {
-                            optional<String> processName;
-                            optional<String> processEXEPath;
-                            optional<pid_t>  parentProcessID;
-                            optional<String> cmdLine;
-                            optional<String> userName;
+                            optional<String>           processName;
+                            optional<filesystem::path> processEXEPath;
+                            optional<pid_t>            parentProcessID;
+                            optional<String>           cmdLine;
+                            optional<String>           userName;
                             LookupProcessPath_ (pid, hProcess, &processName, &processEXEPath, &parentProcessID, fOptions_.fCaptureCommandLine ? &cmdLine : nullptr, &userName);
                             if (fOptions_.fProcessNameReadPolicy == Options::eAlways or (fOptions_.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and not processEXEPath.has_value ())) {
                                 Memory::CopyToIf (processName, &processInfo.fProcessName);
@@ -1625,7 +1625,7 @@ namespace {
             }
             return result;
         }
-        void LookupProcessPath_ (pid_t pid, HANDLE hProcess, optional<String>* processName, optional<String>* processEXEPath, optional<pid_t>* parentProcessID, optional<String>* cmdLine, optional<String>* userName)
+        void LookupProcessPath_ (pid_t pid, HANDLE hProcess, optional<String>* processName, optional<filesystem::path>* processEXEPath, optional<pid_t>* parentProcessID, optional<String>* cmdLine, optional<String>* userName)
         {
             RequireNotNull (hProcess);
             RequireNotNull (processEXEPath);
@@ -1638,7 +1638,7 @@ namespace {
                 TCHAR moduleFullPath[MAX_PATH];
                 moduleFullPath[0] = '\0';
                 if (::GetModuleFileNameEx (hProcess, hMod, moduleFullPath, static_cast<DWORD> (NEltsOf (moduleFullPath))) != 0) {
-                    *processEXEPath = String::FromSDKString (moduleFullPath);
+                    *processEXEPath = filesystem::path{moduleFullPath};
                 }
                 if (processName != nullptr) {
                     TCHAR moduleBaseName[MAX_PATH];
@@ -1666,15 +1666,15 @@ namespace {
                             // Cribbed from http://windows-config.googlecode.com/svn-history/r59/trunk/doc/cmdline/cmdline.cpp
                             void* pebAddress = GetPebAddress_ (hProcess);
                             if (pebAddress != nullptr) {
-                                void* rtlUserProcParamsAddress{};
 #ifdef _WIN64
-                                const int kUserProcParamsOffset_ = 0x20;
-                                const int kCmdLineOffset_        = 112;
+                                constexpr int kUserProcParamsOffset_ = 0x20;
+                                constexpr int kCmdLineOffset_        = 112;
 #else
-                                const int kUserProcParamsOffset_ = 0x10;
-                                const int kCmdLineOffset_        = 0x40;
+                                constexpr int kUserProcParamsOffset_ = 0x10;
+                                constexpr int kCmdLineOffset_        = 0x40;
 #endif
                                 /* get the address of ProcessParameters */
+                                void* rtlUserProcParamsAddress{};
                                 if (not ::ReadProcessMemory (hProcess, (PCHAR)pebAddress + kUserProcParamsOffset_, &rtlUserProcParamsAddress, sizeof (PVOID), NULL)) {
                                     goto SkipCmdLine_;
                                 }
@@ -1688,7 +1688,7 @@ namespace {
                                     size_t                          strLen = commandLine.Length / sizeof (WCHAR); // length field in bytes
                                     Memory::SmallStackBuffer<WCHAR> commandLineContents (strLen + 1);
                                     /* read the command line */
-                                    if (not ReadProcessMemory (hProcess, commandLine.Buffer, commandLineContents.begin (), commandLine.Length, NULL)) {
+                                    if (not ::ReadProcessMemory (hProcess, commandLine.Buffer, commandLineContents.begin (), commandLine.Length, NULL)) {
                                         goto SkipCmdLine_;
                                     }
                                     commandLineContents[strLen] = 0;

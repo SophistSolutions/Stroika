@@ -380,8 +380,10 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
                         }
                     }
                 };
-                myHander_ handler;
-                DataExchange::XML::SAXParse (IO::FileSystem::FileInputStream::New (L"/usr/share/mime/" + ct.GetType () + L"/" + ct.GetSubType () + L".xml"), handler);
+                filesystem::path mimeRoot{"/usr/share/mime/"};
+                myHander_        handler;
+                // @todo validate ct.GetType () to make sure not a ../../ ATTACK
+                DataExchange::XML::SAXParse (IO::FileSystem::FileInputStream::New (mimeRoot / IO::FileSystem::ToPath (ct.GetType () + L"/" + ct.GetSubType () + L".xml")), handler);
                 if (handler.fResult) {
                     fMediaType2PrettyNameCache.rwget ()->Add (ct, *handler.fResult);
                     return *handler.fResult;

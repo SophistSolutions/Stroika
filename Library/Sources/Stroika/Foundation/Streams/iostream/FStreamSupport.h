@@ -9,6 +9,7 @@
 #include <fstream>
 
 #include "../../Characters/String.h"
+#include "../../IO/FileSystem/Common.h"
 
 namespace Stroika::Foundation::Streams::iostream {
 
@@ -25,8 +26,8 @@ namespace Stroika::Foundation::Streams::iostream {
      *  \note This calls https://en.cppreference.com/w/cpp/io/basic_ios/exceptions to force any future failed operations to throw (including open)
      *
      */
-    ifstream& OpenInputFileStream (ifstream* ifStream, const String& fileName, ios_base::openmode _Mode = ios_base::binary);
-    ifstream& OpenInputFileStream (ifstream& tmpIFStream, const String& fileName, ios_base::openmode _Mode = ios_base::binary);
+    ifstream& OpenInputFileStream (ifstream* ifStream, const filesystem::path& fileName, ios_base::openmode _Mode = ios_base::binary);
+    ifstream& OpenInputFileStream (ifstream& tmpIFStream, const filesystem::path& fileName, ios_base::openmode _Mode = ios_base::binary);
 
     /*
      *  OpenOutputFileStream () is like the ofstream::open CTOR - but throws FILE exceptions on failure.
@@ -40,8 +41,8 @@ namespace Stroika::Foundation::Streams::iostream {
      *  \note This calls https://en.cppreference.com/w/cpp/io/basic_ios/exceptions to force any future failed operations to throw (including open)
      *
      */
-    ofstream& OpenOutputFileStream (ofstream* ofStream, const String& fileName, ios_base::openmode _Mode = ios_base::trunc | ios_base::binary);
-    ofstream& OpenOutputFileStream (ofstream& tmpOfStream, const String& fileName, ios_base::openmode _Mode = ios_base::trunc | ios_base::binary);
+    ofstream& OpenOutputFileStream (ofstream* ofStream, const filesystem::path& fileName, ios_base::openmode _Mode = ios_base::trunc | ios_base::binary);
+    ofstream& OpenOutputFileStream (ofstream& tmpOfStream, const filesystem::path& fileName, ios_base::openmode _Mode = ios_base::trunc | ios_base::binary);
 
 }
 

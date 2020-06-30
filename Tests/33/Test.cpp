@@ -11,6 +11,7 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/ModuleGetterSetter.h"
+#include "Stroika/Foundation/IO/FileSystem/PathName.h"
 #include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
 #include "Stroika/Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
 
@@ -67,8 +68,8 @@ namespace {
                 return mapper;
             }(),
             OptionsFile::kDefaultUpgrader,
-            [] (const String& moduleName, const String& fileSuffix) -> String {
-                return IO::FileSystem::WellKnownLocations::GetTemporary () + moduleName + fileSuffix;
+            [] (const String& moduleName, const String& fileSuffix) -> filesystem::path {
+                return IO::FileSystem::WellKnownLocations::GetTemporary () / IO::FileSystem::ToPath (moduleName + fileSuffix);
             }};
         MyData_ m = of.Read<MyData_> (MyData_ ()); // will return default values if file not present
         of.Write (m);                              // test writing
@@ -92,9 +93,11 @@ namespace {
                       });
                       return mapper;
                   }(),
-                  OptionsFile::kDefaultUpgrader, [] (const String& moduleName, const String& fileSuffix) -> String {
-                // for regression tests write to /tmp
-                return  IO::FileSystem::WellKnownLocations::GetTemporary () + moduleName + fileSuffix; }}
+                  OptionsFile::kDefaultUpgrader,
+                  [] (const String& moduleName, const String& fileSuffix) -> filesystem::path {
+                      // for regression tests write to /tmp
+                      return IO::FileSystem::WellKnownLocations::GetTemporary () / IO::FileSystem::ToPath (moduleName + fileSuffix);
+                  }}
             , fActualCurrentConfigData_ (fOptionsFile_.Read<MyData_> (MyData_ ()))
         {
             Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date

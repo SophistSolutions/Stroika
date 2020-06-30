@@ -147,20 +147,20 @@ namespace {
         constexpr bool kWrite2FileAsWell_ = true;
         if (kWrite2FileAsWell_) {
             {
-                IO::FileSystem::FileOutputStream::Ptr tmpFileStream = IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt");
+                IO::FileSystem::FileOutputStream::Ptr tmpFileStream = IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () / "t.txt");
                 Variant::JSON::Writer ().Write (v, tmpFileStream);
             }
             {
                 // , and then if you want, try reading it back
-                IO::FileSystem::FileInputStream::Ptr tmpFileStream = IO::FileSystem::FileInputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt");
-                SharedContactsConfig_                tmp2          = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (tmpFileStream));
+                IO::FileSystem::FileInputStream::Ptr tmpFileStream = IO::FileSystem::FileInputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () / "t.txt");
+                SharedContactsConfig_                tmp2          = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpFileStream));
                 DbgTrace (L"tmp2 = %s", Characters::ToString (tmp2).c_str ());
                 Assert (tmp2 == tmp);
             }
         }
 
         // THEN deserialize, and map back to C++ object form
-        SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (tmpStream));
+        SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
 
         // and check the roundtrip worked
         Assert (tmp2 == tmp);

@@ -56,23 +56,23 @@ class FileInputStream::Rep_ : public InputStream<byte>::_IRep, private Debug::As
 public:
     Rep_ ()            = delete;
     Rep_ (const Rep_&) = delete;
-    Rep_ (const String& fileName, SeekableFlag seekable)
-        : fFD_ (-1)
-        , fSeekable_ (seekable)
-        , fFileName_ (fileName)
+    Rep_ (const filesystem::path& fileName, SeekableFlag seekable)
+        : fFD_{-1}
+        , fSeekable_{seekable}
+        , fFileName_{fileName}
     {
         auto            activity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"opening %s for read access", Characters::ToString (fFileName_).c_str ()); });
         DeclareActivity currentActivity{&activity};
 #if qPlatform_Windows
         errno_t e = ::_wsopen_s (&fFD_, fileName.c_str (), (O_RDONLY | O_BINARY), _SH_DENYNO, 0);
         if (e != 0) {
-            FileSystem::Exception::ThrowPOSIXErrNo (e, path (fileName.As<wstring> ()));
+            FileSystem::Exception::ThrowPOSIXErrNo (e, fileName);
         }
         if (fFD_ == -1) {
-            FileSystem::Exception::ThrowSystemErrNo (path (fileName.As<wstring> ()));
+            FileSystem::Exception::ThrowSystemErrNo (fileName);
         }
 #else
-        FileSystem::Exception::ThrowPOSIXErrNoIfNegative (fFD_ = ::open (fileName.AsNarrowSDKString ().c_str (), O_RDONLY), path (fileName.As<wstring> ()));
+        FileSystem::Exception::ThrowPOSIXErrNoIfNegative (fFD_ = ::open (fileName.generic_string ().c_str (), O_RDONLY), fileName);
 #endif
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"opened fd: %d", fFD_);
@@ -241,13 +241,13 @@ public:
     }
 
 private:
-    int              fFD_;
-    SeekableFlag     fSeekable_;
-    AdoptFDPolicy    fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
-    optional<String> fFileName_;
+    int                        fFD_;
+    SeekableFlag               fSeekable_;
+    AdoptFDPolicy              fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
+    optional<filesystem::path> fFileName_;
 };
 
-auto FileInputStream::New (const String& fileName, SeekableFlag seekable) -> Ptr
+auto FileInputStream::New (const filesystem::path& fileName, SeekableFlag seekable) -> Ptr
 {
     return _mkPtr (make_shared<Rep_> (fileName, seekable));
 }
@@ -257,7 +257,7 @@ auto FileInputStream::New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, S
     return _mkPtr (make_shared<Rep_> (fd, adoptFDPolicy, seekable));
 }
 
-auto FileInputStream::New (Execution::InternallySynchronized internallySynchronized, const String& fileName, SeekableFlag seekable) -> Ptr
+auto FileInputStream::New (Execution::InternallySynchronized internallySynchronized, const filesystem::path& fileName, SeekableFlag seekable) -> Ptr
 {
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
@@ -283,10 +283,10 @@ auto FileInputStream::New (Execution::InternallySynchronized internallySynchroni
     }
 }
 
-InputStream<byte>::Ptr FileInputStream::New (const String& fileName, SeekableFlag seekable, BufferFlag bufferFlag)
+InputStream<byte>::Ptr FileInputStream::New (const filesystem::path& fileName, SeekableFlag seekable, BufferFlag bufferFlag)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (L"FileInputStream::New", L"fileName: %s, seekable: %d, bufferFlag: %d", fileName.c_str (), seekable, bufferFlag);
+    Debug::TraceContextBumper ctx (L"FileInputStream::New", L"fileName: %s, seekable: %d, bufferFlag: %d", ToString (fileName).c_str (), seekable, bufferFlag);
 #endif
     InputStream<byte>::Ptr in = FileInputStream::New (fileName, seekable);
     switch (bufferFlag) {

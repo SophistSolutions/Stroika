@@ -38,7 +38,7 @@ using Memory::BLOB;
  ***************** DataExchange::OptionsFile::LoggerMessage *********************
  ********************************************************************************
  */
-OptionsFile::LoggerMessage::LoggerMessage (Msg msg, String fn)
+OptionsFile::LoggerMessage::LoggerMessage (Msg msg, const filesystem::path& fn)
     : fMsg (msg)
     , fFileName (fn)
 {
@@ -107,8 +107,8 @@ const OptionsFile::LoggerType OptionsFile::kDefaultLogger =
 OptionsFile::ModuleNameToFileNameMapperType OptionsFile::mkFilenameMapper (const String& appName)
 {
     return
-        [appName] (const String& moduleName, const String& fileSuffix) -> String {
-            return IO::FileSystem::WellKnownLocations::GetApplicationData () + appName + String (IO::FileSystem::kPathComponentSeperator) + moduleName + fileSuffix;
+        [appName] (const String& moduleName, const String& fileSuffix) -> filesystem::path {
+            return IO::FileSystem::WellKnownLocations::GetApplicationData () / IO::FileSystem::ToPath (appName) / IO::FileSystem::ToPath (moduleName + fileSuffix);
         };
 }
 
@@ -117,8 +117,8 @@ const OptionsFile::ModuleNameToFileVersionMapperType OptionsFile::kDefaultModule
 };
 
 // Consider using XML by default when more mature
-const Variant::Reader OptionsFile::kDefaultReader = Variant::JSON::Reader ();
-const Variant::Writer OptionsFile::kDefaultWriter = Variant::JSON::Writer ();
+const Variant::Reader OptionsFile::kDefaultReader = Variant::JSON::Reader{};
+const Variant::Writer OptionsFile::kDefaultWriter = Variant::JSON::Writer{};
 
 OptionsFile::OptionsFile (
     const String&                     modName,
@@ -235,12 +235,12 @@ void OptionsFile::Write (const VariantValue& optionsObject)
     WriteRaw (tmp.As<BLOB> ());
 }
 
-String OptionsFile::GetReadFilePath_ () const
+filesystem::path OptionsFile::GetReadFilePath_ () const
 {
     return fModuleNameToReadFileNameMapper_ (fModuleName_, fFileSuffix_);
 }
 
-String OptionsFile::GetWriteFilePath_ () const
+filesystem::path OptionsFile::GetWriteFilePath_ () const
 {
     return fModuleNameToWriteFileNameMapper_ (fModuleName_, fFileSuffix_);
 }

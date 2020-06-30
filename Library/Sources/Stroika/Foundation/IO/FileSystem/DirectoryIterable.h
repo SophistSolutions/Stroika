@@ -33,19 +33,19 @@ namespace Stroika::Foundation::IO::FileSystem {
      *
      *  \par Example Usage
      *      \code
-     *      Iterable<String> textFilesInSlashTmp = DirectoryIterable (L"/tmp").Where ([] (const String& i) { return i.EndsWith (L".txt"); });
+     *          Iterable<String> textFilesInSlashTmp = DirectoryIterable ("/tmp").Where ([] (const String& i) { return i.EndsWith (L".txt"); });
      *      \endcode
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
      */
-    class DirectoryIterable : public Traversal::Iterable<String> {
+    class DirectoryIterable : public Traversal::Iterable<filesystem::path> {
     public:
         using IteratorReturnType = DirectoryIterator::IteratorReturnType;
 
     public:
         /**
          */
-        DirectoryIterable (const String& directory, IteratorReturnType iteratorReturns = IteratorReturnType::eDEFAULT);
+        DirectoryIterable (const filesystem::path& directory, IteratorReturnType iteratorReturns = IteratorReturnType::eDEFAULT);
     };
 
 }

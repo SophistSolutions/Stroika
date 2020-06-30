@@ -57,7 +57,7 @@ namespace Stroika::Foundation::IO::FileSystem::WellKnownLocations {
      *
      *      Data stored here is typically deleted once its been processed.
      */
-    String GetSpoolDirectory ();
+    filesystem::path GetSpoolDirectory ();
 
     /**
      *  Returns:
@@ -70,7 +70,7 @@ namespace Stroika::Foundation::IO::FileSystem::WellKnownLocations {
      *                  though arguably should be /var/lib - fhs-2.3.html and Filesystem_Hierarchy_Standard
      *                  are pretty unclear - was /var/lib until Stroika v2.0a207
      */
-    String GetApplicationData (bool createIfNotPresent = true);
+    filesystem::path GetApplicationData (bool createIfNotPresent = true);
 
     /**
      *  Returns:
@@ -83,7 +83,7 @@ namespace Stroika::Foundation::IO::FileSystem::WellKnownLocations {
      *      Windows:
      *              Alias for GetTemporary()
      */
-    String GetRuntimeVariableData ();
+    filesystem::path GetRuntimeVariableData ();
 
     /**
      *  Returns:
@@ -95,15 +95,15 @@ namespace Stroika::Foundation::IO::FileSystem::WellKnownLocations {
      *          than the GetTemporary () function, and that is critical to its use in
      *          the DbgTrace () code when tracing to a temporary file.
      */
-    String    GetTemporary ();
-    SDKString GetTemporaryT ();
+    filesystem::path GetTemporary ();
+    SDKString        GetTemporaryT ();
 
 #if qPlatform_Windows
     /**
      *  Returns:
      *      empty string if the directory doesn't exist.
      */
-    String GetWinSxS ();
+    filesystem::path GetWinSxS ();
 #endif
 
 }

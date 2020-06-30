@@ -12,6 +12,7 @@
 #include "../Configuration/Common.h"
 #include "../Configuration/Enumeration.h"
 #include "../Debug/Assertions.h"
+#include "../IO/FileSystem/Common.h"
 #include "../Streams/OutputStream.h"
 #include "../Time/Duration.h"
 #include "Synchronized.h"
@@ -367,7 +368,7 @@ namespace Stroika::Foundation::Execution {
      */
     class Logger::FileAppender : public Logger::IAppenderRep {
     public:
-        FileAppender (const String& fileName, bool truncateOnOpen = true);
+        FileAppender (const filesystem::path& fileName, bool truncateOnOpen = true);
 
     public:
         virtual void Log (Priority logLevel, const String& message) override;

@@ -11,6 +11,7 @@
 #include "../../../Foundation/Containers/Sequence.h"
 #include "../../../Foundation/DataExchange/ObjectVariantMapper.h"
 #include "../../../Foundation/Execution/Process.h"
+#include "../../../Foundation/IO/FileSystem/Common.h"
 
 #include "../Instrument.h"
 
@@ -60,10 +61,10 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Process {
          */
         optional<String>                  fUserName;
         optional<String>                  fCommandLine;
-        optional<String>                  fCurrentWorkingDirectory;
+        optional<filesystem::path>        fCurrentWorkingDirectory;
         optional<Mapping<String, String>> fEnvironmentVariables;
-        optional<String>                  fEXEPath;
-        optional<String>                  fRoot; // chroot
+        optional<filesystem::path>        fEXEPath;
+        optional<filesystem::path>        fRoot; // chroot
         optional<Time::DateTime>          fProcessStartedAt;
 
         /**
@@ -258,10 +259,11 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Process {
      *
      *  \par Example Usage
      *      \code
-     *       for (Measurement m : ms.fMeasurements) {
-     *          if (m.fType == SystemPerformance::Instruments::Process::kProcessMapMeasurement) {
-     *              AccumulateMeasurement_Process_ (m);
-     *          }
+     *          for (Measurement m : ms.fMeasurements) {
+     *              if (m.fType == SystemPerformance::Instruments::Process::kProcessMapMeasurement) {
+     *                  AccumulateMeasurement_Process_ (m);
+     *              }
+     *              ...
      *      \endcode
      */
     extern const MeasurementType kProcessMapMeasurement;
@@ -284,7 +286,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Process {
         /**
          *  If FilterFunctionType is nullptr, then treat this as false.
          */
-        using FilterFunctionType = function<bool (pid_t pid, const String& processPath)>;
+        using FilterFunctionType = function<bool (pid_t pid, const filesystem::path& processPath)>;
 
         /**
          *  \req fMinimumAveragingInterval >= 0
@@ -294,7 +296,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Process {
         /*
          * Assign nullptr to disable commandline capture.
          */
-        FilterFunctionType fCaptureCommandLine{[] (pid_t /*pid*/, const String& /*processPath*/) -> bool { return true; }};
+        FilterFunctionType fCaptureCommandLine{[] (pid_t /*pid*/, const filesystem::path& /*processPath*/) -> bool { return true; }};
 
         bool                 fCaptureEnvironmentVariables{true};
         bool                 fCaptureCurrentWorkingDirectory{true};

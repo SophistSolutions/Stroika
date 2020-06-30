@@ -126,7 +126,7 @@ namespace {
         using IO::FileSystem::FileInputStream;
         using Streams::TextReader;
         DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
-        const String                                           kProcFileName_{L"/proc/net/arp"sv};
+        static const filesystem::path                          kProcFileName_{"/proc/net/arp"sv};
         /*
             IP address       HW type     Flags       HW address            Mask     Device
             192.168.244.194  0x1         0x0         00:00:00:00:00:00     *        enp0s31f6

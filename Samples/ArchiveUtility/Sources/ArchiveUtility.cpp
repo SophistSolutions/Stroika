@@ -41,8 +41,8 @@ namespace {
                                eCreate,
                                eUpdate };
         Operation                  fOperation;
-        String                     fArchiveFileName;
-        optional<String>           fOutputDirectory; // applies only if extract
+        filesystem::path           fArchiveFileName;
+        optional<filesystem::path> fOutputDirectory; // applies only if extract
         optional<Sequence<String>> fFiles2Add;
     };
     void Usage_ ()
@@ -99,23 +99,23 @@ namespace {
             return optional<Options_>{};
         }
         result.fOperation       = *operation;
-        result.fArchiveFileName = *archiveName;
+        result.fArchiveFileName = IO::FileSystem::ToPath (*archiveName);
         // @todo add more.. - files etc
         return result;
     }
 }
 
 namespace {
-    DataExchange::Archive::Reader OpenArchive_ (const String& archiveName)
+    DataExchange::Archive::Reader OpenArchive_ (const filesystem::path& archiveName)
     {
 // @todo - must support other formats, have a registry, and autodetect
 #if qHasFeature_LZMA
-        if (archiveName.EndsWith (L".7z", Characters::CompareOptions::eCaseInsensitive)) {
+        if (IO::FileSystem::FromPath (archiveName).EndsWith (L".7z", Characters::CompareOptions::eCaseInsensitive)) {
             return move (Archive::_7z::Reader{IO::FileSystem::FileInputStream::New (archiveName)});
         }
 #endif
 #if qHasFeature_ZLib
-        if (archiveName.EndsWith (L".zip", Characters::CompareOptions::eCaseInsensitive)) {
+        if (IO::FileSystem::FromPath (archiveName).EndsWith (L".zip", Characters::CompareOptions::eCaseInsensitive)) {
             return move (Archive::Zip::Reader{IO::FileSystem::FileInputStream::New (archiveName)});
         }
 #endif
@@ -124,30 +124,30 @@ namespace {
 }
 
 namespace {
-    void ListArchive_ (const String& archiveName)
+    void ListArchive_ (const filesystem::path& archiveName)
     {
         for (String i : OpenArchive_ (archiveName).GetContainedFiles ()) {
             cout << i.AsNarrowSDKString () << endl;
         }
     }
-    void ExtractArchive_ (const String& archiveName, const String& toDirectory)
+    void ExtractArchive_ (const filesystem::path& archiveName, const filesystem::path& toDirectory)
     {
         Debug::TraceContextBumper ctx{L"ExtractArchive_"};
         DbgTrace (L"(archiveName=%s, toDir=%s)", archiveName.c_str (), toDirectory.c_str ());
         DataExchange::Archive::Reader archive{OpenArchive_ (archiveName)};
         for (String i : archive.GetContainedFiles ()) {
-            String srcFileName = i;
-            String trgFileName = toDirectory + L"/" + srcFileName;
+            String           srcFileName = i;
+            filesystem::path trgFileName = toDirectory / IO::FileSystem::ToPath (srcFileName);
 
-//tmphack
-#if qPlatform_Windows
-            trgFileName = trgFileName.ReplaceAll (L"/", L"\\");
-#endif
+            //tmphack no nonger needed due to std::filesystem
+            //#if qPlatform_Windows
+            //           trgFileName = trgFileName.ReplaceAll (L"/", L"\\");
+            //#endif
 
             //DbgTrace (L"(srcFileName=%s, trgFileName=%s)", srcFileName.c_str (), trgFileName.c_str ());
             BLOB b = archive.GetData (srcFileName);
             //DbgTrace (L"IO::FileSystem::GetFileDirectory (trgFileName)=%s", IO::FileSystem::GetFileDirectory (trgFileName).c_str ());
-            IO::FileSystem::Directory{IO::FileSystem::GetFileDirectory (trgFileName)}.AssureExists ();
+            IO::FileSystem::Directory{IO::FileSystem::ToPath (IO::FileSystem::GetFileDirectory (IO::FileSystem::FromPath (trgFileName)))}.AssureExists ();
             IO::FileSystem::FileOutputStream::Ptr ostream = IO::FileSystem::FileOutputStream::New (trgFileName);
             ostream.Write (b);
         }
