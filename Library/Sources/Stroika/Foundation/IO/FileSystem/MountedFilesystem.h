@@ -47,6 +47,8 @@ namespace Stroika::Foundation::IO::FileSystem {
          *  This is where the data for this disk/filesystem appear in the filesystem.
          *
          *  On unix, it mighth be a place like '/', or '/mnt/usbdisk1'.
+         *
+         *  This should be an absolute path.
          */
         filesystem::path fMountedOn;
 
@@ -63,8 +65,10 @@ namespace Stroika::Foundation::IO::FileSystem {
          *  \note - on Linux - this may not be a full path, but just a special name, like tmpfs, or proc, or udev etc - for these special devices
          *
          *  \note - on Linux - this path will frequently be for a PARTITION (like /dev/sda1) - not for the underlying disk block device (e.g /dev/sda)
+         *
+         *  \note These should be absolute paths.
          */
-        optional<Containers::Set<String>> fDevicePaths;
+        optional<Containers::Set<filesystem::path>> fDevicePaths;
 
         /**
          *  This is an open enumeration indicating the format of the given filesystem:

@@ -111,6 +111,15 @@ namespace {
          *  See https://www.kernel.org/doc/Documentation/filesystems/ramfs-rootfs-initramfs.txt
          *
          *  So the last one with a given mount point in the file wins.
+         *
+         *  EXAMPLE OUTPUT (from ubuntu on WSL):
+         *       cat /proc/mounts
+         *       /dev/sdb / ext4 rw,relatime,discard,errors=remount-ro,data=ordered 0 0
+         *       tmpfs /mnt/wsl tmpfs rw,relatime 0 0
+         *       tools /init 9p ro,dirsync,relatime,aname=tools;fmask=022,loose,access=client,trans=fd,rfd=6,wfd=6 0 0
+         *       none /dev devtmpfs rw,nosuid,relatime,size=6474068k,nr_inodes=1618517,mode=755 0 0
+         *       sysfs /sys sysfs rw,nosuid,nodev,noexec,noatime 0 0
+         *       ...
          */
         Collection<MountedFilesystemType>                      results;
         DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
@@ -132,10 +141,10 @@ namespace {
                 if (devName.StartsWith (L"/")) {
                     IgnoreExceptionsExceptThreadInterruptForCall (devName = IO::FileSystem::FromPath (filesystem::canonical (IO::FileSystem::ToPath (devName))));
                 }
-                filesystem::path             mountedAt = ToPath (line[1]);
-                String                       fstype    = line[2];
-                static const String_Constant kNone_{L"none"};
-                results.Add (MountedFilesystemType{mountedAt, devName == kNone_ ? Set<String>{} : Set<String>{devName}, fstype}); // special name none often used when there is no name
+                filesystem::path    mountedAt = ToPath (line[1]);
+                String              fstype    = line[2];
+                static const String kNone_{L"none"_k};
+                results.Add (MountedFilesystemType{mountedAt, devName == kNone_ ? Set<filesystem::path>{} : Set<filesystem::path>{IO::FileSystem::ToPath (devName)}, fstype}); // special name none often used when there is no name
             }
         }
         return results;
@@ -182,16 +191,16 @@ namespace {
 #endif
 #if qPlatform_Windows
 namespace {
-    using DynamicDiskIDType = String;
-    String GetPhysNameForDriveNumber_ (unsigned int i)
+    using DynamicDiskIDType_ = filesystem::path;
+    DynamicDiskIDType_ GetPhysNameForDriveNumber_ (unsigned int i)
     {
         // This format is NOT super well documented, and was mostly derived from reading the remarks section
         // of https://msdn.microsoft.com/en-us/library/windows/desktop/aa363216%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396
         // (DeviceIoControl function)
-        return Characters::Format (L"\\\\.\\PhysicalDrive%d", i);
+        return ToPath (Characters::Format (L"\\\\.\\PhysicalDrive%d", i));
     }
     DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
-    optional<Set<DynamicDiskIDType>> GetDisksForVolume_ (String volumeName)
+    optional<Set<DynamicDiskIDType_>> GetDisksForVolume_ (String volumeName)
     {
         wchar_t volPathsBuf[10 * 1024]; // intentionally uninitialized since we don't use it if GetVolumePathNamesForVolumeNameW () returns error, and its an OUT only parameter
         DWORD   retLen = 0;
@@ -200,7 +209,7 @@ namespace {
             return {}; // missing - no known - not empty - answer
         }
         else if (retLen <= 1) {
-            return Set<DynamicDiskIDType>{};
+            return Set<DynamicDiskIDType_>{};
         }
         Assert (1 <= Characters::CString::Length (volPathsBuf) and Characters::CString::Length (volPathsBuf) < NEltsOf (volPathsBuf));
         volumeName = L"\\\\.\\" + String::FromSDKString (volPathsBuf).SubString (0, -1);
@@ -223,7 +232,7 @@ namespace {
                 return {};
             }
         }
-        Set<DynamicDiskIDType> result;
+        Set<DynamicDiskIDType_> result;
         for (DWORD n = 0; n < volumeDiskExtents.NumberOfDiskExtents; ++n) {
             result.Add (GetPhysNameForDriveNumber_ (volumeDiskExtents.Extents[n].DiskNumber));
         }

@@ -59,14 +59,14 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Filesystem {
     };
 
     /**
-     *  Disk names are strings, but this type alias is used for documentation.
+     *  Disk names are filesystem::path (were strings until Stroika v2.1b2), but this type alias is used for documentation.
      */
-    using DynamicDiskIDType = String;
+    using DynamicDiskIDType = filesystem::path;
 
     /**
-     *  Filesytem mount points are strings, but this type alias is used for documentation.
+     *  Filesytem mount points are filesystem::paths (used to be strings), but this type alias is used for documentation.
      */
-    using MountedFilesystemNameType = String;
+    using MountedFilesystemNameType = filesystem::path;
 
     /**
      *

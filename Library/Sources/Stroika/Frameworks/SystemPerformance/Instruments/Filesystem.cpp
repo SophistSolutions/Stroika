@@ -795,7 +795,7 @@ namespace {
                     ULARGE_INTEGER         freeBytesAvailable{};
                     ULARGE_INTEGER         totalNumberOfBytes{};
                     ULARGE_INTEGER         totalNumberOfFreeBytes{};
-                    [[maybe_unused]] DWORD xxx = ::GetDiskFreeSpaceEx (mfinfo.fMountedOn.AsSDKString ().c_str (), &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes);
+                    [[maybe_unused]] DWORD xxx = ::GetDiskFreeSpaceEx (mfinfo.fMountedOn.c_str (), &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes);
                     v.fSizeInBytes             = totalNumberOfBytes.QuadPart;
                     v.fUsedSizeInBytes         = *v.fSizeInBytes - freeBytesAvailable.QuadPart;
                     v.fAvailableSizeInBytes    = *v.fSizeInBytes - *v.fUsedSizeInBytes;
@@ -807,7 +807,7 @@ namespace {
                         return pctInUse / (1 - pctInUse);
                     };
                     if (fOptions_.fIOStatistics) {
-                        String wmiInstanceName = mfinfo.fMountedOn.RTrim ([] (Characters::Character c) { return c == '\\'; });
+                        String wmiInstanceName = IO::FileSystem::FromPath (mfinfo.fMountedOn).RTrim ([] (Characters::Character c) { return c == '\\'; });
                         fLogicalDiskWMICollector_.AddInstancesIf (wmiInstanceName);
 
                         IOStatsType readStats;

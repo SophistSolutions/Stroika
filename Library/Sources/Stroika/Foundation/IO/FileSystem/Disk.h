@@ -79,7 +79,8 @@ namespace Stroika::Foundation::IO::FileSystem {
      *  Information for a physical disk (not for a partition).
      */
     struct DiskInfoType {
-        String fDeviceName;
+        // DeviceName was string until Stroika v2.1b2, but then switched to path (hope thats right)??? --LGP 2020-06/30
+        filesystem::path fDeviceName;
 
         /*
          *  Is the 'disk' a 'remote' device (network),  CD-ROM, direct-attached hard disk (e.g. internal) or removable drive,

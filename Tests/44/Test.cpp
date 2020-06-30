@@ -56,11 +56,11 @@ namespace {
             static const Containers::Set<filesystem::path> kFileNamesForDir_{L"foo.txt", L"bar.png", L"t3.txt", L"blag.nope"};
             static const filesystem::path                  kTestSubDir_ = WellKnownLocations::GetTemporary () / ToPath (L"Regtest-write-files-" + Characters::ToString (Execution::GetCurrentProcessID ()));
             IO::FileSystem::Default ().RemoveDirectoryIf (kTestSubDir_, IO::FileSystem::eRemoveAnyContainedFiles);
-            [[maybe_unused]] auto&& cleanup = Execution::Finally ([]() noexcept {
+            [[maybe_unused]] auto&& cleanup = Execution::Finally ([] () noexcept {
                 IgnoreExceptionsForCall (IO::FileSystem::Default ().RemoveDirectoryIf (kTestSubDir_, IO::FileSystem::eRemoveAnyContainedFiles));
             });
             IO::FileSystem::Directory (kTestSubDir_).AssureExists ();
-            kFileNamesForDir_.Apply ([](filesystem::path i) { IO::FileSystem::FileOutputStream::New (kTestSubDir_ / i); });
+            kFileNamesForDir_.Apply ([] (filesystem::path i) { IO::FileSystem::FileOutputStream::New (kTestSubDir_ / i); });
             //DbgTrace (L"kTestSubDir_=%s", kTestSubDir_.c_str ());
             //DbgTrace (L"kFileNamesForDir_=%s", Characters::ToString (kFileNamesForDir_).c_str ());
             //DbgTrace (L"DirectoryIterable (kTestSubDir_)=%s", Characters::ToString (DirectoryIterable (kTestSubDir_)).c_str ());
