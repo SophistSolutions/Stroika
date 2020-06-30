@@ -222,7 +222,7 @@ SystemConfiguration::BootInformation Configuration::GetSystemConfiguration_BootI
 #elif qPlatform_POSIX
     {
         // @todo - I don't think /proc/uptime is POSIX ... NOT SURE HOW TO DEFINE THIS - MAYBE ONLY .... on LINUX?
-        bool                  succeeded{false};
+        bool                          succeeded{false};
         static const filesystem::path kProcUptimeFileName_{"/proc/uptime"};
         if (IO::FileSystem::Default ().Access (kProcUptimeFileName_)) {
             /*

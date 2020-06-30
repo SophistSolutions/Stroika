@@ -49,7 +49,6 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
 
     using IBackendRep = InternetMediaTypeRegistry::IBackendRep;
 
-
     // @todo REDO SO CACHING JUST IN FRONTEND, so no need in backend!!!! - remove the LRUCache from that layer....
 
     struct Data_ {
@@ -300,11 +299,11 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
          *  is not indexed (by file suffix) - its indexed by content type (so those lookups COULD be dynamic). But
          *  we can easily construct both at the same time reading the summary file, so we do.
          */
-        Mapping<FileSuffixType, InternetMediaType>               fSuffix2MediaTypeMap_;
-        Mapping<InternetMediaType, FileSuffixType>               fMediaType2PreferredSuffixMap_;
+        Mapping<FileSuffixType, InternetMediaType> fSuffix2MediaTypeMap_;
+        Mapping<InternetMediaType, FileSuffixType> fMediaType2PreferredSuffixMap_;
 
         mutable Synchronized<Mapping<InternetMediaType, String>> fMediaType2PrettyNameCache; // incrementally build as needed
-        
+
         UsrShareMIMERep_ ()
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

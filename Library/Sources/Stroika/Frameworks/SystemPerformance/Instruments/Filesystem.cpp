@@ -342,12 +342,12 @@ namespace {
         }
 
     private:
-        void UpdateVolumeInfo_statvfs_ (const String& mountedOnName, MountedFilesystemInfoType* v)
+        void UpdateVolumeInfo_statvfs_ (const filesystem::path& mountedOnName, MountedFilesystemInfoType* v)
         {
             RequireNotNull (v);
             struct statvfs sbuf {
             };
-            if (::statvfs (mountedOnName.AsNarrowSDKString ().c_str (), &sbuf) == 0) {
+            if (::statvfs (mountedOnName.c_str (), &sbuf) == 0) {
                 uint64_t diskSize        = sbuf.f_bsize * sbuf.f_blocks;
                 v->fSizeInBytes          = diskSize;
                 v->fAvailableSizeInBytes = sbuf.f_bsize * sbuf.f_bavail;
@@ -355,7 +355,7 @@ namespace {
             }
             else {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"statvfs (%s) return error: errno=%d", mountedOnName.c_str (), errno);
+                DbgTrace (L"statvfs (%s) return error: errno=%d", Characters::ToString (mountedOnName).c_str (), errno);
 #endif
             }
         }
