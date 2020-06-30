@@ -5,7 +5,6 @@
 
 #include "../Cache/SynchronizedLRUCache.h"
 #include "../Characters/Format.h"
-#include "../Characters/String_Constant.h"
 #include "../Characters/ToString.h"
 #include "../Containers/Bijection.h"
 #include "../DataExchange/Variant/CharacterDelimitedLines/Reader.h"
@@ -18,6 +17,7 @@
 #include "../Execution/Platform/Windows/Exception.h"
 #endif
 #include "../Execution/Synchronized.h"
+#include "../IO/FileSystem/Common.h"
 #include "../IO/FileSystem/FileInputStream.h"
 #include "../IO/FileSystem/PathName.h"
 
@@ -48,6 +48,9 @@ using FileSuffixType = InternetMediaTypeRegistry::FileSuffixType;
 struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFrontendRep_ {
 
     using IBackendRep = InternetMediaTypeRegistry::IBackendRep;
+
+
+    // @todo REDO SO CACHING JUST IN FRONTEND, so no need in backend!!!! - remove the LRUCache from that layer....
 
     struct Data_ {
         shared_ptr<IBackendRep> fBackendRep;
@@ -287,38 +290,62 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
      *  @todo Consider ALSO checking ~/... location and /usr/local ... location...
      */
     struct UsrShareMIMERep_ : IBackendRep {
-        // NOTE - we cannot use Bijection, because multiple media-types can map to a single filetype and not all mediatypes have a filetype
-        Mapping<FileSuffixType, InternetMediaType>               fSuffix2MediaTypeMap;
-        Mapping<InternetMediaType, FileSuffixType>               fMediaType2PreferredSuffixMap;
-        mutable Synchronized<Mapping<InternetMediaType, String>> fMediaType2PrettyNameCache; // incrementally build as needed
+        Iterable<filesystem::path> fDataRoots_{"~/.local/share/mime/"sv, "/usr/local/share/mime/"sv, "/usr/share/mime"sv};
 
+        /*
+         *  NOTE - for fSuffix2MediaTypeMap_ and fMediaType2PreferredSuffixMap, we cannot use Bijection, 
+         *  because multiple media-types can map to a single filetype and not all mediatypes have a filetype.
+         *
+         *  We CANNOT use a cache, or dynamically fetch this data from files, because the data for each file suffix
+         *  is not indexed (by file suffix) - its indexed by content type (so those lookups COULD be dynamic). But
+         *  we can easily construct both at the same time reading the summary file, so we do.
+         */
+        Mapping<FileSuffixType, InternetMediaType>               fSuffix2MediaTypeMap_;
+        Mapping<InternetMediaType, FileSuffixType>               fMediaType2PreferredSuffixMap_;
+
+        mutable Synchronized<Mapping<InternetMediaType, String>> fMediaType2PrettyNameCache; // incrementally build as needed
+        
         UsrShareMIMERep_ ()
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{L"InternetMediaTypeRegistry::{}UsrShareMIMERep_::CTOR"};
 #endif
-            for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{':'}}.ReadMatrix (IO::FileSystem::FileInputStream::New (L"/usr/share/mime/globs"))) {
-                if (line.length () == 2) {
-                    String glob = line[1];
-                    if (glob.StartsWith ('*')) {
-                        glob = glob.SubString (1);
+            // @todo consider using globs2 file support, but little point since they seem to be written in priority order
+            auto loadGlobsFromFile = [&] (const filesystem::path& fn) {
+                if (filesystem::exists (fn)) {
+                    DbgTrace (L"%s exists so trying to load", Characters::ToString (fn).c_str ());
+                    try {
+                        for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{':'}}.ReadMatrix (IO::FileSystem::FileInputStream::New (fn))) {
+                            if (line.length () == 2) {
+                                String glob = line[1];
+                                if (glob.StartsWith ('*')) {
+                                    glob = glob.SubString (1);
+                                }
+                                // Use AddIf () - so first (appears empirically to be the preferred value) wins
+                                fSuffix2MediaTypeMap_.AddIf (glob, InternetMediaType{line[0]}, false);
+                                fMediaType2PreferredSuffixMap_.AddIf (InternetMediaType{line[0]}, glob, false);
+
+                                // @todo add support to track all associated suffixes for mime type
+                            }
+                        }
                     }
-                    // @todo also keep mapping of suffix media type to all file suffixes - maybe use addif here?
-                    fSuffix2MediaTypeMap.AddIf (glob, InternetMediaType{line[0]}, false);
-
-                    // &&& and fix other code - other sources
-                    // @todo use AddIf() and also keep mapping of suffix media type to all file suffixes
-
-                    fMediaType2PreferredSuffixMap.AddIf (InternetMediaType{line[0]}, glob, false);
+                    catch (...) {
+                        // log error
+                    }
                 }
+            };
+            // override files loaded first, tied to use of AddIf - not replacing
+            for (auto p : fDataRoots_) {
+                loadGlobsFromFile (p / "globs");
             }
+
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"succeeded with %d fSuffix2MediaTypeMap entries, and %d fMediaType2PreferredSuffixMap entries", fSuffix2MediaTypeMap_.size (), fMediaType2PreferredSuffixMap_.size ());
+            DbgTrace (L"succeeded with %d fSuffix2MediaTypeMap_ entries, and %d fMediaType2PreferredSuffixMap entries", fSuffix2MediaTypeMap_.size (), fMediaType2PreferredSuffixMap_.size ());
 #endif
         }
         virtual optional<FileSuffixType> GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const override
         {
-            if (auto o = fMediaType2PreferredSuffixMap.Lookup (ct)) {
+            if (auto o = fMediaType2PreferredSuffixMap_.Lookup (ct)) {
                 return *o;
             }
             return nullopt;
@@ -327,7 +354,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
         {
             // @todo fetch all suffixes
             Set<String> result;
-            if (auto i = fMediaType2PreferredSuffixMap.Lookup (ct)) {
+            if (auto i = fMediaType2PreferredSuffixMap_.Lookup (ct)) {
                 result += *i;
             }
             return result;
@@ -339,7 +366,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
         virtual optional<InternetMediaType> GetAssociatedContentType (const FileSuffixType& fileSuffix) const override
         {
             Require (fileSuffix[0] == '.');
-            if (auto o = fSuffix2MediaTypeMap.Lookup (fileSuffix)) {
+            if (auto o = fSuffix2MediaTypeMap_.Lookup (fileSuffix)) {
                 return *o;
             }
             return nullopt;
