@@ -62,7 +62,7 @@ String DiskInfoType::ToString () const
 {
     StringBuilder sb;
     sb += L"{";
-    sb += L"Device-Name: '" + fDeviceName + L"', ";
+    sb += L"Device-Name: " + Characters::ToString (fDeviceName) + L", ";
     if (fDeviceKind) {
         sb += L"Device-Kind: '" + Characters::ToString (*fDeviceKind) + L"', ";
     }
