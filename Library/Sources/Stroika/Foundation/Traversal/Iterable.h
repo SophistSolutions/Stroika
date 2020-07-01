@@ -682,18 +682,22 @@ namespace Stroika::Foundation::Traversal {
          *      @todo provide overload that is more terse, where instead of specifing funciton, you specify ptr-to-member or some such?
          *
          *  \see SelectIf
-         *  @todo CONSIDER justhaving one typename argument - RESULT - like SelectIf
          */
-        template <typename T1, typename RESULT = T1>
-        nonvirtual Iterable<RESULT> Select (const function<T1 (const T&)>& extract1) const;
+        template <typename RESULT>
+        nonvirtual Iterable<RESULT> Select (const function<RESULT (const T&)>& extract) const;
         template <typename T1, typename T2, typename RESULT = pair<T1, T2>>
-        nonvirtual Iterable<RESULT> Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2) const;
+        [[deprecated ("Since Stroika v2.1b2 - just use the Select<RESULT> and a single extractor that produces the combined type (pair<T1,T2>)")]] nonvirtual Iterable<RESULT> Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2) const;
         template <typename T1, typename T2, typename T3, typename RESULT = tuple<T1, T2, T3>>
-        nonvirtual Iterable<RESULT> Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2, const function<T3 (const T&)>& extract3) const;
+        [[deprecated ("Since Stroika v2.1b2 - just use the Select<RESULT> and a single extractor that produces the combined type (pair<T1,T2,T3>)")]] nonvirtual Iterable<RESULT> Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2, const function<T3 (const T&)>& extract3) const;
 
     public:
         /**
-         *  \see Select - maybe better approach to select than above
+         *  \brief - like Select<RESULT> but argument returns optional<RESULT> and nullopt interpretted as skipping that element
+         *
+         *  \par Example Usage
+         *      \code
+         *          possibleFileSuffixes.SelectIf<InternetMediaType> ([&] (String suffix) { return r.GetAssociatedContentType (suffix); }).As<Set<InternetMediaType>> ())
+         *      \endcode
          */
         template <typename RESULT>
         nonvirtual Iterable<RESULT> SelectIf (const function<optional<RESULT> (const T&)>& extract) const;

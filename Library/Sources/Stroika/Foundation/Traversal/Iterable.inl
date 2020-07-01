@@ -508,17 +508,17 @@ namespace Stroika::Foundation::Traversal {
         return CreateGenerator (getNext);
     }
     template <typename T>
-    template <typename T1, typename RESULT>
-    Iterable<RESULT> Iterable<T>::Select (const function<T1 (const T&)>& extract1) const
+    template <typename RESULT>
+    Iterable<RESULT> Iterable<T>::Select (const function<RESULT (const T&)>& extract) const
     {
-        RequireNotNull (extract1);
+        RequireNotNull (extract);
         // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
         auto sharedContext = make_shared<Iterable<T>> (*this);
         // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
         // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
-        function<optional<RESULT> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (), extract1] () mutable -> optional<RESULT> {
+        function<optional<RESULT> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (), extract] () mutable -> optional<RESULT> {
             if (perIteratorContextBaseIterator) {
-                return RESULT (extract1 (*perIteratorContextBaseIterator++));
+                return RESULT (extract (*perIteratorContextBaseIterator++));
             }
             return nullopt;
         };
