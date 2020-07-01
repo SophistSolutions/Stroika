@@ -64,6 +64,7 @@ namespace Stroika::Foundation::IO::FileSystem {
      *      (( The windows behavior is that the code did - I'm not sure its wise, or even needed anymore?))
      *      (( -- LGP 2011-09-29)
      */
+    [[deprecated ("Since Stroika v2.1b2 - use filesystem::path{}.extension ()")]]
     String GetFileSuffix (const String& fileName);
 
     /**

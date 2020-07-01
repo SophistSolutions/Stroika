@@ -97,6 +97,7 @@ String FileSystem::AssureLongFileName (const String& fileName)
  */
 String FileSystem::GetFileSuffix (const String& fileName)
 {
+    return FromPath (ToPath (fileName).extension ());
 #if qPlatform_Linux
     if (auto o = fileName.RFind ('.')) {
         if (auto olastSlash = fileName.RFind (kPathComponentSeperator)) {
