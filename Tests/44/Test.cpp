@@ -31,14 +31,14 @@ namespace {
         {
             Debug::TraceContextBumper ctx1 ("simple test");
             for (DirectoryIterator i{WellKnownLocations::GetTemporary ()}; not i.Done (); ++i) {
-                DbgTrace (L"filename = %s", i->c_str ());
+                DbgTrace (L"filename = %s", Characters::ToString (*i).c_str ());
             }
         }
         {
             Debug::TraceContextBumper ctx1 ("t2");
             DirectoryIterator         i{WellKnownLocations::GetTemporary ()};
             for (DirectoryIterator i2 = i; not i2.Done (); ++i2) {
-                DbgTrace (L"filename = %s", i2->c_str ());
+                DbgTrace (L"filename = %s", Characters::ToString (*i2).c_str ());
             }
         }
     }
@@ -61,7 +61,7 @@ namespace {
             });
             IO::FileSystem::Directory (kTestSubDir_).AssureExists ();
             kFileNamesForDir_.Apply ([] (filesystem::path i) { IO::FileSystem::FileOutputStream::New (kTestSubDir_ / i); });
-            //DbgTrace (L"kTestSubDir_=%s", kTestSubDir_.c_str ());
+            //DbgTrace (L"kTestSubDir_=%s", Characters::ToString (kTestSubDir_).c_str ());
             //DbgTrace (L"kFileNamesForDir_=%s", Characters::ToString (kFileNamesForDir_).c_str ());
             //DbgTrace (L"DirectoryIterable (kTestSubDir_)=%s", Characters::ToString (DirectoryIterable (kTestSubDir_)).c_str ());
             VerifyTestResult (Containers::Set<filesystem::path>::EqualsComparer{}(kFileNamesForDir_, DirectoryIterable (kTestSubDir_)));
