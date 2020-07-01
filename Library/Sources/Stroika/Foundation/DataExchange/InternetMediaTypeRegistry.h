@@ -170,8 +170,12 @@ namespace Stroika::Foundation::DataExchange {
     public:
         /**
          * return nullopt if not found
+         *
+         *  \note **Since Stroika v2.1b2 - this takes fileSuffix argument - NOT fileNameOrSuffix - because path::extension ()
+         *
+         *  \req fileSuffix.empty () or fileSuffix[0] == '.'
          */
-        nonvirtual optional<InternetMediaType> GetAssociatedContentType (const FileSuffixType& fileNameOrSuffix) const;
+        nonvirtual optional<InternetMediaType> GetAssociatedContentType (const FileSuffixType& fileSuffix) const;
     };
 
     /**

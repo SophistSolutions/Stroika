@@ -516,12 +516,11 @@ Set<String> InternetMediaTypeRegistry::GetAssociatedFileSuffixes (const Iterable
     return result;
 }
 
-optional<InternetMediaType> InternetMediaTypeRegistry::GetAssociatedContentType (const FileSuffixType& fileNameOrSuffix) const
+optional<InternetMediaType> InternetMediaTypeRegistry::GetAssociatedContentType (const FileSuffixType& fileSuffix) const
 {
-    FileSuffixType suffix = IO::FileSystem::FromPath (IO::FileSystem::ToPath (fileNameOrSuffix).extension ());
-    if (suffix.empty ()) {
+    if (fileSuffix.empty ()) {
         return nullopt;
     }
-    Assert (suffix[0] == '.');
-    return fFrontEndRep_->GetAssociatedContentType (suffix);
+    Assert (fileSuffix[0] == '.');
+    return fFrontEndRep_->GetAssociatedContentType (fileSuffix);
 }
