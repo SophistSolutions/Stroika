@@ -176,7 +176,12 @@ namespace {
                         Format (L"File suffix mismatch for %s: got %s, expected %s", ToString (i).c_str (), ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str (), ToString (possibleFileSuffixes).c_str ()).c_str ());
                 }
                 if (not possibleFileSuffixes.Any ([&] (String suffix) -> bool { return r.GetAssociatedContentType (suffix) == i; })) {
-                    Stroika::TestHarness::WarnTestIssue (Format (L"GetAssociatedContentType for fileSuffixes %s (expected %s)", ToString (possibleFileSuffixes).c_str (), ToString (i).c_str ()).c_str ());
+                    Stroika::TestHarness::WarnTestIssue (
+                        Format (L"GetAssociatedContentType for fileSuffixes %s (expected %s, got %s)",
+                                ToString (possibleFileSuffixes).c_str (),
+                                ToString (i).c_str (),
+                                ToString (possibleFileSuffixes.SelectIf<InternetMediaType> ([&] (String suffix) { return r.GetAssociatedContentType (suffix); }).As<Set<InternetMediaType>> ()).c_str ())
+                            .c_str ());
                 }
             };
             dumpCT (L"PLAINTEXT", InternetMediaTypes::kText_PLAIN);
