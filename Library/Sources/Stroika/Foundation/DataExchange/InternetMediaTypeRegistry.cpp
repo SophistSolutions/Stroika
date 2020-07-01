@@ -128,17 +128,23 @@ shared_ptr<InternetMediaTypeRegistry::IBackendRep> InternetMediaTypeRegistry::De
 #if qPlatform_Windows
     return WindowsRegistryDefaultBackend ();
 #endif
-    try {
-        return UsrSharedDefaultBackend ();
+    // not sure how to tell if this works - @todo - FIX - need to avoid this on macos somehow...
+    if (filesystem::exists ("/usr/share/mime")) {
+        try {
+            return UsrSharedDefaultBackend ();
+        }
+        catch (...) {
+            // LOG/WRN
+        }
     }
-    catch (...) {
-        // LOG/WRN
-    }
-    try {
-        return EtcMimeTypesDefaultBackend ();
-    }
-    catch (...) {
-        // LOG/WRN
+    // not sure how to tell if this works - @todo - FIX - need to avoid this on macos somehow...
+    if (filesystem::exists ("/etc/mime.types")) {
+        try {
+            return EtcMimeTypesDefaultBackend ();
+        }
+        catch (...) {
+            // LOG/WRN
+        }
     }
     return BakedInDefaultBackend (); // always works (but sucks)
 }
