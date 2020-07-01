@@ -453,6 +453,7 @@ auto InternetMediaTypeRegistry::BakedInDefaultBackend () -> shared_ptr<IBackendR
                      {InternetMediaTypes::kText_HTML, L".htm"},
                      {InternetMediaTypes::kText_HTML, L".html"},
                      {InternetMediaTypes::kJSON, L".json"},
+                     {InternetMediaTypes::kImage_PNG, L".png"},
                  }) {
                 fSuffix2MediaTypeMap_.AddIf (i.second, i.first);
                 fMediaType2PreferredSuffixMap_.AddIf (i.first, i.second);
