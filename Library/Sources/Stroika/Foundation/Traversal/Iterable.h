@@ -691,12 +691,12 @@ namespace Stroika::Foundation::Traversal {
         template <typename T1, typename T2, typename T3, typename RESULT = tuple<T1, T2, T3>>
         nonvirtual Iterable<RESULT> Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2, const function<T3 (const T&)>& extract3) const;
 
-        public:
+    public:
         /**
          *  \see Select - maybe better approach to select than above
          */
         template <typename RESULT>
-            nonvirtual Iterable<RESULT> SelectIf (const function<optional<RESULT> (const T&)>& extract) const;
+        nonvirtual Iterable<RESULT> SelectIf (const function<optional<RESULT> (const T&)>& extract) const;
 
     public:
         /**
