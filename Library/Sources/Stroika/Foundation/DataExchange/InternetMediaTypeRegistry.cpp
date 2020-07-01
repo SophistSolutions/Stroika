@@ -518,7 +518,7 @@ Set<String> InternetMediaTypeRegistry::GetAssociatedFileSuffixes (const Iterable
 
 optional<InternetMediaType> InternetMediaTypeRegistry::GetAssociatedContentType (const FileSuffixType& fileNameOrSuffix) const
 {
-    FileSuffixType suffix = IO::FileSystem::GetFileSuffix (fileNameOrSuffix);
+    FileSuffixType suffix = IO::FileSystem::FromPath (IO::FileSystem::ToPath (fileNameOrSuffix).extension ());
     if (suffix.empty ()) {
         return nullopt;
     }

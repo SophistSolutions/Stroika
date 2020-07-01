@@ -209,7 +209,7 @@ pair<String, String> FileSystem::ExtractDirAndBaseName (const String& pathName)
 String FileSystem::StripFileSuffix (const String& pathName)
 {
     String useFName   = pathName;
-    String fileSuffix = GetFileSuffix (pathName);
+    String fileSuffix = IO::FileSystem::FromPath (IO::FileSystem::ToPath (pathName).extension ());
     if (useFName.length () > fileSuffix.length ()) {
         return useFName.substr (0, useFName.length () - fileSuffix.length ());
     }
