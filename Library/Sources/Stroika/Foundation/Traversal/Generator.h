@@ -40,6 +40,8 @@ namespace Stroika::Foundation::Traversal {
     Iterator<T> CreateGeneratorIterator (const function<optional<T> ()>& getNext);
 
     /**
+     *  \brief Create an Iterable<T> from a function that returns optional<T> - treating nullopt as meaning the END of iteration.
+     *
      *  Note - if you need to maintain context for the iterator (typically yes) - bind it into the
      *  std::function lambda closure (with smart pointers).
      *
