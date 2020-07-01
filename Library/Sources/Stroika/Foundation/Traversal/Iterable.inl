@@ -563,6 +563,28 @@ namespace Stroika::Foundation::Traversal {
         return CreateGenerator (getNext);
     }
     template <typename T>
+    template <typename RESULT>
+    Iterable<RESULT> Iterable<T>::SelectIf (const function<optional<RESULT> (const T&)> & extract) const
+    {
+        RequireNotNull (extract);
+        // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
+        auto sharedContext = make_shared<Iterable<T>> (*this);
+        // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
+        // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
+        function<optional<RESULT> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (), extract] () mutable -> optional<RESULT> {
+            // tricky. The funtion we are defining returns nullopt as a sentinal to signal end of iteration. The function we are GIVEN returns nullopt
+            // to signal skip this item. So adjust accordingly
+            while (perIteratorContextBaseIterator) {
+                auto t = extract (*perIteratorContextBaseIterator++);
+                if (t) {
+                    return RESULT (*t);
+                }
+            }
+            return nullopt;
+        };
+        return CreateGenerator (getNext);
+    }
+    template <typename T>
     Iterable<T> Iterable<T>::Skip (size_t nItems) const
     {
         // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)

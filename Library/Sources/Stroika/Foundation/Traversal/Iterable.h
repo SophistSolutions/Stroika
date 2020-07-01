@@ -680,6 +680,9 @@ namespace Stroika::Foundation::Traversal {
          *      \endcode
          *
          *      @todo provide overload that is more terse, where instead of specifing funciton, you specify ptr-to-member or some such?
+         *
+         *  \see SelectIf
+         *  @todo CONSIDER justhaving one typename argument - RESULT - like SelectIf
          */
         template <typename T1, typename RESULT = T1>
         nonvirtual Iterable<RESULT> Select (const function<T1 (const T&)>& extract1) const;
@@ -687,6 +690,13 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual Iterable<RESULT> Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2) const;
         template <typename T1, typename T2, typename T3, typename RESULT = tuple<T1, T2, T3>>
         nonvirtual Iterable<RESULT> Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2, const function<T3 (const T&)>& extract3) const;
+
+        public:
+        /**
+         *  \see Select - maybe better approach to select than above
+         */
+        template <typename RESULT>
+            nonvirtual Iterable<RESULT> SelectIf (const function<optional<RESULT> (const T&)>& extract) const;
 
     public:
         /**
