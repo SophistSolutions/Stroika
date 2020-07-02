@@ -58,8 +58,8 @@
 // Must check CLANG first, since CLANG also defines GCC
 // see
 //      clang++-3.8 -dM -E - < /dev/null
-#if (__clang_major__ < 10) || (__clang_major__ == 10 && (__clang_minor__ < 0))
-#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v2.1 (older clang versions supported by Stroika v2.0) does not support versions prior to APPLE clang++ 10 (XCode 10)"
+#if (__clang_major__ < 11) || (__clang_major__ == 11 && (__clang_minor__ < 0))
+#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v2.1 (older clang versions supported by Stroika v2.0) does not support versions prior to APPLE clang++ 11 (XCode 11)"
 #endif
 #if (__clang_major__ > 11) || (__clang_major__ == 11 && (__clang_minor__ > 0))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of clang++ (APPLE) - USING PREVIOUS COMPILER VERSION BUG DEFINES"
@@ -871,35 +871,13 @@ STILL:
 
 #endif
 
-/*
- *
-    Compiling {StroikaRoot}Library/Sources/Stroika/Frameworks/Modbus/Server.cpp ...
-    Server.cpp:369:45: error: call to unavailable member function 'value': introduced in macOS 10.14
-        options.fLogger.value ()->Log (Logger::Priority::eWarning, L"ModbusTCP unrecognized f...
-           ~~~~~~~~~~~~~~~~^~~~~
-    /Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/optional:933:33: note:
-      candidate function has been explicitly made unavailable
-    constexpr value_type const& value() const&
-*/
-#ifndef qCompilerAndStdLib_optional_value_const_Buggy
-
-#if defined(__clang__) && defined(__APPLE__)
-// VERIFIED FIXED on XCode 11.0
-#define qCompilerAndStdLib_optional_value_const_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
-#else
-#define qCompilerAndStdLib_optional_value_const_Buggy 0
-#endif
-
-#endif
-
 /**
  * get warnings like 
  *      warning: ‘no_sanitize’ attribute directive ignored [-Wattributes
  */
 #ifndef qCompiler_noSanitizeAttribute_Buggy
 #if defined(__clang__) && defined(__APPLE__)
-// appears to work with XCode 10 on macos, if you use clang::no_sanitize for attribute name
-#define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 9))
+#define qCompiler_noSanitizeAttribute_Buggy 0
 #elif defined(__clang__) && !defined(__APPLE__)
 #define qCompiler_noSanitizeAttribute_Buggy ((__clang_major__ <= 6))
 #else
@@ -961,27 +939,6 @@ In file included from ./ObjectVariantMapper.h:883:
 #define qCompiler_MisinterpretAttributeOnCompoundStatementAsWarningIgnored_Buggy 0
 #endif
 
-#endif
-
-/**
- *  \note this also happens to clang++ 5 or lower (fixed in 6) on Linux (LLVM). But we aren't going to bother supporting
- *        those versions for Stroika 2.1. (ONLY HAS EFFECT with -std=c++17)
- *
- *  SAMPLE ERROR OUTPUT:
- *       Undefined symbols for architecture x86_64:
- *        "Stroika::Foundation::Configuration::DefaultNames<Stroika::Foundation::Execution::SignalHandler::Type>::k", referenced from:
- *            Stroika::Foundation::Characters::String Stroika::Foundation::Characters::Private_::ToString_<Stroika::Foundation::Execution::SignalHandler::Type>(Stroika::Foundation::Execution::SignalHandler::Type const&, std::__1::enable_if<is_enum<Stroika::Foundation::Execution::SignalHandler::Type>::value, void>::type*) in Stroika-Foundation.a(SignalHandlers.o)
- *        "Stroika::Foundation::Configuration::DefaultNames<Stroika::Foundation::Execution::Thread::Status>::k", referenced from:
- *            Stroika::Foundation::Characters::String Stroika::Foundation::Characters::Private_::ToString_<Stroika::Foundation::Execution::Thread::Status>(Stroika::Foundation::Execution::Thread::Status const&, std::__1::enable_if<is_enum<Stroika::Foundation::Execution::Thread::Status>::value, void>::type*) in Stroika-Foundation.a(Thread.o)
- *      ld: symbol(s) not found for architecture x86_64
- *      clang: error: linker command failed with exit code 1 (use -v to see invocation)
- */
-#ifndef qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
-#if defined(__clang__) && defined(__APPLE__)
-#define qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 9))
-#else
-#define qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy 0
-#endif
 #endif
 
 // You get double delete/shared_ptr failure on Test43 - IO:Transfer::Cache regression test
@@ -1185,10 +1142,7 @@ clang says:
 */
 #ifndef qCompilerAndStdLib_make_from_tuple_Buggy
 
-#if defined(__clang__) && defined(__APPLE__)
-// VERIFIED FIXED on XCode 11.0
-#define qCompilerAndStdLib_make_from_tuple_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
-#elif defined(__clang__) && !defined(__APPLE__)
+#if defined(__clang__) && !defined(__APPLE__)
 // Appears FIXED with clang++-9
 #define qCompilerAndStdLib_make_from_tuple_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 8))
 #elif defined(_MSC_VER)
@@ -1216,7 +1170,6 @@ clang says:
 
 /*
 @CONFIGVAR:     qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
-
 
 WinSock.cpp
 Fault.cpp
@@ -1623,23 +1576,6 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 #endif
 
 /*
- *  qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
- *
- *   Looking at returned string object from locale - its got a bogus length. And then the DTOR for that string causes crash. Just don't
- *   use this til debugged.
- */
-#ifndef qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
-
-#if defined(__clang__) && defined(__APPLE__)
-// VERIFIED FIXED on XCode 11.0
-#define qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
-#else
-#define qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy 0
-#endif
-
-#endif
-
-/*
  */
 #ifndef qCompilerAndStdLib_locale_pctX_print_time_Buggy
 
@@ -1987,20 +1923,10 @@ namespace {
 #if _MSVC_LANG < kStrokia_Foundation_Configuration_cplusplus_17
 #pragma message("Stroika v2.1 requires at least C++ ISO/IEC 14882:2017(E) supported by the compiler (informally known as C++ 17)")
 #endif
-#elif qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
-#if __cplusplus < kStrokia_Foundation_Configuration_cplusplus_14
-#pragma message("Stroika v2.1 requires at least C++ ISO/IEC 14882:2014(E) supported by the compiler (informally known as C++ 14) - and really uses C++17 features if/when possible")
-#endif
 #else
 #if __cplusplus < kStrokia_Foundation_Configuration_cplusplus_17
 #pragma message("Stroika v2.1 requires at least C++ ISO/IEC 14882:2017(E) supported by the compiler (informally known as C++ 17)")
 #endif
-#endif
-
-// Stroika v2.1 requires C++17, but due to this bug, to enable that with clang, you must say c++14, and then a special warning define
-// so you don't get warnings for using C++17 features. Not perfect, but will have to do
-#if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy && __cplusplus < kStrokia_Foundation_Configuration_cplusplus_17
-#pragma clang diagnostic ignored "-Wc++17-extensions"
 #endif
 
 #if qSilenceAnnoyingCompilerWarnings && defined(__GNUC__) && !defined(__clang__)

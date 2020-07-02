@@ -31,7 +31,6 @@ void Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
     locale::global (GetPlatformDefaultLocale ());
 }
 
-#if !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
 /*
  ********************************************************************************
  ************************* Configuration::GetAvailableLocales *******************
@@ -63,14 +62,12 @@ vector<Characters::String> Configuration::GetAvailableLocales ()
     IgnoreExceptionsForCall (result.push_back (FindLocaleName (L"en"sv, L"us"sv)));
     return result;
 }
-#endif
 
 /*
  ********************************************************************************
  ************************* Configuration::FindLocaleName ************************
  ********************************************************************************
  */
-#if !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
 Characters::String Configuration::FindLocaleName (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode)
 {
     using namespace Characters;
@@ -137,4 +134,3 @@ locale Configuration::FindNamedLocale (const Characters::String& iso2LetterLangu
 {
     return locale (FindLocaleName (iso2LetterLanguageCode, iso2LetterTerritoryCode).AsNarrowSDKString ().c_str ());
 }
-#endif

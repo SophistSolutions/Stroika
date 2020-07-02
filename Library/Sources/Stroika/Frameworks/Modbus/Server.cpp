@@ -362,13 +362,9 @@ namespace {
                         }
                     } break;
                     default: {
-                        DbgTrace (L"UNREGONIZED FunctionCode (nyi probably) - %d - so echo ILLEGAL_FUNCTION code", Characters::ToString (requestHeader.fFunctionCode).c_str ());
+                        DbgTrace (L"UNREGONIZED FunctionCode (NYI probably) - %d - so echo ILLEGAL_FUNCTION code", Characters::ToString (requestHeader.fFunctionCode).c_str ());
                         if (options.fLogger) {
-#if qCompilerAndStdLib_optional_value_const_Buggy
-                            (*options.fLogger)->Log (Logger::Priority::eWarning, L"ModbusTCP unrecognized function code '%s'- rejected as ILLEGAL_FUNCTION", Characters::ToString (requestHeader.fFunctionCode).c_str ());
-#else
                             options.fLogger.value ()->Log (Logger::Priority::eWarning, L"ModbusTCP unrecognized function code '%s'- rejected as ILLEGAL_FUNCTION", Characters::ToString (requestHeader.fFunctionCode).c_str ());
-#endif
                         }
                         MBAPHeaderIsh_ responseHeader = requestHeader;
                         responseHeader.fFunctionCode  = static_cast<FunctionCodeType_> (responseHeader.fFunctionCode | 0x80); // set high bit

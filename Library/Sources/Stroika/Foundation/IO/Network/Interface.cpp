@@ -107,20 +107,6 @@ namespace {
     };
 }
 
-#if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
-/*
- ********************************************************************************
- **************************** Configuration::DefaultNames ***********************
- ********************************************************************************
- */
-namespace Stroika::Foundation::Configuration {
-    template <>
-    constexpr EnumNames<IO::Network::Interface::Status> DefaultNames<IO::Network::Interface::Status>::k;
-    template <>
-    constexpr EnumNames<IO::Network::Interface::Type> DefaultNames<IO::Network::Interface::Type>::k;
-}
-#endif
-
 /*
  ********************************************************************************
  ********************** Interface::WirelessInfo *********************************

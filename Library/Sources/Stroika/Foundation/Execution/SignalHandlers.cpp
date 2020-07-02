@@ -59,18 +59,6 @@ using Time::DurationSecondsType;
 #define qConditionVariablesSafeInAsyncSignalHanlders !qPlatform_POSIX
 #endif
 
-#if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
-/*
- ********************************************************************************
- **************************** Configuration::DefaultNames ***********************
- ********************************************************************************
- */
-namespace Stroika::Foundation::Configuration {
-    template <>
-    constexpr EnumNames<Execution::SignalHandler::Type> DefaultNames<Execution::SignalHandler::Type>::k;
-}
-#endif
-
 /*
  ********************************************************************************
  *************************** Execution::SignalHandler ***************************

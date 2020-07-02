@@ -79,10 +79,6 @@ namespace {
 const Timezone           Timezone::kLocalTime{Timezone::LocalTime ()};
 const Timezone           Timezone::kUTC{Timezone::UTC ()};
 const optional<Timezone> Timezone::kUnknown{Timezone::Unknown ()};
-#elif qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
-constexpr Timezone           Timezone::kLocalTime;
-constexpr Timezone           Timezone::kUTC;
-constexpr optional<Timezone> Timezone::kUnknown;
 #endif
 
 optional<Timezone> Timezone::ParseTimezoneOffsetString (const char* tzStr)

@@ -43,9 +43,7 @@ namespace {
     {
         TestRoundTripFormatThenParseNoChange_ (startDateOrTime, locale ());
         TestRoundTripFormatThenParseNoChange_ (startDateOrTime, locale::classic ());
-#if !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
         TestRoundTripFormatThenParseNoChange_ (startDateOrTime, Configuration::FindNamedLocale (L"en", L"us"));
-#endif
 
         // should add test like this...
         //VerifyTestResult (startDateOrTime == DATEORTIME::Parse (startDateOrTime.Format (DATEORTIME::PrintFormat::eCurrentLocale), DATEORTIME::PrintFormat::ParseFormat::eCurrentLocale));
@@ -143,7 +141,6 @@ namespace {
             VerifyTestResult (TimeOfDay::Parse (L"16:00", TimeOfDay::ParseFormat::eCurrentLocale).GetAsSecondsCount () == 16 * 60 * 60);
         }
         {
-#if !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
             Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale (L"en", L"us")};
 #if qCompilerAndStdLib_locale_pctX_print_time_Buggy
@@ -160,7 +157,6 @@ namespace {
             VerifyTestResult (TimeOfDay (60 * 60 + 101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"1:01:41 AM" or TimeOfDay (60 * 60 + 101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"01:01:41 AM");
             VerifyTestResult (TimeOfDay (60 * 60 + 101).Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"1:01:41 AM");
             VerifyTestResult (TimeOfDay (60 * 60 + 60).Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"1:01 AM");
-#endif
 #endif
         }
         {
@@ -236,14 +232,12 @@ namespace {
             TestRoundTripFormatThenParseNoChange_ (Date::max ());
         }
         {
-#if !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
             Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale (L"en", L"us")};
             Date                           d = Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5));
             TestRoundTripFormatThenParseNoChange_ (d);
             VerifyTestResult (d.Format (Date::PrintFormat::eCurrentLocale) == L"4/5/1903" or d.Format (Date::PrintFormat::eCurrentLocale) == L"04/05/1903");
             VerifyTestResult (d.Format (Date::PrintFormat::eCurrentLocale_WithZerosStripped) == L"4/5/1903");
-#endif
         }
         {
             Date d = Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5));
@@ -284,7 +278,6 @@ namespace {
         }
         //// TODO - FIX FOR PrintFormat::eCurrentLocale_WITHZEROESTRIPPED!!!!
         {
-#if !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
             Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale (L"en", L"us")};
             Date                           d = Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5));
@@ -300,128 +293,127 @@ namespace {
 #else
                 VerifyTestResult (tmp == L"Sun 05 Apr 1903 12:01:41 AM");
 #endif
-#endif
             }
             DateTime dt2 (d, TimeOfDay (60));
 //TOFIX!VerifyTestResult (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
 #endif
-        }
-        {
-            Date d = Date (Year (1903), MonthOfYear::eApril, DayOfMonth (6));
-            TestRoundTripFormatThenParseNoChange_ (d);
-            DateTime dt (d, TimeOfDay (101));
-            TestRoundTripFormatThenParseNoChange_ (dt);
-            String tmp = dt.Format (DateTime::PrintFormat::eCurrentLocale);
-            VerifyTestResult (tmp == L"Mon Apr  6 00:01:41 1903");
-            DateTime dt2 (d, TimeOfDay (60));
-            TestRoundTripFormatThenParseNoChange_ (dt2);
-            // want a variant that does this formatting!
-            //VerifyTestResult (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
-        }
-        VerifyTestResult (DateTime::Parse (L"2010-01-01", DateTime::ParseFormat::eISO8601).GetDate ().GetYear () == Time::Year (2010));
-        {
-            DateTime now = DateTime::Now ();
-            TestRoundTripFormatThenParseNoChange_ (now);
-
-            constexpr bool kLocaleDateTimeFormatMaybeLossy_{true}; // 2 digit date - 03/04/05 parsed as 2005 on windows, and 1905 of glibc (neither wrong)
-            if (kLocaleDateTimeFormatMaybeLossy_) {
-                String   nowShortLocaleForm = now.Format (locale{}, DateTime::kShortLocaleFormatPattern);
-                DateTime dt                 = DateTime::Parse (nowShortLocaleForm, locale{}, {DateTime::kShortLocaleFormatPattern});
-                // This roundtrip can be lossy, becaue the date 2016 could be represented as '16' and then when mapped the other way as
-                // 1916 (locale::classic ()). So fixup the year before comparing
-                Time::Year nYear = now.GetDate ().GetYear ();
-                Date       d     = dt.GetDate ();
-                if (d.GetYear () != nYear) {
-                    VerifyTestResult (((nYear - d.GetYear ()) % 100) == 0);
-                    d  = Date (nYear, d.GetMonth (), d.GetDayOfMonth ());
-                    dt = DateTime (dt, d);
-                }
-                VerifyTestResult (now == dt); // if this fails, look at qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
             }
-            else {
-                VerifyTestResult (now == DateTime::Parse (now.Format (locale{}, DateTime::kShortLocaleFormatPattern), locale{}, {DateTime::kShortLocaleFormatPattern}));
-            }
-        }
-        {
-            using Time::DurationSecondsType;
-            DurationSecondsType now = Time::GetTickCount ();
-            for (DurationSecondsType ds : initializer_list<DurationSecondsType>{3, 995, 3.4, 3004.5, 1055646.4, 60 * 60 * 24 * 300}) {
-                ds += now;
-                DateTime dt = DateTime::FromTickCount (ds);
-                VerifyTestResult (Math::NearlyEquals (dt, DateTime::FromTickCount (dt.ToTickCount ())));
-                // crazy large epsilon for now because we represent datetime to nearest second
-                // (note - failed once with clang++ on vm - could be something else slowed vm down - LGP 2018-04-17 - ignore for now)
-                // But even the 1.1 failed once (--LGP 2019-05-03) - so change to warning and use bigger number (2.1) for error check
-                VerifyTestResultWarning (Math::NearlyEquals (dt.ToTickCount (), ds, 1.1));
-                VerifyTestResult (Math::NearlyEquals (dt.ToTickCount (), ds, 2.1));
-            }
-        }
-        {
-            auto roundTripD = [] (DateTime dt) {
-                String   s   = dt.Format (DateTime::PrintFormat::eRFC1123);
-                DateTime dt2 = DateTime::Parse (s, DateTime::ParseFormat::eRFC1123);
-                VerifyTestResult (dt == dt2);
-            };
-            auto roundTripS = [] (String s) {
-                DateTime dt = DateTime::Parse (s, DateTime::ParseFormat::eRFC1123);
-                VerifyTestResult (dt.Format (DateTime::PrintFormat::eRFC1123) == s);
-            };
-
-            // Parse eRFC1123
-            VerifyTestResult (DateTime::Parse (L"Wed, 09 Jun 2021 10:18:14 GMT", DateTime::ParseFormat::eRFC1123) == (DateTime{Date{Time::Year{2021}, MonthOfYear::eJune, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::UTC ()}));
-            // from https://www.feedvalidator.org/docs/error/InvalidRFC2822Date.html
-            VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 08:00:00 EST", DateTime::ParseFormat::eRFC1123) == (DateTime{Date{Time::Year{2002}, MonthOfYear::eOctober, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
-            VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 13:00:00 GMT", DateTime::ParseFormat::eRFC1123) == (DateTime{Date{Time::Year{2002}, MonthOfYear::eOctober, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
-            VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 15:00:00 +0200", DateTime::ParseFormat::eRFC1123) == (DateTime{Date{Time::Year{2002}, MonthOfYear::eOctober, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
-
-            VerifyTestResult (DateTime::Parse (L"Tue, 6 Nov 2018 06:25:51 -0800 (PST)", DateTime::ParseFormat::eRFC1123) == (DateTime{Date{Time::Year{2018}, MonthOfYear::eNovember, DayOfMonth{6}}, TimeOfDay{6, 25, 51}, Timezone (-8 * 60)}));
-
-            roundTripD (DateTime{Date{Time::Year{2021}, MonthOfYear::eJune, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::UTC ()});
-
-            // Careful with these, because there are multiple valid string representations for a given date
-            roundTripS (L"Wed, 02 Oct 2002 13:00:00 GMT");
-            roundTripS (L"Wed, 02 Oct 2002 15:00:00 +0200");
-            roundTripS (L"Wed, 02 Oct 2002 15:00:00 -0900");
-        }
-        {
-            // difference
             {
-                constexpr Date kDate_{Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29)};
-        constexpr TimeOfDay kTOD_{10, 21, 32};
-        constexpr TimeOfDay kTOD2_{10, 21, 35};
-        VerifyTestResult ((DateTime (kDate_, kTOD_) - DateTime (kDate_, kTOD2_)).As<Time::DurationSecondsType> () == -3);
-        VerifyTestResult ((DateTime (kDate_, kTOD2_) - DateTime (kDate_, kTOD_)).As<Time::DurationSecondsType> () == 3);
-        VerifyTestResult ((DateTime (kDate_.AddDays (1), kTOD_) - DateTime (kDate_, kTOD_)).As<Time::DurationSecondsType> () == 24 * 60 * 60);
-        VerifyTestResult ((DateTime (kDate_, kTOD_) - DateTime (kDate_.AddDays (1), kTOD_)).As<Time::DurationSecondsType> () == -24 * 60 * 60);
+                Date d = Date (Year (1903), MonthOfYear::eApril, DayOfMonth (6));
+                TestRoundTripFormatThenParseNoChange_ (d);
+                DateTime dt (d, TimeOfDay (101));
+                TestRoundTripFormatThenParseNoChange_ (dt);
+                String tmp = dt.Format (DateTime::PrintFormat::eCurrentLocale);
+                VerifyTestResult (tmp == L"Mon Apr  6 00:01:41 1903");
+                DateTime dt2 (d, TimeOfDay (60));
+                TestRoundTripFormatThenParseNoChange_ (dt2);
+                // want a variant that does this formatting!
+                //VerifyTestResult (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
+            }
+            VerifyTestResult (DateTime::Parse (L"2010-01-01", DateTime::ParseFormat::eISO8601).GetDate ().GetYear () == Time::Year (2010));
+            {
+                DateTime now = DateTime::Now ();
+                TestRoundTripFormatThenParseNoChange_ (now);
+
+                constexpr bool kLocaleDateTimeFormatMaybeLossy_{true}; // 2 digit date - 03/04/05 parsed as 2005 on windows, and 1905 of glibc (neither wrong)
+                if (kLocaleDateTimeFormatMaybeLossy_) {
+                    String   nowShortLocaleForm = now.Format (locale{}, DateTime::kShortLocaleFormatPattern);
+                    DateTime dt                 = DateTime::Parse (nowShortLocaleForm, locale{}, {DateTime::kShortLocaleFormatPattern});
+                    // This roundtrip can be lossy, becaue the date 2016 could be represented as '16' and then when mapped the other way as
+                    // 1916 (locale::classic ()). So fixup the year before comparing
+                    Time::Year nYear = now.GetDate ().GetYear ();
+                    Date       d     = dt.GetDate ();
+                    if (d.GetYear () != nYear) {
+                        VerifyTestResult (((nYear - d.GetYear ()) % 100) == 0);
+                        d  = Date (nYear, d.GetMonth (), d.GetDayOfMonth ());
+                        dt = DateTime (dt, d);
+                    }
+                    VerifyTestResult (now == dt); // if this fails, look at qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
+                }
+                else {
+                    VerifyTestResult (now == DateTime::Parse (now.Format (locale{}, DateTime::kShortLocaleFormatPattern), locale{}, {DateTime::kShortLocaleFormatPattern}));
+                }
+            }
+            {
+                using Time::DurationSecondsType;
+                DurationSecondsType now = Time::GetTickCount ();
+                for (DurationSecondsType ds : initializer_list<DurationSecondsType>{3, 995, 3.4, 3004.5, 1055646.4, 60 * 60 * 24 * 300}) {
+                    ds += now;
+                    DateTime dt = DateTime::FromTickCount (ds);
+                    VerifyTestResult (Math::NearlyEquals (dt, DateTime::FromTickCount (dt.ToTickCount ())));
+                    // crazy large epsilon for now because we represent datetime to nearest second
+                    // (note - failed once with clang++ on vm - could be something else slowed vm down - LGP 2018-04-17 - ignore for now)
+                    // But even the 1.1 failed once (--LGP 2019-05-03) - so change to warning and use bigger number (2.1) for error check
+                    VerifyTestResultWarning (Math::NearlyEquals (dt.ToTickCount (), ds, 1.1));
+                    VerifyTestResult (Math::NearlyEquals (dt.ToTickCount (), ds, 2.1));
+                }
+            }
+            {
+                auto roundTripD = [] (DateTime dt) {
+                    String   s   = dt.Format (DateTime::PrintFormat::eRFC1123);
+                    DateTime dt2 = DateTime::Parse (s, DateTime::ParseFormat::eRFC1123);
+                    VerifyTestResult (dt == dt2);
+                };
+                auto roundTripS = [] (String s) {
+                    DateTime dt = DateTime::Parse (s, DateTime::ParseFormat::eRFC1123);
+                    VerifyTestResult (dt.Format (DateTime::PrintFormat::eRFC1123) == s);
+                };
+
+                // Parse eRFC1123
+                VerifyTestResult (DateTime::Parse (L"Wed, 09 Jun 2021 10:18:14 GMT", DateTime::ParseFormat::eRFC1123) == (DateTime{Date{Time::Year{2021}, MonthOfYear::eJune, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::UTC ()}));
+                // from https://www.feedvalidator.org/docs/error/InvalidRFC2822Date.html
+                VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 08:00:00 EST", DateTime::ParseFormat::eRFC1123) == (DateTime{Date{Time::Year{2002}, MonthOfYear::eOctober, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
+                VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 13:00:00 GMT", DateTime::ParseFormat::eRFC1123) == (DateTime{Date{Time::Year{2002}, MonthOfYear::eOctober, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
+                VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 15:00:00 +0200", DateTime::ParseFormat::eRFC1123) == (DateTime{Date{Time::Year{2002}, MonthOfYear::eOctober, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
+
+                VerifyTestResult (DateTime::Parse (L"Tue, 6 Nov 2018 06:25:51 -0800 (PST)", DateTime::ParseFormat::eRFC1123) == (DateTime{Date{Time::Year{2018}, MonthOfYear::eNovember, DayOfMonth{6}}, TimeOfDay{6, 25, 51}, Timezone (-8 * 60)}));
+
+                roundTripD (DateTime{Date{Time::Year{2021}, MonthOfYear::eJune, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::UTC ()});
+
+                // Careful with these, because there are multiple valid string representations for a given date
+                roundTripS (L"Wed, 02 Oct 2002 13:00:00 GMT");
+                roundTripS (L"Wed, 02 Oct 2002 15:00:00 +0200");
+                roundTripS (L"Wed, 02 Oct 2002 15:00:00 -0900");
+            }
+            {
+                // difference
+                {
+                    constexpr Date kDate_{Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29)};
+            constexpr TimeOfDay kTOD_{10, 21, 32};
+            constexpr TimeOfDay kTOD2_{10, 21, 35};
+            VerifyTestResult ((DateTime (kDate_, kTOD_) - DateTime (kDate_, kTOD2_)).As<Time::DurationSecondsType> () == -3);
+            VerifyTestResult ((DateTime (kDate_, kTOD2_) - DateTime (kDate_, kTOD_)).As<Time::DurationSecondsType> () == 3);
+            VerifyTestResult ((DateTime (kDate_.AddDays (1), kTOD_) - DateTime (kDate_, kTOD_)).As<Time::DurationSecondsType> () == 24 * 60 * 60);
+            VerifyTestResult ((DateTime (kDate_, kTOD_) - DateTime (kDate_.AddDays (1), kTOD_)).As<Time::DurationSecondsType> () == -24 * 60 * 60);
+        }
+        {
+            VerifyTestResult ((DateTime::Now () - DateTime::min ()) > Duration ("P200Y"));
+        }
     }
     {
-        VerifyTestResult ((DateTime::Now () - DateTime::min ()) > Duration ("P200Y"));
+        // https://stroika.atlassian.net/browse/STK-555 - Improve Timezone object so that we can read time with +500, and respect that
+        {
+            constexpr Date      kDate_{Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29)};
+            constexpr TimeOfDay kTOD_{10, 21, 32};
+            DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-04:00", DateTime::ParseFormat::eISO8601);
+            DateTime            tdu = td.AsUTC ();
+            VerifyTestResult (tdu == DateTime (kDate_, TimeOfDay (kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()), Timezone::UTC ()));
+        }
+        {
+            constexpr Date      kDate_ = Date (Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29));
+            constexpr TimeOfDay kTOD_{10, 21, 32};
+            DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-0400", DateTime::ParseFormat::eISO8601);
+            DateTime            tdu = td.AsUTC ();
+            VerifyTestResult (tdu == DateTime (kDate_, TimeOfDay (kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()), Timezone::UTC ()));
+        }
+        {
+            constexpr Date      kDate_{Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29)};
+            constexpr TimeOfDay kTOD_{10, 21, 32};
+            DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-04", DateTime::ParseFormat::eISO8601);
+            DateTime            tdu = td.AsUTC ();
+            VerifyTestResult (tdu == DateTime (kDate_, TimeOfDay (kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()), Timezone::UTC ()));
+        }
     }
-}
-{
-    // https://stroika.atlassian.net/browse/STK-555 - Improve Timezone object so that we can read time with +500, and respect that
-    {
-        constexpr Date      kDate_{Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29)};
-        constexpr TimeOfDay kTOD_{10, 21, 32};
-        DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-04:00", DateTime::ParseFormat::eISO8601);
-        DateTime            tdu = td.AsUTC ();
-        VerifyTestResult (tdu == DateTime (kDate_, TimeOfDay (kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()), Timezone::UTC ()));
-    }
-    {
-        constexpr Date      kDate_ = Date (Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29));
-        constexpr TimeOfDay kTOD_{10, 21, 32};
-        DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-0400", DateTime::ParseFormat::eISO8601);
-        DateTime            tdu = td.AsUTC ();
-        VerifyTestResult (tdu == DateTime (kDate_, TimeOfDay (kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()), Timezone::UTC ()));
-    }
-    {
-        constexpr Date      kDate_{Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29)};
-        constexpr TimeOfDay kTOD_{10, 21, 32};
-        DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-04", DateTime::ParseFormat::eISO8601);
-        DateTime            tdu = td.AsUTC ();
-        VerifyTestResult (tdu == DateTime (kDate_, TimeOfDay (kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()), Timezone::UTC ()));
-    }
-}
 }
 }
 

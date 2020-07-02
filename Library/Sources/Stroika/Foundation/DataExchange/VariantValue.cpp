@@ -90,18 +90,6 @@ struct VariantValue::TIRep_ : VariantValue::IRep_, public Memory::UseBlockAlloca
     T fVal;
 };
 
-#if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
-/*
- ********************************************************************************
- **************************** Configuration::DefaultNames ***********************
- ********************************************************************************
- */
-namespace Stroika::Foundation::Configuration {
-    template <>
-    constexpr EnumNames<DataExchange::VariantValue::Type> DefaultNames<DataExchange::VariantValue::Type>::k;
-}
-#endif
-
 /*
  ********************************************************************************
  ******************************** VariantValue **********************************

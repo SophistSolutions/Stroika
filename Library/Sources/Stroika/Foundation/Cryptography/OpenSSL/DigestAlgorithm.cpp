@@ -36,18 +36,6 @@ using namespace Stroika::Foundation::Memory;
 
 #if qHasFeature_OpenSSL
 
-#if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
-/*
- ********************************************************************************
- **************************** Configuration::DefaultNames ***********************
- ********************************************************************************
- */
-namespace Stroika::Foundation::Configuration {
-    template <>
-    constexpr EnumNames<Cryptography::OpenSSL::DigestAlgorithm> DefaultNames<Cryptography::OpenSSL::DigestAlgorithm>::k;
-}
-#endif
-
 /*
  ********************************************************************************
  ************** Cryptography::OpenSSL::Convert2OpenSSL **************************

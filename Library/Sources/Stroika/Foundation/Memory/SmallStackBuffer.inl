@@ -342,12 +342,6 @@ namespace Stroika::Foundation::Memory {
         Assert (capacity () >= size ());
         ValidateGuards_ ();
     }
-#if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
-    template <typename T, size_t BUF_SIZE>
-    constexpr byte SmallStackBuffer<T, BUF_SIZE>::kGuard1_[8];
-    template <typename T, size_t BUF_SIZE>
-    constexpr byte SmallStackBuffer<T, BUF_SIZE>::kGuard2_[8];
-#endif
     template <typename T, size_t BUF_SIZE>
     void SmallStackBuffer<T, BUF_SIZE>::ValidateGuards_ () const
     {

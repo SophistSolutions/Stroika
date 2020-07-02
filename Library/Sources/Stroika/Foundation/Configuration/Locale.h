@@ -64,7 +64,6 @@ namespace Stroika::Foundation::Configuration {
      */
     void UsePlatformDefaultLocaleAsDefaultLocale ();
 
-#if !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
     /**
      *  \brief  List all installed locale names (names which can be passed to std::locale::CTOR)
      *
@@ -91,7 +90,6 @@ namespace Stroika::Foundation::Configuration {
      *  an exception.
      */
     locale FindNamedLocale (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode);
-#endif
 
     /**
      *  Temporarily use the given argument locale.

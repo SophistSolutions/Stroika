@@ -44,18 +44,6 @@ namespace {
                                                                IO::Network::HTTP::HeaderName::kContentType});
 }
 
-#if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
-/*
- ********************************************************************************
- **************************** Configuration::DefaultNames ***********************
- ********************************************************************************
- */
-namespace Stroika::Foundation::Configuration {
-    template <>
-    constexpr EnumNames<Frameworks::WebServer::Response::State> DefaultNames<Frameworks::WebServer::Response::State>::k;
-}
-#endif
-
 /*
  ********************************************************************************
  **************************** WebServer::Response *******************************
