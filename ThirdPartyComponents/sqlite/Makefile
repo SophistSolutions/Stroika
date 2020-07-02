@@ -15,19 +15,22 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 
-VERSION=3320300
+#VERSION=3320300
+VERSION=3.32.3
 #VERSION=3320100
 #VERSION=3310100
 #VERSION=3300100
 
+https://github.com/azadkuh/sqlite-amalgamation/archive/3.32.3.zip
 AMALGAMATION_WITH_VERSION=sqlite-amalgamation-$(VERSION)
 
 ZIPPEDFILE=../Origs-Cache/$(AMALGAMATION_WITH_VERSION).zip
 
 FETCHURLS=
-FETCHURLS+=https://www.sqlite.org/2020/$(AMALGAMATION_WITH_VERSION).zip
-FETCHURLS+=https://www.sqlite.org/2019/$(AMALGAMATION_WITH_VERSION).zip
-FETCHURLS+=https://www.sqlite.org/2018/$(AMALGAMATION_WITH_VERSION).zip
+FETCHURLS+=https://github.com/azadkuh/sqlite-amalgamation/archive/$(VERSION).zip
+#FETCHURLS+=https://www.sqlite.org/2020/$(AMALGAMATION_WITH_VERSION).zip
+#FETCHURLS+=https://www.sqlite.org/2019/$(AMALGAMATION_WITH_VERSION).zip
+#FETCHURLS+=https://www.sqlite.org/2018/$(AMALGAMATION_WITH_VERSION).zip
 
 
 PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)/
