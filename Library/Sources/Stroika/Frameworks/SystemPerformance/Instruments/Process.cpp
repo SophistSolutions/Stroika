@@ -124,11 +124,11 @@ using SystemPerformance::Support::WMICollector;
 
 #if qPlatform_Windows
 namespace {
-    struct SetPrivilegeInContext {
+    struct SetPrivilegeInContext_ {
         enum IgnoreError { eIgnoreError };
         HANDLE    fToken_{INVALID_HANDLE_VALUE};
         SDKString fPrivilege_;
-        SetPrivilegeInContext (LPCTSTR privilege)
+        SetPrivilegeInContext_ (LPCTSTR privilege)
             : fPrivilege_ (privilege)
         {
             try {
@@ -142,7 +142,7 @@ namespace {
                 Execution::ReThrow ();
             }
         }
-        SetPrivilegeInContext (LPCTSTR privilege, IgnoreError)
+        SetPrivilegeInContext_ (LPCTSTR privilege, IgnoreError)
             : fPrivilege_ (privilege)
         {
             try {
@@ -156,9 +156,9 @@ namespace {
                 }
             }
         }
-        SetPrivilegeInContext (const SetPrivilegeInContext&) = delete;
-        SetPrivilegeInContext& operator= (const SetPrivilegeInContext&) = delete;
-        ~SetPrivilegeInContext ()
+        SetPrivilegeInContext_ (const SetPrivilegeInContext_&) = delete;
+        SetPrivilegeInContext_& operator= (const SetPrivilegeInContext_&) = delete;
+        ~SetPrivilegeInContext_ ()
         {
             if (fToken_ != INVALID_HANDLE_VALUE) {
                 IgnoreExceptionsForCall (SetPrivilege_ (fToken_, fPrivilege_.c_str (), false));
@@ -1362,7 +1362,7 @@ namespace {
             }
 #endif
 
-            SetPrivilegeInContext s (SE_DEBUG_NAME, SetPrivilegeInContext::eIgnoreError);
+            SetPrivilegeInContext_ s (SE_DEBUG_NAME, SetPrivilegeInContext_::eIgnoreError);
             ProcessMapType        results;
 
 #if qUseWMICollectionSupport_
