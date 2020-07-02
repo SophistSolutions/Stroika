@@ -1055,6 +1055,8 @@ ObjectVariantMapper Instruments::Filesystem::GetObjectVariantMapper ()
         });
         mapper.AddCommonType<Set<String>> ();
         mapper.AddCommonType<optional<Set<String>>> ();
+        mapper.AddCommonType<Set<filesystem::path>> ();
+        mapper.AddCommonType<optional<Set<filesystem::path>>> ();
         mapper.AddClass<MountedFilesystemInfoType> (initializer_list<StructFieldInfo>{
             {L"Device-Kind", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fDeviceKind), StructFieldInfo::eOmitNullFields},
             {L"Filesystem-Type", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fFileSystemType), StructFieldInfo::eOmitNullFields},
