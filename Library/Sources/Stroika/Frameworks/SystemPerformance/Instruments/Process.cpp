@@ -1363,7 +1363,7 @@ namespace {
 #endif
 
             SetPrivilegeInContext_ s (SE_DEBUG_NAME, SetPrivilegeInContext_::eIgnoreError);
-            ProcessMapType        results;
+            ProcessMapType         results;
 
 #if qUseWMICollectionSupport_
             Mapping<String, double> threadCounts_ByPID          = fProcessWMICollector_.GetCurrentValues (kThreadCount_);

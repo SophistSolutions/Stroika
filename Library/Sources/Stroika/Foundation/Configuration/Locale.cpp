@@ -92,12 +92,11 @@ Characters::String Configuration::FindLocaleName (const Characters::String& iso2
         iso2LetterLanguageCode.ToLowerCase (),
         iso2LetterLanguageCode.ToUpperCase (),
     };
-    static const set<String> part2
-    {
+    static const set<String> part2{
         L"-"sv,
-            L"_"sv,
-            L"."sv,
-            L" "sv,
+        L"_"sv,
+        L"."sv,
+        L" "sv,
     };
     set<String> part3{
         iso2LetterTerritoryCode,
