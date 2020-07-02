@@ -6,6 +6,8 @@
 
 #include "../../StroikaPreComp.h"
 
+#include <filesystem>
+
 #include "../../Characters/String.h"
 #include "../../Streams/InternallySynchronizedOutputStream.h"
 #include "../../Streams/OutputStream.h"

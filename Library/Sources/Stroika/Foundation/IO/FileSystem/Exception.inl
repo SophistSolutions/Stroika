@@ -42,18 +42,6 @@ namespace Stroika::Foundation::IO::FileSystem {
         }
     }
 #endif
-#if qHasFeature_boost
-    template <typename FUNCTION, enable_if_t<is_invocable_v<FUNCTION>>*>
-    auto Exception::TranslateBoostFilesystemException2StandardExceptions (const FUNCTION& f)
-    {
-        try {
-            return f ();
-        }
-        catch (const boost::filesystem::filesystem_error& e) {
-            Execution::Throw (TranslateBoostFilesystemException2StandardExceptions (e));
-        }
-    }
-#endif
     template <typename INT_TYPE>
     inline INT_TYPE Exception::ThrowPOSIXErrNoIfNegative (INT_TYPE returnCode, const path& p1, const path& p2)
     {

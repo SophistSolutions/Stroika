@@ -10,6 +10,8 @@
 #include <Windows.h>
 #endif
 
+#include <filesystem>
+
 #include "Common.h"
 
 /**

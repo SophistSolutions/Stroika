@@ -422,37 +422,11 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 #endif
 
 /*
- *  In xcode 10 std::filesystem is unsupported... --LGP 2018-06-15
- *  \see https://stackoverflow.com/questions/49577343/filesystem-with-c17-doesnt-work-on-my-mac-os-x-high-sierra
- *  \see https://news.ycombinator.com/item?id=15941976
- *       https://stackoverflow.com/questions/50710781/compatibility-of-c17-of-apple-clang-that-xcode-10-beta-bundle
- *
- *  In xcode 10 one beta the headers for filesystem are there but I cannot find libraries, so disable for now... --LGP 2018-06-15
- */
-#ifndef qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy
-
-#if defined(__clang__) && defined(__APPLE__)
-// -mmacosx-version-min=10.15 needed for https://stackoverflow.com/questions/56924853/why-xcode-11-beta-cant-use-c17s-filesystem-header
-// Figured out I can read __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__  to find setting of -mmacosx-version-min flag
-// And logic is - if this is set, the clang code works correctly, and so this hack isn't needed (and doesn't seem to work due to library name conflicts)
-// Present in clang++-11 (apple) but buggy unless __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__  >= 101500
-#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 101500
-#define qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
-#else
-#define qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy 1
-#endif
-#else
-#define qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy 0
-#endif
-
-#endif
-
-/*
-  *     Assert (::sem_init (&fSem_, kpshared, defaultValue) == 0) failed in 'Stroika::Foundation::Execution::Platform::POSIX::SemWaitableEvent::SemWaitableEvent()'; SemWaitableEvent.cpp:26
+ *     Assert (::sem_init (&fSem_, kpshared, defaultValue) == 0) failed in 'Stroika::Foundation::Execution::Platform::POSIX::SemWaitableEvent::SemWaitableEvent()'; SemWaitableEvent.cpp:26
 ABORTING...
-  *
-  *     https://stackoverflow.com/questions/1413785/sem-init-on-os-x
-  */
+ *
+ *     https://stackoverflow.com/questions/1413785/sem-init-on-os-x
+ */
 #ifndef qCompilerAndStdLib_unnamed_semaphores_Buggy
 
 #if defined(__APPLE__) && defined(__MACH__) /*qPlatform_MacOS - not not including Defaults_Configuration_Common.h before here*/

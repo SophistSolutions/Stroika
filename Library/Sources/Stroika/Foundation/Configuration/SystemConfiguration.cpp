@@ -4,6 +4,7 @@
 #include "../StroikaPreComp.h"
 
 #include <climits>
+#include <filesystem>
 #include <thread>
 
 #if qPlatform_POSIX

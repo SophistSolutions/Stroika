@@ -6,6 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
+#include <filesystem>
 #include <optional>
 
 #if qHasFeature_sqlite

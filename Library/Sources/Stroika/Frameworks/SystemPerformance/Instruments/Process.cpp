@@ -13,6 +13,8 @@
 #include <psapi.h>
 #endif
 
+#include <filesystem>
+
 #include "../../../Foundation/Characters/CString/Utilities.h"
 #include "../../../Foundation/Characters/String2Int.h"
 #include "../../../Foundation/Characters/StringBuilder.h"

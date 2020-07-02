@@ -10,6 +10,7 @@
  ********************************************************************************
  */
 #include <exception>
+#include <filesystem>
 #include <typeindex>
 #include <typeinfo>
 #include <wchar.h>

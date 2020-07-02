@@ -6,6 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
+#include <filesystem>
 #include <optional>
 
 #include "../../Foundation/Characters/String.h"

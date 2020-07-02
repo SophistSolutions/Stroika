@@ -6,6 +6,8 @@
 
 #include "../../StroikaPreComp.h"
 
+#include <filesystem>
+
 #include "../../../Foundation/Configuration/Enumeration.h"
 #include "../../../Foundation/Containers/Mapping.h"
 #include "../../../Foundation/Containers/Sequence.h"

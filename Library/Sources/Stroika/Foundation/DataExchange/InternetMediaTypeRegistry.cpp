@@ -3,6 +3,8 @@
  */
 #include "../StroikaPreComp.h"
 
+#include <filesystem>
+
 #include "../Cache/SynchronizedLRUCache.h"
 #include "../Characters/Format.h"
 #include "../Characters/ToString.h"
@@ -17,7 +19,6 @@
 #include "../Execution/Platform/Windows/Exception.h"
 #endif
 #include "../Execution/Synchronized.h"
-#include "../IO/FileSystem/Common.h"
 #include "../IO/FileSystem/FileInputStream.h"
 #include "../IO/FileSystem/PathName.h"
 

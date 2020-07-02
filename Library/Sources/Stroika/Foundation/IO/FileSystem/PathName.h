@@ -6,6 +6,8 @@
 
 #include "../../StroikaPreComp.h"
 
+#include <filesystem>
+
 #include "../../Characters/String.h"
 #include "../../Configuration/Common.h"
 #include "Common.h"
@@ -149,15 +151,15 @@ namespace Stroika::Foundation::IO::FileSystem {
     /**
      *  Convert Stroika String to std::filesystem::path
      */
-    path           ToPath (const String& p);
-    optional<path> ToPath (const optional<String>& p);
+    filesystem::path           ToPath (const String& p);
+    optional<filesystem::path> ToPath (const optional<String>& p);
 
     /**
      *  Convert  std::filesystem::path to String Stroika String
      *  \note UNLIKE Characters::ToString () - so will NOT surround the name with quotes - this does a straight conversion.
      */
-    String           FromPath (const path& p);
-    optional<String> FromPath (const optional<path>& p);
+    String           FromPath (const filesystem::path& p);
+    optional<String> FromPath (const optional<filesystem::path>& p);
 
 }
 

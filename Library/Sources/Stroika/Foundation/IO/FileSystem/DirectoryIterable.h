@@ -6,6 +6,8 @@
 
 #include "../../StroikaPreComp.h"
 
+#include <filesystem>
+
 #include "../../Characters/String.h"
 #include "../../Configuration/Common.h"
 #include "../../Traversal/Iterable.h"

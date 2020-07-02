@@ -3,6 +3,7 @@
  */
 #include "../../StroikaPreComp.h"
 
+#include <filesystem>
 #include <functional>
 
 #if qPlatform_POSIX

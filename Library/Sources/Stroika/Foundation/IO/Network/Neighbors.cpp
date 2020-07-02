@@ -3,6 +3,8 @@
  */
 #include "../../StroikaPreComp.h"
 
+#include <filesystem>
+
 #include "../../Characters/Format.h"
 #include "../../Characters/String2Int.h"
 #include "../../DataExchange/Variant/CharacterDelimitedLines/Reader.h"

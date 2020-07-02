@@ -10,6 +10,8 @@
 #include <Windows.h>
 #endif
 
+#include <filesystem>
+
 #include "../../Characters/String.h"
 #include "../../Configuration/Common.h"
 #include "../../Debug/Assertions.h"

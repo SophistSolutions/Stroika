@@ -16,11 +16,11 @@ namespace Stroika::Foundation::IO::FileSystem {
      ***************************** IO::FileSystem::ToPath ***************************
      ********************************************************************************
      */
-    inline path ToPath (const String& p)
+    inline filesystem::path ToPath (const String& p)
     {
-        return path{p.As<wstring> ()};
+        return filesystem::path{p.As<wstring> ()};
     }
-    inline optional<path> ToPath (const optional<String>& p)
+    inline optional<filesystem::path> ToPath (const optional<String>& p)
     {
         if (p) {
             return ToPath (*p);
@@ -33,11 +33,11 @@ namespace Stroika::Foundation::IO::FileSystem {
      **************************** IO::FileSystem::FromPath **************************
      ********************************************************************************
      */
-    inline String FromPath (const path& p)
+    inline String FromPath (const filesystem::path& p)
     {
         return p.wstring ();
     }
-    inline optional<String> FromPath (const optional<path>& p)
+    inline optional<String> FromPath (const optional<filesystem::path>& p)
     {
         if (p) {
             return FromPath (*p);

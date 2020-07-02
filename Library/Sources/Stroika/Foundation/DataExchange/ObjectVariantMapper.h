@@ -10,6 +10,7 @@
 #include <compare>
 #endif
 
+#include <filesystem>
 #include <type_traits>
 #include <typeindex>
 

@@ -9,6 +9,8 @@
 #include <Windows.h>
 #endif
 
+#include <filesystem>
+
 #include "../../../Foundation/Characters/FloatConversion.h"
 #include "../../../Foundation/Characters/String_Constant.h"
 #include "../../../Foundation/Configuration/SystemConfiguration.h"

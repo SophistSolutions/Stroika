@@ -7,6 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include <cstdarg>
+#include <filesystem>
 
 #include "../Characters/String.h"
 #include "../Configuration/Common.h"
