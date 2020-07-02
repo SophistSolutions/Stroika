@@ -14,22 +14,33 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
-
-#VERSION=3320300
-VERSION=3.32.3
+VERSION=3320300
 #VERSION=3320100
 #VERSION=3310100
 #VERSION=3300100
+
+#
+# Download of SQLITE from www.sqlite.org mysteriously started failing on the macos machines only for travisci
+# Do I looked for a mirror. I only found one mirroring the amalgamation files - and that used a differently
+# formatted version#. Thus the trickery here to handle that alternate download source.
+#
+# @todo redo this more generally - use substr in first string and eval to lose leading zeros - I think
+#
+#	--LGP 2020-07-02
+#
+ifeq (${VERSION},3320300)
+MAPPED_VERSION=3.32.3
+endif
 
 AMALGAMATION_WITH_VERSION=sqlite-amalgamation-$(VERSION)
 
 ZIPPEDFILE=../Origs-Cache/$(AMALGAMATION_WITH_VERSION).zip
 
 FETCHURLS=
-FETCHURLS+=https://github.com/azadkuh/sqlite-amalgamation/archive/$(VERSION).zip
-#FETCHURLS+=https://www.sqlite.org/2020/$(AMALGAMATION_WITH_VERSION).zip
-#FETCHURLS+=https://www.sqlite.org/2019/$(AMALGAMATION_WITH_VERSION).zip
-#FETCHURLS+=https://www.sqlite.org/2018/$(AMALGAMATION_WITH_VERSION).zip
+FETCHURLS+=https://www.sqlite.org/2020/$(AMALGAMATION_WITH_VERSION).zip
+FETCHURLS+=https://www.sqlite.org/2019/$(AMALGAMATION_WITH_VERSION).zip
+FETCHURLS+=https://www.sqlite.org/2018/$(AMALGAMATION_WITH_VERSION).zip
+FETCHURLS+=https://github.com/azadkuh/sqlite-amalgamation/archive/${MAPPED_VERSION}.zip
 
 
 PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)/
@@ -62,7 +73,6 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 $(ZIPPEDFILE):
 	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ../../ScriptsLib/WebGet $(ZIPPEDFILE) $(FETCHURLS)
 
-
 SILENT_BUILD_FLAG=	-silent
 ifeq ($(ECHO_BUILD_LINES),1)
 SILENT_BUILD_FLAG=
@@ -85,8 +95,9 @@ ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPED
 	@../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "sqlite ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
 	@mkdir -p $@
 	@unzip -q $(ZIPPEDFILE) -d $@
-	@mv $@/$(AMALGAMATION_WITH_VERSION)/* $@/
-	@rm -rf $@/$(AMALGAMATION_WITH_VERSION)
+	@#intentionally make mv/rm code version agnostic due to issue with differently formatted zip files in different mirrors/repositories
+	@mv $@/sqlite-amalgamation-*/* $@/
+	@rm -rf $@/sqlite-amalgamation-*
 	@touch $@
 
 
