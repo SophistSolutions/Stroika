@@ -142,7 +142,7 @@ jobs:
         - clang++ --version
       script:
         # travis_wait, because dont get output building third-party-components for a while in openssl
-        - travis_wait 30 make third-party-components
+        - travis_wait 40 make third-party-components
         - make samples
       after_failure:
         - echo "HANDLING FAILURE DUMPING DEBUG STUFF:"
@@ -171,7 +171,7 @@ jobs:
         - clang++ --version
       script:
         # travis_wait, because dont get output building third-party-components for a while in openssl
-        - travis_wait 30 make third-party-components
+        - travis_wait 40 make third-party-components
         - make run-tests
       after_failure:
         - echo "run-tests failed:" # in the event of failure could add extra dump/log here
