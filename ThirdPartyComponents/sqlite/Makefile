@@ -21,7 +21,6 @@ VERSION=3.32.3
 #VERSION=3310100
 #VERSION=3300100
 
-https://github.com/azadkuh/sqlite-amalgamation/archive/3.32.3.zip
 AMALGAMATION_WITH_VERSION=sqlite-amalgamation-$(VERSION)
 
 ZIPPEDFILE=../Origs-Cache/$(AMALGAMATION_WITH_VERSION).zip
