@@ -49,14 +49,14 @@ namespace {
                         fDB_ = make_unique<Database::SQLite::Connection> (testDBFile, [&created] (Database::SQLite::Connection& db) { created = true; InitialSetup_ (db); });
                     }
                     catch (...) {
-                        DbgTrace (L"Error %s experiment DB: %s: %s", created ? L"creating" : L"opening", testDBFile.c_str (), Characters::ToString (current_exception ()).c_str ());
+                        DbgTrace (L"Error %s experiment DB: %s: %s", created ? L"creating" : L"opening", Characters::ToString (testDBFile).c_str (), Characters::ToString (current_exception ()).c_str ());
                         Execution::ReThrow ();
                     }
                     if (created) {
-                        DbgTrace (L"Initialized new experiment DB: %s", testDBFile.c_str ());
+                        DbgTrace (L"Initialized new experiment DB: %s", Characters::ToString (testDBFile).c_str ());
                     }
                     else {
-                        DbgTrace (L"Opened experiment DB: %s", testDBFile.c_str ());
+                        DbgTrace (L"Opened experiment DB: %s", Characters::ToString (testDBFile).c_str ());
                     }
                 }
                 DB (Database::SQLite::Connection::InMemoryDBFlag)
