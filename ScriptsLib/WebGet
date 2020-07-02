@@ -57,8 +57,7 @@ doGetOne_ () {
           $MY_PATH/PrintProgressLine $MAKE_INDENT_LEVEL "cp ${url:8} $OUTPUTFILE"
          cp ${url:8} $OUTPUTFILE
      else
-          #WGET_CMD_BASE="wget --quiet --no-check-certificate --tries=$RETRIES -O $OUTPUTFILE"
-          WGET_CMD_BASE="wget --no-check-certificate --tries=$RETRIES -O $OUTPUTFILE"
+          WGET_CMD_BASE="wget --quiet --no-check-certificate --tries=$RETRIES -O $OUTPUTFILE"
           $MY_PATH/PrintProgressLine $MAKE_INDENT_LEVEL "$WGET_CMD_BASE $url ... "
           $WGET_CMD_BASE $url
      fi
