@@ -46,18 +46,23 @@ modern, reliable and threaded applications easier to write.
 
 - CircleCI
 
-  - Status: <https://circleci.com/gh/SophistSolutions/Stroika>
-  - Build/test script: [.circleci/config.yml](.circleci/config.yml)
+  - Nice CI system (docker based).
+  - Autobuilds Linux, and Windows configurations (macos not free for opensource).
+  - Expensive for opensource projects (only allows free trivial builds or once a week builds).
 
-  Nice CI system (docker based). Autobuilds Linux configurations.
+  | [Branches](https://app.circleci.com/pipelines/github/SophistSolutions/Stroika) |                                             Status                                             | [.circleci/config.yml](.circleci/config.yml) |
+  | ------------------------------------------------------------------------------ | :--------------------------------------------------------------------------------------------: | -------------------------------------------- |
+  | **v2.1-Release**                                                               | [Link](https://app.circleci.com/pipelines/github/SophistSolutions/Stroika?branch=v2.1-Release) |                                              |
 
 - Travis CI
 
-  - Status: <https://travis-ci.com/SophistSolutions/Stroika>
-  - Build/test script: [.travis.yml](.travis.yml)
+  - Autobuilds Linux configurations, MacOS, and Windows.
+  - Some configurations work using docker.
 
-  Autobuilds Linux configurations.
-  MacOS and Windows may work in teh future.
+  | [Branches](https://travis-ci.com/github/SophistSolutions/Stroika/branches) |                                                                               Status                                                                               | [.travis.yml](.travis.yml) |
+  | -------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------: | -------------------------- |
+  | **v2.1-Release**                                                           | [![Develop](https://travis-ci.com/SophistSolutions/Stroika.svg?branch=v2.1-Release&status=passed)](https://travis-ci.com/github/SophistSolutions/Stroika/branches) |                            |
+  | **v2.1-Dev**                                                               |   [![Develop](https://travis-ci.com/SophistSolutions/Stroika.svg?branch=v2.1-Dev&status=passed)](https://travis-ci.com/github/SophistSolutions/Stroika/branches)   |                            |
 
 ## Random Features
 
