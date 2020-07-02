@@ -395,10 +395,6 @@ basic-unix-test-configurations:
 	./configure DEFAULT_CONFIG --config-tag Unix;\
 	./configure no-third-party-components --config-tag Unix --LibCurl no --lzma no --zlib no --OpenSSL no --sqlite no --Xerces no --boost no;\
 	./configure only-zlib-system-third-party-component --config-tag Unix --LibCurl no --lzma no --zlib system --OpenSSL no --sqlite no --Xerces no --boost no;\
-	# g++-7\
-	./configure g++-7-debug-c++17 --config-tag Unix --compiler-driver g++-7 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17;\
-	./configure g++-7-release-c++17 --config-tag Unix --compiler-driver g++-7 --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17;\
-	./configure my-g++-7.4-debug --config-tag Unix --compiler-driver /private-compiler-builds/gcc-7.4.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --no-sanitize address --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:/private-compiler-builds/gcc-7.4.0/lib64' --only-if-has-compiler;\
 	# g++-8\
 	./configure g++-8-debug-c++17 --config-tag Unix --compiler-driver g++-8 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17;\
 	./configure g++-8-release-c++17 --config-tag Unix --compiler-driver g++-8 --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17;\

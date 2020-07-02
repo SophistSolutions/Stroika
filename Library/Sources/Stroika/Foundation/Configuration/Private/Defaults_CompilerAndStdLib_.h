@@ -80,8 +80,8 @@
 
 #elif defined(__GNUC__)
 
-#if __GNUC__ < 7
-#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v2.1 does not support versions prior to GCC 7 (v2.0 supports g++5 and g++6)"
+#if __GNUC__ < 8
+#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v2.1 does not support versions prior to GCC 8 (v2.0 supports g++5 and g++6 and g++-7)"
 #endif
 #if __GNUC__ > 10 || (__GNUC__ == 10 && (__GNUC_MINOR__ > 0))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG DEFINES"
@@ -650,9 +650,7 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 
 #if defined(__GNUC__) && !defined(__clang__)
 // https://stackoverflow.com/questions/44405394/how-to-portably-compare-stdsystem-error-exceptions-to-stderrc-values
-#if __GNUC__ <= 7
-#define qCompilerAndStdLib_error_code_compare_condition_Buggy (__GNUC_MINOR__ <= 3)
-#elif __GNUC__ <= 8
+#if __GNUC__ <= 8
 #define qCompilerAndStdLib_error_code_compare_condition_Buggy (__GNUC_MINOR__ <= 3)
 // VERIFIED FIXED in GCC9
 #else
@@ -663,157 +661,6 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 #else
 #define qCompilerAndStdLib_error_code_compare_condition_Buggy 0
 #endif
-#endif
-
-/*
- *  This ONLY affects arm-linux-gnueabihf-g++-7
- *
- ... (7z/CharacterDelimitedLines/INI/JSON/XML/Zip)  (scp ../Builds/raspberrypi-gcc-7-sanitize/Test30
- ...  (scp ../Builds/raspberrypi-gcc-7-sanitize/Test40
- *
- * MUST MANUALLY FIX make default-regressions like to test if this is fixed (MAYBE WITH GCC8)
- *
- =================================================================
- ==13645==ERROR: AddressSanitizer: stack-use-after-scope on address 0x7e94da60 at pc 0x55d05d8d bp 0x7e94c5dc sp 0x7e94c5d4
- WRITE of size 4 at 0x7e94da60 thread T0
- #0 0x55d05d8b in Stroika::Foundation::Memory::SmallStackBuffer<unsigned char, 4096u>::SmallStackBuffer() ../../../DataExchange/../Execution/../Characters/../Containers/Factory/../Concrete/../Private/PatchingDataStructures/../../../Memory/SmallStackBuffer.inl:31
- #1 0x55d3e9fb in Stroika::Foundation::Memory::SmallStackBuffer<unsigned char, 4096u>::SmallStackBuffer(unsigned int) ../../../DataExchange/../Execution/../Characters/../Containers/Factory/../Concrete/../Private/PatchingDataStructures/../../../Memory/SmallStackBuffer.inl:41
- #2 0x55d30787 in Stroika::Foundation::Streams::TextReader::FromBinaryStreamBaseRep_::Read(Stroika::Foundation::Characters::Character*, Stroika::Foundation::Characters::Character*) /home/lewis/Sandbox/Stroika-Regression-Tests/Library/Sources/Stroika/Foundation/Streams/TextReader.cpp:79
- #3 0x55d35877 in Stroika::Foundation::Streams::TextReader::CachingSeekableBinaryStreamRep_::Read(Stroika::Foundation::Characters::Character*, Stroika::Foundation::Characters::Character*) (/tmp/Test30+0x11b3877)
- #4 0x55b2e5f9 in Stroika::Foundation::Streams::InputStream<Stroika::Foundation::Characters::Character>::Ptr::Read() const ../../../Streams/InputStream.inl:134
- #5 0x55b2c291 in Reader_value_ /home/lewis/Sandbox/Stroika-Regression-Tests/Library/Sources/Stroika/Foundation/DataExchange/Variant/JSON/Reader.cpp:337
- #6 0x55b2de41 in Stroika::Foundation::DataExchange::Variant::JSON::Reader::Rep_::Read(Stroika::Foundation::Streams::InputStream<Stroika::Foundation::Characters::Character>::Ptr const&) /home/lewis/Sandbox/Stroika-Regression-Tests/Library/Sources/Stroika/Foundation/DataExchange/Variant/JSON/Reader.cpp:407
- #7 0x55a54931 in Stroika::Foundation::DataExchange::Variant::Reader::Read(Stroika::Foundation::Streams::InputStream<Stroika::Foundation::Characters::Character>::Ptr const&) /home/lewis/Sandbox/Stroika-Regression-Tests/Library/Sources/Stroika/Foundation/DataExchange/Variant/Reader.inl:46
- #8 0x55a540a7 in Stroika::Foundation::DataExchange::Variant::Reader::Read(std::istream&) /home/lewis/Sandbox/Stroika-Regression-Tests/Library/Sources/Stroika/Foundation/DataExchange/Variant/Reader.cpp:34
- #9 0x5576427d in VerifyThisStringFailsToParse_ /home/lewis/Sandbox/Stroika-Regression-Tests/Tests/30/Test.cpp:315
- #10 0x557649cd in DoIt /home/lewis/Sandbox/Stroika-Regression-Tests/Tests/30/Test.cpp:330
- #11 0x5576cb09 in DoAll_ /home/lewis/Sandbox/Stroika-Regression-Tests/Tests/30/Test.cpp:598
- #12 0x5576efb5 in DoRegressionTests_ /home/lewis/Sandbox/Stroika-Regression-Tests/Tests/30/Test.cpp:803
- #13 0x558b7ee7 in Stroika::TestHarness::PrintPassOrFail(void (*)()) /home/lewis/Sandbox/Stroika-Regression-Tests/Tests/30/../TestHarness/TestHarness.cpp:81
- #14 0x5576f013 in main /home/lewis/Sandbox/Stroika-Regression-Tests/Tests/30/Test.cpp:820
- #15 0x76298677 in __libc_start_main (/lib/arm-linux-gnueabihf/libc.so.6+0x16677)
-
- Address 0x7e94da60 is located in stack of thread T0 at offset 4800 in frame
- #0 0x55d30247 in Stroika::Foundation::Streams::TextReader::FromBinaryStreamBaseRep_::Read(Stroika::Foundation::Characters::Character*, Stroika::Foundation::Characters::Character*) /home/lewis/Sandbox/Stroika-Regression-Tests/Library/Sources/Stroika/Foundation/Streams/TextReader.cpp:60
-
- This frame has 10 object(s):
- [32, 34) '<unknown>'
- [96, 100) 'outCursor'
- [160, 164) 'critSec'
- [224, 228) 'cursorB'
- [288, 292) '<unknown>'
- [352, 412) '<unknown>'
- [448, 456) 'mbState_'
- [512, 600) '<unknown>'
- [640, 4760) 'outBuf'
- [4800, 8920) 'inBuf' <== Memory access at offset 4800 is inside this variable
- HINT: this may be a false positive if your program uses some custom stack unwind mechanism or swapcontext
- (longjmp and C++ exceptions *are* supported)
- SUMMARY: AddressSanitizer: stack-use-after-scope ../../../DataExchange/../Execution/../Characters/../Containers/Factory/../Concrete/../Private/PatchingDataStructures/../../../Memory/SmallStackBuffer.inl:31 in Stroika::Foundation::Memory::SmallStackBuffer<unsigned char, 4096u>::SmallStackBuffer()
- Shadow bytes around the buggy address:
- 0x2fd29af0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- 0x2fd29b00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- 0x2fd29b10: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- 0x2fd29b20: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- 0x2fd29b30: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- =>0x2fd29b40: 00 00 00 00 00 00 00 f2 f2 f2 f2 f2[f8]f8 f8 f8
- 0x2fd29b50: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- 0x2fd29b60: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- 0x2fd29b70: 00 00 00 00 00 00 00 00 f8 f8 f8 f8 f8 f8 f8 f8
- 0x2fd29b80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 00
- 0x2fd29b90: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- Shadow byte legend (one shadow byte represents 8 application bytes):
- Addressable:           00
- Partially addressable: 01 02 03 04 05 06 07
- Heap left redzone:       fa
- Freed heap region:       fd
- Stack left redzone:      f1
- Stack mid redzone:       f2
- Stack right redzone:     f3
- Stack after return:      f5
- Stack use after scope:   f8
- Global redzone:          f9
- Global init order:       f6
- Poisoned by user:        f7
- Container overflow:      fc
- Array cookie:            ac
- Intra object redzone:    bb
- ASan internal:           fe
- Left alloca redzone:     ca
- Right alloca redzone:    cb
- ==13645==ABORTING
-
-
-
-
-
-
-
- OR (had diff workaround) -
- LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.4 ./Test44
- =================================================================
- ==16307==ERROR: AddressSanitizer: stack-use-after-scope on address 0x7ea13180 at pc 0x553b760d bp 0x7ea1315c sp 0x7ea13154
- READ of size 4 at 0x7ea13180 thread T0
- #0 0x553b760b in std::initializer_list<Stroika::Foundation::Characters::String>::begin() const /usr/arm-linux-gnueabihf/include/c++/7/initializer_list:75
- #1 0x553b1a0f in Stroika::Foundation::Characters::String const* std::begin<Stroika::Foundation::Characters::String>(std::initializer_list<Stroika::Foundation::Characters::String>) /usr/arm-linux-gnueabihf/include/c++/7/initializer_list:90
- #2 0x553b771b in void Stroika::Foundation::Containers::Set<Stroika::Foundation::Characters::String, Stroika::Foundation::Containers::DefaultTraits::Set<Stroika::Foundation::Characters::String, Stroika::Foundation::Common::DefaultEqualsComparer<Stroika::Foundation::Characters::String, Stroika::Foundation::Common::ComparerWithEquals<Stroika::Foundation::Characters::String> > > >::AddAll<std::initializer_list<Stroika::Foundation::Characters::String>, void>(std::initializer_list<Stroika::Foundation::Characters::String> const&) ../../Characters/../Containers/Set.inl:138
- #3 0x553b1aab in Stroika::Foundation::Containers::Set<Stroika::Foundation::Characters::String, Stroika::Foundation::Containers::DefaultTraits::Set<Stroika::Foundation::Characters::String, Stroika::Foundation::Common::DefaultEqualsComparer<Stroika::Foundation::Characters::String, Stroika::Foundation::Common::ComparerWithEquals<Stroika::Foundation::Characters::String> > > >::Set(std::initializer_list<Stroika::Foundation::Characters::String> const&) ../../Characters/../Containers/Set.inl:41
- #4 0x556b8b17 in ReadMountInfo_MTabLikeFile_ /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/IO/FileSystem/MountedFilesystem.cpp:135
- #5 0x556b94b7 in ReadMountInfo_FromProcFSMounts_ /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/IO/FileSystem/MountedFilesystem.cpp:153
- #6 0x556baa3f in Stroika::Foundation::IO::FileSystem::GetMountedFilesystems() /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/IO/FileSystem/MountedFilesystem.cpp:305
- #7 0x553a6ccb in DoTest /home/lewis/Sandbox/Stroika-Dev/Tests/44/Test.cpp:140
- #8 0x553a76a5 in DoRegressionTests_ /home/lewis/Sandbox/Stroika-Dev/Tests/44/Test.cpp:165
- #9 0x553ed22f in Stroika::TestHarness::PrintPassOrFail(void (*)()) /home/lewis/Sandbox/Stroika-Dev/Tests/44/../TestHarness/TestHarness.cpp:81
- #10 0x553a76eb in main /home/lewis/Sandbox/Stroika-Dev/Tests/44/Test.cpp:173
- #11 0x762b6677 in __libc_start_main (/lib/arm-linux-gnueabihf/libc.so.6+0x16677)
-
- Address 0x7ea13180 is located in stack of thread T0
- SUMMARY: AddressSanitizer: stack-use-after-scope /usr/arm-linux-gnueabihf/include/c++/7/initializer_list:75 in std::initializer_list<Stroika::Foundation::Characters::String>::begin() const
- Shadow bytes around the buggy address:
- 0x2fd425e0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- 0x2fd425f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- 0x2fd42600: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- 0x2fd42610: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- 0x2fd42620: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- =>0x2fd42630:[f8]f8 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- 0x2fd42640: 00 00 00 00 f8 00 00 00 00 00 00 00 00 00 00 00
- 0x2fd42650: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- 0x2fd42660: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- 0x2fd42670: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- 0x2fd42680: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- Shadow byte legend (one shadow byte represents 8 application bytes):
- Addressable:           00
- Partially addressable: 01 02 03 04 05 06 07
- Heap left redzone:       fa
- Freed heap region:       fd
- Stack left redzone:      f1
- Stack mid redzone:       f2
- Stack right redzone:     f3
- Stack after return:      f5
- Stack use after scope:   f8
- Global redzone:          f9
- Global init order:       f6
- Poisoned by user:        f7
- Container overflow:      fc
- Array cookie:            ac
- Intra object redzone:    bb
- ASan internal:           fe
- Left alloca redzone:     ca
- Right alloca redzone:    cb
-
-
- but disabling asan also workaround for now and seems like likely asan bug since only on gcc and arm and when I investigate code looks fine.
- */
-#ifndef qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy
-
-#if defined(__GNUC__) && !defined(__clang__)
-#if defined(__arm__)
-#define qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy (__GNUC__ <= 7))
-#endif
-#else
-#define qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy 0
-#endif
-
 #endif
 
 /*
@@ -1055,11 +902,8 @@ STILL:
 #define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 9))
 #elif defined(__clang__) && !defined(__APPLE__)
 #define qCompiler_noSanitizeAttribute_Buggy ((__clang_major__ <= 6))
-#elif defined(__GNUC__)
-// tested still generates warning with gcc8
-//todo retest with gnu::no_sanitize
-#define qCompiler_noSanitizeAttribute_Buggy (__GNUC__ <= 7)
 #else
+// TYPO - THIS SHOULD BE ZERO - But the way its used is a bit of a misnomer - so leave this as is for now...
 #define qCompiler_noSanitizeAttribute_Buggy 1
 #endif
 #endif
@@ -1165,68 +1009,6 @@ In file included from ./ObjectVariantMapper.h:883:
 #else
 #define qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy 0
 #endif
-#endif
-
-/**
-Compiling  $StroikaRoot/Library/Sources/Stroika/Foundation/Configuration/VersionDefs.cpp...
-Locale.cpp: In function ‘Stroika::Foundation::Characters::String Stroika::Foundation::Configuration::FindLocaleName(const Stroika::Foundation::Characters::String&, const Stroika::Foundation::Characters::String&)’:
-Locale.cpp:102:5: internal compiler error: in process_init_constructor_array, at cp/typeck2.c:1308
-};
-^
-0x6ccd5c process_init_constructor_array
-/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/typeck2.c:1307
-0x6ccd5c process_init_constructor
-/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/typeck2.c:1623
-0x6ccd5c digest_init_r
-/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/typeck2.c:1135
-0x759ef6 finish_compound_literal(tree_node*, tree_node*, int)
-/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/semantics.c:2717
-0x66c481 convert_like_real
-/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/call.c:6803
-0x67355d build_over_call
-/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/call.c:7845
-0x66c66c convert_like_real
-/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/call.c:6716
-0x66c8f5 convert_like_real
-/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/call.c:6844
-0x66d4a6 perform_implicit_conversion_flags(tree_node*, tree_node*, int, int)
-/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/call.c:10119
-0x66bc5e build_special_member_call(tree_node*, tree_node*, vec<tree_node*, va_gc, vl_embed>**, tree_node*, int, int)
-/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/call.c:8371
-0x746d59 expand_default_init
-/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/init.c:1850
-0x746d59 expand_aggr_init_1
-/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/init.c:1965
-0x74767c build_aggr_init(tree_node*, tree_node*, int, int)
-/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/init.c:1704
-0x67eabd build_aggr_init_full_exprs
-/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/decl.c:6170
-0x67eabd check_initializer
-/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/decl.c:6318
-0x68e967 cp_finish_decl(tree_node*, tree_node*, bool, tree_node*, int)
-/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/decl.c:7037
-0x71eded cp_parser_init_declarator
-/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/parser.c:19388
-0x71f5e6 cp_parser_simple_declaration
-/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/parser.c:12777
-0x72028a cp_parser_block_declaration
-/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/parser.c:12603
-0x720c09 cp_parser_declaration_statement
-/home/lewis/BUILD-GCC-7.1.0/objdir/../gcc-7.1.0/gcc/cp/parser.c:12212
-Please submit a full bug report,
-with preprocessed source if appropriate.
-Please include the complete backtrace with any bug report.
-See <https://gcc.gnu.org/bugs/> for instructions.
-
-*/
-#ifndef qCompilerAndStdLib_process_init_constructor_array_Buggy
-
-#if !defined(__clang__) && defined(__GNUC__)
-#define qCompilerAndStdLib_process_init_constructor_array_Buggy (__GNUC__ == 7)
-#else
-#define qCompilerAndStdLib_process_init_constructor_array_Buggy 0
-#endif
-
 #endif
 
 /*

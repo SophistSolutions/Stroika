@@ -94,17 +94,10 @@ Characters::String Configuration::FindLocaleName (const Characters::String& iso2
     };
     static const set<String> part2
     {
-#if qCompilerAndStdLib_process_init_constructor_array_Buggy
-        {L"-"},
-            {L"_"},
-            {L"."},
-            {L" "},
-#else
         L"-"sv,
             L"_"sv,
             L"."sv,
             L" "sv,
-#endif
     };
     set<String> part3{
         iso2LetterTerritoryCode,

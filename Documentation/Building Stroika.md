@@ -100,8 +100,8 @@ This mostly conists of GNU make, and perl (see details below depending on your p
 #### For UNIX
 
 - Compiler
-  - gcc 7 or later OR
-    - Stroika v2.1 is currently tested with gcc7, gcc8, gcc9, and gcc10
+  - gcc 8 or later OR
+    - Stroika v2.1 is currently tested with gcc8, gcc9, and gcc10
   - llvm (clang++) 6 or later
     - Stroika v2.1 is currently tested with clang6, clang7, clang8, clang9, clang10
 - automake (if building curl)
@@ -447,11 +447,11 @@ This allows for building (or clobbering or whatever) a related family of configu
 
 To cross-compile for Raspberry pi,
 
-- install some suitable cross compiler (in this example arm-linux-gnueabihf-g++-7)
+- install some suitable cross compiler (in this example arm-linux-gnueabihf-g++-9)
 
-On unubtu, sudo apt-get install g++-7-arm-linux-gnueabihf
+On unubtu, sudo apt-get install g++-9-arm-linux-gnueabihf
 
-- configure raspberrypi-gcc-7 --apply-default-debug-flags --trace2file enable --compiler-driver arm-linux-gnueabihf-g++-7 --cross-compiling true
+- configure raspberrypi-gcc-9 --apply-default-debug-flags --trace2file enable --compiler-driver arm-linux-gnueabihf-g++-9 --cross-compiling true
 
 Set cross-compiling true so that internal tests aren&#39;t run using the arm built executables.
 
@@ -459,9 +459,9 @@ Set –apply-default-release-flags instead of &#39;debug&#39; for a smaller fast
 
 --trace2file disable to disable tracefile utility, and enabled writes a debug log to /tmp.
 
-- make CONFIGURATION=raspberrypi-gcc-7 all
+- make CONFIGURATION=raspberrypi-gcc-9 all
 
-This builds the samples, libraries etc to Builds/raspberrypi-gcc-7)
+This builds the samples, libraries etc to Builds/raspberrypi-gcc-9)
 
 - make run-tests REMOTE=pi@myRasberryPi
 

@@ -40,7 +40,7 @@ modern, reliable and threaded applications easier to write.
 
 - Stroika v2.1
 
-  Regularly tested on x86, arm, gcc7 thru gcc10, clang 6 thru clang 10, Visual Studio 17 and Visual Studio 19, XCode 11 (but should support XCode 10).
+  Regularly tested on x86, arm, gcc8 thru gcc10, clang 6 thru clang 10, Visual Studio 17 and Visual Studio 19, XCode 11 (but should support XCode 10).
 
 ## CI System Integration
 
