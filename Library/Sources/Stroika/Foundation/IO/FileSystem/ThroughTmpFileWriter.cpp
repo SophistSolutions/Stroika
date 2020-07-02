@@ -53,7 +53,7 @@ ThroughTmpFileWriter::ThroughTmpFileWriter (const filesystem::path& realFileName
 ThroughTmpFileWriter::~ThroughTmpFileWriter ()
 {
     if (not fTmpFilePath_.empty ()) {
-        DbgTrace (L"ThroughTmpFileWriter::DTOR - tmpfile not successfully commited to '%s'", Characters::ToString (fRealFilePath_).c_str ());
+        DbgTrace (L"ThroughTmpFileWriter::DTOR - tmpfile not successfully commited to %s", Characters::ToString (fRealFilePath_).c_str ());
 // ignore errors on unlike, cuz nothing to be done in DTOR anyhow...
 #if qPlatform_Windows
         (void)::DeleteFileW (fTmpFilePath_.c_str ());
