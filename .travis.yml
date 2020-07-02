@@ -124,7 +124,7 @@ jobs:
 
     #
     # MacOS Configuration Build Samples
-    #   o Build with --Xerces no --OpenSSL no, just to avoid timeouts building
+    #   o Build with --boost no --OpenSSL no, just to avoid timeouts building
     - os: osx
       osx_image: xcode11.4
       addons:
@@ -137,7 +137,7 @@ jobs:
         - system_profiler SPSoftwareDataType
         - sw_vers
         # -mmacosx-version-min=10.15 needed for https://stackoverflow.com/questions/56924853/why-xcode-11-beta-cant-use-c17s-filesystem-header
-        - ./configure Debug --apply-default-debug-flags --append-extra-compiler-and-linker-args -mmacosx-version-min=10.15 --Xerces no --OpenSSL no
+        - ./configure Debug --apply-default-debug-flags --append-extra-compiler-and-linker-args -mmacosx-version-min=10.15 --boost no --OpenSSL no
         - cat ConfigurationFiles/Debug.xml
         - clang++ --version
       script:
