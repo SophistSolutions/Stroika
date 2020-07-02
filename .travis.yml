@@ -13,10 +13,6 @@
 #
 # See https://config.travis-ci.com/, https://github.com/travis-ci/travis-yml/blob/master/schema.json for format of this file.
 #
-# See https://travis-ci.community/t/i-have-several-executables-that-just-dont-run-on-your-build-system-under-docker-and-no-way-i-can-see-to-debug
-# for discussion of why the windows build of test apps and running samples from WIX not working
-#   https://stroika.atlassian.net/browse/STK-712
-#
 # TODO
 #   > Consider rewriting the travis build scripts for UNIX to use docker (as I do for windows, and circleci)
 #
@@ -37,21 +33,18 @@ branches:
     - v2.1-Release
 
 jobs:
-  allow_failures:
-    - env:
-        - MATRIX_EVAL="Windows=true && BuildSamples=true" # https://stroika.atlassian.net/browse/STK-708
+  #allow_failures:
+  #  - env:
+  #      - MATRIX_EVAL="Windows=true && BuildSamples=true" # https://stroika.atlassian.net/browse/STK-708
 
   include:
     ## Windows builds notes
     ##   - We break the build into RunTests and RunSamples due to timeout if we try to run both together -- LGP 2020-03-08
     #
     # Windows Configuration (RunTests)
-    #     @todo FIX issue tests run correctly (build works but test files run dont)
-    #     @see https://stroika.atlassian.net/browse/STK-712
     #
     - os: windows
       before_install:
-        - df -h
         - systeminfo
         - echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
         - travis_wait 45 docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
@@ -64,9 +57,6 @@ jobs:
           --detach --name buildContainer
           sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 || echo 'Failed: $?'"
         - docker ps -a
-        - docker exec buildContainer pwd
-        - docker exec buildContainer df -h
-        - docker exec buildContainer cmd /C '"echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%"'
         - docker exec buildContainer systeminfo
         - docker exec buildContainer sh -c "git clone --branch $TRAVIS_BRANCH https://github.com/SophistSolutions/Stroika.git"
         # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no
@@ -74,10 +64,6 @@ jobs:
         - docker exec --workdir c:/Stroika buildContainer cat ConfigurationFiles/Debug.xml
       script:
         - docker exec --workdir c:/Stroika --env MAKEFLAGS=$MAKEFLAGS buildContainer make run-tests
-        # Hacks to test why running tests doesn't work
-        - docker exec --workdir c:/Stroika buildContainer ls -l Builds/Debug
-        - docker exec --workdir c:/Stroika buildContainer ls -l Builds/Debug/Tests
-        - docker exec --workdir c:/Stroika buildContainer sh -c "./Builds/Debug/Tests/Test01.exe; echo $?"
       env:
         - MATRIX_EVAL="Windows=true && RunTests=true"
 
@@ -90,9 +76,7 @@ jobs:
     #
     - os: windows
       before_install:
-        - df -h
         - systeminfo
-        - echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
         - travis_wait 45 docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
       install:
         # Not sure why, but this run appears to require EITHER --interactive or --tty, else it fails
@@ -101,9 +85,6 @@ jobs:
           --memory 4G --cpus 2 --storage-opt 'size=35GB'
           --detach --name buildContainer
           sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 || echo 'Failed: $?'"
-        - docker exec buildContainer pwd
-        - docker exec buildContainer df -h
-        - docker exec buildContainer cmd /C "echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%"
         - docker exec buildContainer systeminfo
         - docker exec buildContainer sh -c "git clone --branch $TRAVIS_BRANCH https://github.com/SophistSolutions/Stroika.git"
         # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no
@@ -114,11 +95,6 @@ jobs:
         - docker exec --workdir c:/Stroika --env MAKEFLAGS=$MAKEFLAGS buildContainer make samples
       after_failure:
         - echo "HANDLING FAILURE DUMPING DEBUG STUFF:"
-        - docker exec --workdir c:/Stroika buildContainer sh -c "cat IntermediateFiles/Release/Samples-Service/WIX-Installer-Build.Out"
-        - docker exec --workdir c:/Stroika buildContainer sh -c "ls -l ThirdPartyComponents/WIX/CURRENT/"
-        - docker exec --workdir c:/Stroika buildContainer sh -c "chmod +x ThirdPartyComponents/WIX/CURRENT/*.exe"
-        - docker exec --workdir c:/Stroika buildContainer sh -c "cd ThirdPartyComponents/WIX/CURRENT/ && ./candle -v; echo 'exit code:' $?"
-        - echo "ENDING DEBUG STUFF DUMP"
       env:
         - MATRIX_EVAL="Windows=true && BuildSamples=true"
 
