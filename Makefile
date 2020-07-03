@@ -392,7 +392,7 @@ default-configurations:
 basic-unix-test-configurations:
 	@ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making basic-unix-test-configurations:"
 	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
-	./configure DEFAULT_CONFIG --config-tag Unix;\
+	./configure DEFAULT_CONFIG --config-tag Unix --only-if-has-compiler;\
 	./configure no-third-party-components --config-tag Unix --LibCurl no --lzma no --zlib no --OpenSSL no --sqlite no --Xerces no --boost no;\
 	./configure only-zlib-system-third-party-component --config-tag Unix --LibCurl no --lzma no --zlib system --OpenSSL no --sqlite no --Xerces no --boost no;\
 	# g++-8\
