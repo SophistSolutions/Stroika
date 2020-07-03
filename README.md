@@ -10,6 +10,8 @@ modern, reliable and threaded applications easier to write.
 
 ## Stroika provides
 
+- [Cache classes](Library/Sources/Stroika/Foundation/Cache/ReadMe.md) (A variety of different caching/memoizing strategies directly supported).
+- [Characters classes](Library/Sources/Stroika/Foundation/Characters/ReadMe.md) (Simpler to use - especially with UNICODE - Strings class, with functional style mappings - to ToString\<template\>() for most Stroika objects).
 - [Container classes](Library/Sources/Stroika/Foundation/Containers/ReadMe.md) (Collection, Queue, Mapping, Sequence, Set, and much more with rich variety of backend implementations).
 - [DataExchange](Library/Sources/Stroika/Foundation/DataExchange/ReadMe.md) (VariantValue, rich collection of data format serializer/deserializers - like JSON, object to/from serialization mappings, and much more).
 - [Execution](Library/Sources/Stroika/Foundation/Execution/ReadMe.md) pattern classes (external process runner, synchronization patterns, blockingqueue, threadpools, and much more).
