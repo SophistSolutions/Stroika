@@ -2445,7 +2445,7 @@ if ($onlyGenerateIfCompilerExists) {
 			}
 		}
 	}
-	if (GetGCCVersion_ (COMPILER_DRIVER_CPlusPlus) < '8.0') {
+	if (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < '8.0') {
 		$generate = false;
 		$generateBecause = "GCC versions < 8 are missing <filesystem> code and wont work with this version of Stroika";
 	}
