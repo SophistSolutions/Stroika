@@ -293,7 +293,6 @@ namespace {
 #else
                 VerifyTestResult (tmp == L"Sun 05 Apr 1903 12:01:41 AM");
 #endif
-            }
             DateTime dt2 (d, TimeOfDay (60));
 //TOFIX!VerifyTestResult (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
 #endif
