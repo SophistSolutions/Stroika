@@ -400,6 +400,13 @@ basic-unix-test-configurations:
 	./configure g++-8-release-c++17 --config-tag Unix --compiler-driver g++-8 --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17;\
 	./configure g++-8-debug-c++2a --config-tag Unix --compiler-driver g++-8 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2a;\
 	./configure my-g++-8.3-debug-c++2a --config-tag Unix --compiler-driver /private-compiler-builds/gcc-8.3.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --no-sanitize address --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:/private-compiler-builds/gcc-8.3.0/lib64' --only-if-has-compiler --cppstd-version c++2a;\
+	# A few sanitize/configs (must do explicit -g++-8 versions for ubuntu 1804 since its default g++ is 7 and not supported any longer)\
+	./configure g++-8-debug-sanitize_leak --config-tag Unix --only-if-has-compiler --compiler-driver g++-8 --apply-default-debug-flags --sanitize none,leak --trace2file enable;\
+	./configure g++-8-debug-sanitize_address --config-tag Unix --only-if-has-compiler --compiler-driver g++-8 --apply-default-debug-flags --sanitize none,address,undefined --trace2file enable;\
+	./configure g++-8-debug-sanitize_thread --config-tag Unix --only-if-has-compiler --compiler-driver g++-8 --apply-default-debug-flags --trace2file enable --cppstd-version c++17 --sanitize none,thread,undefined --append-run-prefix 'TSAN_OPTIONS=suppressions=ThreadSanitizerSuppressions.supp';\
+	./configure g++-8-debug-sanitize_undefined --config-tag Unix --only-if-has-compiler --compiler-driver g++-8 --apply-default-debug-flags --sanitize none,address,undefined --trace2file enable;\
+	./configure g++-8-release-sanitize_address_undefined --config-tag Unix --only-if-has-compiler --compiler-driver g++-8 --apply-default-release-flags --trace2file enable --cppstd-version c++17 --sanitize none,address,undefined;\
+	./configure g++-8-release-sanitize_thread_undefined --config-tag Unix --only-if-has-compiler --compiler-driver g++-8 --apply-default-release-flags --trace2file enable --cppstd-version c++17 --sanitize none,thread,undefined --append-run-prefix 'TSAN_OPTIONS=suppressions=ThreadSanitizerSuppressions.supp';\
 	# g++-9\
 	./configure g++-9-debug-c++17 --config-tag Unix --compiler-driver g++-9 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17;\
 	./configure g++-9-release-c++17 --config-tag Unix --compiler-driver g++-9 --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17;\
@@ -437,13 +444,15 @@ basic-unix-test-configurations:
 	#32-bit not working now - asm bug - must debug...\
 	#./configure gcc-release-32 --compiler-driver "gcc -m32" --trace2file enable --assertions enable --only-if-has-compiler --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args -m32 --static-link-gccruntime disable;\
 	#\
-	./configure g++-debug-sanitize_leak --config-tag Unix --apply-default-debug-flags --sanitize none,leak --trace2file enable;\
-	./configure g++-debug-sanitize_address --config-tag Unix --apply-default-debug-flags --sanitize none,address,undefined --trace2file enable;\
-	./configure g++-debug-sanitize_thread --config-tag Unix --apply-default-debug-flags --trace2file enable --cppstd-version c++17 --sanitize none,thread,undefined --append-run-prefix 'TSAN_OPTIONS=suppressions=ThreadSanitizerSuppressions.supp';\
-	./configure g++-debug-sanitize_undefined --config-tag Unix --apply-default-debug-flags --sanitize none,address,undefined --trace2file enable;\
-	./configure g++-release-sanitize_address_undefined --config-tag Unix --apply-default-release-flags --trace2file enable --cppstd-version c++17 --sanitize none,address,undefined;\
-	./configure g++-release-sanitize_thread_undefined --config-tag Unix --apply-default-release-flags --trace2file enable --cppstd-version c++17 --sanitize none,thread,undefined --append-run-prefix 'TSAN_OPTIONS=suppressions=ThreadSanitizerSuppressions.supp';\
-	./configure g++-optimized --config-tag Unix --apply-default-release-flags;\
+	# A few sanitize/configs (must do explicit -g++-8 versions for ubuntu 1804 since its default g++ is 7 and not supported any longer)\
+	./configure g++-debug-sanitize_leak --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,leak --trace2file enable;\
+	./configure g++-debug-sanitize_address --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,address,undefined --trace2file enable;\
+	./configure g++-debug-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --trace2file enable --cppstd-version c++17 --sanitize none,thread,undefined --append-run-prefix 'TSAN_OPTIONS=suppressions=ThreadSanitizerSuppressions.supp';\
+	./configure g++-debug-sanitize_undefined --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,address,undefined --trace2file enable;\
+	./configure g++-release-sanitize_address_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++17 --sanitize none,address,undefined;\
+	./configure g++-release-sanitize_thread_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++17 --sanitize none,thread,undefined --append-run-prefix 'TSAN_OPTIONS=suppressions=ThreadSanitizerSuppressions.supp';\
+	#\
+	./configure g++-optimized --only-if-has-compiler --config-tag Unix --apply-default-release-flags;\
 	#\
 	###Builds with a few special flags to make valgrind work better\
 	#nb: using default installed C++ compiler cuz of matching installed libraries on host computer\
