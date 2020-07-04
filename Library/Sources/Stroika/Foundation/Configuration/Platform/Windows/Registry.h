@@ -72,6 +72,12 @@ namespace Stroika::Foundation::Configuration::Platform::Windows {
          */
         nonvirtual DataExchange::VariantValue Lookup (const Characters::String& valuePath) const;
 
+    public:
+        nonvirtual Traversal::Iterable<shared_ptr<RegistryKey>> EnumerateSubKeys () const;
+
+    public:
+        nonvirtual Containers::Mapping<Characters::String, DataExchange::VariantValue> EnumerateValues () const;
+
     private:
         /*
          */

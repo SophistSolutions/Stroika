@@ -10,6 +10,8 @@
 #endif
 #include "../../../Execution/Platform/Windows/Exception.h"
 
+#include "../../../Memory/SmallStackBuffer.h"
+
 #include "./Registry.h"
 
 using namespace Stroika;
@@ -114,4 +116,55 @@ VariantValue RegistryKey::Lookup (const String& valuePath) const
         }
     }
     return ExtractValue_ (fKey_, valuePath.c_str ());
+}
+
+Traversal::Iterable<shared_ptr<RegistryKey>> RegistryKey::EnumerateSubKeys () const
+{
+    Require (fKey_ != INVALID_HANDLE_VALUE);
+
+    // Use a generator to avoid keeping tons of registry key objects in memory at the same time (in case this is a limited resource)
+    struct Context_ {
+        HKEY fParentKey;
+        int fCurIndex{0};
+    };
+    auto myContext = make_shared<Context_> ();
+    myContext->fParentKey = fKey_;
+    auto getNext          = [myContext] () -> optional<shared_ptr<RegistryKey>> {
+        Memory::SmallStackBuffer<TCHAR> achKeyBuf{1024};
+        DWORD                           cbName = achKeyBuf.size (); // size of name string
+    retry:
+        auto retCode = ::RegEnumKeyEx (myContext->fParentKey, myContext->fCurIndex, achKeyBuf.begin (), &cbName, nullptr, nullptr, nullptr, nullptr);
+        if (retCode == ERROR_NO_MORE_ITEMS) {
+            return nullopt; // done
+        }
+        if (retCode == ERROR_MORE_DATA) {
+            achKeyBuf.GrowToSize (achKeyBuf.size () * 2);
+            goto retry;
+        }
+        ThrowIfNotERROR_SUCCESS (retCode);
+        myContext->fCurIndex++;
+        return make_shared<RegistryKey> (myContext->fParentKey, String::FromSDKString (achKeyBuf));
+    };
+    return Traversal::CreateGenerator<shared_ptr<RegistryKey>> (getNext);
+}
+
+Containers::Mapping<Characters::String, DataExchange::VariantValue> RegistryKey::EnumerateValues () const
+{
+    Containers::Mapping<Characters::String, DataExchange::VariantValue> result;
+    for (int i = 0;; i++) {
+        Memory::SmallStackBuffer<TCHAR> achKeyBuf{1024};
+        DWORD                           cbName = achKeyBuf.size (); // size of name string
+    retry:
+        auto retCode = ::RegEnumValue (fKey_, i, achKeyBuf.begin (), &cbName, nullptr, nullptr, nullptr, nullptr);
+        if (retCode == ERROR_NO_MORE_ITEMS) {
+            break;
+        }
+        if (retCode == ERROR_MORE_DATA) {
+            achKeyBuf.GrowToSize (achKeyBuf.size () * 2);
+            goto retry;
+        }
+        ThrowIfNotERROR_SUCCESS (retCode);
+        result.Add (String::FromSDKString (achKeyBuf), ExtractValue_ (fKey_, achKeyBuf.begin ()));
+    }
+    return result;
 }
