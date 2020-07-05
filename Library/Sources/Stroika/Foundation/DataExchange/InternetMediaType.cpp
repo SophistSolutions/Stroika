@@ -61,8 +61,15 @@ DataExchange::Private_::InternetMediaType_ModuleData_::InternetMediaType_ModuleD
 InternetMediaType::InternetMediaType (const String& ct)
 {
     // @todo RECALL / DOCUMENT where I got this regexp from - roughly corresponds to https://tools.ietf.org/html/rfc2045#section-5.1
+
+    // ROUGHLY based on
+    //      grammar from RFC 2045 Section 5.1 and RFC 7231 Section 3.1.1.1
+    // and
+    //      https://tools.ietf.org/html/rfc2045#section-5.1
+    //      https://tools.ietf.org/html/rfc7230#section-3.2.6
+    //
     // but I'm not sure its really correct (but probably OK)
-    static const RegularExpression kTopLevelMatcher_ = L"([_\\-[:alnum:]]+|\\*)/([_\\-[:alnum:]]+|\\*)(.*)"_RegEx;
+    static const RegularExpression kTopLevelMatcher_ = L"([_\\-\\+\\!\\$[:alnum:]]+|\\*)/([_\\-\\+\\!\\$[:alnum:]]+|\\*)(.*)"_RegEx;
     Containers::Sequence<String>   matches;
     if (ct.Match (kTopLevelMatcher_, &matches) and matches.length () >= 2) {
         fType_    = matches[0];
