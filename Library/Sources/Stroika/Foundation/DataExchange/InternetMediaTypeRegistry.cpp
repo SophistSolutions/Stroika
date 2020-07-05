@@ -312,7 +312,7 @@ auto InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend () -> shared_ptr<IBac
                     catch (...) {
                         DbgTrace ("Ingoring exception looking parsing potential media type entry (%s): %s", Characters::ToString (line[0]).c_str (), Characters::ToString (current_exception ()).c_str ());
                     }
-                    if (majorType != nullopt and imt.GetType () != majorType) {
+                    if (majorType != nullopt and (imt.GetType< InternetMediaType::AtomType> () != *majorType)) {
                         continue;
                     }
                     results += imt;
@@ -417,7 +417,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
         virtual Set<InternetMediaType> GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const override
         {
             Set<InternetMediaType> results;
-            auto loadGlobsFromFile = [&] (const filesystem::path& fn) {
+            auto                   loadGlobsFromFile = [&] (const filesystem::path& fn) {
                 if (filesystem::exists (fn)) {
                     DbgTrace (L"%s exists so trying to load", Characters::ToString (fn).c_str ());
                     try {
@@ -430,7 +430,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
                                 catch (...) {
                                     DbgTrace ("Ingoring exception looking parsing potential media type entry (%s): %s", Characters::ToString (line[0]).c_str (), Characters::ToString (current_exception ()).c_str ());
                                 }
-                                if (majorType != nullopt and imt.GetType () != majorType) {
+                                if (majorType != nullopt and imt.GetType < InternetMediaType::AtomType> () != majorType) {
                                     continue;
                                 }
                                 results += imt;
@@ -562,7 +562,7 @@ auto InternetMediaTypeRegistry::BakedInDefaultBackend () -> shared_ptr<IBackendR
                         continue; // skip non-matching types
                     }
                 }
-                results += imt;            
+                results += imt;
             }
             return results;
         }
