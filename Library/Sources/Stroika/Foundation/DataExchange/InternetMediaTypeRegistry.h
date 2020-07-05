@@ -147,20 +147,6 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
-         *  Some types can be more general or more specific versions of a given type.
-         *  Return those more general (including argument).
-         */
-        nonvirtual Set<InternetMediaType> GetMoreGeneralTypes (const InternetMediaType& ct) const;
-
-    public:
-        /**
-         *  Some types can be more general or more specific versions of a given type.
-         *  Return those more specific (including argument).
-         */
-        nonvirtual Set<InternetMediaType> GetMoreSpecificTypes (const InternetMediaType& ct) const;
-
-    public:
-        /**
          *  There can be more than one file suffix associated with a content type. Note that this returns file
          *  suffixes from more general InternetMediaTypes as well as the given one.
          */

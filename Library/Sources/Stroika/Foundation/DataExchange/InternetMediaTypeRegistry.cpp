@@ -312,7 +312,7 @@ auto InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend () -> shared_ptr<IBac
                     catch (...) {
                         DbgTrace ("Ingoring exception looking parsing potential media type entry (%s): %s", Characters::ToString (line[0]).c_str (), Characters::ToString (current_exception ()).c_str ());
                     }
-                    if (majorType != nullopt and (imt.GetType< InternetMediaType::AtomType> () != *majorType)) {
+                    if (majorType != nullopt and (imt.GetType<InternetMediaType::AtomType> () != *majorType)) {
                         continue;
                     }
                     results += imt;
@@ -430,7 +430,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
                                 catch (...) {
                                     DbgTrace ("Ingoring exception looking parsing potential media type entry (%s): %s", Characters::ToString (line[0]).c_str (), Characters::ToString (current_exception ()).c_str ());
                                 }
-                                if (majorType != nullopt and imt.GetType < InternetMediaType::AtomType> () != majorType) {
+                                if (majorType != nullopt and imt.GetType<InternetMediaType::AtomType> () != majorType) {
                                     continue;
                                 }
                                 results += imt;
@@ -607,24 +607,8 @@ Set<InternetMediaType> InternetMediaTypeRegistry::GetMediaTypes (InternetMediaTy
     return fFrontEndRep_->GetMediaTypes (majorType);
 }
 
-Set<InternetMediaType> InternetMediaTypeRegistry::GetMoreGeneralTypes (const InternetMediaType& ct) const
+Set<String> InternetMediaTypeRegistry::GetAssociatedFileSuffixes (const Iterable<InternetMediaType>& mediaTypes) const
 {
-    //@todo tmphack add others
-    return Set<InternetMediaType>{ct};
-}
-
-Set<InternetMediaType> InternetMediaTypeRegistry::GetMoreSpecificTypes (const InternetMediaType& ct) const
-{
-    //@todo tmphack add others
-    return Set<InternetMediaType>{ct};
-}
-
-Set<String> InternetMediaTypeRegistry::GetAssociatedFileSuffixes (const Iterable<InternetMediaType>& cts) const
-{
-    Set<InternetMediaType> mediaTypes;
-    cts.Apply ([&mediaTypes, this] (auto i) {
-        mediaTypes += GetMoreGeneralTypes (i);
-    });
     Set<String> result;
     for (auto ct : mediaTypes) {
         for (auto i : GetAssociatedFileSuffixes (ct)) {
