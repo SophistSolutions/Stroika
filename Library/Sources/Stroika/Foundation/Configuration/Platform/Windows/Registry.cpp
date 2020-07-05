@@ -22,10 +22,8 @@ using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Execution::Platform::Windows;
 
-
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
-
 
 /*
  ********************************************************************************
@@ -57,7 +55,7 @@ HKEY RegistryKey::OpenPath_ (HKEY parentKey, const String& path, REGSAM samDesir
 }
 
 namespace {
-    // missingReturnsEmpty flag because I happen to have defined the semantics for Lookup () that way, and its reasonable 
+    // missingReturnsEmpty flag because I happen to have defined the semantics for Lookup () that way, and its reasonable
     // so lets not change now... --LGP 2020-07-05
     VariantValue ExtractValue_ (HKEY key, const TCHAR* path, bool missingReturnsEmpty)
     {
