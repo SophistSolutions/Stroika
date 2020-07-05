@@ -30,6 +30,10 @@ namespace Stroika::Foundation::Configuration::Platform::Windows {
      *              return tmp.As<String> ();
      *          }
      *      \endcode
+     *
+     *  \note It would be convenient to be able to retrieve the parent key and name for this given HKEY,
+     *        but this doesn't appear well supported (but possible):
+     *          https://stackoverflow.com/questions/937044/determine-path-to-registry-key-from-hkey-handle-in-c
      */
     class RegistryKey {
     public:

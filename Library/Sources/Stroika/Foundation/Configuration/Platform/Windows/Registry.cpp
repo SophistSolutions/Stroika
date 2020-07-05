@@ -22,6 +22,11 @@ using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Execution::Platform::Windows;
 
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
 /*
  ********************************************************************************
  ********************************* RegistryKey **********************************
@@ -52,7 +57,9 @@ HKEY RegistryKey::OpenPath_ (HKEY parentKey, const String& path, REGSAM samDesir
 }
 
 namespace {
-    VariantValue ExtractValue_ (HKEY key, const TCHAR* path)
+    // missingReturnsEmpty flag because I happen to have defined the semantics for Lookup () that way, and its reasonable 
+    // so lets not change now... --LGP 2020-07-05
+    VariantValue ExtractValue_ (HKEY key, const TCHAR* path, bool missingReturnsEmpty)
     {
         DWORD dwType         = 0;
         DWORD dwCountInBytes = 0;
@@ -84,8 +91,9 @@ namespace {
                 } break;
             }
         }
-        else if (lResult == ERROR_FILE_NOT_FOUND) {
-            return VariantValue{};      // @todo reconsider if we should throw here or not??? -- LGP 2020-07-04
+        // Just treat this as an error and revisit later if we get issues and maybe change / document behavior for Lookup()
+        else if (lResult == ERROR_FILE_NOT_FOUND and missingReturnsEmpty) {
+            return VariantValue{}; // @todo reconsider if we should throw here or not??? -- LGP 2020-07-04
         }
         else {
             Execution::Throw (Execution::SystemErrorException<> (lResult, system_category ()));
@@ -115,7 +123,7 @@ VariantValue RegistryKey::Lookup (const String& valuePath) const
             }
         }
     }
-    return ExtractValue_ (fKey_, valuePath.c_str ());
+    return ExtractValue_ (fKey_, valuePath.c_str (), true);
 }
 
 Traversal::Iterable<shared_ptr<RegistryKey>> RegistryKey::EnumerateSubKeys () const
@@ -125,9 +133,9 @@ Traversal::Iterable<shared_ptr<RegistryKey>> RegistryKey::EnumerateSubKeys () co
     // Use a generator to avoid keeping tons of registry key objects in memory at the same time (in case this is a limited resource)
     struct Context_ {
         HKEY fParentKey;
-        int fCurIndex{0};
+        int  fCurIndex{0};
     };
-    auto myContext = make_shared<Context_> ();
+    auto myContext        = make_shared<Context_> ();
     myContext->fParentKey = fKey_;
     auto getNext          = [myContext] () -> optional<shared_ptr<RegistryKey>> {
         Memory::SmallStackBuffer<TCHAR> achKeyBuf{1024};
@@ -143,6 +151,9 @@ Traversal::Iterable<shared_ptr<RegistryKey>> RegistryKey::EnumerateSubKeys () co
         }
         ThrowIfNotERROR_SUCCESS (retCode);
         myContext->fCurIndex++;
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace (L"returning next child key: %s", String::FromSDKString (achKeyBuf).c_str ());
+#endif
         return make_shared<RegistryKey> (myContext->fParentKey, String::FromSDKString (achKeyBuf));
     };
     return Traversal::CreateGenerator<shared_ptr<RegistryKey>> (getNext);
@@ -164,7 +175,7 @@ Containers::Mapping<Characters::String, DataExchange::VariantValue> RegistryKey:
             goto retry;
         }
         ThrowIfNotERROR_SUCCESS (retCode);
-        result.Add (String::FromSDKString (achKeyBuf), ExtractValue_ (fKey_, achKeyBuf.begin ()));
+        result.Add (String::FromSDKString (achKeyBuf), ExtractValue_ (fKey_, achKeyBuf.begin (), false));
     }
     return result;
 }
