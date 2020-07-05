@@ -29,6 +29,10 @@ namespace Stroika::Foundation::DataExchange {
     /**
      *  MIME content-types are also sometimes referred to as 'Internet media type'.
      *
+     *  References:
+     *      o   https://tools.ietf.org/html/rfc2045#section-5.1
+     *      o   https://tools.ietf.org/html/rfc2046
+     *
      *  \note - this class stores the type, subtype, and parameters, but it does NOT store any comments from the content-type
      *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
