@@ -27,6 +27,7 @@ using Execution::ModuleGetterSetter;
 namespace {
     void Test1_Atom_ ()
     {
+        Debug::TraceContextBumper ctx{"{}::Test1_Atom_"};
         {
             Atom<> a = L"d";
             Atom<> b = L"d";
@@ -53,6 +54,7 @@ namespace {
 namespace {
     void Test2_OptionsFile_ ()
     {
+        Debug::TraceContextBumper ctx ("{}::Test2_OptionsFile_");
         struct MyData_ {
             bool               fEnabled = false;
             optional<DateTime> fLastSynchronizedAt;
@@ -121,6 +123,7 @@ namespace {
 
     void Test3_ModuleGetterSetter_ ()
     {
+        Debug::TraceContextBumper ctx{"{}::Test3_ModuleGetterSetter_"};
         if (sModuleConfiguration_.Get ().fEnabled) {
             auto n = sModuleConfiguration_.Get ();
             sModuleConfiguration_.Set (n);
@@ -131,6 +134,7 @@ namespace {
 namespace Test4_VariantValue_ {
     void RunTests ()
     {
+        Debug::TraceContextBumper            ctx{"{}::Test4_VariantValue_"};
         Containers::Collection<VariantValue> vc;
         VariantValue                         vv{vc};
     }
@@ -140,6 +144,7 @@ namespace {
     namespace Test5_InternetMediaType_ {
         void RunTests ()
         {
+            Debug::TraceContextBumper ctx ("{}::Test5_InternetMediaType_");
             {
                 InternetMediaType ct1{L"text/plain;charset=ascii"};
                 VerifyTestResult ((ct1.GetParameters () == Containers::Mapping{Common::KeyValuePair<String, String>{L"charset", L"ascii"}}));
@@ -160,38 +165,47 @@ namespace {
                 VerifyTestResult (ct1 == ct2);
                 VerifyTestResult (ct1.IsTextFormat ());
             }
-            auto dumpCT = [] (const String& label, InternetMediaType i) {
-                [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::sThe;
-                DbgTrace (L"SUFFIX(%s)=%s", label.c_str (), Characters::ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str ());
-                DbgTrace (L"MOREGEN(%s)=%s", label.c_str (), Characters::ToString (r.GetMoreGeneralTypes (i)).c_str ());
-                DbgTrace (L"MORESPECIFIC(%s)=%s", label.c_str (), Characters::ToString (r.GetMoreSpecificTypes (i)).c_str ());
-                DbgTrace (L"ASSOCFILESUFFIXES(%s)=%s", label.c_str (), Characters::ToString (r.GetAssociatedFileSuffixes (i)).c_str ());
-                DbgTrace (L"GetAssociatedPrettyName(%s)=%s", label.c_str (), Characters::ToString (r.GetAssociatedPrettyName (i)).c_str ());
-            };
-            auto checkCT = [] (InternetMediaType i, const Set<String>& possibleFileSuffixes) {
-                [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::sThe;
-                using namespace Characters;
-                if (not possibleFileSuffixes.Contains (r.GetPreferredAssociatedFileSuffix (i).value_or (L""))) {
-                    Stroika::TestHarness::WarnTestIssue (
-                        Format (L"File suffix mismatch for %s: got %s, expected %s", ToString (i).c_str (), ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str (), ToString (possibleFileSuffixes).c_str ()).c_str ());
+            {
+                auto dumpCT = [] (const String& label, InternetMediaType i) {
+                    [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::sThe;
+                    DbgTrace (L"SUFFIX(%s)=%s", label.c_str (), Characters::ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str ());
+                    DbgTrace (L"MOREGEN(%s)=%s", label.c_str (), Characters::ToString (r.GetMoreGeneralTypes (i)).c_str ());
+                    DbgTrace (L"MORESPECIFIC(%s)=%s", label.c_str (), Characters::ToString (r.GetMoreSpecificTypes (i)).c_str ());
+                    DbgTrace (L"ASSOCFILESUFFIXES(%s)=%s", label.c_str (), Characters::ToString (r.GetAssociatedFileSuffixes (i)).c_str ());
+                    DbgTrace (L"GetAssociatedPrettyName(%s)=%s", label.c_str (), Characters::ToString (r.GetAssociatedPrettyName (i)).c_str ());
+                };
+                auto checkCT = [] (InternetMediaType i, const Set<String>& possibleFileSuffixes) {
+                    [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::sThe;
+                    using namespace Characters;
+                    if (not possibleFileSuffixes.Contains (r.GetPreferredAssociatedFileSuffix (i).value_or (L""))) {
+                        Stroika::TestHarness::WarnTestIssue (
+                            Format (L"File suffix mismatch for %s: got %s, expected %s", ToString (i).c_str (), ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str (), ToString (possibleFileSuffixes).c_str ()).c_str ());
+                    }
+                    if (not possibleFileSuffixes.Any ([&] (String suffix) -> bool { return r.GetAssociatedContentType (suffix) == i; })) {
+                        Stroika::TestHarness::WarnTestIssue (
+                            Format (L"GetAssociatedContentType for fileSuffixes %s (expected %s, got %s)",
+                                    ToString (possibleFileSuffixes).c_str (),
+                                    ToString (i).c_str (),
+                                    ToString (possibleFileSuffixes.SelectIf<InternetMediaType> ([&] (String suffix) { return r.GetAssociatedContentType (suffix); }).As<Set<InternetMediaType>> ()).c_str ())
+                                .c_str ());
+                    }
+                };
+                dumpCT (L"PLAINTEXT", InternetMediaTypes::kText_PLAIN);
+                checkCT (InternetMediaTypes::kText_PLAIN, {L".txt"});
+                dumpCT (L"HTML", InternetMediaTypes::kText_HTML);
+                checkCT (InternetMediaTypes::kText_HTML, {L".html", L".htm"});
+                dumpCT (L"JSON", InternetMediaTypes::kJSON);
+                checkCT (InternetMediaTypes::kJSON, {L".json"});
+                dumpCT (L"PNG", InternetMediaTypes::kImage_PNG);
+                checkCT (InternetMediaTypes::kImage_PNG, {L".png"});
+            }
+            {
+                Debug::TraceContextBumper ctx1 ("InternetMediaTypeRegistry::sThe.GetMediaTypes()");
+                // enumerate all content types
+                for (auto ct : InternetMediaTypeRegistry::sThe.GetMediaTypes ()) {
+                    DbgTrace (L"i=%s", Characters::ToString (ct).c_str ());
                 }
-                if (not possibleFileSuffixes.Any ([&] (String suffix) -> bool { return r.GetAssociatedContentType (suffix) == i; })) {
-                    Stroika::TestHarness::WarnTestIssue (
-                        Format (L"GetAssociatedContentType for fileSuffixes %s (expected %s, got %s)",
-                                ToString (possibleFileSuffixes).c_str (),
-                                ToString (i).c_str (),
-                                ToString (possibleFileSuffixes.SelectIf<InternetMediaType> ([&] (String suffix) { return r.GetAssociatedContentType (suffix); }).As<Set<InternetMediaType>> ()).c_str ())
-                            .c_str ());
-                }
-            };
-            dumpCT (L"PLAINTEXT", InternetMediaTypes::kText_PLAIN);
-            checkCT (InternetMediaTypes::kText_PLAIN, {L".txt"});
-            dumpCT (L"HTML", InternetMediaTypes::kText_HTML);
-            checkCT (InternetMediaTypes::kText_HTML, {L".html", L".htm"});
-            dumpCT (L"JSON", InternetMediaTypes::kJSON);
-            checkCT (InternetMediaTypes::kJSON, {L".json"});
-            dumpCT (L"PNG", InternetMediaTypes::kImage_PNG);
-            checkCT (InternetMediaTypes::kImage_PNG, {L".png"});
+            }
         }
     }
 }

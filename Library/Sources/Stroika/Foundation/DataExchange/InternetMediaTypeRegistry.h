@@ -135,6 +135,12 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
+         */
+        nonvirtual Set<InternetMediaType> GetMediaTypes () const;
+        nonvirtual Set<InternetMediaType> GetMediaTypes (InternetMediaType::AtomType majorType) const;
+
+    public:
+        /**
          *  There are frequently many file suffixes associated with a given filetype. This routine fetches the single best/preferred value.
          */
         nonvirtual optional<FileSuffixType> GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const;
@@ -182,6 +188,7 @@ namespace Stroika::Foundation::DataExchange {
      */
     struct InternetMediaTypeRegistry::IBackendRep {
         virtual ~IBackendRep ()                                                                                     = default;
+        virtual Set<InternetMediaType>      GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const   = 0;
         virtual optional<FileSuffixType>    GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const    = 0;
         virtual Set<FileSuffixType>         GetAssociatedFileSuffixes (const InternetMediaType& ct) const           = 0;
         virtual optional<String>            GetAssociatedPrettyName (const InternetMediaType& ct) const             = 0;
@@ -192,6 +199,7 @@ namespace Stroika::Foundation::DataExchange {
      */
     struct InternetMediaTypeRegistry::IFrontendRep_ {
         virtual ~IFrontendRep_ ()                                                                                   = default;
+        virtual Set<InternetMediaType>      GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const   = 0;
         virtual optional<FileSuffixType>    GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const    = 0;
         virtual Set<FileSuffixType>         GetAssociatedFileSuffixes (const InternetMediaType& ct) const           = 0;
         virtual optional<String>            GetAssociatedPrettyName (const InternetMediaType& ct) const             = 0;

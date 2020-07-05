@@ -67,6 +67,12 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
         : fData_{Data_{backendRep == nullptr ? nullptr : backendRep}}
     {
     }
+    virtual Set<InternetMediaType> GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const override
+    {
+        auto lockedData = fData_.rwget ();
+        CheckData_ (&lockedData);
+        return lockedData->fBackendRep->GetMediaTypes (majorType);
+    }
     virtual optional<FileSuffixType> GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const override
     {
         auto lockedData = fData_.rwget ();
@@ -173,6 +179,38 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
         mutable Cache::SynchronizedLRUCache<FileSuffixType, optional<InternetMediaType>, equal_to<FileSuffixType>, hash<FileSuffixType>>       fSuffix2MediaTypeCache_{25, 7};
         mutable Cache::SynchronizedLRUCache<InternetMediaType, optional<FileSuffixType>, equal_to<InternetMediaType>, hash<InternetMediaType>> fContentType2FileSuffixCache_{25, 7};
 
+        virtual Set<InternetMediaType> GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const override
+        {
+            Set<InternetMediaType> result;
+            //
+            // rarely do we fetch all MIME types, so don't cache - just refetch each time
+            //
+            // On Windows, in registry, easiest way appears to be to enumerate ALL registry entries in HKCR that start with .,
+            // and look for sub-field 'Content-type'
+            //
+            using RegistryKey = Configuration::Platform::Windows::RegistryKey;
+            for (shared_ptr<RegistryKey> sk : RegistryKey{HKEY_CLASSES_ROOT}.EnumerateSubKeys ()) {
+                // @todo check if this keys name starts with ., but with current API difficult, so just check all entries for Content Type value
+                if (auto o = sk->Lookup (L"Content Type"sv)) {
+                    InternetMediaType imt;
+                    try {
+                        imt = InternetMediaType{o.As<String> ()};
+                    }
+                    catch (...) {
+                        // ignore bad format - such as .sqlproj has Content-Type "string" which my read of the RFC says is illegal
+                        DbgTrace ("Ingoring exception looking parsing registry key (%s): %s", Characters::ToString (o).c_str (), Characters::ToString (current_exception ()).c_str ());
+                        continue;
+                    }
+                    if (majorType) {
+                        if (imt.GetType<InternetMediaType::AtomType> () != *majorType) {
+                            continue; // skip non-matching types
+                        }
+                    }
+                    result.Add (imt);
+                }
+            }
+            return result;
+        }
         virtual optional<FileSuffixType> GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const override
         {
             return fContentType2FileSuffixCache_.LookupValue (ct, [] (const InternetMediaType& ct) -> optional<FileSuffixType> {
@@ -260,6 +298,27 @@ auto InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend () -> shared_ptr<IBac
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"succeeded with %d fSuffix2MediaTypeMap entries, and %d fMediaType2PreferredSuffixMap entries", fSuffix2MediaTypeMap_.size (), fMediaType2PreferredSuffixMap_.size ());
 #endif
+        }
+        virtual Set<InternetMediaType> GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const override
+        {
+            // consider if this should be cached?
+            Set<InternetMediaType> results;
+            for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{' ', '\t'}}.ReadMatrix (IO::FileSystem::FileInputStream::New (L"/etc/mime.types"))) {
+                if (line.length () >= 2 and not line[0].StartsWith (L"#")) {
+                    InternetMediaType imt;
+                    try {
+                        imt = InternetMediaType{line[0]};
+                    }
+                    catch (...) {
+                        DbgTrace ("Ingoring exception looking parsing potential media type entry (%s): %s", Characters::ToString (line[0]).c_str (), Characters::ToString (current_exception ()).c_str ());
+                    }
+                    if (majorType != nullopt and imt.GetType () != majorType) {
+                        continue;
+                    }
+                    results += imt;
+                }
+            }
+            return results;
         }
         virtual optional<FileSuffixType> GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const override
         {
@@ -354,6 +413,40 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"succeeded with %d fSuffix2MediaTypeMap_ entries, and %d fMediaType2PreferredSuffixMap entries", fSuffix2MediaTypeMap_.size (), fMediaType2PreferredSuffixMap_.size ());
 #endif
+        }
+        virtual Set<InternetMediaType> GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const override
+        {
+            Set<InternetMediaType> results;
+            auto loadGlobsFromFile = [&] (const filesystem::path& fn) {
+                if (filesystem::exists (fn)) {
+                    DbgTrace (L"%s exists so trying to load", Characters::ToString (fn).c_str ());
+                    try {
+                        for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{':'}}.ReadMatrix (IO::FileSystem::FileInputStream::New (fn))) {
+                            if (line.length () >= 2) {
+                                InternetMediaType imt;
+                                try {
+                                    imt = InternetMediaType{line[0]};
+                                }
+                                catch (...) {
+                                    DbgTrace ("Ingoring exception looking parsing potential media type entry (%s): %s", Characters::ToString (line[0]).c_str (), Characters::ToString (current_exception ()).c_str ());
+                                }
+                                if (majorType != nullopt and imt.GetType () != majorType) {
+                                    continue;
+                                }
+                                results += imt;
+                            }
+                        }
+                    }
+                    catch (...) {
+                        // log error
+                    }
+                }
+            };
+            // override files loaded first, tied to use of AddIf - not replacing
+            for (auto p : fDataRoots_) {
+                loadGlobsFromFile (p / "globs");
+            }
+            return results;
         }
         virtual optional<FileSuffixType> GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const override
         {
@@ -450,15 +543,28 @@ auto InternetMediaTypeRegistry::BakedInDefaultBackend () -> shared_ptr<IBackendR
         BakedInTypesRep_ ()
         {
             for (auto i : initializer_list<pair<InternetMediaType, FileSuffixType>>{
-                     {InternetMediaTypes::kText_PLAIN, L".txt"},
-                     {InternetMediaTypes::kText_HTML, L".htm"},
-                     {InternetMediaTypes::kText_HTML, L".html"},
-                     {InternetMediaTypes::kJSON, L".json"},
-                     {InternetMediaTypes::kImage_PNG, L".png"},
+                     {InternetMediaTypes::kText_PLAIN, L".txt"_k},
+                     {InternetMediaTypes::kText_HTML, L".htm"_k},
+                     {InternetMediaTypes::kText_HTML, L".html"_k},
+                     {InternetMediaTypes::kJSON, L".json"_k},
+                     {InternetMediaTypes::kImage_PNG, L".png"_k},
                  }) {
                 fSuffix2MediaTypeMap_.AddIf (i.second, i.first);
                 fMediaType2PreferredSuffixMap_.AddIf (i.first, i.second);
             }
+        }
+        virtual Set<InternetMediaType> GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const override
+        {
+            Set<InternetMediaType> results;
+            for (auto&& imt : fMediaType2PreferredSuffixMap_.Keys ()) {
+                if (majorType) {
+                    if (imt.GetType<InternetMediaType::AtomType> () != *majorType) {
+                        continue; // skip non-matching types
+                    }
+                }
+                results += imt;            
+            }
+            return results;
         }
         virtual optional<FileSuffixType> GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const override
         {
@@ -489,6 +595,16 @@ auto InternetMediaTypeRegistry::BakedInDefaultBackend () -> shared_ptr<IBackendR
         }
     };
     return make_shared<BakedInTypesRep_> ();
+}
+
+Set<InternetMediaType> InternetMediaTypeRegistry::GetMediaTypes () const
+{
+    return fFrontEndRep_->GetMediaTypes (nullopt);
+}
+
+Set<InternetMediaType> InternetMediaTypeRegistry::GetMediaTypes (InternetMediaType::AtomType majorType) const
+{
+    return fFrontEndRep_->GetMediaTypes (majorType);
 }
 
 Set<InternetMediaType> InternetMediaTypeRegistry::GetMoreGeneralTypes (const InternetMediaType& ct) const
