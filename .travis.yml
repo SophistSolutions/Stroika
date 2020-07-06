@@ -126,7 +126,7 @@ jobs:
 
     #
     # MacOS Configuration Run-Tests
-    #   o Build with --boost no --OpenSSL no --libcurl no --Xerces no, only to avoid timeout building (cuz limited  to 50 minutes)
+    #   o Build with --boost no --OpenSSL no --libcurl no --Xerces no --lzma no, only to avoid timeout building (cuz limited  to 50 minutes)
     #
     - os: osx
       osx_image: xcode11.5
@@ -140,7 +140,7 @@ jobs:
         - system_profiler SPSoftwareDataType
         - sw_vers
         # -mmacosx-version-min=10.15 needed for https://stackoverflow.com/questions/56924853/why-xcode-11-beta-cant-use-c17s-filesystem-header
-        - ./configure Release --apply-default-release-flags --append-extra-compiler-and-linker-args -mmacosx-version-min=10.15 --boost no --OpenSSL no --libcurl no --Xerces no
+        - ./configure Release --apply-default-release-flags --append-extra-compiler-and-linker-args -mmacosx-version-min=10.15 --boost no --OpenSSL no --libcurl no --Xerces no --lzma no
         - cat ConfigurationFiles/Release.xml
         - clang++ --version
       script:
