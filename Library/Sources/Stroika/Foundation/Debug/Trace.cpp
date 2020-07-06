@@ -116,7 +116,7 @@ namespace {
 
 #if qTraceToFile
 namespace {
-    SDKString mkTraceFileName_ ()
+    filesystem::path mkTraceFileName_ ()
     {
         // Use TempDir instead of EXEDir because on vista, installation permissions prevent us from (easily) writing in EXEDir.
         // (could fix of course, but I'm not sure desirable - reasonable defaults)
@@ -155,7 +155,7 @@ namespace {
                 *i = '_';
             }
         }
-        return IO::FileSystem::WellKnownLocations::GetTemporaryT () + CString::Format (SDKSTR ("TraceLog_%s_PID#%d-%s.txt"), mfname.c_str (), (int)Execution::GetCurrentProcessID (), nowstr.c_str ());
+        return IO::FileSystem::WellKnownLocations::GetTemporary () / CString::Format (SDKSTR ("TraceLog_%s_PID#%d-%s.txt"), mfname.c_str (), (int)Execution::GetCurrentProcessID (), nowstr.c_str ());
     }
 }
 #endif

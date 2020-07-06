@@ -7,6 +7,8 @@
 #ifndef _Stroika_Foundation_Debug_Trace_inl_
 #define _Stroika_Foundation_Debug_Trace_inl_ 1
 
+#include <filesystem>
+
 CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qTraceToFile, qTraceToFile);
 CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qDefaultTracingOn, qDefaultTracingOn);
 
@@ -62,7 +64,7 @@ namespace Stroika::Foundation::Debug {
             Emitter                     fEmitter;
             Execution::ModuleDependency fStringDependency;
 #if qTraceToFile
-            SDKString fTraceFileName;
+            filesystem::path fTraceFileName;
 #endif
         };
     }
