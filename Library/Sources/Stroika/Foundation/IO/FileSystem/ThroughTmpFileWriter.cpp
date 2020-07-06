@@ -12,14 +12,16 @@
 #endif
 
 #include "../../Characters/Format.h"
+#include "../../Characters/ToString.h"
+#include "../../Containers/Common.h"
 #include "../../Execution/Activity.h"
 #include "../../Execution/Exceptions.h"
 #include "../../Execution/Throw.h"
 #if qPlatform_Windows
 #include "../../Execution/Platform/Windows/Exception.h"
 #endif
-#include "../../Containers/Common.h"
 #include "../../Debug/Trace.h"
+#include "../../IO/FileSystem/PathName.h"
 
 #include "Exception.h"
 
@@ -31,7 +33,6 @@ using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::FileSystem;
-using namespace Stroika::Foundation::Memory;
 
 #if qPlatform_Windows
 using Execution::Platform::Windows::ThrowIfZeroGetLastError;
@@ -54,11 +55,11 @@ ThroughTmpFileWriter::~ThroughTmpFileWriter ()
 {
     if (not fTmpFilePath_.empty ()) {
         DbgTrace (L"ThroughTmpFileWriter::DTOR - tmpfile not successfully commited to %s", Characters::ToString (fRealFilePath_).c_str ());
-// ignore errors on unlike, cuz nothing to be done in DTOR anyhow...
-#if qPlatform_Windows
-        (void)::DeleteFileW (fTmpFilePath_.c_str ());
-#elif qPlatform_POSIX
+        // ignore errors on unlink, cuz nothing to be done in DTOR anyhow...(@todo perhaps should at least tracelog)
+#if qPlatform_POSIX
         (void)::unlink (fTmpFilePath_.c_str ());
+#elif qPlatform_Windows
+        (void)::DeleteFileW (fTmpFilePath_.c_str ());
 #else
         AssertNotImplemented ();
 #endif

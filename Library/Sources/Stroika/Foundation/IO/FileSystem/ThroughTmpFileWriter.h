@@ -7,26 +7,13 @@
 #include "../../StroikaPreComp.h"
 
 #include <filesystem>
-#include <set>
-#include <vector>
 
-#if qPlatform_Windows
-#include <Windows.h>
-#endif
-
-#include "../../Characters/SDKChar.h"
-#include "../../Characters/String_Constant.h"
-#include "../../Configuration/Common.h"
-#include "../../Debug/Assertions.h"
-#include "../../Execution/Thread.h"
-#include "../../Time/DateTime.h"
-
-#include "Directory.h"
+#include "../../Characters/String.h"
 
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
+ *  \version    <a href="Code-Status.md#Beta-Late">Beta-Late</a>
  *
  * TODO:
  */
@@ -34,7 +21,6 @@
 namespace Stroika::Foundation::IO::FileSystem {
 
     using Characters::String;
-    using Time::DateTime;
 
     /**
      * Specify the name of a file to write, and an optional file suffix for a tempfile, and
@@ -46,7 +32,7 @@ namespace Stroika::Foundation::IO::FileSystem {
      * we don't have permission to remove it).
      *
      * The point of this is to allow writing a file in such a way that the entire file write is
-     * atomic. We don't want to partially  update a file and upon failure, leave it corrupted.
+     * atomic. We don't want to partially update a file and upon failure, leave it corrupted (partly updated).
      *
      * Using this class, you create a tempfile, write to it, and the Commit () the change. NOTE,
      * it is REQUIRED you call Commit () after all writing to tmpfile is done (and closed),
@@ -75,7 +61,7 @@ namespace Stroika::Foundation::IO::FileSystem {
      */
     class ThroughTmpFileWriter {
     public:
-        ThroughTmpFileWriter (const filesystem::path& realFileName, const String& tmpSuffix = Characters::String_Constant{L".tmp"});
+        ThroughTmpFileWriter (const filesystem::path& realFileName, const String& tmpSuffix = L".tmp"sv);
         ThroughTmpFileWriter (const ThroughTmpFileWriter&) = delete;
         ~ThroughTmpFileWriter ();
 
