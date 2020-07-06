@@ -97,8 +97,8 @@ namespace Stroika::Foundation::IO::FileSystem::WellKnownLocations {
      *          than the GetTemporary () function, and that is critical to its use in
      *          the DbgTrace () code when tracing to a temporary file.
      */
-    filesystem::path GetTemporary ();
-    SDKString        GetTemporaryT ();
+    filesystem::path                                                                                     GetTemporary ();
+    [[deprecated ("Since Stroika v2.1b2 - use GetTemporary returning std::filesystem::path")]] SDKString GetTemporaryT ();
 
 #if qPlatform_Windows
     /**

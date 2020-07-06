@@ -7,7 +7,9 @@
 #ifndef _Stroika_Foundation_Debug_Trace_inl_
 #define _Stroika_Foundation_Debug_Trace_inl_ 1
 
+#if qTraceToFile
 #include <filesystem>
+#endif
 
 CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qTraceToFile, qTraceToFile);
 CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qDefaultTracingOn, qDefaultTracingOn);
