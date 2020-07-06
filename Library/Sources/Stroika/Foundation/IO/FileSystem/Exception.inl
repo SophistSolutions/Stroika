@@ -34,13 +34,6 @@ namespace Stroika::Foundation::IO::FileSystem {
             ThrowSystemErrNo (::GetLastError (), p1, p2);
         }
     }
-    template <typename WINDOWS_API_RESULT>
-    inline static void Exception::ThrowIfZeroGetLastError (WINDOWS_API_RESULT test, const String& p1, const String& p2)
-    {
-        if (test == 0) {
-            ThrowSystemErrNo (::GetLastError (), path (p1.As<wstring> ()), path (p2.As<wstring> ()));
-        }
-    }
 #endif
     template <typename INT_TYPE>
     inline INT_TYPE Exception::ThrowPOSIXErrNoIfNegative (INT_TYPE returnCode, const path& p1, const path& p2)

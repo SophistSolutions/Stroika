@@ -104,9 +104,6 @@ namespace Stroika::Foundation::IO::FileSystem {
          */
         template <typename WINDOWS_API_RESULT>
         static void ThrowIfZeroGetLastError (WINDOWS_API_RESULT test, const path& p1 = {}, const path& p2 = {});
-        //tmphack overload til we switch APIs for FS to all using path
-        template <typename WINDOWS_API_RESULT>
-        static void ThrowIfZeroGetLastError (WINDOWS_API_RESULT test, const String& p1, const String& p2 = {});
 #endif
 
     private:
