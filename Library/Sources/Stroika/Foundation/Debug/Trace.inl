@@ -62,7 +62,6 @@ namespace Stroika::Foundation::Debug {
             ~TraceModuleData_ ();
 
             Emitter                     fEmitter;
-            Execution::ModuleDependency fStringDependency;
 #if qTraceToFile
             filesystem::path fTraceFileName;
 #endif

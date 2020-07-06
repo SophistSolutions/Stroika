@@ -162,7 +162,6 @@ namespace {
 
 Debug::Private_::TraceModuleData_::TraceModuleData_ ()
     : fEmitter ()
-    , fStringDependency (Characters::MakeModuleDependency_String ())
 #if qTraceToFile
     , fTraceFileName (mkTraceFileName_ ())
 #endif
