@@ -18,6 +18,8 @@
  * TODO:
  *          @todo   Add API variant that allows multiple sub-regions of a file to be mapped.
  *
+ *          @todo   Add API controlling if  mapping is readonly or read/write
+ *
  *          @todo   Consider adding a writable MemoryMappedFileReader variant
  *
  */
