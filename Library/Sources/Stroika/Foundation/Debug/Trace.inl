@@ -56,7 +56,6 @@ namespace Stroika::Foundation::Debug {
     }
 #endif
 
-
     namespace Private_ {
         struct TraceModuleData_ {
             TraceModuleData_ ();
