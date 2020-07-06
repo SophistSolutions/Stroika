@@ -16,6 +16,7 @@
 #include "../Characters/SDKChar.h"
 #include "../Characters/SDKString.h"
 #include "../Configuration/Common.h"
+#include "../Execution/ModuleInit.h"
 #include "../Time/Realtime.h"
 #include "CompileTimeFlagChecker.h"
 
@@ -49,19 +50,18 @@ namespace Stroika::Foundation::Debug {
      *  <p>Led contains a limited amount of pre-built tracing code. This could be expanded someday,
      *   depending on how useful people find it. This defaults to being on only for Windows and if @'qDebug' is
      *   on (windows only cuz thats the only place I've implemented the trace message emitter so far).</p>
-            *   @see    qDebug
-            *   @see    DebugTrace
-
-                        Note ALSO - many Stroika modules (CPP files) contain a private
-                            // Comment this in to turn on tracing in this module
-                            //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
-                        define.
-
-                        This is often not enabled by default because it could produce lots of unintersting noise in logfiles
-                        (when tracing on).
-
-                        Turn these flags on selectively just to enable extra detailed logging on a per module basis.
-
+     *   @see    qDebug
+     *   @see    DebugTrace
+     *
+     *          Note ALSO - many Stroika modules (CPP files) contain a private
+     *              // Comment this in to turn on tracing in this module
+     *              //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+     *          define.
+     *
+     *          This is often not enabled by default because it could produce lots of unintersting noise in logfiles
+     *          (when tracing on).
+     *
+     *          Turn these flags on selectively just to enable extra detailed logging on a per module basis.
      */
 #if !defined(qDefaultTracingOn)
 #error "qDefaultTracingOn should normally be defined indirectly by StroikaConfig.h"
@@ -255,6 +255,12 @@ namespace Stroika::Foundation::Debug {
 #define DbgTrace _NoOp_
 #endif
 #endif
+
+    /**
+     *  Used to force/reference this module from another module to assure static constructed module objects constructed earlier enough.
+     *  VERY RARELY needed/used.
+     */
+    Execution::ModuleDependency MakeModuleDependency_Trace ();
 
 }
 

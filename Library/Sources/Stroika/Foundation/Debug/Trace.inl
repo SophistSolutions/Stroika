@@ -54,14 +54,13 @@ namespace Stroika::Foundation::Debug {
     }
 #endif
 
-    Execution::ModuleDependency MakeModuleDependency_Trace ();
 
     namespace Private_ {
         struct TraceModuleData_ {
             TraceModuleData_ ();
             ~TraceModuleData_ ();
 
-            Emitter                     fEmitter;
+            Emitter fEmitter;
 #if qTraceToFile
             filesystem::path fTraceFileName;
 #endif
