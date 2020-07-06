@@ -49,7 +49,7 @@ namespace Stroika::Foundation::IO::FileSystem::WellKnownLocations {
 
     /**
      */
-    String GetMyDocuments (bool createIfNotPresent = true);
+    filesystem::path GetMyDocuments (bool createIfNotPresent = true);
 
     /**
      *  Returns:

@@ -35,7 +35,7 @@ using Characters::String_Constant;
  ************ FileSystem::WellKnownLocations::GetMyDocuments ********************
  ********************************************************************************
  */
-String FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
+filesystem::path FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
 {
 #if qPlatform_POSIX
     // @todo NYI createIfNotPresent - not sure we want/should???
@@ -43,13 +43,13 @@ String FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
     // Cacheable because the environment variables should be set externally.
     // This has the defect that it misses setenv calls, but that SB so rare,
     // and not clearly a bug we ignore subsequent changes...
-    static const String kCachedResult_ = [] () -> String {
+    static const filesystem::path kCachedResult_ = [] () -> String {
         // http://pubs.opengroup.org/onlinepubs/000095399/basedefs/xbd_chap08.html
         const char* pPath = ::getenv ("HOME");
         if (pPath != nullptr) {
-            return AssureDirectoryPathSlashTerminated (String::FromSDKString (pPath));
+            return pPath;
         }
-        return String{};
+        return filesystem::path{};
     }();
     return kCachedResult_;
 #elif qPlatform_Windows
@@ -58,21 +58,16 @@ String FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
     wchar_t fileBuf[MAX_PATH]{};
     // note - https://docs.microsoft.com/en-us/windows/desktop/api/shlobj_core/nf-shlobj_core-shgetspecialfolderpathw not clear this properly sets GetLastError ()
     Execution::Platform::Windows::ThrowIfZeroGetLastError (::SHGetSpecialFolderPathW (nullptr, fileBuf, CSIDL_PERSONAL, createIfNotPresent));
-    String result = fileBuf;
+    filesystem::path result = fileBuf;
     // Assure non-empty result
     if (result.empty ()) {
-        result = String_Constant (L"c:"); // shouldn't happen
+        result = path (L"c:"); // shouldn't happen
     }
-    // assure ends in '\'
-    if (result[result.size () - 1] != '\\') {
-        result += String_Constant (L"\\");
-    }
-    Ensure (result[result.size () - 1] == '\\');
-    Ensure (not createIfNotPresent or filesystem::is_directory (ToPath (result)));
+    Ensure (not createIfNotPresent or filesystem::is_directory (result));
     return result;
 #else
     AssertNotImplemented ();
-    return String ();
+    return filesystem::path ();
 #endif
 }
 
@@ -241,7 +236,7 @@ filesystem::path FileSystem::WellKnownLocations::GetTemporary ()
     // Cacheable because the environment variables should be set externally.
     // This has the defect that it misses setenv calls, but that SB so rare,
     // and not clearly a bug we ignore subsequent changes...
-    static filesystem::path kCachedResult_ = GetTemporary_ ();
+    static const filesystem::path kCachedResult_ = GetTemporary_ ();
     return kCachedResult_;
 }
 
