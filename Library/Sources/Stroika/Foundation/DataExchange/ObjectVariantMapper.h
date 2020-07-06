@@ -28,7 +28,6 @@
 #include "../Containers/SortedMapping.h"
 #include "../Containers/SortedSet.h"
 #include "../Execution/Synchronized.h"
-#include "../IO/FileSystem/Common.h"
 #include "../IO/Network/InternetAddress.h"
 #include "../IO/Network/URI.h"
 #include "../Memory/Common.h"

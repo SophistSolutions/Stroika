@@ -13,7 +13,6 @@
 #include "../Configuration/Common.h"
 #include "../Configuration/Enumeration.h"
 #include "../Debug/Assertions.h"
-#include "../IO/FileSystem/Common.h"
 #include "../Streams/OutputStream.h"
 #include "../Time/Duration.h"
 #include "Synchronized.h"

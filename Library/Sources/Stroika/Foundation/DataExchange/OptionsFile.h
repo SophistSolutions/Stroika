@@ -11,7 +11,6 @@
 
 #include "../Characters/String.h"
 #include "../Configuration/Version.h"
-#include "../IO/FileSystem/Common.h"
 #include "../Memory/BLOB.h"
 
 #include "Variant/Reader.h"

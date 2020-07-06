@@ -17,7 +17,6 @@
 
 #include "../Configuration/Concepts.h"
 #include "../Configuration/Enumeration.h"
-#include "../IO/FileSystem/Common.h"
 #include "FloatConversion.h"
 #include "StringBuilder.h"
 #include "String_Constant.h"

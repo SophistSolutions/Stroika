@@ -6,6 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
+#include <filesystem>
 #include <optional>
 
 #include "../Characters/String.h"
@@ -30,10 +31,13 @@ namespace Stroika::Foundation::DataExchange {
      *
      *  @todo maybe virtualize interface and provide other implementations (which is why we have Default () API).
      *        and much more - see https://stroika.atlassian.net/browse/STK-576
-
-     @todo use Stroika cache code internally - internallysyncrhonized cache
-
-     @todo DOCUMENT/ASSURE INTERNALLY SYNCRHONIZED
+     *
+     *  \todo Cleanup internally when we do caching and where and how. Not bad now - but maybe smarter todo at
+     *        frontend level not backend level? Unclear (since some backends have different cost structures).
+     *
+     *        But sloppily done for now.
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Rep-Inside-Ptr-Is-Internally-Synchronized">Rep-Inside-Ptr-Is-Internally-Synchronized</a>
      *
      */
     class InternetMediaTypeRegistry {
@@ -129,7 +133,9 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
-         *  file suffix includes the dot
+         *  file suffix includes the dot; This COULD have been defined as a filesystem::path, as path::extension() returns path.
+         *  But I think this is generally more convenient as a string and this class provides overloads when passing in an extension
+         *  taking a filesystem::path.
          */
         using FileSuffixType = String;
 
@@ -168,6 +174,7 @@ namespace Stroika::Foundation::DataExchange {
          *  \req fileSuffix.empty () or fileSuffix[0] == '.'
          */
         nonvirtual optional<InternetMediaType> GetAssociatedContentType (const FileSuffixType& fileSuffix) const;
+        nonvirtual optional<InternetMediaType> GetAssociatedContentType (const filesystem::path& fileSuffix) const;
     };
 
     /**

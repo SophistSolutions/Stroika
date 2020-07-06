@@ -9,6 +9,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "../IO/FileSystem/PathName.h"
+
 namespace Stroika::Foundation::DataExchange {
 
     /*
@@ -30,6 +32,10 @@ namespace Stroika::Foundation::DataExchange {
     {
         AssertNotNull (fFrontEndRep_);
         return fFrontEndRep_->GetAssociatedPrettyName (ct);
+    }
+    inline optional<InternetMediaType> InternetMediaTypeRegistry::GetAssociatedContentType (const filesystem::path& fileSuffix) const
+    {
+        return GetAssociatedContentType (IO::FileSystem::FromPath (fileSuffix));
     }
 
 }
