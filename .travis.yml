@@ -71,8 +71,6 @@ jobs:
     # Windows Configuration (Build Samples)
     #     @todo - this is basically the same as the build steps for Windows (RunTests)
     #       - find way to refactor so the spec is shared
-    #     @todo FIX issue running candle - so actually builds samples correctly
-    #     @see https://stroika.atlassian.net/browse/STK-708 for info about this failre
     #
     - os: windows
       before_install:
