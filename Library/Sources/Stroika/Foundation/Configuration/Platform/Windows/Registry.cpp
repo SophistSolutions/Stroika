@@ -137,7 +137,7 @@ Traversal::Iterable<shared_ptr<RegistryKey>> RegistryKey::EnumerateSubKeys () co
     myContext->fParentKey = fKey_;
     auto getNext          = [myContext] () -> optional<shared_ptr<RegistryKey>> {
         Memory::SmallStackBuffer<TCHAR> achKeyBuf{1024};
-        DWORD                           cbName = achKeyBuf.size (); // size of name string
+        DWORD                           cbName = static_cast<DWORD> (achKeyBuf.size ()); // size of name string
     retry:
         auto retCode = ::RegEnumKeyEx (myContext->fParentKey, myContext->fCurIndex, achKeyBuf.begin (), &cbName, nullptr, nullptr, nullptr, nullptr);
         if (retCode == ERROR_NO_MORE_ITEMS) {
@@ -162,7 +162,7 @@ Containers::Mapping<Characters::String, DataExchange::VariantValue> RegistryKey:
     Containers::Mapping<Characters::String, DataExchange::VariantValue> result;
     for (int i = 0;; i++) {
         Memory::SmallStackBuffer<TCHAR> achKeyBuf{1024};
-        DWORD                           cbName = achKeyBuf.size (); // size of name string
+        DWORD                           cbName = static_cast<DWORD> (achKeyBuf.size ()); // size of name string
     retry:
         auto retCode = ::RegEnumValue (fKey_, i, achKeyBuf.begin (), &cbName, nullptr, nullptr, nullptr, nullptr);
         if (retCode == ERROR_NO_MORE_ITEMS) {
