@@ -55,7 +55,7 @@ namespace Stroika::Frameworks::SystemPerformance {
          */
         class ICapturer {
         public:
-            virtual ~ICapturer () = default;
+            virtual ~ICapturer ()                        = default;
             virtual MeasurementSet        Capture ()     = 0;
             virtual unique_ptr<ICapturer> Clone () const = 0;
         };
