@@ -39,6 +39,8 @@ namespace Stroika::Frameworks::SystemPerformance {
     using InstrumentNameType = DataExchange::Atom<>;
 
     /**
+     *  \brief An Instrument is a stateful object from which you can Capture () a series of measurements about a system.
+     *
      *  \note   Design Note
      *          Each instrument instance MAY maintain 'state' - that affects subsequent calls. For example, for instruments
      *          that measure data over a period of time (like average CPU usage over a time interval) - they may maintain
@@ -53,7 +55,7 @@ namespace Stroika::Frameworks::SystemPerformance {
          */
         class ICapturer {
         public:
-            virtual ~ICapturer (){};
+            virtual ~ICapturer () = default;
             virtual MeasurementSet        Capture ()     = 0;
             virtual unique_ptr<ICapturer> Clone () const = 0;
         };

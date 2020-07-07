@@ -19,7 +19,7 @@
 namespace Stroika::Frameworks::SystemPerformance {
 
     /*
-     *
+     * Return a list of ALL the known (builtin to Stroika) Instruments (see @Instrument).
      */
     Set<Instrument> GetAllInstruments ();
 
