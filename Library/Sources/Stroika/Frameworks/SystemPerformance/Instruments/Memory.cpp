@@ -79,7 +79,7 @@ namespace {
  */
 String Instruments::Memory::Info::PhysicalRAMDetailsType::ToString () const
 {
-    return DataExchange::Variant::JSON::Writer ().WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+    return DataExchange::Variant::JSON::Writer{}.WriteAsString (GetObjectVariantMapper ().FromObject (*this));
 }
 
 /*
@@ -89,7 +89,7 @@ String Instruments::Memory::Info::PhysicalRAMDetailsType::ToString () const
  */
 String Instruments::Memory::Info::VirtualMemoryDetailsType::ToString () const
 {
-    return DataExchange::Variant::JSON::Writer ().WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+    return DataExchange::Variant::JSON::Writer{}.WriteAsString (GetObjectVariantMapper ().FromObject (*this));
 }
 
 /*
@@ -99,7 +99,7 @@ String Instruments::Memory::Info::VirtualMemoryDetailsType::ToString () const
  */
 String Instruments::Memory::Info::PagingDetailsType::ToString () const
 {
-    return DataExchange::Variant::JSON::Writer ().WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+    return DataExchange::Variant::JSON::Writer{}.WriteAsString (GetObjectVariantMapper ().FromObject (*this));
 }
 
 /*
@@ -109,7 +109,7 @@ String Instruments::Memory::Info::PagingDetailsType::ToString () const
  */
 String Instruments::Memory::Info::ToString () const
 {
-    return DataExchange::Variant::JSON::Writer ().WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+    return DataExchange::Variant::JSON::Writer{}.WriteAsString (GetObjectVariantMapper ().FromObject (*this));
 }
 
 namespace {

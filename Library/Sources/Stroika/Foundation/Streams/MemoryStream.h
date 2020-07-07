@@ -73,7 +73,7 @@ namespace Stroika::Foundation ::Streams {
          *  \par Example Usage
          *      \code
          *          Streams::MemoryStream<byte>::Ptr out = Streams::MemoryStream<byte>::New ();
-         *          DataExchange::Variant::JSON::Writer ().Write (v, out);
+         *          DataExchange::Variant::JSON::Writer{}.Write (v, out);
          *          string xxx = out.As<string> ();
          *      \endcode
          *
@@ -115,7 +115,7 @@ namespace Stroika::Foundation ::Streams {
          *  \par Example Usage
          *      \code
          *          Streams::MemoryStream<byte>::Ptr out = Streams::MemoryStream<byte>::New ();
-         *          DataExchange::Variant::JSON::Writer ().Write (v, out);
+         *          DataExchange::Variant::JSON::Writer{}.Write (v, out);
          *          string xxx = out.As<string> ();
          *      \endcode
          */

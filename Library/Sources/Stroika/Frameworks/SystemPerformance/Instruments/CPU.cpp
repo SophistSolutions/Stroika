@@ -81,7 +81,7 @@ Instruments::CPU::Info::LoadAverage::LoadAverage (double oneMinuteAve, double fi
  */
 String Instruments::CPU::Info::ToString () const
 {
-    return DataExchange::Variant::JSON::Writer ().WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+    return DataExchange::Variant::JSON::Writer{}.WriteAsString (GetObjectVariantMapper ().FromObject (*this));
 }
 
 /*

@@ -25,8 +25,8 @@ namespace Stroika::Foundation::DataExchange::Compression::Zip {
      *  \par Example Usage
      *      \code
      *          Memory::BLOB  kSample1_   =     Memory::BLOB::Hex ("aa1234abcd01010102030405");
-     *          Memory::BLOB  compressed  =     Compression::Zip::Reader ().Compress (kSample1_);
-     *          Assert (kSample1_ == Compression::Zip::Reader ().Decompress (compressed));
+     *          Memory::BLOB  compressed  =     Compression::Zip::Reader{}.Compress (kSample1_);
+     *          Assert (kSample1_ == Compression::Zip::Reader{}.Decompress (compressed));
      *      \endcode
      */
     class Reader : public DataExchange::Compression::Reader {

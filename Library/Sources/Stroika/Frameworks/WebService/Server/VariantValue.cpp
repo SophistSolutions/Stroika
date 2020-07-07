@@ -69,7 +69,7 @@ DataExchange::VariantValue Server::VariantValue::CombineWebServiceArgsAsVariantV
         {
             Memory::BLOB inData = request->GetBody ();
             if (not inData.empty ()) {
-                DataExchange::VariantValue bodyObj = Variant::JSON::Reader ().Read (inData);
+                DataExchange::VariantValue bodyObj = Variant::JSON::Reader{}.Read (inData);
                 switch (bodyObj.GetType ()) {
                     case DataExchange::VariantValue::eMap:
                         result = bodyObj.As<Mapping<String, DataExchange::VariantValue>> ();
@@ -140,11 +140,11 @@ void Server::VariantValue::WriteResponse (Response* response, const WebServiceMe
     Require (not webServiceDescription.fResponseType.has_value () or (webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kJSON () or webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kText_PLAIN ())); // all we support for now
     if (webServiceDescription.fResponseType) {
         if (webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kJSON ()) {
-            response->write (Variant::JSON::Writer ().WriteAsBLOB (responseValue));
+            response->write (Variant::JSON::Writer{}.WriteAsBLOB (responseValue));
             response->SetContentType (*webServiceDescription.fResponseType);
         }
         else if (webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kText_PLAIN ()) {
-            response->write (Variant::JSON::Writer ().WriteAsBLOB (responseValue));
+            response->write (Variant::JSON::Writer{}.WriteAsBLOB (responseValue));
             response->SetContentType (*webServiceDescription.fResponseType);
         }
         else {

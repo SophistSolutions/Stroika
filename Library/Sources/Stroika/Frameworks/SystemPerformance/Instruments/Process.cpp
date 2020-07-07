@@ -275,7 +275,7 @@ namespace {
  */
 String Instruments::Process::ProcessType::ToString () const
 {
-    return DataExchange::Variant::JSON::Writer ().WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+    return DataExchange::Variant::JSON::Writer{}.WriteAsString (GetObjectVariantMapper ().FromObject (*this));
 }
 
 /*

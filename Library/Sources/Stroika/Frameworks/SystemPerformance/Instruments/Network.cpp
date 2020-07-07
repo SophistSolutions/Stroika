@@ -112,7 +112,7 @@ IOStatistics& IOStatistics::operator+= (const IOStatistics& rhs)
  */
 String Instruments::Network::IOStatistics::ToString () const
 {
-    return DataExchange::Variant::JSON::Writer ().WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+    return DataExchange::Variant::JSON::Writer{}.WriteAsString (GetObjectVariantMapper ().FromObject (*this));
 }
 
 /*
@@ -122,7 +122,7 @@ String Instruments::Network::IOStatistics::ToString () const
 */
 String Instruments::Network::Info::ToString () const
 {
-    return DataExchange::Variant::JSON::Writer ().WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+    return DataExchange::Variant::JSON::Writer{}.WriteAsString (GetObjectVariantMapper ().FromObject (*this));
 }
 
 /*
@@ -132,7 +132,7 @@ String Instruments::Network::Info::ToString () const
 */
 String Instruments::Network::InterfaceInfo::ToString () const
 {
-    return DataExchange::Variant::JSON::Writer ().WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+    return DataExchange::Variant::JSON::Writer{}.WriteAsString (GetObjectVariantMapper ().FromObject (*this));
 }
 
 namespace {

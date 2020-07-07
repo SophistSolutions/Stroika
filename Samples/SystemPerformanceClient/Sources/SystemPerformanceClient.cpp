@@ -35,7 +35,7 @@ namespace {
     string Serialize_ (VariantValue v, bool oneLineMode)
     {
         Streams::MemoryStream<byte>::Ptr out = Streams::MemoryStream<byte>::New ();
-        DataExchange::Variant::JSON::Writer ().Write (v, out);
+        DataExchange::Variant::JSON::Writer{}.Write (v, out);
         // strip CRLF - so shows up on one line
         String result = String::FromUTF8 (out.As<string> ());
         if (oneLineMode) {

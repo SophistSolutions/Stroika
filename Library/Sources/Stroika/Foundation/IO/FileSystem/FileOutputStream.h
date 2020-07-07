@@ -51,7 +51,7 @@ namespace Stroika::Foundation::IO::FileSystem {
      *  \par Example Usage
      *      \code
      *          String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt";
-     *          JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
+     *          JSON::Writer{}.Write (v, IO::FileSystem::FileOutputStream::New (fileName));
      *      \endcode
      *
      *  \par Example Usage

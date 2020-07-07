@@ -102,7 +102,7 @@ using SystemPerformance::Support::WMICollector;
  */
 String Instruments::Filesystem::MountedFilesystemInfoType::ToString () const
 {
-    return DataExchange::Variant::JSON::Writer ().WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+    return DataExchange::Variant::JSON::Writer{}.WriteAsString (GetObjectVariantMapper ().FromObject (*this));
 }
 
 /*
@@ -112,7 +112,7 @@ String Instruments::Filesystem::MountedFilesystemInfoType::ToString () const
  */
 String Instruments::Filesystem::IOStatsType::ToString () const
 {
-    return DataExchange::Variant::JSON::Writer ().WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+    return DataExchange::Variant::JSON::Writer{}.WriteAsString (GetObjectVariantMapper ().FromObject (*this));
 }
 
 /*
@@ -122,7 +122,7 @@ String Instruments::Filesystem::IOStatsType::ToString () const
  */
 String Instruments::Filesystem::DiskInfoType::ToString () const
 {
-    return DataExchange::Variant::JSON::Writer ().WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+    return DataExchange::Variant::JSON::Writer{}.WriteAsString (GetObjectVariantMapper ().FromObject (*this));
 }
 
 /*
@@ -132,7 +132,7 @@ String Instruments::Filesystem::DiskInfoType::ToString () const
  */
 String Instruments::Filesystem::Info::ToString () const
 {
-    return DataExchange::Variant::JSON::Writer ().WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+    return DataExchange::Variant::JSON::Writer{}.WriteAsString (GetObjectVariantMapper ().FromObject (*this));
 }
 
 namespace {

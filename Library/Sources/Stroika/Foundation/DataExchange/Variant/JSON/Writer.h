@@ -43,7 +43,7 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
      *  \par Example Usage
      *      \code
      *          VariantValue v (3);
-     *          JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream ("fred.json"));
+     *          JSON::Writer{}.Write (v, IO::FileSystem::FileOutputStream ("fred.json"));
      *      \endcode
      *
      *  \par Example Usage
@@ -52,7 +52,7 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
      *          m.Add (L"max-files", 10);
      *          m.Add (L"max-processes", 3);
      *          stringstream stringBuf;
-     *          JSON::Writer ().Write (VariantValue (m), Streams::iostream::OutputStreamFromStdOStream (stringBuf));
+     *          JSON::Writer{}.Write (VariantValue (m), Streams::iostream::OutputStreamFromStdOStream (stringBuf));
      *      \endcode
      *
      *  \par Example Usage

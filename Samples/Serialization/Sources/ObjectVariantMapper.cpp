@@ -67,10 +67,10 @@ namespace {
         // Serialize using any serialization writer defined in Stroika::Foundation::DataExchange::Variant (we chose JSON here)
         // And dump the results into a temporary memory-based stream
         Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
-        Variant::JSON::Writer ().Write (v, tmpStream);
+        Variant::JSON::Writer{}.Write (v, tmpStream);
 
         // THEN deserialize, and map back to C++ object form
-        [[maybe_unused]] MyType2Serialize1_ tmp2 = mapper.ToObject<MyType2Serialize1_> (Variant::JSON::Reader ().Read (tmpStream));
+        [[maybe_unused]] MyType2Serialize1_ tmp2 = mapper.ToObject<MyType2Serialize1_> (Variant::JSON::Reader{}.Read (tmpStream));
 
         // make sure new object matches
         Assert (tmp2 == tmp);
@@ -141,14 +141,14 @@ namespace {
 
         // Serialize using any serialization writer defined in Stroika::Foundation::DataExchange::Variant (we selected JSON)
         Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
-        Variant::JSON::Writer ().Write (v, tmpStream);
+        Variant::JSON::Writer{}.Write (v, tmpStream);
 
         // You can persist these to file if you wish
         constexpr bool kWrite2FileAsWell_ = true;
         if (kWrite2FileAsWell_) {
             {
                 IO::FileSystem::FileOutputStream::Ptr tmpFileStream = IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () / "t.txt");
-                Variant::JSON::Writer ().Write (v, tmpFileStream);
+                Variant::JSON::Writer{}.Write (v, tmpFileStream);
             }
             {
                 // , and then if you want, try reading it back
