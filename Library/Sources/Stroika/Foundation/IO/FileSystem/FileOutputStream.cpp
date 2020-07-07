@@ -67,7 +67,6 @@ public:
             FileSystem::Exception::ThrowPOSIXErrNo (e, fileName);
         }
         if (fFD_ == -1) {
-            ThrowSystemErrNo ();
             FileSystem::Exception::ThrowSystemErrNo (fileName);
         }
 #else
