@@ -138,13 +138,7 @@ namespace {
         for (String i : archive.GetContainedFiles ()) {
             String           srcFileName = i;
             filesystem::path trgFileName = toDirectory / IO::FileSystem::ToPath (srcFileName);
-
-            //tmphack no nonger needed due to std::filesystem
-            //#if qPlatform_Windows
-            //           trgFileName = trgFileName.ReplaceAll (L"/", L"\\");
-            //#endif
-
-            //DbgTrace (L"(srcFileName=%s, trgFileName=%s)", srcFileName.c_str (), trgFileName.c_str ());
+            //DbgTrace (L"(srcFileName=%s, trgFileName=%s)", Characters::ToString (srcFileName).c_str (), Characters::ToString (trgFileName).c_str ());
             BLOB b = archive.GetData (srcFileName);
             //DbgTrace (L"IO::FileSystem::GetFileDirectory (trgFileName)=%s", IO::FileSystem::GetFileDirectory (trgFileName).c_str ());
             IO::FileSystem::Directory{IO::FileSystem::ToPath (IO::FileSystem::GetFileDirectory (IO::FileSystem::FromPath (trgFileName)))}.AssureExists ();
