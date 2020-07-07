@@ -14,7 +14,6 @@
 #include "../../Execution/Throw.h"
 #if qPlatform_Windows
 #include "../../Execution/Platform/Windows/Exception.h"
-#include "../../Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
 
 #include "FileUtils.h"
@@ -85,21 +84,16 @@ filesystem::path FileSystem::WellKnownLocations::GetSpoolDirectory ()
     /// Not sure what better than FOLDERID_ProgramData / "Spool"???
     SDKChar fileBuf[MAX_PATH]{};
     Verify (::SHGetSpecialFolderPath (nullptr, fileBuf, CSIDL_COMMON_APPDATA, false));
-    SDKString result = fileBuf;
+    filesystem::path result = fileBuf;
     // Assure non-empty result
     if (result.empty ()) {
-        result = SDKSTR ("c:"); // shouldn't happen
+        result = filesystem::path ("c:"); // shouldn't happen
     }
-    // assure ends in '\'
-    if (result[result.size () - 1] != '\\') {
-        result += SDKSTR ("\\");
-    }
-    Ensure (result[result.size () - 1] == '\\');
     if (filesystem::is_directory (filesystem::path (result))) {
         return filesystem::path (result);
     }
     else {
-        return filesystem::path ();
+        return filesystem::path{};
     }
 #else
     AssertNotImplemented ();
@@ -121,16 +115,11 @@ filesystem::path FileSystem::WellKnownLocations::GetApplicationData (bool create
 #elif qPlatform_Windows
     SDKChar fileBuf[MAX_PATH]{};
     Verify (::SHGetSpecialFolderPath (nullptr, fileBuf, CSIDL_COMMON_APPDATA, createIfNotPresent));
-    SDKString result = fileBuf;
+    filesystem::path result = fileBuf;
     // Assure non-empty result
     if (result.empty ()) {
-        result = SDKSTR ("c:"); // shouldn't happen
+        result = filesystem::path ("c:"); // shouldn't happen
     }
-    // assure ends in '\'
-    if (result[result.size () - 1] != '\\') {
-        result += SDKSTR ("\\");
-    }
-    Ensure (result[result.size () - 1] == '\\');
     Ensure (not createIfNotPresent or filesystem::is_directory (result));
     return result;
 #else
@@ -236,7 +225,28 @@ filesystem::path FileSystem::WellKnownLocations::GetTemporary ()
     // Cacheable because the environment variables should be set externally.
     // This has the defect that it misses setenv calls, but that SB so rare,
     // and not clearly a bug we ignore subsequent changes...
-    static const filesystem::path kCachedResult_ = GetTemporary_ ();
+    static const filesystem::path kCachedResult_ = [] () -> filesystem::path {
+#if qPlatform_POSIX
+        // http://pubs.opengroup.org/onlinepubs/000095399/basedefs/xbd_chap08.html
+        const char* pPath = ::getenv ("TMPDIR");
+        if (pPath != nullptr) {
+            return AssureDirectoryPathSlashTerminated_ (pPath);
+        }
+        return "/tmp/";
+#elif qPlatform_Windows
+        // NB: internally GetTempPath looks at ENV VAR TMP, then TEMP, etc...
+        SDKChar buf[4 * 1024];
+        if (::GetTempPath (static_cast<DWORD> (NEltsOf (buf)), buf) == 0) {
+            return SDKSTR ("c:\\Temp\\");
+        }
+        else {
+            return buf;
+        }
+#else
+        AssertNotImplemented ();
+        return SDKSTR (L"/tmp/");
+#endif
+    }();
     return kCachedResult_;
 }
 
