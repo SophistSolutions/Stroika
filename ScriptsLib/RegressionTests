@@ -359,8 +359,10 @@ else
 fi
 } 
 
+	echo -n "VALGRIND on tests ..."
+	echo -n "$PREFIX_OUT_LABEL" "VALGRIND on tests..." >>$TEST_OUT_FILE 2>&1
 	#MEMCHECK:
-	if [ "$INCLUDE_VALGRIND_MEMCHECK_TESTS" -ne 0 ] ; then
+	if [[ ("$INCLUDE_VALGRIND_MEMCHECK_TESTS" -ne 0) ]] ; then
 		if [ $NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS -eq 0 ] ; then
 			echo "Skipping valgrind MemCheck test because NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS=$NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS"
 			echo "$PREFIX_OUT_LABEL" "Skipping valgrind MemCheck test because NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS=$NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS" >>$TEST_OUT_FILE 2>&1
@@ -378,7 +380,7 @@ fi
 	fi
 
 	#HELGRIND
-	if [ "$INCLUDE_VALGRIND_HELGRIND_TESTS" -ne 0 ] ; then
+	if [[ ("$INCLUDE_VALGRIND_HELGRIND_TESTS" -ne 0) ]] ; then
 		if [ $NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS -eq 0 ] ; then
 			echo "Skipping valgrind helgrind test because NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS=$NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS"
 			echo "$PREFIX_OUT_LABEL" "Skipping valgrind helgrind test because NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS=$NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS" >>$TEST_OUT_FILE 2>&1
@@ -395,55 +397,75 @@ fi
 		echo "$PREFIX_OUT_LABEL" "Skipping helgrind test because INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS" >>$TEST_OUT_FILE 2>&1
 	fi
 
-	SAMPLE_APPS_2_VALGRIND=()
-	SAMPLE_APPS_2_VALGRIND+=("Samples-ArchiveUtility/ArchiveUtility --list ThirdPartyComponents/Origs-Cache/sqlite-amalgamation-*.zip")
-	SAMPLE_APPS_2_VALGRIND+=("Samples-ArchiveUtility/ArchiveUtility --list ThirdPartyComponents/Origs-Cache/lzma1604.7z")
-	SAMPLE_APPS_2_VALGRIND+=("Samples-Containers/Containers")
-	SAMPLE_APPS_2_VALGRIND+=("Samples-Serialization/Serialization")
-	SAMPLE_APPS_2_VALGRIND+=("Samples-SystemPerformanceClient/SystemPerformanceClient")
-	SAMPLE_APPS_2_VALGRIND+=("Samples-Traceroute/Traceroute www.sophists.com")
-	SAMPLE_APPS_2_VALGRIND+=("Samples-WebServer/WebServer --quit-after 10")
 
-	#Valgrind MEMCHECK ON a few sample apps
-	if [ "$INCLUDE_VALGRIND_MEMCHECK_TESTS" -ne 0 ] ; then
+	SAMPLE_APPS_2_TEST=()
+	SAMPLE_APPS_2_TEST+=("Samples-ArchiveUtility/ArchiveUtility --list ThirdPartyComponents/Origs-Cache/sqlite-amalgamation-*.zip")
+	SAMPLE_APPS_2_TEST+=("Samples-ArchiveUtility/ArchiveUtility --list ThirdPartyComponents/Origs-Cache/lzma1604.7z")
+	SAMPLE_APPS_2_TEST+=("Samples-Containers/Containers")
+	SAMPLE_APPS_2_TEST+=("Samples-Serialization/Serialization")
+	SAMPLE_APPS_2_TEST+=("Samples-SystemPerformanceClient/SystemPerformanceClient")
+	SAMPLE_APPS_2_TEST+=("Samples-Traceroute/Traceroute www.sophists.com")
+	SAMPLE_APPS_2_TEST+=("Samples-WebServer/WebServer --quit-after 10")
 
-		for app in "${SAMPLE_APPS_2_VALGRIND[@]}" ; do
-			# KISS  - include basically all the suppression files (later be smarter about which)
-			SUPPRESSION_LINES_= --suppressions=Tests/Valgrind-MemCheck-Common.supp --suppressions=Tests/Valgrind-MemCheck-BlockAllocation.supp  --suppressions=Tests/Valgrind-MemCheck-Common-x86_64.supp  --suppressions=Tests/Valgrind-Helgrind-Common-armhf.supp 
-			echo -n "valgrind -q --tool=memcheck $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/g++-valgrind-release-SSLPurify-NoBlockAlloc/$app ..."
-			echo -n "$PREFIX_OUT_LABEL" "valgrind -q --tool=memcheck $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/g++-valgrind-release-SSLPurify-NoBlockAlloc/$app..." >>$TEST_OUT_FILE 2>&1
+
+	echo -n "Running SAMPLE_APP basic tests..."
+	echo -n "$PREFIX_OUT_LABEL" "Running SAMPLE_APP basic tests..." >>$TEST_OUT_FILE 2>&1
+	for cfg in "${LOCAL_CONFIGS}" ; do
+		for app in "${SAMPLE_APPS_2_TEST[@]}" ; do
+			echo -n "  Builds/$cfg/$app ..."
+			echo -n "  $PREFIX_OUT_LABEL" "Builds/$cfg/$app..." >>$TEST_OUT_FILE 2>&1
 			STAGE_STARTAT_INT=$(date +%s)
-			valgrind -q --tool=memcheck $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/g++-valgrind-release-SSLPurify-NoBlockAlloc/$app 2>&1 > /dev/null
-			cat valgrind-log.tmp >> $TEST_OUT_FILE
-			rm -f valgrind-log.tmp 
+			if Builds/$cfg/$app 2>&1 > /dev/null ; then
+				#nothing
+			else
+				echo "**FAILED**"
+			fi
 			STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
 			echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
 			echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
 		done; 
+	done; 
 
+	#Valgrind MEMCHECK ON a few sample apps
+	if [[ ("$INCLUDE_VALGRIND_MEMCHECK_TESTS" -ne 0 ) && ("$NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS" -ne 0 ) ]] ; then
+		for cfg in "${LOCAL_VALGRIND_CONFIGS}" ; do
+			for app in "${SAMPLE_APPS_2_TEST[@]}" ; do
+				# KISS  - include basically all the suppression files (later be smarter about which)
+				SUPPRESSION_LINES_= --suppressions=Tests/Valgrind-MemCheck-Common.supp --suppressions=Tests/Valgrind-MemCheck-BlockAllocation.supp  --suppressions=Tests/Valgrind-MemCheck-Common-x86_64.supp  --suppressions=Tests/Valgrind-Helgrind-Common-armhf.supp 
+				echo -n "valgrind -q --tool=memcheck $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/$cfg/$app ..."
+				echo -n "$PREFIX_OUT_LABEL" "valgrind -q --tool=memcheck $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/c$fg/$app..." >>$TEST_OUT_FILE 2>&1
+				STAGE_STARTAT_INT=$(date +%s)
+				valgrind -q --tool=memcheck $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/$cfg/$app 2>&1 > /dev/null
+				cat valgrind-log.tmp >> $TEST_OUT_FILE
+				rm -f valgrind-log.tmp 
+				STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
+				echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
+				echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
+			done; 
+		done; 
 	else
-		echo "Skipping helgrind SAMPLE_APPS_2_VALGRIND because INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS"
-		echo "$PREFIX_OUT_LABEL" "Skipping helgrind SAMPLE_APPS_2_VALGRIND because INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS" >>$TEST_OUT_FILE 2>&1
+		echo "Skipping helgrind SAMPLE_APPS_2_TEST because INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS and NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS=$NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS"
+		echo "$PREFIX_OUT_LABEL" "Skipping helgrind SAMPLE_APPS_2_TEST because INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS and NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS=$NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS" >>$TEST_OUT_FILE 2>&1
 	fi
 
 	#HELGRIND ON a few sample apps
-	if [ "$INCLUDE_VALGRIND_HELGRIND_TESTS" -ne 0 ] ; then
-
-		for app in "${SAMPLE_APPS_2_VALGRIND[@]}" ; do 
-			echo -n "valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/g++-valgrind-release-SSLPurify-NoBlockAlloc/$app ..."
-			echo -n "$PREFIX_OUT_LABEL" "valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/g++-valgrind-release-SSLPurify-NoBlockAlloc/$app..." >>$TEST_OUT_FILE 2>&1
-			STAGE_STARTAT_INT=$(date +%s)
-			valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/g++-valgrind-release-SSLPurify-NoBlockAlloc/$app 2>&1 > /dev/null
-			cat valgrind-log.tmp >> $TEST_OUT_FILE
-			rm -f valgrind-log.tmp 
-			STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
-			echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
-			echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
+	if [[ ("$INCLUDE_VALGRIND_HELGRIND_TESTS" -ne 0) && ("$NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS" -ne 0 ) ]] ; then
+		for cfg in "${LOCAL_VALGRIND_CONFIGS}" ; do
+			for app in "${SAMPLE_APPS_2_TEST[@]}" ; do 
+				echo -n "valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/$cfg/$app ..."
+				echo -n "$PREFIX_OUT_LABEL" "valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/$cfg/$app..." >>$TEST_OUT_FILE 2>&1
+				STAGE_STARTAT_INT=$(date +%s)
+				valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/$cfg/$app 2>&1 > /dev/null
+				cat valgrind-log.tmp >> $TEST_OUT_FILE
+				rm -f valgrind-log.tmp 
+				STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
+				echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
+				echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
+			done; 
 		done; 
-
 	else
-		echo "Skipping helgrind SAMPLE_APPS_2_VALGRIND because INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS"
-		echo "$PREFIX_OUT_LABEL" "Skipping helgrind SAMPLE_APPS_2_VALGRIND because INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS" >>$TEST_OUT_FILE 2>&1
+		echo "Skipping helgrind SAMPLE_APPS_2_TEST because INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS and NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS=$NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS"
+		echo "$PREFIX_OUT_LABEL" "Skipping helgrind SAMPLE_APPS_2_TEST because INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS and NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS=$NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS" >>$TEST_OUT_FILE 2>&1
 	fi
 fi
 
