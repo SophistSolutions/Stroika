@@ -363,17 +363,17 @@ fi
 
 	#MEMCHECK:
 	if [ "$INCLUDE_VALGRIND_MEMCHECK_TESTS" -ne 0 ] ; then
-		echo "Running valgrind MemCheck test because INCLUDE_VALGRIND_MEMCHECK_TESTS=$INCLUDE_VALGRIND_MEMCHECK_TESTS"
-		echo "$PREFIX_OUT_LABEL" "Running valgrind memcheck test because INCLUDE_VALGRIND_MEMCHECK_TESTS=$INCLUDE_VALGRIND_MEMCHECK_TESTS" >>$TEST_OUT_FILE 2>&1
+		if [ $NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS -eq 0 ] ; then
+			echo "Skipping valgrind MemCheck test because NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS=$NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS"
+			echo "$PREFIX_OUT_LABEL" "Skipping valgrind MemCheck test because NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS=$NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS" >>$TEST_OUT_FILE 2>&1
+		else
+			echo "Running valgrind MemCheck test because INCLUDE_VALGRIND_MEMCHECK_TESTS=$INCLUDE_VALGRIND_MEMCHECK_TESTS"
+			echo "$PREFIX_OUT_LABEL" "Running valgrind memcheck test because INCLUDE_VALGRIND_MEMCHECK_TESTS=$INCLUDE_VALGRIND_MEMCHECK_TESTS" >>$TEST_OUT_FILE 2>&1
 
-		echo "TMP-Running valgrind MemCheck test because INCLUDE_VALGRIND_MEMCHECK_TESTS=$LOCAL_VALGRIND_CONFIGS"
-		echo "$PREFIX_OUT_LABEL" "TMP-Running valgrind memcheck test because INCLUDE_VALGRIND_MEMCHECK_TESTS=$LOCAL_VALGRIND_CONFIGS" >>$TEST_OUT_FILE 2>&1
-
-		for o in "${LOCAL_VALGRIND_CONFIGS[@]}"; do 
-			RunLocalValgrind_ memcheck $o ""
-		done
-		echo "TMP-DID VALGRIND RUNS=$LOCAL_VALGRIND_CONFIGS"
-		echo "$PREFIX_OUT_LABEL" "TMP-DID VALGRIND RUNS  =$LOCAL_VALGRIND_CONFIGS" >>$TEST_OUT_FILE 2>&1
+			for o in "${LOCAL_VALGRIND_CONFIGS[@]}"; do 
+				RunLocalValgrind_ memcheck $o ""
+			done
+		fi
 		#MEMCHECK: release, no block allocation
 		#RunLocalValgrind_ memcheck g++-valgrind-release-SSLPurify-NoBlockAlloc ""
 
@@ -390,12 +390,17 @@ fi
 
 	#HELGRIND
 	if [ "$INCLUDE_VALGRIND_HELGRIND_TESTS" -ne 0 ] ; then
-		echo "Running helgrind test because INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS"
-		echo "$PREFIX_OUT_LABEL" "Running helgrind test because INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS" >>$TEST_OUT_FILE 2>&1
+		if [ $NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS -eq 0 ] ; then
+			echo "Skipping valgrind helgrind test because NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS=$NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS"
+			echo "$PREFIX_OUT_LABEL" "Skipping valgrind helgrind test because NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS=$NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS" >>$TEST_OUT_FILE 2>&1
+		else
+			echo "Running valgrind helgrind test because INCLUDE_VALGRIND_MEMCHECK_TESTS=$INCLUDE_VALGRIND_MEMCHECK_TESTS"
+			echo "$PREFIX_OUT_LABEL" "Running valgrind helgrind test because INCLUDE_VALGRIND_MEMCHECK_TESTS=$INCLUDE_VALGRIND_MEMCHECK_TESTS" >>$TEST_OUT_FILE 2>&1
 
-		for o in "${LOCAL_VALGRIND_CONFIGS[@]}"; do 
-			RunLocalValgrind_ helgrind $o ""
-		done
+			for o in "${LOCAL_VALGRIND_CONFIGS[@]}"; do 
+				RunLocalValgrind_ helgrind $o ""
+			done
+		fi
 
 		#@todo EITHER use same for loop above on valgrind local, or add another tag sating valgrind-memcheck and valgrind-helgrind
 		
