@@ -216,9 +216,6 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 		NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + $NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS))
 	fi
 	if [ $INCLUDE_VALGRIND_HELGRIND_TESTS -eq 1 ]; then
-		#only use two of the configs
-		#USECNT_=$(( $NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS <= 2 ? $NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS : 2 ))
-		#NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + $USECNT_))
 		NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + $NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS))
 	fi
 fi
@@ -375,19 +372,10 @@ fi
 				RunLocalValgrind_ memcheck $o ""
 			done
 		fi
-		#MEMCHECK: release, no block allocation
-		#RunLocalValgrind_ memcheck g++-valgrind-release-SSLPurify-NoBlockAlloc ""
-
-		#MEMCHECK: debug (with block alloc)
-		#RunLocalValgrind_ memcheck g++-valgrind-debug-SSLPurify ""
-
-		#MEMCHECK: debug (without block alloc)
-		#RunLocalValgrind_ memcheck g++-valgrind-debug-SSLPurify-NoBlockAlloc ""
 	else
 		echo "Skipping valgrind MemCheck test because INCLUDE_VALGRIND_MEMCHECK_TESTS=$INCLUDE_VALGRIND_MEMCHECK_TESTS"
 		echo "$PREFIX_OUT_LABEL" "Skipping valgrind memcheck test because INCLUDE_VALGRIND_MEMCHECK_TESTS=$INCLUDE_VALGRIND_MEMCHECK_TESTS" >>$TEST_OUT_FILE 2>&1
 	fi
-
 
 	#HELGRIND
 	if [ "$INCLUDE_VALGRIND_HELGRIND_TESTS" -ne 0 ] ; then
@@ -402,14 +390,6 @@ fi
 				RunLocalValgrind_ helgrind $o ""
 			done
 		fi
-
-		#@todo EITHER use same for loop above on valgrind local, or add another tag sating valgrind-memcheck and valgrind-helgrind
-		
-		#HELGRIND: release, no block allocation
-		#RunLocalValgrind_ helgrind g++-valgrind-release-SSLPurify-NoBlockAlloc ""
-
-		#HELGRIND: debug (without block alloc)
-		#RunLocalValgrind_ helgrind g++-valgrind-debug-SSLPurify-NoBlockAlloc ""
 	else
 		echo "Skipping helgrind test because INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS"
 		echo "$PREFIX_OUT_LABEL" "Skipping helgrind test because INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS" >>$TEST_OUT_FILE 2>&1
@@ -424,7 +404,29 @@ fi
 	SAMPLE_APPS_2_VALGRIND+=("Samples-Traceroute/Traceroute www.sophists.com")
 	SAMPLE_APPS_2_VALGRIND+=("Samples-WebServer/WebServer --quit-after 10")
 
-	#HELGRIND ON SYSPERFORM (experimental - must find better way)
+	#Valgrind MEMCHECK ON a few sample apps
+	if [ "$INCLUDE_VALGRIND_MEMCHECK_TESTS" -ne 0 ] ; then
+
+		for app in "${SAMPLE_APPS_2_VALGRIND[@]}" ; do
+			# KISS  - include basically all the suppression files (later be smarter about which)
+			SUPPRESSION_LINES_= --suppressions=Tests/Valgrind-MemCheck-Common.supp --suppressions=Tests/Valgrind-MemCheck-BlockAllocation.supp  --suppressions=Tests/Valgrind-MemCheck-Common-x86_64.supp  --suppressions=Tests/Valgrind-Helgrind-Common-armhf.supp 
+			echo -n "valgrind -q --tool=memcheck $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/g++-valgrind-release-SSLPurify-NoBlockAlloc/$app ..."
+			echo -n "$PREFIX_OUT_LABEL" "valgrind -q --tool=memcheck $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/g++-valgrind-release-SSLPurify-NoBlockAlloc/$app..." >>$TEST_OUT_FILE 2>&1
+			STAGE_STARTAT_INT=$(date +%s)
+			valgrind -q --tool=memcheck $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/g++-valgrind-release-SSLPurify-NoBlockAlloc/$app 2>&1 > /dev/null
+			cat valgrind-log.tmp >> $TEST_OUT_FILE
+			rm -f valgrind-log.tmp 
+			STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
+			echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
+			echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
+		done; 
+
+	else
+		echo "Skipping helgrind SAMPLE_APPS_2_VALGRIND because INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS"
+		echo "$PREFIX_OUT_LABEL" "Skipping helgrind SAMPLE_APPS_2_VALGRIND because INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS" >>$TEST_OUT_FILE 2>&1
+	fi
+
+	#HELGRIND ON a few sample apps
 	if [ "$INCLUDE_VALGRIND_HELGRIND_TESTS" -ne 0 ] ; then
 
 		for app in "${SAMPLE_APPS_2_VALGRIND[@]}" ; do 
@@ -444,6 +446,7 @@ fi
 		echo "$PREFIX_OUT_LABEL" "Skipping helgrind SAMPLE_APPS_2_VALGRIND because INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS" >>$TEST_OUT_FILE 2>&1
 	fi
 fi
+
 
 if [ $INCLUDE_PERFORMANCE_TESTS -ne 0 ] ; then
 	echo >>$TEST_OUT_FILE 2>&1
