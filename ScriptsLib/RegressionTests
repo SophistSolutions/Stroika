@@ -415,7 +415,7 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 				echo -n "  $PREFIX_OUT_LABEL" "Builds/$cfg/$app..." >>$TEST_OUT_FILE 2>&1
 				STAGE_STARTAT_INT=$(date +%s)
 				tmpfile=$(mktemp /tmp/stkregtst.XXXXXX)
-				if Builds/$cfg/$app 2>&1 > $tmpfile ; then
+				if Builds/$cfg/$app >$tmpfile 2>&1  ; then
 					echo -n "SUCCESS..." >>$TEST_OUT_FILE 2>&1
 				else
 					echo "**FAILED**" >>$TEST_OUT_FILE 2>&1
