@@ -399,11 +399,11 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 	SAMPLE_APPS_2_TEST+=("Samples-Containers/Containers")
 	SAMPLE_APPS_2_TEST+=("Samples-Serialization/Serialization")
 	SAMPLE_APPS_2_TEST+=("Samples-SystemPerformanceClient/SystemPerformanceClient")
-	if [[ ("$EUID" -eq 0) || ($OSTYPE =="cygwin") ]] ; then
+	if [[ ("$EUID" -eq 0) || ($OSTYPE == "cygwin") ]] ; then
 		# requires root access on UNIX else fails
 		SAMPLE_APPS_2_TEST+=("Samples-Traceroute/Traceroute www.sophists.com")
 	fi
-	SAMPLE_APPS_2_TEST+=("Samples-WebServer/WebServer --quit-after 100")
+	SAMPLE_APPS_2_TEST+=("Samples-WebServer/WebServer --quit-after 10")
 
 	echo "Running SAMPLE_APP basic tests..."
 	echo >>$TEST_OUT_FILE 2>&1
@@ -416,7 +416,7 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 				STAGE_STARTAT_INT=$(date +%s)
 				tmpfile=$(mktemp /tmp/stkregtst.XXXXXX)
 				if Builds/$cfg/$app 2>&1 > $tmpfile ; then
-					echo -n "SUCCESS" >>$TEST_OUT_FILE 2>&1
+					echo -n "SUCCESS..." >>$TEST_OUT_FILE 2>&1
 				else
 					echo "**FAILED**" >>$TEST_OUT_FILE 2>&1
 					cat $tmpfile >>$TEST_OUT_FILE 2>&1
