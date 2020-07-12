@@ -78,6 +78,7 @@ namespace {
 
         EventFD_Based_SocketPair_ ()
         {
+            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"EventFD_Based_SocketPair_::CTOR")};
             using namespace IO::Network;
 
             // Create a Listening master socket, bind it, and get it listening
@@ -86,7 +87,7 @@ namespace {
             connectionOrientedMaster.Bind (SocketAddress{IO::Network::V4::kLocalhost});
             connectionOrientedMaster.Listen (1);
 
-            // now make a NEW socket, with the bound addres and connect;
+            // now make a NEW socket, with the bound address and connect;
             fReadSocket_  = ConnectionOrientedStreamSocket::NewConnection (*connectionOrientedMaster.GetLocalAddress ());
             fWriteSocket_ = connectionOrientedMaster.Accept ();
         }
@@ -119,6 +120,7 @@ namespace {
  */
 shared_ptr<EventFD> WaitForIOReady_Support::mkEventFD ()
 {
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"WaitForIOReady_Support::mkEventFD")};
     // @todo - See https://stroika.atlassian.net/browse/STK-709
     // to support eventfd and pipe based helper classes
     /// need ifdefs to allow build based on eventfd, or pipe

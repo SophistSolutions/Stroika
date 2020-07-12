@@ -68,6 +68,8 @@ namespace {
             }
             virtual void Connect (const SocketAddress& sockAddr) const override
             {
+                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionOrientedStreamSocket_IMPL_::Connect", L"sockAddr=%s", Characters::ToString (sockAddr).c_str ())};
+
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 sockaddr_storage                                    useSockAddr = sockAddr.As<sockaddr_storage> ();
 #if qPlatform_POSIX
