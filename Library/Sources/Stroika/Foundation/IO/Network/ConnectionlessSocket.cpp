@@ -40,7 +40,7 @@ namespace {
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                 sockaddr_storage                                   sa = sockAddr.As<sockaddr_storage> ();
 #if qPlatform_POSIX
-                ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &start, &end, &sa] () -> int { return ::sendto (fSD_, reinterpret_cast<const char*> (start), end - start, 0, reinterpret_cast<sockaddr*> (&sa), sockAddr.GetRequiredSize ()); }));
+                ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &start, &end, &sa, &sockAddr] () -> int { return ::sendto (fSD_, reinterpret_cast<const char*> (start), end - start, 0, reinterpret_cast<sockaddr*> (&sa), sockAddr.GetRequiredSize ()); }));
 #elif qPlatform_Windows
                 Require (end - start < numeric_limits<int>::max ());
                 ThrowWSASystemErrorIfSOCKET_ERROR (::sendto (fSD_, reinterpret_cast<const char*> (start), static_cast<int> (end - start), 0, reinterpret_cast<sockaddr*> (&sa), sockAddr.GetRequiredSize ()));
