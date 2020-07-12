@@ -26,6 +26,9 @@ namespace {
             Rep_ (Socket::PlatformNativeHandle sd)
                 : inherited (sd)
             {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace ("Constructed BackSocketImpl_<ConnectionOrientedStreamSocket>::Rep_ with sd=%x", (int)sd);
+#endif
             }
             Rep_ ()            = delete;
             Rep_ (const Rep_&) = delete;
@@ -69,13 +72,12 @@ namespace {
             virtual void Connect (const SocketAddress& sockAddr) const override
             {
                 Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionOrientedStreamSocket_IMPL_::Connect", L"sockAddr=%s", Characters::ToString (sockAddr).c_str ())};
-
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 sockaddr_storage                                    useSockAddr = sockAddr.As<sockaddr_storage> ();
 #if qPlatform_POSIX
-                ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([&] () -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sizeof (useSockAddr)); }));
+                ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([&] () -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); }));
 #elif qPlatform_Windows
-                ThrowWSASystemErrorIfSOCKET_ERROR (::connect (fSD_, (sockaddr*)&useSockAddr, sizeof (useSockAddr)));
+                ThrowWSASystemErrorIfSOCKET_ERROR (::connect (fSD_, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()));
 #else
                 AssertNotImplemented ();
 #endif

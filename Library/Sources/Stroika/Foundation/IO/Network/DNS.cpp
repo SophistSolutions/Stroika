@@ -193,7 +193,7 @@ optional<String> DNS::ReverseLookup (const InternetAddress& address) const
 #if defined(NI_IDN)
     flags |= NI_IDN;
 #endif
-    int errCode = ::getnameinfo (reinterpret_cast<const sockaddr*> (&sadata), sizeof (sadata), hbuf, sizeof (hbuf), NULL, 0, flags);
+    int errCode = ::getnameinfo (reinterpret_cast<const sockaddr*> (&sadata), sa.GetRequiredSize (), hbuf, sizeof (hbuf), NULL, 0, flags);
     switch (errCode) {
         case 0:
             //@todo handle I18N more carefully
@@ -220,7 +220,7 @@ optional<String> DNS::QuietReverseLookup (const InternetAddress& address) const
 #if defined(NI_IDN)
     flags |= NI_IDN;
 #endif
-    int errCode = ::getnameinfo (reinterpret_cast<const sockaddr*> (&sadata), sizeof (sadata), hbuf, sizeof (hbuf), NULL, 0, flags);
+    int errCode = ::getnameinfo (reinterpret_cast<const sockaddr*> (&sadata), sa.GetRequiredSize (), hbuf, sizeof (hbuf), NULL, 0, flags);
     switch (errCode) {
         case 0:
             //@todo handle I18N more carefully
