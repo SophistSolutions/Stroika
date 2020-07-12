@@ -175,6 +175,7 @@ if [ `uname -s | cut -b 1-6` != "CYGWIN" ] ; then
 		fi
 	fi
 else
+	LOCAL_CONFIGS=`ScriptsLib/GetConfigurations --quiet`
 	LOCAL_VALGRIND_CONFIGS=""
 fi
 rm -f /tmp/raspvalconfigs.txt /tmp/allvalgrindconfigs.txt
