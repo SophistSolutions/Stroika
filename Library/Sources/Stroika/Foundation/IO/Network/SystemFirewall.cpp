@@ -76,7 +76,7 @@ String Rule::ToString () const
  ***************** IO::Network::SystemFirewall::Manager *************************
  ********************************************************************************
  */
-SystemFirewall::Manager SystemFirewall::Manager::sThe;
+SystemFirewall::Manager SystemFirewall::Manager::sThe; // deprecated in Stroika 2.1b2
 
 #if qPlatform_Windows
 namespace {
@@ -219,7 +219,7 @@ bool SystemFirewall::Manager::Register (const Rule& rule)
     return true;
 }
 
-optional<Rule> SystemFirewall::Manager::Lookup (const String& ruleName)
+optional<Rule> SystemFirewall::Manager::Lookup (const String& ruleName) const
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"SystemFirewall::Manager::Lookup", L"ruleName=%s", ruleName.c_str ())};
 #if qPlatform_Windows
@@ -245,7 +245,7 @@ optional<Rule> SystemFirewall::Manager::Lookup (const String& ruleName)
     return nullopt;
 }
 
-Traversal::Iterable<Rule> SystemFirewall::Manager::LookupByGroup (const String& groupName)
+Traversal::Iterable<Rule> SystemFirewall::Manager::LookupByGroup (const String& groupName) const
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"SystemFirewall::Manager::LookupByGroup", L"groupName=%s", groupName.c_str ())};
     Collection<Rule>          rules;
@@ -257,7 +257,7 @@ Traversal::Iterable<Rule> SystemFirewall::Manager::LookupByGroup (const String& 
     return rules;
 }
 
-Traversal::Iterable<Rule> SystemFirewall::Manager::LookupAll ()
+Traversal::Iterable<Rule> SystemFirewall::Manager::LookupAll () const
 {
     Debug::TraceContextBumper ctx{L"SystemFirewall::Manager::LookupAll"};
     Collection<Rule>          rules;

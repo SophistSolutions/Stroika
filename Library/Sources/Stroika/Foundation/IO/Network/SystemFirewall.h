@@ -111,12 +111,15 @@ namespace Stroika::Foundation::IO::Network::SystemFirewall {
      *  Many apps must augment the system firewall in order to operate properly. Often (e.g. on windows)
      *  this requires admin access (running as root or administrator). These functions will often fail
      *  (exceptions) due to inadequate access permissions.
+     *
+     *  \note - this class contains no data, and is not copyable, and is just a proxy to talk to the OS
+     *  storage of firewall rules.
      */
     class Manager {
     public:
-        static Manager sThe;
+        [[deprecated ("Use default CTOR- deprecated in Stroika 2.1b2")]] static Manager sThe;
 
-    private:
+    public:
         Manager () = default;
 
     public:
@@ -129,17 +132,17 @@ namespace Stroika::Foundation::IO::Network::SystemFirewall {
     public:
         /**
          */
-        nonvirtual optional<Rule> Lookup (const String& ruleName);
+        nonvirtual optional<Rule> Lookup (const String& ruleName) const;
 
     public:
         /**
          */
-        nonvirtual Traversal::Iterable<Rule> LookupByGroup (const String& groupName);
+        nonvirtual Traversal::Iterable<Rule> LookupByGroup (const String& groupName) const;
 
     public:
         /**
          */
-        nonvirtual Traversal::Iterable<Rule> LookupAll ();
+        nonvirtual Traversal::Iterable<Rule> LookupAll () const;
     };
 
 }
