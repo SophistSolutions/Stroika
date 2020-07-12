@@ -122,8 +122,6 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
  *************************** InternetMediaTypeRegistry **************************
  ********************************************************************************
  */
-InternetMediaTypeRegistry InternetMediaTypeRegistry::sThe;
-
 InternetMediaTypeRegistry::InternetMediaTypeRegistry (const shared_ptr<IBackendRep>& backendRep)
     : fFrontEndRep_{make_shared<FrontendRep_> (backendRep)}
 {

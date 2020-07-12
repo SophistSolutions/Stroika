@@ -167,13 +167,13 @@ namespace {
             }
             {
                 auto dumpCT = [] (const String& label, InternetMediaType i) {
-                    [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::sThe;
+                    [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Get ();
                     DbgTrace (L"SUFFIX(%s)=%s", label.c_str (), Characters::ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str ());
                     DbgTrace (L"ASSOCFILESUFFIXES(%s)=%s", label.c_str (), Characters::ToString (r.GetAssociatedFileSuffixes (i)).c_str ());
                     DbgTrace (L"GetAssociatedPrettyName(%s)=%s", label.c_str (), Characters::ToString (r.GetAssociatedPrettyName (i)).c_str ());
                 };
                 auto checkCT = [] (InternetMediaType i, const Set<String>& possibleFileSuffixes) {
-                    [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::sThe;
+                    [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Get ();
                     using namespace Characters;
                     if (not possibleFileSuffixes.Contains (r.GetPreferredAssociatedFileSuffix (i).value_or (L""))) {
                         Stroika::TestHarness::WarnTestIssue (
@@ -198,9 +198,9 @@ namespace {
                 checkCT (InternetMediaTypes::kImage_PNG, {L".png"});
             }
             {
-                Debug::TraceContextBumper ctx1 ("InternetMediaTypeRegistry::sThe.GetMediaTypes()");
+                Debug::TraceContextBumper ctx1 ("InternetMediaTypeRegistry::Get ().GetMediaTypes()");
                 // enumerate all content types
-                for (auto ct : InternetMediaTypeRegistry::sThe.GetMediaTypes ()) {
+                for (auto ct : InternetMediaTypeRegistry::Get ().GetMediaTypes ()) {
                     DbgTrace (L"i=%s", Characters::ToString (ct).c_str ());
                 }
             }

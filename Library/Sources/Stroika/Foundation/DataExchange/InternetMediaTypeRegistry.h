@@ -104,19 +104,19 @@ namespace Stroika::Foundation::DataExchange {
     public:
         /**
          *  Return the current global variable - current internet media type registry. Typically - use this.
-
-         **** IN FUTURE VERISONS - THIS WILL BE CUSTOMIZABLE/EDITABLE, or copy copyable to a private copy you can edit/use
-
-         **** unclear if we want to allow assignemnt - maybe should have Get/Set methods
+         *
+         *  \\todo @todo Consider adding a Set() method, that would allow replacing the global internet media content-type registry
+         *         But - in the meantime, these can be copied, and separately constructed, and used explicitly in any context where
+         *          a user wants a specific registry.
          */
     public:
-        static InternetMediaTypeRegistry sThe;
+        static const InternetMediaTypeRegistry& Get ();
 
     public:
         // DEPRECATED
         [[deprecated ("Since Stroika 2.1b2 - use sThe (?) instead")]] static InternetMediaTypeRegistry Default ()
         {
-            return sThe;
+            return Get ();
         }
 
     public:
