@@ -143,6 +143,15 @@ bool IsRunningUnderValgrind ();
 #define Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER(X) ((void)0)
 #endif
 
+
+#if qStroika_FeatureSupported_Valgrind
+#define Stroika_Foundation_Debug_Valgrind_ANNOTATE_PUBLISH_MEMORY_RANGE(pointer, size) \
+    ANNOTATE_PUBLISH_MEMORY_RANGE (pointer, size)
+#else
+#define Stroika_Foundation_Debug_Valgrind_ANNOTATE_PUBLISH_MEMORY_RANGE(pointer, size) ((void)0)
+#endif
+
+
 #if defined(__cplusplus)
 namespace Stroika::Foundation::Debug {
 #if qStroika_FeatureSupported_Valgrind

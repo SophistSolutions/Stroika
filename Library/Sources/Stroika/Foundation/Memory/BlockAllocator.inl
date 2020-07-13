@@ -164,6 +164,7 @@ namespace Stroika::Foundation::Memory {
         static_assert (sizeof (void*) == sizeof (atomic<void*>), "atomic doesn't change size");
         void* next = reinterpret_cast<const atomic<void*>*> (p)->load (memory_order_acquire);
         Verify (sHeadLink_.exchange (next, memory_order_acq_rel) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
+        Stroika_Foundation_Debug_Valgrind_ANNOTATE_PUBLISH_MEMORY_RANGE (result, n);
         return result;
 #else
         [[maybe_unused]] auto&& critSec = lock_guard{Private_::GetLock_ ()};
@@ -180,6 +181,7 @@ namespace Stroika::Foundation::Memory {
          * treat this as a linked list, and make head point to next member
          */
         sHeadLink_ = (*(void**)sHeadLink_);
+        Stroika_Foundation_Debug_Valgrind_ANNOTATE_PUBLISH_MEMORY_RANGE (result, n);
         return result;
 #endif
     }
