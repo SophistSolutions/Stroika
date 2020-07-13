@@ -134,7 +134,7 @@ namespace Stroika::Foundation::Linguistics {
          *
          *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
          */
-        [[deprecated ("In Stroika v2.1b2 - use MessageUtiltiesManager")]] shared_ptr<const MessageUtilities> LookupHandler ()
+        [[deprecated ("In Stroika v2.1b2 - use MessageUtiltiesManager")]] inline shared_ptr<const MessageUtilities> LookupHandler ()
         {
             return MessageUtiltiesManager::Get ()->LookupHandler ();
         }
@@ -143,7 +143,7 @@ namespace Stroika::Foundation::Linguistics {
          *  Uses a MessageUtilities based on the current thread's locale, if called between the start and end of main, and
          *  otherwise uses an arbitrary one.
          */
-        [[deprecated ("In Stroika v2.1b2 - use MessageUtiltiesManager")]] pair<String, optional<String>> RemoveTrailingSentencePunctuation (const String& msg)
+        [[deprecated ("In Stroika v2.1b2 - use MessageUtiltiesManager")]] inline pair<String, optional<String>> RemoveTrailingSentencePunctuation (const String& msg)
         {
             return MessageUtiltiesManager::Get ()->RemoveTrailingSentencePunctuation (msg);
         }
@@ -155,11 +155,11 @@ namespace Stroika::Foundation::Linguistics {
          *
          *  The variation with two strings - the second one is the explicit plural - just plugged in if the count is non-zero
          */
-        [[deprecated ("In Stroika v2.1b2 - use MessageUtiltiesManager")]] String PluralizeNoun (const String& s, int count = 1000)
+        [[deprecated ("In Stroika v2.1b2 - use MessageUtiltiesManager")]] inline String PluralizeNoun (const String& s, int count = 1000)
         {
             return MessageUtiltiesManager::Get ()->PluralizeNoun (s, count);
         }
-        [[deprecated ("In Stroika v2.1b2 - use MessageUtiltiesManager")]] String PluralizeNoun (const String& s, const String& sPlural, int count)
+        [[deprecated ("In Stroika v2.1b2 - use MessageUtiltiesManager")]] inline String PluralizeNoun (const String& s, const String& sPlural, int count)
         {
             return MessageUtiltiesManager::Get ()->PluralizeNoun (s, sPlural, count);
         }
@@ -167,7 +167,7 @@ namespace Stroika::Foundation::Linguistics {
         /**
          * Take argument string (assumed noun) munge it so its singular (if it happened to have been plural).
          */
-        [[deprecated ("In Stroika v2.1b2 - use MessageUtiltiesManager")]] String MakeNounSingular (const String& s)
+        [[deprecated ("In Stroika v2.1b2 - use MessageUtiltiesManager")]] inline String MakeNounSingular (const String& s)
         {
             return MessageUtiltiesManager::Get ()->MakeNounSingular (s);
         }
