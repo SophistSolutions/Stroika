@@ -77,7 +77,7 @@ namespace {
 #if qPlatform_POSIX
                 ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([&] () -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); }));
 #elif qPlatform_Windows
-                ThrowWSASystemErrorIfSOCKET_ERROR (::connect (fSD_, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()));
+                ThrowWSASystemErrorIfSOCKET_ERROR (::connect (fSD_, (sockaddr*)&useSockAddr, static_cast<int> (sockAddr.GetRequiredSize ())));
 #else
                 AssertNotImplemented ();
 #endif
