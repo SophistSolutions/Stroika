@@ -9,6 +9,7 @@
 #if defined(__cpp_impl_three_way_comparison)
 #include <compare>
 #endif
+#include <filesystem>
 
 #if qPlatform_Windows
 #include <netfw.h>
@@ -31,10 +32,10 @@ namespace Stroika::Foundation::IO::Network::SystemFirewall {
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
     struct Rule {
-        String fName;
-        String fDescription;
-        String fGroup;
-        String fApplication;
+        String           fName;
+        String           fDescription;
+        String           fGroup;
+        filesystem::path fApplication;
 #if qPlatform_Windows
         NET_FW_PROFILE_TYPE2  fProfileMask;
         NET_FW_RULE_DIRECTION fDirection;

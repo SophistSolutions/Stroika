@@ -76,7 +76,7 @@ String Rule::ToString () const
  ***************** IO::Network::SystemFirewall::Manager *************************
  ********************************************************************************
  */
-SystemFirewall::Manager SystemFirewall::Manager::sThe; // deprecated in Stroika 2.1b2
+SystemFirewall::Manager SystemFirewall::Manager::sThe; // sThe deprecated in Stroika 2.1b2
 
 #if qPlatform_Windows
 namespace {
@@ -191,13 +191,13 @@ bool SystemFirewall::Manager::Register (const Rule& rule)
     });
 
     // Retrieve INetFwPolicy2
-    ThrowIfErrorHRESULT (CoCreateInstance (__uuidof(NetFwPolicy2), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwPolicy2), (void**)&pNetFwPolicy2));
+    ThrowIfErrorHRESULT (::CoCreateInstance (__uuidof(NetFwPolicy2), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwPolicy2), (void**)&pNetFwPolicy2));
 
     // Retrieve INetFwRules
     ThrowIfErrorHRESULT (pNetFwPolicy2->get_Rules (&pFwRules));
 
     // Create a new Firewall Rule object.
-    ThrowIfErrorHRESULT (CoCreateInstance (__uuidof(NetFwRule), NULL, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), (void**)&pFwRule));
+    ThrowIfErrorHRESULT (::CoCreateInstance (__uuidof(NetFwRule), NULL, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), (void**)&pFwRule));
 
     // Populate the Firewall Rule object
     ThrowIfErrorHRESULT (pFwRule->put_Name (SmartBSTR{rule.fName.c_str ()}));
@@ -236,7 +236,7 @@ optional<Rule> SystemFirewall::Manager::Lookup (const String& ruleName) const
     });
 
     // Retrieve INetFwPolicy2
-    ThrowIfErrorHRESULT (CoCreateInstance (__uuidof(NetFwPolicy2), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwPolicy2), (void**)&pNetFwPolicy2));
+    ThrowIfErrorHRESULT (::CoCreateInstance (__uuidof(NetFwPolicy2), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwPolicy2), (void**)&pNetFwPolicy2));
 
     // Retrieve INetFwRules
     ThrowIfErrorHRESULT (pNetFwPolicy2->get_Rules (&pFwRules));
@@ -279,7 +279,7 @@ Traversal::Iterable<Rule> SystemFirewall::Manager::LookupAll () const
     });
 
     // Retrieve INetFwPolicy2
-    ThrowIfErrorHRESULT (CoCreateInstance (__uuidof(NetFwPolicy2), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwPolicy2), (void**)&pNetFwPolicy2));
+    ThrowIfErrorHRESULT (::CoCreateInstance (__uuidof(NetFwPolicy2), nullptr, CLSCTX_INPROC_SERVER, __uuidof(INetFwPolicy2), (void**)&pNetFwPolicy2));
 
     // Retrieve INetFwRules
     ThrowIfErrorHRESULT (pNetFwPolicy2->get_Rules (&pFwRules));
