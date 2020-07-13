@@ -395,8 +395,8 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 
 
 	SAMPLE_APPS_2_TEST=()
-	SAMPLE_APPS_2_TEST+=("Samples-ArchiveUtility/ArchiveUtility --list ThirdPartyComponents/Origs-Cache/sqlite-amalgamation-*.zip")
-	SAMPLE_APPS_2_TEST+=("Samples-ArchiveUtility/ArchiveUtility --list ThirdPartyComponents/Origs-Cache/lzma1604.7z")
+	SAMPLE_APPS_2_TEST+=("Samples-ArchiveUtility/ArchiveUtility --no-fail-on-missing-library --list ThirdPartyComponents/Origs-Cache/sqlite-amalgamation-*.zip")
+	SAMPLE_APPS_2_TEST+=("Samples-ArchiveUtility/ArchiveUtility --no-fail-on-missing-library --list ThirdPartyComponents/Origs-Cache/lzma1604.7z")
 	SAMPLE_APPS_2_TEST+=("Samples-Containers/Containers")
 	SAMPLE_APPS_2_TEST+=("Samples-Serialization/Serialization")
 	SAMPLE_APPS_2_TEST+=("Samples-SystemPerformanceClient/SystemPerformanceClient")

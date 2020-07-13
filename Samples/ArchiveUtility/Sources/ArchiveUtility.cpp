@@ -44,12 +44,14 @@ namespace {
         filesystem::path           fArchiveFileName;
         optional<filesystem::path> fOutputDirectory; // applies only if extract
         optional<Sequence<String>> fFiles2Add;
+        optional<bool>             fNoFailOnMissingLibrary;	// for regression tests
     };
     void Usage_ ()
     {
-        cerr << "Usage: ArchiveUtility (--help | -h) | ((--list | --create | --extract |--update) ARCHIVENAME [--outputDirectory D] [FILES])" << endl;
+        cerr << "Usage: ArchiveUtility (--help | -h) | (--no-fail-on-missing-library) | ((--list | --create | --extract |--update) ARCHIVENAME [--outputDirectory D] [FILES])" << endl;
         cerr << "    --help prints this help" << endl;
         cerr << "    -h prints this help" << endl;
+        cerr << "    --no-fail-on-missing-library just warns when we fail because of missing library" << endl;
         cerr << "    --list prints all the files in the argument archive" << endl;
         cerr << "    --create creates the argument ARHCIVE and adds the argument FILES to it" << endl;
         cerr << "    --extract extracts all the files from the argument ARHCIVE and to the output directory specified by --ouptutDirectory (defaulting to .)" << endl;
@@ -63,6 +65,7 @@ namespace {
         Sequence<String>              args = Execution::ParseCommandLine (argc, argv);
         optional<Options_::Operation> operation;
         optional<String>              archiveName;
+        optional<bool>                noFailOnMissingLibrary;
         for (auto argi = args.begin (); argi != args.end (); ++argi) {
             if (argi == args.begin ()) {
                 continue; // skip argv[0] - command name
@@ -70,6 +73,9 @@ namespace {
             if (Execution::MatchesCommandLineArgument (*argi, L"h") or Execution::MatchesCommandLineArgument (*argi, L"help")) {
                 Usage_ ();
                 return optional<Options_>{};
+            }
+            else if (Execution::MatchesCommandLineArgument (*argi, L"no-fail-on-missing-library")) {
+                noFailOnMissingLibrary = true;
             }
             else if (Execution::MatchesCommandLineArgument (*argi, L"list")) {
                 operation = Options_::Operation::eList;
@@ -101,6 +107,7 @@ namespace {
         result.fOperation       = *operation;
         result.fArchiveFileName = IO::FileSystem::ToPath (*archiveName);
         // @todo add more.. - files etc
+        result.fNoFailOnMissingLibrary = noFailOnMissingLibrary;
         return result;
     }
 }
@@ -168,6 +175,13 @@ int main (int argc, const char* argv[])
         catch (...) {
             String exceptMsg = Characters::ToString (current_exception ());
             cerr << "Exception: " << exceptMsg.AsNarrowSDKString () << " - terminating..." << endl;
+            if (o->fNoFailOnMissingLibrary.value_or (false)) {
+#if !qHasFeature_LZMA || !qHasFeature_ZLib
+                if (exceptMsg.Contains (L"Unrecognized format"sv)) {
+                    return EXIT_SUCESSS;
+                }
+#endif
+			}
             return EXIT_FAILURE;
         }
     }
