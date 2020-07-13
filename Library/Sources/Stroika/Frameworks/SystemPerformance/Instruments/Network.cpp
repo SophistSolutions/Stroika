@@ -200,8 +200,9 @@ namespace {
             Collection<InterfaceInfo> interfaceResults;
             IOStatistics              accumSummary;
 #if qSupportProcNet_
-            Read_proc_net_dev_ (&interfaceResults, &accumSummary);
-            Read_proc_net_snmp_ (&accumSummary);
+            // Some Linux builds may not have all (any) of the /proc stuff mounted (e.g. WSL 1)
+            IgnoreExceptionsExceptThreadAbortForCall (Read_proc_net_dev_ (&interfaceResults, &accumSummary));
+            IgnoreExceptionsExceptThreadAbortForCall (Read_proc_net_snmp_ (&accumSummary));
 #endif
 
             DurationSecondsType now = Time::GetTickCount ();
