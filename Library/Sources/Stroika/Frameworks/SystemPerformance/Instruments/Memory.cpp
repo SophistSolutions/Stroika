@@ -163,7 +163,12 @@ namespace {
         {
             Instruments::Memory::Info result;
             Read_ProcMemInfo (&result);
-            Read_ProcVMStat_ (&result);
+            try {
+                Read_ProcVMStat_ (&result);
+            }
+            catch (...) {
+                DbgTrace (L"Ignoring error in Read_ProcVMStat_: %s", Characters::ToString (current_exception ()).c_str ());
+            }
             NoteCompletedCapture_ ();
             return result;
         }
