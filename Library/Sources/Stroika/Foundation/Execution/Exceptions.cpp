@@ -41,7 +41,7 @@ namespace {
             return reasonForError;
         }
         StringBuilder sb;
-        auto          tmp = Linguistics::CurrentLocaleMessageUtilities::RemoveTrailingSentencePunctuation (reasonForError);
+        auto          tmp = Linguistics::MessageUtiltiesManager::Get ()->RemoveTrailingSentencePunctuation (reasonForError);
         sb += tmp.first;
         sb += L" while ";
         for (auto i = activities.begin (); i != activities.end ();) {
