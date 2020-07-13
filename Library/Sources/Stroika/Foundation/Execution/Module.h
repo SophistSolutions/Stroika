@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Execution {
      *  The variant returning TString is useful especially when you need to avoid other Stroika
      *  dependencies, such as low level coding and avoiding deadly embraces with tracelog code.
      */
-    [[deprecated("Since Stroika 2.1b1, use GetEXEDir cuz uses std::filesystem::path not String")]]SDKString GetEXEDirT ();
+    [[deprecated ("Since Stroika 2.1b1, use GetEXEDir cuz uses std::filesystem::path not String")]] SDKString GetEXEDirT ();
 
     /**
      *  @see GetEXEPath
