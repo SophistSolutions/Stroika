@@ -240,7 +240,7 @@ void IO::FileSystem::CreateDirectoryForFile (const filesystem::path& filePath)
         // were done
         return;
     }
-    CreateDirectory (filePath.parent_path (), true);    //CreateDirectory (ToPath (GetFileDirectory (FromPath (filePath))), true);
+    CreateDirectory (filePath.parent_path (), true); //CreateDirectory (ToPath (GetFileDirectory (FromPath (filePath))), true);
 }
 
 /*

@@ -6,6 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
+#include <filesystem>
 #include <optional>
 
 #include "Router.h"
@@ -36,7 +37,7 @@ namespace Stroika::Frameworks::WebServer {
         /**
          *  Any route to apply the handler, must match ALL argument constraints.
          */
-        FileSystemRouter (const String& filesystemRoot, const optional<String>& urlPrefix2Strip, const Sequence<String>& defaultIndexFileNames = {});
+        FileSystemRouter (const filesystem::path& filesystemRoot, const optional<String>& urlPrefix2Strip, const Sequence<String>& defaultIndexFileNames = {});
     };
 
 }

@@ -393,7 +393,7 @@ void ProcessRunner::BackgroundProcess::Terminate ()
  */
 ProcessRunner::ProcessRunner (const String& commandLine, const Streams::InputStream<byte>::Ptr& in, const Streams::OutputStream<byte>::Ptr& out, const Streams::OutputStream<byte>::Ptr& error)
     : fCommandLine_ (commandLine)
-    , fExecutable_ ()
+    , fExecutable_{}
     , fArgs_ ()
     , fStdIn_ (in)
     , fStdOut_ (out)
@@ -401,9 +401,9 @@ ProcessRunner::ProcessRunner (const String& commandLine, const Streams::InputStr
 {
 }
 
-ProcessRunner::ProcessRunner (const String& executable, const Containers::Sequence<String>& args, const Streams::InputStream<byte>::Ptr& in, const Streams::OutputStream<byte>::Ptr& out, const Streams::OutputStream<byte>::Ptr& error)
+ProcessRunner::ProcessRunner (const filesystem::path& executable, const Containers::Sequence<String>& args, const Streams::InputStream<byte>::Ptr& in, const Streams::OutputStream<byte>::Ptr& out, const Streams::OutputStream<byte>::Ptr& error)
     : fCommandLine_ ()
-    , fExecutable_ (executable)
+    , fExecutable_{executable}
     , fArgs_ (args)
     , fStdIn_ (in)
     , fStdOut_ (out)
@@ -423,7 +423,7 @@ String ProcessRunner::GetEffectiveCmdLine_ () const
         {
             Execution::Throw (Execution::Exception (L"need command-line or executable path to run a process"sv));
         }
-    sb += *fExecutable_;
+    sb += IO::FileSystem::FromPath (*fExecutable_);
     for (String i : fArgs_) {
         sb += +L" " + i;
     }
@@ -1226,7 +1226,7 @@ pid_t Execution::DetachedProcessRunner (const String& commandLine)
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx (L"Execution::DetachedProcessRunner", L"commandline=%s", commandLine.c_str ());
 #endif
-    String           exe;
+    filesystem::path exe;
     Sequence<String> args;
     {
         Sequence<String> tmp{Execution::ParseCommandLine (commandLine)};
@@ -1235,15 +1235,15 @@ pid_t Execution::DetachedProcessRunner (const String& commandLine)
             {
                 Execution::Throw (Execution::Exception (L"invalid command argument to DetachedProcessRunner"sv));
             }
-        exe  = tmp[0];
+        exe  = IO::FileSystem::ToPath (tmp[0]);
         args = tmp;
     }
     return DetachedProcessRunner (exe, args);
 }
 
-pid_t Execution::DetachedProcessRunner (const String& executable, const Containers::Sequence<String>& args)
+pid_t Execution::DetachedProcessRunner (const filesystem::path& executable, const Containers::Sequence<String>& args)
 {
-    TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Execution::DetachedProcessRunner", L"executable=%s, args=%s", executable.c_str (), Characters::ToString (args).c_str ())};
+    TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Execution::DetachedProcessRunner", L"executable=%s, args=%s", Characters::ToString (executable).c_str (), Characters::ToString (args).c_str ())};
 
     // @todo Consider rewriting below launch code so more in common with ::Run / CreateRunnable code in ProcessRunner
 
@@ -1253,13 +1253,13 @@ pid_t Execution::DetachedProcessRunner (const String& executable, const Containe
 
     Sequence<String> useArgs;
     if (args.empty ()) {
-        useArgs.Append (IO::FileSystem::ExtractDirAndBaseName (executable).second);
+        useArgs.Append (IO::FileSystem::ExtractDirAndBaseName (IO::FileSystem::FromPath (executable)).second);
     }
     else {
         bool firstTimeThru = true;
         for (auto i = args.begin (); i != args.end (); ++i) {
             if (firstTimeThru and i->empty ()) {
-                useArgs.Append (IO::FileSystem::ExtractDirAndBaseName (executable).second);
+                useArgs.Append (IO::FileSystem::ExtractDirAndBaseName (IO::FileSystem::FromPath (executable)).second);
             }
             else {
                 useArgs.Append (*i);
@@ -1269,7 +1269,7 @@ pid_t Execution::DetachedProcessRunner (const String& executable, const Containe
     }
 
 #if qPlatform_POSIX
-    Characters::SDKString thisEXEPath = executable.AsSDKString ();
+    Characters::SDKString thisEXEPath = executable.native ();
 
     // Note - we do this OUTSIDE the fork since its unsafe to do mallocs etc inside forked space.
 
@@ -1374,7 +1374,7 @@ pid_t Execution::DetachedProcessRunner (const String& executable, const Containe
             Characters::CString::Cat (cmdLineBuf, NEltsOf (cmdLineBuf), i.AsSDKString ().c_str ());
         }
         Execution::Platform::Windows::ThrowIfZeroGetLastError (
-            ::CreateProcess (executable.AsSDKString ().c_str (), cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, nullptr, &startInfo, &processInfo));
+            ::CreateProcess (executable.c_str (), cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, nullptr, &startInfo, &processInfo));
         Verify (::CloseHandle (processInfo.hProcess)); // We can recover the process handle from the process id if needed
         Verify (::CloseHandle (processInfo.hThread));
     }

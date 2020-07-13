@@ -54,7 +54,7 @@ namespace {
                             }},
                       Route{
                           L"Files/.*"_RegEx,
-                          FileSystemRouter{Execution::GetEXEDir () + L"html", String (L"Files"), Sequence<String>{L"index.html"}},
+                          FileSystemRouter{Execution::GetEXEDir () / L"html", String (L"Files"), Sequence<String>{L"index.html"}},
                       },
                   }}
             , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRouter_, ConnectionManager::Options{{}, Socket::BindFlags{}, String{L"Stroika-Sample-WebServer/"} + AppVersion::kVersion.AsMajorMinorString ()}}

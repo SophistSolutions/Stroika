@@ -36,10 +36,10 @@ namespace {
         optional<String> fURLPrefix2Strip;
         Sequence<String> fDefaultIndexFileNames;
 
-        FSRouterRep_ (const String& filesystemRoot, const optional<String>& urlPrefix2Strip, const Sequence<String>& defaultIndexFileNames)
-            : fFSRoot_ (filesystem::canonical (filesystem::path (filesystemRoot.As<wstring> ())))
-            , fURLPrefix2Strip (urlPrefix2Strip)
-            , fDefaultIndexFileNames (defaultIndexFileNames)
+        FSRouterRep_ (const filesystem::path& filesystemRoot, const optional<String>& urlPrefix2Strip, const Sequence<String>& defaultIndexFileNames)
+            : fFSRoot_{filesystem::canonical (filesystemRoot)}
+            , fURLPrefix2Strip{urlPrefix2Strip}
+            , fDefaultIndexFileNames{defaultIndexFileNames}
         {
         }
         void HandleMessage (Message* m)
@@ -106,7 +106,7 @@ namespace {
  ************************* WebServer::FileSystemRouter **************************
  ********************************************************************************
  */
-FileSystemRouter::FileSystemRouter (const String& filesystemRoot, const optional<String>& urlPrefix2Strip, const Sequence<String>& defaultIndexFileNames)
+FileSystemRouter::FileSystemRouter (const filesystem::path& filesystemRoot, const optional<String>& urlPrefix2Strip, const Sequence<String>& defaultIndexFileNames)
     : RequestHandler ([rep = make_shared<FSRouterRep_> (filesystemRoot, urlPrefix2Strip, defaultIndexFileNames)] (Message* m) -> void { rep->HandleMessage (m); })
 {
 }

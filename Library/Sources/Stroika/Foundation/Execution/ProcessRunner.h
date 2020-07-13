@@ -6,6 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
+#include <filesystem>
 #include <optional>
 
 #include "../Characters/String.h"
@@ -144,7 +145,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         ProcessRunner (const String& commandLine, const Streams::InputStream<byte>::Ptr& in = nullptr, const Streams::OutputStream<byte>::Ptr& out = nullptr, const Streams::OutputStream<byte>::Ptr& error = nullptr);
-        ProcessRunner (const String& executable, const Containers::Sequence<String>& args, const Streams::InputStream<byte>::Ptr& in = nullptr, const Streams::OutputStream<byte>::Ptr& out = nullptr, const Streams::OutputStream<byte>::Ptr& error = nullptr);
+        ProcessRunner (const filesystem::path& executable, const Containers::Sequence<String>& args, const Streams::InputStream<byte>::Ptr& in = nullptr, const Streams::OutputStream<byte>::Ptr& out = nullptr, const Streams::OutputStream<byte>::Ptr& error = nullptr);
 #if !qTargetPlatformSDKUseswchar_t && 0
         ProcessRunner (const SDKString& commandLine, const Streams::InputStream<byte>::Ptr& in = nullptr, const Streams::OutputStream<byte>::Ptr& out = nullptr, const Streams::OutputStream<byte>::Ptr& error = nullptr)
             : ProcessRunner (String::FromSDKString (commandLine), in, out, error)
@@ -259,7 +260,7 @@ namespace Stroika::Foundation::Execution {
 
     private:
         optional<String>                 fCommandLine_;
-        optional<String>                 fExecutable_;
+        optional<filesystem::path>       fExecutable_;
         Containers::Sequence<String>     fArgs_; // ignored if fExecutable empty
         optional<String>                 fWorkingDirectory_;
         Streams::InputStream<byte>::Ptr  fStdIn_;
@@ -390,7 +391,7 @@ namespace Stroika::Foundation::Execution {
      *          cwd path.
      */
     pid_t DetachedProcessRunner (const String& commandLine);
-    pid_t DetachedProcessRunner (const String& executable, const Containers::Sequence<String>& args);
+    pid_t DetachedProcessRunner (const filesystem::path& executable, const Containers::Sequence<String>& args);
 
 }
 

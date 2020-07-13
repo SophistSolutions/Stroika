@@ -932,7 +932,7 @@ void Main::WindowsService::_Install ()
     Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::WindowsService::_Install");
 
     const DWORD kServiceMgrAccessPrivs = SC_MANAGER_CREATE_SERVICE;
-    String      cmdLineForRunSvc       = L"\""sv + Execution::GetEXEPath () + L"\" --"sv + CommandNames::kRunAsService;
+    String      cmdLineForRunSvc       = L"\""sv + IO::FileSystem::FromPath (Execution::GetEXEPath ()) + L"\" --"sv + CommandNames::kRunAsService;
     SC_HANDLE   hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hSCM);
     [[maybe_unused]] auto&& cleanup = Execution::Finally (
