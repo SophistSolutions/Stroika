@@ -58,7 +58,7 @@ namespace {
                 Response&              response = *m->PeekResponse ();
                 InputStream<byte>::Ptr in{FileInputStream::New (fn)};
                 response.write (in.ReadAll ());
-                if (optional<InternetMediaType> oMediaType = InternetMediaTypeRegistry::Get ().GetAssociatedContentType (FromPath (fn))) {
+                if (optional<InternetMediaType> oMediaType = InternetMediaTypeRegistry::Get ().GetAssociatedContentType (fn.extension ())) {
                     response.SetContentType (*oMediaType);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace (L"content-type: %s", oMediaType->ToString ().c_str ());
