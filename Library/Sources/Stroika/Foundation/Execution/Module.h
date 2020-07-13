@@ -6,6 +6,8 @@
 
 #include "../StroikaPreComp.h"
 
+#include <filesystem>
+
 #if qPlatform_POSIX
 #include <unistd.h>
 #endif
@@ -38,13 +40,13 @@ namespace Stroika::Foundation::Execution {
      *  The directory where the executable that is running this code is located. If this code is compiled into a DLL,
      *  this returns the executable directory for the underlying process/executable (not the DLL/so file).
      */
-    String GetEXEDir ();
+    filesystem::path GetEXEDir ();
 
     /**
      *  The path where the executable that is running this code is located. If this code is compiled into a DLL,
      *  this returns the executable for the underlying process/executable (not the DLL/so file).
      */
-    String GetEXEPath ();
+    filesystem::path GetEXEPath ();
 
     /**
      *  @see GetEXEDir
@@ -52,7 +54,7 @@ namespace Stroika::Foundation::Execution {
      *  The variant returning TString is useful especially when you need to avoid other Stroika
      *  dependencies, such as low level coding and avoiding deadly embraces with tracelog code.
      */
-    SDKString GetEXEDirT ();
+    [[deprecated("Since Stroika 2.1b1, use GetEXEDir cuz uses std::filesystem::path not String")]]SDKString GetEXEDirT ();
 
     /**
      *  @see GetEXEPath
@@ -60,12 +62,12 @@ namespace Stroika::Foundation::Execution {
      *  The variant returning SDKString is useful especially when you need to avoid other Stroika
      *  dependencies, such as low level coding and avoiding deadly embraces with tracelog code.
      */
-    SDKString GetEXEPathT ();
+    [[deprecated ("Since Stroika 2.1b1, use GetEXEPath cuz uses std::filesystem::path not String")]] SDKString GetEXEPathT ();
 
     /**
      *  Return the full path to the given process
      */
-    String GetEXEPath (pid_t processID);
+    filesystem::path GetEXEPath (pid_t processID);
 
 }
 

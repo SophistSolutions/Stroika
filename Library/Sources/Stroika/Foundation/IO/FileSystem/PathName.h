@@ -137,7 +137,7 @@ namespace Stroika::Foundation::IO::FileSystem {
     /**
      *      // get the directory part of the given pathname (if the path refers to a directory - ends in / - then return THAT name)
      */
-    String GetFileDirectory (const String& pathName);
+    [[deprecated ("Since Stroika v2.1b2, use parent_path ()")]]String GetFileDirectory (const String& pathName);
 
     /**
      *  Return true if the argument pathName is a directory name.
