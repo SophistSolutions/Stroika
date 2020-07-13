@@ -102,6 +102,32 @@ String MessageUtilities_en::MakeNounSingular (const String& s) const
 
 /*
  ********************************************************************************
+ ************************ MessageUtiltiesManager ********************************
+ ********************************************************************************
+ */
+shared_ptr<const MessageUtilities> MessageUtiltiesManager::LookupHandler (const locale& l) const
+{
+    optional<Common::KeyValuePair<locale, shared_ptr<const MessageUtilities>>> cachedVal = fCached_.load ();
+    if (cachedVal && cachedVal->fKey == l) {
+        return cachedVal->fValue;
+    }
+    cachedVal = [&] () {
+        //  search here user installed ones with AddHandler ()
+        for (shared_ptr<const MessageUtilities> h : fMessageHandlers_) {
+            if (h->AppliesToThisLocale (String::FromNarrowSDKString (l.name ()))) {
+                return Common::KeyValuePair<locale, shared_ptr<const MessageUtilities>>{l, h};
+            }
+        }
+        // if nothing applies, return this...
+        return Common::KeyValuePair<locale, shared_ptr<const MessageUtilities>>{l, make_shared<MessageUtilities_en> ()};
+    }();
+    fCached_.store (cachedVal);
+    return cachedVal->fValue;
+}
+#if 0
+
+/*
+ ********************************************************************************
  ************ CurrentLocaleMessageUtilities::Configure **************************
  ********************************************************************************
  */
@@ -139,7 +165,6 @@ void CurrentLocaleMessageUtilities::Configuration::AddHandler (const shared_ptr<
     sHandlers_.rwget ()->Add (handler);
     sCached_.rwget ().store (nullopt);
 }
-
 /*
 ********************************************************************************
 ******************* CurrentLocaleMessageUtilities ******************************
@@ -191,3 +216,4 @@ String CurrentLocaleMessageUtilities::MakeNounSingular (const String& s)
 {
     return LookupHandler ()->MakeNounSingular (s);
 }
+#endif
