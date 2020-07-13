@@ -44,7 +44,7 @@ namespace {
         filesystem::path           fArchiveFileName;
         optional<filesystem::path> fOutputDirectory; // applies only if extract
         optional<Sequence<String>> fFiles2Add;
-        optional<bool>             fNoFailOnMissingLibrary;	// for regression tests
+        optional<bool>             fNoFailOnMissingLibrary; // for regression tests
     };
     void Usage_ ()
     {
@@ -181,7 +181,7 @@ int main (int argc, const char* argv[])
                     return EXIT_SUCESSS;
                 }
 #endif
-			}
+            }
             return EXIT_FAILURE;
         }
     }
