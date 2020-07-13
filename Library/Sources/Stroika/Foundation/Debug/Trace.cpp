@@ -125,7 +125,7 @@ namespace {
         SDKString mfname;
         {
             try {
-                mfname = Execution::GetEXEPathT ();
+                mfname = Execution::GetEXEPath ().native ();
             }
             catch (...) {
                 mfname = SDKSTR ("{unknown}");
