@@ -146,10 +146,10 @@ bool IsRunningUnderValgrind ();
 /**
  */
 #if qStroika_FeatureSupported_Valgrind
-#define Stroika_Foundation_Debug_Valgrind_ANNOTATE_PUBLISH_MEMORY_RANGE(pointer, size) \
-    ANNOTATE_PUBLISH_MEMORY_RANGE (pointer, size)
+#define Stroika_Foundation_Debug_Valgrind_ANNOTATE_NEW_MEMORY(pointer, size) \
+    ANNOTATE_NEW_MEMORY (pointer, size)
 #else
-#define Stroika_Foundation_Debug_Valgrind_ANNOTATE_PUBLISH_MEMORY_RANGE(pointer, size) ((void)0)
+#define Stroika_Foundation_Debug_Valgrind_ANNOTATE_NEW_MEMORY(pointer, size) ((void)0)
 #endif
 
 #if defined(__cplusplus)
