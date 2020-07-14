@@ -178,7 +178,7 @@ int main (int argc, const char* argv[])
             if (o->fNoFailOnMissingLibrary.value_or (false)) {
 #if !qHasFeature_LZMA || !qHasFeature_ZLib
                 if (exceptMsg.Contains (L"Unrecognized format"sv)) {
-                    return EXIT_SUCESSS;
+                    return EXIT_SUCCESS;
                 }
 #endif
             }
