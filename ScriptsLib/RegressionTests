@@ -382,8 +382,8 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 
 		#HELGRIND
 		if [[ ("$INCLUDE_VALGRIND_HELGRIND_TESTS" -ne 0) && ($NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS -ne 0) ]] ; then
-			echo "Running valgrind helgrind test because INCLUDE_VALGRIND_MEMCHECK_TESTS=$INCLUDE_VALGRIND_MEMCHECK_TESTS"
-			echo "$PREFIX_OUT_LABEL" "Running valgrind helgrind test because INCLUDE_VALGRIND_MEMCHECK_TESTS=$INCLUDE_VALGRIND_MEMCHECK_TESTS" >>$TEST_OUT_FILE 2>&1
+			echo "Running valgrind helgrind test because INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS"
+			echo "$PREFIX_OUT_LABEL" "Running valgrind helgrind test because INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS" >>$TEST_OUT_FILE 2>&1
 			for o in ${LOCAL_VALGRIND_CONFIGS[@]} ; do 
 				RunLocalValgrind_ helgrind $o ""
 			done
