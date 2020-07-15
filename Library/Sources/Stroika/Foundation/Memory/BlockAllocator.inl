@@ -166,7 +166,7 @@ namespace Stroika::Foundation::Memory {
         void* next = reinterpret_cast<const atomic<void*>*> (p)->load (memory_order_acquire);
         Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER (p);
         Verify (sHeadLink_.exchange (next, memory_order_acq_rel) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
-        Stroika_Foundation_Debug_Valgrind_ANNOTATE_NEW_MEMORY (result, n);
+        Stroika_Foundation_Debug_ValgrindMarkAddressAsAllocated (result, n);
         return result;
 #else
         [[maybe_unused]] auto&& critSec = lock_guard{Private_::GetLock_ ()};
@@ -183,7 +183,7 @@ namespace Stroika::Foundation::Memory {
          * treat this as a linked list, and make head point to next member
          */
         sHeadLink_ = (*(void**)sHeadLink_);
-        Stroika_Foundation_Debug_Valgrind_ANNOTATE_NEW_MEMORY (result, n);
+        Stroika_Foundation_Debug_ValgrindMarkAddressAsAllocated (result, n);
         return result;
 #endif
     }
