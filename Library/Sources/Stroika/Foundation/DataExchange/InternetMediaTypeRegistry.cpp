@@ -382,7 +382,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
             // @todo consider using globs2 file support, but little point since they seem to be written in priority order
             auto loadGlobsFromFile = [&] (const filesystem::path& fn) {
                 if (filesystem::exists (fn)) {
-                    DbgTrace (L"%s exists so trying to load", Characters::ToString (fn).c_str ());
+                    Debug::TraceContextBumper ctx1{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"UsrShareMIMERep_::CTOR::loadGlobsFromFile", L"exists=true,fn=%s", Characters::ToString (fn).c_str ())};
                     try {
                         for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{':'}}.ReadMatrix (IO::FileSystem::FileInputStream::New (fn))) {
                             if (line.length () == 2) {
@@ -391,8 +391,9 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
                                     glob = glob.SubString (1);
                                 }
                                 // Use AddIf () - so first (appears empirically to be the preferred value) wins
-                                fSuffix2MediaTypeMap_.AddIf (glob, InternetMediaType{line[0]}, false);
-                                fMediaType2PreferredSuffixMap_.AddIf (InternetMediaType{line[0]}, glob, false);
+                                InternetMediaType imt{line[0]};
+                                fSuffix2MediaTypeMap_.AddIf (glob, imt, false);
+                                fMediaType2PreferredSuffixMap_.AddIf (imt, glob, false);
 
                                 // @todo add support to track all associated suffixes for mime type
                             }
@@ -417,7 +418,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
             Set<InternetMediaType> results;
             auto                   loadGlobsFromFile = [&] (const filesystem::path& fn) {
                 if (filesystem::exists (fn)) {
-                    DbgTrace (L"%s exists so trying to load", Characters::ToString (fn).c_str ());
+                    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"UsrShareMIMERep_::GetMediaTypes::loadGlobsFromFile", L"exists=true,fn=%s", Characters::ToString (fn).c_str ())};
                     try {
                         for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{':'}}.ReadMatrix (IO::FileSystem::FileInputStream::New (fn))) {
                             if (line.length () >= 2) {
