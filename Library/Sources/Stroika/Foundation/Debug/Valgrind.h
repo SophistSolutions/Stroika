@@ -122,6 +122,16 @@ bool IsRunningUnderValgrind ();
     Stroika_Foundation_Debug_ValgrindDisableHelgrind (X)
 
 /**
+ */
+#if qStroika_FeatureSupported_Valgrind
+#define Stroika_Foundation_Debug_ValgrindMarkAddressAsDeAllocated(P, SIZE) \
+    VALGRIND_HG_CLEAN_MEMORY (P, SIZE)
+#else
+#define Stroika_Foundation_Debug_ValgrindMarkAddressAsDeAllocated(P, SIZE) \
+    ((void)0)
+#endif
+
+/**
  *  \brief  Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE is ANNOTATE_HAPPENS_BEFORE except it can be used
  *          if no valgrind includes, and ifdefed out, and it can be used in an expression
  */
