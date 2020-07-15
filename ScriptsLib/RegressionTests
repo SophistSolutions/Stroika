@@ -435,7 +435,7 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 	echo "<VALGRIND SAMPLE_APP basic tests>" >>$TEST_OUT_FILE 2>&1
 		#Valgrind MEMCHECK ON a few sample apps
 		if [[ ("$INCLUDE_VALGRIND_MEMCHECK_TESTS" -ne 0 ) && ("$NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS" -ne 0 ) ]] ; then
-			for cfg in "${LOCAL_VALGRIND_CONFIGS}" ; do
+			for cfg in ${LOCAL_VALGRIND_CONFIGS} ; do
 				for app in "${SAMPLE_APPS_2_TEST[@]}" ; do
 					# KISS  - include basically all the suppression files (later be smarter about which)
 					SUPPRESSION_LINES_= --suppressions=Tests/Valgrind-MemCheck-Common.supp --suppressions=Tests/Valgrind-MemCheck-BlockAllocation.supp  --suppressions=Tests/Valgrind-MemCheck-Common-x86_64.supp  --suppressions=Tests/Valgrind-Helgrind-Common-armhf.supp 
@@ -457,7 +457,7 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 
 		#HELGRIND ON a few sample apps
 		if [[ ("$INCLUDE_VALGRIND_HELGRIND_TESTS" -ne 0) && ("$NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS" -ne 0 ) ]] ; then
-			for cfg in "${LOCAL_VALGRIND_CONFIGS}" ; do
+			for cfg in ${LOCAL_VALGRIND_CONFIGS} ; do
 				for app in "${SAMPLE_APPS_2_TEST[@]}" ; do 
 					echo -n "valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/$cfg/$app ..."
 					echo -n "$PREFIX_OUT_LABEL" "valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/$cfg/$app..." >>$TEST_OUT_FILE 2>&1
