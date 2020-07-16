@@ -430,6 +430,7 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 		done; 
 	echo "</Running SAMPLE_APP basic tests>" >>$TEST_OUT_FILE 2>&1
 
+
 	echo >>$TEST_OUT_FILE 2>&1
 	echo >>$TEST_OUT_FILE 2>&1
 	echo "<VALGRIND SAMPLE_APP basic tests>" >>$TEST_OUT_FILE 2>&1
@@ -440,7 +441,7 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 					# KISS  - include basically all the suppression files (later be smarter about which)
 					SUPPRESSION_LINES_= --suppressions=Tests/Valgrind-MemCheck-Common.supp --suppressions=Tests/Valgrind-MemCheck-BlockAllocation.supp  --suppressions=Tests/Valgrind-MemCheck-Common-x86_64.supp  --suppressions=Tests/Valgrind-Helgrind-Common-armhf.supp 
 					echo -n "valgrind -q --tool=memcheck $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/$cfg/$app ..."
-					echo -n "$PREFIX_OUT_LABEL" "valgrind -q --tool=memcheck $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/c$fg/$app..." >>$TEST_OUT_FILE 2>&1
+					echo -n "$PREFIX_OUT_LABEL" "valgrind -q --tool=memcheck $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/$cfg/$app..." >>$TEST_OUT_FILE 2>&1
 					STAGE_STARTAT_INT=$(date +%s)
 					valgrind -q --tool=memcheck $SUPPRESSION_LINES_ --log-file=valgrind-log.tmp Builds/$cfg/$app 2>&1 > /dev/null
 					cat valgrind-log.tmp >> $TEST_OUT_FILE
