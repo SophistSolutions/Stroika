@@ -20,7 +20,7 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     inline SpinLock::SpinLock (BarrierFlag barrier)
-        : fBarrierFlag_ (barrier)
+        : fBarrierFlag_{barrier}
     {
 #if qStroika_FeatureSupported_Valgrind
         Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (fLock_);
