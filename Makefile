@@ -443,7 +443,7 @@ basic-unix-test-configurations:
 	# A few sanitize/configs (must do explicit -g++-8 versions for ubuntu 1804 since its default g++ is 7 and not supported any longer)\
 	./configure g++-debug-sanitize_leak --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,leak --trace2file enable;\
 	./configure g++-debug-sanitize_address --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,address,undefined --trace2file enable;\
-	#TMPDISABLE-LGP2020-07-13- ./configure g++-debug-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --trace2file enable --cppstd-version c++17 --sanitize none,thread,undefined --append-run-prefix 'TSAN_OPTIONS=suppressions=ThreadSanitizerSuppressions.supp';\
+	./configure g++-debug-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --trace2file enable --cppstd-version c++17 --sanitize none,thread,undefined --append-run-prefix 'TSAN_OPTIONS=suppressions=ThreadSanitizerSuppressions.supp';\
 	./configure g++-debug-sanitize_undefined --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,address,undefined --trace2file enable;\
 	./configure g++-release-sanitize_address_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++17 --sanitize none,address,undefined;\
 	#TMPDISABLE-LGP2020-07-13- ./configure g++-release-sanitize_thread_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++17 --sanitize none,thread,undefined --append-run-prefix 'TSAN_OPTIONS=suppressions=ThreadSanitizerSuppressions.supp';\
