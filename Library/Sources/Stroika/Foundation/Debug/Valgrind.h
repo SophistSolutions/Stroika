@@ -154,7 +154,16 @@ bool IsRunningUnderValgrind ();
  *  \brief  Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE is ANNOTATE_HAPPENS_BEFORE except it can be used
  *          if no valgrind includes, and ifdefed out, and it can be used in an expression
  *
- *  see docs 
+ *  \see docs https://android.googlesource.com/platform/external/valgrind/+/master/helgrind/helgrind.h#531
+ *          If threads T1 .. Tn all do ANNOTATE_HAPPENS_BEFORE(obj) and later
+ *         (w.r.t. some notional global clock for the computation) thread Tm
+ *         does ANNOTATE_HAPPENS_AFTER(obj), then Helgrind will regard all
+ *         memory accesses done by T1 .. Tn before the ..BEFORE.. call as
+ *         happening-before all memory accesses done by Tm after the
+ *         ..AFTER.. call.  Hence Helgrind won't complain about races if Tm's
+ *         accesses afterwards are to the same locations as accesses before by
+ *         any of T1 .. Tn.
+ *
  *  \par Example Usage
  *      \code
  *          reinterpret_cast<atomic<void*>*> (newHead)->store (prevHead, memory_order_release);
