@@ -69,17 +69,24 @@ bool IsRunningUnderValgrind ();
  *  ignore.
  *
  *  There are many classes of 'bugs' with helgrind that we can most easily avoid by just ignoring those variables.
- *      >   std::atomic
- *      >   magic statics
- *
- *
+ *      o   std::atomic
+ *      o   magic statics
  */
 #if qStroika_FeatureSupported_Valgrind
-#define Stroika_Foundation_Debug_ValgrindDisableHelgrind(X) \
-    VALGRIND_HG_DISABLE_CHECKING (&(X), sizeof (X))
+#define Stroika_Foundation_Debug_ValgrindDisableHelgrindRange(START, END) \
+    VALGRIND_HG_DISABLE_CHECKING (START, ((const byte*)END - (const byte*)START))
 #else
-#define Stroika_Foundation_Debug_ValgrindDisableHelgrind(X)
+#define Stroika_Foundation_Debug_ValgrindDisableHelgrindRange(START, END) ((void)0)
 #endif
+
+/**
+ *  Use Macro Stroika_Foundation_Debug_ValgrindDisableHelgrind () on variables Helgrind should
+ *  ignore.
+ *
+ *  \see Stroika_Foundation_Debug_ValgrindDisableHelgrindRange
+ */
+#define Stroika_Foundation_Debug_ValgrindDisableHelgrind(X) \
+    Stroika_Foundation_Debug_ValgrindDisableHelgrindRange (&(X), ((byte*)(&X) + sizeof (X)))
 
 /**
  *  See https://bugs.kde.org/show_bug.cgi?id=379630
@@ -125,7 +132,7 @@ bool IsRunningUnderValgrind ();
  */
 #if qStroika_FeatureSupported_Valgrind
 #define Stroika_Foundation_Debug_ValgrindMarkAddressAsAllocated(P, SIZE) \
-    ANNOTATE_NEW_MEMORY(P, SIZE)
+    ANNOTATE_NEW_MEMORY (P, SIZE)
 #else
 #define Stroika_Foundation_Debug_ValgrindMarkAddressAsAllocated(P, SIZE) \
     ((void)0)
