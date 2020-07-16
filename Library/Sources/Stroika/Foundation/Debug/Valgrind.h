@@ -101,14 +101,16 @@ bool IsRunningUnderValgrind ();
  *  Use Macro Stroika_Foundation_Debug_ValgrindDisableHelgrind_START/Stroika_Foundation_Debug_ValgrindDisableHelgrind_END
  *  to ignore a particular variable in a range of code.
  *
- *  EXAMPLE:
- *      int var = 1;
- *      .... thread 1 writes;
- *      .... thread 2 writes; // all with locks
- *      wait til thread 1/2 done;
- *      Stroika_Foundation_Debug_ValgrindDisableHelgrind_START(var);
- *      read var;   // helgrind doesn't know the thread completion is essentially a barrier
- *      Stroika_Foundation_Debug_ValgrindDisableHelgrind_END(var);
+ *  \par Example Usage
+ *      \code
+ *          int var = 1;
+ *          .... thread 1 writes;
+ *          .... thread 2 writes; // all with locks
+ *          wait til thread 1/2 done;
+ *          Stroika_Foundation_Debug_ValgrindDisableHelgrind_START(var);
+ *          read var;   // helgrind doesn't know the thread completion is essentially a barrier
+ *          Stroika_Foundation_Debug_ValgrindDisableHelgrind_END(var);
+ *      \endcode
  */
 #define Stroika_Foundation_Debug_ValgrindDisableHelgrind_START(X) \
     Stroika_Foundation_Debug_ValgrindDisableHelgrind (X)
@@ -151,6 +153,15 @@ bool IsRunningUnderValgrind ();
 /**
  *  \brief  Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE is ANNOTATE_HAPPENS_BEFORE except it can be used
  *          if no valgrind includes, and ifdefed out, and it can be used in an expression
+ *
+ *  see docs 
+ *  \par Example Usage
+ *      \code
+ *          reinterpret_cast<atomic<void*>*> (newHead)->store (prevHead, memory_order_release);
+ *          Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE (p);
+ *      \endcode
+ *
+ *  \see Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER
  */
 #if qStroika_FeatureSupported_Valgrind
 #define Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE(X) \
@@ -162,6 +173,14 @@ bool IsRunningUnderValgrind ();
 /**
  *  \brief  Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER is ANNOTATE_HAPPENS_AFTER except it can be used
  *          if no valgrind includes, and ifdefed out, and it can be used in an expression
+ *
+ *  \par Example Usage
+ *      \code
+ *          Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER (p);
+ *          void* next = reinterpret_cast<const atomic<void*>*> (p)->load (memory_order_acquire);
+ *      \endcode
+ *
+ *  \see Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE
  */
 #if qStroika_FeatureSupported_Valgrind
 #define Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER(X) \
