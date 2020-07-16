@@ -162,9 +162,8 @@ namespace Stroika::Foundation::Memory {
          *  Use atomic_load to guarantee the value not loaded from cache line not shared across threads.
          */
         static_assert (sizeof (void*) == sizeof (atomic<void*>), "atomic doesn't change size");
-        Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE (p);
-        void* next = reinterpret_cast<const atomic<void*>*> (p)->load (memory_order_acquire);
         Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER (p);
+        void* next = reinterpret_cast<const atomic<void*>*> (p)->load (memory_order_acquire);
         Verify (sHeadLink_.exchange (next, memory_order_acq_rel) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
         Stroika_Foundation_Debug_ValgrindMarkAddressAsAllocated (result, n);
         return result;
@@ -211,15 +210,11 @@ namespace Stroika::Foundation::Memory {
          */
         static_assert (sizeof (void*) == sizeof (atomic<void*>), "atomic doesn't change size");
         void* newHead = p;
-        Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE (p);
         reinterpret_cast<atomic<void*>*> (newHead)->store (prevHead, memory_order_release);
         Verify (sHeadLink_.exchange (newHead, memory_order_acq_rel) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
-        Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER (p);
+        Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE (p);
 #else
         Private_::DoDeleteHandlingLocksExceptionsEtc_ (p, &sHeadLink_);
-#endif
-#if qStroika_FeatureSupported_Valgrind
-        VALGRIND_HG_CLEAN_MEMORY (p, SIZE);
 #endif
     }
     template <size_t SIZE>
