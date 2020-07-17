@@ -43,6 +43,9 @@ namespace Stroika::Foundation::Memory {
      *
      *  typically sizeof(SmallStackBuffer<T,BUF_SIZE>) will come to roughly 4K, and always at least something.
      *
+     *  All allocated objects are default initialized, unless they are allocated through a call to resize_uninitialized(), or
+     *  the constructor with the argument eUninitialized
+     *
      *  \note The class name a a slight misnomer, because these classes CAN be used as data members of heap objects.
      *        But that is by far a less common usage. 99% of the time, this will be used on the stack.
      *
@@ -193,6 +196,8 @@ namespace Stroika::Foundation::Memory {
         /**
          *  Grow or shrink the buffer. The 'size' is the number of constructed elements, and this function automatically
          *  assures the capacity is maintained at least as large as the size.
+         *
+         *  If resize () causes the list to grow, the new elements are default-initialized()
          *
          *  \ensure GetSize () <= capacity ();
          */
