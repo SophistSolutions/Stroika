@@ -163,7 +163,7 @@ namespace {
 
                 c.SetSchemeAndAuthority (URI{L"http://httpbin.org"});
                 BLOB roundTripTestData = [] () {
-                    Memory::SmallStackBuffer<byte> buf (1024);
+                    Memory::SmallStackBuffer<byte> buf (Debug::IsRunningUnderValgrind ()? 100: 1024);
                     for (size_t i = 0; i < buf.GetSize (); ++i) {
                         buf[i] = static_cast<byte> (uniform_int_distribution<unsigned short> () (sRNG_));
                     }
@@ -238,7 +238,7 @@ namespace {
                 static mt19937 sRNG_;
 
                 BLOB roundTripTestData = [] () {
-                    Memory::SmallStackBuffer<byte> buf (1024);
+                    Memory::SmallStackBuffer<byte> buf (Debug::IsRunningUnderValgrind () ? 100 : 1024);
                     for (size_t i = 0; i < buf.GetSize (); ++i) {
                         buf[i] = static_cast<byte> (uniform_int_distribution<unsigned short> () (sRNG_));
                     }

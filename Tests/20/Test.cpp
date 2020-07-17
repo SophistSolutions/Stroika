@@ -110,7 +110,7 @@ namespace {
             VerifyTestResult (s.empty ());
         }
         {
-            static const size_t K = Debug::IsRunningUnderValgrind () ? 100 : 1000;
+            static const size_t K = Debug::IsRunningUnderValgrind () ? 50 : 1000;
             CONCRETE_SEQUENCE_T s;
             for (size_t i = 0; i < K; ++i) {
                 s.Append (i + K);
@@ -184,7 +184,7 @@ namespace {
         VerifyTestResult (s.empty ());
         s.RemoveAll ();
         VerifyTestResult (s.empty ());
-        static const size_t K = Debug::IsRunningUnderValgrind () ? 200 : 1000;
+        static const size_t K = Debug::IsRunningUnderValgrind () ? 50 : 1000;
         for (size_t i = 0; i < K; ++i) {
             s.Append (i + K);
         }
@@ -202,7 +202,7 @@ namespace {
     void SimpleSequenceTest_6_GetSetAt_ ()
     {
         Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_6_GetSetAt_ ()");
-        static const size_t       K = Debug::IsRunningUnderValgrind () ? 100 : 1000;
+        static const size_t       K = Debug::IsRunningUnderValgrind () ? 50 : 1000;
         CONCRETE_SEQUENCE_T       s;
         VerifyTestResult (s.empty ());
         for (size_t i = 0; i < K; ++i) {
@@ -282,7 +282,7 @@ namespace {
         Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_8_InsertAppendPrepend_ ()");
         using T = typename CONCRETE_SEQUENCE_T::value_type;
         CONCRETE_SEQUENCE_T s;
-        static const size_t K = Debug::IsRunningUnderValgrind () ? 100 : 1000;
+        static const size_t K = Debug::IsRunningUnderValgrind () ? 50 : 1000;
         {
             for (size_t i = 0; i < K; ++i) {
                 s.Append (i);
