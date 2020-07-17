@@ -166,28 +166,21 @@ namespace {
 
     DurationSecondsType RunTest_ (function<void ()> t, unsigned int runCount)
     {
+        runCount = Math::AtLeast<unsigned int> (runCount, 1);
         const size_t                                  kNParts2Divide_{10};
         Memory::SmallStackBuffer<DurationSecondsType> times (kNParts2Divide_);
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 10)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 12))
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-volatile\""); // warning: increment of object of volatile-qualified type 'volatile unsigned int' is deprecated [-Wdeprecated-volatile]
-#endif
-#if (defined(__GNUC__) && !defined(__clang__)) && (__GNUC__ >= 10)
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wvolatile\""); // warning: '++' expression of 'volatile'-qualified type is deprecated
-#endif
+        unsigned int                                  actualRanCount{};
         for (size_t i = 0; i < kNParts2Divide_; ++i) {
             DurationSecondsType start = Time::GetTickCount ();
-            // volatile attempt to avoid this being optimized away on gcc --LGP 2014-02-17
-            for (volatile unsigned int ii = 0; ii < Math::AtLeast<unsigned int> (runCount / kNParts2Divide_, 1); ++ii) {
+            for (unsigned int ii = 0; ii < Math::AtLeast<unsigned int> (runCount / kNParts2Divide_, 1); ++ii) {
+                if (actualRanCount >= runCount) {
+                    break;
+                }
                 t ();
+                actualRanCount++;
             }
             times[i] = Time::GetTickCount () - start;
         }
-#if (defined(__GNUC__) && !defined(__clang__)) && (__GNUC__ >= 10)
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wvolatile\"");
-#endif
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 10)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 12))
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-volatile\"");
-#endif
         DurationSecondsType m = Math::Median (times.begin (), times.end ());
         return m * kNParts2Divide_; // this should provide a more stable estimate than the total time
     }
