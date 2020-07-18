@@ -119,14 +119,14 @@ namespace {
         }
         void Test_GetFileBaseName_ ()
         {
-            VerifyTestResult (GetFileBaseName (L"foo") == L"foo");
-            VerifyTestResult (GetFileBaseName (L"foo.cpp") == L"foo");
-            VerifyTestResult (GetFileBaseName (L"foo.exe") == L"foo");
-            VerifyTestResult (GetFileBaseName (L".exe") == L".exe");
+            VerifyTestResult (filesystem::path (L"foo").stem () == L"foo");
+            VerifyTestResult (filesystem::path (L"foo.cpp").stem () == L"foo");
+            VerifyTestResult (filesystem::path (L"foo.exe").stem () == L"foo");
+            VerifyTestResult (filesystem::path (L".exe").stem () == L".exe");
 #if qPlatform_POSIX
-            VerifyTestResult (GetFileBaseName (L"/tmp/.CPUBurner") == L".CPUBurner");
+            VerifyTestResult (filesystem::path (L"/tmp/.CPUBurner").stem () == L".CPUBurner");
 #elif qPlatform_Windows
-            VerifyTestResult (GetFileBaseName (L"c:\\tmp\\.CPUBurner") == L".CPUBurner");
+            VerifyTestResult (filesystem::path (L"c:\\tmp\\.CPUBurner").stem () == L".CPUBurner");
 #endif
         }
 

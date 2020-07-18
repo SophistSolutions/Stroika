@@ -69,6 +69,8 @@ namespace Stroika::Foundation::IO::FileSystem {
     [[deprecated ("Since Stroika v2.1b2 - use filesystem::path{}.extension ()")]] String GetFileSuffix (const String& fileName);
 
     /**
+     * \brief Since Stroika v2.1b2 - use path::stem()
+     #if 0
      *  get the base name (strippping path and suffix).
      *
      *  \note   this differs from the UNIX 'basename' - which does not strip file suffixes.
@@ -88,8 +90,9 @@ namespace Stroika::Foundation::IO::FileSystem {
      *      GetFileBaseName (L"c:\\tmp\\.CPUBurner") ==> L".CPUBurner";
      *
      *  @see ExtractDirAndBaseName
+     #endif
      */
-    String GetFileBaseName (const String& pathName);
+    [[deprecated ("Since Stroika v2.1b2 - use path::stem()")]] String GetFileBaseName (const String& pathName);
 
     /**
      *  deprecated("Since Stroika v2.1b2 - use path::parent_path () or path::filename () - not PERFECYLY SAME semantics but close")
@@ -135,7 +138,7 @@ namespace Stroika::Foundation::IO::FileSystem {
     /**
      *  // get the full path WITHOUT the file suffix at the end
      */
-    String StripFileSuffix (const String& pathName);
+    [[deprecated ("Since Stroika v2.1b2 - use path.parent_path + path.stem() for equivilent")]] String StripFileSuffix (const String& pathName);
 
     /**
      *      // get the directory part of the given pathname (if the path refers to a directory - ends in / - then return THAT name)
