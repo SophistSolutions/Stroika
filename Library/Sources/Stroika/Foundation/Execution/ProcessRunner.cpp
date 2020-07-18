@@ -1253,13 +1253,13 @@ pid_t Execution::DetachedProcessRunner (const filesystem::path& executable, cons
 
     Sequence<String> useArgs;
     if (args.empty ()) {
-        useArgs.Append (IO::FileSystem::ExtractDirAndBaseName (IO::FileSystem::FromPath (executable)).second);
+        useArgs.Append (IO::FileSystem::FromPath (executable.filename ()));
     }
     else {
         bool firstTimeThru = true;
         for (auto i = args.begin (); i != args.end (); ++i) {
             if (firstTimeThru and i->empty ()) {
-                useArgs.Append (IO::FileSystem::ExtractDirAndBaseName (IO::FileSystem::FromPath (executable)).second);
+                useArgs.Append (IO::FileSystem::FromPath (executable.filename ()));
             }
             else {
                 useArgs.Append (*i);

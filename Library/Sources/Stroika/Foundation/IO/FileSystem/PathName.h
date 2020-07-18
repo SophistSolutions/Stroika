@@ -92,6 +92,8 @@ namespace Stroika::Foundation::IO::FileSystem {
     String GetFileBaseName (const String& pathName);
 
     /**
+     *  deprecated("Since Stroika v2.1b2 - use path::parent_path () or path::filename () - not PERFECYLY SAME semantics but close")
+     #if 0
      *  Portable version of http://linux.die.net/man/3/basename  http://linux.die.net/man/3/dirname
      *
      *  ExtractDirAndBaseName () break a pathname string into directory and filename components.
@@ -126,8 +128,9 @@ namespace Stroika::Foundation::IO::FileSystem {
      *          is another difference with 'basename' and 'dirname'
      *
      *  \req not pathName.empty ()
+     #endif
      */
-    pair<String, String> ExtractDirAndBaseName (const String& pathName);
+    [[deprecated("Since Stroika v2.1b2 - use path::parent_path () or path::filename () - not PERFECYLY SAME semantics but close")]]pair<String, String> ExtractDirAndBaseName (const String& pathName);
 
     /**
      *  // get the full path WITHOUT the file suffix at the end

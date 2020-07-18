@@ -86,22 +86,35 @@ namespace {
     namespace Test3_Pathnames_ {
         void Test_ExtractDirAndBaseName_ ()
         {
-// Tests from DOCS line in ExtractDirAndBaseName
+// Tests from DOCS line in ExtractDirAndBaseName (except now with different values - cuz using filesystem::path::parent_path/filename
 #if qPlatform_POSIX
-            VerifyTestResult ((ExtractDirAndBaseName (L"/usr/lib") == pair<String, String>{L"/usr/", L"lib"}));
-            VerifyTestResult ((ExtractDirAndBaseName (L"/usr/") == pair<String, String>{L"/", L"usr/"}));
-            VerifyTestResult ((ExtractDirAndBaseName (L"usr") == pair<String, String>{L"./", L"usr"}));
-            VerifyTestResult ((ExtractDirAndBaseName (L"/") == pair<String, String>{L"/", L""}));
-            VerifyTestResult ((ExtractDirAndBaseName (L".") == pair<String, String>{L"./", L"."}));
-            VerifyTestResult ((ExtractDirAndBaseName (L"..") == pair<String, String>{L"./", L".."}));
+            VerifyTestResult ((filesystem::path (L"/usr/lib").parent_path () == L"/usr/"));
+            VerifyTestResult ((filesystem::path (L"/usr/lib").filename () ==  L"lib"));
+            VerifyTestResult ((filesystem::path (L"/usr/").parent_path () == L"/usr"));
+            VerifyTestResult ((filesystem::path (L"/usr/").filename () == L""));
+            VerifyTestResult ((filesystem::path (L"usr").parent_path () ==L""));
+            VerifyTestResult ((filesystem::path (L"usr").filename () == L"usr"));
+            VerifyTestResult ((filesystem::path (L"/").parent_path () == L"/"));
+            VerifyTestResult ((filesystem::path (L"/").filename () ==  L""));
+            VerifyTestResult ((filesystem::path (L".").parent_path () == L""));
+            VerifyTestResult ((filesystem::path (L".").filename () ==  L"."));
+            VerifyTestResult ((filesystem::path (L"..").parent_path () == L""));
+            VerifyTestResult ((filesystem::path (L"..").filename () ==  L".."));
 #elif qPlatform_Windows
-            VerifyTestResult ((ExtractDirAndBaseName (L"\\usr\\lib") == pair<String, String>{L"\\usr\\", L"lib"}));
-            VerifyTestResult ((ExtractDirAndBaseName (L"\\usr\\") == pair<String, String>{L"\\", L"usr\\"}));
-            VerifyTestResult ((ExtractDirAndBaseName (L"usr") == pair<String, String>{L".\\", L"usr"}));
-            VerifyTestResult ((ExtractDirAndBaseName (L"\\") == pair<String, String>{L"\\", L""}));
-            VerifyTestResult ((ExtractDirAndBaseName (L".") == pair<String, String>{L".\\", L"."}));
-            VerifyTestResult ((ExtractDirAndBaseName (L"..") == pair<String, String>{L".\\", L".."}));
-            VerifyTestResult ((ExtractDirAndBaseName (L"c:\\h\\m.t") == pair<String, String>{L"c:\\h\\", L"m.t"}));
+            VerifyTestResult ((filesystem::path (L"\\usr\\lib").parent_path () == L"\\usr"));
+            VerifyTestResult ((filesystem::path (L"\\usr\\lib").filename () == L"lib"));
+            VerifyTestResult ((filesystem::path (L"\\usr\\").parent_path () == L"\\usr"));
+            VerifyTestResult ((filesystem::path (L"\\usr\\").filename () == L""));
+            VerifyTestResult ((filesystem::path (L"usr").parent_path () == ""));
+            VerifyTestResult ((filesystem::path (L"usr").filename () == L"usr"));
+            VerifyTestResult ((filesystem::path (L"\\").parent_path () == L"\\"));
+            VerifyTestResult ((filesystem::path (L"\\").filename () ==  L""));
+            VerifyTestResult ((filesystem::path (L".").parent_path () == ""));
+            VerifyTestResult ((filesystem::path (L".").filename () ==  L"."));
+            VerifyTestResult ((filesystem::path (L"..").parent_path () == L""));
+            VerifyTestResult ((filesystem::path (L"..").filename () == L".."));
+            VerifyTestResult ((filesystem::path (L"c:\\h\\m.t").parent_path () == L"c:\\h"));
+            VerifyTestResult ((filesystem::path (L"c:\\h\\m.t").filename () == L"m.t"));
 #endif
         }
         void Test_GetFileBaseName_ ()
