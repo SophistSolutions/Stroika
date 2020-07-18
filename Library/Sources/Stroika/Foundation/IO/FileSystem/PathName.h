@@ -133,7 +133,7 @@ namespace Stroika::Foundation::IO::FileSystem {
      *  \req not pathName.empty ()
      #endif
      */
-    [[deprecated("Since Stroika v2.1b2 - use path::parent_path () or path::filename () - not PERFECYLY SAME semantics but close")]]pair<String, String> ExtractDirAndBaseName (const String& pathName);
+    [[deprecated ("Since Stroika v2.1b2 - use path::parent_path () or path::filename () - not PERFECYLY SAME semantics but close")]] pair<String, String> ExtractDirAndBaseName (const String& pathName);
 
     /**
      *  // get the full path WITHOUT the file suffix at the end
