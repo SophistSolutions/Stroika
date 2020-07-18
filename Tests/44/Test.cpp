@@ -59,7 +59,7 @@ namespace {
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([] () noexcept {
                 IgnoreExceptionsForCall (IO::FileSystem::Default ().RemoveDirectoryIf (kTestSubDir_, IO::FileSystem::eRemoveAnyContainedFiles));
             });
-            IO::FileSystem::Directory (kTestSubDir_).AssureExists ();
+            create_directories (kTestSubDir_);
             kFileNamesForDir_.Apply ([] (filesystem::path i) { IO::FileSystem::FileOutputStream::New (kTestSubDir_ / i); });
             //DbgTrace (L"kTestSubDir_=%s", Characters::ToString (kTestSubDir_).c_str ());
             //DbgTrace (L"kFileNamesForDir_=%s", Characters::ToString (kFileNamesForDir_).c_str ());
