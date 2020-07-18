@@ -88,18 +88,18 @@ namespace {
         {
 // Tests from DOCS line in ExtractDirAndBaseName (except now with different values - cuz using filesystem::path::parent_path/filename
 #if qPlatform_POSIX
-            VerifyTestResult ((filesystem::path (L"/usr/lib").parent_path () == L"/usr/"));
-            VerifyTestResult ((filesystem::path (L"/usr/lib").filename () ==  L"lib"));
+            VerifyTestResult ((filesystem::path (L"/usr/lib").parent_path () == L"/usr"));
+            VerifyTestResult ((filesystem::path (L"/usr/lib").filename () == L"lib"));
             VerifyTestResult ((filesystem::path (L"/usr/").parent_path () == L"/usr"));
             VerifyTestResult ((filesystem::path (L"/usr/").filename () == L""));
-            VerifyTestResult ((filesystem::path (L"usr").parent_path () ==L""));
+            VerifyTestResult ((filesystem::path (L"usr").parent_path () == L""));
             VerifyTestResult ((filesystem::path (L"usr").filename () == L"usr"));
             VerifyTestResult ((filesystem::path (L"/").parent_path () == L"/"));
-            VerifyTestResult ((filesystem::path (L"/").filename () ==  L""));
+            VerifyTestResult ((filesystem::path (L"/").filename () == L""));
             VerifyTestResult ((filesystem::path (L".").parent_path () == L""));
-            VerifyTestResult ((filesystem::path (L".").filename () ==  L"."));
+            VerifyTestResult ((filesystem::path (L".").filename () == L"."));
             VerifyTestResult ((filesystem::path (L"..").parent_path () == L""));
-            VerifyTestResult ((filesystem::path (L"..").filename () ==  L".."));
+            VerifyTestResult ((filesystem::path (L"..").filename () == L".."));
 #elif qPlatform_Windows
             VerifyTestResult ((filesystem::path (L"\\usr\\lib").parent_path () == L"\\usr"));
             VerifyTestResult ((filesystem::path (L"\\usr\\lib").filename () == L"lib"));
@@ -108,9 +108,9 @@ namespace {
             VerifyTestResult ((filesystem::path (L"usr").parent_path () == ""));
             VerifyTestResult ((filesystem::path (L"usr").filename () == L"usr"));
             VerifyTestResult ((filesystem::path (L"\\").parent_path () == L"\\"));
-            VerifyTestResult ((filesystem::path (L"\\").filename () ==  L""));
+            VerifyTestResult ((filesystem::path (L"\\").filename () == L""));
             VerifyTestResult ((filesystem::path (L".").parent_path () == ""));
-            VerifyTestResult ((filesystem::path (L".").filename () ==  L"."));
+            VerifyTestResult ((filesystem::path (L".").filename () == L"."));
             VerifyTestResult ((filesystem::path (L"..").parent_path () == L""));
             VerifyTestResult ((filesystem::path (L"..").filename () == L".."));
             VerifyTestResult ((filesystem::path (L"c:\\h\\m.t").parent_path () == L"c:\\h"));
