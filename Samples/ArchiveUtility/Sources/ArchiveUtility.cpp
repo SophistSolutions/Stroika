@@ -148,7 +148,7 @@ namespace {
             //DbgTrace (L"(srcFileName=%s, trgFileName=%s)", Characters::ToString (srcFileName).c_str (), Characters::ToString (trgFileName).c_str ());
             BLOB b = archive.GetData (srcFileName);
             //DbgTrace (L"IO::FileSystem::GetFileDirectory (trgFileName)=%s", IO::FileSystem::GetFileDirectory (trgFileName).c_str ());
-            IO::FileSystem::Directory{trgFileName.parent_path ()}.AssureExists ();
+            create_directories (trgFileName.parent_path ());
             IO::FileSystem::FileOutputStream::Ptr ostream = IO::FileSystem::FileOutputStream::New (trgFileName);
             ostream.Write (b);
         }
