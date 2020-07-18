@@ -42,7 +42,8 @@ namespace Stroika::Foundation::IO::FileSystem {
      * A 'Directory' here refers to a "Directory Name". The methods of Directory operate on the actual filesystem (like Create), but
      * this objects lifetime is not connected to the lifetime of any objects with similar names on the filesystem.
      */
-    class Directory {
+    class [[deprecated ("Since Stroika 2.1b2 - use filesystem::path or if for one of the below functions, see deprecated function")]] Directory
+    {
     public:
         // If the argument name is not already '/'-terminated, this CTOR will adjust it
         // CTOR does not create or check for the existence of the given directory (no IO)
@@ -59,7 +60,7 @@ namespace Stroika::Foundation::IO::FileSystem {
          *
          *  AssureExists fails if doesn't exist at the end, or is not a directory (unclear if its a directry but not accessible)
          */
-        nonvirtual void AssureExists (bool createParentComponentsIfNeeded = true) const;
+        [[deprecated ("Since Stroika v2.1b2 - use filesystem::create_directory for FALSE case and create_directories() for TRUE case")]] nonvirtual void AssureExists (bool createParentComponentsIfNeeded = true) const;
 
     public:
         // @todo cleanup / clarify docs (first is from old code second is my guess at new code at one point)
@@ -76,7 +77,7 @@ namespace Stroika::Foundation::IO::FileSystem {
 #endif
 
     public:
-        nonvirtual void AssureDeleted (bool autoDeleteContentsAsNeeded = true) const;
+        [[deprecated ("Since Stroika v2.1b2 - use filesystem::remove for FALSE case and remove_all() for TRUE case")]] nonvirtual void AssureDeleted (bool autoDeleteContentsAsNeeded = true) const;
 
     public:
         // only works with type

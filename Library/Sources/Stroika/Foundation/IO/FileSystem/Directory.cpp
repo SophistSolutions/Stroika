@@ -48,6 +48,7 @@ using namespace Stroika::Foundation::IO::FileSystem;
  ************************** IO::FileSystem::Directory ***************************
  ********************************************************************************
  */
+DISABLE_COMPILER_MSC_WARNING_START (4996)
 Directory::Directory (const filesystem::path& fileFullPath)
     : fFileFullPath_ (fileFullPath)
 {
@@ -87,3 +88,4 @@ bool Directory::Exists () const
 #endif
 #endif
 }
+DISABLE_COMPILER_MSC_WARNING_END (4996)
