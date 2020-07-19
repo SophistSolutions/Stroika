@@ -937,7 +937,7 @@ void Thread::Ptr::AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt)
             DbgTrace ("This should ALMOST NEVER happen - where we did an abort but it came BEFORE the system call and so needs to be called again to re-interrupt: tries: %d.", tries);
         }
         else {
-            DbgTrace ("OK - maybe the target thread is ingoring abort exceptions? try/catch/ignore?");
+            DbgTrace ("OK - maybe the target thread is ignoring abort exceptions? try/catch/ignore?");
         }
     }
 }
