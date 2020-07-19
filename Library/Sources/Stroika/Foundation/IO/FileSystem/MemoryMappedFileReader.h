@@ -38,7 +38,7 @@ namespace Stroika::Foundation::IO::FileSystem {
         ~MemoryMappedFileReader ();
 
     public:
-        nonvirtual const MemoryMappedFileReader& operator= (const MemoryMappedFileReader&) = delete;
+        nonvirtual MemoryMappedFileReader& operator= (const MemoryMappedFileReader&) = delete;
 
     public:
         /**
@@ -56,11 +56,11 @@ namespace Stroika::Foundation::IO::FileSystem {
         nonvirtual size_t size () const;
 
     private:
-        const byte* fFileDataStart_;
-        const byte* fFileDataEnd_;
+        const byte* fFileDataStart_{nullptr};
+        const byte* fFileDataEnd_{nullptr};
 #if qPlatform_Windows
-        HANDLE fFileHandle_;
-        HANDLE fFileMapping_;
+        HANDLE fFileHandle_{INVALID_HANDLE_VALUE};
+        HANDLE fFileMapping_{INVALID_HANDLE_VALUE};
 #endif
     };
 

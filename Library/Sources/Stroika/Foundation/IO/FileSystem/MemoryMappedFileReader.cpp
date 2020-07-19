@@ -43,12 +43,6 @@ using Execution::Platform::Windows::ThrowIfZeroGetLastError;
  ********************************************************************************
  */
 MemoryMappedFileReader::MemoryMappedFileReader (const filesystem::path& fileName)
-    : fFileDataStart_ (nullptr)
-    , fFileDataEnd_ (nullptr)
-#if qPlatform_Windows
-    , fFileHandle_ (INVALID_HANDLE_VALUE)
-    , fFileMapping_ (INVALID_HANDLE_VALUE)
-#endif
 {
 #if qPlatform_POSIX
     int fd = -1;

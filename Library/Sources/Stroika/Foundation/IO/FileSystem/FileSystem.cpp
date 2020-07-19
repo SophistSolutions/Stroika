@@ -399,7 +399,8 @@ DateTime IO::FileSystem::Ptr::GetFileLastModificationDate (const filesystem::pat
 DateTime IO::FileSystem::Ptr::GetFileLastAccessDate (const filesystem::path& fileName)
 {
 #if qPlatform_POSIX
-    struct stat s {};
+    struct stat s {
+    };
     FileSystem::Exception::ThrowPOSIXErrNoIfNegative (::stat (fileName.generic_string ().c_str (), &s), fileName);
     return DateTime{s.st_atime};
 #elif qPlatform_Windows
