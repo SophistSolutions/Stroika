@@ -196,7 +196,7 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
                     }
                     catch (...) {
                         // ignore bad format - such as .sqlproj has Content-Type "string" which my read of the RFC says is illegal
-                        DbgTrace ("Ingoring exception looking parsing registry key (%s): %s", Characters::ToString (o).c_str (), Characters::ToString (current_exception ()).c_str ());
+                        DbgTrace ("Ignoring exception looking parsing registry key (%s): %s", Characters::ToString (o).c_str (), Characters::ToString (current_exception ()).c_str ());
                         continue;
                     }
                     if (majorType) {
@@ -284,7 +284,13 @@ auto InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend () -> shared_ptr<IBac
 #endif
             for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{' ', '\t'}}.ReadMatrix (IO::FileSystem::FileInputStream::New (L"/etc/mime.types"))) {
                 if (line.length () >= 2 and not line[0].StartsWith (L"#")) {
-                    InternetMediaType ct{line[0]};
+                    InternetMediaType ct;
+                    try {
+                        ct = InternetMediaType{line[0]};
+                    }
+                    catch (...) {
+                        DbgTrace ("Ignoring exception looking parsing potential media type entry (%s): %s", Characters::ToString (line[0]).c_str (), Characters::ToString (current_exception ()).c_str ());
+                    }
                     // a line starts with a content type, but then contains any number of file suffixes (without the leading .)
                     for (size_t i = 1; i < line.length (); ++i) {
                         String suffix = L"."sv + line[i];
@@ -299,22 +305,12 @@ auto InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend () -> shared_ptr<IBac
         }
         virtual Set<InternetMediaType> GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const override
         {
-            // consider if this should be cached?
             Set<InternetMediaType> results;
-            for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{' ', '\t'}}.ReadMatrix (IO::FileSystem::FileInputStream::New (L"/etc/mime.types"))) {
-                if (line.length () >= 2 and not line[0].StartsWith (L"#")) {
-                    InternetMediaType imt;
-                    try {
-                        imt = InternetMediaType{line[0]};
-                    }
-                    catch (...) {
-                        DbgTrace ("Ingoring exception looking parsing potential media type entry (%s): %s", Characters::ToString (line[0]).c_str (), Characters::ToString (current_exception ()).c_str ());
-                    }
-                    if (majorType != nullopt and (imt.GetType<InternetMediaType::AtomType> () != *majorType)) {
-                        continue;
-                    }
-                    results += imt;
+            for (const InternetMediaType imt : fMediaType2PreferredSuffixMap_.Keys ()) {
+                if (majorType != nullopt and (imt.GetType<InternetMediaType::AtomType> () != *majorType)) {
+                    continue;
                 }
+                results += imt;
             }
             return results;
         }
