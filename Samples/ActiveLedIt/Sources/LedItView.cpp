@@ -74,7 +74,7 @@ namespace {
                   [] (const String& moduleName, const String& fileSuffix) {
                       static const auto kDefaultMapper_ = OptionsFile::mkFilenameMapper (L"ActiveLedIt"sv);
                       filesystem::path  fileName        = kDefaultMapper_ (moduleName, fileSuffix);
-                      IO::FileSystem::CreateDirectoryForFile (fileName);
+                      filesystem::create_directories (fileName.parent_path ());
                       return fileName;
                   }}
             , fActualCurrentConfigData_ (fOptionsFile_.Read<Options_> (Options_{}))
