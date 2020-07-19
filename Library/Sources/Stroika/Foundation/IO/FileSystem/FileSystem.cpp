@@ -292,7 +292,9 @@ filesystem::path IO::FileSystem::Ptr::GetFullPathName (const filesystem::path& p
             //throw bad path name @todo improve exception
             Execution::Throw (Execution::Exception (L"invalid pathname"sv));
         }
-    return GetCurrentDirectory () / pathName;
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    return filesystem::current_path () / pathName;
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 #elif qPlatform_Windows
     String        name2Use          = pathName;
     const wchar_t kAnySizePrefix_[] = L"\\\\?\\";
@@ -397,17 +399,16 @@ DateTime IO::FileSystem::Ptr::GetFileLastModificationDate (const filesystem::pat
 DateTime IO::FileSystem::Ptr::GetFileLastAccessDate (const filesystem::path& fileName)
 {
 #if qPlatform_POSIX
-    struct stat s {
-    };
+    struct stat s {};
     FileSystem::Exception::ThrowPOSIXErrNoIfNegative (::stat (fileName.generic_string ().c_str (), &s), fileName);
-    return DateTime (s.st_atime);
+    return DateTime{s.st_atime};
 #elif qPlatform_Windows
     WIN32_FILE_ATTRIBUTE_DATA fileAttrData{};
     FileSystem::Exception::ThrowIfZeroGetLastError (::GetFileAttributesExW (fileName.c_str (), GetFileExInfoStandard, &fileAttrData), fileName);
-    return DateTime (fileAttrData.ftLastAccessTime);
+    return DateTime{fileAttrData.ftLastAccessTime};
 #else
     AssertNotImplemented ();
-    return DateTime ();
+    return DateTime{};
 #endif
 }
 

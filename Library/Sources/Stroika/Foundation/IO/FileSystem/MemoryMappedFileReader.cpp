@@ -53,7 +53,7 @@ MemoryMappedFileReader::MemoryMappedFileReader (const filesystem::path& fileName
 #if qPlatform_POSIX
     int fd = -1;
     Execution::ThrowPOSIXErrNoIfNegative (fd = open (fileName.c_str (), O_RDONLY));
-    size_t fileLength = IO::FileSystem::Default ().GetFileSize (fileName);
+    auto fileLength = filesystem::file_size (fileName);
     //WRONG BUT NOT GROSSLY - @todo fix -- AssertNotImplemented (); // size of file - compute -- must check for overlflow and throw...
     //  offset must be a multiple of the page size as returned by sysconf(_SC_PAGE_SIZE). from http://linux.die.net/man/2/mmap
     fFileDataStart_ = reinterpret_cast<const byte*> (::mmap (nullptr, fileLength, PROT_READ, MAP_PRIVATE, fd, 0));

@@ -54,6 +54,7 @@ Directory::Directory (const filesystem::path& fileFullPath)
 {
 }
 
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 void Directory::AssureExists (bool createParentComponentsIfNeeded) const
 {
     IO::FileSystem::CreateDirectory (fFileFullPath_, createParentComponentsIfNeeded);
@@ -63,6 +64,7 @@ void Directory::AssureDeleted (bool autoDeleteContentsAsNeeded) const
 {
     IO::FileSystem::Default ().RemoveDirectoryIf (fFileFullPath_, autoDeleteContentsAsNeeded ? IO::FileSystem::RemoveDirectoryPolicy::eRemoveAnyContainedFiles : IO::FileSystem::RemoveDirectoryPolicy::eFailIfNotEmpty);
 }
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 
 bool Directory::Exists () const
 {
