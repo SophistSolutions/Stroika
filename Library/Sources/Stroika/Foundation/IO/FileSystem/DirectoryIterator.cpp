@@ -253,7 +253,7 @@ private:
             case IteratorReturnType::eDirPlusFilename:
                 return dirName;
             case IteratorReturnType::eFullPathName:
-                return IO::FileSystem::Default ().GetFullPathName (dirName);
+                return filesystem::absolute (dirName);
             default:
                 AssertNotReached ();
                 return filesystem::path{};

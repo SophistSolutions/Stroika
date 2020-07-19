@@ -55,9 +55,10 @@ namespace {
             Debug::TraceContextBumper                      ctx1 ("test-known-dir");
             static const Containers::Set<filesystem::path> kFileNamesForDir_{L"foo.txt", L"bar.png", L"t3.txt", L"blag.nope"};
             static const filesystem::path                  kTestSubDir_ = WellKnownLocations::GetTemporary () / ToPath (L"Regtest-write-files-" + Characters::ToString (Execution::GetCurrentProcessID ()));
-            IO::FileSystem::Default ().RemoveDirectoryIf (kTestSubDir_, IO::FileSystem::eRemoveAnyContainedFiles);
+            (void)filesystem::remove_all (kTestSubDir_);
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([] () noexcept {
-                IgnoreExceptionsForCall (IO::FileSystem::Default ().RemoveDirectoryIf (kTestSubDir_, IO::FileSystem::eRemoveAnyContainedFiles));
+                std::error_code ignored{};
+                (void)filesystem::remove_all (kTestSubDir_, ignored);
             });
             create_directories (kTestSubDir_);
             kFileNamesForDir_.Apply ([] (filesystem::path i) { IO::FileSystem::FileOutputStream::New (kTestSubDir_ / i); });

@@ -441,6 +441,7 @@ bool IO::FileSystem::Ptr::RemoveFileIf (const filesystem::path& fileName)
     return r == 0;
 }
 
+DISABLE_COMPILER_MSC_WARNING_START (4996) // use deprecated
 void IO::FileSystem::Ptr::RemoveDirectory (const filesystem::path& directory, RemoveDirectoryPolicy policy)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -471,7 +472,9 @@ Again:
         FileSystem::Exception::ThrowPOSIXErrNo (errno, directory);
     }
 }
+DISABLE_COMPILER_MSC_WARNING_END (4996)
 
+DISABLE_COMPILER_MSC_WARNING_START (4996) // use deprecated
 bool IO::FileSystem::Ptr::RemoveDirectoryIf (const filesystem::path& directory, RemoveDirectoryPolicy policy)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -505,6 +508,7 @@ Again:
     }
     return r == 0;
 }
+DISABLE_COMPILER_MSC_WARNING_END (4996)
 
 void IO::FileSystem::Ptr::CreateSymbolicLink ([[maybe_unused]] const filesystem::path& linkName, [[maybe_unused]] const filesystem::path& target)
 {

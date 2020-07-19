@@ -171,10 +171,12 @@ namespace Stroika::Foundation::IO::FileSystem {
          *  \note   On Windows, this uses the Windows SDK GetFullPathName, but thats not available on all platforms, where it is
          *          manually simulated.
          */
-        nonvirtual filesystem::path GetFullPathName (const filesystem::path& pathname);
+        [[deprecated ("Since Stroika v2.1b2 - use filesystem::absolute()")]] nonvirtual filesystem::path GetFullPathName (const filesystem::path& pathname);
 
     public:
         /**
+        *** DEPRECATED in Stroika 2.1b2
+        *
          *  This breaks a string at 'path-separator' boundaries, and returns each component.
          *
          *  This works with DOS filenames, as well as UNC filenames (and UNCW file names)
@@ -206,12 +208,14 @@ namespace Stroika::Foundation::IO::FileSystem {
         [[deprecated ("Since Stroika 2.1b2 - use filesystem::path::begin ()")]] nonvirtual Components GetPathComponents (const filesystem::path& fileName);
 
     public:
-        nonvirtual FileOffset_t GetFileSize (const filesystem::path& fileName);
+        [[deprecated ("Since Stroika v2.1b2 - use filesystem::file_size")]] nonvirtual FileOffset_t GetFileSize (const filesystem::path& fileName);
 
     public:
+        // @todo see last_write_time
         nonvirtual DateTime GetFileLastModificationDate (const filesystem::path& fileName);
 
     public:
+        // @todo doesn't appear supported by std::filesystem
         nonvirtual DateTime GetFileLastAccessDate (const filesystem::path& fileName);
 
     public:
@@ -221,7 +225,7 @@ namespace Stroika::Foundation::IO::FileSystem {
          *
          *  @see RemoveFileIf
          */
-        nonvirtual void RemoveFile (const filesystem::path& fileName);
+        [[deprecated ("Since Stroika 2.1b2 - use filesystem::remove () - but note that returns false instead of throwing if not exist")]] nonvirtual void RemoveFile (const filesystem::path& fileName);
 
     public:
         /**
@@ -232,7 +236,7 @@ namespace Stroika::Foundation::IO::FileSystem {
          *
          *  @see RemoveFile
          */
-        nonvirtual bool RemoveFileIf (const filesystem::path& fileName);
+        [[deprecated ("Since Stroika 2.1b2 - use filesystem::remove ()")]] nonvirtual bool RemoveFileIf (const filesystem::path& fileName);
 
     public:
         /**
@@ -243,7 +247,7 @@ namespace Stroika::Foundation::IO::FileSystem {
          *
          *  In any case, this will fail if the directory is not removed.
          */
-        nonvirtual void RemoveDirectory (const filesystem::path& directory, RemoveDirectoryPolicy policy = RemoveDirectoryPolicy::eDEFAULT);
+        [[deprecated ("Since Stroika 2.1b2 - use filesystem::remove () or remove_all () depending on policy (differences on failures)")]] nonvirtual void RemoveDirectory (const filesystem::path& directory, RemoveDirectoryPolicy policy = RemoveDirectoryPolicy::eDEFAULT);
 
     public:
         /**
@@ -257,7 +261,7 @@ namespace Stroika::Foundation::IO::FileSystem {
          *
          *  return true iff it existed, and this succcessfully deleted it.
          */
-        nonvirtual bool RemoveDirectoryIf (const filesystem::path& directory, RemoveDirectoryPolicy policy = RemoveDirectoryPolicy::eDEFAULT);
+        [[deprecated ("Since Stroika 2.1b2 - use filesystem::remove () or remove_all () depending on policy (differences on failures)")]] nonvirtual bool RemoveDirectoryIf (const filesystem::path& directory, RemoveDirectoryPolicy policy = RemoveDirectoryPolicy::eDEFAULT);
 
     public:
         /**
@@ -269,7 +273,7 @@ namespace Stroika::Foundation::IO::FileSystem {
             'linkName' is the full path to the symbolic link file to be created
             'target' is the file POINTED TO by the symbolic link
         */
-        nonvirtual void CreateSymbolicLink (const filesystem::path& linkName, const filesystem::path& target);
+        [[deprecated ("Since Stroika v2.1b2, use filesystem::create_symlink () or create_directory_symlink ()")]] nonvirtual void CreateSymbolicLink (const filesystem::path& linkName, const filesystem::path& target);
 
     public:
         /**
@@ -277,13 +281,13 @@ namespace Stroika::Foundation::IO::FileSystem {
          *
          *  \ensure returns a 'slash terminated' pathname
          */
-        nonvirtual filesystem::path GetCurrentDirectory () const;
+        [[deprecated ("Since Stroika v2.1b2, use filesystem::current_path ()")]] nonvirtual filesystem::path GetCurrentDirectory () const;
 
     public:
         /**
          *  Wrapper on platform SetCurrentDirectory () or chdir ()
          */
-        nonvirtual void SetCurrentDirectory (const filesystem::path& newDir);
+        [[deprecated ("Since Stroika v2.1b2, use filesystem::current_path ()")]] nonvirtual void SetCurrentDirectory (const filesystem::path& newDir);
     };
 
     /**

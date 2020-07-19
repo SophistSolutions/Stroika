@@ -228,6 +228,7 @@ void IO::FileSystem::CreateDirectory (const filesystem::path& directoryPathOrig,
  ******************* FileSystem::CreateDirectoryForFile *************************
  ********************************************************************************
  */
+DISABLE_COMPILER_MSC_WARNING_START (4996) // use deprecated
 void IO::FileSystem::CreateDirectoryForFile (const filesystem::path& filePath)
 {
     if (filePath.empty ())
@@ -242,6 +243,7 @@ void IO::FileSystem::CreateDirectoryForFile (const filesystem::path& filePath)
     }
     CreateDirectory (filePath.parent_path (), true); //CreateDirectory (ToPath (GetFileDirectory (FromPath (filePath))), true);
 }
+DISABLE_COMPILER_MSC_WARNING_END (4996) // use deprecated
 
 /*
  ********************************************************************************
@@ -287,7 +289,7 @@ void IO::FileSystem::CopyFile (const filesystem::path& srcFile, const filesystem
     //
     // If I DON'T do that remapping to Win32 API, then redo this at least to copy / rename through tmpfile
     IO::FileSystem::Default ().CheckAccess (srcFile, IO::AccessMode::eRead);
-    CreateDirectoryForFile (destPath);
+    create_directories (destPath.parent_path ());
     ThrowIfZeroGetLastError (::CopyFile (destPath.c_str (), srcFile.c_str (), false));
 #else
     AssertNotImplemented ();

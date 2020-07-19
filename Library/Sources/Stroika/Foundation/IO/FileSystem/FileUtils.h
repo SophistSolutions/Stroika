@@ -51,9 +51,9 @@ namespace Stroika::Foundation::IO::FileSystem {
         *          TODO:
         *              (o) We need an overload which takes the directory permissions as argument.
         */
-    void CreateDirectory (const filesystem::path& directoryPath, bool createParentComponentsIfNeeded = true);
+    [[deprecated ("Since Stroika 2.1b2, use create_directories() or create_directory()")]] void CreateDirectory (const filesystem::path& directoryPath, bool createParentComponentsIfNeeded = true);
 
-    void CreateDirectoryForFile (const filesystem::path& filePath);
+    [[deprecated ("Since Stroika 2.1b2, use create_directories() or create_directory() with argument filePath.parent_path ()")]] void CreateDirectoryForFile (const filesystem::path& filePath);
 
     /**
      * Possibly useful, even after using std::filesystem, as I dont think supported in std::filesystem.

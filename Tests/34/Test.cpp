@@ -210,7 +210,7 @@ namespace {
             {
                 // re-open the file several times and assure right number of records present
                 filesystem::path dbFileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "foo.db";
-                IO::FileSystem::Default ().RemoveFileIf (dbFileName);
+                (void)remove (dbFileName);
                 for (unsigned int i = 0; i < 5; ++i) {
                     PRIVATE_::DB db{dbFileName};
                     test (db, i);
