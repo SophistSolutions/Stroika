@@ -36,7 +36,7 @@ namespace Stroika::Foundation::IO::FileSystem {
      *  \note   These print names are mostly for display and debugging purposes, and they are not guaranteed to be safe for
      *          persistence (so be sure to version).
      */
-    enum BlockDeviceKind {
+    enum class BlockDeviceKind {
         /**
          *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "Removable Disk" or
          *  https://msdn.microsoft.com/en-us/library/windows/desktop/aa364939%28v=vs.85%29.aspx DRIVE_REMOVABLE

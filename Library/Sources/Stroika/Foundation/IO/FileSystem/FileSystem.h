@@ -139,7 +139,7 @@ namespace Stroika::Foundation::IO::FileSystem {
          *
          *  @see CanonicalizeName
          */
-        nonvirtual filesystem::path ResolveShortcut (const filesystem::path& path2FileOrShortcut);
+        [[deprecated ("Since Stroika 2.1b2, use is_symlink/read_symlink or canonical")]] nonvirtual filesystem::path ResolveShortcut (const filesystem::path& path2FileOrShortcut);
 
     public:
         /**

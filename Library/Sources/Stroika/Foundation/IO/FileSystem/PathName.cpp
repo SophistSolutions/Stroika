@@ -141,9 +141,9 @@ String FileSystem::GetFileSuffix (const String& fileName)
  */
 String FileSystem::GetFileBaseName (const String& pathName)
 {
-    #if 1
+#if 1
     return FromPath (ToPath (pathName).stem ());
-    #else
+#else
     if (pathName.empty ()) {
         return String ();
     }
@@ -161,7 +161,7 @@ String FileSystem::GetFileBaseName (const String& pathName)
         }
     }
     return baseName;
-    #endif
+#endif
 }
 
 /*
