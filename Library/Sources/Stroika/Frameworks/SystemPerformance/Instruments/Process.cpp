@@ -712,7 +712,7 @@ namespace {
         // if fails (cuz not readable) don't throw but return missing, but avoid noisy stroika exception logging
         optional<filesystem::path> OptionallyResolveShortcut_ (const filesystem::path& shortcutPath)
         {
-            if (filesystem::exists (shortcutPath) && filesystem::is_symlink (shortcutPath)) {
+            if (filesystem::exists (shortcutPath) and filesystem::is_symlink (shortcutPath)) {
                 IgnoreExceptionsExceptThreadInterruptForCall (return filesystem::read_symlink (shortcutPath));
             }
             return nullopt;
