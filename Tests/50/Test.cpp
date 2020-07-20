@@ -117,7 +117,7 @@ namespace {
 #if !qDebug && defined(_MSC_VER) && defined(WIN32) && !defined(_WIN64)
     double sTimeMultiplier_ = 5.0; // default larger so on reg-tests we get more consistent percentages
 #else
-    double sTimeMultiplier_ = (Debug::IsRunningUnderValgrind () || Debug::kBuiltWithAddressSanitizer) ? .001 : 1.0;
+    double sTimeMultiplier_ = (Debug::IsRunningUnderValgrind () or Debug::kBuiltWithAddressSanitizer or Debug::kBuiltWithThreadSanitizer) ? .001 : 1.0;
 #endif
 }
 
