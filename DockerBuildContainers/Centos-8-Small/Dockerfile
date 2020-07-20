@@ -4,6 +4,9 @@ COPY Shared-Files/Getting-Started-With-Stroika.md ./
 
 RUN dnf update -y
 
+# For locale support tests
+RUN dnf install langpacks-en glibc-all-langpacks -y
+
 # As of 2020-04-28, this completes, but with lots of errors that indicate its pretty buggy
 RUN dnf groupinstall -y "Development Tools"
 
