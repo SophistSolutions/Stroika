@@ -554,7 +554,7 @@ namespace {
 }
 #endif
 
-void XML::SAXParse (const Streams::InputStream<byte>::Ptr& in, StructuredStreamEvents::IConsumer& callback, Execution::ProgressMonitor::Updater progress)
+void XML::SAXParse ([[maybe_unused]] const Streams::InputStream<byte>::Ptr& in, [[maybe_unused]] StructuredStreamEvents::IConsumer& callback, [[maybe_unused]] Execution::ProgressMonitor::Updater progress)
 {
 #if qHasFeature_Xerces
     SAX2PrintHandlers_        handler (callback);
