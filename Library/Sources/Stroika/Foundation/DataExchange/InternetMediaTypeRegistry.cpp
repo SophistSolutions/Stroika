@@ -387,7 +387,13 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
                                     glob = glob.SubString (1);
                                 }
                                 // Use AddIf () - so first (appears empirically to be the preferred value) wins
-                                InternetMediaType imt{line[0]};
+                                InternetMediaType imt;
+                                try {
+                                    imt = InternetMediaType{line[0]};
+                                }
+                                catch (...) {
+                                    DbgTrace ("Ignoring exception looking parsing potential media type entry (%s): %s", Characters::ToString (line[0]).c_str (), Characters::ToString (current_exception ()).c_str ());
+                                }
                                 fSuffix2MediaTypeMap_.AddIf (glob, imt, false);
                                 fMediaType2PreferredSuffixMap_.AddIf (imt, glob, false);
 
@@ -411,35 +417,17 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
         }
         virtual Set<InternetMediaType> GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const override
         {
-            Set<InternetMediaType> results;
-            auto                   loadGlobsFromFile = [&] (const filesystem::path& fn) {
-                if (filesystem::exists (fn)) {
-                    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"UsrShareMIMERep_::GetMediaTypes::loadGlobsFromFile", L"exists=true,fn=%s", Characters::ToString (fn).c_str ())};
-                    try {
-                        for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{':'}}.ReadMatrix (IO::FileSystem::FileInputStream::New (fn))) {
-                            if (line.length () >= 2) {
-                                InternetMediaType imt;
-                                try {
-                                    imt = InternetMediaType{line[0]};
-                                }
-                                catch (...) {
-                                    DbgTrace ("Ingoring exception looking parsing potential media type entry (%s): %s", Characters::ToString (line[0]).c_str (), Characters::ToString (current_exception ()).c_str ());
-                                }
-                                if (majorType != nullopt and imt.GetType<InternetMediaType::AtomType> () != majorType) {
-                                    continue;
-                                }
-                                results += imt;
-                            }
-                        }
-                    }
-                    catch (...) {
-                        // log error
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"UsrShareMIMERep_::GetMediaTypes", L"majorType=%s", Characters::ToString (fn).c_str ())};
+#endif
+            Set < InternetMediaType> results;
+            for (auto&& imt : fMediaType2PreferredSuffixMap_.Keys ()) {
+                if (majorType) {
+                    if (imt.GetType<InternetMediaType::AtomType> () != *majorType) {
+                        continue; // skip non-matching types
                     }
                 }
-            };
-            // override files loaded first, tied to use of AddIf - not replacing
-            for (auto p : fDataRoots_) {
-                loadGlobsFromFile (p / "globs");
+                results += imt;
             }
             return results;
         }
