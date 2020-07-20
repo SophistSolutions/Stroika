@@ -58,6 +58,19 @@ namespace Stroika::Foundation::Debug {
 #else
     constexpr bool kBuiltWithAddressSanitizer = false;
 #endif
+
+#if defined(__has_feature)
+#if __has_feature(address_thread) or defined(__SANITIZE_THREAD__)
+    constexpr bool kBuiltWithThreadSanitizer = true;
+#else
+    constexpr bool kBuiltWithThreadSanitizer  = false;
+#endif
+#elif defined(__SANITIZE_THREAD__)
+    // sadly, even gcc8 doesn't __has_feature, but defines this instead
+    constexpr bool kBuiltWithThreadSanitizer = true;
+#else
+    constexpr bool kBuiltWithThreadSanitizer  = false;
+#endif
 }
 #endif
 
