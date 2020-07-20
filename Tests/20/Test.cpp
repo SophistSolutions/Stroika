@@ -61,6 +61,7 @@ namespace {
     {
         {
             Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_1_ ()");
+            static const size_t       K = Debug::IsRunningUnderValgrind () ? 100 : 1000;
             CONCRETE_SEQUENCE_T       s;
             VerifyTestResult (s.size () == 0);
             s.Append (1);
@@ -75,16 +76,16 @@ namespace {
         }
         {
             CONCRETE_SEQUENCE_T s;
-            for (size_t i = 0; i < 1000; ++i) {
+            for (size_t i = 0; i < K; ++i) {
                 s.Append (i);
             }
-            VerifyTestResult (s.size () == 1000);
+            VerifyTestResult (s.size () == K);
             VerifyTestResult (EQUALS_COMPARER{}(s[0], 0));
             VerifyTestResult (EQUALS_COMPARER{}(s[1], 1));
-            VerifyTestResult (EQUALS_COMPARER{}(s[100], 100));
+            VerifyTestResult (EQUALS_COMPARER{}(s[K - 1], K - 1));
             s.Remove (0);
-            VerifyTestResult (s.size () == 999);
-            for (size_t i = 0; i < 999; ++i) {
+            VerifyTestResult (s.size () == K - 1);
+            for (size_t i = 0; i < K - 1; ++i) {
                 VerifyTestResult (EQUALS_COMPARER{}(s[i], i + 1));
             }
             s.RemoveAll ();
@@ -228,11 +229,12 @@ namespace {
     void SimpleSequenceTest_7_IndexOf_ ()
     {
         Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_7_IndexOf_ ()");
+        static const size_t       K = Debug::IsRunningUnderValgrind () ? 100 : 1000;
         using T = typename CONCRETE_SEQUENCE_T::value_type;
         CONCRETE_SEQUENCE_T s;
         {
             VerifyTestResult (s.empty ());
-            for (size_t i = 0; i < 1000; ++i) {
+            for (size_t i = 0; i < K; ++i) {
                 s.Append (21 + i);
             }
             VerifyTestResult (not s.template IndexOf<EQUALS_COMPARER> (5).has_value ());
@@ -242,11 +244,11 @@ namespace {
             VerifyTestResult (s.empty ());
         }
         {
-            for (size_t i = 0; i < 1000; ++i) {
+            for (size_t i = 0; i < K; ++i) {
                 s.Append (i);
             }
             VerifyTestResult (not s.empty ());
-            VerifyTestResult (s.size () == 1000);
+            VerifyTestResult (s.size () == K);
 
             Sequence<T> s2 = s;
             VerifyTestResult (s.template IndexOf<EQUALS_COMPARER> (s2) == 0u);
@@ -261,10 +263,10 @@ namespace {
             VerifyTestResult (s.empty ());
         }
         {
-            for (size_t i = 0; i < 1000; ++i) {
+            for (size_t i = 0; i < K; ++i) {
                 s.Append (i);
             }
-            VerifyTestResult (s.size () == 1000);
+            VerifyTestResult (s.size () == K);
             size_t j = 0;
             for (Iterator<T> i = s.MakeIterator (); i != s.end (); ++i, ++j) {
                 VerifyTestResult (s.IndexOf (i) == j);
