@@ -231,6 +231,7 @@ DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declara
  ********************************************************************************
  */
 DISABLE_COMPILER_MSC_WARNING_START (4996) // use deprecated
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 void IO::FileSystem::CreateDirectoryForFile (const filesystem::path& filePath)
 {
     if (filePath.empty ())
@@ -246,6 +247,7 @@ void IO::FileSystem::CreateDirectoryForFile (const filesystem::path& filePath)
     CreateDirectory (filePath.parent_path (), true); //CreateDirectory (ToPath (GetFileDirectory (FromPath (filePath))), true);
 }
 DISABLE_COMPILER_MSC_WARNING_END (4996) // use deprecated
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 
 /*
  ********************************************************************************
