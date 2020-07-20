@@ -420,7 +420,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"UsrShareMIMERep_::GetMediaTypes", L"majorType=%s", Characters::ToString (fn).c_str ())};
 #endif
-            Set < InternetMediaType> results;
+            Set<InternetMediaType> results;
             for (auto&& imt : fMediaType2PreferredSuffixMap_.Keys ()) {
                 if (majorType) {
                     if (imt.GetType<InternetMediaType::AtomType> () != *majorType) {
