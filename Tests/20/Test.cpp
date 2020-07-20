@@ -62,7 +62,7 @@ namespace {
         Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_1_ ()");
         static const size_t       K = Debug::IsRunningUnderValgrind () ? 100 : 1000;
         {
-            CONCRETE_SEQUENCE_T       s;
+            CONCRETE_SEQUENCE_T s;
             VerifyTestResult (s.size () == 0);
             s.Append (1);
             VerifyTestResult (s.size () == 1);
@@ -230,7 +230,7 @@ namespace {
     {
         Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_7_IndexOf_ ()");
         static const size_t       K = Debug::IsRunningUnderValgrind () ? 100 : 1000;
-        using T = typename CONCRETE_SEQUENCE_T::value_type;
+        using T                     = typename CONCRETE_SEQUENCE_T::value_type;
         CONCRETE_SEQUENCE_T s;
         {
             VerifyTestResult (s.empty ());
