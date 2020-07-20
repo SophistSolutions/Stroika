@@ -153,6 +153,7 @@ void IO::FileSystem::SetFileAccessWideOpened (const filesystem::path& filePathNa
  ************************ FileSystem::CreateDirectory ***************************
  ********************************************************************************
  */
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 void IO::FileSystem::CreateDirectory (const filesystem::path& directoryPathOrig, bool createParentComponentsIfNeeded)
 {
     String directoryPath = FromPath (directoryPathOrig);
@@ -222,6 +223,7 @@ void IO::FileSystem::CreateDirectory (const filesystem::path& directoryPathOrig,
     AssertNotImplemented ();
 #endif
 }
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 
 /*
  ********************************************************************************

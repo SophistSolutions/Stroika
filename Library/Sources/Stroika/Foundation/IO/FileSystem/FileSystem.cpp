@@ -444,6 +444,7 @@ bool IO::FileSystem::Ptr::RemoveFileIf (const filesystem::path& fileName)
 }
 
 DISABLE_COMPILER_MSC_WARNING_START (4996) // use deprecated
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 void IO::FileSystem::Ptr::RemoveDirectory (const filesystem::path& directory, RemoveDirectoryPolicy policy)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -475,7 +476,9 @@ Again:
     }
 }
 DISABLE_COMPILER_MSC_WARNING_END (4996)
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 DISABLE_COMPILER_MSC_WARNING_START (4996) // use deprecated
 bool IO::FileSystem::Ptr::RemoveDirectoryIf (const filesystem::path& directory, RemoveDirectoryPolicy policy)
 {
@@ -511,6 +514,7 @@ Again:
     return r == 0;
 }
 DISABLE_COMPILER_MSC_WARNING_END (4996)
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 
 void IO::FileSystem::Ptr::CreateSymbolicLink ([[maybe_unused]] const filesystem::path& linkName, [[maybe_unused]] const filesystem::path& target)
 {
