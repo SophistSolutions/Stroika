@@ -252,10 +252,10 @@ namespace Stroika::Foundation::Characters {
 
 /*
  ********************************************************************************
- ********************************** Thread::Rep_ ********************************
+ ***************************** Thread::Ptr::Rep_ ********************************
  ********************************************************************************
  */
-Thread::Rep_::Rep_ (const function<void ()>& runnable, [[maybe_unused]] const optional<Configuration>& configuration)
+Thread::Ptr::Rep_::Rep_ (const function<void ()>& runnable, [[maybe_unused]] const optional<Configuration>& configuration)
     : fRunnable_ (runnable)
 {
     // @todo - never used anything from configuration (yet) - should!)
@@ -272,10 +272,10 @@ Thread::Rep_::Rep_ (const function<void ()>& runnable, [[maybe_unused]] const op
 #endif
 }
 
-void Thread::Rep_::DoCreate (const shared_ptr<Rep_>* repSharedPtr)
+void Thread::Ptr::Rep_::DoCreate (const shared_ptr<Rep_>* repSharedPtr)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{L"Thread::Rep_::DoCreate"};
+    TraceContextBumper ctx{L"Thread::Ptr::Rep_::DoCreate"};
 #endif
     RequireNotNull (repSharedPtr);
     RequireNotNull (*repSharedPtr);
@@ -300,7 +300,7 @@ void Thread::Rep_::DoCreate (const shared_ptr<Rep_>* repSharedPtr)
     (*repSharedPtr)->ApplyThreadName2OSThreadObject ();
 }
 
-Thread::Rep_::~Rep_ ()
+Thread::Ptr::Rep_::~Rep_ ()
 {
     Assert (fStatus_ != Status::eRunning);
 
@@ -323,7 +323,7 @@ Thread::Rep_::~Rep_ ()
     }
 }
 
-void Thread::Rep_::Run_ ()
+void Thread::Ptr::Rep_::Run_ ()
 {
     try {
         fRunnable_ ();
@@ -339,7 +339,7 @@ void Thread::Rep_::Run_ ()
     }
 }
 
-Characters::String Thread::Rep_::ToString () const
+Characters::String Thread::Ptr::Rep_::ToString () const
 {
     StringBuilder sb;
     sb += L"{";
@@ -352,7 +352,7 @@ Characters::String Thread::Rep_::ToString () const
     return sb.str ();
 }
 
-void Thread::Rep_::ApplyThreadName2OSThreadObject ()
+void Thread::Ptr::Rep_::ApplyThreadName2OSThreadObject ()
 {
     if (GetNativeHandle () != NativeHandleType{}) {
 #if qSupportSetThreadNameDebuggerCall_
@@ -390,10 +390,10 @@ void Thread::Rep_::ApplyThreadName2OSThreadObject ()
     }
 }
 
-void Thread::Rep_::ApplyPriority (Priority priority)
+void Thread::Ptr::Rep_::ApplyPriority (Priority priority)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Rep_::ApplyPriority", L"threads=%s, priority=%s", Characters::ToString (*this).c_str (), Characters::ToString (priority).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Ptr::Rep_::ApplyPriority", L"threads=%s, priority=%s", Characters::ToString (*this).c_str (), Characters::ToString (priority).c_str ())};
 #endif
     NativeHandleType nh = GetNativeHandle ();
     if (nh != NativeHandleType{}) {
@@ -486,7 +486,7 @@ void Thread::Rep_::ApplyPriority (Priority priority)
     }
 }
 
-void Thread::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noexcept
+void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noexcept
 {
     RequireNotNull (thisThreadRep);
     TraceContextBumper ctx ("Thread::Rep_::ThreadMain_");
@@ -640,7 +640,7 @@ void Thread::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noexcept
     }
 }
 
-void Thread::Rep_::NotifyOfInterruptionFromAnyThread_ (bool aborting)
+void Thread::Ptr::Rep_::NotifyOfInterruptionFromAnyThread_ (bool aborting)
 {
     Require (fStatus_ == Status::eAborting or fStatus_ == Status::eCompleted or (not aborting)); // if aborting, must be in state aborting or completed, but for interruption can be other state
     //TraceContextBumper ctx ("Thread::Rep_::NotifyOfAbortFromAnyThread_");
@@ -703,25 +703,25 @@ void Thread::Rep_::NotifyOfInterruptionFromAnyThread_ (bool aborting)
     }
 }
 
-Thread::IDType Thread::Rep_::GetID () const
+Thread::IDType Thread::Ptr::Rep_::GetID () const
 {
     [[maybe_unused]] auto&& critSec = lock_guard{fAccessSTDThreadMutex_};
     return fThread_.get_id ();
 }
 
-Thread::NativeHandleType Thread::Rep_::GetNativeHandle ()
+Thread::NativeHandleType Thread::Ptr::Rep_::GetNativeHandle ()
 {
     [[maybe_unused]] auto&& critSec = lock_guard{fAccessSTDThreadMutex_};
     return fThread_.native_handle ();
 }
 
 #if qPlatform_POSIX
-void Thread::Rep_::InterruptionSignalHandler_ (SignalID signal) noexcept
+void Thread::Ptr::Rep_::InterruptionSignalHandler_ (SignalID signal) noexcept
 {
     //
     //#if USE_NOISY_TRACE_IN_THIS_MODULE_
     // unsafe to call trace code - because called as unsafe (SignalHandler::Type::eDirect) handler
-    //TraceContextBumper ctx ("Thread::Rep_::InterruptionSignalHandler_");
+    //TraceContextBumper ctx ("Thread::Ptr::Rep_::InterruptionSignalHandler_");
     //#endif
     // This doesn't REALLY need to get called. Its enough to have the side-effect of the EINTR from system calls.
     // the TLS variable gets set through the rep poitner in NotifyOfInterruptionFromAnyThread_
@@ -730,10 +730,10 @@ void Thread::Rep_::InterruptionSignalHandler_ (SignalID signal) noexcept
     //
 }
 #elif qPlatform_Windows
-void CALLBACK Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParameter)
+void CALLBACK Thread::Ptr::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParameter)
 {
-    TraceContextBumper ctx{"Thread::Rep_::CalledInRepThreadAbortProc_"};
-    [[maybe_unused]] Thread::Rep_* rep = reinterpret_cast<Thread::Rep_*> (lpParameter);
+    TraceContextBumper ctx{"Thread::Ptr::Rep_::CalledInRepThreadAbortProc_"};
+    [[maybe_unused]] Thread::Ptr::Rep_* rep = reinterpret_cast<Thread::Ptr::Rep_*> (lpParameter);
     Require (GetCurrentThreadID () == rep->GetID ());
     if (rep->fThrowInterruptExceptionInsideUserAPC_)
         [[UNLIKELY_ATTR]]
@@ -748,9 +748,6 @@ void CALLBACK Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParameter)
  ******************************** Thread::Ptr ***********************************
  ********************************************************************************
  */
-#if qPlatform_POSIX
-SignalID Thread::sSignalUsedForThreadInterrupt_ = SIGUSR2;
-#endif
 namespace {
     Synchronized<Thread::Configuration> sDefaultConfiguration_;
 }
@@ -1060,7 +1057,7 @@ Thread::CleanupPtr::~CleanupPtr ()
  */
 Thread::Ptr Thread::New (const function<void ()>& fun2CallOnce, const optional<Characters::String>& name, const optional<Configuration>& configuration)
 {
-    Thread::Ptr ptr = Ptr{make_shared<Rep_> (fun2CallOnce, CombineCFGs_ (configuration))};
+    Thread::Ptr ptr = Ptr{make_shared<Ptr::Rep_> (fun2CallOnce, CombineCFGs_ (configuration))};
     if (name) {
         ptr.SetThreadName (*name);
     }
@@ -1144,19 +1141,26 @@ void Thread::WaitForDoneUntil (const Traversal::Iterable<Thread::Ptr>& threads, 
 }
 
 #if qPlatform_POSIX
-void Thread::SetSignalUsedForThreadInterrupt (SignalID signalNumber)
+SignalID Thread::SignalUsedForThreadInterrupt (optional<SignalID> signalNumber)
 {
-    [[maybe_unused]] auto&& critSec = lock_guard{sHandlerInstalled_};
-    if (sHandlerInstalled_) {
-        SignalHandlerRegistry::Get ().RemoveSignalHandler (GetSignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
-        sHandlerInstalled_ = false;
+#if qPlatform_POSIX
+    static SignalID sSignalUsedForThreadInterrupt_ = SIGUSR2;
+#endif
+    SignalID result = sSignalUsedForThreadInterrupt_;
+    if (signalNumber) {
+        [[maybe_unused]] auto&& critSec = lock_guard{sHandlerInstalled_};
+        if (sHandlerInstalled_) {
+            SignalHandlerRegistry::Get ().RemoveSignalHandler (GetSignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
+            sHandlerInstalled_ = false;
+        }
+        sSignalUsedForThreadInterrupt_ = signalNumber.value ();
+        // install new handler
+        if (not sHandlerInstalled_) {
+            SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
+            sHandlerInstalled_ = true;
+        }
     }
-    sSignalUsedForThreadInterrupt_ = signalNumber;
-    // install new handler
-    if (not sHandlerInstalled_) {
-        SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
-        sHandlerInstalled_ = true;
-    }
+    return result;
 }
 #endif
 

@@ -29,13 +29,13 @@ namespace Stroika::Foundation::Execution {
 
     /*
      ********************************************************************************
-     ********************************* Thread::Rep_ *********************************
+     ********************************* Thread::Ptr::Rep_ ****************************
      ********************************************************************************
      */
     /**
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      */
-    class Thread::Rep_ {
+    class Thread::Ptr::Rep_ {
     public:
         Rep_ (const function<void ()>& runnable, const optional<Configuration>& configuration);
         ~Rep_ ();
@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Execution {
      *********************************** Thread::Rep_ *******************************
      ********************************************************************************
      */
-    inline void Thread::Rep_::Start ()
+    inline void Thread::Ptr::Rep_::Start ()
     {
         fOK2StartEvent_.Set ();
     }
@@ -357,12 +357,6 @@ namespace Stroika::Foundation::Execution {
     {
         WaitForDoneUntil (threads, timeout + Time::GetTickCount ());
     }
-#if qPlatform_POSIX
-    inline SignalID Thread::GetSignalUsedForThreadInterrupt ()
-    {
-        return sSignalUsedForThreadInterrupt_;
-    }
-#endif
 
     /*
      ********************************************************************************

@@ -263,9 +263,6 @@ namespace Stroika::Foundation::Execution {
     public:
         enum AutoStartFlag { eAutoStart };
 
-    private:
-        class Rep_;
-
     public:
         class Ptr;
 
@@ -478,16 +475,27 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          */
-        static SignalID GetSignalUsedForThreadInterrupt ();
+        [[deprecated ("Since Stroika v2.1 use SignalUsedForThreadInterrupt")]] static SignalID GetSignalUsedForThreadInterrupt ()
+        {
+            return SignalUsedForThreadInterrupt ();
+        }
 
     public:
         /**
          *  Unsafe to change this while threads running - at least if you could be interupting threads during this time.
          */
-        static void SetSignalUsedForThreadInterrupt (SignalID signalNumber);
+        [[deprecated ("Since Stroika v2.1 use SignalUsedForThreadInterrupt")]] static void SetSignalUsedForThreadInterrupt (SignalID signalNumber)
+        {
+            (void)SignalUsedForThreadInterrupt (signalNumber);
+        }
 
-    private:
-        static SignalID sSignalUsedForThreadInterrupt_;
+    public:
+        /**
+         *  Unsafe to change this while threads running - at least if you could be interupting threads during this time.
+         *  If argument given, this resets the signalNumber.
+         *  Either way, this returns the previous value.
+         */
+        static SignalID SignalUsedForThreadInterrupt (optional<SignalID> signalNumber = nullopt);
 #endif
     };
 
@@ -500,6 +508,9 @@ namespace Stroika::Foundation::Execution {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-Letter-Internally-Synchronized/a>
      */
     class Thread::Ptr : private Debug::AssertExternallySynchronizedLock {
+    private:
+        class Rep_;
+
     public:
         /**
          *  \par Example Usage
