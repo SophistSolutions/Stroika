@@ -339,7 +339,7 @@ namespace {
             auto                                     i                = sShownThreadIDs_.find (threadID);
             unsigned int                             threadIndex2Show = 0;
             if (i == sShownThreadIDs_.end ()) {
-                threadIndex2Show = sShownThreadIDs_.size ();
+                threadIndex2Show = static_cast<unsigned int> (sShownThreadIDs_.size ());
                 sShownThreadIDs_.insert (pair<Thread::IDType, unsigned int>{threadID, threadIndex2Show});
                 if (threadIndex2Show >= 10000) {
                     sMinWidth_ = 5;
