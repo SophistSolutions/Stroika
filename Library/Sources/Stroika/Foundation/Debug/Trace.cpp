@@ -99,19 +99,6 @@ namespace {
 
     // Declared HERE instead of the template so they get shared across TYPE values for CHARTYPE
     Thread::IDType sMainThread_ = Execution::GetCurrentThreadID ();
-
-    string mkPrintDashAdornment_ ()
-    {
-        size_t threadPrintWidth = FormatThreadID_A (sMainThread_).length () - 4;
-        string result;
-        result.reserve (threadPrintWidth / 2);
-        for (size_t i = 0; i < threadPrintWidth / 2; ++i) {
-            result.append ("-");
-        }
-        return result;
-    }
-    char sThreadPrintDashAdornment_[32]; // use static array to avoid putting the string object into TraceModuleData_, and otherwise having to worry about use after main when calls DbgTrace()
-    bool sDidOneTimePrimaryThreadMessage_ = false;
 }
 
 #if qTraceToFile
@@ -166,7 +153,6 @@ Debug::Private_::TraceModuleData_::TraceModuleData_ ()
     , fTraceFileName (mkTraceFileName_ ())
 #endif
 {
-    CString::Copy (sThreadPrintDashAdornment_, NEltsOf (sThreadPrintDashAdornment_), mkPrintDashAdornment_ ().c_str ());
     Assert (sEmitTraceCritSec_ == nullptr);
     sEmitTraceCritSec_ = new recursive_mutex ();
 #if qTraceToFile
@@ -335,6 +321,46 @@ Emitter::TraceLastBufferedWriteTokenType Emitter::EmitTraceMessage (size_t buffe
     }
 }
 
+namespace {
+    // .first is true iff added, and false if already present
+    // .second is the threadid to display
+    pair<bool, string> mkThreadLabelForThreadID_ (const Thread::IDType& threadID)
+    {
+        constexpr bool kEmitThreadIDsByIndex_ = true;   // if true, emit a much shorter thread ID, making - I suspect (testing)
+                                                        // for terser and clearer tracelogs. Only downside is that you must find
+                                                        // first occurence of that index to find real threadId, and use that in waits, etc.
+                                                        // @todo MAYBE include this mapping in the THREAD class, so it can be used in printing
+                                                        // info about threads
+        if (kEmitThreadIDsByIndex_) {
+            [[maybe_unused]] auto&& critSec = lock_guard{GetEmitCritSection_ ()};
+            char                    buf[1024];
+            static map<Thread::IDType, unsigned int> sShownThreadIDs_;
+            static int                               sMinWidth_       = 4; // for MAIN
+            auto                                     i                = sShownThreadIDs_.find (threadID);
+            unsigned int                             threadIndex2Show = 0;
+            if (i == sShownThreadIDs_.end ()) {
+                threadIndex2Show = sShownThreadIDs_.size ();
+                sShownThreadIDs_.insert (pair<Thread::IDType, unsigned int>{threadID, threadIndex2Show}).second;
+                if (threadIndex2Show >= 10000) {
+                    sMinWidth_ = 5;
+                }
+            }
+            else {
+                threadIndex2Show = i->second;
+            }
+            if (threadID == sMainThread_) {
+                static string kMAIN_{"main"sv};
+                return pair<bool, string>{i == sShownThreadIDs_.end (), kMAIN_};
+            }
+            (void)snprintf (buf, NEltsOf (buf), "%.*d", sMinWidth_, threadIndex2Show);
+            return pair<bool, string>{i == sShownThreadIDs_.end (), buf};
+        }
+        else {
+            // If this is deemed useful, then re-instate the mapping of threadID == sMainThread_ to "MAIN" with appropriate -- around it
+            return pair<bool, string>{false, FormatThreadID_A (threadID)};
+        }
+    }
+}
 template <typename CHARTYPE>
 Emitter::TraceLastBufferedWriteTokenType Emitter::DoEmitMessage_ (size_t bufferLastNChars, const CHARTYPE* s, const CHARTYPE* e)
 {
@@ -344,13 +370,11 @@ Emitter::TraceLastBufferedWriteTokenType Emitter::DoEmitMessage_ (size_t bufferL
     {
         char           buf[1024];
         Thread::IDType threadID    = Execution::GetCurrentThreadID ();
-        string         threadIDStr = FormatThreadID_A (threadID);
-        if (sMainThread_ == threadID) {
-            Verify (snprintf (buf, NEltsOf (buf), "[%sMAIN%s][%08.3f]\t", sThreadPrintDashAdornment_, sThreadPrintDashAdornment_, static_cast<double> (curRelativeTime)) > 0);
-            if (not sDidOneTimePrimaryThreadMessage_) {
-                sDidOneTimePrimaryThreadMessage_ = true;
+        pair<bool, string> threadIDInfo = mkThreadLabelForThreadID_ (threadID);
+        Verify (snprintf (buf, NEltsOf (buf), "[%s][%08.3f]\t", threadIDInfo.second.c_str (), static_cast<double> (curRelativeTime)) > 0);
+        if (threadIDInfo.first) {
                 char buf2[1024];
-                Verify (snprintf (buf2, NEltsOf (buf2), "(REAL THREADID=%s)\t", threadIDStr.c_str ()) > 0);
+            Verify (snprintf (buf2, NEltsOf (buf2), "(NEW THREAD, index=%s Real Thread ID=%s)\t", threadIDInfo.second.c_str (), FormatThreadID_A (threadID).c_str ()) > 0);
 #if __STDC_WANT_SECURE_LIB__
                 strcat_s (buf, buf2);
 #else
@@ -364,10 +388,6 @@ Emitter::TraceLastBufferedWriteTokenType Emitter::DoEmitMessage_ (size_t bufferL
                 strcat (buf, buf2);
 #endif
 #endif
-            }
-        }
-        else {
-            (void)snprintf (buf, NEltsOf (buf), "[%s][%08.3f]\t", threadIDStr.c_str (), static_cast<double> (curRelativeTime));
         }
         DoEmit_ (buf);
     }
