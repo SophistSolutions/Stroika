@@ -326,21 +326,21 @@ namespace {
     // .second is the threadid to display
     pair<bool, string> mkThreadLabelForThreadID_ (const Thread::IDType& threadID)
     {
-        constexpr bool kEmitThreadIDsByIndex_ = true;   // if true, emit a much shorter thread ID, making - I suspect (testing)
-                                                        // for terser and clearer tracelogs. Only downside is that you must find
-                                                        // first occurence of that index to find real threadId, and use that in waits, etc.
-                                                        // @todo MAYBE include this mapping in the THREAD class, so it can be used in printing
-                                                        // info about threads
+        constexpr bool kEmitThreadIDsByIndex_ = true; // if true, emit a much shorter thread ID, making - I suspect (testing)
+                                                      // for terser and clearer tracelogs. Only downside is that you must find
+                                                      // first occurence of that index to find real threadId, and use that in waits, etc.
+                                                      // @todo MAYBE include this mapping in the THREAD class, so it can be used in printing
+                                                      // info about threads
         if (kEmitThreadIDsByIndex_) {
-            [[maybe_unused]] auto&& critSec = lock_guard{GetEmitCritSection_ ()};
-            char                    buf[1024];
+            [[maybe_unused]] auto&&                  critSec = lock_guard{GetEmitCritSection_ ()};
+            char                                     buf[1024];
             static map<Thread::IDType, unsigned int> sShownThreadIDs_;
             static int                               sMinWidth_       = 4; // for MAIN
             auto                                     i                = sShownThreadIDs_.find (threadID);
             unsigned int                             threadIndex2Show = 0;
             if (i == sShownThreadIDs_.end ()) {
                 threadIndex2Show = sShownThreadIDs_.size ();
-                sShownThreadIDs_.insert (pair<Thread::IDType, unsigned int>{threadID, threadIndex2Show}).second;
+                sShownThreadIDs_.insert (pair<Thread::IDType, unsigned int>{threadID, threadIndex2Show});
                 if (threadIndex2Show >= 10000) {
                     sMinWidth_ = 5;
                 }
@@ -368,24 +368,24 @@ Emitter::TraceLastBufferedWriteTokenType Emitter::DoEmitMessage_ (size_t bufferL
     FlushBufferedCharacters_ ();
     Time::DurationSecondsType curRelativeTime = Time::GetTickCount ();
     {
-        char           buf[1024];
-        Thread::IDType threadID    = Execution::GetCurrentThreadID ();
+        char               buf[1024];
+        Thread::IDType     threadID     = Execution::GetCurrentThreadID ();
         pair<bool, string> threadIDInfo = mkThreadLabelForThreadID_ (threadID);
         Verify (snprintf (buf, NEltsOf (buf), "[%s][%08.3f]\t", threadIDInfo.second.c_str (), static_cast<double> (curRelativeTime)) > 0);
         if (threadIDInfo.first) {
-                char buf2[1024];
+            char buf2[1024];
             Verify (snprintf (buf2, NEltsOf (buf2), "(NEW THREAD, index=%s Real Thread ID=%s)\t", threadIDInfo.second.c_str (), FormatThreadID_A (threadID).c_str ()) > 0);
 #if __STDC_WANT_SECURE_LIB__
-                strcat_s (buf, buf2);
+            strcat_s (buf, buf2);
 #else
-                strcat (buf, buf2);
+            strcat (buf, buf2);
 #endif
 #if qPlatform_POSIX
-                Verify (snprintf (buf2, NEltsOf (buf2), "(pthread_self=0x%lx)\t", (unsigned long)pthread_self ()) > 0);
+            Verify (snprintf (buf2, NEltsOf (buf2), "(pthread_self=0x%lx)\t", (unsigned long)pthread_self ()) > 0);
 #if __STDC_WANT_SECURE_LIB__
-                strcat_s (buf, buf2);
+            strcat_s (buf, buf2);
 #else
-                strcat (buf, buf2);
+            strcat (buf, buf2);
 #endif
 #endif
         }
