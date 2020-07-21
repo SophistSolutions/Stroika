@@ -234,7 +234,6 @@ Thread::AbortException::AbortException ()
     : InterruptException (L"Thread Abort"sv)
 {
 }
-
 const Thread::AbortException Thread::AbortException::kThe;
 
 /*
@@ -547,11 +546,11 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noex
                 // we inherit blocked abort signal given how we are created in DoCreate() - so unblock it -
                 // and accept aborts after we've marked reference count as set.
                 sigset_t mySet;
-                sigemptyset (&mySet);                                         // nb: cannot use :: cuz crapple uses macro --LGP 2016-12-31
-                (void)sigaddset (&mySet, GetSignalUsedForThreadInterrupt ()); // ""
+                sigemptyset (&mySet);                                      // nb: cannot use :: cuz crapple uses macro --LGP 2016-12-31
+                (void)sigaddset (&mySet, SignalUsedForThreadInterrupt ()); // ""
                 Verify (::pthread_sigmask (SIG_UNBLOCK, &mySet, nullptr) == 0);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"Just set SIG_UNBLOCK for signal %s in this thread", SignalToName (GetSignalUsedForThreadInterrupt ()).c_str ());
+                DbgTrace (L"Just set SIG_UNBLOCK for signal %s in this thread", SignalToName (SignalUsedForThreadInterrupt ()).c_str ());
 #endif
             }
 #endif
@@ -617,7 +616,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noex
         catch (...) {
             SuppressInterruptionInContext suppressCtx;
 #if qPlatform_POSIX
-            Platform::POSIX::ScopedBlockCurrentThreadSignal blockThreadAbortSignal (GetSignalUsedForThreadInterrupt ());
+            Platform::POSIX::ScopedBlockCurrentThreadSignal blockThreadAbortSignal (SignalUsedForThreadInterrupt ());
             t_Interrupting_ = InterruptFlagState_::eNone; //  else .Set() below will THROW EXCPETION and not set done flag!
 #endif
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread: %s", incRefCnt->ToString ().c_str ());
@@ -681,7 +680,7 @@ void Thread::Ptr::Rep_::NotifyOfInterruptionFromAnyThread_ (bool aborting)
         {
             [[maybe_unused]] auto&& critSec = lock_guard{sHandlerInstalled_};
             if (not sHandlerInstalled_) {
-                SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
+                SignalHandlerRegistry::Get ().AddSignalHandler (SignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
                 sHandlerInstalled_ = true;
             }
         }
@@ -693,10 +692,10 @@ void Thread::Ptr::Rep_::NotifyOfInterruptionFromAnyThread_ (bool aborting)
              *
              *  @todo PROBABLY NOT NEEDED ANYMORE (due to use of sigaction) -- LGP 2015-08-29
              */
-            Verify (::siginterrupt (GetSignalUsedForThreadInterrupt (), true) == 0);
+            Verify (::siginterrupt (SignalUsedForThreadInterrupt (), true) == 0);
         }
 
-        (void)Execution::SendSignal (GetNativeHandle (), GetSignalUsedForThreadInterrupt ());
+        (void)Execution::SendSignal (GetNativeHandle (), SignalUsedForThreadInterrupt ());
 #elif qPlatform_Windows
         Verify (::QueueUserAPC (&CalledInRepThreadAbortProc_, GetNativeHandle (), reinterpret_cast<ULONG_PTR> (this)));
 #endif
@@ -1064,14 +1063,18 @@ Thread::Ptr Thread::New (const function<void ()>& fun2CallOnce, const optional<C
     return ptr;
 }
 
-Thread::Configuration Thread::GetDefaultConfiguration ()
+Thread::Configuration Thread::DefaultConfiguration () noexcept
 {
     return sDefaultConfiguration_.load ();
 }
 
-void Thread::SetDefaultConfiguration (const Configuration& config)
+Thread::Configuration Thread::DefaultConfiguration (const optional<Configuration>& newConfiguration)
 {
-    sDefaultConfiguration_.store (config);
+    auto result = sDefaultConfiguration_.load ();
+    if (newConfiguration) {
+        sDefaultConfiguration_.store (newConfiguration.value ());
+    }
+    return result;
 }
 
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
@@ -1154,13 +1157,13 @@ SignalID Thread::SignalUsedForThreadInterrupt (optional<SignalID> signalNumber)
     if (signalNumber) {
         [[maybe_unused]] auto&& critSec = lock_guard{sHandlerInstalled_};
         if (sHandlerInstalled_) {
-            SignalHandlerRegistry::Get ().RemoveSignalHandler (GetSignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
+            SignalHandlerRegistry::Get ().RemoveSignalHandler (SignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
             sHandlerInstalled_ = false;
         }
         sSignalUsedForThreadInterrupt_ = signalNumber.value ();
         // install new handler
         if (not sHandlerInstalled_) {
-            SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
+            SignalHandlerRegistry::Get ().AddSignalHandler (SignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
             sHandlerInstalled_ = true;
         }
     }

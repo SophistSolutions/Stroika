@@ -230,7 +230,7 @@ namespace Stroika::Foundation::Execution {
              *
              *      \note   NYI - see &&&& - probably availble for POSIX, but not sure for windoze threads
              *              http://man7.org/linux/man-pages/man3/pthread_attr_setguardsize.3.html
-             *              Peryaps for windows just add to end of stacksize
+             *              Perhaps for windows just add to end of stacksize
              */
             optional<size_t> fStackGuard;
 
@@ -240,14 +240,20 @@ namespace Stroika::Foundation::Execution {
         };
 
         /**
-         *  Return the global default configuration for Thread object construction.
+         *  Return or Set the global default configuration for Thread object construction.
          */
-        Configuration GetDefaultConfiguration ();
+        Configuration DefaultConfiguration () noexcept;
+        Configuration DefaultConfiguration (const optional<Configuration>& newConfiguration);
 
-        /**
-         *  @see GetDefaultConfiguration
-         */
-        void SetDefaultConfiguration (const Configuration& config);
+        [[deprecated ("since Stroika 2.1b2 - use DefaultConfiguration")]] inline Configuration GetDefaultConfiguration ()
+        {
+            return DefaultConfiguration ();
+        }
+
+        [[deprecated ("since Stroika 2.1b2 - use DefaultConfiguration")]] inline void SetDefaultConfiguration (const Configuration& config)
+        {
+            (void)DefaultConfiguration (config);
+        }
 
         /**
          * optional flag for constructing new threads
@@ -390,16 +396,21 @@ namespace Stroika::Foundation::Execution {
              *  a safer apporach, and just follow all these alertable calls with CheckForThreadInterruption().
              *
              *  However, occasionally you use a library (like gsoap) that makes this difficult, so for those cases, enable this throw from APC feature.
-             */
-            nonvirtual bool GetThrowInterruptExceptionInsideUserAPC () const;
-
-        public:
-            /**
-             *  @see GetThrowInterruptExceptionInsideUserAPC
              *
-             * \req *this != nullptr
+             *  \note Get function CAN be called with *this == nullptr, but 
+             *  \req if throwInterruptExceptionInsideUserAPC then *this != nullptr;
              */
-            nonvirtual void SetThrowInterruptExceptionInsideUserAPC (bool throwInterruptExceptionInsideUserAPC);
+            nonvirtual bool ThrowInterruptExceptionInsideUserAPC () const noexcept;
+            nonvirtual bool ThrowInterruptExceptionInsideUserAPC (optional<bool> throwInterruptExceptionInsideUserAPC);
+
+            [[deprecated ("Since Stroika 2.1b2 - use ThrowInterruptExceptionInsideUserAPC")]] inline bool GetThrowInterruptExceptionInsideUserAPC () const
+            {
+                return ThrowInterruptExceptionInsideUserAPC ();
+            }
+            [[deprecated ("Since Stroika 2.1b2 - use ThrowInterruptExceptionInsideUserAPC")]] inline void SetThrowInterruptExceptionInsideUserAPC (bool throwInterruptExceptionInsideUserAPC)
+            {
+                (void)ThrowInterruptExceptionInsideUserAPC (throwInterruptExceptionInsideUserAPC);
+            }
 #endif
 
         public:
@@ -424,7 +435,7 @@ namespace Stroika::Foundation::Execution {
              *          check for thread interruption, those threads may not BE interruptible during that region of code.
              *          @see Thread::GetThrowInterruptExceptionInsideUserAPC()
              *
-             *  \req *this != nullptr       { new requirement in v2.0a221 - used to just return }
+             *  \req *this != nullptr
              *
              *  @see Interrupt
              */
@@ -451,7 +462,7 @@ namespace Stroika::Foundation::Execution {
              *
              *  \note   only partly implemented and untested
              *
-             *  \req *this != nullptr       { new requirement in v2.0a221 - used to just return }
+             *  \req *this != nullptr
              *
              *  @see Abort
              */
@@ -492,7 +503,7 @@ namespace Stroika::Foundation::Execution {
              *          or make optional if existing WAIT API throws child excpetions. Maybe paraemter in construction
              *          of the thread?
              *
-             *          Decided against always re-throwing because sometimes you just don't care for a given thread what sort of erorrs
+             *          Decided against always re-throwing because sometimes you just don't care for a given thread what sort of errors
              *          it had (maybe cuz you've given up on the larger task).
              *
              *          Decided against encoding that choice in the Thread::New () function (making it a property) and then always doing in WaitForDone () - becaues
@@ -524,7 +535,7 @@ namespace Stroika::Foundation::Execution {
              *
              *  \note ***Cancelation Point***
              *
-             *  \req *this != nullptr       { new requirement in v2.0a221 - used to just return }
+             *  \req *this != nullptr
              */
             nonvirtual void WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const;
 
@@ -540,7 +551,7 @@ namespace Stroika::Foundation::Execution {
              *
              *  \note ***Cancelation Point***
              *
-             *  \req *this != nullptr       { new requirement in v2.0a221 - used to just return }
+             *  \req *this != nullptr
              */
             nonvirtual void WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const;
 
@@ -559,7 +570,7 @@ namespace Stroika::Foundation::Execution {
              *
              *  \note ***Cancelation Point***
              *
-             *  \req *this != nullptr       { new requirement in v2.0a221 - used to just return }
+             *  \req *this != nullptr
              */
             nonvirtual bool WaitForDoneUntilQuietly (Time::DurationSecondsType timeoutAt) const;
 
@@ -576,7 +587,7 @@ namespace Stroika::Foundation::Execution {
              *
              *  \note ***Cancelation Point***
              *
-             *  \req *this != nullptr       { new requirement in v2.0a221 - used to just return }
+             *  \req *this != nullptr
              */
             nonvirtual void AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const;
 
@@ -606,7 +617,7 @@ namespace Stroika::Foundation::Execution {
              *  @see WaitForDoneUntil ()
              *  @see AbortAndWaitForDone ()
              *
-             *  \req *this != nullptr       { new requirement in v2.0a221 - used to just return }
+             *  \req *this != nullptr
              */
             nonvirtual void AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt) const;
 
@@ -637,7 +648,7 @@ namespace Stroika::Foundation::Execution {
              *
              *  \note   ***Cancelation Point***
              *
-             *  \req *this != nullptr       { new requirement in v2.0a221 - used to just return }
+             *  \req *this != nullptr
              */
             nonvirtual void WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout = Time::kInfinite) const;
 #endif
@@ -974,7 +985,15 @@ namespace Stroika::Foundation::Execution {
         class SuppressInterruptionInContext;
 
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
-        struct Statistics;
+        /**
+         */
+        struct Statistics {
+            /**
+             *  These are the thread objects in the status 'running'. It doesn't count ones that exist,
+             *  or Thread objects (which could be null or completed)
+             */
+            Traversal::Iterable<IDType> fRunningThreads;
+        };
 
         /**
          *  This does not return statistics about this thread (its a static method) - but about all thread allocations (through
@@ -1050,17 +1069,6 @@ namespace Stroika::Foundation::Execution {
      */
     dont_inline void Yield ();
 
-#if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
-    /**
-     */
-    struct Thread::Statistics {
-        /**
-         *  These are the thread objects in the status 'running'. It doesn't count ones that exist,
-         *  or Thread objects (which could be null or completed)
-         */
-        Traversal::Iterable<IDType> fRunningThreads;
-    };
-#endif
 }
 
 namespace Stroika::Foundation::Characters {
