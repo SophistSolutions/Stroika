@@ -1141,11 +1141,15 @@ void Thread::WaitForDoneUntil (const Traversal::Iterable<Thread::Ptr>& threads, 
 }
 
 #if qPlatform_POSIX
+namespace {
+    SignalID sSignalUsedForThreadInterrupt_ = SIGUSR2;
+}
+SignalID Thread::SignalUsedForThreadInterrupt () noexcept
+{
+    return sSignalUsedForThreadInterrupt_;
+}
 SignalID Thread::SignalUsedForThreadInterrupt (optional<SignalID> signalNumber)
 {
-#if qPlatform_POSIX
-    static SignalID sSignalUsedForThreadInterrupt_ = SIGUSR2;
-#endif
     SignalID result = sSignalUsedForThreadInterrupt_;
     if (signalNumber) {
         [[maybe_unused]] auto&& critSec = lock_guard{sHandlerInstalled_};
