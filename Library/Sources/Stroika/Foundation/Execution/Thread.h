@@ -310,12 +310,6 @@ namespace Stroika::Foundation::Execution {
         static Ptr New (const function<void ()>& fun2CallOnce, const optional<Configuration>& configuration);
         static Ptr New (const function<void ()>& fun2CallOnce, AutoStartFlag, const optional<Characters::String>& name = nullopt, const optional<Configuration>& configuration = nullopt);
         static Ptr New (const function<void ()>& fun2CallOnce, AutoStartFlag, const optional<Configuration>& configuration);
-#if 0
-        template <typename FUNCTION>
-        static Ptr New (FUNCTION f, const optional<Characters::String>& name = nullopt, const optional<Configuration>& configuration = nullopt, enable_if_t<is_function_v<FUNCTION>>* = nullptr);
-        template <typename FUNCTION>
-        static Ptr New (FUNCTION f, AutoStartFlag, const optional<Characters::String>& name = nullopt, const optional<Configuration>& configuration = nullopt, enable_if_t<is_function_v<FUNCTION>>* = nullptr);
-#endif
 
     public:
         /**
