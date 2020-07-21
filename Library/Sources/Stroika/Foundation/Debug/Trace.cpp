@@ -193,18 +193,8 @@ Debug::Private_::TraceModuleData_::~TraceModuleData_ ()
 }
 
 namespace {
-    inline recursive_mutex& GetCritSection_ ()
+    inline recursive_mutex& GetEmitCritSection_ ()
     {
-// obsolete comment because as of 2014-01-31 (or earlier) we are acutallly deleting this. But we do have
-// some race where we sometimes - rarely - trigger this error. So we may need to re-instate that leak!!!
-// and this comment!!!
-//  --LGP 2014-02-01
-#if 0
-        // this is a 'false' or 'apparent' memory leak, but we allocate the object this way because in C++ things
-        // can be destroyed in any order, (across OBJs), and though this gets destroyed late, its still possible
-        // someone might do a trace message.
-        //      -- LGP 2008-12-21
-#endif
         EnsureNotNull (sEmitTraceCritSec_);
         return *sEmitTraceCritSec_;
     }
@@ -348,7 +338,7 @@ Emitter::TraceLastBufferedWriteTokenType Emitter::EmitTraceMessage (size_t buffe
 template <typename CHARTYPE>
 Emitter::TraceLastBufferedWriteTokenType Emitter::DoEmitMessage_ (size_t bufferLastNChars, const CHARTYPE* s, const CHARTYPE* e)
 {
-    [[maybe_unused]] auto&& critSec = lock_guard{GetCritSection_ ()};
+    [[maybe_unused]] auto&& critSec = lock_guard{GetEmitCritSection_ ()};
     FlushBufferedCharacters_ ();
     Time::DurationSecondsType curRelativeTime = Time::GetTickCount ();
     {
@@ -432,7 +422,7 @@ void Emitter::FlushBufferedCharacters_ ()
 
 bool Emitter::UnputBufferedCharactersForMatchingToken (TraceLastBufferedWriteTokenType token)
 {
-    [[maybe_unused]] auto&& critSec = lock_guard{GetCritSection_ ()};
+    [[maybe_unused]] auto&& critSec = lock_guard{GetEmitCritSection_ ()};
     // If the fLastNCharBuf_Token_ matches (no new tokens written since the saved one) and the time
     // hasn't been too long (we currently write 1/100th second timestamp resolution).
     // then blank unput (ignore) buffered characters, and return true so caller knows to write
@@ -573,7 +563,7 @@ TraceContextBumper::~TraceContextBumper ()
 {
     DecrCount_ ();
     if (fDoEndMarker) {
-        [[maybe_unused]] auto&& critSec = lock_guard{GetCritSection_ ()};
+        [[maybe_unused]] auto&& critSec = lock_guard{GetEmitCritSection_ ()};
         if (Emitter::Get ().UnputBufferedCharactersForMatchingToken (fLastWriteToken_)) {
             Emitter::Get ().EmitUnadornedText ("/>");
             Emitter::Get ().EmitUnadornedText (GetEOL<char> ());
