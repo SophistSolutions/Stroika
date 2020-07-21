@@ -36,10 +36,7 @@ using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Characters;
 using namespace Containers;
-
-using Execution::Synchronized;
-using Execution::Thread;
-using Execution::WaitableEvent;
+using namespace Execution;
 
 using namespace TestHarness;
 

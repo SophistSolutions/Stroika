@@ -35,8 +35,6 @@
 
 namespace Stroika::Foundation::Execution {
 
-    class Thread;
-
     /**
      *  ProgressMonitor is the basic interface used for progress tracking. Progress tracking both
      *  measures progress, and supports the notion of canceling. The reason progres and cancelability

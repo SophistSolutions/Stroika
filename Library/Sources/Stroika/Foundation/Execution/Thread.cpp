@@ -519,8 +519,8 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noex
         }
         [[maybe_unused]] auto&& cleanup = Finally (
             [thisThreadID] () noexcept {
-                Thread::SuppressInterruptionInContext suppressThreadInterrupts; // may not be needed, but safer/harmless
-                Require (not sKnownBadBeforeMainOrAfterMain_);                  // Note: A crash in this code is FREQUENTLY the result of an attempt to destroy a thread after existing main () has started
+                SuppressInterruptionInContext suppressThreadInterrupts; // may not be needed, but safer/harmless
+                Require (not sKnownBadBeforeMainOrAfterMain_);          // Note: A crash in this code is FREQUENTLY the result of an attempt to destroy a thread after existing main () has started
                 [[maybe_unused]] auto&& critSec = lock_guard{sThreadSupportStatsMutex_};
                 DbgTrace (L"removing thread id %s from sRunningThreads_ (%s)", Characters::ToString (thisThreadID).c_str (), Characters::ToString (sRunningThreads_).c_str ());
                 Verify (sRunningThreads_.erase (thisThreadID) == 1); // verify exactly one erased
@@ -733,7 +733,7 @@ void Thread::Ptr::Rep_::InterruptionSignalHandler_ (SignalID signal) noexcept
 void CALLBACK Thread::Ptr::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParameter)
 {
     TraceContextBumper ctx{"Thread::Ptr::Rep_::CalledInRepThreadAbortProc_"};
-    [[maybe_unused]] Thread::Ptr::Rep_* rep = reinterpret_cast<Thread::Ptr::Rep_*> (lpParameter);
+    [[maybe_unused]] Ptr::Rep_* rep = reinterpret_cast<Ptr::Rep_*> (lpParameter);
     Require (GetCurrentThreadID () == rep->GetID ());
     if (rep->fThrowInterruptExceptionInsideUserAPC_)
         [[UNLIKELY_ATTR]]
@@ -1001,7 +1001,7 @@ void Thread::Ptr::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType tim
     }
     DurationSecondsType timeoutAt = Time::GetTickCount () + timeout;
     // CRUDDY impl - but decent enuf for first draft
-    while (GetStatus () != Thread::Status::eCompleted) {
+    while (GetStatus () != Status::eCompleted) {
         DurationSecondsType time2Wait = timeoutAt - Time::GetTickCount ();
         if (time2Wait <= 0) {
             Throw (TimeOutException::kThe);
@@ -1057,7 +1057,7 @@ Thread::CleanupPtr::~CleanupPtr ()
  */
 Thread::Ptr Thread::New (const function<void ()>& fun2CallOnce, const optional<Characters::String>& name, const optional<Configuration>& configuration)
 {
-    Thread::Ptr ptr = Ptr{make_shared<Ptr::Rep_> (fun2CallOnce, CombineCFGs_ (configuration))};
+    Ptr ptr = Ptr{make_shared<Ptr::Rep_> (fun2CallOnce, CombineCFGs_ (configuration))};
     if (name) {
         ptr.SetThreadName (*name);
     }
@@ -1078,40 +1078,40 @@ void Thread::SetDefaultConfiguration (const Configuration& config)
 Thread::Statistics Thread::GetStatistics ()
 {
     [[maybe_unused]] auto&& critSec = lock_guard{sThreadSupportStatsMutex_};
-    return Statistics{Containers::Set<Thread::IDType>{sRunningThreads_}};
+    return Statistics{Containers::Set<IDType>{sRunningThreads_}};
 }
 #endif
 
-void Thread::Abort (const Traversal::Iterable<Thread::Ptr>& threads)
+void Thread::Abort (const Traversal::Iterable<Ptr>& threads)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Abort", L"threads=%s", Characters::ToString (threads).c_str ())};
 #endif
-    threads.Apply ([] (Thread::Ptr t) { t.Abort (); });
+    threads.Apply ([] (Ptr t) { t.Abort (); });
 }
 
-void Thread::Interrupt (const Traversal::Iterable<Thread::Ptr>& threads)
+void Thread::Interrupt (const Traversal::Iterable<Ptr>& threads)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Interrupt", L"threads=%s", Characters::ToString (threads).c_str ())};
 #endif
-    threads.Apply ([] (Thread::Ptr t) { t.Interrupt (); });
+    threads.Apply ([] (Ptr t) { t.Interrupt (); });
 }
 
-void Thread::AbortAndWaitForDoneUntil (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeoutAt)
+void Thread::AbortAndWaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, Time::DurationSecondsType timeoutAt)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::AbortAndWaitForDoneUntil", L"threads=%s, timeoutAt=%f", Characters::ToString (threads).c_str (), timeoutAt)};
 #endif
-    threads.Apply ([] (const Thread::Ptr& t) { t.Abort (); }); // preflight not needed, but encourages less wait time if each given a short at abort first
-#if 1                                                          /*qDefaultTracingOn*/
+    threads.Apply ([] (const Ptr& t) { t.Abort (); }); // preflight not needed, but encourages less wait time if each given a short at abort first
+#if 1                                                  /*qDefaultTracingOn*/
     {
         constexpr Time::DurationSecondsType kTimeBetweenDbgTraceWarnings_{5.0};
         Time::DurationSecondsType           timeOfLastWarning = Time::GetTickCount ();
         Time::DurationSecondsType           timeOfLastAborts  = timeOfLastWarning;
-        Set<Thread::Ptr>                    threads2WaitOn{threads};
+        Set<Ptr>                            threads2WaitOn{threads};
         while (not threads2WaitOn.empty ()) {
-            for (Traversal::Iterator<Thread::Ptr> i = threads2WaitOn.begin (); i != threads2WaitOn.end (); ++i) {
+            for (Traversal::Iterator<Ptr> i = threads2WaitOn.begin (); i != threads2WaitOn.end (); ++i) {
                 constexpr Time::DurationSecondsType kMinWaitThreshold_ = min (kTimeBetweenDbgTraceWarnings_, kAbortAndWaitForDoneUntil_TimeBetweenAborts_);
                 Time::DurationSecondsType           to                 = min (Time::GetTickCount () + kMinWaitThreshold_, timeoutAt);
                 if (i->WaitForDoneUntilQuietly (to)) {
@@ -1122,22 +1122,22 @@ void Thread::AbortAndWaitForDoneUntil (const Traversal::Iterable<Thread::Ptr>& t
                 DbgTrace (L"still waiting for %s - re-sending aborts", Characters::ToString (threads2WaitOn).c_str ());
             }
             if (not threads2WaitOn.empty () and timeOfLastAborts + kAbortAndWaitForDoneUntil_TimeBetweenAborts_ < Time::GetTickCount ()) {
-                threads2WaitOn.Apply ([] (Thread::Ptr t) { t.Abort (); }); // preflight not needed, but encourages less wait time if each given a short at abort first
+                threads2WaitOn.Apply ([] (Ptr t) { t.Abort (); }); // preflight not needed, but encourages less wait time if each given a short at abort first
             }
         }
     }
 #else
-    threads.Apply ([timeoutAt] (Thread::Ptr t) { t.AbortAndWaitForDoneUntil (timeoutAt); });
+    threads.Apply ([timeoutAt] (Ptr t) { t.AbortAndWaitForDoneUntil (timeoutAt); });
 #endif
 }
 
-void Thread::WaitForDoneUntil (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeoutAt)
+void Thread::WaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, Time::DurationSecondsType timeoutAt)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::WaitForDoneUntil", L"threads=%s, timeoutAt=%f", Characters::ToString (threads).c_str (), timeoutAt)};
 #endif
     CheckForThreadInterruption (); // always a cancelation point (even if empty list)
-    threads.Apply ([timeoutAt] (const Thread::Ptr& t) { t.WaitForDoneUntil (timeoutAt); });
+    threads.Apply ([timeoutAt] (const Ptr& t) { t.WaitForDoneUntil (timeoutAt); });
 }
 
 #if qPlatform_POSIX

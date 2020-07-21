@@ -47,10 +47,10 @@ namespace Stroika::Foundation::Execution {
         nonvirtual void Start ();
 
     public:
-        nonvirtual Thread::IDType GetID () const;
+        nonvirtual IDType GetID () const;
 
     public:
-        nonvirtual Thread::NativeHandleType GetNativeHandle ();
+        nonvirtual NativeHandleType GetNativeHandle ();
 
     public:
         nonvirtual Characters::String ToString () const;
@@ -103,7 +103,7 @@ namespace Stroika::Foundation::Execution {
 #endif
 
     private:
-        friend class Thread;
+        friend class Ptr;
     };
 
     /*
@@ -156,7 +156,7 @@ namespace Stroika::Foundation::Execution {
         if (fRep_ == nullptr)
             [[UNLIKELY_ATTR]]
             {
-                return Thread::IDType{};
+                return IDType{};
             }
         return fRep_->GetID ();
     }
@@ -166,7 +166,7 @@ namespace Stroika::Foundation::Execution {
         if (fRep_ == nullptr)
             [[UNLIKELY_ATTR]]
             {
-                return Thread::NativeHandleType{};
+                return NativeHandleType{};
             }
         return fRep_->GetNativeHandle ();
     }
@@ -320,40 +320,25 @@ namespace Stroika::Foundation::Execution {
     }
     inline Thread::Ptr Thread::New (const function<void ()>& fun2CallOnce, AutoStartFlag, const optional<Configuration>& configuration)
     {
-        Thread::Ptr ptr = Thread::New (fun2CallOnce, nullopt, configuration);
+        Ptr ptr = New (fun2CallOnce, nullopt, configuration);
         ptr.Start ();
         return ptr;
     }
     inline Thread::Ptr Thread::New (const function<void ()>& fun2CallOnce, AutoStartFlag, const optional<Characters::String>& name, const optional<Configuration>& configuration)
     {
-        Thread::Ptr ptr = Thread::New (fun2CallOnce, name, configuration);
+        Ptr ptr = New (fun2CallOnce, name, configuration);
         ptr.Start ();
         return ptr;
     }
-
-#if 0
-    template <typename FUNCTION>
-    inline Thread::Ptr Thread::New (FUNCTION f, const optional<Characters::String>& name, const optional<Configuration>& configuration, enable_if_t<is_function_v<FUNCTION>>*)
-    {
-        return New (function<void()> (f), name, configuration);
-    }
-    template <typename FUNCTION>
-    inline Thread::Ptr Thread::New (FUNCTION f, AutoStartFlag flag, const optional<Characters::String>& name, const optional<Configuration>& configuration, enable_if_t<is_function_v<FUNCTION>>*)
-    {
-        Thread::Ptr ptr = Thread::New (f, name, configuration);
-        ptr.Start ();
-        return ptr;
-    }
-#endif
-    inline void Thread::AbortAndWaitForDone (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeout)
+    inline void Thread::AbortAndWaitForDone (const Traversal::Iterable<Ptr>& threads, Time::DurationSecondsType timeout)
     {
         AbortAndWaitForDoneUntil (threads, timeout + Time::GetTickCount ());
     }
-    inline void Thread::Start (const Traversal::Iterable<Thread::Ptr>& threads)
+    inline void Thread::Start (const Traversal::Iterable<Ptr>& threads)
     {
-        threads.Apply ([] (const Thread::Ptr& p) { p.Start (); });
+        threads.Apply ([] (const Ptr& p) { p.Start (); });
     }
-    inline void Thread::WaitForDone (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeout)
+    inline void Thread::WaitForDone (const Traversal::Iterable<Ptr>& threads, Time::DurationSecondsType timeout)
     {
         WaitForDoneUntil (threads, timeout + Time::GetTickCount ());
     }

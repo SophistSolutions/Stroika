@@ -23,20 +23,10 @@
 #include "../TestHarness/TestHarness.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Execution;
 
 using Characters::String;
 using Containers::Sequence;
-using Execution::BlockingQueue;
-using Execution::Finally;
-using Execution::RWSynchronized;
-#if qHasFeature_boost
-using Execution::UpgradableRWSynchronized;
-#endif
-using Execution::SpinLock;
-using Execution::Synchronized;
-using Execution::Thread;
-using Execution::ThreadPool;
-using Execution::WaitableEvent;
 
 namespace {
     void RegressionTest1_ ()
