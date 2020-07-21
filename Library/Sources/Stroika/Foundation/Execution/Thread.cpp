@@ -754,7 +754,7 @@ namespace {
 namespace {
     Thread::Configuration CombineCFGs_ (const optional<Thread::Configuration>& cfg)
     {
-        Thread::Configuration result = Thread::GetDefaultConfiguration ();
+        Thread::Configuration result = Thread::DefaultConfiguration ();
         if (cfg) {
             if (cfg->fStackSize) {
                 result.fStackSize = *cfg->fStackSize;

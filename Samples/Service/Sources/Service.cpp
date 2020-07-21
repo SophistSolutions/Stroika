@@ -6,7 +6,6 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "Stroika/Foundation/Characters/String_Constant.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
@@ -22,9 +21,8 @@ using namespace std;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Frameworks::Service;
-
-using Execution::Thread;
 
 using namespace Samples::Service;
 

@@ -77,7 +77,7 @@ namespace {
                       filesystem::create_directories (fileName.parent_path ());
                       return fileName;
                   }}
-            , fActualCurrentConfigData_ (fOptionsFile_.Read<Options_> (Options_{}))
+            , fActualCurrentConfigData_{fOptionsFile_.Read<Options_> (Options_{})}
         {
             Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
         }

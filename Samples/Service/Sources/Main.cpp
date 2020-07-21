@@ -6,7 +6,6 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "Stroika/Foundation/Characters/String_Constant.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Debug/Fatal.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
@@ -43,13 +42,10 @@
 using namespace std;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Frameworks::Service;
 
-using Characters::String_Constant;
 using Containers::Sequence;
-using Execution::SignalHandler;
-using Execution::SignalHandlerRegistry;
-using Execution::Thread;
 
 #if qUseLogger
 #include "Stroika/Foundation/Debug/BackTrace.h"
