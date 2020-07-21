@@ -349,7 +349,7 @@ namespace {
                 threadIndex2Show = i->second;
             }
             if (threadID == sMainThread_) {
-                static string kMAIN_{"main"sv};
+                static string kMAIN_{"MAIN"sv};
                 return pair<bool, string>{i == sShownThreadIDs_.end (), kMAIN_};
             }
             (void)snprintf (buf, NEltsOf (buf), "%.*d", sMinWidth_, threadIndex2Show);
