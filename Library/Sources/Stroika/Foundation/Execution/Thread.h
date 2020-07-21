@@ -1008,8 +1008,8 @@ namespace Stroika::Foundation::Execution {
          *  If argument given, this resets the signalNumber.
          *  Either way, this returns the previous value.
          */
-        static SignalID SignalUsedForThreadInterrupt () noexcept;
-        static SignalID SignalUsedForThreadInterrupt (optional<SignalID> signalNumber);
+        SignalID SignalUsedForThreadInterrupt () noexcept;
+        SignalID SignalUsedForThreadInterrupt (optional<SignalID> signalNumber);
 
         /**
          */
