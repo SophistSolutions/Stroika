@@ -1004,6 +1004,14 @@ namespace Stroika::Foundation::Execution {
 
 #if qPlatform_POSIX
         /**
+         *  Unsafe to change this while threads running - at least if you could be interupting threads during this time.
+         *  If argument given, this resets the signalNumber.
+         *  Either way, this returns the previous value.
+         */
+        static SignalID SignalUsedForThreadInterrupt () noexcept;
+        static SignalID SignalUsedForThreadInterrupt (optional<SignalID> signalNumber);
+
+        /**
          */
         [[deprecated ("Since Stroika v2.1 use SignalUsedForThreadInterrupt")]] static SignalID GetSignalUsedForThreadInterrupt ()
         {
@@ -1017,14 +1025,6 @@ namespace Stroika::Foundation::Execution {
         {
             (void)SignalUsedForThreadInterrupt (signalNumber);
         }
-
-        /**
-         *  Unsafe to change this while threads running - at least if you could be interupting threads during this time.
-         *  If argument given, this resets the signalNumber.
-         *  Either way, this returns the previous value.
-         */
-        static SignalID SignalUsedForThreadInterrupt () noexcept;
-        static SignalID SignalUsedForThreadInterrupt (optional<SignalID> signalNumber);
 #endif
     };
 
