@@ -72,6 +72,17 @@ namespace Stroika::Foundation::Debug {
     }
 
     /**
+     * \brief if true, emit a much shorter thread ID, making - I suspect (testing) for terser and clearer tracelogs. 
+     *        Only downside is that you must find first occurence of that index to find real threadId, and use that in waits, etc.
+     *
+     *  This is defined as a #define, so you can turn it off when building Stroika. I'm unsure if the showing of thread indexes
+     *  helps readability of the tracelog, but I think it does.
+     */
+#ifndef qStroika_Foundation_Debug_Trace_ShowThreadIndex
+#define qStroika_Foundation_Debug_Trace_ShowThreadIndex 1
+#endif
+
+    /**
      *  Emitter is not meant to be used directly - but can be. Mostly users are expected to
      *  use DbgTrace () or TraceContextBumper.
      */

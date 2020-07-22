@@ -327,7 +327,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \see    Thread::CleanupPtr
          *
-         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-Letter-Internally-Synchronized/a>
+         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-Letter-Internally-Synchronized</a>
          */
         class Ptr : private Debug::AssertExternallySynchronizedLock {
         private:
@@ -839,6 +839,30 @@ namespace Stroika::Foundation::Execution {
              *      o   Avoids issue with re-throwing while constructing one
              */
             static const AbortException kThe;
+        };
+
+        /**
+         *  Thread IDs tend to be long and not easy to read in trace output. This utility class just maps these long
+         *  ids to a short index. Again - ONLY for easier / brevity in logging. But a common registry is maintained here
+         *  to allow all the logging across Stroika to use the same shortened IDs.
+         *
+         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+         */
+        class IndexRegistrar {
+        protected:
+            IndexRegistrar () = default;
+
+        public:
+            IndexRegistrar (const IndexRegistrar&) = delete;
+            IndexRegistrar& operator= (const IndexRegistrar&) = delete;
+
+        public:
+            /**
+             */
+            nonvirtual unsigned int GetIndex (const Thread::IDType& threadID, bool* wasNew = nullptr);
+
+        public:
+            static IndexRegistrar& Get ();
         };
 
         /**

@@ -238,6 +238,37 @@ const Thread::AbortException Thread::AbortException::kThe;
 
 /*
  ********************************************************************************
+ ************************** Thread::IndexRegistrar ******************************
+ ********************************************************************************
+ */
+unsigned int Thread::IndexRegistrar::GetIndex (const Thread::IDType& threadID, bool* wasNew)
+{
+    static mutex                             sMutex_;
+    static map<Thread::IDType, unsigned int> sShownThreadIDs_;
+    [[maybe_unused]] auto&&                  critSec          = lock_guard{sMutex_};
+    auto                                     i                = sShownThreadIDs_.find (threadID);
+    unsigned int                             threadIndex2Show = 0;
+    if (i == sShownThreadIDs_.end ()) {
+        threadIndex2Show = static_cast<unsigned int> (sShownThreadIDs_.size ());
+        sShownThreadIDs_.insert (pair<Thread::IDType, unsigned int>{threadID, threadIndex2Show});
+    }
+    else {
+        threadIndex2Show = i->second;
+    }
+    if (wasNew != nullptr) {
+        *wasNew = i == sShownThreadIDs_.end ();
+    }
+    return threadIndex2Show;
+}
+
+Thread::IndexRegistrar& Thread::IndexRegistrar::Get ()
+{
+    static IndexRegistrar sThe_;
+    return sThe_;
+}
+
+/*
+ ********************************************************************************
  **************************** Characters::ToString ******************************
  ********************************************************************************
  */
@@ -343,6 +374,9 @@ Characters::String Thread::Ptr::Rep_::ToString () const
     StringBuilder sb;
     sb += L"{";
     sb += L"id: " + Characters::ToString (GetID ()) + L", ";
+    if (qStroika_Foundation_Debug_Trace_ShowThreadIndex) {
+        sb += L"index: " + Characters::ToString (IndexRegistrar::Get ().GetIndex (GetID ()));
+    }
     if (not fThreadName_.empty ()) {
         sb += L"name: '" + fThreadName_ + L"', ";
     }
