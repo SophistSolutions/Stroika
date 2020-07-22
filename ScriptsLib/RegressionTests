@@ -412,25 +412,25 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 	echo "<Running SAMPLE_APP basic tests>" >>$TEST_OUT_FILE 2>&1
 		for cfg in ${LOCAL_CONFIGS} ; do
 			RUN_PREFIX=`ScriptsLib/GetConfigurationParameter $cfg RUN_PREFIX`
-			if [ "${RUN_PREFIX}" = "" ] ; then
-				EXE_RUN_="Builds/${cfg}/${app}"
-			else
-				EXE_RUN_="${RUN_PREFIX} Builds/${cfg}/${app}"
-			fi
 			for app in "${SAMPLE_APPS_2_TEST[@]}" ; do
-				echo -n "  $EXE_RUN_ ..."
+				if [ "${RUN_PREFIX}" = "" ] ; then
+					EXE_RUN_="Builds/${cfg}/${app}"
+				else
+					EXE_RUN_="${RUN_PREFIX} Builds/${cfg}/${app}"
+				fi
+				#echo -n "  $EXE_RUN_ ..."
 				echo -n "  $PREFIX_OUT_LABEL" "$EXE_RUN_..." >>$TEST_OUT_FILE 2>&1
 				STAGE_STARTAT_INT=$(date +%s)
 				tmpfile=$(mktemp /tmp/stkregtst.XXXXXX)
-				if eval $EXE_RUN_ >$tmpfile 2>&1  ; then
-					echo -n "SUCCESS..." >>$TEST_OUT_FILE 2>&1
+				if eval "$EXE_RUN_" >$tmpfile 2>&1  ; then
+					echo -n "SUCCESS..." >>$TEST_OUT_FILE
 				else
-					echo "**FAILED**" >>$TEST_OUT_FILE 2>&1
-					cat $tmpfile >>$TEST_OUT_FILE 2>&1
+					echo "**FAILED**" >>$TEST_OUT_FILE
+					cat $tmpfile >>$TEST_OUT_FILE
 				fi
 				rm -f $tmpfile
 				STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
-				echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
+				#echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
 				echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
 			done;
 		done; 
