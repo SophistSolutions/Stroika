@@ -15,7 +15,7 @@ namespace Stroika::Foundation::Execution {
 
     //redeclare to avoid having to #include Thread.h
     namespace Thread {
-        void CheckForThreadInterruption ();
+        void CheckForInterruption ();
     }
 
     /*
@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Execution {
         if (Time::GetTickCount () > afterTickCount) {
             Throw (exception2Throw);
         }
-        Thread::CheckForThreadInterruption ();
+        Thread::CheckForInterruption ();
     }
     inline void ThrowTimeoutExceptionAfter (Time::DurationSecondsType afterTickCount)
     {

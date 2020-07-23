@@ -348,7 +348,7 @@ namespace Stroika::Foundation::Execution {
     /**
      *  \brief Handle UNIX EINTR system call behavior - fairly transparently - just effectively removes them from the set of errors that can be returned
      *
-     *  Run the given (argument) call. After each call, invoke Thread::CheckForThreadInterruption ().
+     *  Run the given (argument) call. After each call, invoke Thread::CheckForInterruption ().
      *  If the call returns < 0 and errno == EINTR, repeat the call.
      *  If the result was < 0, but errno != EINTR, then ThrowErrNoIfNegative ();
      *  Then return the result.

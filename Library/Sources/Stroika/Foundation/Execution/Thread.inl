@@ -359,18 +359,18 @@ namespace Stroika::Foundation::Execution {
 
     /*
      ********************************************************************************
-     ********************* Thread::CheckForThreadInterruption ***********************
+     ********************* Thread::CheckForInterruption ***********************
      ********************************************************************************
      */
     template <unsigned int kEveryNTimes>
-    void Thread::CheckForThreadInterruption ()
+    void Thread::CheckForInterruption ()
     {
         // note that it is not important that this be protected/thread safe, since the value is just advisory/hint
         static unsigned int n = 0;
         if (++n % kEveryNTimes == kEveryNTimes - 1)
             [[UNLIKELY_ATTR]]
             {
-                CheckForThreadInterruption ();
+                CheckForInterruption ();
             }
     }
 

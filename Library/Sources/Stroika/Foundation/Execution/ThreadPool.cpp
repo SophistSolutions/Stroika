@@ -349,7 +349,7 @@ void ThreadPool::WaitForTasksDoneUntil (const Iterable<TaskType>& tasks, Time::D
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::WaitForTasksDoneUntil", L"*this=%s, tasks=%s, timeoutAt=%f", ToString ().c_str (), ToString (tasks).c_str (), timeoutAt)};
 #endif
-    Thread::CheckForThreadInterruption ();
+    Thread::CheckForInterruption ();
     for (auto&& task : tasks) {
         auto now = Time::GetTickCount ();
         ThrowTimeoutExceptionAfter (timeoutAt);
@@ -362,7 +362,7 @@ void ThreadPool::WaitForTasksDoneUntil (Time::DurationSecondsType timeoutAt) con
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::WaitForTasksDoneUntil", L"*this=%s, timeoutAt=%f", ToString ().c_str (), timeoutAt)};
 #endif
-    Thread::CheckForThreadInterruption ();
+    Thread::CheckForInterruption ();
     // @todo - use waitableevent - this is a horribly implementation
     while (GetTasksCount () != 0) {
         ThrowTimeoutExceptionAfter (timeoutAt);

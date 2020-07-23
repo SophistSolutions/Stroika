@@ -136,7 +136,7 @@ public:
                 Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::Signals::{}::fBlockingQueueDelegatorThread_");
                 while (true) {
                     Debug::TraceContextBumper trcCtx1 ("Waiting for next safe signal");
-                    Thread::CheckForThreadInterruption ();
+                    Thread::CheckForInterruption ();
                     waitForNextSig_ ();
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace ("fRecievedSig_ wait complete (either arrival or timeout): fLastSignalRecieved_ = %d", fLastSignalRecieved_.load ());
@@ -538,7 +538,7 @@ Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("thread") void SignalHandlerRegi
      *          #34 0x0000000000485e6e in Stroika::Foundation::Execution::Private_::GetBT_s () at /media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Library/Sources/Stroika/Foundation/Execution/Exceptions.cpp:30
      *          #35 0x00000000004c56a8 in Stroika::Foundation::Execution::Throw<Stroika::Foundation::Execution::Thread::AbortException> (e2Throw=...)
      *              at /media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Library/Sources/Stroika/Foundation/Execution/../Characters/../Memory/../Execution/Exceptions.inl:40
-     *          #36 0x00000000004c2afc in Stroika::Foundation::Execution::CheckForThreadInterruption () at /media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Library/Sources/Stroika/Foundation/Execution/Thread.cpp:993
+     *          #36 0x00000000004c2afc in Stroika::Foundation::Execution::CheckForInterruption () at /media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Library/Sources/Stroika/Foundation/Execution/Thread.cpp:993
      *          #37 0x00000000004f036c in Stroika::Foundation::Execution::WaitableEvent::WE_::WaitUntilQuietly (this=0x7ffe1997bf80, timeoutAt=1.7976931348623157e+308)
      *              at /media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Library/Sources/Stroika/Foundation/Execution/WaitableEvent.cpp:83
      *          #38 0x00000000004f02bd in Stroika::Foundation::Execution::WaitableEvent::WE_::WaitUntil (this=0x7ffe1997bf80, timeoutAt=1.7976931348623157e+308)

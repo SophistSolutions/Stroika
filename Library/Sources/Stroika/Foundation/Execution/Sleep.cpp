@@ -18,7 +18,7 @@ using namespace Stroika::Foundation::Execution;
 void Execution::Sleep (Time::DurationSecondsType seconds2Wait)
 {
     Require (seconds2Wait >= 0.0);
-    Thread::CheckForThreadInterruption ();
+    Thread::CheckForInterruption ();
     Time::DurationSecondsType timeRemaining = seconds2Wait;
     while (timeRemaining > 0) {
         Sleep (timeRemaining, &timeRemaining);

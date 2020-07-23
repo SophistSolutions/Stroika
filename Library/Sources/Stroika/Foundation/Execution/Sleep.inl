@@ -24,7 +24,7 @@ namespace Stroika::Foundation::Execution {
 
     //redeclare to avoid having to include Thread code
     namespace Thread {
-        void CheckForThreadInterruption ();
+        void CheckForInterruption ();
     }
 
     /*
@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Execution {
     {
         Require (seconds2Wait >= 0.0);
         RequireNotNull (remainingInSleep); // else call the one-argument overload
-        Thread::CheckForThreadInterruption ();
+        Thread::CheckForInterruption ();
         // @todo lose if the #if stuff and use just if constexpr (but not working on msvc - complains about nanosleep undefined)
 #if qPlatform_POSIX
         if constexpr (qPlatform_POSIX) {
@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Execution {
 #endif
         Ensure (*remainingInSleep <= seconds2Wait);
         Ensure (*remainingInSleep >= 0);
-        Thread::CheckForThreadInterruption ();
+        Thread::CheckForInterruption ();
     }
 
     /*
@@ -100,7 +100,7 @@ namespace Stroika::Foundation::Execution {
     {
         Time::DurationSecondsType waitMoreSeconds = untilTickCount - Time::GetTickCount ();
         if (waitMoreSeconds <= 0) {
-            Thread::CheckForThreadInterruption ();
+            Thread::CheckForInterruption ();
         }
         else {
             Sleep (waitMoreSeconds);

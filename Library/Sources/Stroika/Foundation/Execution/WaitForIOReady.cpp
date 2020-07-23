@@ -137,7 +137,7 @@ const WaitForIOReady_Base::TypeOfMonitorSet WaitForIOReady_Base::kDefaultTypeOfM
 auto WaitForIOReady_Base::_WaitQuietlyUntil (const pair<SDKPollableType, TypeOfMonitorSet>* start, const pair<SDKPollableType, TypeOfMonitorSet>* end, Time::DurationSecondsType timeoutAt) -> Containers::Set<size_t>
 {
     DurationSecondsType time2Wait = Math::AtLeast<Time::DurationSecondsType> (timeoutAt - Time::GetTickCount (), 0);
-    Thread::CheckForThreadInterruption ();
+    Thread::CheckForInterruption ();
     SmallStackBuffer<pollfd> pollData;
     {
         pollData.GrowToSize_uninitialized (end - start);
@@ -174,7 +174,7 @@ auto WaitForIOReady_Base::_WaitQuietlyUntil (const pair<SDKPollableType, TypeOfM
 #if qPlatform_Windows
 #if qStroika_Foundation_Exececution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks > 0
     while (true) {
-        Thread::CheckForThreadInterruption ();
+        Thread::CheckForInterruption ();
         DurationSecondsType timeLeft2Wait                 = Math::AtLeast<Time::DurationSecondsType> (timeoutAt - Time::GetTickCount (), 0);
         DurationSecondsType time2WaitThisLoop             = Math::AtLeast<Time::DurationSecondsType> (Math::AtMost<Time::DurationSecondsType> (timeLeft2Wait, qStroika_Foundation_Exececution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks / 1000.0), 0);
         int                 time2WaitMillisecondsThisLoop = static_cast<int> (time2WaitThisLoop * 1000);

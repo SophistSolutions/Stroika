@@ -699,9 +699,9 @@ void Thread::Ptr::Rep_::NotifyOfInterruptionFromAnyThread_ (bool aborting)
 
     if (GetCurrentThreadID () == GetID ()) {
         Assert (fTLSInterruptFlag_ == &t_Interrupting_);
-        // NOTE - using CheckForThreadInterruption uses TLS t_Interrupting_ instead of fStatus
+        // NOTE - using CheckForInterruption uses TLS t_Interrupting_ instead of fStatus
         //      --LGP 2015-02-26
-        CheckForThreadInterruption (); // unless suppressed, this will throw
+        CheckForInterruption (); // unless suppressed, this will throw
     }
     // Note we fall through here either if we have throws suppressed, or if sending to another thread
 
@@ -771,7 +771,7 @@ void CALLBACK Thread::Ptr::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParame
     if (rep->fThrowInterruptExceptionInsideUserAPC_)
         [[UNLIKELY_ATTR]]
         {
-            CheckForThreadInterruption ();
+            CheckForInterruption ();
         }
 }
 #endif
@@ -1000,7 +1000,7 @@ bool Thread::Ptr::WaitForDoneUntilQuietly (Time::DurationSecondsType timeoutAt) 
 #endif
     Require (*this != nullptr);
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    CheckForThreadInterruption (); // always a cancelation point
+    CheckForInterruption (); // always a cancelation point
     if (fRep_->fThreadDoneAndCanJoin_.WaitUntilQuietly (timeoutAt) == WaitableEvent::kWaitQuietlySetResult) {
         /*
          *  This is not critical, but has the effect of assuring the COUNT of existing threads is what the caller would expect.
@@ -1027,7 +1027,7 @@ void Thread::Ptr::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType tim
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     Require (*this != nullptr);
-    CheckForThreadInterruption ();
+    CheckForInterruption ();
     HANDLE thread = fRep_->GetNativeHandle ();
     if (thread == INVALID_HANDLE_VALUE) {
         return;
@@ -1173,7 +1173,7 @@ void Thread::WaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, Time::Du
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::WaitForDoneUntil", L"threads=%s, timeoutAt=%f", Characters::ToString (threads).c_str (), timeoutAt)};
 #endif
-    CheckForThreadInterruption (); // always a cancelation point (even if empty list)
+    CheckForInterruption (); // always a cancelation point (even if empty list)
     threads.Apply ([timeoutAt] (const Ptr& t) { t.WaitForDoneUntil (timeoutAt); });
 }
 
@@ -1265,10 +1265,10 @@ string Execution::Thread::FormatThreadID_A (Thread::IDType threadID, const Forma
 
 /*
  ********************************************************************************
- ********************* Execution::Thread::CheckForThreadInterruption ************
+ ********************* Execution::Thread::CheckForInterruption ************
  ********************************************************************************
  */
-void Execution::Thread::CheckForThreadInterruption ()
+void Execution::Thread::CheckForInterruption ()
 {
     /*
      *  NOTE: subtle but important that we use static Thread::InterruptException::kThe so we avoid
@@ -1314,7 +1314,7 @@ void Execution::Thread::Yield ()
      *  And this (yeild) happens at a non-time critical point, so though checking before and after is redudnant,
      *  not importantly
      */
-    CheckForThreadInterruption ();
+    CheckForInterruption ();
     this_thread::yield ();
-    CheckForThreadInterruption ();
+    CheckForInterruption ();
 }

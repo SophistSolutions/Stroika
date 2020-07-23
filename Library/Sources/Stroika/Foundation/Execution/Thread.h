@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Execution {
      *  the appropriate exception. 
      *
      *  This mechanism is almost completely co-operative, meaning that user
-     *  code must call CheckForThreadInterruption () in the right places to make interruption work. But Stroika
+     *  code must call CheckForInterruption () in the right places to make interruption work. But Stroika
      *  is structured to make that happen automatically throughout most of its code, but having key routines (like Sleep, and WaitableEvents)
      *  automatically internally be cancelation points.
      *
@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Execution {
      *
      *  Thread interruption/aborting is tricky todo safely and portably. We take a safe, cooperative approach.
      *      (1) We maintain a thread-local-storage variable - saying if this thread has been aborted.
-     *          Sprinkling CheckForThreadInterruption throughout your code - will trigger an InterupptedException () or AbortException ()
+     *          Sprinkling CheckForInterruption throughout your code - will trigger an InterupptedException () or AbortException ()
      *          in that thread context. Note a pointer to that TLS interruption variable is also stored
      *          in the thread 'rep' object, so it can be set (by Thread::Interrupt).
      *
@@ -133,7 +133,7 @@ namespace Stroika::Foundation::Execution {
      *      (3) POSIX ONLY: Signal injection - we send a special (defaults to SIG_USR2) signal to a particular thread.
      *          This triggers an EINTR on most UNIX system calls, which are automatically restarted in most cases
      *          (@see Execution::Handle_ErrNoResultInterruption), but in case of interruption, we call
-     *          CheckForThreadInterruption ()
+     *          CheckForInterruption ()
      *
      *          This allows interrupting UNIX waiting / blocking functions (all of them?).
      *
@@ -165,7 +165,7 @@ namespace Stroika::Foundation::Execution {
      *      when someone calls Thread::Interupt or Thread::Abort() on its thread object.
      *
      *      Roughly, these are subroutines which call 
-     *          CheckForThreadInterruption ()
+     *          CheckForInterruption ()
      *      frequently, internally.
      *
      *      As its crucial to understand this in the API, we document each such function with ***Cancelation Point*** in its doc header.
@@ -174,7 +174,7 @@ namespace Stroika::Foundation::Execution {
      *      Equally important to understand, is when a function guarantees its NOT a cancelation point - which we will document
      *      with ***Not Cancelation Point***, and typically also noexcept. The DbgTrace () calls fall into this category.
      *
-     *      \note An API marked *** Cancelation Point *** will always CheckForThreadInterruption () at least once (or equivilent check)
+     *      \note An API marked *** Cancelation Point *** will always CheckForInterruption () at least once (or equivilent check)
      *            and will never block indefinitely without periodically checking for interruption.
      *
      *  \note   Stroika threads lifetime must NOT extend outside the lifetime of 'main'. That means they cannot
@@ -393,7 +393,7 @@ namespace Stroika::Foundation::Execution {
             /**
              *  CalledInRepThreadAbortProc_ USED TO (until Stroika 2.0a234) - call CheckForThreadInterupption () in most cases. But that appeared to cause some trouble
              *  problably because of Windows library code calling an altertable function without being prepared for it to throw. So we adopted 
-             *  a safer apporach, and just follow all these alertable calls with CheckForThreadInterruption().
+             *  a safer apporach, and just follow all these alertable calls with CheckForInterruption().
              *
              *  However, occasionally you use a library (like gsoap) that makes this difficult, so for those cases, enable this throw from APC feature.
              *
@@ -880,7 +880,7 @@ namespace Stroika::Foundation::Execution {
          *  from a destructor.
          *
          *  Any blocked Interrupt Exceptions will wait til the next cancelation point to be invoked (so call
-         *  CheckForThreadInterruption to force that). The destructor of this suppress (even when count hits zero)
+         *  CheckForInterruption to force that). The destructor of this suppress (even when count hits zero)
          *  will not throw.
          */
         class SuppressInterruptionInContext {
@@ -1077,9 +1077,9 @@ namespace Stroika::Foundation::Execution {
          *
          *  Any call to this routine is a 'cancelation point'.
          */
-        void CheckForThreadInterruption ();
+        void CheckForInterruption ();
         template <unsigned int kEveryNTimes>
-        void CheckForThreadInterruption ();
+        void CheckForInterruption ();
 
         /*
          *  Avoid interference with Windows SDK headers. I hate needless C macros (with short, common names)
@@ -1089,7 +1089,7 @@ namespace Stroika::Foundation::Execution {
 #endif
 
         /**
-         *  \brief calls CheckForThreadInterruption, and std::this_thread::yield ()
+         *  \brief calls CheckForInterruption, and std::this_thread::yield ()
          *
          *  \note   ***Cancelation Point***
          *          To avoid cancelation point, directly call std::this_thread::yield ()
@@ -1102,14 +1102,14 @@ namespace Stroika::Foundation::Execution {
     {
         return Thread::GetCurrentThreadID ();
     }
-    [[deprecated ("Since Stroika v2.1b2 - use Thread::CheckForThreadInterruption()")]] inline void CheckForThreadInterruption ()
+    [[deprecated ("Since Stroika v2.1b2 - use Thread::CheckForInterruption()")]] inline void CheckForThreadInterruption ()
     {
-        Thread::CheckForThreadInterruption ();
+        Thread::CheckForInterruption ();
     }
     template <unsigned int kEveryNTimes>
-    [[deprecated ("Since Stroika v2.1b2 - use Thread::CheckForThreadInterruption()")]] inline void CheckForThreadInterruption ()
+    [[deprecated ("Since Stroika v2.1b2 - use Thread::CheckForInterruption()")]] inline void CheckForThreadInterruption ()
     {
-        Thread::CheckForThreadInterruption<kEveryNTimes> ();
+        Thread::CheckForInterruption<kEveryNTimes> ();
     }
     [[deprecated ("Since Stroika v2.1b2 - use Thread::Yield()")]] inline dont_inline void Yield ()
     {

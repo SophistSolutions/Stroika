@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Execution {
 
     // forward declare for use below....to avoid #include of Thread.h
     namespace Thread {
-        void CheckForThreadInterruption ();
+        void CheckForInterruption ();
     }
 
     /*
@@ -203,7 +203,7 @@ namespace Stroika::Foundation::Execution {
         decltype (call ()) ret; // intentionally uninitialized since alway set at least once before read
         do {
             ret = call ();
-            Execution::Thread::CheckForThreadInterruption ();
+            Execution::Thread::CheckForInterruption ();
         } while (ret < 0 and errno == EINTR);
         return ThrowPOSIXErrNoIfNegative (ret);
     }

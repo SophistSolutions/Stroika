@@ -207,7 +207,7 @@ namespace Stroika::Foundation::Execution {
          *  if this progress object has been canceled, and in if so throw UserCanceledException.
          *
          *  Note - this function does NOT check if the itself thread has been aborted (as that is usually
-         *  taken care of automatically or via CheckForThreadInterruption)
+         *  taken care of automatically or via CheckForInterruption)
          */
         nonvirtual void ThrowIfCanceled ();
 
