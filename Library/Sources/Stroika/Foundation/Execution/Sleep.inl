@@ -35,7 +35,7 @@ namespace Stroika::Foundation::Execution {
     inline void Sleep (Time::DurationSecondsType seconds2Wait, Time::DurationSecondsType* remainingInSleep)
     {
         Require (seconds2Wait >= 0.0);
-        RequireNotNull (remainingInSleep); // else call the over overload
+        RequireNotNull (remainingInSleep); // else call the one-argument overload
         Thread::CheckForThreadInterruption ();
         // @todo lose if the #if stuff and use just if constexpr (but not working on msvc - complains about nanosleep undefined)
 #if qPlatform_POSIX
