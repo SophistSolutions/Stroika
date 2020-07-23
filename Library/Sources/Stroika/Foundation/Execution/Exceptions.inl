@@ -21,13 +21,18 @@ namespace Stroika::Foundation::Execution {
         void               TranslateException_ (error_code errCode);
     }
 
+    // forward declare for use below....to avoid #include of Thread.h
+    namespace Thread {
+        void CheckForThreadInterruption ();
+    }
+
     /*
      ********************************************************************************
      ******************************** ExceptionStringHelper *************************
      ********************************************************************************
      */
     inline ExceptionStringHelper::ExceptionStringHelper (const Characters::String& reasonForError)
-        : ExceptionStringHelper (reasonForError, CaptureCurrentActivities ())
+        : ExceptionStringHelper{reasonForError, CaptureCurrentActivities ()}
     {
     }
     inline Characters::String ExceptionStringHelper::GetBasicErrorMessage () const
@@ -99,22 +104,22 @@ namespace Stroika::Foundation::Execution {
      */
     template <typename BASE_EXCEPTION>
     inline SystemErrorException<BASE_EXCEPTION>::SystemErrorException (error_code errCode)
-        : SystemErrorException (errCode, Private_::SystemErrorExceptionPrivate_::mkMsg_ (errCode))
+        : SystemErrorException{errCode, Private_::SystemErrorExceptionPrivate_::mkMsg_ (errCode)}
     {
     }
     template <typename BASE_EXCEPTION>
     inline SystemErrorException<BASE_EXCEPTION>::SystemErrorException (error_code errCode, const Characters::String& message)
-        : inherited (Private_::SystemErrorExceptionPrivate_::mkCombinedMsg_ (errCode, message), errCode)
+        : inherited{Private_::SystemErrorExceptionPrivate_::mkCombinedMsg_ (errCode, message), errCode}
     {
     }
     template <typename BASE_EXCEPTION>
     inline SystemErrorException<BASE_EXCEPTION>::SystemErrorException (int ev, const std::error_category& ecat)
-        : SystemErrorException (error_code{ev, ecat})
+        : SystemErrorException{error_code{ev, ecat}}
     {
     }
     template <typename BASE_EXCEPTION>
     inline SystemErrorException<BASE_EXCEPTION>::SystemErrorException (int ev, const std::error_category& ecat, const Characters::String& message)
-        : SystemErrorException (error_code{ev, ecat}, message)
+        : SystemErrorException{error_code{ev, ecat}, message}
     {
     }
     template <typename BASE_EXCEPTION>
@@ -192,15 +197,13 @@ namespace Stroika::Foundation::Execution {
      ************************ Handle_ErrNoResultInterruption ************************
      ********************************************************************************
      */
-    // forward declare for use below....
-    void CheckForThreadInterruption ();
     template <typename CALL>
     auto Handle_ErrNoResultInterruption (CALL call) -> decltype (call ())
     {
         decltype (call ()) ret; // intentionally uninitialized since alway set at least once before read
         do {
             ret = call ();
-            Execution::CheckForThreadInterruption ();
+            Execution::Thread::CheckForThreadInterruption ();
         } while (ret < 0 and errno == EINTR);
         return ThrowPOSIXErrNoIfNegative (ret);
     }

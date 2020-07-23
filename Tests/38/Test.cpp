@@ -474,7 +474,7 @@ namespace {
                 static void DoIt ()
                 {
                     while (true) {
-                        Execution::CheckForThreadInterruption ();
+                        Thread::CheckForThreadInterruption ();
                     }
                 }
             };
@@ -1174,7 +1174,7 @@ namespace {
 
             auto testUpgradeLockNonAtomically1 = [] (auto& isEven) {
                 while (true) {
-                    Execution::CheckForThreadInterruption ();
+                    Thread::CheckForThreadInterruption ();
                     auto rLock = isEven.cget ();
                     if (rLock.load ()) {
                         isEven.UpgradeLockNonAtomically (&rLock, [&] (auto&& writeLock) {
@@ -1191,7 +1191,7 @@ namespace {
             };
             auto testUpgradeLockNonAtomically2 = [] (auto& isEven) {
                 while (true) {
-                    Execution::CheckForThreadInterruption ();
+                    Thread::CheckForThreadInterruption ();
                     auto rLock = isEven.cget ();
                     if (rLock.load ()) {
                         isEven.UpgradeLockNonAtomically (&rLock, [&] (auto&& writeLock, bool interveningWriteLock) {
@@ -1220,7 +1220,7 @@ namespace {
 #if qHasFeature_boost
             auto testUpgradeLockAtomically1 = [&] (auto& isEven) {
                 while (true) {
-                    Execution::CheckForThreadInterruption ();
+                    Thread::CheckForThreadInterruption ();
                     auto rLock = isEven.cget ();
                     if (rLock.load ()) {
                         try {
@@ -1253,7 +1253,7 @@ namespace {
                     unsigned int tries = 0;
                     unsigned int fails = 0;
                 again:
-                    Execution::CheckForThreadInterruption ();
+                    Thread::CheckForThreadInterruption ();
                     Execution::Sleep (10ms);
                     auto rLock = isEven.cget ();
                     if (rLock.load ()) {
@@ -1288,7 +1288,7 @@ namespace {
                 Thread::Ptr writerThread                     = Thread::New ([&] () {
                     while (true) {
                         Execution::Sleep (50ms);
-                        Execution::CheckForThreadInterruption ();
+                        Execution::Thread::CheckForThreadInterruption ();
                         auto rwLock = isEven.rwget ();
                         rwLock.store (not rwLock.load ()); // toggle back and forth
                     }

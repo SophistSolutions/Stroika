@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Streams {
         while (size_t n = from.Read (buf.begin (), buf.end ())) {
             Assert (n <= buf.size ());
             to.Write (buf.begin (), buf.begin () + n);
-            Execution::CheckForThreadInterruption ();
+            Thread::CheckForThreadInterruption ();
         }
     }
 
