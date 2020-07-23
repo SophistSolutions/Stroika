@@ -98,7 +98,7 @@ namespace {
 #endif
 
     // Declared HERE instead of the template so they get shared across TYPE values for CHARTYPE
-    Thread::IDType sMainThread_ = Execution::GetCurrentThreadID ();
+    Thread::IDType sMainThread_ = Execution::Thread::GetCurrentThreadID ();
 }
 
 #if qTraceToFile
@@ -359,7 +359,7 @@ Emitter::TraceLastBufferedWriteTokenType Emitter::DoEmitMessage_ (size_t bufferL
     Time::DurationSecondsType curRelativeTime = Time::GetTickCount ();
     {
         char               buf[1024];
-        Thread::IDType     threadID     = Execution::GetCurrentThreadID ();
+        Thread::IDType     threadID     = Execution::Thread::GetCurrentThreadID ();
         pair<bool, string> threadIDInfo = mkThreadLabelForThreadID_ (threadID);
         Verify (snprintf (buf, NEltsOf (buf), "[%s][%08.3f]\t", threadIDInfo.second.c_str (), static_cast<double> (curRelativeTime)) > 0);
         if (threadIDInfo.first) {

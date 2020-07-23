@@ -1102,14 +1102,6 @@ namespace Stroika::Foundation::Execution {
     {
         return Thread::GetCurrentThreadID ();
     }
-
-    /**
-     *  Our thread interruption (and abort) mechanism only throws at certain 'signalable' (alertable/cancelable)
-     *  spots in the code - like sleeps, most reads, etc.
-     *  This function will also trigger a throw if called inside a thread which is being aborted.
-     *
-     *  Any call to this routine is a 'cancelation point'.
-     */
     [[deprecated ("Since Stroika v2.1b2 - use Thread::CheckForThreadInterruption()")]] inline void CheckForThreadInterruption ()
     {
         Thread::CheckForThreadInterruption ();
@@ -1119,18 +1111,10 @@ namespace Stroika::Foundation::Execution {
     {
         Thread::CheckForThreadInterruption<kEveryNTimes> ();
     }
-
-    /**
-     *  \brief calls CheckForThreadInterruption, and std::this_thread::yield ()
-     *
-     *  \note   ***Cancelation Point***
-     *          To avoid cancelation point, directly call std::this_thread::yield ()
-     */
     [[deprecated ("Since Stroika v2.1b2 - use Thread::Yield()")]] inline dont_inline void Yield ()
     {
         Thread::Yield ();
     }
-
     [[deprecated ("Since Stroika v2.1b2, use Thread::FormatThreadID_A")]] inline string FormatThreadID_A (Thread::IDType threadID)
     {
         Thread::FormatThreadInfo fi;

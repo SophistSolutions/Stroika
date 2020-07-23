@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T, typename TRAITS>
     auto WaitForIOReady<T, TRAITS>::WaitQuietlyUntil (Time::DurationSecondsType timeoutAt) -> Containers::Set<T>
     {
-        CheckForThreadInterruption ();
+        Thread::CheckForThreadInterruption ();
         vector<pair<SDKPollableType, TypeOfMonitorSet>> pollBuffer;
         vector<T>                                       mappedObjectBuffer;
         // @todo REDO THIS calling FillBuffer_ from CTOR (since always used at least once, but could be more than once.
