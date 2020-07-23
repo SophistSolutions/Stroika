@@ -45,11 +45,11 @@ namespace Stroika::Foundation::Streams {
     template <typename ELEMENT_TYPE>
     void CopyAll_Buffered (typename InputStream<ELEMENT_TYPE>::Ptr from, typename OutputStream<ELEMENT_TYPE>::Ptr to, size_t bufferSize)
     {
-        Memory::SmallStackBuffer<ELEMENT_TYPE> buf (bufferSize);
+        Memory::SmallStackBuffer<ELEMENT_TYPE> buf{bufferSize};
         while (size_t n = from.Read (buf.begin (), buf.end ())) {
             Assert (n <= buf.size ());
             to.Write (buf.begin (), buf.begin () + n);
-            Thread::CheckForInterruption ();
+            Execution::Thread::CheckForInterruption ();
         }
     }
 

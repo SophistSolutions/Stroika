@@ -77,6 +77,8 @@ namespace Stroika::Foundation::Debug {
      *
      *  This is defined as a #define, so you can turn it off when building Stroika. I'm unsure if the showing of thread indexes
      *  helps readability of the tracelog, but I think it does.
+     *
+     *  This is somewhat helpful on windows, but much more so on 64-bit linux with very long fairly random looking thread ids.
      */
 #ifndef qStroika_Foundation_Debug_Trace_ShowThreadIndex
 #define qStroika_Foundation_Debug_Trace_ShowThreadIndex 1
