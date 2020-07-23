@@ -28,20 +28,12 @@ namespace Stroika::Foundation::Execution {
      */
     class ProgressMonitor::Rep_ : public Memory::UseBlockAllocationIfAppropriate<Rep_> {
     public:
-        Rep_ ()
-            : fCurTaskInfo_CritSect_ ()
-            , fCallbacks_ ()
-            , fCanceled_ (false)
-            , fCurrentProgress_ (0.0)
-            , fCurrentTaskInfo_ ()
-            , fWorkThread_ ()
-        {
-        }
+        Rep_ () = default;
 
         mutable mutex                             fCurTaskInfo_CritSect_; // needed because VariantValue is not threadsafe
         Containers::Sequence<ChangedCallbackType> fCallbacks_;
-        atomic<bool>                              fCanceled_;
-        atomic<ProgressRangeType>                 fCurrentProgress_;
+        atomic<bool>                              fCanceled_{false};
+        atomic<ProgressRangeType>                 fCurrentProgress_{0.0};
         CurrentTaskInfo                           fCurrentTaskInfo_;
         Thread::Ptr                               fWorkThread_; // optional - ignore if empty
     };

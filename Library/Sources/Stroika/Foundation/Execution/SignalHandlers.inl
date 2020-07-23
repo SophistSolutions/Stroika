@@ -19,19 +19,19 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     inline SignalHandler::SignalHandler (void (*signalHandler) (SignalID), Type type)
-        : fType_ (type)
-        , fCall_ (signalHandler)
+        : fType_{type}
+        , fCall_{signalHandler}
     {
         Require (signalHandler == SIG_IGN or type == Type::eSafe); // otherwise use the overload taking a noexcept function
     }
     inline SignalHandler::SignalHandler (void (*signalHandler) (SignalID) noexcept, Type type)
-        : fType_ (type)
-        , fCall_ (signalHandler)
+        : fType_{type}
+        , fCall_{signalHandler}
     {
     }
     inline SignalHandler::SignalHandler (const Function<void (SignalID)>& signalHandler, Type type)
-        : fType_ (type)
-        , fCall_ (signalHandler)
+        : fType_{type}
+        , fCall_{signalHandler}
     {
         // @todo - would LIKE to overload this CTOR like we do for regular function pointer, noexcept and noexcept(false), but
         // that doesn't appear to work wtih std::function as of C++17 (reference?) -- DISABLE this Require()

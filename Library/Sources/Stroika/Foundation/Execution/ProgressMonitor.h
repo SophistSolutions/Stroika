@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Execution {
         ProgressMonitor (const shared_ptr<Rep_>& rep);
 
     public:
-        ~ProgressMonitor ();
+        ~ProgressMonitor () = default;
 
     public:
         nonvirtual ProgressMonitor& operator= (const ProgressMonitor&) = delete;

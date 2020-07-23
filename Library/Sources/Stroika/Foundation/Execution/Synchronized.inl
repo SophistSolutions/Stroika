@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Execution {
     }
     template <typename T, typename TRAITS>
     inline Synchronized<T, TRAITS>::Synchronized (const Synchronized& src)
-        : fProtectedValue_ (src.cget ().load ())
+        : fProtectedValue_{src.cget ().load ()}
     {
 #if qStroika_FeatureSupported_Valgrind
         if (TRAITS::kSupportSharedLocks) {

@@ -392,22 +392,20 @@ void ProcessRunner::BackgroundProcess::Terminate ()
  ********************************************************************************
  */
 ProcessRunner::ProcessRunner (const String& commandLine, const Streams::InputStream<byte>::Ptr& in, const Streams::OutputStream<byte>::Ptr& out, const Streams::OutputStream<byte>::Ptr& error)
-    : fCommandLine_ (commandLine)
+    : fCommandLine_{commandLine}
     , fExecutable_{}
-    , fArgs_ ()
-    , fStdIn_ (in)
-    , fStdOut_ (out)
-    , fStdErr_ (error)
+    , fStdIn_{in}
+    , fStdOut_{out}
+    , fStdErr_{error}
 {
 }
 
 ProcessRunner::ProcessRunner (const filesystem::path& executable, const Containers::Sequence<String>& args, const Streams::InputStream<byte>::Ptr& in, const Streams::OutputStream<byte>::Ptr& out, const Streams::OutputStream<byte>::Ptr& error)
-    : fCommandLine_ ()
-    , fExecutable_{executable}
-    , fArgs_ (args)
-    , fStdIn_ (in)
-    , fStdOut_ (out)
-    , fStdErr_ (error)
+    : fExecutable_{executable}
+    , fArgs_{args}
+    , fStdIn_{in}
+    , fStdOut_{out}
+    , fStdErr_{error}
 {
 }
 

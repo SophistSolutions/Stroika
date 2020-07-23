@@ -14,17 +14,14 @@ using namespace Stroika::Foundation::Execution;
  ********************************************************************************
  */
 ProgressMonitor::ProgressMonitor ()
-    : fRep_ (make_shared<Rep_> ())
+    : fRep_{make_shared<Rep_> ()}
 {
 }
 
 ProgressMonitor::ProgressMonitor (Thread::Ptr workThread)
-    : fRep_ (make_shared<Rep_> ())
+    : fRep_{make_shared<Rep_> ()}
 {
-}
-
-ProgressMonitor::~ProgressMonitor ()
-{
+    fRep_->fWorkThread_ = workThread;
 }
 
 void ProgressMonitor::AddOnProgressCallback (const ChangedCallbackType& progressChangedCallback)

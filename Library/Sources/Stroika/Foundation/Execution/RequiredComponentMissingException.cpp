@@ -31,7 +31,7 @@ namespace {
     }
 }
 RequiredComponentMissingException::RequiredComponentMissingException (const wstring& component)
-    : Execution::RuntimeErrorException<> (mkMsg_ (component))
-    , fComponent (component)
+    : Execution::RuntimeErrorException<>{mkMsg_ (component)}
+    , fComponent{component}
 {
 }
