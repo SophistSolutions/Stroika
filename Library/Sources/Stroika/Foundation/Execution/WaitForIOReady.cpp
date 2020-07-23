@@ -137,7 +137,7 @@ const WaitForIOReady_Base::TypeOfMonitorSet WaitForIOReady_Base::kDefaultTypeOfM
 auto WaitForIOReady_Base::_WaitQuietlyUntil (const pair<SDKPollableType, TypeOfMonitorSet>* start, const pair<SDKPollableType, TypeOfMonitorSet>* end, Time::DurationSecondsType timeoutAt) -> Containers::Set<size_t>
 {
     DurationSecondsType time2Wait = Math::AtLeast<Time::DurationSecondsType> (timeoutAt - Time::GetTickCount (), 0);
-    CheckForThreadInterruption ();
+    Thread::CheckForThreadInterruption ();
     SmallStackBuffer<pollfd> pollData;
     {
         pollData.GrowToSize_uninitialized (end - start);
