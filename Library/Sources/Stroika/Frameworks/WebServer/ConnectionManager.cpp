@@ -185,7 +185,7 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
     // run til thread aborted
     while (true) {
         try {
-            Execution::CheckForThreadInterruption ();
+            Thread::CheckForThreadInterruption ();
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             {
