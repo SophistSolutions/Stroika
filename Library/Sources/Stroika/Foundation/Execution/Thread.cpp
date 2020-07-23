@@ -1265,10 +1265,10 @@ string Execution::Thread::FormatThreadID_A (Thread::IDType threadID, const Forma
 
 /*
  ********************************************************************************
- ********************* Execution::CheckForThreadInterruption ********************
+ ********************* Execution::Thread::CheckForThreadInterruption ************
  ********************************************************************************
  */
-void Execution::CheckForThreadInterruption ()
+void Execution::Thread::CheckForThreadInterruption ()
 {
     /*
      *  NOTE: subtle but important that we use static Thread::InterruptException::kThe so we avoid
@@ -1304,10 +1304,10 @@ void Execution::CheckForThreadInterruption ()
 
 /*
  ********************************************************************************
- ********************************* Execution::Yield *****************************
+ **************************** Execution::Thread::Yield **************************
  ********************************************************************************
  */
-void Execution::Yield ()
+void Execution::Thread::Yield ()
 {
     /*
      *  Check before so we abort more quickly, and after since while we were sleeping we could be interupted.

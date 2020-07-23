@@ -1065,11 +1065,44 @@ namespace Stroika::Foundation::Execution {
          *  @see Characters::ToString (Thread::IDType threadID)
          */
         string FormatThreadID_A (Thread::IDType threadID, const FormatThreadInfo& formatInfo = {});
+
+        /**
+         */
+        IDType GetCurrentThreadID () noexcept;
+
+        /**
+         *  Our thread interruption (and abort) mechanism only throws at certain 'signalable' (alertable/cancelable)
+         *  spots in the code - like sleeps, most reads, etc.
+         *  This function will also trigger a throw if called inside a thread which is being aborted.
+         *
+         *  Any call to this routine is a 'cancelation point'.
+         */
+        void CheckForThreadInterruption ();
+        template <unsigned int kEveryNTimes>
+        void CheckForThreadInterruption ();
+
+
+        /*
+         *  Avoid interference with Windows SDK headers. I hate needless C macros (with short, common names)
+         */
+#ifdef Yield
+#undef Yield
+#endif
+
+        /**
+         *  \brief calls CheckForThreadInterruption, and std::this_thread::yield ()
+         *
+         *  \note   ***Cancelation Point***
+         *          To avoid cancelation point, directly call std::this_thread::yield ()
+         */
+        dont_inline void Yield ();
+
     };
 
-    /**
-     */
-    Thread::IDType GetCurrentThreadID () noexcept;
+    [[deprecated ("Since Stroika v2.1b2 - use Thread::GetCurrentThreadID()")]] inline Thread::IDType GetCurrentThreadID () noexcept
+    {
+        return Thread::GetCurrentThreadID ();
+    }
 
     /**
      *  Our thread interruption (and abort) mechanism only throws at certain 'signalable' (alertable/cancelable)
@@ -1078,16 +1111,15 @@ namespace Stroika::Foundation::Execution {
      *
      *  Any call to this routine is a 'cancelation point'.
      */
-    void CheckForThreadInterruption ();
+    [[deprecated ("Since Stroika v2.1b2 - use Thread::CheckForThreadInterruption()")]] inline void CheckForThreadInterruption ()
+    {
+        Thread::CheckForThreadInterruption ();
+    }
     template <unsigned int kEveryNTimes>
-    void CheckForThreadInterruption ();
-
-    /*
-     *  Avoid interference with Windows SDK headers. I hate needless C macros (with short, common names)
-     */
-#ifdef Yield
-#undef Yield
-#endif
+    [[deprecated ("Since Stroika v2.1b2 - use Thread::CheckForThreadInterruption()")]] inline void CheckForThreadInterruption ()
+    {
+        Thread::CheckForThreadInterruption<kEveryNTimes> ();
+    }
 
     /**
      *  \brief calls CheckForThreadInterruption, and std::this_thread::yield ()
@@ -1095,7 +1127,10 @@ namespace Stroika::Foundation::Execution {
      *  \note   ***Cancelation Point***
      *          To avoid cancelation point, directly call std::this_thread::yield ()
      */
-    dont_inline void Yield ();
+    [[deprecated ("Since Stroika v2.1b2 - use Thread::Yield()")]] inline dont_inline void Yield ()
+    {
+        Thread::Yield ();
+    }
 
     [[deprecated ("Since Stroika v2.1b2, use Thread::FormatThreadID_A")]] inline string FormatThreadID_A (Thread::IDType threadID)
     {

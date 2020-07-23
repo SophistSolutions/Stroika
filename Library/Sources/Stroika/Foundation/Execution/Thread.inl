@@ -349,21 +349,21 @@ namespace Stroika::Foundation::Execution {
 
     /*
      ********************************************************************************
-     *************************** GetCurrentThreadID *********************************
+     ************************ Thread::GetCurrentThreadID ****************************
      ********************************************************************************
      */
-    inline Thread::IDType GetCurrentThreadID () noexcept
+    inline Thread::IDType Thread::GetCurrentThreadID () noexcept
     {
         return this_thread::get_id ();
     }
 
     /*
      ********************************************************************************
-     ************************* CheckForThreadInterruption ***************************
+     ********************* Thread::CheckForThreadInterruption ***********************
      ********************************************************************************
      */
     template <unsigned int kEveryNTimes>
-    void CheckForThreadInterruption ()
+    void Thread::CheckForThreadInterruption ()
     {
         // note that it is not important that this be protected/thread safe, since the value is just advisory/hint
         static unsigned int n = 0;
