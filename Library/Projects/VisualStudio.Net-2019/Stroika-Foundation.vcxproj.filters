@@ -702,9 +702,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Module.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\OperationNotSupportedException.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
