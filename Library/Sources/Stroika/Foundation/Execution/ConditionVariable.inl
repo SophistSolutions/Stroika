@@ -14,7 +14,9 @@
 
 namespace Stroika::Foundation::Execution {
 
-    void CheckForThreadInterruption ();
+    namespace Thread {
+        void CheckForThreadInterruption ();
+    }
 
     /*
      ********************************************************************************
@@ -52,7 +54,7 @@ namespace Stroika::Foundation::Execution {
     {
         Require (lock.owns_lock ());
         while (true) {
-            CheckForThreadInterruption ();
+            Thread::CheckForThreadInterruption ();
             Time::DurationSecondsType remaining = timeoutAt - Time::GetTickCount ();
             if (remaining < 0) {
                 return cv_status::timeout;
@@ -95,7 +97,7 @@ namespace Stroika::Foundation::Execution {
     bool ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, PREDICATE readyToWake)
     {
         Require (lock.owns_lock ());
-        CheckForThreadInterruption ();
+        Thread::CheckForThreadInterruption ();
         while (not readyToWake ()) {
             // NB: further checks for interruption happen inside wait_until() called here...
             if (wait_until (lock, timeoutAt) == cv_status::timeout) {

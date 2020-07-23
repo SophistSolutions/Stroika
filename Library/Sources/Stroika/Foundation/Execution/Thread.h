@@ -1081,7 +1081,6 @@ namespace Stroika::Foundation::Execution {
         template <unsigned int kEveryNTimes>
         void CheckForThreadInterruption ();
 
-
         /*
          *  Avoid interference with Windows SDK headers. I hate needless C macros (with short, common names)
          */

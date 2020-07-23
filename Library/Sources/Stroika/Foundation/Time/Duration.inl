@@ -22,19 +22,19 @@ namespace Stroika::Foundation::Time {
     template <typename DURATION_REP, typename DURATION_PERIOD>
     constexpr Duration::Duration (const chrono::duration<DURATION_REP, DURATION_PERIOD>& d)
         : inherited{chrono::duration<InternalNumericFormatType_> (d).count ()}
-        , fRepType_ (eNumeric_)
+        , fRepType_{eNumeric_}
         , fNonStringRep_{}
     {
     }
     constexpr Duration::Duration ()
         : inherited{kValueWhenEmptyRenderedAsNumber_}
-        , fRepType_ (eEmpty_)
+        , fRepType_{eEmpty_}
         , fNonStringRep_{}
     {
     }
     inline Duration::Duration (const Duration& src)
         : inherited{src}
-        , fRepType_ (src.fRepType_)
+        , fRepType_{src.fRepType_}
     {
         if (fRepType_ == eString_) {
             Assert (not src.fStringRep_.empty ());
@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Time {
     }
     inline Duration::Duration (Duration&& src) noexcept
         : inherited{move (src)}
-        , fRepType_ (src.fRepType_)
+        , fRepType_{src.fRepType_}
     {
         if (src.fRepType_ == eString_) {
             Assert (fRepType_ == eString_);
@@ -64,39 +64,39 @@ namespace Stroika::Foundation::Time {
     }
     constexpr Duration::Duration (int duration)
         : inherited{duration}
-        , fRepType_ (eNumeric_)
+        , fRepType_{eNumeric_}
         , fNonStringRep_{}
     {
     }
     constexpr Duration::Duration (long duration)
         : inherited{duration}
-        , fRepType_ (eNumeric_)
+        , fRepType_{eNumeric_}
         , fNonStringRep_{}
     {
     }
     constexpr Duration::Duration (long long duration)
         : inherited{static_cast<InternalNumericFormatType_> (duration)}
-        , fRepType_ (eNumeric_)
+        , fRepType_{eNumeric_}
         , fNonStringRep_{}
     {
     }
     constexpr Duration::Duration (float duration)
         : inherited{duration}
-        , fRepType_ (eNumeric_)
+        , fRepType_{eNumeric_}
         , fNonStringRep_{}
     {
         //Require (not isnan (duration)); // inf is allowed
     }
     constexpr Duration::Duration (double duration)
         : inherited{duration}
-        , fRepType_ (eNumeric_)
+        , fRepType_{eNumeric_}
         , fNonStringRep_{}
     {
         //Require (not isnan (duration)); // inf is allowed
     }
     constexpr Duration::Duration (long double duration)
         : inherited{static_cast<InternalNumericFormatType_> (duration)}
-        , fRepType_ (eNumeric_)
+        , fRepType_{eNumeric_}
         , fNonStringRep_{}
     {
         //Require (not isnan (duration)); // inf is allowed

@@ -136,7 +136,7 @@ public:
                 Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::Signals::{}::fBlockingQueueDelegatorThread_");
                 while (true) {
                     Debug::TraceContextBumper trcCtx1 ("Waiting for next safe signal");
-                    CheckForThreadInterruption ();
+                    Thread::CheckForThreadInterruption ();
                     waitForNextSig_ ();
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace ("fRecievedSig_ wait complete (either arrival or timeout): fLastSignalRecieved_ = %d", fLastSignalRecieved_.load ());

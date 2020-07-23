@@ -49,50 +49,50 @@ namespace Stroika::Foundation::Memory {
      */
     template <typename T, typename TRAITS>
     inline SharedByValue<T, TRAITS>::SharedByValue () noexcept
-        : fCopier_ (element_copier_type{})
-        , fSharedImpl_ ()
+        : fCopier_{element_copier_type{}}
+        , fSharedImpl_{}
     {
     }
     template <typename T, typename TRAITS>
     inline SharedByValue<T, TRAITS>::SharedByValue ([[maybe_unused]] nullptr_t n) noexcept
-        : fCopier_ (element_copier_type{})
-        , fSharedImpl_ ()
+        : fCopier_{element_copier_type{}}
+        , fSharedImpl_{}
     {
     }
     template <typename T, typename TRAITS>
     inline SharedByValue<T, TRAITS>::SharedByValue (const SharedByValue& from) noexcept
-        : fCopier_ (from.fCopier_)
-        , fSharedImpl_ (shared_impl_copier_type::Load (from.fSharedImpl_))
+        : fCopier_{from.fCopier_}
+        , fSharedImpl_{shared_impl_copier_type::Load (from.fSharedImpl_)}
     {
     }
     template <typename T, typename TRAITS>
     inline SharedByValue<T, TRAITS>::SharedByValue (SharedByValue&& from) noexcept
-        : fCopier_ (from.fCopier_)
-        , fSharedImpl_ (move (from.fSharedImpl_))
+        : fCopier_{from.fCopier_}
+        , fSharedImpl_{move (from.fSharedImpl_)}
     {
     }
     template <typename T, typename TRAITS>
     inline SharedByValue<T, TRAITS>::SharedByValue (const shared_ptr_type& from, const element_copier_type& copier) noexcept
-        : fCopier_ (copier)
-        , fSharedImpl_ (shared_impl_copier_type::Load (from))
+        : fCopier_{copier}
+        , fSharedImpl_{shared_impl_copier_type::Load (from)}
     {
     }
     template <typename T, typename TRAITS>
     inline SharedByValue<T, TRAITS>::SharedByValue (const element_type& from, const element_copier_type& copier) noexcept
-        : fCopier_ (copier)
-        , fSharedImpl_ (copier (from))
+        : fCopier_{copier}
+        , fSharedImpl_{copier (from)}
     {
     }
     template <typename T, typename TRAITS>
     inline SharedByValue<T, TRAITS>::SharedByValue (shared_ptr_type&& from, const element_copier_type&& copier) noexcept
-        : fCopier_ (move (copier))
-        , fSharedImpl_ (move (from))
+        : fCopier_{copier}
+        , fSharedImpl_{move (from)}
     {
     }
     template <typename T, typename TRAITS>
     inline SharedByValue<T, TRAITS>::SharedByValue (element_type* from, const element_copier_type& copier)
-        : fCopier_ (copier)
-        , fSharedImpl_ (from)
+        : fCopier_{copier}
+        , fSharedImpl_{from}
     {
     }
     template <typename T, typename TRAITS>

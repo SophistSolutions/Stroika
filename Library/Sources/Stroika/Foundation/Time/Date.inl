@@ -122,12 +122,12 @@ namespace Stroika::Foundation::Time {
         }
     }
     inline constexpr Date::Date (JulianRepType julianRep)
-        : fJulianDateRep_ (julianRep)
+        : fJulianDateRep_{julianRep}
     {
         Require ((kMinJulianRep <= julianRep and julianRep <= kMaxJulianRep) or julianRep == kEmptyJulianRep);
     }
     constexpr inline Date::Date (Year year, MonthOfYear month, DayOfMonth day)
-        : fJulianDateRep_ (jday_ (month, day, year))
+        : fJulianDateRep_{jday_ (month, day, year)}
     {
         // Gregorian calendar started on Sep. 14, 1752
         Require (year >= Year::eFirstYear);

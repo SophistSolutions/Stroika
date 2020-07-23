@@ -18,13 +18,13 @@ namespace Stroika::Foundation::Time {
      ********************************************************************************
      */
     inline constexpr Timezone::Timezone (TZ_ tz) noexcept
-        : fTZ_ (tz)
-        , fBiasInMinutesFromUTC_ (0)
+        : fTZ_{tz}
+        , fBiasInMinutesFromUTC_{0}
     {
     }
     inline constexpr Timezone::Timezone (BiasInMinutesFromUTCType biasInMinutesFromUTC)
-        : fTZ_ (TZ_::eFixedOffsetBias)
-        , fBiasInMinutesFromUTC_ (biasInMinutesFromUTC)
+        : fTZ_{TZ_::eFixedOffsetBias}
+        , fBiasInMinutesFromUTC_{biasInMinutesFromUTC}
     {
         Require (kBiasInMinutesFromUTCTypeValidRange.Contains (biasInMinutesFromUTC));
     }
