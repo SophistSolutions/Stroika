@@ -347,7 +347,7 @@ namespace {
         }
         else {
             // If this is deemed useful, then re-instate the mapping of threadID == sMainThread_ to "MAIN" with appropriate -- around it
-            return pair<bool, string>{false, FormatThreadID_A (threadID)};
+            return pair<bool, string>{false, Thread::FormatThreadID_A (threadID)};
         }
     }
 }
@@ -364,7 +364,7 @@ Emitter::TraceLastBufferedWriteTokenType Emitter::DoEmitMessage_ (size_t bufferL
         Verify (snprintf (buf, NEltsOf (buf), "[%s][%08.3f]\t", threadIDInfo.second.c_str (), static_cast<double> (curRelativeTime)) > 0);
         if (threadIDInfo.first) {
             char buf2[1024];
-            Verify (snprintf (buf2, NEltsOf (buf2), "(NEW THREAD, index=%s Real Thread ID=%s)\t", threadIDInfo.second.c_str (), FormatThreadID_A (threadID).c_str ()) > 0);
+            Verify (snprintf (buf2, NEltsOf (buf2), "(NEW THREAD, index=%s Real Thread ID=%s)\t", threadIDInfo.second.c_str (), Thread::FormatThreadID_A (threadID).c_str ()) > 0);
 #if __STDC_WANT_SECURE_LIB__
             strcat_s (buf, buf2);
 #else

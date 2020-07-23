@@ -276,7 +276,7 @@ namespace Stroika::Foundation::Characters {
     template <>
     String ToString (const thread::id& t)
     {
-        return String::FromASCII (Execution::FormatThreadID_A (t));
+        return String::FromASCII (Execution::Thread::FormatThreadID_A (t));
     }
 }
 
@@ -286,7 +286,7 @@ namespace Stroika::Foundation::Characters {
  ********************************************************************************
  */
 Thread::Ptr::Rep_::Rep_ (const function<void ()>& runnable, [[maybe_unused]] const optional<Configuration>& configuration)
-    : fRunnable_ (runnable)
+    : fRunnable_{runnable}
 {
     // @todo - never used anything from configuration (yet) - should!)
 #if qPlatform_POSIX
@@ -375,7 +375,7 @@ Characters::String Thread::Ptr::Rep_::ToString () const
     sb += L"{";
     sb += L"id: " + Characters::ToString (GetID ()) + L", ";
     if (qStroika_Foundation_Debug_Trace_ShowThreadIndex) {
-        sb += L"index: " + Characters::ToString (IndexRegistrar::Get ().GetIndex (GetID ()));
+        sb += L"index: " + Characters::ToString (IndexRegistrar::Get ().GetIndex (GetID ())) + L", ";
     }
     if (not fThreadName_.empty ()) {
         sb += L"name: '" + fThreadName_ + L"', ";
@@ -1207,10 +1207,10 @@ SignalID Thread::SignalUsedForThreadInterrupt (optional<SignalID> signalNumber)
 
 /*
  ********************************************************************************
- ************************** Execution::FormatThreadID_A *************************
+ ****************** Execution::Thread::FormatThreadID_A *************************
  ********************************************************************************
  */
-string Execution::FormatThreadID_A (Thread::IDType threadID)
+string Execution::Thread::FormatThreadID_A (Thread::IDType threadID, const FormatThreadInfo& formatThreadInfo)
 {
     Thread::SuppressInterruptionInContext suppressAborts;
 
@@ -1234,7 +1234,9 @@ string Execution::FormatThreadID_A (Thread::IDType threadID)
     if constexpr (kSizeOfThreadID_ >= sizeof (uint64_t)) {
         uint64_t threadIDInt = 0;
         out >> threadIDInt;
-        return Characters::CString::Format ("0x%016llx", threadIDInt);
+        return formatThreadInfo.fIncludeLeadingZeros
+                   ? Characters::CString::Format ("0x%016llx", threadIDInt)
+                   : Characters::CString::Format ("0x%llx", threadIDInt);
     }
     else {
         uint32_t threadIDInt = 0;
@@ -1249,10 +1251,14 @@ string Execution::FormatThreadID_A (Thread::IDType threadID)
         constexpr bool kUse16BitThreadIDsIfTheyFit_{false};
         const bool     kUse16Bit_ = kUse16BitThreadIDsIfTheyFit_ and threadIDInt <= 0xffff;
         if (kUse16Bit_) {
-            return Characters::CString::Format ("0x%04x", threadIDInt);
+            return formatThreadInfo.fIncludeLeadingZeros
+                       ? Characters::CString::Format ("0x%04x", threadIDInt)
+                       : Characters::CString::Format ("0x%x", threadIDInt);
         }
         else {
-            return Characters::CString::Format ("0x%08x", threadIDInt);
+            return formatThreadInfo.fIncludeLeadingZeros
+                       ? Characters::CString::Format ("0x%08x", threadIDInt)
+                       : Characters::CString::Format ("0x%x", threadIDInt);
         }
     }
 }

@@ -1050,22 +1050,26 @@ namespace Stroika::Foundation::Execution {
             (void)SignalUsedForThreadInterrupt (signalNumber);
         }
 #endif
+
+        struct FormatThreadInfo {
+            bool fIncludeLeadingZeros{false};
+        };
+
+        /**
+         *  Represent the thread ID for display - typically as an integer.
+         *
+         *  \note this function is NOT a cancelation point
+         *
+         *  \note   this returns an ASCII string (not using String class library) so easier to use from code expecting no cancelation
+         *
+         *  @see Characters::ToString (Thread::IDType threadID)
+         */
+        string FormatThreadID_A (Thread::IDType threadID, const FormatThreadInfo& formatInfo = {});
     };
 
     /**
      */
     Thread::IDType GetCurrentThreadID () noexcept;
-
-    /**
-     *  Represent the thread ID for display - typically as an integer.
-     *
-     *  \note this function is NOT a cancelation point
-     *
-     *  \note   this returns an ASCII string (not using String class library) so easier to use from code expecting no cancelation
-     *
-     *  @see Characters::ToString (Thread::IDType threadID)
-     */
-    string FormatThreadID_A (Thread::IDType threadID);
 
     /**
      *  Our thread interruption (and abort) mechanism only throws at certain 'signalable' (alertable/cancelable)
@@ -1092,6 +1096,13 @@ namespace Stroika::Foundation::Execution {
      *          To avoid cancelation point, directly call std::this_thread::yield ()
      */
     dont_inline void Yield ();
+
+    [[deprecated ("Since Stroika v2.1b2, use Thread::FormatThreadID_A")]] inline string FormatThreadID_A (Thread::IDType threadID)
+    {
+        Thread::FormatThreadInfo fi;
+        fi.fIncludeLeadingZeros = true;
+        return Thread::FormatThreadID_A (threadID, fi);
+    }
 
 }
 
