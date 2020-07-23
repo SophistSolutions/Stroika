@@ -113,7 +113,7 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
     }
     void UpdateBookkeepingThread_ ()
     {
-        Debug::TraceContextBumper ctx ("Logger::Rep_::UpdateBookkeepingThread_");
+        Debug::TraceContextBumper ctx{"Logger::Rep_::UpdateBookkeepingThread_"};
         {
             auto bktLck = fBookkeepingThread_.rwget ();
             if (bktLck.cref () != nullptr) {
@@ -153,7 +153,7 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
             else {
                 newBookKeepThread = Thread::New (
                     [useRepInThread] () {
-                        Debug::TraceContextBumper ctx1 ("Logger::Rep_::UpdateBookkeepingThread_... internal thread/2");
+                        Debug::TraceContextBumper ctx1{"Logger::Rep_::UpdateBookkeepingThread_... internal thread/2"};
                         while (true) {
                             AssertNotNull (useRepInThread);
                             auto                     p   = useRepInThread->fOutMsgQ_.RemoveHead ();

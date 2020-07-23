@@ -65,10 +65,10 @@ namespace {
  ********************************************************************************
  */
 ExceptionStringHelper::ExceptionStringHelper (const Characters::String& reasonForError, const Containers::Stack<Activity<>>& activities)
-    : fActivities_ (activities)
-    , fRawErrorMessage_ (reasonForError)
-    , fFullErrorMessage_ (mkMessage_ (reasonForError, activities))
-    , fSDKCharString_ (fFullErrorMessage_.AsNarrowSDKString ())
+    : fActivities_{activities}
+    , fRawErrorMessage_{reasonForError}
+    , fFullErrorMessage_{mkMessage_ (reasonForError, activities)}
+    , fSDKCharString_{fFullErrorMessage_.AsNarrowSDKString ()}
 {
 }
 

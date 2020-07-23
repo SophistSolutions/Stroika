@@ -20,21 +20,18 @@ using Characters::String_Constant;
  ********************************************************************************
  */
 Execution::InvalidCommandLineArgument::InvalidCommandLineArgument ()
-    : Execution::RuntimeErrorException<> (L"Invalid Command Argument"sv)
-    , fMessage ()
-    , fArgument ()
+    : Execution::RuntimeErrorException<>{L"Invalid Command Argument"sv}
 {
 }
 Execution::InvalidCommandLineArgument::InvalidCommandLineArgument (const String& message)
-    : Execution::RuntimeErrorException<> (message.As<wstring> ())
-    , fMessage (message)
-    , fArgument ()
+    : Execution::RuntimeErrorException<>{message.As<wstring> ()}
+    , fMessage{message}
 {
 }
 Execution::InvalidCommandLineArgument::InvalidCommandLineArgument (const String& message, const String& argument)
     : Execution::RuntimeErrorException<> (message.As<wstring> ())
-    , fMessage (message)
-    , fArgument (argument)
+    , fMessage{message}
+    , fArgument{argument}
 {
 }
 
@@ -94,7 +91,6 @@ Sequence<String> Execution::ParseCommandLine (int argc, const char* argv[])
     for (int i = 0; i < argc; ++i) {
         results.push_back (String::FromNarrowSDKString (argv[i]));
     }
-
     return results;
 }
 
@@ -156,11 +152,9 @@ optional<String> Execution::MatchesCommandLineArgumentWithValue (const Iterable<
     auto i = argList.FindFirstThat ([matchesArgPattern] (String i) -> bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); });
     if (i != argList.end ()) {
         ++i;
-        if (i == argList.end ())
-            [[UNLIKELY_ATTR]]
-            {
+        if (i == argList.end ()) [[UNLIKELY_ATTR]] {
                 Execution::Throw (InvalidCommandLineArgument ());
-            }
+        }
         else {
             return optional<String> (*i);
         }
