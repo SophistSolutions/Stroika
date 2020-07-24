@@ -367,7 +367,7 @@ namespace Stroika::Foundation::Execution {
     auto Handle_ErrNoResultInterruption (CALL call) -> decltype (call ());
 
     /**
-     *  Check the argument 'return value' from some funciton, and if its null, throw a SystemError exception with
+     *  Check the argument 'return value' from some function, and if its null, throw a SystemError exception with
      *  the current errno value.
      *
      *  \note rarely useful, but some POSIX APIs such as getcwd() do return null on error.

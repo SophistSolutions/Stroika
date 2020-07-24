@@ -37,7 +37,7 @@ namespace Stroika::Foundation::IO::FileSystem {
 #endif
 
     /**
-     * This funciton presumes its argument is a directory, and makes sure it has a kPathComponentSeperator character
+     * This function presumes its argument is a directory, and makes sure it has a kPathComponentSeperator character
      * at the end. Use this when given a directory from some source that isn't so careful, so code can generally
      * operate with the assumption that directories have that trailing slash, so its easier to compose
      * pathanmes.

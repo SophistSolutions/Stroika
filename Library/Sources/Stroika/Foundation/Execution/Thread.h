@@ -161,7 +161,7 @@ namespace Stroika::Foundation::Execution {
      *  @see Handle_ErrNoResultInterruption
      *
      *  ***Thread Cancelation Points***
-     *      A cancelation point is any (typically but not always blocking) funciton which will be interupted (cause interruption exception) and stop blocking,
+     *      A cancelation point is any (typically but not always blocking) function which will be interupted (cause interruption exception) and stop blocking,
      *      when someone calls Thread::Interupt or Thread::Abort() on its thread object.
      *
      *      Roughly, these are subroutines which call 

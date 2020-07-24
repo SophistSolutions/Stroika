@@ -381,7 +381,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  Print a displayable rendition of the given range, using the argument funciton to format
+         *  Print a displayable rendition of the given range, using the argument function to format
          *  the basic value_type.
          *
          *  \par Example Usage

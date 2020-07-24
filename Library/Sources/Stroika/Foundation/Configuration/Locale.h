@@ -27,7 +27,7 @@
  *      @todo   verify and document if for windows this is LOCALE_USER_DEFAULT or LOCALE_SYSTEM_DEFAULT.
  *              SB USER!
  *
- *      @todo   reconsider  if GetPlatformDefaultLocale SB inlined, since calls inline funciton that seems relatively
+ *      @todo   reconsider  if GetPlatformDefaultLocale SB inlined, since calls inline function that seems relatively
  *              big and I think maybe OK to cache value (static).
  *
  *      @todo   Enhance FindLocaleName() to make second param - optional (territory)
@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Configuration {
 
     /**
      *  \brief  Set the operating system locale into the current C++ locale used by locale
-     *          functions (and most locale-dependent stroika funcitons).
+     *          functions (and most locale-dependent stroika functions).
      *
      *  In C++, the default locale is "C", not the one inherited from the OS.
      *  Its not hard to get/set the one from the OS, but I've found it not well documented,

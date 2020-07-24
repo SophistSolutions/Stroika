@@ -549,8 +549,8 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noex
             [[maybe_unused]] auto&& critSec = lock_guard{sThreadSupportStatsMutex_};
 #if qStroika_Foundation_Debug_Trace_ShowThreadIndex
             DbgTrace (L"Adding thread index %s to sRunningThreads_ (%s)",
-                Characters::ToString (static_cast<int> (IndexRegistrar::Get ().GetIndex (thisThreadID))).c_str (), 
-                Characters::ToString (Traversal::Iterable<IDType>{sRunningThreads_}.Select<int> ([] (IDType i) {return IndexRegistrar::Get ().GetIndex (i);})).c_str ());
+                      Characters::ToString (static_cast<int> (IndexRegistrar::Get ().GetIndex (thisThreadID))).c_str (),
+                      Characters::ToString (Traversal::Iterable<IDType>{sRunningThreads_}.Select<int> ([] (IDType i) { return IndexRegistrar::Get ().GetIndex (i); })).c_str ());
 #else
             DbgTrace (L"Adding thread id %s to sRunningThreads_ (%s)", Characters::ToString (thisThreadID).c_str (), Characters::ToString (sRunningThreads_).c_str ());
 #endif
@@ -563,8 +563,8 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noex
                 [[maybe_unused]] auto&& critSec = lock_guard{sThreadSupportStatsMutex_};
 #if qStroika_Foundation_Debug_Trace_ShowThreadIndex
                 DbgTrace (L"removing thread index %s from sRunningThreads_ (%s)",
-                    Characters::ToString (static_cast<int> (IndexRegistrar::Get ().GetIndex (thisThreadID))).c_str (), 
-                    Characters::ToString (Traversal::Iterable<IDType>{sRunningThreads_}.Select<int> ([] (IDType i) { return IndexRegistrar::Get ().GetIndex (i); })).c_str ());
+                          Characters::ToString (static_cast<int> (IndexRegistrar::Get ().GetIndex (thisThreadID))).c_str (),
+                          Characters::ToString (Traversal::Iterable<IDType>{sRunningThreads_}.Select<int> ([] (IDType i) { return IndexRegistrar::Get ().GetIndex (i); })).c_str ());
 #else
                 DbgTrace (L"removing thread id %s from sRunningThreads_ (%s)", Characters::ToString (thisThreadID).c_str (), Characters::ToString (sRunningThreads_).c_str ());
 #endif

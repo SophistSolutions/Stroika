@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Debug {
      *  a bad idea. Instead, I simply provide the flexability to allow those who want todo this
      *  that ability. There are <code>SetAssertionHandler</code> and <code>GetAssertionHandler</code>
      *  functions which allow the programmer to specify an alternate assertion handling scheme. The
-     *  only assumption Stroika makes about this scheme is that the assertion handling funciton not
+     *  only assumption Stroika makes about this scheme is that the assertion handling function not
      *  return (so itmust either exit the program, or longjump/throw). Led makes no gaurantee that
      *  attemptsto throw out past an assertion will succeed.
      *

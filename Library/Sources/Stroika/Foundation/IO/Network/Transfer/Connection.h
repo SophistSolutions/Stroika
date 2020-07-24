@@ -34,7 +34,7 @@
  *
  *      @todo   Probably should redo Request so it can optionally use a BLOB or
  *              Stream (like Response). DO NOW the header / class changes - making
- *              CTOR/accessors, so easiser to change funcitonality later!!!
+ *              CTOR/accessors, so easiser to change functionality later!!!
  *
  *      @todo   Add thread safety (locks/semaphores)
  *

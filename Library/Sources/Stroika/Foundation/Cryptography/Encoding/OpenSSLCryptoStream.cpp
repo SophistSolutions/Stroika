@@ -286,7 +286,7 @@ public:
     // Writes always succeed fully or throw.
     virtual void Write (const byte* start, const byte* end) override
     {
-        Require (start < end); // for OutputStream<byte> - this funciton requires non-empty write
+        Require (start < end); // for OutputStream<byte> - this function requires non-empty write
         Require (IsOpenWrite ());
         SmallStackBuffer<byte, 1000 + EVP_MAX_BLOCK_LENGTH> outBuf (SmallStackBufferCommon::eUninitialized, _GetMinOutBufSize (end - start));
         [[maybe_unused]] auto&&                             critSec        = lock_guard{fCriticalSection_};

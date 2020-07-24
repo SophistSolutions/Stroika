@@ -65,7 +65,7 @@ namespace Stroika::Foundation::IO::FileSystem {
     class FileOutputStream : public Streams::OutputStream<byte>, public FileStream {
     public:
         /**
-         *  This flag is used to configure if BinaryOutputStream::Flush will invoke the OS fsync() funciton
+         *  This flag is used to configure if BinaryOutputStream::Flush will invoke the OS fsync() function
          *  to force data to disk (by default Flush just forces the data out of this object to the next object,
          *  for files, the operating system).
          *
