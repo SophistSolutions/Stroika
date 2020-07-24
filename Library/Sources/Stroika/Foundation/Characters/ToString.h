@@ -50,6 +50,8 @@ namespace Stroika::Foundation::Characters {
      *      o   std::tuple
      *      o   std::pair
      *      o   std::optional
+     *      o   std::wstring
+     *      o   std::filesystem::path
      *      o   exception_ptr
      *      o   POD types (int, bool, double, etc)
      *      o   anything with .begin (), .end () - so any contrainer/iterable

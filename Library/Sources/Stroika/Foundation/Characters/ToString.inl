@@ -112,7 +112,9 @@ namespace Stroika::Foundation::Characters {
         template <typename T>
         inline String ToString_ (const T& t, enable_if_t<is_convertible_v<T, String>>* = 0)
         {
-            return L"'" + static_cast<String> (t) + L"'";
+            constexpr size_t kMaxLen2Display_{100}; // no idea what a good value here will be or if we should provide ability to override. I suppose
+                                                    // users can template-specialize ToString(const String&)???
+            return L"'" + static_cast<String> (t).LimitLength (kMaxLen2Display_) + L"'";
         }
 
         String ToString_ex_ (const exception& t);
@@ -241,7 +243,7 @@ namespace Stroika::Foundation::Characters {
     template <>
     inline String ToString (const std::filesystem::path& t)
     {
-        return t.wstring ();
+        return ToString (t.wstring ()); // wrap in 'ToString' for surrounding quotes
     }
 
     template <typename T>
