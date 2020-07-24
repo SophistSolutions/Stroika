@@ -133,9 +133,9 @@ public:
         fBlockingQueuePusherThread_ = Thread::New (
             [this] () {
                 // This is a safe context
-                Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::Signals::{}::fBlockingQueueDelegatorThread_");
+                Debug::TraceContextBumper trcCtx{"Stroika::Foundation::Execution::Signals::{}::fBlockingQueueDelegatorThread_"};
                 while (true) {
-                    Debug::TraceContextBumper trcCtx1 ("Waiting for next safe signal");
+                    Debug::TraceContextBumper trcCtx1{"Waiting for next safe signal"};
                     Thread::CheckForInterruption ();
                     waitForNextSig_ ();
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -147,7 +147,7 @@ public:
                             while (fIncomingSignalCounts_[i] > 0) {
                                 DbgTrace (L"fIncomingSignalCounts_[%d] = %d", i, fIncomingSignalCounts_[i].load ());
                                 fIncomingSignalCounts_[i]--;
-                                Debug::TraceContextBumper trcCtx2 ("Invoking SAFE signal handlers");
+                                Debug::TraceContextBumper trcCtx2{"Invoking SAFE signal handlers"};
                                 for (SignalHandler sh : fHandlers_.rwget ()->LookupValue (i)) {
                                     Assert (sh.GetType () == SignalHandler::Type::eSafe);
                                     IgnoreExceptionsExceptThreadAbortForCall (sh (i));
@@ -181,7 +181,7 @@ public:
 public:
     ~Rep_ ()
     {
-        Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::Rep_::~Rep_");
+        Debug::TraceContextBumper trcCtx{"Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::Rep_::~Rep_"};
         Stroika_Foundation_Debug_ValgrindDisableHelgrind (fRecievedSig_); // For RARE (1/10 times) failure in regtest Foundation::Execution::Signals
         Thread::SuppressInterruptionInContext suppressInterruption;
         fBlockingQueuePusherThread_.Abort ();
@@ -272,15 +272,15 @@ shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> SignalHandlerRegistr
 
 SignalHandlerRegistry::SafeSignalsManager::SafeSignalsManager ()
 {
-    Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::CTOR");
-    Require (sTheRep_ == nullptr);
-    sTheRep_ = make_shared<SignalHandlerRegistry::SafeSignalsManager::Rep_> ();
+    Debug::TraceContextBumper trcCtx{"Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::CTOR"};
+    Require (atomic_load (&sTheRep_) == nullptr);
+    atomic_store (&sTheRep_, make_shared<SignalHandlerRegistry::SafeSignalsManager::Rep_> ());
 }
 
 SignalHandlerRegistry::SafeSignalsManager::~SafeSignalsManager ()
 {
-    Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::DTOR");
-    SignalHandlerRegistry::SafeSignalsManager::sTheRep_.reset (); // this will wait for shutdown of safe processing thread to shut down
+    Debug::TraceContextBumper trcCtx{"Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::DTOR"};
+    atomic_store (&SignalHandlerRegistry::SafeSignalsManager::sTheRep_, shared_ptr<Rep_>{}); // this will wait for shutdown of safe processing thread to shut down
 }
 
 /*
@@ -297,14 +297,13 @@ SignalHandlerRegistry& SignalHandlerRegistry::Get ()
 }
 
 SignalHandlerRegistry::SignalHandlerRegistry ()
-    : fDirectHandlers_ ()
 {
 #if qDebug
     static int nConstructed = 0;
     nConstructed++;
     Assert (nConstructed == 1);
 #endif
-    Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::CTOR");
+    Debug::TraceContextBumper trcCtx{"Stroika::Foundation::Execution::SignalHandlerRegistry::CTOR"};
 
     Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (fDirectSignalHandlersCache_Lock_);
     Stroika_Foundation_Debug_ValgrindDisableHelgrind (fDirectSignalHandlersCache_); // This is disabled on purpose, because we intentionally have no locks - and just read optimistically carefully. No locks cuz read from signal handler
@@ -312,14 +311,14 @@ SignalHandlerRegistry::SignalHandlerRegistry ()
 
 SignalHandlerRegistry::~SignalHandlerRegistry ()
 {
-    Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::DTOR");
-    Assert (SafeSignalsManager::sTheRep_ == nullptr); // must be cleared first
+    Debug::TraceContextBumper trcCtx{"Stroika::Foundation::Execution::SignalHandlerRegistry::DTOR"};
+    Assert (atomic_load (&SafeSignalsManager::sTheRep_) == nullptr); // must be cleared first
 }
 
 Set<SignalID> SignalHandlerRegistry::GetHandledSignals () const
 {
     Set<SignalID> result{fDirectHandlers_.cget ()->Keys ()};
-    if (shared_ptr<SafeSignalsManager::Rep_> tmp = SafeSignalsManager::sTheRep_) {
+    if (shared_ptr<SafeSignalsManager::Rep_> tmp = atomic_load (&SafeSignalsManager::sTheRep_)) {
         result += tmp->GetHandledSignals ();
     }
     return result;
@@ -328,7 +327,7 @@ Set<SignalID> SignalHandlerRegistry::GetHandledSignals () const
 Set<SignalHandler> SignalHandlerRegistry::GetSignalHandlers (SignalID signal) const
 {
     Set<SignalHandler> result = fDirectHandlers_.cget ()->LookupValue (signal);
-    if (shared_ptr<SafeSignalsManager::Rep_> tmp = SafeSignalsManager::sTheRep_) {
+    if (shared_ptr<SafeSignalsManager::Rep_> tmp = atomic_load (&SafeSignalsManager::sTheRep_)) {
         result += tmp->GetSignalHandlers (signal);
     }
     return result;
@@ -336,7 +335,7 @@ Set<SignalHandler> SignalHandlerRegistry::GetSignalHandlers (SignalID signal) co
 
 void SignalHandlerRegistry::SetSignalHandlers (SignalID signal)
 {
-    SetSignalHandlers (signal, Set<SignalHandler> ());
+    SetSignalHandlers (signal, Set<SignalHandler>{});
 }
 
 void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const SignalHandler& handler)
@@ -368,7 +367,7 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
         // To use safe signal handlers, you must have a SignalHandlerRegistry::SafeSignalsManager
         // defined first. It is recommended that you define an instance of
         // SignalHandlerRegistry::SafeSignalsManager handler; should be defined in main ()
-        Require (SafeSignalsManager::sTheRep_ != nullptr);
+        Require (atomic_load (&SafeSignalsManager::sTheRep_) != nullptr);
     }
 
     auto sigSetHandler = [] (SignalID signal, [[maybe_unused]] void (*fun) (int)) {
@@ -584,7 +583,7 @@ Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("thread") void SignalHandlerRegi
      *      >   Be CAREFUL to do as little as possible here.
      */
 #if qDoDbgTraceOnSignalHandlers_
-    Debug::TraceContextBumper trcCtx (L"Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler_", L"signal = %s", SignalToName (signal).c_str ());
+    Debug::TraceContextBumper trcCtx{L"Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler_", L"signal = %s", SignalToName (signal).c_str ()};
 #endif
 #if qDoBacktraceOnFirstPassSignalHandler_ and qDefaultTracingOn
     {
@@ -630,7 +629,7 @@ Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("thread") void SignalHandlerRegi
     // I THINK/HOPE it safe to increment/decrement the reference count on the shared_ptr.
     // But this isn't guaranteed by anything I'm aware of.
     //
-    shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = SignalHandlerRegistry::SafeSignalsManager::sTheRep_;
+    shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = atomic_load (&SignalHandlerRegistry::SafeSignalsManager::sTheRep_);
     if (tmp != nullptr) {
         tmp->NotifyOfArrivalOfPossiblySafeSignal (signal);
     }
