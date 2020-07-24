@@ -1022,6 +1022,8 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  \brief return the first maxLen (or fewer if string shorter) characters of this string (adding ellipsis if truncated)
+         *
          *  This function is for GUI/display purposes. It returns the given string, trimmed down
          *  to at most maxLen characters, and removes whitespace (on 'to trim' side - given by keepLeft flag -
          *  if needed to get under maxLen).
