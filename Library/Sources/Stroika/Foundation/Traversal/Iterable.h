@@ -679,7 +679,7 @@ namespace Stroika::Foundation::Traversal {
          *                  ...
          *      \endcode
          *
-         *      @todo provide overload that is more terse, where instead of specifing funciton, you specify ptr-to-member or some such?
+         *      @todo provide overload that is more terse, where instead of specifing function, you specify ptr-to-member or some such?
          *
          *  \see SelectIf
          */
