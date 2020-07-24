@@ -184,7 +184,7 @@ namespace {
                             Format (L"GetAssociatedContentType for fileSuffixes %s (expected %s, got %s)",
                                     ToString (possibleFileSuffixes).c_str (),
                                     ToString (i).c_str (),
-                                    ToString (possibleFileSuffixes.SelectIf<InternetMediaType> ([&] (String suffix) { return r.GetAssociatedContentType (suffix); }).As<Set<InternetMediaType>> ()).c_str ())
+                                    ToString (possibleFileSuffixes.Select<InternetMediaType> ([&] (String suffix) { return r.GetAssociatedContentType (suffix); }).As<Set<InternetMediaType>> ()).c_str ())
                                 .c_str ());
                     }
                 };

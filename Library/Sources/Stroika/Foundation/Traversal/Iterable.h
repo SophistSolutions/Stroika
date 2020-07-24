@@ -654,8 +654,6 @@ namespace Stroika::Foundation::Traversal {
          *  \brief  Compute a projection of the given type T to some argument set of subtypes, and apply that projection
          *          to the entire iterable, creating a new iterable.
          *
-         *  EXPERIMENTAL
-         *
          *  \par Example Usage
          *      \code
          *          Iterable<pair<int,char>> c { {1, 'a'}, {2, 'b'}, {3, 'c'} };
@@ -679,28 +677,24 @@ namespace Stroika::Foundation::Traversal {
          *                  ...
          *      \endcode
          *
-         *      @todo provide overload that is more terse, where instead of specifing function, you specify ptr-to-member or some such?
-         *
-         *  \see SelectIf
-         */
-        template <typename RESULT>
-        nonvirtual Iterable<RESULT> Select (const function<RESULT (const T&)>& extract) const;
-        template <typename T1, typename T2, typename RESULT = pair<T1, T2>>
-        [[deprecated ("Since Stroika v2.1b2 - just use the Select<RESULT> and a single extractor that produces the combined type (pair<T1,T2>)")]] nonvirtual Iterable<RESULT> Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2) const;
-        template <typename T1, typename T2, typename T3, typename RESULT = tuple<T1, T2, T3>>
-        [[deprecated ("Since Stroika v2.1b2 - just use the Select<RESULT> and a single extractor that produces the combined type (pair<T1,T2,T3>)")]] nonvirtual Iterable<RESULT> Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2, const function<T3 (const T&)>& extract3) const;
-
-    public:
-        /**
-         *  \brief - like Select<RESULT> but argument returns optional<RESULT> and nullopt interpretted as skipping that element
+         *  Overload which returns optional<RESULT> and nullopt interpretted as skipping that element
          *
          *  \par Example Usage
          *      \code
+         *          // GetAssociatedContentType -> optional<String> - skip items that are 'missing'
          *          possibleFileSuffixes.SelectIf<InternetMediaType> ([&] (String suffix) { return r.GetAssociatedContentType (suffix); }).As<Set<InternetMediaType>> ())
          *      \endcode
          */
         template <typename RESULT>
-        nonvirtual Iterable<RESULT> SelectIf (const function<optional<RESULT> (const T&)>& extract) const;
+        nonvirtual Iterable<RESULT> Select (const function<RESULT (const T&)>& extract) const;
+        template <typename RESULT>
+        nonvirtual Iterable<RESULT> Select (const function<optional<RESULT> (const T&)>& extract) const;
+
+    public:
+        template <typename T1, typename T2, typename RESULT = pair<T1, T2>>
+        [[deprecated ("Since Stroika v2.1b2 - just use the Select<RESULT> and a single extractor that produces the combined type (pair<T1,T2>)")]] nonvirtual Iterable<RESULT> Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2) const;
+        template <typename T1, typename T2, typename T3, typename RESULT = tuple<T1, T2, T3>>
+        [[deprecated ("Since Stroika v2.1b2 - just use the Select<RESULT> and a single extractor that produces the combined type (pair<T1,T2,T3>)")]] nonvirtual Iterable<RESULT> Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2, const function<T3 (const T&)>& extract3) const;
 
     public:
         /**

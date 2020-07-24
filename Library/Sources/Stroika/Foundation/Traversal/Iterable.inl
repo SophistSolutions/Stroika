@@ -564,7 +564,7 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <typename RESULT>
-    Iterable<RESULT> Iterable<T>::SelectIf (const function<optional<RESULT> (const T&)>& extract) const
+    Iterable<RESULT> Iterable<T>::Select (const function<optional<RESULT> (const T&)>& extract) const
     {
         RequireNotNull (extract);
         // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)

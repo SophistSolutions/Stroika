@@ -702,6 +702,10 @@ namespace {
             VerifyTestResult (c.Select<int> ([] (pair<int, char> p) { return p.first; }).SequentialEquals (Iterable<int>{1, 2, 3}));
         }
         {
+            Iterable<pair<int, char>> c{{1, 'a'}, {2, 'b'}, {3, 'c'}};
+            VerifyTestResult (c.Select<int> ([] (pair<int, char> p) { return (p.first & 1) ? optional<int>{p.first} : nullopt; }).SequentialEquals (Iterable<int>{1, 3}));
+        }
+        {
             using Characters::String;
             Iterable<int> c{3, 4, 7};
             VerifyTestResult (c.Select<String> ([] (int i) { return Characters::Format (L"%d", i); }).SequentialEquals (Iterable<String>{L"3", L"4", L"7"}));
