@@ -195,6 +195,8 @@ namespace Stroika::Foundation::DataExchange {
          * This returns true if the given type is known to be treatable as an XML. 
          *
          *  This examines the 'Type' field, sometimes subtype field, as well as leverages the Suffix field (if present).
+         *
+         *  \note This returns true if 'ct.GetSuffix () == L"xml"
          */
         nonvirtual bool IsXMLFormat (const InternetMediaType& ct) const;
     };
