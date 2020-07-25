@@ -19,17 +19,17 @@ namespace Stroika::Foundation::DataExchange {
      ********************************************************************************
      */
     inline InternetMediaType::InternetMediaType (AtomType type, AtomType subType, const Containers::Mapping<String, String>& parameters)
-        : fType_ (type)
-        , fSubType_ (subType)
-        , fParameters_ (parameters)
+        : fType_{type}
+        , fSubType_{subType}
+        , fParameters_{parameters}
     {
         Require (type.empty () == subType.empty ());
         Require (not type.empty () or parameters.empty ());
     }
     inline InternetMediaType::InternetMediaType (const String& type, const String& subType, const Containers::Mapping<String, String>& parameters)
-        : fType_ (type)
-        , fSubType_ (subType)
-        , fParameters_ (parameters)
+        : fType_{type}
+        , fSubType_{subType}
+        , fParameters_{parameters}
     {
         Require (type.empty () == subType.empty ());
         Require (not type.empty () or parameters.empty ());
@@ -44,6 +44,7 @@ namespace Stroika::Foundation::DataExchange {
     {
         fType_.clear ();
         fSubType_.clear ();
+        fSuffix_ = nullopt;
         fParameters_.clear ();
     }
     template <>
@@ -65,6 +66,16 @@ namespace Stroika::Foundation::DataExchange {
     inline auto InternetMediaType::GetSubType () const -> String
     {
         return fSubType_.GetPrintName ();
+    }
+    template <>
+    inline auto InternetMediaType::GetSuffix () const -> optional<AtomType>
+    {
+        return fSuffix_;
+    }
+    template <>
+    inline auto InternetMediaType::GetSuffix () const -> optional<String>
+    {
+        return fSuffix_ ? optional<String>{fSuffix_->GetPrintName ()} : nullopt;
     }
     inline Containers::Mapping<String, String> InternetMediaType::GetParameters () const
     {
@@ -175,6 +186,7 @@ namespace Stroika::Foundation::DataExchange::Private_ {
 
         const InternetMediaType kText_HTML_CT;
         const InternetMediaType kText_XHTML_CT;
+        const InternetMediaType kApplication_XML_CT;      
         const InternetMediaType kText_XML_CT;
         const InternetMediaType kText_PLAIN_CT;
         const InternetMediaType kText_CSV_CT;
@@ -211,6 +223,7 @@ namespace Stroika::Foundation::DataExchange::PredefinedInternetMediaType::PRIVAT
 
     inline const InternetMediaType& Text_HTML_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kText_HTML_CT; }
     inline const InternetMediaType& Text_XHTML_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kText_XHTML_CT; }
+    inline const InternetMediaType& ApplicationXML_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kApplication_XML_CT; }
     inline const InternetMediaType& Text_XML_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kText_XML_CT; }
     inline const InternetMediaType& Text_PLAIN_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kText_PLAIN_CT; }
     inline const InternetMediaType& Text_CSV_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kText_CSV_CT; }

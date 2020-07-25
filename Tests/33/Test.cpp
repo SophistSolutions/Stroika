@@ -54,7 +54,7 @@ namespace {
 namespace {
     void Test2_OptionsFile_ ()
     {
-        Debug::TraceContextBumper ctx ("{}::Test2_OptionsFile_");
+        Debug::TraceContextBumper ctx{"{}::Test2_OptionsFile_"};
         struct MyData_ {
             bool               fEnabled = false;
             optional<DateTime> fLastSynchronizedAt;
@@ -144,10 +144,16 @@ namespace {
     namespace Test5_InternetMediaType_ {
         void RunTests ()
         {
-            Debug::TraceContextBumper ctx ("{}::Test5_InternetMediaType_");
+            Debug::TraceContextBumper ctx{"{}::Test5_InternetMediaType_"};
             {
+                InternetMediaType ct0{L"text/plain"};
+                VerifyTestResult (ct0.GetType () == L"text");
+                VerifyTestResult (ct0.GetSubType () == L"plain");
+                VerifyTestResult (ct0.GetSuffix () == nullopt);
+
                 InternetMediaType ct1{L"text/plain;charset=ascii"};
                 VerifyTestResult ((ct1.GetParameters () == Containers::Mapping{Common::KeyValuePair<String, String>{L"charset", L"ascii"}}));
+                VerifyTestResult (ct1.GetSuffix () == nullopt);
 
                 InternetMediaType ct2{L"text/plain; charset = ascii"};
                 VerifyTestResult (ct1 == ct2);
@@ -157,6 +163,16 @@ namespace {
 
                 InternetMediaType ct4{L"text/plain; charset = \"ASCII\""}; // case insensitive compare key, but not value
                 VerifyTestResult (ct1 != ct4);
+
+                InternetMediaType ct5{L"application/vnd.ms-excel"};
+                VerifyTestResult (ct5.GetType () == L"application");
+                VerifyTestResult (ct5.GetSubType () == L"vnd.ms-excel");
+                VerifyTestResult (ct5.GetSuffix () == nullopt);
+
+                InternetMediaType ct6{L"application/mathml+xml"};
+                VerifyTestResult (ct6.GetType () == L"application");
+                VerifyTestResult (ct6.GetSubType () == L"mathml");
+                VerifyTestResult (ct6.GetSuffix () == L"+xml");
             }
             {
                 // Example from https://tools.ietf.org/html/rfc2045#page-10 - comments ignored, and quotes on value

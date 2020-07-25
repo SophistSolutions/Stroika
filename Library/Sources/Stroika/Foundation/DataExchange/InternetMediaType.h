@@ -30,10 +30,20 @@ namespace Stroika::Foundation::DataExchange {
      *  MIME content-types are also sometimes referred to as 'Internet media type'.
      *
      *  References:
+     *      o   https://en.wikipedia.org/wiki/Media_type
      *      o   https://tools.ietf.org/html/rfc2045#section-5.1
      *      o   https://tools.ietf.org/html/rfc2046
      *
-     *  \note - this class stores the type, subtype, and parameters, but it does NOT store any comments from the content-type
+     *
+     *  From https://en.wikipedia.org/wiki/Media_type:
+     *      type "/" [tree "."] subtype ["+" suffix] *[";" parameter]
+     *
+     *      The currently registered types are: 
+     *          application, audio, example, font, image, message, model, multipart, text and video
+     *
+     *  \note - this class stores the type, subtype, suffix, and parameters, but it does NOT store any comments from the content-type
+     *
+     *  \note The 'tree' is just merged into the 'subtype'
      *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
@@ -63,6 +73,8 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
+         *  \brief Gets the primary (major) type of the full internet media type (as a string or atom)
+         *
          *  Supported RETURN_TYPES:
          *      o   String
          *      o   AtomType
@@ -78,6 +90,17 @@ namespace Stroika::Foundation::DataExchange {
          */
         template <typename RETURN_TYPE = String>
         nonvirtual RETURN_TYPE GetSubType () const;
+
+    public:
+        /**
+         *  \brief this is the +XXX part of the internet media type (e.g. +xml) and is often omitted (but note this omits the + sign)
+         *
+         *  Supported RETURN_TYPES:
+         *      o   String
+         *      o   AtomType
+         */
+        template <typename RETURN_TYPE = String>
+        nonvirtual optional<RETURN_TYPE> GetSuffix () const;
 
     public:
         /**
@@ -159,6 +182,7 @@ namespace Stroika::Foundation::DataExchange {
     private:
         AtomType                            fType_;
         AtomType                            fSubType_;
+        optional<AtomType>                  fSuffix_;
         Containers::Mapping<String, String> fParameters_{String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive}};
 
 #if __cpp_impl_three_way_comparison < 201907
@@ -293,14 +317,21 @@ namespace Stroika::Foundation::DataExchange {
         constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Text_XHTML_CT> kText_XHTML;
 
         /**
+         *  deprecated - https://www.w3.org/2006/02/son-of-3023/draft-murata-kohn-lilley-xml-04.html#:~:text=Text%2Fxml%20Registration%20(deprecated),-MIME%20media%20type&text=Although%20listed%20as%20an%20optional,based%20content%20negotiation%20in%20HTTP.
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Text_XML_CT> kText_XML;
+        [[deprecated ("use kXML instead")]] constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Text_XML_CT> kText_XML;
 
         /**
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Application_XML_CT> kApplication_XML;
+
+        /**
+         *  \brief text/plain
          */
         constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Text_PLAIN_CT> kText_PLAIN;
 
         /**
+         *  \brief text/cvs
          */
         constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Text_CSV_CT> kText_CSV;
 
@@ -316,6 +347,13 @@ namespace Stroika::Foundation::DataExchange {
          * very unclear what to use, no clear standard!
          */
         constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::URL_CT> kURL;
+
+        /**
+         *  application/xml
+         *
+         *  \note use this because text/xml deprecated - https://www.w3.org/2006/02/son-of-3023/draft-murata-kohn-lilley-xml-04.html#:~:text=Text%2Fxml%20Registration%20(deprecated),-MIME%20media%20type&text=Although%20listed%20as%20an%20optional,based%20content%20negotiation%20in%20HTTP.
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::XML_CT> kXML;
 
         /**
          *  application/x-xslt

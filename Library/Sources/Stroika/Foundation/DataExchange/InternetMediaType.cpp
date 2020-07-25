@@ -33,6 +33,7 @@ DataExchange::Private_::InternetMediaType_ModuleData_::InternetMediaType_ModuleD
 
     , kText_HTML_CT (kText_Type, L"html"sv)
     , kText_XHTML_CT (kText_Type, L"xhtml"sv)
+    , kApplication_XML_CT (kApplication_Type, L"xml"sv)
     , kText_XML_CT (kText_Type, L"xml"sv)
     , kText_PLAIN_CT (kText_Type, L"plain"sv)
     , kText_CSV_CT (kText_Type, L"csv"sv)
@@ -44,7 +45,7 @@ DataExchange::Private_::InternetMediaType_ModuleData_::InternetMediaType_ModuleD
     // very unclear what to use, no clear standard!
     , kURL_CT (kApplication_Type, L"x-url"sv)
 
-    , kXML_CT (kText_Type, L"xml"sv)
+    , kXML_CT (kApplication_Type, L"xml"sv)
 
     , kXSLT_CT (kApplication_Type, L"x-xslt"sv)
     , kJavaArchive_CT (kApplication_Type, L"java-archive"sv)
@@ -69,13 +70,17 @@ InternetMediaType::InternetMediaType (const String& ct)
     //      https://tools.ietf.org/html/rfc7230#section-3.2.6
     //
     // but I'm not sure its really correct (but probably OK)
-    static const RegularExpression kTopLevelMatcher_ = L"([_\\-\\+\\!\\$[:alnum:]]+|\\*)/([_\\-\\+\\!\\$[:alnum:]]+|\\*)(.*)"_RegEx;
+    // based on https://www.regextester.com/110183 and fiddling with that regexp to add suffix/params
+    static const RegularExpression kTopLevelMatcher_ = L"(^[-\\w.]+)/([-\\w.]+)(\\+[a-z]*)?(.*)"_RegEx;
     Containers::Sequence<String>   matches;
     if (ct.Match (kTopLevelMatcher_, &matches) and matches.length () >= 2) {
         fType_    = matches[0];
         fSubType_ = matches[1];
-        if (matches.length () == 3) {
-            String moreParameters = matches[2];
+        if (matches.length () >= 3 and matches[2].length () > 1) {
+            fSuffix_ = matches[2].SubString (1);
+        }
+        if (matches.length () == 4) {
+            String moreParameters = matches[3];
             while (not moreParameters.empty ()) {
                 static const RegularExpression kParameterMatcher_ = L"\\s*;\\s*([_\\-[:alnum:]]+)\\s*=\\s*(\\S+)(.*)"_RegEx;
                 matches.clear ();
@@ -100,7 +105,8 @@ InternetMediaType::InternetMediaType (const String& ct)
         }
     }
     else {
-        Execution::Throw (DataExchange::BadFormatException{L"Badly formatted InternetMediaType"sv});
+        static const auto kException_ = DataExchange::BadFormatException{L"Badly formatted InternetMediaType"sv};
+        Execution::Throw (kException_);
     }
 }
 
