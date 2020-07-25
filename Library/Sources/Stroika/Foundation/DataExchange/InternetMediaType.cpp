@@ -162,6 +162,9 @@ String InternetMediaType::As () const
     sb += fType_.GetPrintName ();
     sb += L"/";
     sb += fSubType_.GetPrintName ();
+    if (fSuffix_) {
+        sb += L"+" + fSuffix_->GetPrintName ();
+    }
     for (auto&& p : fParameters_) {
         sb += L"; " + p.fKey + L": " + p.fValue;
     }
@@ -175,6 +178,10 @@ Common::strong_ordering InternetMediaType::THREEWAYCOMPARE_ (const InternetMedia
         return cmp;
     }
     cmp = Common::ThreeWayCompare (fSubType_, rhs.fSubType_);
+    if (cmp != Common::kEqual) {
+        return cmp;
+    }
+    cmp = Common::ThreeWayCompare (fSuffix_, rhs.fSuffix_);
     if (cmp != Common::kEqual) {
         return cmp;
     }

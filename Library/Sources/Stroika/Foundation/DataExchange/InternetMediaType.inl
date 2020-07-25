@@ -18,26 +18,33 @@ namespace Stroika::Foundation::DataExchange {
      ******************************** InternetMediaType *****************************
      ********************************************************************************
      */
-    inline InternetMediaType::InternetMediaType (AtomType type, AtomType subType, const Containers::Mapping<String, String>& parameters)
+    inline InternetMediaType::InternetMediaType (AtomType type, AtomType subType, optional<AtomType> suffix, const Containers::Mapping<String, String>& parameters)
         : fType_{type}
         , fSubType_{subType}
+        , fSuffix_{suffix}
         , fParameters_{parameters}
     {
         Require (type.empty () == subType.empty ());
-        Require (not type.empty () or parameters.empty ());
+        Require (not type.empty () or parameters.empty ()); // dont specify params without type
+        Require (not type.empty () or suffix == nullopt);   // dont specify suffix without type
+    }
+    inline InternetMediaType::InternetMediaType (AtomType type, AtomType subType, const Containers::Mapping<String, String>& parameters)
+        : InternetMediaType (type, subType, nullopt, parameters)
+    {
     }
     inline InternetMediaType::InternetMediaType (const String& type, const String& subType, const Containers::Mapping<String, String>& parameters)
-        : fType_{type}
-        , fSubType_{subType}
-        , fParameters_{parameters}
+        : InternetMediaType (static_cast<AtomType> (type), static_cast<AtomType> (subType), parameters)
     {
-        Require (type.empty () == subType.empty ());
-        Require (not type.empty () or parameters.empty ());
+    }
+    inline InternetMediaType::InternetMediaType (const String& type, const String& subType, const optional<String>& suffix, const Containers::Mapping<String, String>& parameters)
+        : InternetMediaType (static_cast<AtomType> (type), static_cast<AtomType> (subType), suffix == nullopt ? nullopt : optional<AtomType>{static_cast<AtomType> (*suffix)}, parameters)
+    {
     }
     inline bool InternetMediaType::empty () const
     {
         Assert (fType_.empty () == fSubType_.empty ());
-        Assert (not fType_.empty () or fParameters_.empty ());
+        Assert (not fType_.empty () or fParameters_.empty ()); // dont specify params without type
+        Assert (not fType_.empty () or fSuffix_ == nullopt);   // dont specify suffix without type
         return fType_.empty ();
     }
     inline void InternetMediaType::clear ()
@@ -186,7 +193,7 @@ namespace Stroika::Foundation::DataExchange::Private_ {
 
         const InternetMediaType kText_HTML_CT;
         const InternetMediaType kText_XHTML_CT;
-        const InternetMediaType kApplication_XML_CT;      
+        const InternetMediaType kApplication_XML_CT;
         const InternetMediaType kText_XML_CT;
         const InternetMediaType kText_PLAIN_CT;
         const InternetMediaType kText_CSV_CT;

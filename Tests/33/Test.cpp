@@ -172,7 +172,8 @@ namespace {
                 InternetMediaType ct6{L"application/mathml+xml"};
                 VerifyTestResult (ct6.GetType () == L"application");
                 VerifyTestResult (ct6.GetSubType () == L"mathml");
-                VerifyTestResult (ct6.GetSuffix () == L"+xml");
+                VerifyTestResult (ct6.GetSuffix () == L"xml");
+                VerifyTestResult (ct6.As<wstring> () == L"application/mathml+xml");
             }
             {
                 // Example from https://tools.ietf.org/html/rfc2045#page-10 - comments ignored, and quotes on value
