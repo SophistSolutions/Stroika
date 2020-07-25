@@ -184,7 +184,7 @@ Mapping<String, String> Response::GetEffectiveHeaders () const
     if (not fContentType_.empty ()) {
         wstring contentTypeString = fContentType_.As<wstring> ();
         // Don't override already specifed characterset
-        if (InternetMediaTypeRegistry::Get ().IsTextFormat (fContentType_) and contentTypeString.find (';') == wstring::npos) {
+        if (DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (fContentType_) and contentTypeString.find (';') == wstring::npos) {
             contentTypeString += L"; charset=" + Characters::GetCharsetString (fCodePage_);
         }
         tmp.Add (IO::Network::HTTP::HeaderName::kContentType, contentTypeString);
