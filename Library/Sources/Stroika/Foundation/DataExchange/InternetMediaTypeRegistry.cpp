@@ -612,8 +612,9 @@ optional<InternetMediaType> InternetMediaTypeRegistry::GetAssociatedContentType 
 
 bool InternetMediaTypeRegistry::IsTextFormat (const InternetMediaType& ct) const
 {
+    // @todo look into info in type files/backend to make extensible
     using AtomType = InternetMediaType::AtomType;
-    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kText) {
+    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kText ()) {
         return true;
     }
     if (IsXMLFormat (ct)) {
@@ -643,6 +644,7 @@ bool InternetMediaTypeRegistry::IsTextFormat (const InternetMediaType& ct) const
 
 bool InternetMediaTypeRegistry::IsImageFormat (const InternetMediaType& ct) const
 {
+    // @todo look into info in type files/backend to make extensible
     using AtomType = InternetMediaType::AtomType;
     if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kImage) {
         return true;
@@ -656,6 +658,7 @@ bool InternetMediaTypeRegistry::IsImageFormat (const InternetMediaType& ct) cons
 
 bool InternetMediaTypeRegistry::IsXMLFormat (const InternetMediaType& ct) const
 {
+    // @todo look into info in type files/backend to make extensible
     using AtomType = InternetMediaType::AtomType;
     if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kApplication) {
         Assert (InternetMediaTypes::kXML->GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
@@ -667,7 +670,7 @@ bool InternetMediaTypeRegistry::IsXMLFormat (const InternetMediaType& ct) const
             return true;
         }
     }
-    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kText) {
+    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kText ()) {
         static const AtomType kXMLAtom_ = L"xml"sv;
         if (ct.GetSubType<AtomType> () == kXMLAtom_) {
             return true;
