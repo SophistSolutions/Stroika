@@ -677,7 +677,7 @@ bool InternetMediaTypeRegistry::IsXMLFormat (const InternetMediaType& ct) const
         }
     }
     static const AtomType kXMLMediaTypeSuffix{L"xml"sv};
-    if (ct.GetSuffix () == kXMLMediaTypeSuffix) {
+    if (ct.GetSuffix<AtomType> () == kXMLMediaTypeSuffix) {
         return true;
     }
     /*
