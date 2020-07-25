@@ -646,7 +646,7 @@ bool InternetMediaTypeRegistry::IsImageFormat (const InternetMediaType& ct) cons
 {
     // @todo look into info in type files/backend to make extensible
     using AtomType = InternetMediaType::AtomType;
-    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kImage) {
+    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kImage ()) {
         return true;
     }
     /*
