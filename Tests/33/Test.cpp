@@ -180,7 +180,7 @@ namespace {
                 InternetMediaType ct1{L"text/plain; charset=us-ascii (Plain text)"};
                 InternetMediaType ct2{L"text/plain; charset=\"us-ascii\""};
                 VerifyTestResult (ct1 == ct2);
-                VerifyTestResult (ct1.IsTextFormat ());
+                VerifyTestResult (InternetMediaTypeRegistry::Get ().IsTextFormat (ct1));
             }
             {
                 auto dumpCT = [] (const String& label, InternetMediaType i) {
@@ -216,7 +216,7 @@ namespace {
                 {
                     VerifyTestResult (InternetMediaTypeRegistry::Get ().IsImageFormat (InternetMediaTypes::kImage_PNG));
                     VerifyTestResult (not InternetMediaTypeRegistry::Get ().IsImageFormat (InternetMediaTypes::kJSON));
-                    VerifyTestResult ( InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaTypes::kXML));
+                    VerifyTestResult (InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaTypes::kXML));
                     VerifyTestResult (not InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaTypes::kText_PLAIN));
                     VerifyTestResult (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kText_PLAIN));
                     VerifyTestResult (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kXML));

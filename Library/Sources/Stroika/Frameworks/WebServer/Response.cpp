@@ -15,6 +15,7 @@
 #include "../../Foundation/Containers/Common.h"
 #include "../../Foundation/DataExchange/BadFormatException.h"
 #include "../../Foundation/DataExchange/InternetMediaType.h"
+#include "../../Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "../../Foundation/Debug/Assertions.h"
 #include "../../Foundation/Debug/Trace.h"
 #include "../../Foundation/IO/Network/HTTP/ClientErrorException.h"
@@ -183,7 +184,7 @@ Mapping<String, String> Response::GetEffectiveHeaders () const
     if (not fContentType_.empty ()) {
         wstring contentTypeString = fContentType_.As<wstring> ();
         // Don't override already specifed characterset
-        if (fContentType_.IsTextFormat () and contentTypeString.find (';') == wstring::npos) {
+        if (InternetMediaTypeRegistry::Get ().IsTextFormat (fContentType_) and contentTypeString.find (';') == wstring::npos) {
             contentTypeString += L"; charset=" + Characters::GetCharsetString (fCodePage_);
         }
         tmp.Add (IO::Network::HTTP::HeaderName::kContentType, contentTypeString);
