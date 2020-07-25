@@ -621,20 +621,20 @@ bool InternetMediaTypeRegistry::IsTextFormat (const InternetMediaType& ct) const
         return true;
     }
     // well known types that can be treated as text (@todo need some way to extend this API)? - Maybe not here but in REGISTRY
-    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kApplication) {
-        Assert (InternetMediaTypes::kJSON->GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
+    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kApplication ()) {
+        Assert (InternetMediaTypes::kJSON->GetType<AtomType> () == InternetMediaTypes::Types::kApplication ());
         if (ct.GetSubType<AtomType> () == InternetMediaTypes::kJSON->GetSubType<AtomType> ()) {
             return true;
         }
-        Assert (InternetMediaTypes::kURL->GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
+        Assert (InternetMediaTypes::kURL->GetType<AtomType> () == InternetMediaTypes::Types::kApplication ());
         if (ct.GetSubType<AtomType> () == InternetMediaTypes::kURL->GetSubType<AtomType> ()) {
             return true;
         }
-        Assert (InternetMediaTypes::kApplication_XSLT->GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
+        Assert (InternetMediaTypes::kApplication_XSLT->GetType<AtomType> () == InternetMediaTypes::Types::kApplication ());
         if (ct.GetSubType<AtomType> () == InternetMediaTypes::kApplication_XSLT->GetSubType<AtomType> ()) {
             return true;
         }
-        Assert (InternetMediaTypes::kApplication_RTF->GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
+        Assert (InternetMediaTypes::kApplication_RTF->GetType<AtomType> () == InternetMediaTypes::Types::kApplication ());
         if (ct.GetSubType<AtomType> () == InternetMediaTypes::kApplication_RTF->GetSubType<AtomType> ()) {
             return true;
         }
@@ -660,12 +660,12 @@ bool InternetMediaTypeRegistry::IsXMLFormat (const InternetMediaType& ct) const
 {
     // @todo look into info in type files/backend to make extensible
     using AtomType = InternetMediaType::AtomType;
-    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kApplication) {
-        Assert (InternetMediaTypes::kXML->GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
+    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kApplication ()) {
+        Assert (InternetMediaTypes::kXML->GetType<AtomType> () == InternetMediaTypes::Types::kApplication ());
         if (ct.GetSubType<AtomType> () == InternetMediaTypes::kXML->GetSubType<AtomType> ()) {
             return true;
         }
-        Assert (InternetMediaTypes::kApplication_XSLT->GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
+        Assert (InternetMediaTypes::kApplication_XSLT->GetType<AtomType> () == InternetMediaTypes::Types::kApplication ());
         if (ct.GetSubType<AtomType> () == InternetMediaTypes::kApplication_XSLT->GetSubType<AtomType> ()) {
             return true;
         }
