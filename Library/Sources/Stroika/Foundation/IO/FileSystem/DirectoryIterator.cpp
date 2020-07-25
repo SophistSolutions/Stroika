@@ -267,6 +267,6 @@ private:
  ********************************************************************************
  */
 DirectoryIterator::DirectoryIterator (const filesystem::path& directoryName, IteratorReturnType iteratorReturns)
-    : Iterator<filesystem::path> (MakeSmartPtr<Rep_> (ToString (directoryName), iteratorReturns))
+    : Iterator<filesystem::path> (MakeSmartPtr<Rep_> (FromPath (directoryName), iteratorReturns))
 {
 }
