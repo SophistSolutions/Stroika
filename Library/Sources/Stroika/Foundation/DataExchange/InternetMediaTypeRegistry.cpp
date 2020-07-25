@@ -609,3 +609,73 @@ optional<InternetMediaType> InternetMediaTypeRegistry::GetAssociatedContentType 
     Assert (fileSuffix[0] == '.');
     return fFrontEndRep_->GetAssociatedContentType (fileSuffix);
 }
+
+bool InternetMediaTypeRegistry::IsTextFormat (const InternetMediaType& ct) const
+{
+    using AtomType = InternetMediaType::AtomType;
+    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kText ()) {
+        return true;
+    }
+    if (IsXMLFormat (ct)) {
+        return true;
+    }
+    // well known types that can be treated as text (@todo need some way to extend this API)? - Maybe not here but in REGISTRY
+    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kApplication) {
+        Assert (InternetMediaTypes::kJSON->GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
+        if (ct.GetSubType<AtomType> () == InternetMediaTypes::kJSON->GetSubType ()) {
+            return true;
+        }
+        Assert (InternetMediaTypes::kURL->GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
+        if (ct.GetSubType<AtomType> () == InternetMediaTypes::kURL->GetSubType ()) {
+            return true;
+        }
+        Assert (InternetMediaTypes::kApplication_XSLT->GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
+        if (ct.GetSubType<AtomType> () == InternetMediaTypes::kApplication_XSLT->GetSubType ()) {
+            return true;
+        }
+        Assert (InternetMediaTypes::kApplication_RTF->GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
+        if (ct.GetSubType<AtomType> () == InternetMediaTypes::kApplication_RTF->GetSubType ()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool InternetMediaTypeRegistry::IsImageFormat (const InternetMediaType& ct) const
+{
+    using AtomType = InternetMediaType::AtomType;
+    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kImage ()) {
+        return true;
+    }
+    /*
+     * TODO:
+     *      o   NEED EXTENSION MECHANSIM TO ADD OTHER TYPES
+     */
+    return false;
+}
+
+bool InternetMediaTypeRegistry::IsXMLFormat (const InternetMediaType& ct) const
+{
+    using AtomType = InternetMediaType::AtomType;
+    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kApplication) {
+        Assert (InternetMediaTypes::kXML->GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
+        if (ct.GetSubType<AtomType> () == InternetMediaTypes::kXML->GetSubType ()) {
+            return true;
+        }
+        Assert (InternetMediaTypes::kApplication_XSLT->GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
+        if (ct.GetSubType<AtomType> () == InternetMediaTypes::kApplication_XSLT->GetSubType ()) {
+            return true;
+        }
+    }
+    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kText) {
+        static const AtomType kXMLAtom_ = L"xml"sv;
+        if (ct.GetSubType<AtomType> () == kXMLAtom_) {
+            return true;
+        }
+    }
+    /*
+     * TODO:
+     *      o   NEED EXTENSION MECHANSIM TO ADD OTHER TYPES
+     */
+    return false;
+}

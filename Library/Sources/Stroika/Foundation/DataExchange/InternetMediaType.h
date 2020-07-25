@@ -126,18 +126,10 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual void clear ();
 
     public:
-        /**
-         *  \brief returns true if you can expect to treat as some sort of text and reasonably view - like text/html, application/x-ccr, application/x-url, etc...
-         *
-         *  See also PredefinedInternetMediaType::kText
-         */
-        nonvirtual bool IsTextFormat () const;
+        [[deprecated ("Use InternetMediaTypeRegistry::IsTextFormat")]] bool IsTextFormat () const;
 
     public:
-        /**
-         * subtype of image / *     {avoid comment-character}
-         */
-        nonvirtual bool IsImageFormat () const;
+        [[deprecated ("Use InternetMediaTypeRegistry::IsImageFormat")]] nonvirtual bool IsImageFormat () const;
 
     public:
         /**
@@ -267,14 +259,18 @@ namespace Stroika::Foundation::DataExchange {
         }
     }
 
+    /**
+     *      The currently registered types are: 
+     *          application, audio, example, font, image, message, model, multipart, text and video
+     */
     namespace InternetMediaTypes::Types {
 
         /**
-         *  \brief 'text'
+         *  \brief 'application'
          *
          *  This is the major type (atom) making up a class of InternetMediaTypes.
          */
-        constexpr Execution::VirtualConstant<InternetMediaType::AtomType, PredefinedInternetMediaType::PRIVATE_::Text_Type> kText;
+        constexpr Execution::VirtualConstant<InternetMediaType::AtomType, PredefinedInternetMediaType::PRIVATE_::Application_Type> kApplication;
 
         /**
          *  \brief 'image'
@@ -284,11 +280,11 @@ namespace Stroika::Foundation::DataExchange {
         constexpr Execution::VirtualConstant<InternetMediaType::AtomType, PredefinedInternetMediaType::PRIVATE_::Image_Type> kImage;
 
         /**
-         *  \brief 'image'
+         *  \brief 'text'
          *
          *  This is the major type (atom) making up a class of InternetMediaTypes.
          */
-        constexpr Execution::VirtualConstant<InternetMediaType::AtomType, PredefinedInternetMediaType::PRIVATE_::Application_Type> kApplication;
+        constexpr Execution::VirtualConstant<InternetMediaType::AtomType, PredefinedInternetMediaType::PRIVATE_::Text_Type> kText;
 
     }
 
@@ -326,7 +322,7 @@ namespace Stroika::Foundation::DataExchange {
 
         /**
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Application_XML_CT> kApplication_XML;
+        [[deprecated ("use kXML instead")]] constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Application_XML_CT> kApplication_XML;
 
         /**
          *  \brief text/plain
@@ -339,6 +335,7 @@ namespace Stroika::Foundation::DataExchange {
         constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Text_CSV_CT> kText_CSV;
 
         /**
+         *  \brief application/json
          */
         constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::JSON_CT> kJSON;
 

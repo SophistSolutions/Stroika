@@ -213,6 +213,19 @@ namespace {
                 checkCT (InternetMediaTypes::kJSON, {L".json"});
                 dumpCT (L"PNG", InternetMediaTypes::kImage_PNG);
                 checkCT (InternetMediaTypes::kImage_PNG, {L".png"});
+                {
+                    VerifyTestResult (InternetMediaTypeRegistry::Get ().IsImageFormat (InternetMediaTypes::kImage_PNG));
+                    VerifyTestResult (not InternetMediaTypeRegistry::Get ().IsImageFormat (InternetMediaTypes::kJSON));
+                    VerifyTestResult ( InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaTypes::kXML));
+                    VerifyTestResult (not InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaTypes::kText_PLAIN));
+                    VerifyTestResult (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kText_PLAIN));
+                    VerifyTestResult (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kXML));
+                    VerifyTestResult (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kText_HTML));
+                    VerifyTestResult (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kJSON));
+                    VerifyTestResult (not InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kImage_PNG));
+                    VerifyTestResult (not InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaType{L"text/foobar"}));
+                    VerifyTestResult (InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaType{L"text/foobar+xml"}));
+                }
             }
             {
                 Debug::TraceContextBumper ctx1 ("InternetMediaTypeRegistry::Get ().GetMediaTypes()");

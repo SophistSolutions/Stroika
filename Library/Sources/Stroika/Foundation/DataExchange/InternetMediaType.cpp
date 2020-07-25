@@ -34,7 +34,7 @@ DataExchange::Private_::InternetMediaType_ModuleData_::InternetMediaType_ModuleD
     , kText_HTML_CT (kText_Type, L"html"sv)
     , kText_XHTML_CT (kText_Type, L"xhtml"sv)
     , kApplication_XML_CT (kApplication_Type, L"xml"sv)
-    , kText_XML_CT (kText_Type, L"xml"sv)
+    , kText_XML_CT (kText_Type, L"xml"sv) // **deprecated**
     , kText_PLAIN_CT (kText_Type, L"plain"sv)
     , kText_CSV_CT (kText_Type, L"csv"sv)
 
@@ -110,43 +110,6 @@ InternetMediaType::InternetMediaType (const String& ct)
     }
 }
 
-bool InternetMediaType::IsTextFormat () const
-{
-    if (fType_ == InternetMediaTypes::Types::kText ()) {
-        return true;
-    }
-    /*
-     * TODO:
-     *      o   NEED EXTENSION MECHANSIM TO ADD OTHER TYPES - EG HelathFrameWorks PHR FORMATS
-     *              -- LGP 2011-10-04
-     */
-    if (Match (InternetMediaTypes::kJSON)) {
-        return true;
-    }
-    if (Match (InternetMediaTypes::kURL)) {
-        return true;
-    }
-    if (Match (InternetMediaTypes::kApplication_XSLT)) {
-        return true;
-    }
-    if (Match (InternetMediaTypes::kApplication_RTF)) {
-        return true;
-    }
-    return false;
-}
-
-bool InternetMediaType::IsImageFormat () const
-{
-    if (fType_ == InternetMediaTypes::Types::kImage ()) {
-        return true;
-    }
-    /*
-     * TODO:
-     *      o   NEED EXTENSION MECHANSIM TO ADD OTHER TYPES
-     */
-    return false;
-}
-
 String InternetMediaType::ToString () const
 {
     return Characters::ToString (As<String> ()); // format this string as any other normal string
@@ -199,4 +162,17 @@ Common::strong_ordering InternetMediaType::THREEWAYCOMPARE_ (const InternetMedia
         return Mapping<String, String>::SequentialThreeWayComparer{}(sortedMapping (fParameters_), sortedMapping (rhs.fParameters_));
 #endif
     }
+}
+
+// Just for this
+#include "InternetMediaTypeRegistry.h"
+
+bool InternetMediaType::IsTextFormat () const
+{
+    return InternetMediaTypeRegistry::Get ().IsTextFormat (*this);
+}
+
+bool InternetMediaType::IsImageFormat () const
+{
+    return InternetMediaTypeRegistry::Get ().IsImageFormat (*this);
 }

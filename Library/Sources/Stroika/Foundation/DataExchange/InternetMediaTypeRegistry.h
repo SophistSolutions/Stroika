@@ -175,6 +175,28 @@ namespace Stroika::Foundation::DataExchange {
          */
         nonvirtual optional<InternetMediaType> GetAssociatedContentType (const FileSuffixType& fileSuffix) const;
         nonvirtual optional<InternetMediaType> GetAssociatedContentType (const filesystem::path& fileSuffix) const;
+
+    public:
+        /**
+         *  \brief returns true if you can expect to treat as some sort of text and reasonably view - like text/html, application/x-ccr, application/x-url, etc...
+         *
+         *  This examines the 'Type' field, sometimes subtype field, as well as leverages the Suffix field (if present).
+         */
+        nonvirtual bool IsTextFormat (const InternetMediaType& ct) const;
+
+    public:
+        /**
+         * This returns true if the given type is known to be treatable as an image. 
+         */
+        nonvirtual bool IsImageFormat (const InternetMediaType& ct) const;
+
+    public:
+        /**
+         * This returns true if the given type is known to be treatable as an XML. 
+         *
+         *  This examines the 'Type' field, sometimes subtype field, as well as leverages the Suffix field (if present).
+         */
+        nonvirtual bool IsXMLFormat (const InternetMediaType& ct) const;
     };
 
     /**
