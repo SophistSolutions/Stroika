@@ -132,22 +132,11 @@ namespace Stroika::Foundation::DataExchange {
         [[deprecated ("Use InternetMediaTypeRegistry::IsImageFormat")]] nonvirtual bool IsImageFormat () const;
 
     public:
-        [[deprecated ("Use just compare GetType () == type (argument)")]] nonvirtual bool Match (const AtomType& type) const;
-        [[deprecated ("Use GetType<AtomType> () != rhs.GetType<AtomType> () and GetSubType<AtomType> () != rhs.GetSubType<AtomType> ()")]] nonvirtual bool Match (const InternetMediaType& rhs) const;
+        [[deprecated ("Since Stroika 2.1b2 - Use just compare GetType () == type (argument)")]] nonvirtual bool                                                                  Match (const AtomType& type) const;
+        [[deprecated ("Since Stroika 2.1b2 - Use GetType<AtomType> () != rhs.GetType<AtomType> () and GetSubType<AtomType> () != rhs.GetSubType<AtomType> ()")]] nonvirtual bool Match (const InternetMediaType& rhs) const;
 
     public:
-        /**
-         *  \brief This function compares similar types, like 
-         *         application/healthframe-PHR-Format and
-         *         application/healthframe-PHR-Format-2 etc
-         *         and returns true iff the given type is a prefix (case insensitive)
-         *         of the argument more general one. The types must match, and the
-         *         parameters are ignored.
-         *
-         *  \note Change as of Stroika v2.1d27 - now only checks prefix of
-         *        subtype - type must match - and now ignores parameters.
-         */
-        nonvirtual bool IsA (const InternetMediaType& moreGeneralType) const;
+        [[deprecated ("Since Stroika 2.1b2 - use InternetMediaTypeRegistry::IsA")]] nonvirtual bool IsA (const InternetMediaType& moreGeneralType) const;
 
 #if __cpp_impl_three_way_comparison >= 201907
     public:

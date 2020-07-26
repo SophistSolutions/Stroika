@@ -686,3 +686,15 @@ bool InternetMediaTypeRegistry::IsXMLFormat (const InternetMediaType& ct) const
      */
     return false;
 }
+
+ bool InternetMediaTypeRegistry::IsA (const InternetMediaType& moreGeneralType, const InternetMediaType& moreSpecificType) const
+
+{
+    using AtomType = InternetMediaType::AtomType;
+    if (moreSpecificType.GetType<AtomType> () != moreGeneralType.GetType<AtomType> ()) {
+        return false;
+    }
+    // compare just the subtypes, for prefix equals
+    // @todo temporary algorithm - works for old HealtFrame code but add some more general mechanism - configurable and based on /user/share/MIME
+    return moreSpecificType.GetSubType<String> ().StartsWith (moreGeneralType.GetSubType<String> (), Characters::CompareOptions::eCaseInsensitive);
+}

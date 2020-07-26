@@ -199,6 +199,28 @@ namespace Stroika::Foundation::DataExchange {
          *  \note This returns true if 'ct.GetSuffix () == L"xml"
          */
         nonvirtual bool IsXMLFormat (const InternetMediaType& ct) const;
+
+    public:
+        /**
+         *  \brief return true if moreSpecificType 'isa' moreGeneralType
+         *
+         *  The HISTORICAL algorithm for this is:
+         *
+         *         This function compares similar types, like 
+         *         application/healthframe-PHR-Format and
+         *         application/healthframe-PHR-Format-2 etc
+         *         and returns true iff the given type is a prefix (case insensitive)
+         *         of the argument more general one. The types must match, and the
+         *         parameters are ignored.
+         *
+         *         Change as of Stroika v2.1d27 - now only checks prefix of
+         *         subtype - type must match - and now ignores parameters.
+         *
+         *  @todo REDO this - and dont count on above old algorith. Will add new mechanism EITHER based on what I can read from
+         *        the MIME config files on each OS (except it appears windows), or from some registration 
+         *        
+         */
+        nonvirtual bool IsA (const InternetMediaType& moreGeneralType, const InternetMediaType& moreSpecificType) const;
     };
 
     /**
