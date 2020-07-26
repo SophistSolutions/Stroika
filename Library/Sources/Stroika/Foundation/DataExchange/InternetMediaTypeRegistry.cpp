@@ -687,8 +687,7 @@ bool InternetMediaTypeRegistry::IsXMLFormat (const InternetMediaType& ct) const
     return false;
 }
 
- bool InternetMediaTypeRegistry::IsA (const InternetMediaType& moreGeneralType, const InternetMediaType& moreSpecificType) const
-
+bool InternetMediaTypeRegistry::IsA (const InternetMediaType& moreGeneralType, const InternetMediaType& moreSpecificType) const
 {
     using AtomType = InternetMediaType::AtomType;
     if (moreSpecificType.GetType<AtomType> () != moreGeneralType.GetType<AtomType> ()) {
