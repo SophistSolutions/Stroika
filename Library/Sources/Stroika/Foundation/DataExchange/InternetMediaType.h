@@ -132,11 +132,8 @@ namespace Stroika::Foundation::DataExchange {
         [[deprecated ("Use InternetMediaTypeRegistry::IsImageFormat")]] nonvirtual bool IsImageFormat () const;
 
     public:
-        /**
-         *  Like 'Equals' but only comparing type/subtype (or for AtomType overload only matching type)
-         */
-        nonvirtual bool Match (const AtomType& type) const;
-        nonvirtual bool Match (const InternetMediaType& rhs) const;
+        [[deprecated ("Use just compare GetType () == type (argument)")]] nonvirtual bool Match (const AtomType& type) const;
+        [[deprecated ("Use GetType<AtomType> () != rhs.GetType<AtomType> () and GetSubType<AtomType> () != rhs.GetSubType<AtomType> ()")]] nonvirtual bool Match (const InternetMediaType& rhs) const;
 
     public:
         /**
