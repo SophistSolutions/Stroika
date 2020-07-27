@@ -68,12 +68,12 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
 
     // OVERRIDE values (take precedence over backend) and any other data we need to keep locked (syncrhonized)
     struct Data_ {
-        shared_ptr<IBackendRep>                             fBackendRep;         // lazy construct on first call to usage (since that construction can be slow)
+        shared_ptr<IBackendRep> fBackendRep; // lazy construct on first call to usage (since that construction can be slow)
 
-        Mapping<FileSuffixType, InternetMediaType>          fSuffix2MediaTypeMap;
-        Mapping<InternetMediaType, FileSuffixType>          fMediaType2PreferredSuffixMap;
-        Mapping<InternetMediaType, String>                  fMediaType2PrettyName;
-        Mapping<InternetMediaType, Set<FileSuffixType>>     fMediaType2FileSuffixes;
+        Mapping<FileSuffixType, InternetMediaType>      fSuffix2MediaTypeMap;
+        Mapping<InternetMediaType, FileSuffixType>      fMediaType2PreferredSuffixMap;
+        Mapping<InternetMediaType, String>              fMediaType2PrettyName;
+        Mapping<InternetMediaType, Set<FileSuffixType>> fMediaType2FileSuffixes;
     };
     mutable Synchronized<Data_> fData_;
 
@@ -453,9 +453,9 @@ auto InternetMediaTypeRegistry::BakedInDefaultBackend () -> shared_ptr<IBackendR
 {
     Debug::TraceContextBumper ctx{"InternetMediaTypeRegistry::BakedInDefaultBackend"};
     struct DefaultEmptyBackendRep_ : IBackendRep {
-        virtual Set<InternetMediaType> GetMediaTypes ([[maybe_unused]]optional<InternetMediaType::AtomType> majorType) const override
+        virtual Set<InternetMediaType> GetMediaTypes ([[maybe_unused]] optional<InternetMediaType::AtomType> majorType) const override
         {
-            return Set<InternetMediaType> {};
+            return Set<InternetMediaType>{};
         }
         virtual optional<FileSuffixType> GetPreferredAssociatedFileSuffix ([[maybe_unused]] const InternetMediaType& ct) const override
         {
