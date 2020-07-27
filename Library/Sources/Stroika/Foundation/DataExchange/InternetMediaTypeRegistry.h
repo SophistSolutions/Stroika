@@ -11,6 +11,7 @@
 
 #include "../Characters/String.h"
 #include "../Containers/Set.h"
+#include "../Execution/VirtualConstant.h"
 
 #include "InternetMediaType.h"
 
@@ -244,6 +245,172 @@ namespace Stroika::Foundation::DataExchange {
         virtual optional<String>            GetAssociatedPrettyName (const InternetMediaType& ct) const             = 0;
         virtual optional<InternetMediaType> GetAssociatedContentType (const FileSuffixType& fileNameOrSuffix) const = 0;
     };
+
+    /**
+     *  NB: these are basically constants, but declaring them as
+     *      const   InternetMediaType   kHealthBookURL_CT                   =   ContentType (L"application/x-healthbook-url");
+     *  causes the string CTOR for ContentType to be evaluated multiple times - once for each module this CPP file is loaded
+     *  into (way overkill - esp if not used).
+     *
+     *  I tried declaring these as extern const ContentType& kImage_CT;
+     *  but that produced problems accessing them at application startup (deadly embrace of startup module issues).
+     *
+     *  This appears the best compromise. They get initialized once (using the ModuleInit<> code) - and effectively
+     *  referenced (after inlining) through an extra pointer, but that should be the limit of the overhead - if the
+     *  compilers do a decent job.
+     *      -- LGP 2009-05-29
+     *
+     *  \note
+     *      @see http://www.iana.org/assignments/media-types/media-types.xhtml
+     *
+     *  @todo
+     *          https://stroika.atlassian.net/browse/STK-576 - move to InternetMediaTypeRegistry
+     */
+    namespace PredefinedInternetMediaType {
+        namespace PRIVATE_ {
+
+            const InternetMediaType::AtomType& Text_Type ();
+            const InternetMediaType::AtomType& Image_Type ();
+            const InternetMediaType::AtomType& Application_Type ();
+
+            const InternetMediaType& OctetStream_CT ();
+            const InternetMediaType& Image_PNG_CT ();
+            const InternetMediaType& Image_GIF_CT ();
+            const InternetMediaType& Image_JPEG_CT ();
+            const InternetMediaType& Text_HTML_CT ();
+            const InternetMediaType& Text_XHTML_CT ();
+            const InternetMediaType& Application_XML_CT ();
+            const InternetMediaType& Text_XML_CT ();
+            const InternetMediaType& Text_PLAIN_CT ();
+            const InternetMediaType& Text_CSV_CT ();
+            const InternetMediaType& JSON_CT ();
+            const InternetMediaType& PDF_CT ();
+            const InternetMediaType& URL_CT ();
+            const InternetMediaType& XML_CT ();
+            const InternetMediaType& XSLT_CT ();
+            const InternetMediaType& JavaArchive_CT ();
+            const InternetMediaType& Application_RTF_CT ();
+            const InternetMediaType& Application_Zip_CT ();
+        }
+    }
+
+    /**
+     *      The currently registered types are: 
+     *          application, audio, example, font, image, message, model, multipart, text and video
+     */
+    namespace InternetMediaTypes::Types {
+
+        /**
+         *  \brief 'application'
+         *
+         *  This is the major type (atom) making up a class of InternetMediaTypes.
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType::AtomType, PredefinedInternetMediaType::PRIVATE_::Application_Type> kApplication;
+
+        /**
+         *  \brief 'image'
+         *
+         *  This is the major type (atom) making up a class of InternetMediaTypes.
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType::AtomType, PredefinedInternetMediaType::PRIVATE_::Image_Type> kImage;
+
+        /**
+         *  \brief 'text'
+         *
+         *  This is the major type (atom) making up a class of InternetMediaTypes.
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType::AtomType, PredefinedInternetMediaType::PRIVATE_::Text_Type> kText;
+
+    }
+
+    namespace InternetMediaTypes {
+
+        /**
+         *  \brief application/octet-stream
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::OctetStream_CT> kOctetStream;
+
+        /**
+         *  \brief image/png
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Image_PNG_CT> kImage_PNG;
+
+        /**
+         *  \brief image/gif
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Image_GIF_CT> kImage_GIF;
+
+        /**
+         *  \brief image/jpeg
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Image_JPEG_CT> kImage_JPEG;
+
+        /**
+         * \brief text/html
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Text_HTML_CT> kText_HTML;
+
+        [[deprecated ("Since Stroika v2.1b2 - use kHTML (probably - not same thing)")]] constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Text_XHTML_CT> kText_XHTML;
+
+        // deprecated - https://www.w3.org/2006/02/son-of-3023/draft-murata-kohn-lilley-xml-04.html#:~:text=Text%2Fxml%20Registration%20(deprecated),-MIME%20media%20type&text=Although%20listed%20as%20an%20optional,based%20content%20negotiation%20in%20HTTP.
+        [[deprecated ("use kXML instead")]] constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Text_XML_CT> kText_XML;
+
+        [[deprecated ("use kXML instead")]] constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Application_XML_CT> kApplication_XML;
+
+        /**
+         *  \brief text/plain
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Text_PLAIN_CT> kText_PLAIN;
+
+        /**
+         *  \brief text/cvs
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Text_CSV_CT> kText_CSV;
+
+        /**
+         *  \brief application/json
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::JSON_CT> kJSON;
+
+        /**
+         *  \brief application/pdf
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::PDF_CT> kPDF;
+
+        /**
+         * \brief text/uri-list (@see https://tools.ietf.org/html/rfc2483#section-5)
+         *
+         *  \note until Stroika 2.1b2, this was defined as application/x-url
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::URL_CT> kURL;
+
+        /**
+         *  \brief application/xml (@see https://www.w3.org/2006/02/son-of-3023/draft-murata-kohn-lilley-xml-04.html#rfc.section.3.2)
+         *
+         *  \note use this because text/xml deprecated - https://www.w3.org/2006/02/son-of-3023/draft-murata-kohn-lilley-xml-04.html#:~:text=Text%2Fxml%20Registration%20(deprecated),-MIME%20media%20type&text=Although%20listed%20as%20an%20optional,based%20content%20negotiation%20in%20HTTP.
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::XML_CT> kXML;
+
+        /**
+         *  \brief application/x-xslt
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::XSLT_CT> kApplication_XSLT;
+
+        /**
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::JavaArchive_CT> kJavaArchive;
+
+        /**
+         * Microsoft RTF - Rich Text Format
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Application_RTF_CT> kApplication_RTF;
+
+        /**
+         *  \brief application/zip
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Application_Zip_CT> kApplication_Zip;
+
+    }
 
 }
 
