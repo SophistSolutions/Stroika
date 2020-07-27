@@ -153,112 +153,6 @@ shared_ptr<InternetMediaTypeRegistry::IBackendRep> InternetMediaTypeRegistry::De
     return BakedInDefaultBackend (); // always works (but sucks)
 }
 
-#if qPlatform_Windows
-auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<IBackendRep>
-{
-    /*
-     *  I can find no documentation on how this works, but at least https://stackoverflow.com/questions/3442607/mime-types-in-the-windows-registry
-     *  mentions it.
-     *
-     *  Empirically you can find:
-     *          HKEY_CLASSES_ROOT\MIME\Database
-     *              Content Type\CT\Extension
-     *              This layout does not appear to accomodate ever having more than one extension for a given mime type
-     *
-     *          HKEY_CLASSES_ROOT\FILE_SUFFIX
-     *              {default} pretty name
-     *              Content Type: 'internet media type'
-     */
-    Debug::TraceContextBumper ctx{"InternetMediaTypeRegistry::WindowsRegistryDefaultBackend"};
-    struct WinRep_ : IBackendRep {
-        // underlying windows code fast so use small cache sizes
-        mutable Cache::SynchronizedLRUCache<FileSuffixType, optional<String>, equal_to<FileSuffixType>, hash<FileSuffixType>>                  fFileSuffix2PrettyNameCache_{25, 7};
-        mutable Cache::SynchronizedLRUCache<FileSuffixType, optional<InternetMediaType>, equal_to<FileSuffixType>, hash<FileSuffixType>>       fSuffix2MediaTypeCache_{25, 7};
-        mutable Cache::SynchronizedLRUCache<InternetMediaType, optional<FileSuffixType>, equal_to<InternetMediaType>, hash<InternetMediaType>> fContentType2FileSuffixCache_{25, 7};
-
-        virtual Set<InternetMediaType> GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const override
-        {
-            Set<InternetMediaType> result;
-            //
-            // rarely do we fetch all MIME types, so don't cache - just refetch each time
-            //
-            // On Windows, in registry, easiest way appears to be to enumerate ALL registry entries in HKCR that start with .,
-            // and look for sub-field 'Content-type'
-            //
-            using RegistryKey = Configuration::Platform::Windows::RegistryKey;
-            for (shared_ptr<RegistryKey> sk : RegistryKey{HKEY_CLASSES_ROOT}.EnumerateSubKeys ()) {
-                // @todo check if this keys name starts with ., but with current API difficult, so just check all entries for Content Type value
-                if (auto o = sk->Lookup (L"Content Type"sv)) {
-                    InternetMediaType imt;
-                    try {
-                        imt = InternetMediaType{o.As<String> ()};
-                    }
-                    catch (...) {
-                        // ignore bad format - such as .sqlproj has Content-Type "string" which my read of the RFC says is illegal
-                        DbgTrace ("Ignoring exception looking parsing registry key (%s): %s", Characters::ToString (o).c_str (), Characters::ToString (current_exception ()).c_str ());
-                        continue;
-                    }
-                    if (majorType) {
-                        if (imt.GetType<InternetMediaType::AtomType> () != *majorType) {
-                            continue; // skip non-matching types
-                        }
-                    }
-                    result.Add (imt);
-                }
-            }
-            return result;
-        }
-        virtual optional<FileSuffixType> GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const override
-        {
-            return fContentType2FileSuffixCache_.LookupValue (ct, [] (const InternetMediaType& ct) -> optional<FileSuffixType> {
-                if (auto fs = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (Characters::Format (L"MIME\\Database\\Content Type\\%s\\Extension", ct.As<String> ().c_str ()))) {
-                    return fs.As<String> ();
-                }
-                return nullopt;
-            });
-        }
-        virtual Set<FileSuffixType> GetAssociatedFileSuffixes (const InternetMediaType& ct) const override
-        {
-            // On Windows, for this registry format (see docs above class definition) - this only supports one suffix per content type
-            Set<String> result;
-            if (auto i = GetPreferredAssociatedFileSuffix (ct)) {
-                result += *i;
-            }
-            return result;
-        }
-        virtual optional<String> GetAssociatedPrettyName (const InternetMediaType& ct) const override
-        {
-            if (optional<FileSuffixType> fileSuffix = GetPreferredAssociatedFileSuffix (ct)) {
-                return fFileSuffix2PrettyNameCache_.LookupValue (*fileSuffix, [] (const String& suffix) -> optional<String> {
-                    if (auto fileTypeID = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (suffix + L"\\")) {
-                        if (auto prettyName = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (fileTypeID.As<String> () + L"\\")) {
-                            return prettyName.As<String> ();
-                        }
-                    }
-                    return nullopt;
-                });
-            }
-            return nullopt;
-        }
-        virtual optional<InternetMediaType> GetAssociatedContentType (const FileSuffixType& fileSuffix) const override
-        {
-            Require (fileSuffix[0] == '.');
-            return fSuffix2MediaTypeCache_.LookupValue (fileSuffix, [] (const FileSuffixType& fileSuffix) -> optional<InternetMediaType> {
-                using Characters::Format;
-                using Configuration::Platform::Windows::RegistryKey;
-                // only do registry lookup if needed, since (probably) more costly than local map lookup
-                if (auto oct = RegistryKey{HKEY_CLASSES_ROOT}.Lookup (Format (L"%s\\Content Type", fileSuffix.c_str ()))) {
-                    InternetMediaType mediaType{oct.As<String> ()};
-                    return mediaType;
-                }
-                return nullopt;
-            });
-        }
-    };
-    return make_shared<WinRep_> ();
-}
-#endif
-
 auto InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend () -> shared_ptr<IBackendRep>
 {
     Debug::TraceContextBumper ctx{"InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend"};
@@ -583,6 +477,112 @@ auto InternetMediaTypeRegistry::BakedInDefaultBackend () -> shared_ptr<IBackendR
     };
     return make_shared<BakedInTypesRep_> ();
 }
+
+#if qPlatform_Windows
+auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<IBackendRep>
+{
+    /*
+     *  I can find no documentation on how this works, but at least https://stackoverflow.com/questions/3442607/mime-types-in-the-windows-registry
+     *  mentions it.
+     *
+     *  Empirically you can find:
+     *          HKEY_CLASSES_ROOT\MIME\Database
+     *              Content Type\CT\Extension
+     *              This layout does not appear to accomodate ever having more than one extension for a given mime type
+     *
+     *          HKEY_CLASSES_ROOT\FILE_SUFFIX
+     *              {default} pretty name
+     *              Content Type: 'internet media type'
+     */
+    Debug::TraceContextBumper ctx{"InternetMediaTypeRegistry::WindowsRegistryDefaultBackend"};
+    struct WinRep_ : IBackendRep {
+        // underlying windows code fast so use small cache sizes
+        mutable Cache::SynchronizedLRUCache<FileSuffixType, optional<String>, equal_to<FileSuffixType>, hash<FileSuffixType>>                  fFileSuffix2PrettyNameCache_{25, 7};
+        mutable Cache::SynchronizedLRUCache<FileSuffixType, optional<InternetMediaType>, equal_to<FileSuffixType>, hash<FileSuffixType>>       fSuffix2MediaTypeCache_{25, 7};
+        mutable Cache::SynchronizedLRUCache<InternetMediaType, optional<FileSuffixType>, equal_to<InternetMediaType>, hash<InternetMediaType>> fContentType2FileSuffixCache_{25, 7};
+
+        virtual Set<InternetMediaType> GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const override
+        {
+            Set<InternetMediaType> result;
+            //
+            // rarely do we fetch all MIME types, so don't cache - just refetch each time
+            //
+            // On Windows, in registry, easiest way appears to be to enumerate ALL registry entries in HKCR that start with .,
+            // and look for sub-field 'Content-type'
+            //
+            using RegistryKey = Configuration::Platform::Windows::RegistryKey;
+            for (shared_ptr<RegistryKey> sk : RegistryKey{HKEY_CLASSES_ROOT}.EnumerateSubKeys ()) {
+                // @todo check if this keys name starts with ., but with current API difficult, so just check all entries for Content Type value
+                if (auto o = sk->Lookup (L"Content Type"sv)) {
+                    InternetMediaType imt;
+                    try {
+                        imt = InternetMediaType{o.As<String> ()};
+                    }
+                    catch (...) {
+                        // ignore bad format - such as .sqlproj has Content-Type "string" which my read of the RFC says is illegal
+                        DbgTrace ("Ignoring exception looking parsing registry key (%s): %s", Characters::ToString (o).c_str (), Characters::ToString (current_exception ()).c_str ());
+                        continue;
+                    }
+                    if (majorType) {
+                        if (imt.GetType<InternetMediaType::AtomType> () != *majorType) {
+                            continue; // skip non-matching types
+                        }
+                    }
+                    result.Add (imt);
+                }
+            }
+            return result;
+        }
+        virtual optional<FileSuffixType> GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const override
+        {
+            return fContentType2FileSuffixCache_.LookupValue (ct, [] (const InternetMediaType& ct) -> optional<FileSuffixType> {
+                if (auto fs = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (Characters::Format (L"MIME\\Database\\Content Type\\%s\\Extension", ct.As<String> ().c_str ()))) {
+                    return fs.As<String> ();
+                }
+                return nullopt;
+            });
+        }
+        virtual Set<FileSuffixType> GetAssociatedFileSuffixes (const InternetMediaType& ct) const override
+        {
+            // On Windows, for this registry format (see docs above class definition) - this only supports one suffix per content type
+            Set<String> result;
+            if (auto i = GetPreferredAssociatedFileSuffix (ct)) {
+                result += *i;
+            }
+            return result;
+        }
+        virtual optional<String> GetAssociatedPrettyName (const InternetMediaType& ct) const override
+        {
+            if (optional<FileSuffixType> fileSuffix = GetPreferredAssociatedFileSuffix (ct)) {
+                return fFileSuffix2PrettyNameCache_.LookupValue (*fileSuffix, [] (const String& suffix) -> optional<String> {
+                    if (auto fileTypeID = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (suffix + L"\\")) {
+                        if (auto prettyName = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (fileTypeID.As<String> () + L"\\")) {
+                            return prettyName.As<String> ();
+                        }
+                    }
+                    return nullopt;
+                });
+            }
+            return nullopt;
+        }
+        virtual optional<InternetMediaType> GetAssociatedContentType (const FileSuffixType& fileSuffix) const override
+        {
+            Require (fileSuffix[0] == '.');
+            return fSuffix2MediaTypeCache_.LookupValue (fileSuffix, [] (const FileSuffixType& fileSuffix) -> optional<InternetMediaType> {
+                using Characters::Format;
+                using Configuration::Platform::Windows::RegistryKey;
+                // only do registry lookup if needed, since (probably) more costly than local map lookup
+                if (auto oct = RegistryKey{HKEY_CLASSES_ROOT}.Lookup (Format (L"%s\\Content Type", fileSuffix.c_str ()))) {
+                    InternetMediaType mediaType{oct.As<String> ()};
+                    return mediaType;
+                }
+                return nullopt;
+            });
+        }
+    };
+    return make_shared<WinRep_> ();
+}
+#endif
 
 Set<InternetMediaType> InternetMediaTypeRegistry::GetMediaTypes () const
 {
