@@ -14,8 +14,8 @@
 
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Cryptography/Encoding/Algorithm/Base64.h"
-#include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
+#include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Valgrind.h"
 #include "Stroika/Foundation/Execution/Activity.h"

@@ -83,7 +83,7 @@ namespace Stroika::Foundation::DataExchange::Private_ {
 }
 
 namespace {
-    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::DataExchange::Private_::InternetMediaType_ModuleData_> _Stroika_Foundation_DataExchange_InternetMediaType_ModuleData_; // this object constructed for the CTOR/DTOR per-module side-effects
+    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::DataExchange::Private_::InternetMediaType_ModuleData_> _Stroika_Foundation_DataExchange_InternetMediaTypeRegistry_ModuleData_; // this object constructed for the CTOR/DTOR per-module side-effects
 }
 
 namespace Stroika::Foundation::DataExchange::PredefinedInternetMediaType::PRIVATE_ {
@@ -120,6 +120,7 @@ namespace Stroika::Foundation::DataExchange::PredefinedInternetMediaType::PRIVAT
     inline const InternetMediaType& Application_RTF_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kApplication_RTF_CT; }
 
     inline const InternetMediaType& Application_Zip_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kApplication_Zip_CT; }
+
 }
 
 #endif /*_Stroika_Foundation_DataExchange_InternetMediaType_inl_*/
