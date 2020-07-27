@@ -86,7 +86,6 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
     {
         auto lockedData = fData_.rwget ();
         CheckData_ (&lockedData);
-        // @todo fetch all suffixes
         Set<String> result;
         if (auto i = GetPreferredAssociatedFileSuffix (ct)) {
             result += *i;
@@ -268,14 +267,12 @@ auto InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend () -> shared_ptr<IBac
      *
      *  not sure this is useful - not sure who uses it that doesn't support /usr/share/mime...
      *
-     *  And this is much less complete.
-     *
      *  Preload the entire DB since its not practical to scan looking for the intended record (due to the time this would take).
      */
     struct EtcMimeTypesRep_ : IBackendRep {
-        // NOTE - we cannot use Bijection, because multiple media-types can map to a single filetype and not all mediatypes have a filetype
-        Mapping<FileSuffixType, InternetMediaType> fSuffix2MediaTypeMap_;
-        Mapping<InternetMediaType, FileSuffixType> fMediaType2PreferredSuffixMap_;
+        Mapping<FileSuffixType, InternetMediaType>      fSuffix2MediaTypeMap_;
+        Mapping<InternetMediaType, FileSuffixType>      fMediaType2PreferredSuffixMap_;
+        Mapping<InternetMediaType, Set<FileSuffixType>> fMediaType2SuffixesMap_;
 
         EtcMimeTypesRep_ ()
         {
@@ -292,13 +289,19 @@ auto InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend () -> shared_ptr<IBac
                         DbgTrace ("Ignoring exception looking parsing potential media type entry (%s): %s", Characters::ToString (line[0]).c_str (), Characters::ToString (current_exception ()).c_str ());
                     }
                     // a line starts with a content type, but then contains any number of file suffixes (without the leading .)
+                    Set<FileSuffixType> fileSuffixes;
                     for (size_t i = 1; i < line.length (); ++i) {
+                        Assert (not line[i].empty ());
                         String suffix = L"."sv + line[i];
                         fSuffix2MediaTypeMap_.Add (suffix, ct);
                         fMediaType2PreferredSuffixMap_.AddIf (ct, suffix, false);
+                        fileSuffixes.Add (suffix);
                     }
+                    fMediaType2SuffixesMap_.Add (ct, fileSuffixes);
                 }
             }
+            // Because on raspberrypi/debian, this comes out with a crazy default for text\plain -- LGP 2020-07-27
+            fMediaType2PreferredSuffixMap_.Add (InternetMediaTypes::kText_PLAIN, L".txt");
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"succeeded with %d fSuffix2MediaTypeMap entries, and %d fMediaType2PreferredSuffixMap entries", fSuffix2MediaTypeMap_.size (), fMediaType2PreferredSuffixMap_.size ());
 #endif
@@ -323,12 +326,10 @@ auto InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend () -> shared_ptr<IBac
         }
         virtual Set<FileSuffixType> GetAssociatedFileSuffixes (const InternetMediaType& ct) const override
         {
-            // @todo fetch all suffixes - but we don't currently store that.
-            Set<String> result;
-            if (auto i = fMediaType2PreferredSuffixMap_.Lookup (ct)) {
-                result += *i;
+            if (auto i = fMediaType2SuffixesMap_.Lookup (ct)) {
+                return *i;
             }
-            return result;
+            return Set<String>{};
         }
         virtual optional<String> GetAssociatedPrettyName (const InternetMediaType& /*ct*/) const override
         {
@@ -351,8 +352,6 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
     Debug::TraceContextBumper ctx{"InternetMediaTypeRegistry::UsrSharedDefaultBackend"};
     /*
      *  Documented to some small degree in https://www.linuxtopia.org/online_books/linux_desktop_guides/gnome_2.14_admin_guide/mimetypes-database.html
-     *
-     *  @todo Consider ALSO checking ~/... location and /usr/local ... location...
      */
     struct UsrShareMIMERep_ : IBackendRep {
         Iterable<filesystem::path> fDataRoots_{"~/.local/share/mime/"sv, "/usr/local/share/mime/"sv, "/usr/share/mime"sv};
@@ -365,8 +364,9 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
          *  is not indexed (by file suffix) - its indexed by content type (so those lookups COULD be dynamic). But
          *  we can easily construct both at the same time reading the summary file, so we do.
          */
-        Mapping<FileSuffixType, InternetMediaType> fSuffix2MediaTypeMap_;
-        Mapping<InternetMediaType, FileSuffixType> fMediaType2PreferredSuffixMap_;
+        Mapping<FileSuffixType, InternetMediaType>      fSuffix2MediaTypeMap_;
+        Mapping<InternetMediaType, FileSuffixType>      fMediaType2PreferredSuffixMap_;
+        Mapping<InternetMediaType, Set<FileSuffixType>> fMediaType2SuffixesMap_;
 
         mutable Synchronized<Mapping<InternetMediaType, String>> fMediaType2PrettyNameCache; // incrementally build as needed
 
@@ -397,9 +397,15 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
                                 fSuffix2MediaTypeMap_.AddIf (glob, imt, false);
                                 fMediaType2PreferredSuffixMap_.AddIf (imt, glob, false);
 
-                                // @todo add support to track all associated suffixes for mime type
+                                // update the set of mapped suffixes
+                                Set<FileSuffixType> prevSuffixes = fMediaType2SuffixesMap_.LookupValue (imt);
+                                prevSuffixes.Add (glob);
+                                fMediaType2SuffixesMap_.Add (imt, prevSuffixes);
                             }
                         }
+
+                        // Because on raspberrypi/debian, this comes out with a crazy default for text\plain -- LGP 2020-07-27
+                        fMediaType2PreferredSuffixMap_.Add (InternetMediaTypes::kText_PLAIN, L".txt");
                     }
                     catch (...) {
                         // log error
@@ -440,12 +446,10 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
         }
         virtual Set<FileSuffixType> GetAssociatedFileSuffixes (const InternetMediaType& ct) const override
         {
-            // @todo fetch all suffixes
-            Set<String> result;
-            if (auto i = fMediaType2PreferredSuffixMap_.Lookup (ct)) {
-                result += *i;
+            if (auto i = fMediaType2SuffixesMap_.Lookup (ct)) {
+                return *i;
             }
-            return result;
+            return Set<FileSuffixType>{};
         }
         virtual optional<String> GetAssociatedPrettyName (const InternetMediaType& ct) const override
         {
@@ -725,7 +729,6 @@ DataExchange::Private_::InternetMediaType_ModuleData_::InternetMediaType_ModuleD
 
     , kPDF_CT (kApplication_Type, L"pdf"sv)
 
-    // very unclear what to use, no clear standard!
     , kURL_CT (kText_Type, L"text/uri-list"sv)
 
     , kXML_CT (kApplication_Type, L"xml"sv)

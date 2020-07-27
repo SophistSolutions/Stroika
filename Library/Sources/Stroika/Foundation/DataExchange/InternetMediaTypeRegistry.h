@@ -154,8 +154,7 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
-         *  There can be more than one file suffix associated with a content type. Note that this returns file
-         *  suffixes from more general InternetMediaTypes as well as the given one.
+         *  There can be more than one file suffix associated with a content type.
          */
         nonvirtual Set<FileSuffixType> GetAssociatedFileSuffixes (const InternetMediaType& ct) const;
         nonvirtual Set<FileSuffixType> GetAssociatedFileSuffixes (const Traversal::Iterable<InternetMediaType>& cts) const;
