@@ -3,6 +3,7 @@
  */
 #include "../../StroikaPreComp.h"
 
+#include "../../../Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "../../../Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "../../../Foundation/DataExchange/Variant/JSON/Writer.h"
 #include "../../../Foundation/IO/Network/HTTP/ClientErrorException.h"
