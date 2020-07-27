@@ -9,7 +9,6 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../Execution/ModuleInit.h"
 
 namespace Stroika::Foundation::DataExchange {
 
