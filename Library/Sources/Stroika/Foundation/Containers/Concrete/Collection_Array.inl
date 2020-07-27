@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Rep_ ()                 = default;
         Rep_ (const Rep_& from) = delete;
         Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
-            : fData_ (&from->fData_, forIterableEnvelope)
+            : fData_{&from->fData_, forIterableEnvelope}
         {
             RequireNotNull (from);
         }
@@ -148,13 +148,13 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T>
     inline Collection_Array<T>::Collection_Array ()
-        : inherited (inherited::template MakeSmartPtr<Rep_> ())
+        : inherited{ inherited::template MakeSmartPtr<Rep_> ()}
     {
         AssertRepValidType_ ();
     }
     template <typename T>
     inline Collection_Array<T>::Collection_Array (const Collection<T>& src)
-        : Collection_Array ()
+        : Collection_Array{}
     {
         SetCapacity (src.GetLength ());
         this->AddAll (src);
@@ -162,7 +162,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T>
     inline Collection_Array<T>::Collection_Array (const T* start, const T* end)
-        : Collection_Array ()
+        : Collection_Array{}
     {
         Require ((start == end) or (start != nullptr and end != nullptr));
         AssertRepValidType_ ();

@@ -35,7 +35,7 @@ const RegularExpression RegularExpression::kNONE{L"(?!)"sv};
 const RegularExpression RegularExpression::kAny{L".*"sv};
 
 RegularExpression::RegularExpression (const String& re, SyntaxType syntaxType, CompareOptions co)
-    : fCompiledRegExp_ (re.As<wstring> (), mkOption_ (syntaxType, co))
+    : fCompiledRegExp_{re.As<wstring> (), mkOption_ (syntaxType, co)}
 {
 }
 
@@ -45,14 +45,14 @@ RegularExpression::RegularExpression (const String& re, SyntaxType syntaxType, C
  ********************************************************************************
  */
 RegularExpressionMatch::RegularExpressionMatch (const String& fullMatch)
-    : fFullMatch_ (fullMatch)
-    , fSubMatches_ (Containers::Sequence<String> ())
+    : fFullMatch_{fullMatch}
+    , fSubMatches_{Containers::Sequence<String>{}}
 {
 }
 
 RegularExpressionMatch::RegularExpressionMatch (const String& fullMatch, const Containers::Sequence<String>& subMatches)
-    : fFullMatch_ (fullMatch)
-    , fSubMatches_ (subMatches)
+    : fFullMatch_{fullMatch}
+    , fSubMatches_{subMatches}
 {
 }
 

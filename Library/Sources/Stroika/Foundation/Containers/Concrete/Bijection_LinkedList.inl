@@ -61,11 +61,11 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         Rep_ (const Rep_& from) = delete;
         Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
-            : inherited ()
-            , fInjectivityViolationPolicy_ (from->fInjectivityViolationPolicy_)
-            , fDomainEqualsComparer_ (from->fDomainEqualsComparer_)
-            , fRangeEqualsComparer_ (from->fRangeEqualsComparer_)
-            , fData_ (&from->fData_, forIterableEnvelope)
+            : inherited{}
+            , fInjectivityViolationPolicy_{from->fInjectivityViolationPolicy_}
+            , fDomainEqualsComparer_{from->fDomainEqualsComparer_}
+            , fRangeEqualsComparer_{from->fRangeEqualsComparer_}
+            , fData_{&from->fData_, forIterableEnvelope}
         {
             RequireNotNull (from);
         }

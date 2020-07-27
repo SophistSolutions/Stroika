@@ -214,20 +214,20 @@ static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t mu
 
 #if __cpp_char8_t >= 201811L
 String::String (const char8_t* cString)
-    : String (cString, cString + Characters::CString::Length (cString))
+    : String{cString, cString + Characters::CString::Length (cString)}
 {
     RequireNotNull (cString);
 }
 #endif
 
 String::String (const char16_t* cString)
-    : String (cString, cString + Characters::CString::Length (cString))
+    : String{cString, cString + Characters::CString::Length (cString)}
 {
     RequireNotNull (cString);
 }
 
 String::String (const char32_t* cString)
-    : String (cString, cString + CString::Length (cString))
+    : String{cString, cString + CString::Length (cString)}
 {
 }
 
@@ -259,12 +259,12 @@ namespace {
 }
 
 String::String (const Iterable<Character>& src)
-    : String (mkWS_ (src))
+    : String{mkWS_ (src)}
 {
 }
 
 String::String (const Character& c)
-    : String (mkWS_ (c))
+    : String{mkWS_ (c)}
 {
 }
 
