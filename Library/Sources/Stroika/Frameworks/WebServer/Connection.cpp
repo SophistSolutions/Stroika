@@ -13,6 +13,7 @@
 #include "../../Foundation/Characters/ToString.h"
 #include "../../Foundation/Containers/Common.h"
 #include "../../Foundation/DataExchange/BadFormatException.h"
+#include "../../Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "../../Foundation/Debug/Assertions.h"
 #include "../../Foundation/Execution/Throw.h"
 #include "../../Foundation/IO/FileSystem/FileOutputStream.h"

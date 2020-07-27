@@ -4,6 +4,7 @@
 #include "../StroikaPreComp.h"
 
 #include "../../Foundation/Characters/ToString.h"
+#include "../../Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "../../Foundation/IO/Network/HTTP/Exception.h"
 
 #include "DefaultFaultInterceptor.h"
