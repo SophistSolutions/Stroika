@@ -942,6 +942,14 @@ namespace Stroika::Foundation::Characters {
          *          Assert (t[1] == L"7");
          *      \endcode
          *
+         *  \par Example Usage
+         *      \code
+         *          String  t { L"foo=   7" };
+         *          auto    tt = t.Tokenize ({ '=' });
+         *          Assert (t.length () == 2);
+         *          Assert (t[1] == L"7");
+         *      \endcode
+         *
          *  @see Find
          *
          *  TODO:
