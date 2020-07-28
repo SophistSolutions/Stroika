@@ -64,9 +64,9 @@ namespace {
 
 DLLLoader::DLLLoader (const SDKChar* dllName)
 {
-    #if USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (SDKSTR ("DLLLoader - loading DLL %s"), dllName);
-    #endif
+#endif
     RequireNotNull (dllName);
 #if qPlatform_POSIX
     fModule_ = LoadDLL_ (dllName, RTLD_NOW);
@@ -80,9 +80,9 @@ DLLLoader::DLLLoader (const SDKChar* dllName)
 
 DLLLoader::DLLLoader (const SDKChar* dllName, const vector<filesystem::path>& searchPath)
 {
-    #if USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (SDKSTR ("DLLLoader - loading DLL %s (with searchPath)"), dllName);
-    #endif
+#endif
     RequireNotNull (dllName);
 #if qPlatform_POSIX
     fModule_ = LoadDLL_ (dllName, RTLD_NOW);
@@ -91,7 +91,7 @@ DLLLoader::DLLLoader (const SDKChar* dllName, const vector<filesystem::path>& se
 #endif
     if (fModule_ == nullptr) {
         for (auto i = searchPath.begin (); i != searchPath.end (); ++i) {
-            SDKString modulePath = *i + SDKSTR ("\\") + dllName;
+            filesystem::path modulePath = *i / dllName;
 #if qPlatform_POSIX
             fModule_ = LoadDLL_ (modulePath.c_str (), RTLD_NOW);
 #else
@@ -110,9 +110,9 @@ DLLLoader::DLLLoader (const SDKChar* dllName, const vector<filesystem::path>& se
 #if qPlatform_POSIX
 DLLLoader::DLLLoader (const SDKChar* dllName, int flags)
 {
-    #if USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (SDKSTR ("DLLLoader - loading DLL %s, flags=0x%x"), dllName, flags);
-    #endif
+#endif
     RequireNotNull (dllName);
     fModule_ = LoadDLL_ (dllName, RTLD_NOW);
     if (fModule_ == nullptr) {
@@ -122,9 +122,9 @@ DLLLoader::DLLLoader (const SDKChar* dllName, int flags)
 
 DLLLoader::DLLLoader (const SDKChar* dllName, const vector<filesystem::path>& searchPath, int flags)
 {
-    #if USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (SDKSTR ("DLLLoader/3 - loading DLL %s, flags=0x%x"), dllName, flags);
-    #endif
+#endif
 #if qPlatform_POSIX
     fModule_ = LoadDLL_ (dllName, flags);
 #else
@@ -132,7 +132,7 @@ DLLLoader::DLLLoader (const SDKChar* dllName, const vector<filesystem::path>& se
 #endif
     if (fModule_ == nullptr) {
         for (auto i = searchPath.begin (); i != searchPath.end (); ++i) {
-            SDKString modulePath = *i + SDKSTR ("\\") + dllName;
+            filesystem::path modulePath = *i / dllName;
 #if qPlatform_POSIX
             fModule_ = LoadDLL_ (modulePath.c_str (), flags);
 #else
@@ -173,9 +173,9 @@ DLLHandle DLLLoader::LoadDLL (const SDKChar* dllName, int flags) /// *** DEPRECA
 
 DLLLoader::~DLLLoader ()
 {
-    #if USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace ("DLLLoader - unloading dll 0x%p", fModule_);
-    #endif
+#endif
     AssertNotNull (fModule_);
 #if qPlatform_Windows
     ::FreeLibrary (fModule_);
