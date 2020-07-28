@@ -32,9 +32,9 @@ namespace {
     DLLHandle LoadDLL_ (const SDKChar* dllName, int flags)
     {
 #if qTargetPlatformSDKUseswchar_t
-        return = dlopen (Characters::WideStringToUTF8 (dllName).c_str (), flags);
+        return ::dlopen (Characters::WideStringToUTF8 (dllName).c_str (), flags);
 #else
-        return = dlopen (dllName, flags);
+        return ::dlopen (dllName, flags);
 #endif
     }
 #endif
@@ -48,6 +48,7 @@ namespace {
 
     void ThrowLoadErr_ ()
     {
+        // @todo should do something to record the original DLL name
 #if qPlatform_POSIX
         // either main module or not found
         const char* err = dlerror ();
@@ -56,9 +57,8 @@ namespace {
             {
                 Execution::Throw (DLLException (err));
             }
-#elif qPlatform_Windows
-        Execution::ThrowSystemErrNo ();
 #endif
+        Execution::ThrowSystemErrNo ();
     }
 }
 
