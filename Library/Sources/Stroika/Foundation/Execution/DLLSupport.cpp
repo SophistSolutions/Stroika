@@ -73,7 +73,7 @@ DLLLoader::DLLLoader (const SDKChar* dllName)
     }
 }
 
-DLLLoader::DLLLoader (const SDKChar* dllName, const vector<SDKString>& searchPath)
+DLLLoader::DLLLoader (const SDKChar* dllName, const vector<filesystem::path>& searchPath)
 {
     DbgTrace (SDKSTR ("DLLLoader - loading DLL %s (with searchPath)"), dllName);
     RequireNotNull (dllName);
@@ -110,7 +110,8 @@ DLLLoader::DLLLoader (const SDKChar* dllName, int flags)
         ThrowLoadErr_ ();
     }
 }
-DLLLoader::DLLLoader (const SDKChar* dllName, const vector<SDKString>& searchPath, int flags)
+
+DLLLoader::DLLLoader (const SDKChar* dllName, const vector<filesystem::path>& searchPath, int flags)
 {
     DbgTrace (SDKSTR ("DLLLoader/3 - loading DLL %s, flags=0x%x"), dllName, flags);
 #if qPlatform_POSIX
@@ -138,7 +139,7 @@ DLLLoader::DLLLoader (const SDKChar* dllName, const vector<SDKString>& searchPat
 #endif
 
 #if !qPlatform_Windows
-DLLHandle DLLLoader::LoadDLL (const SDKChar* dllName, int flags)
+DLLHandle DLLLoader::LoadDLL (const SDKChar* dllName, int flags) /// *** DEPRECATED****
 {
 #if qTargetPlatformSDKUseswchar_t
     DLLHandle module = dlopen (Characters::WideStringToUTF8 (dllName).c_str (), flags);

@@ -6,6 +6,8 @@
 
 #include "../StroikaPreComp.h"
 
+#include <filesystem>
+
 #if qPlatform_Windows
 #include <Windows.h>
 #else
@@ -36,19 +38,24 @@ namespace Stroika::Foundation::Execution {
 #endif
 
     /**
+     *  @todo - probably should have DLL-name embedded in exception message on failure and as a field of DLLException
+     *        or maybe use 'declareactivity' while loading DLL?
      */
     class DLLLoader {
     public:
         /**
          *  Throws on failure.
+         *  For POSIX, default flags=RTLD_NOW
          */
         DLLLoader (const SDKChar* dllName);
-        DLLLoader (const SDKChar* dllName, const vector<SDKString>& searchPath);
+        DLLLoader (const SDKChar* dllName, const vector<filesystem::path>& searchPath);
 #if qPlatform_POSIX
         DLLLoader (const SDKChar* dllName, int flags);
-        DLLLoader (const SDKChar* dllName, const vector<SDKString>& searchPath, int flags);
+        DLLLoader (const SDKChar* dllName, const vector<filesystem::path>& searchPath, int flags);
 #endif
+        DLLLoader (const DLLLoader&) = delete;
         ~DLLLoader ();
+        DLLLoader& operator= (const DLLLoader&) = delete;
 
     public:
         nonvirtual operator DLLHandle () const;
@@ -66,6 +73,7 @@ namespace Stroika::Foundation::Execution {
          */
         [[deprecated ("Use DLLLoader::CTOR since Stroika v2.1b2")]] DLLHandle LoadDLL (const SDKChar* dllName, int flags = RTLD_NOW);
 #endif
+
     private:
         DLLHandle fModule_;
     };
