@@ -63,10 +63,14 @@ namespace Stroika::Foundation::Configuration::Platform::Windows {
         ~RegistryKey ();
 
     public:
+        /**
+         */
         nonvirtual operator HKEY () const;
 
     public:
         /**
+         *  Returns \-delimited string, for example:
+         *      L"\\REGISTRY\\USER\\S-1-5-21-1083356233-3619400068-4035759904-1001_Classes\\*"
          */
         nonvirtual Characters::String GetFullPathOfKey () const;
 
@@ -82,14 +86,16 @@ namespace Stroika::Foundation::Configuration::Platform::Windows {
         nonvirtual DataExchange::VariantValue Lookup (const Characters::String& valuePath) const;
 
     public:
+        /**
+         */
         nonvirtual Traversal::Iterable<shared_ptr<RegistryKey>> EnumerateSubKeys () const;
 
     public:
+        /**
+         */
         nonvirtual Containers::Mapping<Characters::String, DataExchange::VariantValue> EnumerateValues () const;
 
     private:
-        /*
-         */
         static HKEY OpenPath_ (HKEY parentKey, const Characters::String& path, REGSAM samDesired);
 
     private:
