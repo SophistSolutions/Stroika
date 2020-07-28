@@ -57,7 +57,7 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
     // These are adjustable by API, serve the purpose of providing a default on systems with no MIME content database -- LGP 2020-07-27
     static const inline Mapping<InternetMediaType, OverrideRecord> kDefaults_{initializer_list<KeyValuePair<InternetMediaType, OverrideRecord>>{
         {InternetMediaTypes::kText_PLAIN, OverrideRecord{nullopt, Containers::Set<String>{L".txt"_k}, L".txt"_k}},
-        {InternetMediaTypes::kText_HTML, OverrideRecord{nullopt, Containers::Set<String>{L".htm"_k}, L".html"_k}},
+        {InternetMediaTypes::kText_HTML, OverrideRecord{nullopt, Containers::Set<String>{L".htm"_k, L".html"_k}, L".htm"_k}},
         {InternetMediaTypes::kJSON, OverrideRecord{nullopt, Containers::Set<String>{L".json"_k}, L".json"_k}},
         {InternetMediaTypes::kImage_PNG, OverrideRecord{nullopt, Containers::Set<String>{L".png"_k}, L".png"_k}},
         {InternetMediaTypes::kXML, OverrideRecord{nullopt, Containers::Set<String>{L".xml"_k}, L".xml"_k}},
@@ -118,7 +118,6 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
         auto lockedData = fData_.rwget ();
         return lockedData->fBackendRep;
     }
-
     virtual Containers::Set<InternetMediaType> GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const override
     {
         using AtomType  = InternetMediaType::AtomType;
@@ -191,20 +190,23 @@ auto InternetMediaTypeRegistry::_Rep_Cloner::operator() (const IFrontendRep_& t)
     return make_shared<FrontendRep_> (t.GetBackendRep (), t.GetOverrides ());
 };
 
-namespace {
-    static Execution::Synchronized<InternetMediaTypeRegistry> sThe_;
+InternetMediaTypeRegistry::InternetMediaTypeRegistry (const shared_ptr<IBackendRep>& backendRep)
+    : fFrontEndRep_{make_shared<FrontendRep_> (backendRep)}
+{
 }
+
+namespace {
+    Execution::Synchronized<InternetMediaTypeRegistry> sThe_;
+}
+
 InternetMediaTypeRegistry InternetMediaTypeRegistry::Get ()
 {
     return sThe_.load ();
 }
+
 void InternetMediaTypeRegistry::Set (const InternetMediaTypeRegistry& r)
 {
     sThe_.store (r);
-}
-InternetMediaTypeRegistry::InternetMediaTypeRegistry (const shared_ptr<IBackendRep>& backendRep)
-    : fFrontEndRep_{make_shared<FrontendRep_> (backendRep)}
-{
 }
 
 auto InternetMediaTypeRegistry::GetOverrides () const -> Mapping<InternetMediaType, OverrideRecord>
@@ -545,7 +547,7 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
      *  I can find no documentation on how this works, but at least https://stackoverflow.com/questions/3442607/mime-types-in-the-windows-registry
      *  mentions it.
      *
-     *  Empirically you can find:
+     *  Empirically you can usually find:
      *          HKEY_CLASSES_ROOT\MIME\Database
      *              Content Type\CT\Extension
      *              This layout does not appear to accomodate ever having more than one extension for a given mime type
@@ -553,13 +555,16 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
      *          HKEY_CLASSES_ROOT\FILE_SUFFIX
      *              {default} pretty name
      *              Content Type: 'internet media type'
+     *
+     *  \note On Docker windows server core images, this is often missing! (but addressed with the default values baked into the frontend) -- LGP 2020-07-28
      */
     Debug::TraceContextBumper ctx{"InternetMediaTypeRegistry::WindowsRegistryDefaultBackend"};
     struct WinRep_ : IBackendRep {
         // underlying windows code fast so use small cache sizes
-        mutable Cache::SynchronizedLRUCache<FileSuffixType, optional<String>, equal_to<FileSuffixType>, hash<FileSuffixType>>                  fFileSuffix2PrettyNameCache_{25, 7};
-        mutable Cache::SynchronizedLRUCache<FileSuffixType, optional<InternetMediaType>, equal_to<FileSuffixType>, hash<FileSuffixType>>       fSuffix2MediaTypeCache_{25, 7};
-        mutable Cache::SynchronizedLRUCache<InternetMediaType, optional<FileSuffixType>, equal_to<InternetMediaType>, hash<InternetMediaType>> fContentType2FileSuffixCache_{25, 7};
+        mutable Cache::SynchronizedLRUCache<FileSuffixType, optional<String>, equal_to<FileSuffixType>, hash<FileSuffixType>>                         fFileSuffix2PrettyNameCache_{25, 7};
+        mutable Cache::SynchronizedLRUCache<FileSuffixType, optional<InternetMediaType>, equal_to<FileSuffixType>, hash<FileSuffixType>>              fSuffix2MediaTypeCache_{25, 7};
+        mutable Cache::SynchronizedLRUCache<InternetMediaType, optional<FileSuffixType>, equal_to<InternetMediaType>, hash<InternetMediaType>>        fContentType2FileSuffixCache_{25, 7};
+        mutable Cache::SynchronizedLRUCache<InternetMediaType, Containers::Set<FileSuffixType>, equal_to<InternetMediaType>, hash<InternetMediaType>> fContentType2FileSuffixesCache_{25, 7};
 
         virtual Containers::Set<InternetMediaType> GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const override
         {
@@ -572,23 +577,25 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
             //
             using RegistryKey = Configuration::Platform::Windows::RegistryKey;
             for (shared_ptr<RegistryKey> sk : RegistryKey{HKEY_CLASSES_ROOT}.EnumerateSubKeys ()) {
-                // @todo check if this keys name starts with ., but with current API difficult, so just check all entries for Content Type value
-                if (auto o = sk->Lookup (L"Content Type"sv)) {
-                    InternetMediaType imt;
-                    try {
-                        imt = InternetMediaType{o.As<String> ()};
-                    }
-                    catch (...) {
-                        // ignore bad format - such as .sqlproj has Content-Type "string" which my read of the RFC says is illegal
-                        DbgTrace ("Ignoring exception looking parsing registry key (%s): %s", Characters::ToString (o).c_str (), Characters::ToString (current_exception ()).c_str ());
-                        continue;
-                    }
-                    if (majorType) {
-                        if (imt.GetType<InternetMediaType::AtomType> () != *majorType) {
-                            continue; // skip non-matching types
+                String name = sk->GetFullPathOfKey ().Tokenize ({'\\'}).LastValue ();
+                if (name.StartsWith ('.')) {
+                    if (auto o = sk->Lookup (L"Content Type"sv)) {
+                        InternetMediaType imt;
+                        try {
+                            imt = InternetMediaType{o.As<String> ()};
                         }
+                        catch (...) {
+                            // ignore bad format - such as .sqlproj has Content-Type "string" which my read of the RFC says is illegal
+                            DbgTrace (L"Ignoring exception looking parsing registry key (%s): %s", Characters::ToString (o).c_str (), Characters::ToString (current_exception ()).c_str ());
+                            continue;
+                        }
+                        if (majorType) {
+                            if (imt.GetType<InternetMediaType::AtomType> () != *majorType) {
+                                continue; // skip non-matching types
+                            }
+                        }
+                        result.Add (imt);
                     }
-                    result.Add (imt);
                 }
             }
             return result;
@@ -604,12 +611,32 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
         }
         virtual Containers::Set<FileSuffixType> GetAssociatedFileSuffixes (const InternetMediaType& ct) const override
         {
-            // On Windows, for this registry format (see docs above class definition) - this only supports one suffix per content type
-            Containers::Set<String> result;
-            if (auto i = GetPreferredAssociatedFileSuffix (ct)) {
-                result += *i;
-            }
-            return result;
+            // This is expensive to compute, and we could compute all and cache, but I dont think we will need to lookup very often, so just
+            // compute as needed and cache a few
+            return fContentType2FileSuffixesCache_.LookupValue (ct, [] (const InternetMediaType& ct) -> Containers::Set<FileSuffixType> {
+                Containers::Set<FileSuffixType> result;
+                using Configuration::Platform::Windows::RegistryKey;
+                for (shared_ptr<RegistryKey> sk : RegistryKey{HKEY_CLASSES_ROOT}.EnumerateSubKeys ()) {
+                    String name = sk->GetFullPathOfKey ().Tokenize ({'\\'}).LastValue ();
+                    if (name.StartsWith (L".")) {
+                        if (auto o = sk->Lookup (L"Content Type"sv)) {
+                            InternetMediaType imt;
+                            try {
+                                imt = InternetMediaType{o.As<String> ()};
+                            }
+                            catch (...) {
+                                // ignore bad format - such as .sqlproj has Content-Type "string" which my read of the RFC says is illegal
+                                DbgTrace (L"Ignoring exception looking parsing registry key (%s): %s", Characters::ToString (o).c_str (), Characters::ToString (current_exception ()).c_str ());
+                                continue;
+                            }
+                            if (ct.GetType () == imt.GetType () and ct.GetSubType () == imt.GetSubType ()) {
+                                result += name;
+                            }
+                        }
+                    }
+                }
+                return result;
+            });
         }
         virtual optional<String> GetAssociatedPrettyName (const InternetMediaType& ct) const override
         {
