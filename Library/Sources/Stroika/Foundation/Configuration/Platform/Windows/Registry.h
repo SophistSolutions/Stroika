@@ -67,6 +67,11 @@ namespace Stroika::Foundation::Configuration::Platform::Windows {
 
     public:
         /**
+         */
+        nonvirtual Characters::String GetFullPathOfKey () const;
+
+    public:
+        /**
          *  Returns empty object (null) if missing. Can also return String type, or numeric for DWORDs.
          *
          *  \note @todo - should return empty VariantValue if detectably missing, but for permissions issues, raise exception

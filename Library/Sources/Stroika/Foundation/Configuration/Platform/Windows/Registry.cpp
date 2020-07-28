@@ -8,6 +8,8 @@
 #else
 #error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
+
+#include "../../../Execution/DLLSupport.h"
 #include "../../../Execution/Platform/Windows/Exception.h"
 
 #include "../../../Memory/SmallStackBuffer.h"
@@ -31,7 +33,7 @@ using namespace Stroika::Foundation::Execution::Platform::Windows;
  ********************************************************************************
  */
 RegistryKey::RegistryKey (HKEY parentKey, const String& path, REGSAM samDesired)
-    : fKey_ (OpenPath_ (parentKey, path, samDesired))
+    : fKey_{OpenPath_ (parentKey, path, samDesired)}
     , fOwned_{true}
 {
 }
@@ -97,6 +99,43 @@ namespace {
             Execution::Throw (Execution::SystemErrorException<> (lResult, system_category ()));
         }
     }
+}
+
+String RegistryKey::GetFullPathOfKey () const
+{
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper trcCtx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::RegistryKey::GetFullPathOfKey")};
+#endif
+    // Based on https://stackoverflow.com/questions/937044/determine-path-to-registry-key-from-hkey-handle-in-c
+
+    using NTSTATUS = LONG;
+#ifndef STATUS_SUCCESS
+    const auto STATUS_SUCCESS{((NTSTATUS)0x00000000L)};
+#endif
+#ifndef STATUS_BUFFER_TOO_SMALL
+    constexpr auto STATUS_BUFFER_TOO_SMALL{(NTSTATUS)0xC0000023L};
+#endif
+    std::wstring keyPath;
+    if (fKey_ != NULL) {
+        Execution::DLLLoader dll{L"ntdll.dll"};
+        using NtQueryKeyType = DWORD (__stdcall*) (HANDLE KeyHandle, int KeyInformationClass, PVOID KeyInformation, ULONG Length, PULONG ResultLength);
+        NtQueryKeyType func  = reinterpret_cast<NtQueryKeyType> (dll.GetProcAddress ("NtQueryKey"));
+        DWORD          size{0};
+        DWORD          result = func (fKey_, 3, 0, 0, &size);
+        if (result == STATUS_BUFFER_TOO_SMALL) {
+            size            = size + 2;
+            wchar_t* buffer = new (std::nothrow) wchar_t[size / sizeof (wchar_t)]; // size is in bytes
+            if (buffer != NULL) {
+                result = func (fKey_, 3, buffer, size, &size);
+                if (result == STATUS_SUCCESS) {
+                    buffer[size / sizeof (wchar_t)] = L'\0';
+                    keyPath                         = std::wstring (buffer + 2);
+                }
+                delete[] buffer;
+            }
+        }
+    }
+    return keyPath;
 }
 
 VariantValue RegistryKey::Lookup (const String& valuePath) const
