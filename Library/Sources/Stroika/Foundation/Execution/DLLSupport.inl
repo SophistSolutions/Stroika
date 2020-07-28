@@ -21,20 +21,24 @@ namespace Stroika::Foundation::Execution {
      */
     inline DLLLoader::operator DLLHandle () const
     {
-        EnsureNotNull (fModule);
-        return fModule;
+        EnsureNotNull (fModule_);
+        return fModule_;
     }
     inline ProcAddress DLLLoader::GetProcAddress (const char* procName) const
     {
-        AssertNotNull (fModule);
+        AssertNotNull (fModule_);
         RequireNotNull (procName);
 #if qPlatform_Windows
-        return ::GetProcAddress (fModule, procName);
+        auto result{::GetProcAddress (fModule_, procName)};
+        if (result == nullptr) {
+            Execution::ThrowSystemErrNo ();
+        }
+        return result;
 #else
-        ProcAddress addr = dlsym (fModule, procName);
+        ProcAddress addr = dlsym (fModule_, procName);
         if (addr == nullptr) {
             dlerror (); // clear any old error
-            addr = dlsym (fModule, procName);
+            addr = dlsym (fModule_, procName);
             // interface seems to be defined only for char*, not wide strings: may need to map procName as well
             const char* err = dlerror ();
             if (err != nullptr)
@@ -48,7 +52,7 @@ namespace Stroika::Foundation::Execution {
     }
     inline ProcAddress DLLLoader::GetProcAddress (const wchar_t* procName) const
     {
-        AssertNotNull (fModule);
+        AssertNotNull (fModule_);
         RequireNotNull (procName);
         return GetProcAddress (Characters::WideStringToASCII (procName).c_str ());
     }

@@ -39,14 +39,24 @@ namespace Stroika::Foundation::Execution {
      */
     class DLLLoader {
     public:
+        /**
+         *  Throws on failure.
+         */
         DLLLoader (const SDKChar* dllName);
         DLLLoader (const SDKChar* dllName, const vector<SDKString>& searchPath);
+#if qPlatform_POSIX
+        DLLLoader (const SDKChar* dllName, int flags);
+        DLLLoader (const SDKChar* dllName, const vector<SDKString>& searchPath, int flags);
+#endif
         ~DLLLoader ();
 
     public:
         nonvirtual operator DLLHandle () const;
 
     public:
+        /**
+         *  Throws on failure.
+         */
         nonvirtual ProcAddress GetProcAddress (const char* procName) const;
         nonvirtual ProcAddress GetProcAddress (const wchar_t* procName) const;
 
@@ -54,10 +64,10 @@ namespace Stroika::Foundation::Execution {
         /*
          * see linux.die.net/man/3/dlopen for flags
          */
-        nonvirtual DLLHandle LoadDLL (const SDKChar* dllName, int flags = RTLD_NOW);
+        [[deprecated ("Use DLLLoader::CTOR since Stroika v2.1b2")]] DLLHandle LoadDLL (const SDKChar* dllName, int flags = RTLD_NOW);
 #endif
     private:
-        DLLHandle fModule;
+        DLLHandle fModule_;
     };
 
 }

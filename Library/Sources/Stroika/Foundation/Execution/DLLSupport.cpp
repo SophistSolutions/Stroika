@@ -23,43 +23,119 @@ using Debug::TraceContextBumper;
  **************************** DLLSupport::DLLLoader *****************************
  ********************************************************************************
  */
+namespace {
+#if qPlatform_POSIX
+    // CAN RETURN NULL
+    DLLHandle LoadDLL_ (const SDKChar* dllName, int flags)
+    {
+#if qTargetPlatformSDKUseswchar_t
+        return = dlopen (Characters::WideStringToUTF8 (dllName).c_str (), flags);
+#else
+        return = dlopen (dllName, flags);
+#endif
+    }
+#endif
+#if qPlatform_Windows
+    // CAN RETURN NULL
+    DLLHandle LoadDLL_ (const SDKChar* dllName)
+    {
+        return ::LoadLibrary (dllName);
+    }
+#endif
+
+    void ThrowLoadErr_ ()
+    {
+#if qPlatform_POSIX
+        // either main module or not found
+        const char* err = dlerror ();
+        if (err != nullptr)
+            [[UNLIKELY_ATTR]]
+            {
+                Execution::Throw (DLLException (err));
+            }
+#elif qPlatform_Windows
+        Execution::ThrowSystemErrNo ();
+#endif
+    }
+}
+
 DLLLoader::DLLLoader (const SDKChar* dllName)
 {
     DbgTrace (SDKSTR ("DLLLoader - loading DLL %s"), dllName);
     RequireNotNull (dllName);
-#if qPlatform_Windows
-    Execution::Platform::Windows::ThrowIfZeroGetLastError (fModule = ::LoadLibrary (dllName));
-#else
-    fModule = LoadDLL (dllName);
+#if qPlatform_POSIX
+    fModule_ = LoadDLL_ (dllName, RTLD_NOW);
+#elif qPlatform_Windows
+    fModule_ = LoadDLL_ (dllName);
 #endif
+    if (fModule_ == nullptr) {
+        ThrowLoadErr_ ();
+    }
 }
 
 DLLLoader::DLLLoader (const SDKChar* dllName, const vector<SDKString>& searchPath)
 {
     DbgTrace (SDKSTR ("DLLLoader - loading DLL %s (with searchPath)"), dllName);
     RequireNotNull (dllName);
-    try {
-#if qPlatform_Windows
-        Execution::Platform::Windows::ThrowIfZeroGetLastError (fModule = ::LoadLibrary (dllName));
+#if qPlatform_POSIX
+    fModule_ = LoadDLL_ (dllName, RTLD_NOW);
 #else
-        fModule = LoadDLL (dllName);
+    fModule_ = LoadDLL_ (dllName);
 #endif
-    }
-    catch (...) {
+    if (fModule_ == nullptr) {
         for (auto i = searchPath.begin (); i != searchPath.end (); ++i) {
             SDKString modulePath = *i + SDKSTR ("\\") + dllName;
-#if qPlatform_Windows
-            fModule = ::LoadLibrary (modulePath.c_str ());
+#if qPlatform_POSIX
+            fModule_ = LoadDLL_ (modulePath.c_str (), RTLD_NOW);
 #else
-            IgnoreExceptionsForCall (fModule = LoadDLL (modulePath.c_str ()));
+            fModule_ = LoadDLL_ (modulePath.c_str ());
 #endif
-            if (fModule != nullptr) {
+            if (fModule_ != nullptr) {
                 return;
             }
         }
-        Execution::ReThrow ();
+    }
+    if (fModule_ == nullptr) {
+        ThrowLoadErr_ ();
     }
 }
+
+#if qPlatform_POSIX
+DLLLoader::DLLLoader (const SDKChar* dllName, int flags)
+{
+    DbgTrace (SDKSTR ("DLLLoader - loading DLL %s, flags=0x%x"), dllName, flags);
+    RequireNotNull (dllName);
+    fModule_ = LoadDLL_ (dllName, RTLD_NOW);
+    if (fModule_ == nullptr) {
+        ThrowLoadErr_ ();
+    }
+}
+DLLLoader::DLLLoader (const SDKChar* dllName, const vector<SDKString>& searchPath, int flags)
+{
+    DbgTrace (SDKSTR ("DLLLoader/3 - loading DLL %s, flags=0x%x"), dllName, flags);
+#if qPlatform_POSIX
+    fModule_ = LoadDLL_ (dllName, flags);
+#else
+    fModule_ = LoadDLL_ (dllName);
+#endif
+    if (fModule_ == nullptr) {
+        for (auto i = searchPath.begin (); i != searchPath.end (); ++i) {
+            SDKString modulePath = *i + SDKSTR ("\\") + dllName;
+#if qPlatform_POSIX
+            fModule_ = LoadDLL_ (modulePath.c_str (), flags);
+#else
+            fModule_ = LoadDLL_ (modulePath.c_str ());
+#endif
+            if (fModule_ != nullptr) {
+                return;
+            }
+        }
+    }
+    if (fModule_ == nullptr) {
+        ThrowLoadErr_ ();
+    }
+}
+#endif
 
 #if !qPlatform_Windows
 DLLHandle DLLLoader::LoadDLL (const SDKChar* dllName, int flags)
@@ -85,12 +161,12 @@ DLLHandle DLLLoader::LoadDLL (const SDKChar* dllName, int flags)
 
 DLLLoader::~DLLLoader ()
 {
-    DbgTrace (SDKSTR ("DLLLoader - unloading dll"));
-    AssertNotNull (fModule);
+    DbgTrace ("DLLLoader - unloading dll %p", fModule_);
+    AssertNotNull (fModule_);
 #if qPlatform_Windows
-    ::FreeLibrary (fModule);
+    ::FreeLibrary (fModule_);
 #else
-    if (dlclose (fModule) != 0) {
+    if (dlclose (fModule_) != 0) {
         const char* err = dlerror ();
         if (err != nullptr)
             [[UNLIKELY_ATTR]]
