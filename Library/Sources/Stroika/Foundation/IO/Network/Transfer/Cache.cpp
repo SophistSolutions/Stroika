@@ -235,7 +235,7 @@ Transfer::Cache::Element::Element (const Response& response)
             headers.erase (i);
         }
         else if (i->fKey == HTTP::HeaderName::kCacheControl) {
-            fCacheControl = Set<String>{i->fValue.Tokenize (Set<Character>{','})};
+            fCacheControl = Set<String>{i->fValue.Tokenize ({','})};
             headers.erase (i);
             static const String kMaxAgeEquals_{L"max-age="sv};
             for (String cci : *fCacheControl) {

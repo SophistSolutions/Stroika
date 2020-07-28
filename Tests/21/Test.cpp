@@ -70,7 +70,7 @@ namespace {
             using Characters::Character;
             using Characters::String;
             Set<String> tmp1 = Set<String> (Sequence<String>{});
-            Set<String> tmp2 = Set<String> (String ().Trim ().Tokenize (Set<Character>{';', ' '}));
+            Set<String> tmp2 = Set<String> (String ().Trim ().Tokenize ({';', ' '}));
         }
         void DoTest ()
         {
