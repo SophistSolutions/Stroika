@@ -8,7 +8,6 @@
 #include "../Cache/SynchronizedLRUCache.h"
 #include "../Characters/Format.h"
 #include "../Characters/ToString.h"
-#include "../Containers/Bijection.h"
 #include "../DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #include "../DataExchange/XML/SAXReader.h"
 #if qPlatform_Windows
@@ -55,54 +54,82 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
     using IBackendRep = InternetMediaTypeRegistry::IBackendRep;
 
     // Baked in predefined initial user-overrides.
-    // These will (eventually) be adjustable by API, but for now serve the purpose of providing a default
-    // on systems with no MIME content database -- LGP 2020-07-27
-    static const inline map<InternetMediaType, FileSuffixType> kDefaults_{{
-        pair<InternetMediaType, FileSuffixType>{InternetMediaTypes::kText_PLAIN, L".txt"_k},
-        pair<InternetMediaType, FileSuffixType>{InternetMediaTypes::kText_HTML, L".htm"_k},
-        pair<InternetMediaType, FileSuffixType>{InternetMediaTypes::kText_HTML, L".html"_k},
-        pair<InternetMediaType, FileSuffixType>{InternetMediaTypes::kJSON, L".json"_k},
-        pair<InternetMediaType, FileSuffixType>{InternetMediaTypes::kImage_PNG, L".png"_k},
-        pair<InternetMediaType, FileSuffixType>{InternetMediaTypes::kXML, L".xml"_k},
+    // These are adjustable by API, serve the purpose of providing a default on systems with no MIME content database -- LGP 2020-07-27
+    static const inline Mapping<InternetMediaType, OverrideRecord> kDefaults_{initializer_list<KeyValuePair<InternetMediaType, OverrideRecord>>{
+        {InternetMediaTypes::kText_PLAIN, OverrideRecord{nullopt, Containers::Set<String>{L".txt"_k}, L".txt"_k}},
+        {InternetMediaTypes::kText_HTML, OverrideRecord{nullopt, Containers::Set<String>{L".htm"_k}, L".html"_k}},
+        {InternetMediaTypes::kJSON, OverrideRecord{nullopt, Containers::Set<String>{L".json"_k}, L".json"_k}},
+        {InternetMediaTypes::kImage_PNG, OverrideRecord{nullopt, Containers::Set<String>{L".png"_k}, L".png"_k}},
+        {InternetMediaTypes::kXML, OverrideRecord{nullopt, Containers::Set<String>{L".xml"_k}, L".xml"_k}},
     }};
 
     // OVERRIDE values (take precedence over backend) and any other data we need to keep locked (syncrhonized)
     struct Data_ {
         shared_ptr<IBackendRep> fBackendRep; // lazy construct on first call to usage (since that construction can be slow)
 
-        Mapping<FileSuffixType, InternetMediaType>      fSuffix2MediaTypeMap;
-        Mapping<InternetMediaType, FileSuffixType>      fMediaType2PreferredSuffixMap;
-        Mapping<InternetMediaType, String>              fMediaType2PrettyName;
-        Mapping<InternetMediaType, Set<FileSuffixType>> fMediaType2FileSuffixes;
+        Mapping<FileSuffixType, InternetMediaType> fSuffix2MediaTypeMap;
+        Mapping<InternetMediaType, OverrideRecord> fOverrides;
     };
     mutable Synchronized<Data_> fData_;
 
     // NULL IS allowed - use that to on-dempand construct the backend
     FrontendRep_ (const shared_ptr<IBackendRep>& backendRep)
+        : FrontendRep_{backendRep, kDefaults_}
+    {
+    }
+    FrontendRep_ (const shared_ptr<IBackendRep>& backendRep, const Mapping<InternetMediaType, OverrideRecord>& overrides)
         : fData_{Data_{backendRep == nullptr ? nullptr : backendRep}}
     {
+        SetOverrides (overrides);
+    }
+    virtual Mapping<InternetMediaType, OverrideRecord> GetOverrides () const override
+    {
         auto lockedData = fData_.rwget ();
-        for (auto i : kDefaults_) {
-            lockedData->fSuffix2MediaTypeMap.AddIf (i.second, i.first);
-            lockedData->fMediaType2PreferredSuffixMap.AddIf (i.first, i.second);
-
-            // update the set of mapped suffixes
-            Set<FileSuffixType> prevSuffixes = lockedData->fMediaType2FileSuffixes.LookupValue (i.first);
-            prevSuffixes.Add (i.second);
-            lockedData->fMediaType2FileSuffixes.Add (i.first, prevSuffixes);
+        return lockedData->fOverrides;
+    }
+    virtual void SetOverrides (const Mapping<InternetMediaType, OverrideRecord>& overrides) override
+    {
+        auto lockedData        = fData_.rwget ();
+        lockedData->fOverrides = overrides;
+        lockedData->fSuffix2MediaTypeMap.clear ();
+        for (auto i : lockedData->fOverrides) {
+            if (i.fValue.fFileSuffixes) {
+                for (auto si : *i.fValue.fFileSuffixes) {
+                    lockedData->fSuffix2MediaTypeMap.AddIf (si, i.fKey);
+                }
+            }
         }
     }
-    virtual Set<InternetMediaType> GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const override
+    virtual void AddOverride (const InternetMediaType& mediaType, const OverrideRecord& overrideRec) override
+    {
+        auto lockedData = fData_.rwget ();
+        lockedData->fOverrides.Add (mediaType, overrideRec);
+        lockedData->fSuffix2MediaTypeMap.clear ();
+        for (auto i : lockedData->fOverrides) {
+            if (i.fValue.fFileSuffixes) {
+                for (auto si : *i.fValue.fFileSuffixes) {
+                    lockedData->fSuffix2MediaTypeMap.AddIf (si, i.fKey);
+                }
+            }
+        }
+    }
+    virtual shared_ptr<IBackendRep> GetBackendRep () const override
+    {
+        auto lockedData = fData_.rwget ();
+        return lockedData->fBackendRep;
+    }
+
+    virtual Containers::Set<InternetMediaType> GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const override
     {
         using AtomType  = InternetMediaType::AtomType;
         auto lockedData = fData_.rwget ();
         CheckData_ (&lockedData);
-        Set<InternetMediaType> result = lockedData->fBackendRep->GetMediaTypes (majorType);
+        Containers::Set<InternetMediaType> result = lockedData->fBackendRep->GetMediaTypes (majorType);
         if (majorType == nullopt) {
-            result += lockedData->fMediaType2PreferredSuffixMap.Keys ();
+            result += lockedData->fOverrides.Keys ();
         }
         else {
-            lockedData->fMediaType2PreferredSuffixMap.Keys ().Apply ([&] (const InternetMediaType& i) { if (i.GetType<AtomType> () == majorType) {result += i; } });
+            lockedData->fOverrides.Keys ().Apply ([&] (const InternetMediaType& i) { if (i.GetType<AtomType> () == majorType) {result += i; } });
         }
         return result;
     }
@@ -110,27 +137,29 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
     {
         auto lockedData = fData_.rwget ();
         CheckData_ (&lockedData);
-        if (auto o = lockedData->fMediaType2PreferredSuffixMap.Lookup (ct)) {
-            return *o;
+        if (auto o = lockedData->fOverrides.Lookup (ct)) {
+            if (o->fPreferredSuffix) {
+                return *o->fPreferredSuffix;
+            }
         }
         return lockedData->fBackendRep->GetPreferredAssociatedFileSuffix (ct);
     }
-    virtual Set<FileSuffixType> GetAssociatedFileSuffixes (const InternetMediaType& ct) const override
+    virtual Containers::Set<FileSuffixType> GetAssociatedFileSuffixes (const InternetMediaType& ct) const override
     {
         auto lockedData = fData_.rwget ();
         CheckData_ (&lockedData);
-        Set<String> result = lockedData->fMediaType2FileSuffixes.LookupValue (ct);
-        if (auto i = GetPreferredAssociatedFileSuffix (ct)) {
-            result += *i;
-        }
+        Containers::Set<String> result = lockedData->fOverrides.LookupValue (ct).fFileSuffixes.value_or (Containers::Set<FileSuffixType>{});
+        result += lockedData->fBackendRep->GetAssociatedFileSuffixes (ct);
         return result;
     }
     virtual optional<String> GetAssociatedPrettyName (const InternetMediaType& ct) const override
     {
         auto lockedData = fData_.rwget ();
         CheckData_ (&lockedData);
-        if (auto o = lockedData->fMediaType2PrettyName.Lookup (ct)) {
-            return *o;
+        if (auto o = lockedData->fOverrides.Lookup (ct)) {
+            if (o->fTypePrintName) {
+                return *o->fTypePrintName;
+            }
         }
         return lockedData->fBackendRep->GetAssociatedPrettyName (ct);
     }
@@ -157,9 +186,40 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
  *************************** InternetMediaTypeRegistry **************************
  ********************************************************************************
  */
+auto InternetMediaTypeRegistry::_Rep_Cloner::operator() (const IFrontendRep_& t) const -> shared_ptr<IFrontendRep_>
+{
+    return make_shared<FrontendRep_> (t.GetBackendRep (), t.GetOverrides ());
+};
+
+namespace {
+    static Execution::Synchronized<InternetMediaTypeRegistry> sThe_;
+}
+InternetMediaTypeRegistry InternetMediaTypeRegistry::Get ()
+{
+    return sThe_.load ();
+}
+void InternetMediaTypeRegistry::Set (const InternetMediaTypeRegistry& r)
+{
+    sThe_.store (r);
+}
 InternetMediaTypeRegistry::InternetMediaTypeRegistry (const shared_ptr<IBackendRep>& backendRep)
     : fFrontEndRep_{make_shared<FrontendRep_> (backendRep)}
 {
+}
+
+auto InternetMediaTypeRegistry::GetOverrides () const -> Mapping<InternetMediaType, OverrideRecord>
+{
+    return fFrontEndRep_->GetOverrides ();
+}
+
+void InternetMediaTypeRegistry::SetOverrides (const Mapping<InternetMediaType, OverrideRecord>& overrides)
+{
+    fFrontEndRep_->SetOverrides (overrides);
+}
+
+void InternetMediaTypeRegistry::AddOverride (const InternetMediaType& mediaType, const OverrideRecord& overrideRec)
+{
+    fFrontEndRep_->AddOverride (mediaType, overrideRec);
 }
 
 shared_ptr<InternetMediaTypeRegistry::IBackendRep> InternetMediaTypeRegistry::DefaultBackend ()
@@ -200,9 +260,9 @@ auto InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend () -> shared_ptr<IBac
      *  Preload the entire DB since its not practical to scan looking for the intended record (due to the time this would take).
      */
     struct EtcMimeTypesRep_ : IBackendRep {
-        Mapping<FileSuffixType, InternetMediaType>      fSuffix2MediaTypeMap_;
-        Mapping<InternetMediaType, FileSuffixType>      fMediaType2PreferredSuffixMap_;
-        Mapping<InternetMediaType, Set<FileSuffixType>> fMediaType2SuffixesMap_;
+        Mapping<FileSuffixType, InternetMediaType>                  fSuffix2MediaTypeMap_;
+        Mapping<InternetMediaType, FileSuffixType>                  fMediaType2PreferredSuffixMap_;
+        Mapping<InternetMediaType, Containers::Set<FileSuffixType>> fMediaType2SuffixesMap_;
 
         EtcMimeTypesRep_ ()
         {
@@ -219,7 +279,7 @@ auto InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend () -> shared_ptr<IBac
                         DbgTrace ("Ignoring exception looking parsing potential media type entry (%s): %s", Characters::ToString (line[0]).c_str (), Characters::ToString (current_exception ()).c_str ());
                     }
                     // a line starts with a content type, but then contains any number of file suffixes (without the leading .)
-                    Set<FileSuffixType> fileSuffixes;
+                    Containers::Set<FileSuffixType> fileSuffixes;
                     for (size_t i = 1; i < line.length (); ++i) {
                         Assert (not line[i].empty ());
                         String suffix = L"."sv + line[i];
@@ -236,9 +296,9 @@ auto InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend () -> shared_ptr<IBac
             DbgTrace (L"succeeded with %d fSuffix2MediaTypeMap entries, and %d fMediaType2PreferredSuffixMap entries", fSuffix2MediaTypeMap_.size (), fMediaType2PreferredSuffixMap_.size ());
 #endif
         }
-        virtual Set<InternetMediaType> GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const override
+        virtual Containers::Set<InternetMediaType> GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const override
         {
-            Set<InternetMediaType> results;
+            Containers::Set<InternetMediaType> results;
             for (const InternetMediaType imt : fMediaType2PreferredSuffixMap_.Keys ()) {
                 if (majorType != nullopt and (imt.GetType<InternetMediaType::AtomType> () != *majorType)) {
                     continue;
@@ -254,12 +314,12 @@ auto InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend () -> shared_ptr<IBac
             }
             return nullopt;
         }
-        virtual Set<FileSuffixType> GetAssociatedFileSuffixes (const InternetMediaType& ct) const override
+        virtual Containers::Set<FileSuffixType> GetAssociatedFileSuffixes (const InternetMediaType& ct) const override
         {
             if (auto i = fMediaType2SuffixesMap_.Lookup (ct)) {
                 return *i;
             }
-            return Set<String>{};
+            return Containers::Set<String>{};
         }
         virtual optional<String> GetAssociatedPrettyName (const InternetMediaType& /*ct*/) const override
         {
@@ -294,9 +354,9 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
          *  is not indexed (by file suffix) - its indexed by content type (so those lookups COULD be dynamic). But
          *  we can easily construct both at the same time reading the summary file, so we do.
          */
-        Mapping<FileSuffixType, InternetMediaType>      fSuffix2MediaTypeMap_;
-        Mapping<InternetMediaType, FileSuffixType>      fMediaType2PreferredSuffixMap_;
-        Mapping<InternetMediaType, Set<FileSuffixType>> fMediaType2SuffixesMap_;
+        Mapping<FileSuffixType, InternetMediaType>                  fSuffix2MediaTypeMap_;
+        Mapping<InternetMediaType, FileSuffixType>                  fMediaType2PreferredSuffixMap_;
+        Mapping<InternetMediaType, Containers::Set<FileSuffixType>> fMediaType2SuffixesMap_;
 
         mutable Synchronized<Mapping<InternetMediaType, String>> fMediaType2PrettyNameCache; // incrementally build as needed
 
@@ -328,7 +388,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
                                 fMediaType2PreferredSuffixMap_.AddIf (imt, glob, false);
 
                                 // update the set of mapped suffixes
-                                Set<FileSuffixType> prevSuffixes = fMediaType2SuffixesMap_.LookupValue (imt);
+                                Containers::Set<FileSuffixType> prevSuffixes = fMediaType2SuffixesMap_.LookupValue (imt);
                                 prevSuffixes.Add (glob);
                                 fMediaType2SuffixesMap_.Add (imt, prevSuffixes);
                             }
@@ -351,12 +411,12 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
             DbgTrace (L"succeeded with %d fSuffix2MediaTypeMap_ entries, and %d fMediaType2PreferredSuffixMap entries", fSuffix2MediaTypeMap_.size (), fMediaType2PreferredSuffixMap_.size ());
 #endif
         }
-        virtual Set<InternetMediaType> GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const override
+        virtual Containers::Set<InternetMediaType> GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const override
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"UsrShareMIMERep_::GetMediaTypes", L"majorType=%s", Characters::ToString (fn).c_str ())};
 #endif
-            Set<InternetMediaType> results;
+            Containers::Set<InternetMediaType> results;
             for (auto&& imt : fMediaType2PreferredSuffixMap_.Keys ()) {
                 if (majorType) {
                     if (imt.GetType<InternetMediaType::AtomType> () != *majorType) {
@@ -374,12 +434,12 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
             }
             return nullopt;
         }
-        virtual Set<FileSuffixType> GetAssociatedFileSuffixes (const InternetMediaType& ct) const override
+        virtual Containers::Set<FileSuffixType> GetAssociatedFileSuffixes (const InternetMediaType& ct) const override
         {
             if (auto i = fMediaType2SuffixesMap_.Lookup (ct)) {
                 return *i;
             }
-            return Set<FileSuffixType>{};
+            return Containers::Set<FileSuffixType>{};
         }
         virtual optional<String> GetAssociatedPrettyName (const InternetMediaType& ct) const override
         {
@@ -453,17 +513,17 @@ auto InternetMediaTypeRegistry::BakedInDefaultBackend () -> shared_ptr<IBackendR
 {
     Debug::TraceContextBumper ctx{"InternetMediaTypeRegistry::BakedInDefaultBackend"};
     struct DefaultEmptyBackendRep_ : IBackendRep {
-        virtual Set<InternetMediaType> GetMediaTypes ([[maybe_unused]] optional<InternetMediaType::AtomType> majorType) const override
+        virtual Containers::Set<InternetMediaType> GetMediaTypes ([[maybe_unused]] optional<InternetMediaType::AtomType> majorType) const override
         {
-            return Set<InternetMediaType>{};
+            return Containers::Set<InternetMediaType>{};
         }
         virtual optional<FileSuffixType> GetPreferredAssociatedFileSuffix ([[maybe_unused]] const InternetMediaType& ct) const override
         {
             return nullopt;
         }
-        virtual Set<FileSuffixType> GetAssociatedFileSuffixes ([[maybe_unused]] const InternetMediaType& ct) const override
+        virtual Containers::Set<FileSuffixType> GetAssociatedFileSuffixes ([[maybe_unused]] const InternetMediaType& ct) const override
         {
-            return Set<String>{};
+            return Containers::Set<String>{};
         }
         virtual optional<String> GetAssociatedPrettyName (const InternetMediaType& /*ct*/) const override
         {
@@ -501,9 +561,9 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
         mutable Cache::SynchronizedLRUCache<FileSuffixType, optional<InternetMediaType>, equal_to<FileSuffixType>, hash<FileSuffixType>>       fSuffix2MediaTypeCache_{25, 7};
         mutable Cache::SynchronizedLRUCache<InternetMediaType, optional<FileSuffixType>, equal_to<InternetMediaType>, hash<InternetMediaType>> fContentType2FileSuffixCache_{25, 7};
 
-        virtual Set<InternetMediaType> GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const override
+        virtual Containers::Set<InternetMediaType> GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const override
         {
-            Set<InternetMediaType> result;
+            Containers::Set<InternetMediaType> result;
             //
             // rarely do we fetch all MIME types, so don't cache - just refetch each time
             //
@@ -542,10 +602,10 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
                 return nullopt;
             });
         }
-        virtual Set<FileSuffixType> GetAssociatedFileSuffixes (const InternetMediaType& ct) const override
+        virtual Containers::Set<FileSuffixType> GetAssociatedFileSuffixes (const InternetMediaType& ct) const override
         {
             // On Windows, for this registry format (see docs above class definition) - this only supports one suffix per content type
-            Set<String> result;
+            Containers::Set<String> result;
             if (auto i = GetPreferredAssociatedFileSuffix (ct)) {
                 result += *i;
             }
@@ -596,7 +656,7 @@ Set<InternetMediaType> InternetMediaTypeRegistry::GetMediaTypes (InternetMediaTy
 
 Set<String> InternetMediaTypeRegistry::GetAssociatedFileSuffixes (const Iterable<InternetMediaType>& mediaTypes) const
 {
-    Set<String> result;
+    Containers::Set<String> result;
     for (auto ct : mediaTypes) {
         for (auto i : GetAssociatedFileSuffixes (ct)) {
             result += i;

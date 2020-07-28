@@ -10,8 +10,10 @@
 #include <optional>
 
 #include "../Characters/String.h"
+#include "../Containers/Mapping.h"
 #include "../Containers/Set.h"
 #include "../Execution/VirtualConstant.h"
+#include "../Memory/SharedByValue.h"
 
 #include "InternetMediaType.h"
 
@@ -38,7 +40,7 @@ namespace Stroika::Foundation::DataExchange {
      *
      *        But sloppily done for now.
      *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Rep-Inside-Ptr-Is-Internally-Synchronized">Rep-Inside-Ptr-Is-Internally-Synchronized</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      */
     class InternetMediaTypeRegistry {
@@ -104,14 +106,53 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
+         *  file suffix includes the dot; This COULD have been defined as a filesystem::path, as path::extension() returns path.
+         *  But I think this is generally more convenient as a string and this class provides overloads when passing in an extension
+         *  taking a filesystem::path.
+         */
+        using FileSuffixType = String;
+
+    public:
+        /**
+         *  Used to override InternetMediaType file suffix/pretty name entries from the OS, or to define custom ones per-application.
+         */
+        struct OverrideRecord {
+            optional<String>              fTypePrintName;
+            optional<Set<FileSuffixType>> fFileSuffixes;
+            optional<FileSuffixType>      fPreferredSuffix;
+        };
+
+    public:
+        /**
+         *  The default constructor makes a new (empty) copy of customizations, and uses DefaultBackend (). The constructor
+         *  with the explicit backend, uses that backend.
+         */
+        InternetMediaTypeRegistry (const shared_ptr<IBackendRep>& backendRep = nullptr);
+        InternetMediaTypeRegistry (const InternetMediaTypeRegistry& src) = default;
+
+    public:
+        InternetMediaTypeRegistry& operator= (const InternetMediaTypeRegistry& rhs) = default;
+
+    public:
+        /**
          *  Return the current global variable - current internet media type registry. Typically - use this.
          *
-         *  \\todo @todo Consider adding a Set() method, that would allow replacing the global internet media content-type registry
-         *         But - in the meantime, these can be copied, and separately constructed, and used explicitly in any context where
-         *          a user wants a specific registry.
+         *  \see Set ()
+         *
+         *  \note  \em Thread-Safety   <a href="Thread-Safety.md#Rep-Inside-Ptr-Is-Internally-Synchronized">Rep-Inside-Ptr-Is-Internally-Synchronized</a>
          */
     public:
-        static const InternetMediaTypeRegistry& Get ();
+        static InternetMediaTypeRegistry Get ();
+
+    public:
+        /**
+         *  Set the current global variable - current internet media type registry. Typically - use this.
+         *
+         *  \see Get ()
+         *
+         *  \note  \em Thread-Safety   <a href="Thread-Safety.md#Rep-Inside-Ptr-Is-Internally-Synchronized">Rep-Inside-Ptr-Is-Internally-Synchronized</a>
+         */
+        static void Set (const InternetMediaTypeRegistry& newRegistry);
 
     public:
         // DEPRECATED
@@ -122,29 +163,39 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
-         *  The default constructor makes a new (empty) copy of customizations, and uses DefaultBackend (). The constructor
-         *  with the explicit backend, uses that backend.
+         *  Return the current override mappings (note - these are initialized per-OS, to provide sometimes better values than that OS,
+         *  but this can be overridden/cleared).
          */
-        InternetMediaTypeRegistry (const shared_ptr<IBackendRep>& backendRep = nullptr);
+        nonvirtual Containers::Mapping<InternetMediaType, OverrideRecord> GetOverrides () const;
+
+    public:
+        /**
+         *  Set the current override mappings. Rarely called. More likely - call AddOverride()
+         */
+        nonvirtual void SetOverrides (const Containers::Mapping<InternetMediaType, OverrideRecord>& overrides);
+
+    public:
+        /**
+         *  Typically used to add custom internet media type mappings to file names. But can be used to override operating system defaults.
+         */
+        nonvirtual void AddOverride (const InternetMediaType& mediaType, const OverrideRecord& overrideRec);
 
     private:
         struct IFrontendRep_;
         struct FrontendRep_;
-        shared_ptr<IFrontendRep_> fFrontEndRep_;
 
-    public:
-        /**
-         *  file suffix includes the dot; This COULD have been defined as a filesystem::path, as path::extension() returns path.
-         *  But I think this is generally more convenient as a string and this class provides overloads when passing in an extension
-         *  taking a filesystem::path.
-         */
-        using FileSuffixType = String;
+        struct _Rep_Cloner {
+            shared_ptr<IFrontendRep_> operator() (const IFrontendRep_& t) const;
+        };
+        using SharedRepByValuePtr_ = Memory::SharedByValue<IFrontendRep_, Memory::SharedByValue_Traits<IFrontendRep_, shared_ptr<IFrontendRep_>, _Rep_Cloner>>;
+
+        SharedRepByValuePtr_ fFrontEndRep_;
 
     public:
         /**
          */
-        nonvirtual Set<InternetMediaType> GetMediaTypes () const;
-        nonvirtual Set<InternetMediaType> GetMediaTypes (InternetMediaType::AtomType majorType) const;
+        nonvirtual Containers::Set<InternetMediaType> GetMediaTypes () const;
+        nonvirtual Containers::Set<InternetMediaType> GetMediaTypes (InternetMediaType::AtomType majorType) const;
 
     public:
         /**
@@ -156,8 +207,8 @@ namespace Stroika::Foundation::DataExchange {
         /**
          *  There can be more than one file suffix associated with a content type.
          */
-        nonvirtual Set<FileSuffixType> GetAssociatedFileSuffixes (const InternetMediaType& ct) const;
-        nonvirtual Set<FileSuffixType> GetAssociatedFileSuffixes (const Traversal::Iterable<InternetMediaType>& cts) const;
+        nonvirtual Containers::Set<FileSuffixType> GetAssociatedFileSuffixes (const InternetMediaType& ct) const;
+        nonvirtual Containers::Set<FileSuffixType> GetAssociatedFileSuffixes (const Traversal::Iterable<InternetMediaType>& cts) const;
 
     public:
         /**
@@ -226,23 +277,27 @@ namespace Stroika::Foundation::DataExchange {
     /**
      */
     struct InternetMediaTypeRegistry::IBackendRep {
-        virtual ~IBackendRep ()                                                                                     = default;
-        virtual Set<InternetMediaType>      GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const   = 0;
-        virtual optional<FileSuffixType>    GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const    = 0;
-        virtual Set<FileSuffixType>         GetAssociatedFileSuffixes (const InternetMediaType& ct) const           = 0;
-        virtual optional<String>            GetAssociatedPrettyName (const InternetMediaType& ct) const             = 0;
-        virtual optional<InternetMediaType> GetAssociatedContentType (const FileSuffixType& fileNameOrSuffix) const = 0;
+        virtual ~IBackendRep ()                                                                                            = default;
+        virtual Containers::Set<InternetMediaType> GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const   = 0;
+        virtual optional<FileSuffixType>           GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const    = 0;
+        virtual Containers::Set<FileSuffixType>    GetAssociatedFileSuffixes (const InternetMediaType& ct) const           = 0;
+        virtual optional<String>                   GetAssociatedPrettyName (const InternetMediaType& ct) const             = 0;
+        virtual optional<InternetMediaType>        GetAssociatedContentType (const FileSuffixType& fileNameOrSuffix) const = 0;
     };
 
     /**
      */
     struct InternetMediaTypeRegistry::IFrontendRep_ {
-        virtual ~IFrontendRep_ ()                                                                                   = default;
-        virtual Set<InternetMediaType>      GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const   = 0;
-        virtual optional<FileSuffixType>    GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const    = 0;
-        virtual Set<FileSuffixType>         GetAssociatedFileSuffixes (const InternetMediaType& ct) const           = 0;
-        virtual optional<String>            GetAssociatedPrettyName (const InternetMediaType& ct) const             = 0;
-        virtual optional<InternetMediaType> GetAssociatedContentType (const FileSuffixType& fileNameOrSuffix) const = 0;
+        virtual ~IFrontendRep_ ()                                                                                                                             = default;
+        virtual Containers::Mapping<InternetMediaType, OverrideRecord> GetOverrides () const                                                                  = 0;
+        virtual void                                                   SetOverrides (const Containers::Mapping<InternetMediaType, OverrideRecord>& overrides) = 0;
+        virtual void                                                   AddOverride (const InternetMediaType& mediaType, const OverrideRecord& overrideRec)    = 0;
+        virtual shared_ptr<IBackendRep>                                GetBackendRep () const                                                                 = 0;
+        virtual Containers::Set<InternetMediaType>                     GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const                  = 0;
+        virtual optional<FileSuffixType>                               GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const                   = 0;
+        virtual Containers::Set<FileSuffixType>                        GetAssociatedFileSuffixes (const InternetMediaType& ct) const                          = 0;
+        virtual optional<String>                                       GetAssociatedPrettyName (const InternetMediaType& ct) const                            = 0;
+        virtual optional<InternetMediaType>                            GetAssociatedContentType (const FileSuffixType& fileNameOrSuffix) const                = 0;
     };
 
     /**
@@ -294,8 +349,10 @@ namespace Stroika::Foundation::DataExchange {
     }
 
     /**
-     *      The currently registered types are: 
+     *  The currently registered types are: 
      *          application, audio, example, font, image, message, model, multipart, text and video
+     *
+     *  \note Types - here - refers to MAJOR types - not InternetMediaTypes (so just top level stuff before the /)
      */
     namespace InternetMediaTypes::Types {
 

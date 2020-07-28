@@ -234,6 +234,19 @@ namespace {
                     DbgTrace (L"i=%s", Characters::ToString (ct).c_str ());
                 }
             }
+            {
+                Debug::TraceContextBumper ctx1 ("InternetMediaTypeRegistry - updating");
+                InternetMediaTypeRegistry origRegistry    = InternetMediaTypeRegistry::Get ();
+                InternetMediaTypeRegistry updatedRegistry = origRegistry;
+                const auto                kHFType_        = InternetMediaType{L"application/fake-heatlthframe-phr+xml"};
+                VerifyTestResult (not InternetMediaTypeRegistry::Get ().GetMediaTypes ().Contains (kHFType_));
+                updatedRegistry.AddOverride (kHFType_, InternetMediaTypeRegistry::OverrideRecord{nullopt, Containers::Set<String>{L".HPHR"}, L".HPHR"});
+                InternetMediaTypeRegistry::Set (updatedRegistry);
+                VerifyTestResult (InternetMediaTypeRegistry::Get ().IsXMLFormat (kHFType_));
+                VerifyTestResult (InternetMediaTypeRegistry::Get ().GetMediaTypes ().Contains (kHFType_));
+                VerifyTestResult (not origRegistry.GetMediaTypes ().Contains (kHFType_));
+                VerifyTestResult (updatedRegistry.GetMediaTypes ().Contains (kHFType_));
+            }
         }
     }
 }

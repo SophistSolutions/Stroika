@@ -38,11 +38,6 @@ namespace Stroika::Foundation::DataExchange {
     {
         return GetAssociatedContentType (IO::FileSystem::FromPath (fileSuffix));
     }
-    inline const InternetMediaTypeRegistry& InternetMediaTypeRegistry::Get ()
-    {
-        static const InternetMediaTypeRegistry sThe_;
-        return sThe_;
-    }
 
 }
 
