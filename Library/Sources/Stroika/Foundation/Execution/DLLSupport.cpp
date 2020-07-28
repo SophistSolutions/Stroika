@@ -13,6 +13,9 @@
 
 #include "DLLSupport.h"
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Execution;
 
@@ -61,7 +64,9 @@ namespace {
 
 DLLLoader::DLLLoader (const SDKChar* dllName)
 {
+    #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (SDKSTR ("DLLLoader - loading DLL %s"), dllName);
+    #endif
     RequireNotNull (dllName);
 #if qPlatform_POSIX
     fModule_ = LoadDLL_ (dllName, RTLD_NOW);
@@ -75,7 +80,9 @@ DLLLoader::DLLLoader (const SDKChar* dllName)
 
 DLLLoader::DLLLoader (const SDKChar* dllName, const vector<filesystem::path>& searchPath)
 {
+    #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (SDKSTR ("DLLLoader - loading DLL %s (with searchPath)"), dllName);
+    #endif
     RequireNotNull (dllName);
 #if qPlatform_POSIX
     fModule_ = LoadDLL_ (dllName, RTLD_NOW);
@@ -103,7 +110,9 @@ DLLLoader::DLLLoader (const SDKChar* dllName, const vector<filesystem::path>& se
 #if qPlatform_POSIX
 DLLLoader::DLLLoader (const SDKChar* dllName, int flags)
 {
+    #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (SDKSTR ("DLLLoader - loading DLL %s, flags=0x%x"), dllName, flags);
+    #endif
     RequireNotNull (dllName);
     fModule_ = LoadDLL_ (dllName, RTLD_NOW);
     if (fModule_ == nullptr) {
@@ -113,7 +122,9 @@ DLLLoader::DLLLoader (const SDKChar* dllName, int flags)
 
 DLLLoader::DLLLoader (const SDKChar* dllName, const vector<filesystem::path>& searchPath, int flags)
 {
+    #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (SDKSTR ("DLLLoader/3 - loading DLL %s, flags=0x%x"), dllName, flags);
+    #endif
 #if qPlatform_POSIX
     fModule_ = LoadDLL_ (dllName, flags);
 #else
@@ -162,7 +173,9 @@ DLLHandle DLLLoader::LoadDLL (const SDKChar* dllName, int flags) /// *** DEPRECA
 
 DLLLoader::~DLLLoader ()
 {
-    DbgTrace ("DLLLoader - unloading dll %p", fModule_);
+    #if USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace ("DLLLoader - unloading dll 0x%p", fModule_);
+    #endif
     AssertNotNull (fModule_);
 #if qPlatform_Windows
     ::FreeLibrary (fModule_);
