@@ -63,18 +63,18 @@ namespace {
 }
 
 Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream<byte>::Ptr& outStream, const InternetMediaType& ct)
-    : fSocket_ {s}
-    , fState_ {State::eInProgress}
-    , fStatus_ {StatusCodes::kOK}
-    , fStatusOverrideReason_ {}
-    , fUnderlyingOutStream_ {outStream}
-    , fUseOutStream_ {Streams::BufferedOutputStream<byte>::New (outStream)}
-    , fHeaders_ {}
-    , fContentType_ {ct}
-    , fCodePage_ {Characters::kCodePage_UTF8}
-    , fBytes_ {}
-    , fContentSizePolicy_ {ContentSizePolicy::eAutoCompute}
-    , fContentSize_ {0}
+    : fSocket_{s}
+    , fState_{State::eInProgress}
+    , fStatus_{StatusCodes::kOK}
+    , fStatusOverrideReason_{}
+    , fUnderlyingOutStream_{outStream}
+    , fUseOutStream_{Streams::BufferedOutputStream<byte>::New (outStream)}
+    , fHeaders_{}
+    , fContentType_{ct}
+    , fCodePage_{Characters::kCodePage_UTF8}
+    , fBytes_{}
+    , fContentSizePolicy_{ContentSizePolicy::eAutoCompute}
+    , fContentSize_{0}
 {
     AddHeader (IO::Network::HTTP::HeaderName::kServer, L"Stroka-Based-Web-Server"sv);
 }
@@ -182,8 +182,8 @@ Mapping<String, String> Response::GetEffectiveHeaders () const
         } break;
     }
     if (not fContentType_.empty ()) {
-        using AtomType = InternetMediaType::AtomType;
-        InternetMediaType useContentType    = fContentType_;
+        using AtomType                   = InternetMediaType::AtomType;
+        InternetMediaType useContentType = fContentType_;
         if (DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (fContentType_)) {
             // Don't override already specifed characterset
             Containers::Mapping<String, String> params = useContentType.GetParameters ();
@@ -272,7 +272,7 @@ void Response::Redirect (const String& url)
 
     // PERHAPS should clear some header values???
     AddHeader (L"Connection"_k, L"close"_k); // needed for redirect
-    AddHeader (L"Location"_k, url);                          // needed for redirect
+    AddHeader (L"Location"_k, url);          // needed for redirect
     SetStatus (StatusCodes::kMovedPermanently);
     Flush ();
     fState_ = State::eCompleted;
