@@ -27,18 +27,48 @@
 namespace Stroika::Foundation::DataExchange {
 
     using Characters::String;
+    using Containers::Mapping;
     using Containers::Set;
 
     /**
      *  This leverages the os-dependent MIME databases
      *
-     *  @todo maybe virtualize interface and provide other implementations (which is why we have Default () API).
-     *        and much more - see https://stroika.atlassian.net/browse/STK-576
-     *
      *  \todo Cleanup internally when we do caching and where and how. Not bad now - but maybe smarter todo at
      *        frontend level not backend level? Unclear (since some backends have different cost structures).
      *
      *        But sloppily done for now.
+     *
+     *  \par Example Usage
+     *      \code
+     *          if (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaType {somestring}) {
+     *              handle_textfiles()
+     *          }
+     *      \endcode
+     *
+     *  \par Example Usage
+     *      \code
+     *          DbgTrace (L"SUFFIX: %s", Characters::ToString (InternetMediaTypeRegistry::Get ().GetPreferredAssociatedFileSuffix (i)).c_str ());
+     *          DbgTrace (L"ASSOCFILESUFFIXES: %s", Characters::ToString (InternetMediaTypeRegistry::Get ().GetAssociatedFileSuffixes (i)).c_str ());
+     *          DbgTrace (L"GetAssociatedPrettyName: %s", Characters::ToString (InternetMediaTypeRegistry::Get ().GetAssociatedPrettyName (i)).c_str ());
+     *      \endcode
+     *
+     *  \par Example Usage
+     *      \code
+     *          // updating media type registry, create a new one and call Set
+     *          InternetMediaTypeRegistry origRegistry    = InternetMediaTypeRegistry::Get ();
+     *          InternetMediaTypeRegistry updatedRegistry = origRegistry;
+     *          const auto                kHFType_        = InternetMediaType{L"application/fake-heatlthframe-phr+xml"};
+     *          VerifyTestResult (not InternetMediaTypeRegistry::Get ().GetMediaTypes ().Contains (kHFType_));
+     *          updatedRegistry.AddOverride (kHFType_, InternetMediaTypeRegistry::OverrideRecord{nullopt, Set<String>{L".HPHR"}, L".HPHR"});
+     *          InternetMediaTypeRegistry::Set (updatedRegistry);
+     *          Assert (InternetMediaTypeRegistry::Get ().IsXMLFormat (kHFType_));
+     *          Assert (InternetMediaTypeRegistry::Get ().GetMediaTypes ().Contains (kHFType_));
+     *          Assert (not origRegistry.GetMediaTypes ().Contains (kHFType_));
+     *          Assert (updatedRegistry.GetMediaTypes ().Contains (kHFType_));
+     *      \endcode
+     *
+     *  TODO:
+     *      \todo   https://stroika.atlassian.net/browse/STK-714 - InternetMediaTypeRegistry Add mechanism to fetch subtypes more generally - enhance IsA
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
@@ -49,7 +79,7 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
-         *  Return the default, OS-provided MIME InternetMediaType registry.
+         *  \brief - Generally no need to use this - handled automatically - but returns the default, OS-provided MIME InternetMediaType registry.
          *
          *  On Windows, this uses:
          *      HKEY_CLASSES_ROOT\MIME\Database\Content Type
@@ -57,7 +87,6 @@ namespace Stroika::Foundation::DataExchange {
          *  On Linux/BSD (but not MacOS), this uses:
          *      /usr/share/mime/globs
          *      /etc/mime.types
-         *
          */
         static shared_ptr<IBackendRep> DefaultBackend ();
 
@@ -72,6 +101,8 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
+         *  \brief - Generally no need to use this - handled automatically.
+         *
          *  Available on:
          *      o   Linux
          *      o   BSD
@@ -84,6 +115,8 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
+         *  \brief - Generally no need to use this - handled automatically.
+         *
          *  Available on:
          *      o   Linux
          *      o   BSD
@@ -96,6 +129,8 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
+         *  \brief - Generally no need to use this - handled automatically.
+         *
          *  Provides a handfull of hardwired values - enough to pass regression tests, but not a good choice.
          *
          *  Available everywhere
@@ -131,7 +166,7 @@ namespace Stroika::Foundation::DataExchange {
         InternetMediaTypeRegistry (const InternetMediaTypeRegistry& src) = default;
 
     public:
-        InternetMediaTypeRegistry& operator= (const InternetMediaTypeRegistry& rhs) = default;
+        nonvirtual InternetMediaTypeRegistry& operator= (const InternetMediaTypeRegistry& rhs) = default;
 
     public:
         /**
@@ -166,13 +201,13 @@ namespace Stroika::Foundation::DataExchange {
          *  Return the current override mappings (note - these are initialized per-OS, to provide sometimes better values than that OS,
          *  but this can be overridden/cleared).
          */
-        nonvirtual Containers::Mapping<InternetMediaType, OverrideRecord> GetOverrides () const;
+        nonvirtual Mapping<InternetMediaType, OverrideRecord> GetOverrides () const;
 
     public:
         /**
          *  Set the current override mappings. Rarely called. More likely - call AddOverride()
          */
-        nonvirtual void SetOverrides (const Containers::Mapping<InternetMediaType, OverrideRecord>& overrides);
+        nonvirtual void SetOverrides (const Mapping<InternetMediaType, OverrideRecord>& overrides);
 
     public:
         /**
@@ -268,7 +303,8 @@ namespace Stroika::Foundation::DataExchange {
          *         subtype - type must match - and now ignores parameters.
          *
          *  @todo REDO this - and dont count on above old algorith. Will add new mechanism EITHER based on what I can read from
-         *        the MIME config files on each OS (except it appears windows), or from some registration 
+         *        the MIME config files on each OS (except it appears windows), or from some registration;
+         *        see https://stroika.atlassian.net/browse/STK-714
          *        
          */
         nonvirtual bool IsA (const InternetMediaType& moreGeneralType, const InternetMediaType& moreSpecificType) const;
@@ -288,16 +324,16 @@ namespace Stroika::Foundation::DataExchange {
     /**
      */
     struct InternetMediaTypeRegistry::IFrontendRep_ {
-        virtual ~IFrontendRep_ ()                                                                                                                             = default;
-        virtual Containers::Mapping<InternetMediaType, OverrideRecord> GetOverrides () const                                                                  = 0;
-        virtual void                                                   SetOverrides (const Containers::Mapping<InternetMediaType, OverrideRecord>& overrides) = 0;
-        virtual void                                                   AddOverride (const InternetMediaType& mediaType, const OverrideRecord& overrideRec)    = 0;
-        virtual shared_ptr<IBackendRep>                                GetBackendRep () const                                                                 = 0;
-        virtual Containers::Set<InternetMediaType>                     GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const                  = 0;
-        virtual optional<FileSuffixType>                               GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const                   = 0;
-        virtual Containers::Set<FileSuffixType>                        GetAssociatedFileSuffixes (const InternetMediaType& ct) const                          = 0;
-        virtual optional<String>                                       GetAssociatedPrettyName (const InternetMediaType& ct) const                            = 0;
-        virtual optional<InternetMediaType>                            GetAssociatedContentType (const FileSuffixType& fileNameOrSuffix) const                = 0;
+        virtual ~IFrontendRep_ ()                                                                                                              = default;
+        virtual Mapping<InternetMediaType, OverrideRecord> GetOverrides () const                                                               = 0;
+        virtual void                                       SetOverrides (const Mapping<InternetMediaType, OverrideRecord>& overrides)          = 0;
+        virtual void                                       AddOverride (const InternetMediaType& mediaType, const OverrideRecord& overrideRec) = 0;
+        virtual shared_ptr<IBackendRep>                    GetBackendRep () const                                                              = 0;
+        virtual Containers::Set<InternetMediaType>         GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const               = 0;
+        virtual optional<FileSuffixType>                   GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const                = 0;
+        virtual Containers::Set<FileSuffixType>            GetAssociatedFileSuffixes (const InternetMediaType& ct) const                       = 0;
+        virtual optional<String>                           GetAssociatedPrettyName (const InternetMediaType& ct) const                         = 0;
+        virtual optional<InternetMediaType>                GetAssociatedContentType (const FileSuffixType& fileNameOrSuffix) const             = 0;
     };
 
     /**
@@ -316,9 +352,6 @@ namespace Stroika::Foundation::DataExchange {
      *
      *  \note
      *      @see http://www.iana.org/assignments/media-types/media-types.xhtml
-     *
-     *  @todo
-     *          https://stroika.atlassian.net/browse/STK-576 - move to InternetMediaTypeRegistry
      */
     namespace PredefinedInternetMediaType {
         namespace PRIVATE_ {
