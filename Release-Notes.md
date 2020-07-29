@@ -8,6 +8,11 @@ to be aware of when upgrading.
 
 ## History
 
+### 2.1b2x = working
+
+- https://stroika.atlassian.net/browse/STK-312 InternetMediaTypes – add ability to add externally specified mappings - FIXED
+- https://stroika.atlassian.net/browse/STK-576 - Lots more work todo on InternetMediaTypeRegistry- FIXED
+
 ### 2.1b1 {2020-06-07}
 
 - **TLDR**
