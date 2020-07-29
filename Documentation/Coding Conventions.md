@@ -325,11 +325,78 @@ For this reason, a handful of Stroika APIs follow the convention of a suffix of:
 
 ---
 
-## kThe for some final singleton objects
+## Final Singleton objects (kThe, Get, Set)
 
-Some objects which are only usable after the start of main (and until end of main), may be slightly more convenient and performant to use pre-existing ones. For example, EOFException::kThe, InterruptException::kThe, etc.
+Singleton objects are a common pattern. Stroika doesn't use these a ton, but some. One issue with singletons to be careful about is thread safety. Stroika leverages a couple of patterns to handle this.
 
----
+### kThe for constant (immutable) singletons
+
+Where the object is intrinsically constant, we follow the pattern of
+
+```c++
+struct EOFException ... {
+  static const EOFException kThe;
+}
+```
+
+```c++
+struct InterruptException ... {
+  static const EOFException kThe;
+}
+```
+
+Here since the objects are constant, thread safety is obviously not an issue.
+
+### Get (and sometimes Set) for mutable singletons
+
+Mutable singletons are accessed by the Get() static method. By definition of a mutable singleton, it will have some non-const methods.
+
+#### Return mutable reference
+
+Within this category of singletons, sometimes we have the Get method return a mutable reference to the global object.
+
+For example:
+
+```c++
+struct Logger ... {
+  static Logger& Get ()
+}
+```
+
+In this case, all mutable methods (such as Logger::SetAppender(), SetSignalHandlers::SetSignalHanlders()) are internally syncrhonized, and so safe to call from any thread
+
+#### Return shared_ptr<> or some other SharedValue() type object, and support singleton static Set method
+
+Another pattern is to return a copyable managed object (either shared_ptr, or something that internally has a shared_ptr or like object).
+
+For example,
+
+```c++
+struct InternetMediaTypeRegistry ... {
+  static InternetMediaTypeRegistry Get ()
+  static void Set (InternetMediaTypeRegistry newRegistry)
+}
+```
+
+In this case, you Get a copy of the global object, update it, and then call Set() to reset the shared/default copy of the given object.
+
+In this case, the mutable methods need NOT be internally synchronized, but the Get/Set static functions are guarnateed internally synchronized.
+
+And something like
+
+```c++
+InternetMediaTypeRegistry::Get()->GetSomeValue()
+```
+
+is safe even if done in parallel with an update to the InternetMediaTypeRegistry (via Set) because the "Get" call maintains a temporary shared_ptr() reference to the old value when the new value is being updated.
+
+**NOTE** Doing
+
+```c++
+SINGLETON::Get()->SomeMutableMethod()
+```
+
+MAY NOT be safe, depending on the particular type. See each singleton type to see how to call its mutable singleton methods.
 
 ## enable_if<> usage
 
@@ -357,3 +424,7 @@ Reasons:
 - \* (to make it a type that can be initialized) is modest and any easy pattern to follow. Seems needed since else you cannot provide a default value
 - Nullptr value maybe would be clearer with =0, which works, but everywhere else we initialize void\* ptr with nullptr.
 - CAN be repeated (without default value) – in the .inl file (definition).
+
+```
+
+```
