@@ -28,7 +28,10 @@ ifeq ($(shell uname),Linux)
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev .
 endif
 ifeq (Windows,$(findstring Windows,$(OS)))
-	docker build -f Windows-Cygwin-VS2k19/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 .
+	# to build this you may need  --storage-opts "size 100GB", but that currently doesn't work with build, so set
+	# in docker windows configuration settings (can get from docker gui - settings/Docker Engine)
+	# Build with -m 4GB cuz default of 1GB pages alot
+	docker build -m 4GB -f Windows-Cygwin-VS2k19/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 .
 	#docker build -f Windows-MinGW-VS2k19/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-mingw-vs2k19 .
 endif
 

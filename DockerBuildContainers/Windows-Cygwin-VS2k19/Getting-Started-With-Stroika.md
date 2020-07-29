@@ -19,5 +19,3 @@ make CONFIGURATION=Debug-U-32 all -j4
 ## Make all configurations
 
 make all -j4
-
-for now, not enuf disk space on windows docker containers, and broken resetting size
