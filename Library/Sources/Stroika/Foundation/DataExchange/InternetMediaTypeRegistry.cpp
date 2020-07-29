@@ -717,10 +717,6 @@ bool InternetMediaTypeRegistry::IsTextFormat (const InternetMediaType& ct) const
         if (ct.GetSubType<AtomType> () == InternetMediaTypes::kJSON->GetSubType<AtomType> ()) {
             return true;
         }
-        Assert (InternetMediaTypes::kURL->GetType<AtomType> () == InternetMediaTypes::Types::kApplication ());
-        if (ct.GetSubType<AtomType> () == InternetMediaTypes::kURL->GetSubType<AtomType> ()) {
-            return true;
-        }
         Assert (InternetMediaTypes::kApplication_XSLT->GetType<AtomType> () == InternetMediaTypes::Types::kApplication ());
         if (ct.GetSubType<AtomType> () == InternetMediaTypes::kApplication_XSLT->GetSubType<AtomType> ()) {
             return true;
