@@ -180,7 +180,7 @@ DLLLoader::~DLLLoader ()
 #if qPlatform_Windows
     ::FreeLibrary (fModule_);
 #else
-    if (dlclose (fModule_) != 0) {
+    if (::dlclose (fModule_) != 0) {
         const char* err = dlerror ();
         if (err != nullptr)
             [[UNLIKELY_ATTR]]
