@@ -63,18 +63,18 @@ namespace {
 }
 
 Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream<byte>::Ptr& outStream, const InternetMediaType& ct)
-    : fSocket_ (s)
-    , fState_ (State::eInProgress)
-    , fStatus_ (StatusCodes::kOK)
-    , fStatusOverrideReason_ ()
-    , fUnderlyingOutStream_ (outStream)
-    , fUseOutStream_ (Streams::BufferedOutputStream<byte>::New (outStream))
-    , fHeaders_ ()
-    , fContentType_ (ct)
-    , fCodePage_ (Characters::kCodePage_UTF8)
-    , fBytes_ ()
-    , fContentSizePolicy_ (ContentSizePolicy::eAutoCompute)
-    , fContentSize_ (0)
+    : fSocket_ {s}
+    , fState_ {State::eInProgress}
+    , fStatus_ {StatusCodes::kOK}
+    , fStatusOverrideReason_ {}
+    , fUnderlyingOutStream_ {outStream}
+    , fUseOutStream_ {Streams::BufferedOutputStream<byte>::New (outStream)}
+    , fHeaders_ {}
+    , fContentType_ {ct}
+    , fCodePage_ {Characters::kCodePage_UTF8}
+    , fBytes_ {}
+    , fContentSizePolicy_ {ContentSizePolicy::eAutoCompute}
+    , fContentSize_ {0}
 {
     AddHeader (IO::Network::HTTP::HeaderName::kServer, L"Stroka-Based-Web-Server"sv);
 }
@@ -182,12 +182,15 @@ Mapping<String, String> Response::GetEffectiveHeaders () const
         } break;
     }
     if (not fContentType_.empty ()) {
-        wstring contentTypeString = fContentType_.As<wstring> ();
-        // Don't override already specifed characterset
-        if (DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (fContentType_) and contentTypeString.find (';') == wstring::npos) {
-            contentTypeString += L"; charset=" + Characters::GetCharsetString (fCodePage_);
+        using AtomType = InternetMediaType::AtomType;
+        InternetMediaType useContentType    = fContentType_;
+        if (DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (fContentType_)) {
+            // Don't override already specifed characterset
+            Containers::Mapping<String, String> params = useContentType.GetParameters ();
+            params.AddIf (L"charset"_k, Characters::GetCharsetString (fCodePage_));
+            useContentType = InternetMediaType{useContentType.GetType<AtomType> (), useContentType.GetSubType<AtomType> (), useContentType.GetSuffix (), params};
         }
-        tmp.Add (IO::Network::HTTP::HeaderName::kContentType, contentTypeString);
+        tmp.Add (IO::Network::HTTP::HeaderName::kContentType, useContentType.As<wstring> ());
     }
     return tmp;
 }
@@ -195,7 +198,7 @@ Mapping<String, String> Response::GetEffectiveHeaders () const
 void Response::Flush ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (L"Response::Flush");
+    Debug::TraceContextBumper ctx{L"Response::Flush"};
     DbgTrace (L"fState_ = %s", Characters::ToString (fState_).c_str ());
 #endif
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
@@ -268,8 +271,8 @@ void Response::Redirect (const String& url)
     fBytes_.clear ();
 
     // PERHAPS should clear some header values???
-    AddHeader (String_Constant (L"Connection"), String_Constant (L"close")); // needed for redirect
-    AddHeader (String_Constant (L"Location"), url);                          // needed for redirect
+    AddHeader (L"Connection"_k, L"close"_k); // needed for redirect
+    AddHeader (L"Location"_k, url);                          // needed for redirect
     SetStatus (StatusCodes::kMovedPermanently);
     Flush ();
     fState_ = State::eCompleted;
