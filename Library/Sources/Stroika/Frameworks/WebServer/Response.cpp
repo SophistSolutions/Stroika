@@ -187,7 +187,7 @@ Mapping<String, String> Response::GetEffectiveHeaders () const
         if (DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (fContentType_)) {
             // Don't override already specifed characterset
             Containers::Mapping<String, String> params = useContentType.GetParameters ();
-            params.AddIf (L"charset"_k, Characters::GetCharsetString (fCodePage_));
+            params.Add (L"charset"_k, Characters::GetCharsetString (fCodePage_), AddReplaceMode::eAddIfMissing);
             useContentType = InternetMediaType{useContentType.GetType<AtomType> (), useContentType.GetSubType<AtomType> (), useContentType.GetSuffix (), params};
         }
         tmp.Add (IO::Network::HTTP::HeaderName::kContentType, useContentType.As<wstring> ());

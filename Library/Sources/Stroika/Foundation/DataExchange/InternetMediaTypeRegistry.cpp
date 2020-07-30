@@ -95,7 +95,7 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
         for (auto i : lockedData->fOverrides) {
             if (i.fValue.fFileSuffixes) {
                 for (auto si : *i.fValue.fFileSuffixes) {
-                    lockedData->fSuffix2MediaTypeMap.AddIf (si, i.fKey);
+                    lockedData->fSuffix2MediaTypeMap.Add (si, i.fKey, AddReplaceMode::eAddIfMissing);
                 }
             }
         }
@@ -108,7 +108,7 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
         for (auto i : lockedData->fOverrides) {
             if (i.fValue.fFileSuffixes) {
                 for (auto si : *i.fValue.fFileSuffixes) {
-                    lockedData->fSuffix2MediaTypeMap.AddIf (si, i.fKey);
+                    lockedData->fSuffix2MediaTypeMap.Add (si, i.fKey, AddReplaceMode::eAddIfMissing);
                 }
             }
         }
@@ -286,14 +286,14 @@ auto InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend () -> shared_ptr<IBac
                         Assert (not line[i].empty ());
                         String suffix = L"."sv + line[i];
                         fSuffix2MediaTypeMap_.Add (suffix, ct);
-                        fMediaType2PreferredSuffixMap_.AddIf (ct, suffix, false);
+                        fMediaType2PreferredSuffixMap_.Add (ct, suffix, AddReplaceMode::eAddIfMissing);
                         fileSuffixes.Add (suffix);
                     }
                     fMediaType2SuffixesMap_.Add (ct, fileSuffixes);
                 }
             }
             // Because on raspberrypi/debian, this comes out with a crazy default for text\plain -- LGP 2020-07-27
-            fMediaType2PreferredSuffixMap_.Add (InternetMediaTypes::kText_PLAIN, L".txt");
+            fMediaType2PreferredSuffixMap_.Add (InternetMediaTypes::kText_PLAIN, L".txt"_k);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"succeeded with %d fSuffix2MediaTypeMap entries, and %d fMediaType2PreferredSuffixMap entries", fSuffix2MediaTypeMap_.size (), fMediaType2PreferredSuffixMap_.size ());
 #endif
@@ -378,7 +378,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
                                 if (glob.StartsWith ('*')) {
                                     glob = glob.SubString (1);
                                 }
-                                // Use AddIf () - so first (appears empirically to be the preferred value) wins
+                                // Use AddReplaceMode::eAddIfMissing - so first (appears empirically to be the preferred value) wins
                                 InternetMediaType imt;
                                 try {
                                     imt = InternetMediaType{line[0]};
@@ -386,8 +386,8 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
                                 catch (...) {
                                     DbgTrace ("Ignoring exception looking parsing potential media type entry (%s): %s", Characters::ToString (line[0]).c_str (), Characters::ToString (current_exception ()).c_str ());
                                 }
-                                fSuffix2MediaTypeMap_.AddIf (glob, imt, false);
-                                fMediaType2PreferredSuffixMap_.AddIf (imt, glob, false);
+                                fSuffix2MediaTypeMap_.Add (glob, imt, AddReplaceMode::eAddIfMissing);
+                                fMediaType2PreferredSuffixMap_.Add (imt, glob, AddReplaceMode::eAddIfMissing);
 
                                 // update the set of mapped suffixes
                                 Containers::Set<FileSuffixType> prevSuffixes = fMediaType2SuffixesMap_.LookupValue (imt);
@@ -404,7 +404,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
                     }
                 }
             };
-            // override files loaded first, tied to use of AddIf - not replacing
+            // override files loaded first, tied to use of AddReplaceMode::eAddIfMissing - not replacing
             for (auto p : fDataRoots_) {
                 loadGlobsFromFile (p / "globs");
             }

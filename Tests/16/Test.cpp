@@ -160,9 +160,9 @@ namespace {
                 VerifyTestResult (m[1] == 2);
                 m.Add (1, 3);
                 VerifyTestResult (m[1] == 3);
-                VerifyTestResult (not m.AddIf (1, 4));
+                VerifyTestResult (not m.Add (1, 4, AddReplaceMode::eAddIfMissing));
                 VerifyTestResult (m[1] == 3);
-                VerifyTestResult (m.AddIf (2, 3));
+                VerifyTestResult (m.Add (2, 3, AddReplaceMode::eAddIfMissing));
                 VerifyTestResult (m[2] == 3);
             }
         }

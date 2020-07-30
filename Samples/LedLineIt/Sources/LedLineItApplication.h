@@ -45,7 +45,7 @@ public:
 
 #if qIncludeBasicSpellcheckEngine
 public:
-    shared_ptr < SpellCheckEngine_Basic_Simple> fSpellCheckEngine;
+    shared_ptr<SpellCheckEngine_Basic_Simple> fSpellCheckEngine;
 #endif
 
 public:

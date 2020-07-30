@@ -46,6 +46,14 @@ namespace Stroika::Foundation::Containers {
     using Traversal::Iterator;
 
     /**
+     *  @todo consider moving this elesewhere in containers code (Containers/Common.h) as this maybe useful elsewhere
+     */
+    enum class AddReplaceMode {
+        eAddIfMissing,
+        eAddReplaces
+    };
+
+    /**
      *      Mapping which allows for the association of two elements: a key and
      *  a value. The key UNIQUELY specifies its associated value.
      *
@@ -328,8 +336,14 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  Add the association between key and newElt. If key was already associated with something
-         *  else, the association is silently updated, and the size of the iterable does not change.
+         *  Add the association between key and newElt. 
+         *
+         *  If key was already associated with something, consult argument addReplaceMode (defaults to AddReplaceMode::eAddReplaces).
+         *  if 'replaces' then replace, and if 'addif' then do nothing on Add ()
+         *
+         *  \returns bool: The (generally ignored) return value boolean indicates if a new item was added (so size of iterable increased).
+         *  This value returned is FALSE for the case of when the value remains unchanged or even if the value is updated (overwriting the previous association).
+         *
          *  Also - we guarantee that even if the association is different, if the key has not changed,
          *  then the iteration order is not changed (helpful for AddAll() semantics, and perhaps elsewhere).
          *
@@ -339,28 +353,6 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          *
-         *  \see AddIf () for more general interface which returns results about changes, and makes conditional the overwrite mapping behavior.
-         */
-        nonvirtual void Add (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt);
-        nonvirtual void Add (ArgByValueType<KeyValuePair<key_type, mapped_type>> p);
-
-    public:
-        /**
-         *  Add the association between key and newElt. 
-         *
-         *  If replaceExistingMapping, unconditionally update the mapping (whether there was a pre-existing mapping or not)
-         *  if not replaceExistingMapping (THE DEFAULT for AddIf) - add the mapping from key to value only if there was no mapping for key.
-         *
-         *  In either case, return true if a new mapping was added (mapping object enlarged by one).
-         *
-         *  \note This behavior when the entry already exists (and replaceExistingMapping is default value false) is similar 
-         *        to std::map::insert (@see http://en.cppreference.com/w/cpp/container/map/insert)
-         *        "Inserts element(s) into the container, if the container doesn't already contain an element with an equivalent key".
-         *
-         *  \note mutates container
-         *
-         *  \see Add ();
-         *
          *  \note - this returns true if a CLEAR change happened. But mappings dont have a VALUE_COMPARER by default. So no way
          *          to return if the MAPPING ITSELF changed. @todo - CONSIDER adding optional VALUE_COMPARER to AddIf, so it can return
          *          true if the mapping CHANGES (mapped to value changes). May need a different name (meaning maybe we've picked a bad name here)
@@ -368,8 +360,8 @@ namespace Stroika::Foundation::Containers {
          *  \note Similar to Set<>::AddIf() - but here there is the ambiguity about whether to change what is mapped to (which we do differntly
          *        between Add and AddIf) and no such issue exists with Set<>::AddIf. But return true if they make a change.
          */
-        nonvirtual bool AddIf (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt, bool replaceExistingMapping = false);
-        nonvirtual bool AddIf (ArgByValueType<KeyValuePair<key_type, mapped_type>> p, bool replaceExistingMapping = false);
+        nonvirtual bool Add (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt, AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces);
+        nonvirtual bool Add (ArgByValueType<KeyValuePair<key_type, mapped_type>> p, AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces);
 
     public:
         /**
@@ -380,9 +372,9 @@ namespace Stroika::Foundation::Containers {
          *  \note mutates container
          */
         template <typename CONTAINER_OF_KEYVALUE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_KEYVALUE>>* = nullptr>
-        nonvirtual unsigned int AddAll (CONTAINER_OF_KEYVALUE&& items, bool replaceExistingMapping = true);
+        nonvirtual unsigned int AddAll (CONTAINER_OF_KEYVALUE&& items, AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces);
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-        nonvirtual unsigned int AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end, bool replaceExistingMapping = true);
+        nonvirtual unsigned int AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end, AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces);
 
     public:
         /**
@@ -603,9 +595,9 @@ namespace Stroika::Foundation::Containers {
         // 'item' arg CAN be nullptr
         virtual bool Lookup (ArgByValueType<KEY_TYPE> key, optional<mapped_type>* item) const = 0;
         // return true if NEW mapping added (container enlarged) - if replaceExistingMapping we unconditionally update but can still return false
-        virtual bool Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt, bool replaceExistingMapping) = 0;
-        virtual void Remove (ArgByValueType<KEY_TYPE> key)                                                               = 0;
-        virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i)                               = 0;
+        virtual bool Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt, AddReplaceMode addReplaceMode) = 0;
+        virtual void Remove (ArgByValueType<KEY_TYPE> key)                                                                 = 0;
+        virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i)                                 = 0;
 #if qDebug
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif

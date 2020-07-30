@@ -156,19 +156,23 @@ namespace Stroika::Foundation::Containers::Concrete {
                 return true;
             }
         }
-        virtual bool Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<MAPPED_VALUE_TYPE> newElt, bool replaceExistingMapping) override
+        virtual bool Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt, AddReplaceMode addReplaceMode) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             fData_.Invariant ();
-            bool insertedNew;
-            if (replaceExistingMapping) {
-                insertedNew = fData_.insert_or_assign (key, newElt).second; // according to https://en.cppreference.com/w/cpp/container/map/insert_or_assign - no iterator references are invalidated
-            }
-            else {
-                insertedNew = fData_.insert ({key, newElt}).second; // according to https://en.cppreference.com/w/cpp/container/map/insert no iterator references are invalidated
+            bool result;
+            switch (addReplaceMode) {
+                case AddReplaceMode::eAddReplaces:
+                    result = fData_.insert_or_assign (key, newElt).second; // according to https://en.cppreference.com/w/cpp/container/map/insert_or_assign - no iterator references are invalidated
+                    break;
+                case AddReplaceMode::eAddIfMissing:
+                    result = fData_.insert ({key, newElt}).second; // according to https://en.cppreference.com/w/cpp/container/map/insert no iterator references are invalidated
+                    break;
+                default:
+                    AssertNotReached ();
             }
             fData_.Invariant ();
-            return insertedNew;
+            return result;
         }
         virtual void Remove (ArgByValueType<KEY_TYPE> key) override
         {

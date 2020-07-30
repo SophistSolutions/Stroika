@@ -217,32 +217,22 @@ namespace Stroika::Foundation::Containers {
         return false;
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Add (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt)
+    inline bool Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Add (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt, AddReplaceMode addReplaceMode)
     {
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (key, newElt, true);
+        return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (key, newElt, addReplaceMode);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Add (ArgByValueType<KeyValuePair<key_type, mapped_type>> p)
+    inline bool Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Add (ArgByValueType<KeyValuePair<key_type, mapped_type>> p, AddReplaceMode addReplaceMode)
     {
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (p.fKey, p.fValue, true);
-    }
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline bool Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::AddIf (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt, bool replaceExistingMapping)
-    {
-        return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (key, newElt, replaceExistingMapping);
-    }
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline bool Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::AddIf (ArgByValueType<KeyValuePair<key_type, mapped_type>> p, bool replaceExistingMapping)
-    {
-        return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (p.fKey, p.fValue, replaceExistingMapping);
+        return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (p.fKey, p.fValue, addReplaceMode);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
-    unsigned int Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end, bool replaceExistingMapping)
+    unsigned int Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end, AddReplaceMode addReplaceMode)
     {
         unsigned int cntAdded{};
         for (auto i = start; i != end; ++i) {
-            if (AddIf (*i, replaceExistingMapping)) {
+            if (Add (*i, addReplaceMode)) {
                 cntAdded++;
             }
         }
@@ -250,14 +240,14 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename CONTAINER_OF_KEYVALUE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_KEYVALUE>>*>
-    inline unsigned int Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (CONTAINER_OF_KEYVALUE&& items, bool replaceExistingMapping)
+    inline unsigned int Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (CONTAINER_OF_KEYVALUE&& items, AddReplaceMode addReplaceMode)
     {
         /*
          *  Note - unlike other containers - we don't need to check for this != &s because if we
          *  attempt to add items that already exist, it would do nothing to our iteration
          *  and therefore not lead to an infinite loop.
          */
-        return AddAll (std::begin (items), std::end (items), replaceExistingMapping);
+        return AddAll (std::begin (items), std::end (items), addReplaceMode);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Remove (ArgByValueType<key_type> key)

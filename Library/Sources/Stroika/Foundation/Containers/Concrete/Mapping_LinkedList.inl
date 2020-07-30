@@ -157,19 +157,25 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             return false;
         }
-        virtual bool Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<MAPPED_VALUE_TYPE> newElt, bool replaceExistingMapping) override
+        virtual bool Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt, AddReplaceMode addReplaceMode) override
         {
             using Traversal::kUnknownIteratorOwnerID;
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
                 if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
-                    if (replaceExistingMapping) {
-                        fData_.SetAt (it, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE> (key, newElt));
+                    switch (addReplaceMode) {
+                        case AddReplaceMode::eAddReplaces:
+                            fData_.SetAt (it, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>{key, newElt});
+                            break;
+                        case AddReplaceMode::eAddIfMissing:
+                            break;
+                        default:
+                            AssertNotReached ();
                     }
                     return false;
                 }
             }
-            fData_.Append (KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE> (key, newElt));
+            fData_.Append (KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>{key, newElt});
             return true;
         }
         virtual void Remove (ArgByValueType<KEY_TYPE> key) override

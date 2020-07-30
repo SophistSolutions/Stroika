@@ -665,7 +665,6 @@ LedItApplication::LedItApplication ()
     Require (sThe == NULL);
     sThe = this;
 
-
 /*
      *  It would be nice to be able to add all the standard types in one place, but due to the quirkly requirement (or is it
      *  just a convention) with MFC of having the application object staticly constructed, we run into a 'race condition'
