@@ -298,20 +298,6 @@ LedLineItApplication::LedLineItApplication ()
 {
     Require (sThe == NULL);
     sThe = this;
-
-#if qIncludeBasicSpellcheckEngine && qDebug
-    SpellCheckEngine_Basic::RegressionTest ();
-#endif
-
-#if qIncludeBasicSpellcheckEngine && qPlatform_Windows
-    {
-        // Place the dictionary in a reasonable - but hardwired place. Later - allow for editing that location,
-        // and other spellchecking options (see SPR#1591)
-        TCHAR defaultPath[MAX_PATH + 1];
-        Verify (::SHGetSpecialFolderPath (NULL, defaultPath, CSIDL_FLAG_CREATE | CSIDL_PERSONAL, true));
-        fSpellCheckEngine.SetUserDictionary (Led_SDK_String (defaultPath) + Led_SDK_TCHAROF ("\\My LedLineIt Dictionary.txt"));
-    }
-#endif
 }
 
 LedLineItApplication::~LedLineItApplication ()
@@ -376,6 +362,23 @@ BOOL LedLineItApplication::InitInstance ()
     //  to update the system registry in case it has been damaged.
     fOleTemplateServer.UpdateRegistry (OAT_INPLACE_SERVER);
     COleObjectFactory::UpdateRegistryAll ();
+
+
+#if qIncludeBasicSpellcheckEngine && qDebug
+#if  qDebug
+    SpellCheckEngine_Basic::RegressionTest ();
+#endif
+    fSpellCheckEngine = make_shared<SpellCheckEngine_Basic_Simple> ();
+#if qPlatform_Windows
+    {
+        // Place the dictionary in a reasonable - but hardwired place. Later - allow for editing that location,
+        // and other spellchecking options (see SPR#1591)
+        TCHAR defaultPath[MAX_PATH + 1];
+        Verify (::SHGetSpecialFolderPath (NULL, defaultPath, CSIDL_FLAG_CREATE | CSIDL_PERSONAL, true));
+        fSpellCheckEngine->SetUserDictionary (Led_SDK_String (defaultPath) + Led_SDK_TCHAROF ("\\My LedLineIt Dictionary.txt"));
+    }
+#endif
+    #endif
 
 #if qPlatform_Windows
     {

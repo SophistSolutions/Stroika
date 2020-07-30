@@ -640,10 +640,6 @@ LedItApplication::LedItApplication ()
     inherited ()
     ,
 #endif
-#if qIncludeBasicSpellcheckEngine
-    fSpellCheckEngine ()
-    ,
-#endif
 #if qPlatform_MacOS
     fHelpMenuItem (0)
     , fGotoLedItWebPageMenuItem (0)
@@ -669,22 +665,6 @@ LedItApplication::LedItApplication ()
     Require (sThe == NULL);
     sThe = this;
 
-#if qIncludeBasicSpellcheckEngine && qDebug
-    SpellCheckEngine_Basic::RegressionTest ();
-#endif
-
-#if qIncludeBasicSpellcheckEngine && qPlatform_Windows
-    {
-        // Place the dictionary in a reasonable - but hardwired place. Later - allow for editing that location,
-        // and other spellchecking options (see SPR#1591)
-        TCHAR defaultPath[MAX_PATH + 1];
-#ifndef CSIDL_FLAG_CREATE
-#define CSIDL_FLAG_CREATE 0x8000 // new for Win2K, or this in to force creation of folder
-#endif
-        Verify (::SHGetSpecialFolderPath (NULL, defaultPath, CSIDL_FLAG_CREATE | CSIDL_PERSONAL, true));
-        fSpellCheckEngine.SetUserDictionary (Led_SDK_String (defaultPath) + Led_SDK_TCHAROF ("\\My LedIt Dictionary.txt"));
-    }
-#endif
 
 /*
      *  It would be nice to be able to add all the standard types in one place, but due to the quirkly requirement (or is it
@@ -1313,6 +1293,28 @@ BOOL LedItApplication::InitInstance ()
         AfxMessageBox (IDP_OLE_INIT_FAILED);
         return false;
     }
+
+#if qIncludeBasicSpellcheckEngine
+#if qDebug
+    SpellCheckEngine_Basic::RegressionTest ();
+#endif
+
+    fSpellCheckEngine = make_shared<SpellCheckEngine_Basic_Simple> ();
+
+#if qPlatform_Windows
+    {
+        // Place the dictionary in a reasonable - but hardwired place. Later - allow for editing that location,
+        // and other spellchecking options (see SPR#1591)
+        TCHAR defaultPath[MAX_PATH + 1];
+#ifndef CSIDL_FLAG_CREATE
+#define CSIDL_FLAG_CREATE 0x8000 // new for Win2K, or this in to force creation of folder
+#endif
+        Verify (::SHGetSpecialFolderPath (NULL, defaultPath, CSIDL_FLAG_CREATE | CSIDL_PERSONAL, true));
+        fSpellCheckEngine->SetUserDictionary (Led_SDK_String (defaultPath) + Led_SDK_TCHAROF ("\\My LedIt Dictionary.txt"));
+    }
+#endif
+
+#endif
 
 #if qUseSpyglassDDESDIToOpenURLs
     Led_URLManager::InitDDEHandler ();
