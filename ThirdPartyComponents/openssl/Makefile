@@ -22,9 +22,10 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 # CHECK FOR UPDATED VERSIONS https://www.openssl.org/source/
 #
 
-# alpha2 works mostly bug regtests fail with error:060000CA:digital envelope routines::fetch failed
+# alpha5 fails on openssl regtests (make tests hangs on unix after long time - after test 80-test_x509aux.t, tests seem to complete on windows, but regtests fail with error:03000086:digital envelope routines::initialization error)
 # alpha4 fails on openssl regtests (make tests hangs on unix)
-#VERSION=3.0.0-alpha4
+# alpha2 works mostly bug regtests fail with error:060000CA:digital envelope routines::fetch failed
+#VERSION=3.0.0-alpha5
 
 
 VERSION=1.1.1g
