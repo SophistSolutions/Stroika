@@ -232,7 +232,7 @@ public:
             }
 
             LedLineItDocument::sHiddenDocOpenArg = codePage;
-            CDocument* doc                       = inherited::OpenDocumentFile (GetLongPathName (lpszFileName).c_str ());
+            CDocument* doc                       = inherited::OpenDocumentFile (GetLongPathName (lpszFileName).c_str (), TRUE);
             LedLineItDocument::sHiddenDocOpenArg = kIGNORECodePage;
 
             if (untitledDoc != NULL) {
