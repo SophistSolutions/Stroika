@@ -135,27 +135,27 @@ namespace Stroika::Foundation::IO::Network {
      */
     inline bool operator< (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) < 0;
+        return Common::ThreeWayCompare (lhs._GetSharedRep (), rhs._GetSharedRep ()) < 0;
     }
     inline bool operator<= (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) <= 0;
+        return Common::ThreeWayCompare (lhs._GetSharedRep (), rhs._GetSharedRep ()) <= 0;
     }
     inline bool operator== (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) == 0;
+        return Common::ThreeWayCompare (lhs._GetSharedRep (), rhs._GetSharedRep ()) == 0;
     }
     inline bool operator!= (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) != 0;
+        return Common::ThreeWayCompare (lhs._GetSharedRep (), rhs._GetSharedRep ()) != 0;
     }
     inline bool operator>= (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) >= 0;
+        return Common::ThreeWayCompare (lhs._GetSharedRep (), rhs._GetSharedRep ()) >= 0;
     }
     inline bool operator> (const Socket::Ptr& lhs, const Socket::Ptr& rhs)
     {
-        return Common::ThreeWayCompare (lhs, rhs) > 0;
+        return Common::ThreeWayCompare (lhs._GetSharedRep (), rhs._GetSharedRep ()) > 0;
     }
 #endif
 
