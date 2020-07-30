@@ -615,7 +615,7 @@ void LedItView::OnInitialUpdate ()
     SetHidableTextDatabase (GetDocument ().GetHidableTextDatabase ());
     SetShowHiddenText (Options ().GetShowHiddenText ());
     SetCommandHandler (&GetDocument ().GetCommandHandler ());
-    SetSpellCheckEngine (&LedItApplication::Get ().fSpellCheckEngine);
+    SetSpellCheckEngine (LedItApplication::Get ().fSpellCheckEngine.get ());
 
     {
         // Don't let this change the docs IsModified flag

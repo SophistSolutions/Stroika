@@ -336,7 +336,7 @@ void LedLineItView::OnInitialUpdate ()
     SpecifyTextStore (&GetDocument ().GetTextStore ());
     SetCommandHandler (&GetDocument ().GetCommandHandler ());
 #if qIncludeBasicSpellcheckEngine
-    SetSpellCheckEngine (&LedLineItApplication::Get ().fSpellCheckEngine);
+    SetSpellCheckEngine (LedLineItApplication::Get ().fSpellCheckEngine.get ());
 #endif
 }
 
