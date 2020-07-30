@@ -68,6 +68,7 @@ PERSONAL_FILE_MOUNTS="${PERSONAL_FILE_MOUNTS} \
 	-v $HOME/.bashrc:$HOME/.bashrc:ro \
 	-v $HOME/.bash_aliases:$HOME/.bash_aliases:ro \
 	-v $HOME/.gitconfig:$HOME/.gitconfig \
+	-v $HOME/.npm:$HOME/.npm \
 	"
 fi
 

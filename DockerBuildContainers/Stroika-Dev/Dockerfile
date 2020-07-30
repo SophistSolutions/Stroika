@@ -3,5 +3,5 @@ FROM sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
 # Get latest packages system, so can do installs
 RUN apt-get update
 
-RUN apt-get install -y clang-format curl vim apt-file iproute2
+RUN apt-get install -y clang-format curl vim apt-file iproute2 npm
 RUN apt-file update
