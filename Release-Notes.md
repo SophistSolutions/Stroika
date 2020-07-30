@@ -29,12 +29,32 @@ to be aware of when upgrading.
 
   - Improved erro reporting on configure script
 
+  - GCC
+    - De-support gcc-7 for Stroika v2.1, because it only supports experimental/filesystem,
+      not filesystem and not important enuf to retain backward compat with gcc-7 to have all the conditional includes.
   - XCode
+
+    - **Lose support for XCode 10 on MacOS** because it doesn't support \<filesystem\> code
+      and trying to swtich to using that in a more thorough way.
+
     - try xcode 11.5
+
+  - Compiler Bug defines
+    - Lose qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy bug workarounds (using experimental or boost filesystem) - all in - require new c++17 filesystem code from now on
+    - Lose qCompilerAndStdLib_optional_value_const_Buggy
+    - Lose qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
+
+- CI Systems
+
+  - TravisCI
+
+    - changed one tpp configure include flag for one travisci macos configuration that was failing due to not building fast enuf
 
 - Documentation
 
-  - cleanup ReadMe.md
+  - ReadMe.md
+    - Cleanups
+    - update ReadMe.md with pretty docs on CI systems uses
 
 - Foundation
 
@@ -42,7 +62,9 @@ to be aware of when upgrading.
     - fixed bugs in Cache/SynchronizedLRUCache - case where no value returned;
       and must use unique_lock instead of lock_guard to unlock
   - Containers
-    - new Mapping<>::AddIf() - INCOMPLET ECHANGE BEFORE RELASE
+
+    - Change to Mapping::Add() to take optional AddReplaceMode (enum) parameter (matching STL insert vs insert_or_assign), and returning bool indicating if actaul addition done.
+
   - DataExchange
 
     - InternetMediaType and InternetMediaTypeRegistry
@@ -69,6 +91,7 @@ to be aware of when upgrading.
     - cleanup and deprecate old appraoch to Iterable<>::Select()
 
 - ThirdPartyComponents
+
   - boost
     - dont think I need sophists backup for boost downloads anymore, so comment out
   - libcurl
@@ -77,61 +100,13 @@ to be aware of when upgrading.
     - Comments on failed test of up-to 3.0.0-alpha5
   - sqlite
     - 3.32.03
-    - alt download site for sqlite and see if that fixes travisci
+    - Support a mirror for sqlite due to mysterious problem downloading from the main source on travisci macos machines
+
 - Tests
   - regression testing cleanups: TestHarness::WarnTestIssue() now has overload taking wchar_t\*
   - improved logging
 
 #if 0
-
-    Lose qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy bug workarounds (using experimental or boost filesystem) - all in - require new c++17 filesystem code from now on
-
-commit 24310e46141d1bbe7b1e37153681b779e3574794
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jul 2 09:58:07 2020 -0400
-
-    another bugfix where path needs to be wrpaped to ToString() before calling .c_str()
-
-commit e615e13d38a1948f389ec7a06c0b73d7e3528a31
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jul 2 13:10:54 2020 -0400
-
-    Support a mirror for sqlite due to mysterious problem downloading from the main source on travisci macos machines
-
-commit 5d66a7c969f098d92c676028feaea20e82c01d1b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jul 2 13:20:59 2020 -0400
-
-    changed one tpp configure include flag for one travisci macos configuration that was failing due to not building fast enuf
-
-commit 53d649abe90c67b027b0e928f1ba10c3af9cb091
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jul 2 15:51:42 2020 -0400
-
-    De-support gcc-7 for Stroika v2.1, because it only supports experimental/filesystem, not filesystem
-    and not important enuf to retain backward compat with gcc-7 to have all the conditional includes.
-
-commit d874425786815f8fee841f24c6a4d338a5c5d085
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jul 2 19:03:58 2020 -0400
-
-    **Lose support for XCode 10 on MacOS** because it doesn't support <filesystem> code
-    and trying to swtich to using that in a more thorough way.
-
-    Also (therefore) lost BWA:
-
-       > qCompilerAndStdLib_optional_value_const_Buggy
-       > qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
-
-commit 0093d330ad169a80292eb4ba0a024a1ea9b27ddd
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jul 2 19:58:06 2020 -0400
-
-    update ReadMe.md with pretty docs on CI systems uses
-
-commit 20db0b79399669f38da85767d431597377576266
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jul 2 20:07:18 2020 -0400
 
     configure DEFAULT_CONFIG --only-if-has-compiler and fixed configure script so if using gcc, assure using gcc 8.0 or later
 
