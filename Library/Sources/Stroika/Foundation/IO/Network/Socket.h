@@ -396,6 +396,7 @@ namespace Stroika::Foundation::IO::Network {
         shared_ptr<_IRep> fRep_;
 
 #if __cpp_impl_three_way_comparison < 201907
+    private:
         friend bool operator< (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
         friend bool operator<= (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
         friend bool operator== (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
