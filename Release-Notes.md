@@ -13,1815 +13,918 @@ to be aware of when upgrading.
 - https://stroika.atlassian.net/browse/STK-312 InternetMediaTypes – add ability to add externally specified mappings - FIXED
 - https://stroika.atlassian.net/browse/STK-576 - Lots more work todo on InternetMediaTypeRegistry- FIXED
 
+- Dependencies
 
-#if 0
-commit 4d720cfa6fb7d7446c0ffff12249eebe29f5cbf5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 7 21:14:51 2020 -0400
+  - Large change - **NOT BACKWARD COMPATIBLE**
 
-    start dev 2.1b2x
-
-commit 5e7bcf574b54606fc1a8f2e4d5dda56691e929ba
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 7 21:15:44 2020 -0400
-
-    I dont think I need sophists backup for boost downloads anymore, so comment out
-
-commit 4041b0934cbaab33078c1039f40f39f58e15f28e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jun 27 23:14:24 2020 -0400
-
-    new Mapping<>::AddIf()
-
-commit 93479abdef2e423b2767b7d88e9505c29ccf3ba4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 28 01:00:17 2020 -0400
-
-    Added Mapping<>::AddIf
-
-commit f312076efe1e9691d1369cc8f376b201c103d9f8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 28 08:02:00 2020 -0400
-
-    Added mapping AddVsAddIf_Test_9 test
-
-commit 54fe901521d529ce13aa0f09796b245be44fa610
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 28 08:57:45 2020 -0400
-
-    refactored Mapping<>::AddIf/Add code - now single rep virtual Add that handles the AddIf parameters
-
-commit d090555067814727bffcce1b0e27810136221e7d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 28 09:06:17 2020 -0400
-
-    todo comments on Mapping
-
-commit 98a30b20505afee71b1be30c67f15f0b0848ced0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 28 09:48:24 2020 -0400
-
-    comments
-
-commit 80370d5af542fafdc6fac803139e2af91937b4d6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 28 10:00:48 2020 -0400
-
-    cleanup ReadMe.md
-
-commit bae8dedf49570c15619e0b52741dc35e1bb8ad73
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 28 10:20:40 2020 -0400
-
-    Comments on failed test of openssl3 alpha
-
-commit fdc52ba6f5a1371d499eb26778501754e4e16cdc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 28 10:26:22 2020 -0400
-
-    more debug trace usage
-
-commit 441effde445ca9b88be65f41a72b1df873fd4894
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 28 11:06:30 2020 -0400
-
-    curl 7.71
-
-commit fade1ee8fbeca250244f981d6c573bfbeba45062
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 28 11:08:04 2020 -0400
-
-    regression testing cleanups: TestHarness::WarnTestIssue() now has overload taking wchar_t*; and imporved logging in regtest 29 (crypto)
-
-commit 5880906064b0d708cb89dbccedf87eb2ff0e1d74
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 28 11:08:25 2020 -0400
-
-    sqlite 3.32.03
-
-commit 35a4dfad6ae29c17e837683e5d3964d33b856e9c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 28 11:20:43 2020 -0400
-
-    tweak debug message
-
-commit ad9c7e1af63a6ea77adf6cd4aeaf5440e6516821
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 28 11:24:06 2020 -0400
-
-    debug trace messages
-
-commit a69fc0f2642330a30e42f83a58c7408e645d9653
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 28 14:01:52 2020 -0400
-
-    try xcode 11.5
-
-commit 0e5270a3fa9c615da614a82fcfeacfa448fa3de4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 28 14:39:43 2020 -0400
-
-    revert to sqlite 3320200 since had trouble on macosx with 3320300
-
-commit 9d9bae9955521bfbe201f0107283c4c589a1da6a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 28 16:30:35 2020 -0400
-
-    revert change to sqlite version due to build issue with macosx
-
-commit d8d2d2f66a427815f5cfb88b725c26309a5a6072
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 28 23:12:43 2020 -0400
-
-    simplify and add (problematic for unix) case to regtests for InternetMediaTypeRegistry
-
-commit 01a2cb5c00ab2733d41ad9125f92b9611b5a81b8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 28 23:49:38 2020 -0400
-
-    major refactoring (incomplete) of InternetMediaTypeRegistry
-
-commit f5451e35b3e5a8074809b8dce2f142475119dc54
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jun 28 23:50:19 2020 -0400
-
-    went back to 3320300 for sqlite - not sure whats wrong on macos on travisci
-
-commit 1a77d47bdd06c100f93ff7926097b1534abaf787
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 29 11:00:02 2020 -0400
-
-    fixed bugs in Cache/SynchronizedLRUCache - case where no value returned; and must use unique_lock instead of lock_guard to unlock
-
-commit c1212a06490dfae04dce916e6013e5a03f6fa5aa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 29 11:01:11 2020 -0400
-
-    cleanup InternetMediaTypeRegistry regtest to accomodate fact that some systems return html and some htm for file suffix
-
-commit 4169dada1d0decb7876bed23e89d2da5a8c59e41
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 29 11:01:23 2020 -0400
-
-    Cleanup InternetMediaTypeRegistry code for windows, using SyncrhonizedLRUCache
-    and docs
-
-commit c8a72abc82b5af96ee7582c15b9c2f4b8dca7758
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 29 11:11:28 2020 -0400
-
-    todo comments and code cleanups and no longer use deprecated name
-
-commit 1be64da028955f443405fde1371786a4feb52a77
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 29 11:11:50 2020 -0400
-
-    clenaups
-
-commit 6304712a13ffb7a5d50a717797ab3253344f9fbb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 29 11:12:23 2020 -0400
-
-    fix error message for recent intermnetmediatype regression test cleanups
-
-commit 42af8a30e07024c676b92740a3b50f25359a1177
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 29 11:35:28 2020 -0400
-
-    cosmetic
-
-commit 6ca757d85eb2e257c3908b29cc9403751d7c87c2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 29 11:35:57 2020 -0400
-
-    define std::hash<> specialization for InternetMediaType
-
-commit 09095edfb4049cdb7ff96eab89633e8ddc74f9cb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 29 11:36:12 2020 -0400
-
-    cosmetic
-
-commit 42c8570053a788fe46ff116c998b22d9dc99c29a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 29 11:37:46 2020 -0400
-
-    got LRUCache with hashtable code working on InternetMediaTypeRegistry
-
-commit 357fbec2643be07daf50706894249239851e33c6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 30 16:50:10 2020 -0400
-
-    Large change - **NOT BACKWARD COMPATIBLE**
     Switched to using filesystem::path instead of String all over the place for pathnames.
-    
+
     Changed TONS of APIs. No good way to do compatibly, because supporting both path and String
     as argumnets would lead to "", etc not working, due to ambiguous conversions. So at this version
     boundary - you just must swtich your code to using std::filesystem.
 
-commit 2d0080baaf4760e75016a2626a45a3a79af3b36a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 30 17:00:16 2020 -0400
+    - dangerous change on UNIX - where we used to use String and String x; x.c_str() used to be wchar_t and now that we switched to path, its char\* on POSIX (and some other) systems. So be careful when used with Format (especially common with DebugTrace calls so we maybe debugging this for a while)
 
-    IntenretMediaTypeRegistry cleanups - UsrSharedDefaultBackend now looks in more places, etc
+- Build System
 
-commit a39a53a30bd760e68c20372d65581e7fe740aada
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 30 17:07:30 2020 -0400
+  - Improved erro reporting on configure script
 
-    fix regression due to filesystem change
+  - XCode
+    - try xcode 11.5
 
-commit 8abf310ffc5e5aade53dfe96494eed26d0b8cdfa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 30 17:07:57 2020 -0400
+- Documentation
 
-    more progress on -> std::filesystem change
+  - cleanup ReadMe.md
 
-commit 331ac9c67c4476f28a2057cdfc83cd0349207f53
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 30 17:09:53 2020 -0400
+- Foundation
 
-    fix regression due to filesystem change
+  - Cache
+    - fixed bugs in Cache/SynchronizedLRUCache - case where no value returned;
+      and must use unique_lock instead of lock_guard to unlock
+  - Containers
+    - new Mapping<>::AddIf() - INCOMPLET ECHANGE BEFORE RELASE
+  - DataExchange
 
-commit 6a88dd85720fc54ba941eb2e7e4a803be5dbf5da
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 30 17:11:34 2020 -0400
+    - InternetMediaType and InternetMediaTypeRegistry
 
-    fix regression due to filesystem change
+      - **MAJOR CHANGES**
+      - Improved (but not final/perfected) caching logic/thread safety (docs and enforcement)
+      - define std::hash<> specialization for InternetMediaType
+      - IntenretMediaTypeRegistry cleanups - UsrSharedDefaultBackend now looks in more places, etc
 
-commit dc1d441c9d8c890a7b79d99faf82e38350741948
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 30 17:56:58 2020 -0400
+        REVISE DOCS FOR THIS ITEM
 
-    a few more filesystem::path cleanups
+      - Added InternetMediaTypeRegistry::BakedInDefaultBackend - so regtests pass on MacOS (without warning) - cuz it doesnt have a mapper for content types otehrwise
 
-commit ee182670013cc23f21b8ce2051ef81cfe3214c9a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 30 17:58:44 2020 -0400
+      - InternetMediaTypeRegistry::GetAssociatedContentType - changed sematnics - requires file suffix argument - not file or suffix
 
-    fix regression due to filesystem change
+  - IO::FileSystem
 
-commit 2876e34b9ef4c4cabdb5ff8a082354c879abef20
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 30 18:02:23 2020 -0400
+    - **tons of changes due to (above) switch to using std::filesystem**
+    - deprecated FileSystem::GetFileSuffix() and reimplemented using FromPath (ToPath (fileName).extension ());
 
-    fix regression due to filesystem change
+  - Traversal
 
-commit 61d03c91f8b7e4e22ca5f30695ed6714b2165e37
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 30 18:04:41 2020 -0400
+    - docs and new experimental Iterable\<T\>::SelectIf ()
+    - cleanup and deprecate old appraoch to Iterable<>::Select()
 
-    fix regression due to filesystem change
+- ThirdPartyComponents
+  - boost
+    - dont think I need sophists backup for boost downloads anymore, so comment out
+  - libcurl
+    - use 7.71.1
+  - openssl
+    - Comments on failed test of up-to 3.0.0-alpha5
+  - sqlite
+    - 3.32.03
+    - alt download site for sqlite and see if that fixes travisci
+- Tests
+  - regression testing cleanups: TestHarness::WarnTestIssue() now has overload taking wchar_t\*
+  - improved logging
 
-commit 2db04c3ff3ea4c4b00a31dc186c5bc284a14b344
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 30 18:16:37 2020 -0400
-
-    fix slight regression due to filesystem::path changes
-
-commit 1e158b5ff426e2c7d484a3d6f60ecb21ff8cc267
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 30 19:26:27 2020 -0400
-
-    Added InternetMediaTypeRegistry::BakedInDefaultBackend - so regtests pass on MacOS (without warning) - cuz it doesnt have a mapper for content types otehrwise
-
-commit 7fce529ad5b4d59e5440e93477c2c12700db4ee2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 30 19:30:49 2020 -0400
-
-    cosmetic
-
-commit f573aed088c364462a062168eddfcbb383489f07
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 30 19:31:05 2020 -0400
-
-    fixed macos issue(regresison) with filesystem::path changes
-
-commit f79fc071714f3cfd21849beea4234508163a7534
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 30 20:37:49 2020 -0400
-
-    dbgtrace call regressions caused by filesystem::path change
-
-commit eb76b20044070d93cc94482f087652204c2dba7a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 30 20:52:41 2020 -0400
-
-    deprecated FileSystem::GetFileSuffix() and reimplemented using FromPath (ToPath (fileName).extension ());
-
-commit 83ad0834ea8fc95a04fbc339100ec56b813ed4d8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 30 20:54:13 2020 -0400
-
-    fixed some regressions due to filesystem::path change - dangerous change on UNIX - where we used to use String and String x; x.c_str() used to be wchar_t and now that we switched to path, its char* on POSIX (and some other) systems. So be careful when used with Format (especially common with DebugTrace calls so we maybe debugging this for a while)
-
-commit a08627722f97bbeab9631f527af0d2b77f710cea
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 30 20:54:32 2020 -0400
-
-    costmetic
-
-commit 33950650c89336883531f4e87c727efd0c7433e8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 30 20:55:20 2020 -0400
-
-    workaround isseus with InternetMediaTypeRegistry.cpp - checking if file exists - before loading particualr backend - must do better but hopefully good enuf for macos regtests to pass?
-
-commit 9a2440982943714d6a84649851ca70e509d39faf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 30 21:15:41 2020 -0400
-
-    react to GetFileSuffix() being deprecated (use std::filesytem)
-
-commit de849bb0dd31f8b65bd100ee9369b652c241c29c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 1 08:29:22 2020 -0400
-
-    docs
-
-commit ea441c5e6931a9ed8eb13ad8ee70920368463dc9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 1 08:30:06 2020 -0400
-
-    docs and new experimental Iterable<T>::SelectIf ()
-
-commit 3ee173c93d0785b60417a598ac37fd43638610ab
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 1 08:30:44 2020 -0400
-
-    improved warning reporting for regtest
-
-commit cb6cc170253d574faaa0415f17d4b3f3428b37ec
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 1 08:31:31 2020 -0400
-
-    cosmetic
-
-commit b724f14a45d6af4f32be388b635ac71391b4d40f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 1 08:45:53 2020 -0400
-
-    changed sematnics for InternetMediaTypeRegistry::GetAssociatedContentType - requires file suffix argument - not file or suffix
-
-commit f3941ee71c4cf11c84037c714d62dce8171e51c0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 1 09:14:57 2020 -0400
-
-    cleanup and deprecate old appraoch to Iterable<>::Select()
-
-commit 747d51f0bf5bd66514b8259432aae12a4eea656d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 1 09:20:53 2020 -0400
-
-    Added misinsg PNG for InternetMediaTypeRegistry::BakedInDefaultBackend
-
-commit 080201bf1602daf5a31b103c9c507e1dbc616b38
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 1 17:25:13 2020 -0400
-
-    careful to use ToString (PATH) before passing to DbgTrace
-
-commit 06f852f6821082867f6244ad207817cc1ad8118c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 1 21:19:24 2020 -0400
-
-    added missing objectvariantmapper type mappings for Set<path> etc in Frameworks/SystemPerformance code
-
-commit 9bcb54356f3ad563dee2e72eb92bdec4a01061e8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 1 21:49:50 2020 -0400
-
-    up wait time for third-party-components on travisci builds (macos)
-
-commit 5ce4f28ff04b7cf52ef170c1f00e316862f89393
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 1 21:53:55 2020 -0400
-
-    temporily disable --quiet on wget to debug macos travisci build failure
-
-commit c98978ca8118b7a95f485ba026f5499954a33c1f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 2 08:19:48 2020 -0400
-
-    revert debugging hack to WebGet script
-
-commit 681d18c9116de1072433f668aa75e1cc6c3fb048
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 2 08:28:56 2020 -0400
-
-    test alt download site for sqlite and see if that fixes travisci issue on macos
-
-commit 6b3d914550433e91957120c2494db24360bb5b1e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 2 08:29:15 2020 -0400
-
-    test alt download site for sqlite and see if that fixes travisci issue on macos
-
-commit 3bdae79b70d49e80815b95ab848dcea3db2d17d7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 2 09:53:04 2020 -0400
-
-    fix regression due to String->Path change - c_str()
-
-commit 663eecc929fc7405c86c95e3f1156196b476d69b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 2 09:57:40 2020 -0400
+#if 0
 
     Lose qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy bug workarounds (using experimental or boost filesystem) - all in - require new c++17 filesystem code from now on
 
 commit 24310e46141d1bbe7b1e37153681b779e3574794
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 2 09:58:07 2020 -0400
+Date: Thu Jul 2 09:58:07 2020 -0400
 
     another bugfix where path needs to be wrpaped to ToString() before calling .c_str()
 
-commit 8c301053bfcc617394bd0eb0a41c112838f05d05
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 2 09:59:25 2020 -0400
-
-    cosmetic trace output
-
 commit e615e13d38a1948f389ec7a06c0b73d7e3528a31
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 2 13:10:54 2020 -0400
+Date: Thu Jul 2 13:10:54 2020 -0400
 
     Support a mirror for sqlite due to mysterious problem downloading from the main source on travisci macos machines
 
 commit 5d66a7c969f098d92c676028feaea20e82c01d1b
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 2 13:20:59 2020 -0400
+Date: Thu Jul 2 13:20:59 2020 -0400
 
     changed one tpp configure include flag for one travisci macos configuration that was failing due to not building fast enuf
 
-commit 2c60a458a352d2f82ee176914e08c29f1456282f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 2 13:23:58 2020 -0400
-
-    cosmetic cleanup
-
-commit 8e47e2aaa892bf6a6d3945b3df43ea1321ffd0ac
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 2 15:26:59 2020 -0400
-
-    travisci cleanups
-
-commit beaddaa7439d4f1de29903ef9e8ac37689dc2fb5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 2 15:35:32 2020 -0400
-
-    filesystem::path change cleanups
-
 commit 53d649abe90c67b027b0e928f1ba10c3af9cb091
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 2 15:51:42 2020 -0400
+Date: Thu Jul 2 15:51:42 2020 -0400
 
     De-support gcc-7 for Stroika v2.1, because it only supports experimental/filesystem, not filesystem
     and not important enuf to retain backward compat with gcc-7 to have all the conditional includes.
 
-commit dd48b449d4940d63e5efda5437f49479e9b39e2c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 2 15:55:17 2020 -0400
-
-    cosmetic
-
 commit d874425786815f8fee841f24c6a4d338a5c5d085
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 2 19:03:58 2020 -0400
+Date: Thu Jul 2 19:03:58 2020 -0400
 
     **Lose support for XCode 10 on MacOS** because it doesn't support <filesystem> code
     and trying to swtich to using that in a more thorough way.
-    
+
     Also (therefore) lost BWA:
-    
+
        > qCompilerAndStdLib_optional_value_const_Buggy
        > qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
 
 commit 0093d330ad169a80292eb4ba0a024a1ea9b27ddd
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 2 19:58:06 2020 -0400
+Date: Thu Jul 2 19:58:06 2020 -0400
 
     update ReadMe.md with pretty docs on CI systems uses
 
 commit 20db0b79399669f38da85767d431597377576266
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 2 20:07:18 2020 -0400
+Date: Thu Jul 2 20:07:18 2020 -0400
 
     configure DEFAULT_CONFIG --only-if-has-compiler and fixed configure script so if using gcc, assure using gcc 8.0 or later
 
 commit 1b2262a85311cd720cfaa665e1ca3f737d333dd9
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 2 20:08:19 2020 -0400
+Date: Thu Jul 2 20:08:19 2020 -0400
 
     configure DEFAULT_CONFIG --only-if-has-compiler and fixed configure script so if using gcc, assure using gcc 8.0 or later
 
 commit 52d0cedee82f2854569305f7d57d75f03ad8a686
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 2 20:09:54 2020 -0400
+Date: Thu Jul 2 20:09:54 2020 -0400
 
     configure DEFAULT_CONFIG --only-if-has-compiler and fixed configure script so if using gcc, assure using gcc 8.0 or later
 
-commit bd7b7f2c57911ea1241feed4afb2f847086722c4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 2 20:19:17 2020 -0400
-
-    regression in recent checkin
-
-commit 94a00db00888fc98d29e3f9661f2940865dda157
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 2 20:28:28 2020 -0400
-
-    fix typo in last fixup of deleting obsolete ifdefs in regtests
-
 commit 81636dec372ddc869bbe7f4dde54e9450cce56b7
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 3 11:10:11 2020 -0400
+Date: Fri Jul 3 11:10:11 2020 -0400
 
     added explicit configs g++-8-debug-sanitize_leak  etc (about 8) - really only for ubuntu1804 but others others may get this too (not good); and added  --only-if-has-compiler to a few remaing configure lines (really sb on all of htem I expect)
 
-commit 3af416096959c6113231235300a7cf4f606a689c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 3 11:18:30 2020 -0400
-
-    IMproved erro reporting on configure script
-
 commit 2893a7db9477b168034d95774a729cd66947f2d4
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 3 11:22:10 2020 -0400
+Date: Fri Jul 3 11:22:10 2020 -0400
 
     Added g++--8-valgrind-debug-SSLPurify for ubuntu 1804
 
 commit e7dd74f1bd46ff4d91b5486f857f65cb127f2e44
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 3 11:23:54 2020 -0400
+Date: Fri Jul 3 11:23:54 2020 -0400
 
     fewer explicit g++ version sanitize configurations - will catch on other oses"
 
-commit 648f94d6909dfccfad5643dd0fea8b92192719e0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 3 15:44:33 2020 -0400
-
-    stroika readme docs
-
 commit f078cef0611a0275047e549ea45b9c4bd24b5642
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 4 10:43:41 2020 -0400
+Date: Sat Jul 4 10:43:41 2020 -0400
 
     refactoring of Execution::Platform::Windows::RegistryKey code
 
 commit 623a6545c236043072b052f27ca77bd0eda72171
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 4 10:46:36 2020 -0400
+Date: Sat Jul 4 10:46:36 2020 -0400
 
     Added Widnwos registrykey EnumerateSubKeys() and EnumerateValues ()
 
 commit be006a9eeead73765e50cdbbc308a1ca72baa967
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 5 13:03:44 2020 -0400
+Date: Sun Jul 5 13:03:44 2020 -0400
 
     windows::RegistryKey code: cleanups, docs, dbgtrace improvements, and  ExtractValue_() arg missingReturnsEmpty so sometimes error and sometimes not (following API docs)
 
-commit 6ca718838724fd6b9bf061442d01b2079568a6cf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 5 13:04:35 2020 -0400
-
-    cleanup docs for internetmediatype
-
-commit fe1d96ffa95b7cf6def08db341c215c59929f9ef
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 5 13:04:52 2020 -0400
-
-    cosmetic
-
 commit b7260e99f52d3dd69830376e89df2fa41a6f14bb
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 5 16:16:28 2020 -0400
+Date: Sun Jul 5 16:16:28 2020 -0400
 
     support InternetMediaTypeRegistry::GetMediaTypes()
 
-commit 4fac15bc41a99e47e7848cedbaaf0db7c5f77819
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 5 17:51:38 2020 -0400
-
-    cleanup/typos
-
 commit c8f297a4b7fabc71c257af16506c849202442615
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 5 18:02:03 2020 -0400
+Date: Sun Jul 5 18:02:03 2020 -0400
 
     lose obsolete (and I think never really used cuz never implemetned and I now see probably doesnt make sense) GetMoreGeneralTypes GetMoreSpecificTypes for InternetMediaTypeRegistry
 
 commit 7a23e814e6132dee0f6164675a75771a463644b8
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 5 18:24:38 2020 -0400
+Date: Sun Jul 5 18:24:38 2020 -0400
 
     hopefully improved regexp for InternetMediaType parsing - I'm sure still not right because I cannot find any clear reference for this. But hopefully closer (and a few links in code for possible starting points to find reference
 
-commit 7c742fa6ca8d6d9e2e2f4241a6f477358f59c431
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 6 11:02:07 2020 -0400
-
-    Comments and cleanup includes
-
-commit 1a82d430851a2acc9bd9513c8dd40c212303e3ce
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 6 11:23:19 2020 -0400
-
-    minor travisci comment cleanups
-
-commit 2a680c9226bcc13f1e2f37fd9ecb4ef0a3d1433e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 6 11:30:45 2020 -0400
-
-    comments
-
 commit ec74bd0db8710eaa36e7fa2de52dbaad5efb912b
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 6 14:44:55 2020 -0400
+Date: Mon Jul 6 14:44:55 2020 -0400
 
     limit builds for macos test configuration to avoid 50 minute timeout
 
 commit 8a0a4ab7a4b3b221261c84cb63e9b22ac320e559
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 6 15:04:59 2020 -0400
+Date: Mon Jul 6 15:04:59 2020 -0400
 
     Debug module uses filesystem::path instead of SDKString for pathname name
 
 commit c59fcafc6a1b7010e849eaf46ebdfe5334002dc5
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 6 15:07:16 2020 -0400
+Date: Mon Jul 6 15:07:16 2020 -0400
 
     use Debug:: module use of Execution::ModuleDependency referncing string module because no longer needed (I think) - maybe so for a long time - but test and verify
 
 commit 2770ce31d6e89292cf97d84b3e279f5203185ebf
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 6 15:14:07 2020 -0400
+Date: Mon Jul 6 15:14:07 2020 -0400
 
     mostly cosmetic cleanups (MakeModuleDependency_Trace declare/use)
 
 commit 5efc193aaa46d6acb1e667ef0b6b9533192aaeb9
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 6 15:18:52 2020 -0400
+Date: Mon Jul 6 15:18:52 2020 -0400
 
     IO::Filesystem::WellKnownLocations::GetTemporaryT () now marked deprecated
 
-commit 939f366a690266c5ffb9c0c0256cbbe10cf210a3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 6 16:44:26 2020 -0400
-
-    cosmetic
-
 commit e8cfc2449c05e7f0ddd528d998673e54e4c0e25d
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 6 16:45:14 2020 -0400
+Date: Mon Jul 6 16:45:14 2020 -0400
 
     FileSystem::WellKnownLocations::GetMyDocuments () now returns filesystem::path (**NOT BACKWARD COMPATIBLE CHANGE**)
 
-commit 2c3afdd3a012f218064489e9c9d636c81ae777f4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 6 16:56:37 2020 -0400
-
-    cleanup includes on ThroughTmpFileWriter
-
 commit 2865b9983fe02123b3867e9a7d6fc923ff1e1837
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 6 17:04:27 2020 -0400
+Date: Mon Jul 6 17:04:27 2020 -0400
 
     lose obsolete temporary overload of Exception::ThrowIfZeroGetLastError() - with string instead of filesystem::path
 
-commit 155e1a565c5b0cefe2eb418ed416bee15fdf924a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 6 17:04:43 2020 -0400
-
-    todo comments
-
-commit 0252772469e602cbd086679cb0cf46a8c34f7d12
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 6 17:30:15 2020 -0400
-
-    fixed typo in FileSystem/WellKnownLocations for posix
-
-commit 07bdebcb718b1a168a108b5ed4b74236cb6423d9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 6 20:18:18 2020 -0400
-
-    cleanups for FileSystem/WellKnownLocations
-
 commit 8706c8ee9646ae09ae11915c1e31e54c53e6b886
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 6 20:34:07 2020 -0400
+Date: Mon Jul 6 20:34:07 2020 -0400
 
     eliminated errant double call to ThrowSystemErrNo
 
-commit d659d1a0a197beae6990eb7fd0cf2f44fe53995b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 6 20:43:23 2020 -0400
-
-    remove obsolete commented out code
-
-commit b1524a96b5860fd4861cf4bd9a6f01a4cd792616
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 6 20:51:09 2020 -0400
-
-    cosmetic
-
-commit cfd1cecac2e75cea0d01f315378cef4d6874a24a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 6 20:58:02 2020 -0400
-
-    comments/cleanups
-
 commit 7a5058161fecc3cdda479cab48855216a61c548a
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 7 11:27:28 2020 -0400
+Date: Tue Jul 7 11:27:28 2020 -0400
 
     maybe fix issue with RegressionTests - lose some hardwired config names for running valgrind tests and loop running over all(memcheck)
 
 commit 1b69a3d1c36511d6586a5a6baff1ea26f48bc751
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 7 11:40:23 2020 -0400
+Date: Tue Jul 7 11:40:23 2020 -0400
 
     Needed a few more --only-if-has-compiler checks in basic-unix-test-configurations since not ubuntu 1804 default compiler doesnt have <filesystem>
 
-commit b9e8718e4ec8a7f29e1c517243c0db73f5462437
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 7 11:40:41 2020 -0400
-
-    cosmetic
-
-commit b464135ca021eff64ded9abf561e80f97b9cd78e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 7 11:40:57 2020 -0400
-
-    cast to silence warning
-
 commit 12f612098ea5769925d5473aed70d6396c0bc809
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 8 10:45:06 2020 -0400
+Date: Wed Jul 8 10:45:06 2020 -0400
 
     tweak RegressionScript test again for runnign valgrind tests (testing)
 
 commit 826ab1279c9052b7362ec4516b9ecae50fd39da6
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 8 11:21:12 2020 -0400
+Date: Wed Jul 8 11:21:12 2020 -0400
 
     tweak RegressionScript test again for runnign valgrind tests (testing)
 
-commit b3b5c95d5eb56894af27d91ea99ca5bce0e91275
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 8 12:09:26 2020 -0400
-
-    Comments
-
 commit 26e201b533a16747d708ed8e544fa7d3d1b42ec9
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 8 12:10:40 2020 -0400
+Date: Wed Jul 8 12:10:40 2020 -0400
 
     travisci: see if --jobs=3 makes macos build complete in under 50 minutes
 
-commit 3975caa164f20fcc128b7da2010c4f62dd5d9e1e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 8 12:25:19 2020 -0400
-
-    another fix to /RegressionTests script
-
 commit 378e6273866576090719692cae9303adb3147d03
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 8 12:34:07 2020 -0400
+Date: Wed Jul 8 12:34:07 2020 -0400
 
     RegressionTEsts script: embellish tests/valgrind run on sample apps
 
 commit 59ea4593c600eb3a000950234c88740d0f563661
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 8 14:35:13 2020 -0400
+Date: Wed Jul 8 14:35:13 2020 -0400
 
     travisci: tweaks to get macos build faster
 
 commit 1b7eef0f8a4b3cc4cba7a7bb3fda28bf9ca47f49
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 8 15:04:19 2020 -0400
+Date: Wed Jul 8 15:04:19 2020 -0400
 
     more enhancements of regressiontests script to run sample apps
 
 commit 9ca6060f38e64391f2edc6754addc0b6c597d971
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 8 22:31:16 2020 -0400
+Date: Wed Jul 8 22:31:16 2020 -0400
 
     more tweaks to regressiontest script
 
 commit 839b6afaea6b81f7ee7b2bf5eb700a407e78edb1
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 9 13:53:45 2020 -0400
+Date: Thu Jul 9 13:53:45 2020 -0400
 
     when we get timeout i webserver sample - return with exist success (thats not an error)
 
 commit 88f349773bb5d57db8d035625e749026a2c832e0
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 9 14:17:50 2020 -0400
+Date: Thu Jul 9 14:17:50 2020 -0400
 
     more cleanups of regressiontests script - esp invoking sample apps
 
 commit 2788fd67d8f31b603450dd87e07adc5b06cc8601
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 9 21:20:18 2020 -0400
+Date: Thu Jul 9 21:20:18 2020 -0400
 
     more cleanups to RegressionTests script
 
 commit d09552a1f8899bee8732889f1c713788d31075b9
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 10 10:22:18 2020 -0400
+Date: Fri Jul 10 10:22:18 2020 -0400
 
     fixed regressiontest redirection of stderr on running samples
 
 commit 46088915a0d18995565c428bb698f59ca4d759c1
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 11 13:14:55 2020 -0400
+Date: Sat Jul 11 13:14:55 2020 -0400
 
     tweak assertions/enusure calls in SystemPerformanceCapturer for Memory (for macos assert)
 
 commit e56b3201466fb0a2b387b1c3b10626225d4c6a60
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 11 20:45:59 2020 -0400
+Date: Sat Jul 11 20:45:59 2020 -0400
 
     cosmetic and dbgtrace
 
 commit b9e40929098310acdbd7c2fbdf9919208d9f2d7e
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 11 21:21:11 2020 -0400
+Date: Sat Jul 11 21:21:11 2020 -0400
 
     places where we call sockAddr.As<sockaddr_storage>  - pass to socket API sa.GetRequiredSize() not sizeof (sadata) - since MacOS generates error 22 for this (and I think other sock stacks are similarly unhappy though works on LINUX with sizeof(socket_storage)
 
 commit b5a4c77e7dab97c1a77f071eb7472edb4802532b
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 12 11:09:53 2020 -0400
+Date: Sun Jul 12 11:09:53 2020 -0400
 
     places where we call sockAddr.As<sockaddr_storage>  - pass to socket API sa.GetRequiredSize() not sizeof (sadata) - since MacOS generates error 22 for this (and I think other sock stacks are similarly unhappy though works on LINUX with sizeof(socket_storage)
 
 commit 6a0bdef802d29fd1ef525186b60be75f54e9fdbb
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 12 11:15:56 2020 -0400
+Date: Sun Jul 12 11:15:56 2020 -0400
 
     RegressionTests: LOCAL_CONFIGS generation on CYGWIN
 
-commit 32fe82df9ab29bb66efa4523ee8a9a7865940d31
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 12 11:21:59 2020 -0400
-
-    fixed typo
-
 commit 3da29dce28e241f83aa800c75b5b315f33a4c02a
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 12 13:22:25 2020 -0400
+Date: Sun Jul 12 13:22:25 2020 -0400
 
     deprecate sThe in SsytemFirewall class (and amke a few methods const)
 
 commit 93fa28524a9b9f4f4faea130dca7e63dc59e49df
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 12 13:39:36 2020 -0400
+Date: Sun Jul 12 13:39:36 2020 -0400
 
     Lose InternetMediaTypeRegistry::sThe and replace with InternetMediaTypeRegistry::Get ()
 
 commit 0bda3df9cf4285116b3864e3a666fbaf805cbfc1
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 12 13:43:04 2020 -0400
+Date: Sun Jul 12 13:43:04 2020 -0400
 
     fixed missing switch to InternetMediaTypeRegistry::Get ()
 
 commit ebf39a366b2e02ccecdd6f237a1b513ee64905af
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 12 17:46:15 2020 -0400
+Date: Sun Jul 12 17:46:15 2020 -0400
 
     Tweak output of RegressionTest script
 
 commit 4bde337f68780f4b161a72812dc441f47ad09a95
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 12 20:55:42 2020 -0400
+Date: Sun Jul 12 20:55:42 2020 -0400
 
     WSL1 fails to read /proc/vmstat - so handle that more appropriately and quietly fail to gather the appropriate info (under wsl1)
 
 commit ddb8048143ba2f1d6a0f2c7e8f906d2aa5b18fdd
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 12 20:57:04 2020 -0400
+Date: Sun Jul 12 20:57:04 2020 -0400
 
     rewrite alot of Library/Sources/Stroika/Foundation/Linguistics/MessageUtilities:
             deprecating CurrentLocaleMessageUtilities functions and replacing with
-    
+
             MessageUtiltiesManager class (with Get/Set).
-
-commit 3c8bde050a454955a23d0e3e7191d94e67aadf42
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 12 21:16:44 2020 -0400
-
-    silence some warnings
-
-commit 17c4151e07ee106c76c8a8d62ef689676cec9656
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 12 21:17:07 2020 -0400
-
-    fixwed typo in recent checkin
-
-commit 79037b043b9bdb99f97a6460a6004c30123d9cf1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 12 21:17:33 2020 -0400
-
-    update some use of deprecated Linguistics code
 
 commit 67a0130d63c383ef2f3cd5e0ae2e0228c30c9e6b
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 13 09:14:06 2020 -0400
+Date: Mon Jul 13 09:14:06 2020 -0400
 
     IgnoreExceptionsExceptThreadAbortForCall in Frameworks/SystemPerformance/Instruments/Network for WSL1
 
 commit 2d33da67681489c5d6abf39f12e4e0b3f190d973
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 13 09:28:54 2020 -0400
+Date: Mon Jul 13 09:28:54 2020 -0400
 
     --no-fail-on-missing-library option on Samples-ArchiveUtility/ArchiveUtility so no error from regressiontests when building without those libraries (which we test)
 
 commit 855803ffef749ae0e5ef5c4562b73b5e7bac9246
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 13 09:36:41 2020 -0400
+Date: Mon Jul 13 09:36:41 2020 -0400
 
     temporarily disbale g++-debug-sanitize_thread, g++-release-sanitize_thread_undefined , g++-8-release-sanitize_thread_undefined regression test configurations since thread sanitizer failing too many times and must cleanup various failures warnings and re-enable slowly (may not have ever had those passing - invistagate one at a time)
 
 commit c93d0ea9604c72649218d51b567e9b4c9d145a87
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 13 11:00:42 2020 -0400
+Date: Mon Jul 13 11:00:42 2020 -0400
 
     FileSystem::GetFileDirectory now deprecated; and incompatible change to Module functions GetEXEPath/GetEXEDir etc now returning filesystem::path instead of String (and deprecated T variants of said functions)
 
-commit 958d69280638dbf2a9868f491e16ed648ac3bba6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 13 11:00:59 2020 -0400
-
-    cosmetic
-
-commit d8d45e270c635bf03a3714cda5ab855296265661
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 13 11:02:24 2020 -0400
-
-    cosmetic
-
 commit bcfadb4721850a6af50db4d2b4abc8ff8104d118
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 13 11:12:14 2020 -0400
+Date: Mon Jul 13 11:12:14 2020 -0400
 
     systemfirewall - use filesystem::path for application path - not string
 
 commit 16393949d8989e9b380dc120c24d2a8320c7975f
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 13 11:12:49 2020 -0400
+Date: Mon Jul 13 11:12:49 2020 -0400
 
     silcen warning - use .parent_path () isntead of deprecated GetFileDirectory
 
 commit 55a1c1a134474fc8cdcb9330d6497adac87d758d
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 13 11:25:20 2020 -0400
+Date: Mon Jul 13 11:25:20 2020 -0400
 
     more reactions to change from String to filesystem::path
 
 commit 5dfd04bb5f16c0952e984f0d5d834fc0837e90eb
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 13 11:38:42 2020 -0400
+Date: Mon Jul 13 11:38:42 2020 -0400
 
     react to Execution::GetEXEPathT () deprecation
 
-commit 2bce1b9c406aac7efb198855512c3aed193561e3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 13 11:41:07 2020 -0400
-
-    cosmetic
-
 commit 76b6e810fe6e27bad9a024653ca3dfbdddf18e1f
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 13 16:46:03 2020 -0400
+Date: Mon Jul 13 16:46:03 2020 -0400
 
     fixed call from webserver filesystemrouter to do fn.extension () before call to GetAssociatedContentType ()
 
 commit 59e880029fc1aab0d9d3d68c6ece6d1f2d21032a
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 13 17:24:58 2020 -0400
+Date: Mon Jul 13 17:24:58 2020 -0400
 
     use path::parent_path () instead of deprecated IO::FileSystem::GetFileDirectory()
 
 commit 88381e49433805656883d49f2c5322c6eb2d67cd
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 13 17:52:15 2020 -0400
+Date: Mon Jul 13 17:52:15 2020 -0400
 
     define Stroika_Foundation_Debug_Valgrind_ANNOTATE_PUBLISH_MEMORY_RANGE() utility and use in blockallocation to see if it addresses helgrind warnings
 
-commit 449fd2d8e9c680a6424dd028c08d40f8e7e8c241
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 13 17:54:46 2020 -0400
-
-    cosmetic
-
-commit 3fa58c326bfb8fa750c2ca7cef17d7e4a0b39d18
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 14 09:25:13 2020 -0400
-
-    fixed typo
-
 commit 1414881ab452bdf3e2a9892316b6e2ccc0686cc2
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 14 09:31:14 2020 -0400
+Date: Tue Jul 14 09:31:14 2020 -0400
 
     maybe fix regressiontests run valgrind
 
 commit 55f22762f12477b0f9339e0a5f4e1d7ac2a8ab5a
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 14 18:43:57 2020 -0400
+Date: Tue Jul 14 18:43:57 2020 -0400
 
     cleanup messages in RegressionTests script
 
 commit 7a8401761da691cc162fdb0c96381d6ffe9edce2
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 14 19:43:44 2020 -0400
+Date: Tue Jul 14 19:43:44 2020 -0400
 
     changed ANNOTATE_PUBLISH_MEMORY_RANGE to ANNOTATE_NEW_MEMORY helgrind workaround
 
 commit a21fee64578756434177757fe96a4d01fd63996d
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 15 09:53:05 2020 -0400
+Date: Wed Jul 15 09:53:05 2020 -0400
 
     use Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE/Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER to silence helgrind warnings with blockallocation
 
 commit 5b777bb252fe7e7fa9810445996ede9b0645fa8d
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 15 13:23:25 2020 -0400
+Date: Wed Jul 15 13:23:25 2020 -0400
 
     hopefully fixed RegressionTest script VALGRIND SAMPLE_APP basic tests section
 
 commit a2f9393b29572810609d1569bb8b8c29c3a9211a
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 15 17:04:18 2020 -0400
+Date: Wed Jul 15 17:04:18 2020 -0400
 
     travisci: tweak macos tests build to hopefully complete in under 50 minutes
 
 commit 34eeec823556e40ab02cb81c703fc10b27f46f39
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 15 19:52:13 2020 -0400
+Date: Wed Jul 15 19:52:13 2020 -0400
 
     Added Stroika_Foundation_Debug_ValgrindMarkAddressAsDeAllocated
 
 commit fedf56c55c9290b5e74d3a02f2223974b7b0a018
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 15 19:54:21 2020 -0400
+Date: Wed Jul 15 19:54:21 2020 -0400
 
     renamed Stroika_Foundation_Debug_Valgrind_ANNOTATE_NEW_MEMORY -> Stroika_Foundation_Debug_ValgrindMarkAddressAsAllocated
 
 commit 434187b4a19ba456f2b7223bfd68180655245543
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 15 19:54:59 2020 -0400
+Date: Wed Jul 15 19:54:59 2020 -0400
 
     minor speed tweak and dbgtrace cleanups for DataExchange/InternetMediaTypeRegistry
 
 commit da24031eeca389d37ed2b061ed09d957299b0bd3
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 15 20:50:57 2020 -0400
+Date: Wed Jul 15 20:50:57 2020 -0400
 
-    cleanups to Valgrind macros
-
-commit f7b2a38217bf05c6436ef5728e6f80a29b564d8a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 15 21:07:16 2020 -0400
-
-    cosmetic
-
-commit fd6fc9e6929db0256f1466e87aace4e9b6d7f49d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 15 22:27:20 2020 -0400
-
-    valgrind .h docs
+    cleanups to Valgrind macros/ DOCS
 
 commit 5356bcf933dfecc9fb5a83f38eae0a999b90119e
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 15 22:34:45 2020 -0400
+Date: Wed Jul 15 22:34:45 2020 -0400
 
     Simplified and more correct Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS* usage in BlockAllocator.inl: now appears to work properly (though maybe not 100%) with qStroika_Foundation_Memory_BlockAllocator_UseLockFree_ - test more
 
 commit c8dabdcd01e3ebdb2bf5cac07c04e28219b8e58a
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 15 22:34:58 2020 -0400
+Date: Wed Jul 15 22:34:58 2020 -0400
 
     valgrind/helgrind docs
 
-commit 4398985e0facbe73afabd32512ad0a263946b68a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 16 15:01:11 2020 -0400
-
-    fixed typo in RegressionTests script
-
 commit c8334868e0df75456c2e419ec5a3db44990fa9bf
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 16 15:04:01 2020 -0400
+Date: Thu Jul 16 15:04:01 2020 -0400
 
     re-enable (temporarily disabled) g++-debug-sanitize_thread  - to test if thread sanitizer working OK now (changed valgrind logic - maybe need to turn on valgrind flags automatically if TSAN flag on?)
 
 commit 97537559a68a0124c478b49bedbef82b821202dd
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 16 19:20:00 2020 -0400
+Date: Thu Jul 16 19:20:00 2020 -0400
 
     re-enable configs g++-release-sanitize_thread_undefined  g++-8-release-sanitize_thread_undefined  (testing)
 
 commit 1005b09f0904e098aaa3dfbcc2181046a6c01f15
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 16 20:12:33 2020 -0400
+Date: Thu Jul 16 20:12:33 2020 -0400
 
     lower test sizes in a couple places when running under valgrind, to make valgrind (really helgrind) tests a little quicker
 
-commit e4dbf73f4ff35e2113baade8717daaafe149bf49
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 16 20:12:51 2020 -0400
-
-    docs
-
 commit dc6936a11af9b5a59da36ab9a176851f9d4288ec
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 16 20:14:01 2020 -0400
+Date: Thu Jul 16 20:14:01 2020 -0400
 
     **WARNING** - changed RunTest_ counting code in performance regression tests: shoudl NOT make any difference to real tests, but should make cut-off tests due to valgrind/helgrind slowness issues run much faster
 
-commit 94a2ca4940a4f1a32bd789e2ac27e8cc7d29dd26
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 16 20:15:23 2020 -0400
-
-    cosmetic
-
 commit 6b9f5997ed43a53ebe6b121b3fe2903cbab27af9
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 18 17:06:40 2020 -0400
+Date: Sat Jul 18 17:06:40 2020 -0400
 
     fix to RegressionTest code to use RUN_PREFIX running samples
 
 commit 4ee1d56fc3e4a5a9525b1c1eb090a62c9485bf6e
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 18 17:17:28 2020 -0400
+Date: Sat Jul 18 17:17:28 2020 -0400
 
     ExtractDirAndBaseName () file routine marked deprecated (with replacement suggested)
 
 commit a43cea77b625fc54845115d0f00f39327cd63781
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 18 17:27:35 2020 -0400
+Date: Sat Jul 18 17:27:35 2020 -0400
 
     IO::FileSystem::GetFileBaseName deprecated
 
-commit 4c9c7b9534450dfc55f1b05aa0994f42973e7ffa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 18 17:27:59 2020 -0400
-
-    cosmetic
-
-commit ae0c0579887e98272e99ca65a5428fddfda12444
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 18 17:46:13 2020 -0400
-
-    fixed typo
-
 commit 5239d911bdf3430ada58699c073811a3510bfd30
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 18 17:55:00 2020 -0400
+Date: Sat Jul 18 17:55:00 2020 -0400
 
     deprecated IO::FileSystem::Directory and any remaining function associated with it
 
 commit d1e6b2c3047d2765b2ef03668fb4cbd9927652d6
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 18 17:58:58 2020 -0400
+Date: Sat Jul 18 17:58:58 2020 -0400
 
     more lose use of deprecated FileSystem code
 
 commit 737d238df49f4ef82d383d8a2a713a7845333673
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 18 18:02:34 2020 -0400
+Date: Sat Jul 18 18:02:34 2020 -0400
 
     lose use of deprecated IO::FileSystem::Directory (kTestSubDir_).AssureExists
 
 commit 973356093923f91e86ee52a20b415e6a1a0607db
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 18 18:04:34 2020 -0400
+Date: Sat Jul 18 18:04:34 2020 -0400
 
     lose use of deprecated IO::FileSystem::Directory (kTestSubDir_).AssureExists
 
 commit fdfc97297b12d6ba344579ddf5b6975f121e4b56
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 18 21:46:30 2020 -0400
+Date: Sat Jul 18 21:46:30 2020 -0400
 
     more deprecation of filesystem code; and enum class used for BlockDeviceKind
 
 commit 6755aa57becea2d85b774e72b486e2ef99fab4c8
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 18 23:03:42 2020 -0400
+Date: Sat Jul 18 23:03:42 2020 -0400
 
     use std::filesystem instead of deprecated ResolveShortcut()
 
-commit 17e0d7b5275bf73bfae8514c4e38ee41066a902b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 18 23:05:30 2020 -0400
-
-    cosmetic
-
 commit a01951526dd135776330d99f213b9f069cb0bff3
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 19 11:40:15 2020 -0400
+Date: Sun Jul 19 11:40:15 2020 -0400
 
     marked more FileSystem/FileUtils code as deprecated
 
 commit 3e3bbf3a90bb81c9da3deee230e617c4b95061e3
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 19 11:48:36 2020 -0400
+Date: Sun Jul 19 11:48:36 2020 -0400
 
     use filesystem::create_directories () instead of deprecated IO::FileSystem::CreateDirectoryForFile
 
-commit 6b708f8faedcfa505c5f1bf278b2693d7d659951
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 19 14:13:10 2020 -0400
-
-    cosmetic
-
 commit c065c343272e99bcd74453af1bc3e79053b9d1c8
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 19 14:14:13 2020 -0400
+Date: Sun Jul 19 14:14:13 2020 -0400
 
     refactoring EtcMimeTypesRep_ so no extra parse of file on call to GetMediaTypes
 
 commit 27869c1fe3b32d7f2b35bf46610176e54cc6899b
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 19 19:41:40 2020 -0400
+Date: Sun Jul 19 19:41:40 2020 -0400
 
     use filesystem::file_size  in place of deprecated IO::FileSystem::Default ().GetFileSize; and a  suppress some deprecation warnings
 
-commit 34c2cdf869c458918a8a3c4df61c3e60dd0c29b2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 19 19:54:05 2020 -0400
-
-    cosmetic cleanups
-
 commit 2df1b9e29824b0ca3157369320615b0af6b11027
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 19 20:19:11 2020 -0400
+Date: Sun Jul 19 20:19:11 2020 -0400
 
     Added ARG DEBIAN_FRONTEND=noninteractive to debian dockerfiles
 
-commit 2170dabb7dc8b79171f7148819f0e1ec5e5517fb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 19 20:42:18 2020 -0400
-
-    silence some deprecation warnigns
-
-commit 3a816183bba3364ce4bad8444857518896d21f97
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 20 08:32:15 2020 -0400
-
-    more deprecation cleanups
-
 commit 160d2535520ccf93b74eba869b61ae7451737e72
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 20 14:42:25 2020 -0400
+Date: Mon Jul 20 14:42:25 2020 -0400
 
     add locale support for centos8 (not sure why not there by default anymore)
 
 commit cc2f63f229d6d1c74d077dddf4e782bf7e2acada
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 20 15:28:19 2020 -0400
+Date: Mon Jul 20 15:28:19 2020 -0400
 
     define Debug::kBuiltWithThreadSanitizer flag; and use that in regtest 39 (thresafetybuildinobject) - ti reduce test count like we do for valgrind, so runs in acceptable timeframe
 
 commit 187eb622a6bc4dbffb6915ebbd01e4c5eac695d6
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 20 16:31:32 2020 -0400
+Date: Mon Jul 20 16:31:32 2020 -0400
 
     parameterize some tests in Sequence<> regression test suite bsaed on whether we are using valgrind or not so they run a bit faster under valgrind
 
 commit 226315799cc7ff4e9e79aaaeb05826bdba388eae
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 20 16:35:32 2020 -0400
+Date: Mon Jul 20 16:35:32 2020 -0400
 
     performacne regtest now also looks at Debug::kBuiltWithThreadSanitizer to adjust intensity/speed of runnign that test
 
-commit 56bb0632cfd3032926f279d1e0dcb596ba44a857
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 20 19:11:26 2020 -0400
-
-    fixed typo
-
-commit 4312f61dd7bb0f4c4410369d325727eb519e5a22
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 20 19:11:55 2020 -0400
-
-    silence unused warning
-
 commit 60a8ba12572e6b4aaecc888528f5eb612b5d0009
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 20 19:26:32 2020 -0400
+Date: Mon Jul 20 19:26:32 2020 -0400
 
     Speed tweak/cleanup for InternetMediaTypeRegistry::UsrSharedDefaultBackend () ...GetMediaTypes()
 
-commit 0f633653ab348b534ea9182b1965f46011e094cd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 20 19:26:54 2020 -0400
-
-    cosmetic
-
-commit 9d064573f109c9c8839b4394c70587499731e2d0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 20 19:30:10 2020 -0400
-
-    cosmetic
-
 commit 63bcf1ea70b5f5e567b1525e8557565fb3563511
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 20 20:48:05 2020 -0400
+Date: Mon Jul 20 20:48:05 2020 -0400
 
     Debug::Trace module cleanuP
 
 commit 8a38bdc1397841bf3987e148b68323fdabf69e52
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 20 21:36:20 2020 -0400
+Date: Mon Jul 20 21:36:20 2020 -0400
 
     new experimental logging feature: kEmitThreadIDsByIndex_  in Debug Trace code
 
-commit 24165933198e7def633bfad137af7246d899cb7a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 21 07:56:15 2020 -0400
-
-    cosmetic
-
-commit 02667e07ada2779e78e80d154adf20d6bee01c34
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 21 08:02:13 2020 -0400
-
-    cosmetic
-
-commit 61f7c1c3d86ce8584c9d2918a66acf1bd07894d5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 21 08:38:36 2020 -0400
-
-    silene inoccuous warning
-
-commit e8af13d8309d72343c8684f56c4fc70a372cd505
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 21 10:02:21 2020 -0400
-
-    cosmetic
-
 commit 47c2489809f2ead39112ad2aedc3e30b1229636f
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 21 10:17:51 2020 -0400
+Date: Tue Jul 21 10:17:51 2020 -0400
 
     Thread classes: moved private stuff inside Thread::Ptr, and deprecated Get/Set SignalUsedForThreadInterrupt and replaced with single dual-function call SignalUsedForThreadInterrupt
 
 commit 52a1dbabd94a34e60206d3d994fc09dcc3336d11
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 21 10:21:04 2020 -0400
+Date: Tue Jul 21 10:21:04 2020 -0400
 
     break SignalUsedForThreadInterrupt into two overloads (so looks like before) except read case no noexcept
 
 commit 06484177756ac1186a467e4d99f1aed5fa15323d
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 21 11:07:25 2020 -0400
+Date: Tue Jul 21 11:07:25 2020 -0400
 
     Switch Thread code from using Quasi-namespace to actual namespace (use of private not that compelling, and otherwise I think will work more naturally and as users would expect with true namespace
 
 commit a8a272e2a938a93acb3499336d87e139bc51678c
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 21 11:50:58 2020 -0400
+Date: Tue Jul 21 11:50:58 2020 -0400
 
     Threads: tons of cleanups; deprecated Get/Set ThrowInterruptExceptionInsideUserAPC and replaced with one name ThrowInterruptExceptionInsideUserAPC;  similarly lose Get/Set DefaultConfiguration and replaced with function DefaultConfiguration() that gets and sets
 
-commit 67584c79ed2f125101b626b7075bf3cc6c49c53d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 21 12:10:53 2020 -0400
-
-    more cleanups due to Thread namespace changes
-
-commit 18a151f27a1d089f3a6f52437e1910276abd86d6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 21 12:12:40 2020 -0400
-
-    more cleanups due to Thread namespace changes
-
-commit 3e2e40e82654c46501c0d4de921c34fc9a65ae2f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 21 12:15:11 2020 -0400
-
-    more cleanups due to Thread namespace changes
-
-commit 35d6a5f0564c575fd44a6cab58a9c620f7718635
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 21 12:25:12 2020 -0400
-
-    minor docs cleanups
-
 commit 7baef7faf2041b0366bbc13ddcc5cafee635f9fe
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 21 22:18:14 2020 -0400
+Date: Tue Jul 21 22:18:14 2020 -0400
 
     fix output for regressiontests - Running SAMPLE_APP basic tests
 
 commit 8f5fcf9bda7c0a0e35c209de0e1a8d786d30843b
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 22 09:18:45 2020 -0400
+Date: Wed Jul 22 09:18:45 2020 -0400
 
     instead of doing pushed Tests in RegressionTEst, I fixed the configure append-run-prefix to use absolute path for tsan supressions
 
 commit ae37c4b1845e66b292fa357ce8a924fdd3d84932
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 22 11:19:08 2020 -0400
+Date: Wed Jul 22 11:19:08 2020 -0400
 
     new Thread::IndexRegistrar: use in Thread::Ptr::ToString () and in Trace code (in place of local code I put there to do index dumping); and defined  qStroika_Foundation_Debug_Trace_ShowThreadIndex to control if we do this in tracelog
 
 commit fc7187865bb0e6f1e97408a69600c3d770fa6ffa
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 22 11:19:48 2020 -0400
+Date: Wed Jul 22 11:19:48 2020 -0400
 
     fixed isuses with RegressionTests script on Running SAMPLE_APP basic tests section
 
 commit 7babea2d16497721bf7cd1f9d58dcd199abe2f71
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 22 20:44:14 2020 -0400
+Date: Wed Jul 22 20:44:14 2020 -0400
 
     moved Execution::FormatThreadID_A to Execution::Thread::FormatThreadID_A () adding extra param and changing default behavior
 
-commit c93e3c84d203bab8c3b373749c399621f6f58548
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 22 20:44:41 2020 -0400
-
-    cosmetic
-
-commit e04b24defc6cefa5ff7a9ac2e862ff4136548c27
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 22 20:52:58 2020 -0400
-
-    cosmetic cleanups
-
 commit 6ca79c7af1a8b5f5780a2530b738d55ccf89c958
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 22 21:00:30 2020 -0400
+Date: Wed Jul 22 21:00:30 2020 -0400
 
     Moved a few more Thread related Execution namespace functions under Thread namespace (CheckForThreadInterruption, Yield, GetCurrentThreadID)
 
-commit 2758831171f9977061373a306487511e036e1d17
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 22 21:18:02 2020 -0400
-
-    cosmetic
-
-commit 8a986af40df297efb54637402efaa06d95ff2496
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 22 21:54:08 2020 -0400
-
-    cleanup deprecation warnings
-
-commit 91dee198ab08ba3702255b398bf857c6590afa01
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 22 21:56:44 2020 -0400
-
-    comments
-
-commit 81783ff117ec0e3cd9c32bf0eda10f6b2044e46c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 22 22:00:08 2020 -0400
-
-    fixed typo
-
-commit 57882ecf5a53da666e70bf0b3b0df126aa501623
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 23 10:43:46 2020 -0400
-
-    cosmetic, and cleanup typos in last checkin or two
-
-commit cce4a1c7db94e9d5841de66ce7ddfadcafafeb62
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 23 10:47:35 2020 -0400
-
-    cosmetic, and cleanup typos in last checkin or two
-
-commit a6da113e7977bf623d6830a3a2c4612e1d350b42
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 23 10:49:10 2020 -0400
-
-    delete obsolete file
-
-commit e4be7dd9475842ddae1802f16cdf1aae1ba85e95
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 23 10:50:57 2020 -0400
-
-    comsetic and fixed typo
-
 commit 3ca70bddc46e30dd271b09ccaaf6ac0b8f85037a
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 23 11:02:12 2020 -0400
+Date: Thu Jul 23 11:02:12 2020 -0400
 
     renmaed Thread::CheckForThreadInterruption to Thread::CheckForInterruption
 
-commit 4c0064decc2249d19387c7db2cb212e5712565cf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 23 11:10:24 2020 -0400
-
-    comsetic and bugfix
-
 commit ea5dbbf4acd3a5607de0d41c9991d771bdb5f39c
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 23 22:01:00 2020 -0400
+Date: Thu Jul 23 22:01:00 2020 -0400
 
     SignalHandlerRegistry: cosmetic cleanups; and fixed small bug with accessing sTheRep_ - use atomic_load/atomic_store (though must replace that with plain atomic in c++20; this fixes tsan warning
 
 commit 6d5ebda550d1b2c011aaabbdbded9f55de729909
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 24 09:41:31 2020 -0400
+Date: Fri Jul 24 09:41:31 2020 -0400
 
     docs
 
 commit ece4647236d031df91376a5d5879b2261d7c912b
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 24 09:42:10 2020 -0400
+Date: Fri Jul 24 09:42:10 2020 -0400
 
     ToString() for path invokes ToStirng(String) - and changed ToString(String) to use LimitLength (as hinted in docs)
 
 commit 823bee53313df2827b0283a01aa1adb262244bed
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 24 11:33:47 2020 -0400
+Date: Fri Jul 24 11:33:47 2020 -0400
 
     if qStroika_Foundation_Debug_Trace_ShowThreadIndex - also changed output of sRunningThreads_ to show threadindex (so easier compare in tracelog file)
 
-commit bddd4ca8fc05957fd258def29301b27388f6a705
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 24 11:42:31 2020 -0400
-
-    typo
-
-commit d46c6adc286afe38ae15c24a20d207fa23f5284a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 24 11:42:58 2020 -0400
-
-    typo
-
 commit d892093a2577aba0f262df4bf78210dd6352cecd
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 24 12:17:31 2020 -0400
+Date: Fri Jul 24 12:17:31 2020 -0400
 
     lose (never released) Iterable::SelectIf - rename losing IF - just as overload of Select; and added regtest
 
 commit f210b698d70ba46f4d8f4c97a758803d39c0ed74
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 24 21:13:31 2020 -0400
+Date: Fri Jul 24 21:13:31 2020 -0400
 
     fixed one use oof ToString() on path tha tshould have been FromPath()
 
 commit acd416e161f7e8b48b1b5994b7336a2145d18fd4
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 25 13:05:36 2020 -0400
+Date: Sat Jul 25 13:05:36 2020 -0400
 
     InternetMediaType: deprecated text/xml, and instead map XML to application/xml; support GetSuffix() on InternetMediaType and properly parse it (and regtests)
 
 commit a39c9f9a8a76303b1416151c961758967240fb9a
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 25 13:21:49 2020 -0400
+Date: Sat Jul 25 13:21:49 2020 -0400
 
     More cleanups of recent InternetMediaType suffix support changes
 
 commit 90ce1d817c67dc18dfb36b3abf6290251696a8cd
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 25 14:19:07 2020 -0400
+Date: Sat Jul 25 14:19:07 2020 -0400
 
     deprecated InternetMediaType::IstextFormat/IsImageFormat and moved those to IntenrMediaTypeRegistry object (adding IsXMLFormat there too)
 
-commit f28ec56ec2a3f965bc40a0b26f7c586e623d520a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 25 14:52:19 2020 -0400
-
-    fixed a few typos
-
-commit 3eb7217670d8df271451f701b9a08a02526dff3f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 25 14:54:48 2020 -0400
-
-    fixed a few typos
-
-commit 283b37c4116a518712f55281d056ee69ac21b168
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 25 14:55:56 2020 -0400
-
-    fixed a few typos
-
-commit 54ab70245553350f6feacd0a69552ebe4e6a8620
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 25 14:56:22 2020 -0400
-
-    fixed a few typos
-
-commit 2a601cbd6522b3af1abb3787c1944b12b7eab48e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 25 15:01:07 2020 -0400
-
-    cleanup use of deprecated functions
-
-commit 35facaef91a4182d0888b1d2fd0bcf80eaa1bbb7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 25 15:14:56 2020 -0400
-
-    fixced typo
-
 commit 587fb3acdd3e7c88ccf0c1561cfd57afcbf124bf
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 25 18:16:47 2020 -0400
+Date: Sat Jul 25 18:16:47 2020 -0400
 
     fixed InternetMediaTypeRegistry::Get ().IsXMLFormat () for case of +xml
 
-commit 9bf6c196699fca3126dc87e05aa0fccfe51bae39
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 25 18:18:46 2020 -0400
-
-    fixed typo
-
 commit 9cf145f2071fee2f09a5ce13b0716fb303c5ed72
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 25 21:33:59 2020 -0400
+Date: Sat Jul 25 21:33:59 2020 -0400
 
     deprecated InternetMediaType::Match
 
 commit 6f197220299719dabf505778b470b0a43a468a2a
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 25 21:43:50 2020 -0400
+Date: Sat Jul 25 21:43:50 2020 -0400
 
     deprecated InternetMediaType::IsA and replaced with InternetMediaTypeRegistry::IsA
 
-commit e3b10f43e8f8fb84cb810b88bad161c5cf6ddec7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 25 22:38:39 2020 -0400
-
-    cosmetic
-
-commit 6766f89a7f0d6b54a8e127a52a94f9d3e60bdbd3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 26 21:57:38 2020 -0400
-
-    cleanups and tweak a few warnigns
-
 commit 5c4b33d1426ef665fb2e966196e9a72d90c8b99e
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 26 22:49:59 2020 -0400
+Date: Sun Jul 26 22:49:59 2020 -0400
 
     cleanup/refactoring of InternetMediaType code - mostly moving TYPES namespace into InternetMediaTypeRegistry.h
 
 commit 0d395da0d31623dcf57884ce0593828686c00ead
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 26 22:51:02 2020 -0400
+Date: Sun Jul 26 22:51:02 2020 -0400
 
     cleanup/refactoring of InternetMediaType code - mostly moving TYPES namespace into InternetMediaTypeRegistry.h
 
-commit 01bfd331b5b3486e47c09bba13ec4f7f4d05ccf1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 26 22:54:10 2020 -0400
-
-    cosmetic
-
-commit f5dd4a4b48e55b47de76f7bd345cde7e6818d4ad
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 26 23:01:32 2020 -0400
-
-    fixed missing includes
-
-commit 73d97130fd166135d4f946aa9723593343a1e9c6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 26 23:04:25 2020 -0400
-
-    fixed missing includes
-
-commit dd2e4c44261acafffde29b17a06ad9b16981546e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 26 23:09:06 2020 -0400
-
-    fixed missing includes
-
-commit 9b59672972996ab1136a9e13a6cc158455ecfbbe
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 27 09:29:31 2020 -0400
-
-        // very unclear what to use, no clear standard!
-
-commit 92e613a084a1eca5756c2bceece714b76a218b99
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 27 09:32:26 2020 -0400
-
-    cosmetic
-
 commit 4dc9b91f8601b12d16e4798f73b1a2ed7f580932
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 27 10:18:05 2020 -0400
+Date: Mon Jul 27 10:18:05 2020 -0400
 
     InternetMediaTypeRegistry: moved defaults from default backend to FrontEnd - so close to supporting external update of app defined defaults for these values; this should fix issue running on windwos docker environent that is missing a bunch of defines (as well as groundwork for above)
 
-commit cf407857baadf44ee14c73af357d8d21d989ac79
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 27 10:29:58 2020 -0400
-
-    cosmetic
-
-commit 1493c8278565d9e31c121774da5a9270e85dd6f2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 27 12:56:45 2020 -0400
-
-    cosmetic
-
 commit 0db1fa9d26bcfcb641f45e8fd931d6761f979f92
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 28 08:08:45 2020 -0400
+Date: Tue Jul 28 08:08:45 2020 -0400
 
     made InternetMediaTypeRegistry copyable using SharedByValue, and allowed updating of global object (Get/Set)
 
 commit f9eb9737cf7d8d2a97e317033286276bd857e1a3
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 28 15:26:48 2020 -0400
+Date: Tue Jul 28 15:26:48 2020 -0400
 
     docs example
 
 commit 2eca0d0a991b2a65813c9431a4eff1a8d69c6a79
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 28 15:27:57 2020 -0400
+Date: Tue Jul 28 15:27:57 2020 -0400
 
     Cleanup DLLLoader code: enforce GetProcAddress() cannot return nullptr (throws); better throw behavior in DLLLoader CTOR. cleanups
 
 commit 16cb1d2d53cd0b0a1b09c951a91e25c321f45d8a
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 28 15:36:09 2020 -0400
+Date: Tue Jul 28 15:36:09 2020 -0400
 
     DLLLoader cleanups
 
 commit 5c2c3d100041c1d36fdc2cddc562c99ee94d5c47
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 28 15:37:16 2020 -0400
+Date: Tue Jul 28 15:37:16 2020 -0400
 
     cleanup use of String::Tokenize
 
 commit 4501b192baf9f5f8b6bcd2f2c6b04e64f298fbbe
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 28 15:39:30 2020 -0400
+Date: Tue Jul 28 15:39:30 2020 -0400
 
     USE_NOISY_TRACE_IN_THIS_MODULE_ use in DLLLoader
 
 commit e584d32adeafeb132e3bcfd909ca7c1eafa01a1b
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 28 15:39:58 2020 -0400
+Date: Tue Jul 28 15:39:58 2020 -0400
 
     new RegistryKey::GetFullPathOfKey () utility
 
-commit c363f4f147f9058b923286ae0ffd78f00f72cc80
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 28 15:43:41 2020 -0400
-
-    docs
-
 commit 6e80e7dcafeedfd65c66e4c38ef99d50267ca228
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 28 15:45:36 2020 -0400
+Date: Tue Jul 28 15:45:36 2020 -0400
 
     lots more cleanups to InternetMediaTypeRegistry: for windows, return GetAllFileSuffixes properly; Fixed baked in html type definition, and a few other cleanups
 
 commit b12fa3331d08cee6a4b12ee2059c069b646975f5
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 28 15:58:44 2020 -0400
+Date: Tue Jul 28 15:58:44 2020 -0400
 
     USE_NOISY_TRACE_IN_THIS_MODULE_ use in DLLLoader module
 
 commit 4f40f198973586097052e1cf4567ffbfb9e5f6b7
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 28 16:59:14 2020 -0400
+Date: Tue Jul 28 16:59:14 2020 -0400
 
     minor fixes to (regressions in) DLLLoader support
 
 commit 4c2d648b34d9abc00b13546414e80427ec1024cf
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 29 08:27:49 2020 -0400
+Date: Wed Jul 29 08:27:49 2020 -0400
 
     cleanup Windows docker file test; and workaround issue with cygwin not working on latest docker (https://github.com/moby/moby/issues/41058#issuecomment-653865175)
 
-commit d83ee7b4b7bbff7295b25df9dee3304478390e31
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 29 09:21:04 2020 -0400
-
-    cosmetic
-
 commit e43c7c87cd713df8b515e5779fab8953d3273370
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 29 11:51:09 2020 -0400
+Date: Wed Jul 29 11:51:09 2020 -0400
 
     InternetMediaTypeRegistry: minor cleanups - mostly docs
 
-commit 61db140c67eefb72c7bdf53367bd6a8cd075d52e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 29 11:51:25 2020 -0400
-
-    start release notes
-
 commit b9139fca3854f6c3e8eaa7d9119d8a3c65dd546b
 Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 29 12:29:40 2020 -0400
+Date: Wed Jul 29 12:29:40 2020 -0400
 
     coding convensions docs about Singletons
 
+Samples:
+
+fix bug in LedLineIt app (MFC issue) with document opening (assert/infinite recurse)
+
+In LedIt/LedLineIt samples - delay construction of SpellCheckEngine til InitInstance method since uses locks which caused msvc runtime to crash cuz called before main () - MFC pattern for constructing app objects
+
 #endif
-
-
 
 ### 2.1b1 {2020-06-07}
 
