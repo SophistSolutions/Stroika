@@ -160,7 +160,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             fData_.Invariant ();
-            bool result;
+            bool result{};
             switch (addReplaceMode) {
                 case AddReplaceMode::eAddReplaces:
                     result = fData_.insert_or_assign (key, newElt).second; // according to https://en.cppreference.com/w/cpp/container/map/insert_or_assign - no iterator references are invalidated
