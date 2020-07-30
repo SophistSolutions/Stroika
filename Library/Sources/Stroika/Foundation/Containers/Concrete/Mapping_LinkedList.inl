@@ -157,7 +157,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             return false;
         }
-        virtual bool Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt, AddReplaceMode addReplaceMode) override
+        virtual bool Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<MAPPED_VALUE_TYPE> newElt, AddReplaceMode addReplaceMode) override
         {
             using Traversal::kUnknownIteratorOwnerID;
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
