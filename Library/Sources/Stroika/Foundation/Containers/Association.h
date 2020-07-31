@@ -65,8 +65,6 @@ namespace Stroika::Foundation::Containers {
      *      as convenient syntactic sugar. But if you have to check (the elt not necessarily present) - then you
      *      may as well use Lookup () - cuz the code's going to look ugly anyhow.
      *
-     *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
-     *
      *  \note Note About Iterators
      *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
      *
