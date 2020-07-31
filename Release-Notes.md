@@ -8,10 +8,18 @@ to be aware of when upgrading.
 
 ## History
 
+---
+
 ### 2.1b2x = working
 
-- https://stroika.atlassian.net/browse/STK-312 InternetMediaTypes – add ability to add externally specified mappings - FIXED
-- https://stroika.atlassian.net/browse/STK-576 - Lots more work todo on InternetMediaTypeRegistry- FIXED
+#### TLDR
+
+- **NOT BACKWARD COMPATIBLE** switch from Stroika 'file path' related classes to **required** use of std::filesystem classes
+  - implied De-support gcc-7 and X-Code 10 (and pre-catalina MacOS - use older Stroika if you need pre-catalina MacOS support)
+- Improved regression tests (including testing samples) and valgrind/santizer coverage
+- Improved InternetMediaType and InternetMediaTypeRegistry
+
+#### Details
 
 - Dependencies
 
@@ -67,11 +75,13 @@ to be aware of when upgrading.
   - ReadMe.md
     - Cleanups
     - update ReadMe.md with pretty docs on CI systems uses
+  - coding convensions docs about Singletons
 
 - Docker
 
   - Added ARG DEBIAN_FRONTEND=noninteractive to debian dockerfiles
   - add locale support for centos8 (not sure why not there by default anymore)
+  - cleanup Windows docker file test; and workaround issue with cygwin not working on latest docker (https://github.com/moby/moby/issues/41058#issuecomment-653865175)
 
 - RegressionTests
 
@@ -94,6 +104,7 @@ to be aware of when upgrading.
   - Characters
 
     - ToString() for path invokes ToString(String) - and changed ToString(String) to use LimitLength (as hinted in docs)
+    - cleanup use of String::Tokenize
 
   - Containers
 
@@ -104,6 +115,8 @@ to be aware of when upgrading.
     - InternetMediaType and InternetMediaTypeRegistry
 
       - **MAJOR CHANGES**
+      - https://stroika.atlassian.net/browse/STK-312 InternetMediaTypes – add ability to add externally specified mappings - FIXED
+      - https://stroika.atlassian.net/browse/STK-576 - Lots more work todo on InternetMediaTypeRegistry- FIXED
       - Improved (but not final/perfected) caching logic/thread safety (docs and enforcement)
       - define std::hash<> specialization for InternetMediaType
       - IntenretMediaTypeRegistry cleanups - UsrSharedDefaultBackend now looks in more places, etc
@@ -124,6 +137,9 @@ to be aware of when upgrading.
       - fixed InternetMediaTypeRegistry::Get ().IsXMLFormat () for case of +xml
       - deprecated InternetMediaType::Match
       - deprecated InternetMediaType::IsA and replaced with InternetMediaTypeRegistry::IsA
+      - cleanup/refactoring of InternetMediaType code - mostly moving TYPES namespace into InternetMediaTypeRegistry.h
+      - made InternetMediaTypeRegistry copyable using SharedByValue, and allowed updating of global object (Get/Set)
+      - lots more cleanups to InternetMediaTypeRegistry: for windows, return GetAllFileSuffixes properly; Fixed baked in html type definition, and a few other cleanups
 
   - Debug
 
@@ -137,9 +153,12 @@ to be aware of when upgrading.
 
   - Execution
 
-    - Execution::Platform::Windows::RegistryKey
+    - DLLLoader
+      - Cleanup code: enforce GetProcAddress() cannot return nullptr (throws); better throw behavior in CTOR.
+    - Platform::Windows::RegistryKey
       - lots of cleanups and new methods, refactoring
-      - added EnumerateSubKeys() and EnumerateValues ()
+      - new method EnumerateSubKeys() and EnumerateValues ()
+      - new RegistryKey::GetFullPathOfKey () utility
     - Threads
       - Thread classes: moved private stuff inside Thread::Ptr, and deprecated Get/Set SignalUsedForThreadInterrupt and replaced with single dual-function call SignalUsedForThreadInterrupt
       - Switch Thread code from using Quasi-namespace to actual namespace (use of private not that compelling, and otherwise I think will work more naturally and as users would expect with true namespace
@@ -197,6 +216,10 @@ to be aware of when upgrading.
 
   - ArchiveUtility
     - --no-fail-on-missing-library option on Samples-ArchiveUtility/ArchiveUtility so no error from regressiontests when building without those libraries (which we test)
+  - LedIt
+    - In LedIt/LedLineIt samples - delay construction of SpellCheckEngine til InitInstance method since uses locks which caused msvc runtime to crash cuz called before main () - MFC pattern for constructing app objects
+  - LedLineIt
+    - fix bug in LedLineIt app (MFC issue) with document opening (assert/infinite recurse)
   - SystemPerformanceCapturer
     - tweak assertions/enusure calls in SystemPerformanceCapturer for Memory (for macos assert)
   - WebServer
@@ -223,102 +246,16 @@ to be aware of when upgrading.
     - 3.32.03
     - Support a mirror for sqlite due to mysterious problem downloading from the main source on travisci macos machines
 
-#if 0
-
-    cleanup/refactoring of InternetMediaType code - mostly moving TYPES namespace into InternetMediaTypeRegistry.h
-
-commit 0d395da0d31623dcf57884ce0593828686c00ead
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jul 26 22:51:02 2020 -0400
-
-    cleanup/refactoring of InternetMediaType code - mostly moving TYPES namespace into InternetMediaTypeRegistry.h
-
-commit 4dc9b91f8601b12d16e4798f73b1a2ed7f580932
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jul 27 10:18:05 2020 -0400
-
-    InternetMediaTypeRegistry: moved defaults from default backend to FrontEnd - so close to supporting external update of app defined defaults for these values; this should fix issue running on windwos docker environent that is missing a bunch of defines (as well as groundwork for above)
-
-commit 0db1fa9d26bcfcb641f45e8fd931d6761f979f92
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jul 28 08:08:45 2020 -0400
-
-    made InternetMediaTypeRegistry copyable using SharedByValue, and allowed updating of global object (Get/Set)
-
-commit 2eca0d0a991b2a65813c9431a4eff1a8d69c6a79
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jul 28 15:27:57 2020 -0400
-
-    Cleanup DLLLoader code: enforce GetProcAddress() cannot return nullptr (throws); better throw behavior in DLLLoader CTOR. cleanups
-
-commit 5c2c3d100041c1d36fdc2cddc562c99ee94d5c47
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jul 28 15:37:16 2020 -0400
-
-    cleanup use of String::Tokenize
-
-commit 4501b192baf9f5f8b6bcd2f2c6b04e64f298fbbe
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jul 28 15:39:30 2020 -0400
-
-    USE_NOISY_TRACE_IN_THIS_MODULE_ use in DLLLoader
-
-commit e584d32adeafeb132e3bcfd909ca7c1eafa01a1b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jul 28 15:39:58 2020 -0400
-
-    new RegistryKey::GetFullPathOfKey () utility
-
-commit 6e80e7dcafeedfd65c66e4c38ef99d50267ca228
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jul 28 15:45:36 2020 -0400
-
-    lots more cleanups to InternetMediaTypeRegistry: for windows, return GetAllFileSuffixes properly; Fixed baked in html type definition, and a few other cleanups
-
-commit b12fa3331d08cee6a4b12ee2059c069b646975f5
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jul 28 15:58:44 2020 -0400
-
-    USE_NOISY_TRACE_IN_THIS_MODULE_ use in DLLLoader module
-
-commit 4f40f198973586097052e1cf4567ffbfb9e5f6b7
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jul 28 16:59:14 2020 -0400
-
-    minor fixes to (regressions in) DLLLoader support
-
-commit 4c2d648b34d9abc00b13546414e80427ec1024cf
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 29 08:27:49 2020 -0400
-
-    cleanup Windows docker file test; and workaround issue with cygwin not working on latest docker (https://github.com/moby/moby/issues/41058#issuecomment-653865175)
-
-commit e43c7c87cd713df8b515e5779fab8953d3273370
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 29 11:51:09 2020 -0400
-
-    InternetMediaTypeRegistry: minor cleanups - mostly docs
-
-commit b9139fca3854f6c3e8eaa7d9119d8a3c65dd546b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 29 12:29:40 2020 -0400
-
-    coding convensions docs about Singletons
-
-Samples:
-
-fix bug in LedLineIt app (MFC issue) with document opening (assert/infinite recurse)
-
-In LedIt/LedLineIt samples - delay construction of SpellCheckEngine til InitInstance method since uses locks which caused msvc runtime to crash cuz called before main () - MFC pattern for constructing app objects
-
-#endif
+---
 
 ### 2.1b1 {2020-06-07}
 
-- **TLDR**
+#### TLDR
 
-  - Docs
-  - Lose old deprecated code
+- Docs
+- Lose old deprecated code
+
+#### Details
 
 - Documentation
 
@@ -353,12 +290,14 @@ In LedIt/LedLineIt samples - delay construction of SpellCheckEngine til InitInst
 
 ## 2.1a5 {2020-05-31}
 
-- **TLDR**
+#### TLDR
 
-  - New comparison API (spaceship operator)
-  - Docker (windows builds, and much more)
-  - CI systems (builds on travisci, and circleci, multiple platforms)
-  - WaitForIOReady improvements, which make webserver much faster
+- New comparison API (spaceship operator)
+- Docker (windows builds, and much more)
+- CI systems (builds on travisci, and circleci, multiple platforms)
+- WaitForIOReady improvements, which make webserver much faster
+
+#### Details
 
 - new Comparison API
   Support new C++20 spaceship operator, but in a way that is backwards compatible with C++17
@@ -666,12 +605,14 @@ In LedIt/LedLineIt samples - delay construction of SpellCheckEngine til InitInst
 
 ### 2.1a4 {2020-01-10}
 
-- **TLDR**
+#### TLDR
 
-  - lose support for configuration Release-DbgMemLeaks-U-32 from vs2k projects
-  - IO::Network::NeighborsMonitor improvements
-  - Added clang and ubuntu1910 builds to circleci
-  - fixed regression in 2.1a3 - which broke clang builds (boost build issue on linux)
+- lose support for configuration Release-DbgMemLeaks-U-32 from vs2k projects
+- IO::Network::NeighborsMonitor improvements
+- Added clang and ubuntu1910 builds to circleci
+- fixed regression in 2.1a3 - which broke clang builds (boost build issue on linux)
+
+#### Details
 
 - Build System
 
@@ -702,12 +643,14 @@ In LedIt/LedLineIt samples - delay construction of SpellCheckEngine til InitInst
 
 ### 2.1a3 {2020-01-04}
 
-- **TLDR**
+#### TLDR
 
-  - Integrate with online CI systems TravisCI, and CircleCI
-  - Attempt at windows docker build support
-  - Small fixes to configuration code
-  - Small improvements to SSDP code
+- Integrate with online CI systems TravisCI, and CircleCI
+- Attempt at windows docker build support
+- Small fixes to configuration code
+- Small improvements to SSDP code
+
+#### Details
 
 - Online CI System Integration
 
