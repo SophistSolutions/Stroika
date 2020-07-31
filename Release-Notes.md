@@ -27,7 +27,10 @@ to be aware of when upgrading.
 
 - Build System
 
-  - Improved erro reporting on configure script
+  - Configure script
+
+    - Improved error reporting
+    - configure XXX --only-if-has-compiler fixed so if using gcc, assure using gcc 8.0 or later
 
   - GCC
     - De-support gcc-7 for Stroika v2.1, because it only supports experimental/filesystem,
@@ -48,7 +51,16 @@ to be aware of when upgrading.
 
   - TravisCI
 
-    - changed one tpp configure include flag for one travisci macos configuration that was failing due to not building fast enuf
+    - changed one the configure include flags for one travisci macos configuration that was failing due to not building fast enuf
+    - limit builds for macos test configuration to avoid 50 minute timeout
+    - try --jobs=3 to see if faster. Maybe. Not much difference
+
+- Code Patterns
+
+  - sThe/kThe/Get/Set
+    - deprecate sThe in SystemFirewall class (and make a few methods const)
+    - InternetMediaTypeRegistry::sThe and replace with InternetMediaTypeRegistry::Get ()
+    - MessageUtiltiesManager class (with Get/Set)
 
 - Documentation
 
@@ -56,11 +68,33 @@ to be aware of when upgrading.
     - Cleanups
     - update ReadMe.md with pretty docs on CI systems uses
 
+- Docker
+
+  - Added ARG DEBIAN_FRONTEND=noninteractive to debian dockerfiles
+  - add locale support for centos8 (not sure why not there by default anymore)
+
+- RegressionTests
+
+  - Configurations
+    - added explicit configs g++-8-debug-sanitize_leak etc (about 8) - really only for ubuntu1804 but others others may get this too (not good)
+    - Added g++--8-valgrind-debug-SSLPurify for ubuntu 1804
+    - Added --only-if-has-compiler to most configurations
+    - fixed the configure append-run-prefix to use absolute path for tsan supressions
+  - Fixed a variety issue with RegressionTests - hardwired config names for running valgrind tests and loop running over all(memcheck/helgrind)
+  - Run regression tests on a variety of samples, and likewise with valgrind (valgrind configs)
+  - fix to RegressionTest code to use RUN_PREFIX running samples
+
 - Foundation
 
   - Cache
+
     - fixed bugs in Cache/SynchronizedLRUCache - case where no value returned;
       and must use unique_lock instead of lock_guard to unlock
+
+  - Characters
+
+    - ToString() for path invokes ToString(String) - and changed ToString(String) to use LimitLength (as hinted in docs)
+
   - Containers
 
     - Change to Mapping::Add() to take optional AddReplaceMode (enum) parameter (matching STL insert vs insert_or_assign), and returning bool indicating if actaul addition done.
@@ -80,15 +114,102 @@ to be aware of when upgrading.
 
       - InternetMediaTypeRegistry::GetAssociatedContentType - changed sematnics - requires file suffix argument - not file or suffix
 
+      - lose obsolete (and I think never really used cuz never implemetned and I now see probably doesnt make sense) GetMoreGeneralTypes GetMoreSpecificTypes for InternetMediaTypeRegistry
+      - improved regexp for InternetMediaType parsing - I'm sure still not right because I cannot find any clear reference for this. But hopefully closer (and a few links in code for possible starting points to find reference
+      - Lose InternetMediaTypeRegistry::sThe and replace with InternetMediaTypeRegistry::Get ()
+      - speed tweak and dbgtrace cleanups for DataExchange/InternetMediaTypeRegistry
+      - refactoring EtcMimeTypesRep\_ so no extra parse of file on call to GetMediaTypes
+      - InternetMediaType: deprecated text/xml, and instead map XML to application/xml; support GetSuffix() on InternetMediaType and properly parse it (and regtests)
+      - deprecated InternetMediaType::IstextFormat/IsImageFormat and moved those to IntenrMediaTypeRegistry object (adding IsXMLFormat there too)
+      - fixed InternetMediaTypeRegistry::Get ().IsXMLFormat () for case of +xml
+      - deprecated InternetMediaType::Match
+      - deprecated InternetMediaType::IsA and replaced with InternetMediaTypeRegistry::IsA
+
+  - Debug
+
+    - use Debug:: module use of Execution::ModuleDependency referncing string module because no longer needed (I think) - maybe so for a long time - but test and verify
+    - define Stroika_Foundation_Debug_ValgrindMarkAddressAsAllocated() utility and use in blockallocation to see if it addresses helgrind warnings
+    - use Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE/Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER to silence helgrind warnings with blockallocation
+    - Added Stroika_Foundation_Debug_ValgrindMarkAddressAsDeAllocated
+    - cleanups to Valgrind macros/ DOCS
+    - define Debug::kBuiltWithThreadSanitizer flag; and use that in regtest 39 (thresafetybuildinobject) - ti reduce test count like we do for valgrind, so runs in acceptable timeframe
+    - new experimental logging feature: kEmitThreadIDsByIndex\_ in Debug Trace code
+
+  - Execution
+
+    - Execution::Platform::Windows::RegistryKey
+      - lots of cleanups and new methods, refactoring
+      - added EnumerateSubKeys() and EnumerateValues ()
+    - Threads
+      - Thread classes: moved private stuff inside Thread::Ptr, and deprecated Get/Set SignalUsedForThreadInterrupt and replaced with single dual-function call SignalUsedForThreadInterrupt
+      - Switch Thread code from using Quasi-namespace to actual namespace (use of private not that compelling, and otherwise I think will work more naturally and as users would expect with true namespace
+      - Threads: tons of cleanups; deprecated Get/Set ThrowInterruptExceptionInsideUserAPC and replaced with one name ThrowInterruptExceptionInsideUserAPC; similarly lose Get/Set DefaultConfiguration and replaced with function DefaultConfiguration() that gets and sets
+      - new Thread::IndexRegistrar: use in Thread::Ptr::ToString () and in Trace code (in place of local code I put there to do index dumping); and defined qStroika_Foundation_Debug_Trace_ShowThreadIndex to control if we do this in tracelog
+      - if qStroika*Foundation_Debug_Trace_ShowThreadIndex - also changed output of sRunningThreads* to show threadindex (so easier compare in tracelog file)
+      - moved Execution::FormatThreadID_A to Execution::Thread::FormatThreadID_A () adding extra param and changing default behavior
+      - Moved a few more Thread related Execution namespace functions under Thread namespace (CheckForThreadInterruption, Yield, GetCurrentThreadID)
+      - renmaed Thread::CheckForThreadInterruption to Thread::CheckForInterruption
+    - SignalHandlerRegistry: cosmetic cleanups; and fixed small bug with accessing sTheRep\_ - use atomic_load/atomic_store (though must replace that with plain atomic in c++20; this fixes tsan warning
+
+  - Linguistics
+
+    - rewrite alot of Library/Sources/Stroika/Foundation/Linguistics/MessageUtilities:
+      deprecating CurrentLocaleMessageUtilities functions and replacing with
+      MessageUtiltiesManager class (with Get/Set).
+
   - IO::FileSystem
 
     - **tons of changes due to (above) switch to using std::filesystem**
     - deprecated FileSystem::GetFileSuffix() and reimplemented using FromPath (ToPath (fileName).extension ());
+    - IO::Filesystem::WellKnownLocations::GetTemporaryT () now marked deprecated
+    - FileSystem::WellKnownLocations::GetMyDocuments () now returns filesystem::path (**NOT BACKWARD COMPATIBLE CHANGE**)
+    - lose obsolete temporary overload of Exception::ThrowIfZeroGetLastError() - with string instead of filesystem::path
+    - FileSystem::GetFileDirectory now deprecated; and incompatible change to Module functions GetEXEPath/GetEXEDir etc now returning filesystem::path instead of String (and deprecated T variants of said functions)
+    - ExtractDirAndBaseName () file routine marked deprecated (with replacement suggested)
+    - IO::FileSystem::GetFileBaseName deprecated
+    - deprecated IO::FileSystem::Directory and any remaining function associated with it
+    - use filesystem::create_directories () instead of deprecated IO::FileSystem::CreateDirectoryForFile
+    - use filesystem::file_size in place of deprecated IO::FileSystem::Default ().GetFileSize; and a suppress some deprecation warnings
+
+  - IO::Network
+
+    - places where we call sockAddr.As\<sockaddr_storage> () - pass to socket API sa.GetRequiredSize()
+      not sizeof (sadata) - since MacOS generates error 22 for this
+      (and I think other sock stacks are similarly unhappy though works on LINUX with
+      sizeof(socket_storage)
+
+  - Memory
+
+    - Simplified and more correct Stroika **Foundation_Debug_Valgrind_ANNOTATE_HAPPENS** usage in BlockAllocator.inl: now appears to work properly (though maybe not 100%) with qStroika_Foundation_Memory_BlockAllocator_UseLockFree\* - test more
 
   - Traversal
-
     - docs and new experimental Iterable\<T\>::SelectIf ()
     - cleanup and deprecate old appraoch to Iterable<>::Select()
+    - lose (never released) Iterable::SelectIf - rename losing IF - just as overload of Select; and added regtest
+
+- Frameworks
+
+  - SystemPerformance
+    - WSL1 fails to read /proc/vmstat - so handle that more appropriately and quietly fail to gather the appropriate info (under wsl1)
+    - IgnoreExceptionsExceptThreadAbortForCall in Frameworks/SystemPerformance/Instruments/Network for WSL1
+
+- Samples
+
+  - ArchiveUtility
+    - --no-fail-on-missing-library option on Samples-ArchiveUtility/ArchiveUtility so no error from regressiontests when building without those libraries (which we test)
+  - SystemPerformanceCapturer
+    - tweak assertions/enusure calls in SystemPerformanceCapturer for Memory (for macos assert)
+  - WebServer
+    - when we get timeout i webserver sample - return with exist success (thats not an error)
+
+- Tests
+
+  - regression testing cleanups: TestHarness::WarnTestIssue() now has overload taking wchar_t\*
+  - improved logging
+  - lower test sizes in a couple places when running under valgrind, to make valgrind (really helgrind) tests a little quicker
+  - **WARNING** - changed RunTest\_ counting code in performance regression tests: shoudl NOT make any difference to real tests, but should make cut-off tests due to valgrind/helgrind slowness issues run much faster
+  - parameterize some tests in Sequence<> regression test suite bsaed on whether we are using valgrind or not so they run a bit faster under valgrind
+  - performacne regtest now also looks at Debug::kBuiltWithThreadSanitizer to adjust intensity/speed of runnign that test
 
 - ThirdPartyComponents
 
@@ -102,704 +223,7 @@ to be aware of when upgrading.
     - 3.32.03
     - Support a mirror for sqlite due to mysterious problem downloading from the main source on travisci macos machines
 
-- Tests
-  - regression testing cleanups: TestHarness::WarnTestIssue() now has overload taking wchar_t\*
-  - improved logging
-
 #if 0
-
-    configure DEFAULT_CONFIG --only-if-has-compiler and fixed configure script so if using gcc, assure using gcc 8.0 or later
-
-commit 1b2262a85311cd720cfaa665e1ca3f737d333dd9
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jul 2 20:08:19 2020 -0400
-
-    configure DEFAULT_CONFIG --only-if-has-compiler and fixed configure script so if using gcc, assure using gcc 8.0 or later
-
-commit 52d0cedee82f2854569305f7d57d75f03ad8a686
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jul 2 20:09:54 2020 -0400
-
-    configure DEFAULT_CONFIG --only-if-has-compiler and fixed configure script so if using gcc, assure using gcc 8.0 or later
-
-commit 81636dec372ddc869bbe7f4dde54e9450cce56b7
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jul 3 11:10:11 2020 -0400
-
-    added explicit configs g++-8-debug-sanitize_leak  etc (about 8) - really only for ubuntu1804 but others others may get this too (not good); and added  --only-if-has-compiler to a few remaing configure lines (really sb on all of htem I expect)
-
-commit 2893a7db9477b168034d95774a729cd66947f2d4
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jul 3 11:22:10 2020 -0400
-
-    Added g++--8-valgrind-debug-SSLPurify for ubuntu 1804
-
-commit e7dd74f1bd46ff4d91b5486f857f65cb127f2e44
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jul 3 11:23:54 2020 -0400
-
-    fewer explicit g++ version sanitize configurations - will catch on other oses"
-
-commit f078cef0611a0275047e549ea45b9c4bd24b5642
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jul 4 10:43:41 2020 -0400
-
-    refactoring of Execution::Platform::Windows::RegistryKey code
-
-commit 623a6545c236043072b052f27ca77bd0eda72171
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jul 4 10:46:36 2020 -0400
-
-    Added Widnwos registrykey EnumerateSubKeys() and EnumerateValues ()
-
-commit be006a9eeead73765e50cdbbc308a1ca72baa967
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jul 5 13:03:44 2020 -0400
-
-    windows::RegistryKey code: cleanups, docs, dbgtrace improvements, and  ExtractValue_() arg missingReturnsEmpty so sometimes error and sometimes not (following API docs)
-
-commit b7260e99f52d3dd69830376e89df2fa41a6f14bb
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jul 5 16:16:28 2020 -0400
-
-    support InternetMediaTypeRegistry::GetMediaTypes()
-
-commit c8f297a4b7fabc71c257af16506c849202442615
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jul 5 18:02:03 2020 -0400
-
-    lose obsolete (and I think never really used cuz never implemetned and I now see probably doesnt make sense) GetMoreGeneralTypes GetMoreSpecificTypes for InternetMediaTypeRegistry
-
-commit 7a23e814e6132dee0f6164675a75771a463644b8
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jul 5 18:24:38 2020 -0400
-
-    hopefully improved regexp for InternetMediaType parsing - I'm sure still not right because I cannot find any clear reference for this. But hopefully closer (and a few links in code for possible starting points to find reference
-
-commit ec74bd0db8710eaa36e7fa2de52dbaad5efb912b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jul 6 14:44:55 2020 -0400
-
-    limit builds for macos test configuration to avoid 50 minute timeout
-
-commit 8a0a4ab7a4b3b221261c84cb63e9b22ac320e559
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jul 6 15:04:59 2020 -0400
-
-    Debug module uses filesystem::path instead of SDKString for pathname name
-
-commit c59fcafc6a1b7010e849eaf46ebdfe5334002dc5
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jul 6 15:07:16 2020 -0400
-
-    use Debug:: module use of Execution::ModuleDependency referncing string module because no longer needed (I think) - maybe so for a long time - but test and verify
-
-commit 2770ce31d6e89292cf97d84b3e279f5203185ebf
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jul 6 15:14:07 2020 -0400
-
-    mostly cosmetic cleanups (MakeModuleDependency_Trace declare/use)
-
-commit 5efc193aaa46d6acb1e667ef0b6b9533192aaeb9
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jul 6 15:18:52 2020 -0400
-
-    IO::Filesystem::WellKnownLocations::GetTemporaryT () now marked deprecated
-
-commit e8cfc2449c05e7f0ddd528d998673e54e4c0e25d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jul 6 16:45:14 2020 -0400
-
-    FileSystem::WellKnownLocations::GetMyDocuments () now returns filesystem::path (**NOT BACKWARD COMPATIBLE CHANGE**)
-
-commit 2865b9983fe02123b3867e9a7d6fc923ff1e1837
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jul 6 17:04:27 2020 -0400
-
-    lose obsolete temporary overload of Exception::ThrowIfZeroGetLastError() - with string instead of filesystem::path
-
-commit 8706c8ee9646ae09ae11915c1e31e54c53e6b886
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jul 6 20:34:07 2020 -0400
-
-    eliminated errant double call to ThrowSystemErrNo
-
-commit 7a5058161fecc3cdda479cab48855216a61c548a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jul 7 11:27:28 2020 -0400
-
-    maybe fix issue with RegressionTests - lose some hardwired config names for running valgrind tests and loop running over all(memcheck)
-
-commit 1b69a3d1c36511d6586a5a6baff1ea26f48bc751
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jul 7 11:40:23 2020 -0400
-
-    Needed a few more --only-if-has-compiler checks in basic-unix-test-configurations since not ubuntu 1804 default compiler doesnt have <filesystem>
-
-commit 12f612098ea5769925d5473aed70d6396c0bc809
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 8 10:45:06 2020 -0400
-
-    tweak RegressionScript test again for runnign valgrind tests (testing)
-
-commit 826ab1279c9052b7362ec4516b9ecae50fd39da6
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 8 11:21:12 2020 -0400
-
-    tweak RegressionScript test again for runnign valgrind tests (testing)
-
-commit 26e201b533a16747d708ed8e544fa7d3d1b42ec9
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 8 12:10:40 2020 -0400
-
-    travisci: see if --jobs=3 makes macos build complete in under 50 minutes
-
-commit 378e6273866576090719692cae9303adb3147d03
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 8 12:34:07 2020 -0400
-
-    RegressionTEsts script: embellish tests/valgrind run on sample apps
-
-commit 59ea4593c600eb3a000950234c88740d0f563661
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 8 14:35:13 2020 -0400
-
-    travisci: tweaks to get macos build faster
-
-commit 1b7eef0f8a4b3cc4cba7a7bb3fda28bf9ca47f49
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 8 15:04:19 2020 -0400
-
-    more enhancements of regressiontests script to run sample apps
-
-commit 9ca6060f38e64391f2edc6754addc0b6c597d971
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 8 22:31:16 2020 -0400
-
-    more tweaks to regressiontest script
-
-commit 839b6afaea6b81f7ee7b2bf5eb700a407e78edb1
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jul 9 13:53:45 2020 -0400
-
-    when we get timeout i webserver sample - return with exist success (thats not an error)
-
-commit 88f349773bb5d57db8d035625e749026a2c832e0
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jul 9 14:17:50 2020 -0400
-
-    more cleanups of regressiontests script - esp invoking sample apps
-
-commit 2788fd67d8f31b603450dd87e07adc5b06cc8601
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jul 9 21:20:18 2020 -0400
-
-    more cleanups to RegressionTests script
-
-commit d09552a1f8899bee8732889f1c713788d31075b9
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jul 10 10:22:18 2020 -0400
-
-    fixed regressiontest redirection of stderr on running samples
-
-commit 46088915a0d18995565c428bb698f59ca4d759c1
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jul 11 13:14:55 2020 -0400
-
-    tweak assertions/enusure calls in SystemPerformanceCapturer for Memory (for macos assert)
-
-commit e56b3201466fb0a2b387b1c3b10626225d4c6a60
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jul 11 20:45:59 2020 -0400
-
-    cosmetic and dbgtrace
-
-commit b9e40929098310acdbd7c2fbdf9919208d9f2d7e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jul 11 21:21:11 2020 -0400
-
-    places where we call sockAddr.As<sockaddr_storage>  - pass to socket API sa.GetRequiredSize() not sizeof (sadata) - since MacOS generates error 22 for this (and I think other sock stacks are similarly unhappy though works on LINUX with sizeof(socket_storage)
-
-commit b5a4c77e7dab97c1a77f071eb7472edb4802532b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jul 12 11:09:53 2020 -0400
-
-    places where we call sockAddr.As<sockaddr_storage>  - pass to socket API sa.GetRequiredSize() not sizeof (sadata) - since MacOS generates error 22 for this (and I think other sock stacks are similarly unhappy though works on LINUX with sizeof(socket_storage)
-
-commit 6a0bdef802d29fd1ef525186b60be75f54e9fdbb
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jul 12 11:15:56 2020 -0400
-
-    RegressionTests: LOCAL_CONFIGS generation on CYGWIN
-
-commit 3da29dce28e241f83aa800c75b5b315f33a4c02a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jul 12 13:22:25 2020 -0400
-
-    deprecate sThe in SsytemFirewall class (and amke a few methods const)
-
-commit 93fa28524a9b9f4f4faea130dca7e63dc59e49df
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jul 12 13:39:36 2020 -0400
-
-    Lose InternetMediaTypeRegistry::sThe and replace with InternetMediaTypeRegistry::Get ()
-
-commit 0bda3df9cf4285116b3864e3a666fbaf805cbfc1
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jul 12 13:43:04 2020 -0400
-
-    fixed missing switch to InternetMediaTypeRegistry::Get ()
-
-commit ebf39a366b2e02ccecdd6f237a1b513ee64905af
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jul 12 17:46:15 2020 -0400
-
-    Tweak output of RegressionTest script
-
-commit 4bde337f68780f4b161a72812dc441f47ad09a95
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jul 12 20:55:42 2020 -0400
-
-    WSL1 fails to read /proc/vmstat - so handle that more appropriately and quietly fail to gather the appropriate info (under wsl1)
-
-commit ddb8048143ba2f1d6a0f2c7e8f906d2aa5b18fdd
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jul 12 20:57:04 2020 -0400
-
-    rewrite alot of Library/Sources/Stroika/Foundation/Linguistics/MessageUtilities:
-            deprecating CurrentLocaleMessageUtilities functions and replacing with
-
-            MessageUtiltiesManager class (with Get/Set).
-
-commit 67a0130d63c383ef2f3cd5e0ae2e0228c30c9e6b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jul 13 09:14:06 2020 -0400
-
-    IgnoreExceptionsExceptThreadAbortForCall in Frameworks/SystemPerformance/Instruments/Network for WSL1
-
-commit 2d33da67681489c5d6abf39f12e4e0b3f190d973
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jul 13 09:28:54 2020 -0400
-
-    --no-fail-on-missing-library option on Samples-ArchiveUtility/ArchiveUtility so no error from regressiontests when building without those libraries (which we test)
-
-commit 855803ffef749ae0e5ef5c4562b73b5e7bac9246
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jul 13 09:36:41 2020 -0400
-
-    temporarily disbale g++-debug-sanitize_thread, g++-release-sanitize_thread_undefined , g++-8-release-sanitize_thread_undefined regression test configurations since thread sanitizer failing too many times and must cleanup various failures warnings and re-enable slowly (may not have ever had those passing - invistagate one at a time)
-
-commit c93d0ea9604c72649218d51b567e9b4c9d145a87
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jul 13 11:00:42 2020 -0400
-
-    FileSystem::GetFileDirectory now deprecated; and incompatible change to Module functions GetEXEPath/GetEXEDir etc now returning filesystem::path instead of String (and deprecated T variants of said functions)
-
-commit bcfadb4721850a6af50db4d2b4abc8ff8104d118
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jul 13 11:12:14 2020 -0400
-
-    systemfirewall - use filesystem::path for application path - not string
-
-commit 16393949d8989e9b380dc120c24d2a8320c7975f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jul 13 11:12:49 2020 -0400
-
-    silcen warning - use .parent_path () isntead of deprecated GetFileDirectory
-
-commit 55a1c1a134474fc8cdcb9330d6497adac87d758d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jul 13 11:25:20 2020 -0400
-
-    more reactions to change from String to filesystem::path
-
-commit 5dfd04bb5f16c0952e984f0d5d834fc0837e90eb
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jul 13 11:38:42 2020 -0400
-
-    react to Execution::GetEXEPathT () deprecation
-
-commit 76b6e810fe6e27bad9a024653ca3dfbdddf18e1f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jul 13 16:46:03 2020 -0400
-
-    fixed call from webserver filesystemrouter to do fn.extension () before call to GetAssociatedContentType ()
-
-commit 59e880029fc1aab0d9d3d68c6ece6d1f2d21032a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jul 13 17:24:58 2020 -0400
-
-    use path::parent_path () instead of deprecated IO::FileSystem::GetFileDirectory()
-
-commit 88381e49433805656883d49f2c5322c6eb2d67cd
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jul 13 17:52:15 2020 -0400
-
-    define Stroika_Foundation_Debug_Valgrind_ANNOTATE_PUBLISH_MEMORY_RANGE() utility and use in blockallocation to see if it addresses helgrind warnings
-
-commit 1414881ab452bdf3e2a9892316b6e2ccc0686cc2
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jul 14 09:31:14 2020 -0400
-
-    maybe fix regressiontests run valgrind
-
-commit 55f22762f12477b0f9339e0a5f4e1d7ac2a8ab5a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jul 14 18:43:57 2020 -0400
-
-    cleanup messages in RegressionTests script
-
-commit 7a8401761da691cc162fdb0c96381d6ffe9edce2
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jul 14 19:43:44 2020 -0400
-
-    changed ANNOTATE_PUBLISH_MEMORY_RANGE to ANNOTATE_NEW_MEMORY helgrind workaround
-
-commit a21fee64578756434177757fe96a4d01fd63996d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 15 09:53:05 2020 -0400
-
-    use Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE/Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER to silence helgrind warnings with blockallocation
-
-commit 5b777bb252fe7e7fa9810445996ede9b0645fa8d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 15 13:23:25 2020 -0400
-
-    hopefully fixed RegressionTest script VALGRIND SAMPLE_APP basic tests section
-
-commit a2f9393b29572810609d1569bb8b8c29c3a9211a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 15 17:04:18 2020 -0400
-
-    travisci: tweak macos tests build to hopefully complete in under 50 minutes
-
-commit 34eeec823556e40ab02cb81c703fc10b27f46f39
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 15 19:52:13 2020 -0400
-
-    Added Stroika_Foundation_Debug_ValgrindMarkAddressAsDeAllocated
-
-commit fedf56c55c9290b5e74d3a02f2223974b7b0a018
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 15 19:54:21 2020 -0400
-
-    renamed Stroika_Foundation_Debug_Valgrind_ANNOTATE_NEW_MEMORY -> Stroika_Foundation_Debug_ValgrindMarkAddressAsAllocated
-
-commit 434187b4a19ba456f2b7223bfd68180655245543
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 15 19:54:59 2020 -0400
-
-    minor speed tweak and dbgtrace cleanups for DataExchange/InternetMediaTypeRegistry
-
-commit da24031eeca389d37ed2b061ed09d957299b0bd3
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 15 20:50:57 2020 -0400
-
-    cleanups to Valgrind macros/ DOCS
-
-commit 5356bcf933dfecc9fb5a83f38eae0a999b90119e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 15 22:34:45 2020 -0400
-
-    Simplified and more correct Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS* usage in BlockAllocator.inl: now appears to work properly (though maybe not 100%) with qStroika_Foundation_Memory_BlockAllocator_UseLockFree_ - test more
-
-commit c8dabdcd01e3ebdb2bf5cac07c04e28219b8e58a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 15 22:34:58 2020 -0400
-
-    valgrind/helgrind docs
-
-commit c8334868e0df75456c2e419ec5a3db44990fa9bf
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jul 16 15:04:01 2020 -0400
-
-    re-enable (temporarily disabled) g++-debug-sanitize_thread  - to test if thread sanitizer working OK now (changed valgrind logic - maybe need to turn on valgrind flags automatically if TSAN flag on?)
-
-commit 97537559a68a0124c478b49bedbef82b821202dd
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jul 16 19:20:00 2020 -0400
-
-    re-enable configs g++-release-sanitize_thread_undefined  g++-8-release-sanitize_thread_undefined  (testing)
-
-commit 1005b09f0904e098aaa3dfbcc2181046a6c01f15
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jul 16 20:12:33 2020 -0400
-
-    lower test sizes in a couple places when running under valgrind, to make valgrind (really helgrind) tests a little quicker
-
-commit dc6936a11af9b5a59da36ab9a176851f9d4288ec
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jul 16 20:14:01 2020 -0400
-
-    **WARNING** - changed RunTest_ counting code in performance regression tests: shoudl NOT make any difference to real tests, but should make cut-off tests due to valgrind/helgrind slowness issues run much faster
-
-commit 6b9f5997ed43a53ebe6b121b3fe2903cbab27af9
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jul 18 17:06:40 2020 -0400
-
-    fix to RegressionTest code to use RUN_PREFIX running samples
-
-commit 4ee1d56fc3e4a5a9525b1c1eb090a62c9485bf6e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jul 18 17:17:28 2020 -0400
-
-    ExtractDirAndBaseName () file routine marked deprecated (with replacement suggested)
-
-commit a43cea77b625fc54845115d0f00f39327cd63781
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jul 18 17:27:35 2020 -0400
-
-    IO::FileSystem::GetFileBaseName deprecated
-
-commit 5239d911bdf3430ada58699c073811a3510bfd30
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jul 18 17:55:00 2020 -0400
-
-    deprecated IO::FileSystem::Directory and any remaining function associated with it
-
-commit d1e6b2c3047d2765b2ef03668fb4cbd9927652d6
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jul 18 17:58:58 2020 -0400
-
-    more lose use of deprecated FileSystem code
-
-commit 737d238df49f4ef82d383d8a2a713a7845333673
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jul 18 18:02:34 2020 -0400
-
-    lose use of deprecated IO::FileSystem::Directory (kTestSubDir_).AssureExists
-
-commit 973356093923f91e86ee52a20b415e6a1a0607db
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jul 18 18:04:34 2020 -0400
-
-    lose use of deprecated IO::FileSystem::Directory (kTestSubDir_).AssureExists
-
-commit fdfc97297b12d6ba344579ddf5b6975f121e4b56
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jul 18 21:46:30 2020 -0400
-
-    more deprecation of filesystem code; and enum class used for BlockDeviceKind
-
-commit 6755aa57becea2d85b774e72b486e2ef99fab4c8
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jul 18 23:03:42 2020 -0400
-
-    use std::filesystem instead of deprecated ResolveShortcut()
-
-commit a01951526dd135776330d99f213b9f069cb0bff3
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jul 19 11:40:15 2020 -0400
-
-    marked more FileSystem/FileUtils code as deprecated
-
-commit 3e3bbf3a90bb81c9da3deee230e617c4b95061e3
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jul 19 11:48:36 2020 -0400
-
-    use filesystem::create_directories () instead of deprecated IO::FileSystem::CreateDirectoryForFile
-
-commit c065c343272e99bcd74453af1bc3e79053b9d1c8
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jul 19 14:14:13 2020 -0400
-
-    refactoring EtcMimeTypesRep_ so no extra parse of file on call to GetMediaTypes
-
-commit 27869c1fe3b32d7f2b35bf46610176e54cc6899b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jul 19 19:41:40 2020 -0400
-
-    use filesystem::file_size  in place of deprecated IO::FileSystem::Default ().GetFileSize; and a  suppress some deprecation warnings
-
-commit 2df1b9e29824b0ca3157369320615b0af6b11027
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jul 19 20:19:11 2020 -0400
-
-    Added ARG DEBIAN_FRONTEND=noninteractive to debian dockerfiles
-
-commit 160d2535520ccf93b74eba869b61ae7451737e72
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jul 20 14:42:25 2020 -0400
-
-    add locale support for centos8 (not sure why not there by default anymore)
-
-commit cc2f63f229d6d1c74d077dddf4e782bf7e2acada
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jul 20 15:28:19 2020 -0400
-
-    define Debug::kBuiltWithThreadSanitizer flag; and use that in regtest 39 (thresafetybuildinobject) - ti reduce test count like we do for valgrind, so runs in acceptable timeframe
-
-commit 187eb622a6bc4dbffb6915ebbd01e4c5eac695d6
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jul 20 16:31:32 2020 -0400
-
-    parameterize some tests in Sequence<> regression test suite bsaed on whether we are using valgrind or not so they run a bit faster under valgrind
-
-commit 226315799cc7ff4e9e79aaaeb05826bdba388eae
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jul 20 16:35:32 2020 -0400
-
-    performacne regtest now also looks at Debug::kBuiltWithThreadSanitizer to adjust intensity/speed of runnign that test
-
-commit 60a8ba12572e6b4aaecc888528f5eb612b5d0009
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jul 20 19:26:32 2020 -0400
-
-    Speed tweak/cleanup for InternetMediaTypeRegistry::UsrSharedDefaultBackend () ...GetMediaTypes()
-
-commit 63bcf1ea70b5f5e567b1525e8557565fb3563511
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jul 20 20:48:05 2020 -0400
-
-    Debug::Trace module cleanuP
-
-commit 8a38bdc1397841bf3987e148b68323fdabf69e52
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jul 20 21:36:20 2020 -0400
-
-    new experimental logging feature: kEmitThreadIDsByIndex_  in Debug Trace code
-
-commit 47c2489809f2ead39112ad2aedc3e30b1229636f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jul 21 10:17:51 2020 -0400
-
-    Thread classes: moved private stuff inside Thread::Ptr, and deprecated Get/Set SignalUsedForThreadInterrupt and replaced with single dual-function call SignalUsedForThreadInterrupt
-
-commit 52a1dbabd94a34e60206d3d994fc09dcc3336d11
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jul 21 10:21:04 2020 -0400
-
-    break SignalUsedForThreadInterrupt into two overloads (so looks like before) except read case no noexcept
-
-commit 06484177756ac1186a467e4d99f1aed5fa15323d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jul 21 11:07:25 2020 -0400
-
-    Switch Thread code from using Quasi-namespace to actual namespace (use of private not that compelling, and otherwise I think will work more naturally and as users would expect with true namespace
-
-commit a8a272e2a938a93acb3499336d87e139bc51678c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jul 21 11:50:58 2020 -0400
-
-    Threads: tons of cleanups; deprecated Get/Set ThrowInterruptExceptionInsideUserAPC and replaced with one name ThrowInterruptExceptionInsideUserAPC;  similarly lose Get/Set DefaultConfiguration and replaced with function DefaultConfiguration() that gets and sets
-
-commit 7baef7faf2041b0366bbc13ddcc5cafee635f9fe
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jul 21 22:18:14 2020 -0400
-
-    fix output for regressiontests - Running SAMPLE_APP basic tests
-
-commit 8f5fcf9bda7c0a0e35c209de0e1a8d786d30843b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 22 09:18:45 2020 -0400
-
-    instead of doing pushed Tests in RegressionTEst, I fixed the configure append-run-prefix to use absolute path for tsan supressions
-
-commit ae37c4b1845e66b292fa357ce8a924fdd3d84932
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 22 11:19:08 2020 -0400
-
-    new Thread::IndexRegistrar: use in Thread::Ptr::ToString () and in Trace code (in place of local code I put there to do index dumping); and defined  qStroika_Foundation_Debug_Trace_ShowThreadIndex to control if we do this in tracelog
-
-commit fc7187865bb0e6f1e97408a69600c3d770fa6ffa
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 22 11:19:48 2020 -0400
-
-    fixed isuses with RegressionTests script on Running SAMPLE_APP basic tests section
-
-commit 7babea2d16497721bf7cd1f9d58dcd199abe2f71
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 22 20:44:14 2020 -0400
-
-    moved Execution::FormatThreadID_A to Execution::Thread::FormatThreadID_A () adding extra param and changing default behavior
-
-commit 6ca79c7af1a8b5f5780a2530b738d55ccf89c958
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 22 21:00:30 2020 -0400
-
-    Moved a few more Thread related Execution namespace functions under Thread namespace (CheckForThreadInterruption, Yield, GetCurrentThreadID)
-
-commit 3ca70bddc46e30dd271b09ccaaf6ac0b8f85037a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jul 23 11:02:12 2020 -0400
-
-    renmaed Thread::CheckForThreadInterruption to Thread::CheckForInterruption
-
-commit ea5dbbf4acd3a5607de0d41c9991d771bdb5f39c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jul 23 22:01:00 2020 -0400
-
-    SignalHandlerRegistry: cosmetic cleanups; and fixed small bug with accessing sTheRep_ - use atomic_load/atomic_store (though must replace that with plain atomic in c++20; this fixes tsan warning
-
-commit 6d5ebda550d1b2c011aaabbdbded9f55de729909
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jul 24 09:41:31 2020 -0400
-
-    docs
-
-commit ece4647236d031df91376a5d5879b2261d7c912b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jul 24 09:42:10 2020 -0400
-
-    ToString() for path invokes ToStirng(String) - and changed ToString(String) to use LimitLength (as hinted in docs)
-
-commit 823bee53313df2827b0283a01aa1adb262244bed
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jul 24 11:33:47 2020 -0400
-
-    if qStroika_Foundation_Debug_Trace_ShowThreadIndex - also changed output of sRunningThreads_ to show threadindex (so easier compare in tracelog file)
-
-commit d892093a2577aba0f262df4bf78210dd6352cecd
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jul 24 12:17:31 2020 -0400
-
-    lose (never released) Iterable::SelectIf - rename losing IF - just as overload of Select; and added regtest
-
-commit f210b698d70ba46f4d8f4c97a758803d39c0ed74
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jul 24 21:13:31 2020 -0400
-
-    fixed one use oof ToString() on path tha tshould have been FromPath()
-
-commit acd416e161f7e8b48b1b5994b7336a2145d18fd4
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jul 25 13:05:36 2020 -0400
-
-    InternetMediaType: deprecated text/xml, and instead map XML to application/xml; support GetSuffix() on InternetMediaType and properly parse it (and regtests)
-
-commit a39c9f9a8a76303b1416151c961758967240fb9a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jul 25 13:21:49 2020 -0400
-
-    More cleanups of recent InternetMediaType suffix support changes
-
-commit 90ce1d817c67dc18dfb36b3abf6290251696a8cd
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jul 25 14:19:07 2020 -0400
-
-    deprecated InternetMediaType::IstextFormat/IsImageFormat and moved those to IntenrMediaTypeRegistry object (adding IsXMLFormat there too)
-
-commit 587fb3acdd3e7c88ccf0c1561cfd57afcbf124bf
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jul 25 18:16:47 2020 -0400
-
-    fixed InternetMediaTypeRegistry::Get ().IsXMLFormat () for case of +xml
-
-commit 9cf145f2071fee2f09a5ce13b0716fb303c5ed72
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jul 25 21:33:59 2020 -0400
-
-    deprecated InternetMediaType::Match
-
-commit 6f197220299719dabf505778b470b0a43a468a2a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jul 25 21:43:50 2020 -0400
-
-    deprecated InternetMediaType::IsA and replaced with InternetMediaTypeRegistry::IsA
-
-commit 5c4b33d1426ef665fb2e966196e9a72d90c8b99e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jul 26 22:49:59 2020 -0400
 
     cleanup/refactoring of InternetMediaType code - mostly moving TYPES namespace into InternetMediaTypeRegistry.h
 
@@ -821,23 +245,11 @@ Date: Tue Jul 28 08:08:45 2020 -0400
 
     made InternetMediaTypeRegistry copyable using SharedByValue, and allowed updating of global object (Get/Set)
 
-commit f9eb9737cf7d8d2a97e317033286276bd857e1a3
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jul 28 15:26:48 2020 -0400
-
-    docs example
-
 commit 2eca0d0a991b2a65813c9431a4eff1a8d69c6a79
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Tue Jul 28 15:27:57 2020 -0400
 
     Cleanup DLLLoader code: enforce GetProcAddress() cannot return nullptr (throws); better throw behavior in DLLLoader CTOR. cleanups
-
-commit 16cb1d2d53cd0b0a1b09c951a91e25c321f45d8a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jul 28 15:36:09 2020 -0400
-
-    DLLLoader cleanups
 
 commit 5c2c3d100041c1d36fdc2cddc562c99ee94d5c47
 Author: Lewis Pringle <lewis@sophists.com>
