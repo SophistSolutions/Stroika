@@ -212,7 +212,16 @@ namespace Stroika::Foundation::Memory {
         void* newHead = p;
         reinterpret_cast<atomic<void*>*> (newHead)->store (prevHead, memory_order_release);
         Verify (sHeadLink_.exchange (newHead, memory_order_acq_rel) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
+#if 1
+        // As near as I can tell, since the memory is now unallocated, and shouldn't be used again until re-allocated,
+        //  I think doing Stroika_Foundation_Debug_ValgrindMarkAddressAsDeAllocated makes more sense. However, at least
+        // on Ubuntu 1910, valgrind -q --tool=helgrind --suppressions=Valgrind-Helgrind-Common.supp  ../Builds/g++--8-valgrind-debug-SSLPurify/Tests/Test38
+        // produces a race error, so stick to ANNOTATE_HAPPENS_BEFORE for now
+        // --LGP 2020-07-31
         Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE (p);
+#else
+        Stroika_Foundation_Debug_ValgrindMarkAddressAsDeAllocated (p, SIZE);
+#endif
 #else
         Private_::DoDeleteHandlingLocksExceptionsEtc_ (p, &sHeadLink_);
 #endif
