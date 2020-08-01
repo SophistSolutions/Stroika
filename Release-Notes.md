@@ -10,7 +10,7 @@ to be aware of when upgrading.
 
 ---
 
-### 2.1b2x = working
+### 2.1b2 {2020-08-01x RC}
 
 #### TLDR
 
