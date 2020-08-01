@@ -28,3 +28,12 @@ see <Regression-Tests.md> for steps to run most regression tests
 If anything looks iffy, fix before release (repeat much of above). But when all tests pass adequately (or documneted issues in release notes) - then checkin/commit the release note files (see instructions in <Regression-Tests.md>)
 
 ## Last step, is to docker tag the latest containers, and push
+
+in DockerBuildContainers
+
+```bash
+make pull-base-images
+make build-images
+make tag-images
+make push-images
+```
