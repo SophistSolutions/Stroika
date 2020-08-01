@@ -22,6 +22,7 @@ OUT_FIELD_NAME=$2
 #		Major.Minor
 #		DecoratedStageInfo
 #		Win32FourDot
+#		FinalBuild
 #
 
 #echo "-----------"
@@ -105,4 +106,8 @@ if [ "$OUT_FIELD_NAME" == "Win32FourDot" ]
 	fourthOctet=$((($VERSIONSUBSTAGE & 0x7f) << 1))
 	if [ "$VERSIONFINAL" == "" ] ; then fourthOctet = $(($fourthOctet + 1)); fi
 	echo -n "$fourthOctet"
+fi
+if [ "$OUT_FIELD_NAME" == "FinalBuild" ]
+  then
+	echo -n "$VERSIONFINAL"
 fi

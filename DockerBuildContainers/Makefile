@@ -1,5 +1,8 @@
 DEFAULT_GOAL := help
 
+STROIKA_VERSION=$(shell dos2unix < ../STROIKA_VERSION | xargs echo -n)
+STROIKA_VERSION_Final=$(shell ../ScriptsLib/ExtractVersionInformation ../STROIKA_VERSION FinalBuild)
+
 
 help:
 	@echo "make docker-images to create the docker images on your computer"
@@ -36,6 +39,25 @@ ifeq (Windows,$(findstring Windows,$(OS)))
 endif
 
 
+tag-images:
+ifeq ($(shell uname),Linux)
+	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu1804-small $(STROIKA_VERSION)
+	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests  $(STROIKA_VERSION)
+	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu1910-small $(STROIKA_VERSION)
+	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests $(STROIKA_VERSION)
+	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu2004-small $(STROIKA_VERSION)
+	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests $(STROIKA_VERSION)
+	docker tag sophistsolutionsinc/stroika-buildvm-centos-7-small $(STROIKA_VERSION)
+	docker tag sophistsolutionsinc/stroika-buildvm-centos-8-small $(STROIKA_VERSION)
+	#docker tag sophistsolutionsinc/stroika-dev $(STROIKA_VERSION)
+endif
+ifeq (Windows,$(findstring Windows,$(OS)))
+	docker tag sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19:latest sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19:$(STROIKA_VERSION)
+	#docker tag sophistsolutionsinc/stroika-buildvm-windows-mingw-vs2k19 $(STROIKA_VERSION)
+endif
+
+
+
 pull-base-images:
 ifeq ($(shell uname),Linux)
 	docker pull ubuntu:18.04
@@ -52,18 +74,36 @@ endif
 push-images:
 	#if you get errors doing this (permission denied) make sure you ran docker login (as sophists - else no permission to push these)
 ifeq ($(shell uname),Linux)
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-small
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1910-small
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-small
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
-	docker push sophistsolutionsinc/stroika-buildvm-centos-7-small
-	docker push sophistsolutionsinc/stroika-buildvm-centos-8-small
+	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-small:latest
+	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1910-small:latest
+	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-small:latest
+	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests:latest
+	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests:latest
+	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:latest
+	docker push sophistsolutionsinc/stroika-buildvm-centos-7-small:latest
+	docker push sophistsolutionsinc/stroika-buildvm-centos-8-small:latest
 	#no need to push this yet/now
-	#docker push sophistsolutionsinc/stroika-dev
+	#docker push sophistsolutionsinc/stroika-dev:latest
 endif
 ifeq (Windows,$(findstring Windows,$(OS)))
-	docker push sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
-	#docker push sophistsolutionsinc/stroika-buildvm-windows-mingw-vs2k19
+	docker push sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19:latest
+	#docker push sophistsolutionsinc/stroika-buildvm-windows-mingw-vs2k19:latest
+endif
+ifeq ($(STROIKA_VERSION_Final),true)
+ifeq ($(shell uname),Linux)
+	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-small:$(STROIKA_VERSION)
+	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1910-small:$(STROIKA_VERSION)
+	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-small:$(STROIKA_VERSION)
+	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests:$(STROIKA_VERSION)
+	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests:$(STROIKA_VERSION)
+	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:$(STROIKA_VERSION)
+	docker push sophistsolutionsinc/stroika-buildvm-centos-7-small:$(STROIKA_VERSION)
+	docker push sophistsolutionsinc/stroika-buildvm-centos-8-small:$(STROIKA_VERSION)
+	#no need to push this yet/now
+	#docker push sophistsolutionsinc/stroika-dev:$(STROIKA_VERSION)
+endif
+ifeq (Windows,$(findstring Windows,$(OS)))
+	docker push sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19:$(STROIKA_VERSION)
+	#docker push sophistsolutionsinc/stroika-buildvm-windows-mingw-vs2k19:$(STROIKA_VERSION)
+endif
 endif
