@@ -14,8 +14,8 @@ to be aware of when upgrading.
 
 #### TLDR
 
-- **NOT BACKWARD COMPATIBLE** switch from Stroika 'file path' related classes to **required** use of std::filesystem classes
-  - implied De-support gcc-7 and X-Code 10 (and pre-catalina MacOS - use older Stroika if you need pre-catalina MacOS support)
+- **NOT BACKWARD COMPATIBLE** switch from Stroika 'IO::FileSystem' related classes to **required** use of std::filesystem classes
+  - implied de-support gcc-7 and X-Code 10 (and pre-catalina MacOS - use older Stroika if you need pre-catalina MacOS support)
 - Improved regression tests (including testing samples) and valgrind/santizer coverage
 - Improved InternetMediaType and InternetMediaTypeRegistry
 
