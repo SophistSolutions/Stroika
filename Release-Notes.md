@@ -21,18 +21,6 @@ to be aware of when upgrading.
 
 #### Details
 
-- Dependencies
-
-  - Large change - **NOT BACKWARD COMPATIBLE**
-
-    Switched to using filesystem::path instead of String all over the place for pathnames.
-
-    Changed TONS of APIs. No good way to do compatibly, because supporting both path and String
-    as argumnets would lead to "", etc not working, due to ambiguous conversions. So at this version
-    boundary - you just must swtich your code to using std::filesystem.
-
-    - dangerous change on UNIX - where we used to use String and String x; x.c_str() used to be wchar_t and now that we switched to path, its char\* on POSIX (and some other) systems. So be careful when used with Format (especially common with DebugTrace calls so we maybe debugging this for a while)
-
 - Build System
 
   - Configure script
@@ -41,14 +29,15 @@ to be aware of when upgrading.
     - configure XXX --only-if-has-compiler fixed so if using gcc, assure using gcc 8.0 or later
 
   - GCC
+
     - De-support gcc-7 for Stroika v2.1, because it only supports experimental/filesystem,
-      not filesystem and not important enuf to retain backward compat with gcc-7 to have all the conditional includes.
+      not std::filesystem and not important enuf to retain backward compat with gcc-7 to have all the conditional includes.
+
   - XCode
 
     - **Lose support for XCode 10 on MacOS** because it doesn't support \<filesystem\> code
       and trying to swtich to using that in a more thorough way.
-
-    - try xcode 11.5
+    - xcode 11.5
 
   - Compiler Bug defines
     - Lose qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy bug workarounds (using experimental or boost filesystem) - all in - require new c++17 filesystem code from now on
@@ -70,6 +59,18 @@ to be aware of when upgrading.
     - InternetMediaTypeRegistry::sThe and replace with InternetMediaTypeRegistry::Get ()
     - MessageUtiltiesManager class (with Get/Set)
 
+- Dependencies
+
+  - Large change - **NOT BACKWARD COMPATIBLE**
+
+    Switched to using filesystem::path instead of String all over the place for pathnames.
+
+    Changed TONS of APIs. No good way to do compatibly, because supporting both path and String
+    as argumnets would lead to "", etc not working, due to ambiguous conversions. So at this version
+    boundary - you just must swtich your code to using std::filesystem.
+
+    - dangerous change on UNIX - where we used to use String and String x; x.c_str() used to be wchar_t and now that we switched to path, its char\* on POSIX (and some other) systems. So be careful when used with Format (especially common with DebugTrace calls so we maybe debugging this for a while)
+
 - Documentation
 
   - ReadMe.md
@@ -79,20 +80,20 @@ to be aware of when upgrading.
 
 - Docker
 
-  - Added ARG DEBIAN_FRONTEND=noninteractive to debian dockerfiles
-  - add locale support for centos8 (not sure why not there by default anymore)
   - cleanup Windows docker file test; and workaround issue with cygwin not working on latest docker (https://github.com/moby/moby/issues/41058#issuecomment-653865175)
+  - add locale support for centos8 (not sure why not there by default anymore)
+  - Added ARG DEBIAN_FRONTEND=noninteractive to debian dockerfiles
 
 - RegressionTests
 
+  - Fixed a variety issue with RegressionTests - hardwired config names for running valgrind tests and loop running over all valgrind configurations (memcheck/helgrind)
+  - Run regression tests on a variety of samples, and likewise with valgrind (valgrind configs)
+  - fix to RegressionTest code to use RUN_PREFIX running samples
   - Configurations
     - added explicit configs g++-8-debug-sanitize_leak etc (about 8) - really only for ubuntu1804 but others others may get this too (not good)
     - Added g++--8-valgrind-debug-SSLPurify for ubuntu 1804
     - Added --only-if-has-compiler to most configurations
     - fixed the configure append-run-prefix to use absolute path for tsan supressions
-  - Fixed a variety issue with RegressionTests - hardwired config names for running valgrind tests and loop running over all(memcheck/helgrind)
-  - Run regression tests on a variety of samples, and likewise with valgrind (valgrind configs)
-  - fix to RegressionTest code to use RUN_PREFIX running samples
 
 - Foundation
 
@@ -119,17 +120,12 @@ to be aware of when upgrading.
       - https://stroika.atlassian.net/browse/STK-576 - Lots more work todo on InternetMediaTypeRegistry- FIXED
       - Improved (but not final/perfected) caching logic/thread safety (docs and enforcement)
       - define std::hash<> specialization for InternetMediaType
-      - IntenretMediaTypeRegistry cleanups - UsrSharedDefaultBackend now looks in more places, etc
-
-        REVISE DOCS FOR THIS ITEM
-
+      - UsrSharedDefaultBackend now looks in more places, etc (local/~)
       - Added InternetMediaTypeRegistry::BakedInDefaultBackend - so regtests pass on MacOS (without warning) - cuz it doesnt have a mapper for content types otehrwise
-
       - InternetMediaTypeRegistry::GetAssociatedContentType - changed sematnics - requires file suffix argument - not file or suffix
-
       - lose obsolete (and I think never really used cuz never implemetned and I now see probably doesnt make sense) GetMoreGeneralTypes GetMoreSpecificTypes for InternetMediaTypeRegistry
       - improved regexp for InternetMediaType parsing - I'm sure still not right because I cannot find any clear reference for this. But hopefully closer (and a few links in code for possible starting points to find reference
-      - Lose InternetMediaTypeRegistry::sThe and replace with InternetMediaTypeRegistry::Get ()
+      - Made InternetMediaTypeRegistry copyable using SharedByValue; Then lose InternetMediaTypeRegistry::sThe and replace with InternetMediaTypeRegistry::Get (), InternetMediaTypeRegistry::Set ()
       - speed tweak and dbgtrace cleanups for DataExchange/InternetMediaTypeRegistry
       - refactoring EtcMimeTypesRep\_ so no extra parse of file on call to GetMediaTypes
       - InternetMediaType: deprecated text/xml, and instead map XML to application/xml; support GetSuffix() on InternetMediaType and properly parse it (and regtests)
@@ -138,7 +134,6 @@ to be aware of when upgrading.
       - deprecated InternetMediaType::Match
       - deprecated InternetMediaType::IsA and replaced with InternetMediaTypeRegistry::IsA
       - cleanup/refactoring of InternetMediaType code - mostly moving TYPES namespace into InternetMediaTypeRegistry.h
-      - made InternetMediaTypeRegistry copyable using SharedByValue, and allowed updating of global object (Get/Set)
       - lots more cleanups to InternetMediaTypeRegistry: for windows, return GetAllFileSuffixes properly; Fixed baked in html type definition, and a few other cleanups
 
   - Debug
@@ -148,8 +143,8 @@ to be aware of when upgrading.
     - use Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE/Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER to silence helgrind warnings with blockallocation
     - Added Stroika_Foundation_Debug_ValgrindMarkAddressAsDeAllocated
     - cleanups to Valgrind macros/ DOCS
-    - define Debug::kBuiltWithThreadSanitizer flag; and use that in regtest 39 (thresafetybuildinobject) - ti reduce test count like we do for valgrind, so runs in acceptable timeframe
-    - new experimental logging feature: kEmitThreadIDsByIndex\_ in Debug Trace code
+    - define Debug::kBuiltWithThreadSanitizer flag; and use that in regtest 39 (thresafetybuildinobject) - to reduce test count like we do for valgrind, so runs in acceptable timeframe
+    - new trace logging feature: qStroika_Foundation_Debug_Trace_ShowThreadIndex in Debug Trace code
 
   - Execution
 
@@ -157,8 +152,9 @@ to be aware of when upgrading.
       - Cleanup code: enforce GetProcAddress() cannot return nullptr (throws); better throw behavior in CTOR.
     - Platform::Windows::RegistryKey
       - lots of cleanups and new methods, refactoring
-      - new method EnumerateSubKeys() and EnumerateValues ()
-      - new RegistryKey::GetFullPathOfKey () utility
+      - new method EnumerateSubKeys()
+      - new method EnumerateValues()
+      - new method RegistryKey::GetFullPathOfKey () utility
     - Threads
       - Thread classes: moved private stuff inside Thread::Ptr, and deprecated Get/Set SignalUsedForThreadInterrupt and replaced with single dual-function call SignalUsedForThreadInterrupt
       - Switch Thread code from using Quasi-namespace to actual namespace (use of private not that compelling, and otherwise I think will work more naturally and as users would expect with true namespace
@@ -202,9 +198,7 @@ to be aware of when upgrading.
     - Simplified and more correct Stroika **Foundation_Debug_Valgrind_ANNOTATE_HAPPENS** usage in BlockAllocator.inl: now appears to work properly (though maybe not 100%) with qStroika_Foundation_Memory_BlockAllocator_UseLockFree\* - test more
 
   - Traversal
-    - docs and new experimental Iterable\<T\>::SelectIf ()
-    - cleanup and deprecate old appraoch to Iterable<>::Select()
-    - lose (never released) Iterable::SelectIf - rename losing IF - just as overload of Select; and added regtest
+    - Overload of Select to handle 'subselection/selectif' funtionality and added regtest
 
 - Frameworks
 
