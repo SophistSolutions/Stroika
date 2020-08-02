@@ -862,6 +862,8 @@ namespace Stroika::Foundation::Execution {
             nonvirtual unsigned int GetIndex (const Thread::IDType& threadID, bool* wasNew = nullptr);
 
         public:
+            /**
+             */
             static IndexRegistrar& Get ();
         };
 

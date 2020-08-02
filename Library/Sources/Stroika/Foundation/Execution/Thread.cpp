@@ -162,7 +162,7 @@ namespace {
             return 0; // failed to get proc address
         THREAD_BASIC_INFORMATION tbi;
         THREAD_INFORMATION_CLASS tic = ThreadBasicInformation;
-        if (NtQueryInformationThread (thread, tic, &tbi, sizeof (tbi), nullptr) != STATUS_SUCCESS) {
+        if (::NtQueryInformationThread (thread, tic, &tbi, sizeof (tbi), nullptr) != STATUS_SUCCESS) {
             return 0;
         }
         return tbi.ClientId.UniqueThread;
@@ -215,12 +215,12 @@ Thread::SuppressInterruptionInContext::~SuppressInterruptionInContext ()
  ********************************************************************************
  */
 Thread::InterruptException::InterruptException ()
-    : InterruptException (L"Thread Interrupt"sv)
+    : InterruptException{L"Thread Interrupt"sv}
 {
 }
 
 Thread::InterruptException::InterruptException (const Characters::String& msg)
-    : Exception<> (msg)
+    : Exception<>{msg}
 {
 }
 const Thread::InterruptException Thread::InterruptException::kThe;
@@ -231,7 +231,7 @@ const Thread::InterruptException Thread::InterruptException::kThe;
  ********************************************************************************
  */
 Thread::AbortException::AbortException ()
-    : InterruptException (L"Thread Abort"sv)
+    : InterruptException{L"Thread Abort"sv}
 {
 }
 const Thread::AbortException Thread::AbortException::kThe;
@@ -263,7 +263,7 @@ unsigned int Thread::IndexRegistrar::GetIndex (const Thread::IDType& threadID, b
 
 Thread::IndexRegistrar& Thread::IndexRegistrar::Get ()
 {
-    static IndexRegistrar sThe_;
+    static IndexRegistrar sThe_; // OK to return reference because this wont get destroyed or replaced (no set method)
     return sThe_;
 }
 
