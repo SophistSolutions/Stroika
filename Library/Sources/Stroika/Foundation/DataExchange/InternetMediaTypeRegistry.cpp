@@ -64,7 +64,7 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
 
     using IBackendRep = InternetMediaTypeRegistry::IBackendRep;
 
-    #if !qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy
+#if !qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy
     // Baked in predefined initial user-overrides.
     // These are adjustable by API, serve the purpose of providing a default on systems with no MIME content database -- LGP 2020-07-27
     static const inline Mapping<InternetMediaType, OverrideRecord> kDefaults_{initializer_list<KeyValuePair<InternetMediaType, OverrideRecord>>{
@@ -74,7 +74,7 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
         {InternetMediaTypes::kImage_PNG, OverrideRecord{nullopt, Containers::Set<String>{L".png"_k}, L".png"_k}},
         {InternetMediaTypes::kXML, OverrideRecord{nullopt, Containers::Set<String>{L".xml"_k}, L".xml"_k}},
     }};
-    #endif
+#endif
 
     // OVERRIDE values (take precedence over backend) and any other data we need to keep locked (syncrhonized)
     struct Data_ {
