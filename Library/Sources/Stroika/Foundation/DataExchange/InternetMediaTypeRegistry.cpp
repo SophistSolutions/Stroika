@@ -39,7 +39,18 @@ using FileSuffixType = InternetMediaTypeRegistry::FileSuffixType;
  ******************** InternetMediaTypeRegistry::FrontendRep_ *******************
  ********************************************************************************
  */
-
+#if qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy
+namespace {
+    using OverrideRecord = InternetMediaTypeRegistry::OverrideRecord;
+    static const inline Mapping<InternetMediaType, OverrideRecord> kDefaults_{initializer_list<KeyValuePair<InternetMediaType, OverrideRecord>>{
+        {InternetMediaTypes::kText_PLAIN, OverrideRecord{nullopt, Containers::Set<String>{L".txt"_k}, L".txt"_k}},
+        {InternetMediaTypes::kText_HTML, OverrideRecord{nullopt, Containers::Set<String>{L".htm"_k, L".html"_k}, L".htm"_k}},
+        {InternetMediaTypes::kJSON, OverrideRecord{nullopt, Containers::Set<String>{L".json"_k}, L".json"_k}},
+        {InternetMediaTypes::kImage_PNG, OverrideRecord{nullopt, Containers::Set<String>{L".png"_k}, L".png"_k}},
+        {InternetMediaTypes::kXML, OverrideRecord{nullopt, Containers::Set<String>{L".xml"_k}, L".xml"_k}},
+    }};
+}
+#endif
 /**
  *  @todo NYI UPDATING the frontend. Implement APIs to externally add mappings and be sure copying the InternetMediaTypeRegistry and using that
  *  in isolation works as well (use COW)
@@ -53,6 +64,7 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
 
     using IBackendRep = InternetMediaTypeRegistry::IBackendRep;
 
+    #if !qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy
     // Baked in predefined initial user-overrides.
     // These are adjustable by API, serve the purpose of providing a default on systems with no MIME content database -- LGP 2020-07-27
     static const inline Mapping<InternetMediaType, OverrideRecord> kDefaults_{initializer_list<KeyValuePair<InternetMediaType, OverrideRecord>>{
@@ -62,6 +74,7 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
         {InternetMediaTypes::kImage_PNG, OverrideRecord{nullopt, Containers::Set<String>{L".png"_k}, L".png"_k}},
         {InternetMediaTypes::kXML, OverrideRecord{nullopt, Containers::Set<String>{L".xml"_k}, L".xml"_k}},
     }};
+    #endif
 
     // OVERRIDE values (take precedence over backend) and any other data we need to keep locked (syncrhonized)
     struct Data_ {
