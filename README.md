@@ -66,10 +66,6 @@ modern, reliable and threaded applications easier to write.
   | **v2.1-Release**                                                           | [![Develop](https://travis-ci.com/SophistSolutions/Stroika.svg?branch=v2.1-Release&status=passed)](https://travis-ci.com/github/SophistSolutions/Stroika/branches) |                            |
   | **v2.1-Dev**                                                               |   [![Develop](https://travis-ci.com/SophistSolutions/Stroika.svg?branch=v2.1-Dev&status=passed)](https://travis-ci.com/github/SophistSolutions/Stroika/branches)   |                            |
 
-## Issues
-
-Stroika bugs & issues are tracked in JIRA <http://stroika-bugs.sophists.com/>
-
 ## Random Features
 
 - Vanilla make based builds
@@ -89,6 +85,6 @@ Looking through the samples is also a good way to start:
 
 &nbsp;&nbsp;&nbsp;&nbsp;[Samples/ReadMe.md](Samples/ReadMe.md)
 
-Please report bugs at:
+Please report bugs/issues at:
 
 &nbsp;&nbsp;&nbsp;&nbsp;[http://stroika-bugs.sophists.com](http://stroika-bugs.sophists.com)
