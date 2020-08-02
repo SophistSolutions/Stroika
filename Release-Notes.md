@@ -21,6 +21,30 @@ to be aware of when upgrading.
 
 #### Details
 
+- Release Test Summary
+
+  - OS/Platform
+    - Windows
+      - version 2004
+      - WSL v1, v2 (one sample fails)
+    - MacOS
+    - Linux: { Ubuntu: [1804, 1910, 2004], Centos: [7, 8]}
+  - Hardware
+    - x86
+    - x64
+    - arm (linux/raspberrypi - cross-compiled)
+  - Compilers
+    - MSVC: {15.9.25, 16.6.5}
+    - gcc: {8, 9, 10}
+    - clang { unix: 7, 8, 9, 10; XCode-Clang: 11 }
+  - Docker
+    - Windows: { mcr.microsoft.com/windows/servercore:ltsc2019, cygwin, VS_16_6_5 }
+    - Ubuntu { 1804, 1910, 2004 }
+    - Centos {7, 8}
+  - CI
+    - TravisCI (Mac, Unix, Windows)
+    - CircleCI (Unix, Windows)
+
 - Build System
 
   - Configure script
@@ -43,6 +67,7 @@ to be aware of when upgrading.
     - Lose qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy bug workarounds (using experimental or boost filesystem) - all in - require new c++17 filesystem code from now on
     - Lose qCompilerAndStdLib_optional_value_const_Buggy
     - Lose qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
+    - new qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy
 
 - CI Systems
 
