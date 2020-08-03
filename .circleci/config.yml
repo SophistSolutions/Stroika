@@ -144,7 +144,8 @@ jobs:
       - checkout
       - run:
           name: Configure
-          command: ./configure Debug --config-tag Unix --apply-default-debug-flags
+          # Use g++-8 cuz default on ubuntu 1804 is gcc7, which doenst support <filesystem>
+          command: ./configure Debug --config-tag Unix --apply-default-debug-flags --compiler-driver g++-8
       - run:
           name: Build
           command: make all -j2
@@ -295,7 +296,7 @@ workflows:
           filters:
             branches:
               only:
-                #- v2.1-Dev
+                - v2.1-Dev
                 - v2.1-Release
       - basic-debug-builds-test-ubuntu1910:
           filters:
