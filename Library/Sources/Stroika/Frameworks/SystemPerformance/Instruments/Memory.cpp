@@ -495,7 +495,8 @@ namespace {
         }
         virtual MeasurementSet Capture () override
         {
-            MeasurementSet results;
+            Debug::TraceContextBumper ctx{"SystemPerformance::Instrument...Memory...MyCapturer_::Capture ()"};
+            MeasurementSet            results;
             results.fMeasurements.Add (Measurement{kMemoryUsageMeasurement_, GetObjectVariantMapper ().FromObject (Capture_Raw (&results.fMeasuredAt))});
             return results;
         }
@@ -537,7 +538,8 @@ Instrument SystemPerformance::Instruments::Memory::GetInstrument (Options option
 template <>
 Instruments::Memory::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
 {
-    MyCapturer_* myCap = dynamic_cast<MyCapturer_*> (fCapFun_.get ());
+    Debug::TraceContextBumper ctx{"SystemPerformance::Instrument::CaptureOneMeasurement<Memory::Info>"};
+    MyCapturer_*              myCap = dynamic_cast<MyCapturer_*> (fCapFun_.get ());
     AssertNotNull (myCap);
     return myCap->Capture_Raw (measurementTimeOut);
 }

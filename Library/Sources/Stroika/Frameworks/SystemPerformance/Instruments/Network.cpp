@@ -604,8 +604,9 @@ namespace {
         }
         virtual MeasurementSet Capture () override
         {
-            MeasurementSet results;
-            Measurement    m{kNetworkInterfacesMeasurement_, GetObjectVariantMapper ().FromObject (Capture_Raw (&results.fMeasuredAt))};
+            Debug::TraceContextBumper ctx{"SystemPerformance::Instrument...Network...MyCapturer_::Capture ()"};
+            MeasurementSet            results;
+            Measurement               m{kNetworkInterfacesMeasurement_, GetObjectVariantMapper ().FromObject (Capture_Raw (&results.fMeasuredAt))};
             results.fMeasurements.Add (m);
             return results;
         }
@@ -647,7 +648,8 @@ Instrument SystemPerformance::Instruments::Network::GetInstrument (Options optio
 template <>
 Instruments::Network::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
 {
-    MyCapturer_* myCap = dynamic_cast<MyCapturer_*> (fCapFun_.get ());
+    Debug::TraceContextBumper ctx{"SystemPerformance::Instrument::CaptureOneMeasurement<Network::Info>"};
+    MyCapturer_*              myCap = dynamic_cast<MyCapturer_*> (fCapFun_.get ());
     AssertNotNull (myCap);
     return myCap->Capture_Raw (measurementTimeOut);
 }

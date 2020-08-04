@@ -54,9 +54,9 @@ using SystemPerformance::Support::WMICollector;
 
 #if qUseWMICollectionSupport_
 namespace {
-    const String_Constant kInstanceName_{L""};
+    const String kInstanceName_{L""_k};
 
-    const String_Constant kProcessorQueueLength_{L"Processor Queue Length"};
+    const String kProcessorQueueLength_{L"Processor Queue Length"_k};
 }
 #endif
 
@@ -67,9 +67,9 @@ namespace {
  ********************************************************************************
  */
 Instruments::CPU::Info::LoadAverage::LoadAverage (double oneMinuteAve, double fiveMinuteAve, double fifteenMinuteAve)
-    : f1MinuteAve (oneMinuteAve)
-    , f5MinuteAve (fiveMinuteAve)
-    , f15MinuteAve (fifteenMinuteAve)
+    : f1MinuteAve{oneMinuteAve}
+    , f5MinuteAve{fiveMinuteAve}
+    , f15MinuteAve{fifteenMinuteAve}
 {
 }
 #endif
@@ -124,8 +124,8 @@ namespace {
         DurationSecondsType fLastCapturedAt{};
         DurationSecondsType fMinimumAveragingInterval_;
         CapturerWithContext_COMMON_ (const Options& options)
-            : fOptions_ (options)
-            , fMinimumAveragingInterval_ (options.fMinimumAveragingInterval)
+            : fOptions_{options}
+            , fMinimumAveragingInterval_{options.fMinimumAveragingInterval}
         {
         }
         DurationSecondsType GetLastCaptureAt () const { return fLastCapturedAt; }
@@ -183,7 +183,7 @@ namespace {
         };
         POSIXSysTimeCaptureContext_ fContext_{};
         CapturerWithContext_Linux_ (const Options& options)
-            : CapturerWithContext_COMMON_ (options)
+            : CapturerWithContext_COMMON_{options}
         {
             // Force fill of context - ignore results
             try {
@@ -463,7 +463,7 @@ namespace {
         {
             lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx ("Instruments::CPU capture");
+            Debug::TraceContextBumper ctx{"Instruments::CPU capture"};
 #endif
 #if qPlatform_Linux or qPlatform_Windows
             Info result = inherited::capture ();
@@ -493,7 +493,8 @@ namespace {
         }
         virtual MeasurementSet Capture () override
         {
-            MeasurementSet results;
+            Debug::TraceContextBumper ctx{"SystemPerformance::Instrument...CPU...MyCapturer_::Capture ()"};
+            MeasurementSet            results;
             results.fMeasurements.Add (Measurement{kCPUMeasurment_, GetObjectVariantMapper ().FromObject (Capture_Raw (&results.fMeasuredAt))});
             return results;
         }
@@ -536,7 +537,8 @@ Instrument SystemPerformance::Instruments::CPU::GetInstrument (Options options)
 template <>
 Instruments::CPU::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
 {
-    MyCapturer_* myCap = dynamic_cast<MyCapturer_*> (fCapFun_.get ());
+    Debug::TraceContextBumper ctx{"SystemPerformance::Instrument::CaptureOneMeasurement<CPU::Info>"};
+    MyCapturer_*              myCap = dynamic_cast<MyCapturer_*> (fCapFun_.get ());
     AssertNotNull (myCap);
     return myCap->Capture_Raw (measurementTimeOut);
 }

@@ -701,7 +701,7 @@ namespace {
         Info capture_ ()
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx ("Instruments::Filesystem...CapturerWithContext_Windows_::capture_");
+            Debug::TraceContextBumper ctx{"Instruments::Filesystem...CapturerWithContext_Windows_::capture_"};
 #endif
             Info results = capture_Windows_GetVolumeInfo_ ();
             _NoteCompletedCapture ();
@@ -898,7 +898,7 @@ namespace {
     Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> ApplyDiskStatsToMissingFileSystemStats_ (const Mapping<DynamicDiskIDType, DiskInfoType>& disks, const Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>& fileSystems)
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx ("Instruments::Filesystem ... ApplyDiskStatsToMissingFileSystemStats_");
+        Debug::TraceContextBumper ctx{"Instruments::Filesystem ... ApplyDiskStatsToMissingFileSystemStats_"};
 #endif
         // Each FS will have some stats about disk usage, and we want to use those to relatively weight the stats from the disk usage when
         // applied back to other FS stats.
@@ -1141,7 +1141,8 @@ Instrument SystemPerformance::Instruments::Filesystem::GetInstrument (Options op
 template <>
 Instruments::Filesystem::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
 {
-    MyCapturer_* myCap = dynamic_cast<MyCapturer_*> (fCapFun_.get ());
+    Debug::TraceContextBumper ctx{"SystemPerformance::Instrument::CaptureOneMeasurement"};
+    MyCapturer_*              myCap = dynamic_cast<MyCapturer_*> (fCapFun_.get ());
     AssertNotNull (myCap);
     return myCap->Capture_Raw (measurementTimeOut);
 }
