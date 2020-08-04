@@ -469,7 +469,7 @@ namespace {
                 String                  dirFileNameString = IO::FileSystem::FromPath (dir.filename ());
                 bool                    isAllNumeric      = not dirFileNameString.FindFirstThat ([] (Character c) -> bool { return not c.IsDigit (); });
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ExtractFromProcFS_::reading proc files"};
+                Debug::TraceContextBumper ctx{"...SystemPerformance::Instruments::Process::{}::ExtractFromProcFS_::reading /proc files"};
                 DbgTrace (L"isAllNumeric=%d, dir= %s, is_dir=%d", isAllNumeric, ToString (dir).c_str (), p.is_directory ());
 #endif
                 if (isAllNumeric and p.is_directory ()) {
@@ -712,8 +712,12 @@ namespace {
         // if fails (cuz not readable) don't throw but return missing, but avoid noisy stroika exception logging
         optional<filesystem::path> OptionallyResolveShortcut_ (const filesystem::path& shortcutPath)
         {
-            if (filesystem::exists (shortcutPath) and filesystem::is_symlink (shortcutPath)) {
-                IgnoreExceptionsExceptThreadInterruptForCall (return filesystem::read_symlink (shortcutPath));
+            std::error_code ec{};
+            if (filesystem::exists (shortcutPath, ec) and filesystem::is_symlink (shortcutPath, ec)) {
+                auto r = filesystem::read_symlink (shortcutPath, ec);
+                if (not ec) {
+                    return r;
+                }
             }
             return nullopt;
         }
@@ -1774,8 +1778,9 @@ namespace {
         }
         virtual MeasurementSet Capture () override
         {
-            MeasurementSet results;
-            Measurement    m{kProcessMapMeasurement, GetObjectVariantMapper ().FromObject (Capture_Raw (&results.fMeasuredAt))};
+            Debug::TraceContextBumper ctx{"SystemPerformance::Instrument...Process...MyCapturer_::Capture ()"};
+            MeasurementSet            results;
+            Measurement               m{kProcessMapMeasurement, GetObjectVariantMapper ().FromObject (Capture_Raw (&results.fMeasuredAt))};
             results.fMeasurements.Add (m);
             return results;
         }
@@ -1817,7 +1822,8 @@ Instrument SystemPerformance::Instruments::Process::GetInstrument (const Options
 template <>
 Instruments::Process::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
 {
-    MyCapturer_* myCap = dynamic_cast<MyCapturer_*> (fCapFun_.get ());
+    Debug::TraceContextBumper ctx{"SystemPerformance::Instrument::CaptureOneMeasurement<Process::Info>"};
+    MyCapturer_*              myCap = dynamic_cast<MyCapturer_*> (fCapFun_.get ());
     AssertNotNull (myCap);
     return myCap->Capture_Raw (measurementTimeOut);
 }
