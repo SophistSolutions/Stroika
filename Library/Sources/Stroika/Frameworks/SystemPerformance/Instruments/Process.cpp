@@ -36,7 +36,6 @@
 #include "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #include "../../../Foundation/Execution/Platform/Windows/Users.h"
 #endif
-#include "../../../Foundation/IO/FileSystem/DirectoryIterable.h"
 #include "../../../Foundation/IO/FileSystem/FileInputStream.h"
 #include "../../../Foundation/IO/FileSystem/FileSystem.h"
 #include "../../../Foundation/IO/FileSystem/PathName.h"
@@ -48,7 +47,7 @@
 #include "Process.h"
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+// #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
@@ -129,7 +128,7 @@ namespace {
         HANDLE    fToken_{INVALID_HANDLE_VALUE};
         SDKString fPrivilege_;
         SetPrivilegeInContext_ (LPCTSTR privilege)
-            : fPrivilege_ (privilege)
+            : fPrivilege_{privilege}
         {
             try {
                 setupToken_ ();
@@ -143,7 +142,7 @@ namespace {
             }
         }
         SetPrivilegeInContext_ (LPCTSTR privilege, IgnoreError)
-            : fPrivilege_ (privilege)
+            : fPrivilege_{privilege}
         {
             try {
                 setupToken_ ();
@@ -347,8 +346,8 @@ namespace {
         // only used if fCachePolicy == CachePolicy::eOmitUnchangedValues
         Set<pid_t> fStaticSuppressedAgain;
         CapturerWithContext_COMMON_ (const Options& options)
-            : fOptions_ (options)
-            , fMinimumAveragingInterval_ (options.fMinimumAveragingInterval)
+            : fOptions_{options}
+            , fMinimumAveragingInterval_{options.fMinimumAveragingInterval}
         {
         }
         DurationSecondsType GetLastCaptureAt () const { return fLastCapturedAt; }
@@ -379,7 +378,7 @@ namespace {
         Mapping<pid_t, PerfStats_> fContextStats_;
 
         CapturerWithContext_Linux_ (const Options& options)
-            : CapturerWithContext_COMMON_ (options)
+            : CapturerWithContext_COMMON_{options}
         {
             // for side-effect of setting fContextStats_
             try {
@@ -465,14 +464,16 @@ namespace {
              *  the lightweight process thread ids,  so we don't need to specially filter them out. However, I've not found
              *  this claim documented anywhere, so beware...
              */
-            for (filesystem::path dir : IO::FileSystem::DirectoryIterable ("/proc")) {
-                bool isAllNumeric = not IO::FileSystem::FromPath (dir).FindFirstThat ([] (Character c) -> bool { return not c.IsDigit (); });
+            for (auto& p : filesystem::directory_iterator{"/proc", filesystem::directory_options{filesystem::directory_options::skip_permission_denied}}) {
+                const filesystem::path& dir               = p.path (); // full-path
+                String                  dirFileNameString = IO::FileSystem::FromPath (dir.filename ());
+                bool                    isAllNumeric      = not dirFileNameString.FindFirstThat ([] (Character c) -> bool { return not c.IsDigit (); });
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ExtractFromProcFS_::reading proc files");
-                DbgTrace (L"isAllNumeric=%d, dir= %s", isAllNumeric, ToString (dir).c_str ());
+                Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ExtractFromProcFS_::reading proc files"};
+                DbgTrace (L"isAllNumeric=%d, dir= %s, is_dir=%d", isAllNumeric, ToString (dir).c_str (), p.is_directory ());
 #endif
-                if (isAllNumeric) {
-                    pid_t               pid{String2Int<pid_t> (IO::FileSystem::FromPath (dir))};
+                if (isAllNumeric and p.is_directory ()) {
+                    pid_t               pid{String2Int<pid_t> (dirFileNameString)};
                     DurationSecondsType now{Time::GetTickCount ()};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace ("reading for pid = %d", pid);
@@ -488,19 +489,18 @@ namespace {
                         }
                     }
 
-                    filesystem::path processDirPath = filesystem::path{"/proc"} / dir;
-                    bool             grabStaticData = fOptions_.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not fStaticSuppressedAgain.Contains (pid);
+                    bool grabStaticData = fOptions_.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not fStaticSuppressedAgain.Contains (pid);
 
                     ProcessType processDetails;
 
                     if (grabStaticData) {
-                        processDetails.fEXEPath = OptionallyResolveShortcut_ (processDirPath / kEXEFilename_);
+                        processDetails.fEXEPath = OptionallyResolveShortcut_ (dir / kEXEFilename_);
                         if (processDetails.fEXEPath and IO::FileSystem::FromPath (*processDetails.fEXEPath).EndsWith (L" (deleted)")) {
                             processDetails.fEXEPath = IO::FileSystem::ToPath (IO::FileSystem::FromPath (*processDetails.fEXEPath).SubString (0, -10));
                         }
 
                         if (fOptions_.fProcessNameReadPolicy == Options::eAlways or (fOptions_.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and not processDetails.fEXEPath.has_value ())) {
-                            processDetails.fProcessName = OptionallyReadIfFileExists_<String> (processDirPath / "comm", [] (const Streams::InputStream<byte>::Ptr& in) { return TextReader::New (in).ReadAll ().Trim (); });
+                            processDetails.fProcessName = OptionallyReadIfFileExists_<String> (dir / "comm", [] (const Streams::InputStream<byte>::Ptr& in) { return TextReader::New (in).ReadAll ().Trim (); });
                         }
 
                         /*
@@ -514,27 +514,27 @@ namespace {
                         processDetails.fKernelProcess = not processDetails.fEXEPath.has_value ();
                         // Note - many kernel processes have commandline, so don't filter here based on that
                         if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, ValueOrDefault (processDetails.fEXEPath))) {
-                            processDetails.fCommandLine = ReadCmdLineString_ (processDirPath / kCmdLineFilename_);
+                            processDetails.fCommandLine = ReadCmdLineString_ (dir / kCmdLineFilename_);
                         }
                         // kernel process cannot chroot (as far as I know) --LGP 2015-05-21
                         if (fOptions_.fCaptureRoot and processDetails.fKernelProcess == false) {
-                            processDetails.fRoot = OptionallyResolveShortcut_ (processDirPath / kRootFilename_);
+                            processDetails.fRoot = OptionallyResolveShortcut_ (dir / kRootFilename_);
                         }
                         // kernel process cannot have environment variables (as far as I know) --LGP 2015-05-21
                         if (fOptions_.fCaptureEnvironmentVariables and processDetails.fKernelProcess == false) {
-                            processDetails.fEnvironmentVariables = OptionallyReadFileStringsMap_ (processDirPath / kEnvironFilename_);
+                            processDetails.fEnvironmentVariables = OptionallyReadFileStringsMap_ (dir / kEnvironFilename_);
                         }
                     }
 
                     // kernel process cannot have current directory (as far as I know) --LGP 2015-05-21
                     if (fOptions_.fCaptureCurrentWorkingDirectory and processDetails.fKernelProcess == false) {
-                        processDetails.fCurrentWorkingDirectory = OptionallyResolveShortcut_ (processDirPath / kCWDFilename_);
+                        processDetails.fCurrentWorkingDirectory = OptionallyResolveShortcut_ (dir / kCWDFilename_);
                     }
 
                     static const double kClockTick_ = ::sysconf (_SC_CLK_TCK);
 
                     try {
-                        StatFileInfo_ stats = ReadStatFile_ (processDirPath / kStatFilename_);
+                        StatFileInfo_ stats = ReadStatFile_ (dir / kStatFilename_);
 
                         processDetails.fRunStatus = cvtStatusCharToStatus_ (stats.state);
 
@@ -581,10 +581,10 @@ namespace {
                          * Probably best to compute fPrivateBytes from:
                          *       grep  Private /proc/1912/smaps
                          */
-                        processDetails.fPrivateBytes = ReadPrivateBytes_ (processDirPath / "smaps");
+                        processDetails.fPrivateBytes = ReadPrivateBytes_ (dir / "smaps");
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"loaded processDetails.fProcessStartedAt=%s wuit stats.start_time = %lld", ValueOrDefault (processDetails.fProcessStartedAt).Format ().c_str (), stats.start_time);
+                        DbgTrace (L"loaded processDetails.fProcessStartedAt=%s wuit stats.start_time = %lld", Characters::ToString (processDetails.fProcessStartedAt).c_str (), stats.start_time);
                         DbgTrace (L"loaded processDetails.fTotalCPUTimeEverUsed=%f wuit stats.utime = %lld, stats.stime = %lld", (*processDetails.fTotalCPUTimeEverUsed), stats.utime, stats.stime);
 #endif
                     }
@@ -592,7 +592,7 @@ namespace {
                     }
 
                     if (fOptions_.fCaptureTCPStatistics) {
-                        IgnoreExceptionsForCall (processDetails.fTCPStats = ReadTCPStats_ (processDirPath / kNetTCPFilename_));
+                        IgnoreExceptionsForCall (processDetails.fTCPStats = ReadTCPStats_ (dir / kNetTCPFilename_));
                     }
 
                     if (grabStaticData) {
@@ -602,7 +602,7 @@ namespace {
                                 processDetails.fUserName = L"root"sv;
                             }
                             else {
-                                proc_status_data_ stats  = Readproc_proc_status_data_ (processDirPath / kStatusFilename_);
+                                proc_status_data_ stats  = Readproc_proc_status_data_ (dir / kStatusFilename_);
                                 processDetails.fUserName = Execution::Platform::POSIX::uid_t2UserName (stats.ruid);
                             }
                         }
@@ -612,7 +612,7 @@ namespace {
 
                     try {
                         // @todo maybe able to optimize and not check this if processDetails.fKernelProcess == true
-                        optional<proc_io_data_> stats = Readproc_io_data_ (processDirPath / kIOFilename_);
+                        optional<proc_io_data_> stats = Readproc_io_data_ (dir / kIOFilename_);
                         if (stats.has_value ()) {
                             processDetails.fCombinedIOReadBytes  = (*stats).read_bytes;
                             processDetails.fCombinedIOWriteBytes = (*stats).write_bytes;
@@ -669,7 +669,7 @@ namespace {
         {
             Mapping<String, String> results;
             for (String i : ReadFileStrings_ (fullPath)) {
-                auto tokens = i.Tokenize (Set<Character>{'='});
+                auto tokens = i.Tokenize ({'='});
                 if (tokens.size () == 2) {
                     results.Add (tokens[0], tokens[1]);
                 }
@@ -682,7 +682,7 @@ namespace {
             // this reads /proc format files - meaning that a trialing nul-byte is the EOS
             auto ReadFileString_ = [] (const Streams::InputStream<byte>::Ptr& in) -> String {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadCmdLineString_");
+                Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadCmdLineString_"};
 #endif
                 StringBuilder sb;
                 bool          lastCharNullRemappedToSpace = false;
@@ -879,7 +879,7 @@ namespace {
         StatFileInfo_ ReadStatFile_ (const filesystem::path& fullPath)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx (L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadStatFile_", L"fullPath=%s", fullPath.c_str ());
+            Debug::TraceContextBumper ctx{L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadStatFile_", L"fullPath=%s", Characters::ToString (fullPath).c_str ()};
 #endif
             StatFileInfo_                   result{};
             Streams::InputStream<byte>::Ptr in = FileInputStream::New (fullPath, FileInputStream::eNotSeekable);
@@ -1003,7 +1003,7 @@ namespace {
         optional<proc_io_data_> Readproc_io_data_ (const filesystem::path& fullPath)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx (L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::Readproc_io_data_", L"fullPath=%s", fullPath.c_str ());
+            Debug::TraceContextBumper ctx (L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::Readproc_io_data_", L"fullPath=%s", Characters::ToString (fullPath).c_str ());
 #endif
 
             if (not IO::FileSystem::Default ().Access (fullPath)) {
@@ -1040,7 +1040,7 @@ namespace {
              *      1: 00000000:0050 00000000:0000 0A 00000000:00000000 00:00000000 00000000     0        0 6059 1 e466d720 300 0 0 2 -1
              */
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx (L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadTCPStats_", L"fullPath=%s", fullPath.c_str ());
+            Debug::TraceContextBumper ctx (L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadTCPStats_", L"fullPath=%s", Characters::ToString (fullPath).c_str ());
 #endif
 
             if (not IO::FileSystem::Default ().Access (fullPath)) {
@@ -1056,7 +1056,7 @@ namespace {
                     didSkip = true;
                     continue;
                 }
-                Sequence<String> splits = i.Tokenize (Set<Character>{' '});
+                Sequence<String> splits = i.Tokenize ({' '});
                 if (splits.size () >= 4) {
                     int st = HexString2Int (splits[3]);
                     /*
@@ -1078,7 +1078,7 @@ namespace {
         optional<MemorySizeType> ReadPrivateBytes_ (const filesystem::path& fullPath)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx (L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadPrivateBytes_", L"fullPath=%s", fullPath.c_str ());
+            Debug::TraceContextBumper ctx (L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadPrivateBytes_", L"fullPath=%s", Characters::ToString (fullPath).c_str ());
 #endif
 
             if (not IO::FileSystem::Default ().Access (fullPath)) {
@@ -1116,7 +1116,7 @@ namespace {
         proc_status_data_ Readproc_proc_status_data_ (const filesystem::path& fullPath)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx (L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::Readproc_proc_status_data_", L"fullPath=%s", fullPath.c_str ());
+            Debug::TraceContextBumper ctx (L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::Readproc_proc_status_data_", L"fullPath=%s", Characters::ToString (fullPath).c_str ());
 #endif
             proc_status_data_ result{};
             ifstream          r;
@@ -1170,7 +1170,7 @@ namespace {
             constexpr size_t                 kUser_Idx_{6};
             constexpr size_t                 kThreadCnt_Idx_{7};
             constexpr size_t                 kColCountIncludingCmd_{9};
-            ProcessRunner                    pr (L"ps -A -o \"pid,ppid,s,time,rss,vsz,user,nlwp,cmd\"");
+            ProcessRunner                    pr{L"ps -A -o \"pid,ppid,s,time,rss,vsz,user,nlwp,cmd\""};
             Streams::MemoryStream<byte>::Ptr useStdOut = Streams::MemoryStream<byte>::New ();
             pr.SetStdOut (useStdOut);
             pr.Run ();
@@ -1215,7 +1215,7 @@ namespace {
                     // wrong - must grab EVERYHTING from i past a certain point
                     // Since our first line has headings, its length is our target, minus the 3 chars for CMD
                     const size_t kCmdNameStartsAt_ = headerLen - 3;
-                    cmdLine                        = i.size () <= kCmdNameStartsAt_ ? String () : i.SubString (kCmdNameStartsAt_).RTrim ();
+                    cmdLine                        = i.size () <= kCmdNameStartsAt_ ? String{} : i.SubString (kCmdNameStartsAt_).RTrim ();
                 }
                 {
                     processDetails.fKernelProcess = not cmdLine.empty () and cmdLine[0] == '[';
@@ -1262,16 +1262,16 @@ namespace {
 
 #if qUseWMICollectionSupport_
 namespace {
-    const String_Constant kProcessID_{L"ID Process"};
-    const String_Constant kThreadCount_{L"Thread Count"};
-    const String_Constant kIOReadBytesPerSecond_{L"IO Read Bytes/sec"};
-    const String_Constant kIOWriteBytesPerSecond_{L"IO Write Bytes/sec"};
-    const String_Constant kPercentProcessorTime_{L"% Processor Time"}; // % Processor Time is the percentage of elapsed time that all of process threads
+    const String kProcessID_{L"ID Process"_k};
+    const String kThreadCount_{L"Thread Count"_k};
+    const String kIOReadBytesPerSecond_{L"IO Read Bytes/sec"_k};
+    const String kIOWriteBytesPerSecond_{L"IO Write Bytes/sec"_k};
+    const String kPercentProcessorTime_{L"% Processor Time"_k}; // % Processor Time is the percentage of elapsed time that all of process threads
     // used the processor to execution instructions. An instruction is the basic unit of
     // execution in a computer, a thread is the object that executes instructions, and a
     // process is the object created when a program is run. Code executed to handle some
     // hardware interrupts and trap conditions are included in this count.
-    const String_Constant kElapsedTime_{L"Elapsed Time"}; // The total elapsed time, in seconds, that this process has been running.
+    const String kElapsedTime_{L"Elapsed Time"_k}; // The total elapsed time, in seconds, that this process has been running.
 }
 #endif
 
@@ -1295,7 +1295,7 @@ namespace {
                                                                                                              kElapsedTime_ }};
 #endif
         CapturerWithContext_Windows_ (const Options& options)
-            : CapturerWithContext_COMMON_ (options)
+            : CapturerWithContext_COMMON_{options}
         {
 #if qUseWMICollectionSupport_ && 0
             IgnoreExceptionsForCall (fProcessWMICollector_.Collect ()); // prefill with each process capture
@@ -1312,8 +1312,8 @@ namespace {
         }
 #if qUseWMICollectionSupport_
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
-            : CapturerWithContext_COMMON_ (from)
-            , fProcessWMICollector_ (from.fProcessWMICollector_)
+            : CapturerWithContext_COMMON_{from}
+            , fProcessWMICollector_{from.fProcessWMICollector_}
         {
             IgnoreExceptionsForCall (fProcessWMICollector_.Collect ()); // hack cuz no way to copy
             fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
@@ -1742,7 +1742,7 @@ namespace {
         using inherited = CapturerWithContext_COMMON_;
 #endif
         CapturerWithContext_ (const Options& options)
-            : inherited (options)
+            : inherited{options}
         {
         }
 
@@ -1769,7 +1769,7 @@ namespace {
 
     public:
         MyCapturer_ (const CapturerWithContext_& ctx)
-            : fCaptureContext (ctx)
+            : fCaptureContext{ctx}
         {
         }
         virtual MeasurementSet Capture () override
@@ -1802,11 +1802,11 @@ namespace {
  */
 Instrument SystemPerformance::Instruments::Process::GetInstrument (const Options& options)
 {
-    return Instrument (
-        InstrumentNameType (String_Constant{L"Process"}),
+    return Instrument{
+        InstrumentNameType{L"Process"_k},
         Instrument::SharedByValueCaptureRepType (make_unique<MyCapturer_> (CapturerWithContext_{options})),
         {kProcessMapMeasurement},
-        GetObjectVariantMapper ());
+        GetObjectVariantMapper ()};
 }
 
 /*
