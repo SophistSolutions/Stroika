@@ -25,13 +25,13 @@ namespace Stroika::Foundation::Streams {
      */
     template <typename ELEMENT_TYPE>
     inline OutputStream<ELEMENT_TYPE>::Ptr::Ptr (const _SharedIRep& rep)
-        : inherited (rep)
+        : inherited{rep}
     {
         RequireNotNull (rep);
     }
     template <typename ELEMENT_TYPE>
     inline OutputStream<ELEMENT_TYPE>::Ptr::Ptr (nullptr_t)
-        : inherited (nullptr)
+        : inherited{nullptr}
     {
     }
     template <typename ELEMENT_TYPE>

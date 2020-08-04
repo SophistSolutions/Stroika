@@ -258,7 +258,7 @@ TimeZoneInformationType Time::GetCurrentLocaleTimezoneInfo ()
         try {
             // Not a good approach because this returns a zone abbreviation, which doesn't uniquely define a zone.
             // For example, CDT could be Cocos Islands Time, or Central Daylight Time (North America) etc (see http://en.wikipedia.org/wiki/List_of_time_zone_abbreviations)
-            String  tzAbbrev = Execution::ProcessRunner (L"date +%Z").Run (String ()).Trim ();
+            String  tzAbbrev = Execution::ProcessRunner (L"date +%Z").Run (String {}).Trim ();
             using   Containers::Mapping;
             using   Common::KeyValuePair;
             // Table from Hand-coded for a few empirical cases around 2015-06-01

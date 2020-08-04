@@ -21,7 +21,7 @@ namespace Stroika::Foundation::Execution {
      */
     template <typename T>
     BlockingQueue<T>::BlockingQueue (const Containers::Queue<T>& useQueue)
-        : fQueue_ (useQueue)
+        : fQueue_{useQueue}
     {
         Require (useQueue.empty ()); // this constructor is only used to control the 'type' (data structure/backend) used by the Blocking Queue
     }

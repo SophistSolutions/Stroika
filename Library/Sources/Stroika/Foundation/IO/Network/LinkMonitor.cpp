@@ -256,7 +256,7 @@ String Network::GetPrimaryNetworkDeviceMacAddress ()
 #else
     AssertNotImplemented ();
 #endif
-    return String ();
+    return String{};
 }
 
 struct LinkMonitor::Rep_ {
@@ -297,7 +297,7 @@ struct LinkMonitor::Rep_ {
                             Address->Address.Ipv4.sin_addr.s_lh,
                             Address->Address.Ipv4.sin_addr.s_impno);
             LinkChange lc = (NotificationType == MibDeleteInstance) ? LinkChange::eRemoved : LinkChange::eAdded;
-            rep->SendNotifies (lc, String (), String::FromASCII (ipAddrBuf));
+            rep->SendNotifies (lc, String{}, String::FromASCII (ipAddrBuf));
         }
     }
 #endif

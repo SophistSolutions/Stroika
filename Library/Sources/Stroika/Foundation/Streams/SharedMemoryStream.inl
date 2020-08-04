@@ -30,13 +30,13 @@ namespace Stroika::Foundation::Streams {
 
     public:
         Rep_ ()
-            : fData_ ()
-            , fReadCursor_ (fData_.begin ())
-            , fWriteCursor_ (fData_.begin ())
+            : fData_{}
+            , fReadCursor_{fData_.begin ()}
+            , fWriteCursor_{fData_.begin ()}
         {
         }
         Rep_ (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end)
-            : Rep_ ()
+            : Rep_{}
         {
             Write (start, end);
         }

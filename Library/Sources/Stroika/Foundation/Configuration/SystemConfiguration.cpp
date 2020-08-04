@@ -558,7 +558,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
 #if qPlatform_POSIX
         tmp.fTokenName = String_Constant (L"Unix");
         try {
-            tmp.fTokenName = Execution::ProcessRunner (L"uname").Run (String ()).Trim ();
+            tmp.fTokenName = Execution::ProcessRunner (L"uname").Run (String{}).Trim ();
         }
         catch (...) {
             DbgTrace ("Failure running uname");
@@ -652,7 +652,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
         // not a great way to test since some systems have both, like ubuntu
         if (not tmp.fPreferedInstallerTechnology.has_value ()) {
             try {
-                Execution::ProcessRunner (L"dpkg --help").Run (String ());
+                Execution::ProcessRunner (L"dpkg --help").Run (String{});
                 tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eDPKG;
             }
             catch (...) {
@@ -660,7 +660,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
         }
         if (not tmp.fPreferedInstallerTechnology.has_value ()) {
             try {
-                Execution::ProcessRunner (L"rpm --help").Run (String ());
+                Execution::ProcessRunner (L"rpm --help").Run (String{});
                 tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eRPM;
             }
             catch (...) {
@@ -860,7 +860,7 @@ string  name;
     int e = getaddrinfo(nullptr, nullptr, &hints, &res);
     if (e != 0) {
         //printf("failure %s\n", gai_strerror (e));
-        return String ();
+        return String {};
     }
     int sock = -1;
     for (struct addrinfo* r = res; r != NULL; r = r->ai_next) {

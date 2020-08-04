@@ -18,7 +18,7 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     inline Activity<Characters::String>::Activity (const Characters::String& arg)
-        : fArg_ (arg)
+        : fArg_{arg}
     {
     }
 
@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     constexpr Activity<wstring_view>::Activity (const wstring_view& arg) noexcept
-        : fArg_ (arg)
+        : fArg_{arg}
     {
     }
 

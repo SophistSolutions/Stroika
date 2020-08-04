@@ -109,7 +109,7 @@ namespace {
         }
         else {
             AssertNotReached ();
-            return String ();
+            return String{};
         }
     }
     String xercesString2String_ (const XMLCh* t)
@@ -127,7 +127,7 @@ namespace {
         }
         else {
             AssertNotReached ();
-            return String ();
+            return String{};
         }
     }
 }

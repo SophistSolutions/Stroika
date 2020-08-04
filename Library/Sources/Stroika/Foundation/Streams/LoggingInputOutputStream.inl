@@ -21,10 +21,10 @@ namespace Stroika::Foundation::Streams {
     class LoggingInputOutputStream<ELEMENT_TYPE>::Rep_ : public InputOutputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
     public:
         Rep_ (const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream, const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput, const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput)
-            : InputOutputStream<ELEMENT_TYPE>::_IRep ()
-            , fRealStream_ (realStream)
-            , fLogInput_ (logInput)
-            , fLogOutput_ (logOutput)
+            : InputOutputStream<ELEMENT_TYPE>::_IRep{}
+            , fRealStream_{realStream}
+            , fLogInput_{logInput}
+            , fLogOutput_{logOutput}
         {
             Require (not realStream.IsSeekable () or (logInput.IsSeekable () and logOutput.IsSeekable ())); // since may need to delegate seeks
         }

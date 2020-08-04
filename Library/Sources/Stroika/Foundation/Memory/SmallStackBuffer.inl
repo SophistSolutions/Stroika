@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Memory {
      */
     template <typename T, size_t BUF_SIZE>
     inline SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer ()
-        : fLiveData_ (BufferAsT_ ())
+        : fLiveData_{BufferAsT_ ()}
     {
 #if qDebug
         (void)::memcpy (fGuard1_, kGuard1_, sizeof (kGuard1_));
@@ -36,14 +36,14 @@ namespace Stroika::Foundation::Memory {
     }
     template <typename T, size_t BUF_SIZE>
     inline SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (size_t nElements)
-        : SmallStackBuffer ()
+        : SmallStackBuffer{}
     {
         resize (nElements);
         Invariant ();
     }
     template <typename T, size_t BUF_SIZE>
     inline SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (UninitializedConstructorFlag, size_t nElements)
-        : SmallStackBuffer ()
+        : SmallStackBuffer{}
     {
         static_assert (is_trivially_default_constructible_v<T>);
         resize_uninitialized (nElements);
@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t BUF_SIZE>
     template <typename ITERATOR_OF_T, enable_if_t<Configuration::is_iterator_v<ITERATOR_OF_T>, char>*>
     SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (ITERATOR_OF_T start, ITERATOR_OF_T end)
-        : SmallStackBuffer (distance (start, end))
+        : SmallStackBuffer{distance (start, end)}
     {
 #if qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
         Configuration::uninitialized_copy_MSFT_BWA (start, end, this->begin ());
@@ -64,12 +64,12 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t BUF_SIZE>
     template <size_t FROM_BUF_SIZE>
     SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (const SmallStackBuffer<T, FROM_BUF_SIZE>& from)
-        : SmallStackBuffer (from.begin (), from.end ())
+        : SmallStackBuffer{from.begin (), from.end ()}
     {
     }
     template <typename T, size_t BUF_SIZE>
     inline SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (const SmallStackBuffer& from)
-        : SmallStackBuffer (from.begin (), from.end ())
+        : SmallStackBuffer{from.begin (), from.end ()}
     {
     }
     template <typename T, size_t BUF_SIZE>

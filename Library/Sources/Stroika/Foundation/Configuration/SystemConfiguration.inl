@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Configuration {
     }
     inline String SystemConfiguration::CPU::GetCPUModelPrintName () const
     {
-        return fCores.empty () ? String () : fCores[0].fModelName;
+        return fCores.empty () ? String{} : fCores[0].fModelName;
     }
 
 }

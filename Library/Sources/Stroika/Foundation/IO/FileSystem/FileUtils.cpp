@@ -278,7 +278,7 @@ String IO::FileSystem::GetVolumeName (const filesystem::path& driveLetterAbsPath
 #else
     AssertNotImplemented ();
 #endif
-    return String ();
+    return String{};
 }
 
 /*

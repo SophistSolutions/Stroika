@@ -299,7 +299,7 @@ String TimeOfDay::Format (PrintFormat pf) const
         }
         default: {
             AssertNotReached ();
-            return String ();
+            return String{};
         }
     }
 }

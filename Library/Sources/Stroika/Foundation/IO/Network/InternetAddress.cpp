@@ -196,7 +196,7 @@ namespace Stroika::Foundation::IO::Network {
             } break;
             default: {
                 RequireNotReached ();
-                return String ();
+                return String{};
             } break;
         }
     }

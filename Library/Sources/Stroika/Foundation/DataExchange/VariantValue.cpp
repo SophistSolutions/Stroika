@@ -500,12 +500,12 @@ String VariantValue::AsString_ () const
     if (fVal_ == nullptr)
         [[UNLIKELY_ATTR]]
         {
-            return String ();
+            return String{};
         }
     switch (fVal_->GetType ()) {
         case Type::eNull: {
             AssertNotReached ();
-            return String ();
+            return String{};
         }
         case Type::eBoolean: {
             auto v = dynamic_cast<const TIRep_<bool>*> (fVal_.get ());
@@ -603,7 +603,7 @@ String VariantValue::AsString_ () const
         }
         default: {
             AssertNotReached (); // That was all types enumerated, and all types convertable to string
-            return String ();
+            return String{};
         }
     }
 }

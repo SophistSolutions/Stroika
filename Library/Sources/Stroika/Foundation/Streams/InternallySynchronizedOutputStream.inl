@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Streams {
     public:
         template <typename... ARGS>
         Rep_ (ARGS&&... args)
-            : BASE_REP_TYPE (forward<ARGS> (args)...)
+            : BASE_REP_TYPE{forward<ARGS> (args)...}
         {
         }
         Rep_ (const Rep_&) = delete;

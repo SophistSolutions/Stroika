@@ -130,7 +130,7 @@ String FileSystem::GetFileSuffix (const String& fileName)
     return String::FromSDKString (ext);
 #else
     AssertNotImplemented ();
-    return String ();
+    return String{};
 #endif
 }
 
@@ -145,7 +145,7 @@ String FileSystem::GetFileBaseName (const String& pathName)
     return FromPath (ToPath (pathName).stem ());
 #else
     if (pathName.empty ()) {
-        return String ();
+        return String{};
     }
     String baseName = ExtractDirAndBaseName (pathName).second;
     if (not baseName.empty () and baseName.GetCharAt (baseName.size () - 1) == kPathComponentSeperator) {

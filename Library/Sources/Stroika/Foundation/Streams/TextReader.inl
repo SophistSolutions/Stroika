@@ -18,11 +18,11 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     inline TextReader::Ptr::Ptr (const shared_ptr<InputStream<Character>::_IRep>& from)
-        : inherited (from)
+        : inherited{from}
     {
     }
     inline TextReader::Ptr::Ptr (const InputStream<Character>::Ptr& from)
-        : inherited (from)
+        : inherited{from}
     {
     }
 

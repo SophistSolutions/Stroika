@@ -23,8 +23,8 @@ namespace Stroika::Foundation::Streams {
     class BufferedInputStream<ELEMENT_TYPE>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
     public:
         Rep_ (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn)
-            : InputStream<ELEMENT_TYPE>::_IRep ()
-            , fRealIn_ (realIn)
+            : InputStream<ELEMENT_TYPE>::_IRep{}
+            , fRealIn_{realIn}
         {
         }
         virtual bool IsSeekable () const override

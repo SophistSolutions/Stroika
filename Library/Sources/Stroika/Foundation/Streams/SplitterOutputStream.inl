@@ -23,9 +23,9 @@ namespace Stroika::Foundation::Streams {
     class SplitterOutputStream<ELEMENT_TYPE>::Rep_ : public OutputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
     public:
         Rep_ (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut1, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut2)
-            : OutputStream<ELEMENT_TYPE>::_IRep ()
-            , fRealOut1_ (realOut1)
-            , fRealOut2_ (realOut2)
+            : OutputStream<ELEMENT_TYPE>::_IRep{}
+            , fRealOut1_{realOut1}
+            , fRealOut2_{realOut2}
         {
         }
 

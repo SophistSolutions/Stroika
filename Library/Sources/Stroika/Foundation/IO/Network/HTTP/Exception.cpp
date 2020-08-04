@@ -101,10 +101,10 @@ String Exception::GetReason () const
 String Exception::GetStandardTextForStatus (Status s, bool forceAlwaysFound)
 {
     if (forceAlwaysFound) {
-        return mkReason_ (s, String ());
+        return mkReason_ (s, String{});
     }
     else {
-        return mkCanBeEmptyReason_ (s, String ());
+        return mkCanBeEmptyReason_ (s, String{});
     }
 }
 

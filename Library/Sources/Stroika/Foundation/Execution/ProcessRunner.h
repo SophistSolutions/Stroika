@@ -125,7 +125,7 @@ namespace Stroika::Foundation::Execution {
         *
         *  \par Example Usage
         *      \code
-        *          String name = Execution::ProcessRunner (L"uname").Run (String ()).Trim ();
+        *          String name = Execution::ProcessRunner (L"uname").Run (String {}).Trim ();
         *      \endcode
         *
         *      \code

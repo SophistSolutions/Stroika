@@ -67,7 +67,7 @@ String OptionsFile::LoggerMessage::FormatMessage () const
             return Characters::Format (L"Failed to write default (in use) values to file: %s", Characters::ToString (ValueOrDefault (fFileName)).c_str ());
         default:
             RequireNotReached ();
-            return String ();
+            return String{};
     }
 }
 

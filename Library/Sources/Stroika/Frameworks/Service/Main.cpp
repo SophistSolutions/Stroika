@@ -131,7 +131,7 @@ void Main::IApplicationRep::OnReReadConfigurationRequest ()
 
 String Main::IApplicationRep::GetServiceStatusMessage () const
 {
-    return String ();
+    return String{};
 }
 
 /*
@@ -731,7 +731,7 @@ void Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
         Execution::Throw (Execution::Exception (L"Cannot Start service because its already running"sv));
     }
 
-    (void)Execution::DetachedProcessRunner (Execution::GetEXEPath (), Sequence<String> ({String (), (L"--"sv + String (CommandNames::kRunAsService))}));
+    (void)Execution::DetachedProcessRunner (Execution::GetEXEPath (), Sequence<String>{{String{}, (L"--"sv + String{CommandNames::kRunAsService})}});
 
     while (_GetServicePID () <= 0) {
         Execution::Sleep (500ms);

@@ -116,7 +116,7 @@ String Cookie::Encode () const
             sb += kvp.fValue;
         }
     }
-    return String ();
+    return String{};
 }
 
 Cookie Cookie::Decode (Streams::InputStream<Character>::Ptr src)

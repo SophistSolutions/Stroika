@@ -29,12 +29,12 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     class Exception : public Execution::RuntimeErrorException<> {
     public:
         // If no reason is given, a default is generated based on the status code
-        Exception (Status status, const String& reason = String ());
+        Exception (Status status, const String& reason = String{});
 
     public:
         // throw Exception () type iff the status indicates a real HTTP exception code (i.e. ignore 2xx values etc)
-        static void ThrowIfError (Status status, const String& reason = String ());
-        static void ThrowIfError (const String& status, const String& reason = String ());
+        static void ThrowIfError (Status status, const String& reason = String{});
+        static void ThrowIfError (const String& status, const String& reason = String{});
 
         static bool IsHTTPStatusOK (Status status);
 

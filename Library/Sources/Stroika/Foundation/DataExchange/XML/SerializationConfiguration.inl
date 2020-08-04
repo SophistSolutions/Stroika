@@ -23,7 +23,7 @@ namespace Stroika::Foundation::DataExchange::XML {
     inline void SerializationConfiguration::SetDocumentElementName (const optional<String>& n)
     {
         Require (not n.has_value () or not(*n).empty ()); // should validate legit xml elt name
-        fDocumentElementName_ = n.has_value () ? *n : String ();
+        fDocumentElementName_ = n.has_value () ? *n : String{};
     }
     inline optional<String> SerializationConfiguration::GetArrayElementName () const
     {
@@ -32,7 +32,7 @@ namespace Stroika::Foundation::DataExchange::XML {
     inline void SerializationConfiguration::SetArrayElementName (const optional<String>& n)
     {
         Require (not n.has_value () or not(*n).empty ()); // should validate legit xml elt name
-        fArrayElementName_ = n.has_value () ? *n : String ();
+        fArrayElementName_ = n.has_value () ? *n : String{};
     }
 
 }

@@ -97,7 +97,7 @@ filesystem::path FileSystem::WellKnownLocations::GetSpoolDirectory ()
     }
 #else
     AssertNotImplemented ();
-    return String ();
+    return String{};
 #endif
 }
 
@@ -124,7 +124,7 @@ filesystem::path FileSystem::WellKnownLocations::GetApplicationData (bool create
     return result;
 #else
     AssertNotImplemented ();
-    return String ();
+    return String{};
 #endif
 }
 
@@ -142,7 +142,7 @@ filesystem::path FileSystem::WellKnownLocations::GetRuntimeVariableData ()
     return GetTemporary ();
 #else
     AssertNotImplemented ();
-    return String ();
+    return String{};
 #endif
 }
 

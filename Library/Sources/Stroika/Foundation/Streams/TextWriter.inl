@@ -17,11 +17,11 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     inline TextWriter::Ptr::Ptr (const shared_ptr<OutputStream<Characters::Character>::_IRep>& from)
-        : inherited (from)
+        : inherited{from}
     {
     }
     inline TextWriter::Ptr::Ptr (const OutputStream<Characters::Character>::Ptr& from)
-        : inherited (from)
+        : inherited{from}
     {
     }
 

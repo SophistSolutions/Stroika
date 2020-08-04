@@ -342,7 +342,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline void String::clear ()
     {
-        *this = String ();
+        *this = String{};
     }
     namespace Private_ {
         // match index starts with 1 (and requres match.size () >=2)

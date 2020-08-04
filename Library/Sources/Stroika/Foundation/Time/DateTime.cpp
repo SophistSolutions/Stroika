@@ -641,7 +641,7 @@ String DateTime::Format (PrintFormat pf) const
         } break;
     }
     AssertNotReached ();
-    return String ();
+    return String{};
 }
 
 String DateTime::Format (const locale& l) const

@@ -18,10 +18,10 @@
 namespace Stroika::Foundation::Streams {
 
     /*
-        ********************************************************************************
-        *********************** InputStream<ELEMENT_TYPE>::_IRep ***********************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     *********************** InputStream<ELEMENT_TYPE>::_IRep ***********************
+     ********************************************************************************
+     */
     template <typename ELEMENT_TYPE>
     optional<size_t> InputStream<ELEMENT_TYPE>::_IRep::_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (ElementType* intoStart, ElementType* intoEnd, size_t elementsRemaining)
     {
@@ -35,10 +35,10 @@ namespace Stroika::Foundation::Streams {
     }
 
     /*
-        ********************************************************************************
-        *********************** InputStream<ELEMENT_TYPE>::Ptr *************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     *********************** InputStream<ELEMENT_TYPE>::Ptr *************************
+     ********************************************************************************
+     */
     template <typename ELEMENT_TYPE>
     inline InputStream<ELEMENT_TYPE>::Ptr::Ptr (const _SharedIRep& rep)
         : inherited (rep)

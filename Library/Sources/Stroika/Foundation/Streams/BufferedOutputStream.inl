@@ -26,10 +26,10 @@ namespace Stroika::Foundation ::Streams {
 
     public:
         Rep_ (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut)
-            : OutputStream<ELEMENT_TYPE>::_IRep ()
-            , fBuffer_ ()
-            , fRealOut_ (realOut)
-            , fAborted_ (false)
+            : OutputStream<ELEMENT_TYPE>::_IRep{}
+            , fBuffer_{}
+            , fRealOut_{realOut}
+            , fAborted_{false}
         {
             fBuffer_.reserve (kDefaultBufSize_);
         }
@@ -169,10 +169,10 @@ namespace Stroika::Foundation ::Streams {
     };
 
     /*
-        ********************************************************************************
-        ************************* Streams::BufferedOutputStream ************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************************* Streams::BufferedOutputStream ************************
+     ********************************************************************************
+     */
     template <typename ELEMENT_TYPE>
     inline auto BufferedOutputStream<ELEMENT_TYPE>::New (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut) -> Ptr
     {
@@ -193,13 +193,13 @@ namespace Stroika::Foundation ::Streams {
     }
 
     /*
-        ********************************************************************************
-        ****************** BufferedOutputStream<ELEMENT_TYPE>::Ptr *********************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ****************** BufferedOutputStream<ELEMENT_TYPE>::Ptr *********************
+     ********************************************************************************
+     */
     template <typename ELEMENT_TYPE>
     inline BufferedOutputStream<ELEMENT_TYPE>::Ptr::Ptr (const shared_ptr<Rep_>& from)
-        : inherited (from)
+        : inherited{from}
     {
     }
     template <typename ELEMENT_TYPE>

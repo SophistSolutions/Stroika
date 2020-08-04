@@ -1001,7 +1001,7 @@ String String::LTrim (bool (*shouldBeTrimmmed) (Character)) const
         }
     }
     // all trimmed
-    return String ();
+    return String{};
 }
 
 String String::RTrim (bool (*shouldBeTrimmmed) (Character)) const

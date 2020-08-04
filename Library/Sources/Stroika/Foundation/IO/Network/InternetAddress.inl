@@ -53,9 +53,12 @@ namespace Stroika::Foundation::IO::Network {
 #endif
     }
     inline InternetAddress::InternetAddress (const in_addr_t& i, ByteOrder byteOrder)
-        : fAddressFamily_ (AddressFamily::V4)
+        : fAddressFamily_
+    {
+        AddressFamily::V4
+    }
 #if qPlatform_POSIX
-        , fV4_
+    , fV4_
     {
         i
     }
@@ -82,11 +85,11 @@ namespace Stroika::Foundation::IO::Network {
         }
     }
     constexpr InternetAddress::InternetAddress (byte octet1, byte octet2, byte octet3, byte octet4)
-        : InternetAddress (array<byte, 4>{octet1, octet2, octet3, octet4})
+        : InternetAddress{array<byte, 4>{octet1, octet2, octet3, octet4}}
     {
     }
     constexpr InternetAddress::InternetAddress (uint8_t octet1, uint8_t octet2, uint8_t octet3, uint8_t octet4)
-        : InternetAddress (array<uint8_t, 4>{octet1, octet2, octet3, octet4})
+        : InternetAddress{array<uint8_t, 4>{octet1, octet2, octet3, octet4}}
     {
     }
     constexpr InternetAddress::InternetAddress (array<uint8_t, 4> octets, AddressFamily af)
@@ -100,7 +103,7 @@ namespace Stroika::Foundation::IO::Network {
     {
     }
     constexpr InternetAddress::InternetAddress (const in6_addr& i)
-        : fAddressFamily_ (AddressFamily::V6)
+        : fAddressFamily_{AddressFamily::V6}
         , fV6_{i}
     {
     }
