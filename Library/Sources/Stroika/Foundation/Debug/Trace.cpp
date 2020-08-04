@@ -521,18 +521,21 @@ void Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept
  */
 #if qDefaultTracingOn
 TraceContextBumper::TraceContextBumper (const wchar_t* contextName) noexcept
-    : fDoEndMarker (true)
+    : fDoEndMarker{true}
 {
     fLastWriteToken_ = Emitter::Get ().EmitTraceMessage (3 + ::wcslen (GetEOL<wchar_t> ()), L"<%s> {", contextName);
     size_t len       = min (NEltsOf (fSavedContextName_) - 1, char_traits<wchar_t>::length (contextName));
     char_traits<wchar_t>::copy (fSavedContextName_, contextName, len);
+    if (len >= NEltsOf (fSavedContextName_) - 1) {
+        char_traits<wchar_t>::copy (&fSavedContextName_[len - 3], L"...", 3);
+    }
     *(std::end (fSavedContextName_) - 1) = '\0';
     fSavedContextName_[len]              = '\0';
     IncCount_ ();
 }
 
 TraceContextBumper::TraceContextBumper (const wchar_t* contextName, const wchar_t* extraFmt, ...) noexcept
-    : fDoEndMarker (true)
+    : fDoEndMarker{true}
 {
     try {
         va_list argsList;
@@ -541,6 +544,9 @@ TraceContextBumper::TraceContextBumper (const wchar_t* contextName, const wchar_
         va_end (argsList);
         size_t len = min (NEltsOf (fSavedContextName_) - 1, char_traits<wchar_t>::length (contextName));
         char_traits<wchar_t>::copy (fSavedContextName_, contextName, len);
+        if (len >= NEltsOf (fSavedContextName_) - 1) {
+            char_traits<wchar_t>::copy (&fSavedContextName_[len - 3], L"...", 3);
+        }
         *(std::end (fSavedContextName_) - 1) = '\0';
         fSavedContextName_[len]              = '\0';
         IncCount_ ();
@@ -550,7 +556,7 @@ TraceContextBumper::TraceContextBumper (const wchar_t* contextName, const wchar_
 }
 
 TraceContextBumper::TraceContextBumper (const char* contextName) noexcept
-    : TraceContextBumper (mkwtrfromascii_ (contextName).data ())
+    : TraceContextBumper{mkwtrfromascii_ (contextName).data ()}
 {
 }
 
@@ -584,21 +590,22 @@ TraceContextBumper::~TraceContextBumper ()
     }
 }
 
-auto TraceContextBumper::mkwtrfromascii_ (const char* contextName) -> array<wchar_t, kMaxContextNameLen_>
+auto TraceContextBumper::mkwtrfromascii_ (const char* contextName) -> array<wchar_t, kMaxContextNameLen_ + 1>
 {
-    array<wchar_t, kMaxContextNameLen_> r;
-    auto                                ci = contextName;
+    // Return item with max size kMaxContextNameLen_+1 so we can tell if we need to add elipsis
+    array<wchar_t, kMaxContextNameLen_ + 1> r;
+    auto                                    ci = contextName;
     for (; *ci != '\0'; ++ci) {
         Require (isascii (*ci));
         size_t i = ci - contextName;
-        if (i < kMaxContextNameLen_ - 1) {
+        if (i < kMaxContextNameLen_) {
             r[i] = *ci;
         }
         else {
             break;
         }
     }
-    Assert (ci - contextName < kMaxContextNameLen_);
+    Assert (ci - contextName <= kMaxContextNameLen_);
     r[ci - contextName] = '\0';
     return r;
 }

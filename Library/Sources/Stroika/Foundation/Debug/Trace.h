@@ -230,7 +230,7 @@ namespace Stroika::Foundation::Debug {
         Emitter::TraceLastBufferedWriteTokenType fLastWriteToken_{}; // used to COMBINE items into a single line if they happen quickly enuf
 
     private:
-        static array<wchar_t, kMaxContextNameLen_> mkwtrfromascii_ (const char* contextName);
+        static array<wchar_t, kMaxContextNameLen_ + 1> mkwtrfromascii_ (const char* contextName);
 
     private:
         static void IncCount_ () noexcept;
