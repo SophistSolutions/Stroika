@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Memory {
 
         template <typename BYTE_ITERATOR>
         BasicRep_ (BYTE_ITERATOR start, BYTE_ITERATOR end)
-            : fData{SmallStackBufferCommon::eUninitialized, end - start}
+            : fData{SmallStackBufferCommon::eUninitialized, static_cast<size_t> (end - start)}
         {
             // use memcpy instead of std::copy because std::copy doesn't work between uint8_t, and byte arrays.
             static_assert (sizeof (*start) == 1);
