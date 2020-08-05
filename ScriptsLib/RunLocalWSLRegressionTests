@@ -9,7 +9,7 @@ echo "Clearing and checking out $BRANCH"
 (cd /tmp && git clone git@github.com:SophistSolutions/Stroika.git stkbldtest --branch $BRANCH)
 
 echo "Running WSL build (usually takes about 2 hrs)"
-(cd /tmp/stkbldtest && ./ScriptsLib/RegressionTests)
+(cd /tmp/stkbldtest && PARALELLMAKEFLAG=-j2 ./ScriptsLib/RegressionTests)
 
 echo "Done with build, so copying out results"
 cp /tmp/stkbldtest/Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_BASENAME-$VERSION-OUT.txt Tests/HistoricalRegressionTestResults/
