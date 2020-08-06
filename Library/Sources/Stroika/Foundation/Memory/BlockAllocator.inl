@@ -139,16 +139,19 @@ namespace Stroika::Foundation::Memory {
         Require (n <= SIZE);
 
 #if qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
-    /*
-     *  Note - once we have stored Private_::kLockedSentinal_ in the sHeadLink_ and gotten back something other than that, we
-     *  effectively have a lock for the scope below (because nobody else can get other than Private_::kLockedSentinal_ from exchange).
-     */
-    again:
-        void* p = sHeadLink_.exchange (Private_::kLockedSentinal_, memory_order_acq_rel);
-        if (p == Private_::kLockedSentinal_) {
-            // we stored and retrieved a sentinal. So no lock. Try again!
-            this_thread::yield (); // nb: until Stroika v2.0a209, this called Execution::Yield (), making this a cancelation point.
-            goto again;
+        /*
+         *  Note - once we have stored Private_::kLockedSentinal_ in the sHeadLink_ and gotten back something other than that, we
+         *  effectively have a lock for the scope below (because nobody else can get other than Private_::kLockedSentinal_ from exchange).
+         */
+        void* p{};
+        {
+        again:
+            p = sHeadLink_.exchange (Private_::kLockedSentinal_, memory_order_acq_rel);
+            if (p == Private_::kLockedSentinal_) {
+                // we stored and retrieved a sentinal. So no lock. Try again!
+                this_thread::yield (); // nb: until Stroika v2.0a209, this called Execution::Yield (), making this a cancelation point.
+                goto again;
+            }
         }
         // if we got here, p contains the real head, and have a pseudo lock
         if (p == nullptr) {
@@ -196,12 +199,15 @@ namespace Stroika::Foundation::Memory {
          *  Note - once we have stored Private_::kLockedSentinal_ in the sHeadLink_ and gotten back something other than that, we
          *  effectively have a lock for the scope below (because nobody else can get other than Private_::kLockedSentinal_ from exchange).
          */
-    again:
-        void* prevHead = sHeadLink_.exchange (Private_::kLockedSentinal_, memory_order_acq_rel);
-        if (prevHead == Private_::kLockedSentinal_) {
-            // we stored and retrieved a sentinal. So no lock. Try again!
-            this_thread::yield (); // nb: until Stroika v2.0a209, this called Execution::Yield (), making this a cancelation point.
-            goto again;
+        void* prevHead{};
+        {
+        again:
+            prevHead = sHeadLink_.exchange (Private_::kLockedSentinal_, memory_order_acq_rel);
+            if (prevHead == Private_::kLockedSentinal_) {
+                // we stored and retrieved a sentinal. So no lock. Try again!
+                this_thread::yield (); // nb: until Stroika v2.0a209, this called Execution::Yield (), making this a cancelation point.
+                goto again;
+            }
         }
         /*
          *  Push p onto the head of linked free list.
@@ -218,6 +224,31 @@ namespace Stroika::Foundation::Memory {
         // on Ubuntu 1910, valgrind -q --tool=helgrind --suppressions=Valgrind-Helgrind-Common.supp  ../Builds/g++--8-valgrind-debug-SSLPurify/Tests/Test38
         // produces a race error, so stick to ANNOTATE_HAPPENS_BEFORE for now
         // --LGP 2020-07-31
+
+        // But even this OCCASIONALLY (not reproducibly) fails on Ubuntu 1910 - as in:
+        /*
+            )))- valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/g++-valgrind-debug-SSLPurify/Samples-WebServer/WebServer --quit-after 10...==2665543== ---Thread-Announcement------------------------------------------
+            ==2665543== 
+                ...
+            ==2665543== 
+            ==2665543== Possible data race during read of size 8 at 0x4BC5080 by thread #6
+            ==2665543== Locks held: none
+            ==2665543==    at 0x35AD59: load (atomic_base.h:740)
+            ==2665543==    by 0x35AD59: std::atomic<void*>::load(std::memory_order) const (atomic:519)
+            ==2665543==    by 0x3A578C: Stroika::Foundation::Memory::Private_::BlockAllocationPool_<64ul>::Allocate(unsigned long) (BlockAllocator.inl:166)
+            ==2665543==    by 0x47A67C: Stroika::Foundation::Memory::BlockAllocator<Stroika::Foundation::Characters::Concrete::Private::BufferedStringRepBlock_<16ul> >::Allocate(unsigned long) (BlockAllocator.inl:359)
+            ==2665543==    by 0x4794BA: Stroika::Foundation::Characters::Concrete::Private::BufferedStringRep::_Rep::_Rep(wchar_t const*, wchar_t const*, unsigned long) (String_BufferedStringRep.inl:141)
+            ...
+            ==2665543== 
+            ==2665543== This conflicts with a previous write of size 8 by thread #1
+            ==2665543== Locks held: none
+            ==2665543==    at 0x350700: store (atomic_base.h:718)
+            ==2665543==    by 0x350700: std::atomic<void*>::store(void*, std::memory_order) (atomic:510)
+            ==2665543==    by 0x3A5A41: Stroika::Foundation::Memory::Private_::BlockAllocationPool_<64ul>::Deallocate(void*) (BlockAllocator.inl:213)
+            ==2665543==    by 0x47A870: Stroika::Foundation::Memory::BlockAllocator<Stroika::Foundation::Characters::Concrete::Private::BufferedStringRepBlock_<16ul> >::Deallocate(void*) (BlockAllocator.inl:373)
+            ==2665543==    by 0x479625: Stroika::Foundation::Characters::Concrete::Private::BufferedStringRep::_Rep::~_Rep() (String_BufferedStringRep.inl:172)
+         */
+
         Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE (p);
 #else
         Stroika_Foundation_Debug_ValgrindMarkAddressAsDeAllocated (p, SIZE);
