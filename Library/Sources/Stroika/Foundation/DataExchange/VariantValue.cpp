@@ -80,7 +80,7 @@ template <typename T>
 struct VariantValue::TIRep_ : VariantValue::IRep_, public Memory::UseBlockAllocationIfAppropriate<TIRep_<T>> {
     template <typename FWD>
     inline TIRep_ (FWD&& v)
-        : fVal (forward<FWD> (v))
+        : fVal{forward<FWD> (v)}
     {
     }
     virtual Type GetType () const override

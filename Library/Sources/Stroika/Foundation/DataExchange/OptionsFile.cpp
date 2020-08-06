@@ -39,8 +39,8 @@ using Memory::BLOB;
  ********************************************************************************
  */
 OptionsFile::LoggerMessage::LoggerMessage (Msg msg, const filesystem::path& fn)
-    : fMsg (msg)
-    , fFileName (fn)
+    : fMsg{msg}
+    , fFileName{fn}
 {
 }
 
@@ -129,7 +129,7 @@ OptionsFile::OptionsFile (
     LoggerType                        logger,
     Variant::Reader                   reader,
     Variant::Writer                   writer)
-    : OptionsFile (modName, mapper, moduleUpgrader, moduleNameToFileNameMapper, moduleNameToFileNameMapper, moduleNameToReadFileVersion, logger, reader, writer, reader.GetDefaultFileSuffix ())
+    : OptionsFile{modName, mapper, moduleUpgrader, moduleNameToFileNameMapper, moduleNameToFileNameMapper, moduleNameToReadFileVersion, logger, reader, writer, reader.GetDefaultFileSuffix ()}
 {
 }
 
@@ -143,7 +143,7 @@ OptionsFile::OptionsFile (
     LoggerType                        logger,
     Variant::Reader                   reader,
     Variant::Writer                   writer)
-    : OptionsFile (modName, mapper, moduleUpgrader, moduleNameToReadFileNameMapper, moduleNameToWriteFileNameMapper, moduleNameToReadFileVersion, logger, reader, writer, reader.GetDefaultFileSuffix ())
+    : OptionsFile{modName, mapper, moduleUpgrader, moduleNameToReadFileNameMapper, moduleNameToWriteFileNameMapper, moduleNameToReadFileVersion, logger, reader, writer, reader.GetDefaultFileSuffix ()}
 {
 }
 
@@ -158,16 +158,16 @@ OptionsFile::OptionsFile (
     Variant::Reader                   reader,
     Variant::Writer                   writer,
     const String&                     fileSuffix)
-    : fModuleName_ (modName)
-    , fMapper_ (mapper)
-    , fModuleDataUpgrader_ (moduleUpgrader)
-    , fModuleNameToReadFileNameMapper_ (moduleNameToReadFileNameMapper)
-    , fModuleNameToWriteFileNameMapper_ (moduleNameToWriteFileNameMapper)
-    , fModuleNameToFileVersionMapper_ (moduleNameToReadFileVersion)
-    , fLogger_ (logger)
-    , fReader_ (reader)
-    , fWriter_ (writer)
-    , fFileSuffix_ (fileSuffix)
+    : fModuleName_{modName}
+    , fMapper_{mapper}
+    , fModuleDataUpgrader_{moduleUpgrader}
+    , fModuleNameToReadFileNameMapper_{moduleNameToReadFileNameMapper}
+    , fModuleNameToWriteFileNameMapper_{moduleNameToWriteFileNameMapper}
+    , fModuleNameToFileVersionMapper_{moduleNameToReadFileVersion}
+    , fLogger_{logger}
+    , fReader_{reader}
+    , fWriter_{writer}
+    , fFileSuffix_{fileSuffix}
 {
 }
 

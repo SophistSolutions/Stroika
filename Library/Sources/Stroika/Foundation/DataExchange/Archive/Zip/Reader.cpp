@@ -2838,7 +2838,7 @@ public:
 };
 
 Zip::Reader::Reader (const Streams::InputStream<byte>::Ptr& in)
-    : DataExchange::Archive::Reader (make_shared<Rep_> (in))
+    : DataExchange::Archive::Reader{make_shared<Rep_> (in)}
 {
 }
 #endif

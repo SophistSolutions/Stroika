@@ -148,9 +148,11 @@ namespace {
     public:
         MyXercesMemMgr_ ()
 #if qXMLDBTrackAllocs
-            : fBaseAllocator ()
-            , fAllocator (fBaseAllocator)
-            , fLastSnapshot ()
+            : fBaseAllocator{}
+            , fAllocator{fBaseAllocator}
+            , fLastSnapshot
+        {
+        }
 #endif
         {
         }
@@ -315,7 +317,7 @@ namespace {
         struct UsingLibInterHelper_XERCES {
             MyXercesMemMgr_* fUseXercesMemoryManager;
             UsingLibInterHelper_XERCES ()
-                : fUseXercesMemoryManager (nullptr)
+                : fUseXercesMemoryManager{nullptr}
             {
 #if qUseMyXMLDBMemManager
                 fUseXercesMemoryManager = new MyXercesMemMgr_ ();
@@ -358,7 +360,10 @@ namespace {
  */
 SAXReader_ModuleInit_::SAXReader_ModuleInit_ ()
 #if qDefaultTracingOn
-    : fDebugTraceDependency (Debug::MakeModuleDependency_Trace ())
+    : fDebugTraceDependency
+{
+    Debug::MakeModuleDependency_Trace ()
+}
 #endif
 {
 #if qHasFeature_Xerces

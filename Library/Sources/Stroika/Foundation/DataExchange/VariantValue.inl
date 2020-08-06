@@ -162,7 +162,7 @@ namespace Stroika::Foundation::DataExchange {
      ********************************************************************************
      */
     constexpr VariantValue::EqualsComparer::EqualsComparer (bool exactTypeMatchOnly)
-        : fExactTypeMatchOnly (exactTypeMatchOnly)
+        : fExactTypeMatchOnly{exactTypeMatchOnly}
     {
     }
 
@@ -172,7 +172,7 @@ namespace Stroika::Foundation::DataExchange {
      ********************************************************************************
      */
     constexpr VariantValue::ThreeWayComparer::ThreeWayComparer (bool exactTypeMatchOnly)
-        : fExactTypeMatchOnly (exactTypeMatchOnly)
+        : fExactTypeMatchOnly{exactTypeMatchOnly}
     {
     }
 

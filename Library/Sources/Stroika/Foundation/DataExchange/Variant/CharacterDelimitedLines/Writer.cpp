@@ -49,6 +49,6 @@ public:
 };
 
 DataExchange::Variant::CharacterDelimitedLines::Writer::Writer ()
-    : inherited (make_shared<Rep_> ())
+    : inherited{make_shared<Rep_> ()}
 {
 }

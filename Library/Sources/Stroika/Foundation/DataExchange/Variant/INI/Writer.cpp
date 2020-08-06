@@ -42,6 +42,6 @@ public:
 };
 
 Variant::INI::Writer::Writer ()
-    : inherited (make_shared<Rep_> ())
+    : inherited{make_shared<Rep_> ()}
 {
 }

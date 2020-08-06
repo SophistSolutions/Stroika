@@ -13,8 +13,8 @@ namespace Stroika::Foundation::DataExchange::XML {
 
     //  class   NamespaceDefinition
     inline NamespaceDefinition::NamespaceDefinition (const wstring& uri, const wstring& prefix)
-        : fURI (uri)
-        , fPrefix (prefix)
+        : fURI{uri}
+        , fPrefix{prefix}
     {
     }
 #if __cpp_impl_three_way_comparison < 201907

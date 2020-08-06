@@ -17,11 +17,11 @@ namespace Stroika::Foundation::DataExchange::Compression {
      ********************************************************************************
      */
     inline Reader::Reader (const shared_ptr<_IRep>& rep)
-        : fRep_ (rep)
+        : fRep_{rep}
     {
     }
     inline Reader::Reader (Reader&& src)
-        : fRep_ (move (src.fRep_))
+        : fRep_{move (src.fRep_)}
     {
     }
     inline Reader::_IRep& Reader::_GetRep ()

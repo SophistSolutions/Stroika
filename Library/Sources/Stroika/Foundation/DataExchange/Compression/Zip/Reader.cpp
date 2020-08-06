@@ -294,7 +294,7 @@ public:
 };
 
 Zip::Reader::Reader ()
-    : DataExchange::Compression::Reader (make_shared<Rep_> ())
+    : DataExchange::Compression::Reader{make_shared<Rep_> ()}
 {
 }
 #endif

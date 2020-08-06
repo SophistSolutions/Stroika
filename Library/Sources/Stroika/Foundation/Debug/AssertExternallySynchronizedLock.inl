@@ -19,12 +19,12 @@ namespace Stroika::Foundation::Debug {
      ********************************************************************************
      */
     inline AssertExternallySynchronizedLock::AssertExternallySynchronizedLock (const AssertExternallySynchronizedLock& src) noexcept
-        : AssertExternallySynchronizedLock ()
+        : AssertExternallySynchronizedLock{}
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec1{src}; // to copy, the src can have shared_locks, but no (write) locks
     }
     inline AssertExternallySynchronizedLock::AssertExternallySynchronizedLock ([[maybe_unused]] AssertExternallySynchronizedLock&& src) noexcept
-        : AssertExternallySynchronizedLock ()
+        : AssertExternallySynchronizedLock{}
     {
 #if qDebug
         try {

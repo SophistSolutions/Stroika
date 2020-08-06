@@ -20,8 +20,8 @@ namespace Stroika::Foundation::Memory::Platform::Windows {
      ********************************************************************************
      */
     inline StackBasedHandleLocker::StackBasedHandleLocker (HANDLE h)
-        : fHandle_ (h)
-        , fPointer_ (reinterpret_cast<byte*> (::GlobalLock (h)))
+        : fHandle_{h}
+        , fPointer_{reinterpret_cast<byte*> (::GlobalLock (h))}
     {
         RequireNotNull (h);
         Execution::ThrowIfNull (fPointer_);

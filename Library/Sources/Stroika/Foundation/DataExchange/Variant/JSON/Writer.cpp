@@ -30,7 +30,7 @@ namespace {
     struct Options_ {
         Options_ (const Variant::JSON::Writer::Options& o)
             : fFloatOptions{o.fFloatOptions.value_or (Characters::Float2StringOptions{})}
-            , fJSONPrettyPrint (o.fJSONPrettyPrint.value_or (true))
+            , fJSONPrettyPrint{o.fJSONPrettyPrint.value_or (true)}
             , fSpacesPerIndent{o.fSpacesPerIndent.value_or (4)}
             , fAllowNANInf{o.fAllowNANInf.value_or (true)}
         {
@@ -38,7 +38,7 @@ namespace {
                 fSpacesPerIndent = 0;
             }
             if (fSpacesPerIndent != 0) {
-                fIndentSpace = String_Constant{L" "}.Repeat (fSpacesPerIndent);
+                fIndentSpace = (L" "_k).Repeat (fSpacesPerIndent);
             }
         }
         Characters::Float2StringOptions fFloatOptions;
@@ -262,6 +262,6 @@ public:
 };
 
 Variant::JSON::Writer::Writer (const Options& options)
-    : inherited (make_shared<Rep_> (options))
+    : inherited{make_shared<Rep_> (options)}
 {
 }

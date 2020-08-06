@@ -35,12 +35,12 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
      */
     template <typename T>
     inline Vector<T>::Vector (size_t dimension)
-        : Vector (dimension, 0)
+        : Vector{dimension, 0}
     {
     }
     template <typename T>
     Vector<T>::Vector (size_t dimension, Configuration::ArgByValueType<T> fillValue)
-        : fRep_ (make_shared<IRep_> ())
+        : fRep_{make_shared<IRep_> ()}
     {
         for (size_t i = 0; i < dimension; ++i) {
             fRep_.get ()->fData.Append (fillValue);
@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     }
     template <typename T>
     Vector<T>::Vector (size_t dimension, const function<T ()>& filler)
-        : fRep_ (make_shared<IRep_> ())
+        : fRep_{make_shared<IRep_> ()}
     {
         for (size_t i = 0; i < dimension; ++i) {
             fRep_.get ()->fData.Append (filler ());
@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     template <typename T>
     template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_T, T>>*>
     Vector<T>::Vector (const CONTAINER_OF_T& c)
-        : fRep_ (make_shared<IRep_> ())
+        : fRep_{make_shared<IRep_> ()}
     {
         fRep_->fData = Containers::Sequence<T>{c};
     }

@@ -35,7 +35,7 @@ class Variant::CharacterDelimitedLines::Reader::Rep_ : public Variant::Reader::_
 public:
     Set<Character> fDelimiters_;
     Rep_ (const Set<Character>& columnDelimiters)
-        : fDelimiters_ (columnDelimiters)
+        : fDelimiters_{columnDelimiters}
     {
     }
     virtual _SharedPtrIRep Clone () const override
@@ -82,7 +82,7 @@ public:
 #endif
 };
 Variant::CharacterDelimitedLines::Reader::Reader (const Set<Character>& columnDelimiters)
-    : inherited (make_shared<Rep_> (columnDelimiters))
+    : inherited{make_shared<Rep_> (columnDelimiters)}
 {
 }
 

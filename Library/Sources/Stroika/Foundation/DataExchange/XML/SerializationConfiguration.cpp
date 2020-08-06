@@ -9,10 +9,9 @@
 
 using namespace Stroika;
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::XML;
-
-using Characters::String_Constant;
 
 /*
  ********************************************************************************
@@ -20,7 +19,7 @@ using Characters::String_Constant;
  ********************************************************************************
  */
 SerializationConfiguration::SerializationConfiguration ()
-    : fDocumentElementName_ (String_Constant (L"Document"))
-    , fArrayElementName_ (String_Constant (L"Array"))
+    : fDocumentElementName_{L"Document"_k}
+    , fArrayElementName_{L"Array"_k}
 {
 }

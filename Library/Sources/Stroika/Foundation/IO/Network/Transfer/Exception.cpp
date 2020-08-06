@@ -17,8 +17,8 @@ using namespace Stroika::Foundation::IO::Network::Transfer;
  ********************************************************************************
  */
 Exception::Exception (const Response& response)
-    : HTTP::Exception (response.GetStatus ())
-    , fResponse_ (response)
+    : HTTP::Exception{response.GetStatus ()}
+    , fResponse_{response}
 {
 }
 

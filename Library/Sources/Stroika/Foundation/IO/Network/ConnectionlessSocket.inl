@@ -17,15 +17,15 @@ namespace Stroika::Foundation::IO::Network {
      ********************************************************************************
      */
     inline ConnectionlessSocket::Ptr::Ptr (nullptr_t)
-        : Socket::Ptr (nullptr)
+        : Socket::Ptr{nullptr}
     {
     }
     inline ConnectionlessSocket::Ptr::Ptr (const shared_ptr<_IRep>& rep)
-        : Socket::Ptr (rep)
+        : Socket::Ptr{rep}
     {
     }
     inline ConnectionlessSocket::Ptr::Ptr (shared_ptr<_IRep>&& rep)
-        : Socket::Ptr (move (rep))
+        : Socket::Ptr{move (rep)}
     {
     }
     inline uint8_t ConnectionlessSocket::Ptr::GetMulticastTTL () const

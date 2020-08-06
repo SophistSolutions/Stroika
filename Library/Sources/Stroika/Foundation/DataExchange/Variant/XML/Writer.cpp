@@ -144,8 +144,8 @@ namespace {
 class Variant::XML::Writer::Rep_ : public Variant::Writer::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
 public:
     Rep_ (const SerializationConfiguration& config)
-        : fSerializationConfiguration_ (config)
-        , fDocumentElementName_ (config.GetDocumentElementName ().value_or (String{}))
+        : fSerializationConfiguration_{config}
+        , fDocumentElementName_{config.GetDocumentElementName ().value_or (String{})}
     {
     }
     virtual _SharedPtrIRep Clone () const override
@@ -196,7 +196,7 @@ private:
 };
 
 Variant::XML::Writer::Writer (const SerializationConfiguration& config)
-    : inherited (make_shared<Rep_> (config))
+    : inherited{make_shared<Rep_> (config)}
 {
 }
 

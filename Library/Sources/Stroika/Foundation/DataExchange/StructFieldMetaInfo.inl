@@ -18,8 +18,8 @@ namespace Stroika::Foundation::DataExchange {
      ********************************************************************************
      */
     inline StructFieldMetaInfo::StructFieldMetaInfo (size_t fieldOffset, type_index typeInfo)
-        : fOffset (fieldOffset)
-        , fTypeInfo (typeInfo)
+        : fOffset{fieldOffset}
+        , fTypeInfo{typeInfo}
     {
     }
 

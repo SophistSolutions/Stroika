@@ -71,29 +71,29 @@ namespace {
     }
 }
 DataExchange::BadFormatException::BadFormatException ()
-    : inherited (mkMessage_ ())
-    , fLineNumber_ ()
-    , fColumnNumber_ ()
-    , fFileOffset_ ()
-    , fDetails_ ()
+    : inherited{mkMessage_ ()}
+    , fLineNumber_{}
+    , fColumnNumber_{}
+    , fFileOffset_{}
+    , fDetails_{}
 {
 }
 
 DataExchange::BadFormatException::BadFormatException (const String& details)
-    : inherited (mkMessage_ (details))
-    , fLineNumber_ ()
-    , fColumnNumber_ ()
-    , fFileOffset_ ()
-    , fDetails_ (details)
+    : inherited{mkMessage_ (details)}
+    , fLineNumber_{}
+    , fColumnNumber_{}
+    , fFileOffset_{}
+    , fDetails_{details}
 {
 }
 
 DataExchange::BadFormatException::BadFormatException (const String& details, const optional<unsigned int>& lineNumber, const optional<unsigned int>& columnNumber, const optional<uint64_t>& fileOffset)
-    : inherited (mkMessage_ (details, lineNumber, columnNumber, fileOffset))
-    , fLineNumber_ (lineNumber)
-    , fColumnNumber_ (columnNumber)
-    , fFileOffset_ (fileOffset)
-    , fDetails_ (details)
+    : inherited{mkMessage_ (details, lineNumber, columnNumber, fileOffset)}
+    , fLineNumber_{lineNumber}
+    , fColumnNumber_{columnNumber}
+    , fFileOffset_{fileOffset}
+    , fDetails_{details}
 {
 }
 

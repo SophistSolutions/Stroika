@@ -26,7 +26,7 @@ using Characters::String_Constant;
 class Variant::XML::Reader::Rep_ : public Variant::Reader::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
 public:
     Rep_ (const SerializationConfiguration& config)
-        : fSerializationConfiguration_ (config)
+        : fSerializationConfiguration_{config}
     {
     }
 
@@ -77,7 +77,7 @@ private:
  ********************************************************************************
  */
 Variant::XML::Reader::Reader (const SerializationConfiguration& config)
-    : inherited (make_shared<Rep_> (config))
+    : inherited{make_shared<Rep_> (config)}
 {
 }
 

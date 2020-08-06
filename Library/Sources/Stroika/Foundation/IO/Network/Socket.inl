@@ -17,7 +17,7 @@ namespace Stroika::Foundation::IO::Network {
      ********************************************************************************
      */
     inline constexpr Socket::BindFlags::BindFlags (bool reUseAddr)
-        : fReUseAddr (reUseAddr)
+        : fReUseAddr{reUseAddr}
     {
     }
 
@@ -30,11 +30,11 @@ namespace Stroika::Foundation::IO::Network {
     {
     }
     inline Socket::Ptr::Ptr (const shared_ptr<_IRep>& rep)
-        : fRep_ (rep)
+        : fRep_{rep}
     {
     }
     inline Socket::Ptr::Ptr (shared_ptr<_IRep>&& rep)
-        : fRep_ (move (rep))
+        : fRep_{move (rep)}
     {
     }
     inline Socket::Ptr& Socket::Ptr::operator= (Ptr&& s) noexcept

@@ -111,7 +111,7 @@ private:
 
 public:
     Rep_ (const Connection::Options& options)
-        : fOptions_ (options)
+        : fOptions_{options}
     {
     }
     Rep_ (const Rep_&) = delete;

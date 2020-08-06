@@ -31,8 +31,8 @@ namespace {
         function<void (Ptr)> fDeleter; // call on delete
 
         DelegatingConnectionRepWithDeleteHook_ (const Ptr& delegateTo, function<void (Ptr)> deleter)
-            : fDelegateTo (delegateTo)
-            , fDeleter (deleter)
+            : fDelegateTo{delegateTo}
+            , fDeleter{deleter}
         {
         }
         DelegatingConnectionRepWithDeleteHook_ (const DelegatingConnectionRepWithDeleteHook_&) = delete;
@@ -97,7 +97,7 @@ public:
     Options fOptions;
 
     Rep_ (const Options& options)
-        : fOptions (options)
+        : fOptions{options}
     {
     }
     ~Rep_ ()
@@ -205,7 +205,7 @@ public:
  ********************************************************************************
  */
 ConnectionPool::ConnectionPool (const Options& options)
-    : fRep_ (make_unique<Rep_> (options))
+    : fRep_{make_unique<Rep_> (options)}
 {
 }
 

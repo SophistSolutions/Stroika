@@ -19,13 +19,13 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      ********************************************************************************
      */
     inline Connection::Options::Authentication::Authentication (const String& authToken)
-        : fOptions_ (Options::eProactivelySendAuthentication)
-        , fExplicitAuthToken_ (authToken)
+        : fOptions_{Options::eProactivelySendAuthentication}
+        , fExplicitAuthToken_{authToken}
     {
     }
     inline Connection::Options::Authentication::Authentication (const String& username, const String& password, Options options)
-        : fOptions_ (options)
-        , fUsernamePassword_ (pair<String, String>{username, password})
+        : fOptions_{options}
+        , fUsernamePassword_{pair<String, String>{username, password}}
     {
     }
     inline Connection::Options::Authentication::Options Connection::Options::Authentication::GetOptions () const
@@ -43,7 +43,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      ********************************************************************************
      */
     inline Connection::Ptr::Ptr (const shared_ptr<IRep>& rep)
-        : fRep_ (rep)
+        : fRep_{rep}
     {
         RequireNotNull (rep);
     }

@@ -17,15 +17,15 @@ namespace Stroika::Foundation::IO::Network {
      ********************************************************************************
      */
     inline ConnectionOrientedStreamSocket::Ptr::Ptr (nullptr_t)
-        : inherited (nullptr)
+        : inherited{nullptr}
     {
     }
     inline ConnectionOrientedStreamSocket::Ptr::Ptr (shared_ptr<_IRep>&& rep)
-        : inherited (move (rep))
+        : inherited{move (rep)}
     {
     }
     inline ConnectionOrientedStreamSocket::Ptr::Ptr (const shared_ptr<_IRep>& rep)
-        : inherited (rep)
+        : inherited{rep}
     {
     }
     inline void ConnectionOrientedStreamSocket::Ptr::Close () const

@@ -35,10 +35,10 @@ namespace Stroika::Foundation::Math::ReBin {
      */
     template <typename X_TYPE, typename VALUE_TYPE>
     inline BasicDataDescriptor<X_TYPE, VALUE_TYPE>::BasicDataDescriptor (const ValueType* bucketStart, const ValueType* bucketEnd, XType xStart, XType xEnd)
-        : _fBucketDataStart (bucketStart)
-        , _fBucketDataEnd (bucketEnd)
-        , fXStart_ (xStart)
-        , fXEnd_ (xEnd)
+        : _fBucketDataStart{bucketStart}
+        , _fBucketDataEnd{bucketEnd}
+        , fXStart_{xStart}
+        , fXEnd_{xEnd}
     {
         RequireNotNull (bucketStart);
         RequireNotNull (bucketEnd);
@@ -105,7 +105,7 @@ namespace Stroika::Foundation::Math::ReBin {
      */
     template <typename X_TYPE, typename VALUE_TYPE>
     inline UpdatableDataDescriptor<X_TYPE, VALUE_TYPE>::UpdatableDataDescriptor (VALUE_TYPE* bucketStart, VALUE_TYPE* bucketEnd, X_TYPE xStart, X_TYPE xEnd)
-        : inherited (bucketStart, bucketEnd, xStart, xEnd)
+        : inherited{bucketStart, bucketEnd, xStart, xEnd}
     {
     }
     template <typename X_TYPE, typename VALUE_TYPE>

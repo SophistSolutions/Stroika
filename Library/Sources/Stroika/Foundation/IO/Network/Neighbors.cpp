@@ -238,7 +238,7 @@ public:
 };
 
 NeighborsMonitor::NeighborsMonitor (const Options& options)
-    : fRep_ (make_shared<Rep_> (options))
+    : fRep_{make_shared<Rep_> (options)}
 {
 }
 

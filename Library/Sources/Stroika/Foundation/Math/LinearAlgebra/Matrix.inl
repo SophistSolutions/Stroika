@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     class Matrix<T>::Rep_ : private Debug::AssertExternallySynchronizedLock {
     public:
         Rep_ (const DimensionType& dimensions)
-            : fDimensions_ (dimensions)
+            : fDimensions_{dimensions}
         {
         }
 
@@ -70,17 +70,17 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
      */
     template <typename T>
     inline Matrix<T>::Matrix (const DimensionType& dimensions)
-        : Matrix (dimensions, T{0})
+        : Matrix{dimensions, T{0}}
     {
     }
     template <typename T>
     inline Matrix<T>::Matrix (size_t rows, size_t columns)
-        : Matrix (DimensionType{rows, columns})
+        : Matrix{DimensionType{rows, columns}}
     {
     }
     template <typename T>
     Matrix<T>::Matrix (const DimensionType& dimensions, Configuration::ArgByValueType<T> fillValue)
-        : fRep_ (make_shared<Rep_> (dimensions))
+        : fRep_{make_shared<Rep_> (dimensions)}
     {
         for (size_t r = 0; r < dimensions.fRows; ++r) {
             for (size_t c = 0; c < dimensions.fColumns; ++c) {
@@ -90,12 +90,12 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     }
     template <typename T>
     inline Matrix<T>::Matrix (size_t rows, size_t columns, Configuration::ArgByValueType<T> fillValue)
-        : Matrix (DimensionType{rows, columns}, fillValue)
+        : Matrix{DimensionType{rows, columns}, fillValue}
     {
     }
     template <typename T>
     Matrix<T>::Matrix (const DimensionType& dimensions, const function<T ()>& filler)
-        : fRep_ (make_shared<Rep_> (dimensions))
+        : fRep_{make_shared<Rep_> (dimensions)}
     {
         for (size_t r = 0; r < dimensions.fRows; ++r) {
             for (size_t c = 0; c < dimensions.fColumns; ++c) {

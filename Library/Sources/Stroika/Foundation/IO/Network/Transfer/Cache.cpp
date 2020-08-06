@@ -41,7 +41,7 @@ namespace {
         struct MyElement_ : Element {
             MyElement_ () = default;
             MyElement_ (const Response& response)
-                : Element (response)
+                : Element{response}
             {
             }
 

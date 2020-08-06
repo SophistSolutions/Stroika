@@ -18,7 +18,7 @@ namespace Stroika::Foundation::IO::Network {
      ********************************************************************************
      */
     inline CIDR::CIDR (const InternetAddress& internetAddress, optional<unsigned int> significantBits)
-        : CIDR (internetAddress, significantBits.value_or (static_cast<unsigned int> (*internetAddress.GetAddressSize () * 8)))
+        : CIDR{internetAddress, significantBits.value_or (static_cast<unsigned int> (*internetAddress.GetAddressSize () * 8))}
     {
     }
     inline InternetAddress CIDR::GetInternetAddress () const

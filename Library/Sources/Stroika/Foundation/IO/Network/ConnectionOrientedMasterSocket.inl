@@ -17,15 +17,15 @@ namespace Stroika::Foundation::IO::Network {
      ********************************************************************************
      */
     inline ConnectionOrientedMasterSocket::Ptr::Ptr (nullptr_t)
-        : inherited (nullptr)
+        : inherited{nullptr}
     {
     }
     inline ConnectionOrientedMasterSocket::Ptr::Ptr (shared_ptr<_IRep>&& rep)
-        : inherited (move (rep))
+        : inherited{move (rep)}
     {
     }
     inline ConnectionOrientedMasterSocket::Ptr::Ptr (const shared_ptr<_IRep>& rep)
-        : inherited (rep)
+        : inherited{rep}
     {
     }
     inline void ConnectionOrientedMasterSocket::Ptr::Listen (unsigned int backlog) const

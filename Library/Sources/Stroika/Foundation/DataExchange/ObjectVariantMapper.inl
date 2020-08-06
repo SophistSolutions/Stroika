@@ -32,24 +32,24 @@ namespace Stroika::Foundation::DataExchange {
      ********************************************************************************
      */
     inline ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const optional<TypeMappingDetails>& overrideTypeMapper, NullFieldHandling nullFields)
-        : fFieldMetaInfo (fieldMetaInfo)
-        , fSerializedFieldName (serializedFieldName)
-        , fOverrideTypeMapper (overrideTypeMapper)
-        , fNullFields (nullFields)
+        : fFieldMetaInfo{fieldMetaInfo}
+        , fSerializedFieldName{serializedFieldName}
+        , fOverrideTypeMapper{overrideTypeMapper}
+        , fNullFields{nullFields}
     {
     }
     inline ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields)
-        : StructFieldInfo (serializedFieldName, fieldMetaInfo, {}, nullFields)
+        : StructFieldInfo{serializedFieldName, fieldMetaInfo, {}, nullFields}
     {
     }
     template <int SZ>
     inline ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const wchar_t (&serializedFieldName)[SZ], const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields)
-        : StructFieldInfo (Characters::String_Constant{serializedFieldName}, fieldMetaInfo, {}, nullFields)
+        : StructFieldInfo{Characters::String_Constant{serializedFieldName}, fieldMetaInfo, {}, nullFields}
     {
     }
     template <int SZ>
     inline ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const wchar_t (&serializedFieldName)[SZ], const StructFieldMetaInfo& fieldMetaInfo, const optional<TypeMappingDetails>& overrideTypeMapper, NullFieldHandling nullFields)
-        : StructFieldInfo (Characters::String_Constant{serializedFieldName}, fieldMetaInfo, overrideTypeMapper, nullFields)
+        : StructFieldInfo{Characters::String_Constant{serializedFieldName}, fieldMetaInfo, overrideTypeMapper, nullFields}
     {
     }
 
@@ -59,9 +59,9 @@ namespace Stroika::Foundation::DataExchange {
      ********************************************************************************
      */
     inline ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& forTypeInfo, const FromGenericObjectMapperType& fromObjectMapper, const ToGenericObjectMapperType& toObjectMapper)
-        : fForType (forTypeInfo)
-        , fFromObjecttMapper (fromObjectMapper)
-        , fToObjectMapper (toObjectMapper)
+        : fForType{forTypeInfo}
+        , fFromObjecttMapper{fromObjectMapper}
+        , fToObjectMapper{toObjectMapper}
     {
         RequireNotNull (fromObjectMapper);
         RequireNotNull (toObjectMapper);
@@ -130,7 +130,7 @@ namespace Stroika::Foundation::DataExchange {
      ********************************************************************************
      */
     inline ObjectVariantMapper::TypesRegistry::TypesRegistry (const Mapping<type_index, TypeMappingDetails>& src)
-        : fSerializers_ (src)
+        : fSerializers_{src}
     {
     }
     inline ObjectVariantMapper::TypesRegistry::TypesRegistry (const Set<TypeMappingDetails>& src)

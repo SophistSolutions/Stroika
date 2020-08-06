@@ -68,7 +68,7 @@ namespace {
     struct AutoWinHINTERNET_ {
         HINTERNET fHandle;
         explicit AutoWinHINTERNET_ (HINTERNET handle)
-            : fHandle (handle)
+            : fHandle{handle}
         {
             ThrowIfZeroGetLastError (fHandle);
         }
@@ -90,7 +90,7 @@ namespace {
 class Connection_WinHTTP::Rep_ : public Connection::IRep {
 public:
     Rep_ (const Connection::Options& options)
-        : fOptions_ (options)
+        : fOptions_{options}
     {
     }
     Rep_ (const Rep_&) = delete;

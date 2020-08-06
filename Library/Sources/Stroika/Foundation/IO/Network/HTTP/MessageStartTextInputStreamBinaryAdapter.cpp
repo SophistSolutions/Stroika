@@ -35,10 +35,10 @@ namespace {
 class MessageStartTextInputStreamBinaryAdapter::Rep_ : public InputStream<Character>::_IRep, protected Debug::AssertExternallySynchronizedLock {
 public:
     Rep_ (const InputStream<byte>::Ptr& src)
-        : fSource_ (src)
-        , fAllDataReadBuf_ (kDefaultBufSize_)
-        , fOffset_ (0)
-        , fBufferFilledUpValidBytes_ (0)
+        : fSource_{src}
+        , fAllDataReadBuf_{kDefaultBufSize_}
+        , fOffset_{0}
+        , fBufferFilledUpValidBytes_{0}
     {
     }
 

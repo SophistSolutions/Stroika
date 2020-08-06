@@ -27,7 +27,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     class Registry::SimpleReader_ : public IElementConsumer {
     public:
         SimpleReader_ (T* intoVal)
-            : fValue_ (intoVal)
+            : fValue_{intoVal}
         {
             RequireNotNull (intoVal);
         }
@@ -112,12 +112,12 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      ********************************************************************************
      */
     inline Context::Context (const Registry& registry)
-        : fObjectReaderRegistry_ (registry)
+        : fObjectReaderRegistry_{registry}
     {
     }
     inline Context::Context (Context&& from) noexcept
-        : fObjectReaderRegistry_ (from.fObjectReaderRegistry_)
-        , fStack_ (move (from.fStack_))
+        : fObjectReaderRegistry_{from.fObjectReaderRegistry_}
+        , fStack_{move (from.fStack_)}
     {
     }
     inline void Context::Push (const shared_ptr<IElementConsumer>& elt)
@@ -171,15 +171,15 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      ********************************************************************************
      */
     inline IConsumerDelegateToContext::IConsumerDelegateToContext (Context&& r)
-        : fContext (move (r))
+        : fContext{move (r)}
     {
     }
     inline IConsumerDelegateToContext::IConsumerDelegateToContext (const Registry& registry)
-        : fContext (registry)
+        : fContext{registry}
     {
     }
     inline IConsumerDelegateToContext::IConsumerDelegateToContext (const Registry& registry, const shared_ptr<IElementConsumer>& initialTop)
-        : fContext (registry, initialTop)
+        : fContext{registry, initialTop}
     {
     }
 
@@ -189,9 +189,9 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      ********************************************************************************
      */
     inline StructFieldInfo::StructFieldInfo (const Name& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const optional<ReaderFromVoidStarFactory>& typeMapper)
-        : fSerializedFieldName (serializedFieldName)
-        , fFieldMetaInfo (fieldMetaInfo)
-        , fOverrideTypeMapper (typeMapper)
+        : fSerializedFieldName{serializedFieldName}
+        , fFieldMetaInfo{fieldMetaInfo}
+        , fOverrideTypeMapper{typeMapper}
     {
     }
 
@@ -202,8 +202,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      */
     template <typename T>
     ClassReader<T>::ClassReader (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, T* vp)
-        : fFieldDescriptions_ (fieldDescriptions)
-        , fValuePtr_ (vp)
+        : fFieldDescriptions_{fieldDescriptions}
+        , fValuePtr_{vp}
     {
         RequireNotNull (vp);
         for (StructFieldInfo i : fieldDescriptions) {
@@ -302,7 +302,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      */
     template <typename CONTAINER_OF_T>
     inline ListOfObjectsReader<CONTAINER_OF_T>::ListOfObjectsReader (CONTAINER_OF_T* v)
-        : fValuePtr_ (v)
+        : fValuePtr_{v}
     {
         RequireNotNull (v);
     }
@@ -357,7 +357,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
       */
     template <typename T, typename TRAITS>
     OptionalTypesReader<T, TRAITS>::OptionalTypesReader (optional<T>* intoVal)
-        : fValue_ (intoVal)
+        : fValue_{intoVal}
     {
         RequireNotNull (intoVal);
     }
@@ -403,37 +403,37 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     const function<std::byte*(T*)> MixinReader<T>::MixinEltTraits::kDefaultAddressOfSubElementFetcher = [] (T* b) { return reinterpret_cast<std::byte*> (b); };
     template <typename T>
     inline MixinReader<T>::MixinEltTraits::MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<std::byte*(T*)>& addressOfSubEltFetcher)
-        : fReaderFactory (readerFactory)
-        , fAddressOfSubElementFetcher (addressOfSubEltFetcher)
+        : fReaderFactory{readerFactory}
+        , fAddressOfSubElementFetcher{addressOfSubEltFetcher}
     {
     }
     template <typename T>
     inline MixinReader<T>::MixinEltTraits::MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool (const Name& name)>& readsName, const function<std::byte*(T*)>& addressOfSubEltFetcher)
-        : fReaderFactory (readerFactory)
-        , fReadsName (readsName)
-        , fAddressOfSubElementFetcher (addressOfSubEltFetcher)
+        : fReaderFactory{readerFactory}
+        , fReadsName{readsName}
+        , fAddressOfSubElementFetcher{addressOfSubEltFetcher}
     {
     }
     template <typename T>
     inline MixinReader<T>::MixinEltTraits::MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool ()>& readsText, const function<std::byte*(T*)>& addressOfSubEltFetcher)
-        : fReaderFactory (readerFactory)
-        , fReadsText (readsText)
-        , fAddressOfSubElementFetcher (addressOfSubEltFetcher)
+        : fReaderFactory{readerFactory}
+        , fReadsText{readsText}
+        , fAddressOfSubElementFetcher{addressOfSubEltFetcher}
     {
     }
     template <typename T>
     inline MixinReader<T>::MixinEltTraits::MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool (const Name& name)>& readsName, const function<bool ()>& readsText, const function<std::byte*(T*)>& addressOfSubEltFetcher)
-        : fReaderFactory (readerFactory)
-        , fReadsName (readsName)
-        , fReadsText (readsText)
-        , fAddressOfSubElementFetcher (addressOfSubEltFetcher)
+        : fReaderFactory{readerFactory}
+        , fReadsName{readsName}
+        , fReadsText{readsText}
+        , fAddressOfSubElementFetcher{addressOfSubEltFetcher}
     {
     }
 
     template <typename T>
     MixinReader<T>::MixinReader (T* vp, const Traversal::Iterable<MixinEltTraits>& mixins)
-        : fValuePtr_ (vp)
-        , fMixins_ (mixins)
+        : fValuePtr_{vp}
+        , fMixins_{mixins}
     {
         RequireNotNull (vp);
         for (MixinEltTraits m : mixins) {
@@ -503,8 +503,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      */
     template <typename T>
     RangeReader<T>::RangeReader (T* intoVal, const pair<Name, Name>& pairNames)
-        : fPairNames (pairNames)
-        , fValue_ (intoVal)
+        : fPairNames{pairNames}
+        , fValue_{intoVal}
     {
         RequireNotNull (intoVal);
     }
@@ -576,26 +576,26 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      */
     template <typename T, typename TRAITS>
     inline RepeatedElementReader<T, TRAITS>::RepeatedElementReader (ContainerType* v)
-        : fValuePtr_ (v)
+        : fValuePtr_{v}
     {
     }
     template <typename T, typename TRAITS>
     inline RepeatedElementReader<T, TRAITS>::RepeatedElementReader (ContainerType* pv, const ReaderFromVoidStarFactory& actualElementFactory)
-        : fValuePtr_ (pv)
-        , fReaderRactory_ (actualElementFactory)
+        : fValuePtr_{pv}
+        , fReaderRactory_{actualElementFactory}
     {
     }
     template <typename T, typename TRAITS>
     inline RepeatedElementReader<T, TRAITS>::RepeatedElementReader (ContainerType* v, const Name& readonlyThisName, const ReaderFromVoidStarFactory& actualElementFactory)
-        : fValuePtr_ (v)
-        , fReaderRactory_ (actualElementFactory)
-        , fReadThisName_ ([readonlyThisName] (const Name& n) { return n == readonlyThisName; })
+        : fValuePtr_{v}
+        , fReaderRactory_{actualElementFactory}
+        , fReadThisName_{[readonlyThisName] (const Name& n) { return n == readonlyThisName; }}
     {
     }
     template <typename T, typename TRAITS>
     inline RepeatedElementReader<T, TRAITS>::RepeatedElementReader (ContainerType* v, const Name& readonlyThisName)
-        : fValuePtr_ (v)
-        , fReadThisName_ ([readonlyThisName] (const Name& n) { return n == readonlyThisName; })
+        : fValuePtr_{v}
+        , fReadThisName_{[readonlyThisName] (const Name& n) { return n == readonlyThisName; }}
     {
     }
     template <typename T, typename TRAITS>

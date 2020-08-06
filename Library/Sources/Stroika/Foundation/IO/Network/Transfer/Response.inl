@@ -19,10 +19,10 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      ********************************************************************************
      */
     inline Response::Response (const BLOB& data, HTTP::Status status, const Mapping<String, String>& headers, const optional<SSLResultInfo>& sslInfo)
-        : fData_ (data)
-        , fHeaders_ (headers)
-        , fStatus_ (status)
-        , fServerEndpointSSLInfo_ (sslInfo)
+        : fData_{data}
+        , fHeaders_{headers}
+        , fStatus_{status}
+        , fServerEndpointSSLInfo_{sslInfo}
     {
     }
     inline BLOB Response::GetData () const

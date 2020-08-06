@@ -27,7 +27,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
      ********************************************************************************
      */
     inline Reader::Reader (const shared_ptr<_IRep>& rep)
-        : fRep_ (rep)
+        : fRep_{rep}
     {
     }
     inline String Reader::GetDefaultFileSuffix () const
