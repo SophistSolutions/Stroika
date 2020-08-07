@@ -22,13 +22,13 @@ namespace Stroika::Foundation::Characters {
      ********************************************************************************
      */
     inline StringBuilder::StringBuilder ()
-        : fData_ (0)
-        , fLength_ (0)
+        : fData_{0}
+        , fLength_{0}
     {
     }
     inline StringBuilder::StringBuilder (const String& initialValue)
-        : fData_ (0)
-        , fLength_ (0)
+        : fData_{0}
+        , fLength_{0}
     {
         operator+= (initialValue);
     }
@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Characters {
             Append (reinterpret_cast<const wchar_t*> (s));
         }
         else {
-            Append (String (s));
+            Append (String{s});
         }
     }
     inline void StringBuilder::Append (const char32_t* s, const char32_t* e)
@@ -92,7 +92,7 @@ namespace Stroika::Foundation::Characters {
             Append (reinterpret_cast<const wchar_t*> (s), reinterpret_cast<const wchar_t*> (e));
         }
         else {
-            Append (String (s, e));
+            Append (String{s, e});
         }
     }
     inline void StringBuilder::Append (const char32_t* s)
@@ -102,7 +102,7 @@ namespace Stroika::Foundation::Characters {
             Append (reinterpret_cast<const wchar_t*> (s));
         }
         else {
-            Append (String (s));
+            Append (String{s});
         }
     }
     inline void StringBuilder::Append (const wstring& s)
@@ -115,7 +115,7 @@ namespace Stroika::Foundation::Characters {
             Append (reinterpret_cast<const wchar_t*> (s.c_str ()), reinterpret_cast<const wchar_t*> (s.c_str ()) + s.length ());
         }
         else {
-            Append (String (s));
+            Append (String{s});
         }
     }
     inline void StringBuilder::Append (const u32string& s)
@@ -124,7 +124,7 @@ namespace Stroika::Foundation::Characters {
             Append (reinterpret_cast<const wchar_t*> (s.c_str ()), reinterpret_cast<const wchar_t*> (s.c_str ()) + s.length ());
         }
         else {
-            Append (String (s));
+            Append (String{s});
         }
     }
     inline void StringBuilder::Append (const String& s)

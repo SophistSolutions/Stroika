@@ -80,7 +80,8 @@ template <typename T>
 struct VariantValue::TIRep_ : VariantValue::IRep_, public Memory::UseBlockAllocationIfAppropriate<TIRep_<T>> {
     template <typename FWD>
     inline TIRep_ (FWD&& v)
-        : fVal{forward<FWD> (v)}
+        // @todo - Understand why changing this to uniform-initialization changes this to an infinite stack overflow recursion
+        : fVal (forward<FWD> (v))
     {
     }
     virtual Type GetType () const override

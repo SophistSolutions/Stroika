@@ -22,21 +22,21 @@ namespace Stroika::Foundation::Characters {
      ********************************************************************************
      */
     constexpr inline Character::Character ()
-        : fCharacterCode_ ('\0')
+        : fCharacterCode_{'\0'}
     {
     }
     constexpr inline Character::Character (char c)
-        : fCharacterCode_ (c)
+        : fCharacterCode_{static_cast<wchar_t> (c)}
     {
     }
     constexpr inline Character::Character (char16_t c)
-        : fCharacterCode_ (c)
+        : fCharacterCode_{c}
     {
     }
     DISABLE_COMPILER_MSC_WARNING_START (4244)
     // NB: THIS IS A REAL BUG/ISSUE. WE MUST DO WORK TO TRANSFORM. REDESIGN REQUIRED!!!
     constexpr inline Character::Character (char32_t c)
-        : fCharacterCode_ (c)
+        : fCharacterCode_{static_cast<wchar_t> (c)}
     {
     }
     DISABLE_COMPILER_MSC_WARNING_END (4244)

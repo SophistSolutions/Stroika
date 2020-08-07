@@ -18,15 +18,15 @@ namespace Stroika::Foundation::Characters {
      ********************************************************************************
      */
     inline RegularExpression::RegularExpression ()
-        : fCompiledRegExp_ ()
+        : fCompiledRegExp_{}
     {
     }
     inline RegularExpression::RegularExpression (const wregex& regEx)
-        : fCompiledRegExp_ (regEx)
+        : fCompiledRegExp_{regEx}
     {
     }
     inline RegularExpression::RegularExpression (wregex&& regEx)
-        : fCompiledRegExp_ (move (regEx))
+        : fCompiledRegExp_{move (regEx)}
     {
     }
     inline const wregex& RegularExpression::GetCompiled () const

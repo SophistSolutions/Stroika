@@ -23,8 +23,8 @@ namespace Stroika::Foundation::Characters {
      ********************************************************************************
      */
     inline String::_IRep::_IRep (const wchar_t* start, const wchar_t* end)
-        : _fStart (start)
-        , _fEnd (end)
+        : _fStart{start}
+        , _fEnd{end}
     {
     }
     inline Character String::_IRep::GetAt (size_t index) const
@@ -93,44 +93,44 @@ namespace Stroika::Foundation::Characters {
      ********************************************************************************
      */
     inline String::String (const String& from) noexcept
-        : inherited (from)
+        : inherited{from}
     {
     }
     inline String::String (String&& from) noexcept
-        : inherited (move (from))
+        : inherited{move (from)}
     {
     }
     inline String::String (const _SharedPtrIRep& rep) noexcept
-        : inherited (rep)
+        : inherited{rep}
     {
         _AssertRepValidType ();
     }
     inline String::String (_SharedPtrIRep&& rep) noexcept
-        : inherited (move (rep))
+        : inherited{move (rep)}
     {
         //RequireNotNull (rep); -- logically required, but we cannot test here, must test before mem-initializers
         _AssertRepValidType ();
     }
     inline String::String ()
-        : inherited (mkEmpty_ ())
+        : inherited{mkEmpty_ ()}
     {
         _AssertRepValidType ();
     }
     inline String::String (const wchar_t* cString)
-        : inherited (cString[0] == '\0' ? mkEmpty_ () : mk_ (cString, cString + wcslen (cString)))
+        : inherited{cString[0] == '\0' ? mkEmpty_ () : mk_ (cString, cString + ::wcslen (cString))}
     {
         RequireNotNull (cString);
         _AssertRepValidType ();
     }
     inline String::String (const wchar_t* from, const wchar_t* to)
-        : inherited ((from == to) ? mkEmpty_ () : mk_ (from, to))
+        : inherited{(from == to) ? mkEmpty_ () : mk_ (from, to)}
     {
         Require (from <= to);
         Require (from != nullptr or from == to);
         _AssertRepValidType ();
     }
     inline String::String (const Character* from, const Character* to)
-        : inherited ((from == to) ? mkEmpty_ () : mk_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to)))
+        : inherited{(from == to) ? mkEmpty_ () : mk_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to))}
     {
         static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
         Require (from <= to);
@@ -138,23 +138,23 @@ namespace Stroika::Foundation::Characters {
         _AssertRepValidType ();
     }
     inline String::String (const wstring& r)
-        : inherited (r.empty () ? mkEmpty_ () : mk_ (r.data (), r.data () + r.length ()))
+        : inherited{r.empty () ? mkEmpty_ () : mk_ (r.data (), r.data () + r.length ())}
     {
         _AssertRepValidType ();
     }
     inline String::String (const u16string& r)
-        : inherited (r.empty () ? mkEmpty_ () : mk_ (r.data (), r.data () + r.length ()))
+        : inherited{r.empty () ? mkEmpty_ () : mk_ (r.data (), r.data () + r.length ())}
     {
         _AssertRepValidType ();
     }
     inline String::String (const u32string& r)
-        : inherited (r.empty () ? mkEmpty_ () : mk_ (r.data (), r.data () + r.length ()))
+        : inherited{r.empty () ? mkEmpty_ () : mk_ (r.data (), r.data () + r.length ())}
     {
         _AssertRepValidType ();
     }
 #if __cpp_char8_t >= 201811L
     inline String::String (const char8_t* from, const char8_t* to)
-        : inherited ((from == to) ? mkEmpty_ () : FromUTF8 (from, to))
+        : inherited{(from == to) ? mkEmpty_ () : FromUTF8 (from, to)}
     {
         Require ((from == nullptr) == (to == nullptr));
         Require (from <= to);
@@ -162,14 +162,14 @@ namespace Stroika::Foundation::Characters {
     }
 #endif
     inline String::String (const char16_t* from, const char16_t* to)
-        : inherited ((from == to) ? mkEmpty_ () : mk_ (from, to))
+        : inherited{(from == to) ? mkEmpty_ () : mk_ (from, to)}
     {
         Require ((from == nullptr) == (to == nullptr));
         Require (from <= to);
         _AssertRepValidType (); // just make sure non-null and right type
     }
     inline String::String (const char32_t* from, const char32_t* to)
-        : inherited ((from == to) ? mkEmpty_ () : mk_ (from, to))
+        : inherited{(from == to) ? mkEmpty_ () : mk_ (from, to)}
     {
         Require ((from == nullptr) == (to == nullptr));
         Require (from <= to);
@@ -225,7 +225,6 @@ namespace Stroika::Foundation::Characters {
         return FromUTF8 (from.c_str (), from.c_str () + from.length ());
     }
 #endif
-
     inline String String::FromISOLatin1 (const char* from)
     {
         return FromISOLatin1 (from, from + ::strlen (from));

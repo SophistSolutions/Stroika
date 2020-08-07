@@ -22,7 +22,8 @@ namespace Stroika::Foundation::Execution {
     template <typename FUNCTION_SIGNATURE>
     template <typename CTOR_FUNC_SIG>
     inline Function<FUNCTION_SIGNATURE>::Function (const CTOR_FUNC_SIG& f)
-        : fFun_{STDFUNCTION{f}}
+        // @todo - Understand why changing this to uniform-initialization fails to compile
+        : fFun_ (STDFUNCTION{f})
         , fOrdering_{fFun_.template target<CTOR_FUNC_SIG> ()}
     {
         Assert ((fOrdering_ == nullptr) == (fFun_ == nullptr));

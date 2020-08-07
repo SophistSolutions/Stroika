@@ -73,8 +73,8 @@ namespace {
  ********************************************************************************
  */
 Exception::Exception (InternalErrorCodeType errorCode)
-    : inherited (GetMessage (errorCode))
-    , fErrorCode_ (errorCode)
+    : inherited{GetMessage (errorCode)}
+    , fErrorCode_{errorCode}
 {
 }
 

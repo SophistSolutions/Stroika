@@ -17,7 +17,7 @@ namespace Stroika::Foundation::Cryptography::Encoding {
      ********************************************************************************
      */
     inline OpenSSLCryptoParams::OpenSSLCryptoParams (const function<void (EVP_CIPHER_CTX*, Direction)>& f)
-        : fInitializer (f)
+        : fInitializer{f}
     {
     }
 #endif
