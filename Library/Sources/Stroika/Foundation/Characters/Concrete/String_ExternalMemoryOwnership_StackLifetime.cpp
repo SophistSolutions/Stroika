@@ -15,7 +15,7 @@ using namespace Stroika::Foundation::Characters::Concrete;
  ********************************************************************************
  */
 String_ExternalMemoryOwnership_StackLifetime::String_ExternalMemoryOwnership_StackLifetime (const wchar_t* cString)
-    : String (cString)
+    : String{cString}
 {
     /* TODO: FIX PERFORMANCE!!!
      *      This implementation conforms to the requirements of the API, so that this class CAN be used safely. However, it does NOT exhibit the performance
