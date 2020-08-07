@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Containers {
     void Collection<T>::AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
     {
         _SafeReadWriteRepAccessor<_IRep> tmp{this};
-        for (const auto& i = start; i != end; ++i) {
+        for (auto i = start; i != end; ++i) {
             tmp._GetWriteableRep ().Add (*i);
         }
     }
