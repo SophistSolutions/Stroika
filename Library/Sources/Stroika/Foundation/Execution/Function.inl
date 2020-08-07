@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Execution {
     template <typename FUNCTION_SIGNATURE>
     template <typename CTOR_FUNC_SIG>
     inline Function<FUNCTION_SIGNATURE>::Function (const CTOR_FUNC_SIG& f)
-        : fFun_{STDFUNCTION (f)}    // use non-uniform-initialzation convert to STDFUNCTION so we can get implicit conversions here
+        : fFun_{STDFUNCTION (f)} // use non-uniform-initialzation convert to STDFUNCTION so we can get implicit conversions here
         , fOrdering_{fFun_.template target<CTOR_FUNC_SIG> ()}
     {
         Assert ((fOrdering_ == nullptr) == (fFun_ == nullptr));
