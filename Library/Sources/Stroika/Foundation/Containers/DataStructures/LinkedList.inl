@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline LinkedList<T>::Link::Link (T item, Link* next)
         : fItem{item}
-        , fNext {next}
+        , fNext{next}
     {
     }
 
