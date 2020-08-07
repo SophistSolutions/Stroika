@@ -17,7 +17,7 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     template <typename... ARGS>
     SynchronizedLRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::SynchronizedLRUCache (ARGS... args)
-        : inherited (forward<ARGS> (args)...)   // allow implicit conversions so int converted to size_t like with direct call to LRUCache
+        : inherited (forward<ARGS> (args)...) // allow implicit conversions so int converted to size_t like with direct call to LRUCache
     {
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>

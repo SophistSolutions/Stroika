@@ -24,7 +24,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping ()
-        : inherited (Factory::Mapping_Factory<KEY_TYPE, MAPPED_VALUE_TYPE>{} ())
+        : inherited (Factory::Mapping_Factory<KEY_TYPE, MAPPED_VALUE_TYPE>{}())
     {
         _AssertRepValidType ();
     }
@@ -94,7 +94,7 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>*>
     Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
-        : Mapping {}
+        : Mapping{}
     {
         AddAll (start, end);
         _AssertRepValidType ();
