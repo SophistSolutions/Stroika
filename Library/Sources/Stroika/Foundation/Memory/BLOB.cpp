@@ -50,8 +50,11 @@ BLOB::BasicRep_::BasicRep_ (const initializer_list<pair<const byte*, const byte*
 {
     byte* pb = fData.begin ();
     for (auto i : startEndPairs) {
-        (void)::memcpy (pb, i.first, i.second - i.first);
-        pb += (i.second - i.first);
+        auto itemSize{i.second - i.first};
+        if (itemSize != 0) {
+            (void)::memcpy (pb, i.first, itemSize);
+            pb += itemSize;
+        }
     }
     Ensure (pb == fData.end ());
 }
@@ -61,8 +64,11 @@ BLOB::BasicRep_::BasicRep_ (const initializer_list<BLOB>& list2Concatenate)
 {
     byte* pb = fData.begin ();
     for (auto i : list2Concatenate) {
-        (void)::memcpy (pb, i.begin (), i.GetSize ());
-        pb += i.GetSize ();
+        auto itemSize{i.GetSize ()};
+        if (itemSize != 0) {
+            (void)::memcpy (pb, i.begin (), itemSize);
+            pb += itemSize;
+        }
     }
     Ensure (pb == fData.end ());
 }
