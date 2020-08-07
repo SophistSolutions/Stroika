@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Containers {
         TemporaryElementReference_ (TemporaryElementReference_&& from) = default;
         TemporaryElementReference_ (Sequence<X>* s, size_t i)
             : fV ((RequireNotNull (s), s))
-            , fIndex (i)
+            , fIndex {i}
         {
         }
         TemporaryElementReference_& operator= (const TemporaryElementReference_&) = delete;
@@ -64,8 +64,8 @@ namespace Stroika::Foundation::Containers {
         TemporaryElementReference_ (TemporaryElementReference_&&)      = default;
         TemporaryElementReference_ (Sequence<X>* s, size_t i)
             : X ((RequireNotNull (s), s->GetAt (i)))
-            , fV (s)
-            , fIndex (i)
+            , fV{s}
+            , fIndex{i}
         {
         }
         TemporaryElementReference_& operator= (const TemporaryElementReference_&) = delete;
@@ -96,13 +96,13 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline Sequence<T>::Sequence ()
-        : inherited (Factory::Sequence_Factory<T> () ())
+        : inherited (Factory::Sequence_Factory<T>{} ())
     {
         _AssertRepValidType ();
     }
     template <typename T>
     inline Sequence<T>::Sequence (const initializer_list<T>& src)
-        : Sequence ()
+        : Sequence{}
     {
         AppendAll (src);
         _AssertRepValidType ();
@@ -110,7 +110,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Sequence<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
     inline Sequence<T>::Sequence (CONTAINER_OF_ADDABLE&& src)
-        : Sequence ()
+        : Sequence{}
     {
         AppendAll (forward<CONTAINER_OF_ADDABLE> (src));
         _AssertRepValidType ();
@@ -131,7 +131,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
     inline Sequence<T>::Sequence (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
-        : Sequence ()
+        : Sequence{}
     {
         AppendAll (start, end);
         _AssertRepValidType ();
@@ -289,7 +289,7 @@ namespace Stroika::Foundation::Containers {
                 ww->Insert (_IRep::_kSentinalLastItemIndex, &item, &item + 1);
             });
 #else
-        for (auto&& i : s) {
+        for (const auto& i : s) {
             if (ww == nullptr) {
                 ww = &tmp._GetWriteableRep ();
             }
