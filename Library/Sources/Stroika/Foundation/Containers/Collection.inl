@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline Collection<T>::Collection ()
-        : inherited{Factory::Collection_Factory<T>{} ()}
+        : inherited (Factory::Collection_Factory<T>{}())
     {
         _AssertRepValidType ();
     }
@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     inline Collection<T>::Collection (_CollectionRepSharedPtr&& src) noexcept
-        : inherited{(RequireNotNull (src), move (src))}
+        : inherited (RequireNotNull (src), move (src)))
     {
         _AssertRepValidType ();
     }
@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Containers {
     template <typename EQUALS_COMPARER>
     bool Collection<T>::Contains (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer) const
     {
-        for (auto i : *this) {
+        for (auto&& i : *this) {
             if (equalsComparer (i, item)) {
                 return true;
             }
@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Containers {
     void Collection<T>::AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
     {
         _SafeReadWriteRepAccessor<_IRep> tmp{this};
-        for (auto i = start; i != end; ++i) {
+        for (auto&& i = start; i != end; ++i) {
             tmp._GetWriteableRep ().Add (*i);
         }
     }
