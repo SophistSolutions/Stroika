@@ -24,7 +24,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping ()
-        : inherited (Factory::Mapping_Factory<KEY_TYPE, MAPPED_VALUE_TYPE> () ())
+        : inherited (Factory::Mapping_Factory<KEY_TYPE, MAPPED_VALUE_TYPE>{} ())
     {
         _AssertRepValidType ();
     }
@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Containers {
 #endif
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
-        : Mapping ()
+        : Mapping{}
     {
         AddAll (src);
         _AssertRepValidType ();
@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
-        : Mapping ()
+        : Mapping{}
     {
         AddAll (src);
         _AssertRepValidType ();
@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> and not is_base_of_v<Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
     inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (CONTAINER_OF_ADDABLE&& src)
-        : Mapping ()
+        : Mapping{}
     {
         AddAll (forward<CONTAINER_OF_ADDABLE> (src));
         _AssertRepValidType ();
@@ -94,7 +94,7 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>*>
     Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
-        : Mapping ()
+        : Mapping {}
     {
         AddAll (start, end);
         _AssertRepValidType ();
