@@ -21,14 +21,14 @@ namespace Stroika::Foundation::Cache {
      */
     template <typename KEY, typename VALUE, typename TRAITS>
     TimedCache<KEY, VALUE, TRAITS>::TimedCache (Time::DurationSecondsType timeout)
-        : fTimeout_ (timeout)
-        , fNextAutoClearAt_ (Time::GetTickCount () + timeout)
+        : fTimeout_{timeout}
+        , fNextAutoClearAt_{Time::GetTickCount () + timeout}
     {
         Require (fTimeout_ > 0.0f);
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     TimedCache<KEY, VALUE, TRAITS>::TimedCache (const Time::Duration& timeout)
-        : TimedCache (timeout.As<Time::DurationSecondsType> ())
+        : TimedCache{timeout.As<Time::DurationSecondsType> ()}
     {
     }
     template <typename KEY, typename VALUE, typename TRAITS>

@@ -17,13 +17,13 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     template <typename... ARGS>
     SynchronizedLRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::SynchronizedLRUCache (ARGS... args)
-        : inherited (forward<ARGS> (args)...)
+        : inherited{forward<ARGS> (args)...}
     {
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     SynchronizedLRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::SynchronizedLRUCache (const SynchronizedLRUCache& src)
-        : inherited (src.GetMaxCacheSize (), src.GetKeyEqualsCompareFunction (), src.GetHashTableSize (), src.GetKeyHashFunction ())
-        , fHoldWriteLockDuringCacheFill (src.fHoldWriteLockDuringCacheFill)
+        : inherited{src.GetMaxCacheSize (), src.GetKeyEqualsCompareFunction (), src.GetHashTableSize (), src.GetKeyHashFunction ()}
+        , fHoldWriteLockDuringCacheFill{src.fHoldWriteLockDuringCacheFill}
     {
         for (auto i : src.Elements ()) {
             Add (i.fKey, i.fValue);

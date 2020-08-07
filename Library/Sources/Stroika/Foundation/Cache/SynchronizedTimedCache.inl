@@ -16,17 +16,17 @@ namespace Stroika::Foundation::Cache {
      */
     template <typename KEY, typename VALUE, typename TRAITS>
     inline SynchronizedTimedCache<KEY, VALUE, TRAITS>::SynchronizedTimedCache (Time::DurationSecondsType timeout)
-        : inherited (timeout)
+        : inherited{timeout}
     {
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     inline SynchronizedTimedCache<KEY, VALUE, TRAITS>::SynchronizedTimedCache (const Time::Duration& timeout)
-        : inherited (timeout)
+        : inherited{timeout}
     {
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     inline SynchronizedTimedCache<KEY, VALUE, TRAITS>::SynchronizedTimedCache (const SynchronizedTimedCache& src)
-        : inherited (src)
+        : inherited {src}
     {
     }
     template <typename KEY, typename VALUE, typename TRAITS>
