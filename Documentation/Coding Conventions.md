@@ -100,6 +100,21 @@ but if count was numeric_limits\&lt;size_t\&gt;::max(), then the e pointer compu
 
 ---
 
+## Uniform initialization {} vs. older style paren initialization ()
+
+- Generally prefer Uniform initialization syntax {} because
+
+  - makes construction appear distint from function calls
+  - rule about no narrowing/implicit conversions (MAYBE? helpful - unclear)
+
+- DONT use uniform initialzation syntax with call to perfect forwarding in templates. The natural behavior
+  with perfect forwarding is that you get the same effect with the wrapper object as you would have had with initializing
+  the underlying (wrapped) object. But initializing that object generally would have allowed implicit conversions (esp int to size_t).
+
+- VERY UNCERTAIN about this policy - as of 2020-08-07 - just an experimental plan.
+
+---
+
 ## New static methods and Factories
 
 In Stroika, a New () is static method, which allocates an instance of some class, but returns some kind of shared_ptr/smart pointer to the type – not a bare C++ pointer.
