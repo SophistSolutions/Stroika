@@ -18,13 +18,13 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline Queue<T>::Queue ()
-        : inherited (Factory::Queue_Factory<T> () ())
+        : inherited{Factory::Queue_Factory<T>{}()}
     {
         _AssertRepValidType ();
     }
     template <typename T>
     inline Queue<T>::Queue (const initializer_list<T>& src)
-        : Queue ()
+        : Queue{}
     {
         AddAllToTail (src);
         _AssertRepValidType ();
@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Queue<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
     inline Queue<T>::Queue (CONTAINER_OF_ADDABLE&& src)
-        : Queue ()
+        : Queue{}
     {
         AssertNotImplemented ();
         AddAllToTail (forward<CONTAINER_OF_ADDABLE> (src));
@@ -40,21 +40,21 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     inline Queue<T>::Queue (const _QueueRepSharedPtr& rep) noexcept
-        : inherited ((RequireNotNull (rep), rep))
+        : inherited{(RequireNotNull (rep), rep)}
     {
         _AssertRepValidType ();
         RequireNotNull (rep);
     }
     template <typename T>
     inline Queue<T>::Queue (_QueueRepSharedPtr&& rep) noexcept
-        : inherited ((RequireNotNull (rep), move (rep)))
+        : inherited{(RequireNotNull (rep), move (rep))}
     {
         _AssertRepValidType ();
     }
     template <typename T>
     template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
     inline Queue<T>::Queue (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
-        : Queue ()
+        : Queue{}
     {
         AddAllToTail (start, end);
         _AssertRepValidType ();

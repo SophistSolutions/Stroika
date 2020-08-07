@@ -23,34 +23,34 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline Collection<T>::Collection ()
-        : inherited (Factory::Collection_Factory<T> () ())
+        : inherited{Factory::Collection_Factory<T>{} ()}
     {
         _AssertRepValidType ();
     }
     template <typename T>
     template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
     inline Collection<T>::Collection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
-        : Collection ()
+        : Collection{}
     {
         AddAll (start, end);
         _AssertRepValidType ();
     }
     template <typename T>
     inline Collection<T>::Collection (const _CollectionRepSharedPtr& src) noexcept
-        : inherited (src)
+        : inherited{src}
     {
         RequireNotNull (src);
         _AssertRepValidType ();
     }
     template <typename T>
     inline Collection<T>::Collection (_CollectionRepSharedPtr&& src) noexcept
-        : inherited ((RequireNotNull (src), move (src)))
+        : inherited{(RequireNotNull (src), move (src))}
     {
         _AssertRepValidType ();
     }
     template <typename T>
     inline Collection<T>::Collection (const initializer_list<T>& src)
-        : Collection ()
+        : Collection{}
     {
         AddAll (src);
         _AssertRepValidType ();
@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Collection<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
     inline Collection<T>::Collection (CONTAINER_OF_ADDABLE&& src)
-        : Collection ()
+        : Collection{}
     {
         AddAll (forward<CONTAINER_OF_ADDABLE> (src));
         _AssertRepValidType ();

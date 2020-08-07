@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Containers {
      ********************************************************************************
      */
     inline Bijection_Base::InjectivityViolation::InjectivityViolation ()
-        : inherited (L"Injectivity violation"sv)
+        : inherited{L"Injectivity violation"sv}
     {
     }
 
@@ -33,7 +33,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection ()
-        : Bijection (equal_to<DOMAIN_TYPE>{}, equal_to<RANGE_TYPE>{})
+        : Bijection{equal_to<DOMAIN_TYPE>{}, equal_to<RANGE_TYPE>{}}
     {
         _AssertRepValidType ();
     }
@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (const initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src)
-        : Bijection ()
+        : Bijection{}
     {
         AddAll (src);
         _AssertRepValidType ();
@@ -69,7 +69,7 @@ namespace Stroika::Foundation::Containers {
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     template <typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_SINGLEVALUE_ADD_ARGS, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> and not is_base_of_v<Bijection<DOMAIN_TYPE, RANGE_TYPE>, Configuration::remove_cvref_t<CONTAINER_OF_SINGLEVALUE_ADD_ARGS>>>*>
     inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& src)
-        : Bijection ()
+        : Bijection{}
     {
         AddAll (src);
         _AssertRepValidType ();
@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Containers {
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     template <typename COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG, enable_if_t<Configuration::is_iterator_v<COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG>>*>
     Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG start, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG end)
-        : Bijection ()
+        : Bijection{}
     {
         AddAll (start, end);
         _AssertRepValidType ();
@@ -100,14 +100,14 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (const _BijectionRepSharedPtr& src) noexcept
-        : inherited (src)
+        : inherited{src}
     {
         RequireNotNull (src);
         _AssertRepValidType ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (_BijectionRepSharedPtr&& src) noexcept
-        : inherited ((RequireNotNull (src), move (src)))
+        : inherited{(RequireNotNull (src), move (src))}
     {
         _AssertRepValidType ();
     }
