@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline Bag<T>::Bag ()
-        : inherited (Factory::Bag_Factory<T> () ())
+        : inherited (Factory::Bag_Factory<T>{}())
     {
         EnsureMember (&inherited::_GetRep (), _IRep);
     }

@@ -20,9 +20,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
      */
     template <typename T>
     inline DoublyLinkedList<T>::Link::Link (ArgByValueType<T> item, Link* prev, Link* next)
-        : fItem (item)
-        , fPrev (prev)
-        , fNext (next)
+        : fItem{item}
+        , fPrev{prev}
+        , fNext{next}
     {
     }
 

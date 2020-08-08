@@ -16,14 +16,14 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline SortedSet<T>::SortedSet ()
-        : SortedSet (less<T>{})
+        : SortedSet{less<T>{}}
     {
         _AssertRepValidType ();
     }
     template <typename T>
     template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>*>
     inline SortedSet<T>::SortedSet (INORDER_COMPARER&& inorderComparer)
-        : inherited (Factory::SortedSet_Factory<T, INORDER_COMPARER> (forward<INORDER_COMPARER> (inorderComparer)) ())
+        : inherited (Factory::SortedSet_Factory<T, INORDER_COMPARER> (forward<INORDER_COMPARER> (inorderComparer))())
     {
         static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with SortedSet");
         _AssertRepValidType ();
@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     inline SortedSet<T>::SortedSet (const initializer_list<T>& src)
-        : SortedSet ()
+        : SortedSet{}
     {
         this->AddAll (src);
         _AssertRepValidType ();
@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<SortedSet<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
     inline SortedSet<T>::SortedSet (const CONTAINER_OF_ADDABLE& src)
-        : SortedSet ()
+        : SortedSet{}
     {
         this->AddAll (src);
         _AssertRepValidType ();
@@ -75,7 +75,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>*>
     inline SortedSet<T>::SortedSet (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
-        : SortedSet ()
+        : SortedSet{}
     {
         this->AddAll (start, end);
         _AssertRepValidType ();

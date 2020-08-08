@@ -16,7 +16,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T, typename TRAITS>
     inline SortedMultiSet<T, TRAITS>::SortedMultiSet ()
-        : SortedMultiSet (less<T>{})
+        : SortedMultiSet{less<T>{}}
     {
         _AssertRepValidType ();
     }
@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T, typename TRAITS>
     SortedMultiSet<T, TRAITS>::SortedMultiSet (const initializer_list<T>& src)
-        : SortedMultiSet ()
+        : SortedMultiSet{}
     {
         this->AddAll (src);
         _AssertRepValidType ();
@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T, typename TRAITS>
     SortedMultiSet<T, TRAITS>::SortedMultiSet (const initializer_list<CountedValue<T>>& src)
-        : SortedMultiSet ()
+        : SortedMultiSet{}
     {
         this->AddAll (src);
         _AssertRepValidType ();
@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<SortedMultiSet<T, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
     inline SortedMultiSet<T, TRAITS>::SortedMultiSet (CONTAINER_OF_ADDABLE&& src)
-        : SortedMultiSet ()
+        : SortedMultiSet{}
     {
         this->AddAll (forward<CONTAINER_OF_ADDABLE> (src));
         _AssertRepValidType ();
@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     template <typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>*>
     SortedMultiSet<T, TRAITS>::SortedMultiSet (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
-        : SortedMultiSet ()
+        : SortedMultiSet{}
     {
         AddAll (start, end);
         _AssertRepValidType ();

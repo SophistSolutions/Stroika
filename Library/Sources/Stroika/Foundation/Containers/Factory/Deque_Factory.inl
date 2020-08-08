@@ -16,10 +16,10 @@
 namespace Stroika::Foundation::Containers::Factory {
 
     /*
-        ********************************************************************************
-        ******************************* Deque_Factory<T> *******************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ******************************* Deque_Factory<T> *******************************
+     ********************************************************************************
+     */
 #if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
     template <typename T>
     atomic<Deque<T> (*) ()> Deque_Factory<T>::sFactory_ (nullptr);
@@ -28,12 +28,12 @@ namespace Stroika::Foundation::Containers::Factory {
     inline Deque<T> Deque_Factory<T>::operator() () const
     {
         /*
-            *  Would have been more performant to just and assure always properly set, but to initialize
-            *  sFactory_ with a value other than nullptr requires waiting until after main() - so causes problems
-            *  with containers constructed before main.
-            *
-            *  This works more generally (and with hopefully modest enough performance impact).
-            */
+         *  Would have been more performant to just and assure always properly set, but to initialize
+         *  sFactory_ with a value other than nullptr requires waiting until after main() - so causes problems
+         *  with containers constructed before main.
+         *
+         *  This works more generally (and with hopefully modest enough performance impact).
+         */
         auto f = sFactory_.load ();
         if (f == nullptr) {
             return Default_ ();
@@ -52,5 +52,6 @@ namespace Stroika::Foundation::Containers::Factory {
     {
         return Concrete::Deque_DoublyLinkedList<T> ();
     }
+
 }
 #endif /* _Stroika_Foundation_Containers_Concrete_Deque_Factory_inl_ */

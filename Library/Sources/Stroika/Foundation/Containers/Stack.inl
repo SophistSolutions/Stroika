@@ -18,14 +18,14 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline Stack<T>::Stack ()
-        : inherited (Factory::Stack_Factory<T> () ())
+        : inherited (Factory::Stack_Factory<T>{}())
     {
         _AssertRepValidType ();
     }
     template <typename T>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Stack<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
     inline Stack<T>::Stack (CONTAINER_OF_ADDABLE&& src)
-        : Stack ()
+        : Stack{}
     {
         AssertNotImplemented ();
         //                AddAll (s);
@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
     inline Stack<T>::Stack (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
-        : Stack ()
+        : Stack{}
     {
         AssertNotImplemented ();
         //                AddAll (start, end);

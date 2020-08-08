@@ -17,7 +17,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline Set<T>::Set ()
-        : Set (equal_to<T>{})
+        : Set{equal_to<T>{}}
     {
         _AssertRepValidType ();
     }
@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     inline Set<T>::Set (const initializer_list<T>& src)
-        : Set ()
+        : Set{}
     {
         AddAll (src);
         _AssertRepValidType ();
@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Set<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
     inline Set<T>::Set (CONTAINER_OF_ADDABLE&& src)
-        : Set ()
+        : Set{}
     {
         AddAll (forward<CONTAINER_OF_ADDABLE> (src));
         _AssertRepValidType ();
@@ -75,7 +75,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>*>
     inline Set<T>::Set (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
-        : Set ()
+        : Set{}
     {
         AddAll (start, end);
         _AssertRepValidType ();

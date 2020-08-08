@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Containers {
         TemporaryElementReference_ (const TemporaryElementReference_&) = default;
         TemporaryElementReference_ (TemporaryElementReference_&& from) = default;
         TemporaryElementReference_ (Sequence<X>* s, size_t i)
-            : fV ((RequireNotNull (s), s))
+            : fV{(RequireNotNull (s), s)}
             , fIndex{i}
         {
         }
@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Containers {
         TemporaryElementReference_ (const TemporaryElementReference_&) = default;
         TemporaryElementReference_ (TemporaryElementReference_&&)      = default;
         TemporaryElementReference_ (Sequence<X>* s, size_t i)
-            : X ((RequireNotNull (s), s->GetAt (i)))
+            : X{(RequireNotNull (s), s->GetAt (i))}
             , fV{s}
             , fIndex{i}
         {

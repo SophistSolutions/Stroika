@@ -16,10 +16,10 @@
 namespace Stroika::Foundation::Containers::Factory {
 
     /*
-        ********************************************************************************
-        ********************* SortedMultiSet_Factory<T, TRAITS> ************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************* SortedMultiSet_Factory<T, TRAITS> ************************
+     ********************************************************************************
+     */
 #if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
     template <typename T, typename TRAITS, typename INORDER_COMPARER>
     atomic<SortedMultiSet<T, TRAITS> (*) (const INORDER_COMPARER&)> SortedMultiSet_Factory<T, TRAITS, INORDER_COMPARER>::sFactory_ (nullptr);
@@ -57,5 +57,6 @@ namespace Stroika::Foundation::Containers::Factory {
     {
         return Concrete::SortedMultiSet_stdmap<T, TRAITS> (inOrderComparer);
     }
+
 }
 #endif /* _Stroika_Foundation_Containers_Concrete_SortedMultiSet_Factory_inl_ */

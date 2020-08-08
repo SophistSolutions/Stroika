@@ -16,7 +16,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping ()
-        : SortedMapping (less<KEY_TYPE>{})
+        : SortedMapping{less<KEY_TYPE>{}}
     {
         _AssertRepValidType ();
     }
@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
-        : SortedMapping ()
+        : SortedMapping{}
     {
         this->AddAll (src);
         _AssertRepValidType ();
@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
-        : SortedMapping ()
+        : SortedMapping{}
     {
         this->AddAll (src);
         _AssertRepValidType ();
@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<(Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> or Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>)and not is_base_of_v<SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
     inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping (CONTAINER_OF_ADDABLE&& src)
-        : SortedMapping ()
+        : SortedMapping{}
     {
         _AssertRepValidType ();
         this->AddAll (forward<CONTAINER_OF_ADDABLE> (src));
@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>*>
     SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
-        : SortedMapping ()
+        : SortedMapping{}
     {
         this->AddAll (start, end);
         _AssertRepValidType ();

@@ -29,16 +29,16 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename T>
     inline Array<T>::Array ()
-        : _fLength (0)
-        , _fSlotsAllocated (0)
-        , _fItems (0)
+        : _fLength{0}
+        , _fSlotsAllocated{0}
+        , _fItems{nullptr}
     {
     }
     template <typename T>
     Array<T>::Array (const Array<T>& from)
-        : _fLength (0)
-        , _fSlotsAllocated (0)
-        , _fItems (nullptr)
+        : _fLength{0}
+        , _fSlotsAllocated{0}
+        , _fItems{nullptr}
     {
         from.Invariant ();
         SetCapacity (from.GetLength ());

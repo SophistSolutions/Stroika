@@ -16,7 +16,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline SortedCollection<T>::SortedCollection ()
-        : SortedCollection (less<T>{})
+        : SortedCollection{less<T>{}}
     {
         _AssertRepValidType ();
     }
@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     inline SortedCollection<T>::SortedCollection (const initializer_list<T>& src)
-        : SortedCollection ()
+        : SortedCollection{}
     {
         this->AddAll (src);
         _AssertRepValidType ();
@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<SortedCollection<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
     inline SortedCollection<T>::SortedCollection (CONTAINER_OF_ADDABLE&& src)
-        : SortedCollection ()
+        : SortedCollection{}
     {
         this->AddAll (forward<CONTAINER_OF_ADDABLE> (src));
         _AssertRepValidType ();
@@ -75,7 +75,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
     inline SortedCollection<T>::SortedCollection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
-        : SortedCollection ()
+        : SortedCollection{}
     {
         this->AddAll (start, end);
         _AssertRepValidType ();

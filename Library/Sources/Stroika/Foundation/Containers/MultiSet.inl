@@ -26,10 +26,10 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     struct MultiSet<T, TRAITS>::_IRep::ElementsIteratorHelperContext_ {
         ElementsIteratorHelperContext_ (const typename Iterable<CountedValue<T>>::_IterableRepSharedPtr& tally, const Iterator<CountedValue<T>>& delegateTo, size_t countMoreTimesToGoBeforeAdvance = 0, optional<T> saved2Return = optional<T> ())
-            : fMultiSet (tally)
-            , fMultiSetIterator (delegateTo)
-            , fCountMoreTimesToGoBeforeAdvance (countMoreTimesToGoBeforeAdvance)
-            , fSaved2Return (saved2Return)
+            : fMultiSet{tally}
+            , fMultiSetIterator{delegateTo}
+            , fCountMoreTimesToGoBeforeAdvance{countMoreTimesToGoBeforeAdvance}
+            , fSaved2Return{saved2Return}
         {
         }
         typename Iterable<CountedValue<T>>::_IterableRepSharedPtr fMultiSet;
@@ -44,8 +44,8 @@ namespace Stroika::Foundation::Containers {
             using inherited = typename Iterator<T>::IRep;
             ElementsIteratorHelperContext_ fContext;
             Rep (const ElementsIteratorHelperContext_& context)
-                : inherited ()
-                , fContext (context)
+                : inherited{}
+                , fContext{context}
             {
                 if (not fContext.fMultiSetIterator.Done ()) {
                     fContext.fSaved2Return = fContext.fMultiSetIterator->fValue;
@@ -115,7 +115,7 @@ namespace Stroika::Foundation::Containers {
         struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
             using inherited = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep;
             MyIterableRep_ (const ElementsIteratorHelperContext_& context)
-                : inherited (context)
+                : inherited{context}
             {
             }
             virtual size_t GetLength () const override
@@ -136,7 +136,7 @@ namespace Stroika::Foundation::Containers {
             }
         };
         _ElementsIterableHelper (const typename Iterable<CountedValue<T>>::_IterableRepSharedPtr& iterateOverMultiSet)
-            : Iterable<T> (Iterable<T>::template MakeSmartPtr<MyIterableRep_> (ElementsIteratorHelperContext_ (iterateOverMultiSet, iterateOverMultiSet->MakeIterator (iterateOverMultiSet.get ()))))
+            : Iterable<T>{Iterable<T>::template MakeSmartPtr<MyIterableRep_> (ElementsIteratorHelperContext_ (iterateOverMultiSet, iterateOverMultiSet->MakeIterator (iterateOverMultiSet.get ())))}
         {
         }
     };
@@ -144,8 +144,8 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     struct MultiSet<T, TRAITS>::_IRep::UniqueElementsIteratorHelperContext_ {
         UniqueElementsIteratorHelperContext_ (const typename Iterable<CountedValue<T>>::_IterableRepSharedPtr& tally, const Iterator<CountedValue<T>>& delegateTo)
-            : fMultiSet (tally)
-            , fMultiSetIterator (delegateTo)
+            : fMultiSet{tally}
+            , fMultiSetIterator{delegateTo}
         {
         }
         typename Iterable<CountedValue<T>>::_IterableRepSharedPtr fMultiSet;
@@ -158,8 +158,8 @@ namespace Stroika::Foundation::Containers {
             using inherited = typename Iterator<T>::IRep;
             UniqueElementsIteratorHelperContext_ fContext;
             Rep (const UniqueElementsIteratorHelperContext_& context)
-                : inherited ()
-                , fContext (context)
+                : inherited{}
+                , fContext{context}
             {
             }
             virtual void More (optional<T>* result, bool advance) override
@@ -192,7 +192,7 @@ namespace Stroika::Foundation::Containers {
             }
         };
         UniqueElementsIteratorHelper_ (const typename Iterable<CountedValue<T>>::_IterableRepSharedPtr& tally)
-            : Iterator<T> (Iterator<T>::template MakeSmartPtr<Rep> (UniqueElementsIteratorHelperContext_ (tally, tally->MakeIterator (tally.get ()))))
+            : Iterator<T> (Iterator<T>::template MakeSmartPtr<Rep> (UniqueElementsIteratorHelperContext_{tally, tally->MakeIterator (tally.get ())}))
         {
         }
     };
@@ -208,7 +208,7 @@ namespace Stroika::Foundation::Containers {
         struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
             using inherited = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep;
             MyIterableRep_ (const UniqueElementsIteratorHelperContext_& context)
-                : inherited (context)
+                : inherited{context}
             {
             }
             virtual size_t GetLength () const override
@@ -225,7 +225,7 @@ namespace Stroika::Foundation::Containers {
             }
         };
         _UniqueElementsHelper (const typename Iterable<CountedValue<T>>::_IterableRepSharedPtr& tally)
-            : Iterable<T> (Iterable<T>::template MakeSmartPtr<MyIterableRep_> (UniqueElementsIteratorHelperContext_ (tally, tally->MakeIterator (tally.get ()))))
+            : Iterable<T>{Iterable<T>::template MakeSmartPtr<MyIterableRep_> (UniqueElementsIteratorHelperContext_{tally, tally->MakeIterator (tally.get ())})}
         {
         }
     };
@@ -271,7 +271,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T, typename TRAITS>
     MultiSet<T, TRAITS>::MultiSet ()
-        : MultiSet (equal_to<T>{})
+        : MultiSet{equal_to<T>{}}
     {
         _AssertRepValidType ();
     }
@@ -286,7 +286,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<MultiSet<T, TRAITS>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
     inline MultiSet<T, TRAITS>::MultiSet (CONTAINER_OF_ADDABLE&& src)
-        : MultiSet ()
+        : MultiSet{}
     {
         AddAll (forward<CONTAINER_OF_ADDABLE> (src));
         _AssertRepValidType ();
@@ -313,7 +313,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T, typename TRAITS>
     MultiSet<T, TRAITS>::MultiSet (const initializer_list<T>& src)
-        : MultiSet ()
+        : MultiSet{}
     {
         AddAll (src);
         _AssertRepValidType ();
@@ -328,7 +328,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T, typename TRAITS>
     MultiSet<T, TRAITS>::MultiSet (const initializer_list<CountedValue<T>>& src)
-        : MultiSet ()
+        : MultiSet{}
     {
         AddAll (src);
         _AssertRepValidType ();
@@ -344,7 +344,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     template <typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>*>
     MultiSet<T, TRAITS>::MultiSet (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
-        : MultiSet ()
+        : MultiSet{}
     {
         AddAll (start, end);
         _AssertRepValidType ();
