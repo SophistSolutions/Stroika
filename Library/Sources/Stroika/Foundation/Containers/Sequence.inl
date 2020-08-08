@@ -303,7 +303,7 @@ namespace Stroika::Foundation::Containers {
     {
         _SafeReadWriteRepAccessor<_IRep> accessor = {this};
         for (auto i = start; i != end; ++i) {
-            T tmp = *i;
+            const T& tmp = *i;
             accessor._GetWriteableRep ().Insert (_IRep::_kSentinalLastItemIndex, &tmp, &tmp + 1);
         }
     }

@@ -72,10 +72,16 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     template <typename REP_SUB_TYPE>
     inline Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const Iterable<T>* it) noexcept
-        : shared_lock<const Debug::AssertExternallySynchronizedLock> (*it)
-        , fConstRef_ (static_cast<const REP_SUB_TYPE*> (it->_fRep.cget ()))
+        : shared_lock<const Debug::AssertExternallySynchronizedLock>{*it}
+        , fConstRef_
+    {
+        static_cast<const REP_SUB_TYPE*> (it->_fRep.cget ())
+    }
 #if qDebug
-        , fIterableEnvelope_ (it)
+    , fIterableEnvelope_
+    {
+        it
+    }
 #endif
     {
         RequireNotNull (it);
@@ -85,13 +91,25 @@ namespace Stroika::Foundation::Traversal {
     template <typename REP_SUB_TYPE>
     inline Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const _SafeReadRepAccessor& src) noexcept
 #if qDebug
-        : shared_lock<const Debug::AssertExternallySynchronizedLock> (*src.fIterableEnvelope_)
+        : shared_lock<const Debug::AssertExternallySynchronizedLock>
+    {
+        *src.fIterableEnvelope_
+    }
 #else
-        : shared_lock<const Debug::AssertExternallySynchronizedLock> (*(const Iterable<T>*)nullptr)
+        : shared_lock<const Debug::AssertExternallySynchronizedLock>
+    {
+        *(const Iterable<T>*)nullptr
+    }
 #endif
-        , fConstRef_ (src.fConstRef_)
+    , fConstRef_
+    {
+        src.fConstRef_
+    }
 #if qDebug
-        , fIterableEnvelope_ (src.fIterableEnvelope_)
+    , fIterableEnvelope_
+    {
+        src.fIterableEnvelope_
+    }
 #endif
     {
         RequireNotNull (fConstRef_);
@@ -101,9 +119,15 @@ namespace Stroika::Foundation::Traversal {
     template <typename REP_SUB_TYPE>
     inline Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (_SafeReadRepAccessor&& src) noexcept
         : shared_lock<const Debug::AssertExternallySynchronizedLock> (move<const Debug::AssertExternallySynchronizedLock> (src))
-        , fConstRef_ (src.fConstRef_)
+        , fConstRef_
+    {
+        src.fConstRef_
+    }
 #if qDebug
-        , fIterableEnvelope_ (src.fIterableEnvelope_)
+    , fIterableEnvelope_
+    {
+        src.fIterableEnvelope_
+    }
 #endif
     {
         RequireNotNull (fConstRef_);
@@ -137,9 +161,9 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     template <typename REP_SUB_TYPE>
     inline Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_SafeReadWriteRepAccessor (Iterable<T>* iterableEnvelope)
-        : lock_guard<const Debug::AssertExternallySynchronizedLock> (*iterableEnvelope)
-        , fIterableEnvelope_ (iterableEnvelope)
-        , fRepReference_ (static_cast<REP_SUB_TYPE*> (iterableEnvelope->_fRep.get (iterableEnvelope)))
+        : lock_guard<const Debug::AssertExternallySynchronizedLock>{*iterableEnvelope}
+        , fIterableEnvelope_{iterableEnvelope}
+        , fRepReference_{static_cast<REP_SUB_TYPE*> (iterableEnvelope->_fRep.get (iterableEnvelope))}
     {
         RequireNotNull (iterableEnvelope);
     }
@@ -147,8 +171,8 @@ namespace Stroika::Foundation::Traversal {
     template <typename REP_SUB_TYPE>
     inline Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_SafeReadWriteRepAccessor (_SafeReadWriteRepAccessor&& from)
         : lock_guard<const Debug::AssertExternallySynchronizedLock> (move<const Debug::AssertExternallySynchronizedLock> (from))
-        , fIterableEnvelope_ (from.fIterableEnvelope_)
-        , fRepReference_ (from.fRepReference_)
+        , fIterableEnvelope_{from.fIterableEnvelope_}
+        , fRepReference_{from.fRepReference_}
     {
         RequireNotNull (fRepReference_);
         EnsureMember (fRepReference_, REP_SUB_TYPE);
@@ -185,13 +209,13 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T>
     inline Iterable<T>::Iterable (const _IterableRepSharedPtr& rep) noexcept
-        : _fRep (rep)
+        : _fRep{rep}
     {
         Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
     }
     template <typename T>
     inline Iterable<T>::Iterable (_IterableRepSharedPtr&& rep) noexcept
-        : _fRep (move (rep))
+        : _fRep{move (rep)}
     {
         Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
         if constexpr (!kIterableUsesStroikaSharedPtr) {
@@ -200,13 +224,13 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     inline Iterable<T>::Iterable (const Iterable& from) noexcept
-        : _fRep (from._fRep)
+        : _fRep{from._fRep}
     {
         Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
     }
     template <typename T>
     inline Iterable<T>::Iterable (Iterable&& from) noexcept
-        : _fRep (from._fRep)
+        : _fRep{move (from._fRep)}
     {
         /*
          *  SEE DESIGN NOTE in class (and https://stroika.atlassian.net/browse/STK-541) - why we intentionally use copy of rep not MOVE
@@ -216,12 +240,12 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_base_of_v<Iterable<T>, Configuration::remove_cvref_t<CONTAINER_OF_T>>>*>
     Iterable<T>::Iterable (CONTAINER_OF_T&& from)
-        : _fRep (mk_ (forward<CONTAINER_OF_T> (from))._fRep)
+        : _fRep{mk_ (forward<CONTAINER_OF_T> (from))._fRep}
     {
     }
     template <typename T>
     Iterable<T>::Iterable (const initializer_list<T>& from)
-        : _fRep (mk_ (from)._fRep)
+        : _fRep{mk_ (from)._fRep}
     {
     }
     template <typename T>
@@ -336,7 +360,7 @@ namespace Stroika::Foundation::Traversal {
     {
         auto tallyOf = [&equalsComparer] (const auto& c, T item) -> size_t {
             size_t total = 0;
-            for (auto ti : c) {
+            for (const auto& ti : c) {
                 if (equalsComparer (ti, item)) {
                     total++;
                 }
@@ -347,12 +371,12 @@ namespace Stroika::Foundation::Traversal {
          *  An extremely in-efficient but space-constant implementation. N^3 and check
          *  a contains b and b contains a
          */
-        for (auto&& ti : lhs) {
+        for (const auto& ti : lhs) {
             if (tallyOf (lhs, ti) != tallyOf (rhs, ti)) {
                 return false;
             }
         }
-        for (auto&& ti : rhs) {
+        for (const auto& ti : rhs) {
             if (tallyOf (lhs, ti) != tallyOf (rhs, ti)) {
                 return false;
             }
@@ -443,7 +467,7 @@ namespace Stroika::Foundation::Traversal {
     {
         Require (emptyResult.empty ());
         RESULT_CONTAINER result = emptyResult;
-        for (auto i : Where (includeIfTrue)) {
+        for (const auto& i : Where (includeIfTrue)) {
             result.Add (i);
         }
         return result;
@@ -455,10 +479,10 @@ namespace Stroika::Foundation::Traversal {
         vector<T> tmp; // Simplistic/stupid/weak implementation
         if constexpr (is_same_v<equal_to<T>, EQUALS_COMPARER> and is_invocable_v<less<T>>) {
             set<T> t1 (begin (), end ());
-            tmp = vector<T> (t1.begin (), t1.end ());
+            tmp = vector<T>{t1.begin (), t1.end ()};
         }
         else {
-            for (const T&& i : *this) {
+            for (const auto& i : *this) {
                 if (find_if (tmp.begin (), tmp.end (), [&] (ArgByValueType<T> n) { return equalsComparer (n, i); }) == tmp.end ()) {
                     tmp.push_back (i);
                 }
@@ -486,10 +510,10 @@ namespace Stroika::Foundation::Traversal {
             for (T i : *this) {
                 t1.add (extractElt (i));
             }
-            tmp = vector<RESULT> (t1.begin (), t1.end ());
+            tmp = vector<RESULT>{t1.begin (), t1.end ()};
         }
         else {
-            for (const T&& i : *this) {
+            for (const T& i : *this) {
                 RESULT item2Test = extractElt (i);
                 if (find_if (tmp.begin (), tmp.end (), [&] (ArgByValueType<T> n) { return equalsComparer (n, item2Test); }) == tmp.end ()) {
                     tmp.push_back (item2Test);
@@ -653,7 +677,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename INORDER_COMPARER_TYPE>
     Iterable<T> Iterable<T>::OrderBy (const INORDER_COMPARER_TYPE& inorderComparer) const
     {
-        vector<T> tmp (begin (), end ()); // Somewhat simplistic implementation (always over copy and index so no need to worry about iterator refereincing inside container)
+        vector<T> tmp{begin (), end ()}; // Somewhat simplistic implementation (always over copy and index so no need to worry about iterator refereincing inside container)
         stable_sort (tmp.begin (), tmp.end (), inorderComparer);
         size_t                   idx{0};
         function<optional<T> ()> getNext = [tmp, idx] () mutable -> optional<T> {
@@ -676,7 +700,7 @@ namespace Stroika::Foundation::Traversal {
     inline optional<T> Iterable<T>::First (const function<bool (ArgByValueType<T>)>& that) const
     {
         RequireNotNull (that);
-        for (auto i : *this) {
+        for (const auto& i : *this) {
             if (that (i)) {
                 return i;
             }
@@ -712,7 +736,7 @@ namespace Stroika::Foundation::Traversal {
     {
         RequireNotNull (that);
         optional<T> result;
-        for (auto i : *this) {
+        for (const auto& i : *this) {
             if (that (i)) {
                 result = i;
             }
@@ -738,7 +762,7 @@ namespace Stroika::Foundation::Traversal {
     bool Iterable<T>::All (const function<bool (ArgByValueType<T>)>& testEachElt) const
     {
         RequireNotNull (testEachElt);
-        for (auto i : *this) {
+        for (const auto& i : *this) {
             if (not testEachElt (i)) {
                 return false;
             }
@@ -750,7 +774,7 @@ namespace Stroika::Foundation::Traversal {
     optional<RESULT_TYPE> Iterable<T>::Accumulate (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op) const
     {
         optional<RESULT_TYPE> result;
-        for (T i : *this) {
+        for (const T& i : *this) {
             if (result) {
                 result = op (i, *result);
             }
@@ -822,7 +846,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename RESULT_TYPE, typename INORDER_COMPARE_FUNCTION>
     optional<RESULT_TYPE> Iterable<T>::Median (const INORDER_COMPARE_FUNCTION& compare) const
     {
-        vector<T> tmp (begin (), end ()); // Somewhat simplistic implementation
+        vector<T> tmp{begin (), end ()}; // Somewhat simplistic implementation
         sort (tmp.begin (), tmp.end (), compare);
         size_t sz{tmp.size ()};
         if (sz == 0)
@@ -912,7 +936,7 @@ namespace Stroika::Foundation::Traversal {
     {
         Require (n < size ());
         size_t idx = n;
-        for (T i : *this) {
+        for (const T& i : *this) {
             if (idx == 0) {
                 return i;
             }
@@ -925,7 +949,7 @@ namespace Stroika::Foundation::Traversal {
     T Iterable<T>::NthValue (size_t n, ArgByValueType<T> defaultValue) const
     {
         size_t idx = n;
-        for (T i : *this) {
+        for (const T& i : *this) {
             if (idx == 0) {
                 return i;
             }
