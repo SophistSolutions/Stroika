@@ -286,9 +286,9 @@ SignalHandlerRegistry::SafeSignalsManager::~SafeSignalsManager ()
 {
     Debug::TraceContextBumper trcCtx{"Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::DTOR"};
 #if __cpp_lib_atomic_shared_ptr >= 201711
-    SignalHandlerRegistry::SafeSignalsManager::sTheRep_.store (shared_ptr<Rep_>{});             // this will wait for shutdown of safe processing thread to shut down
+    SignalHandlerRegistry::SafeSignalsManager::sTheRep_.store (shared_ptr<Rep_>{}); // this will wait for shutdown of safe processing thread to shut down
 #else
-    atomic_store (&SignalHandlerRegistry::SafeSignalsManager::sTheRep_, shared_ptr<Rep_>{});    // this will wait for shutdown of safe processing thread to shut down
+    atomic_store (&SignalHandlerRegistry::SafeSignalsManager::sTheRep_, shared_ptr<Rep_>{}); // this will wait for shutdown of safe processing thread to shut down
 #endif
 }
 
@@ -324,7 +324,7 @@ SignalHandlerRegistry::~SignalHandlerRegistry ()
 #if __cpp_lib_atomic_shared_ptr >= 201711
     Assert (SafeSignalsManager::sTheRep_.load () == nullptr); // must be cleared first
 #else
-    Assert (atomic_load (&SafeSignalsManager::sTheRep_) == nullptr);                            // must be cleared first
+    Assert (atomic_load (&SafeSignalsManager::sTheRep_) == nullptr);                         // must be cleared first
 #endif
 }
 
