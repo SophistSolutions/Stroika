@@ -338,9 +338,9 @@ namespace Stroika::Foundation::Execution {
     private:
         class Rep_;
 #if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
-        static shared_ptr<Rep_> sTheRep_;
+        static atomic<shared_ptr<Rep_>> sTheRep_;
 #else
-        static inline shared_ptr<Rep_> sTheRep_{nullptr};
+        static inline atomic<shared_ptr<Rep_>> sTheRep_{nullptr};
 #endif
 
     private:
