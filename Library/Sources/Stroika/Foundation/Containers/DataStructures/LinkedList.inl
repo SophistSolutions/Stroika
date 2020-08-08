@@ -34,13 +34,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
      */
     template <typename T>
     inline LinkedList<T>::LinkedList ()
-        : _fHead{nullptr}
     {
         Invariant ();
     }
     template <typename T>
     LinkedList<T>::LinkedList (const LinkedList<T>& from)
-        : _fHead{nullptr}
     {
         /*
          *      Copy the link list by keeping a point to the new current and new

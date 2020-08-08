@@ -46,14 +46,14 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         Rep_ (const EQUALS_COMPARER& equalsComparer)
-            : fEqualsComparer_ (equalsComparer)
+            : fEqualsComparer_{equalsComparer}
         {
         }
         Rep_ (const Rep_& from) = delete;
         Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
-            : inherited ()
-            , fEqualsComparer_ (from->fEqualsComparer_)
-            , fData_ (&from->fData_, forIterableEnvelope)
+            : inherited{}
+            , fEqualsComparer_{from->fEqualsComparer_}
+            , fData_{&from->fData_, forIterableEnvelope}
         {
             RequireNotNull (from);
         }
@@ -248,7 +248,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T, typename TRAITS>
     inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList ()
-        : MultiSet_LinkedList (equal_to<T>{})
+        : MultiSet_LinkedList{equal_to<T>{}}
     {
         AssertRepValidType_ ();
     }
@@ -262,14 +262,14 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T, typename TRAITS>
     template <typename COPY_FROM_ITERATOR>
     inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
-        : MultiSet_LinkedList ()
+        : MultiSet_LinkedList{}
     {
         this->AddAll (start, end);
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
     inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const MultiSet<T, TRAITS>& src)
-        : MultiSet_LinkedList ()
+        : MultiSet_LinkedList{}
     {
         this->AddAll (src);
         AssertRepValidType_ ();
@@ -282,14 +282,14 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T, typename TRAITS>
     inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const initializer_list<T>& src)
-        : MultiSet_LinkedList ()
+        : MultiSet_LinkedList{}
     {
         this->AddAll (src);
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
     MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const initializer_list<CountedValue<T>>& src)
-        : MultiSet_LinkedList ()
+        : MultiSet_LinkedList{}
     {
         this->AddAll (src);
         AssertRepValidType_ ();

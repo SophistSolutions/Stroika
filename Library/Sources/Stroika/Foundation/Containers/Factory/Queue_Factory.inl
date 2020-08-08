@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T>
     inline Queue<T> Queue_Factory<T>::Default_ ()
     {
-        return Concrete::Queue_DoublyLinkedList<T> ();
+        return Concrete::Queue_DoublyLinkedList<T>{};
     }
 
 }

@@ -49,8 +49,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Rep_ ()                 = default;
         Rep_ (const Rep_& from) = delete;
         Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
-            : inherited ()
-            , fData_ (&from->fData_, forIterableEnvelope)
+            : fData_{&from->fData_, forIterableEnvelope}
         {
             RequireNotNull (from);
         }
@@ -182,10 +181,10 @@ namespace Stroika::Foundation::Containers::Concrete {
     };
 
     /*
-        ********************************************************************************
-        ******** SortedAssociation_stdmultimap<KEY_TYPE,MAPPED_VALUE_TYPE> *************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ******** SortedAssociation_stdmultimap<KEY_TYPE,MAPPED_VALUE_TYPE> *************
+     ********************************************************************************
+     */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline SortedAssociation_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation_stdmultimap ()
         : inherited (inherited::template MakeSmartPtr<Rep_> ())

@@ -169,7 +169,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Queue_Array<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
     inline Queue_Array<T>::Queue_Array (CONTAINER_OF_ADDABLE&& src)
-        : Queue_Array ()
+        : Queue_Array{}
     {
         AssertNotImplemented (); // @todo - use new EnqueueAll()
         //InsertAll (0, s);
@@ -178,7 +178,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     template <typename COPY_FROM_ITERATOR_OF_T>
     inline Queue_Array<T>::Queue_Array (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-        : Queue_Array ()
+        : Queue_Array{}
     {
         Append (start, end);
         AssertRepValidType_ ();

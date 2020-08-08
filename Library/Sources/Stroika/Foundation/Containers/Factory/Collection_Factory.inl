@@ -51,5 +51,6 @@ namespace Stroika::Foundation::Containers::Factory {
     {
         return Concrete::Collection_LinkedList<T>{};
     }
+
 }
 #endif /* _Stroika_Foundation_Containers_Concrete_Collection_Factory_inl_ */

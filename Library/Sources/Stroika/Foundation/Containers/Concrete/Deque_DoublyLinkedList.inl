@@ -18,10 +18,10 @@
 namespace Stroika::Foundation::Containers::Concrete {
 
     /*
-        ********************************************************************************
-        *********************** Deque_DoublyLinkedList<T>::Rep_ ************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     *********************** Deque_DoublyLinkedList<T>::Rep_ ************************
+     ********************************************************************************
+     */
     template <typename T>
     class Deque_DoublyLinkedList<T>::Rep_ : public Deque<T>::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
     private:
@@ -37,8 +37,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         Rep_ ()                 = default;
         Rep_ (const Rep_& from) = delete;
         Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
-            : inherited ()
-            , fData_ (&from->fData_, forIterableEnvelope)
+            : inherited{}
+            , fData_{&from->fData_, forIterableEnvelope}
         {
             RequireNotNull (from);
         }
@@ -174,26 +174,26 @@ namespace Stroika::Foundation::Containers::Concrete {
     };
 
     /*
-        ********************************************************************************
-        *************************** Deque_DoublyLinkedList<T> **************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     *************************** Deque_DoublyLinkedList<T> **************************
+     ********************************************************************************
+     */
     template <typename T>
     inline Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList ()
-        : inherited (inherited::template MakeSmartPtr<Rep_> ())
+        : inherited{inherited::template MakeSmartPtr<Rep_> ()}
     {
         AssertRepValidType_ ();
     }
     template <typename T>
     inline Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList (const Deque_DoublyLinkedList<T>& src)
-        : inherited (src)
+        : inherited{src}
     {
         AssertRepValidType_ ();
     }
     template <typename T>
     template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Deque_DoublyLinkedList<T>*>>*>
     inline Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList (const CONTAINER_OF_T& src)
-        : Deque_DoublyLinkedList ()
+        : Deque_DoublyLinkedList{}
     {
         this->InsertAll (0, src);
         AssertRepValidType_ ();
@@ -201,7 +201,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     template <typename COPY_FROM_ITERATOR_OF_T>
     inline Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-        : Deque_DoublyLinkedList ()
+        : Deque_DoublyLinkedList{}
     {
         this->Append (start, end);
         AssertRepValidType_ ();

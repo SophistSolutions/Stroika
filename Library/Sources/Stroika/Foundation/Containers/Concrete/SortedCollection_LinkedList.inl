@@ -45,14 +45,13 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         Rep_ (const INORDER_COMPARER& inorderComparer)
-            : fInorderComparer_ (inorderComparer)
+            : fInorderComparer_{inorderComparer}
         {
         }
         Rep_ (const Rep_& from) = delete;
         Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
-            : inherited ()
-            , fInorderComparer_ (from->fInorderComparer_)
-            , fData_ (&from->fData_, forIterableEnvelope)
+            : fInorderComparer_{from->fInorderComparer_}
+            , fData_{&from->fData_, forIterableEnvelope}
         {
             RequireNotNull (from);
         }
@@ -206,7 +205,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T>
     inline SortedCollection_LinkedList<T>::SortedCollection_LinkedList ()
-        : SortedCollection_LinkedList (less<T>{})
+        : SortedCollection_LinkedList{less<T>{}}
     {
         AssertRepValidType_ ();
     }
@@ -220,7 +219,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T>
     inline SortedCollection_LinkedList<T>::SortedCollection_LinkedList (const T* start, const T* end)
-        : SortedCollection_LinkedList ()
+        : SortedCollection_LinkedList{}
     {
         Require ((start == end) or (start != nullptr and end != nullptr));
         this->AddAll (start, end);

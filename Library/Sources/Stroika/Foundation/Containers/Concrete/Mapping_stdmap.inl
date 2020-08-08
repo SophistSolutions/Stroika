@@ -56,13 +56,13 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         Rep_ (const KEY_INORDER_COMPARER& inorderComparer)
-            : fData_ (inorderComparer)
+            : fData_{inorderComparer}
         {
         }
         Rep_ (const Rep_& from) = delete;
         Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
-            : inherited ()
-            , fData_ (&from->fData_, forIterableEnvelope)
+            : inherited{}
+            , fData_{&from->fData_, forIterableEnvelope}
         {
             RequireNotNull (from);
         }
@@ -208,7 +208,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdmap ()
-        : Mapping_stdmap (less<KEY_TYPE>{})
+        : Mapping_stdmap{less<KEY_TYPE>{}}
     {
         AssertRepValidType_ ();
     }
@@ -222,7 +222,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>*>>*>
     inline Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdmap (const CONTAINER_OF_ADDABLE& src)
-        : Mapping_stdmap ()
+        : Mapping_stdmap{}
     {
         this->AddAll (src);
         AssertRepValidType_ ();
@@ -230,7 +230,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename COPY_FROM_ITERATOR_KEYVALUE>
     Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdmap (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end)
-        : Mapping_stdmap ()
+        : Mapping_stdmap{}
     {
         this->AddAll (start, end);
         AssertRepValidType_ ();
@@ -242,6 +242,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMemeber
 #endif
     }
+
 }
 
 #endif /* _Stroika_Foundation_Containers_Concrete_Mapping_stdmap_inl_ */

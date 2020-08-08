@@ -216,7 +216,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public: //////WORKRARBOUND - NEED MUTATOR TO ACCESS THIS SO OUR PROTECTED STUFF NOT NEEDED BY PATCHING CODE
         //protected:
-        Link* _fHead;
+        Link* _fHead{nullptr};
 
 #if qDebug
     protected:

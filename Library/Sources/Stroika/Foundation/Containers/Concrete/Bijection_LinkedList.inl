@@ -54,9 +54,9 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         Rep_ (Bijection_Base::InjectivityViolationPolicy injectivityViolationPolicy, const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer)
-            : fInjectivityViolationPolicy_ (injectivityViolationPolicy)
-            , fDomainEqualsComparer_ (domainEqualsComparer)
-            , fRangeEqualsComparer_ (rangeEqualsComparer)
+            : fInjectivityViolationPolicy_{injectivityViolationPolicy}
+            , fDomainEqualsComparer_{domainEqualsComparer}
+            , fRangeEqualsComparer_{rangeEqualsComparer}
         {
         }
         Rep_ (const Rep_& from) = delete;
@@ -274,7 +274,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Bijection_LinkedList ()
-        : Bijection_LinkedList (equal_to<DOMAIN_TYPE>{}, equal_to<RANGE_TYPE>{})
+        : Bijection_LinkedList{equal_to<DOMAIN_TYPE>{}, equal_to<RANGE_TYPE>{}}
     {
         AssertRepValidType_ ();
     }
@@ -293,7 +293,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     template <typename CONTAINER_OF_ADDABLE>
     inline Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Bijection_LinkedList (const CONTAINER_OF_ADDABLE& src)
-        : Bijection_LinkedList ()
+        : Bijection_LinkedList{}
     {
         this->AddAll (src);
         AssertRepValidType_ ();
@@ -301,7 +301,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     template <typename COPY_FROM_ITERATOR_KVP_T, enable_if_t<Configuration::is_iterator_v<COPY_FROM_ITERATOR_KVP_T>>*>
     Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Bijection_LinkedList (COPY_FROM_ITERATOR_KVP_T start, COPY_FROM_ITERATOR_KVP_T end)
-        : Bijection_LinkedList ()
+        : Bijection_LinkedList{}
     {
         this->AddAll (start, end);
         AssertRepValidType_ ();

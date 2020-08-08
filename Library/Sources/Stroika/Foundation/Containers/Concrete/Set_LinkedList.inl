@@ -48,14 +48,13 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         Rep_ (const EQUALS_COMPARER& equalsComparer)
-            : fEqualsComparer_ (equalsComparer)
+            : fEqualsComparer_{equalsComparer}
         {
         }
         Rep_ (const Rep_& from) = delete;
         Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
-            : inherited ()
-            , fEqualsComparer_ (from->fEqualsComparer_)
-            , fData_ (&from->fData_, forIterableEnvelope)
+            : fEqualsComparer_{from->fEqualsComparer_}
+            , fData_{&from->fData_, forIterableEnvelope}
         {
             RequireNotNull (from);
         }
@@ -197,7 +196,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T>
     inline Set_LinkedList<T>::Set_LinkedList ()
-        : Set_LinkedList (equal_to<T>{})
+        : Set_LinkedList{equal_to<T>{}}
     {
         AssertRepValidType_ ();
     }
@@ -211,7 +210,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T>
     inline Set_LinkedList<T>::Set_LinkedList (const initializer_list<T>& src)
-        : Set_LinkedList ()
+        : Set_LinkedList{}
     {
         this->AddAll (src);
         AssertRepValidType_ ();
@@ -226,7 +225,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Set_LinkedList<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
     inline Set_LinkedList<T>::Set_LinkedList (CONTAINER_OF_ADDABLE&& src)
-        : Set_LinkedList ()
+        : Set_LinkedList{}
     {
         this->AddAll (forward<CONTAINER_OF_ADDABLE> (src));
         AssertRepValidType_ ();
@@ -242,7 +241,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     template <typename COPY_FROM_ITERATOR_OF_T>
     inline Set_LinkedList<T>::Set_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-        : Set_LinkedList ()
+        : Set_LinkedList{}
     {
         AddAll (start, end);
         AssertRepValidType_ ();

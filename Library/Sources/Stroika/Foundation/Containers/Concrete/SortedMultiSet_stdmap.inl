@@ -45,13 +45,12 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         Rep_ (const INORDER_COMPARER& inorderComparer)
-            : fData_ (inorderComparer)
+            : fData_{inorderComparer}
         {
         }
         Rep_ (const Rep_& from) = delete;
         Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
-            : inherited ()
-            , fData_ (&from->fData_, forIterableEnvelope)
+            : fData_{&from->fData_, forIterableEnvelope}
         {
             RequireNotNull (from);
         }
@@ -219,7 +218,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T, typename TRAITS>
     inline SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap ()
-        : SortedMultiSet_stdmap (less<T>{})
+        : SortedMultiSet_stdmap{less<T>{}}
     {
         AssertRepValidType_ ();
     }
@@ -232,14 +231,14 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T, typename TRAITS>
     inline SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const initializer_list<T>& src)
-        : SortedMultiSet_stdmap ()
+        : SortedMultiSet_stdmap{}
     {
         this->AddAll (src);
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
     inline SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const initializer_list<CountedValue<T>>& src)
-        : SortedMultiSet_stdmap ()
+        : SortedMultiSet_stdmap{}
     {
         this->AddAll (src);
         AssertRepValidType_ ();
@@ -247,7 +246,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T, typename TRAITS>
     template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const SortedMultiSet_stdmap<T, TRAITS>*>>*>
     inline SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const CONTAINER_OF_T& src)
-        : SortedMultiSet_stdmap ()
+        : SortedMultiSet_stdmap{}
     {
         this->AddAll (src);
         AssertRepValidType_ ();
@@ -255,7 +254,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T, typename TRAITS>
     template <typename COPY_FROM_ITERATOR>
     SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
-        : SortedMultiSet_stdmap ()
+        : SortedMultiSet_stdmap{}
     {
         AddAll (start, end);
         AssertRepValidType_ ();

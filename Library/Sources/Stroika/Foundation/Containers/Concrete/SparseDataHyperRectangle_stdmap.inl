@@ -38,13 +38,12 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         Rep_ (Configuration::ArgByValueType<T> defaultItem)
-            : fDefaultValue_ (defaultItem)
+            : fDefaultValue_{defaultItem}
         {
         }
         Rep_ (const Rep_& from) = delete;
         Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
-            : inherited ()
-            , fData_ (&from->fData_, forIterableEnvelope)
+            : fData_{&from->fData_, forIterableEnvelope}
         {
             RequireNotNull (from);
         }
@@ -154,8 +153,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             MyIteratorImplHelper_ ()                             = delete;
             MyIteratorImplHelper_ (const MyIteratorImplHelper_&) = default;
             explicit MyIteratorImplHelper_ (IteratorOwnerID owner, PATCHABLE_CONTAINER* data)
-                : inherited ()
-                , fIterator (owner, data)
+                : fIterator{owner, data}
             {
                 RequireNotNull (data);
                 fIterator.More (static_cast<pair<tuple<INDEXES...>, T>*> (nullptr), true); //tmphack cuz current backend iterators require a first more() - fix that!

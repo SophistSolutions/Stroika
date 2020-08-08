@@ -61,14 +61,14 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         Rep_ (const EQUALS_COMPARER& equalsComparer)
-            : fEqualsComparer_ (equalsComparer)
+            : fEqualsComparer_{equalsComparer}
         {
         }
         Rep_ (const Rep_& from) = delete;
         Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
-            : inherited ()
-            , fEqualsComparer_ (from->fEqualsComparer_)
-            , fData_ (&from->fData_, forIterableEnvelope)
+            : inherited{}
+            , fEqualsComparer_{from->fEqualsComparer_}
+            , fData_{&from->fData_, forIterableEnvelope}
         {
             RequireNotNull (from);
         }
@@ -286,7 +286,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T, typename TRAITS>
     inline MultiSet_Array<T, TRAITS>::MultiSet_Array ()
-        : inherited (equal_to<T>{})
+        : inherited{equal_to<T>{}}
     {
         AssertRepValidType_ ();
     }
@@ -301,7 +301,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T, typename TRAITS>
     template <typename COPY_FROM_ITERATOR>
     MultiSet_Array<T, TRAITS>::MultiSet_Array (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
-        : MultiSet_Array ()
+        : MultiSet_Array{}
     {
         SetCapacity (end - start);
         this->AddAll (start, end);
@@ -309,7 +309,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T, typename TRAITS>
     inline MultiSet_Array<T, TRAITS>::MultiSet_Array (const MultiSet<T, TRAITS>& src)
-        : MultiSet_Array ()
+        : MultiSet_Array{}
     {
         SetCapacity (src.GetLength ());
         this->AddAll (src);
@@ -317,14 +317,14 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T, typename TRAITS>
     MultiSet_Array<T, TRAITS>::MultiSet_Array (const initializer_list<T>& src)
-        : MultiSet_Array ()
+        : MultiSet_Array{}
     {
         this->AddAll (src);
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
     MultiSet_Array<T, TRAITS>::MultiSet_Array (const initializer_list<CountedValue<T>>& src)
-        : MultiSet_Array ()
+        : MultiSet_Array{}
     {
         this->AddAll (src);
         AssertRepValidType_ ();

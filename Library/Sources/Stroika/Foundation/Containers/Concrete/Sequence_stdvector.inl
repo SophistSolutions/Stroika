@@ -36,13 +36,11 @@ namespace Stroika::Foundation::Containers::Concrete {
         Rep_ ()                = default;
         Rep_ (const Rep_& src) = delete;
         Rep_ (vector<T>&& src)
-            : inherited ()
-            , fData_ (move (src))
+            : fData_ (move (src))
         {
         }
         Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
-            : inherited ()
-            , fData_ (&from->fData_, forIterableEnvelope)
+            : fData_{&from->fData_, forIterableEnvelope}
         {
             RequireNotNull (from);
         }
@@ -206,7 +204,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T>
     inline Sequence_stdvector<T>::Sequence_stdvector ()
-        : inherited (inherited::template MakeSmartPtr<Rep_> ())
+        : inherited{inherited::template MakeSmartPtr<Rep_> ()}
     {
         AssertRepValidType_ ();
     }
@@ -219,7 +217,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Sequence_stdvector<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
     inline Sequence_stdvector<T>::Sequence_stdvector (CONTAINER_OF_ADDABLE&& src)
-        : Sequence_stdvector ()
+        : Sequence_stdvector{}
     {
         this->AppendAll (forward<CONTAINER_OF_ADDABLE> (src));
         AssertRepValidType_ ();
@@ -227,7 +225,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     template <typename COPY_FROM_ITERATOR_OF_T>
     inline Sequence_stdvector<T>::Sequence_stdvector (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-        : Sequence_stdvector ()
+        : Sequence_stdvector{}
     {
         this->AppendAll (start, end);
         AssertRepValidType_ ();

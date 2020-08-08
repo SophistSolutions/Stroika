@@ -43,13 +43,12 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         Rep_ (const INORDER_COMPARER& inorderComparer)
-            : fData_ (inorderComparer)
+            : fData_{inorderComparer}
         {
         }
         Rep_ (const Rep_& from) = delete;
         Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
-            : inherited ()
-            , fData_ (&from->fData_, forIterableEnvelope)
+            : fData_{&from->fData_, forIterableEnvelope}
         {
             RequireNotNull (from);
         }
@@ -172,7 +171,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T>
     inline Set_stdset<T>::Set_stdset ()
-        : Set_stdset (less<T>{})
+        : Set_stdset{less<T>{}}
     {
         AssertRepValidType_ ();
     }
@@ -185,7 +184,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T>
     inline Set_stdset<T>::Set_stdset (const initializer_list<T>& src)
-        : Set_stdset ()
+        : Set_stdset{}
     {
         this->AddAll (src);
         AssertRepValidType_ ();
@@ -200,7 +199,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and not is_base_of_v<Set_stdset<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>*>
     inline Set_stdset<T>::Set_stdset (CONTAINER_OF_ADDABLE&& src)
-        : Set_stdset ()
+        : Set_stdset{}
     {
         this->AddAll (forward<CONTAINER_OF_ADDABLE> (src));
         AssertRepValidType_ ();
@@ -216,7 +215,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     template <typename COPY_FROM_ITERATOR_T>
     inline Set_stdset<T>::Set_stdset (COPY_FROM_ITERATOR_T start, COPY_FROM_ITERATOR_T end)
-        : Set_stdset ()
+        : Set_stdset{}
     {
         this->AddAll (start, end);
         AssertRepValidType_ ();

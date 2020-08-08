@@ -62,14 +62,15 @@ namespace Stroika::Foundation::Containers::Factory {
     inline Bijection<DOMAIN_TYPE, RANGE_TYPE> Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>::Default_ (InjectivityViolationPolicy injectivityViolationPolicy, const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer)
     {
         /*
-            *  Note - though this is not an efficient implementation of Bijection<> for large sizes, its probably the most
-            *  efficeint representation which adds no requirements to DOMAIN_TYPE, such as operator< (or a traits less) or
-            *  a hash function. And its quite reasonable for small Bijection's - which are often the case.
-            *
-            *  Calls may use an explicit initializer of Bijection_xxx<> to get better performance for large sized
-            *  maps.
-            */
-        return Concrete::Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE> (injectivityViolationPolicy, domainEqualsComparer, rangeEqualsComparer);
+         *  Note - though this is not an efficient implementation of Bijection<> for large sizes, its probably the most
+         *  efficeint representation which adds no requirements to DOMAIN_TYPE, such as operator< (or a traits less) or
+         *  a hash function. And its quite reasonable for small Bijection's - which are often the case.
+         *
+         *  Calls may use an explicit initializer of Bijection_xxx<> to get better performance for large sized
+         *  maps.
+         */
+        return Concrete::Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>{injectivityViolationPolicy, domainEqualsComparer, rangeEqualsComparer};
     }
+
 }
 #endif /* _Stroika_Foundation_Containers_Concrete_Bijection_Factory_inl_ */
