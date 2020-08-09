@@ -197,6 +197,9 @@ namespace Stroika::Foundation::Containers {
      *
      *      So now (as of v2.0a20) - we just have the EQUALS_COMPARER be a templated param to the
      *      methods that need it.
+     * 
+     *  \note Move constructor/assignment
+     *      This maps to copy due to COW - see description of Iterable<T> for details.
      *
      *  \note Note About Iterators
      *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
@@ -264,7 +267,6 @@ namespace Stroika::Foundation::Containers {
          */
         Sequence ();
         Sequence (const Sequence& src) noexcept = default;
-        Sequence (Sequence&& src) noexcept      = default;
         Sequence (const initializer_list<T>& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Sequence<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         explicit Sequence (CONTAINER_OF_ADDABLE&& src);
@@ -284,7 +286,6 @@ namespace Stroika::Foundation::Containers {
         /**
          */
         nonvirtual Sequence& operator= (const Sequence& rhs) = default;
-        nonvirtual Sequence& operator= (Sequence&& rhs) = default;
 
     public:
         /**

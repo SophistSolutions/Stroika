@@ -74,6 +74,9 @@ namespace Stroika::Foundation::Containers {
      *
      *      Similarly for std::initalizer_list.
      *
+     *  \note Move constructor/assignment
+     *      This maps to copy due to COW - see description of Iterable<T> for details.
+     *
      *  \note Note About Iterators
      *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
      *
@@ -166,7 +169,6 @@ namespace Stroika::Foundation::Containers {
         template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>* = nullptr>
         explicit Set (EQUALS_COMPARER&& equalsComparer);
         Set (const Set& src) noexcept = default;
-        Set (Set&& src) noexcept      = default;
         Set (const initializer_list<T>& src);
         template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>* = nullptr>
         Set (EQUALS_COMPARER&& equalsComparer, const initializer_list<T>& src);
@@ -192,7 +194,6 @@ namespace Stroika::Foundation::Containers {
         /**
          */
         nonvirtual Set& operator= (const Set& rhs) = default;
-        nonvirtual Set& operator= (Set&& rhs) noexcept = default;
 
     public:
         /**

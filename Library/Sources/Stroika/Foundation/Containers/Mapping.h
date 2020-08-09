@@ -80,6 +80,9 @@ namespace Stroika::Foundation::Containers {
      *
      *      Similarly for std::initalizer_list.
      *
+     *  \note Move constructor/assignment
+     *      This maps to copy due to COW - see description of Iterable<T> for details.
+     *
      *  \note Note About Iterators
      *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
      *
