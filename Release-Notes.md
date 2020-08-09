@@ -9,8 +9,6 @@ especially those they need to be aware of when upgrading.
 
 ### 2.1b3x prerelease
 
-(rough draft of notes - up to date as of 2020-08--08 - but still doing more after that - things broken)
-
 #### TLDR
 
 - Fixed CircleCI issue, so builds there
@@ -56,6 +54,7 @@ especially those they need to be aware of when upgrading.
     - BlockAllocator.inl - cosmetic cleanups and comments about (not easy to reproduce) helgrind failure
   - Foundation::Traveral
     - respect issue https://stroika.atlassian.net/browse/STK-541 - and dont do move inside Iterable\<T> - for now
+    - Iterable\<T>: lose MOVE constructors/operator= and better docs for why (COW intrisic to Iterable)
 
 - Code Style
 
