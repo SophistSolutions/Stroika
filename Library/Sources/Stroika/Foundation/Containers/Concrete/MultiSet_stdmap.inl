@@ -123,7 +123,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual bool Contains (ArgByValueType<T> item) const override
         {
-            CountedValue<T>                                            tmp (item);
+            CountedValue<T>                                            tmp{item};
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             return fData_.find (item) != fData_.end ();
         }
