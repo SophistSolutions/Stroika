@@ -9,7 +9,7 @@ especially those they need to be aware of when upgrading.
 
 ### 2.1b3x prerelease
 
-(rough draft of notes)
+(rough draft of notes - up to date as of 2020-08--08 - but still doing more after that - things broken)
 
 #### TLDR
 
