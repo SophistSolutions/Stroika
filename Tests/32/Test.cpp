@@ -427,7 +427,7 @@ namespace {
             });
             DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
             Person_                                  p;
-            ObjectReader::IConsumerDelegateToContext tmp (mapper, make_shared<ObjectReader::ReadDownToReader> (mapper.MakeContextReader (&p)));
+            ObjectReader::IConsumerDelegateToContext tmp{mapper, make_shared<ObjectReader::ReadDownToReader> (mapper.MakeContextReader (&p))};
             XML::SAXParse (mkdata_ (), tmp);
             VerifyTestResult (p.firstName == L"Jim");
             VerifyTestResult (p.lastName == L"Smith");

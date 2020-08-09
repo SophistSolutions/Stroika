@@ -69,7 +69,7 @@ namespace {
             {
                 Containers::Set<filesystem::path>     answers1;
                 Containers::Set<filesystem::path>     answers2;
-                DirectoryIterable                     tmp (kTestSubDir_);
+                DirectoryIterable                     tmp{kTestSubDir_};
                 Traversal::Iterator<filesystem::path> i2 = tmp.end (); // we had a bug with copying iterator - when refcnt != 1 - hangs - never advances... Windows only
                 for (Traversal::Iterator<filesystem::path> i = tmp.begin (); i != tmp.end (); ++i) {
                     answers1 += *i;

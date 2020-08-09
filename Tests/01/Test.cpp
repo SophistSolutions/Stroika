@@ -26,7 +26,7 @@ namespace {
         namespace Private_ {
             void T1_ ()
             {
-                LRUCache<string, string> tmp (3);
+                LRUCache<string, string> tmp {3};
                 tmp.Add ("a", "1");
                 tmp.Add ("b", "2");
                 tmp.Add ("c", "3");
@@ -43,7 +43,7 @@ namespace {
             void T2_ ()
             {
                 using CACHE = LRUCache<string, string, equal_to<string>, hash<string>>;
-                CACHE tmp (3, equal_to<string>{}, 10);
+                CACHE tmp{3, equal_to<string>{}, 10};
                 tmp.Add ("a", "1");
                 tmp.Add ("b", "2");
                 tmp.Add ("c", "3");
@@ -61,7 +61,7 @@ namespace {
             void T3_ ()
             {
                 // using C++17 deduction guides
-                LRUCache tmp (pair<string, string>{}, 3, 10, hash<string>{});
+                LRUCache tmp{pair<string, string>{}, 3, 10, hash<string>{}};
                 tmp.Add ("a", "1");
                 tmp.Add ("b", "2");
                 tmp.Add ("c", "3");
@@ -116,7 +116,7 @@ namespace {
         }
         void DoIt ()
         {
-            LRUCache<string, string> tmp (3);
+            LRUCache<string, string> tmp{3};
             tmp.Add ("a", "1");
             tmp.Add ("b", "2");
             tmp.Add ("c", "3");
