@@ -157,7 +157,7 @@ namespace Stroika::Foundation::Execution {
         /**
          *  This returns true iff EndOfInput () has been called and the BlockingQueue is empty.
          *
-         *  \note Equivilent to EndOfInputHasBeenQueued () and empty ()
+         *  \note Equivalent to EndOfInputHasBeenQueued () and empty ()
          *
          *  \note   Once this is true, it will always remain true.
          *

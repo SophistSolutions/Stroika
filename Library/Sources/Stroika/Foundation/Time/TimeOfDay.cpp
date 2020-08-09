@@ -67,7 +67,7 @@ namespace {
  ********************************************************************************
  */
 TimeOfDay::FormatException::FormatException ()
-    : Execution::RuntimeErrorException<> (L"Invalid Time Format"sv)
+    : Execution::RuntimeErrorException<>{L"Invalid Time Format"sv}
 {
 }
 const TimeOfDay::FormatException TimeOfDay::FormatException::kThe;
@@ -113,7 +113,7 @@ namespace {
 
 const String TimeOfDay::kLocaleStandardFormat          = String_Constant{kLocaleStandardFormatArray};
 const String TimeOfDay::kLocaleStandardAlternateFormat = String_Constant{kLocaleStandardAlternateFormatArray};
-const String TimeOfDay::kISO8601Format                 = String_Constant{kISO8601FormatArray}; // equivilent to String_Constant{L"%H:%M:%S"}
+const String TimeOfDay::kISO8601Format                 = String_Constant{kISO8601FormatArray}; // equivalent to String_Constant{L"%H:%M:%S"}
 
 //%t        Any white space.
 //%T        The time as %H : %M : %S. (iso8601 format)
@@ -306,7 +306,7 @@ String TimeOfDay::Format (PrintFormat pf) const
 
 String TimeOfDay::Format (const locale& l) const
 {
-    return Format (l, String_Constant{L"%X"}); // %X locale dependent
+    return Format (l, L"%X"_k); // %X locale dependent
 }
 
 String TimeOfDay::Format (const String& formatPattern) const

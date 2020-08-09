@@ -531,7 +531,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         /**
          *  Helper to convert a reader to a factory (something that creates the reader).
          *
-         *  Equivilent to
+         *  Equivalent to
          *      Registry::ConvertReaderToFactory<TARGET_TYPE, READER> ()
          *
          *  Typically shadowed in subclasses (actual readers) to fill in default parameters.

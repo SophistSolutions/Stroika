@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Streams {
     inline auto OutputStream<ELEMENT_TYPE>::Ptr::_GetRepConstRef () const -> const _IRep&
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        // reinterpret_cast faster than dynamic_cast - check equivilent
+        // reinterpret_cast faster than dynamic_cast - check equivalent
         Assert (dynamic_cast<const _IRep*> (&inherited::_GetRepConstRef ()) == reinterpret_cast<const _IRep*> (&inherited::_GetRepConstRef ()));
         return *reinterpret_cast<const _IRep*> (&inherited::_GetRepConstRef ());
     }
@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Streams {
     inline auto OutputStream<ELEMENT_TYPE>::Ptr::_GetRepRWRef () const -> _IRep&
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        // reinterpret_cast faster than dynamic_cast - check equivilent
+        // reinterpret_cast faster than dynamic_cast - check equivalent
         Assert (dynamic_cast<_IRep*> (&inherited::_GetRepRWRef ()) == reinterpret_cast<_IRep*> (&inherited::_GetRepRWRef ()));
         return *reinterpret_cast<_IRep*> (&inherited::_GetRepRWRef ());
     }

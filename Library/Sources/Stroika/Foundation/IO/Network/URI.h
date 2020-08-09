@@ -109,7 +109,7 @@ namespace Stroika::Foundation::IO::Network {
          *
          *  These will raise exceptions if anything illegal in the URL specification.
          *
-         *  Constructor from String(or string) and no other arguments, is equivilent to calling URI::Parse ()
+         *  Constructor from String(or string) and no other arguments, is equivalent to calling URI::Parse ()
          */
         URI () = default;
         URI (const optional<SchemeType>& scheme, const optional<Authority>& authority, const String& path = String{}, const optional<String>& query = nullopt, const optional<String>& fragment = nullopt);

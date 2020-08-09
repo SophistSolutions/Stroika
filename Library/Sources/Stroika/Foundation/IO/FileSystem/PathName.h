@@ -138,7 +138,7 @@ namespace Stroika::Foundation::IO::FileSystem {
     /**
      *  // get the full path WITHOUT the file suffix at the end
      */
-    [[deprecated ("Since Stroika v2.1b2 - use path.parent_path + path.stem() for equivilent")]] String StripFileSuffix (const String& pathName);
+    [[deprecated ("Since Stroika v2.1b2 - use path.parent_path + path.stem() for equivalent")]] String StripFileSuffix (const String& pathName);
 
     /**
      *      // get the directory part of the given pathname (if the path refers to a directory - ends in / - then return THAT name)

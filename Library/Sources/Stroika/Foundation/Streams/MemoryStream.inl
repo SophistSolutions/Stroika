@@ -348,14 +348,14 @@ namespace Stroika::Foundation::Streams {
     template <typename ELEMENT_TYPE>
     inline auto MemoryStream<ELEMENT_TYPE>::Ptr::GetRepConstRef_ () const -> const Rep_&
     {
-        // reinterpret_cast faster than dynamic_cast - check equivilent
+        // reinterpret_cast faster than dynamic_cast - check equivalent
         Assert (dynamic_cast<const Rep_*> (&inherited::_GetRepConstRef ()) == reinterpret_cast<const Rep_*> (&inherited::_GetRepConstRef ()));
         return *reinterpret_cast<const Rep_*> (&inherited::_GetRepConstRef ());
     }
     template <typename ELEMENT_TYPE>
     inline auto MemoryStream<ELEMENT_TYPE>::Ptr::GetRepRWRef_ () const -> Rep_&
     {
-        // reinterpret_cast faster than dynamic_cast - check equivilent
+        // reinterpret_cast faster than dynamic_cast - check equivalent
         Assert (dynamic_cast<Rep_*> (&inherited::_GetRepRWRef ()) == reinterpret_cast<Rep_*> (&inherited::_GetRepRWRef ()));
         return *reinterpret_cast<Rep_*> (&inherited::_GetRepRWRef ());
     }

@@ -146,7 +146,7 @@ namespace Stroika::Foundation::IO::Network {
     sockaddr_in6 SocketAddress::As<sockaddr_in6> () const;
 
     /**
-     *  Take the argument list of internet addresses and convert them to an equivilent list of SocketAddresses - with the given port.
+     *  Take the argument list of internet addresses and convert them to an equivalent list of SocketAddresses - with the given port.
      *
      *  \par Example Usage
      *      \code

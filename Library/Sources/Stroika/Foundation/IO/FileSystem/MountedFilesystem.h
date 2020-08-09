@@ -88,7 +88,7 @@ namespace Stroika::Foundation::IO::FileSystem {
         optional<String> fFileSystemType;
 
         /**
-         *  This refers - for now - to a windows concept - Volume ID. I think this is roughly equivilent to physical disk
+         *  This refers - for now - to a windows concept - Volume ID. I think this is roughly equivalent to physical disk
          *  but I'm not sure.
          *
          *  Examples include:

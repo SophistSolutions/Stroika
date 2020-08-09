@@ -174,7 +174,7 @@ namespace Stroika::Foundation::Execution {
      *      Equally important to understand, is when a function guarantees its NOT a cancelation point - which we will document
      *      with ***Not Cancelation Point***, and typically also noexcept. The DbgTrace () calls fall into this category.
      *
-     *      \note An API marked *** Cancelation Point *** will always CheckForInterruption () at least once (or equivilent check)
+     *      \note An API marked *** Cancelation Point *** will always CheckForInterruption () at least once (or equivalent check)
      *            and will never block indefinitely without periodically checking for interruption.
      *
      *  \note   Stroika threads lifetime must NOT extend outside the lifetime of 'main'. That means they cannot

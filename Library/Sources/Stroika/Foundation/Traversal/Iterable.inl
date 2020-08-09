@@ -73,16 +73,12 @@ namespace Stroika::Foundation::Traversal {
     template <typename REP_SUB_TYPE>
     inline Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const Iterable<T>* it) noexcept
         : shared_lock<const Debug::AssertExternallySynchronizedLock>{*it}
-        , fConstRef_
-    {
-        static_cast<const REP_SUB_TYPE*> (it->_fRep.cget ())
-    }
+        // clang-format off
+        , fConstRef_{static_cast<const REP_SUB_TYPE*> (it->_fRep.cget ())}
 #if qDebug
-    , fIterableEnvelope_
-    {
-        it
-    }
+        , fIterableEnvelope_{it}
 #endif
+    // clang-format on
     {
         RequireNotNull (it);
         EnsureMember (fConstRef_, REP_SUB_TYPE);
@@ -90,27 +86,17 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     template <typename REP_SUB_TYPE>
     inline Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const _SafeReadRepAccessor& src) noexcept
+    // clang-format off
 #if qDebug
-        : shared_lock<const Debug::AssertExternallySynchronizedLock>
-    {
-        *src.fIterableEnvelope_
-    }
+        : shared_lock<const Debug::AssertExternallySynchronizedLock>{*src.fIterableEnvelope_}
 #else
-        : shared_lock<const Debug::AssertExternallySynchronizedLock>
-    {
-        *(const Iterable<T>*)nullptr
-    }
+        : shared_lock<const Debug::AssertExternallySynchronizedLock>{*(const Iterable<T>*)nullptr}
 #endif
-    , fConstRef_
-    {
-        src.fConstRef_
-    }
+        , fConstRef_{src.fConstRef_}
 #if qDebug
-    , fIterableEnvelope_
-    {
-        src.fIterableEnvelope_
-    }
+        , fIterableEnvelope_{src.fIterableEnvelope_}
 #endif
+    // clang-format on
     {
         RequireNotNull (fConstRef_);
         EnsureMember (fConstRef_, REP_SUB_TYPE);
@@ -119,16 +105,12 @@ namespace Stroika::Foundation::Traversal {
     template <typename REP_SUB_TYPE>
     inline Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (_SafeReadRepAccessor&& src) noexcept
         : shared_lock<const Debug::AssertExternallySynchronizedLock> (move<const Debug::AssertExternallySynchronizedLock> (src))
-        , fConstRef_
-    {
-        src.fConstRef_
-    }
+        // clang-format off
+        , fConstRef_{src.fConstRef_}
 #if qDebug
-    , fIterableEnvelope_
-    {
-        src.fIterableEnvelope_
-    }
+        , fIterableEnvelope_{src.fIterableEnvelope_}
 #endif
+    // clang-format on
     {
         RequireNotNull (fConstRef_);
         EnsureMember (fConstRef_, REP_SUB_TYPE);
@@ -170,7 +152,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     template <typename REP_SUB_TYPE>
     inline Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_SafeReadWriteRepAccessor (_SafeReadWriteRepAccessor&& from)
-        : lock_guard<const Debug::AssertExternallySynchronizedLock> (move<const Debug::AssertExternallySynchronizedLock> (from))
+        : lock_guard<const Debug::AssertExternallySynchronizedLock>{move<const Debug::AssertExternallySynchronizedLock> (from)}
         , fIterableEnvelope_{from.fIterableEnvelope_}
         , fRepReference_{from.fRepReference_}
     {
@@ -299,7 +281,7 @@ namespace Stroika::Foundation::Traversal {
          */
         for (const auto& ti : lhs) {
             bool contained = false;
-            for (auto ri : rhs) {
+            for (const auto& ri : rhs) {
                 if (equalsComparer (ti, ri)) {
                     contained = true;
                     break;
@@ -311,7 +293,7 @@ namespace Stroika::Foundation::Traversal {
         }
         for (const auto& ri : rhs) {
             bool contained = false;
-            for (auto ti : lhs) {
+            for (const auto& ti : lhs) {
                 if (equalsComparer (ti, ri)) {
                     contained = true;
                     break;

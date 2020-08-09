@@ -912,7 +912,7 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \note   returns nullopt if empty list
          *
-         *  \note   Equivilent to Accumulate ([] (T lhs, T rhs) { return min (lhs, rhs); })
+         *  \note   Equivalent to Accumulate ([] (T lhs, T rhs) { return min (lhs, rhs); })
          *
          *  See:
          *      https://msdn.microsoft.com/en-us/library/bb503062%28v=vs.100%29.aspx?f=255&MSPPError=-2147217396
@@ -940,7 +940,7 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \note   returns nullopt if empty list
          *
-         *  \note   Equivilent to Accumulate ([] (T lhs, T rhs) { return max (lhs, rhs); })
+         *  \note   Equivalent to Accumulate ([] (T lhs, T rhs) { return max (lhs, rhs); })
          *
          *  See:
          *      https://msdn.microsoft.com/en-us/library/bb503062%28v=vs.100%29.aspx?f=255&MSPPError=-2147217396
@@ -994,7 +994,7 @@ namespace Stroika::Foundation::Traversal {
          *          VerifyTestResult (c.Sum () == 24);
          *      \endcode
          *
-         *  \note   Equivilent to Accumulate ([] (T lhs, T rhs) { return lhs + rhs; })
+         *  \note   Equivalent to Accumulate ([] (T lhs, T rhs) { return lhs + rhs; })
          *
          *  \note   returns nullopt if empty list
          *

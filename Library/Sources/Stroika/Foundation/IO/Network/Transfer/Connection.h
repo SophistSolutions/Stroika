@@ -384,13 +384,13 @@ namespace Stroika::Foundation::IO::Network::Transfer {
              *  If the constructor with an authToken is specified, we automatically use eProactivelySendAuthentication.
              *
              *      \note   digest/basic/etc - normal username/password:
-             *              Authentication (L"Mr-Smith", L"Super-Secret") is equivilent to curl --user Mr-Smith:Super-Secret URL
+             *              Authentication (L"Mr-Smith", L"Super-Secret") is equivalent to curl --user Mr-Smith:Super-Secret URL
              *
              *      \note   For OAuth2:
-             *              Authentication (L"OAuth <ACCESS_TOKEN>") is equivilent to curl -H "Authorization: OAuth <ACCESS_TOKEN>" URL
+             *              Authentication (L"OAuth <ACCESS_TOKEN>") is equivalent to curl -H "Authorization: OAuth <ACCESS_TOKEN>" URL
              *
              *      \note   For Bearer tokens:
-             *              Authentication (L"Bearer <ACCESS_TOKEN>") is equivilent to curl -H "Authorization: Bearer <ACCESS_TOKEN>" URL
+             *              Authentication (L"Bearer <ACCESS_TOKEN>") is equivalent to curl -H "Authorization: Bearer <ACCESS_TOKEN>" URL
              */
             Authentication () = delete;
             Authentication (const String& authToken);

@@ -152,7 +152,7 @@ namespace Stroika::Foundation::DataExchange {
      *              ObjectVariantMapper::StructFieldInfo { L"This-HR-ContactID-To-SharedContactID-Map", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fThisPHRsIDToSharedContactID) },
      *          });
      *
-     *          // OR Equivilently
+     *          // OR Equivalently
      *          mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
      *              { L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fEnabled) },
      *              { L"Last-Synchronized-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fLastSynchronizedAt) },
@@ -381,7 +381,7 @@ namespace Stroika::Foundation::DataExchange {
          *      \code
          *          ObjectVariantMapper mapper;
          *          mapper.Add (ObjectVariantMapper::MakeCommonSerializer<optional<int>> ());   // long way
-         *          mapper.AddCommonType<optional<int>> ();                                     // equivilent, but also checks/asserts underlying
+         *          mapper.AddCommonType<optional<int>> ();                                     // equivalent, but also checks/asserts underlying
          *                                                                                      // type has been entered into registry
          *      \endcode
          *
