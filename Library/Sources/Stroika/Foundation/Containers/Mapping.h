@@ -171,7 +171,6 @@ namespace Stroika::Foundation::Containers {
         template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> ()>* = nullptr>
         explicit Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer);
         Mapping (const Mapping& src) noexcept = default;
-        Mapping (Mapping&& src) noexcept      = default;
         Mapping (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> ()>* = nullptr>
         Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
@@ -200,7 +199,6 @@ namespace Stroika::Foundation::Containers {
         /**
          */
         nonvirtual Mapping& operator= (const Mapping& rhs) = default;
-        nonvirtual Mapping& operator= (Mapping&& rhs) noexcept = default;
 
     public:
         /**
