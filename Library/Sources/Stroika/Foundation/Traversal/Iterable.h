@@ -195,16 +195,19 @@ namespace Stroika::Foundation::Traversal {
      *      threading stuff and ???
      *
      *  *Important Design Note*:
-     *      Move operations on an interable are mapped to the same as copy. We experimented with
+     *      Move operations on an interable are mapped to copy operations. We experimented with
      *      true move (before Stroika v2.1d10), but since all operations have to still be somehow valid
      *      after a move, that meants re-creating the rep in the moved-out iterable.
      *
      *      There is little value to move, since Iterable already uses copy-on-write (COW).
      *
      *      And when you take into account the cost of either checking for null in all operations (methods), or
-     *      creating a new empty object after each move, there is no point.
+     *      creating a new empty object after each move, this is a poor tradeoff.
      *
      *      See https://stroika.atlassian.net/browse/STK-541 for history and alteratives (allowing real moves)
+     * 
+     *      In Stroika 2.1b3, switched to simply not defining (&&) move constructor/operator= (&&), instead of defining
+     *      it and having map to move.
      *
      *  \em Design Note
      *      Methods like Min/Max/Median/Sum make little senese on empty Iterables. There were several choices
@@ -280,12 +283,6 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \brief  move CTOR - clears source
-         */
-        explicit Iterable (Iterable&& from) noexcept;
-
-    public:
-        /**
          *  Make a copy of the given argument, and treat it as an iterable.
          *
          *  \par Example Usage
@@ -308,12 +305,6 @@ namespace Stroika::Foundation::Traversal {
          */
         explicit Iterable (const _IterableRepSharedPtr& rep) noexcept;
 
-    protected:
-        /**
-         *  \brief  Iterable's are typically constructed as concrete subtype objects, whose CTOR passed in a shared copyable rep.
-         */
-        explicit Iterable (_IterableRepSharedPtr&& rep) noexcept;
-
     public:
         ~Iterable () = default;
 
@@ -325,7 +316,6 @@ namespace Stroika::Foundation::Traversal {
          *  at the time of move.
          */
         nonvirtual Iterable<T>& operator= (const Iterable& rhs);
-        nonvirtual Iterable<T>& operator= (Iterable&& rhs) noexcept;
 
     public:
         /**

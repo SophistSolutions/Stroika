@@ -214,23 +214,8 @@ namespace Stroika::Foundation::Traversal {
         Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
     }
     template <typename T>
-    inline Iterable<T>::Iterable (_IterableRepSharedPtr&& rep) noexcept
-        : _fRep{move (rep)}
-    {
-        Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
-        if constexpr (!kIterableUsesStroikaSharedPtr) {
-            Require (rep == nullptr); // after move (see https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr "After the construction, ... r is empty and its stored pointer is null"
-        }
-    }
-    template <typename T>
     inline Iterable<T>::Iterable (const Iterable& from) noexcept
         : _fRep{from._fRep}
-    {
-        Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
-    }
-    template <typename T>
-    inline Iterable<T>::Iterable (Iterable&& from) noexcept
-        : _fRep{from._fRep} // SEE Iterable<T> DESIGN NOTE in class (and https://stroika.atlassian.net/browse/STK-541) - why we intentionally use copy of rep not MOVE
     {
         Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
     }
@@ -253,13 +238,6 @@ namespace Stroika::Foundation::Traversal {
         return *this;
     }
     template <typename T>
-    inline Iterable<T>& Iterable<T>::operator= (Iterable&& rhs) noexcept
-    {
-        RequireNotNull (rhs._fRep);
-        _fRep = move (rhs._fRep);
-        return *this;
-    }
-    template <typename T>
     inline typename Iterable<T>::_IterableRepSharedPtr Iterable<T>::Clone_ (const _IRep& rep, IteratorOwnerID forIterableEnvelope)
     {
         return rep.Clone (forIterableEnvelope);
@@ -268,7 +246,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename CONTAINER_OF_T>
     Iterable<T> Iterable<T>::mk_ (CONTAINER_OF_T&& from)
     {
-        vector<T>                tmp (from.begin (), from.end ()); // Somewhat simplistic / inefficient implementation
+        vector<T>                tmp{from.begin (), from.end ()}; // Somewhat simplistic / inefficient implementation
         size_t                   idx{0};
         function<optional<T> ()> getNext = [tmp, idx] () mutable -> optional<T> {
             if (idx < tmp.size ())
@@ -319,7 +297,7 @@ namespace Stroika::Foundation::Traversal {
          *  An extremely inefficient but space-constant implementation. N^2 and check
          *  a contains b and b contains a
          */
-        for (auto&& ti : lhs) {
+        for (const auto& ti : lhs) {
             bool contained = false;
             for (auto ri : rhs) {
                 if (equalsComparer (ti, ri)) {
@@ -331,7 +309,7 @@ namespace Stroika::Foundation::Traversal {
                 return false;
             }
         }
-        for (auto&& ri : rhs) {
+        for (const auto& ri : rhs) {
             bool contained = false;
             for (auto ti : lhs) {
                 if (equalsComparer (ti, ri)) {
@@ -475,7 +453,7 @@ namespace Stroika::Foundation::Traversal {
     {
         vector<T> tmp; // Simplistic/stupid/weak implementation
         if constexpr (is_same_v<equal_to<T>, EQUALS_COMPARER> and is_invocable_v<less<T>>) {
-            set<T> t1 (begin (), end ());
+            set<T> t1{begin (), end ()};
             tmp = vector<T>{t1.begin (), t1.end ()};
         }
         else {
