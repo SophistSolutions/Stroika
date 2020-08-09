@@ -26,7 +26,7 @@ namespace {
         namespace Private_ {
             void T1_ ()
             {
-                LRUCache<string, string> tmp {3};
+                LRUCache<string, string> tmp{3};
                 tmp.Add ("a", "1");
                 tmp.Add ("b", "2");
                 tmp.Add ("c", "3");
