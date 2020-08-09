@@ -16,7 +16,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline Deque<T>::Deque ()
-        : inherited (move (Factory::Deque_Factory<T> () ()))
+        : inherited (Factory::Deque_Factory<T> () ())
     {
         _AssertRepValidType ();
     }
@@ -37,13 +37,13 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     inline Deque<T>::Deque (const _DequeRepSharedPtr& src) noexcept
-        : inherited ((RequireNotNull (src), src))
+        : inherited{(RequireNotNull (src), src)}
     {
         _AssertRepValidType ();
     }
     template <typename T>
     inline Deque<T>::Deque (_DequeRepSharedPtr&& src) noexcept
-        : inherited ((RequireNotNull (src), move (src)))
+        : inherited{(RequireNotNull (src), move (src))}
     {
         _AssertRepValidType ();
     }

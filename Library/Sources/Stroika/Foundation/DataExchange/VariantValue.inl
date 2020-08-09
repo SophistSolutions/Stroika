@@ -37,7 +37,7 @@ namespace Stroika::Foundation::DataExchange {
         }
     }
     inline VariantValue::VariantValue (nullptr_t)
-        : VariantValue ()
+        : VariantValue{}
     {
     }
     inline VariantValue::VariantValue (const vector<VariantValue>& val)
@@ -45,7 +45,7 @@ namespace Stroika::Foundation::DataExchange {
     {
     }
     inline VariantValue::VariantValue (VariantValue&& src) noexcept
-        : fVal_ (move (src.fVal_))
+        : fVal_{move (src.fVal_)}
     {
     }
     inline VariantValue& VariantValue::operator= (VariantValue&& rhs) noexcept

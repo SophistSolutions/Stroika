@@ -117,15 +117,14 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     inline Sequence<T>::Sequence (const _SequenceRepSharedPtr& rep) noexcept
-        : inherited ((RequireNotNull (rep), rep))
+        : inherited{(RequireNotNull (rep), rep)}
     {
         _AssertRepValidType ();
     }
     template <typename T>
     inline Sequence<T>::Sequence (_SequenceRepSharedPtr&& rep) noexcept
-        : inherited (move (rep))
+        : inherited ((RequireNotNull (rep), move (rep)))
     {
-        //RequireNotNull (rep); -- logically required, but we cannot test here, must test before mem-initializers
         _AssertRepValidType ();
     }
     template <typename T>
@@ -276,26 +275,9 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
-    void Sequence<T>::AppendAll (CONTAINER_OF_ADDABLE&& s)
+    inline void Sequence<T>::AppendAll (CONTAINER_OF_ADDABLE&& s)
     {
-        _SafeReadWriteRepAccessor<_IRep> tmp = {this};
-        _IRep*                           ww  = nullptr; // lazy _GetWriteableRep... in case we don't need
-#if 0
-            // faster but doesn't work if container doesn't have 'Apply' method - like vector
-            s.Apply ([&ww] (const T & item) {
-                if (ww == nullptr) {
-                    ww = &tmp._GetWriteableRep ();
-                }
-                ww->Insert (_IRep::_kSentinalLastItemIndex, &item, &item + 1);
-            });
-#else
-        for (const auto& i : s) {
-            if (ww == nullptr) {
-                ww = &tmp._GetWriteableRep ();
-            }
-            ww->Insert (_IRep::_kSentinalLastItemIndex, &i, &i + 1);
-        }
-#endif
+        AppendAll (s.begin (), s.end ());
     }
     template <typename T>
     template <typename COPY_FROM_ITERATOR_OF_ADDABLE>

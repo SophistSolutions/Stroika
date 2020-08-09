@@ -28,15 +28,15 @@ namespace Stroika::Foundation::DataExchange {
         Require (not type.empty () or suffix == nullopt);   // dont specify suffix without type
     }
     inline InternetMediaType::InternetMediaType (AtomType type, AtomType subType, const Containers::Mapping<String, String>& parameters)
-        : InternetMediaType (type, subType, nullopt, parameters)
+        : InternetMediaType{type, subType, nullopt, parameters}
     {
     }
     inline InternetMediaType::InternetMediaType (const String& type, const String& subType, const Containers::Mapping<String, String>& parameters)
-        : InternetMediaType (static_cast<AtomType> (type), static_cast<AtomType> (subType), parameters)
+        : InternetMediaType{static_cast<AtomType> (type), static_cast<AtomType> (subType), parameters}
     {
     }
     inline InternetMediaType::InternetMediaType (const String& type, const String& subType, const optional<String>& suffix, const Containers::Mapping<String, String>& parameters)
-        : InternetMediaType (static_cast<AtomType> (type), static_cast<AtomType> (subType), suffix == nullopt ? nullopt : optional<AtomType>{static_cast<AtomType> (*suffix)}, parameters)
+        : InternetMediaType{static_cast<AtomType> (type), static_cast<AtomType> (subType), suffix == nullopt ? nullopt : optional<AtomType>{static_cast<AtomType> (*suffix)}, parameters}
     {
     }
     inline bool InternetMediaType::empty () const
