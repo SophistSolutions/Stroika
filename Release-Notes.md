@@ -2,15 +2,75 @@
 
 ## About
 
-These release notes are a summary of
-major user (developer)-impactful changes - especially those they need
-to be aware of when upgrading.
+These release notes are a summary of major user (developer)-impactful changes -
+especially those they need to be aware of when upgrading.
 
 ## History
 
+### 2.1b3x prerelease
+
+(rough draft of notes)
+
+#### TLDR
+
+- Fixed CircleCI issue, so builds there
+
+- Support Visual Studio.Net 2019 build - 16.7.0
+
+- Code cleanups: uniform initialization; const auto&
+
+#### Details
+
+- CircleCI
+
+  - better (homefully equivilent) formatting - differnt vscode formatter - for circleci file
+  - hopefully fixed compile issue with gcc7/8 on circleci build
+
+- RegressionTests
+
+  - tweaked output for regressiontests
+
+- ScriptsLib/RunLocalWSLRegressionTests run with just -j2, since where i run this test doesnt have much virtual memory (nor logical cores)
+
+- Frameworks/SystemPerformance
+
+  - Stroika/Frameworks/SystemPerformance/Instruments: cleanups
+  - Instruments/Process: fixed permission checking issue with OptionallyResolveShortcut\_ ()
+    so it doesn't throw on bad filenames (before it used IgnoreExceptionsExceptThreadInterruptForCall to suppress and now error_code& arg); and
+    dbgtrace cleanups
+  - Instruments/Process cleanups: cosmetic, and fixed several regressions due(dbgtrace due to swithc to std::filesystem), and use directory_iterator directly instead of Stroika wrapper, and improved failuremode on WSL2 (still not fixed)
+
+- Support vs 2k 19 16.7.0
+- react with if \_\_cpp_lib_atomic_shared_ptr >= 201711 on atomic load/store shared_ptr deprecation in c++20
+
+- more uniform initializaiton; and lose unneeded inherited () mem-initializer calls to base class CTOR with no args
+
+- Library
+
+  - Foundation::Containers
+    - Sequence\<T>::AppendAll () simplification (one overload)
+    - more tweaks to Collection (and all containers) template (minor but related to uniform init mostly)
+  - Foundation::Debug
+    - in DbgTrace TraceContextBumper - use ... in name in brackets when overflowing
+  - Foundation::Memory
+    - BlockAllocator.inl - cosmetic cleanups and comments about (not easy to reproduce) helgrind failure
+  - Foundation::Traveral
+    - respect issue https://stroika.atlassian.net/browse/STK-541 - and dont do move inside Iterable\<T> - for now
+
+- Code Style
+
+  - uniform initializaiton
+    - document when using {} vs () for initializzaiton
+    - cleanup/document one place to not use uniform initialization for implicit conversions
+    - allow implicit conversions in some template/perfect forwarding situations
+  - for const auto& instead of auto&& or auto i (especailly with ranged for loop)
+    - maybe better to use const auto vs. auto&& for range based for (when common case just referencing) - not clear thats best for fundemental types though?
+
+- avoid memcpy of zero bytes with nullptr arg
+
 ---
 
-### 2.1b2 {2020-08-01x RC}
+### 2.1b2 {2020-08-03}
 
 #### TLDR
 
