@@ -301,9 +301,15 @@ namespace Stroika::Foundation::Traversal {
 
     protected:
         /**
-         *  \brief  Iterable's are typically constructed as concrete subtype objects, whose CTOR passed in a shared copyable rep.
+         *  \brief  Iterable's are typically constructed as concrete subtype objects, 
+         *          whose CTOR passed in a shared copyable rep.
+         *
+         *  \note - though Iterables are not movable, the repPtr in construction can be, so that we don't
+         *          need to increment its reference count as we pass it though the call chain to where it will be finally
+         *          stored.
          */
         explicit Iterable (const _IterableRepSharedPtr& rep) noexcept;
+        explicit Iterable (_IterableRepSharedPtr&& rep) noexcept;
 
     public:
         ~Iterable () = default;

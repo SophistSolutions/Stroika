@@ -191,9 +191,18 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T>
     inline Iterable<T>::Iterable (const _IterableRepSharedPtr& rep) noexcept
-        : _fRep{rep}
+        : _fRep{(RequireNotNull (rep), rep)}
     {
         Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
+    }
+    template <typename T>
+    inline Iterable<T>::Iterable (_IterableRepSharedPtr&& rep) noexcept
+        : _fRep{(RequireNotNull (rep), move (rep))}
+    {
+        Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
+        if constexpr (!kIterableUsesStroikaSharedPtr) {
+            Require (rep == nullptr); // after move (see https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr "After the construction, ... r is empty and its stored pointer is null"
+        }
     }
     template <typename T>
     inline Iterable<T>::Iterable (const Iterable& from) noexcept
