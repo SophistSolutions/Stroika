@@ -210,7 +210,7 @@ Date Date::Parse_ (const String& rep, const locale& l, const Traversal::Iterable
     ios::iostate             errState = ios::goodbit;
     tm                       when{};
 
-    for (auto&& formatPattern : formatPatterns) {
+    for (const auto& formatPattern : formatPatterns) {
         errState = ios::goodbit;
         wistringstream iss (wRep);
         if constexpr (kRequireImbueToUseFacet_) {

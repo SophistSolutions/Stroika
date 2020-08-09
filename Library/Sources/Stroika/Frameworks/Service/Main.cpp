@@ -99,7 +99,7 @@ Main::CommandArgs::CommandArgs (const Sequence<String>& args)
             pair<String, MajorOperation> (Main::CommandNames::kContinue, MajorOperation::eContinue),
         };
         bool found = false;
-        for (auto i : kPairs_) {
+        for (const auto& i : kPairs_) {
             if (Execution::MatchesCommandLineArgument (si, i.first)) {
                 if (found) {
                     Execution::Throw (Execution::InvalidCommandLineArgument (L"Only one major command-line option can be specified at a time"));

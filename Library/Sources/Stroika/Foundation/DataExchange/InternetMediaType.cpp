@@ -92,7 +92,7 @@ String InternetMediaType::As () const
     if (fSuffix_) {
         sb += L"+" + fSuffix_->GetPrintName ();
     }
-    for (auto&& p : fParameters_) {
+    for (const auto& p : fParameters_) {
         sb += L"; " + p.fKey + L": " + p.fValue;
     }
     return sb.str ();

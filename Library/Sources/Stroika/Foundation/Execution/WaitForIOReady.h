@@ -198,7 +198,7 @@ namespace Stroika::Foundation::Execution {
      *          Execution::WaitForIOReady sockSetPoller{socket2FDBijection.Image ()};
      *          while (true) {
      *              try {
-     *                  for (auto readyFD : sockSetPoller.WaitQuietly ()) {
+     *                  for (const auto& readyFD : sockSetPoller.WaitQuietly ()) {
      *                      ConnectionOrientedMasterSocket::Ptr localSocketToAcceptOn = *socket2FDBijection.InverseLookup (readyFD);
      *                      ConnectionOrientedStreamSocket::Ptr s                     = localSocketToAcceptOn.Accept ();
      *                      fNewConnectionAcceptor (s);

@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Execution {
         Require (mappedObjectBuffer->size () == 0);
         pollBuffer->reserve (fPollData_.size ());
         mappedObjectBuffer->reserve (fPollData_.size ());
-        for (auto i : fPollData_) {
+        for (const auto& i : fPollData_) {
             pollBuffer->push_back (pair<SDKPollableType, TypeOfMonitorSet>{TRAITS::GetSDKPollable (i.first), i.second});
             mappedObjectBuffer->push_back (i.first);
         }

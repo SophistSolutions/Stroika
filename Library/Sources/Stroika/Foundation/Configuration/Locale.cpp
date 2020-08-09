@@ -110,10 +110,10 @@ Characters::String Configuration::FindLocaleName (const Characters::String& iso2
             L".utf8"sv,
 #endif
     };
-    for (auto&& i1 : part1) {
-        for (auto&& i2 : part2) {
-            for (auto&& i3 : part3) {
-                for (auto&& i4 : part4) {
+    for (const auto& i1 : part1) {
+        for (const auto& i2 : part2) {
+            for (const auto& i3 : part3) {
+                for (const auto& i4 : part4) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace (L"***trying locale (i1 + i2 + i3 + i4).AsUTF8 ().c_str ()=%s", (i1 + i2 + i3 + i4).c_str ());
 #endif

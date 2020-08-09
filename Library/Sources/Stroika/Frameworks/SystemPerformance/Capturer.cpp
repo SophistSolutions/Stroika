@@ -116,7 +116,7 @@ void Capturer::Runner_ ()
 void Capturer::UpdateMeasurementSet_ (const MeasurementSet& ms)
 {
     fCurrentMeasurementSet_ = ms;
-    for (auto cb : fCallbacks_.load ()) {
+    for (const auto& cb : fCallbacks_.load ()) {
         cb (ms);
     }
 }

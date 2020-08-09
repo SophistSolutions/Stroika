@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Execution {
     {
         {
             auto lk = fData_.rwget ();
-            for (auto i : fds) {
+            for (const auto& i : fds) {
                 lk->Add (i, flags);
             }
         }

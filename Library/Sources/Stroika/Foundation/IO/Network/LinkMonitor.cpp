@@ -280,7 +280,7 @@ struct LinkMonitor::Rep_ {
 
     void SendNotifies (LinkChange lc, const String& linkName, const String& ipAddr)
     {
-        for (auto cb : fCallbacks_) {
+        for (const auto& cb : fCallbacks_) {
             cb (lc, linkName, ipAddr);
         }
     }

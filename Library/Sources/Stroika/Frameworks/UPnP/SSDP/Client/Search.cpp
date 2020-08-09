@@ -196,7 +196,7 @@ public:
             {
                 // bad practice to keep mutex lock here - DEADLOCK CITY - find nice CLEAN way todo this...
                 [[maybe_unused]] auto&& critSec = lock_guard{fCritSection_};
-                for (auto i : fFoundCallbacks_) {
+                for (const auto& i : fFoundCallbacks_) {
                     i (d);
                 }
             }

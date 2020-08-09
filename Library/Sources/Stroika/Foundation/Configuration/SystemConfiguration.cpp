@@ -190,7 +190,7 @@ String SystemConfiguration::ToString () const
 unsigned int SystemConfiguration::CPU::GetNumberOfSockets () const
 {
     Set<unsigned int> socketIds;
-    for (auto i : fCores) {
+    for (const auto& i : fCores) {
         socketIds.Add (i.fSocketID);
     }
     return static_cast<unsigned int> (socketIds.size ());

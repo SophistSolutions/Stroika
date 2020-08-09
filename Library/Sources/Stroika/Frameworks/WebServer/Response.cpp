@@ -213,7 +213,7 @@ void Response::Flush ()
 
         {
             Mapping<String, String> headers2Write = GetEffectiveHeaders ();
-            for (auto i : headers2Write) {
+            for (const auto& i : headers2Write) {
                 string utf8 = Characters::Format (L"%s: %s\r\n", i.fKey.c_str (), i.fValue.c_str ()).AsUTF8 ();
                 fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (utf8)), reinterpret_cast<const byte*> (Containers::End (utf8)));
             }

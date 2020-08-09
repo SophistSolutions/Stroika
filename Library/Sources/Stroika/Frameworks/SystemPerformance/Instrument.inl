@@ -29,7 +29,7 @@ namespace Stroika::Frameworks::SystemPerformance {
         if (measurementTimeOut != nullptr) {
             *measurementTimeOut = ms.fMeasuredAt;
         }
-        for (auto ii : ms.fMeasurements) {
+        for (const auto& ii : ms.fMeasurements) {
             return ii.fValue;
         }
         AssertNotReached (); // only use this on insturments with one result returned

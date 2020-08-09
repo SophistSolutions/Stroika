@@ -38,7 +38,7 @@ namespace {
     size_t len_ (const initializer_list<BLOB>& list2Concatenate)
     {
         size_t sz = 0;
-        for (auto i : list2Concatenate) {
+        for (const auto& i : list2Concatenate) {
             sz += i.GetSize ();
         }
         return sz;
@@ -63,7 +63,7 @@ BLOB::BasicRep_::BasicRep_ (const initializer_list<BLOB>& list2Concatenate)
     : fData{len_ (list2Concatenate)}
 {
     byte* pb = fData.begin ();
-    for (auto i : list2Concatenate) {
+    for (const auto& i : list2Concatenate) {
         auto itemSize{i.GetSize ()};
         if (itemSize != 0) {
             (void)::memcpy (pb, i.begin (), itemSize);

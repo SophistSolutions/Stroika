@@ -85,7 +85,7 @@ namespace {
                 matches = true;
             }
             else {
-                for (auto a : advertisements) {
+                for (const auto& a : advertisements) {
                     if (targetEqComparer (a.fTarget, da.fTarget)) {
                         matches = true;
                         break;
@@ -128,7 +128,7 @@ namespace {
 void SearchResponder::Run (const Iterable<Advertisement>& advertisements)
 {
 #if qDebug
-    for (auto a : advertisements) {
+    for (const auto& a : advertisements) {
         Require (not a.fTarget.empty ());
     }
 #endif

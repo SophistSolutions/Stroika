@@ -224,7 +224,7 @@ namespace {
             L"nfs3"sv,
             L"vboxsf"sv,
         };
-        for (auto i : *volumes) {
+        for (const auto& i : *volumes) {
             // @todo - NOTE - this is NOT a reliable way to tell, but hopefully good enough for starters
             MountedFilesystemInfoType vi = i.fValue;
             if (vi.fFileSystemType) {
@@ -919,7 +919,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         {
             Debug::TraceContextBumper ctx1 ("Weighted disk stats");
-            for (auto i : totalWeights) {
+            for (const auto& i : totalWeights) {
                 DbgTrace (L"Disk '%s' weight %f", i.fKey.c_str (), i.fValue);
             }
         }

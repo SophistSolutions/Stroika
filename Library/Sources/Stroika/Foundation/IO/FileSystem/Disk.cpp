@@ -226,7 +226,7 @@ Collection<DiskInfoType> FileSystem::GetAvailableDisks ()
 
 #if qPlatform_Windows
 #if qCaptureDiskDeviceInfoWindows_ && 0
-    for (auto s : GetPhysicalDiskDeviceInfo_ ()) {
+    for (const auto& s : GetPhysicalDiskDeviceInfo_ ()) {
         DbgTrace (L"s=%s", s.c_str ());
     }
 #endif

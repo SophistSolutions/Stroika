@@ -809,7 +809,7 @@ namespace {
                         //     std::cout << i << ": " << sub_match_str << '\n';
                         //}
 
-                        for (auto i : color_match) {
+                        for (const auto& i : color_match) {
                             std::cout << i << '\n';
                         }
                     }

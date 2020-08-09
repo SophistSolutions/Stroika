@@ -166,7 +166,7 @@ bool SystemFirewall::Manager::Register (const Rule& rule)
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"SystemFirewall::Manager::Register", L"rule=%s", Characters::ToString (rule).c_str ())};
 
-    for (auto r : LookupByGroup (rule.fGroup)) {
+    for (const auto& r : LookupByGroup (rule.fGroup)) {
         if (r == rule) {
             DbgTrace ("run unchanged, so returning false");
             return false;

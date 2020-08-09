@@ -105,9 +105,9 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
         auto lockedData        = fData_.rwget ();
         lockedData->fOverrides = overrides;
         lockedData->fSuffix2MediaTypeMap.clear ();
-        for (auto i : lockedData->fOverrides) {
+        for (const auto& i : lockedData->fOverrides) {
             if (i.fValue.fFileSuffixes) {
-                for (auto si : *i.fValue.fFileSuffixes) {
+                for (const auto& si : *i.fValue.fFileSuffixes) {
                     lockedData->fSuffix2MediaTypeMap.Add (si, i.fKey, AddReplaceMode::eAddIfMissing);
                 }
             }
@@ -118,9 +118,9 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
         auto lockedData = fData_.rwget ();
         lockedData->fOverrides.Add (mediaType, overrideRec);
         lockedData->fSuffix2MediaTypeMap.clear ();
-        for (auto i : lockedData->fOverrides) {
+        for (const auto& i : lockedData->fOverrides) {
             if (i.fValue.fFileSuffixes) {
-                for (auto si : *i.fValue.fFileSuffixes) {
+                for (const auto& si : *i.fValue.fFileSuffixes) {
                     lockedData->fSuffix2MediaTypeMap.Add (si, i.fKey, AddReplaceMode::eAddIfMissing);
                 }
             }
@@ -418,7 +418,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
                 }
             };
             // override files loaded first, tied to use of AddReplaceMode::eAddIfMissing - not replacing
-            for (auto p : fDataRoots_) {
+            for (const auto& p : fDataRoots_) {
                 loadGlobsFromFile (p / "globs");
             }
 
@@ -432,7 +432,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
             Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"UsrShareMIMERep_::GetMediaTypes", L"majorType=%s", Characters::ToString (fn).c_str ())};
 #endif
             Containers::Set<InternetMediaType> results;
-            for (auto&& imt : fMediaType2PreferredSuffixMap_.Keys ()) {
+            for (const auto& imt : fMediaType2PreferredSuffixMap_.Keys ()) {
                 if (majorType) {
                     if (imt.GetType<InternetMediaType::AtomType> () != *majorType) {
                         continue; // skip non-matching types
@@ -697,8 +697,8 @@ Set<InternetMediaType> InternetMediaTypeRegistry::GetMediaTypes (InternetMediaTy
 Set<String> InternetMediaTypeRegistry::GetAssociatedFileSuffixes (const Iterable<InternetMediaType>& mediaTypes) const
 {
     Containers::Set<String> result;
-    for (auto ct : mediaTypes) {
-        for (auto i : GetAssociatedFileSuffixes (ct)) {
+    for (const auto& ct : mediaTypes) {
+        for (const auto& i : GetAssociatedFileSuffixes (ct)) {
             result += i;
         }
     }

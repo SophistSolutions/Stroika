@@ -36,7 +36,7 @@ using namespace Stroika::Frameworks::UPnP::SSDP::Server;
 void PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi)
 {
 #if qDebug
-    for (auto a : advertisements) {
+    for (const auto& a : advertisements) {
         Require (not a.fTarget.empty ());
     }
 #endif
@@ -53,7 +53,7 @@ void PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, const
 #if qDefaultTracingOn
                 if (firstTimeThru) {
                     Debug::TraceContextBumper ctx ("SSDP PeriodicNotifier - first time notifications");
-                    for (auto a : advertisements) {
+                    for (const auto& a : advertisements) {
                         DbgTrace (L"(alive,loc=%s,usn=%s,...)", Characters::ToString (a.fLocation).c_str (), a.fUSN.c_str ());
                     }
                     firstTimeThru = false;
@@ -61,7 +61,7 @@ void PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, const
 #endif
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx ("SSDP PeriodicNotifier - notifications");
-                for (auto a : advertisements) {
+                for (const auto& a : advertisements) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     String msg;
                     msg += L"alive," sz;
