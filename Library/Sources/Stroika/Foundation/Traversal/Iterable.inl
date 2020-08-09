@@ -230,11 +230,8 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     inline Iterable<T>::Iterable (Iterable&& from) noexcept
-        : _fRep{move (from._fRep)}
+        : _fRep{from._fRep} // SEE Iterable<T> DESIGN NOTE in class (and https://stroika.atlassian.net/browse/STK-541) - why we intentionally use copy of rep not MOVE
     {
-        /*
-         *  SEE DESIGN NOTE in class (and https://stroika.atlassian.net/browse/STK-541) - why we intentionally use copy of rep not MOVE
-         */
         Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
     }
     template <typename T>
