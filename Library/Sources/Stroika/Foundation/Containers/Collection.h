@@ -92,6 +92,9 @@ namespace Stroika::Foundation::Containers {
      *          The caller may use the inherited (from Iterable<>) SetEquals, MultiSetEquals, or SequenceEquals()
      *          as appropriate. Methods that require and equals comparer, take one as argument with appropriate defaulting.
      *
+     *  \note Move constructor/assignment
+     *      This maps to copy due to COW - see description of Iterable<T> for details.
+     *
      *  \note Note About Iterators
      *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
      *
@@ -152,7 +155,6 @@ namespace Stroika::Foundation::Containers {
          */
         Collection ();
         Collection (const Collection& src) noexcept = default;
-        Collection (Collection&& src) noexcept      = default;
         Collection (const initializer_list<T>& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Collection<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         Collection (CONTAINER_OF_ADDABLE&& src);
@@ -169,7 +171,6 @@ namespace Stroika::Foundation::Containers {
 #endif
     public:
         nonvirtual Collection& operator= (const Collection& rhs) = default;
-        nonvirtual Collection& operator= (Collection&& rhs) noexcept = default;
 
     public:
         /**

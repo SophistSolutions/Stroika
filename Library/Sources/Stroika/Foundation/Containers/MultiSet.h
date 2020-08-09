@@ -102,6 +102,9 @@ namespace Stroika::Foundation::Containers {
      *          ThreeWayComparer support is NOT provided for Multisets, because there is no intrinsic ordering among the elements
      *          of the multiset (keys) - even if there was some way to compare the T elements.
      *
+     *  \note Move constructor/assignment
+     *      This maps to copy due to COW - see description of Iterable<T> for details.
+     *
      *  \note Note About Iterators
      *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
      *
@@ -183,7 +186,6 @@ namespace Stroika::Foundation::Containers {
         template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>* = nullptr>
         explicit MultiSet (EQUALS_COMPARER&& equalsComparer);
         MultiSet (const MultiSet& src) noexcept = default;
-        MultiSet (MultiSet&& src) noexcept      = default;
         MultiSet (const initializer_list<T>& src);
         template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>* = nullptr>
         MultiSet (EQUALS_COMPARER&& equalsComparer, const initializer_list<T>& src);
@@ -210,7 +212,6 @@ namespace Stroika::Foundation::Containers {
 
     public:
         nonvirtual MultiSet& operator= (const MultiSet& rhs) = default;
-        nonvirtual MultiSet& operator= (MultiSet&& rhs) = default;
 
     public:
         /**

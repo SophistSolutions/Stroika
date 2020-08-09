@@ -58,6 +58,9 @@ namespace Stroika::Foundation::Containers {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
+     *  \note Move constructor/assignment
+     *      This maps to copy due to COW - see description of Iterable<T> for details.
+     *
      *  \note Note About Iterators
      *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
      *
@@ -109,7 +112,6 @@ namespace Stroika::Foundation::Containers {
          */
         Stack ();
         Stack (const Stack& src) noexcept = default;
-        Stack (Stack&& src) noexcept      = default;
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Stack<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         explicit Stack (CONTAINER_OF_ADDABLE&& src);
         template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
@@ -123,7 +125,6 @@ namespace Stroika::Foundation::Containers {
         /**
          */
         nonvirtual Stack& operator= (const Stack& rhs) = default;
-        nonvirtual Stack& operator= (Stack&& rhs) = default;
 
     public:
         /**

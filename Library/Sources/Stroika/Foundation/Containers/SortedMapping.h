@@ -38,6 +38,9 @@ namespace Stroika::Foundation::Containers {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
+     *  \note Move constructor/assignment
+     *      This maps to copy due to COW - see description of Iterable<T> for details.
+     *
      *  \note Note About Iterators
      *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
      *
@@ -101,7 +104,6 @@ namespace Stroika::Foundation::Containers {
         template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> ()>* = nullptr>
         explicit SortedMapping (KEY_INORDER_COMPARER&& inorderComparer);
         SortedMapping (const SortedMapping& src) noexcept = default;
-        SortedMapping (SortedMapping&& src) noexcept      = default;
         SortedMapping (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> ()>* = nullptr>
         SortedMapping (KEY_INORDER_COMPARER&& inorderComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
@@ -125,7 +127,6 @@ namespace Stroika::Foundation::Containers {
         /**
          */
         nonvirtual SortedMapping& operator= (const SortedMapping& rhs) = default;
-        nonvirtual SortedMapping& operator= (SortedMapping&& rhs) = default;
 
     public:
         /**

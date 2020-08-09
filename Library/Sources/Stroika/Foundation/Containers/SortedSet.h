@@ -43,6 +43,9 @@ namespace Stroika::Foundation::Containers {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
+     *  \note Move constructor/assignment
+     *      This maps to copy due to COW - see description of Iterable<T> for details.
+     *
      *  \note Note About Iterators
      *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
      *
@@ -95,7 +98,6 @@ namespace Stroika::Foundation::Containers {
         template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>* = nullptr>
         explicit SortedSet (INORDER_COMPARER&& inorderComparer);
         SortedSet (const SortedSet& src) noexcept = default;
-        SortedSet (SortedSet&& src) noexcept      = default;
         SortedSet (const initializer_list<T>& src);
         template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>* = nullptr>
         SortedSet (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src);
@@ -116,7 +118,6 @@ namespace Stroika::Foundation::Containers {
         /**
          */
         nonvirtual SortedSet& operator= (const SortedSet& rhs) = default;
-        nonvirtual SortedSet& operator= (SortedSet&& rhs) = default;
 
     public:
         /**

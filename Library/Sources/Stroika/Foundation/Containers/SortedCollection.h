@@ -56,6 +56,9 @@ namespace Stroika::Foundation::Containers {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Automatically-LEGACY_Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
      *
+     *  \note Move constructor/assignment
+     *      This maps to copy due to COW - see description of Iterable<T> for details.
+     *
      *  \note Note About Iterators
      *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
      *
@@ -107,7 +110,6 @@ namespace Stroika::Foundation::Containers {
         template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>* = nullptr>
         explicit SortedCollection (INORDER_COMPARER&& inorderComparer);
         SortedCollection (const SortedCollection& src) noexcept = default;
-        SortedCollection (SortedCollection&& src) noexcept      = default;
         SortedCollection (const initializer_list<T>& src);
         template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>* = nullptr>
         SortedCollection (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src);
@@ -128,7 +130,6 @@ namespace Stroika::Foundation::Containers {
         /**
          */
         nonvirtual SortedCollection& operator= (const SortedCollection& rhs) = default;
-        nonvirtual SortedCollection& operator= (SortedCollection&& rhs) = default;
 
     public:
         /**

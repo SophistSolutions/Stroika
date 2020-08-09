@@ -71,6 +71,9 @@ namespace Stroika::Foundation::Containers {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
+     *  \note Move constructor/assignment
+     *      This maps to copy due to COW - see description of Iterable<T> for details.
+     *
      *  \note Note About Iterators
      *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
      *
@@ -120,7 +123,6 @@ namespace Stroika::Foundation::Containers {
          */
         Queue ();
         Queue (const Queue& src) noexcept = default;
-        Queue (Queue&& src) noexcept      = default;
         Queue (const initializer_list<T>& src);
         template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<Queue<T>, Configuration::remove_cvref_t<CONTAINER_OF_ADDABLE>>>* = nullptr>
         explicit Queue (CONTAINER_OF_ADDABLE&& src);
@@ -140,7 +142,6 @@ namespace Stroika::Foundation::Containers {
         /**
          */
         nonvirtual Queue& operator= (const Queue& rhs) = default;
-        nonvirtual Queue& operator= (Queue&& rhs) = default;
 
     public:
         /**
