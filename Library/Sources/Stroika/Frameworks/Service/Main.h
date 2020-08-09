@@ -430,7 +430,7 @@ namespace Stroika::Frameworks::Service {
      *  but will ignore unrecognized arguments.
      */
     struct Main::CommandArgs {
-        CommandArgs ();
+        CommandArgs () = default;
         CommandArgs (const Sequence<String>& args);
 
         enum class MajorOperation {
@@ -653,7 +653,7 @@ namespace Stroika::Frameworks::Service {
      */
     class Main::RunTilIdleService : public Main::IServiceIntegrationRep {
     public:
-        RunTilIdleService ();
+        RunTilIdleService () = default;
 
     protected:
         virtual void                                        _Attach (const shared_ptr<IApplicationRep>& appRep) override;
@@ -732,20 +732,20 @@ namespace Stroika::Frameworks::Service {
         nonvirtual void SetupSignalHanlders_ (bool install);
 
         /*
-            * By default, ServiceMain sets up its own signal handlers for
-            *
-            *      SIGTERM
-            *      SIGHUP
-            *      ....
-            *<<should  add more - like TSTP and CONT - but not high priorities since the default UNIX behavior of these is pretty reasonable
-            *>>>--LGP 2011-09-24
-            *
-            *  If the user of this class needs there own signal handlers, but still wnats to leverage the default handling in this
-            *  class, there are two easy ways:
-            *      (1)     overide the 'rep' method Signalhandler and delegate t your own handlers.
-            *      (2)     or, replace the signal hanlder yourself (with the signal system call), and call
-            *              SignalHandler () directly on this class.
-            */
+         * By default, ServiceMain sets up its own signal handlers for
+         *
+         *      SIGTERM
+         *      SIGHUP
+         *      ....
+         *<<should  add more - like TSTP and CONT - but not high priorities since the default UNIX behavior of these is pretty reasonable
+         *>>>--LGP 2011-09-24
+         *
+         *  If the user of this class needs there own signal handlers, but still wnats to leverage the default handling in this
+         *  class, there are two easy ways:
+         *      (1)     overide the 'rep' method Signalhandler and delegate t your own handlers.
+         *      (2)     or, replace the signal hanlder yourself (with the signal system call), and call
+         *              SignalHandler () directly on this class.
+         */
     public:
         static constexpr SignalID kSIG_ReReadConfiguration = SIGHUP;
 
@@ -759,7 +759,7 @@ namespace Stroika::Frameworks::Service {
         nonvirtual void _DidReReadConfig ();
 
     private:
-        bool fMustReReadConfig;
+        bool fMustReReadConfig{false};
 
     private:
         Execution::Synchronized<shared_ptr<IApplicationRep>> fAppRep_;

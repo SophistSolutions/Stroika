@@ -138,16 +138,16 @@ namespace {
 }
 
 ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Router& router, const Options& options)
-    : fServerHeader_ (Memory::OptionalValue (options.fServerHeader, Options::kDefault_ServerHeader))
-    , fCORSModeSupport_ (options.fCORSModeSupport.value_or (Options::kDefault_CORSModeSupport))
+    : fServerHeader_{Memory::OptionalValue (options.fServerHeader, Options::kDefault_ServerHeader)}
+    , fCORSModeSupport_{options.fCORSModeSupport.value_or (Options::kDefault_CORSModeSupport)}
     , fServerAndCORSEtcInterceptor_{ServerHeadersInterceptor_{fServerHeader_, fCORSModeSupport_}}
-    , fDefaultErrorHandler_ (DefaultFaultInterceptor{})
+    , fDefaultErrorHandler_{DefaultFaultInterceptor{}}
     , fEarlyInterceptors_{mkEarlyInterceptors_ (fDefaultErrorHandler_, fServerAndCORSEtcInterceptor_)}
     , fBeforeInterceptors_{}
     , fAfterInterceptors_{}
-    , fLinger_ (Memory::OptionalValue (options.fLinger, Options::kDefault_Linger))
-    , fAutomaticTCPDisconnectOnClose_ (options.fAutomaticTCPDisconnectOnClose.value_or (Options::kDefault_AutomaticTCPDisconnectOnClose))
-    , fRouter_ (router)
+    , fLinger_{Memory::OptionalValue (options.fLinger, Options::kDefault_Linger)}
+    , fAutomaticTCPDisconnectOnClose_{options.fAutomaticTCPDisconnectOnClose.value_or (Options::kDefault_AutomaticTCPDisconnectOnClose)}
+    , fRouter_{router}
     , fInterceptorChain_{mkInterceptorChain_ (fRouter_, fEarlyInterceptors_, fBeforeInterceptors_, fAfterInterceptors_)}
     , fActiveConnectionThreads_{ComputeThreadPoolSize_ (options), options.fThreadPoolName} // implementation detail - due to EXPENSIVE blcoking read strategy - see https://stroika.atlassian.net/browse/STK-638
     , fListener_{bindAddresses,

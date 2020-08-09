@@ -66,18 +66,10 @@ namespace {
  *********************** Service::Main::CommandArgs *****************************
  ********************************************************************************
  */
-Main::CommandArgs::CommandArgs ()
-    : fMajorOperation ()
-    , fUnusedArguments ()
-{
-}
-
 Main::CommandArgs::CommandArgs (const Sequence<String>& args)
-    : fMajorOperation ()
-    , fUnusedArguments ()
 {
     bool didFirst = false;
-    for (String si : args) {
+    for (const String& si : args) {
         if (not didFirst) {
             // skip argv[0]
             // @todo - nice to try args.SubSequence (1)....
@@ -85,18 +77,18 @@ Main::CommandArgs::CommandArgs (const Sequence<String>& args)
             continue;
         }
         static const pair<String, MajorOperation> kPairs_[] = {
-            pair<String, MajorOperation> (Main::CommandNames::kInstall, MajorOperation::eInstall),
-            pair<String, MajorOperation> (Main::CommandNames::kUnInstall, MajorOperation::eUnInstall),
-            pair<String, MajorOperation> (Main::CommandNames::kRunAsService, MajorOperation::eRunServiceMain),
-            pair<String, MajorOperation> (Main::CommandNames::kRunDirectly, MajorOperation::eRunDirectly),
-            pair<String, MajorOperation> (Main::CommandNames::kStart, MajorOperation::eStart),
-            pair<String, MajorOperation> (Main::CommandNames::kStop, MajorOperation::eStop),
-            pair<String, MajorOperation> (Main::CommandNames::kForcedStop, MajorOperation::eForcedStop),
-            pair<String, MajorOperation> (Main::CommandNames::kRestart, MajorOperation::eRestart),
-            pair<String, MajorOperation> (Main::CommandNames::kForcedRestart, MajorOperation::eForcedRestart),
-            pair<String, MajorOperation> (Main::CommandNames::kReloadConfiguration, MajorOperation::eReloadConfiguration),
-            pair<String, MajorOperation> (Main::CommandNames::kPause, MajorOperation::ePause),
-            pair<String, MajorOperation> (Main::CommandNames::kContinue, MajorOperation::eContinue),
+            pair<String, MajorOperation> {Main::CommandNames::kInstall, MajorOperation::eInstall},
+            pair<String, MajorOperation> {Main::CommandNames::kUnInstall, MajorOperation::eUnInstall},
+            pair<String, MajorOperation> {Main::CommandNames::kRunAsService, MajorOperation::eRunServiceMain},
+            pair<String, MajorOperation> {Main::CommandNames::kRunDirectly, MajorOperation::eRunDirectly},
+            pair<String, MajorOperation> {Main::CommandNames::kStart, MajorOperation::eStart},
+            pair<String, MajorOperation> {Main::CommandNames::kStop, MajorOperation::eStop},
+            pair<String, MajorOperation> {Main::CommandNames::kForcedStop, MajorOperation::eForcedStop},
+            pair<String, MajorOperation> {Main::CommandNames::kRestart, MajorOperation::eRestart},
+            pair<String, MajorOperation> {Main::CommandNames::kForcedRestart, MajorOperation::eForcedRestart},
+            pair<String, MajorOperation> {Main::CommandNames::kReloadConfiguration, MajorOperation::eReloadConfiguration},
+            pair<String, MajorOperation> {Main::CommandNames::kPause, MajorOperation::ePause},
+            pair<String, MajorOperation>{Main::CommandNames::kContinue, MajorOperation::eContinue},
         };
         bool found = false;
         for (const auto& i : kPairs_) {
@@ -178,7 +170,7 @@ shared_ptr<Main::IServiceIntegrationRep> Main::mkDefaultServiceIntegrationRep ()
 }
 
 Main::Main (const shared_ptr<IApplicationRep>& rep, const shared_ptr<IServiceIntegrationRep>& serviceIntegrationRep)
-    : fServiceRep_ (serviceIntegrationRep)
+    : fServiceRep_{serviceIntegrationRep}
 {
     RequireNotNull (rep);
     RequireNotNull (serviceIntegrationRep);
@@ -192,11 +184,11 @@ Main::~Main ()
 
 void Main::Run (const CommandArgs& args, const Streams::OutputStream<Characters::Character>::Ptr& out)
 {
-    for (String i : args.fUnusedArguments) {
+    for (const String& i : args.fUnusedArguments) {
         fServiceRep_->HandleCommandLineArgument (i);
     }
     if (not args.fMajorOperation.has_value ()) {
-        Execution::Throw (Execution::InvalidCommandLineArgument (L"No recognized operation"sv));
+        Execution::Throw (Execution::InvalidCommandLineArgument{L"No recognized operation"sv});
     }
     switch (*args.fMajorOperation) {
         case CommandArgs::MajorOperation::eInstall: {
@@ -307,13 +299,13 @@ String Main::GetServiceStatusMessage () const
 
 void Main::RunAsService ()
 {
-    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::RunAsService");
+    Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::RunAsService"};
     GetServiceRep_ ()._RunAsService ();
 }
 
 void Main::RunDirectly ()
 {
-    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::RunDirectly");
+    Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::RunDirectly"};
     GetServiceRep_ ()._RunDirectly ();
 }
 
@@ -324,7 +316,7 @@ void Main::ForcedRestart ([[maybe_unused]] Time::DurationSecondsType timeout, [[
 
 void Main::ReReadConfiguration ()
 {
-    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::ReReadConfiguration");
+    Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::ReReadConfiguration"};
 #if qPlatform_Windows
     AssertNotImplemented ();
 #elif qPlatform_POSIX
@@ -353,7 +345,7 @@ Main::ServiceDescription Main::GetServiceDescription () const
 
 void Main::Restart (Time::DurationSecondsType timeout)
 {
-    Debug::TraceContextBumper traceCtx (L"Stroika::Frameworks::Service::Main::Restart", L"timeout = %e", timeout);
+    Debug::TraceContextBumper traceCtx{L"Stroika::Frameworks::Service::Main::Restart", L"timeout = %e", timeout};
 
     /////// WRONG HANDLING OF TIMEOUT
     Stop (timeout);
@@ -375,7 +367,7 @@ void Main::Restart (Time::DurationSecondsType timeout)
  ********************************************************************************
  */
 Main::LoggerServiceWrapper::LoggerServiceWrapper (const shared_ptr<Main::IServiceIntegrationRep>& delegateTo)
-    : fDelegateTo_ (delegateTo)
+    : fDelegateTo_{delegateTo}
 {
     RequireNotNull (delegateTo);
 }
@@ -479,12 +471,6 @@ pid_t Main::LoggerServiceWrapper::_GetServicePID () const
  ******************* Service::Main::RunTilIdleService ***************************
  ********************************************************************************
  */
-Main::RunTilIdleService::RunTilIdleService ()
-    : fAppRep_ ()
-    , fRunThread_ ()
-{
-}
-
 void Main::RunTilIdleService::_Attach (const shared_ptr<IApplicationRep>& appRep)
 {
     Require ((appRep == nullptr and fAppRep_ != nullptr) or
@@ -516,12 +502,12 @@ Main::State Main::RunTilIdleService::_GetState () const
 
 void Main::RunTilIdleService::_Install ()
 {
-    Execution::Throw (Execution::OperationNotSupportedException (L"Install"));
+    Execution::Throw (Execution::OperationNotSupportedException{L"Install"_k});
 }
 
 void Main::RunTilIdleService::_UnInstall ()
 {
-    Execution::Throw (Execution::OperationNotSupportedException (L"UnInstall"));
+    Execution::Throw (Execution::OperationNotSupportedException {L"UnInstall"_k});
 }
 
 void Main::RunTilIdleService::_RunAsService ()
@@ -563,7 +549,7 @@ void Main::RunTilIdleService::_Start ([[maybe_unused]] Time::DurationSecondsType
 void Main::RunTilIdleService::_Stop (Time::DurationSecondsType timeout)
 {
     // VERY WEAK TO WRONG IMPL
-    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::RunTilIdleService::_Stop");
+    Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::RunTilIdleService::_Stop"};
     if (fRunThread_ != nullptr) {
         fRunThread_.AbortAndWaitForDone (timeout);
         fRunThread_ = nullptr;
@@ -573,7 +559,7 @@ void Main::RunTilIdleService::_Stop (Time::DurationSecondsType timeout)
 void Main::RunTilIdleService::_ForcedStop (Time::DurationSecondsType timeout)
 {
     // VERY WEAK TO WRONG IMPL
-    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::RunTilIdleService::_Stop");
+    Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::RunTilIdleService::_Stop"};
     if (fRunThread_ != nullptr) {
         fRunThread_.AbortAndWaitForDone (timeout);
         fRunThread_ = nullptr;
@@ -592,9 +578,7 @@ pid_t Main::RunTilIdleService::_GetServicePID () const
  ********************************************************************************
  */
 Main::BasicUNIXServiceImpl::BasicUNIXServiceImpl ()
-    : fOurSignalHandler_ ([this] (SignalID signum) { SignalHandler_ (signum); })
-    , fAppRep_ ()
-    , fRunThread_ ()
+    : fOurSignalHandler_{[this] (SignalID signum) { SignalHandler_ (signum); }}
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace ("Main::BasicUNIXServiceImpl::BasicUNIXServiceImpl: this=%p", this);
@@ -640,7 +624,7 @@ Set<Main::ServiceIntegrationFeatures> Main::BasicUNIXServiceImpl::_GetSupportedF
 Main::State Main::BasicUNIXServiceImpl::_GetState () const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::_GetState");
+    Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::_GetState"};
 #endif
     // @todo - maybe not qutie right - but a good approx ... review...
     if (_GetServicePID () > 0) {
@@ -657,19 +641,19 @@ Main::State Main::BasicUNIXServiceImpl::_GetState () const
 
 void Main::BasicUNIXServiceImpl::_Install ()
 {
-    Execution::Throw (Execution::OperationNotSupportedException (L"Install"sv));
+    Execution::Throw (Execution::OperationNotSupportedException{L"Install"sv});
 }
 
 void Main::BasicUNIXServiceImpl::_UnInstall ()
 {
-    Execution::Throw (Execution::OperationNotSupportedException (L"UnInstall"sv));
+    Execution::Throw (Execution::OperationNotSupportedException{L"UnInstall"sv});
 }
 
 void Main::BasicUNIXServiceImpl::_RunAsService ()
 {
-    Debug::TraceContextBumper ctx ("Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_RunAsService");
+    Debug::TraceContextBumper ctx{"Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_RunAsService"};
     if (_GetServicePID () > 0) {
-        Execution::Throw (Execution::Exception (L"Service Already Running"sv));
+        Execution::Throw (Execution::Exception{L"Service Already Running"sv});
     }
 
     shared_ptr<IApplicationRep> appRep = fAppRep_;
@@ -699,10 +683,10 @@ void Main::BasicUNIXServiceImpl::_RunAsService ()
         out << Execution::GetCurrentProcessID () << endl;
     }
     if (_GetServicePID () <= 0) {
-        Execution::Throw (Execution::Exception (Characters::Format (L"Unable to create process ID tracking file %s", IO::FileSystem::FromPath (_GetPIDFileName ()).c_str ())));
+        Execution::Throw (Execution::Exception{Characters::Format (L"Unable to create process ID tracking file %s", IO::FileSystem::FromPath (_GetPIDFileName ()).c_str ())});
     }
     if (_GetServicePID () != Execution::GetCurrentProcessID ()) {
-        Execution::Throw (Execution::Exception (Characters::Format (L"Unable to create process ID tracking file %s (race?)", IO::FileSystem::FromPath (_GetPIDFileName ()).c_str ())));
+        Execution::Throw (Execution::Exception{Characters::Format (L"Unable to create process ID tracking file %s (race?)", IO::FileSystem::FromPath (_GetPIDFileName ()).c_str ())});
     }
     fRunThread_.load ().Join ();
 }
@@ -722,13 +706,13 @@ void Main::BasicUNIXServiceImpl::_RunDirectly ()
 
 void Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
 {
-    Debug::TraceContextBumper traceCtx (L"Stroika::Frameworks::Service::Main::Start", L"timeout = %e", timeout);
+    Debug::TraceContextBumper traceCtx{L"Stroika::Frameworks::Service::Main::Start", L"timeout = %e", timeout};
 
     Time::DurationSecondsType timeoutAt = Time::GetTickCount () + timeout;
 
     // REALLY should use GETSTATE - and return state based on if PID file exsits...
     if (_GetServicePID () > 0) {
-        Execution::Throw (Execution::Exception (L"Cannot Start service because its already running"sv));
+        Execution::Throw (Execution::Exception{L"Cannot Start service because its already running"sv});
     }
 
     (void)Execution::DetachedProcessRunner (Execution::GetEXEPath (), Sequence<String>{{String{}, (L"--"sv + String{CommandNames::kRunAsService})}});
@@ -742,7 +726,7 @@ void Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
 void Main::BasicUNIXServiceImpl::_Stop (Time::DurationSecondsType timeout)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper traceCtx (L"Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_Stop", L"timeout=%e", timeout);
+    Debug::TraceContextBumper traceCtx{L"Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_Stop", L"timeout=%e", timeout};
 #endif
     bool kInProc_ = false;
     if (kInProc_) {
@@ -821,7 +805,7 @@ filesystem::path Main::BasicUNIXServiceImpl::_GetPIDFileName () const
 
 void Main::BasicUNIXServiceImpl::_CleanupDeadService ()
 {
-    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::_CleanupDeadService");
+    Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::_CleanupDeadService"};
     // REALY should WAIT for server to stop and only do this it fails -
     (void)::unlink (_GetPIDFileName ().c_str ());
 }
@@ -885,7 +869,7 @@ Set<Main::ServiceIntegrationFeatures> Main::WindowsService::_GetSupportedFeature
 
 Main::State Main::WindowsService::_GetState () const
 {
-    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::WindowsService::_GetState");
+    Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::WindowsService::_GetState"};
     const DWORD               kServiceMgrAccessPrivs = SERVICE_QUERY_STATUS;
     SC_HANDLE                 hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hSCM);
@@ -929,7 +913,7 @@ Main::State Main::WindowsService::_GetState () const
 
 void Main::WindowsService::_Install ()
 {
-    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::WindowsService::_Install");
+    Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::WindowsService::_Install"};
 
     const DWORD kServiceMgrAccessPrivs = SC_MANAGER_CREATE_SERVICE;
     String      cmdLineForRunSvc       = L"\""sv + IO::FileSystem::FromPath (Execution::GetEXEPath ()) + L"\" --"sv + CommandNames::kRunAsService;
@@ -986,7 +970,7 @@ void Main::WindowsService::_UnInstall ()
 
 void Main::WindowsService::_RunAsService ()
 {
-    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::WindowsService::_RunAsService");
+    Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::WindowsService::_RunAsService"};
     Assert (s_SvcRunningTHIS_ == nullptr);
     s_SvcRunningTHIS_ = this;
 
@@ -1018,7 +1002,7 @@ void Main::WindowsService::_RunDirectly ()
 void Main::WindowsService::_Start (Time::DurationSecondsType timeout)
 {
     // @todo - timeout not supported
-    Debug::TraceContextBumper traceCtx (L"Stroika::Frameworks::Service::Main::WindowsService::Start", L"timeout = %e", timeout);
+    Debug::TraceContextBumper traceCtx{L"Stroika::Frameworks::Service::Main::WindowsService::Start", L"timeout = %e", timeout};
 
     const DWORD kServiceMgrAccessPrivs = SERVICE_START;
     SC_HANDLE   hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
@@ -1044,7 +1028,7 @@ void Main::WindowsService::_Start (Time::DurationSecondsType timeout)
 void Main::WindowsService::_Stop ([[maybe_unused]] Time::DurationSecondsType timeout)
 {
     // @todo - timeout not supported
-    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::WindowsService::_Stop");
+    Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::WindowsService::_Stop"};
     const DWORD               kServiceMgrAccessPrivs = SERVICE_STOP;
     SC_HANDLE                 hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hSCM);
@@ -1110,7 +1094,7 @@ SDKString Main::WindowsService::GetSvcName_ () const
 
 bool Main::WindowsService::IsInstalled_ () const noexcept
 {
-    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::WindowsService::IsInstalled_");
+    Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::WindowsService::IsInstalled_"};
     const DWORD               kServiceMgrAccessPrivs = SERVICE_QUERY_CONFIG;
     SC_HANDLE                 hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hSCM);
@@ -1140,7 +1124,7 @@ void Main::WindowsService::SetServiceStatus_ (DWORD dwState) noexcept
 
 void Main::WindowsService::ServiceMain_ ([[maybe_unused]] DWORD dwArgc, [[maybe_unused]] LPTSTR* lpszArgv) noexcept
 {
-    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::WindowsService::ServiceMain_");
+    Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::WindowsService::ServiceMain_"};
     ///@TODO - FIXUP EXCEPTION HANLDING HERE!!!
 
     // do file create stuff here
