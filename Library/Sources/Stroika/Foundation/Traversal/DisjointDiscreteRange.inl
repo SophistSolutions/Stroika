@@ -50,7 +50,6 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename RANGE_TYPE>
     template <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
     DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, enable_if_t<is_convertible_v<typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T::value_type, value_type>, int>*)
-        : inherited ()
     {
         Containers::Sequence<RangeType> srs{};
         // @todo DEBUG why this initializer syntax produces wrong overload call ???

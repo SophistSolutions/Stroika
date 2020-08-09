@@ -32,7 +32,7 @@ namespace Stroika::Frameworks::Led {
         using inherited = InteractorImagerMixinHelper<WordWrappedTextImager>;
 
     protected:
-        WordWrappedTextInteractor ();
+        WordWrappedTextInteractor () = default;
 
     public:
         virtual void OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed, bool controlPressed, bool altKeyPressed) override;

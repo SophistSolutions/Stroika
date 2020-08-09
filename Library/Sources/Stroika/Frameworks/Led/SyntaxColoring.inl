@@ -18,12 +18,15 @@ namespace Stroika::Frameworks::Led {
      ********************************************************************************
      */
     inline SyntaxColoringMarkerOwner::ColoredStyleMarker::ColoredStyleMarker (const Led_Color& color)
-        : inherited ()
-        , fColor (color)
+        : fColor{color}
     {
     }
 
-    //  class   TableDrivenKeywordSyntaxAnalyzer::KeywordTable
+    /*
+     ********************************************************************************
+     ******************** TableDrivenKeywordSyntaxAnalyzer::KeywordTable ************
+     ********************************************************************************
+     */
     inline TableDrivenKeywordSyntaxAnalyzer::KeywordTable::KeywordTable (const Led_tChar* keyWords[], size_t nKeywords, int (*cmpFunction) (const Led_tChar*, const Led_tChar*, size_t))
         : fKeywords (keyWords)
         , fNKeywords (nKeywords)

@@ -86,9 +86,8 @@ namespace {
 
     public:
         MyCallback (TextInteractor& ti)
-            : inherited ()
-            , fTI (ti)
-            , fIgnoredWords ()
+            : fTI{ti}
+            , fIgnoredWords{}
         {
         }
 

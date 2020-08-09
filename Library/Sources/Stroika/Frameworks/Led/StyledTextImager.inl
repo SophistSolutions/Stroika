@@ -99,11 +99,6 @@ namespace Stroika::Frameworks::Led {
 
     // class SimpleStyleMarkerWithExtraDraw<BASECLASS>
     template <class BASECLASS>
-    inline SimpleStyleMarkerWithExtraDraw<BASECLASS>::SimpleStyleMarkerWithExtraDraw ()
-        : inherited ()
-    {
-    }
-    template <class BASECLASS>
     typename SimpleStyleMarkerWithExtraDraw<BASECLASS>::RunElement SimpleStyleMarkerWithExtraDraw<BASECLASS>::MungeRunElement (const RunElement& inRunElt) const
     {
         using StyleMarker        = StyledTextImager::StyleMarker;

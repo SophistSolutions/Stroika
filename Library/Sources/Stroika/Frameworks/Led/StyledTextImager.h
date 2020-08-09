@@ -339,7 +339,7 @@ namespace Stroika::Frameworks::Led {
         using RunElement = StyledTextImager::RunElement;
 
     protected:
-        SimpleStyleMarkerWithExtraDraw ();
+        SimpleStyleMarkerWithExtraDraw () = default;
 
     protected:
         /*

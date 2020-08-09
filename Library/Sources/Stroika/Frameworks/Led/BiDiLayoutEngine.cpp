@@ -491,21 +491,19 @@ bool operator== (const TextLayoutBlock& lhs, const TextLayoutBlock& rhs)
  ********************************************************************************
  */
 TextLayoutBlock_Basic::TextLayoutBlock_Basic (const Led_tChar* realText, const Led_tChar* realTextEnd)
-    : inherited ()
-    , fTextLength (0)
-    , fRealText (0)
-    , fVirtualText (0)
-    , fScriptRuns ()
+    : fTextLength{0}
+    , fRealText{0}
+    , fVirtualText{0}
+    , fScriptRuns{}
 {
     Construct (realText, realTextEnd, nullptr);
 }
 
 TextLayoutBlock_Basic::TextLayoutBlock_Basic (const Led_tChar* realText, const Led_tChar* realTextEnd, TextDirection initialDirection)
-    : inherited ()
-    , fTextLength (0)
-    , fRealText (0)
-    , fVirtualText (0)
-    , fScriptRuns ()
+    : fTextLength{0}
+    , fRealText{0}
+    , fVirtualText{0}
+    , fScriptRuns{}
 {
     Construct (realText, realTextEnd, &initialDirection);
 }

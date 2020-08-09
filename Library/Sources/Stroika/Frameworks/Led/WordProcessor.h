@@ -41,7 +41,7 @@ namespace Stroika::Frameworks::Led {
         using inherited = InteractorInteractorMixinHelper<StandardStyledTextInteractor, WordWrappedTextInteractor>;
 
     protected:
-        StandardStyledWordWrappedTextInteractor ();
+        StandardStyledWordWrappedTextInteractor () = default;
     };
 
     /*

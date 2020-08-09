@@ -179,9 +179,7 @@ inline unsigned GetJapaneseKutenRow (wchar_t c)
  ******************************** TextBreaks_Basic ******************************
  ********************************************************************************
  */
-
 TextBreaks_Basic::TextBreaks_Basic ()
-    : inherited ()
 {
 #if qDebug
     // NB: since this is called in this CTOR - it doesn't capture (or pay attention to) subclass overrides of CharToCharacterClass
@@ -461,9 +459,7 @@ void TextBreaks_Basic::RegressionTest ()
  ***************************** TextBreaks_Basic_WP ******************************
  ********************************************************************************
  */
-
 TextBreaks_Basic_WP::TextBreaks_Basic_WP ()
-    : inherited ()
 {
 #if qDebug
     // NB: since this is called in this CTOR - it doesn't capture (or pay attention to) subclass overrides of CharToCharacterClass
@@ -573,9 +569,7 @@ void TextBreaks_Basic_WP::RegressionTest ()
  ************************* TextBreaks_Basic_TextEditor **************************
  ********************************************************************************
  */
-
 TextBreaks_Basic_TextEditor::TextBreaks_Basic_TextEditor ()
-    : inherited ()
 {
 #if qDebug
     // NB: since this is called in this CTOR - it doesn't capture (or pay attention to) subclass overrides of CharToCharacterClass

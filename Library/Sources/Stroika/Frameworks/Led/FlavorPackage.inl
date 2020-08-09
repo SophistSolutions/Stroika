@@ -18,8 +18,7 @@ namespace Stroika::Frameworks::Led {
      ********************************************************************************
      */
     inline FlavorPackageExternalizer::FlavorPackageExternalizer (TextStore& ts)
-        : inherited ()
-        , fTextStore (ts)
+        : fTextStore{ts}
     {
     }
 
@@ -29,8 +28,7 @@ namespace Stroika::Frameworks::Led {
      ********************************************************************************
      */
     inline FlavorPackageInternalizer::FlavorPackageInternalizer (TextStore& ts)
-        : inherited ()
-        , fTextStore (ts)
+        : fTextStore{ts}
     {
     }
 

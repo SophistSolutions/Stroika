@@ -44,16 +44,15 @@ namespace Stroika::Foundation::Traversal {
     */
     template    <typename T>
     inline Iterator<T>::Iterator (const Iterator<T>& from)
-        : inherited ()
-        , fIterator_ (from.fIterator_)
-        , fCurrent_ (from.fCurrent_)
+        : fIterator_ {from.fIterator_}
+        , fCurrent_ {from.fCurrent_}
     {
         Require (fIterator_.get () != nullptr or Done ());  // if not special 'auto-done' we must have legit iterator rep
     }
     template    <typename T>
     inline Iterator<T>::Iterator (const RandomAccessIteratorRepSharedPtr& rep)
-        : fIterator_ (rep)
-        , fCurrent_ ()
+        : fIterator_ {rep}
+        , fCurrent_ {}
     {
         RequireNotNull (rep.get ());
         // Reason for cast stuff is to avoid Clone if unneeded.

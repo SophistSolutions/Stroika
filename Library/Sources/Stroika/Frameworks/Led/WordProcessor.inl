@@ -34,16 +34,6 @@ namespace Stroika::Frameworks::Led {
 
     /*
      ********************************************************************************
-     ******************** StandardStyledWordWrappedTextInteractor *******************
-     ********************************************************************************
-     */
-    inline StandardStyledWordWrappedTextInteractor::StandardStyledWordWrappedTextInteractor ()
-        : inherited ()
-    {
-    }
-
-    /*
-     ********************************************************************************
      ************************** WordProcessor::ParagraphInfo ************************
      ********************************************************************************
      */
@@ -258,8 +248,7 @@ namespace Stroika::Frameworks::Led {
      ********************************************************************************
      */
     inline WordProcessor::IncrementalParagraphInfo::IncrementalParagraphInfo ()
-        : inherited ()
-        , fJustificationValid (false)
+        : fJustificationValid (false)
         , fTabStopListValid (false)
         , fMarginsValid (false)
         , fFirstIndentValid (false)

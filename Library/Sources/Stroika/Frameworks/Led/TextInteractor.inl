@@ -665,14 +665,13 @@ namespace Stroika::Frameworks::Led {
 
     //  class   TextInteractor::SearchParameters
     inline TextInteractor::SearchParameters::SearchParameters ()
-        : inherited ()
-        , fRecentFindStrings ()
+        : fRecentFindStrings{}
     {
     }
 
     //  class   TextInteractor::ReplaceParameters
     inline TextInteractor::ReplaceParameters::ReplaceParameters ()
-        : fReplaceWith ()
+        : fReplaceWith{}
     {
     }
 

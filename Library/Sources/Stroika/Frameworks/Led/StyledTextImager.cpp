@@ -42,11 +42,10 @@ int StyleMarker::GetPriority () const
  ********************************************************************************
  */
 StyleMarkerSummarySink::StyleMarkerSummarySink (size_t from, size_t to)
-    : inherited ()
-    , fBuckets ()
-    , fText (nullptr)
-    , fFrom (from)
-    , fTo (to)
+    : fBuckets{}
+    , fText{nullptr}
+    , fFrom{from}
+    , fTo{to}
 {
     // See SPR#1293 - may want to get rid of this eventually
     Require (from <= to);

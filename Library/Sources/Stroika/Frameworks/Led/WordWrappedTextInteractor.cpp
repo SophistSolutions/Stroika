@@ -14,11 +14,6 @@ using namespace Stroika::Frameworks::Led;
  ***************************** WordWrappedTextInteractor ************************
  ********************************************************************************
  */
-WordWrappedTextInteractor::WordWrappedTextInteractor ()
-    : inherited ()
-{
-}
-
 /*
 @METHOD:        WordWrappedTextInteractor::OnTypedNormalCharacter
 @DESCRIPTION:   <p>Override @'TextInteractor::OnTypedNormalCharacter' to map 'shiftPressed' + NL to a soft-line break.</p>
