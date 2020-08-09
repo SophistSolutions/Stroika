@@ -77,17 +77,17 @@ Main::CommandArgs::CommandArgs (const Sequence<String>& args)
             continue;
         }
         static const pair<String, MajorOperation> kPairs_[] = {
-            pair<String, MajorOperation> {Main::CommandNames::kInstall, MajorOperation::eInstall},
-            pair<String, MajorOperation> {Main::CommandNames::kUnInstall, MajorOperation::eUnInstall},
-            pair<String, MajorOperation> {Main::CommandNames::kRunAsService, MajorOperation::eRunServiceMain},
-            pair<String, MajorOperation> {Main::CommandNames::kRunDirectly, MajorOperation::eRunDirectly},
-            pair<String, MajorOperation> {Main::CommandNames::kStart, MajorOperation::eStart},
-            pair<String, MajorOperation> {Main::CommandNames::kStop, MajorOperation::eStop},
-            pair<String, MajorOperation> {Main::CommandNames::kForcedStop, MajorOperation::eForcedStop},
-            pair<String, MajorOperation> {Main::CommandNames::kRestart, MajorOperation::eRestart},
-            pair<String, MajorOperation> {Main::CommandNames::kForcedRestart, MajorOperation::eForcedRestart},
-            pair<String, MajorOperation> {Main::CommandNames::kReloadConfiguration, MajorOperation::eReloadConfiguration},
-            pair<String, MajorOperation> {Main::CommandNames::kPause, MajorOperation::ePause},
+            pair<String, MajorOperation>{Main::CommandNames::kInstall, MajorOperation::eInstall},
+            pair<String, MajorOperation>{Main::CommandNames::kUnInstall, MajorOperation::eUnInstall},
+            pair<String, MajorOperation>{Main::CommandNames::kRunAsService, MajorOperation::eRunServiceMain},
+            pair<String, MajorOperation>{Main::CommandNames::kRunDirectly, MajorOperation::eRunDirectly},
+            pair<String, MajorOperation>{Main::CommandNames::kStart, MajorOperation::eStart},
+            pair<String, MajorOperation>{Main::CommandNames::kStop, MajorOperation::eStop},
+            pair<String, MajorOperation>{Main::CommandNames::kForcedStop, MajorOperation::eForcedStop},
+            pair<String, MajorOperation>{Main::CommandNames::kRestart, MajorOperation::eRestart},
+            pair<String, MajorOperation>{Main::CommandNames::kForcedRestart, MajorOperation::eForcedRestart},
+            pair<String, MajorOperation>{Main::CommandNames::kReloadConfiguration, MajorOperation::eReloadConfiguration},
+            pair<String, MajorOperation>{Main::CommandNames::kPause, MajorOperation::ePause},
             pair<String, MajorOperation>{Main::CommandNames::kContinue, MajorOperation::eContinue},
         };
         bool found = false;
@@ -507,7 +507,7 @@ void Main::RunTilIdleService::_Install ()
 
 void Main::RunTilIdleService::_UnInstall ()
 {
-    Execution::Throw (Execution::OperationNotSupportedException {L"UnInstall"_k});
+    Execution::Throw (Execution::OperationNotSupportedException{L"UnInstall"_k});
 }
 
 void Main::RunTilIdleService::_RunAsService ()
