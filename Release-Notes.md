@@ -7,41 +7,53 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 2.1b3x prerelease
+### 2.1b3 {2020-08-10}
 
 #### TLDR
 
 - Fixed CircleCI issue, so builds there
-
 - Support Visual Studio.Net 2019 build - 16.7.0
-
-- Code cleanups: uniform initialization; const auto&
+- Code cleanups: uniform initialization; const auto&, omit base class empty mem-initializers in many cases
 
 #### Details
 
+- Release Test Summary
+
+  - OS/Platform
+    - Windows
+      - version 2004
+      - WSL v1
+    - MacOS
+    - Linux: { Ubuntu: [1804, 1910, 2004], Centos: [7, 8]}
+  - Hardware
+    - x86
+    - x64
+    - arm (linux/raspberrypi - cross-compiled)
+  - Compilers
+    - MSVC: {15.9.25, 16.7.0}
+    - gcc: {8, 9, 10}
+    - clang { unix: 7, 8, 9, 10; XCode: 11.6 }
+  - Docker
+    - Windows: { mcr.microsoft.com/windows/servercore:ltsc2019, cygwin, VS_16_7_0 }
+    - Ubuntu { 1804, 1910, 2004 }
+    - Centos {7, 8}
+  - CI
+    - TravisCI (Mac, Unix, Windows)
+    - CircleCI (Unix, Windows)
+
 - CircleCI
 
-  - better (homefully equivilent) formatting - differnt vscode formatter - for circleci file
+  - better (homefully equivilent) formatting - different vscode formatter - for circleci file
   - hopefully fixed compile issue with gcc7/8 on circleci build
 
 - RegressionTests
 
   - tweaked output for regressiontests
+  - ScriptsLib/RunLocalWSLRegressionTests run with just -j2, since where i run this test doesnt have much virtual memory (nor logical cores)
 
-- ScriptsLib/RunLocalWSLRegressionTests run with just -j2, since where i run this test doesnt have much virtual memory (nor logical cores)
+- Compiler Support
 
-- Frameworks/SystemPerformance
-
-  - Stroika/Frameworks/SystemPerformance/Instruments: cleanups
-  - Instruments/Process: fixed permission checking issue with OptionallyResolveShortcut\_ ()
-    so it doesn't throw on bad filenames (before it used IgnoreExceptionsExceptThreadInterruptForCall to suppress and now error_code& arg); and
-    dbgtrace cleanups
-  - Instruments/Process cleanups: cosmetic, and fixed several regressions due(dbgtrace due to swithc to std::filesystem), and use directory_iterator directly instead of Stroika wrapper, and improved failuremode on WSL2 (still not fixed)
-
-- Support vs 2k 19 16.7.0
-- react with if \_\_cpp_lib_atomic_shared_ptr >= 201711 on atomic load/store shared_ptr deprecation in c++20
-
-- more uniform initializaiton; and lose unneeded inherited () mem-initializer calls to base class CTOR with no args
+  - Support vs 2k 19 16.7.0
 
 - Library
 
@@ -55,17 +67,22 @@ especially those they need to be aware of when upgrading.
   - Foundation::Traveral
     - respect issue https://stroika.atlassian.net/browse/STK-541 - and dont do move inside Iterable\<T> - for now
     - Iterable\<T>: lose MOVE constructors/operator= and better docs for why (COW intrisic to Iterable)
+  - Frameworks/SystemPerformance
+    - Stroika/Frameworks/SystemPerformance/Instruments: cleanups
+      - Instruments/Process: fixed permission checking issue with OptionallyResolveShortcut\_ ()
+        so it doesn't throw on bad filenames (before it used IgnoreExceptionsExceptThreadInterruptForCall to suppress and now error_code& arg); and
+        dbgtrace cleanups
+      - Instruments/Process cleanups: cosmetic, and fixed several regressions due(dbgtrace due to swithc to std::filesystem), and use directory_iterator directly instead of Stroika wrapper, and improved failuremode on WSL2 (still not fixed)
 
-- Code Style
+- Code Style / Cleanups
 
   - uniform initializaiton
-    - document when using {} vs () for initializzaiton
-    - cleanup/document one place to not use uniform initialization for implicit conversions
-    - allow implicit conversions in some template/perfect forwarding situations
+    - document when using {} vs () for initializaiton
+    - generally use uninform initialization throughout Stroika, instead of = or () initialization (except where implicit conversions needed - like maybe for now perfect forwarding templates)
   - for const auto& instead of auto&& or auto i (especailly with ranged for loop)
     - maybe better to use const auto vs. auto&& for range based for (when common case just referencing) - not clear thats best for fundemental types though?
-
-- avoid memcpy of zero bytes with nullptr arg
+  - avoid memcpy of zero bytes with nullptr arg
+  - react with if \_\_cpp_lib_atomic_shared_ptr >= 201711 on atomic load/store shared_ptr deprecation in c++20
 
 ---
 
