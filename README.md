@@ -6,7 +6,8 @@ modern, reliable and threaded applications easier to write.
 - Nearly all public interfaces and methods are well documented; implementations are clear and well commented.
 - An elaborate system of built-in assertions (including thread-safety assertions) helps document and enforce usage patterns (without performance cost in production builds).
 - Each release is tested with Valgrind, Google Sanitizers, and a variety of platforms and compilers, as well as a large body of regression tests (including most documentation examples) to help assure library correctness.
-- [Sample applications](Samples/ReadMe.md) help show common use cases (like building a web server into your app to deliver web-service content and APIs). Quick start using pre-built Docker containers.
+- [Sample applications](Samples/ReadMe.md) help show common use cases (like building a web server into your app to deliver web-service content and APIs).
+- Quick start using pre-built Docker containers (for Windows, and Linux).
 
 ## Stroika provides
 
@@ -55,7 +56,7 @@ modern, reliable and threaded applications easier to write.
   | [Branches](https://app.circleci.com/pipelines/github/SophistSolutions/Stroika) |                                                                               Status                                                                               | [.circleci/config.yml](.circleci/config.yml) |
   | ------------------------------------------------------------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------------: | -------------------------------------------- |
   | **v2.1-Release**                                                               | [![Link](https://circleci.com/gh/SophistSolutions/Stroika/tree/v2.1-Release.svg?style=shield)](https://circleci.com/gh/SophistSolutions/Stroika/tree/v2.1-Release) |                                              |
-  | **v2.1-Dev**                                                                   |   [![Link](https://circleci.com/gh/SophistSolutions/Stroika/tree/v2.1-Dev.svg?style=shield)](https://circleci.com/gh/SophistSolutions/Stroika/tree/v2.1-Dev.svg)   |                                              |
+  | **v2.1-Dev**                                                                   |     [![Link](https://circleci.com/gh/SophistSolutions/Stroika/tree/v2.1-Dev.svg?style=shield)](https://circleci.com/gh/SophistSolutions/Stroika/tree/v2.1-Dev)     |                                              |
 
 - Travis CI
 
