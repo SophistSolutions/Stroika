@@ -526,10 +526,12 @@ But - even with just plain make, you need some sort of configure script to estab
 
     - sudo vi /etc/apt/sources.list"
     - temporarily add
+
       ```bash
       #tmphack to load GLIBC_2 2.28
       deb http://raspbian.raspberrypi.org/raspbian/ buster main contrib non-free rpi
       ```
+
     - `sudo apt-get update`
     - `apt-cache policy libc6`
     - `sudo apt-get install libc6=2.28-5+rpi1`
