@@ -293,7 +293,7 @@ Thread::Ptr::Rep_::Rep_ (const function<void ()>& runnable, [[maybe_unused]] con
     static bool sDidInit_{false}; // initialize after main() started, but before any threads
     if (not sDidInit_) {
         sDidInit_                               = true;
-        kCallInRepThreadAbortProcSignalHandler_ = SignalHandler (Rep_::InterruptionSignalHandler_, SignalHandler::Type::eDirect);
+        kCallInRepThreadAbortProcSignalHandler_ = SignalHandler{Rep_::InterruptionSignalHandler_, SignalHandler::Type::eDirect};
     }
 #elif qPlatform_Windows
     if (configuration.has_value () and configuration->fThrowInterruptExceptionInsideUserAPC.has_value ()) {
@@ -525,7 +525,7 @@ void Thread::Ptr::Rep_::ApplyPriority (Priority priority)
 void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noexcept
 {
     RequireNotNull (thisThreadRep);
-    TraceContextBumper ctx ("Thread::Rep_::ThreadMain_");
+    TraceContextBumper ctx{"Thread::Rep_::ThreadMain_"};
     Require (not sKnownBadBeforeMainOrAfterMain_);
 
 #if qDebug
