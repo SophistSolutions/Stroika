@@ -356,15 +356,18 @@ struct EOFException ... {
 
 ```c++
 struct InterruptException ... {
-  static const EOFException kThe;
+  static const InterruptException kThe;
 }
 ```
 
-Here since the objects are constant, thread safety is obviously not an issue.
+Here since the objects are constant, thread safety is obviously not an issue. Doing this where constexpr is not possible DOES present an issue with
+accessing these objects before main(). Avoid this pattern (without constexpr) if the object maybe needed before main (use Get () below)
 
 ### Get (and sometimes Set) for mutable singletons
 
 Mutable singletons are accessed by the Get() static method. By definition of a mutable singleton, it will have some non-const methods.
+
+Variants of this pattern are safe to use before main (because the Get() method can ensure the underlying singleton object is constructed before returning it).
 
 #### Return mutable reference
 
@@ -378,7 +381,10 @@ struct Logger ... {
 }
 ```
 
-In this case, all mutable methods (such as Logger::SetAppender(), SetSignalHandlers::SetSignalHanlders()) are internally syncrhonized, and so safe to call from any thread
+In this case, all mutable methods (such as Logger::SetAppender(), SetSignalHandlers::SetSignalHanlders()) are internally syncrhonized,
+and so safe to call from any thread.
+
+This pattern is safe to use before main (because the Get() method can ensure the underlying singleton object is constructed before returning it).
 
 #### Return shared_ptr<> or some other SharedValue() type object, and support singleton static Set method
 
