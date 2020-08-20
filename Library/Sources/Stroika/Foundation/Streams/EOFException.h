@@ -27,8 +27,7 @@ namespace Stroika::Foundation::Streams {
         using inherited = Execution::RuntimeErrorException<>;
 
     public:
-        EOFException ();
-        EOFException (bool partialReadCompleted);
+        EOFException (bool partialReadCompleted = false);
 
     public:
         nonvirtual bool GetPartialReadCompleted () const;
