@@ -32,27 +32,10 @@ using namespace Stroika::Foundation::Time;
 
 using namespace Time;
 
-#if qPlatform_Windows
 namespace {
-    SYSTEMTIME toSYSTEM_ (const Date& date)
+    ::tm Date2TM_ (const Date& d)
     {
-        MonthOfYear m = MonthOfYear::eEmptyMonthOfYear;
-        DayOfMonth  d = DayOfMonth::eEmptyDayOfMonth;
-        Year        y = Year::eEmptyYear;
-        date.mdy (&m, &d, &y);
-        SYSTEMTIME st{};
-        st.wYear  = static_cast<WORD> (y);
-        st.wMonth = static_cast<WORD> (m);
-        st.wDay   = static_cast<WORD> (d);
-        return st;
-    }
-}
-#endif
-
-namespace {
-    tm Date2TM_ (const Date& d)
-    {
-        tm tm{};
+        ::tm tm{};
         tm.tm_year = static_cast<int> (d.GetYear ()) - 1900;
         tm.tm_mon  = static_cast<int> (d.GetMonth ()) - 1;
         tm.tm_mday = static_cast<int> (d.GetDayOfMonth ());
@@ -78,7 +61,7 @@ namespace {
 namespace {
     void TestDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ (int tm_Year, int tm_Mon, int tm_mDay, const locale& l)
     {
-        tm origDateTM{};
+        ::tm origDateTM{};
         origDateTM.tm_year = tm_Year;
         origDateTM.tm_mon  = tm_Mon;
         origDateTM.tm_mday = tm_mDay;
@@ -170,7 +153,7 @@ Date Date::Parse (const String& rep, ParseFormat pf)
             int nItems = ::swscanf (rep.c_str (), L"%d-%d-%d", &year, &month, &day);
             DISABLE_COMPILER_MSC_WARNING_END (4996)
             if (nItems == 3) {
-                Date result = Date (Safe_jday_ (MonthOfYear (month), DayOfMonth (day), Year (year)));
+                Date result = Date{Safe_jday_ (MonthOfYear (month), DayOfMonth (day), Year (year))};
                 Ensure (result == Parse (rep, locale::classic (), {String_Constant{kISO8601FormatArray}}));
                 return result;
             }
@@ -183,7 +166,7 @@ Date Date::Parse (const String& rep, ParseFormat pf)
             int nItems = ::swscanf (rep.c_str (), L"%d/%d/%d", &month, &day, &year);
             DISABLE_COMPILER_MSC_WARNING_END (4996)
             if (nItems == 3) {
-                return Date (Safe_jday_ (MonthOfYear (month), DayOfMonth (day), Year (year)));
+                return Date{Safe_jday_ (MonthOfYear (month), DayOfMonth (day), Year (year))};
             }
         } break;
     }
@@ -351,16 +334,16 @@ String Date::Format (const locale& l, const String& formatPattern) const
 #endif
 
     // http://new.cplusplus.com/reference/std/locale/time_put/put/
-    tm                       when  = Date2TM_ (*this);
+    ::tm                     when  = Date2TM_ (*this);
     const time_put<wchar_t>& tmput = use_facet<time_put<wchar_t>> (l);
     wostringstream           oss;
     tmput.put (oss, oss, ' ', &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
     return oss.str ();
 }
 
-Date Date::AsDate_ (const tm& when)
+Date Date::AsDate_ (const ::tm& when)
 {
-    return Date (Safe_jday_ (MonthOfYear (when.tm_mon + 1), DayOfMonth (when.tm_mday), Year (when.tm_year + 1900)));
+    return Date{Safe_jday_ (MonthOfYear (when.tm_mon + 1), DayOfMonth (when.tm_mday), Year (when.tm_year + 1900))};
 }
 
 Date Date::AddDays (SignedJulianRepType dayCount) const

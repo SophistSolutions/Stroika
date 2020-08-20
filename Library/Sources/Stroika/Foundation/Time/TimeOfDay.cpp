@@ -48,7 +48,7 @@ namespace {
 
 #if qPlatform_Windows
 namespace {
-    TimeOfDay mkTimeOfDay_ (const SYSTEMTIME& sysTime)
+    TimeOfDay mkTimeOfDay_ (const ::SYSTEMTIME& sysTime)
     {
         WORD hour   = max (sysTime.wHour, static_cast<WORD> (0));
         hour        = min (hour, static_cast<WORD> (23));
@@ -56,7 +56,7 @@ namespace {
         minute      = min (minute, static_cast<WORD> (59));
         WORD secs   = max (sysTime.wSecond, static_cast<WORD> (0));
         secs        = min (secs, static_cast<WORD> (59));
-        return TimeOfDay ((hour * 60 + minute) * 60 + secs);
+        return TimeOfDay{hour, minute, secs};
     }
 }
 #endif
@@ -85,7 +85,7 @@ namespace {
             Execution::Throw (TimeOfDay::FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty TimeOfDay{}
                                                                  //        return TimeOfDay ();
         }
-        DATE d{};
+        ::DATE d{};
         try {
             ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR (rep.c_str ()), lcid, VAR_TIMEVALUEONLY, &d));
         }
@@ -103,7 +103,7 @@ namespace {
             }
         }
         // SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
-        SYSTEMTIME sysTime{};
+        ::SYSTEMTIME sysTime{};
         Verify (::VariantTimeToSystemTime (d, &sysTime));
         return mkTimeOfDay_ (sysTime);
     }
@@ -157,7 +157,7 @@ TimeOfDay TimeOfDay::Parse (const String& rep, ParseFormat pf)
                 minute = std::min (minute, 59);
                 secs   = std::max (secs, 0);
                 secs   = std::min (secs, 59);
-                return TimeOfDay ((hour * 60 + minute) * 60 + secs);
+                return TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (secs)};
             }
             DISABLE_COMPILER_MSC_WARNING_END (4996)
         }
@@ -246,7 +246,7 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l, const Traversal:
     Assert (0 <= when.tm_hour and when.tm_hour <= 23);
     Assert (0 <= when.tm_min and when.tm_min <= 59);
     Assert (0 <= when.tm_sec and when.tm_sec <= 59);
-    auto result = TimeOfDay (when.tm_hour * 60 * 60 + when.tm_min * 60 + when.tm_sec);
+    auto result = TimeOfDay{static_cast<unsigned> (when.tm_hour), static_cast<unsigned> (when.tm_min), static_cast<unsigned> (when.tm_sec)};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"returning '%s'", Characters::ToString (result).c_str ());
 #endif

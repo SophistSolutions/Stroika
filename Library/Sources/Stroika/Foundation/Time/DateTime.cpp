@@ -64,20 +64,20 @@ namespace {
         minute      = min (minute, static_cast<WORD> (59));
         WORD secs   = max (sysTime.wSecond, static_cast<WORD> (0));
         secs        = min (secs, static_cast<WORD> (59));
-        return TimeOfDay ((hour * 60 + minute) * 60 + secs);
+        return TimeOfDay{hour, minute, secs};
     }
     Date mkDate_ (const SYSTEMTIME& sysTime)
     {
-        return Date (Year (sysTime.wYear), MonthOfYear (sysTime.wMonth), DayOfMonth (sysTime.wDay));
+        return Date{Year (sysTime.wYear), MonthOfYear (sysTime.wMonth), DayOfMonth (sysTime.wDay)};
     }
 }
 #endif
 
 namespace {
 #if qPlatform_Windows
-    SYSTEMTIME toSysTime_ (TimeOfDay tod)
+    ::SYSTEMTIME toSysTime_ (TimeOfDay tod)
     {
-        SYSTEMTIME   t{};
+        ::SYSTEMTIME t{};
         unsigned int seconds = tod.GetAsSecondsCount ();
         unsigned int minutes = seconds / 60;
         unsigned int hours   = minutes / 60;
@@ -177,8 +177,8 @@ DateTime::DateTime (time_t unixEpochTime) noexcept
 #else
     (void)::gmtime_r (&unixEpochTime, &tmTime);
 #endif
-    fDate_      = Date (Year (tmTime.tm_year + 1900), MonthOfYear (tmTime.tm_mon + 1), DayOfMonth (tmTime.tm_mday));
-    fTimeOfDay_ = TimeOfDay (tmTime.tm_sec + (tmTime.tm_min * 60) + (tmTime.tm_hour * 60 * 60));
+    fDate_      = Date{Year (tmTime.tm_year + 1900), MonthOfYear (tmTime.tm_mon + 1), DayOfMonth (tmTime.tm_mday)};
+    fTimeOfDay_ = TimeOfDay{tmTime.tm_sec + (tmTime.tm_min * 60) + (tmTime.tm_hour * 60 * 60)};
 }
 
 DateTime::DateTime (const tm& tmTime, const optional<Timezone>& tz) noexcept
@@ -205,8 +205,8 @@ DateTime::DateTime (const timespec& tmTime, const optional<Timezone>& tz) noexce
 #else
     tm* tmTimeData = ::gmtime (&unixTime); // not threadsafe
 #endif
-    fDate_      = Date (Year (tmTimeData->tm_year + 1900), MonthOfYear (tmTimeData->tm_mon + 1), DayOfMonth (tmTimeData->tm_mday));
-    fTimeOfDay_ = TimeOfDay (tmTimeData->tm_sec + (tmTimeData->tm_min * 60) + (tmTimeData->tm_hour * 60 * 60));
+    fDate_      = Date{Year (tmTimeData->tm_year + 1900), MonthOfYear (tmTimeData->tm_mon + 1), DayOfMonth (tmTimeData->tm_mday)};
+    fTimeOfDay_ = TimeOfDay{static_cast<unsigned> (tmTimeData->tm_hour), static_cast<unsigned> (tmTimeData->tm_min), static_cast<unsigned> (tmTimeData->tm_sec)};
 }
 
 #if qPlatform_POSIX
@@ -217,8 +217,8 @@ DateTime::DateTime (const timeval& tmTime, const optional<Timezone>& tz) noexcep
     time_t unixTime = tmTime.tv_sec; // IGNORE tv_usec FOR NOW because we currently don't support fractional seconds in DateTime
     tm     tmTimeData{};
     (void)::gmtime_r (&unixTime, &tmTimeData);
-    fDate_      = Date (Year (tmTimeData.tm_year + 1900), MonthOfYear (tmTimeData.tm_mon + 1), DayOfMonth (tmTimeData.tm_mday));
-    fTimeOfDay_ = TimeOfDay (tmTimeData.tm_sec + (tmTimeData.tm_min * 60) + (tmTimeData.tm_hour * 60 * 60));
+    fDate_      = Date{Year (tmTimeData.tm_year + 1900), MonthOfYear (tmTimeData.tm_mon + 1), DayOfMonth (tmTimeData.tm_mday)};
+    fTimeOfDay_ = TimeOfDay{static_cast<unsigned> (tmTimeData.tm_hour), static_cast<unsigned> (tmTimeData.tm_min), static_cast<unsigned> (tmTimeData.tm_sec)};
 }
 #endif
 
@@ -312,7 +312,7 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
             Date                d = Date{Year (year), MonthOfYear (month), DayOfMonth (day)};
             optional<TimeOfDay> t;
             if (nItems >= 5) {
-                t = TimeOfDay (hour * 60 * 60 + minute * 60 + second);
+                t = TimeOfDay{hour, minute, second};
             }
             optional<Timezone> tz;
             if (tzKnown) {
@@ -324,7 +324,7 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
                     tz = Timezone{static_cast<int16_t> (tzHr * 60 + tzMn)};
                 }
             }
-            return t.has_value () ? DateTime (d, *t, tz) : d;
+            return t.has_value () ? DateTime{d, *t, tz} : d;
         } break;
         case ParseFormat::eRFC1123: {
             /*
@@ -388,10 +388,10 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
             if (nItems < 3) {
                 Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
             }
-            Date                d = Date (Year (year), MonthOfYear (month), DayOfMonth (day));
+            Date                d = Date{Year (year), MonthOfYear (month), DayOfMonth (day)};
             optional<TimeOfDay> t;
             if (nItems >= 5) {
-                t = TimeOfDay (hour * 60 * 60 + minute * 60 + second);
+                t = TimeOfDay{hour, minute, second};
             }
             optional<Timezone>                       tz;
             constexpr pair<const wchar_t*, Timezone> kNamedTimezones_[]{
@@ -416,7 +416,7 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
             if (not tz.has_value ()) {
                 tz = Timezone::ParseTimezoneOffsetString (tzStr);
             }
-            return t.has_value () ? DateTime (d, *t, tz) : d;
+            return t.has_value () ? DateTime{d, *t, tz} : d;
         } break;
         default: {
             AssertNotReached ();
@@ -484,13 +484,13 @@ DateTime DateTime::AsLocalTime () const
 {
     if (GetTimezone () == Timezone::kUTC) {
         DateTime tmp = AddSeconds (fTimezone_->GetBiasFromUTC (fDate_, Memory::ValueOrDefault (fTimeOfDay_, TimeOfDay{0})));
-        return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::kLocalTime);
+        return DateTime{tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::kLocalTime};
     }
     else if (GetTimezone () == Timezone::kLocalTime) {
         return *this;
     }
     else if (GetTimezone () == Timezone::kUnknown) {
-        return DateTime (GetDate (), GetTimeOfDay (), Timezone::kLocalTime);
+        return DateTime{GetDate (), GetTimeOfDay (), Timezone::kLocalTime};
     }
     else {
         // Convert to UTC, and then back to localtime
@@ -506,7 +506,7 @@ DateTime DateTime::AsUTC () const
         }
         else {
             DateTime tmp = fTimezone_.has_value () ? AddSeconds (-fTimezone_->GetBiasFromUTC (fDate_, Memory::ValueOrDefault (fTimeOfDay_, TimeOfDay{0}))) : *this;
-            return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::kUTC);
+            return DateTime{tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::kUTC};
         }
     };
     Ensure (AsTimezone (Timezone::kUTC) == oldCode ());
@@ -520,7 +520,7 @@ DateTime DateTime::AsTimezone (Timezone tz) const
     }
     else {
         DateTime tmp = fTimezone_.has_value () ? AddSeconds (-fTimezone_->GetBiasFromUTC (fDate_, Memory::ValueOrDefault (fTimeOfDay_, TimeOfDay{0}))) : *this;
-        return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), tz);
+        return DateTime{tmp.GetDate (), tmp.GetTimeOfDay (), tz};
     }
 }
 
@@ -773,12 +773,12 @@ timespec DateTime::As () const
 
 #if qPlatform_Windows
 template <>
-SYSTEMTIME DateTime::As () const
+::SYSTEMTIME DateTime::As () const
 {
     // CAN GET RID OF toSYSTEM_/toSysTime_ and just inline logic here...
-    SYSTEMTIME d    = toSYSTEM_ (fDate_);
-    SYSTEMTIME t    = toSysTime_ (Memory::ValueOrDefault (fTimeOfDay_, TimeOfDay{0}));
-    SYSTEMTIME r    = d;
+    ::SYSTEMTIME d  = toSYSTEM_ (fDate_);
+    ::SYSTEMTIME t  = toSysTime_ (Memory::ValueOrDefault (fTimeOfDay_, TimeOfDay{0}));
+    ::SYSTEMTIME r  = d;
     r.wHour         = t.wHour;
     r.wMinute       = t.wMinute;
     r.wSecond       = t.wSecond;
@@ -804,7 +804,7 @@ DateTime DateTime::AddDays (int days) const
 {
     Date d = GetDate ();
     d      = d.AddDays (days);
-    return DateTime (d, GetTimeOfDay (), GetTimezone ());
+    return DateTime{d, GetTimeOfDay (), GetTimezone ()};
 }
 
 DateTime DateTime::AddSeconds (int64_t seconds) const
@@ -831,10 +831,10 @@ DateTime DateTime::AddSeconds (int64_t seconds) const
     Ensure (0 <= n and n < static_cast<int64_t> (TimeOfDay::kMaxSecondsPerDay));
     Assert (numeric_limits<int>::lowest () <= dayDiff and dayDiff <= numeric_limits<int>::max ());
     if (n == 0) {
-        return DateTime (GetDate ().AddDays (static_cast<int> (dayDiff)), GetTimeOfDay (), GetTimezone ());
+        return DateTime{GetDate ().AddDays (static_cast<int> (dayDiff)), GetTimeOfDay (), GetTimezone ()};
     }
     else {
-        return DateTime (GetDate ().AddDays (static_cast<int> (dayDiff)), TimeOfDay (static_cast<uint32_t> (n)), GetTimezone ());
+        return DateTime{GetDate ().AddDays (static_cast<int> (dayDiff)), TimeOfDay{static_cast<uint32_t> (n)}, GetTimezone ()};
     }
 }
 

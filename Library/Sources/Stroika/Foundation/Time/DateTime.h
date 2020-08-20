@@ -113,13 +113,13 @@ namespace Stroika::Foundation::Time {
         constexpr DateTime (const Date& date, const optional<TimeOfDay>& timeOfDay, const optional<Timezone>& tz = Timezone::kUnknown) noexcept;
         constexpr DateTime (const Date& date, const TimeOfDay& timeOfDay, const optional<Timezone>& tz = Timezone::kUnknown) noexcept;
         explicit DateTime (time_t unixEpochTime) noexcept;
-        explicit DateTime (const tm& tmTime, const optional<Timezone>& tz = Timezone::kUnknown) noexcept;
-        explicit DateTime (const timespec& tmTime, const optional<Timezone>& tz = Timezone::kUnknown) noexcept;
+        explicit DateTime (const ::tm& tmTime, const optional<Timezone>& tz = Timezone::kUnknown) noexcept;
+        explicit DateTime (const ::timespec& tmTime, const optional<Timezone>& tz = Timezone::kUnknown) noexcept;
 #if qPlatform_POSIX
-        explicit DateTime (const timeval& tmTime, const optional<Timezone>& tz = Timezone::kUnknown) noexcept;
+        explicit DateTime (const ::timeval& tmTime, const optional<Timezone>& tz = Timezone::kUnknown) noexcept;
 #elif qPlatform_Windows
-        explicit DateTime (const SYSTEMTIME& sysTime, const optional<Timezone>& tz = Timezone::kLocalTime) noexcept;
-        explicit DateTime (const FILETIME& fileTime, const optional<Timezone>& tz = Timezone::kUTC) noexcept;
+        explicit DateTime (const ::SYSTEMTIME& sysTime, const optional<Timezone>& tz = Timezone::kLocalTime) noexcept;
+        explicit DateTime (const ::FILETIME& fileTime, const optional<Timezone>& tz = Timezone::kUTC) noexcept;
 #endif
 
     public:

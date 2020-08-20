@@ -64,8 +64,8 @@ namespace {
     bool IsDaylightSavingsTime_ (const DateTime& d);
 
     /**
-    * Return the number of seconds which must be added to a LocalTime value to get GMT.
-    */
+     * Return the number of seconds which must be added to a LocalTime value to get GMT.
+     */
     time_t GetLocaltimeToGMTOffset_ (bool applyDST);
     time_t GetLocaltimeToGMTOffset_ (const DateTime& forTime);
 }
@@ -409,28 +409,28 @@ namespace {
     {
         struct tm asTM = Date2TM_ (date, tod);
         /*
-     *  From http://pubs.opengroup.org/onlinepubs/7908799/xsh/mktime.html:
-     *
-     *      A positive or 0 value for tm_isdst causes mktime() to presume initially that Daylight Savings Time, respectively,
-     *      is or is not in effect for the specified time. A negative value for tm_isdst causes mktime() to attempt to determine
-     *      whether Daylight Saving Time is in effect for the specified time.
-     *
-     *      Local timezone information is set as though mktime() called tzset().
-     *
-     *      Upon successful completion, the values of the tm_wday and tm_yday components of the structure are set appropriately,
-     *      and the other components are set to represent the specified time since the Epoch, but with their values forced to the
-     *      ranges indicated in the <time.h> entry; the final value of tm_mday is not set until tm_mon and tm_year are determined.
-     *
-     *  But http://linux.die.net/man/3/localtime says:
-     *      The mktime() function modifies the fields of the tm structure as follows: tm_wday and tm_yday are set to values determined
-     *      from the contents of the other fields; if structure members are outside their valid interval, they will be normalized
-     *      (so that, for example, 40 October is changed into 9 November); tm_isdst is set (regardless of its initial value)
-     *      to a positive value or to 0, respectively, to indicate whether DST is or is not in effect at the specified time.
-     *
-     *  The POSIX part is not totally clear - but the linux docs do make it clear - that we can use this to test if is daylight savings time.
-     *
-     *  APPEARS to work since... --LGP 2011-10-15
-     */
+         *  From http://pubs.opengroup.org/onlinepubs/7908799/xsh/mktime.html:
+         *
+         *      A positive or 0 value for tm_isdst causes mktime() to presume initially that Daylight Savings Time, respectively,
+         *      is or is not in effect for the specified time. A negative value for tm_isdst causes mktime() to attempt to determine
+         *      whether Daylight Saving Time is in effect for the specified time.
+         *
+         *      Local timezone information is set as though mktime() called tzset().
+         *
+         *      Upon successful completion, the values of the tm_wday and tm_yday components of the structure are set appropriately,
+         *      and the other components are set to represent the specified time since the Epoch, but with their values forced to the
+         *      ranges indicated in the <time.h> entry; the final value of tm_mday is not set until tm_mon and tm_year are determined.
+         *
+         *  But http://linux.die.net/man/3/localtime says:
+         *      The mktime() function modifies the fields of the tm structure as follows: tm_wday and tm_yday are set to values determined
+         *      from the contents of the other fields; if structure members are outside their valid interval, they will be normalized
+         *      (so that, for example, 40 October is changed into 9 November); tm_isdst is set (regardless of its initial value)
+         *      to a positive value or to 0, respectively, to indicate whether DST is or is not in effect at the specified time.
+         *
+         *  The POSIX part is not totally clear - but the linux docs do make it clear - that we can use this to test if is daylight savings time.
+         *
+         *  APPEARS to work since... --LGP 2011-10-15
+         */
         asTM.tm_isdst = -1; // force calc of correct daylight savings time flag
         // https://stroika.atlassian.net/browse/STK-515  only works back to 1970 (Unix epoch time) - else assume NOT daylight savings time
         if (::mktime (&asTM) == -1) {

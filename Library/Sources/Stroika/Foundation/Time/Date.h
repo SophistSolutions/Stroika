@@ -295,13 +295,13 @@ namespace Stroika::Foundation::Time {
         /**
          *  Date::kMin is the first date this Date class supports representing.
          */
-        static const Date kMin; // really constexpr
+        static const Date kMin; // defined constexpr
 
     public:
         /**
          * Date::kMax is the last date this Date class supports representing.
          */
-        static const Date kMax; // really constexpr
+        static const Date kMax; // defined constexpr
 
     public:
         [[deprecated ("Since Stroika 2.1b4 use kMax")]] static constexpr Date min ();
@@ -439,7 +439,7 @@ namespace Stroika::Foundation::Time {
         constexpr static JulianRepType Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year);
 
     private:
-        static Date AsDate_ (const tm& when);
+        static Date AsDate_ (const ::tm& when);
 
     private:
         JulianRepType fJulianDateRep_;

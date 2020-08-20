@@ -55,7 +55,7 @@ namespace {
         if (err != nullptr)
             [[UNLIKELY_ATTR]]
             {
-                Execution::Throw (DLLException (err));
+                Execution::Throw (DLLException{err});
             }
 #endif
         Execution::ThrowSystemErrNo ();
@@ -153,18 +153,18 @@ DLLLoader::DLLLoader (const SDKChar* dllName, const vector<filesystem::path>& se
 DLLHandle DLLLoader::LoadDLL (const SDKChar* dllName, int flags) /// *** DEPRECATED****
 {
 #if qTargetPlatformSDKUseswchar_t
-    DLLHandle module = dlopen (Characters::WideStringToUTF8 (dllName).c_str (), flags);
+    DLLHandle module = ::dlopen (Characters::WideStringToUTF8 (dllName).c_str (), flags);
 #else
-    DLLHandle module = dlopen (dllName, flags);
+    DLLHandle module = ::dlopen (dllName, flags);
 #endif
 
     if (module == nullptr) {
         // either main module or not found
-        const char* err = dlerror ();
+        const char* err = ::dlerror ();
         if (err != nullptr)
             [[UNLIKELY_ATTR]]
             {
-                Execution::Throw (DLLException (err));
+                Execution::Throw (DLLException{err});
             }
     }
     return module;
@@ -181,11 +181,11 @@ DLLLoader::~DLLLoader ()
     ::FreeLibrary (fModule_);
 #else
     if (::dlclose (fModule_) != 0) {
-        const char* err = dlerror ();
+        const char* err = ::dlerror ();
         if (err != nullptr)
             [[UNLIKELY_ATTR]]
             {
-                Execution::Throw (DLLException (err));
+                Execution::Throw (DLLException{err});
             }
     }
 #endif

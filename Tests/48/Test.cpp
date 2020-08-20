@@ -234,7 +234,7 @@ namespace {
         {
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
             Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale (L"en", L"us")};
-            Date                           d = Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5));
+            Date                           d = Date{Year{1903}, MonthOfYear::eApril, DayOfMonth{5}};
             TestRoundTripFormatThenParseNoChange_ (d);
             VerifyTestResult (d.Format (Date::PrintFormat::eCurrentLocale) == L"4/5/1903" or d.Format (Date::PrintFormat::eCurrentLocale) == L"04/05/1903");
             VerifyTestResult (d.Format (Date::PrintFormat::eCurrentLocale_WithZerosStripped) == L"4/5/1903");
@@ -246,7 +246,7 @@ namespace {
         }
 
         {
-            Date d = Date (Date::JulianRepType (2455213));
+            Date d = Date{Date::JulianRepType (2455213)};
             VerifyTestResult (d.Format () == L"1/16/10");
         }
     }
@@ -272,7 +272,7 @@ namespace {
             DateTime d = DateTime::min ();
             VerifyTestResult (d < DateTime::Now ());
             VerifyTestResult (DateTime::Now () > d);
-            d = DateTime (d.GetDate (), d.GetTimeOfDay (), Timezone::kUTC);                           // so that compare works - cuz we don't know timezone we'll run test with...
+            d = DateTime{d.GetDate (), d.GetTimeOfDay (), Timezone::kUTC};                            // so that compare works - cuz we don't know timezone we'll run test with...
             VerifyTestResult (d.Format (DateTime::PrintFormat::eISO8601) == L"1752-09-14T00:00:00Z"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
