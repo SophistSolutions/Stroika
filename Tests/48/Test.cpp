@@ -397,21 +397,21 @@ namespace {
         constexpr TimeOfDay kTOD_{10, 21, 32};
         DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-04:00", DateTime::ParseFormat::eISO8601);
         DateTime            tdu = td.AsUTC ();
-        VerifyTestResult (tdu == DateTime {kDate_, TimeOfDay {kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC});
+        VerifyTestResult ((tdu == DateTime {kDate_, TimeOfDay {kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
     }
     {
         constexpr Date      kDate_ = Date (Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29));
         constexpr TimeOfDay kTOD_{10, 21, 32};
         DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-0400", DateTime::ParseFormat::eISO8601);
         DateTime            tdu = td.AsUTC ();
-        VerifyTestResult (tdu == DateTime (kDate_, TimeOfDay (kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()), Timezone::kUTC));
+        VerifyTestResult ((tdu == DateTime {kDate_, TimeOfDay {kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
     }
     {
         constexpr Date      kDate_{Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29)};
         constexpr TimeOfDay kTOD_{10, 21, 32};
         DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-04", DateTime::ParseFormat::eISO8601);
         DateTime            tdu = td.AsUTC ();
-        VerifyTestResult (tdu == DateTime (kDate_, TimeOfDay (kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()), Timezone::kUTC));
+        VerifyTestResult ((tdu == DateTime {kDate_, TimeOfDay {kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
     }
 }
 }
