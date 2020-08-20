@@ -178,13 +178,13 @@ DateTime::DateTime (time_t unixEpochTime) noexcept
     (void)::gmtime_r (&unixEpochTime, &tmTime);
 #endif
     fDate_      = Date{Year (tmTime.tm_year + 1900), MonthOfYear (tmTime.tm_mon + 1), DayOfMonth (tmTime.tm_mday)};
-    fTimeOfDay_ = TimeOfDay{tmTime.tm_sec + (tmTime.tm_min * 60) + (tmTime.tm_hour * 60 * 60)};
+    fTimeOfDay_ = TimeOfDay{static_cast<unsigned> (tmTime.tm_hour), static_cast<unsigned> (tmTime.tm_min), static_cast<unsigned> (tmTime.tm_sec)};
 }
 
 DateTime::DateTime (const tm& tmTime, const optional<Timezone>& tz) noexcept
     : fTimezone_{tz}
     , fDate_{Year (tmTime.tm_year + 1900), MonthOfYear (tmTime.tm_mon + 1), DayOfMonth (tmTime.tm_mday)}
-    , fTimeOfDay_{(tmTime.tm_hour * 60 + tmTime.tm_min) * 60 + tmTime.tm_sec}
+    , fTimeOfDay_{TimeOfDay{static_cast<unsigned> (tmTime.tm_hour), static_cast<unsigned> (tmTime.tm_min), static_cast<unsigned> (tmTime.tm_sec)}}
 {
 }
 
@@ -312,7 +312,7 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
             Date                d = Date{Year (year), MonthOfYear (month), DayOfMonth (day)};
             optional<TimeOfDay> t;
             if (nItems >= 5) {
-                t = TimeOfDay{hour, minute, second};
+                t = TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (second)};
             }
             optional<Timezone> tz;
             if (tzKnown) {
@@ -391,7 +391,7 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
             Date                d = Date{Year (year), MonthOfYear (month), DayOfMonth (day)};
             optional<TimeOfDay> t;
             if (nItems >= 5) {
-                t = TimeOfDay{hour, minute, second};
+                t = TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (second)};
             }
             optional<Timezone>                       tz;
             constexpr pair<const wchar_t*, Timezone> kNamedTimezones_[]{
