@@ -17,10 +17,6 @@ namespace Stroika::Foundation::Streams {
      **************************** Streams::EOFException *****************************
      ********************************************************************************
      */
-    inline EOFException::EOFException ()
-        : EOFException{false}
-    {
-    }
     inline bool EOFException::GetPartialReadCompleted () const
     {
         return fPartialReadCompleted_;
