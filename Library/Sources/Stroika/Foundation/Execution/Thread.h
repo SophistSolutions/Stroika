@@ -822,6 +822,7 @@ namespace Stroika::Foundation::Execution {
              */
             static const InterruptException kThe;
         };
+        inline const InterruptException InterruptException::kThe;
 
         /**
          */
@@ -840,6 +841,7 @@ namespace Stroika::Foundation::Execution {
              */
             static const AbortException kThe;
         };
+        inline const AbortException AbortException::kThe;
 
         /**
          *  Thread IDs tend to be long and not easy to read in trace output. This utility class just maps these long

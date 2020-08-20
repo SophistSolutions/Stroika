@@ -69,6 +69,7 @@ namespace Stroika::Foundation::Execution {
          */
         static const TimeOutException kThe;
     };
+    inline const TimeOutException TimeOutException::kThe;
 
     /**
      *  \brief  Execution::Throw (Execution::TimeOutException::kThe);

@@ -17,6 +17,7 @@ namespace Stroika::Foundation::Execution {
     public:
         static const UserCanceledException kThe;
     };
+    inline const UserCanceledException UserCanceledException::kThe;
 
 }
 

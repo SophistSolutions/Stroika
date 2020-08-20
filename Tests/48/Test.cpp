@@ -122,7 +122,7 @@ namespace {
             VerifyTestResult (t2.GetHours () == 23);
             VerifyTestResult (t2.GetMinutes () == 59);
             VerifyTestResult (t2.GetSeconds () == 59);
-            VerifyTestResult (t2 == TimeOfDay::max ());
+            VerifyTestResult (t2 == TimeOfDay::kMax);
             TestRoundTripFormatThenParseNoChange_ (t2);
         }
         {
@@ -199,7 +199,7 @@ namespace {
         }
         try {
             Date d = Date::Parse (L"09/14/1752", locale::classic ());
-            VerifyTestResult (d == Date::min ());
+            VerifyTestResult (d == Date::kMin);
             VerifyTestResult (d.Format (Date::PrintFormat::eISO8601) == L"1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
@@ -213,7 +213,7 @@ namespace {
             //TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
-            Date d = Date::min ();
+            Date d = Date::kMin;
             VerifyTestResult (d < DateTime::Now ().GetDate ());
             VerifyTestResult (not(DateTime::Now ().GetDate () < d));
             VerifyTestResult (d.Format (Date::PrintFormat::eISO8601) == L"1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
@@ -224,12 +224,12 @@ namespace {
             VerifyTestResult (Date::Parse (L"11/1/2001", Date::ParseFormat::eJavascript).Format (Date::PrintFormat::eJavascript) == L"11/01/2001");
         }
         {
-            VerifyTestResult (Date::min () < Date::max ());
-            VerifyTestResult (Date::min () <= Date::max ());
-            VerifyTestResult (not(Date::min () > Date::max ()));
-            VerifyTestResult (not(Date::min () >= Date::max ()));
-            TestRoundTripFormatThenParseNoChange_ (Date::min ());
-            TestRoundTripFormatThenParseNoChange_ (Date::max ());
+            VerifyTestResult (Date::kMin < Date::kMax);
+            VerifyTestResult (Date::kMin <= Date::kMax);
+            VerifyTestResult (not(Date::kMin > Date::kMax));
+            VerifyTestResult (not(Date::kMin >= Date::kMax));
+            TestRoundTripFormatThenParseNoChange_ (Date::kMin);
+            TestRoundTripFormatThenParseNoChange_ (Date::kMax);
         }
         {
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
@@ -360,7 +360,7 @@ namespace {
             };
 
             // Parse eRFC1123
-            VerifyTestResult (DateTime::Parse (L"Wed, 09 Jun 2021 10:18:14 GMT", DateTime::ParseFormat::eRFC1123) == (DateTime{Date{Time::Year{2021}, MonthOfYear::eJune, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::UTC ()}));
+            VerifyTestResult (DateTime::Parse (L"Wed, 09 Jun 2021 10:18:14 GMT", DateTime::ParseFormat::eRFC1123) == (DateTime{Date{Time::Year{2021}, MonthOfYear::eJune, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::kUTC}));
             // from https://www.feedvalidator.org/docs/error/InvalidRFC2822Date.html
             VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 08:00:00 EST", DateTime::ParseFormat::eRFC1123) == (DateTime{Date{Time::Year{2002}, MonthOfYear::eOctober, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
             VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 13:00:00 GMT", DateTime::ParseFormat::eRFC1123) == (DateTime{Date{Time::Year{2002}, MonthOfYear::eOctober, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
@@ -368,7 +368,7 @@ namespace {
 
             VerifyTestResult (DateTime::Parse (L"Tue, 6 Nov 2018 06:25:51 -0800 (PST)", DateTime::ParseFormat::eRFC1123) == (DateTime{Date{Time::Year{2018}, MonthOfYear::eNovember, DayOfMonth{6}}, TimeOfDay{6, 25, 51}, Timezone (-8 * 60)}));
 
-            roundTripD (DateTime{Date{Time::Year{2021}, MonthOfYear::eJune, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::UTC ()});
+            roundTripD (DateTime{Date{Time::Year{2021}, MonthOfYear::eJune, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::kUTC});
 
             // Careful with these, because there are multiple valid string representations for a given date
             roundTripS (L"Wed, 02 Oct 2002 13:00:00 GMT");
@@ -397,21 +397,21 @@ namespace {
         constexpr TimeOfDay kTOD_{10, 21, 32};
         DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-04:00", DateTime::ParseFormat::eISO8601);
         DateTime            tdu = td.AsUTC ();
-        VerifyTestResult (tdu == DateTime (kDate_, TimeOfDay (kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()), Timezone::UTC ()));
+        VerifyTestResult (tdu == DateTime (kDate_, TimeOfDay (kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()), Timezone::kUTC));
     }
     {
         constexpr Date      kDate_ = Date (Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29));
         constexpr TimeOfDay kTOD_{10, 21, 32};
         DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-0400", DateTime::ParseFormat::eISO8601);
         DateTime            tdu = td.AsUTC ();
-        VerifyTestResult (tdu == DateTime (kDate_, TimeOfDay (kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()), Timezone::UTC ()));
+        VerifyTestResult (tdu == DateTime (kDate_, TimeOfDay (kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()), Timezone::kUTC));
     }
     {
         constexpr Date      kDate_{Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29)};
         constexpr TimeOfDay kTOD_{10, 21, 32};
         DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-04", DateTime::ParseFormat::eISO8601);
         DateTime            tdu = td.AsUTC ();
-        VerifyTestResult (tdu == DateTime (kDate_, TimeOfDay (kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()), Timezone::UTC ()));
+        VerifyTestResult (tdu == DateTime (kDate_, TimeOfDay (kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()), Timezone::kUTC));
     }
 }
 }
@@ -702,8 +702,8 @@ namespace {
             DateRange d2 = DateRange::FullRange ();
             VerifyTestResult (d1.empty ());
             VerifyTestResult (not d2.empty ());
-            VerifyTestResult (d2.GetLowerBound () == Date::min ());
-            VerifyTestResult (d2.GetUpperBound () == Date::max ());
+            VerifyTestResult (d2.GetLowerBound () == Date::kMin);
+            VerifyTestResult (d2.GetUpperBound () == Date::kMax);
         }
         {
             DateRange    dr{Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5)), Date (Year (1903), MonthOfYear::eApril, DayOfMonth (6))};

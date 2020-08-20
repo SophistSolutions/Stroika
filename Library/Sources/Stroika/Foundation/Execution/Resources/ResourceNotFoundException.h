@@ -23,6 +23,7 @@ namespace Stroika::Foundation::Execution {
          */
         static const ResourceNotFoundException kThe;
     };
+    inline const ResourceNotFoundException ResourceNotFoundException::kThe;
 
 }
 

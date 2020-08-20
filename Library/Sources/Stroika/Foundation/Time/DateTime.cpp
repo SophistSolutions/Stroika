@@ -157,10 +157,8 @@ namespace {
  ********************** DateTime::FormatException *******************************
  ********************************************************************************
  */
-const DateTime::FormatException DateTime::FormatException::kThe;
-
 DateTime::FormatException::FormatException ()
-    : RuntimeErrorException<> (L"Invalid DateTime Format"sv)
+    : RuntimeErrorException<>{L"Invalid DateTime Format"sv}
 {
 }
 
@@ -170,7 +168,7 @@ DateTime::FormatException::FormatException ()
  ********************************************************************************
  */
 DateTime::DateTime (time_t unixEpochTime) noexcept
-    : fTimezone_ (Timezone::UTC ())
+    : fTimezone_{Timezone::kUTC}
     , fDate_{Date::kMinJulianRep} // avoid initialization warning
 {
     tm tmTime{};
@@ -184,14 +182,14 @@ DateTime::DateTime (time_t unixEpochTime) noexcept
 }
 
 DateTime::DateTime (const tm& tmTime, const optional<Timezone>& tz) noexcept
-    : fTimezone_ (tz)
-    , fDate_ (Year (tmTime.tm_year + 1900), MonthOfYear (tmTime.tm_mon + 1), DayOfMonth (tmTime.tm_mday))
-    , fTimeOfDay_ ((tmTime.tm_hour * 60 + tmTime.tm_min) * 60 + tmTime.tm_sec)
+    : fTimezone_{tz}
+    , fDate_{Year (tmTime.tm_year + 1900), MonthOfYear (tmTime.tm_mon + 1), DayOfMonth (tmTime.tm_mday)}
+    , fTimeOfDay_{(tmTime.tm_hour * 60 + tmTime.tm_min) * 60 + tmTime.tm_sec}
 {
 }
 
 DateTime::DateTime (const timespec& tmTime, const optional<Timezone>& tz) noexcept
-    : fTimezone_ (tz)
+    : fTimezone_{tz}
     , fDate_{Date::kMinJulianRep} // avoid initialization warning
 {
     time_t unixTime = tmTime.tv_sec; // IGNORE tv_nsec FOR NOW because we currently don't support fractional seconds in DateTime
@@ -213,7 +211,7 @@ DateTime::DateTime (const timespec& tmTime, const optional<Timezone>& tz) noexce
 
 #if qPlatform_POSIX
 DateTime::DateTime (const timeval& tmTime, const optional<Timezone>& tz) noexcept
-    : fTimezone_ (tz)
+    : fTimezone_{tz}
     , fDate_{Date::kMinJulianRep} // avoid initialization warning
 {
     time_t unixTime = tmTime.tv_sec; // IGNORE tv_usec FOR NOW because we currently don't support fractional seconds in DateTime
@@ -226,14 +224,14 @@ DateTime::DateTime (const timeval& tmTime, const optional<Timezone>& tz) noexcep
 
 #if qPlatform_Windows
 DateTime::DateTime (const SYSTEMTIME& sysTime, const optional<Timezone>& tz) noexcept
-    : fTimezone_ (tz)
-    , fDate_ (mkDate_ (sysTime))
-    , fTimeOfDay_ (mkTimeOfDay_ (sysTime))
+    : fTimezone_{tz}
+    , fDate_{mkDate_ (sysTime)}
+    , fTimeOfDay_{mkTimeOfDay_ (sysTime)}
 {
 }
 
 DateTime::DateTime (const FILETIME& fileTime, const optional<Timezone>& tz) noexcept
-    : fTimezone_ (tz)
+    : fTimezone_{tz}
     , fDate_{Date::kMinJulianRep} // avoid initialization warning
 {
     SYSTEMTIME sysTime{};
@@ -311,7 +309,7 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
             if (nItems < 3) {
                 Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
             }
-            Date                d = Date (Year (year), MonthOfYear (month), DayOfMonth (day));
+            Date                d = Date{Year (year), MonthOfYear (month), DayOfMonth (day)};
             optional<TimeOfDay> t;
             if (nItems >= 5) {
                 t = TimeOfDay (hour * 60 * 60 + minute * 60 + second);
@@ -319,11 +317,11 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
             optional<Timezone> tz;
             if (tzKnown) {
                 if (tzUTC) {
-                    tz = Timezone::UTC ();
+                    tz = Timezone::kUTC;
                 }
                 else {
                     Assert (numeric_limits<int16_t>::min () <= tzHr * 60 + tzMn and tzHr * 60 + tzMn < numeric_limits<int16_t>::max ());
-                    tz = Timezone (static_cast<int16_t> (tzHr * 60 + tzMn));
+                    tz = Timezone{static_cast<int16_t> (tzHr * 60 + tzMn)};
                 }
             }
             return t.has_value () ? DateTime (d, *t, tz) : d;
@@ -397,17 +395,17 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
             }
             optional<Timezone>                       tz;
             constexpr pair<const wchar_t*, Timezone> kNamedTimezones_[]{
-                {L"Z", Timezone::UTC ()},
-                {L"UT", Timezone::UTC ()},
-                {L"GMT", Timezone::UTC ()},
-                {L"EST", Timezone (-5 * 60)},
-                {L"EDT", Timezone (-4 * 60)},
-                {L"CST", Timezone (-6 * 60)},
-                {L"CDT", Timezone (-5 * 60)},
-                {L"MST", Timezone (-7 * 60)},
-                {L"MDT", Timezone (-6 * 60)},
-                {L"PST", Timezone (-8 * 60)},
-                {L"PDT", Timezone (-7 * 60)},
+                {L"Z", Timezone::kUTC},
+                {L"UT", Timezone::kUTC},
+                {L"GMT", Timezone::kUTC},
+                {L"EST", Timezone{-5 * 60}},
+                {L"EDT", Timezone{-4 * 60}},
+                {L"CST", Timezone{-6 * 60}},
+                {L"CDT", Timezone{-5 * 60}},
+                {L"MST", Timezone{-7 * 60}},
+                {L"MDT", Timezone{-6 * 60}},
+                {L"PST", Timezone{-8 * 60}},
+                {L"PDT", Timezone{-7 * 60}},
             };
             for (size_t i = 0; i < NEltsOf (kNamedTimezones_); ++i) {
                 if (wcscmp (tzStr, kNamedTimezones_[i].first) == 0) {
@@ -479,20 +477,20 @@ DateTime DateTime::Parse (const String& rep, const locale& l, const Traversal::I
     }
     // clang-format on
 
-    return DateTime (when, Timezone::Unknown ());
+    return DateTime{when, Timezone::kUnknown};
 }
 
 DateTime DateTime::AsLocalTime () const
 {
-    if (GetTimezone () == Timezone::UTC ()) {
+    if (GetTimezone () == Timezone::kUTC) {
         DateTime tmp = AddSeconds (fTimezone_->GetBiasFromUTC (fDate_, Memory::ValueOrDefault (fTimeOfDay_, TimeOfDay{0})));
-        return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::LocalTime ());
+        return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::kLocalTime);
     }
-    else if (GetTimezone () == Timezone::LocalTime ()) {
+    else if (GetTimezone () == Timezone::kLocalTime) {
         return *this;
     }
-    else if (GetTimezone () == Timezone::Unknown ()) {
-        return DateTime (GetDate (), GetTimeOfDay (), Timezone::LocalTime ());
+    else if (GetTimezone () == Timezone::kUnknown) {
+        return DateTime (GetDate (), GetTimeOfDay (), Timezone::kLocalTime);
     }
     else {
         // Convert to UTC, and then back to localtime
@@ -503,16 +501,16 @@ DateTime DateTime::AsLocalTime () const
 DateTime DateTime::AsUTC () const
 {
     [[maybe_unused]] auto oldCode = [&] () {
-        if (GetTimezone () == Timezone::UTC ()) {
+        if (GetTimezone () == Timezone::kUTC) {
             return *this;
         }
         else {
             DateTime tmp = fTimezone_.has_value () ? AddSeconds (-fTimezone_->GetBiasFromUTC (fDate_, Memory::ValueOrDefault (fTimeOfDay_, TimeOfDay{0}))) : *this;
-            return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::UTC ());
+            return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::kUTC);
         }
     };
-    Ensure (AsTimezone (Timezone::UTC ()) == oldCode ());
-    return AsTimezone (Timezone::UTC ());
+    Ensure (AsTimezone (Timezone::kUTC) == oldCode ());
+    return AsTimezone (Timezone::kUTC);
 }
 
 DateTime DateTime::AsTimezone (Timezone tz) const
@@ -531,7 +529,7 @@ DateTime DateTime::Now () noexcept
 #if qPlatform_Windows
     SYSTEMTIME st{};
     ::GetLocalTime (&st);
-    return DateTime{st, Timezone::LocalTime ()};
+    return DateTime{st, Timezone::kLocalTime};
 #elif qPlatform_POSIX
     // time() returns the time since the Epoch (00:00:00 UTC, January 1, 1970), measured in seconds.
     // Convert to LocalTime - just for symetry with the windows version (and cuz our API spec say so)
@@ -561,7 +559,7 @@ DurationSecondsType DateTime::ToTickCount () const
 
 DateTime DateTime::FromTickCount (DurationSecondsType tickCount)
 {
-    Assert (GetDateTimeTickCountZeroOffset_ ().GetTimezone () == Timezone::LocalTime ());
+    Assert (GetDateTimeTickCountZeroOffset_ ().GetTimezone () == Timezone::kLocalTime);
     return GetDateTimeTickCountZeroOffset_ ().AddSeconds (Math::Round<int64_t> (tickCount));
 }
 
@@ -611,9 +609,9 @@ String DateTime::Format (PrintFormat pf) const
             String r = fDate_.Format (Date::PrintFormat::eISO8601);
             if (fTimeOfDay_.has_value ()) {
                 String timeStr = fTimeOfDay_->Format (TimeOfDay::PrintFormat::eISO8601);
-                r += Characters::String_Constant (L"T") + timeStr;
+                r += L"T"_k + timeStr;
                 if (fTimezone_) {
-                    if (fTimezone_ == Timezone::UTC ()) {
+                    if (fTimezone_ == Timezone::kUTC) {
                         static const String_Constant kZ_{L"Z"};
                         r += kZ_;
                     }
@@ -632,7 +630,7 @@ String DateTime::Format (PrintFormat pf) const
             optional<Timezone>  tz     = GetTimezone ();
             static const String kFMT_  = L"%a, %d %b %Y %H:%M:%S";
             String              result = Format (locale::classic (), {kFMT_});
-            if (tz == Timezone::Unknown ()) {
+            if (tz == Timezone::kUnknown) {
                 return result;
             }
             else {
@@ -859,7 +857,7 @@ Duration DateTime::Difference (const DateTime& rhs) const
  */
 Common::strong_ordering DateTime::ThreeWayComparer::operator() (const DateTime& lhs, const DateTime& rhs) const
 {
-    if (lhs.GetTimezone () == rhs.GetTimezone () or (lhs.GetTimezone () == Timezone::Unknown ()) or (rhs.GetTimezone () == Timezone::Unknown ())) {
+    if (lhs.GetTimezone () == rhs.GetTimezone () or (lhs.GetTimezone () == Timezone::kUnknown) or (rhs.GetTimezone () == Timezone::kUnknown)) {
         if (auto cmp = Common::ThreeWayCompare (lhs.GetDate (), rhs.GetDate ()); cmp != Common::kEqual) {
             return cmp;
         }

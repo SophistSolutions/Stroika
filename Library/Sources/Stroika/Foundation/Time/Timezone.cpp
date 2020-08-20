@@ -75,12 +75,6 @@ namespace {
  ********************************* Time::Timezone *******************************
  ********************************************************************************
  */
-#if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-const Timezone           Timezone::kLocalTime{Timezone::LocalTime ()};
-const Timezone           Timezone::kUTC{Timezone::UTC ()};
-const optional<Timezone> Timezone::kUnknown{Timezone::Unknown ()};
-#endif
-
 optional<Timezone> Timezone::ParseTimezoneOffsetString (const char* tzStr)
 {
     RequireNotNull (tzStr);

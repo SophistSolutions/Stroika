@@ -315,9 +315,8 @@ namespace Stroika::Foundation::Time {
         /**
          * Duration::kMin is the least duration this Duration class supports representing.
          *
-         *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
-         *
-         *  @todo get constexpr working here
+         *  @todo get constexpr working here (I THINK MAYBE POSSIBLE IN C++20 since you can have constexpr dtor - not sure how but I think can work)
+         *  THEN MAKE kMin
          */
         static /*constexpr*/ Duration min ();
 
@@ -325,9 +324,8 @@ namespace Stroika::Foundation::Time {
         /**
          * Duration::kMax is the largest duration this Duration class supports representing
          *
-         *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
-         *
-         *  @todo get constexpr working here
+         *  @todo get constexpr working here (I THINK MAYBE POSSIBLE IN C++20 since you can have constexpr dtor - not sure how but I think can work)
+         *  THEN MAKE kMax
          */
         static /*constexpr*/ Duration max ();
 
@@ -411,6 +409,7 @@ namespace Stroika::Foundation::Time {
     public:
         static const FormatException kThe;
     };
+    inline const Duration::FormatException Duration::FormatException::kThe;
 
     /**
      *  \brief user defined literal for Duration, specified in ISO8601 format.

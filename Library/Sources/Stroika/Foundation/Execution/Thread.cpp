@@ -223,7 +223,6 @@ Thread::InterruptException::InterruptException (const Characters::String& msg)
     : Exception<>{msg}
 {
 }
-const Thread::InterruptException Thread::InterruptException::kThe;
 
 /*
  ********************************************************************************
@@ -234,7 +233,6 @@ Thread::AbortException::AbortException ()
     : InterruptException{L"Thread Abort"sv}
 {
 }
-const Thread::AbortException Thread::AbortException::kThe;
 
 /*
  ********************************************************************************

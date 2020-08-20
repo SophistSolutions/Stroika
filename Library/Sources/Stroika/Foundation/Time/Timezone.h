@@ -134,63 +134,29 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          *  Returns Timezone object in UTC timezone.
-         *
-         *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
          */
-        static constexpr Timezone UTC ();
+        static const Timezone kUTC; // defined constexpr
+
+        [[deprecated ("Since Stroika 2.1b4 use kUTC")]] static constexpr Timezone UTC ();
 
     public:
         /**
          *  Returns Timezone object in localtime timezone.
-         *
-         *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
          *
          *  \note - LocalTime is a STICKY property. This does NOT return the FIXED OFFSET for the current local-time, but rather a special
          *          Timezone which always references that global current timezone.
          */
-        static constexpr Timezone LocalTime ();
+        static const Timezone kLocalTime; // defined constexpr
+
+        [[deprecated ("Since Stroika 2.1b4 use kLocalTime")]] static constexpr Timezone LocalTime ();
 
     public:
         /**
          *  Returns Timezone object in localtime timezone.
-         *
-         *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
          */
-        static constexpr optional<Timezone> Unknown ();
+        static const optional<Timezone> kUnknown; // defined constexpr
 
-    public:
-        /**
-         *  @see Timezone::UTC ()
-         *
-         *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
-         */
-#if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-        static const Timezone kUTC;
-#else
-        static constexpr Timezone kUTC{TZ_::eUTC};
-#endif
-
-    public:
-        /**
-         *  @see Timezone::LocalTime ()
-         *
-         *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
-         */
-#if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-        static const Timezone kLocalTime;
-#else
-        static constexpr Timezone kLocalTime{TZ_::eLocalTime};
-#endif
-
-    public:
-        /**
-         *  @see Timezone::Unknown ()
-         *
-         *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
-         *        BUT - this is trickier than the others cuz its not even Timezone but a type derived from it. Could be nice if it
-         *        worked!
-         */
-        static const optional<Timezone> kUnknown;
+        [[deprecated ("Since Stroika 2.1b4 use kUnknown")]] static constexpr optional<Timezone> Unknown ();
 
     public:
         /**

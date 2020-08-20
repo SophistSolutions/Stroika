@@ -920,7 +920,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     }
     namespace PRIVATE_ {
         struct OptionalTypesReader_DateTime_DefaultTraits_ {
-            static inline const Time::DateTime kDefaultValue = Time::DateTime::min ();
+            static inline const Time::DateTime kDefaultValue = Time::DateTime::kMin;
         };
     }
     template <>

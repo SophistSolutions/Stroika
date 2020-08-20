@@ -41,6 +41,7 @@ namespace Stroika::Foundation::Streams {
     private:
         bool fPartialReadCompleted_{false};
     };
+    inline const EOFException EOFException::kThe;
 
 }
 

@@ -96,5 +96,3 @@ DataExchange::BadFormatException::BadFormatException (const String& details, con
     , fDetails_{details}
 {
 }
-
-const DataExchange::BadFormatException DataExchange::BadFormatException::kThe;

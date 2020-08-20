@@ -36,11 +36,9 @@ using namespace Time;
  ********************************************************************************
  */
 Duration::FormatException::FormatException ()
-    : inherited (L"Invalid Duration Format"sv)
+    : inherited{L"Invalid Duration Format"sv}
 {
 }
-
-const Duration::FormatException Duration::FormatException::kThe;
 
 /*
  ********************************************************************************

@@ -28,6 +28,7 @@ namespace Stroika::Foundation::Execution {
          */
         virtual const char* what () const noexcept override;
     };
+    inline const SilentException SilentException::kThe;
 
 }
 

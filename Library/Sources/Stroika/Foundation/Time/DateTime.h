@@ -110,16 +110,16 @@ namespace Stroika::Foundation::Time {
         constexpr DateTime (const Date& d) noexcept;
         constexpr DateTime (const DateTime& dt, const Date& updateDate) noexcept;
         constexpr DateTime (const DateTime& dt, const TimeOfDay& updateTOD) noexcept;
-        constexpr DateTime (const Date& date, const optional<TimeOfDay>& timeOfDay, const optional<Timezone>& tz = Timezone::Unknown ()) noexcept;
-        constexpr DateTime (const Date& date, const TimeOfDay& timeOfDay, const optional<Timezone>& tz = Timezone::Unknown ()) noexcept;
+        constexpr DateTime (const Date& date, const optional<TimeOfDay>& timeOfDay, const optional<Timezone>& tz = Timezone::kUnknown) noexcept;
+        constexpr DateTime (const Date& date, const TimeOfDay& timeOfDay, const optional<Timezone>& tz = Timezone::kUnknown) noexcept;
         explicit DateTime (time_t unixEpochTime) noexcept;
-        explicit DateTime (const tm& tmTime, const optional<Timezone>& tz = Timezone::Unknown ()) noexcept;
-        explicit DateTime (const timespec& tmTime, const optional<Timezone>& tz = Timezone::Unknown ()) noexcept;
+        explicit DateTime (const tm& tmTime, const optional<Timezone>& tz = Timezone::kUnknown) noexcept;
+        explicit DateTime (const timespec& tmTime, const optional<Timezone>& tz = Timezone::kUnknown) noexcept;
 #if qPlatform_POSIX
-        explicit DateTime (const timeval& tmTime, const optional<Timezone>& tz = Timezone::Unknown ()) noexcept;
+        explicit DateTime (const timeval& tmTime, const optional<Timezone>& tz = Timezone::kUnknown) noexcept;
 #elif qPlatform_Windows
-        explicit DateTime (const SYSTEMTIME& sysTime, const optional<Timezone>& tz = Timezone::LocalTime ()) noexcept;
-        explicit DateTime (const FILETIME& fileTime, const optional<Timezone>& tz = Timezone::UTC ()) noexcept;
+        explicit DateTime (const SYSTEMTIME& sysTime, const optional<Timezone>& tz = Timezone::kLocalTime) noexcept;
+        explicit DateTime (const FILETIME& fileTime, const optional<Timezone>& tz = Timezone::kUTC) noexcept;
 #endif
 
     public:
@@ -229,19 +229,19 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  DateTime::min () is the first date this DateTime class supports representing.
-         *
-         *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
+         *  DateTime::kMin is the first date this DateTime class supports representing.
          */
-        static constexpr DateTime min ();
+        static const DateTime kMin; // defined constexpr
 
     public:
         /**
-         * DateTime::max () is the last date this DateTime class supports representing.
-         *
-         *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
+         * DateTime::kMax is the last date this DateTime class supports representing.
          */
-        static constexpr DateTime max ();
+        static const DateTime kMax; // defined constexpr
+
+    public:
+        [[deprecated ("Since Stroika 2.1b4 use kMin")]] static constexpr DateTime min ();
+        [[deprecated ("Since Stroika 2.1b4 use kMax")]] static constexpr DateTime max ();
 
     public:
         /**
@@ -501,6 +501,7 @@ namespace Stroika::Foundation::Time {
          */
         static const FormatException kThe;
     };
+    inline const DateTime::FormatException DateTime::FormatException::kThe;
 
     template <>
     time_t DateTime::As () const;

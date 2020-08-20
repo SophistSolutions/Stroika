@@ -129,10 +129,8 @@ namespace {
  ************************** Date::FormatException *******************************
  ********************************************************************************
  */
-const Date::FormatException Date::FormatException::kThe;
-
 Date::FormatException::FormatException ()
-    : Execution::RuntimeErrorException<> (L"Invalid Date Format"sv)
+    : Execution::RuntimeErrorException<>{L"Invalid Date Format"sv}
 {
 }
 

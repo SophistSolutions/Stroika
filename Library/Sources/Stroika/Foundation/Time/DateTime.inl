@@ -19,20 +19,20 @@ namespace Stroika::Foundation::Time {
      ********************************************************************************
      */
     inline constexpr DateTime::DateTime (const Date& d) noexcept
-        : fTimezone_{Timezone::Unknown ()}
+        : fTimezone_{Timezone::kUnknown}
         , fDate_{d}
     {
     }
     inline constexpr DateTime::DateTime (const DateTime& dt, const Date& updateDate) noexcept
-        : fTimezone_ (dt.GetTimezone ())
-        , fDate_ (updateDate)
-        , fTimeOfDay_ (dt.GetTimeOfDay ().has_value () ? optional<TimeOfDay> (*dt.GetTimeOfDay ()) : nullopt)
+        : fTimezone_{dt.GetTimezone ()}
+        , fDate_{updateDate}
+        , fTimeOfDay_{dt.GetTimeOfDay ().has_value () ? optional<TimeOfDay> (*dt.GetTimeOfDay ()) : nullopt}
     {
     }
     inline constexpr DateTime::DateTime (const DateTime& dt, const TimeOfDay& updateTOD) noexcept
-        : fTimezone_ (dt.GetTimezone ())
-        , fDate_ (dt.GetDate ())
-        , fTimeOfDay_ (updateTOD)
+        : fTimezone_{dt.GetTimezone ()}
+        , fDate_{dt.GetDate ()}
+        , fTimeOfDay_{updateTOD}
     {
     }
     inline constexpr DateTime::DateTime (const Date& date, const optional<TimeOfDay>& timeOfDay, const optional<Timezone>& tz) noexcept
@@ -47,13 +47,15 @@ namespace Stroika::Foundation::Time {
         , fTimeOfDay_{timeOfDay}
     {
     }
+    inline constexpr DateTime DateTime::kMin{Date::kMin, optional<TimeOfDay>{TimeOfDay::kMin}, Timezone::kUnknown};
     inline constexpr DateTime DateTime::min ()
     {
-        return DateTime{Date::min (), optional<TimeOfDay>{TimeOfDay::min ()}, Timezone::Unknown ()};
+        return DateTime{Date::kMin, optional<TimeOfDay>{TimeOfDay::kMin}, Timezone::kUnknown};
     }
+    inline constexpr DateTime DateTime::kMax{Date::kMax, optional<TimeOfDay>{TimeOfDay::kMax}, Timezone::kUnknown};
     inline constexpr DateTime DateTime::max ()
     {
-        return DateTime{Date::max (), optional<TimeOfDay>{TimeOfDay::max ()}, Timezone::Unknown ()};
+        return DateTime{Date::kMax, optional<TimeOfDay>{TimeOfDay::kMax}, Timezone::kUnknown};
     }
     inline constexpr Date DateTime::GetDate () const noexcept
     {

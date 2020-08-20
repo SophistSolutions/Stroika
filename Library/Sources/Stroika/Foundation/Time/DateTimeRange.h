@@ -22,8 +22,8 @@ namespace Stroika::Foundation::Time {
     namespace Private_ {
         using namespace Traversal;
         struct DateTimeRangeTraitsType_ : RangeTraits::ExplicitRangeTraitsWithoutMinMax<DateTime, Openness::eClosed, Openness::eClosed, Time::Duration, Time::Duration> {
-            static constexpr DateTime kLowerBound{DateTime::min ()};
-            static constexpr DateTime kUpperBound{DateTime::max ()};
+            static constexpr DateTime kLowerBound{DateTime::kMin};
+            static constexpr DateTime kUpperBound{DateTime::kMax};
         };
     }
 

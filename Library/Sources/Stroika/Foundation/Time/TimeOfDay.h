@@ -168,24 +168,20 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  min () is the first date this TimeOfDay class supports representing.
-         *
-         *  @see constexpr TimeOfDay::kMin
-         *
-         *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
+         *  kMin is the first date this TimeOfDay class supports representing.
          */
-        static constexpr TimeOfDay min ();
+        static const TimeOfDay kMin; // defined constexpr
 
     public:
         /**
-         *  max () is the last date this TimeOfDay class supports representing. This is a legal TimeOfDay, and
+         *  kMax is the last date this TimeOfDay class supports representing. This is a legal TimeOfDay, and
          *  not like 'end' - one past the last legal value.
-         *
-         *  @see constexpr TimeOfDay::kMax
-         *
-         *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
          */
-        static constexpr TimeOfDay max ();
+        static const TimeOfDay kMax; // defined constexpr
+
+    public:
+        [[deprecated ("Since Stroika 2.1b4 use kMin")]] static constexpr TimeOfDay min ();
+        [[deprecated ("Since Stroika 2.1b4 use kMax")]] static constexpr TimeOfDay max ();
 
     public:
         class FormatException;
@@ -278,6 +274,7 @@ namespace Stroika::Foundation::Time {
          */
         static const FormatException kThe;
     };
+    inline const TimeOfDay::FormatException TimeOfDay::FormatException::kThe;
 
 #if __cpp_impl_three_way_comparison < 201907
     constexpr bool operator< (TimeOfDay lhs, TimeOfDay rhs);

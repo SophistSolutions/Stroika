@@ -49,6 +49,7 @@ namespace Stroika::Foundation::DataExchange {
     private:
         Characters::String fDetails_;
     };
+    inline const BadFormatException BadFormatException::kThe;
 
 }
 

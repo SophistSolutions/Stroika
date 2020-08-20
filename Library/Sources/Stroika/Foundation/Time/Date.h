@@ -293,20 +293,19 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  Date::min () is the first date this Date class supports representing.
-         *  Defined constexpr if compiler supports.
-         *
-         *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
+         *  Date::kMin is the first date this Date class supports representing.
          */
-        static constexpr Date min ();
+        static const Date kMin; // really constexpr
 
     public:
         /**
-         * Date::max () is the last date this Date class supports representing.
-         *
-         *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
+         * Date::kMax is the last date this Date class supports representing.
          */
-        static constexpr Date max ();
+        static const Date kMax; // really constexpr
+
+    public:
+        [[deprecated ("Since Stroika 2.1b4 use kMax")]] static constexpr Date min ();
+        [[deprecated ("Since Stroika 2.1b4 use kMax")]] static constexpr Date max ();
 
     public:
         /**
@@ -455,6 +454,7 @@ namespace Stroika::Foundation::Time {
          */
         static const FormatException kThe;
     };
+    inline const Date::FormatException Date::FormatException::kThe;
 
 #if __cpp_impl_three_way_comparison < 201907
     constexpr bool operator< (const Date& lhs, const Date& rhs);

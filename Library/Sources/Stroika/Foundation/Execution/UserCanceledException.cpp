@@ -14,3 +14,4 @@ using namespace Stroika::Foundation::Execution;
  ********************************************************************************
  */
 const UserCanceledException UserCanceledException::kThe{};
+xx

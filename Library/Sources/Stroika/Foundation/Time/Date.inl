@@ -186,10 +186,12 @@ namespace Stroika::Foundation::Time {
     {
         return this->AddDays (-daysOffset);
     }
+    inline constexpr Date Date::kMin{Date::kMinJulianRep};
     inline constexpr Date Date::min ()
     {
         return Date{kMinJulianRep};
     }
+    inline constexpr Date Date::kMax{UINT_MAX - 1};
     inline constexpr Date Date::max ()
     {
         return Date{UINT_MAX - 1};

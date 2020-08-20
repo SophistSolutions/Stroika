@@ -28,14 +28,17 @@ namespace Stroika::Foundation::Time {
     {
         Require (kBiasInMinutesFromUTCTypeValidRange.Contains (biasInMinutesFromUTC));
     }
+    inline constexpr Timezone Timezone::kUTC{TZ_::eUTC};
     inline constexpr Timezone Timezone::UTC ()
     {
         return Timezone{TZ_::eUTC};
     }
+    inline constexpr Timezone Timezone::kLocalTime{TZ_::eLocalTime};
     inline constexpr Timezone Timezone::LocalTime ()
     {
         return Timezone{TZ_::eLocalTime};
     }
+    inline constexpr optional<Timezone> Timezone::kUnknown{nullopt};
     inline constexpr optional<Timezone> Timezone::Unknown ()
     {
         return {};

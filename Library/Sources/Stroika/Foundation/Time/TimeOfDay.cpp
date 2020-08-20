@@ -70,7 +70,6 @@ TimeOfDay::FormatException::FormatException ()
     : Execution::RuntimeErrorException<>{L"Invalid Time Format"sv}
 {
 }
-const TimeOfDay::FormatException TimeOfDay::FormatException::kThe;
 
 /*
  ********************************************************************************

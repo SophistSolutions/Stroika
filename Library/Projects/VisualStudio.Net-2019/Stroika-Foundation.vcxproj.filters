@@ -750,9 +750,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Users.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
