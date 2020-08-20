@@ -26,7 +26,7 @@ namespace {
         struct Rep_ : BackSocketImpl_<ConnectionOrientedMasterSocket>::Rep_ {
             using inherited = BackSocketImpl_<ConnectionOrientedMasterSocket>::Rep_;
             Rep_ (Socket::PlatformNativeHandle sd)
-                : inherited (sd)
+                : inherited{sd}
             {
             }
             virtual void Listen (unsigned int backlog) override

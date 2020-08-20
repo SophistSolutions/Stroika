@@ -25,7 +25,7 @@ using namespace Stroika::Foundation::IO::Network;
  */
 #if qPlatform_Windows
 SocketAddress::SocketAddress (const SOCKET_ADDRESS& sockaddr)
-    : fSocketAddress_ ()
+    : fSocketAddress_{}
 {
     if (sockaddr.iSockaddrLength > sizeof (fSocketAddressStorage_))
         [[UNLIKELY_ATTR]]

@@ -29,7 +29,7 @@ namespace {
         struct Rep_ : BackSocketImpl_<ConnectionlessSocket>::Rep_ {
             using inherited = BackSocketImpl_<ConnectionlessSocket>::Rep_;
             Rep_ (Socket::PlatformNativeHandle sd)
-                : inherited (sd)
+                : inherited{sd}
             {
             }
             virtual void SendTo (const byte* start, const byte* end, const SocketAddress& sockAddr) override
@@ -102,13 +102,13 @@ namespace {
                 Execution::DeclareActivity activityDeclare{&activity};
                 switch (iaddr.GetAddressFamily ()) {
                     case InternetAddress::AddressFamily::V4: {
-                        ip_mreq m{};
+                        ::ip_mreq m{};
                         m.imr_multiaddr = iaddr.As<in_addr> ();
                         m.imr_interface = onInterface.As<in_addr> ();
                         setsockopt (IPPROTO_IP, IP_ADD_MEMBERSHIP, m);
                     } break;
                     case InternetAddress::AddressFamily::V6: {
-                        ipv6_mreq m{};
+                        ::ipv6_mreq m{};
                         m.ipv6mr_multiaddr = iaddr.As<in6_addr> ();
                         m.ipv6mr_interface = 0; //??? seems to mean any
                         setsockopt (IPPROTO_IPV6, IPV6_JOIN_GROUP, m);
@@ -123,13 +123,13 @@ namespace {
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                 switch (iaddr.GetAddressFamily ()) {
                     case InternetAddress::AddressFamily::V4: {
-                        ip_mreq m{};
+                        ::ip_mreq m{};
                         m.imr_multiaddr = iaddr.As<in_addr> ();
                         m.imr_interface = onInterface.As<in_addr> ();
                         setsockopt (IPPROTO_IP, IP_DROP_MEMBERSHIP, m);
                     } break;
                     case InternetAddress::AddressFamily::V6: {
-                        ipv6_mreq m{};
+                        ::ipv6_mreq m{};
                         m.ipv6mr_multiaddr = iaddr.As<in6_addr> ();
                         m.ipv6mr_interface = 0; ///??? seems to mean any
                         setsockopt (IPPROTO_IPV6, IPV6_LEAVE_GROUP, m);

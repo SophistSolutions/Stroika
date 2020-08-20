@@ -30,8 +30,8 @@ public:
     bool           fOpenForWrite_{true};
     SeekOffsetType fReadSeekOffset_{};
     Rep_ (const ConnectionOrientedStreamSocket::Ptr& sd)
-        : InputOutputStream<byte>::_IRep ()
-        , fSD_ (sd)
+        : InputOutputStream<byte>::_IRep{}
+        , fSD_{sd}
     {
     }
     virtual bool IsSeekable () const override
@@ -149,6 +149,6 @@ auto SocketStream::New (Execution::InternallySynchronized internallySynchronized
  ********************************************************************************
  */
 SocketStream::Ptr::Ptr (const shared_ptr<Rep_>& from)
-    : inherited (from)
+    : inherited{from}
 {
 }

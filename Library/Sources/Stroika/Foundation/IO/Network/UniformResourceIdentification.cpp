@@ -285,13 +285,13 @@ namespace {
     }
 }
 Query::Query (const String& query)
-    : fMap_ ()
+    : fMap_{}
 {
     InitURLQueryDecoder_ (&fMap_, query.AsASCII ());
 }
 
 Query::Query (const string& query)
-    : fMap_ ()
+    : fMap_{}
 {
     InitURLQueryDecoder_ (&fMap_, query);
 }

@@ -159,13 +159,13 @@ InternetAddress Network::GetPrimaryInternetAddress ()
     for (int i = 0; phe->h_addr_list[i] != 0; ++i) {
         struct in_addr addr;
         (void)::memcpy (&addr, phe->h_addr_list[i], sizeof (struct in_addr));
-        return InternetAddress (addr);
+        return InternetAddress{addr};
     }
 #endif
     return InternetAddress ();
 #elif qPlatform_POSIX
     auto getFlags = [] (int sd, const char* name) -> int {
-        struct ifreq ifreq {
+        struct ::ifreq ifreq {
         };
         Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
         int r = ::ioctl (sd, SIOCGIFFLAGS, (char*)&ifreq);
@@ -179,8 +179,8 @@ InternetAddress Network::GetPrimaryInternetAddress ()
         return ifreq.ifr_flags;
     };
 
-    struct ifreq  ifreqs[32]{};
-    struct ifconf ifconf {
+    struct ::ifreq  ifreqs[32]{};
+    struct ::ifconf ifconf {
     };
     ifconf.ifc_req = ifreqs;
     ifconf.ifc_len = sizeof (ifreqs);
@@ -373,17 +373,17 @@ struct LinkMonitor::Rep_ {
 
     ~Rep_ ()
     {
-#if qPlatform_Windows
+#if qPlatform_POSIX
+        Execution::Thread::SuppressInterruptionInContext suppressInterruption; // critical to wait til done cuz captures this
+        if (fMonitorThread_ != nullptr) {
+            fMonitorThread_.AbortAndWaitForDone ();
+        }
+#elif qPlatform_Windows
         if (fMonitorHandler_ != INVALID_HANDLE_VALUE) {
             // @todo should check error result, but then do what?
             // also - does this blcok until pending notifies done?
             // assuming so!!!
             ::CancelMibChangeNotify2 (fMonitorHandler_);
-        }
-#elif qPlatform_POSIX
-        Execution::Thread::SuppressInterruptionInContext suppressInterruption; // critical to wait til done cuz captures this
-        if (fMonitorThread_ != nullptr) {
-            fMonitorThread_.AbortAndWaitForDone ();
         }
 #endif
     }

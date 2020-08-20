@@ -256,7 +256,7 @@ Mapping<String, String> Transfer::Cache::Element::GetCombinedHeaders () const
 {
     Mapping<String, String> result = fOtherHeaders;
     if (fETag) {
-        result.Add (HTTP::HeaderName::kETag, L"\"" + *fETag + L"\"");
+        result.Add (HTTP::HeaderName::kETag, L"\""_k + *fETag + L"\""_k);
     }
     if (fExpires) {
         result.Add (HTTP::HeaderName::kExpires, fExpires->Format (DateTime::PrintFormat::eRFC1123));

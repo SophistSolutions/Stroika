@@ -75,26 +75,26 @@ struct Listener::Rep_ {
 ********************************************************************************
 */
 Listener::Listener (const SocketAddress& addr, const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog)
-    : Listener (Sequence<SocketAddress>{addr}, Socket::BindFlags{}, newConnectionAcceptor, backlog)
+    : Listener{Sequence<SocketAddress>{addr}, Socket::BindFlags{}, newConnectionAcceptor, backlog}
 {
 }
 
 Listener::Listener (const SocketAddress& addr, const Socket::BindFlags& bindFlags, const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog)
-    : Listener (Sequence<SocketAddress>{addr}, bindFlags, newConnectionAcceptor, backlog)
+    : Listener{Sequence<SocketAddress>{addr}, bindFlags, newConnectionAcceptor, backlog}
 {
 }
 
 Listener::Listener (const Traversal::Iterable<SocketAddress>& addrs, const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog)
-    : Listener (addrs, Socket::BindFlags{}, newConnectionAcceptor, backlog)
+    : Listener{addrs, Socket::BindFlags{}, newConnectionAcceptor, backlog}
 {
 }
 
 Listener::Listener (const Traversal::Iterable<SocketAddress>& addrs, const Socket::BindFlags& bindFlags, const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog)
-    : fRep_ (make_shared<Rep_> (addrs, bindFlags, backlog, newConnectionAcceptor))
+    : fRep_{make_shared<Rep_> (addrs, bindFlags, backlog, newConnectionAcceptor)}
 {
 }
 
 Listener::Listener (Listener&& rhs) noexcept
-    : fRep_ (move (rhs.fRep_))
+    : fRep_{move (rhs.fRep_)}
 {
 }

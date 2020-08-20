@@ -178,7 +178,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Users.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\AccessMode.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterator.cpp" />

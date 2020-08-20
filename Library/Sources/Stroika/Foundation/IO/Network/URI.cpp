@@ -124,7 +124,7 @@ URI URI::Parse (const String& rawURL)
         return URI{emptyStr2Missing (scheme), Authority::Parse (authority.value_or (String{})), UniformResourceIdentification::PCTDecode2String (path.value_or (String{})), emptyStr2Missing (query), emptyStr2Missing (fragment)};
     }
     else {
-        Execution::Throw (Execution::RuntimeErrorException (L"Ill-formed URI"sv)); // doesn't match regexp in https://tools.ietf.org/html/rfc3986#appendix-B
+        Execution::Throw (Execution::RuntimeErrorException{L"Ill-formed URI"sv}); // doesn't match regexp in https://tools.ietf.org/html/rfc3986#appendix-B
     }
 }
 
@@ -260,7 +260,7 @@ void URI::CheckValidPathForAuthority_ (const optional<Authority>& authority, con
      *      must either be empty or begin with a slash ("/") character
      */
     if (authority and (not path.empty () and not path.StartsWith (L"/"))) {
-        Execution::Throw (Execution::RuntimeErrorException (L"A URI with an authority must have an empty path, or an absolute path"sv));
+        Execution::Throw (Execution::RuntimeErrorException{L"A URI with an authority must have an empty path, or an absolute path"sv});
     }
 }
 
@@ -288,7 +288,7 @@ URI URI::Combine (const URI& uri) const
      */
     URI baseURI = Normalize ();
     if (not baseURI.GetScheme ()) {
-        Execution::Throw (Execution::RuntimeErrorException (L"Scheme is required in base URI to combine with another URI"sv));
+        Execution::Throw (Execution::RuntimeErrorException{L"Scheme is required in base URI to combine with another URI"sv});
     }
     auto merge = [&] (const String& base, const String& rhs) {
         // @see https://tools.ietf.org/html/rfc3986#section-5.2.3

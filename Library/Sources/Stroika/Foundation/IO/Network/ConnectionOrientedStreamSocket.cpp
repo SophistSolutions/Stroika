@@ -24,7 +24,7 @@ namespace {
         struct Rep_ : BackSocketImpl_<ConnectionOrientedStreamSocket>::Rep_ {
             using inherited = BackSocketImpl_<ConnectionOrientedStreamSocket>::Rep_;
             Rep_ (Socket::PlatformNativeHandle sd)
-                : inherited (sd)
+                : inherited{sd}
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("Constructed BackSocketImpl_<ConnectionOrientedStreamSocket>::Rep_ with sd=%x", (int)sd);

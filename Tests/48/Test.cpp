@@ -397,21 +397,21 @@ namespace {
         constexpr TimeOfDay kTOD_{10, 21, 32};
         DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-04:00", DateTime::ParseFormat::eISO8601);
         DateTime            tdu = td.AsUTC ();
-        VerifyTestResult ((tdu == DateTime {kDate_, TimeOfDay {kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
+        VerifyTestResult ((tdu == DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
     }
     {
         constexpr Date      kDate_ = Date (Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29));
         constexpr TimeOfDay kTOD_{10, 21, 32};
         DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-0400", DateTime::ParseFormat::eISO8601);
         DateTime            tdu = td.AsUTC ();
-        VerifyTestResult ((tdu == DateTime {kDate_, TimeOfDay {kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
+        VerifyTestResult ((tdu == DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
     }
     {
         constexpr Date      kDate_{Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29)};
         constexpr TimeOfDay kTOD_{10, 21, 32};
         DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-04", DateTime::ParseFormat::eISO8601);
         DateTime            tdu = td.AsUTC ();
-        VerifyTestResult ((tdu == DateTime {kDate_, TimeOfDay {kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
+        VerifyTestResult ((tdu == DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
     }
 }
 }
@@ -642,7 +642,7 @@ namespace {
          *  @see https://stroika.atlassian.net/browse/STK-634
          */
         {
-            DateTime                        n     = DateTime {Date {Year (2011), MonthOfYear::eDecember, DayOfMonth (30)}, TimeOfDay::Parse (L"1 pm", locale::classic ()), Timezone::kLocalTime};
+            DateTime                        n     = DateTime{Date{Year (2011), MonthOfYear::eDecember, DayOfMonth (30)}, TimeOfDay::Parse (L"1 pm", locale::classic ()), Timezone::kLocalTime};
             [[maybe_unused]] optional<bool> isDst = n.IsDaylightSavingsTime ();
             DateTime                        n2    = n.AddDays (180);
             // This verify was wrong. Consider a system on GMT! Besides that - its still not reliable because DST doesnt end 180 days exactly apart.
@@ -765,10 +765,10 @@ namespace {
             VerifyTestResult (d2.GetUpperBound () == DateTime::kMax);
         }
         {
-            DateTimeRange d1{DateTime {Date {Year (2000), MonthOfYear::eApril, DayOfMonth (20)}}, DateTime {Date {Year (2000), MonthOfYear::eApril, DayOfMonth (22)}}};
+            DateTimeRange d1{DateTime{Date{Year (2000), MonthOfYear::eApril, DayOfMonth (20)}}, DateTime{Date{Year (2000), MonthOfYear::eApril, DayOfMonth (22)}}};
             VerifyTestResult (d1.GetDistanceSpanned () / 2 == Duration ("PT1D"));
             // SEE https://stroika.atlassian.net/browse/STK-514 for accuracy of compare (sb .1 or less)
-            VerifyTestResult (Math::NearlyEquals (d1.GetMidpoint (), Date {Year (2000), MonthOfYear::eApril, DayOfMonth (21)}, DurationSecondsType (2)));
+            VerifyTestResult (Math::NearlyEquals (d1.GetMidpoint (), Date{Year (2000), MonthOfYear::eApril, DayOfMonth (21)}, DurationSecondsType (2)));
         }
     }
 }

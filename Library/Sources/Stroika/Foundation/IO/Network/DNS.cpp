@@ -59,18 +59,18 @@ namespace {
             switch (ev) {
 #if EAI_ADDRFAMILY
                 case EAI_ADDRFAMILY:
-                    return std::error_condition (errc::address_family_not_supported); // best approximartion I can find
+                    return std::error_condition{errc::address_family_not_supported}; // best approximartion I can find
 #endif
 #if EAI_NONAME
                 case EAI_NONAME:
-                    return error_condition (errc::no_such_device); // best approximartion I can find
+                    return error_condition{errc::no_such_device}; // best approximartion I can find
 #endif
 #if EAI_MEMORY
                 case EAI_MEMORY:
-                    return error_condition (errc::not_enough_memory);
+                    return error_condition{errc::not_enough_memory};
 #endif
             }
-            return error_condition (errc::bad_message); // no idea what to return here
+            return error_condition{errc::bad_message}; // no idea what to return here
         }
         virtual string message (int _Errval) const override
         {
@@ -85,7 +85,7 @@ namespace {
             while (result < e and isspace (*(e - 1))) {
                 e--;
             }
-            return string (result, e);
+            return string{result, e};
         }
     };
     const error_category& DNS_error_category () noexcept
@@ -204,7 +204,7 @@ optional<String> DNS::ReverseLookup (const InternetAddress& address) const
         case EAI_NONAME:
             return {};
         default:
-            Throw (SystemErrorException (errCode, DNS_error_category ()));
+            Throw (SystemErrorException{errCode, DNS_error_category ()});
     }
 }
 
@@ -262,7 +262,7 @@ InternetAddress DNS::GetHostAddress (const String& hostNameOrAddress) const
 #endif
     auto h = GetHostEntry (hostNameOrAddress).fAddressList;
     if (h.empty ()) {
-        Execution::Throw (RuntimeErrorException (L"No associated addresses"sv));
+        Execution::Throw (RuntimeErrorException{L"No associated addresses"sv});
     }
     return h[0];
 }
@@ -279,7 +279,7 @@ InternetAddress DNS::GetHostAddress (const String& hostNameOrAddress, InternetAd
         }
     }
     if (h.empty ()) {
-        Execution::Throw (RuntimeErrorException (L"No associated addresses"sv));
+        Execution::Throw (RuntimeErrorException{L"No associated addresses"sv});
     }
     return h[0];
 }

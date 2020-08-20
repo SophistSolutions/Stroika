@@ -109,7 +109,7 @@ namespace {
  ********************************************************************************
  */
 InternetAddress::InternetAddress (const string& s, AddressFamily af)
-    : fAddressFamily_ (AddressFamily::UNKNOWN)
+    : fAddressFamily_{AddressFamily::UNKNOWN}
 {
     if (not s.empty ()) {
         if (af == AddressFamily::UNKNOWN) {
@@ -125,26 +125,26 @@ InternetAddress::InternetAddress (const string& s, AddressFamily af)
         switch (af) {
             case AddressFamily::V4: {
                 if (::inet_pton (AF_INET, s.c_str (), &fV4_) == 0) {
-                    Execution::Throw (Execution::RuntimeErrorException (L"unable to parse string as IPv4 internet address"sv));
+                    Execution::Throw (Execution::RuntimeErrorException{L"unable to parse string as IPv4 internet address"sv});
                 }
                 fAddressFamily_ = af;
             } break;
             case AddressFamily::V6: {
                 if (::inet_pton (AF_INET6, s.c_str (), &fV6_) == 0) {
-                    Execution::Throw (Execution::RuntimeErrorException (L"unable to parse string as IPv6 internet address"sv));
+                    Execution::Throw (Execution::RuntimeErrorException{L"unable to parse string as IPv6 internet address"sv});
                 }
                 fAddressFamily_ = af;
             } break;
             default: {
                 // @todo need better exception
-                Execution::Throw (Execution::RuntimeErrorException (L"Unrecognized address family"sv));
+                Execution::Throw (Execution::RuntimeErrorException{L"Unrecognized address family"sv});
             } break;
         }
     }
 }
 
 InternetAddress::InternetAddress (const String& s, AddressFamily af)
-    : InternetAddress (s.AsUTF8 (), af)
+    : InternetAddress{s.AsUTF8 (), af}
 {
 }
 
@@ -384,7 +384,7 @@ InternetAddress InternetAddress::KeepSignifcantBits (unsigned int significantBit
             sigBitsLeft = 0;
         }
     }
-    return InternetAddress (r, this->GetAddressFamily ());
+    return InternetAddress{r, this->GetAddressFamily ()};
 }
 
 InternetAddress InternetAddress::Offset (uint64_t o) const
@@ -407,7 +407,7 @@ InternetAddress InternetAddress::Offset (uint64_t o) const
             o >>= 8;
         }
     }
-    return InternetAddress (addressAsArrayOfBytes, GetAddressFamily ());
+    return InternetAddress{addressAsArrayOfBytes, GetAddressFamily ()};
 }
 
 InternetAddress InternetAddress::PinLowOrderBitsToMax (unsigned int o) const
@@ -425,7 +425,7 @@ InternetAddress InternetAddress::PinLowOrderBitsToMax (unsigned int o) const
         idx--;
         bitsRemaining -= nBits;
     }
-    return InternetAddress (addressAsArrayOfBytes, GetAddressFamily ());
+    return InternetAddress{addressAsArrayOfBytes, GetAddressFamily ()};
 }
 
 /*

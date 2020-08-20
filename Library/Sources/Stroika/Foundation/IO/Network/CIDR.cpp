@@ -40,21 +40,21 @@ namespace {
             if (not ia.GetAddressSize ().has_value ())
                 [[UNLIKELY_ATTR]]
                 {
-                    Execution::Throw (Execution::RuntimeErrorException (L"CIDR format exception: cannot use CIDR notation with that type of internet address"sv));
+                    Execution::Throw (Execution::RuntimeErrorException{L"CIDR format exception: cannot use CIDR notation with that type of internet address"sv});
                 }
             if (*ia.GetAddressSize () * 8 < nBits)
                 [[UNLIKELY_ATTR]]
                 {
-                    Execution::Throw (Execution::RuntimeErrorException (L"CIDR format exception: number of significant bits too large"sv));
+                    Execution::Throw (Execution::RuntimeErrorException{L"CIDR format exception: number of significant bits too large"sv});
                 }
             return CIDR{ia, nBits};
         }
-        Execution::Throw (Execution::RuntimeErrorException (L"CIDR format exception: doesn't contain a / character"sv));
+        Execution::Throw (Execution::RuntimeErrorException{L"CIDR format exception: doesn't contain a / character"sv});
     }
 }
 
 CIDR::CIDR (const String& cidrNotation, InternetAddress::AddressFamily addressFamily)
-    : CIDR (read_ (cidrNotation, addressFamily))
+    : CIDR{read_ (cidrNotation, addressFamily)}
 {
 }
 
@@ -66,7 +66,6 @@ String Network::CIDR::ToString () const
 IO::Network::InternetAddressRange Network::CIDR::GetRange () const
 {
     Require (fBaseAddress_.GetAddressSize ().has_value ());
-    size_t               offset = *fBaseAddress_.GetAddressSize () * 8 - fSignificantBits_;
-    InternetAddressRange result{fBaseAddress_, fBaseAddress_.PinLowOrderBitsToMax (static_cast<unsigned int> (offset))};
-    return result;
+    size_t offset = *fBaseAddress_.GetAddressSize () * 8 - fSignificantBits_;
+    return InternetAddressRange{fBaseAddress_, fBaseAddress_.PinLowOrderBitsToMax (static_cast<unsigned int> (offset))};
 }

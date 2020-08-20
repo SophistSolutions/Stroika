@@ -24,7 +24,6 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
-	$(ObjDir)AccessMode${OBJ_SUFFIX}\
 
 
 all:	$(Objs) $(SubDirs)
