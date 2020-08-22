@@ -31,7 +31,7 @@ using Containers::Sequence;
 namespace {
     void RegressionTest1_ ()
     {
-        Debug::TraceContextBumper traceCtx ("RegressionTest1_");
+        Debug::TraceContextBumper traceCtx{"RegressionTest1_"};
         struct FRED {
             static void DoIt ([[maybe_unused]] void* ignored)
             {
@@ -51,7 +51,7 @@ namespace {
     recursive_mutex sharedCriticalSection_;
     void            RegressionTest2_ ()
     {
-        Debug::TraceContextBumper traceCtx ("RegressionTest2_");
+        Debug::TraceContextBumper traceCtx{"RegressionTest2_"};
 
         // Make 2 concurrent threads, which share a critical section object to take turns updating a variable
         struct FRED {
@@ -59,7 +59,7 @@ namespace {
             {
                 int* argP = reinterpret_cast<int*> (ignored);
                 for (int i = 0; i < 10; i++) {
-                    lock_guard<recursive_mutex> critSect (sharedCriticalSection_);
+                    lock_guard<recursive_mutex> critSect{sharedCriticalSection_};
                     int                         tmp = *argP;
                     Execution::Sleep (.001);
                     //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
@@ -85,7 +85,7 @@ namespace {
     namespace WAITABLE_EVENTS_ {
         void NOTIMEOUTS_ ()
         {
-            Debug::TraceContextBumper traceCtx ("pingpong threads with event.wait(NOTIMEOUTS)");
+            Debug::TraceContextBumper traceCtx{"pingpong threads with event.wait(NOTIMEOUTS)"};
             // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
             struct FRED1 {
                 static void DoIt (void* ignored)
@@ -136,7 +136,7 @@ namespace {
         }
         void PingBackAndForthWithSimpleTimeouts_ ()
         {
-            Debug::TraceContextBumper traceCtx ("pingpong threads with event.wait(WITHTIMEOUT)");
+            Debug::TraceContextBumper traceCtx{"pingpong threads with event.wait(WITHTIMEOUT)"};
             // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
             struct FRED1 {
                 static void DoIt (void* ignored)
@@ -187,7 +187,7 @@ namespace {
         }
         void TEST_TIMEOUT_EXECPETIONS_ ()
         {
-            Debug::TraceContextBumper traceCtx ("Event wait timeouts");
+            Debug::TraceContextBumper traceCtx{"Event wait timeouts"};
             bool                      passed = false;
             sRegTest3Event_T1_.Reset ();
             try {
@@ -352,7 +352,7 @@ namespace {
     }
     void RegressionTest3_WaitableEvents_ ()
     {
-        Debug::TraceContextBumper traceCtx ("RegressionTest3_WaitableEvents_");
+        Debug::TraceContextBumper traceCtx{"RegressionTest3_WaitableEvents_"};
         WAITABLE_EVENTS_::NOTIMEOUTS_ ();
         WAITABLE_EVENTS_::PingBackAndForthWithSimpleTimeouts_ ();
         WAITABLE_EVENTS_::TEST_TIMEOUT_EXECPETIONS_ ();
@@ -371,7 +371,7 @@ namespace {
                 using syncofdata = Synchronized<data_, Synchronized_Traits<recursive_mutex>>;
                 using syncofint  = Synchronized<int, Synchronized_Traits<recursive_mutex>>;
 
-                Debug::TraceContextBumper traceCtx ("Test1_");
+                Debug::TraceContextBumper traceCtx{"Test1_"};
                 {
                     syncofdata                  x;
                     [[maybe_unused]] syncofdata y = data_ ();
@@ -468,7 +468,7 @@ namespace {
 namespace {
     void RegressionTest5_Aborting_ ()
     {
-        Debug::TraceContextBumper traceCtx ("RegressionTest5_Aborting_");
+        Debug::TraceContextBumper traceCtx{"RegressionTest5_Aborting_"};
         {
             struct FRED {
                 static void DoIt ()
@@ -522,7 +522,7 @@ namespace {
 namespace {
     void RegressionTest6_ThreadWaiting_ ()
     {
-        Debug::TraceContextBumper traceCtx ("RegressionTest6_ThreadWaiting_");
+        Debug::TraceContextBumper traceCtx{"RegressionTest6_ThreadWaiting_"};
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
         // if this triggers - add waits to end of procedure - so we assure no 'side effects' moving on to next test...
         [[maybe_unused]] auto&& cleanupReport = Finally (
@@ -576,7 +576,7 @@ namespace {
 namespace {
     void RegressionTest7_SimpleThreadPool_ ()
     {
-        Debug::TraceContextBumper traceCtx ("RegressionTest7_SimpleThreadPool_");
+        Debug::TraceContextBumper traceCtx{"RegressionTest7_SimpleThreadPool_"};
         {
             ThreadPool p;
             p.SetPoolSize (1);
@@ -599,11 +599,11 @@ namespace {
 namespace {
     void RegressionTest8_ThreadPool_ ()
     {
-        Debug::TraceContextBumper traceCtx ("RegressionTest8_ThreadPool_");
+        Debug::TraceContextBumper traceCtx{"RegressionTest8_ThreadPool_"};
         // Make 2 concurrent tasks, which share a critical section object to take turns updating a variable
         auto doIt = [] (int* argP) {
             for (int i = 0; i < 10; i++) {
-                [[maybe_unused]] auto&& critSect = lock_guard (sharedCriticalSection_);
+                [[maybe_unused]] auto&& critSect = lock_guard{sharedCriticalSection_};
                 int                     tmp      = *argP;
                 Execution::Sleep (.002);
                 //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
@@ -628,7 +628,7 @@ namespace {
 namespace {
     void RegressionTest9_ThreadsAbortingEarly_ ()
     {
-        Debug::TraceContextBumper traceCtx ("RegressionTest9_ThreadsAbortingEarly_");
+        Debug::TraceContextBumper traceCtx{"RegressionTest9_ThreadsAbortingEarly_"};
         // I was seeing SOME rare thread bug - trying to abort a thread which was itself trying to create a new thread - and was
         // between the create of thread and Abort
         Containers::Collection<Thread::Ptr> innerThreads;
@@ -796,7 +796,7 @@ namespace {
         });
         t2.Start ();
         t1.Start ();
-        WaitableEvent::WaitForAll (Sequence<WaitableEvent*> ({&we1, &we2}));
+        WaitableEvent::WaitForAll (Sequence<WaitableEvent*>{{&we1, &we2}});
         Stroika_Foundation_Debug_ValgrindDisableHelgrind (w1Fired); // tecnically a race
         Stroika_Foundation_Debug_ValgrindDisableHelgrind (w2Fired); // tecnically a race
         VerifyTestResult (w1Fired and w2Fired);
@@ -815,14 +815,14 @@ namespace {
         Thread::Ptr               t1  = Thread::New ([&lock, &sum] () {
             for (int i = 0; i < 100; ++i) {
                 Execution::Sleep (0.001);
-                lock_guard<SpinLock> critSec (lock);
+                lock_guard<SpinLock> critSec{lock};
                 sum += i;
             }
         });
         Thread::Ptr               t2  = Thread::New ([&lock, &sum] () {
             for (int i = 0; i < 100; ++i) {
                 Execution::Sleep (0.001);
-                lock_guard<SpinLock> critSec (lock);
+                lock_guard<SpinLock> critSec{lock};
                 sum -= i;
             }
         });
@@ -847,7 +847,7 @@ namespace {
         // Maybe no bug??? BUt tried to reproduce what looked like it MIGHT be a bug/issue based on behavior in
         // BLKQCL...--LGP 2015-10-05
         //
-        Debug::TraceContextBumper traceCtx ("RegressionTest15_ThreadPoolStarvationBug_");
+        Debug::TraceContextBumper traceCtx{"RegressionTest15_ThreadPoolStarvationBug_"};
         {
             Time::DurationSecondsType                  testStartedAt       = Time::GetTickCount ();
             static constexpr unsigned                  kThreadPoolSize_    = 10;
