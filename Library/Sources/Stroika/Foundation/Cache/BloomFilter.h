@@ -17,6 +17,19 @@
 
 namespace Stroika::Foundation::Cache {
 
+    struct BloomFilterOptions {
+        optional<size_t>       fExpectedMaxSetSize;
+        optional<size_t>       fBitCount; // allocated bit count
+        optional<unsigned int> fHashFunctionCount;
+
+    public:
+        static unsigned int OptimizeBitSize (size_t nElements, float desiredFalsePositiveProbability = 0.1);
+        static unsigned int OptimizeNumberOfHashFunctions (size_t setSize, optional<size_t> bitSize = nullopt);
+
+    public:
+        nonvirtual BloomFilterOptions Optimize () const;
+    };
+
     /**
      * \brief a Bloom filter is a probablistic set, which returns either "possibly in set" or "definitely not in set"
      *

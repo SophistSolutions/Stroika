@@ -9,9 +9,39 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include <cmath>
+
 #include "../Debug/Assertions.h"
 
 namespace Stroika::Foundation::Cache {
+
+    /*
+     ********************************************************************************
+     ***************************** Cache::BloomFilterOptions ************************
+     ********************************************************************************
+     */
+    inline unsigned int BloomFilterOptions ::OptimizeBitSize (size_t nElements, float desiredFalsePositiveProbability)
+    {
+        // based on https://en.wikipedia.org/wiki/Bloom_filter (approximate)
+        return -nElements * log (desiredFalsePositiveProbability) / log (2) * log (2);
+    }
+    inline unsigned int BloomFilterOptions::OptimizeNumberOfHashFunctions (size_t setSize, optional<size_t> bitSize)
+    {
+        size_t useBitSize = bitSize.value_or (OptimizeBitSize (setSize));
+        // (m/n)*ln(2)
+        return round (double (setSize) / useBitSize) * log (2);
+    }
+    inline BloomFilterOptions BloomFilterOptions::Optimize () const
+    {
+        // Assert (fBitCount or fExpectedMaxSetSize);
+        BloomFilterOptions tmp = *this;
+#if 0
+        if (not fBitCount) {
+            fBitCount = OptimizeBitSize ()
+        }
+#endif
+        return tmp;
+    }
 
     /*
      ********************************************************************************
