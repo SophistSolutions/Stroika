@@ -3309,6 +3309,9 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\COM.inl">
       <Filter>Sources\Execution\Platform\Windows</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cache\BloomFilter.inl">
+      <Filter>Sources\Cache</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="VisualStudio-Stroika-Foundation-Debugger-Template.natvis" />

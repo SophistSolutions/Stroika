@@ -7,41 +7,59 @@
 #include "../StroikaPreComp.h"
 
 #include "../Configuration/Common.h"
-#include "../Memory/SharedByValue.h"
+#include "../Containers/Sequence.h"
+#include "../Containers/Set.h"
 
 /**
  *
- * Description:
- *      http://en.wikipedia.org/wiki/Bloom_filter
- *
- * TODO:
- *      @todo   Biggest question is whether this is just a single implemeentaiton or virtual
- *              abstraction with different backend implementations (probably the latter).
- *
- *      @todo   interesting if we want to have an AsIterable<T>() method - so you can iterate
- *              over something in the filter? But probably NOT since its not clear what you could
- *              return (due to nature of bloom filter you don't store the stuff, but the hashes)
  *
  */
 
 namespace Stroika::Foundation::Cache {
 
     /**
-     *  @todo   very rough initial draft of API
+     * \brief a Bloom filter is a probablistic set, which returns either "possibly in set" or "definitely not in set"
+     *
+     * Description:
+     *      http://en.wikipedia.org/wiki/Bloom_filter
      */
     template <typename T>
-    class BloomFilter<T> {
+    class BloomFilter {
     public:
+        using HashFunctionType = function<size_t (T)>;
+
+    public:
+        static constexpr inline HashFunctionType kDefaultHashFunction = hash<T>;
+
+    public:
+        /**
+         *  nHashFunctions corresponds to 'k' in http://en.wikipedia.org/wiki/Bloom_filter
+         *  expectedSetSize corresponds to 'm' in http://en.wikipedia.org/wiki/Bloom_filter
+         */
+        BloomFilter (Containers::Sequence<HashFunctionType> hashFunctions, size_t expectedSetSize);
+        BloomFilter (size_t expectedSetSize);
+        BloomFilter (const BloomFilter& src) = default;
+        BloomFilter& operator= (const BloomFilter& src) = default;
+
+    public:
+        /**
+         */
         nonvirtual void Add (ArgByValueType<T> elt);
 
     public:
-        nonvirtual void Remove (ArgByValueType<T> elt);
+        /**
+         */
+        nonvirtual void clear ();
 
     public:
         /**
          *  False positive retrieval results are possible, but false negatives are not;
          */
-        nonvirtual void IsPresent (T elt) const;
+        nonvirtual void IsPresent (ArgByValueType<T> elt) const;
+
+    private:
+        vector<HashFunctionType> fHashFunctions_;
+        vector<bool>             fBits_; // @todo use Set_Bitstring
     };
 
 }
@@ -51,5 +69,6 @@ namespace Stroika::Foundation::Cache {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "BloomFilter.inl"
 
 #endif /*_Stroika_Foundation_Cache_BloomFilter_h_ */

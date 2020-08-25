@@ -667,6 +667,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Foundation\Cache\BloomFilter.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cache\CallerStalenessCache.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cache\LRUCache.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cache\Makefile" />
