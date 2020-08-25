@@ -10,6 +10,12 @@
 #include <climits>
 #include <string>
 
+#if qPlatform_POSIX
+#include <sys/time.h>
+#elif qPlatform_Windows
+#include <Winsock2.h>
+#endif
+
 #include "../Characters/String.h"
 #include "../Configuration/Common.h"
 #include "../Execution/Exceptions.h"
@@ -188,6 +194,7 @@ namespace Stroika::Foundation::Time {
         /**
          * Only specifically specialized variants are supported. Defined for
          *      time_t
+         *      timeval
          *      int
          *      long int
          *      long long int

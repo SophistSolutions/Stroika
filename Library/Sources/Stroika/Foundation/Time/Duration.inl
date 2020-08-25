@@ -226,6 +226,14 @@ namespace Stroika::Foundation::Time {
         return chrono::nanoseconds (static_cast<chrono::nanoseconds::rep> (count () * 1000.0 * 1000.0 * 1000.0));
     }
     template <>
+    inline timeval Duration::As () const
+    {
+        auto r       = count (); // @todo fix for negative case
+        long seconds = static_cast<long> (r);
+        r -= seconds;
+        return timeval{seconds, static_cast<long> (r * 1000 * 1000)};
+    }
+    template <>
     inline Characters::String Duration::As () const
     {
         using Characters::String;
