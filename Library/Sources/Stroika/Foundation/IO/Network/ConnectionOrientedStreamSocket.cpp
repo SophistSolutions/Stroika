@@ -3,6 +3,11 @@
  */
 #include "../../StroikaPreComp.h"
 
+#if qPlatform_POSIX
+#include <fcntl.h>
+#include <unistd.h>
+#endif
+
 #include "../../Characters/StringBuilder.h"
 #include "../../Characters/ToString.h"
 #include "../../Execution/WaitForIOReady.h"
