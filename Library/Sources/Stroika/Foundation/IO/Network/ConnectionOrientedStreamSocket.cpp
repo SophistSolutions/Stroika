@@ -114,6 +114,7 @@ namespace {
                         });
                         socklen_t lon      = sizeof (int);
                         // Check the value returned...
+                        int valopt{};
                         if (getsockopt (fSD_, SOL_SOCKET, SO_ERROR, (void*)(&valopt), &lon) < 0) {
                             Execution::ThrowSystemErrNo ();
                         }
