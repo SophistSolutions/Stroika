@@ -6,6 +6,8 @@
 
 #include "../../StroikaPreComp.h"
 
+#include "../../Time/Duration.h"
+
 #include "Socket.h"
 
 namespace Stroika::Foundation::Memory {
@@ -169,9 +171,13 @@ namespace Stroika::Foundation::IO::Network {
         /**
          *  Throws on failure to connect. Else leaves the socket in a connected state.
          *
+         *  If explicit timeout given, and the connection doesn't complete in time, TimeOutException will be thrown.
+         *  If no explicit timeout is given, the OS default setting for timeouts will be used.
+         *
          *  \note ***Cancelation Point***
          */
         nonvirtual void Connect (const SocketAddress& sockAddr) const;
+        nonvirtual void Connect (const SocketAddress& sockAddr, const Time::Duration& timeout) const;
 
     public:
         /**
@@ -290,16 +296,16 @@ namespace Stroika::Foundation::IO::Network {
      */
     class ConnectionOrientedStreamSocket::_IRep : public Socket::_IRep {
     public:
-        virtual ~_IRep ()                                                                                                                  = default;
-        virtual void                                 Connect (const SocketAddress& sockAddr) const                                         = 0;
-        virtual size_t                               Read (byte* intoStart, byte* intoEnd) const                                           = 0;
-        virtual optional<size_t>                     ReadNonBlocking (byte* intoStart, byte* intoEnd) const                                = 0;
-        virtual void                                 Write (const byte* start, const byte* end) const                                      = 0;
-        virtual optional<IO::Network::SocketAddress> GetPeerAddress () const                                                               = 0;
-        virtual optional<Time::DurationSecondsType>  GetAutomaticTCPDisconnectOnClose () const                                             = 0;
-        virtual void                                 SetAutomaticTCPDisconnectOnClose (const optional<Time::DurationSecondsType>& waitFor) = 0;
-        virtual KeepAliveOptions                     GetKeepAlives () const                                                                = 0;
-        virtual void                                 SetKeepAlives (const KeepAliveOptions& keepAliveOptions)                              = 0;
+        virtual ~_IRep ()                                                                                                                   = default;
+        virtual void                                 Connect (const SocketAddress& sockAddr, const optional<Time::Duration>& timeout) const = 0;
+        virtual size_t                               Read (byte* intoStart, byte* intoEnd) const                                            = 0;
+        virtual optional<size_t>                     ReadNonBlocking (byte* intoStart, byte* intoEnd) const                                 = 0;
+        virtual void                                 Write (const byte* start, const byte* end) const                                       = 0;
+        virtual optional<IO::Network::SocketAddress> GetPeerAddress () const                                                                = 0;
+        virtual optional<Time::DurationSecondsType>  GetAutomaticTCPDisconnectOnClose () const                                              = 0;
+        virtual void                                 SetAutomaticTCPDisconnectOnClose (const optional<Time::DurationSecondsType>& waitFor)  = 0;
+        virtual KeepAliveOptions                     GetKeepAlives () const                                                                 = 0;
+        virtual void                                 SetKeepAlives (const KeepAliveOptions& keepAliveOptions)                               = 0;
     };
 }
 

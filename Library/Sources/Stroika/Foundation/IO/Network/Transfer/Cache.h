@@ -76,7 +76,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *  Creates a default-styled HTTP cache object. Note - you still must associate this cache object with
          *  any cache connections you create (typically by assigning it to the Connection creation factory)
          *
-         *  NOTE - thoguh the smart ptr Ptr is not fully re-entrant, the letter class created by CreateDefault is fully
+         *  NOTE - though the smart ptr Ptr is not fully re-entrant, the letter class created by CreateDefault is fully
          *  internally synchonized. This means you can re-use it with multiple connections and run those connection requests from as
          *  many threads as desired.
          *

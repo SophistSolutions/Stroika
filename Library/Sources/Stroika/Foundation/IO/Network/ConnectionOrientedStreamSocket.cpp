@@ -69,9 +69,8 @@ namespace {
                 }
                 inherited::Close ();
             }
-            virtual void Connect (const SocketAddress& sockAddr) const override
+            nonvirtual void Connect_Sync_ (const SocketAddress& sockAddr) const
             {
-                Debug::TraceContextBumper                           ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionOrientedStreamSocket_IMPL_::Connect", L"sockAddr=%s", Characters::ToString (sockAddr).c_str ())};
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 sockaddr_storage                                    useSockAddr = sockAddr.As<sockaddr_storage> ();
 #if qPlatform_POSIX
@@ -81,6 +80,101 @@ namespace {
 #else
                 AssertNotImplemented ();
 #endif
+            }
+            nonvirtual void Connect_AsyncWTimeout_ (const SocketAddress& sockAddr, const Time::Duration& timeout) const
+            {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                sockaddr_storage                                    useSockAddr = sockAddr.As<sockaddr_storage> ();
+#if qPlatform_POSIX
+                // http://developerweb.net/viewtopic.php?id=3196.
+                // and see https://stackoverflow.com/questions/4181784/how-to-set-socket-timeout-in-c-when-making-multiple-connections/4182564#4182564 for why not using SO_RCVTIMEO/SO_SNDTIMEO
+                long savedFlags{};
+                if ((savedFlags = ::fcntl (fSD_, F_GETFL, nullptr)) < 0) {
+                    Execution::ThrowSystemErrNo ();
+                }
+                {
+                    if (::fcntl (fSD_, F_SETFL, savedFlags | O_NONBLOCK) < 0) {
+                        Execution::ThrowSystemErrNo ();
+                    }
+                }
+                [[maybe_unused]] auto&& cleanup = Finally ([this, savedFlags] () noexcept {
+                    // Set to blocking mode again...
+                    if (::fcntl (fSD_, F_SETFL, savedFlags) < 0) {
+                        Execution::ThrowSystemErrNo ();
+                    }
+                });
+                if (Handle_ErrNoResultInterruption ([&] () -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); }) < 0) {
+                    if (errno == EINPROGRESS) {
+                        fd_set myset;
+                        FD_ZERO (&myset);
+                        FD_SET (fSD_, &myset);
+                        timeval   time_out = timeout.As<timeval> ();
+                        int       ret      = Handle_ErrNoResultInterruption ([&] () -> int {
+                            ::select (fSD_ + 1, NULL, &myset, nullptr, &time_out);
+                        });
+                        socklen_t lon      = sizeof (int);
+                        // Check the value returned...
+                        if (getsockopt (fSD_, SOL_SOCKET, SO_ERROR, (void*)(&valopt), &lon) < 0) {
+                            Execution::ThrowSystemErrNo ();
+                        }
+                        if (valopt) {
+                            Execution::ThrowSystemErrNo ();
+                        }
+                        // else must have succeeded
+                    }
+                    else {
+                        Execution::ThrowSystemErrNo ();
+                    }
+                }
+#elif qPlatform_Windows
+                // https://stackoverflow.com/questions/46045434/winsock-c-connect-timeout
+                {
+                    u_long block = 1;
+                    if (::ioctlsocket (fSD_, FIONBIO, &block) == SOCKET_ERROR) {
+                        Execution::ThrowSystemErrNo (::WSAGetLastError ());
+                    }
+                }
+                [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept {
+                    u_long block = 0; // should have saved old value, but not clear how to read?
+                    if (::ioctlsocket (fSD_, FIONBIO, &block) == SOCKET_ERROR) {
+                        //Execution::ThrowSystemErrNo (::WSAGetLastError ());
+                        Assert (false); //FAILURE SETTING BACK TO NOT BLOCKING - SERIOUS
+                    }
+                });
+                if (::connect (fSD_, (sockaddr*)&useSockAddr, static_cast<int> (sockAddr.GetRequiredSize ())) == SOCKET_ERROR) {
+                    if (::WSAGetLastError () != WSAEWOULDBLOCK) {
+                        Execution::ThrowSystemErrNo (::WSAGetLastError ()); // connection failed
+                    }
+                    // connection pending
+                    fd_set setW;
+                    FD_ZERO (&setW);
+                    FD_SET (fSD_, &setW);
+                    fd_set setE;
+                    FD_ZERO (&setE);
+                    FD_SET (fSD_, &setE);
+                    timeval time_out = timeout.As<timeval> ();
+                    int ret = ::select (0, NULL, &setW, &setE, &time_out);
+                    if (ret <= 0) {
+                        // select() failed or connection timed out
+                        if (ret == 0)
+                            WSASetLastError (WSAETIMEDOUT);
+                        Execution::ThrowSystemErrNo (::WSAGetLastError ()); // connection failed
+                    }
+                    // else if got here >0 so succeeded with connection
+                }
+#else
+                AssertNotImplemented ();
+#endif
+            }
+            virtual void Connect (const SocketAddress& sockAddr, const optional<Time::Duration>& timeout) const override
+            {
+                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionOrientedStreamSocket_IMPL_::Connect", L"sockAddr=%s, timeout=%s", Characters::ToString (sockAddr).c_str (), Characters::ToString (timeout).c_str ())};
+                if (timeout) {
+                    Connect_AsyncWTimeout_ (sockAddr, *timeout);
+                }
+                else {
+                    Connect_Sync_ (sockAddr);
+                }
             }
             virtual size_t Read (byte* intoStart, byte* intoEnd) const override
             {
