@@ -33,12 +33,15 @@ namespace Stroika::Foundation::Math {
     constexpr double kE  = 2.71828182845904523536;
     constexpr double kPi = 3.14159265358979323846;
 
+
     /**
      * RoundUpTo() - round towards positive infinity.
      *
      *  T can be any of int, long, or long long, or unsigned int, or unsigned long, or unsigned long long
      *  (after review of this API/implementation, probably should add short/char with unsigned variants
      *  to this list)
+     * 
+     *  \note - to RoundUp - just use ceil ()
      */
     template <typename T>
     constexpr T RoundUpTo (T x, T toNearest);
