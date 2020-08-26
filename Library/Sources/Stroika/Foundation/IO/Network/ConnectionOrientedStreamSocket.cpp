@@ -99,16 +99,17 @@ namespace {
                 [[maybe_unused]] auto&& cleanup = Finally ([this, savedFlags] () noexcept {
                     // Set to blocking mode again...
                     if (::fcntl (fSD_, F_SETFL, savedFlags) < 0) {
-                        AssertNotReached ();    // cannot throw here
+                        AssertNotReached (); // cannot throw here
                     }
                 });
-                if (Handle_ErrNoResultInterruption ([&] () -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); }) < 0) {
+                if (Handle_ErrNoResultInterruption ([&] () -> int {
+                    return ::connect (fSD_, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); }) < 0) {
                     if (errno == EINPROGRESS) {
                         fd_set myset;
                         FD_ZERO (&myset);
                         FD_SET (fSD_, &myset);
-                        timeval   time_out = timeout.As<timeval> ();
-                        int       ret      = Handle_ErrNoResultInterruption ([&] () -> int {
+                        timeval time_out = timeout.As<timeval> ();
+                        int     ret      = Handle_ErrNoResultInterruption ([&] () -> int {
                             return ::select (fSD_ + 1, NULL, &myset, nullptr, &time_out);
                         });
                         // Check the errno value returned...

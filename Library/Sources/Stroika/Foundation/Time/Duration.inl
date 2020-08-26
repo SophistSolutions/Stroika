@@ -228,8 +228,8 @@ namespace Stroika::Foundation::Time {
     template <>
     inline timeval Duration::As () const
     {
-        auto r       = count (); // @todo fix for negative case
-        decltype(timeval::tv_sec) seconds = static_cast<long> (r);
+        auto                       r       = count (); // @todo fix for negative case
+        decltype (timeval::tv_sec) seconds = static_cast<long> (r);
         r -= seconds;
         return timeval{seconds, static_cast<decltype (timeval::tv_usec)> (r * 1000 * 1000)};
     }
