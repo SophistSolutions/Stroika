@@ -21,13 +21,14 @@ namespace Stroika::Foundation::Cache {
         optional<size_t>       fExpectedMaxSetSize;
         optional<size_t>       fBitCount; // allocated bit count
         optional<unsigned int> fHashFunctionCount;
+        float                  fDesiredFalsePositivityRate{0.1};
+
+    public:
+        nonvirtual BloomFilterOptions Optimize () const;
 
     public:
         static unsigned int OptimizeBitSize (size_t nElements, float desiredFalsePositiveProbability = 0.1);
         static unsigned int OptimizeNumberOfHashFunctions (size_t setSize, optional<size_t> bitSize = nullopt);
-
-    public:
-        nonvirtual BloomFilterOptions Optimize () const;
     };
 
     /**
@@ -49,8 +50,8 @@ namespace Stroika::Foundation::Cache {
          *  nHashFunctions corresponds to 'k' in http://en.wikipedia.org/wiki/Bloom_filter
          *  expectedSetSize corresponds to 'm' in http://en.wikipedia.org/wiki/Bloom_filter
          */
-        BloomFilter (Containers::Sequence<HashFunctionType> hashFunctions, size_t expectedSetSize);
-        BloomFilter (size_t expectedSetSize);
+        BloomFilter (Containers::Sequence<HashFunctionType> hashFunctions, const BloomFilterOptions& options);
+        BloomFilter (const BloomFilterOptions& options);
         BloomFilter (const BloomFilter& src) = default;
         BloomFilter& operator= (const BloomFilter& src) = default;
 

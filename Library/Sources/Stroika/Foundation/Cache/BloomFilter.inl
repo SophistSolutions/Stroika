@@ -12,6 +12,8 @@
 #include <cmath>
 
 #include "../Debug/Assertions.h"
+#include "../Execution/Exceptions.h"
+#include "../Math/Common.h"
 
 namespace Stroika::Foundation::Cache {
 
@@ -20,26 +22,32 @@ namespace Stroika::Foundation::Cache {
      ***************************** Cache::BloomFilterOptions ************************
      ********************************************************************************
      */
-    inline unsigned int BloomFilterOptions ::OptimizeBitSize (size_t nElements, float desiredFalsePositiveProbability)
+    inline unsigned int BloomFilterOptions::OptimizeBitSize (size_t nElements, float desiredFalsePositiveProbability)
     {
         // based on https://en.wikipedia.org/wiki/Bloom_filter (approximate)
-        return -nElements * log (desiredFalsePositiveProbability) / log (2) * log (2);
+        return static_cast<unsigned int> (::ceil (-nElements * log (desiredFalsePositiveProbability) / log (2) * log (2)));
     }
     inline unsigned int BloomFilterOptions::OptimizeNumberOfHashFunctions (size_t setSize, optional<size_t> bitSize)
     {
         size_t useBitSize = bitSize.value_or (OptimizeBitSize (setSize));
-        // (m/n)*ln(2)
-        return round (double (setSize) / useBitSize) * log (2);
+        // based on https://en.wikipedia.org/wiki/Bloom_filter - (m/n)*ln(2)
+        return static_cast<unsigned int> (::ceil ((double (setSize) / useBitSize) * log (2)));
     }
     inline BloomFilterOptions BloomFilterOptions::Optimize () const
     {
-        // Assert (fBitCount or fExpectedMaxSetSize);
+        Require (fBitCount or fExpectedMaxSetSize);
+        Require (fHashFunctionCount or fExpectedMaxSetSize);
         BloomFilterOptions tmp = *this;
-#if 0
-        if (not fBitCount) {
-            fBitCount = OptimizeBitSize ()
+        if (not tmp.fBitCount) {
+            if (not tmp.fExpectedMaxSetSize) {
+                tmp.fBitCount = OptimizeBitSize (*tmp.fExpectedMaxSetSize, tmp.fDesiredFalsePositivityRate);
+            }
         }
-#endif
+        if (not tmp.fHashFunctionCount) {
+            tmp.fHashFunctionCount = OptimizeNumberOfHashFunctions (*tmp.fExpectedMaxSetSize, not *tmp.fBitCount);
+        }
+        Ensure (tmp.fBitCount);
+        Ensure (tmp.fHashFunctionCount);
         return tmp;
     }
 
@@ -49,15 +57,19 @@ namespace Stroika::Foundation::Cache {
      ********************************************************************************
      */
     template <typename T>
-    inline BloomFilter<T>::BloomFilter (Containers::Sequence<HashFunctionType> hashFunctions, size_t expectedSetSize)
+    inline BloomFilter<T>::BloomFilter (Containers::Sequence<HashFunctionType> hashFunctions, const BloomFilterOptions& options)
         : fHashFunctions_{hashFunctions}
         , fBits_{}
     {
-        fBits_.resize (expectedSetSize, false);
+        BloomFilterOptions o = options.Optimize ();
+        if (*o.fHashFunctionCount != fHashFunctions_.size ()) {
+            AssertNotReached ();    // must manually create functions here
+        }
+        fBits_.resize (*o.fBitCount, false);
     }
     template <typename T>
-    inline BloomFilter<T>::BloomFilter (size_t expectedSetSize)
-        : BloomFilter{kDefaultHashFunction, expectedSetSize}
+    inline BloomFilter<T>::BloomFilter (const BloomFilterOptions& options)
+        : BloomFilter{Containers::Sequence<HashFunctionType>{kDefaultHashFunction}, options}
     {
     }
     template <typename T>
