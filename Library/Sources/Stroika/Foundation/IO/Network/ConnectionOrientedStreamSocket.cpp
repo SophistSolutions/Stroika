@@ -94,18 +94,12 @@ namespace {
                 // http://developerweb.net/viewtopic.php?id=3196.
                 // and see https://stackoverflow.com/questions/4181784/how-to-set-socket-timeout-in-c-when-making-multiple-connections/4182564#4182564 for why not using SO_RCVTIMEO/SO_SNDTIMEO
                 long savedFlags{};
-                if ((savedFlags = ::fcntl (fSD_, F_GETFL, nullptr)) < 0) {
-                    Execution::ThrowSystemErrNo ();
-                }
-                {
-                    if (::fcntl (fSD_, F_SETFL, savedFlags | O_NONBLOCK) < 0) {
-                        Execution::ThrowSystemErrNo ();
-                    }
-                }
+                ThrowPOSIXErrNoIfNegative ((savedFlags = ::fcntl (fSD_, F_GETFL, nullptr));
+                ThrowPOSIXErrNoIfNegative (::fcntl (fSD_, F_SETFL, savedFlags | O_NONBLOCK));   // non-blocking mode for select
                 [[maybe_unused]] auto&& cleanup = Finally ([this, savedFlags] () noexcept {
                     // Set to blocking mode again...
                     if (::fcntl (fSD_, F_SETFL, savedFlags) < 0) {
-                        Execution::ThrowSystemErrNo ();
+                        AssertNotReached ();    // cannot throw here
                     }
                 });
                 if (Handle_ErrNoResultInterruption ([&] () -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); }) < 0) {
@@ -115,16 +109,11 @@ namespace {
                         FD_SET (fSD_, &myset);
                         timeval   time_out = timeout.As<timeval> ();
                         int       ret      = Handle_ErrNoResultInterruption ([&] () -> int {
-                            ::select (fSD_ + 1, NULL, &myset, nullptr, &time_out);
+                            return ::select (fSD_ + 1, NULL, &myset, nullptr, &time_out);
                         });
-                        socklen_t lon      = sizeof (int);
-                        // Check the value returned...
-                        int valopt{};
-                        if (getsockopt (fSD_, SOL_SOCKET, SO_ERROR, (void*)(&valopt), &lon) < 0) {
-                            Execution::ThrowSystemErrNo ();
-                        }
-                        if (valopt) {
-                            Execution::ThrowSystemErrNo ();
+                        // Check the errno value returned...
+                        if (auto err = getsockopt<int> (fSD_, SOL_SOCKET, SO_ERROR)) {
+                            Execution::ThrowSystemErrNo (err);
                         }
                         // else must have succeeded
                     }
