@@ -229,9 +229,9 @@ namespace Stroika::Foundation::Time {
     inline timeval Duration::As () const
     {
         auto r       = count (); // @todo fix for negative case
-        long seconds = static_cast<long> (r);
+        decltype(timeval::tv_sec) seconds = static_cast<long> (r);
         r -= seconds;
-        return timeval{seconds, static_cast<long> (r * 1000 * 1000)};
+        return timeval{seconds, static_cast<decltype (timeval::tv_usec)> (r * 1000 * 1000)};
     }
     template <>
     inline Characters::String Duration::As () const
