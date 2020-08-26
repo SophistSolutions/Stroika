@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Cache {
     {
         BloomFilterOptions o = options.Optimize ();
         if (*o.fHashFunctionCount != fHashFunctions_.size ()) {
-            AssertNotReached ();    // must manually create functions here
+            AssertNotReached (); // must manually create functions here
         }
         fBits_.resize (*o.fBitCount, false);
     }
