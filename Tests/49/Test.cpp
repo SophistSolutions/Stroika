@@ -13,6 +13,7 @@
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/IO/Network/InternetAddress.h"
 #include "Stroika/Foundation/Time/DateTimeRange.h"
 #include "Stroika/Foundation/Time/DurationRange.h"
 #include "Stroika/Foundation/Traversal/DiscreteRange.h"
@@ -900,6 +901,18 @@ namespace {
 }
 
 namespace {
+    void Test20_Join_ ()
+    {
+        using IO::Network::InternetAddress;
+        Debug::TraceContextBumper ctx{L"{}::Test20_Join_"};
+        Iterable<InternetAddress> c{IO::Network::V4::kLocalhost, IO::Network::V4::kAddrAny};
+        DbgTrace (L"x=%s", c.Join ().c_str ());
+        VerifyTestResult (c.Join () == L"localhost, INADDR_ANY");
+        VerifyTestResult (c.Join (L"; ") == L"localhost; INADDR_ANY");
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_"};
@@ -922,6 +935,7 @@ namespace {
         Test17_DurationRange_ ();
         Test18_IterableConstructors_ ();
         Test19_CreateGeneratorBug_ ();
+        Test20_Join_ ();
     }
 }
 

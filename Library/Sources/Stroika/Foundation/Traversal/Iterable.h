@@ -705,6 +705,19 @@ namespace Stroika::Foundation::Traversal {
          * 
          *  For the very common case of accumulating objects into a String, there are additional (stringish) overloads that more closely mimic
          *  what you can do in javascript/python.
+         * 
+         *  \note The String returning overload converts to String with ((soon will use Characters::ToString)) i.ToString (), so this may not be
+         *        a suitable conversion in all cases (mostly intended for debugging or quick cheap display)
+         * 
+         *  \par Example Usage
+         *      \code
+         *          Iterable<InternetAddress> c{IO::Network::V4::kLocalhost, IO::Network::V4::kAddrAny};
+         *          VerifyTestResult (c.Join () == L"localhost, INADDR_ANY");
+         *          VerifyTestResult (c.Join (L"; ") == L"localhost, INADDR_ANY");
+         *      \endcode
+         *
+         *  See:
+         *      @see Accumulate
          */
         template <typename RESULT>
         nonvirtual RESULT Join (const function<RESULT (const T&)>& convertToT, const function<RESULT (const RESULT&, const RESULT&)>& combine) const;
@@ -912,6 +925,7 @@ namespace Stroika::Foundation::Traversal {
          *
          *  See:
          *      @see AccumulateValue
+         *      @see Join
          *      @see Sum
          *      @see SumValue
          */
