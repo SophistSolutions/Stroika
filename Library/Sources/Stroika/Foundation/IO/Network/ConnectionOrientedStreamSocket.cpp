@@ -95,21 +95,20 @@ namespace {
                 // and see https://stackoverflow.com/questions/4181784/how-to-set-socket-timeout-in-c-when-making-multiple-connections/4182564#4182564 for why not using SO_RCVTIMEO/SO_SNDTIMEO
                 long savedFlags{};
                 ThrowPOSIXErrNoIfNegative (savedFlags = ::fcntl (fSD_, F_GETFL, nullptr));
-                ThrowPOSIXErrNoIfNegative (::fcntl (fSD_, F_SETFL, savedFlags | O_NONBLOCK));   // non-blocking mode for select
+                ThrowPOSIXErrNoIfNegative (::fcntl (fSD_, F_SETFL, savedFlags | O_NONBLOCK)); // non-blocking mode for select
                 [[maybe_unused]] auto&& cleanup = Finally ([this, savedFlags] () noexcept {
                     // Set to blocking mode again...
                     if (::fcntl (fSD_, F_SETFL, savedFlags) < 0) {
                         AssertNotReached (); // cannot throw here
                     }
                 });
-                if (Handle_ErrNoResultInterruption ([&] () -> int {
-                    return ::connect (fSD_, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); }) < 0) {
+                if (Handle_ErrNoResultInterruption ([&] () -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); }) < 0) {
                     if (errno == EINPROGRESS) {
                         fd_set myset;
                         FD_ZERO (&myset);
                         FD_SET (fSD_, &myset);
                         timeval time_out = timeout.As<timeval> ();
-                        ThrowPOSIXErrNoIfNegative ( Handle_ErrNoResultInterruption ([&] () -> int {
+                        ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([&] () -> int {
                             return ::select (fSD_ + 1, NULL, &myset, nullptr, &time_out);
                         }));
                         // Check the errno value returned...
