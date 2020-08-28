@@ -1005,10 +1005,20 @@ namespace Stroika::Foundation::Traversal {
         return Join (convertToT, [=] (const Characters::String& l, const Characters::String& r) { return l + separator + r; });
     }
     template <typename T>
+    inline Characters::String Iterable<T>::Join (const function<Characters::String (const T&)>& convertToT) const
+    {
+        return Join (convertToT, L", "sv);
+    }
+    template <typename T>
     inline Characters::String Iterable<T>::Join (const Characters::String& separator) const
     {
         //return Join ([] (const auto& i) { return Characters::ToString (i); });    @todo figure out trick to be able to use Characters::ToString () here...
         return Join ([] (const auto& i) { return i.ToString (); }, [=] (const Characters::String& l, const Characters::String& r) { return l + separator + r; });
+    }
+    template <typename T>
+    inline Characters::String Iterable<T>::Join () const
+    {
+        return Join (L", "sv);
     }
 }
 

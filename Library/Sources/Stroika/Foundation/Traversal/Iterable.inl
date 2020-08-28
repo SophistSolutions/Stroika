@@ -601,7 +601,11 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     inline Characters::String Iterable<T>::Join (const function<Characters::String (const T&)>& convertToT, const Characters::String& separator) const
     template <typename T>
+    inline Characters::String Iterable<T>::Join (const function<Characters::String (const T&)>& convertToT) const
+    template <typename T>
     inline Characters::String Iterable<T>::Join (const Characters::String& separator) const
+    template <typename T>
+    inline Characters::String Iterable<T>::Join () const
 #endif
     template <typename T>
     Iterable<T> Iterable<T>::Skip (size_t nItems) const

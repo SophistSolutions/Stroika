@@ -906,7 +906,6 @@ namespace {
         using IO::Network::InternetAddress;
         Debug::TraceContextBumper ctx{L"{}::Test20_Join_"};
         Iterable<InternetAddress> c{IO::Network::V4::kLocalhost, IO::Network::V4::kAddrAny};
-        DbgTrace (L"x=%s", c.Join ().c_str ());
         VerifyTestResult (c.Join () == L"localhost, INADDR_ANY");
         VerifyTestResult (c.Join (L"; ") == L"localhost; INADDR_ANY");
     }
