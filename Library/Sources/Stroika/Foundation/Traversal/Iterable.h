@@ -706,7 +706,7 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual RESULT Join (const function<RESULT (const T&)>& convertToT, const function<RESULT (const RESULT&, const RESULT&)>& combine) const;
         nonvirtual Characters::String Join (const function<Characters::String (const T&)>& convertToT, const function<Characters::String (const Characters::String&, const Characters::String&)>& combine) const;
         nonvirtual Characters::String Join (const function<Characters::String (const T&)>& convertToT, const Characters::String& separator = L", "sv) const;
-        nonvirtual Characters::String Join () const;
+        nonvirtual Characters::String Join (const Characters::String& separator = L", "sv) const;
 
     public:
         /**
