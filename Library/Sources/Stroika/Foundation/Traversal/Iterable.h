@@ -698,9 +698,13 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         * early experimental draft
-         * if no elts in this, returns RESULT{};
-         * @todo SPECIALIZATION for STRING where both args are defaulted (ToString and coombine ", ")
+         * \brief ape the javascript/python 'join' function - take the parts of 'this' iterable and combine them into a new object (typically a string)
+         *
+         *  This Join () API - if you use the template, is fairly generic and lets the caller iterate over subelements of this iterable, and
+         *  combine them into a new thing (@see Accumulate - similar).
+         * 
+         *  For the very common case of accumulating objects into a String, there are additional (stringish) overloads that more closely mimic
+         *  what you can do in javascript/python.
          */
         template <typename RESULT>
         nonvirtual RESULT Join (const function<RESULT (const T&)>& convertToT, const function<RESULT (const RESULT&, const RESULT&)>& combine) const;
