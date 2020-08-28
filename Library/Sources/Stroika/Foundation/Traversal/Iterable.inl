@@ -591,6 +591,18 @@ namespace Stroika::Foundation::Traversal {
         }
         return result;
     }
+#if 0
+    /*
+     *  LOGICALLY, we should put Iterable<T>::Join () String overloads here, but they must be defined in
+     *  String.inl to avoid #include problems (that includes this anyhow, and this cannot include that because that includes this)
+     */
+    template <typename T>
+    Characters::String Iterable<T>::Join (const function<Characters::String (const T&)>& convertToT, const function<Characters::String (const Characters::String&, const Characters::String&)>& combine) const
+    template <typename T>
+    inline Characters::String Iterable<T>::Join (const function<Characters::String (const T&)>& convertToT, const Characters::String& separator) const
+    template <typename T>
+    inline Characters::String Iterable<T>::Join () const
+#endif
     template <typename T>
     Iterable<T> Iterable<T>::Skip (size_t nItems) const
     {

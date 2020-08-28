@@ -60,6 +60,10 @@
  *      @todo   since Iterator<T> now uses iterator<> traits stuff, so should Iterable<T>?
  */
 
+namespace Stroika::Foundation::Characters {
+    class String;
+}
+
 namespace Stroika::Foundation::Traversal {
 
     using Configuration::ArgByValueType;
@@ -700,6 +704,9 @@ namespace Stroika::Foundation::Traversal {
          */
         template <typename RESULT>
         nonvirtual RESULT Join (const function<RESULT (const T&)>& convertToT, const function<RESULT (const RESULT&, const RESULT&)>& combine) const;
+        nonvirtual Characters::String Join (const function<Characters::String (const T&)>& convertToT, const function<Characters::String (const Characters::String&, const Characters::String&)>& combine) const;
+        nonvirtual Characters::String Join (const function<Characters::String (const T&)>& convertToT, const Characters::String& separator = L", "sv) const;
+        nonvirtual Characters::String Join () const;
 
     public:
         /**
