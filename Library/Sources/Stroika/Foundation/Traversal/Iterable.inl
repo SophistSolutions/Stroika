@@ -575,6 +575,23 @@ namespace Stroika::Foundation::Traversal {
         return CreateGenerator (getNext);
     }
     template <typename T>
+    template <typename RESULT>
+    nonvirtual RESULT Iterable<T>::Join (const function<RESULT (const T&)>& convertToT, const function<RESULT (const RESULT&, const RESULT&)>& combine) const
+    {
+        RESULT result{};
+        bool   firstTime{true};
+        for (const auto& i : *this) {
+            if (firstTime) {
+                result    = convertToT (i);
+                firstTime = false;
+            }
+            else {
+                result = combine (result, convertToT (i));
+            }
+        }
+        return result;
+    }
+    template <typename T>
     Iterable<T> Iterable<T>::Skip (size_t nItems) const
     {
         // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)

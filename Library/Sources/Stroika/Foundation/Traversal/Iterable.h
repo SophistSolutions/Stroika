@@ -693,24 +693,13 @@ namespace Stroika::Foundation::Traversal {
         [[deprecated ("Since Stroika v2.1b2 - just use the Select<RESULT> and a single extractor that produces the combined type (pair<T1,T2,T3>)")]] nonvirtual Iterable<RESULT> Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2, const function<T3 (const T&)>& extract3) const;
 
     public:
-        // early experimental draft
-        // if no elts in this, returns RESULT{};
+        /**
+         * early experimental draft
+         * if no elts in this, returns RESULT{};
+         * @todo SPECIALIZATION for STRING where both args are defaulted (ToString and coombine ", ")
+         */
         template <typename RESULT>
-        nonvirtual RESULT Join (const function<RESULT (const T&)>& convertToT, const function<RESULT (const RESULT&, const RESULT&)>& combine) const
-        {
-            RESULT result{};
-            bool   firstTime{true};
-            for (const auto& i : *this) {
-                if (firstTime) {
-                    result = convertToT (i);
-                    firstTime = false;
-                }
-                else {
-                    result = combine (resul, convertToT (i));
-                }
-            }
-            return result;
-        }
+        nonvirtual RESULT Join (const function<RESULT (const T&)>& convertToT, const function<RESULT (const RESULT&, const RESULT&)>& combine) const;
 
     public:
         /**
