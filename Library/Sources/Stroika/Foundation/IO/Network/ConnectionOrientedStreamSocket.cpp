@@ -102,7 +102,7 @@ namespace {
                             }
                         }
                         else {
-                            break;  // connection succeeded
+                            break; // connection succeeded
                         }
                     }
 #elif qPlatform_Windows

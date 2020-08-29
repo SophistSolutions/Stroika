@@ -16,9 +16,9 @@
 namespace Stroika::Foundation::Execution {
 
     namespace Private_::SystemErrorExceptionPrivate_ {
-        Characters::String mkMsg_ (error_code errCode);
-        Characters::String mkCombinedMsg_ (error_code errCode, const Characters::String& message);
-        void               TranslateException_ (error_code errCode);
+        Characters::String    mkMsg_ (error_code errCode);
+        Characters::String    mkCombinedMsg_ (error_code errCode, const Characters::String& message);
+        void                  TranslateException_ (error_code errCode);
         unique_ptr<exception> TranslateExceptionQuietly_ (error_code errCode);
     }
 
@@ -201,7 +201,7 @@ namespace Stroika::Foundation::Execution {
     {
         Require (sysErr != 0);
         error_code ec{sysErr, system_category ()};
-        auto e = Private_::SystemErrorExceptionPrivate_::TranslateExceptionQuietly_ (ec);
+        auto       e = Private_::SystemErrorExceptionPrivate_::TranslateExceptionQuietly_ (ec);
         if (e != nullptr) {
             return e;
         }

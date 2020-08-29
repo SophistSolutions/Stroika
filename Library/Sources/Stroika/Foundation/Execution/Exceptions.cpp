@@ -170,8 +170,8 @@ void Execution::Private_::SystemErrorExceptionPrivate_::TranslateException_ (err
 #if qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy
     if (errCode.category () == system_category ()) {
         switch (errCode.value ()) {
-            case WAIT_TIMEOUT:           // errc::timed_out
-            case ERROR_INTERNET_TIMEOUT: // ""
+            case WAIT_TIMEOUT:                  // errc::timed_out
+            case ERROR_INTERNET_TIMEOUT:        // ""
                                                 // NOT a good idea becuase then code saying if (errCode==errc::timed_out) will still fail --- Throw (TimeOutException (errCode));
                 Throw (TimeOutException::kThe); // sad to have to lose the original error, but kind of useful so if test against errc::timeout works
         }
@@ -193,7 +193,6 @@ void Execution::Private_::SystemErrorExceptionPrivate_::TranslateException_ (err
 #endif
 }
 
-
 /*
  ********************************************************************************
  ***** SystemErrorExceptionPrivate_::TranslateExceptionQuietly_ *****************
@@ -212,14 +211,13 @@ unique_ptr<exception> Execution::Private_::SystemErrorExceptionPrivate_::Transla
     if (errCode.category () == system_category ()) {
         switch (errCode.value ()) {
             case WAIT_TIMEOUT:
-            case ERROR_INTERNET_TIMEOUT: 
+            case ERROR_INTERNET_TIMEOUT:
                 return make_unique<TimeOutException> ();
         }
     }
 #endif
     return nullptr;
 }
-
 
 /*
  ********************************************************************************
