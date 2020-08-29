@@ -344,20 +344,6 @@ namespace Stroika::Foundation::Execution {
 #endif
 
     /**
-     *  \brief Like ThrowSystemErrNo, but creates a unique_ptr<> of the exception and returns it, rather than throwing it.
-     *         This can be used to make tracelogs less noisy.
-     *
-     *  \req sysErr != 0
-     *
-     *  See:
-     *      @see ThrowSystemErrNo ();
-     */
-    unique_ptr<exception> CreateSystemErrNo (int sysErr);
-#if qPlatform_POSIX or qPlatform_Windows
-    unique_ptr<exception> CreateSystemErrNo ();
-#endif
-
-    /**
      *  \brief Handle UNIX EINTR system call behavior - fairly transparently - just effectively removes them from the set of errors that can be returned
      *
      *  Run the given (argument) call. After each call, invoke Thread::CheckForInterruption ().

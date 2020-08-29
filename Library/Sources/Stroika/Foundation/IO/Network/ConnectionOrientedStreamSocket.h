@@ -174,15 +174,10 @@ namespace Stroika::Foundation::IO::Network {
          *  If explicit timeout given, and the connection doesn't complete in time, TimeOutException will result.
          *  If no explicit timeout is given, the OS default setting for timeouts will be used.
          * 
-         *  If e, return true on success, and false with e filled in with exception on failure. Note - even if 'e' is provided, this may sometimes throw instead of returning the
-         *  exception by value. But it can be simpler and quieter in logs to use the unique_ptr<exception>* e overloads.
-         *
          *  \note ***Cancelation Point***
          */
         nonvirtual void Connect (const SocketAddress& sockAddr) const;
-        nonvirtual bool Connect (const SocketAddress& sockAddr, unique_ptr<exception>* e) const;
         nonvirtual void Connect (const SocketAddress& sockAddr, const Time::Duration& timeout) const;
-        nonvirtual bool Connect (const SocketAddress& sockAddr, const Time::Duration& timeout, unique_ptr<exception>* e) const;
 
     public:
         /**
@@ -303,15 +298,15 @@ namespace Stroika::Foundation::IO::Network {
     public:
         virtual ~_IRep () = default;
         // return true on success, and false on failure (if e != nullptr) - if e == nullptr - just throws as normal
-        virtual bool                                 Connect (const SocketAddress& sockAddr, const optional<Time::Duration>& timeout, unique_ptr<exception>* e) const = 0;
-        virtual size_t                               Read (byte* intoStart, byte* intoEnd) const                                                                      = 0;
-        virtual optional<size_t>                     ReadNonBlocking (byte* intoStart, byte* intoEnd) const                                                           = 0;
-        virtual void                                 Write (const byte* start, const byte* end) const                                                                 = 0;
-        virtual optional<IO::Network::SocketAddress> GetPeerAddress () const                                                                                          = 0;
-        virtual optional<Time::DurationSecondsType>  GetAutomaticTCPDisconnectOnClose () const                                                                        = 0;
-        virtual void                                 SetAutomaticTCPDisconnectOnClose (const optional<Time::DurationSecondsType>& waitFor)                            = 0;
-        virtual KeepAliveOptions                     GetKeepAlives () const                                                                                           = 0;
-        virtual void                                 SetKeepAlives (const KeepAliveOptions& keepAliveOptions)                                                         = 0;
+        virtual void                                 Connect (const SocketAddress& sockAddr, const optional<Time::Duration>& timeout) const = 0;
+        virtual size_t                               Read (byte* intoStart, byte* intoEnd) const                                            = 0;
+        virtual optional<size_t>                     ReadNonBlocking (byte* intoStart, byte* intoEnd) const                                 = 0;
+        virtual void                                 Write (const byte* start, const byte* end) const                                       = 0;
+        virtual optional<IO::Network::SocketAddress> GetPeerAddress () const                                                                = 0;
+        virtual optional<Time::DurationSecondsType>  GetAutomaticTCPDisconnectOnClose () const                                              = 0;
+        virtual void                                 SetAutomaticTCPDisconnectOnClose (const optional<Time::DurationSecondsType>& waitFor)  = 0;
+        virtual KeepAliveOptions                     GetKeepAlives () const                                                                 = 0;
+        virtual void                                 SetKeepAlives (const KeepAliveOptions& keepAliveOptions)                               = 0;
     };
 }
 

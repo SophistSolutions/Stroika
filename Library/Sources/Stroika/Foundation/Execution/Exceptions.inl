@@ -192,31 +192,6 @@ namespace Stroika::Foundation::Execution {
     }
 #endif
 
-    /*
-     ********************************************************************************
-     ****************************** CreateSystemErrNo *******************************
-     ********************************************************************************
-     */
-    inline unique_ptr<exception> CreateSystemErrNo (int sysErr)
-    {
-        Require (sysErr != 0);
-        error_code ec{sysErr, system_category ()};
-        auto       e = Private_::SystemErrorExceptionPrivate_::TranslateExceptionQuietly_ (ec);
-        if (e != nullptr) {
-            return e;
-        }
-        return make_unique<SystemErrorException<>> (ec);
-    }
-#if qPlatform_POSIX or qPlatform_Windows
-    inline unique_ptr<exception> CreateSystemErrNo ()
-    {
-#if qPlatform_POSIX
-        return CreateSystemErrNo (errno);
-#elif qPlatform_Windows
-        return CreateSystemErrNo (::GetLastError ());
-#endif
-    }
-#endif
 
     /*
      ********************************************************************************
