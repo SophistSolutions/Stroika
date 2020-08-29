@@ -79,11 +79,11 @@ namespace {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 sockaddr_storage                                    useSockAddr = sockAddr.As<sockaddr_storage> ();
 #if qPlatform_POSIX
-                    ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([&] () -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); }));
+                ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([&] () -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); }));
 #elif qPlatform_Windows
-                    ThrowWSASystemErrorIfSOCKET_ERROR (::connect (fSD_, (sockaddr*)&useSockAddr, static_cast<int> (sockAddr.GetRequiredSize ())));
+                ThrowWSASystemErrorIfSOCKET_ERROR (::connect (fSD_, (sockaddr*)&useSockAddr, static_cast<int> (sockAddr.GetRequiredSize ())));
 #else
-                    AssertNotImplemented ();
+                AssertNotImplemented ();
 #endif
             }
             nonvirtual void Connect_AsyncWTimeout_ (const SocketAddress& sockAddr, const Time::Duration& timeout) const
@@ -169,10 +169,10 @@ namespace {
             {
                 Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionOrientedStreamSocket_IMPL_::Connect", L"sockAddr=%s, timeout=%s", Characters::ToString (sockAddr).c_str (), Characters::ToString (timeout).c_str ())};
                 if (timeout) {
-                     Connect_AsyncWTimeout_ (sockAddr, *timeout);
+                    Connect_AsyncWTimeout_ (sockAddr, *timeout);
                 }
                 else {
-                     Connect_Sync_ (sockAddr);
+                    Connect_Sync_ (sockAddr);
                 }
             }
             virtual size_t Read (byte* intoStart, byte* intoEnd) const override

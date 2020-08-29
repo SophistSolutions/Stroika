@@ -192,7 +192,6 @@ namespace Stroika::Foundation::Execution {
     }
 #endif
 
-
     /*
      ********************************************************************************
      ************************ Handle_ErrNoResultInterruption ************************

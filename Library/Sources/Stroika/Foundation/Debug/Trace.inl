@@ -56,7 +56,6 @@ namespace Stroika::Foundation::Debug {
     }
 #endif
 
-
     /*
      ********************************************************************************
      ******************************* TraceContextBumper *****************************
@@ -74,8 +73,6 @@ namespace Stroika::Foundation::Debug {
     {
         return tSuppressCnt_ > 0;
     }
-
-
 
     namespace Private_ {
         struct TraceModuleData_ {
