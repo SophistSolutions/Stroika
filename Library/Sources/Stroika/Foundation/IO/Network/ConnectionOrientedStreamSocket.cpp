@@ -155,6 +155,10 @@ namespace {
                             WSASetLastError (WSAETIMEDOUT);
                         Execution::ThrowSystemErrNo (::WSAGetLastError ()); // connection failed
                     }
+                    // Check the errno value returned...
+                    if (auto err = getsockopt<int> (SOL_SOCKET, SO_ERROR)) {
+                        Execution::ThrowSystemErrNo (err);
+                    }
                     // else if got here >0 so succeeded with connection
                 }
 #else
