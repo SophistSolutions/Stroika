@@ -36,12 +36,22 @@ namespace Stroika::Foundation::IO::Network {
     inline void ConnectionOrientedStreamSocket::Ptr::Connect (const SocketAddress& sockAddr) const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        return _ref ().Connect (sockAddr, nullopt);
+        _ref ().Connect (sockAddr, nullopt, nullptr);
+    }
+    inline bool ConnectionOrientedStreamSocket::Ptr::Connect (const SocketAddress& sockAddr, unique_ptr<exception>* e) const
+    {
+        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        return _ref ().Connect (sockAddr, nullopt, e);
     }
     inline void ConnectionOrientedStreamSocket::Ptr::Connect (const SocketAddress& sockAddr, const Time::Duration& timeout) const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        return _ref ().Connect (sockAddr, timeout);
+        _ref ().Connect (sockAddr, timeout, nullptr);
+    }
+    bool ConnectionOrientedStreamSocket::Ptr::Connect (const SocketAddress& sockAddr, const Time::Duration& timeout, unique_ptr<exception>* e) const
+    {
+        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        return _ref ().Connect (sockAddr, timeout, e);
     }
     inline size_t ConnectionOrientedStreamSocket::Ptr::Read (byte* intoStart, byte* intoEnd) const
     {

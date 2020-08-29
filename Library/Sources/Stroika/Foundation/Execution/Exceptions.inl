@@ -19,6 +19,7 @@ namespace Stroika::Foundation::Execution {
         Characters::String mkMsg_ (error_code errCode);
         Characters::String mkCombinedMsg_ (error_code errCode, const Characters::String& message);
         void               TranslateException_ (error_code errCode);
+        unique_ptr<exception> TranslateExceptionQuietly_ (error_code errCode);
     }
 
     // forward declare for use below....to avoid #include of Thread.h
@@ -180,15 +181,40 @@ namespace Stroika::Foundation::Execution {
         Private_::SystemErrorExceptionPrivate_::TranslateException_ (ec);
         Throw (SystemErrorException (ec));
     }
+#if qPlatform_POSIX or qPlatform_Windows
+    [[noreturn]] inline void ThrowSystemErrNo ()
+    {
 #if qPlatform_POSIX
-    [[noreturn]] inline void ThrowSystemErrNo ()
-    {
         ThrowSystemErrNo (errno);
-    }
 #elif qPlatform_Windows
-    [[noreturn]] inline void ThrowSystemErrNo ()
-    {
         ThrowSystemErrNo (::GetLastError ());
+#endif
+    }
+#endif
+
+    /*
+     ********************************************************************************
+     ****************************** CreateSystemErrNo *******************************
+     ********************************************************************************
+     */
+    inline unique_ptr<exception> CreateSystemErrNo (int sysErr)
+    {
+        Require (sysErr != 0);
+        error_code ec{sysErr, system_category ()};
+        auto e = Private_::SystemErrorExceptionPrivate_::TranslateExceptionQuietly_ (ec);
+        if (e != nullptr) {
+            return e;
+        }
+        return make_unique<SystemErrorException<>> (ec);
+    }
+#if qPlatform_POSIX or qPlatform_Windows
+    inline unique_ptr<exception> CreateSystemErrNo ()
+    {
+#if qPlatform_POSIX
+        return CreateSystemErrNo (errno);
+#elif qPlatform_Windows
+        return CreateSystemErrNo (::GetLastError ());
+#endif
     }
 #endif
 

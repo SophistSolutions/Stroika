@@ -74,19 +74,49 @@ namespace {
                 }
                 inherited::Close ();
             }
-            nonvirtual void Connect_Sync_ (const SocketAddress& sockAddr) const
+            nonvirtual bool Connect_Sync_ (const SocketAddress& sockAddr, unique_ptr<exception>* e) const
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 sockaddr_storage                                    useSockAddr = sockAddr.As<sockaddr_storage> ();
+                if (e == nullptr) {
 #if qPlatform_POSIX
-                ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([&] () -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); }));
+                    ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([&] () -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); }));
 #elif qPlatform_Windows
-                ThrowWSASystemErrorIfSOCKET_ERROR (::connect (fSD_, (sockaddr*)&useSockAddr, static_cast<int> (sockAddr.GetRequiredSize ())));
+                    ThrowWSASystemErrorIfSOCKET_ERROR (::connect (fSD_, (sockaddr*)&useSockAddr, static_cast<int> (sockAddr.GetRequiredSize ())));
 #else
-                AssertNotImplemented ();
+                    AssertNotImplemented ();
 #endif
+                }
+                else {
+#if qPlatform_POSIX
+                    while (true) {
+                        int ret = ::connect (fSD_, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ());
+                        Execution::Thread::CheckForInterruption ();
+                        if (r < 0) {
+                            if (errno == EINTR) {
+                                continue;
+                            }
+                            else {
+                                *e = Execution::CreateSystemErrNo (::WSAGetLastError ());
+                                return false;
+                            }
+                        }
+                        else {
+                            break;  // connection succeeded
+                        }
+                    }
+#elif qPlatform_Windows
+                    if (::connect (fSD_, (sockaddr*)&useSockAddr, static_cast<int> (sockAddr.GetRequiredSize ())) == SOCKET_ERROR) {
+                        *e = Execution::CreateSystemErrNo (::WSAGetLastError ());
+                        return false;
+                    }
+#else
+                    AssertNotImplemented ();
+#endif
+                }
+                return true;
             }
-            nonvirtual void Connect_AsyncWTimeout_ (const SocketAddress& sockAddr, const Time::Duration& timeout) const
+            nonvirtual bool Connect_AsyncWTimeout_ (const SocketAddress& sockAddr, const Time::Duration& timeout, unique_ptr<exception>* e) const
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 sockaddr_storage                                    useSockAddr = sockAddr.As<sockaddr_storage> ();
@@ -113,7 +143,13 @@ namespace {
                         }));
                         // Check the errno value returned...
                         if (auto err = getsockopt<int> (SOL_SOCKET, SO_ERROR)) {
-                            Execution::ThrowSystemErrNo (err);
+                            if (e == nullptr) {
+                                Execution::ThrowSystemErrNo (err);
+                            }
+                            else {
+                                *e = Execution::CreateSystemErrNo (err);
+                                return false;
+                            }
                         }
                         // else must have succeeded
                     }
@@ -157,22 +193,29 @@ namespace {
                     }
                     // Check the errno value returned...
                     if (auto err = getsockopt<int> (SOL_SOCKET, SO_ERROR)) {
-                        Execution::ThrowSystemErrNo (err);
+                        if (e == nullptr) {
+                            Execution::ThrowSystemErrNo (err);
+                        }
+                        else {
+                            *e = Execution::CreateSystemErrNo (err);
+                            return false;
+                        }
                     }
                     // else if got here >0 so succeeded with connection
                 }
 #else
                 AssertNotImplemented ();
 #endif
+                return true;
             }
-            virtual void Connect (const SocketAddress& sockAddr, const optional<Time::Duration>& timeout) const override
+            virtual bool Connect (const SocketAddress& sockAddr, const optional<Time::Duration>& timeout, unique_ptr<exception>* e) const override
             {
-                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionOrientedStreamSocket_IMPL_::Connect", L"sockAddr=%s, timeout=%s", Characters::ToString (sockAddr).c_str (), Characters::ToString (timeout).c_str ())};
+                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionOrientedStreamSocket_IMPL_::Connect", L"sockAddr=%s, timeout=%s, e=%p", Characters::ToString (sockAddr).c_str (), Characters::ToString (timeout).c_str (), e)};
                 if (timeout) {
-                    Connect_AsyncWTimeout_ (sockAddr, *timeout);
+                    return Connect_AsyncWTimeout_ (sockAddr, *timeout, e);
                 }
                 else {
-                    Connect_Sync_ (sockAddr);
+                    return Connect_Sync_ (sockAddr, e);
                 }
             }
             virtual size_t Read (byte* intoStart, byte* intoEnd) const override

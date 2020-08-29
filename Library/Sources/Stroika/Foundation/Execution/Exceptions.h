@@ -338,11 +338,23 @@ namespace Stroika::Foundation::Execution {
      *  \note   zero arg versions only defined for POSIX and Windows platforms, and there the default is the obvious value for each
      *          platform - errno and GetLastError(). It is still an assertion (require) error to call these when errno / GetLastError () would return 0.
      */
-    [[noreturn]] static void ThrowSystemErrNo (int sysErr);
-#if qPlatform_POSIX
-    [[noreturn]] static void ThrowSystemErrNo ();
-#elif qPlatform_Windows
-    [[noreturn]] static void ThrowSystemErrNo ();
+    [[noreturn]] void ThrowSystemErrNo (int sysErr);
+#if qPlatform_POSIX or qPlatform_Windows
+    [[noreturn]] void ThrowSystemErrNo ();
+#endif
+
+    /**
+     *  \brief Like ThrowSystemErrNo, but creates a unique_ptr<> of the exception and returns it, rather than throwing it.
+     *         This can be used to make tracelogs less noisy.
+     *
+     *  \req sysErr != 0
+     *
+     *  See:
+     *      @see ThrowSystemErrNo ();
+     */
+    unique_ptr<exception> CreateSystemErrNo (int sysErr);
+#if qPlatform_POSIX or qPlatform_Windows
+    unique_ptr<exception> CreateSystemErrNo ();
 #endif
 
     /**
