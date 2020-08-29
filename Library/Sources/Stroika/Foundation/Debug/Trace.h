@@ -239,6 +239,26 @@ namespace Stroika::Foundation::Debug {
     };
 
     /**
+     */
+    class TraceContextSuppressor {
+    public:
+        /**
+         */
+        TraceContextSuppressor () noexcept;
+        TraceContextSuppressor (const TraceContextSuppressor&) = delete;
+        TraceContextSuppressor& operator= (const TraceContextSuppressor&) = delete;
+
+    public:
+        ~TraceContextSuppressor ();
+
+    public:
+        static bool GetSuppressTraceInThisThread ();
+
+    private:
+        static inline thread_local unsigned int tSuppressCnt_;
+    };
+
+    /**
      * \def Stroika_Foundation_Debug_OptionalizeTraceArgs
      *
      *   This is meant to be used with the 2+ argument Debug::TraceContextBumper constructor, to optionally suppress side-effects

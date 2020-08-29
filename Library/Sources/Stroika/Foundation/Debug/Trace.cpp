@@ -245,6 +245,9 @@ Execution::ModuleDependency Debug::MakeModuleDependency_Trace ()
 */
 void Emitter::EmitTraceMessage (const char* format, ...) noexcept
 {
+    if (TraceContextSuppressor::GetSuppressTraceInThisThread ()) {
+        return;
+    }
     Thread::SuppressInterruptionInContext suppressAborts;
     try {
         va_list argsList;
@@ -264,6 +267,9 @@ void Emitter::EmitTraceMessage (const char* format, ...) noexcept
 
 void Emitter::EmitTraceMessage (const wchar_t* format, ...) noexcept
 {
+    if (TraceContextSuppressor::GetSuppressTraceInThisThread ()) {
+        return;
+    }
     Thread::SuppressInterruptionInContext suppressAborts;
     try {
         va_list argsList;
@@ -283,6 +289,9 @@ void Emitter::EmitTraceMessage (const wchar_t* format, ...) noexcept
 
 Emitter::TraceLastBufferedWriteTokenType Emitter::EmitTraceMessage (size_t bufferLastNChars, const char* format, ...) noexcept
 {
+    if (TraceContextSuppressor::GetSuppressTraceInThisThread ()) {
+        return 0;
+    }
     Thread::SuppressInterruptionInContext suppressAborts;
     try {
         va_list argsList;
@@ -303,6 +312,9 @@ Emitter::TraceLastBufferedWriteTokenType Emitter::EmitTraceMessage (size_t buffe
 
 Emitter::TraceLastBufferedWriteTokenType Emitter::EmitTraceMessage (size_t bufferLastNChars, const wchar_t* format, ...) noexcept
 {
+    if (TraceContextSuppressor::GetSuppressTraceInThisThread ()) {
+        return 0;
+    }
     Thread::SuppressInterruptionInContext suppressAborts;
     try {
         va_list argsList;

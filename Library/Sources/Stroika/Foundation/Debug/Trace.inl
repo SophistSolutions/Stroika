@@ -56,6 +56,27 @@ namespace Stroika::Foundation::Debug {
     }
 #endif
 
+
+    /*
+     ********************************************************************************
+     ******************************* TraceContextBumper *****************************
+     ********************************************************************************
+     */
+    inline TraceContextSuppressor::TraceContextSuppressor () noexcept
+    {
+        ++tSuppressCnt_;
+    }
+    inline TraceContextSuppressor::~TraceContextSuppressor () noexcept
+    {
+        --tSuppressCnt_;
+    }
+    inline bool TraceContextSuppressor::GetSuppressTraceInThisThread ()
+    {
+        return tSuppressCnt_ > 0;
+    }
+
+
+
     namespace Private_ {
         struct TraceModuleData_ {
             TraceModuleData_ ();
