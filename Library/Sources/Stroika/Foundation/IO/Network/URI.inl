@@ -73,7 +73,7 @@ namespace Stroika::Foundation::IO::Network {
         CheckValidPathForAuthority_ (authority, fPath_);
         fAuthority_ = authority;
     }
-    inline URI::PortType URI::GetPortValue () const
+    inline PortType URI::GetPortValue () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         optional<PortType>                                  op = fAuthority_ ? fAuthority_->GetPort () : optional<PortType>{};

@@ -37,7 +37,7 @@ namespace Stroika::Foundation::IO::Network {
     {
         fSocketAddressStorage_ = iaddr;
     }
-    inline SocketAddress::SocketAddress (const InternetAddress& iaddr, uint16_t portNumber)
+    inline SocketAddress::SocketAddress (const InternetAddress& iaddr, PortType portNumber)
     {
         switch (iaddr.GetAddressFamily ()) {
             case InternetAddress::AddressFamily::V4: {
@@ -111,7 +111,7 @@ namespace Stroika::Foundation::IO::Network {
             }
         }
     }
-    inline uint16_t SocketAddress::GetPort () const
+    inline PortType SocketAddress::GetPort () const
     {
         Require (IsInternetAddress ());
         switch (fSocketAddress_.sa_family) {

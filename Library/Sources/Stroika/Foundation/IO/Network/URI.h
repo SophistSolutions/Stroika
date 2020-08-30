@@ -95,9 +95,6 @@ namespace Stroika::Foundation::IO::Network {
         using Host = UniformResourceIdentification::Host;
 
     public:
-        using PortType = UniformResourceIdentification::PortType;
-
-    public:
         using SchemeType = UniformResourceIdentification::SchemeType;
 
     public:

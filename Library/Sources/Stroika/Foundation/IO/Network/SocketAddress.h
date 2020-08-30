@@ -15,6 +15,7 @@
 #endif
 
 #include "InternetAddress.h"
+#include "Port.h"
 
 /**
  * TODO:
@@ -44,7 +45,7 @@ namespace Stroika::Foundation::IO::Network {
         /** 
          *  This value can only be used in the SocketAddress constructor to mean for the OS to select a random (available) port.
          */
-        static constexpr uint16_t kAnyPort{0};
+        static constexpr PortType kAnyPort{0};
 
     public:
         /**
@@ -61,7 +62,7 @@ namespace Stroika::Foundation::IO::Network {
 #if qPlatform_Windows
         SocketAddress (const SOCKET_ADDRESS& sockaddr);
 #endif
-        explicit SocketAddress (const InternetAddress& iaddr, uint16_t portNumber = kAnyPort);
+        explicit SocketAddress (const InternetAddress& iaddr, PortType portNumber = kAnyPort);
 
     public:
         /**
@@ -105,7 +106,7 @@ namespace Stroika::Foundation::IO::Network {
         /**
          *  \req IsInternetAddress()
          */
-        nonvirtual uint16_t GetPort () const;
+        nonvirtual PortType GetPort () const;
 
     public:
         /**
@@ -153,7 +154,7 @@ namespace Stroika::Foundation::IO::Network {
      *          Listener l{SocketAddresses (InternetAddresses_Any (), usingPortNumber), options.fBindFlags.Value (), ....
      *      \endcode
      */
-    Traversal::Iterable<SocketAddress> SocketAddresses (const Traversal::Iterable<InternetAddress>& internetAddresses, uint16_t portNumber);
+    Traversal::Iterable<SocketAddress> SocketAddresses (const Traversal::Iterable<InternetAddress>& internetAddresses, PortType portNumber);
 
 }
 

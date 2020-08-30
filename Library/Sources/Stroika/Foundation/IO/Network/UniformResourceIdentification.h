@@ -17,6 +17,7 @@
 #include "../../Configuration/Common.h"
 #include "../../Containers/Mapping.h"
 #include "InternetAddress.h"
+#include "Port.h"
 
 /**
  *  \file
@@ -102,10 +103,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *          One SLIGHT exception is the ToString() method, which is just for debugging, and there we emit what will be easier/better
      *          for debugging, and dont worry about reversability.
      */
-
-    /**
-     */
-    using PortType = uint16_t;
 
     /**
      *  From https://tools.ietf.org/html/rfc3986#section-3.1
