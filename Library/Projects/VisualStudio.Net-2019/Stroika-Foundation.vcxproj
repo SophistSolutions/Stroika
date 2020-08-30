@@ -578,6 +578,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Listener.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Neighbors.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Platform\Windows\WinSock.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Port.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SOAP\Fault.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket-Private_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.h" />

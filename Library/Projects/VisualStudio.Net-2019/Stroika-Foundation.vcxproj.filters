@@ -2025,6 +2025,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\COM.h">
       <Filter>Sources\Execution\Platform\Windows</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Port.h">
+      <Filter>Sources\IO\Network</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
