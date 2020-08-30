@@ -33,24 +33,24 @@ namespace Stroika::Foundation::IO::Network {
      */
     namespace WellKnownPorts {
 
-        enum class TCP : PortType {
-            eSSH         = 22,
-            eSMPT        = 25,
-            eDNS         = 53,
-            eHTTP        = 80,
-            ePOP3        = 110,
-            eNTP         = 123,
-            eNETBIOS     = 137,
-            eSMB         = 139, // NetBIOS Session Service
-            eHTTPS       = 443,
-            eMicrosoftDS = 445, // https://en.wikipedia.org/wiki/Active_Directory, https://en.wikipedia.org/wiki/Server_Message_Block
-            eModbus      = 502,
-            eLPD         = 515,  // Line Printer Daemon
-            eIPP         = 631,  // internet printing protocol
-            eDNSOverTLS  = 853,  // https://tools.ietf.org/html/rfc7858
-            eMSSQL       = 1433, // https://en.wikipedia.org/wiki/Microsoft_SQL_Server
-            eRDP         = 3389,
-            eSIP         = 5060, // SIP (https://isc.sans.edu/diary/Cyber+Security+Awareness+Month+-+Day+20+-+Ports+5060+%26+5061+-+SIP+%28VoIP%29/7405
+        namespace TCP {
+            constexpr PortType kSSH            = 22;
+            constexpr PortType kSMPT = 25;
+            constexpr PortType kDNS            = 53;
+            constexpr PortType kHTTP           = 80;
+            constexpr PortType kPOP3           = 110;
+            constexpr PortType kNTP            = 123;
+            constexpr PortType kNETBIOS        = 137;
+            constexpr PortType kSMB            = 139; // NetBIOS Session Service
+            constexpr PortType kHTTPS          = 443;
+            constexpr PortType kMicrosoftDS    = 445; // https://en.wikipedia.org/wiki/Active_Directory, https://en.wikipedia.org/wiki/Server_Message_Block
+            constexpr PortType kModbus         = 502;
+            constexpr PortType kLPD            = 515;  // Line Printer Daemon
+            constexpr PortType kIPP            = 631;  // internet printing protocol
+            constexpr PortType kDNSOverTLS     = 853;  // https://tools.ietf.org/html/rfc7858
+            constexpr PortType kMSSQL          = 1433; // https://en.wikipedia.org/wiki/Microsoft_SQL_Server
+            constexpr PortType kRDP            = 3389;
+            constexpr PortType kSIP            = 5060; // SIP (https://isc.sans.edu/diary/Cyber+Security+Awareness+Month+-+Day+20+-+Ports+5060+%26+5061+-+SIP+%28VoIP%29/7405
         };
 
     }
