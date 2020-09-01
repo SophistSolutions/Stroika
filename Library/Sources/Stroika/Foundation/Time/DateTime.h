@@ -112,7 +112,7 @@ namespace Stroika::Foundation::Time {
         constexpr DateTime (const DateTime& dt, const TimeOfDay& updateTOD) noexcept;
         constexpr DateTime (const Date& date, const optional<TimeOfDay>& timeOfDay, const optional<Timezone>& tz = Timezone::kUnknown) noexcept;
         constexpr DateTime (const Date& date, const TimeOfDay& timeOfDay, const optional<Timezone>& tz = Timezone::kUnknown) noexcept;
-        explicit DateTime (time_t unixEpochTime, const optional<Timezone>& tz = Timezone::kUTC) noexcept;
+        explicit DateTime (time_t unixEpochTime) noexcept;
         explicit DateTime (const ::tm& tmTime, const optional<Timezone>& tz = Timezone::kUnknown) noexcept;
         explicit DateTime (const ::timespec& tmTime, const optional<Timezone>& tz = Timezone::kUnknown) noexcept;
 #if qPlatform_POSIX
