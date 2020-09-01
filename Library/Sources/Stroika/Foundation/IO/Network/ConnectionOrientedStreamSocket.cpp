@@ -102,20 +102,31 @@ namespace {
                         AssertNotReached (); // cannot throw here
                     }
                 });
+                while (::connect (fSD_, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()) < 0) {
+                    switch (errno) {
+                        case EINTR:
+                            break;  // ignore - try again
+                        case EINPROGRESS: {
+                            fd_set myset;
+                            FD_ZERO (&myset);
+                            FD_SET (fSD_, &myset);
+                            timeval time_out = timeout.As<timeval> ();
+                            Handle_ErrNoResultInterruption ([&] () -> int {
+                                return ::select (fSD_ + 1, NULL, &myset, nullptr, &time_out);
+                            });
+                            // Check the errno value returned...
+                            if (auto err = getsockopt<int> (SOL_SOCKET, SO_ERROR)) {
+                                Execution::ThrowSystemErrNo (err);
+                            }
+                            // else must have succeeded
+                        } break;
+                        default: {
+                            Execution::ThrowSystemErrNo ();
+                        } break;
+                    }
+                }
                 if (Handle_ErrNoResultInterruption ([&] () -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); }) < 0) {
                     if (errno == EINPROGRESS) {
-                        fd_set myset;
-                        FD_ZERO (&myset);
-                        FD_SET (fSD_, &myset);
-                        timeval time_out = timeout.As<timeval> ();
-                        Handle_ErrNoResultInterruption ([&] () -> int {
-                            return ::select (fSD_ + 1, NULL, &myset, nullptr, &time_out);
-                        });
-                        // Check the errno value returned...
-                        if (auto err = getsockopt<int> (SOL_SOCKET, SO_ERROR)) {
-                            Execution::ThrowSystemErrNo (err);
-                        }
-                        // else must have succeeded
                     }
                     else {
                         Execution::ThrowSystemErrNo ();
