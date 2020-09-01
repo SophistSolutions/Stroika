@@ -158,7 +158,7 @@ namespace Stroika::Foundation::Debug {
      *
      *  \par Example Usage
      *      \code
-     *          Debug::TraceContextBumper ctx ("MyXercesMemMgr_::DUMPCurMemStats");
+     *          Debug::TraceContextBumper ctx{"MyXercesMemMgr_::DUMPCurMemStats"};
      *          DbgTrace (L"x");
      *      \endcode
      *
@@ -169,7 +169,7 @@ namespace Stroika::Foundation::Debug {
      *
      *  \par Example Usage
      *      \code
-     *          Debug::TraceContextBumper ctx (L"OptionsFile::ReadRaw", L"readfilename=%s", GetReadFilePath_ ().c_str ());
+     *          Debug::TraceContextBumper ctx{L"OptionsFile::ReadRaw", L"readfilename=%s", GetReadFilePath_ ().c_str ()};
      *      \endcode
      *
      *      Generates log output (assuming ReadRaw is quick and doesn't do more DbgTrace calls):
@@ -249,7 +249,7 @@ namespace Stroika::Foundation::Debug {
         TraceContextSuppressor& operator= (const TraceContextSuppressor&) = delete;
 
     public:
-        ~TraceContextSuppressor ();
+        ~TraceContextSuppressor () noexcept;
 
     public:
         static bool GetSuppressTraceInThisThread ();
