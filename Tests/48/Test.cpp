@@ -380,46 +380,48 @@ namespace {
             roundTripS (L"Wed, 02 Oct 2002 15:00:00 +0200");
             roundTripS (L"Wed, 02 Oct 2002 15:00:00 -0900");
         }
+        // clang-format off
         {
             // difference
             {
-                constexpr Date kDate_{Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29)};
-        constexpr TimeOfDay kTOD_{10, 21, 32};
-        constexpr TimeOfDay kTOD2_{10, 21, 35};
-        VerifyTestResult ((DateTime (kDate_, kTOD_) - DateTime (kDate_, kTOD2_)).As<Time::DurationSecondsType> () == -3);
-        VerifyTestResult ((DateTime (kDate_, kTOD2_) - DateTime (kDate_, kTOD_)).As<Time::DurationSecondsType> () == 3);
-        VerifyTestResult ((DateTime (kDate_.AddDays (1), kTOD_) - DateTime (kDate_, kTOD_)).As<Time::DurationSecondsType> () == 24 * 60 * 60);
-        VerifyTestResult ((DateTime (kDate_, kTOD_) - DateTime (kDate_.AddDays (1), kTOD_)).As<Time::DurationSecondsType> () == -24 * 60 * 60);
+                constexpr Date kDate_{Time::Year {2016}, Time::MonthOfYear (9), Time::DayOfMonth{29}};
+                constexpr TimeOfDay kTOD_{10, 21, 32};
+                constexpr TimeOfDay kTOD2_{10, 21, 35};
+                VerifyTestResult ((DateTime {kDate_, kTOD_} - DateTime {kDate_, kTOD2_}).As<Time::DurationSecondsType> () == -3);
+                VerifyTestResult ((DateTime (kDate_, kTOD2_) - DateTime {kDate_, kTOD_}).As<Time::DurationSecondsType> () == 3);
+                VerifyTestResult ((DateTime (kDate_.AddDays (1), kTOD_) - DateTime (kDate_, kTOD_)).As<Time::DurationSecondsType> () == 24 * 60 * 60);
+                VerifyTestResult ((DateTime (kDate_, kTOD_) - DateTime (kDate_.AddDays (1), kTOD_)).As<Time::DurationSecondsType> () == -24 * 60 * 60);
+            }
+            {
+                VerifyTestResult ((DateTime::Now () - DateTime::kMin) > "P200Y"_duration);
+            }
+        }
+        {
+            // https://stroika.atlassian.net/browse/STK-555 - Improve Timezone object so that we can read time with +500, and respect that
+            {
+                constexpr Date      kDate_{Time::Year{2016}, Time::MonthOfYear (9), Time::DayOfMonth{29}};
+                constexpr TimeOfDay kTOD_{10, 21, 32};
+                DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-04:00", DateTime::ParseFormat::eISO8601);
+                DateTime            tdu = td.AsUTC ();
+                VerifyTestResult ((tdu == DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
+            }
+            {
+                constexpr Date      kDate_ = Date (Time::Year{2016}, Time::MonthOfYear (9), Time::DayOfMonth{29});
+                constexpr TimeOfDay kTOD_{10, 21, 32};
+                DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-0400", DateTime::ParseFormat::eISO8601);
+                DateTime            tdu = td.AsUTC ();
+                VerifyTestResult ((tdu == DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
+            }
+            {
+                constexpr Date      kDate_{Time::Year{2016}, Time::MonthOfYear (9), Time::DayOfMonth (29)};
+                constexpr TimeOfDay kTOD_{10, 21, 32};
+                DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-04", DateTime::ParseFormat::eISO8601);
+                DateTime            tdu = td.AsUTC ();
+                VerifyTestResult ((tdu == DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
+            }
+        }
+        // clang-format on
     }
-    {
-        VerifyTestResult ((DateTime::Now () - DateTime::kMin) > "P200Y"_duration);
-    }
-}
-{
-    // https://stroika.atlassian.net/browse/STK-555 - Improve Timezone object so that we can read time with +500, and respect that
-    {
-        constexpr Date      kDate_{Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29)};
-        constexpr TimeOfDay kTOD_{10, 21, 32};
-        DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-04:00", DateTime::ParseFormat::eISO8601);
-        DateTime            tdu = td.AsUTC ();
-        VerifyTestResult ((tdu == DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
-    }
-    {
-        constexpr Date      kDate_ = Date (Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29));
-        constexpr TimeOfDay kTOD_{10, 21, 32};
-        DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-0400", DateTime::ParseFormat::eISO8601);
-        DateTime            tdu = td.AsUTC ();
-        VerifyTestResult ((tdu == DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
-    }
-    {
-        constexpr Date      kDate_{Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29)};
-        constexpr TimeOfDay kTOD_{10, 21, 32};
-        DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-04", DateTime::ParseFormat::eISO8601);
-        DateTime            tdu = td.AsUTC ();
-        VerifyTestResult ((tdu == DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
-    }
-}
-}
 }
 
 namespace {
