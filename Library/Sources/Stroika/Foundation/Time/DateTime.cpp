@@ -167,8 +167,8 @@ DateTime::FormatException::FormatException ()
  *********************************** DateTime ***********************************
  ********************************************************************************
  */
-DateTime::DateTime (time_t unixEpochTime) noexcept
-    : fTimezone_{Timezone::kUTC}
+DateTime::DateTime (time_t unixEpochTime, const optional<Timezone>& tz) noexcept
+    : fTimezone_{tz}
     , fDate_{Date::kMinJulianRep} // avoid initialization warning
 {
     tm tmTime{};
