@@ -269,6 +269,11 @@ namespace {
             //TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
+            DbgTrace (L"DateTime::Now()=%s", Characters::ToString (DateTime::Now ()).c_str ());
+            DbgTrace (L"DateTime::Now().AsUTC ()=%s", Characters::ToString (DateTime::Now ().AsUTC ()).c_str ());
+            DbgTrace (L"DateTime::Now().AsLocalTime ()=%s", Characters::ToString (DateTime::Now ().AsLocalTime ()).c_str ());
+        }
+        {
             DateTime d = DateTime::kMin;
             VerifyTestResult (d < DateTime::Now ());
             VerifyTestResult (DateTime::Now () > d);
