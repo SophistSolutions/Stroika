@@ -166,7 +166,7 @@ public:
         return Read (intoStart, intoEnd);
 #elif qPlatform_POSIX
         pollfd pollData{fFD_, POLLIN, 0};
-        int    pollResult = ThrowPOSIXErrNoIfNegative (Execution::Handle_ErrNoResultInterruption ([&] () { return ::poll (&pollData, 1, 0); }));
+        int    pollResult = Execution::Handle_ErrNoResultInterruption ([&] () { return ::poll (&pollData, 1, 0); });
         Assert (pollResult >= 0);
         if (pollResult == 0) {
             return nullopt; // if no data available, return nullopt

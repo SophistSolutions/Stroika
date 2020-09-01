@@ -79,7 +79,7 @@ namespace {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 sockaddr_storage                                    useSockAddr = sockAddr.As<sockaddr_storage> ();
 #if qPlatform_POSIX
-                ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([&] () -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); }));
+                Handle_ErrNoResultInterruption ([&] () -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); });
 #elif qPlatform_Windows
                 ThrowWSASystemErrorIfSOCKET_ERROR (::connect (fSD_, (sockaddr*)&useSockAddr, static_cast<int> (sockAddr.GetRequiredSize ())));
 #else
@@ -108,9 +108,9 @@ namespace {
                         FD_ZERO (&myset);
                         FD_SET (fSD_, &myset);
                         timeval time_out = timeout.As<timeval> ();
-                        ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([&] () -> int {
+                        Handle_ErrNoResultInterruption ([&] () -> int {
                             return ::select (fSD_ + 1, NULL, &myset, nullptr, &time_out);
-                        }));
+                        });
                         // Check the errno value returned...
                         if (auto err = getsockopt<int> (SOL_SOCKET, SO_ERROR)) {
                             Execution::ThrowSystemErrNo (err);
@@ -185,7 +185,7 @@ namespace {
 #endif
 
 #if qPlatform_POSIX
-                return ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &intoStart, &intoEnd] () -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); }));
+                return Handle_ErrNoResultInterruption ([this, &intoStart, &intoEnd] () -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); });
 #elif qPlatform_Windows
                 int flags = 0;
                 int nBytesToRead = static_cast<int> (min<size_t> ((intoEnd - intoStart), numeric_limits<int>::max ()));
@@ -214,7 +214,7 @@ namespace {
                             // But MUST check if is EOF or real data available
                             char buf[1024];
 #if qPlatform_POSIX
-                            int tmp = ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([&] () -> int { return ::recv (fSD_, buf, NEltsOf (buf), MSG_PEEK); }));
+                            int tmp = Handle_ErrNoResultInterruption ([&] () -> int { return ::recv (fSD_, buf, NEltsOf (buf), MSG_PEEK); });
 #elif qPlatform_Windows
                             int tmp = ThrowWSASystemErrorIfSOCKET_ERROR (::recv (fSD_, buf, static_cast<int> (NEltsOf (buf)), MSG_PEEK));
 #else

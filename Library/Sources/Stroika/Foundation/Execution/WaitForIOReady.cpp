@@ -191,7 +191,7 @@ auto WaitForIOReady_Base::_WaitQuietlyUntil (const pair<SDKPollableType, TypeOfM
     }
 #endif
 #else
-    pollResult = ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([&] () { return ::poll (pollData.begin (), pollData.GetSize (), timeout_msecs); }));
+    pollResult = Handle_ErrNoResultInterruption ([&] () { return ::poll (pollData.begin (), pollData.GetSize (), timeout_msecs); });
 #endif
     Set<size_t> result;
     if (pollResult != 0) {

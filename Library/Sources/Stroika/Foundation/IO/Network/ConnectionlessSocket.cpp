@@ -40,7 +40,7 @@ namespace {
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                 sockaddr_storage                                   sa = sockAddr.As<sockaddr_storage> ();
 #if qPlatform_POSIX
-                ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &start, &end, &sa, &sockAddr] () -> int { return ::sendto (fSD_, reinterpret_cast<const char*> (start), end - start, 0, reinterpret_cast<sockaddr*> (&sa), sockAddr.GetRequiredSize ()); }));
+                Handle_ErrNoResultInterruption ([this, &start, &end, &sa, &sockAddr] () -> int { return ::sendto (fSD_, reinterpret_cast<const char*> (start), end - start, 0, reinterpret_cast<sockaddr*> (&sa), sockAddr.GetRequiredSize ()); });
 #elif qPlatform_Windows
                 Require (end - start < numeric_limits<int>::max ());
                 ThrowWSASystemErrorIfSOCKET_ERROR (::sendto (fSD_, reinterpret_cast<const char*> (start), static_cast<int> (end - start), 0, reinterpret_cast<sockaddr*> (&sa), static_cast<int> (sockAddr.GetRequiredSize ())));
@@ -77,7 +77,7 @@ namespace {
                 struct sockaddr_storage sa;
                 socklen_t               salen = sizeof (sa);
 #if qPlatform_POSIX
-                size_t result = static_cast<size_t> (ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([&] () -> int { return ::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag, fromAddress == nullptr ? nullptr : reinterpret_cast<sockaddr*> (&sa), fromAddress == nullptr ? nullptr : &salen); })));
+                size_t result = static_cast<size_t> (Handle_ErrNoResultInterruption ([&] () -> int { return ::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag, fromAddress == nullptr ? nullptr : reinterpret_cast<sockaddr*> (&sa), fromAddress == nullptr ? nullptr : &salen); }));
                 if (fromAddress != nullptr) {
                     *fromAddress = sa;
                 }

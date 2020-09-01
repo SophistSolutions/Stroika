@@ -50,7 +50,7 @@ Socket::PlatformNativeHandle Socket::mkLowLevelSocket_ (SocketAddress::FamilyTyp
 #endif
     Socket::PlatformNativeHandle sfd;
 #if qPlatform_POSIX
-    ThrowPOSIXErrNoIfNegative (sfd = Handle_ErrNoResultInterruption ([=] () -> int { return socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (ValueOrDefault (protocol))); }));
+    sfd = Handle_ErrNoResultInterruption ([=] () -> int { return socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (ValueOrDefault (protocol))); });
 #elif qPlatform_Windows
     DISABLE_COMPILER_MSC_WARNING_START (28193) // dump warning about examining sfd
     ThrowWSASystemErrorIfSOCKET_ERROR (sfd = ::socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (ValueOrDefault (protocol))));
@@ -123,7 +123,7 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
 #if qPlatform_Windows
         ThrowWSASystemErrorIfSOCKET_ERROR (::bind (sfd, (sockaddr*)&useSockAddr, static_cast<int> (sockAddr.GetRequiredSize ())));
 #else
-        ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([sfd, &useSockAddr, &sockAddr] () -> int { return ::bind (sfd, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); }));
+        Handle_ErrNoResultInterruption ([sfd, &useSockAddr, &sockAddr] () -> int { return ::bind (sfd, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); });
 #endif
     }
     catch (const Execution::SystemErrorException<>& e) {
