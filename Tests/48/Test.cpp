@@ -87,7 +87,7 @@ namespace {
 
     void Test_1_TestTickCountGrowsMonotonically_ ()
     {
-        TraceContextBumper  ctx ("Test_1_TestTickCountGrowsMonotonically_");
+        TraceContextBumper  ctx{"Test_1_TestTickCountGrowsMonotonically_"};
         DurationSecondsType start = Time::GetTickCount ();
         Execution::Sleep (100ms);
         VerifyTestResult (start <= Time::GetTickCount ());
@@ -98,11 +98,11 @@ namespace {
 
     void Test_2_TestTimeOfDay_ ()
     {
-        TraceContextBumper ctx ("Test_2_TestTimeOfDay_");
+        TraceContextBumper ctx{"Test_2_TestTimeOfDay_"};
         {
             optional<TimeOfDay> t;
             VerifyTestResult (not t.has_value ());
-            TimeOfDay t2 (2);
+            TimeOfDay t2{2};
             VerifyTestResult (t < t2);
             VerifyTestResult (not t2.Format (TimeOfDay::PrintFormat::eCurrentLocale).empty ());
             VerifyTestResult (t2.GetHours () == 0);
@@ -256,7 +256,7 @@ namespace {
 
     void Test_4_TestDateTime_ ()
     {
-        TraceContextBumper ctx ("Test_4_TestDateTime_");
+        TraceContextBumper ctx{"Test_4_TestDateTime_"};
         {
             DateTime d = Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4));
             VerifyTestResult (d.Format (DateTime::PrintFormat::eISO8601) == L"1903-04-04");
@@ -434,15 +434,15 @@ namespace {
                 VerifyTestResult ((tdu == DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
             }
         }
-        // clang-format on
     }
 }
+        // clang-format on
 
-namespace {
+    namespace {
 
     void Test_5_DateTimeTimeT_ ()
     {
-        TraceContextBumper ctx ("Test_5_DateTimeTimeT_");
+        TraceContextBumper ctx{"Test_5_DateTimeTimeT_"};
         {
             DateTime d = Date (Year (2000), MonthOfYear::eApril, DayOfMonth (20));
             VerifyTestResult (d.As<time_t> () == 956188800); // source - http://www.onlineconversion.com/unix_time.htm
@@ -475,7 +475,7 @@ namespace {
 
     void Test_6_DateTimeStructTM_ ()
     {
-        TraceContextBumper ctx ("Test_6_DateTimeStructTM_");
+        TraceContextBumper ctx{"Test_6_DateTimeStructTM_"};
         {
             struct tm x;
             memset (&x, 0, sizeof (x));
@@ -499,7 +499,7 @@ namespace {
 
     void Test_7_Duration_ ()
     {
-        TraceContextBumper ctx ("Test_7_Duration_");
+        TraceContextBumper ctx{"Test_7_Duration_"};
         {
             VerifyTestResult (Duration (0).As<time_t> () == 0);
             VerifyTestResult (Duration (0).As<String> () == L"PT0S");
@@ -603,12 +603,12 @@ namespace {
             VerifyTestResult (Math::NearlyEquals (d.As<DurationSecondsType> (), static_cast<DurationSecondsType> (.130)));
         }
         {
-            VerifyTestResult (Duration (L"PT1.4S").PrettyPrintAge () == L"now");
+            VerifyTestResult (Duration{L"PT1.4S"}.PrettyPrintAge () == L"now");
             VerifyTestResult (Duration (L"-PT9M").PrettyPrintAge () == L"now");
             VerifyTestResult (Duration (L"-PT20M").PrettyPrintAge () == L"20 minutes ago");
             VerifyTestResult (Duration (L"PT20M").PrettyPrintAge () == L"20 minutes from now");
             VerifyTestResult (Duration (L"PT4H").PrettyPrintAge () == L"4 hours from now");
-            VerifyTestResult (Duration (L"PT4.4H").PrettyPrintAge () == L"4 hours from now");
+            VerifyTestResult (Duration{L"PT4.4H"}.PrettyPrintAge () == L"4 hours from now");
             VerifyTestResult (Duration (L"P2Y").PrettyPrintAge () == L"2 years from now");
             VerifyTestResult (Duration (L"P2.4Y").PrettyPrintAge () == L"2 years from now");
             VerifyTestResult (Duration (L"P2.6Y").PrettyPrintAge () == L"3 years from now");
@@ -624,7 +624,7 @@ namespace {
 
     void Test_8_DateTimeWithDuration_ ()
     {
-        TraceContextBumper ctx ("Test_8_DateTimeWithDuration_");
+        TraceContextBumper ctx{"Test_8_DateTimeWithDuration_"};
         {
             DateTime d = DateTime (Date (Year (1995), MonthOfYear::eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3:00", TimeOfDay::ParseFormat::eCurrentLocale));
             VerifyTestResult (d.As<time_t> () == 802234800); // source - http://www.onlineconversion.com/unix_time.htm
@@ -653,7 +653,7 @@ namespace {
 
     void Test_9_TZOffsetAndDaylightSavingsTime_ ()
     {
-        TraceContextBumper ctx ("Test_9_TZOffsetAndDaylightSavingsTime_");
+        TraceContextBumper ctx{"Test_9_TZOffsetAndDaylightSavingsTime_"};
         /*
          * I cannot think if any good way to test this stuff - since it depends on the current timezone and I cannot
          * see any good portbale way to change that (setenv (TZ) doest work on visual studio.net 2010).
@@ -684,7 +684,7 @@ namespace {
 namespace {
     void Test_10_std_duration_ ()
     {
-        TraceContextBumper ctx ("Test_10_std_duration_");
+        TraceContextBumper ctx{"Test_10_std_duration_"};
         const Duration     k30Seconds = Duration (30.0);
         VerifyTestResult (k30Seconds.As<time_t> () == 30);
         VerifyTestResult (k30Seconds.As<String> () == L"PT30S");
@@ -704,7 +704,7 @@ namespace {
 namespace {
     void Test_11_DurationRange_ ()
     {
-        TraceContextBumper ctx ("Test_11_DurationRange_");
+        TraceContextBumper ctx{"Test_11_DurationRange_"};
         DurationRange      d1;
         DurationRange      d2 = DurationRange::FullRange ();
         VerifyTestResult (d1.empty ());
