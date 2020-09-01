@@ -273,14 +273,14 @@ namespace {
             DbgTrace (L"DateTime::Now().AsUTC ()=%s", Characters::ToString (DateTime::Now ().AsUTC ()).c_str ());
             DbgTrace (L"DateTime::Now().AsLocalTime ()=%s", Characters::ToString (DateTime::Now ().AsLocalTime ()).c_str ());
             DbgTrace (L"Timezone::kLocalTime.GetBiasFromUTC (fDate_, TimeOfDay{0})=%d", Timezone::kLocalTime.GetBiasFromUTC (DateTime::Now ().GetDate (), TimeOfDay{0}));
-
             {
                 DateTime regTest{time_t (1598992961)};
                 VerifyTestResult (regTest.GetTimezone () == Timezone::kUTC);
                 VerifyTestResult ((regTest.GetDate () == Date{Year{2020}, MonthOfYear::eSeptember, DayOfMonth{1}}));
-                VerifyTestResult ((regTest.GetTimeOfDay () == TimeOfDay {20, 42, 41}));
-                if (Timezone::kLocalTime.GetBiasFromUTC (regTest.GetDate (), *regTest.GetTimeOfDay ()) == -14400) {
+                VerifyTestResult ((regTest.GetTimeOfDay () == TimeOfDay{20, 42, 41}));
+                if (Timezone::kLocalTime.GetBiasFromUTC (regTest.GetDate (), *regTest.GetTimeOfDay ()) == -4 * 60 * 60) {
                     DbgTrace ("Eastern US timezone");
+                    VerifyTestResult ((regTest.AsLocalTime () == DateTime{Date{Year{2020}, MonthOfYear::eSeptember, DayOfMonth{1}}, TimeOfDay{20 - 4, 42, 41}, Timezone::kLocalTime}));
                 }
                 else {
                     DbgTrace ("other timezone: offset=%d", Timezone::kLocalTime.GetBiasFromUTC (regTest.GetDate (), *regTest.GetTimeOfDay ()));

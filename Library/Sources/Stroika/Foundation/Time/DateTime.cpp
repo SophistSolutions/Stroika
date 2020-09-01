@@ -483,7 +483,7 @@ DateTime DateTime::Parse (const String& rep, const locale& l, const Traversal::I
 DateTime DateTime::AsLocalTime () const
 {
     if (GetTimezone () == Timezone::kUTC) {
-        DateTime tmp = AddSeconds (fTimezone_->GetBiasFromUTC (fDate_, Memory::ValueOrDefault (fTimeOfDay_, TimeOfDay{0})));
+        DateTime tmp = AddSeconds (Timezone::kLocalTime.GetBiasFromUTC (fDate_, Memory::ValueOrDefault (fTimeOfDay_, TimeOfDay{0})));
         return DateTime{tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::kLocalTime};
     }
     else if (GetTimezone () == Timezone::kLocalTime) {
