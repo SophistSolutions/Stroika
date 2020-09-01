@@ -105,7 +105,7 @@ namespace {
                 while (::connect (fSD_, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()) < 0) {
                     switch (errno) {
                         case EINTR:
-                            break;  // ignore - try again
+                            break; // ignore - try again
                         case EINPROGRESS: {
                             fd_set myset;
                             FD_ZERO (&myset);
@@ -123,13 +123,6 @@ namespace {
                         default: {
                             Execution::ThrowSystemErrNo ();
                         } break;
-                    }
-                }
-                if (Handle_ErrNoResultInterruption ([&] () -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); }) < 0) {
-                    if (errno == EINPROGRESS) {
-                    }
-                    else {
-                        Execution::ThrowSystemErrNo ();
                     }
                 }
 #elif qPlatform_Windows
