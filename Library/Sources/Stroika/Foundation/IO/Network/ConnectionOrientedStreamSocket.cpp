@@ -118,7 +118,7 @@ namespace {
                             if (auto err = getsockopt<int> (SOL_SOCKET, SO_ERROR)) {
                                 Execution::ThrowSystemErrNo (err);
                             }
-                            // else must have succeeded
+                            return; // else must have succeeded
                         } break;
                         default: {
                             Execution::ThrowSystemErrNo ();
