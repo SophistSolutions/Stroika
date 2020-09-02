@@ -183,7 +183,7 @@ DateTime::DateTime (time_t unixEpochTime) noexcept
 
 DateTime::DateTime (const ::tm& tmTime, const optional<Timezone>& tz) noexcept
     : fTimezone_{tz}
-    , fDate_{Year (tmTime.tm_year + 1900), MonthOfYear(tmTime.tm_mon + 1), DayOfMonth(tmTime.tm_mday)}
+    , fDate_{Year (tmTime.tm_year + 1900), MonthOfYear (tmTime.tm_mon + 1), DayOfMonth (tmTime.tm_mday)}
     , fTimeOfDay_{TimeOfDay{static_cast<unsigned> (tmTime.tm_hour), static_cast<unsigned> (tmTime.tm_min), static_cast<unsigned> (tmTime.tm_sec)}}
 {
 }
@@ -205,7 +205,7 @@ DateTime::DateTime (const ::timespec& tmTime, const optional<Timezone>& tz) noex
 #else
     ::tm* tmTimeData = ::gmtime (&unixTime); // not threadsafe
 #endif
-    fDate_      = Date{Year(tmTimeData->tm_year + 1900), MonthOfYear(tmTimeData->tm_mon + 1), DayOfMonth(tmTimeData->tm_mday)};
+    fDate_      = Date{Year (tmTimeData->tm_year + 1900), MonthOfYear (tmTimeData->tm_mon + 1), DayOfMonth (tmTimeData->tm_mday)};
     fTimeOfDay_ = TimeOfDay{static_cast<unsigned> (tmTimeData->tm_hour), static_cast<unsigned> (tmTimeData->tm_min), static_cast<unsigned> (tmTimeData->tm_sec)};
 }
 
@@ -217,7 +217,7 @@ DateTime::DateTime (const timeval& tmTime, const optional<Timezone>& tz) noexcep
     time_t unixTime = tmTime.tv_sec; // IGNORE tv_usec FOR NOW because we currently don't support fractional seconds in DateTime
     tm     tmTimeData{};
     (void)::gmtime_r (&unixTime, &tmTimeData);
-    fDate_      = Date{Year(tmTimeData.tm_year + 1900), MonthOfYear(tmTimeData.tm_mon + 1), DayOfMonth(tmTimeData.tm_mday)};
+    fDate_      = Date{Year (tmTimeData.tm_year + 1900), MonthOfYear (tmTimeData.tm_mon + 1), DayOfMonth (tmTimeData.tm_mday)};
     fTimeOfDay_ = TimeOfDay{static_cast<unsigned> (tmTimeData.tm_hour), static_cast<unsigned> (tmTimeData.tm_min), static_cast<unsigned> (tmTimeData.tm_sec)};
 }
 #endif
@@ -309,7 +309,7 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
             if (nItems < 3) {
                 Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
             }
-            Date                d = Date{Year(year), MonthOfYear(month), DayOfMonth(day)};
+            Date                d = Date{Year (year), MonthOfYear (month), DayOfMonth (day)};
             optional<TimeOfDay> t;
             if (nItems >= 5) {
                 t = TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (second)};
@@ -388,7 +388,7 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
             if (nItems < 3) {
                 Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
             }
-            Date                d = Date{Year(year), MonthOfYear(month), DayOfMonth(day)};
+            Date                d = Date{Year (year), MonthOfYear (month), DayOfMonth (day)};
             optional<TimeOfDay> t;
             if (nItems >= 5) {
                 t = TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (second)};

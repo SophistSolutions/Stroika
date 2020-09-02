@@ -239,6 +239,16 @@ namespace Stroika::Foundation::Debug {
     };
 
     /**
+     *  Suppress trace messages (in this thread) for the lifetime of this object.
+     *
+     *  \par Example Usage
+     *      \code
+     *          {
+     *              Debug::TraceContextSuppressor suppressTraceInThisBlock;
+     *              DbgTrace (L"x");    // suppressed
+     *          }
+     *          DbgTrace (L"x");        // emitted
+     *      \endcode
      */
     class TraceContextSuppressor {
     public:
@@ -249,7 +259,7 @@ namespace Stroika::Foundation::Debug {
         TraceContextSuppressor& operator= (const TraceContextSuppressor&) = delete;
 
     public:
-        ~TraceContextSuppressor () noexcept;
+        ~TraceContextSuppressor ();
 
     public:
         static bool GetSuppressTraceInThisThread ();

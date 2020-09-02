@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Debug {
     {
         ++tSuppressCnt_;
     }
-    inline TraceContextSuppressor::~TraceContextSuppressor () noexcept
+    inline TraceContextSuppressor::~TraceContextSuppressor ()
     {
         --tSuppressCnt_;
     }
