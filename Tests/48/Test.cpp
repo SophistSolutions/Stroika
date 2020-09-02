@@ -436,9 +436,9 @@ namespace {
         }
     }
 }
-        // clang-format on
+// clang-format on
 
-    namespace {
+namespace {
 
     void Test_5_DateTimeTimeT_ ()
     {

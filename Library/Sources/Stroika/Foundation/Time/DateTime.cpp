@@ -56,19 +56,19 @@ namespace {
 
 #if qPlatform_Windows
 namespace {
-    TimeOfDay mkTimeOfDay_ (const SYSTEMTIME& sysTime)
+    TimeOfDay mkTimeOfDay_ (const ::SYSTEMTIME& sysTime)
     {
-        WORD hour   = max (sysTime.wHour, static_cast<WORD> (0));
-        hour        = min (hour, static_cast<WORD> (23));
-        WORD minute = max (sysTime.wMinute, static_cast<WORD> (0));
-        minute      = min (minute, static_cast<WORD> (59));
-        WORD secs   = max (sysTime.wSecond, static_cast<WORD> (0));
-        secs        = min (secs, static_cast<WORD> (59));
+        ::WORD hour   = max (sysTime.wHour, static_cast<WORD> (0));
+        hour          = min (hour, static_cast<WORD> (23));
+        ::WORD minute = max (sysTime.wMinute, static_cast<WORD> (0));
+        minute        = min (minute, static_cast<WORD> (59));
+        ::WORD secs   = max (sysTime.wSecond, static_cast<WORD> (0));
+        secs          = min (secs, static_cast<WORD> (59));
         return TimeOfDay{hour, minute, secs};
     }
     Date mkDate_ (const SYSTEMTIME& sysTime)
     {
-        return Date{Year (sysTime.wYear), MonthOfYear (sysTime.wMonth), DayOfMonth (sysTime.wDay)};
+        return Date{Year{sysTime.wYear}, MonthOfYear{sysTime.wMonth}, DayOfMonth{sysTime.wDay}};
     }
 }
 #endif
@@ -106,16 +106,16 @@ namespace {
 
 namespace {
 #if qPlatform_Windows
-    SYSTEMTIME toSYSTEM_ (const Date& date)
+    ::SYSTEMTIME toSYSTEM_ (const Date& date)
     {
-        SYSTEMTIME  st{};
+        ::SYSTEMTIME  st{};
         MonthOfYear m = MonthOfYear::eEmptyMonthOfYear;
         DayOfMonth  d = DayOfMonth::eEmptyDayOfMonth;
         Year        y = Year::eEmptyYear;
         date.mdy (&m, &d, &y);
-        st.wYear  = static_cast<WORD> (y);
-        st.wMonth = static_cast<WORD> (m);
-        st.wDay   = static_cast<WORD> (d);
+        st.wYear  = static_cast<::WORD> (y);
+        st.wMonth = static_cast<::WORD> (m);
+        st.wDay   = static_cast<::WORD> (d);
         return st;
     }
 #endif
@@ -123,7 +123,7 @@ namespace {
 
 namespace {
     // @todo add error checking - so returns -1 outside UNIX EPOCH TIME
-    static time_t mkgmtime_ (const tm* ptm)
+    time_t mkgmtime_ (const tm* ptm)
     {
         // On GLIBC systems, could use _mkgmtime64  - https://github.com/leelwh/clib/blob/master/c/mktime64.c
         // Based on https://stackoverflow.com/questions/12353011/how-to-convert-a-utc-date-time-to-a-time-t-in-c
@@ -171,7 +171,7 @@ DateTime::DateTime (time_t unixEpochTime) noexcept
     : fTimezone_{Timezone::kUTC}
     , fDate_{Date::kMinJulianRep} // avoid initialization warning
 {
-    tm tmTime{};
+    ::tm tmTime{};
 #if qPlatform_Windows
     (void)::_gmtime64_s (&tmTime, &unixEpochTime);
 #else
@@ -181,31 +181,31 @@ DateTime::DateTime (time_t unixEpochTime) noexcept
     fTimeOfDay_ = TimeOfDay{static_cast<unsigned> (tmTime.tm_hour), static_cast<unsigned> (tmTime.tm_min), static_cast<unsigned> (tmTime.tm_sec)};
 }
 
-DateTime::DateTime (const tm& tmTime, const optional<Timezone>& tz) noexcept
+DateTime::DateTime (const ::tm& tmTime, const optional<Timezone>& tz) noexcept
     : fTimezone_{tz}
-    , fDate_{Year (tmTime.tm_year + 1900), MonthOfYear (tmTime.tm_mon + 1), DayOfMonth (tmTime.tm_mday)}
+    , fDate_{Year{tmTime.tm_year + 1900}, MonthOfYear{tmTime.tm_mon + 1}, DayOfMonth{tmTime.tm_mday}}
     , fTimeOfDay_{TimeOfDay{static_cast<unsigned> (tmTime.tm_hour), static_cast<unsigned> (tmTime.tm_min), static_cast<unsigned> (tmTime.tm_sec)}}
 {
 }
 
-DateTime::DateTime (const timespec& tmTime, const optional<Timezone>& tz) noexcept
+DateTime::DateTime (const ::timespec& tmTime, const optional<Timezone>& tz) noexcept
     : fTimezone_{tz}
     , fDate_{Date::kMinJulianRep} // avoid initialization warning
 {
     time_t unixTime = tmTime.tv_sec; // IGNORE tv_nsec FOR NOW because we currently don't support fractional seconds in DateTime
 #if qPlatform_POSIX
-    tm  tmTimeDataBuf{};
-    tm* tmTimeData = ::gmtime_r (&unixTime, &tmTimeDataBuf);
+    ::tm  tmTimeDataBuf{};
+    ::tm* tmTimeData = ::gmtime_r (&unixTime, &tmTimeDataBuf);
 #elif qPlatform_Windows
-    tm tmTimeDataBuf{};
+    ::tm tmTimeDataBuf{};
     if (errno_t e = ::gmtime_s (&tmTimeDataBuf, &unixTime)) {
         ThrowPOSIXErrNo (e);
     };
-    tm* tmTimeData = &tmTimeDataBuf;
+    ::tm* tmTimeData = &tmTimeDataBuf;
 #else
-    tm* tmTimeData = ::gmtime (&unixTime); // not threadsafe
+    ::tm* tmTimeData = ::gmtime (&unixTime); // not threadsafe
 #endif
-    fDate_      = Date{Year (tmTimeData->tm_year + 1900), MonthOfYear (tmTimeData->tm_mon + 1), DayOfMonth (tmTimeData->tm_mday)};
+    fDate_      = Date{Year{tmTimeData->tm_year + 1900}, MonthOfYear{tmTimeData->tm_mon + 1}, DayOfMonth{tmTimeData->tm_mday}};
     fTimeOfDay_ = TimeOfDay{static_cast<unsigned> (tmTimeData->tm_hour), static_cast<unsigned> (tmTimeData->tm_min), static_cast<unsigned> (tmTimeData->tm_sec)};
 }
 
@@ -217,24 +217,24 @@ DateTime::DateTime (const timeval& tmTime, const optional<Timezone>& tz) noexcep
     time_t unixTime = tmTime.tv_sec; // IGNORE tv_usec FOR NOW because we currently don't support fractional seconds in DateTime
     tm     tmTimeData{};
     (void)::gmtime_r (&unixTime, &tmTimeData);
-    fDate_      = Date{Year (tmTimeData.tm_year + 1900), MonthOfYear (tmTimeData.tm_mon + 1), DayOfMonth (tmTimeData.tm_mday)};
+    fDate_      = Date{Year{tmTimeData.tm_year + 1900}, MonthOfYear{tmTimeData.tm_mon + 1}, DayOfMonth{tmTimeData.tm_mday}};
     fTimeOfDay_ = TimeOfDay{static_cast<unsigned> (tmTimeData.tm_hour), static_cast<unsigned> (tmTimeData.tm_min), static_cast<unsigned> (tmTimeData.tm_sec)};
 }
 #endif
 
 #if qPlatform_Windows
-DateTime::DateTime (const SYSTEMTIME& sysTime, const optional<Timezone>& tz) noexcept
+DateTime::DateTime (const ::SYSTEMTIME& sysTime, const optional<Timezone>& tz) noexcept
     : fTimezone_{tz}
     , fDate_{mkDate_ (sysTime)}
     , fTimeOfDay_{mkTimeOfDay_ (sysTime)}
 {
 }
 
-DateTime::DateTime (const FILETIME& fileTime, const optional<Timezone>& tz) noexcept
+DateTime::DateTime (const ::FILETIME& fileTime, const optional<Timezone>& tz) noexcept
     : fTimezone_{tz}
     , fDate_{Date::kMinJulianRep} // avoid initialization warning
 {
-    SYSTEMTIME sysTime{};
+    ::SYSTEMTIME sysTime{};
     if (::FileTimeToSystemTime (&fileTime, &sysTime)) {
         fDate_      = mkDate_ (sysTime);
         fTimeOfDay_ = mkTimeOfDay_ (sysTime);
@@ -309,7 +309,7 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
             if (nItems < 3) {
                 Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
             }
-            Date                d = Date{Year (year), MonthOfYear (month), DayOfMonth (day)};
+            Date                d = Date{Year{year}, MonthOfYear{month}, DayOfMonth{day}};
             optional<TimeOfDay> t;
             if (nItems >= 5) {
                 t = TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (second)};
@@ -388,7 +388,7 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
             if (nItems < 3) {
                 Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
             }
-            Date                d = Date{Year (year), MonthOfYear (month), DayOfMonth (day)};
+            Date                d = Date{Year{year}, MonthOfYear{month}, DayOfMonth{day}};
             optional<TimeOfDay> t;
             if (nItems >= 5) {
                 t = TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (second)};
@@ -526,14 +526,14 @@ DateTime DateTime::AsTimezone (Timezone tz) const
 
 DateTime DateTime::Now () noexcept
 {
-#if qPlatform_Windows
-    SYSTEMTIME st{};
-    ::GetLocalTime (&st);
-    return DateTime{st, Timezone::kLocalTime};
-#elif qPlatform_POSIX
+#if qPlatform_POSIX
     // time() returns the time since the Epoch (00:00:00 UTC, January 1, 1970), measured in seconds.
     // Convert to LocalTime - just for symetry with the windows version (and cuz our API spec say so)
     return DateTime{::time (nullptr)}.AsLocalTime ();
+#elif qPlatform_Windows
+    ::SYSTEMTIME st{};
+    ::GetLocalTime (&st);
+    return DateTime{st, Timezone::kLocalTime};
 #else
     AssertNotImplemented ();
     return DateTime{};
@@ -612,7 +612,7 @@ String DateTime::Format (PrintFormat pf) const
                 r += L"T"_k + timeStr;
                 if (fTimezone_) {
                     if (fTimezone_ == Timezone::kUTC) {
-                        static const String_Constant kZ_{L"Z"};
+                        static const String kZ_{L"Z"_k};
                         r += kZ_;
                     }
                     else {
@@ -718,7 +718,7 @@ time_t DateTime::As () const
     }
     // clang-format on
 
-    tm tm{};
+    ::tm tm{};
     tm.tm_year                         = static_cast<int> (d.GetYear ()) - 1900;
     tm.tm_mon                          = static_cast<int> (d.GetMonth ()) - 1;
     tm.tm_mday                         = static_cast<int> (d.GetDayOfMonth ());
@@ -736,12 +736,12 @@ time_t DateTime::As () const
 template <>
 tm DateTime::As () const
 {
-    if (GetDate ().GetYear () < Year (1900))
-        [[UNLIKELY_ATTR]]
-        {
-            static const range_error kRangeErrror_{"DateTime cannot be convered to time_t - before 1900"};
-            Execution::Throw (kRangeErrror_);
-        }
+    // clang-format off
+    if (GetDate ().GetYear () < Year (1900)) [[UNLIKELY_ATTR]] {
+        static const range_error kRangeErrror_{"DateTime cannot be convered to time_t - before 1900"};
+        Execution::Throw (kRangeErrror_);
+    }
+    // clang-format on
     tm tm{};
     tm.tm_year                         = static_cast<int> (fDate_.GetYear ()) - 1900;
     tm.tm_mon                          = static_cast<int> (fDate_.GetMonth ()) - 1;
