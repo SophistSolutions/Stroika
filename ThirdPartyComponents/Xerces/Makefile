@@ -60,17 +60,6 @@ FETCHURLS+=http://www.apache.org/dist/xerces/c/3/sources/$(BASENAME).tar.gz
 FETCHURLS+=http://www-us.apache.org/dist/xerces/c/3/sources/$(BASENAME).tar.gz
 
 
-ifneq (,$(findstring /cygdrive/,$(PATH)))
-    UNAME := Cygwin
-else
-ifneq (,$(findstring WINDOWS,$(PATH)))
-    UNAME := Windows
-else
-    UNAME := $(shell uname -s)
-endif
-endif
-
-
 ifeq (0,$(ENABLE_ASSERTIONS))
 CMAKE_CONFIGURATION:=Release
 else
@@ -252,7 +241,7 @@ CMAKE_ARGS=
 CMAKE_ARGS+= -Dnetwork:BOOL=OFF
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 CMAKE_ARGS+= -Dtranscoder=windows
-else ifeq ($(UNAME),Darwin)
+else ifeq ($(shell uname -s),Darwin)
 #AVOID Undefined symbols for architecture x86_64:  "_CFRelease", etc.... Avoid library dependency
 CMAKE_ARGS+= -Dtranscoder=iconv
 else
