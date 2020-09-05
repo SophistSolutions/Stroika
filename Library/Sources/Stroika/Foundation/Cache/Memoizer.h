@@ -57,6 +57,9 @@ namespace Stroika::Foundation::Cache {
     class Memoizer {
     public:
         /**
+         *  \note see Tests use of qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy if you get the message
+         *        "template template argument has different template parameters than its corresponding template template parameter"
+         *
          *  \par Example Usage
          *      \code
          *          unsigned int                      totalCallsCount{};
