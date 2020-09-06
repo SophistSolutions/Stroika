@@ -7,6 +7,383 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+- Compiler versions
+
+  - use VS2k19 16_7_1
+
+- Compiler bug defines
+
+  - Close https://stroika.atlassian.net/browse/STK-635
+    Lose qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
+    Deprecate Date::min/max, DateTime::min/max functions etc and instead use kMin/kMax
+    and got constexpr stuff working correctly (and timezone). Cannot do similar to Duration yet - requires
+    C++20 - I think).
+
+- (Mostly) Cosmetic code cleanups
+  - use {} for ctor
+  - use TimeOfDay/3 rathern than computing \*60
+
+---
+
+commit 1d56e7e1ee3ed8755eedc4440e66a9d98ffab3d1
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Thu Aug 20 15:54:03 2020 -0400
+
+    remove obsolete Library/Sources/Stroika/Foundation/IO/AccessMode.cpp; use more {} constructor initialization
+
+commit 5ca9a0620be526f1809a4cc21cd099a9443b6ea4
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Thu Aug 20 16:01:00 2020 -0400
+
+    fixed regression in Foundation/Streams/EOFException class
+
+commit ab07e120813fb489f1caf89e42513ebf3a2c4794
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Thu Aug 20 16:05:07 2020 -0400
+
+    fixed regression in Foundation/Streams/EOFException class
+
+commit 516983d3fb9a6f44d991c6f1182354113e36713c
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Aug 22 11:09:09 2020 -0400
+
+    uniform init
+
+commit 35b692519f029d30369bb969714e040c5ce29420
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Aug 22 11:09:32 2020 -0400
+
+    dockerfile windows uses 16_7_2
+
+commit c84d30ee2a230cc9ec9ce921f898164f7f2cc609
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Aug 25 14:46:43 2020 -0400
+
+    Added ConnectionOrientedStreamSocket::Ptr::Connect () overload taking timeout parameter
+
+commit 79a13bab5f30e0a11c1c626722c5205a29dfb3bf
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Aug 25 16:38:45 2020 -0400
+
+     timeval Duration::As ()
+
+commit 51a1390836282ce19450048965087405d86734b6
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Aug 25 16:39:35 2020 -0400
+
+    fixed typo
+
+commit b3ab6c82aad405833567b90ea3f8ee5bf09d870b
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Aug 25 16:45:12 2020 -0400
+
+    first complete draft of Bloom Filter
+
+commit e564e30506732554ee9ae3cca8450cb37223065c
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Aug 25 18:25:16 2020 -0400
+
+    fixed posix typo for ConnectionOrientedStreamSocket
+
+commit 872263f6f36b4bb7ba2ff821b3e831f1f32547bf
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Aug 25 18:28:42 2020 -0400
+
+    more progress on Bloom Filter
+
+commit ca9146743af068135ec34fdb114956f3761e90b8
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Aug 25 21:05:53 2020 -0400
+
+    Comments
+
+commit 12eb11f11598c2d71d7a70c9bd2072843b92fc6e
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Aug 25 21:06:11 2020 -0400
+
+    More BloomFilter progress
+
+commit e98849c903b014304b3e3ed7ad395d201cd54216
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Wed Aug 26 08:48:30 2020 -0400
+
+    use decltype() to grab right types for timeval parameters
+
+commit 8fcf9d31f0a86522f55a5587cd04486655df23ac
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Wed Aug 26 08:48:50 2020 -0400
+
+    cosmetic
+
+commit 9852f1b5c874719d0ac40c3344b1e44064edc749
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Wed Aug 26 08:49:45 2020 -0400
+
+    cleaned up (still untested) timout support on onverload of Socket Connect()
+
+commit d08cc2d20f8956197f8ee8728a3e81915481947d
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Wed Aug 26 08:50:22 2020 -0400
+
+    cosmetic
+
+commit 51a09a3fe20dbc57c42a8e3321f823a982a39d7d
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Wed Aug 26 11:33:02 2020 -0400
+
+    cleanup regressions in ...Socket::Connect(...timeout) code
+
+commit 9b4a22d7077fc2514c44f2a7d98fc9a3e0da2b6a
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Wed Aug 26 11:33:25 2020 -0400
+
+    cosmetic
+
+commit 154139ed1deef16745cd3505c4734f5c2630849a
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Thu Aug 27 21:10:55 2020 -0400
+
+    Experimental Iterable<>::Join ()
+
+commit dd9a252bdf3ac8bdad547b383b72afbe2b87a49e
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Thu Aug 27 21:11:28 2020 -0400
+
+    cosmetic
+
+commit 107d95b190ee32fabdec14fbfa417e54c43ac8b2
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Aug 28 08:33:47 2020 -0400
+
+    Improved draft of Iterable::Join
+
+commit c57a115176f925257520049b91210ed09051fa4e
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Aug 28 11:58:59 2020 -0400
+
+    Improved Traversal::Iterable::Join() functionality adding overloads for common case where RESULT = String (not perfect but decently done with some tricks)
+
+commit aeb2f0029b1fcbc6008e1eed2ccef576a49b606f
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Aug 28 12:04:13 2020 -0400
+
+    Improved Traversal::Iterable::Join() functionality adding overloads for common case where RESULT = String (not perfect but decently done with some tricks)
+
+commit a5486d8e4d77c107b76780902f11f4cdcb86a449
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Aug 28 12:11:25 2020 -0400
+
+    Iterable<>::Join () docs
+
+commit fb3e545a9dc75d8f04333d6527c4d21fff7db100
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Aug 28 13:07:40 2020 -0400
+
+    docs and regtests on new Traversal::Join
+
+commit 88aab96babbbe55c4eed0a9234351dcfa504e28a
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Aug 28 13:17:12 2020 -0400
+
+    fixed bug with clang++ compiler compiling new Iterable::Join code
+
+commit 7049a525099336150fed727b2ba3703afba6dbf1
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Aug 28 20:13:36 2020 -0400
+
+    fixed missing eror check in ConnectionOrientedStreamSocket new windows Connect with timeout
+
+commit bcc45b2c718f574a338d211d251cb78eb574617c
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Aug 28 20:13:58 2020 -0400
+
+    cosmetic
+
+commit ad4f73f614b242a9714b5a461e9993506dc064fc
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Aug 28 23:11:19 2020 -0400
+
+    New experimenal CreateSystemErrNo () utility (for quiet exceptions without throwing)
+
+    idea somewhat inspired by 'quietly' routines already in stroika (replacing with overloads).
+
+    and somewhat inspired by overloads in std c++ filesystem API taking overload with error_code
+    and not throwing.
+
+    Anyhow - use this also in Network/ConnectionOrientedStreamSocket for Connect () api.
+
+    UNTESTED.
+
+commit 684b09f9038cf60775cf70847d37ee344b2e64c8
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Aug 28 23:19:18 2020 -0400
+
+    cosmetic
+
+commit bb6740754a621861b541bb673f6094540324f914
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Aug 28 23:27:33 2020 -0400
+
+    fixed typo
+
+commit 33bacf8d2f952356af417643be3689a1755e950f
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Aug 29 13:39:25 2020 -0400
+
+    undid change - CreateSystemErrNo () and overload of Conenct taking exception ptr to quiet (better strategy coming)
+
+commit 230fec09e55c4c5c93b38dd0ca6946e9313639c4
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Aug 29 14:03:41 2020 -0400
+
+    New experimental TraceContextSuppressor support
+
+commit 6c5ae79682a12b36efb75e948d50b0a3ed34d6fd
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Aug 29 14:03:55 2020 -0400
+
+    cosmetic
+
+commit b7e922b097d7e96480673bfaf4b7ffe136f3bf9d
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Aug 30 11:06:36 2020 -0400
+
+    new Port.h checkin with wellknownports defined (for a few)
+
+commit 2edf51d903df87b74dec7fc1d091467a1d5d8b18
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Aug 30 11:17:41 2020 -0400
+
+    PortType wellknown ports constexpr in namespace instead of enum cuz cannot use as PortType the other way without conversion (sad)
+
+commit 1e3a4e806b32053c8f8ad0265244992c23f80120
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Aug 30 11:23:24 2020 -0400
+
+    PortType well known ports now as namespace with constexpr instead of enum cuz cannot implicitly assign to PortType otehrwise (sad)
+
+commit 2c70c49dd8c5f6eb55e6f71d48605044712c1204
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Aug 30 11:41:45 2020 -0400
+
+    cleanup use of new Port.h and PortType typename
+
+commit b7024f406d4793f1a476afc110e61dee8ce00356
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Sep 1 08:38:16 2020 -0400
+
+    cosmetic and fixed typo
+
+commit 26925b101c353e630780038877fb3357a09f0dc7
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Sep 1 08:56:54 2020 -0400
+
+    fixed bug with DateTime::Now() on POSIX systems - must interpret unix ::time (nullptr) as UTC
+
+commit ed7e8bde4a6e11b7de39c77ae1251a784a4fd744
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Sep 1 10:02:29 2020 -0400
+
+    DateTime{time_t} CTOR now takes optional TZ parameter, though defaults to value that used to be hardwired (UTC)
+
+commit 2e0830d1924fa1fe0ebd39bf763651ccf6ae6b00
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Sep 1 13:47:55 2020 -0400
+
+    because Handle_ErrNoResultInterruption alread does throw if < 0 (and not eintr) - lose calls to ThrowPOSIXErrNoIfNegative () surrounding it in a number of places
+
+commit d666f793a4e9333b1c811f1d73cc73921b3ba43f
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Sep 1 13:52:04 2020 -0400
+
+    hopefully fixed connection oriented stream socket Connect_AsyncWTimeout_ for POSIX case (exception handling)
+
+commit ce191d844342aedd41340e0ae5d30dafd089c135
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Sep 1 15:04:23 2020 -0400
+
+    fixed typo in IO/Network/ConnectionOrientedStreamSocket.cpp POSIX code
+
+commit 54f4919221d69edcbda2702fb9a5e4a003ed9465
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Sep 1 15:16:03 2020 -0400
+
+    in regression tests - print AsUTC and AsLocalTime() outputs for DateTime
+
+commit 8fd07ea09ecc00e9fa718624607fd5513cf2c17c
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Sep 1 15:25:05 2020 -0400
+
+    enhanced DataTime regression tests, and cosmetic make-format cleanups
+
+commit b49565da380bb2f01710e11d6bd9eee4c24c512d
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Sep 1 15:50:39 2020 -0400
+
+    fixed another bug/with timeout overload of Connect_AsyncWTimeout_
+
+commit 26b59de9a60d304d94931165a862cdf19f8e2c8a
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Sep 1 16:07:58 2020 -0400
+
+    revert recent DateTime CTOR change - always interpert time_t arg to DateTime CTOR as UTC
+
+commit 4b02045e441860ad373dd4be2f2624d4405c584c
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Sep 1 17:00:03 2020 -0400
+
+    tweaks to regtest for timezone datetime code -  cuz on unix DateTime::NOw () not coming out right
+
+commit 4728c93118a57dc4771dd098ef9d644b504a779a
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Sep 1 17:26:59 2020 -0400
+
+    fixed serious bug with DateTime::AsLocalTime () - wehn it has UTC - it was computing wrong LocalTime value (happened all the time on UNIX for DateTime::Now) - and added regtests to hopefully detect this issue sometimes
+
+commit 737279e8b315ce12a0a4c5d4a3637e8830350f0d
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Sep 1 17:38:53 2020 -0400
+
+    cosmetic cleanups
+
+commit fe4450dd5985900e126a41a7cc703302ea904d35
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Wed Sep 2 09:42:58 2020 -0400
+
+    various cosmetic cleanups - clang-format and uniform initialization and :: usage
+
+commit becca4e6882f6471c0bafca901e0bce704705696
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Wed Sep 2 10:29:25 2020 -0400
+
+    undid some too aggressive moves to uniform initializaiton
+
+commit 423afe49efc06c99fda90f1ef068eab9cba2f733
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Wed Sep 2 10:40:11 2020 -0400
+
+    cosmetic; and docs and cleanup ~TraceContextSuppressor ()
+
+commit 6e3f9aa2fabc7a73bc5ce8c646f849cd6d9ef564
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Sep 4 10:22:55 2020 -0400
+
+    slight cleanup to xerces makefile
+
+commit 1d4c299c91ab781c6f2c1c600b5cfa112ac7f763
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Sep 5 14:51:59 2020 -0400
+
+    start release 2.1b4
+
+commit 3fb7dc8d3d260d10f8504f677a6ec8392c5f7229
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Sep 5 19:41:24 2020 -0400
+
+    comments
+
+## #endif
+
 ### 2.1b3 {2020-08-10}
 
 #### TLDR
