@@ -364,6 +364,7 @@ namespace Stroika::Foundation::DataExchange {
             const InternetMediaType& Image_PNG_CT ();
             const InternetMediaType& Image_GIF_CT ();
             const InternetMediaType& Image_JPEG_CT ();
+            const InternetMediaType& Text_CSS_CT ();
             const InternetMediaType& Text_HTML_CT ();
             const InternetMediaType& Text_XHTML_CT ();
             const InternetMediaType& Application_XML_CT ();
@@ -438,6 +439,11 @@ namespace Stroika::Foundation::DataExchange {
          * \brief text/html
          */
         constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Text_HTML_CT> kText_HTML;
+
+        /**
+         * \brief text/css
+         */
+        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Text_CSS_CT> kText_CSS;
 
         [[deprecated ("Since Stroika v2.1b2 - use kHTML (probably - not same thing)")]] constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Text_XHTML_CT> kText_XHTML;
 

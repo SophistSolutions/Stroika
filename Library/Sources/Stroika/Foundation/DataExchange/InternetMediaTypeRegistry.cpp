@@ -44,6 +44,7 @@ namespace {
     using OverrideRecord = InternetMediaTypeRegistry::OverrideRecord;
     static const inline Mapping<InternetMediaType, OverrideRecord> kDefaults_{initializer_list<KeyValuePair<InternetMediaType, OverrideRecord>>{
         {InternetMediaTypes::kText_PLAIN, OverrideRecord{nullopt, Containers::Set<String>{L".txt"_k}, L".txt"_k}},
+        {InternetMediaTypes::kText_CSS, OverrideRecord{nullopt, Containers::Set<String>{L".css"_k}, L".css"_k}},
         {InternetMediaTypes::kText_HTML, OverrideRecord{nullopt, Containers::Set<String>{L".htm"_k, L".html"_k}, L".htm"_k}},
         {InternetMediaTypes::kJSON, OverrideRecord{nullopt, Containers::Set<String>{L".json"_k}, L".json"_k}},
         {InternetMediaTypes::kImage_PNG, OverrideRecord{nullopt, Containers::Set<String>{L".png"_k}, L".png"_k}},
@@ -69,6 +70,7 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
     // These are adjustable by API, serve the purpose of providing a default on systems with no MIME content database -- LGP 2020-07-27
     static const inline Mapping<InternetMediaType, OverrideRecord> kDefaults_{initializer_list<KeyValuePair<InternetMediaType, OverrideRecord>>{
         {InternetMediaTypes::kText_PLAIN, OverrideRecord{nullopt, Containers::Set<String>{L".txt"_k}, L".txt"_k}},
+        {InternetMediaTypes::kText_CSS, OverrideRecord{nullopt, Containers::Set<String>{L".css"_k}, L".css"_k}},
         {InternetMediaTypes::kText_HTML, OverrideRecord{nullopt, Containers::Set<String>{L".htm"_k, L".html"_k}, L".htm"_k}},
         {InternetMediaTypes::kJSON, OverrideRecord{nullopt, Containers::Set<String>{L".json"_k}, L".json"_k}},
         {InternetMediaTypes::kImage_PNG, OverrideRecord{nullopt, Containers::Set<String>{L".png"_k}, L".png"_k}},
@@ -814,6 +816,7 @@ DataExchange::Private_::InternetMediaType_ModuleData_::InternetMediaType_ModuleD
     , kImage_GIF_CT (kImage_Type, L"gif"sv)
     , kImage_JPEG_CT (kImage_Type, L"jpeg"sv)
 
+    , kText_CSS_CT (kText_Type, L"css"sv)
     , kText_HTML_CT (kText_Type, L"html"sv)
     , kText_XHTML_CT (kText_Type, L"xhtml"sv)
     , kApplication_XML_CT (kApplication_Type, L"xml"sv)

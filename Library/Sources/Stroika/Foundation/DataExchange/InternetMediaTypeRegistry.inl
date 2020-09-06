@@ -56,6 +56,7 @@ namespace Stroika::Foundation::DataExchange::Private_ {
         const InternetMediaType kImage_GIF_CT;
         const InternetMediaType kImage_JPEG_CT;
 
+        const InternetMediaType kText_CSS_CT;
         const InternetMediaType kText_HTML_CT;
         const InternetMediaType kText_XHTML_CT;
         const InternetMediaType kApplication_XML_CT;
@@ -93,6 +94,7 @@ namespace Stroika::Foundation::DataExchange::PredefinedInternetMediaType::PRIVAT
     inline const InternetMediaType& Image_GIF_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kImage_GIF_CT; }
     inline const InternetMediaType& Image_JPEG_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kImage_JPEG_CT; }
 
+    inline const InternetMediaType& Text_CSS_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kText_CSS_CT; }
     inline const InternetMediaType& Text_HTML_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kText_HTML_CT; }
     inline const InternetMediaType& Text_XHTML_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kText_XHTML_CT; }
     inline const InternetMediaType& ApplicationXML_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kApplication_XML_CT; }
