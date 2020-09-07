@@ -16,6 +16,15 @@ Then summarize them into Release-Notes.md
 
 Just delete the 'x' in the version#, and save/checkin/commit
 
+## Docker tag the latest containers, and push
+
+in DockerBuildContainers (both windows dev vm and Hercules)
+
+```bash
+make pull-base-images
+make build-images
+```
+
 ## Do most builds on hercules-dev VM
 
 see <Regression-Tests.md> for steps to run most regression tests
@@ -29,11 +38,9 @@ If anything looks iffy, fix before release (repeat much of above). But when all 
 
 ## Docker tag the latest containers, and push
 
-in DockerBuildContainers
+in DockerBuildContainers (both windows dev vm and Hercules)
 
 ```bash
-make pull-base-images
-make build-images
 make tag-images
 make push-images
 ```

@@ -7,7 +7,7 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 2.1b4x {2020-09-06}
+### 2.1b4 {2020-09-07}
 
 #### TLDR
 
@@ -29,14 +29,14 @@ especially those they need to be aware of when upgrading.
 
 - (Mostly) Cosmetic code cleanups
 
-  - use more uniform-initializaiton syntax - {}
+  - use more uniform-initialization syntax use - {}
   - use TimeOfDay/3 rathern than computing \*60
 
 - Library
 
   - Cache
 
-    - first complete draft of Bloom Filter
+    - complete draft of Bloom Filter (but not tests and need more code to support configuration)
 
   - Debug
 
