@@ -148,9 +148,8 @@ namespace {
 #endif
 
 Debug::Private_::TraceModuleData_::TraceModuleData_ ()
-    : fEmitter ()
 #if qTraceToFile
-    , fTraceFileName (mkTraceFileName_ ())
+    : fTraceFileName {mkTraceFileName_ ()}
 #endif
 {
     Assert (sEmitTraceCritSec_ == nullptr);
@@ -161,6 +160,7 @@ Debug::Private_::TraceModuleData_::TraceModuleData_ ()
     sTraceFile->open (Emitter::Get ().GetTraceFileName ().c_str (), ios::out | ios::binary);
 #endif
     DbgTrace (L"***Starting TraceLog***");
+    DbgTrace (L"EXEPath=%s", Characters::ToString (Execution::GetEXEPath ()).c_str ());
     TraceContextBumper ctx{L"debug-state"};
     DbgTrace (L"Debug::kBuiltWithAddressSanitizer = %s", Characters::ToString (Debug::kBuiltWithAddressSanitizer).c_str ());
     DbgTrace (L"Debug::IsRunningUnderValgrind () = %s", Characters::ToString (Debug::IsRunningUnderValgrind ()).c_str ());
