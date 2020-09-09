@@ -58,7 +58,7 @@ jobs:
           sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 || echo 'Failed: $?'"
         - docker ps -a
         - docker exec buildContainer systeminfo
-        - docker exec buildContainer sh -c "git clone --branch $TRAVIS_BRANCH https://github.com/SophistSolutions/Stroika.git"
+        - docker exec buildContainer sh -c "git clone https://github.com/SophistSolutions/Stroika.git && git checkout $TRAVIS_COMMIT"
         # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no
         - docker exec --workdir c:/Stroika buildContainer sh -c "./configure Debug --arch x86 --apply-default-debug-flags --Xerces no --OpenSSL no --lzma no --boost no"
         - docker exec --workdir c:/Stroika buildContainer cat ConfigurationFiles/Debug.xml
@@ -84,7 +84,7 @@ jobs:
           --detach --name buildContainer
           sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 || echo 'Failed: $?'"
         - docker exec buildContainer systeminfo
-        - docker exec buildContainer sh -c "git clone --branch $TRAVIS_BRANCH https://github.com/SophistSolutions/Stroika.git"
+        - docker exec buildContainer sh -c "git clone https://github.com/SophistSolutions/Stroika.git && git checkout $TRAVIS_COMMIT"
         # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no
         - docker exec --workdir c:/Stroika buildContainer sh -c "./configure Release --arch x86 --apply-default-release-flags --Xerces no --OpenSSL no --lzma no --boost no"
         - docker exec --workdir c:/Stroika buildContainer cat ConfigurationFiles/Release.xml
@@ -100,7 +100,7 @@ jobs:
     # MacOS Configuration Build Samples
     #   o Build with --boost no --OpenSSL no, just to avoid timeouts building
     - os: osx
-      osx_image: xcode11.4
+      osx_image: xcode11.5
       addons:
         homebrew:
           packages:
@@ -129,7 +129,7 @@ jobs:
     #   o Build with --lto disable --boost no --zlib system --sqlite no --OpenSSL no --libcurl no --Xerces no --lzma no, only to avoid timeout building (cuz limited  to 50 minutes)
     #
     - os: osx
-      osx_image: xcode11.5
+      osx_image: xcode11.6
       addons:
         homebrew:
           packages:
