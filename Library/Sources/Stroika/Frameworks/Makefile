@@ -59,14 +59,14 @@ NEED_GNU_MAKE_ := 4.0.0
 OK_GNU_MAKE_VERSION_ := $(filter $(NEED_GNU_MAKE_),$(firstword $(sort $(MAKE_VERSION) $(NEED_GNU_MAKE_))))
 
 ifeq ($(OK_GNU_MAKE_VERSION_),)
-Objs := $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) CONFIGURATION=$(CONFIGURATION) -s list-objs 2>/dev/null))
+Objs := $(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) CONFIGURATION=$(CONFIGURATION) -s list-objs))
 else
 ifeq ($(wildcard $(CachedOBJSFile_)),)
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),clobber)
 $(shell $(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Computing $(CachedOBJSFile_)" 1>&2)
 $(shell mkdir -p $(shell dirname $(CachedOBJSFile_)) )
-$(file > $(CachedOBJSFile_),$(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) CONFIGURATION=$(CONFIGURATION) -s list-objs 2>/dev/null)))
+$(file > $(CachedOBJSFile_),$(foreach dir, $(SubDirs), $(shell $(MAKE) --directory $(dir) CONFIGURATION=$(CONFIGURATION) -s list-objs)))
 endif
 endif
 endif

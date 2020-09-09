@@ -1,7 +1,8 @@
 StroikaRoot=$(abspath ../../)/
 
 ifneq ($(CONFIGURATION),)
-	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+	#no error if missing cuz could be doing make clobber
+	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
@@ -15,7 +16,7 @@ TARGETDIR	=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SimpleLedTest/
 TARGETEXE	=	$(TARGETDIR)SimpleLedTest${EXE_SUFFIX}
 
 
-VPATH	=			$(SrcDir)/Sources/
+VPATH	=			$(SrcDir)Sources/
 
 
 RC_OUTPUT_=$(ObjDir)Test.res
@@ -56,7 +57,7 @@ check:
 RC_FLAGS += /l 0x0409
 
 $(ObjDir)Test.res:
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running RC compiler on "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(SrcDir)/Sources/LedIt.rc` "; see "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(ObjDir)RC-Build.out`" ..."
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running RC compiler on "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(SrcDir)Sources/LedIt.rc` "; see "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(ObjDir)RC-Build.out`" ..."
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
 	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_RC_LINE,$(SrcDir)Sources/Test.rc,$(ObjDir)Test.res)';\
 	fi

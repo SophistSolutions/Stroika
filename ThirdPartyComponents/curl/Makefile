@@ -8,6 +8,7 @@
 StroikaRoot=$(abspath ../..)/
 
 ifneq ($(CONFIGURATION),)
+	#no error if missing cuz could be doing make clobber
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 

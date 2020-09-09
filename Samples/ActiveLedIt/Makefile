@@ -1,7 +1,8 @@
 StroikaRoot=$(abspath ../../)/
 
 ifneq ($(CONFIGURATION),)
-	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+	#no error if missing cuz could be doing make clobber
+	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
@@ -14,7 +15,7 @@ TARGETDIR			=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-ActiveLedIt/
 TARGETEXE			=	$(TARGETDIR)SophistSolutions.ActiveLedIt.dll
 
 
-VPATH	=			$(SrcDir)/Sources/
+VPATH	=			$(SrcDir)Sources/
 
 
 Objs	=	\
@@ -85,9 +86,9 @@ RC_FLAGS+=	/I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(ObjDir))"
 EXTRA_SUFFIX_LINKER_ARGS+=/TLBID:1
 
 $(ObjDir)ActiveLedIt.tlb:
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running MIDL compiler on "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(SrcDir)/Sources/ActiveLedIt.odl` "; see "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(ObjDir)MIDL-Build.out`" ..."
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running MIDL compiler on "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(SrcDir)Sources/ActiveLedIt.odl` "; see "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(ObjDir)MIDL-Build.out`" ..."
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_MIDL_LINE,$(SrcDir)/Sources/ActiveLedIt.odl,$(ObjDir)ActiveLedIt.tlb,$(ObjDir)ActiveLedIt_h.h,$(ObjDir)ActiveLedIt_i.c)';\
+	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_MIDL_LINE,$(SrcDir)Sources/ActiveLedIt.odl,$(ObjDir)ActiveLedIt.tlb,$(ObjDir)ActiveLedIt_h.h,$(ObjDir)ActiveLedIt_i.c)';\
 	fi
 	@$(call DEFAULT_MIDL_LINE,$(SrcDir)Sources/ActiveLedIt.odl,$(ObjDir)ActiveLedIt.tlb,$(ObjDir)ActiveLedIt_h.h,$(ObjDir)ActiveLedIt_i.c) > $(ObjDir)MIDL-Build.out 2>&1
 
@@ -96,7 +97,7 @@ $(ObjDir)ActiveLedIt.tlb:
 RC_FLAGS += /l 0x0409
 
 $(ObjDir)ActiveLedIt.res:
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running RC compiler on "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(SrcDir)/Sources/ActiveLedIt.rc` "; see "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(ObjDir)RC-Build.out`" ..."
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running RC compiler on "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(SrcDir)Sources/ActiveLedIt.rc` "; see "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(ObjDir)RC-Build.out`" ..."
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
 	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_RC_LINE,$(SrcDir)Sources/ActiveLedIt.rc,$(ObjDir)ActiveLedIt.res)';\
 	fi

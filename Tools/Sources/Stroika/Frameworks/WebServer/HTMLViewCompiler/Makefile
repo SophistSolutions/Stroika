@@ -1,7 +1,8 @@
 StroikaRoot=$(abspath ../../../../../../)/
 
 ifneq ($(CONFIGURATION),)
-	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+	#no error if missing cuz could be doing make clobber
+	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
 SrcDir						=   $(StroikaRoot)Tools/Sources/Stroika/Frameworks/WebServer/HTMLViewCompiler/
