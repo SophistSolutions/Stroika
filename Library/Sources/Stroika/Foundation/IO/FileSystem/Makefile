@@ -1,6 +1,9 @@
 StroikaRoot=$(abspath ../../../../../../)/
 
-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+ifneq ($(CONFIGURATION),)
+	#no error if missing cuz could be doing make clobber
+	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+endif
 
 SrcDir	=	$(StroikaRoot)Library/Sources/Stroika/Foundation/IO/FileSystem/
 ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/IO/FileSystem/

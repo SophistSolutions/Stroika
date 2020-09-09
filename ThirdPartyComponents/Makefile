@@ -3,10 +3,9 @@ StroikaRoot=$(abspath ../)/
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 ifneq ($(CONFIGURATION),)
+	#no error if missing cuz could be doing make clobber
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
-
-
 
 
 #Handy shortcut

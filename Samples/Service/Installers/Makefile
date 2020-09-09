@@ -1,9 +1,9 @@
 StroikaRoot=$(abspath ../../../)/
 
 ifneq ($(CONFIGURATION),)
-	include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+	#no error if missing cuz could be doing make clobber
+	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
-
 
 BASIC_NAME_LC=stroika-sampleservice
 BASIC_NAME=Stroika-SampleService

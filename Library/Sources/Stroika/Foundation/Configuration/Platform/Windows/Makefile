@@ -1,6 +1,9 @@
 StroikaRoot=$(abspath ../../../../../../../)/
 
-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+ifneq ($(CONFIGURATION),)
+	#no error if missing cuz could be doing make clobber
+	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
