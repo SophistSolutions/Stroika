@@ -70,8 +70,10 @@ filesystem::path Execution::GetEXEPath ()
 #if qPlatform_MacOS
     uint32_t bufSize = 0;
     Verify (_NSGetExecutablePath (nullptr, &bufSize) == -1);
+    Assert (bufSize > 0);
     Memory::SmallStackBuffer<char> buf (bufSize);
     Verify (_NSGetExecutablePath (buf.begin (), &bufSize) == 0);
+    Assert (buf[bufSize - 1] == '\-0');
     return buf.begin ();
 #elif qPlatform_POSIX && qSupport_Proc_Filesystem
     // readlink () isn't clear about finding the right size. The only way to tell it wasn't enuf (maybe) is
@@ -79,7 +81,7 @@ filesystem::path Execution::GetEXEPath ()
     // double buf size and try again
     Memory::SmallStackBuffer<Characters::SDKChar> buf (1024);
     ssize_t                                       n;
-    while ((n = readlink ("/proc/self/exe", buf, buf.GetSize ())) == buf.GetSize ()) {
+    while ((n = ::readlink ("/proc/self/exe", buf, buf.GetSize ())) == buf.GetSize ()) {
         buf.GrowToSize_uninitialized (buf.GetSize () * 2);
     }
     if (n < 0) {
@@ -104,46 +106,9 @@ filesystem::path Execution::GetEXEPath ()
  **************************** Execution::GetEXEPathT ****************************
  ********************************************************************************
  */
-SDKString Execution::GetEXEPathT ()
+SDKString Execution::GetEXEPathT () //***DEPRECATED***
 {
-// See also http://stackoverflow.com/questions/1023306/finding-current-executables-path-without-proc-self-exe
-//      Mac OS X: _NSGetExecutablePath() (man 3 dyld)
-//      Linux: readlink /proc/self/exe
-//      Solaris: getexecname()
-//      FreeBSD: sysctl CTL_KERN KERN_PROC KERN_PROC_PATHNAME -1
-//      BSD with procfs: readlink /proc/curproc/file
-//      Windows: GetModuleFileName() with hModule = nullptr
-//
-#if qPlatform_MacOS
-    uint32_t bufSize = 0;
-    Verify (_NSGetExecutablePath (nullptr, &bufSize) == -1);
-    Memory::SmallStackBuffer<char> buf (bufSize);
-    Verify (_NSGetExecutablePath (buf.begin (), &bufSize) == 0);
-    return buf.begin ();
-#elif qPlatform_POSIX && qSupport_Proc_Filesystem
-    // readlink () isn't clear about finding the right size. The only way to tell it wasn't enuf (maybe) is
-    // if all the bytes passed in are used. That COULD mean it all fit, or there was more. If we get that -
-    // double buf size and try again
-    Memory::SmallStackBuffer<Characters::SDKChar> buf (1024);
-    ssize_t                                       n;
-    while ((n = readlink ("/proc/self/exe", buf, buf.GetSize ())) == buf.GetSize ()) {
-        buf.GrowToSize_uninitialized (buf.GetSize () * 2);
-    }
-    if (n < 0) {
-        ThrowPOSIXErrNo (errno);
-    }
-    Assert (n <= buf.GetSize ()); // could leave no room for NUL-byte, but not needed
-    return SDKString (buf.begin (), buf.begin () + n);
-#elif qPlatform_Windows
-    Characters::SDKChar buf[MAX_PATH];
-    //memset (buf, 0, sizeof (buf));
-    Verify (::GetModuleFileName (nullptr, buf, static_cast<DWORD> (NEltsOf (buf))));
-    buf[NEltsOf (buf) - 1] = '\0'; // cheaper and just as safe as memset() - more even. Buffer always nul-terminated, and if GetModuleFileName succeeds will be nul-terminated
-    return buf;
-#else
-    AssertNotImplemented ();
-    return SDKString ();
-#endif
+    return GetEXEPath ().native ();
 }
 
 filesystem::path Execution::GetEXEPath ([[maybe_unused]] pid_t processID)
