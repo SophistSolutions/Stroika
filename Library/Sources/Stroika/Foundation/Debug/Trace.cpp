@@ -149,18 +149,24 @@ namespace {
 
 Debug::Private_::TraceModuleData_::TraceModuleData_ ()
 #if qTraceToFile
-    : fTraceFileName {mkTraceFileName_ ()}
+    // clang-format off
+    : fTraceFileName{ mkTraceFileName_ ()}
+    // clang-format on
 #endif
 {
     Assert (sEmitTraceCritSec_ == nullptr);
-    sEmitTraceCritSec_ = new recursive_mutex ();
+    sEmitTraceCritSec_ = new recursive_mutex{};
 #if qTraceToFile
     Assert (sTraceFile == nullptr);
-    sTraceFile = new ofstream ();
+    sTraceFile = new ofstream{};
     sTraceFile->open (Emitter::Get ().GetTraceFileName ().c_str (), ios::out | ios::binary);
 #endif
     DbgTrace (L"***Starting TraceLog***");
+#if qCompiler_LimitLengthBeforeMainCrash_Buggy
+    DbgTrace ("EXEPath=%s", Execution::GetEXEPath ().native ().c_str ());
+#else
     DbgTrace (L"EXEPath=%s", Characters::ToString (Execution::GetEXEPath ()).c_str ());
+#endif
     TraceContextBumper ctx{L"debug-state"};
     DbgTrace (L"Debug::kBuiltWithAddressSanitizer = %s", Characters::ToString (Debug::kBuiltWithAddressSanitizer).c_str ());
     DbgTrace (L"Debug::IsRunningUnderValgrind () = %s", Characters::ToString (Debug::IsRunningUnderValgrind ()).c_str ());
