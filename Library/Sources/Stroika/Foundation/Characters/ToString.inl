@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Characters {
         {
             constexpr size_t kMaxLen2Display_{100}; // no idea what a good value here will be or if we should provide ability to override. I suppose
                                                     // users can template-specialize ToString(const String&)???
-            return L"'" + static_cast<String> (t).LimitLength (kMaxLen2Display_) + L"'";
+            return L"'"sv + static_cast<String> (t).LimitLength (kMaxLen2Display_) + L"'"sv;
         }
 
         String ToString_ex_ (const exception& t);
@@ -127,10 +127,7 @@ namespace Stroika::Foundation::Characters {
         template <typename T>
         inline String ToString_ ([[maybe_unused]] const T& t, enable_if_t<is_convertible_v<T, tuple<>>>* = 0)
         {
-            StringBuilder sb;
-            sb << L"{";
-            sb << L"}";
-            return sb.str ();
+            return "{}"sv;
         }
         template <typename T1>
         String ToString_ (const tuple<T1>& t)
@@ -232,12 +229,12 @@ namespace Stroika::Foundation::Characters {
         template <typename T>
         inline String ToString_ (const shared_ptr<T>& pt)
         {
-            return (pt == nullptr) ? L"nullptr" : ToString (*pt);
+            return (pt == nullptr) ? L"nullptr"sv : ToString (*pt);
         }
         template <typename T>
         inline String ToString_ (const optional<T>& o)
         {
-            return o.has_value () ? Characters::ToString (*o) : L"[missing]";
+            return o.has_value () ? Characters::ToString (*o) : L"[missing]"sv;
         }
     }
     template <>
