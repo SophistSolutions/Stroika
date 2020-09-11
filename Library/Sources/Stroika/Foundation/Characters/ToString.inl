@@ -127,7 +127,7 @@ namespace Stroika::Foundation::Characters {
         template <typename T>
         inline String ToString_ ([[maybe_unused]] const T& t, enable_if_t<is_convertible_v<T, tuple<>>>* = 0)
         {
-            return "{}"sv;
+            return "{}"_k;
         }
         template <typename T1>
         String ToString_ (const tuple<T1>& t)
