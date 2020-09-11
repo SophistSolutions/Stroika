@@ -1115,11 +1115,7 @@ bool String::IsWhitespace () const
 
 String String::LimitLength (size_t maxLen, bool keepLeft) const
 {
-#if 1
-    static const String kELIPSIS_{String_Constant (L"\u2026")};
-#else
-    static const String kELIPSIS_{String_Constant (L"...")};
-#endif
+    static const String kELIPSIS_{L"\u2026"_k}; // OR L"..."
     return LimitLength (maxLen, keepLeft, kELIPSIS_);
 }
 
