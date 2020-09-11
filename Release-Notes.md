@@ -7,6 +7,35 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+---
+
+### 2.1b5 {2020-09-11 DRAFT @todo cleanup}
+
+#### TLDR
+
+- Updated VS2k19 compiler, and a few ThirdPartyComponents
+
+#### Details
+
+- vs2k19 16.7.3 docker config
+
+- ThirdPartyComponents
+
+  - use 3.33 sqlite
+  - 7.72.0 libcurl
+  - tested openssl 3.0 alpha 6
+  - Boost 1.74.0
+
+- workaround qCompiler_LimitLengthBeforeMainCrash_Buggy macos issue
+
+- makefile cleanups: use - in front of include IntemediateFiles/...Configuraiton.mk so we no longer need the > /dev/null on make list-objs (and fixes other issues)
+
+- dbgtrace EXEPath on app startup
+
+- travisci: up xcode version using on macos; and checkout TRAVIS_COMMIT not TRAVIS_BRANCH
+
+---
+
 ### 2.1b4 {2020-09-07}
 
 #### TLDR
@@ -15,17 +44,19 @@ especially those they need to be aware of when upgrading.
 - new TraceContextSuppressor
 - ConnectionOrientedStreamSocket::Ptr::Connect () overload taking timeout parameter
 
-#### Details- Compiler versions
+#### Details
 
-- use VS2k19 16_7_2
+- Compiler versions
 
-- Compiler bug defines
+  - use VS2k19 16_7_2
 
-  - Close https://stroika.atlassian.net/browse/STK-635
-    Lose qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-    Deprecate Date::min/max, DateTime::min/max functions etc and instead use kMin/kMax
-    and got constexpr stuff working correctly (and timezone). Cannot do similar to Duration yet - requires
-    C++20 - I think).
+  - Compiler bug defines
+
+    - Close https://stroika.atlassian.net/browse/STK-635
+      Lose qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
+      Deprecate Date::min/max, DateTime::min/max functions etc and instead use kMin/kMax
+      and got constexpr stuff working correctly (and timezone). Cannot do similar to Duration yet - requires
+      C++20 - I think).
 
 - (Mostly) Cosmetic code cleanups
 
