@@ -9,7 +9,7 @@ especially those they need to be aware of when upgrading.
 
 ---
 
-### 2.1b5 {2020-09-11 DRAFT @todo cleanup}
+### 2.1b5 {2020-09-12}
 
 #### TLDR
 
@@ -17,7 +17,10 @@ especially those they need to be aware of when upgrading.
 
 #### Details
 
-- vs2k19 16.7.3 docker config
+- Compiler versions
+
+  - vs2k19 16.7.3 docker config
+  - workaround qCompiler_LimitLengthBeforeMainCrash_Buggy macos issue
 
 - ThirdPartyComponents
 
@@ -26,13 +29,13 @@ especially those they need to be aware of when upgrading.
   - tested openssl 3.0 alpha 6
   - Boost 1.74.0
 
-- workaround qCompiler_LimitLengthBeforeMainCrash_Buggy macos issue
+- Library
 
-- makefile cleanups: use - in front of include IntemediateFiles/...Configuraiton.mk so we no longer need the > /dev/null on make list-objs (and fixes other issues)
+  - dbgtrace print EXEPath on app startup
 
-- dbgtrace EXEPath on app startup
-
-- travisci: up xcode version using on macos; and checkout TRAVIS_COMMIT not TRAVIS_BRANCH
+- Build System
+  - travisci: up xcode version using on macos; and checkout TRAVIS_COMMIT not TRAVIS_BRANCH
+  - makefile cleanups: use - in front of include IntemediateFiles/...Configuraiton.mk so we no longer need the > /dev/null on make list-objs (and fixes other issues)
 
 ---
 
