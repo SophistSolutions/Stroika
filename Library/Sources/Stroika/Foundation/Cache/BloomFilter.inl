@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Cache {
      */
     template <typename T>
     inline BloomFilter<T>::BloomFilter (const Containers::Sequence<HashFunctionType>& hashFunctions, const BloomFilterOptions& options)
-        : fHashFunctions_{hashFunctions.As<vector<HashFunctionType>> ()}
+        : fHashFunctions_{hashFunctions.template As<vector<HashFunctionType>> ()}
         , fBits_{}
     {
         BloomFilterOptions o = options.Optimize ();
