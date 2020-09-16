@@ -151,7 +151,7 @@ Debug::Private_::TraceModuleData_::TraceModuleData_ ()
 #if qTraceToFile
     // clang-format off
     : fTraceFileName{ mkTraceFileName_ ()}
-    // clang-format on
+// clang-format on
 #endif
 {
     Assert (sEmitTraceCritSec_ == nullptr);
