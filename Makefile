@@ -110,7 +110,7 @@ ifeq ($(CONFIGURATION),)
 	@ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika $(call FUNCTION_CAPITALIZE_WORD,$@):"
 ifeq ($(CONFIGURATION_TAGS),)
 	@#for clobber, quickly delete all interesting stuff (if no args so unrestricted) and in third party deletes stuff like 'CURRENT' folders
-	@if [ "$@" = "clobber" ] ; then \
+	@if [ "$@" == "clobber" ] ; then \
 		rm -rf IntermediateFiles/* Builds/*;\
 		$(MAKE) --directory ThirdPartyComponents --no-print-directory $@ CONFIGURATION= MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	fi
