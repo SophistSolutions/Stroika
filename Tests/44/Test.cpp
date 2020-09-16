@@ -27,15 +27,15 @@ using namespace Stroika::Foundation::IO::FileSystem;
 namespace {
     void Test1_DirectoryIterator_ ()
     {
-        Debug::TraceContextBumper ctx ("Test1_DirectoryIterator_");
+        Debug::TraceContextBumper ctx{"Test1_DirectoryIterator_"};
         {
-            Debug::TraceContextBumper ctx1 ("simple test");
+            Debug::TraceContextBumper ctx1{"simple test"};
             for (DirectoryIterator i{WellKnownLocations::GetTemporary ()}; not i.Done (); ++i) {
                 DbgTrace (L"filename = %s", Characters::ToString (*i).c_str ());
             }
         }
         {
-            Debug::TraceContextBumper ctx1 ("t2");
+            Debug::TraceContextBumper ctx1{"t2"};
             DirectoryIterator         i{WellKnownLocations::GetTemporary ()};
             for (DirectoryIterator i2 = i; not i2.Done (); ++i2) {
                 DbgTrace (L"filename = %s", Characters::ToString (*i2).c_str ());
@@ -47,12 +47,12 @@ namespace {
 namespace {
     void Test2_DirectoryIterable_ ()
     {
-        Debug::TraceContextBumper ctx ("Test2_DirectoryIterable_");
+        Debug::TraceContextBumper ctx{"Test2_DirectoryIterable_"};
         for (filesystem::path filename : DirectoryIterable (WellKnownLocations::GetTemporary ())) {
             DbgTrace (L"filename = %s", Characters::ToString (filename).c_str ());
         }
         {
-            Debug::TraceContextBumper                      ctx1 ("test-known-dir");
+            Debug::TraceContextBumper                      ctx1{"test-known-dir"};
             static const Containers::Set<filesystem::path> kFileNamesForDir_{L"foo.txt", L"bar.png", L"t3.txt", L"blag.nope"};
             static const filesystem::path                  kTestSubDir_ = WellKnownLocations::GetTemporary () / ToPath (L"Regtest-write-files-" + Characters::ToString (Execution::GetCurrentProcessID ()));
             (void)filesystem::remove_all (kTestSubDir_);
@@ -102,7 +102,7 @@ namespace {
             VerifyTestResult ((filesystem::path (L"..").parent_path () == L""));
             VerifyTestResult ((filesystem::path (L"..").filename () == L".."));
 #elif qPlatform_Windows
-            VerifyTestResult ((filesystem::path (L"\\usr\\lib").parent_path () == L"\\usr"));
+            VerifyTestResult ((filesystem::path{L"\\usr\\lib"}.parent_path () == L"\\usr"));
             VerifyTestResult ((filesystem::path (L"\\usr\\lib").filename () == L"lib"));
             VerifyTestResult ((filesystem::path (L"\\usr\\").parent_path () == L"\\usr"));
             VerifyTestResult ((filesystem::path (L"\\usr\\").filename () == L""));
@@ -133,7 +133,7 @@ namespace {
 
         void DoTest ()
         {
-            Debug::TraceContextBumper ctx ("Test3_Pathnames_");
+            Debug::TraceContextBumper ctx{"Test3_Pathnames_"};
             Test_ExtractDirAndBaseName_ ();
             Test_GetFileBaseName_ ();
         }
@@ -144,7 +144,7 @@ namespace {
     namespace Test4_MountedFilesystems_ {
         void DoTest ()
         {
-            Debug::TraceContextBumper ctx ("Test4_MountedFilesystems_");
+            Debug::TraceContextBumper ctx{"Test4_MountedFilesystems_"};
             for (auto i : IO::FileSystem::GetMountedFilesystems ()) {
                 DbgTrace (L"fs=%s", Characters::ToString (i).c_str ());
             }
@@ -156,7 +156,7 @@ namespace {
     namespace Test5_DisksPresent_ {
         void DoTest ()
         {
-            Debug::TraceContextBumper ctx ("Test5_DisksPresent_");
+            Debug::TraceContextBumper ctx{"Test5_DisksPresent_"};
             for (auto i : IO::FileSystem::GetAvailableDisks ()) {
                 DbgTrace (L"d=%s", Characters::ToString (i).c_str ());
             }
