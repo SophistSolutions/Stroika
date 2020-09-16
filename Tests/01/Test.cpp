@@ -4,6 +4,7 @@
 //  TEST    Foundation::Caching
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Cache/BloomFilter.h"
 #include "Stroika/Foundation/Cache/CallerStalenessCache.h"
 #include "Stroika/Foundation/Cache/LRUCache.h"
 #include "Stroika/Foundation/Cache/Memoizer.h"
@@ -13,6 +14,7 @@
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Memory/Optional.h"
+#include "Stroika/Foundation/Traversal/DiscreteRange.h"
 
 #include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
@@ -298,6 +300,42 @@ namespace {
 }
 
 namespace {
+    namespace Test7_BloomFilter_ {
+        // FROM Example Usage in ???
+        namespace Private_ {
+            void SimpleBasic ()
+            {
+                Debug::TraceContextBumper ctx{"SimpleBasic"};
+                BloomFilter<int>          f{BloomFilterOptions{1000}};
+                for (auto i : Traversal::DiscreteRange<int>{1, 1000}) {
+                    if (i & 1) {
+                        f.Add (i);
+                    }
+                }
+                unsigned int falsePositives{};
+                for (auto i : Traversal::DiscreteRange<int>{1, 1000}) {
+                    if (i & 1) {
+                        VerifyTestResult (f.Contains (i));
+                    }
+                    else {
+                        if (f.Contains (i)) {
+                            falsePositives++;
+                        }
+                    }
+                }
+                VerifyTestResult (falsePositives < 500);    // last measured was 101, but anything over 500 clearly buggy, no matter how things change
+                DbgTrace (L"false positives: %d", falsePositives);
+            }
+        }
+
+        void DoIt ()
+        {
+            Debug::TraceContextBumper ctx{"Test7_BloomFilter_"};
+            Private_::SimpleBasic ();
+        }
+    }
+}
+namespace {
     void DoRegressionTests_ ()
     {
         Test1_Simple_::DoIt ();
@@ -306,6 +344,7 @@ namespace {
         Test4_TimedCache_::DoIt ();
         Test5_Memoizer_::DoIt ();
         Test6_CallerStalenessCache_::DoIt ();
+        Test7_BloomFilter_::DoIt ();
     }
 }
 

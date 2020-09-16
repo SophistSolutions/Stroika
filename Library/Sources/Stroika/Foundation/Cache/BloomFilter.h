@@ -7,6 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include "../Configuration/Common.h"
+#include "../Configuration/TypeHints.h"
 #include "../Containers/Sequence.h"
 #include "../Containers/Set.h"
 
@@ -21,18 +22,18 @@ namespace Stroika::Foundation::Cache {
         optional<size_t>       fExpectedMaxSetSize;
         optional<size_t>       fBitCount; // allocated bit count
         optional<unsigned int> fHashFunctionCount;
-        float                  fDesiredFalsePositivityRate{0.1};
+        double                 fDesiredFalsePositivityRate{0.1};
 
     public:
         nonvirtual BloomFilterOptions Optimize () const;
 
     public:
-        static unsigned int OptimizeBitSize (size_t nElements, float desiredFalsePositiveProbability = 0.1);
+        static unsigned int OptimizeBitSize (size_t nElements, double desiredFalsePositiveProbability = 0.1);
         static unsigned int OptimizeNumberOfHashFunctions (size_t setSize, optional<size_t> bitSize = nullopt);
     };
 
     /**
-     * \brief a Bloom filter is a probablistic set, which returns either "possibly in set" or "definitely not in set"
+     * \brief a Bloom filter is a probablistic set, which returns either "probably in set" or "definitely not in set"
      *
      * Description:
      *      http://en.wikipedia.org/wiki/Bloom_filter
@@ -43,14 +44,14 @@ namespace Stroika::Foundation::Cache {
         using HashFunctionType = function<size_t (T)>;
 
     public:
-        static constexpr inline HashFunctionType kDefaultHashFunction = hash<T>;
+        static const inline HashFunctionType kDefaultHashFunction = hash<T>{};
 
     public:
         /**
          *  nHashFunctions corresponds to 'k' in http://en.wikipedia.org/wiki/Bloom_filter
          *  expectedSetSize corresponds to 'm' in http://en.wikipedia.org/wiki/Bloom_filter
          */
-        BloomFilter (Containers::Sequence<HashFunctionType> hashFunctions, const BloomFilterOptions& options);
+        BloomFilter (const Containers::Sequence<HashFunctionType>& hashFunctions, const BloomFilterOptions& options);
         BloomFilter (const BloomFilterOptions& options);
         BloomFilter (const BloomFilter& src) = default;
         BloomFilter& operator= (const BloomFilter& src) = default;
@@ -58,7 +59,7 @@ namespace Stroika::Foundation::Cache {
     public:
         /**
          */
-        nonvirtual void Add (ArgByValueType<T> elt);
+        nonvirtual void Add (Configuration::ArgByValueType<T> elt);
 
     public:
         /**
@@ -67,9 +68,11 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
+         *  \brief returns true if this Contains (elt) - and probably false otherwise.
+         *
          *  False positive retrieval results are possible, but false negatives are not;
          */
-        nonvirtual void IsPresent (ArgByValueType<T> elt) const;
+        nonvirtual bool Contains (Configuration::ArgByValueType<T> elt) const;
 
     private:
         vector<HashFunctionType> fHashFunctions_;
