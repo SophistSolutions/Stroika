@@ -325,7 +325,7 @@ namespace {
                 DbgTrace (L"false positives: %d", falsePositives);
                 DbgTrace (L"Probability of false positives = %f", f.GetEffectiveOptions ().ProbabilityOfFalsePositive (1000));
                 VerifyTestResult (falsePositives < 500); // last measured was 101, but anything over 500 clearly buggy, no matter how things change
-                auto pfp = f.GetEffectiveOptions ().ProbabilityOfFalsePositive (1000);
+                auto pfp                        = f.GetEffectiveOptions ().ProbabilityOfFalsePositive (1000);
                 auto expectedFalsePositiveRange = 500.0 * pfp * (Traversal::Range<double>{-.5, .5} + 1.0); // my probs estimate not perfect, so add some wiggle around it
                 DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
                 VerifyTestResult (expectedFalsePositiveRange.Contains (falsePositives));
