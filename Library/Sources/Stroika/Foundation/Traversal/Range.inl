@@ -325,6 +325,12 @@ namespace Stroika::Foundation::Traversal {
         return Range (static_cast<T> (GetLowerBound () + o), static_cast<T> (GetUpperBound () + o), GetLowerBoundOpenness (), GetUpperBoundOpenness ());
     }
     template <typename T, typename TRAITS>
+    constexpr auto Range<T, TRAITS>::Times (T o) const -> Range
+    {
+        Require (not empty ());
+        return Range (static_cast<T> (GetLowerBound () * o), static_cast<T> (GetUpperBound () * o), GetLowerBoundOpenness (), GetUpperBoundOpenness ());
+    }
+    template <typename T, typename TRAITS>
     Characters::String Range<T, TRAITS>::ToString (const function<Characters::String (T)>& eltToString) const
     {
         Characters::StringBuilder out;
@@ -384,9 +390,30 @@ namespace Stroika::Foundation::Traversal {
      ********************************************************************************
      */
     template <typename T, typename TRAITS>
+    inline Range<T, TRAITS> operator+ (const T& lhs, const Range<T, TRAITS>& rhs)
+    {
+        return rhs.Offset (lhs);
+    }
+    template <typename T, typename TRAITS>
+    inline Range<T, TRAITS> operator+ (const Range<T, TRAITS>& lhs, const T& rhs)
+    {
+        return lhs.Offset (rhs);
+    }
+    template <typename T, typename TRAITS>
     inline DisjointRange<T, Range<T, TRAITS>> operator+ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
     {
         return lhs.Union (rhs);
+    }
+
+    template <typename T, typename TRAITS>
+    inline Range<T, TRAITS> operator* (const T& lhs, const Range<T, TRAITS>& rhs)
+    {
+        return rhs.Times (lhs);
+    }
+    template <typename T, typename TRAITS>
+    inline Range<T, TRAITS> operator* (const Range<T, TRAITS>& lhs, const T& rhs)
+    {
+        return lhs.Times (rhs);
     }
 
     template <typename T, typename TRAITS>

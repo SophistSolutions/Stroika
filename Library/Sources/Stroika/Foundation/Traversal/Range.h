@@ -142,6 +142,9 @@ namespace Stroika::Foundation::Traversal {
     /**
      *  A Range<> is analagous to a mathematical range. It's left and and its right sides can
      *  be optionally open or closed.
+     * 
+     *  A range always has a lower and upper bound (if not specified in CTOR, its specified by the type traits) so no
+     *  unbounded ranges).
      *
      *  This Range<> template is similar to Ruby range, and fairly DIFFERENT from the std::range<> template.
      *
@@ -381,6 +384,14 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
+         *  \req not empty
+         *  \req the Range produced by applying the given factor to the upper and lower bounds.
+         *  \req T has operator* (T,T) -> T defined
+         */
+        constexpr Range Times (T o) const;
+
+    public:
+        /**
          *  Print a displayable rendition of the given range, using the argument function to format
          *  the basic value_type.
          *
@@ -411,10 +422,24 @@ namespace Stroika::Foundation::Traversal {
 #endif
 
     /**
-     *  Alias forlhs.Union (rhs)
+     *  Alias: T + RANGE => RANGE.Offset(T)
+     *  Alias: RANGE + RANGE => RANGE.Union (RANGE)
      */
     template <typename T, typename TRAITS>
+    Range<T, TRAITS> operator+ (const T& lhs, const Range<T, TRAITS>& rhs);
+    template <typename T, typename TRAITS>
+    Range<T, TRAITS> operator+ (const Range<T, TRAITS>& lhs, const T& rhs);
+    template <typename T, typename TRAITS>
     DisjointRange<T, Range<T, TRAITS>> operator+ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
+
+    /**
+     *  Alias: T * RANGE => RANGE.Times(T)
+     *  \req T has operator* (T,T) -> T defined
+     */
+    template <typename T, typename TRAITS>
+    Range<T, TRAITS> operator* (const T& lhs, const Range<T, TRAITS>& rhs);
+    template <typename T, typename TRAITS>
+    Range<T, TRAITS> operator* (const Range<T, TRAITS>& lhs, const T& rhs);
 
     /**
      *  Alias forlhs.Intersection (rhs)
