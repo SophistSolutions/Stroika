@@ -31,7 +31,18 @@ namespace Stroika::Foundation::Cache {
     {
         size_t useBitSize = bitSize.value_or (OptimizeBitSize (setSize));
         // based on https://en.wikipedia.org/wiki/Bloom_filter - (m/n)*ln(2)
-        return static_cast<unsigned int> (::ceil ((double (setSize) / useBitSize) * log (2)));
+        return static_cast<unsigned int> (::ceil ((double (useBitSize) / setSize) * log (2)));
+    }
+    inline double BloomFilterOptions::ProbabilityOfFalsePositive (int hashFunctionCount, int bitCount, int nElementsInsertedSoFar)
+    {
+        // From https://en.wikipedia.org/wiki/Bloom_filter
+        return ::pow (1 - ::exp (-static_cast<double> (hashFunctionCount * nElementsInsertedSoFar) / bitCount), hashFunctionCount);
+    }
+    inline double BloomFilterOptions::ProbabilityOfFalsePositive (int nElementsInsertedSoFar) const
+    {
+        Require (fHashFunctionCount);
+        Require (fBitCount);
+        return ProbabilityOfFalsePositive (*fHashFunctionCount, *fBitCount, nElementsInsertedSoFar);
     }
     inline BloomFilterOptions BloomFilterOptions::Optimize () const
     {
@@ -58,19 +69,29 @@ namespace Stroika::Foundation::Cache {
      */
     template <typename T>
     inline BloomFilter<T>::BloomFilter (const Containers::Sequence<HashFunctionType>& hashFunctions, const BloomFilterOptions& options)
-        : fHashFunctions_{hashFunctions.template As<vector<HashFunctionType>> ()}
-        , fBits_{}
+        : fBits_{}
     {
+        Require (hashFunctions.size () >= 1);
         BloomFilterOptions o = options.Optimize ();
-        if (*o.fHashFunctionCount != fHashFunctions_.size ()) {
-            AssertNotReached (); // must manually create functions here
+        // @todo only repeat enuf to get at least desired number of hash functions
+        fHashFunctions_ = hashFunctions.Repeat (*o.fHashFunctionCount).template As<vector<HashFunctionType>> ();
+        if (*o.fHashFunctionCount < fHashFunctions_.size ()) {
+            fHashFunctions_.erase (fHashFunctions_.begin () + *o.fHashFunctionCount, fHashFunctions_.end ());
         }
+        Ensure (fHashFunctions_.size () >= 1);
+        Ensure (fHashFunctions_.size () == *o.fHashFunctionCount);
         fBits_.resize (*o.fBitCount, false);
+        Ensure (fBits_.size () >= 1);
     }
     template <typename T>
-    inline BloomFilter<T>::BloomFilter (const BloomFilterOptions& options)
+    inline BloomFilter<T>::BloomFilter (const Options& options)
         : BloomFilter{Containers::Sequence<HashFunctionType>{kDefaultHashFunction}, options}
     {
+    }
+    template <typename T>
+    inline auto BloomFilter<T>::GetEffectiveOptions () const -> Options
+    {
+        return Options{nullopt, fBits_.size (), fHashFunctions_.size ()};
     }
     template <typename T>
     void BloomFilter<T>::Add (Configuration::ArgByValueType<T> elt)
