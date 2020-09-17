@@ -867,6 +867,39 @@ namespace Stroika::Foundation::Traversal {
         return Median ().Value (defaultValue);
     }
     template <typename T>
+    Iterable<T> Iterable<T>::Repeat (size_t count) const
+    {
+        switch (count) {
+            case 0:
+                return Iterable<T>{};
+            case 1:
+                return *this;
+            default: {
+                // Somewhat simplistic / inefficient implementation
+                vector<T>                origList{begin (), end ()};
+                size_t                   repeatCountIndex{1}; // start at one, cuz we don't copy the zeroth time
+                size_t                   innerIndex{0};
+                function<optional<T> ()> getNext = [origList, repeatCountIndex, innerIndex, count] () mutable -> optional<T> {
+                    Again:
+                        if (innerIndex < origList.size ())
+                            [[LIKELY_ATTR]]
+                            {
+                                return origList[innerIndex++];
+                            }
+                        if (repeatCountIndex < count)
+                            [[LIKELY_ATTR]]
+                            {
+                                repeatCountIndex++;
+                                innerIndex = 0;
+                                goto Again;
+                            }
+                        return nullopt;
+                };
+                return CreateGenerator (getNext);
+            }
+        }
+    }
+    template <typename T>
     inline bool Iterable<T>::empty () const
     {
         return IsEmpty ();

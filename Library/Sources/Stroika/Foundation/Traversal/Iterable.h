@@ -1079,6 +1079,21 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
+         *  Return this iterable n (count) times. count may be zero, or any other unsigned integer.
+         *  Repeat (0) returns an empty list, and Repeat (1) returns *this;
+         * 
+         *  Similar to https://docs.microsoft.com/en-us/dotnet/api/system.linq.enumerable.repeat?view=netcore-3.1
+         * 
+         *  \par Example Usage
+         *      \code
+         *          Iterable<int> c{1};
+         *          VerifyTestResult (c.Repeat (5).SequentialEquals (Iterable<int>{1, 1, 1, 1, 1}));
+         *      \endcode
+         */
+        nonvirtual Iterable<T> Repeat (size_t count) const;
+
+    public:
+        /**
          * \brief not empty () - synonym for .net Any() Linq method.
          *
          *  Second overload (with filter function) same as .Where(filter).Any ();

@@ -912,6 +912,24 @@ namespace {
 }
 
 namespace {
+    void Test21_Repeat_ ()
+    {
+        Debug::TraceContextBumper ctx{L"{}::Test21_Repeat_"};
+        {
+            Iterable<int> c{1};
+            VerifyTestResult (c.Repeat (5).SequentialEquals (Iterable<int>{1, 1, 1, 1, 1}));
+        }
+        {
+            using IO::Network::InternetAddress;
+            Iterable<InternetAddress> c{IO::Network::V4::kLocalhost, IO::Network::V4::kAddrAny};
+            VerifyTestResult (c.Repeat (0).GetLength () == 0);
+            VerifyTestResult (c.Repeat (1).SequentialEquals (c));
+            VerifyTestResult (c.Repeat (10).GetLength () == 20);
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_"};
@@ -935,6 +953,7 @@ namespace {
         Test18_IterableConstructors_ ();
         Test19_CreateGeneratorBug_ ();
         Test20_Join_ ();
+        Test21_Repeat_ ();
     }
 }
 
