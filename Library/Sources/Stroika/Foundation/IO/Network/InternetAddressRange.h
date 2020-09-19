@@ -46,6 +46,12 @@ namespace Stroika::Foundation::IO::Network {
     }
 
     /**
+     *  \par Example Usage
+     *      \code
+     *          for (InternetAddress ia : CIDR  { L"192.168.243.0/24" }.GetRange ()) {
+     *               print (ia);
+     *          }
+     *      \endcode
      */
     using InternetAddressRange = Traversal::DiscreteRange<InternetAddress, Private_::InternetAddressRangeTraits_>;
 
