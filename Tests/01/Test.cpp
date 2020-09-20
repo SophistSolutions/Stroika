@@ -12,6 +12,7 @@
 #include "Stroika/Foundation/Cache/Memoizer.h"
 #include "Stroika/Foundation/Cache/TimedCache.h"
 #include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/Cryptography/Digest/Algorithm/SuperFastHash.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/TimingTrace.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -343,14 +344,54 @@ namespace {
                 using Characters::String;
                 using IO::Network::CIDR;
                 using IO::Network::InternetAddress;
-                auto                         hashFunction = [] (auto&& a) -> int { return hash<string>{}(a.As<String> ().AsUTF8 ()); };
+                auto                         hashFunction = [] (const InternetAddress& a) -> int { return hash<string>{}(a.As<String> ().AsUTF8 ()); };
                 BloomFilter<InternetAddress> f{BloomFilter<InternetAddress>::Options{1000, hashFunction}}; // way more than needed so SB small # of false positives
                 DbgTrace (L"bloom filter options = %s", Characters::ToString (f.GetEffectiveOptions ()).c_str ());
                 CIDR                             cidr{L"192.168.243.0/24"};
                 Containers::Set<InternetAddress> oracle;
                 for (InternetAddress ia : cidr.GetRange ()) {
                     default_random_engine      gen (random_device{}()); //Standard mersenne_twister_engine seeded with rd()
-                    uniform_int_distribution<> uniformDist (0, 1);
+                    uniform_int_distribution<> uniformDist{0, 1};
+                    if (uniformDist (gen) == 0) {
+                        f.Add (ia);
+                        oracle.Add (ia);
+                    }
+                }
+                unsigned int falsePositives{};
+                for (InternetAddress ia : cidr.GetRange ()) {
+                    if (oracle.Contains (ia)) {
+                        VerifyTestResult (f.Contains (ia));
+                    }
+                    else {
+                        if (f.Contains (ia)) {
+                            falsePositives++;
+                        }
+                    }
+                }
+                DbgTrace (L"false positives: %d", falsePositives);
+                DbgTrace (L"Probability of false positives = %f", f.GetEffectiveOptions ().ProbabilityOfFalsePositive (cidr.GetRange ().GetNumberOfContainedPoints ()));
+                VerifyTestResult (falsePositives < 20); // &&& FIX NUMBER last measured was ???, but anything over 500 clearly buggy, no matter how things change
+                auto pfp                        = f.GetEffectiveOptions ().ProbabilityOfFalsePositive (cidr.GetRange ().GetNumberOfContainedPoints ());
+                auto expectedFalsePositiveRange = (cidr.GetRange ().GetNumberOfContainedPoints () / 2) * pfp * (Traversal::Range<double>{-.5, .5} + 1.0); // my probs estimate not perfect, so add some wiggle around it
+                expectedFalsePositiveRange      = expectedFalsePositiveRange * 2.0;                                                                       //tmphack til I fix algorithm how to duplicate hashers
+                DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
+                //disable til we fix # hash functions issue - VerifyTestResult (expectedFalsePositiveRange.Contains (falsePositives));
+            }
+            void SimpleBloomTestWithStroikaDigester ()
+            {
+                Debug::TraceContextBumper ctx{"SimpleBloomTestWithStroikaDigester"};
+                using namespace Cryptography::Digest;
+                using Characters::String;
+                using IO::Network::CIDR;
+                using IO::Network::InternetAddress;
+                auto                         hashFunction = [] (const InternetAddress& a) -> int { return Digester<Algorithm::SuperFastHash>::ComputeDigest (Memory::BLOB{a.As<vector<uint8_t>> ()}); };
+                BloomFilter<InternetAddress> f{BloomFilter<InternetAddress>::Options{1000, hashFunction}}; // way more than needed so SB small # of false positives
+                DbgTrace (L"bloom filter options = %s", Characters::ToString (f.GetEffectiveOptions ()).c_str ());
+                CIDR                             cidr{L"192.168.243.0/24"};
+                Containers::Set<InternetAddress> oracle;
+                for (InternetAddress ia : cidr.GetRange ()) {
+                    default_random_engine      gen (random_device{}()); //Standard mersenne_twister_engine seeded with rd()
+                    uniform_int_distribution<> uniformDist{0, 1};
                     if (uniformDist (gen) == 0) {
                         f.Add (ia);
                         oracle.Add (ia);
@@ -383,6 +424,7 @@ namespace {
             Debug::TraceContextBumper ctx{"Test7_BloomFilter_"};
             Private_::SimpleBasic ();
             Private_::SimpleInternetAddressTest ();
+            Private_::SimpleBloomTestWithStroikaDigester ();
         }
     }
 }
