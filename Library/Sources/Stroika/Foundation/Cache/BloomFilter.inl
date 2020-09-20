@@ -11,6 +11,7 @@
  */
 #include <cmath>
 
+#include "../Characters/StringBuilder.h"
 #include "../Debug/Assertions.h"
 #include "../Execution/Exceptions.h"
 #include "../Math/Common.h"
@@ -61,6 +62,55 @@ namespace Stroika::Foundation::Cache {
         Ensure (tmp.fHashFunctionCount);
         return tmp;
     }
+    inline Characters::String BloomFilterOptions::ToString () const
+    {
+        Characters::StringBuilder sb;
+        sb += L"{";
+        sb += L"fExpectedMaxSetSize: " + Characters::ToString (fExpectedMaxSetSize) + L", ";
+        sb += L"}";
+        sb += L"{";
+        sb += L"fBitCount: " + Characters::ToString (fBitCount) + L", ";
+        sb += L"}";
+        sb += L"{";
+        sb += L"fHashFunctionCount: " + Characters::ToString (fHashFunctionCount) + L", ";
+        sb += L"}";
+        sb += L"{";
+        sb += L"fDesiredFalsePositivityRate: " + Characters::ToString (fDesiredFalsePositivityRate) + L", ";
+        sb += L"}";
+        return sb.str ();
+    }
+
+    /*
+     ********************************************************************************
+     ************************* Cache::BloomFilter<T>::Options ***********************
+     ********************************************************************************
+     */
+    template <typename T>
+    BloomFilter<T>::Options::Options (const BloomFilterOptions& o)
+        : BloomFilterOptions{o}
+        , fHashFunctions{Containers::Sequence<HashFunctionType>{hash<T>{}}}
+    {
+    }
+    template <typename T>
+    BloomFilter<T>::Options::Options (size_t expectedMaxSetSize, const HashFunctionType& defaultHashFunction)
+        : BloomFilterOptions{expectedMaxSetSize}
+        , fHashFunctions{defaultHashFunction}
+    {
+    }
+    template <typename T>
+    BloomFilter<T>::Options::Options (const Containers::Sequence<HashFunctionType>& hashFunctions, size_t bitCount)
+        : BloomFilterOptions{nullopt, bitCount, hashFunctions.GetLength ()}
+        , fHashFunctions{hashFunctions}
+    {
+    }
+    template <typename T>
+    Characters::String BloomFilter<T>::Options::ToString () const
+    {
+        Characters::StringBuilder sb{BloomFilterOptions::ToString ().SubString (0, -1)};
+        sb += L", fHashFunctions.length: " + Characters::ToString (fHashFunctions.GetLength ());
+        sb += L"}";
+        return sb.str ();
+    }
 
     /*
      ********************************************************************************
@@ -85,13 +135,13 @@ namespace Stroika::Foundation::Cache {
     }
     template <typename T>
     inline BloomFilter<T>::BloomFilter (const Options& options)
-        : BloomFilter{Containers::Sequence<HashFunctionType>{kDefaultHashFunction}, options}
+        : BloomFilter{options.fHashFunctions, options}
     {
     }
     template <typename T>
     inline auto BloomFilter<T>::GetEffectiveOptions () const -> Options
     {
-        return Options{nullopt, fBits_.size (), fHashFunctions_.size ()};
+        return Options{Containers::Sequence<HashFunctionType> (fHashFunctions_), fBits_.size ()};
     }
     template <typename T>
     void BloomFilter<T>::Add (Configuration::ArgByValueType<T> elt)

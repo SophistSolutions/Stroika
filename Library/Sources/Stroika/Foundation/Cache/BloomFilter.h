@@ -6,6 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
+#include "../Characters/ToString.h"
 #include "../Configuration/Common.h"
 #include "../Configuration/TypeHints.h"
 #include "../Containers/Sequence.h"
@@ -15,7 +16,6 @@
  *
  *
  */
-
 namespace Stroika::Foundation::Cache {
 
     /**
@@ -45,6 +45,12 @@ namespace Stroika::Foundation::Cache {
          */
         static double     ProbabilityOfFalsePositive (int hashFunctionCount, int bitCount, int nElementsInsertedSoFar);
         nonvirtual double ProbabilityOfFalsePositive (int nElementsInsertedSoFar) const;
+
+    public:
+        /**
+         *  @see Characters::ToString ()
+         */
+        nonvirtual Characters::String ToString () const;
     };
 
     /**
@@ -54,6 +60,9 @@ namespace Stroika::Foundation::Cache {
      *      http://en.wikipedia.org/wiki/Bloom_filter
      * 
      *  TODO:
+     *      @todo WHEN CLONING hash functions, must MODIFY them - so they are offset somehow - use larger number and mod differntly or modify
+     *            input automatically? - adding some number to it?
+     *
      *      @todo MAYBE KEEP Options object in BloomFilter (readonly)
      *      @todo MAYBE subclass (in template) Options to take actual hash functions as OPTIONS arg with right types
      *      @todo CLARIFY if using exact given hash functions or number from options calculation
@@ -66,10 +75,19 @@ namespace Stroika::Foundation::Cache {
         using HashFunctionType = function<size_t (T)>;
 
     public:
-        using Options = BloomFilterOptions;
+        struct Options : BloomFilterOptions {
+            Options (const BloomFilterOptions& o);
+            Options (size_t expectedMaxSetSize, const HashFunctionType& defaultHashFunction = hash<T>{});
+            Options (const Containers::Sequence<HashFunctionType>& hashFunctions, size_t bitCount);
 
-    public:
-        static const inline HashFunctionType kDefaultHashFunction = hash<T>{};
+            Containers::Sequence<HashFunctionType> fHashFunctions;
+
+        public:
+            /**
+             *  @see Characters::ToString ()
+             */
+            nonvirtual Characters::String ToString () const;
+        };
 
     public:
         /**
