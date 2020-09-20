@@ -47,26 +47,26 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *
      *  \par Example Usage
      *      \code
-     *      string digestStr = Format (Digester<Algorithm::MD5>::ComputeDigest (s, e));
+     *          string digestStr = Format (Digester<Algorithm::MD5>::ComputeDigest (s, e));
      *      \endcode
      *
      *  \par Example Usage
      *      \code
-     *      SourceDefinition    tmp;    // some struct which defines ostream operator>>
-     *      string  digestStr = Format (Digester<Algorithm::MD5>::ComputeDigest (Streams::iostream::SerializeItemToBLOB (tmp)));
+     *          SourceDefinition    tmp;    // some struct which defines ostream operator>>
+     *          string  digestStr = Format (Digester<Algorithm::MD5>::ComputeDigest (Streams::iostream::SerializeItemToBLOB (tmp)));
      *      \endcode
      *
      *  \par Example Usage
      *      \code
-     *      return Format<String> (Digester<Algorithm::MD5>::ComputeDigest (Memory::BLOB::Raw (sb.AsUTF8 ())));
+     *          return Format<String> (Digester<Algorithm::MD5>::ComputeDigest (Memory::BLOB::Raw (sb.AsUTF8 ())));
      *      \endcode
      *
      *  @see  DigestDataToString ()
      *
      *  \par Example Usage
      *      \code
-     *      SourceDefinition    tmp;    // some struct which defines ostream operator>>
-     *      string  digestStr = DigestDataToString<Digester<Algorithm::MD5>> (tmp);
+     *          SourceDefinition    tmp;    // some struct which defines ostream operator>>
+     *          string  digestStr = DigestDataToString<Digester<Algorithm::MD5>> (tmp);
      *      \endcode
      */
     template <typename ALGORITHM, typename RETURN_TYPE = typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>
