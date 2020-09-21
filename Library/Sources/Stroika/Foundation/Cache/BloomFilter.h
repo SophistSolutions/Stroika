@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright(c) Sophist Solutions, Inc. 1990-2020.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Cache_BloomFilter_h_
@@ -19,22 +19,38 @@
 namespace Stroika::Foundation::Cache {
 
     /**
-     * From http://en.wikipedia.org/wiki/Bloom_filter: 
-     *      fHashFunctionCount corresponds to 'k'
-     *      fBitCount corresponds to 'm'
+     * \brief a Bloom filter is a probablistic set, which returns either "probably in set" or "definitely not in set"
+     *
+     * Description:
+     *      http://en.wikipedia.org/wiki/Bloom_filter
+     *          fHashFunction.size () corresponds to 'k'
+     *          fBitCount corresponds to 'm'
      */
-    struct BloomFilterOptions {
-        optional<size_t>       fExpectedMaxSetSize;
-        optional<size_t>       fBitCount; // allocated bit count
-        optional<unsigned int> fHashFunctionCount;
-        double                 fDesiredFalsePositivityRate{0.1};
+    template <typename T>
+    class BloomFilter {
+    public:
+        using HashFunctionType = function<size_t (T)>;
 
     public:
-        nonvirtual BloomFilterOptions Optimize () const;
+        static inline constexpr double kDefaultDesiredFalsePositivityRate = 0.1;
 
     public:
-        static unsigned int OptimizeBitSize (size_t nElements, double desiredFalsePositiveProbability = 0.1);
-        static unsigned int OptimizeNumberOfHashFunctions (size_t setSize, optional<size_t> bitSize = nullopt);
+        /**
+         *  The constructor with an explicit set of hash functions and bitCount uses those hash functions and bitCount.
+         *  The construcotr taking  expectedMaxSetSize calls OptimizeBitSize and OptimizeNumberOfHashFunctions to calculate
+         *  optimimum numbers of hash functions and bitstorage for the given expected set size. It also uses DeriveIndependentHashFunctions ()
+         *  to automatically create (semi) independent hash functions from the original argument one (this maybe could use tuning/work).
+         */
+        BloomFilter (const Containers::Sequence<HashFunctionType>& hashFunctions, size_t bitCount);
+        BloomFilter (size_t expectedMaxSetSize, const HashFunctionType& defaultHashFunction = hash<T>{}, double desiredFalsePositivityRate = kDefaultDesiredFalsePositivityRate);
+        BloomFilter (const BloomFilter& src) = default;
+        BloomFilter& operator= (const BloomFilter& src) = default;
+
+    public:
+        static unsigned int OptimizeBitSize (size_t nElements, double desiredFalsePositiveProbability = kDefaultDesiredFalsePositivityRate);
+
+    public:
+        static unsigned int OptimizeNumberOfHashFunctions (size_t setSize, size_t bitSize);
 
     public:
         /**
@@ -47,61 +63,7 @@ namespace Stroika::Foundation::Cache {
         nonvirtual double ProbabilityOfFalsePositive (int nElementsInsertedSoFar) const;
 
     public:
-        /**
-         *  @see Characters::ToString ()
-         */
-        nonvirtual Characters::String ToString () const;
-    };
-
-    /**
-     * \brief a Bloom filter is a probablistic set, which returns either "probably in set" or "definitely not in set"
-     *
-     * Description:
-     *      http://en.wikipedia.org/wiki/Bloom_filter
-     * 
-     *  TODO:
-     *      @todo WHEN CLONING hash functions, must MODIFY them - so they are offset somehow - use larger number and mod differntly or modify
-     *            input automatically? - adding some number to it?
-     *
-     *      @todo MAYBE KEEP Options object in BloomFilter (readonly)
-     *      @todo MAYBE subclass (in template) Options to take actual hash functions as OPTIONS arg with right types
-     *      @todo CLARIFY if using exact given hash functions or number from options calculation
-     *      @todo MAYBE redo options object so HAS FIELDS of actual choices but takes ARGS that say optional and 
-     *            those get filled in with optimal values in CTOR.
-     */
-    template <typename T>
-    class BloomFilter {
-    public:
-        using HashFunctionType = function<size_t (T)>;
-
-    public:
-        struct Options : BloomFilterOptions {
-            Options (const BloomFilterOptions& o);
-            Options (size_t expectedMaxSetSize, const HashFunctionType& defaultHashFunction = hash<T>{});
-            Options (const Containers::Sequence<HashFunctionType>& hashFunctions, size_t bitCount);
-
-            Containers::Sequence<HashFunctionType> fHashFunctions;
-
-        public:
-            /**
-             *  @see Characters::ToString ()
-             */
-            nonvirtual Characters::String ToString () const;
-        };
-
-    public:
-        /**
-         */
-        BloomFilter (const Containers::Sequence<HashFunctionType>& hashFunctions, const BloomFilterOptions& options);
-        BloomFilter (const Options& options);
-        BloomFilter (const BloomFilter& src) = default;
-        BloomFilter& operator= (const BloomFilter& src) = default;
-
-    public:
-        /**
-         *  Not necessarily exactly the constructor options but the effective values used.
-         */
-        nonvirtual Options GetEffectiveOptions () const;
+        static Containers::Sequence<HashFunctionType> DeriveIndependentHashFunctions (const HashFunctionType& h, size_t repeatCount);
 
     public:
         /**
@@ -123,9 +85,32 @@ namespace Stroika::Foundation::Cache {
          */
         nonvirtual bool Contains (Configuration::ArgByValueType<T> elt) const;
 
+    public:
+        struct Statistics;
+
+    public:
+        /**
+         */
+        nonvirtual Statistics GetStatistics () const;
+
     private:
         vector<HashFunctionType> fHashFunctions_;
         vector<bool>             fBits_; // @todo use Set_Bitstring
+    };
+
+    /**
+     */
+    template <typename T>
+    struct BloomFilter<T>::Statistics {
+        size_t fHashFunctions;
+        size_t fBitCount;
+        size_t fBitsSet;
+
+    public:
+        /**
+         *  @see Characters::ToString ()
+         */
+        nonvirtual Characters::String ToString () const;
     };
 
 }

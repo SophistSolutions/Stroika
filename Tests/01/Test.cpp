@@ -312,15 +312,15 @@ namespace {
             void SimpleBasic ()
             {
                 Debug::TraceContextBumper ctx{"SimpleBasic"};
-                BloomFilter<int>          f{BloomFilterOptions{1000}};
-                DbgTrace (L"bloom filter options = %s", Characters::ToString (f.GetEffectiveOptions ()).c_str ());
-                for (auto i : Traversal::DiscreteRange<int>{1, 1000}) {
+                constexpr int             kTotalEntries_{1000};
+                BloomFilter<int>          f{BloomFilter<int>{kTotalEntries_}};
+                for (auto i : Traversal::DiscreteRange<int>{1, kTotalEntries_}) {
                     if (i & 1) {
                         f.Add (i);
                     }
                 }
                 unsigned int falsePositives{};
-                for (auto i : Traversal::DiscreteRange<int>{1, 1000}) {
+                for (auto i : Traversal::DiscreteRange<int>{1, kTotalEntries_}) {
                     if (i & 1) {
                         VerifyTestResult (f.Contains (i));
                     }
@@ -330,11 +330,12 @@ namespace {
                         }
                     }
                 }
+                DbgTrace (L"stats: %s", Characters::ToString (f.GetStatistics ()).c_str ());
                 DbgTrace (L"false positives: %d", falsePositives);
-                DbgTrace (L"Probability of false positives = %f", f.GetEffectiveOptions ().ProbabilityOfFalsePositive (1000));
-                VerifyTestResult (falsePositives < 500); // last measured was 101, but anything over 500 clearly buggy, no matter how things change
-                auto pfp                        = f.GetEffectiveOptions ().ProbabilityOfFalsePositive (1000);
-                auto expectedFalsePositiveRange = 500.0 * pfp * (Traversal::Range<double>{-.5, .5} + 1.0); // my probs estimate not perfect, so add some wiggle around it
+                DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (kTotalEntries_));
+                VerifyTestResult (falsePositives < kTotalEntries_ / 2); // last measured was 101, but anything over 500 clearly buggy, no matter how things change
+                auto pfp                        = f.ProbabilityOfFalsePositive (kTotalEntries_);
+                auto expectedFalsePositiveRange = (kTotalEntries_ / 2) * pfp * (Traversal::Range<double>{-.75, .75} + 1.0); // my probs estimate not perfect, so add some wiggle around it
                 DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
                 VerifyTestResult (expectedFalsePositiveRange.Contains (falsePositives));
             }
@@ -344,10 +345,9 @@ namespace {
                 using Characters::String;
                 using IO::Network::CIDR;
                 using IO::Network::InternetAddress;
-                auto                         hashFunction = [] (const InternetAddress& a) -> int { return hash<string>{}(a.As<String> ().AsUTF8 ()); };
-                BloomFilter<InternetAddress> f{BloomFilter<InternetAddress>::Options{1000, hashFunction}}; // way more than needed so SB small # of false positives
-                DbgTrace (L"bloom filter options = %s", Characters::ToString (f.GetEffectiveOptions ()).c_str ());
+                auto                             hashFunction = [] (const InternetAddress& a) -> int { return hash<string>{}(a.As<String> ().AsUTF8 ()); };
                 CIDR                             cidr{L"192.168.243.0/24"};
+                BloomFilter<InternetAddress>     f{BloomFilter<InternetAddress>{cidr.GetRange ().GetNumberOfContainedPoints (), hashFunction}}; // way more than needed so SB small # of false positives
                 Containers::Set<InternetAddress> oracle;
                 for (InternetAddress ia : cidr.GetRange ()) {
                     default_random_engine      gen (random_device{}()); //Standard mersenne_twister_engine seeded with rd()
@@ -368,14 +368,14 @@ namespace {
                         }
                     }
                 }
+                DbgTrace (L"stats: %s", Characters::ToString (f.GetStatistics ()).c_str ());
                 DbgTrace (L"false positives: %d", falsePositives);
-                DbgTrace (L"Probability of false positives = %f", f.GetEffectiveOptions ().ProbabilityOfFalsePositive (cidr.GetRange ().GetNumberOfContainedPoints ()));
-                VerifyTestResult (falsePositives < 20); // &&& FIX NUMBER last measured was ???, but anything over 500 clearly buggy, no matter how things change
-                auto pfp                        = f.GetEffectiveOptions ().ProbabilityOfFalsePositive (cidr.GetRange ().GetNumberOfContainedPoints ());
-                auto expectedFalsePositiveRange = (cidr.GetRange ().GetNumberOfContainedPoints () / 2) * pfp * (Traversal::Range<double>{-.5, .5} + 1.0); // my probs estimate not perfect, so add some wiggle around it
-                expectedFalsePositiveRange      = expectedFalsePositiveRange * 2.0;                                                                       //tmphack til I fix algorithm how to duplicate hashers
+                DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (cidr.GetRange ().GetNumberOfContainedPoints ()));
+                VerifyTestResultWarning (falsePositives < 25); // typically 13, but anything over 25 proably buggy, no matter how things change
+                auto pfp                        = f.ProbabilityOfFalsePositive (cidr.GetRange ().GetNumberOfContainedPoints ());
+                auto expectedFalsePositiveRange = (cidr.GetRange ().GetNumberOfContainedPoints () / 2) * pfp * (Traversal::Range<double>{-.75, .75} + 1.0); // my probs estimate not perfect, so add some wiggle around it
                 DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
-                //disable til we fix # hash functions issue - VerifyTestResult (expectedFalsePositiveRange.Contains (falsePositives));
+                VerifyTestResultWarning (expectedFalsePositiveRange.Contains (falsePositives));
             }
             void SimpleBloomTestWithStroikaDigester ()
             {
@@ -384,10 +384,9 @@ namespace {
                 using Characters::String;
                 using IO::Network::CIDR;
                 using IO::Network::InternetAddress;
-                auto                         hashFunction = [] (const InternetAddress& a) -> int { return Digester<Algorithm::SuperFastHash>::ComputeDigest (Memory::BLOB{a.As<vector<uint8_t>> ()}); };
-                BloomFilter<InternetAddress> f{BloomFilter<InternetAddress>::Options{1000, hashFunction}}; // way more than needed so SB small # of false positives
-                DbgTrace (L"bloom filter options = %s", Characters::ToString (f.GetEffectiveOptions ()).c_str ());
+                auto                             hashFunction = [] (const InternetAddress& a) -> int { return Digester<Algorithm::SuperFastHash>::ComputeDigest (Memory::BLOB{a.As<vector<uint8_t>> ()}); };
                 CIDR                             cidr{L"192.168.243.0/24"};
+                BloomFilter<InternetAddress>     f{BloomFilter<InternetAddress>{cidr.GetRange ().GetNumberOfContainedPoints (), hashFunction}};
                 Containers::Set<InternetAddress> oracle;
                 for (InternetAddress ia : cidr.GetRange ()) {
                     default_random_engine      gen (random_device{}()); //Standard mersenne_twister_engine seeded with rd()
@@ -408,14 +407,14 @@ namespace {
                         }
                     }
                 }
+                DbgTrace (L"stats: %s", Characters::ToString (f.GetStatistics ()).c_str ());
                 DbgTrace (L"false positives: %d", falsePositives);
-                DbgTrace (L"Probability of false positives = %f", f.GetEffectiveOptions ().ProbabilityOfFalsePositive (cidr.GetRange ().GetNumberOfContainedPoints ()));
-                VerifyTestResult (falsePositives < 20); // &&& FIX NUMBER last measured was ???, but anything over 500 clearly buggy, no matter how things change
-                auto pfp                        = f.GetEffectiveOptions ().ProbabilityOfFalsePositive (cidr.GetRange ().GetNumberOfContainedPoints ());
-                auto expectedFalsePositiveRange = (cidr.GetRange ().GetNumberOfContainedPoints () / 2) * pfp * (Traversal::Range<double>{-.5, .5} + 1.0); // my probs estimate not perfect, so add some wiggle around it
-                expectedFalsePositiveRange      = expectedFalsePositiveRange * 2.0;                                                                       //tmphack til I fix algorithm how to duplicate hashers
+                DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (cidr.GetRange ().GetNumberOfContainedPoints ()));
+                VerifyTestResultWarning (falsePositives < 20); // typically around 14
+                auto pfp                        = f.ProbabilityOfFalsePositive (cidr.GetRange ().GetNumberOfContainedPoints ());
+                auto expectedFalsePositiveRange = (cidr.GetRange ().GetNumberOfContainedPoints () / 2) * pfp * (Traversal::Range<double>{-.75, .75} + 1.0); // my probs estimate not perfect, so add some wiggle around it
                 DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
-                //disable til we fix # hash functions issue - VerifyTestResult (expectedFalsePositiveRange.Contains (falsePositives));
+                VerifyTestResultWarning (expectedFalsePositiveRange.Contains (falsePositives));
             }
         }
 
