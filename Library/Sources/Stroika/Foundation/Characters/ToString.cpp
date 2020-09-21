@@ -82,7 +82,7 @@ namespace Stroika::Foundation::Characters {
                     (void)::swprintf (buf, NEltsOf (buf), L"0x%x", t);
                     break;
                 default:
-                    AssertNotReached ();    // @todo support octal
+                    AssertNotReached (); // @todo support octal
             }
             return buf;
         }
