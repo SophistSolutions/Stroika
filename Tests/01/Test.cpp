@@ -371,7 +371,7 @@ namespace {
                 DbgTrace (L"stats: %s", Characters::ToString (f.GetStatistics ()).c_str ());
                 DbgTrace (L"false positives: %d", falsePositives);
                 DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (cidr.GetRange ().GetNumberOfContainedPoints ()));
-                VerifyTestResultWarning (falsePositives < 25); // typically 13, but anything over 25 proably buggy, no matter how things change
+                VerifyTestResultWarning (falsePositives < 30); // typically 15, but anything over 30 probably buggy, no matter how things change
                 auto pfp                        = f.ProbabilityOfFalsePositive (cidr.GetRange ().GetNumberOfContainedPoints ());
                 auto expectedFalsePositiveRange = (cidr.GetRange ().GetNumberOfContainedPoints () / 2) * pfp * (Traversal::Range<double>{-.75, .75} + 1.0); // my probs estimate not perfect, so add some wiggle around it
                 DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
