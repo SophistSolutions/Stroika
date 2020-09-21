@@ -73,6 +73,9 @@ namespace Stroika::Foundation::Characters {
     /**
      * \brief flags may be std::dec, std::oct, or std::hex
      * 
+     *  Defaults to DEC for all types except uint8_t (where it defaults to hex).
+     *  \note Prior to 2.1b6, all ToString<unsigned integer types> were all hex.
+     * 
      *   @see https://en.cppreference.com/w/cpp/io/ios_base/fmtflags
      */
     template <typename T, enable_if<is_integral_v<T>>* = nullptr>
