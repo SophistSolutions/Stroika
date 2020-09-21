@@ -373,7 +373,7 @@ namespace {
                 DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (cidr.GetRange ().GetNumberOfContainedPoints ()));
                 VerifyTestResultWarning (falsePositives < 30); // typically 15, but anything over 30 probably buggy, no matter how things change
                 auto pfp                        = f.ProbabilityOfFalsePositive (cidr.GetRange ().GetNumberOfContainedPoints ());
-                auto expectedFalsePositiveRange = (cidr.GetRange ().GetNumberOfContainedPoints () / 2) * pfp * (Traversal::Range<double>{-.75, .75} + 1.0); // my probs estimate not perfect, so add some wiggle around it
+                auto expectedFalsePositiveRange = (cidr.GetRange ().GetNumberOfContainedPoints () / 2) * pfp * (Traversal::Range<double>{.2, 1.4}); // my probs estimate not perfect, so add some wiggle around it
                 DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
                 VerifyTestResultWarning (expectedFalsePositiveRange.Contains (falsePositives));
             }
@@ -410,9 +410,9 @@ namespace {
                 DbgTrace (L"stats: %s", Characters::ToString (f.GetStatistics ()).c_str ());
                 DbgTrace (L"false positives: %d", falsePositives);
                 DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (cidr.GetRange ().GetNumberOfContainedPoints ()));
-                VerifyTestResultWarning (falsePositives < 20); // typically around 14
+                VerifyTestResultWarning (falsePositives < 25); // typically around 14
                 auto pfp                        = f.ProbabilityOfFalsePositive (cidr.GetRange ().GetNumberOfContainedPoints ());
-                auto expectedFalsePositiveRange = (cidr.GetRange ().GetNumberOfContainedPoints () / 2) * pfp * (Traversal::Range<double>{-.75, .75} + 1.0); // my probs estimate not perfect, so add some wiggle around it
+                auto expectedFalsePositiveRange = (cidr.GetRange ().GetNumberOfContainedPoints () / 2) * pfp * (Traversal::Range<double>{.1, 1.2}); // my probs estimate not perfect, so add some wiggle around it
                 DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
                 VerifyTestResultWarning (expectedFalsePositiveRange.Contains (falsePositives));
             }
