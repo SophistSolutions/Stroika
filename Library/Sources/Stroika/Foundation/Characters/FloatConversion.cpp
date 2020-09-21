@@ -10,7 +10,7 @@
 #include <sstream>
 
 #include "../Characters/StringBuilder.h"
-#include "../Characters/String_Constant.h"
+#include "../Characters/ToString.h"
 #include "../Containers/Common.h"
 #include "../Debug/Assertions.h"
 #include "../Debug/Trace.h"
@@ -39,10 +39,10 @@ String Float2StringOptions::ToString () const
     StringBuilder sb;
     sb += L"{";
     if (fPrecision_) {
-        sb += L"Precision:" + Characters::ToString ((int)*fPrecision_) + L",";
+        sb += L"Precision:" + Characters::ToString (*fPrecision_) + L",";
     }
     if (fFmtFlags_) {
-        sb += L"Fmt-Flags:" + Characters::ToString ((int)*fFmtFlags_) + L",";
+        sb += L"Fmt-Flags:" + Characters::ToString ((int)*fFmtFlags_, ios_base::hex) + L",";
     }
     if (fUseLocale_) {
         sb += L"Use-Locale" + String::FromNarrowSDKString (fUseLocale_->name ()) + L",";
@@ -192,7 +192,7 @@ namespace {
             case FP_NAN: {
                 Assert (isnan (f));
                 Assert (!isinf (f));
-                static const String_Constant kNAN_STR_{L"NAN"};
+                static const String kNAN_STR_{L"NAN"_k};
                 return kNAN_STR_;
             }
 #if qCompilerAndStdLib_valgrind_fpclassify_check_Buggy && qDebug
@@ -200,8 +200,8 @@ namespace {
                 if (Debug::IsRunningUnderValgrind ()) {
                     if (isinf (f)) {
                         DbgTrace ("fpclassify (%f) = %d", (double)f, fpclassify (f));
-                        static const String_Constant kNEG_INF_STR_{L"-INF"};
-                        static const String_Constant kINF_STR_{L"INF"};
+                        static const String kNEG_INF_STR_{L"-INF"_k};
+                        static const String kINF_STR_{L"INF"_k};
                         return f > 0 ? kINF_STR_ : kNEG_INF_STR_;
                     }
                 }
