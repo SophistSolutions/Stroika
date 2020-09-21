@@ -6,6 +6,8 @@
 
 #include "../StroikaPreComp.h"
 
+#include <ios>
+
 #include "../Configuration/Concepts.h"
 
 #include "String.h"
@@ -67,6 +69,35 @@ namespace Stroika::Foundation::Characters {
      */
     template <typename T>
     String ToString (const T& t);
+
+    /**
+     * \brief flags may be std::dec, std::oct, or std::hex
+     * 
+     *   @see https://en.cppreference.com/w/cpp/io/ios_base/fmtflags
+     */
+    template <typename T, enable_if<is_integral_v<T>>* = nullptr>
+    String ToString (T t, std::ios_base::fmtflags flags);
+
+    template <>
+    String ToString (const signed char t, std::ios_base::fmtflags flags);
+    template <>
+    String ToString (const short int t, std::ios_base::fmtflags flags);
+    template <>
+    String ToString (const int t, std::ios_base::fmtflags flags);
+    template <>
+    String ToString (const long int t, std::ios_base::fmtflags flags);
+    template <>
+    String ToString (const long long int t, std::ios_base::fmtflags flags);
+    template <>
+    String ToString (const unsigned char t, std::ios_base::fmtflags flags);
+    template <>
+    String ToString (const unsigned short t, std::ios_base::fmtflags flags);
+    template <>
+    String ToString (const unsigned int t, std::ios_base::fmtflags flags);
+    template <>
+    String ToString (const unsigned long t, std::ios_base::fmtflags flags);
+    template <>
+    String ToString (const unsigned long long t, std::ios_base::fmtflags flags);
 
 }
 

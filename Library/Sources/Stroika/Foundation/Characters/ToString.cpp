@@ -67,76 +67,112 @@ namespace Stroika::Foundation::Characters {
         static const String kFalse{L"false"sv};
         return t ? kTrue_ : kFalse;
     }
+
+    namespace {
+        template <typename T>
+        inline String num2Str_ (T t, std::ios_base::fmtflags flags)
+        {
+            static_assert (sizeof (t) <= sizeof (int));
+            wchar_t buf[1024];
+            switch (flags) {
+                case std::ios_base::dec:
+                    (void)::swprintf (buf, NEltsOf (buf), L"%d", t);
+                    break;
+                case std::ios_base::hex:
+                    (void)::swprintf (buf, NEltsOf (buf), L"0x%x", t);
+                    break;
+                default:
+                    AssertNotReached ();    // @todo support octal
+            }
+            return buf;
+        }
+        template <typename T>
+        inline String num2Strl_ (T t, std::ios_base::fmtflags flags)
+        {
+            wchar_t buf[1024];
+            static_assert (sizeof (t) == sizeof (long int));
+            switch (flags) {
+                case std::ios_base::dec:
+                    (void)::swprintf (buf, NEltsOf (buf), L"%ld", t);
+                    break;
+                case std::ios_base::hex:
+                    (void)::swprintf (buf, NEltsOf (buf), L"0x%lx", t);
+                    break;
+                default:
+                    AssertNotReached (); // @todo support octal
+            }
+            return buf;
+        }
+        template <typename T>
+        inline String num2Strll_ (T t, std::ios_base::fmtflags flags)
+        {
+            wchar_t buf[1024];
+            static_assert (sizeof (t) == sizeof (long long int));
+            switch (flags) {
+                case std::ios_base::dec:
+                    (void)::swprintf (buf, NEltsOf (buf), L"%lld", t);
+                    break;
+                case std::ios_base::hex:
+                    (void)::swprintf (buf, NEltsOf (buf), L"0x%llx", t);
+                    break;
+                default:
+                    AssertNotReached (); // @todo support octal
+            }
+            return buf;
+        }
+    }
+
     template <>
-    String ToString (const signed char& t)
+    String ToString (const signed char t, std::ios_base::fmtflags flags)
     {
-        wchar_t buf[1024];
-        (void)::swprintf (buf, NEltsOf (buf), L"%d", t);
-        return buf;
+        return num2Str_ (t, flags);
     }
     template <>
-    String ToString (const short int& t)
+    String ToString (const short int t, std::ios_base::fmtflags flags)
     {
-        wchar_t buf[1024];
-        (void)::swprintf (buf, NEltsOf (buf), L"%d", t);
-        return buf;
+        return num2Str_ (t, flags);
     }
     template <>
-    String ToString (const int& t)
+    String ToString (const int t, std::ios_base::fmtflags flags)
     {
-        wchar_t buf[1024];
-        (void)::swprintf (buf, NEltsOf (buf), L"%d", t);
-        return buf;
+        return num2Str_ (t, flags);
     }
     template <>
-    String ToString (const long int& t)
+    String ToString (const long int t, std::ios_base::fmtflags flags)
     {
-        wchar_t buf[1024];
-        (void)::swprintf (buf, NEltsOf (buf), L"%ld", t);
-        return buf;
+        return num2Strl_ (t, flags);
     }
     template <>
-    String ToString (const long long int& t)
+    String ToString (const long long int t, std::ios_base::fmtflags flags)
     {
-        wchar_t buf[1024];
-        (void)::swprintf (buf, NEltsOf (buf), L"%lld", t);
-        return buf;
+        return num2Strll_ (t, flags);
     }
     template <>
-    String ToString (const unsigned char& t)
+    String ToString (const unsigned char t, std::ios_base::fmtflags flags)
     {
-        wchar_t buf[1024];
-        (void)::swprintf (buf, NEltsOf (buf), L"0x%x", t);
-        return buf;
+        return num2Str_ (t, flags);
     }
     template <>
-    String ToString (const unsigned short& t)
+    String ToString (const unsigned short t, std::ios_base::fmtflags flags)
     {
-        wchar_t buf[1024];
-        (void)::swprintf (buf, NEltsOf (buf), L"0x%x", t);
-        return buf;
+        return num2Str_ (t, flags);
     }
     template <>
-    String ToString (const unsigned int& t)
+    String ToString (const unsigned int t, std::ios_base::fmtflags flags)
     {
-        wchar_t buf[1024];
-        (void)::swprintf (buf, NEltsOf (buf), L"0x%x", t);
-        return buf;
+        return num2Str_ (t, flags);
     }
     template <>
-    String ToString (const unsigned long& t)
+    String ToString (const unsigned long t, std::ios_base::fmtflags flags)
     {
-        wchar_t buf[1024];
-        (void)::swprintf (buf, NEltsOf (buf), L"0x%lx", t);
-        return buf;
+        return num2Strl_ (t, flags);
     }
     template <>
-    String ToString (const unsigned long long& t)
+    String ToString (const unsigned long long t, std::ios_base::fmtflags flags)
     {
-        wchar_t buf[1024];
-        (void)::swprintf (buf, NEltsOf (buf), L"0x%llx", t);
-        return buf;
+        return num2Strll_ (t, flags);
     }
+
     namespace Private_ {
         String ToString_ex_ (const std::exception& t)
         {

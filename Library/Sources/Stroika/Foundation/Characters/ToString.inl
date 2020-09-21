@@ -237,6 +237,58 @@ namespace Stroika::Foundation::Characters {
             return o.has_value () ? Characters::ToString (*o) : L"[missing]"sv;
         }
     }
+
+    template <>
+    inline String ToString (const signed char& t)
+    {
+        return ToString (t, std::ios_base::dec);
+    }
+    template <>
+    inline String ToString (const short int& t)
+    {
+        return ToString (t, std::ios_base::dec);
+    }
+    template <>
+    inline String ToString (const int& t)
+    {
+        return ToString (t, std::ios_base::dec);
+    }
+    template <>
+    inline String ToString (const long int& t)
+    {
+        return ToString (t, std::ios_base::dec);
+    }
+    template <>
+    inline String ToString (const long long int& t)
+    {
+        return ToString (t, std::ios_base::dec);
+    }
+    template <>
+    inline String ToString (const unsigned char& t)
+    {
+        return ToString (t, std::ios_base::hex);
+    }
+    template <>
+    inline String ToString (const unsigned short& t)
+    {
+        return ToString (t, std::ios_base::hex);
+    }
+    template <>
+    inline String ToString (const unsigned int& t)
+    {
+        return ToString (t, std::ios_base::hex);
+    }
+    template <>
+    inline String ToString (const unsigned long& t)
+    {
+        return ToString (t, std::ios_base::hex);
+    }
+    template <>
+    inline String ToString (const unsigned long long& t)
+    {
+        return ToString (t, std::ios_base::hex);
+    }
+
     template <>
     inline String ToString (const std::filesystem::path& t)
     {
