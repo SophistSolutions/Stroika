@@ -1336,7 +1336,8 @@ namespace {
     {
         Debug::TraceContextBumper ctx{L"Test48_ToString_"};
         VerifyTestResult (ToString (3) == L"3");
-        VerifyTestResult (ToString (3u) == L"0x3");
+        VerifyTestResult (ToString (3u, ios_base::hex) == L"0x3");
+        VerifyTestResult (ToString (3u) == L"3");
         VerifyTestResult (ToString (1.0).StartsWith (L"1"));
         VerifyTestResult (ToString (L"abc") == L"'abc'");
         VerifyTestResult (ToString (String (L"abc")) == L"'abc'");
