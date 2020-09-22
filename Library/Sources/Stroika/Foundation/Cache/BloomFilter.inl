@@ -93,12 +93,13 @@ namespace Stroika::Foundation::Cache {
          *      bit fields. Alternatively, one can pass k different initial values (such as 0, 1, ..., k − 1) 
          *      to a hash function that takes an initial value; or add (or append) these values to the key
          *
-         *  This trick here - seems to work OK for now, but @todo we may want to improve like above
+         *  This trick here - is something similar to the suggestions in the wiki article - deriving
+         *  a hash function by combining a unique seed (by hashing a constant) and combining that with the
+         *  has result of the original function.
          */
         Containers::Sequence<HashFunctionType> result{h};
         for (size_t i = 1; i < repeatCount; ++i) {
-            result += [=] (const T& t) { return hash<HashResultType>{}(h (t) ^ hash<HashResultType>{}(i)); };
-            //result += [=] (const T& t) { return h (t) ^ hash<HashResultType>{}(i); };
+            result += [=] (const T& t) { using DH = hash<HashResultType>{}; return DH(h (t) ^ DH(i)); };
         }
         return result;
     }

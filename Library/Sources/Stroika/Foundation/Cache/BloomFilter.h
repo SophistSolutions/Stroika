@@ -35,7 +35,7 @@ namespace Stroika::Foundation::Cache {
 
     public:
         //using HashResultType = invoke_result_t<HashFunctionType>;
-        using HashResultType = size_t;  // @todo rewrite using invoke_result_t
+        using HashResultType = size_t; // @todo rewrite using invoke_result_t
 
     public:
         static inline constexpr double kDefaultDesiredFalsePositivityRate = 0.1;

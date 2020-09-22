@@ -330,7 +330,7 @@ namespace {
                         }
                     }
                 }
-                auto falsePositivesMax = kTotalEntries_ / 2;    // total number that should be false
+                auto falsePositivesMax = kTotalEntries_ / 2; // total number that should be false
                 DbgTrace (L"stats: %s", Characters::ToString (f.GetStatistics ()).c_str ());
                 DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (kTotalEntries_));
                 DbgTrace (L"false positives: %d, expected: %f", falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (kTotalEntries_));
@@ -369,7 +369,7 @@ namespace {
                         }
                     }
                 }
-                auto totalEntries = cidr.GetRange ().GetNumberOfContainedPoints ();
+                auto totalEntries      = cidr.GetRange ().GetNumberOfContainedPoints ();
                 auto falsePositivesMax = totalEntries - oracle.size (); // total number that should be false
                 DbgTrace (L"stats: %s", Characters::ToString (f.GetStatistics ()).c_str ());
                 DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (totalEntries));
@@ -410,7 +410,7 @@ namespace {
                         }
                     }
                 }
-                auto totalEntries = cidr.GetRange ().GetNumberOfContainedPoints ();
+                auto totalEntries      = cidr.GetRange ().GetNumberOfContainedPoints ();
                 auto falsePositivesMax = totalEntries - oracle.size (); // total number that should be false
                 DbgTrace (L"stats: %s", Characters::ToString (f.GetStatistics ()).c_str ());
                 DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (totalEntries));
