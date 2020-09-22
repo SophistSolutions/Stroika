@@ -31,11 +31,10 @@ namespace Stroika::Foundation::Cache {
     template <typename T>
     class BloomFilter {
     public:
-        using HashFunctionType = function<size_t (T)>;
+        using HashResultType = uint64_t;
 
     public:
-        //using HashResultType = invoke_result_t<HashFunctionType>;
-        using HashResultType = size_t; // @todo rewrite using invoke_result_t
+        using HashFunctionType = function<HashResultType (T)>;
 
     public:
         static inline constexpr double kDefaultDesiredFalsePositivityRate = 0.1;
