@@ -330,12 +330,13 @@ namespace {
                         }
                     }
                 }
+                auto falsePositivesMax = kTotalEntries_ / 2;    // total number that should be false
                 DbgTrace (L"stats: %s", Characters::ToString (f.GetStatistics ()).c_str ());
-                DbgTrace (L"false positives: %d", falsePositives);
                 DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (kTotalEntries_));
-                VerifyTestResult (falsePositives < kTotalEntries_ / 2); // last measured was 101, but anything over 500 clearly buggy, no matter how things change
+                DbgTrace (L"false positives: %d, expected: %f", falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (kTotalEntries_));
+                VerifyTestResultWarning (falsePositives < 100); // last measured was 60, no matter how things change
                 auto pfp                        = f.ProbabilityOfFalsePositive (kTotalEntries_);
-                auto expectedFalsePositiveRange = (kTotalEntries_ / 2) * pfp * (Traversal::Range<double>{-.75, .75} + 1.0); // my probs estimate not perfect, so add some wiggle around it
+                auto expectedFalsePositiveRange = falsePositivesMax * pfp * (Traversal::Range<double>{.25, 1.5}); // my probs estimate not perfect, so add some wiggle around it
                 DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
                 VerifyTestResult (expectedFalsePositiveRange.Contains (falsePositives));
             }
@@ -368,12 +369,14 @@ namespace {
                         }
                     }
                 }
+                auto totalEntries = cidr.GetRange ().GetNumberOfContainedPoints ();
+                auto falsePositivesMax = totalEntries - oracle.size (); // total number that should be false
                 DbgTrace (L"stats: %s", Characters::ToString (f.GetStatistics ()).c_str ());
-                DbgTrace (L"false positives: %d", falsePositives);
-                DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (cidr.GetRange ().GetNumberOfContainedPoints ()));
-                VerifyTestResultWarning (falsePositives < 30); // typically 15, but anything over 30 probably buggy, no matter how things change
-                auto pfp                        = f.ProbabilityOfFalsePositive (cidr.GetRange ().GetNumberOfContainedPoints ());
-                auto expectedFalsePositiveRange = (cidr.GetRange ().GetNumberOfContainedPoints () / 2) * pfp * (Traversal::Range<double>{.2, 1.4}); // my probs estimate not perfect, so add some wiggle around it
+                DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (totalEntries));
+                DbgTrace (L"false positives: %d, expected: %f", falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (totalEntries));
+                VerifyTestResultWarning (falsePositives < 50); // typically 15, but anything over 50 probably buggy, no matter how things change
+                auto pfp                        = f.ProbabilityOfFalsePositive (totalEntries);
+                auto expectedFalsePositiveRange = falsePositivesMax * pfp * (Traversal::Range<double>{.2, 1.4}); // my probs estimate not perfect, so add some wiggle around it
                 DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
                 VerifyTestResultWarning (expectedFalsePositiveRange.Contains (falsePositives));
             }
@@ -407,12 +410,14 @@ namespace {
                         }
                     }
                 }
+                auto totalEntries = cidr.GetRange ().GetNumberOfContainedPoints ();
+                auto falsePositivesMax = totalEntries - oracle.size (); // total number that should be false
                 DbgTrace (L"stats: %s", Characters::ToString (f.GetStatistics ()).c_str ());
-                DbgTrace (L"false positives: %d", falsePositives);
-                DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (cidr.GetRange ().GetNumberOfContainedPoints ()));
+                DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (totalEntries));
+                DbgTrace (L"false positives: %d, expected: %f", falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (totalEntries));
                 VerifyTestResultWarning (falsePositives < 25); // typically around 14
-                auto pfp                        = f.ProbabilityOfFalsePositive (cidr.GetRange ().GetNumberOfContainedPoints ());
-                auto expectedFalsePositiveRange = (cidr.GetRange ().GetNumberOfContainedPoints () / 2) * pfp * (Traversal::Range<double>{.1, 1.2}); // my probs estimate not perfect, so add some wiggle around it
+                auto pfp                        = f.ProbabilityOfFalsePositive (totalEntries);
+                auto expectedFalsePositiveRange = falsePositivesMax * pfp * (Traversal::Range<double>{.1, 1.2}); // my probs estimate not perfect, so add some wiggle around it
                 DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
                 VerifyTestResultWarning (expectedFalsePositiveRange.Contains (falsePositives));
             }
