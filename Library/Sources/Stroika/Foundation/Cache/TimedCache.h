@@ -236,6 +236,7 @@ namespace Stroika::Foundation::Cache {
      *
      *  \note   Implementation Note: inherit from TRAITS::StatsType to take advantage of zero-sized base object rule.
      *
+     *  @see SyncrhonizedCallerStalenessCache
      *  @see CallerStalenessCache
      *  @see LRUCache
      */
