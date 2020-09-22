@@ -336,7 +336,7 @@ namespace {
                 DbgTrace (L"false positives: %d, expected: %f", falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (kTotalEntries_));
                 VerifyTestResultWarning (falsePositives < 100); // last measured was 75 (was 60 with old hash function) no matter how things change
                 auto pfp                        = f.ProbabilityOfFalsePositive (kTotalEntries_);
-                auto expectedFalsePositiveRange = falsePositivesMax * pfp * (Traversal::Range<double>{.25, 1.5}); // my probs estimate not perfect, so add some wiggle around it
+                auto expectedFalsePositiveRange = falsePositivesMax * pfp * (Traversal::Range<double>{.1, 1.5}); // my probs estimate not perfect, so add some wiggle around it
                 DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
                 VerifyTestResultWarning (expectedFalsePositiveRange.Contains (falsePositives));
             }
