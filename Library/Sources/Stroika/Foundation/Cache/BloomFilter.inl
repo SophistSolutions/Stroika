@@ -97,7 +97,7 @@ namespace Stroika::Foundation::Cache {
          */
         Containers::Sequence<HashFunctionType> result{h};
         for (size_t i = 1; i < repeatCount; ++i) {
-            result += [=] (const T& t) { return hash<HashResultType>{}(h (t) + i); };
+            result += [=] (const T& t) { return hash<HashResultType>{}(h (t) ^ hash<HashResultType>{}(i)); };
             //result += [=] (const T& t) { return h (t) ^ hash<HashResultType>{}(i); };
         }
         return result;
