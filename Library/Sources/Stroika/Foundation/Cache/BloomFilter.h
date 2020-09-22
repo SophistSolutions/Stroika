@@ -6,6 +6,8 @@
 
 #include "../StroikaPreComp.h"
 
+#include <type_traits>
+
 #include "../Characters/ToString.h"
 #include "../Configuration/Common.h"
 #include "../Configuration/TypeHints.h"
@@ -32,7 +34,7 @@ namespace Stroika::Foundation::Cache {
         using HashFunctionType = function<size_t (T)>;
 
     public:
-        using HashResultType = invoke_result_t (HashFunctionType);
+        using HashResultType = invoke_result_t<HashFunctionType>;
 
     public:
         static inline constexpr double kDefaultDesiredFalsePositivityRate = 0.1;
