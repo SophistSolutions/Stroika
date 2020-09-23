@@ -13,6 +13,7 @@
 #include "../Configuration/TypeHints.h"
 #include "../Containers/Sequence.h"
 #include "../Containers/Set.h"
+#include "../Cryptography/Digest/Hash.h"
 
 /**
  *
@@ -47,7 +48,7 @@ namespace Stroika::Foundation::Cache {
          *  to automatically create (semi) independent hash functions from the original argument one (this maybe could use tuning/work).
          */
         BloomFilter (const Containers::Sequence<HashFunctionType>& hashFunctions, size_t bitCount);
-        BloomFilter (size_t expectedMaxSetSize, const HashFunctionType& defaultHashFunction = hash<T>{}, double desiredFalsePositivityRate = kDefaultDesiredFalsePositivityRate);
+        BloomFilter (size_t expectedMaxSetSize, const HashFunctionType& defaultHashFunction = Cryptography::Digest::Hash<T>{}, double desiredFalsePositivityRate = kDefaultDesiredFalsePositivityRate);
         BloomFilter (const BloomFilter& src) = default;
         BloomFilter& operator= (const BloomFilter& src) = default;
 
