@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Cache {
     template <typename T>
     class BloomFilter {
     public:
-        using HashResultType = uint64_t;
+        using HashResultType = uint64_t; // often something smaller will be used, but best to pick a wider type here, and @todo maybe make it a template parameter
 
     public:
         using HashFunctionType = function<HashResultType (T)>;
@@ -43,9 +43,12 @@ namespace Stroika::Foundation::Cache {
     public:
         /**
          *  The constructor with an explicit set of hash functions and bitCount uses those hash functions and bitCount.
-         *  The construcotr taking  expectedMaxSetSize calls OptimizeBitSize and OptimizeNumberOfHashFunctions to calculate
+         *  The constructor taking expectedMaxSetSize calls OptimizeBitSize and OptimizeNumberOfHashFunctions to calculate
          *  optimimum numbers of hash functions and bitstorage for the given expected set size. It also uses DeriveIndependentHashFunctions ()
          *  to automatically create (semi) independent hash functions from the original argument one (this maybe could use tuning/work).
+         * 
+         *  \note - for the hash functions, you can simple use std::hash<T>, but the hash implementation on gcc (libstdc++) works quite badly
+         *          as a crytographic hash for integer types. So the default is to use the Stroika hash function.
          */
         BloomFilter (const Containers::Sequence<HashFunctionType>& hashFunctions, size_t bitCount);
         BloomFilter (size_t expectedMaxSetSize, const HashFunctionType& defaultHashFunction = Cryptography::Digest::Hash<T>{}, double desiredFalsePositivityRate = kDefaultDesiredFalsePositivityRate);

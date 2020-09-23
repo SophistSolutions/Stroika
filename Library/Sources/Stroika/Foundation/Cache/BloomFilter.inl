@@ -99,9 +99,8 @@ namespace Stroika::Foundation::Cache {
          */
         Containers::Sequence<HashFunctionType> result{h};
         for (size_t i = 1; i < repeatCount; ++i) {
-            auto                 DH   = Cryptography::Digest::Hash<HashResultType>{};
-            const HashResultType seed = DH (i);
-            result += [=] (const T& t) { return Cryptography::Digest::HashCombine (h (t), seed); };
+            HashResultType seed = Cryptography::Digest::Hash<HashResultType>{}(i);
+            result += [=] (const T& t) { return Cryptography::Digest::HashValueCombine (h (t), seed); };
         }
         return result;
     }
