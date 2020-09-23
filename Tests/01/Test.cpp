@@ -346,7 +346,7 @@ namespace {
                 using Characters::String;
                 using IO::Network::CIDR;
                 using IO::Network::InternetAddress;
-                auto                             hashFunction = [] (const InternetAddress& a) -> int { return hash<string>{}(a.As<String> ().AsUTF8 ()); };
+                auto                             hashFunction = [] (const InternetAddress& a) -> size_t { return hash<string>{}(a.As<String> ().AsUTF8 ()); };
                 CIDR                             cidr{L"192.168.243.0/24"};
                 BloomFilter<InternetAddress>     f{BloomFilter<InternetAddress>{cidr.GetRange ().GetNumberOfContainedPoints (), hashFunction}}; // way more than needed so SB small # of false positives
                 Containers::Set<InternetAddress> oracle;

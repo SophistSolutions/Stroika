@@ -65,8 +65,8 @@ namespace Stroika::Foundation::Cache {
          * 
          *      n elements inserted so far (other letter/vars see struct docs above)
          */
-        static double     ProbabilityOfFalsePositive (int hashFunctionCount, int bitCount, int nElementsInsertedSoFar);
-        nonvirtual double ProbabilityOfFalsePositive (int nElementsInsertedSoFar) const;
+        static double     ProbabilityOfFalsePositive (size_t hashFunctionCount, size_t bitCount, size_t nElementsInsertedSoFar);
+        nonvirtual double ProbabilityOfFalsePositive (size_t nElementsInsertedSoFar) const;
 
     public:
         static Containers::Sequence<HashFunctionType> DeriveIndependentHashFunctions (const HashFunctionType& h, size_t repeatCount);

@@ -69,13 +69,13 @@ namespace Stroika::Foundation::Cache {
         return static_cast<unsigned int> (::ceil ((double (bitSize) / setSize) * log (2)));
     }
     template <typename T>
-    inline double BloomFilter<T>::ProbabilityOfFalsePositive (int hashFunctionCount, int bitCount, int nElementsInsertedSoFar)
+    inline double BloomFilter<T>::ProbabilityOfFalsePositive (size_t hashFunctionCount, size_t bitCount, size_t nElementsInsertedSoFar)
     {
         // From https://en.wikipedia.org/wiki/Bloom_filter
         return ::pow (1 - ::exp (-static_cast<double> (hashFunctionCount * nElementsInsertedSoFar) / bitCount), hashFunctionCount);
     }
     template <typename T>
-    inline double BloomFilter<T>::ProbabilityOfFalsePositive (int nElementsInsertedSoFar) const
+    inline double BloomFilter<T>::ProbabilityOfFalsePositive (size_t nElementsInsertedSoFar) const
     {
         return ProbabilityOfFalsePositive (fHashFunctions_.size (), fBits_.size (), nElementsInsertedSoFar);
     }
