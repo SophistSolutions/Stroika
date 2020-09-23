@@ -2028,6 +2028,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Port.h">
       <Filter>Sources\IO\Network</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Hash.h">
+      <Filter>Sources\Cryptography\Digest</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -3314,6 +3317,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cache\BloomFilter.inl">
       <Filter>Sources\Cache</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Hash.inl">
+      <Filter>Sources\Cryptography\Digest</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -417,6 +417,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\SuperFastHash.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\DigestDataToString.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Digester.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Hash.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\ResultTypes.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\AES.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\Base64.h" />
@@ -826,6 +827,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\SuperFastHash.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\DigestDataToString.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Digester.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Hash.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\ResultTypes.inl" />
