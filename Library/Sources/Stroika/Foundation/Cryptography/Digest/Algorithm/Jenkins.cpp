@@ -37,11 +37,6 @@ namespace {
     }
 }
 
-Digester<Algorithm::Jenkins, uint32_t>::ReturnType Digester<Algorithm::Jenkins, uint32_t>::ComputeDigest (const Memory::BLOB& from)
-{
-    return Digester<Algorithm::Jenkins, uint32_t>{}.operator() (from.begin (), from.end ());
-}
-
 Digester<Algorithm::Jenkins, uint32_t>::ReturnType Digester<Algorithm::Jenkins, uint32_t>::operator() (const Streams::InputStream<std::byte>::Ptr& from) const
 {
     uint32_t hash = 0;
