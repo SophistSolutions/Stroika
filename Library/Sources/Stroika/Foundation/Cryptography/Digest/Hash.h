@@ -20,6 +20,8 @@
 namespace Stroika::Foundation::Cryptography::Digest {
 
     /**
+     *  \brief Simple wrapper on (cryptographic) digest algorithms with fewer knobs, and easier construcion- mimicing std::hash<T>
+     *
      *  Mimic the behavior of std::hash<> - except hopefully pick a better default algorithm than gcc did.
      *  (https://news.ycombinator.com/item?id=13745383)
      * 

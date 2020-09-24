@@ -39,9 +39,22 @@ namespace Stroika::Foundation::Cryptography::Digest {
     struct Digester<Algorithm::SuperFastHash, uint32_t> {
         using ReturnType = uint32_t;
 
-        static ReturnType ComputeDigest (const Streams::InputStream<std::byte>::Ptr& from);
-        static ReturnType ComputeDigest (const std::byte* from, const std::byte* to);
-        static ReturnType ComputeDigest (const BLOB& from);
+        ReturnType operator() (const Streams::InputStream<std::byte>::Ptr& from) const;
+        ReturnType operator() (const std::byte* from, const std::byte* to) const;
+        ReturnType operator() (const BLOB& from) const;
+
+        [[deprecated ("Since Stroika 2.1b6 - use instance of Digester and call operator()")]] static ReturnType ComputeDigest (const Streams::InputStream<std::byte>::Ptr& from)
+        {
+            return Digester{}(from);
+        }
+        [[deprecated ("Since Stroika 2.1b6 - use instance of Digester and call operator()")]] static ReturnType ComputeDigest (const std::byte* from, const std::byte* to)
+        {
+            return Digester{}(from, to);
+        }
+        [[deprecated ("Since Stroika 2.1b6 - use instance of Digester and call operator()")]] static ReturnType ComputeDigest (const BLOB& from)
+        {
+            return Digester{}(from);
+        }
     };
 
 }

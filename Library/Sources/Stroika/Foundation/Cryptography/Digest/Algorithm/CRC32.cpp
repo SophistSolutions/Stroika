@@ -85,7 +85,7 @@ namespace {
     }
 }
 
-Digester<Algorithm::CRC32, uint32_t>::ReturnType Digester<Algorithm::CRC32, uint32_t>::ComputeDigest (const Streams::InputStream<byte>::Ptr& from)
+Digester<Algorithm::CRC32, uint32_t>::ReturnType Digester<Algorithm::CRC32, uint32_t>::operator() (const Streams::InputStream<std::byte>::Ptr& from) const
 {
     uint32_t hash = 0xFFFFFFFF;
     while (true) {
@@ -101,7 +101,7 @@ Digester<Algorithm::CRC32, uint32_t>::ReturnType Digester<Algorithm::CRC32, uint
     return hash;
 }
 
-Digester<Algorithm::CRC32, uint32_t>::ReturnType Digester<Algorithm::CRC32, uint32_t>::ComputeDigest (const byte* from, const byte* to)
+Digester<Algorithm::CRC32, uint32_t>::ReturnType Digester<Algorithm::CRC32, uint32_t>::operator() (const std::byte* from, const std::byte* to) const
 {
     Require (from == to or from != nullptr);
     Require (from == to or to != nullptr);
@@ -109,9 +109,4 @@ Digester<Algorithm::CRC32, uint32_t>::ReturnType Digester<Algorithm::CRC32, uint
     DoMore_ (&hash, from, to);
     DoEnd_ (&hash);
     return hash;
-}
-
-Digester<Algorithm::CRC32, uint32_t>::ReturnType Digester<Algorithm::CRC32, uint32_t>::ComputeDigest (const Memory::BLOB& from)
-{
-    return ComputeDigest (from.begin (), from.end ());
 }

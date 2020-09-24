@@ -57,13 +57,7 @@ namespace {
      */
 }
 
-Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType Digester<Algorithm::SuperFastHash, uint32_t>::ComputeDigest (const Streams::InputStream<byte>::Ptr& from)
-{
-    Memory::BLOB b = from.ReadAll ();
-    return Digester<Algorithm::SuperFastHash, uint32_t>::ComputeDigest (b.begin (), b.end ());
-}
-
-Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType Digester<Algorithm::SuperFastHash, uint32_t>::ComputeDigest (const byte* from, const byte* to)
+Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType Digester<Algorithm::SuperFastHash, uint32_t>::operator() (const std::byte* from, const std::byte* to) const
 {
     Require (from == to or from != nullptr);
     Require (from == to or to != nullptr);
@@ -129,9 +123,4 @@ Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType Digester<Algorithm::Sup
     hash += hash >> 6;
 
     return hash;
-}
-
-Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType Digester<Algorithm::SuperFastHash, uint32_t>::ComputeDigest (const Memory::BLOB& from)
-{
-    return ComputeDigest (from.begin (), from.end ());
 }

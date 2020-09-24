@@ -353,14 +353,7 @@ namespace {
      */
 }
 
-Digester<Algorithm::MD5, ReturnType>::ReturnType Digester<Algorithm::MD5, ReturnType>::ComputeDigest (const Streams::InputStream<byte>::Ptr& from)
-{
-    // @todo - REIMPLMENET CALLING MD5 Update directly, on each read, as in CRC32 impl...
-    Memory::BLOB b = from.ReadAll ();
-    return Digester<Algorithm::MD5, ReturnType>::ComputeDigest (b.begin (), b.end ());
-}
-
-Digester<Algorithm::MD5, ReturnType>::ReturnType Digester<Algorithm::MD5, ReturnType>::ComputeDigest (const byte* from, const byte* to)
+Digester<Algorithm::MD5, Result128BitType>::ReturnType Digester<Algorithm::MD5, Result128BitType>::operator() (const std::byte* from, const std::byte* to) const
 {
     Require (from == to or from != nullptr);
     Require (from == to or to != nullptr);
@@ -375,9 +368,4 @@ Digester<Algorithm::MD5, ReturnType>::ReturnType Digester<Algorithm::MD5, Return
     //(void)::memcpy (Traversal::Iterator2Pointer (result.begin ()), ctx.digest, 16);
     (void)::memcpy (Traversal::Iterator2Pointer (result.begin ()), ctx.digest, 16);
     return result;
-}
-
-Digester<Algorithm::MD5, ReturnType>::ReturnType Digester<Algorithm::MD5, ReturnType>::ComputeDigest (const Memory::BLOB& from)
-{
-    return ComputeDigest (from.begin (), from.end ());
 }

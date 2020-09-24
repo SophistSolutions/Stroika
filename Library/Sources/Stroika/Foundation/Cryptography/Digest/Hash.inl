@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
             size_t operator() (const T& t) const
             {
                 using DIGESTER = Digester<Algorithm::SuperFastHash>; // pick arbitrarily which algorithm to use for now -- err on the side of quick and dirty
-                return DIGESTER::ComputeDigest (reinterpret_cast<const byte*> (&t), reinterpret_cast<const byte*> (&t + 1));
+                return DIGESTER{}(reinterpret_cast<const byte*> (&t), reinterpret_cast<const byte*> (&t + 1));
             }
         };
     }
@@ -87,6 +87,15 @@ namespace Stroika::Foundation::Cryptography::Digest {
     struct Hash<unsigned long long> : Private_::Hash<unsigned long long> {
     };
     template <>
+    struct Hash<float> : Private_::Hash<float> {
+    };
+    template <>
+    struct Hash<double> : Private_::Hash<double> {
+    };
+    template <>
+    struct Hash<long double> : Private_::Hash<long double> {
+    };
+    template <>
     struct Hash<nullptr_t> : Private_::Hash<nullptr_t> {
     };
     template <>
@@ -95,7 +104,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
         {
             using DIGESTER = Digester<Algorithm::SuperFastHash>; // pick arbitrarily which algorithm to use for now -- err on the side of quick and dirty
             auto p         = t.GetData<wchar_t> ();
-            return DIGESTER::ComputeDigest (reinterpret_cast<const std::byte*> (p.first), reinterpret_cast<const std::byte*> (p.second));
+            return DIGESTER{}(reinterpret_cast<const std::byte*> (p.first), reinterpret_cast<const std::byte*> (p.second));
         }
     };
 

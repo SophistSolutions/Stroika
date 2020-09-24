@@ -9,6 +9,22 @@
  ********************************************************************************
  */
 namespace Stroika::Foundation::Cryptography::Digest {
+
+    /*
+     ********************************************************************************
+     *************** Digester<Algorithm::SuperFastHash, uint32_t> *******************
+     ********************************************************************************
+     */
+    inline Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType Digester<Algorithm::SuperFastHash, uint32_t>::operator() (const Streams::InputStream<std::byte>::Ptr& from) const
+    {
+        Memory::BLOB b = from.ReadAll ();
+        return this->operator() (b.begin (), b.end ());
+    }
+    inline Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType Digester<Algorithm::SuperFastHash, uint32_t>::operator() (const BLOB& from) const
+    {
+        return this->operator() (from.begin (), from.end ());
+    }
+
 }
 
 #endif /*_Stroika_Foundation_Cryptography_Digest_SuperFastHash_inl_*/

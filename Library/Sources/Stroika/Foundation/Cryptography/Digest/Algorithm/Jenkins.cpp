@@ -37,7 +37,12 @@ namespace {
     }
 }
 
-Digester<Algorithm::Jenkins, uint32_t>::ReturnType Digester<Algorithm::Jenkins, uint32_t>::ComputeDigest (const Streams::InputStream<byte>::Ptr& from)
+Digester<Algorithm::Jenkins, uint32_t>::ReturnType Digester<Algorithm::Jenkins, uint32_t>::ComputeDigest (const Memory::BLOB& from)
+{
+    return Digester<Algorithm::Jenkins, uint32_t>{}.operator() (from.begin (), from.end ());
+}
+
+Digester<Algorithm::Jenkins, uint32_t>::ReturnType Digester<Algorithm::Jenkins, uint32_t>::operator() (const Streams::InputStream<std::byte>::Ptr& from) const
 {
     uint32_t hash = 0;
     while (true) {
@@ -53,7 +58,7 @@ Digester<Algorithm::Jenkins, uint32_t>::ReturnType Digester<Algorithm::Jenkins, 
     return hash;
 }
 
-Digester<Algorithm::Jenkins, uint32_t>::ReturnType Digester<Algorithm::Jenkins, uint32_t>::ComputeDigest (const byte* from, const byte* to)
+Digester<Algorithm::Jenkins, uint32_t>::ReturnType Digester<Algorithm::Jenkins, uint32_t>::operator() (const std::byte* from, const std::byte* to) const
 {
     Require (from == to or from != nullptr);
     Require (from == to or to != nullptr);
@@ -61,9 +66,4 @@ Digester<Algorithm::Jenkins, uint32_t>::ReturnType Digester<Algorithm::Jenkins, 
     DoMore_ (&hash, from, to);
     DoEnd_ (&hash);
     return hash;
-}
-
-Digester<Algorithm::Jenkins, uint32_t>::ReturnType Digester<Algorithm::Jenkins, uint32_t>::ComputeDigest (const Memory::BLOB& from)
-{
-    return ComputeDigest (from.begin (), from.end ());
 }
