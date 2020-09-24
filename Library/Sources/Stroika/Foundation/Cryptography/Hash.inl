@@ -73,13 +73,13 @@ namespace Stroika::Foundation::Cryptography {
         {
             // Just pass in pointers directly, and don't make a BLOB memory object (speed hack)
             // note - no need to optimize mkReturnType_ is already optimizable way for common case of arithmetic types
-            return Private_::mkReturnType_<HASH_RETURN_TYPE> (DIGESTER::ComputeDigest (reinterpret_cast<const byte*> (&data2Hash), reinterpret_cast<const byte*> (&data2Hash) + sizeof (data2Hash)));
+            return Private_::mkReturnType_<HASH_RETURN_TYPE> (DIGESTER{}(reinterpret_cast<const byte*> (&data2Hash), reinterpret_cast<const byte*> (&data2Hash) + sizeof (data2Hash)));
         }
         template <typename DIGESTER, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE>
         HASH_RETURN_TYPE Hash_SimpleHash_ (TYPE_TO_COMPUTE_HASH_OF data2Hash, enable_if_t<not is_arithmetic_v<TYPE_TO_COMPUTE_HASH_OF>>* = nullptr)
         {
             Memory::BLOB blob = Private_::SerializeForHash_ (data2Hash);
-            return Private_::mkReturnType_<HASH_RETURN_TYPE> (DIGESTER::ComputeDigest (blob.begin (), blob.end ()));
+            return Private_::mkReturnType_<HASH_RETURN_TYPE> (DIGESTER{}(blob.begin (), blob.end ()));
         }
     }
 
@@ -97,13 +97,13 @@ namespace Stroika::Foundation::Cryptography {
     HASH_RETURN_TYPE Hash (TYPE_TO_COMPUTE_HASH_OF data2Hash, const Memory::BLOB& salt)
     {
         Memory::BLOB blob = Private_::SerializeForHash_ (data2Hash) + salt;
-        return Private_::mkReturnType_<HASH_RETURN_TYPE> (DIGESTER::ComputeDigest (blob.begin (), blob.end ()));
+        return Private_::mkReturnType_<HASH_RETURN_TYPE> (DIGESTER{}(blob.begin (), blob.end ()));
     }
     template <typename DIGESTER, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE>
     HASH_RETURN_TYPE Hash (TYPE_TO_COMPUTE_HASH_OF data2Hash, TYPE_TO_COMPUTE_HASH_OF salt)
     {
         Memory::BLOB blob = Private_::SerializeForHash_ (data2Hash) + Private_::SerializeForHash_ (salt);
-        return Private_::mkReturnType_<HASH_RETURN_TYPE> (DIGESTER::ComputeDigest (blob.begin (), blob.end ()));
+        return Private_::mkReturnType_<HASH_RETURN_TYPE> (DIGESTER{}(blob.begin (), blob.end ()));
     }
 
 }

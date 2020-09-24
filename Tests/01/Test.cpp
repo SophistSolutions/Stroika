@@ -387,7 +387,7 @@ namespace {
                 using Characters::String;
                 using IO::Network::CIDR;
                 using IO::Network::InternetAddress;
-                auto                             hashFunction = [] (const InternetAddress& a) -> int { return Digester<Algorithm::SuperFastHash>::ComputeDigest (Memory::BLOB{a.As<vector<uint8_t>> ()}); };
+                auto                             hashFunction = [] (const InternetAddress& a) -> int { return Digester<Algorithm::SuperFastHash>{}(Memory::BLOB{a.As<vector<uint8_t>> ()}); };
                 CIDR                             cidr{L"192.168.243.0/24"};
                 BloomFilter<InternetAddress>     f{BloomFilter<InternetAddress>{cidr.GetRange ().GetNumberOfContainedPoints (), hashFunction}};
                 Containers::Set<InternetAddress> oracle;

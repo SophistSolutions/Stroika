@@ -194,11 +194,11 @@ namespace {
             {
                 const char kSrc[]        = "This is a very good test of a very good test";
                 const char kEncodedVal[] = "08c8888b86d6300ade93a10095a9083a";
-                VerifyTestResult (Format (DIGESTER_::ComputeDigest ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc))) == kEncodedVal);
+                VerifyTestResult (Format (DIGESTER_{}((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc))) == kEncodedVal);
             }
             {
                 int    tmp       = 3;
-                string digestStr = Format (DIGESTER_::ComputeDigest (Streams::iostream::SerializeItemToBLOB (tmp)));
+                string digestStr = Format (DIGESTER_{}(Streams::iostream::SerializeItemToBLOB (tmp)));
                 VerifyTestResult (digestStr == "eccbc87e4b5ce2fe28308fd9f2a7baf3");
             }
             {
@@ -214,8 +214,8 @@ namespace {
     template <typename HASHER>
     void DoCommonHasherTest_ (const byte* dataStart, const byte* dataEnd, uint32_t answer)
     {
-        VerifyTestResult (HASHER::ComputeDigest (dataStart, dataEnd) == answer);
-        VerifyTestResult (HASHER::ComputeDigest (Memory::BLOB (dataStart, dataEnd).As<Streams::InputStream<byte>::Ptr> ()) == answer);
+        VerifyTestResult (HASHER{}(dataStart, dataEnd) == answer);
+        VerifyTestResult (HASHER{}(Memory::BLOB (dataStart, dataEnd).As<Streams::InputStream<byte>::Ptr> ()) == answer);
     }
 }
 
