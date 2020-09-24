@@ -24,6 +24,11 @@ namespace Stroika::Foundation::Cache {
      ********************************************************************************
      */
     template <typename T>
+    nonvirtual double BloomFilter<T>::Statistics::GetFractionFull () const
+    {
+        return static_cast<double> (fBitsSet) / static_cast<double> (fBitCount);
+    }
+    template <typename T>
     Characters::String BloomFilter<T>::Statistics::ToString () const
     {
         Characters::StringBuilder sb;

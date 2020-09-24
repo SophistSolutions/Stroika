@@ -38,6 +38,9 @@ namespace Stroika::Foundation::Cache {
         using HashFunctionType = function<HashResultType (T)>;
 
     public:
+        /**
+         * \brief kDefaultDesiredFalsePositivityRate is used for constructors given expectedMaxSetSize to compute the appropriate #bits for the BloomFilter or for explicit calls to OptimizeBitSize()
+         */
         static inline constexpr double kDefaultDesiredFalsePositivityRate = 0.1;
 
     public:
@@ -67,6 +70,12 @@ namespace Stroika::Foundation::Cache {
          *      (1-exp(-kn/m))^^k
          * 
          *      n elements inserted so far (other letter/vars see struct docs above)
+         * 
+         *  This formula is not good - see https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=903775#:~:text=The%20probability%20of%20a%20false,mapped%20into%20the%20Bloom%20filter).
+         *  and its especially not good because it should mostly depend on number of bits set, not nElementsInsertedSoFar.
+         *  IF/WHEN I can fix that, maybe make this a method of the 'Statistics' object.
+         * 
+         *  See comments in GetFractionFull() about alternative better possible approach.
          */
         static double     ProbabilityOfFalsePositive (size_t hashFunctionCount, size_t bitCount, size_t nElementsInsertedSoFar);
         nonvirtual double ProbabilityOfFalsePositive (size_t nElementsInsertedSoFar) const;
@@ -114,6 +123,15 @@ namespace Stroika::Foundation::Cache {
         size_t fHashFunctions;
         size_t fBitCount;
         size_t fBitsSet;
+
+    public:
+        /**
+         *  \brief return number from 0..1 indicating 'percent' of the bloom filter full so its clear when to refresh/resize it (or at least when its going to start getting lots of false positives)
+         * 
+         *  @todo see comments on ProbabilityOfFalsePositive () - should be able to compute ProbabilityOfFalsePositive based just on this info
+         *  (roughly pct bits unset / number of hash functions). But I cannot find a reference for that so leaving this as is for now.
+         */
+        nonvirtual double GetFractionFull () const;
 
     public:
         /**
