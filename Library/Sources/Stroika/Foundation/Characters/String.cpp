@@ -14,6 +14,8 @@
 #include "../Configuration/Empty.h"
 #include "../Containers/Common.h"
 #include "../Containers/Set.h"
+#include "../Cryptography/Digest/Algorithm/SuperFastHash.h"
+#include "../Cryptography/Digest/Hash.h"
 #include "../Execution/Exceptions.h"
 #include "../Execution/Throw.h"
 #include "../Math/Common.h"
@@ -1354,5 +1356,8 @@ String_ModuleInit_::String_ModuleInit_ ()
  */
 size_t std::hash<Stroika::Foundation::Characters::String>::operator() (const Stroika::Foundation::Characters::String& arg) const
 {
-    return hash<wstring> () (arg.As<wstring> ());
+    using namespace Cryptography::Digest;
+    using DIGESTER = Digester<Algorithm::SuperFastHash>; // pick arbitrarily which algorithm to use for now -- err on the side of quick and dirty
+    auto p         = arg.GetData<wchar_t> ();
+    return DIGESTER{}(reinterpret_cast<const std::byte*> (p.first), reinterpret_cast<const std::byte*> (p.second));
 }

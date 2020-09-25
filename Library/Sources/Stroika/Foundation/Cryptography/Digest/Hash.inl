@@ -98,15 +98,6 @@ namespace Stroika::Foundation::Cryptography::Digest {
     template <>
     struct Hash<nullptr_t> : Private_::Hash<nullptr_t> {
     };
-    template <>
-    struct Hash<Characters::String> {
-        size_t operator() (const Characters::String& t) const
-        {
-            using DIGESTER = Digester<Algorithm::SuperFastHash>; // pick arbitrarily which algorithm to use for now -- err on the side of quick and dirty
-            auto p         = t.GetData<wchar_t> ();
-            return DIGESTER{}(reinterpret_cast<const std::byte*> (p.first), reinterpret_cast<const std::byte*> (p.second));
-        }
-    };
 
     /*
      ********************************************************************************
