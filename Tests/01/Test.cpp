@@ -346,6 +346,45 @@ namespace {
                 using Characters::String;
                 using IO::Network::CIDR;
                 using IO::Network::InternetAddress;
+                CIDR                             cidr{L"192.168.243.0/24"};
+                BloomFilter<InternetAddress>     f{BloomFilter<InternetAddress>{cidr.GetRange ().GetNumberOfContainedPoints ()}}; // way more than needed so SB small # of false positives
+                Containers::Set<InternetAddress> oracle;
+                for (InternetAddress ia : cidr.GetRange ()) {
+                    default_random_engine      gen (random_device{}()); //Standard mersenne_twister_engine seeded with rd()
+                    uniform_int_distribution<> uniformDist{0, 1};
+                    if (uniformDist (gen) == 0) {
+                        f.Add (ia);
+                        oracle.Add (ia);
+                    }
+                }
+                unsigned int falsePositives{};
+                for (InternetAddress ia : cidr.GetRange ()) {
+                    if (oracle.Contains (ia)) {
+                        VerifyTestResult (f.Contains (ia));
+                    }
+                    else {
+                        if (f.Contains (ia)) {
+                            falsePositives++;
+                        }
+                    }
+                }
+                auto totalEntries      = cidr.GetRange ().GetNumberOfContainedPoints ();
+                auto falsePositivesMax = totalEntries - oracle.size (); // total number that should be false
+                DbgTrace (L"stats: %s", Characters::ToString (f.GetStatistics ()).c_str ());
+                DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (totalEntries));
+                DbgTrace (L"false positives: %d, expected: %f", falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (totalEntries));
+                VerifyTestResultWarning (falsePositives < 75); // typically 15, but anything over 75 probably buggy, no matter how things change
+                auto pfp                        = f.ProbabilityOfFalsePositive (totalEntries);
+                auto expectedFalsePositiveRange = falsePositivesMax * pfp * (Traversal::Range<double>{.1, 1.1}); // my probs estimate not perfect, so add some wiggle around it
+                DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
+                VerifyTestResultWarning (expectedFalsePositiveRange.Contains (falsePositives));
+            }
+            void SimpleInternetAddressTestWithExplicitHash ()
+            {
+                Debug::TraceContextBumper ctx{"SimpleInternetAddressTestWithExplicitHash"};
+                using Characters::String;
+                using IO::Network::CIDR;
+                using IO::Network::InternetAddress;
                 auto                             hashFunction = [] (const InternetAddress& a) -> size_t { return hash<string>{}(a.As<String> ().AsUTF8 ()); };
                 CIDR                             cidr{L"192.168.243.0/24"};
                 BloomFilter<InternetAddress>     f{BloomFilter<InternetAddress>{cidr.GetRange ().GetNumberOfContainedPoints (), hashFunction}}; // way more than needed so SB small # of false positives
@@ -427,6 +466,7 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"Test7_BloomFilter_"};
             Private_::SimpleBasic ();
+            Private_::SimpleInternetAddressTestWithExplicitHash ();
             Private_::SimpleInternetAddressTest ();
             Private_::SimpleBloomTestWithStroikaDigester ();
         }

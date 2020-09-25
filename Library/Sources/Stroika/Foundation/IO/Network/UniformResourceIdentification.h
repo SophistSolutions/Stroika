@@ -689,6 +689,14 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
 }
 
+namespace std {
+    template <>
+    class hash<Stroika::Foundation::IO::Network::UniformResourceIdentification::Host> {
+    public:
+        size_t operator() (const Stroika::Foundation::IO::Network::UniformResourceIdentification::Host& arg) const;
+    };
+}
+
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************

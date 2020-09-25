@@ -425,6 +425,14 @@ namespace Stroika::Foundation::IO::Network {
 
 }
 
+namespace std {
+    template <>
+    class hash<Stroika::Foundation::IO::Network::InternetAddress> {
+    public:
+        size_t operator() (const Stroika::Foundation::IO::Network::InternetAddress& arg) const;
+    };
+}
+
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************

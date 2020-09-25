@@ -208,10 +208,7 @@ namespace std {
     template <>
     class hash<Stroika::Foundation::DataExchange::InternetMediaType> {
     public:
-        size_t operator() (const Stroika::Foundation::DataExchange::InternetMediaType& arg) const
-        {
-            return hash<wstring> () (arg.As<wstring> ());
-        }
+        size_t operator() (const Stroika::Foundation::DataExchange::InternetMediaType& arg) const;
     };
 }
 

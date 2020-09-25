@@ -1346,3 +1346,13 @@ String_ModuleInit_::String_ModuleInit_ ()
     : fBlockAllocationDependency (Memory::MakeModuleDependency_BlockAllocator ())
 {
 }
+
+/*
+ ********************************************************************************
+ *********** hash<Stroika::Foundation::Characters::String> **********************
+ ********************************************************************************
+ */
+size_t std::hash<Stroika::Foundation::Characters::String>::operator() (const Stroika::Foundation::Characters::String& arg) const
+{
+    return hash<wstring> () (arg.As<wstring> ());
+}

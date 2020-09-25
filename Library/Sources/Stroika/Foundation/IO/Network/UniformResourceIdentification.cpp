@@ -518,3 +518,13 @@ String UniformResourceIdentification::PCTDecode2String (const String& s)
 {
     return String::FromUTF8 (PCTDecode (s.AsASCII ()));
 }
+
+/*
+ ********************************************************************************
+ *********** hash<Stroika::Foundation::IO::Network::URI> ************************
+ ********************************************************************************
+ */
+size_t std::hash<Stroika::Foundation::IO::Network::UniformResourceIdentification::Host>::operator() (const Stroika::Foundation::IO::Network::UniformResourceIdentification::Host& arg) const
+{
+    return hash<Characters::String> () (arg.AsEncoded<Characters::String> ());
+}

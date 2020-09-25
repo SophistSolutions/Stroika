@@ -461,3 +461,13 @@ Traversal::Iterable<InternetAddress> Network::InternetAddresses_Localhost (Inter
     }
     return result;
 }
+
+/*
+ ********************************************************************************
+ ******** hash<Stroika::Foundation::IO::Network::InternetAddress> ***************
+ ********************************************************************************
+ */
+size_t std::hash<Stroika::Foundation::IO::Network::InternetAddress>::operator() (const Stroika::Foundation::IO::Network::InternetAddress& arg) const
+{
+    return hash<Characters::String> () (arg.As<Characters::String> ());
+}

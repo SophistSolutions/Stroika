@@ -370,3 +370,13 @@ Common::strong_ordering URI::TWC_ (const URI& lhs, const URI& rhs)
     }
     return Common::kEqual;
 }
+
+/*
+ ********************************************************************************
+ *********** hash<Stroika::Foundation::IO::Network::URI> ************************
+ ********************************************************************************
+ */
+size_t std::hash<Stroika::Foundation::IO::Network::URI>::operator() (const Stroika::Foundation::IO::Network::URI& arg) const
+{
+    return hash<Characters::String> () (arg.As<Characters::String> ());
+}

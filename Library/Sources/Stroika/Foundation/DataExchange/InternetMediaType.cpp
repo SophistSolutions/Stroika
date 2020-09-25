@@ -137,3 +137,13 @@ bool InternetMediaType::IsImageFormat () const
 {
     return InternetMediaTypeRegistry::Get ().IsImageFormat (*this);
 }
+
+/*
+ ********************************************************************************
+ ******** hash<Stroika::Foundation::DataExchange::InternetMediaType> ************
+ ********************************************************************************
+ */
+size_t std::hash<Stroika::Foundation::DataExchange::InternetMediaType>::operator() (const Stroika::Foundation::DataExchange::InternetMediaType& arg) const
+{
+    return hash<wstring> () (arg.As<wstring> ());
+}

@@ -1552,10 +1552,7 @@ namespace std {
     template <>
     class hash<Stroika::Foundation::Characters::String> {
     public:
-        size_t operator() (const Stroika::Foundation::Characters::String& arg) const
-        {
-            return hash<wstring> () (arg.As<wstring> ());
-        }
+        size_t operator() (const Stroika::Foundation::Characters::String& arg) const;
     };
 }
 
