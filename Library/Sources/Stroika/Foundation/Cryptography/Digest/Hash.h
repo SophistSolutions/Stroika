@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *  This class is 'pre-specialized' for:
      *      o   all builtin numeric types, int, char, unsigned int, long etc...
      *      o   all types for which std::hash<T> is defined
-     *      o   Characters::String
+     *      o   many other Stroika types, but see docs for that type to see if there is a specialization
      */
     template <typename T>
     struct Hash {
