@@ -8,95 +8,256 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include <type_traits>
 
-#include "Algorithm/SuperFastHash.h"
+#include "../Format.h"
 
 namespace Stroika::Foundation::Cryptography::Digest {
+
+    /*
+     ********************************************************************************
+     ***************************** SystemHashDigester<T> ****************************
+     ********************************************************************************
+     */
+    template <typename T>
+    size_t SystemHashDigester<T>::operator() (const Streams::InputStream<std::byte>::Ptr& from) const
+    {
+        Memory::BLOB b = from.ReadAll ();
+        return this->operator() (b.begin (), b.end ());
+    }
+    template <typename T>
+    inline size_t SystemHashDigester<T>::operator() (const std::byte* from, const std::byte* to) const
+    {
+        Require (to - from == sizeof (T));
+        return hash<T>{}(*reinterpret_cast<const T*> (from));
+    }
+    template <typename T>
+    inline size_t SystemHashDigester<T>::operator() (const BLOB& from) const
+    {
+        return this->operator() (from.begin (), from.end ());
+    }
+
+    namespace Private_ {
+
+        using std::byte;
+
+        template <typename TYPE_TO_COMPUTE_HASH_OF>
+        Memory::BLOB SerializeForHash1_ (TYPE_TO_COMPUTE_HASH_OF data2Hash, enable_if_t<is_arithmetic_v<TYPE_TO_COMPUTE_HASH_OF>, void>* = nullptr)
+        {
+            return Memory::BLOB (reinterpret_cast<const byte*> (&data2Hash), reinterpret_cast<const byte*> (&data2Hash + 1));
+        }
+        template <typename TYPE_TO_COMPUTE_HASH_OF>
+        inline Memory::BLOB SerializeForHash1_ (TYPE_TO_COMPUTE_HASH_OF data2Hash, enable_if_t<is_same_v<typename remove_cv<TYPE_TO_COMPUTE_HASH_OF>::type, Memory::BLOB>>* = nullptr)
+        {
+            return data2Hash;
+        }
+        inline Memory::BLOB SerializeForHash1_ (const Characters::String& data2Hash)
+        {
+            string utf8 = data2Hash.AsUTF8 (); // unwise approach because costly
+            return Memory::BLOB (reinterpret_cast<const byte*> (utf8.c_str ()), reinterpret_cast<const byte*> (utf8.c_str () + utf8.length ()));
+        }
+        inline Memory::BLOB SerializeForHash1_ (const char* data2Hash)
+        {
+            return Memory::BLOB (reinterpret_cast<const byte*> (data2Hash), reinterpret_cast<const byte*> (data2Hash + ::strlen (data2Hash)));
+        }
+        inline Memory::BLOB SerializeForHash1_ (const string& data2Hash)
+        {
+            return Memory::BLOB (reinterpret_cast<const byte*> (data2Hash.c_str ()), reinterpret_cast<const byte*> (data2Hash.c_str () + data2Hash.length ()));
+        }
+        template <typename TYPE_TO_COMPUTE_HASH_OF>
+        inline Memory::BLOB SerializeForHash_ (TYPE_TO_COMPUTE_HASH_OF data2Hash)
+        {
+            return SerializeForHash1_ (data2Hash);
+        }
+    }
+
+    namespace Private_ {
+        // Adapt the digest return type to the return type declared by the Hasher (often the same)
+        template <typename ADAPTER_RETURN_TYPE, typename HASHER_RETURN_TYPE>
+        inline ADAPTER_RETURN_TYPE mkReturnType1_ (HASHER_RETURN_TYPE hashVal, enable_if_t<is_arithmetic_v<ADAPTER_RETURN_TYPE>, void>* = nullptr)
+        {
+            return static_cast<ADAPTER_RETURN_TYPE> (hashVal);
+        }
+        template <typename ADAPTER_RETURN_TYPE, typename HASHER_RETURN_TYPE>
+        inline ADAPTER_RETURN_TYPE mkReturnType1_ (HASHER_RETURN_TYPE hashVal, enable_if_t<is_same_v<ADAPTER_RETURN_TYPE, string>>* = nullptr)
+        {
+            return Format (hashVal);
+        }
+        template <typename ADAPTER_RETURN_TYPE, typename HASHER_RETURN_TYPE>
+        inline ADAPTER_RETURN_TYPE mkReturnType_ (HASHER_RETURN_TYPE hashVal)
+        {
+            return mkReturnType1_<ADAPTER_RETURN_TYPE> (hashVal);
+        }
+    }
+#if 0
+    namespace Private_ {
+        template <typename DIGESTER, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE>
+        inline HASH_RETURN_TYPE Hash_SimpleHash_ (TYPE_TO_COMPUTE_HASH_OF data2Hash, enable_if_t<is_arithmetic_v<TYPE_TO_COMPUTE_HASH_OF>>* = nullptr)
+        {
+            // Just pass in pointers directly, and don't make a BLOB memory object (speed hack)
+            // note - no need to optimize mkReturnType_ is already optimizable way for common case of arithmetic types
+            return Private_::mkReturnType_<HASH_RETURN_TYPE> (DIGESTER{}(reinterpret_cast<const byte*> (&data2Hash), reinterpret_cast<const byte*> (&data2Hash) + sizeof (data2Hash)));
+        }
+        template <typename DIGESTER, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE>
+        HASH_RETURN_TYPE Hash_SimpleHash_ (TYPE_TO_COMPUTE_HASH_OF data2Hash, enable_if_t<not is_arithmetic_v<TYPE_TO_COMPUTE_HASH_OF>>* = nullptr)
+        {
+            Memory::BLOB blob = Private_::SerializeForHash_ (data2Hash);
+            return Private_::mkReturnType_<HASH_RETURN_TYPE> (DIGESTER{}(blob.begin (), blob.end ()));
+        }
+    }
+#endif
+
+#if 0
+
+    /*
+     ********************************************************************************
+     ************************************** Hash ************************************
+     ********************************************************************************
+     */
+    template <typename DIGESTER, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE>
+    inline HASH_RETURN_TYPE Hash_OldDeprecated (TYPE_TO_COMPUTE_HASH_OF data2Hash)
+    {
+        return Private_::Hash_SimpleHash_<DIGESTER, TYPE_TO_COMPUTE_HASH_OF, HASH_RETURN_TYPE> (data2Hash);
+    }
+    template <typename DIGESTER, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE>
+    HASH_RETURN_TYPE Hash_OldDeprecated (TYPE_TO_COMPUTE_HASH_OF data2Hash, const Memory::BLOB& salt)
+    {
+        Memory::BLOB blob = Private_::SerializeForHash_ (data2Hash) + salt;
+        return Private_::mkReturnType_<HASH_RETURN_TYPE> (DIGESTER{}(blob.begin (), blob.end ()));
+    }
+    template <typename DIGESTER, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE>
+    HASH_RETURN_TYPE Hash_OldDeprecated (TYPE_TO_COMPUTE_HASH_OF data2Hash, TYPE_TO_COMPUTE_HASH_OF salt)
+    {
+        Memory::BLOB blob = Private_::SerializeForHash_ (data2Hash) + Private_::SerializeForHash_ (salt);
+        return Private_::mkReturnType_<HASH_RETURN_TYPE> (DIGESTER{}(blob.begin (), blob.end ()));
+    }
+#endif
 
     /*
      ********************************************************************************
      ********************** Cryptography::Digest::Hash<T> ***************************
      ********************************************************************************
      */
-    template <typename T>
-    inline size_t Hash<T>::operator() (const T& t) const
+    template <typename T, typename DIGESTER, typename HASH_RETURN_TYPE>
+    constexpr inline Hash<T, DIGESTER, HASH_RETURN_TYPE>::Hash (const HASH_RETURN_TYPE& seed)
+        : fSeed{seed}
     {
-        return hash<T>{}(t);
+    }
+    template <typename T, typename DIGESTER, typename HASH_RETURN_TYPE>
+    inline HASH_RETURN_TYPE Hash<T, DIGESTER, HASH_RETURN_TYPE>::operator() (const T& t) const
+    {
+        HASH_RETURN_TYPE result;
+        if constexpr (is_same_v<DIGESTER, SystemHashDigester<T>> or is_same_v<DIGESTER, hash<T>>) {
+            result = hash<T>{}(t);
+        }
+        else {
+            result = Private_::mkReturnType_<HASH_RETURN_TYPE> (DIGESTER{}(Private_::SerializeForHash_ (t)));
+        }
+        if (fSeed) {
+            result = HashValueCombine (*fSeed, result);
+        }
+        return result;
     }
 
-    /*  === DEFINE Hash<> specializations ===     */
+    /*  ========================== DEFINE Hash<> specializations ==========================  */
 
     namespace Private_ {
-        template <typename T, enable_if<is_integral_v<T>>* = nullptr>
+        template <typename T, typename DIGESTER, typename HASH_RETURN_TYPE, enable_if<is_arithmetic_v<T>>* = nullptr>
         struct Hash {
+            constexpr Hash () = default;
+            constexpr Hash (const HASH_RETURN_TYPE& seed)
+                : fSeed{seed}
+            {
+            }
             size_t operator() (const T& t) const
             {
-                using DIGESTER = Digester<Algorithm::SuperFastHash>; // pick arbitrarily which algorithm to use for now -- err on the side of quick and dirty
                 return DIGESTER{}(reinterpret_cast<const byte*> (&t), reinterpret_cast<const byte*> (&t + 1));
             }
+            optional<HASH_RETURN_TYPE> fSeed;
         };
     }
+
     template <>
-    struct Hash<bool> : Private_::Hash<bool> {
+    struct Hash<bool, DefaultHashDigester, DefaultHashDigester::ReturnType> : Private_::Hash<bool, DefaultHashDigester, DefaultHashDigester::ReturnType> {
+        using Private_::Hash<bool, DefaultHashDigester, DefaultHashDigester::ReturnType>::Hash;
     };
     template <>
-    struct Hash<char> : Private_::Hash<char> {
+    struct Hash<char, DefaultHashDigester, DefaultHashDigester::ReturnType> : Private_::Hash<char, DefaultHashDigester, DefaultHashDigester::ReturnType> {
+        using Private_::Hash<char, DefaultHashDigester, DefaultHashDigester::ReturnType>::Hash;
     };
     template <>
-    struct Hash<signed char> : Private_::Hash<signed char> {
+    struct Hash<signed char, DefaultHashDigester, DefaultHashDigester::ReturnType> : Private_::Hash<signed char, DefaultHashDigester, DefaultHashDigester::ReturnType> {
+        using Private_::Hash<signed char, DefaultHashDigester, DefaultHashDigester::ReturnType>::Hash;
     };
     template <>
-    struct Hash<unsigned char> : Private_::Hash<unsigned char> {
+    struct Hash<unsigned char, DefaultHashDigester, DefaultHashDigester::ReturnType> : Private_::Hash<unsigned char, DefaultHashDigester, DefaultHashDigester::ReturnType> {
+        using Private_::Hash<unsigned char, DefaultHashDigester, DefaultHashDigester::ReturnType>::Hash;
     };
 #if __cpp_char8_t >= 201811L
     template <>
-    struct Hash<char8_t> : Private_::Hash<char8_t> {
+    struct Hash<char8_t, DefaultHashDigester, DefaultHashDigester::ReturnType> : Private_::Hash<char8_t, DefaultHashDigester, DefaultHashDigester::ReturnType> {
+        using Private_::Hash<char8_t, DefaultHashDigester, DefaultHashDigester::ReturnType>::Hash;
     };
 #endif
     template <>
-    struct Hash<char16_t> : Private_::Hash<char16_t> {
+    struct Hash<char16_t, DefaultHashDigester, DefaultHashDigester::ReturnType> : Private_::Hash<char16_t, DefaultHashDigester, DefaultHashDigester::ReturnType> {
+        using Private_::Hash<char16_t, DefaultHashDigester, DefaultHashDigester::ReturnType>::Hash;
     };
     template <>
-    struct Hash<char32_t> : Private_::Hash<char32_t> {
+    struct Hash<char32_t, DefaultHashDigester, DefaultHashDigester::ReturnType> : Private_::Hash<char32_t, DefaultHashDigester, DefaultHashDigester::ReturnType> {
+        using Private_::Hash<char32_t, DefaultHashDigester, DefaultHashDigester::ReturnType>::Hash;
     };
     template <>
-    struct Hash<wchar_t> : Private_::Hash<wchar_t> {
+    struct Hash<wchar_t, DefaultHashDigester, DefaultHashDigester::ReturnType> : Private_::Hash<wchar_t, DefaultHashDigester, DefaultHashDigester::ReturnType> {
+        using Private_::Hash<wchar_t, DefaultHashDigester, DefaultHashDigester::ReturnType>::Hash;
     };
     template <>
-    struct Hash<short> : Private_::Hash<short> {
+    struct Hash<short, DefaultHashDigester, DefaultHashDigester::ReturnType> : Private_::Hash<short, DefaultHashDigester, DefaultHashDigester::ReturnType> {
+        using Private_::Hash<short, DefaultHashDigester, DefaultHashDigester::ReturnType>::Hash;
     };
     template <>
-    struct Hash<unsigned short> : Private_::Hash<unsigned short> {
+    struct Hash<unsigned short, DefaultHashDigester, DefaultHashDigester::ReturnType> : Private_::Hash<unsigned short, DefaultHashDigester, DefaultHashDigester::ReturnType> {
+        using Private_::Hash<unsigned short, DefaultHashDigester, DefaultHashDigester::ReturnType>::Hash;
     };
     template <>
-    struct Hash<int> : Private_::Hash<int> {
+    struct Hash<int, DefaultHashDigester, DefaultHashDigester::ReturnType> : Private_::Hash<int, DefaultHashDigester, DefaultHashDigester::ReturnType> {
+        using Private_::Hash<int, DefaultHashDigester, DefaultHashDigester::ReturnType>::Hash;
     };
     template <>
-    struct Hash<unsigned int> : Private_::Hash<unsigned int> {
+    struct Hash<unsigned int, DefaultHashDigester, DefaultHashDigester::ReturnType> : Private_::Hash<unsigned int, DefaultHashDigester, DefaultHashDigester::ReturnType> {
+        using Private_::Hash<unsigned int, DefaultHashDigester, DefaultHashDigester::ReturnType>::Hash;
     };
     template <>
-    struct Hash<long> : Private_::Hash<long> {
+    struct Hash<long, DefaultHashDigester, DefaultHashDigester::ReturnType> : Private_::Hash<long, DefaultHashDigester, DefaultHashDigester::ReturnType> {
+        using Private_::Hash<long, DefaultHashDigester, DefaultHashDigester::ReturnType>::Hash;
     };
     template <>
-    struct Hash<unsigned long> : Private_::Hash<unsigned long> {
+    struct Hash<unsigned long, DefaultHashDigester, DefaultHashDigester::ReturnType> : Private_::Hash<unsigned long, DefaultHashDigester, DefaultHashDigester::ReturnType> {
+        using Private_::Hash<unsigned long, DefaultHashDigester, DefaultHashDigester::ReturnType>::Hash;
     };
     template <>
-    struct Hash<long long> : Private_::Hash<long long> {
+    struct Hash<long long, DefaultHashDigester, DefaultHashDigester::ReturnType> : Private_::Hash<long long, DefaultHashDigester, DefaultHashDigester::ReturnType> {
+        using Private_::Hash<long long, DefaultHashDigester, DefaultHashDigester::ReturnType>::Hash;
     };
     template <>
-    struct Hash<unsigned long long> : Private_::Hash<unsigned long long> {
+    struct Hash<unsigned long long, DefaultHashDigester, DefaultHashDigester::ReturnType> : Private_::Hash<unsigned long long, DefaultHashDigester, DefaultHashDigester::ReturnType> {
+        using Private_::Hash<unsigned long long, DefaultHashDigester, DefaultHashDigester::ReturnType>::Hash;
     };
     template <>
-    struct Hash<float> : Private_::Hash<float> {
+    struct Hash<float, DefaultHashDigester, DefaultHashDigester::ReturnType> : Private_::Hash<float, DefaultHashDigester, DefaultHashDigester::ReturnType> {
+        using Private_::Hash<float, DefaultHashDigester, DefaultHashDigester::ReturnType>::Hash;
     };
     template <>
-    struct Hash<double> : Private_::Hash<double> {
+    struct Hash<double, DefaultHashDigester, DefaultHashDigester::ReturnType> : Private_::Hash<double, DefaultHashDigester, DefaultHashDigester::ReturnType> {
+        using Private_::Hash<double, DefaultHashDigester, DefaultHashDigester::ReturnType>::Hash;
     };
     template <>
-    struct Hash<long double> : Private_::Hash<long double> {
+    struct Hash<long double, DefaultHashDigester, DefaultHashDigester::ReturnType> : Private_::Hash<long double, DefaultHashDigester, DefaultHashDigester::ReturnType> {
+        using Private_::Hash<long double, DefaultHashDigester, DefaultHashDigester::ReturnType>::Hash;
     };
     template <>
-    struct Hash<nullptr_t> : Private_::Hash<nullptr_t> {
+    struct Hash<nullptr_t, DefaultHashDigester, DefaultHashDigester::ReturnType> : Private_::Hash<nullptr_t, DefaultHashDigester, DefaultHashDigester::ReturnType> {
+        using Private_::Hash<nullptr_t, DefaultHashDigester, DefaultHashDigester::ReturnType>::Hash;
     };
 
     /*

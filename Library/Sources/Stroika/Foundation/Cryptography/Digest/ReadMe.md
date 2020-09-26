@@ -29,4 +29,4 @@ This Folder contains the Foundation::Cryptography::Digest source code.
 	Conceptually its best for each to just operate on a stream, but for performance
 	reasons, we must also allow Hash of individual ints etc.
 
-See Also Cryptography/Hash.h
+See Also Cryptography/Digest/Hash.h

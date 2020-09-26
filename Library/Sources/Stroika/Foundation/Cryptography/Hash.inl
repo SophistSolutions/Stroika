@@ -15,6 +15,9 @@
 
 namespace Stroika::Foundation::Cryptography {
 
+    /// <summary>
+    ///  DEPRECAED iN STROIKA 2.1b6
+    /// </summary>
     namespace Private_ {
 
         using std::byte;

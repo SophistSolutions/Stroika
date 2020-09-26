@@ -11,7 +11,7 @@
  */
 #include "../Containers/Common.h"
 #include "../Cryptography/Digest/Algorithm/Jenkins.h"
-#include "../Cryptography/Hash.h"
+#include "../Cryptography/Digest/Hash.h"
 #include "../Debug/Assertions.h"
 
 namespace Stroika::Foundation::Cache {

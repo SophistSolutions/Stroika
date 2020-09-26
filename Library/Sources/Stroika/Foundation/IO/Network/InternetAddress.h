@@ -24,6 +24,7 @@
 
 #include "../../Characters/String.h"
 #include "../../Configuration/Common.h"
+#include "../../Cryptography/Digest/Hash.h"
 #include "../../Traversal/Iterable.h"
 
 #include "InternetProtocol/IP.h"
@@ -428,6 +429,13 @@ namespace Stroika::Foundation::IO::Network {
 namespace std {
     template <>
     class hash<Stroika::Foundation::IO::Network::InternetAddress> {
+    public:
+        size_t operator() (const Stroika::Foundation::IO::Network::InternetAddress& arg) const;
+    };
+}
+namespace Stroika::Foundation::Cryptography::Digest {
+    template <>
+    class Hash<Stroika::Foundation::IO::Network::InternetAddress> {
     public:
         size_t operator() (const Stroika::Foundation::IO::Network::InternetAddress& arg) const;
     };

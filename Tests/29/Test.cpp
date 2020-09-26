@@ -22,12 +22,13 @@
 #include "Stroika/Foundation/Cryptography/Digest/Algorithm/MD5.h"
 #include "Stroika/Foundation/Cryptography/Digest/Algorithm/SuperFastHash.h"
 #include "Stroika/Foundation/Cryptography/Digest/DigestDataToString.h"
+#include "Stroika/Foundation/Cryptography/Digest/Hash.h"
 #include "Stroika/Foundation/Cryptography/Encoding/Algorithm/AES.h"
 #include "Stroika/Foundation/Cryptography/Encoding/Algorithm/Base64.h"
 #include "Stroika/Foundation/Cryptography/Encoding/Algorithm/RC4.h"
 #include "Stroika/Foundation/Cryptography/Encoding/OpenSSLCryptoStream.h"
 #include "Stroika/Foundation/Cryptography/Format.h"
-#include "Stroika/Foundation/Cryptography/Hash.h"
+#include "Stroika/Foundation/Cryptography/Hash.h" //**DEPRECATED**
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Memory/SmallStackBuffer.h"
@@ -253,11 +254,11 @@ namespace {
             using Configuration::EndianConverter;
             using USE_DIGESTER_ = Digester<Algorithm::Jenkins>;
             {
-                VerifyTestResult (Hash<USE_DIGESTER_> (ToLE_ (1)) == 10338022);
-                VerifyTestResult (Hash<USE_DIGESTER_> ("1") == 2154528969);
-                VerifyTestResult (Hash<USE_DIGESTER_> (Characters::String (L"1")) == 2154528969);
-                VerifyTestResult (Hash<USE_DIGESTER_> ("1", "mysalt") == 2164173146);
-                VerifyTestResult (Hash<USE_DIGESTER_> (ToLE_ (93993)) == 1748544338);
+                VerifyTestResult (Cryptography::Hash<USE_DIGESTER_> (ToLE_ (1)) == 10338022);
+                VerifyTestResult (Cryptography::Hash<USE_DIGESTER_> ("1") == 2154528969);
+                VerifyTestResult (Cryptography::Hash<USE_DIGESTER_> (Characters::String (L"1")) == 2154528969);
+                VerifyTestResult (Cryptography::Hash<USE_DIGESTER_> ("1", "mysalt") == 2164173146);
+                VerifyTestResult (Cryptography::Hash<USE_DIGESTER_> (ToLE_ (93993)) == 1748544338);
             }
             {
                 const char kSrc[] = "This is a very good test of a very good test";
@@ -280,7 +281,7 @@ namespace {
             {
                 const char kSrc[]        = "This is a very good test of a very good test";
                 const char kEncodedVal[] = "08c8888b86d6300ade93a10095a9083a";
-                VerifyTestResult ((Hash<USE_DIGESTER_, string, string> (kSrc)) == kEncodedVal);
+                VerifyTestResult ((Cryptography::Hash<USE_DIGESTER_, string, string> (kSrc)) == kEncodedVal);
             }
         }
     }
@@ -298,8 +299,8 @@ namespace {
             // @todo -- RETHINK IF RESULTS SB SAME REGARDLESS OF ENDIAN - NOT CONSISTENT!!!! --LGP 2015-08-26 -- AIX
             using USE_DIGESTER_ = Digester<Algorithm::SuperFastHash>;
             {
-                VerifyTestResult (Hash<USE_DIGESTER_> (ToLE_ (1)) == 422304363);
-                VerifyTestResult (Hash<USE_DIGESTER_> (ToLE_ (93993)) == 2489559407);
+                VerifyTestResult (Cryptography::Hash<USE_DIGESTER_> (ToLE_ (1)) == 422304363);
+                VerifyTestResult (Cryptography::Hash<USE_DIGESTER_> (ToLE_ (93993)) == 2489559407);
             }
             {
                 // special case where these collide
@@ -521,6 +522,28 @@ namespace {
 }
 
 namespace {
+    namespace HashTest_ {
+        using namespace Cryptography::Digest;
+
+        void DoRegressionTests_ ()
+        {
+            Debug::TraceContextBumper ctx{"HashTest_::DoRegressionTests_"};
+#if 0
+            {
+                using namespace Characters;
+                VerifyTestResult (Hash<String>{}(L"x") != Hash<String>{}(L"y")); // practically this should never fail if not absolutely required
+                VerifyTestResult (Hash<string>{}(L"x") != Hash<string>{}(L"y")); // practically this should never fail if not absolutely required
+            }
+            {
+                using namespace IO::Network;
+                //   VerifyTestResult (Hash<string>{}(L"x") != Hash<string>{}(L"y")); // practically this should never fail if not absolutely required
+            }
+#endif
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         Debug::TraceContextBumper ctx{"DoRegressionTests_"};
@@ -534,6 +557,7 @@ namespace {
         OpenSSLDeriveKeyTests_::DoRegressionTests_ ();
         OpenSSLEncryptDecryptTests_::DoRegressionTests_ ();
         AESTest_::DoRegressionTests_ ();
+        HashTest_::DoRegressionTests_ ();
     }
 }
 
