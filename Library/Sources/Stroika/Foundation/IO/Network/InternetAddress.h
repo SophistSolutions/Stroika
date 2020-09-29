@@ -428,15 +428,13 @@ namespace Stroika::Foundation::IO::Network {
 
 namespace std {
     template <>
-    class hash<Stroika::Foundation::IO::Network::InternetAddress> {
-    public:
+    struct hash<Stroika::Foundation::IO::Network::InternetAddress> {
         size_t operator() (const Stroika::Foundation::IO::Network::InternetAddress& arg) const;
     };
 }
 namespace Stroika::Foundation::Cryptography::Digest {
     template <>
-    class Hash<Stroika::Foundation::IO::Network::InternetAddress> {
-    public:
+    struct Hash<Stroika::Foundation::IO::Network::InternetAddress> {
         size_t operator() (const Stroika::Foundation::IO::Network::InternetAddress& arg) const;
     };
 }

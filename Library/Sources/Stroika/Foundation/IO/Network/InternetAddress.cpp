@@ -464,7 +464,7 @@ Traversal::Iterable<InternetAddress> Network::InternetAddresses_Localhost (Inter
 
 /*
  ********************************************************************************
- ******** hash<Stroika::Foundation::IO::Network::InternetAddress> ***************
+ ********** hash<Stroika::Foundation::IO::Network::InternetAddress> *************
  ********************************************************************************
  */
 size_t std::hash<Stroika::Foundation::IO::Network::InternetAddress>::operator() (const Stroika::Foundation::IO::Network::InternetAddress& arg) const
@@ -474,7 +474,7 @@ size_t std::hash<Stroika::Foundation::IO::Network::InternetAddress>::operator() 
 
 /*
  ********************************************************************************
- ********** Cryptography::Hash<IO::Network::InternetAddress> ********************
+ ****** Cryptography::Digest::Hash<IO::Network::InternetAddress> ****************
  ********************************************************************************
  */
 size_t Cryptography::Digest::Hash<IO::Network::InternetAddress>::operator() (const IO::Network::InternetAddress& arg) const

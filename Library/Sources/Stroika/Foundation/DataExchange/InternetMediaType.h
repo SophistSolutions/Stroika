@@ -8,6 +8,7 @@
 
 #include "../Characters/String.h"
 #include "../Containers/Mapping.h"
+#include "../Cryptography/Digest/Hash.h"
 #include "../DataExchange/Atom.h"
 
 /**
@@ -206,8 +207,13 @@ namespace Stroika::Foundation::DataExchange {
 
 namespace std {
     template <>
-    class hash<Stroika::Foundation::DataExchange::InternetMediaType> {
-    public:
+    struct hash<Stroika::Foundation::DataExchange::InternetMediaType> {
+        size_t operator() (const Stroika::Foundation::DataExchange::InternetMediaType& arg) const;
+    };
+}
+namespace Stroika::Foundation::Cryptography::Digest {
+    template <>
+    struct Hash<Stroika::Foundation::DataExchange::InternetMediaType, DefaultHashDigester, DefaultHashDigester::ReturnType> {
         size_t operator() (const Stroika::Foundation::DataExchange::InternetMediaType& arg) const;
     };
 }

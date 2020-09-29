@@ -52,6 +52,8 @@ namespace Stroika::Foundation::Cache {
          * 
          *  \note - for the hash functions, you can simple use std::hash<T>, but the hash implementation on gcc (libstdc++) works quite badly
          *          as a crytographic hash for integer types. So the default is to use the Stroika hash function.
+         *          You can directly use Cryptography::Digest::Hash<> instead (the default), and this will generaly work better where its
+         *          defined.
          */
         BloomFilter (const Containers::Sequence<HashFunctionType>& hashFunctions, size_t bitCount);
         BloomFilter (size_t expectedMaxSetSize, const HashFunctionType& defaultHashFunction = Cryptography::Digest::Hash<T>{}, double desiredFalsePositivityRate = kDefaultDesiredFalsePositivityRate);

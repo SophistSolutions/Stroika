@@ -12,6 +12,7 @@
 #include "Digest/Digester.h"
 
 // THIS FILE IS OBSOLETE - USE Digest/Hash.h
+#pragma message("Cryptography/Hash.h deprecated since Stroika v2.1b6 - use Cryptography/Digest/Hash.h")
 
 namespace Stroika::Foundation::Cryptography {
 

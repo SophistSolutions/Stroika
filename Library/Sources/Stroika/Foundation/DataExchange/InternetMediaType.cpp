@@ -147,3 +147,13 @@ size_t std::hash<Stroika::Foundation::DataExchange::InternetMediaType>::operator
 {
     return hash<wstring> () (arg.As<wstring> ());
 }
+
+/*
+ ********************************************************************************
+ ****** Cryptography::Digest::Hash<DataExchange::InternetMediaType> *************
+ ********************************************************************************
+ */
+size_t Cryptography::Digest::Hash<InternetMediaType, Cryptography::Digest::DefaultHashDigester, Cryptography::Digest::DefaultHashDigester::ReturnType>::operator() (const InternetMediaType& arg) const
+{
+    return Hash<Characters::String>{}(arg.As<Characters::String> ());
+}

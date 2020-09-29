@@ -1550,11 +1550,22 @@ namespace Stroika::Foundation::Characters {
 
 namespace std {
     template <>
-    class hash<Stroika::Foundation::Characters::String> {
-    public:
+    struct hash<Stroika::Foundation::Characters::String> {
         size_t operator() (const Stroika::Foundation::Characters::String& arg) const;
     };
 }
+
+// NOTE - Stroika::Foundation::Cryptography::Digest::Hash<> should be defined here, but for mutual includes issue
+// BUT - impl still DEFINED in this CPP file
+#if 0
+template <>
+struct Hash<Stroika::Foundation::Characters::String, DefaultHashDigester, DefaultHashDigester::ReturnType> {
+    constexpr Hash () = default;
+    constexpr Hash (const Characters::String& seed);
+    size_t operator() (const Stroika::Foundation::Characters::String& arg) const;
+    optional<DefaultHashDigester::ReturnType> fSeed;
+};
+#endif
 
 #if __cpp_lib_three_way_comparison < 201907L
 namespace Stroika::Foundation::Common {

@@ -1354,10 +1354,33 @@ String_ModuleInit_::String_ModuleInit_ ()
  *********** hash<Stroika::Foundation::Characters::String> **********************
  ********************************************************************************
  */
-size_t std::hash<Stroika::Foundation::Characters::String>::operator() (const Stroika::Foundation::Characters::String& arg) const
+size_t std::hash<String>::operator() (const String& arg) const
 {
     using namespace Cryptography::Digest;
     using DIGESTER = Digester<Algorithm::SuperFastHash>; // pick arbitrarily which algorithm to use for now -- err on the side of quick and dirty
     auto p         = arg.GetData<wchar_t> ();
     return DIGESTER{}(reinterpret_cast<const std::byte*> (p.first), reinterpret_cast<const std::byte*> (p.second));
+}
+
+/*
+ ********************************************************************************
+ *********** hash<Stroika::Foundation::Characters::String> **********************
+ ********************************************************************************
+ */
+Cryptography::Digest::Hash<String>::Hash (const Characters::String& seed)
+    : fSeed{nullopt}
+{
+    fSeed = (*this) (seed); // OK to call now with no seed set
+}
+
+size_t Cryptography::Digest::Hash<String>::operator() (const String& arg) const
+{
+    using namespace Cryptography::Digest;
+    using DIGESTER = Digester<Algorithm::SuperFastHash>; // pick arbitrarily which algorithm to use for now -- err on the side of quick and dirty
+    auto p         = arg.GetData<wchar_t> ();
+    auto result    = DIGESTER{}(reinterpret_cast<const std::byte*> (p.first), reinterpret_cast<const std::byte*> (p.second));
+    if (fSeed) {
+        result = HashValueCombine (*fSeed, result);
+    }
+    return result;
 }
