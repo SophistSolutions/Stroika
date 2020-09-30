@@ -59,16 +59,13 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *  is typically required to be more quick, and often works on a variety of input types (int, string
      *  etc), and maps to often smaller sequences of bits (say 32-bit number).
      *
-     *  A hash makes NO EFFORT to rem the results (though frequently the caller with % the result before use).
+     *  A hash makes NO EFFORT to rem (mod) the results (though frequently the caller with % the result before use).
      *
      *  So this class uses the Digest mechanism to allow users to easily map different types to
      *  a sequence of 'bytes' in normalized form, and then allows them to be digested, and then the digest
      *  mapped to a (typically) small number (32-bit integer for example).
      *
-     *  This function applies any (argument) Hash function (DIGESTER given data type, and
-     *  returns the argument hash value.
-     *
-     *  Hash algorithms work on BLOBs, and generate return (often longish) integers, often encoded
+     *  Digest algorithms work on BLOBs, and generate return (often longish) integers, often encoded
      *  as strings and such.
      *
      *  This Adpater takes care of the general part of mapping the inputs and outputs to/from
@@ -92,23 +89,16 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *  Mimic the behavior of std::hash<> - except hopefully pick a better default algorithm than gcc did.
      *  (https://news.ycombinator.com/item?id=13745383)
      * 
-     *  Generally replaces the same types 'T' as defined https://en.cppreference.com/w/cpp/utility/hash specialized,
-     *  but just in case, the default algorithm / implementation just defaults to hash<T>{} ();
-     * 
-     *  This template is NOT defined for all T, and must be explicitly specialized for many user types, because we dont
-     *  know in general how to compute the digest of an arbitrary C++ type.
-     * 
-     *  This class is 'pre-specialized' for:
+     *  If you construct your Hash object with a 'salt' value (a value of type T which is digested to combine/offset
+     *  all other computed hash values). This can be used for cryptographic salt (as with passwords) or
+     *  with rehashing, for example.
+     *
+     *  This template is NOT fully default-defined for all T, but will work automatically for:
      *      o   all builtin numeric types, int, char, unsigned int, long etc...
      *      o   many other Stroika types, but see docs for that type to see if there is a specialization
      *
      *  To use with types for which hash<> is already defined, you can use DIGESTER=SystemHashDigester (but then this
      *  class provides little additional value over direct use of std::hash)
-     *
-     *  If you use the overload with 'salt', if the SALT is not a BLOB, it will be turned into a BLOB with the same
-     *  normalizing function used on data2Hash. The resulting BLOB salt will be combined with the serialized data2Hash
-     *  producing a different output hash value. This can be used for cryptographic salt (as with passwords) or
-     *  with rehashing, for example.
      *
      *  This works by default on any time T for which DefaultSerializer<T> is defined (so @sse DefaultSerializer<T>).
      *  But callers can always provide a specific templated serializer for performance or because the default serializer doesnt support T).

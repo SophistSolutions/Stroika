@@ -190,14 +190,6 @@ namespace Stroika::Foundation::Cryptography::Digest {
     struct Hash<nullptr_t, DefaultHashDigester, DefaultHashDigester::ReturnType> : Private_::Hash_POD_Impl_<nullptr_t, DefaultHashDigester, DefaultHashDigester::ReturnType> {
         using Private_::Hash_POD_Impl_<nullptr_t, DefaultHashDigester, DefaultHashDigester::ReturnType>::Hash_POD_Impl_;
     };
-    template <>
-    struct Hash<Stroika::Foundation::Characters::String, DefaultHashDigester, DefaultHashDigester::ReturnType> {
-        // defined in String.cpp
-        constexpr Hash () = default;
-        Hash (const Characters::String& seed);
-        optional<DefaultHashDigester::ReturnType> fSeed;
-        size_t                                    operator() (const Stroika::Foundation::Characters::String& arg) const;
-    };
 
     /*
      ********************************************************************************

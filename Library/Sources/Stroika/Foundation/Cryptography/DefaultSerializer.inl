@@ -61,6 +61,12 @@ namespace Stroika::Foundation::Cryptography {
         return Private_::SerializeForHash_ (t);
     }
 
+    template <>
+    struct DefaultSerializer<Stroika::Foundation::Characters::String> {
+        // defined in String.cpp
+        Memory::BLOB operator() (const Stroika::Foundation::Characters::String& arg) const;
+    };
+
 }
 
 #endif /*_Stroika_Foundation_Cryptography_DefaultSerializer_inl_*/
