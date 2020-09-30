@@ -37,60 +37,6 @@ namespace Stroika::Foundation::Cryptography::Digest {
         return this->operator() (from.begin (), from.end ());
     }
 
-    /*
-     ********************************************************************************
-     **** HashImplHelper<T, DIGESTER, HASH_RETURN_TYPE, CONVERT_T_2_DIGEST_ARG> *****
-     ********************************************************************************
-     */
-    template <typename T, typename DIGESTER, typename HASH_RETURN_TYPE, typename CONVERT_T_2_DIGEST_ARG>
-    constexpr HashImplHelper<T, DIGESTER, HASH_RETURN_TYPE, CONVERT_T_2_DIGEST_ARG>::HashImplHelper (const T& seed)
-        : fSeed{DIGESTER{}(CONVERT_T_2_DIGEST_ARG{}(seed))}
-    {
-    }
-    template <typename T, typename DIGESTER, typename HASH_RETURN_TYPE, typename CONVERT_T_2_DIGEST_ARG>
-    HASH_RETURN_TYPE HashImplHelper<T, DIGESTER, HASH_RETURN_TYPE, CONVERT_T_2_DIGEST_ARG>::operator() (const T& t) const
-    {
-        auto result = DIGESTER{}(CONVERT_T_2_DIGEST_ARG{}(t));
-        if (fSeed) {
-            result = HashValueCombine (*fSeed, result);
-        }
-        return result;
-    }
-
-    namespace Private_ {
-
-        using std::byte;
-
-        template <typename TYPE_TO_COMPUTE_HASH_OF>
-        Memory::BLOB SerializeForHash1_ (TYPE_TO_COMPUTE_HASH_OF data2Hash, enable_if_t<is_arithmetic_v<TYPE_TO_COMPUTE_HASH_OF>, void>* = nullptr)
-        {
-            return Memory::BLOB (reinterpret_cast<const byte*> (&data2Hash), reinterpret_cast<const byte*> (&data2Hash + 1));
-        }
-        template <typename TYPE_TO_COMPUTE_HASH_OF>
-        inline Memory::BLOB SerializeForHash1_ (TYPE_TO_COMPUTE_HASH_OF data2Hash, enable_if_t<is_same_v<typename remove_cv<TYPE_TO_COMPUTE_HASH_OF>::type, Memory::BLOB>>* = nullptr)
-        {
-            return data2Hash;
-        }
-        inline Memory::BLOB SerializeForHash1_ (const Characters::String& data2Hash)
-        {
-            string utf8 = data2Hash.AsUTF8 (); // unwise approach because costly
-            return Memory::BLOB (reinterpret_cast<const byte*> (utf8.c_str ()), reinterpret_cast<const byte*> (utf8.c_str () + utf8.length ()));
-        }
-        inline Memory::BLOB SerializeForHash1_ (const char* data2Hash)
-        {
-            return Memory::BLOB (reinterpret_cast<const byte*> (data2Hash), reinterpret_cast<const byte*> (data2Hash + ::strlen (data2Hash)));
-        }
-        inline Memory::BLOB SerializeForHash1_ (const string& data2Hash)
-        {
-            return Memory::BLOB (reinterpret_cast<const byte*> (data2Hash.c_str ()), reinterpret_cast<const byte*> (data2Hash.c_str () + data2Hash.length ()));
-        }
-        template <typename TYPE_TO_COMPUTE_HASH_OF>
-        inline Memory::BLOB SerializeForHash_ (TYPE_TO_COMPUTE_HASH_OF data2Hash)
-        {
-            return SerializeForHash1_ (data2Hash);
-        }
-    }
-
     namespace Private_ {
         // Adapt the digest return type to the return type declared by the Hasher (often the same)
         template <typename ADAPTER_RETURN_TYPE, typename HASHER_RETURN_TYPE>
@@ -115,21 +61,23 @@ namespace Stroika::Foundation::Cryptography::Digest {
      ********************** Cryptography::Digest::Hash<T> ***************************
      ********************************************************************************
      */
-    template <typename T, typename DIGESTER, typename HASH_RETURN_TYPE>
-    constexpr inline Hash<T, DIGESTER, HASH_RETURN_TYPE>::Hash (const T& seed)
+    template <typename T, typename DIGESTER, typename HASH_RETURN_TYPE, typename SERIALIZER>
+    constexpr inline Hash<T, DIGESTER, HASH_RETURN_TYPE, SERIALIZER>::Hash (const T& seed)
         : fSeed{nullopt}
     {
+        // NOTE - if not for support of SystemHashDigester<> - which combines hashing with digesting in one -
+        // we could do fSeed{DIGESTER{}(CONVERT_T_2_DIGEST_ARG{}(seed))} and skip this re-assignment
         fSeed = (*this) (seed); // OK to call now with no seed set
     }
-    template <typename T, typename DIGESTER, typename HASH_RETURN_TYPE>
-    inline HASH_RETURN_TYPE Hash<T, DIGESTER, HASH_RETURN_TYPE>::operator() (const T& t) const
+    template <typename T, typename DIGESTER, typename HASH_RETURN_TYPE, typename SERIALIZER>
+    inline HASH_RETURN_TYPE Hash<T, DIGESTER, HASH_RETURN_TYPE, SERIALIZER>::operator() (const T& t) const
     {
         HASH_RETURN_TYPE result;
         if constexpr (is_same_v<DIGESTER, SystemHashDigester<T>> or is_same_v<DIGESTER, hash<T>>) {
             result = hash<T>{}(t);
         }
         else {
-            result = Private_::mkReturnType_<HASH_RETURN_TYPE> (DIGESTER{}(Private_::SerializeForHash_ (t)));
+            result = Private_::mkReturnType_<HASH_RETURN_TYPE> (DIGESTER{}(SERIALIZER{}(t)));
         }
         if (fSeed) {
             result = HashValueCombine (*fSeed, result);

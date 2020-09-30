@@ -11,6 +11,7 @@
 #include "../../Characters/String.h"
 #include "../../Memory/BLOB.h"
 
+#include "../DefaultSerializer.h"
 #include "Digester.h"
 
 #include "Algorithm/SuperFastHash.h" // for default algorithm
@@ -109,13 +110,8 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *  producing a different output hash value. This can be used for cryptographic salt (as with passwords) or
      *  with rehashing, for example.
      *
-     *  For now, this works with TYPE_TO_COMPUTE_HASH_OF:
-     *      o   is_arithmetic (e.g. int, float, uint32_t, etc)
-     *      o   const char*
-     *      o   std::string
-     *      o   String (or anything promotable to string)
-     *      o   Memory::BLOB (just passed throgh, not adpated)
-     * ((PRELIMINARY - WROKING ON DEFINING THIS))
+     *  This works by default on any time T for which DefaultSerializer<T> is defined (so @sse DefaultSerializer<T>).
+     *  But callers can always provide a specific templated serializer for performance or because the default serializer doesnt support T).
      *
      *  Other types should generate compile-time error.
      *
@@ -138,31 +134,13 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *          VerifyTestResult (Hash<String, USE_DIGESTER_>{} (L"1") == 2154528969);
      *      \endcode
      */
-    template <typename T, typename DIGESTER = DefaultHashDigester, typename HASH_RETURN_TYPE = typename DIGESTER::ReturnType>
+    template <typename T, typename DIGESTER = DefaultHashDigester, typename HASH_RETURN_TYPE = typename DIGESTER::ReturnType, typename SERIALIZER = DefaultSerializer<T>>
     struct Hash {
         /**
          *  Some algorithms respect a 'seed' parameter if provided.
          */
         constexpr Hash () = default;
         constexpr Hash (const T& seed);
-
-        /**
-         */
-        HASH_RETURN_TYPE operator() (const T& t) const;
-
-        optional<HASH_RETURN_TYPE> fSeed;
-    };
-
-    /**
-     *  NOT intended to be used directly, except to simplify boilerplate for implementation of Hash<> specializations.
-     *  
-     *  First 3 template arguments identical to Hash<> but the CVT argument converts from T to something that can be
-     *  passed to the Digest function.
-     */
-    template <typename T, typename DIGESTER, typename HASH_RETURN_TYPE, typename CONVERT_T_2_DIGEST_ARG>
-    struct HashImplHelper {
-        constexpr HashImplHelper () = default;
-        constexpr HashImplHelper (const T& seed);
 
         /**
          */
