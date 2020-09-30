@@ -8,14 +8,12 @@
 
 #include <cstdint>
 
-#include "../Characters/String.h"
 #include "../Memory/BLOB.h"
 
 /*
  *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
  *
  */
-
 namespace Stroika::Foundation::Cryptography {
 
     /**

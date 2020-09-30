@@ -30,11 +30,6 @@ namespace Stroika::Foundation::Cryptography {
         {
             return data2Hash;
         }
-        inline Memory::BLOB SerializeForHash1_ (const Characters::String& data2Hash)
-        {
-            string utf8 = data2Hash.AsUTF8 (); // unwise approach because costly
-            return Memory::BLOB (reinterpret_cast<const byte*> (utf8.c_str ()), reinterpret_cast<const byte*> (utf8.c_str () + utf8.length ()));
-        }
         inline Memory::BLOB SerializeForHash1_ (const char* data2Hash)
         {
             return Memory::BLOB (reinterpret_cast<const byte*> (data2Hash), reinterpret_cast<const byte*> (data2Hash + ::strlen (data2Hash)));
@@ -60,12 +55,6 @@ namespace Stroika::Foundation::Cryptography {
     {
         return Private_::SerializeForHash_ (t);
     }
-
-    template <>
-    struct DefaultSerializer<Stroika::Foundation::Characters::String> {
-        // defined in String.cpp
-        Memory::BLOB operator() (const Stroika::Foundation::Characters::String& arg) const;
-    };
 
 }
 

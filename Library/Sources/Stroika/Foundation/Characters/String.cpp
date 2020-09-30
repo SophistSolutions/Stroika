@@ -14,7 +14,6 @@
 #include "../Configuration/Empty.h"
 #include "../Containers/Common.h"
 #include "../Containers/Set.h"
-#include "../Cryptography/DefaultSerializer.h"
 #include "../Cryptography/Digest/Algorithm/SuperFastHash.h"
 #include "../Execution/Exceptions.h"
 #include "../Execution/Throw.h"

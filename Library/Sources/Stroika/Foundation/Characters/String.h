@@ -1555,17 +1555,18 @@ namespace std {
     };
 }
 
-// NOTE - Stroika::Foundation::Cryptography::Digest::Hash<> should be defined here, but for mutual includes issue
-// BUT - impl still DEFINED in this CPP file
-#if 0
-template <>
-struct Hash<Stroika::Foundation::Characters::String, DefaultHashDigester, DefaultHashDigester::ReturnType> {
-    constexpr Hash () = default;
-    constexpr Hash (const Characters::String& seed);
-    size_t operator() (const Stroika::Foundation::Characters::String& arg) const;
-    optional<DefaultHashDigester::ReturnType> fSeed;
-};
-#endif
+namespace Stroika::Foundation::Memory {
+    class BLOB; // Forward declare to avoid mutual include issues
+}
+
+namespace Stroika::Foundation::Cryptography {
+    template <typename T>
+    struct DefaultSerializer; // Forward declare to avoid mutual include issues
+    template <>
+    struct DefaultSerializer<Stroika::Foundation::Characters::String> {
+        Memory::BLOB operator() (const Stroika::Foundation::Characters::String& arg) const;
+    };
+}
 
 #if __cpp_lib_three_way_comparison < 201907L
 namespace Stroika::Foundation::Common {
