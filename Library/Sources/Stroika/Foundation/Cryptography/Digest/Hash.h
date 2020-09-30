@@ -79,6 +79,15 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *
      *          Use the digest directly if you need a portable, externalizable digest value.
      *
+     *  \note   Design Note:
+     *          Considered reversing the first two template parameters, so
+     *              template Hash<typename DIGESTER = DefaultHashDigester, typename T>...
+     *          For the case of the constructor this MIGHT work better, allowing you to specify
+     *          one paramter (the digester) and DEDUCE the T parameter.
+     *
+     *          However, that makes worse the default behavior for the more common (in my current estimation)
+     *          usage where there is no SALT (where now you can just provide T, and have DIGESTER defaulted).
+     *
      *  Mimic the behavior of std::hash<> - except hopefully pick a better default algorithm than gcc did.
      *  (https://news.ycombinator.com/item?id=13745383)
      * 
@@ -112,6 +121,14 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *
      *  Supported values for HASH_RETURN_TYPE, depend on the DIGESTER::ReturnType. This can be any type
      *  cast convertible into HASH_RETURN_TYPE (typically an unsigned int), or std::string, or Characters::String.
+     *
+     *  \par Example Usage
+     *      \code
+     *          VerifyTestResult (Hash<int>{} (1) == someNumber);
+     *          VerifyTestResult (Hash<string>{} ("1") == someNumber2);
+     *          VerifyTestResult (Hash<String>{} (L"1") == someNumber3);
+     *          VerifyTestResult (Hash<String>{L"somesalt"} (L"1") == someNumber4);
+     *      \endcode
      *
      *  \par Example Usage
      *      \code
