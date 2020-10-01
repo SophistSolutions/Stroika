@@ -254,7 +254,13 @@ namespace {
             {
                 VerifyTestResult ((Cryptography::Digest::Hash<int, USE_DIGESTER_>{}(ToLE_ (1)) == 10338022));
                 VerifyTestResult ((Cryptography::Digest::Hash<string, USE_DIGESTER_>{}("1") == 2154528969));
-                VerifyTestResult ((Cryptography::Digest::Hash<Characters::String, USE_DIGESTER_>{}(L"1") == 1243634960));
+                // DefaultSerializer<String> MAY produce different byte patterns depending on sizeof (wchar_t)
+                if (sizeof (wchar_t) == 2) {
+                    VerifyTestResult ((Cryptography::Digest::Hash<Characters::String, USE_DIGESTER_>{}(L"1") == 1243634960));
+                }
+                else if (sizeof (wchar_t) == 4) {
+                    VerifyTestResult ((Cryptography::Digest::Hash<Characters::String, USE_DIGESTER_>{}(L"1") == 2036516137));
+                }
                 VerifyTestResult ((Cryptography::Digest::Hash<string, USE_DIGESTER_>{"mysalt"}("1") == 1355707049));
                 VerifyTestResult ((Cryptography::Digest::Hash<int, USE_DIGESTER_>{}(ToLE_ (93993)) == 1748544338));
             }

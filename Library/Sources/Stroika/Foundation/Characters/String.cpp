@@ -1368,6 +1368,13 @@ size_t std::hash<String>::operator() (const String& arg) const
  */
 Memory::BLOB Cryptography::DefaultSerializer<String>::operator() (const String& arg) const
 {
+    // NOTE: DefaultSerializer<String> MAY produce different byte patterns depending on sizeof (wchar_t)
+    // We could avoid this by converting to UTF before creating the BLOB, but that would be slower and
+    // would rarely be useful
+    //
+    // Perhaps provide an additional 'serializer' in the string library that automatically unifies so you get
+    // the same answer (and that can be passed explcitly to Hash as your serializer).
+    //
     auto p = arg.GetData<wchar_t> ();
     return Memory::BLOB (reinterpret_cast<const std::byte*> (p.first), reinterpret_cast<const std::byte*> (p.second));
 }
