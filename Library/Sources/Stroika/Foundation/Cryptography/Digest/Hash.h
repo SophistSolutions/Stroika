@@ -127,7 +127,8 @@ namespace Stroika::Foundation::Cryptography::Digest {
     template <typename T, typename DIGESTER = DefaultHashDigester, typename HASH_RETURN_TYPE = typename DIGESTER::ReturnType, typename SERIALIZER = DefaultSerializer<T>>
     struct Hash {
         /**
-         *  Some algorithms respect a 'seed' parameter if provided.
+         *  Seed parameter to the hash 'starts it off' in some unique state so that computed hashes will all take that
+         *  'seed' into account and differ (statistically) from those with a different seed.
          */
         constexpr Hash () = default;
         constexpr Hash (const T& seed);
