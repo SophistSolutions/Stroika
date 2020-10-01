@@ -52,8 +52,8 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *  \brief Simple wrapper on (cryptographic) digest algorithms with fewer knobs, and easier construcion- mimicing std::hash<T>
      *
      *  A Hash is very much like a Digest - it takes a series of bytes and produces a
-     *  series of bits which as closely as practical uniquely bijectively maps between
-     *  the series of input bytes and the series of output bits.
+     *  (generally fixed size much shorter) series of bits which as closely as practical
+     *  uniquely bijectively maps between the series of input bytes and the series of output bits.
      *
      *  The main difference between a Digest and a Hash, is more a focus on how its used. A Hash
      *  is typically required to be more quick, and often works on a variety of input types (int, string
@@ -61,12 +61,9 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *
      *  A hash makes NO EFFORT to rem (mod) the results (though frequently the caller with % the result before use).
      *
-     *  So this class uses the Digest mechanism to allow users to easily map different types to
+     *  So this class uses the SERIALIZER mechanism to allow users to easily map different types to
      *  a sequence of 'bytes' in normalized form, and then allows them to be digested, and then the digest
      *  mapped to a (typically) small number (32-bit integer for example).
-     *
-     *  Digest algorithms work on BLOBs, and generate return (often longish) integers, often encoded
-     *  as strings and such.
      *
      *  This Adpater takes care of the general part of mapping the inputs and outputs to/from
      *  common forms, and then makes generic the actual hash computing algorithm.

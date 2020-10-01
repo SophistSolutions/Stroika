@@ -24,13 +24,17 @@ namespace Stroika::Foundation::Cryptography {
      *
      *  NOTE - not always defined - since we dont know how to serialze everthing - callers may need to specialize this
      *
-     *  For now, this works with TYPE_TO_COMPUTE_HASH_OF:
-     *      o   is_arithmetic (e.g. int, float, uint32_t, etc)
+     *  For now, this works with T:
+     *      o   is_trivially_copy_constructible_v (e.g. int, float, uint32_t, etc)
      *      o   const char*
      *      o   std::string
-     *      o   String (or anything promotable to string)
      *      o   Memory::BLOB (just passed throgh, not adpated)
-     * ((PRELIMINARY - WROKING ON DEFINING THIS))
+     * 
+     *  ALSO, MANY other Stroika classes support this by providing their own specialization of DefaultSerializer<>
+     *  For example:
+     *      o   Characters::String
+     *      o   IO::Network::InternetAddress
+     *      ...
      * 
      *  @todo Consider moving this to 'DataExchange' or 'Memory'? and more generally defining somehow - using other tricks like 
      *        serialize to JSON if the converters for that are defined, or with operator<< if those are defined.
