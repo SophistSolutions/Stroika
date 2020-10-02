@@ -120,6 +120,21 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *          VerifyTestResult (Hash<string, USE_DIGESTER_>{} ("1") == 2154528969);
      *          VerifyTestResult (Hash<String, USE_DIGESTER_>{} (L"1") == 2154528969);
      *      \endcode
+     * 
+     *  \par Example Usage (using explicitly specified serializer)
+     *      \code
+     *          VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType>{}(L"x") == Hash<String>{}(L"x")));
+     *          struct altStringSerializer {
+     *               auto operator () (const String& s) { return s.empty () ? Memory::BLOB{} : Memory::BLOB ((const byte*)s.c_str (), (const byte*)s.c_str () + 1); };
+     *          };
+     *          // NICE to figure out how to get this working instead of the 'struct' above - @todo
+     *          //constexpr auto altStringSerializer = [] (const String& s) { return s.empty () ? Memory::BLOB{} : Memory::BLOB ((const byte*)s.c_str (), (const byte*)s.c_str () + 1); };
+     *          VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}(L"xxx") != Hash<String>{}(L"xxx")));
+     *          VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}(L"x1") == Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}(L"x2")));
+     *      \endcode
+     * 
+     *      AND see docs on DefaultSerializer<> for how to explicitly specialize it for a given type (often better than passing
+     *      an explicit serializer as in this example.
      */
     template <typename T, typename DIGESTER = DefaultHashDigester, typename HASH_RETURN_TYPE = typename DIGESTER::ReturnType, typename SERIALIZER = DefaultSerializer<T>>
     struct Hash {

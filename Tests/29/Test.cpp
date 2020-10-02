@@ -211,6 +211,39 @@ namespace {
 }
 
 namespace {
+    namespace HashMisc {
+        using namespace Cryptography::Digest;
+
+        void DoRegressionTests_ ()
+        {
+            Debug::TraceContextBumper ctx{"HashMisc::DoRegressionTests_"};
+
+            using namespace Characters;
+            {
+                VerifyTestResult ((Hash<String>{}(L"x") != Hash<String>{}(L"y"))); // practically this should never fail if not absolutely required
+                VerifyTestResult ((Hash<String>{L"somesalt"}(L"x") != Hash<String>{}(L"x")));
+                VerifyTestResult ((Hash<String>{L"somesalt"}(L"x") == Hash<String>{L"somesalt"}(L"x")));
+
+                VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType>{}(L"x") == Hash<String>{}(L"x")));
+                struct altStringSerializer {
+                    auto operator() (const String& s) { return s.empty () ? Memory::BLOB{} : Memory::BLOB ((const byte*)s.c_str (), (const byte*)s.c_str () + 1); };
+                };
+                //constexpr auto altStringSerializer = [] (const String& s) { return s.empty () ? Memory::BLOB{} : Memory::BLOB ((const byte*)s.c_str (), (const byte*)s.c_str () + 1); };
+                VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}(L"xxx") != Hash<String>{}(L"xxx")));
+                VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}(L"x1") == Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}(L"x2")));
+            }
+
+#if 0
+            {
+                using namespace IO::Network;
+                //   VerifyTestResult (Hash<string>{}(L"x") != Hash<string>{}(L"y")); // practically this should never fail if not absolutely required
+            }
+#endif
+        }
+    }
+}
+
+namespace {
     template <typename HASHER>
     void DoCommonHasherTest_ (const byte* dataStart, const byte* dataEnd, uint32_t answer)
     {
@@ -526,33 +559,12 @@ namespace {
 }
 
 namespace {
-    namespace HashTest_ {
-        using namespace Cryptography::Digest;
-
-        void DoRegressionTests_ ()
-        {
-            Debug::TraceContextBumper ctx{"HashTest_::DoRegressionTests_"};
-#if 0
-            {
-                using namespace Characters;
-                VerifyTestResult (Hash<String>{}(L"x") != Hash<String>{}(L"y")); // practically this should never fail if not absolutely required
-                VerifyTestResult (Hash<string>{}(L"x") != Hash<string>{}(L"y")); // practically this should never fail if not absolutely required
-            }
-            {
-                using namespace IO::Network;
-                //   VerifyTestResult (Hash<string>{}(L"x") != Hash<string>{}(L"y")); // practically this should never fail if not absolutely required
-            }
-#endif
-        }
-    }
-}
-
-namespace {
     void DoRegressionTests_ ()
     {
         Debug::TraceContextBumper ctx{"DoRegressionTests_"};
         Base64Test::DoRegressionTests_ ();
         MD5Test::DoRegressionTests_ ();
+        HashMisc::DoRegressionTests_ ();
         Hash_CRC32::DoRegressionTests_ ();
         Hash_Jenkins::DoRegressionTests_ ();
         Hash_MD5::DoRegressionTests_ ();
@@ -561,7 +573,6 @@ namespace {
         OpenSSLDeriveKeyTests_::DoRegressionTests_ ();
         OpenSSLEncryptDecryptTests_::DoRegressionTests_ ();
         AESTest_::DoRegressionTests_ ();
-        HashTest_::DoRegressionTests_ ();
     }
 }
 

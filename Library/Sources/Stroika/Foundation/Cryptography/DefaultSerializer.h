@@ -36,6 +36,24 @@ namespace Stroika::Foundation::Cryptography {
      *      o   IO::Network::InternetAddress
      *      ...
      * 
+     *  \par Example Usage (specializing and USING DefaultSerializer)
+     *      \code
+     *          template <>
+     *          struct DefaultSerializer<Stroika::Foundation::IO::Network::InternetAddress> {
+     *              Memory::BLOB operator() (const Stroika::Foundation::IO::Network::InternetAddress& arg) const
+     *              {
+     *                  return DefaultSerializer<Characters::String>{}(arg.As<Characters::String> ());
+     *              }
+     *          };
+     *      \endcode
+     * 
+     *  \note \em Design Note
+     *      We chose to have this return Memory::BLOB instead of an abstract template type which was often
+     *      Memory::BLOB but could be something more efficeint, because I'm still supporting C++17 (no concepts)
+     *      and I think Memory::BLOB can be made VERY NEARLY as efficient (by having a constructor which uses
+     *      block allocation and pre-storages (SmallStackBuffer) the space for small objects (small strings and ints etc)
+     *      (maybe do this performance tweak for Stroika 2.1b6?)
+     * 
      *  @todo Consider moving this to 'DataExchange' or 'Memory'? and more generally defining somehow - using other tricks like 
      *        serialize to JSON if the converters for that are defined, or with operator<< if those are defined.
      */
