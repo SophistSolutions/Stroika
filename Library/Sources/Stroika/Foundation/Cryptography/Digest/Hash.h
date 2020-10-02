@@ -157,8 +157,8 @@ namespace Stroika::Foundation::Cryptography::Digest {
      * 
      *  inspired by https://en.cppreference.com/w/cpp/utility/hash - return h1 ^ (h2 << 1); // or use boost::hash_combine
      */
-    template <typename RESULT_TYPE>
-    RESULT_TYPE HashValueCombine (RESULT_TYPE lhs, RESULT_TYPE rhs);
+    //template <typename RESULT_TYPE>
+    //RESULT_TYPE HashValueCombine (RESULT_TYPE lhs, RESULT_TYPE rhs);
 
 #if 0
     /**

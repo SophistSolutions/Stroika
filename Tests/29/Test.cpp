@@ -15,6 +15,7 @@
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/Configuration/Endian.h"
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Cryptography/Digest/Algorithm/CRC32.h"
@@ -319,6 +320,16 @@ namespace {
                 const char kSrc[]        = "This is a very good test of a very good test";
                 const char kEncodedVal[] = "08c8888b86d6300ade93a10095a9083a";
                 VerifyTestResult ((Cryptography::Digest::Hash<string, USE_DIGESTER_, string>{}(kSrc)) == kEncodedVal);
+            }
+            {
+                using namespace Characters;
+                VerifyTestResult (Cryptography::Format<String> (Hash<string, USE_DIGESTER_>{}("x")) == L"9dd4e461268c8034f5c8564e155c67a6");
+                VerifyTestResult (Cryptography::Format<string> (Hash<string, USE_DIGESTER_>{}("x")) == "9dd4e461268c8034f5c8564e155c67a6");
+                auto a1 = Hash<string, USE_DIGESTER_>{}("x");
+                auto a2 = Common::GUID{Hash<string, USE_DIGESTER_>{}("x")}.ToString ();
+                auto a3 = Hash<string, USE_DIGESTER_, Common::GUID>{}("x").ToString ();
+                VerifyTestResult ((Common::GUID{Hash<string, USE_DIGESTER_>{}("x")} == Common::GUID{L"61e4d49d-8c26-3480-f5c8-564e155c67a6"}));
+                VerifyTestResult ((Hash<string, USE_DIGESTER_, Common::GUID>{}("x") == Common::GUID{L"61e4d49d-8c26-3480-f5c8-564e155c67a6"}));
             }
         }
     }

@@ -40,9 +40,10 @@ namespace Stroika::Foundation::Cryptography::Digest {
     namespace Private_ {
         // Adapt the digest return type to the return type declared by the Hasher (often the same)
         template <typename ADAPTER_RETURN_TYPE, typename HASHER_RETURN_TYPE>
-        inline ADAPTER_RETURN_TYPE mkReturnType1_ (HASHER_RETURN_TYPE hashVal, enable_if_t<is_arithmetic_v<ADAPTER_RETURN_TYPE>, void>* = nullptr)
+        inline ADAPTER_RETURN_TYPE mkReturnType1_ (HASHER_RETURN_TYPE hashVal, enable_if_t<is_constructible_v<ADAPTER_RETURN_TYPE, HASHER_RETURN_TYPE>, void>* = nullptr)
         {
-            return static_cast<ADAPTER_RETURN_TYPE> (hashVal);
+            //return static_cast<ADAPTER_RETURN_TYPE> (hashVal);
+            return ADAPTER_RETURN_TYPE (hashVal);
         }
         // NOTE - mkReturnType1_<string,XXX> () here uses enable_if and is_same, since C++ doesn't currently allow partial function template
         // specialization -- LGP 2020-10-02
@@ -92,27 +93,32 @@ namespace Stroika::Foundation::Cryptography::Digest {
      ****************** Cryptography::Digest::HashValueCombine **********************
      ********************************************************************************
      */
-    template <typename RESULT_TYPE>
+    // @todo VERY WEAK impl - of template matching - but good enuf for now - really want to use concept to see if << defined and returns same type
+    template <typename RESULT_TYPE, enable_if_t<is_arithmetic_v<RESULT_TYPE> or is_same_v<RESULT_TYPE, std::byte>>* = nullptr>
     inline RESULT_TYPE HashValueCombine (RESULT_TYPE lhs, RESULT_TYPE rhs)
     {
         // inspired by https://en.cppreference.com/w/cpp/utility/hash - return h1 ^ (h2 << 1); // or use boost::hash_combine
         return lhs ^ (rhs << 1); // don't simply XOR, I think, because this would be symetric and produce zero if lhs==rhs
     }
-    template <>
-    inline string HashValueCombine (string lhs, string rhs)
+    // @todo VERY WEAK impl - of template matching - but good enuf for now - really want to use concept to see if is container
+    template <typename RESULT_TYPE, enable_if_t<not(is_arithmetic_v<RESULT_TYPE> or is_same_v<RESULT_TYPE, std::byte>)>* = nullptr>
+    RESULT_TYPE HashValueCombine (RESULT_TYPE lhs, RESULT_TYPE rhs)
     {
-        string result = lhs;
-        auto   i      = result.begin ();
-        auto   ri     = rhs.begin ();
+        RESULT_TYPE result = lhs;
+        auto        i      = result.begin ();
+        auto        ri     = rhs.begin ();
         while (i != result.end () && ri != rhs.end ()) {
             *i = HashValueCombine (*i, *ri);
             ++i;
             ++ri;
         }
         // e.g. if lhs empty, result sb rhs, so we always look at all chars of both sides
-        while (ri != rhs.end ()) {
-            result += *ri;
-            ++ri;
+        // @todo if constexpr check if has append!!!
+        if constexpr (is_same_v<RESULT_TYPE, string>) {
+            while (ri != rhs.end ()) {
+                result += *ri;
+                ++ri;
+            }
         }
         return result;
     }
