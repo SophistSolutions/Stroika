@@ -93,34 +93,41 @@ namespace Stroika::Foundation::Cryptography::Digest {
      ****************** Cryptography::Digest::HashValueCombine **********************
      ********************************************************************************
      */
-    // @todo VERY WEAK impl - of template matching - but good enuf for now - really want to use concept to see if << defined and returns same type
-    template <typename RESULT_TYPE, enable_if_t<is_arithmetic_v<RESULT_TYPE> or is_same_v<RESULT_TYPE, std::byte>>* = nullptr>
-    inline RESULT_TYPE HashValueCombine (RESULT_TYPE lhs, RESULT_TYPE rhs)
-    {
-        // inspired by https://en.cppreference.com/w/cpp/utility/hash - return h1 ^ (h2 << 1); // or use boost::hash_combine
-        return lhs ^ (rhs << 1); // don't simply XOR, I think, because this would be symetric and produce zero if lhs==rhs
-    }
-    // @todo VERY WEAK impl - of template matching - but good enuf for now - really want to use concept to see if is container
-    template <typename RESULT_TYPE, enable_if_t<not(is_arithmetic_v<RESULT_TYPE> or is_same_v<RESULT_TYPE, std::byte>)>* = nullptr>
-    RESULT_TYPE HashValueCombine (RESULT_TYPE lhs, RESULT_TYPE rhs)
-    {
-        RESULT_TYPE result = lhs;
-        auto        i      = result.begin ();
-        auto        ri     = rhs.begin ();
-        while (i != result.end () && ri != rhs.end ()) {
-            *i = HashValueCombine (*i, *ri);
-            ++i;
-            ++ri;
+    namespace Private_ {
+        // @todo VERY WEAK impl - of template matching - but good enuf for now - really want to use concept to see if << defined and returns same type
+        template <typename RESULT_TYPE, enable_if_t<is_arithmetic_v<RESULT_TYPE> or is_same_v<RESULT_TYPE, std::byte>>* = nullptr>
+        inline RESULT_TYPE HashValueCombine (RESULT_TYPE lhs, RESULT_TYPE rhs)
+        {
+            // inspired by https://en.cppreference.com/w/cpp/utility/hash - return h1 ^ (h2 << 1); // or use boost::hash_combine
+            return lhs ^ (rhs << 1); // don't simply XOR, I think, because this would be symetric and produce zero if lhs==rhs
         }
-        // e.g. if lhs empty, result sb rhs, so we always look at all chars of both sides
-        // @todo if constexpr check if has append!!!
-        if constexpr (is_same_v<RESULT_TYPE, string>) {
-            while (ri != rhs.end ()) {
-                result += *ri;
+        // @todo VERY WEAK impl - of template matching - but good enuf for now - really want to use concept to see if is container
+        template <typename RESULT_TYPE, enable_if_t<not(is_arithmetic_v<RESULT_TYPE> or is_same_v<RESULT_TYPE, std::byte>)>* = nullptr>
+        RESULT_TYPE HashValueCombine (RESULT_TYPE lhs, RESULT_TYPE rhs)
+        {
+            RESULT_TYPE result = lhs;
+            auto        i      = result.begin ();
+            auto        ri     = rhs.begin ();
+            while (i != result.end () && ri != rhs.end ()) {
+                *i = HashValueCombine (*i, *ri);
+                ++i;
                 ++ri;
             }
+            // e.g. if lhs empty, result sb rhs, so we always look at all chars of both sides
+            // @todo if constexpr check if has append!!!
+            if constexpr (is_same_v<RESULT_TYPE, string>) {
+                while (ri != rhs.end ()) {
+                    result += *ri;
+                    ++ri;
+                }
+            }
+            return result;
         }
-        return result;
+    }
+    template <typename RESULT_TYPE>
+    inline RESULT_TYPE HashValueCombine (RESULT_TYPE lhs, RESULT_TYPE rhs)
+    {
+        return Private_::HashValueCombine (lhs, rhs);
     }
 
 }
