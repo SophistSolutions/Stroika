@@ -44,6 +44,8 @@ namespace Stroika::Foundation::Cryptography::Digest {
         {
             return static_cast<ADAPTER_RETURN_TYPE> (hashVal);
         }
+        // NOTE - mkReturnType1_<string,XXX> () here uses enable_if and is_same, since C++ doesn't currently allow partial function template
+        // specialization -- LGP 2020-10-02
         template <typename ADAPTER_RETURN_TYPE, typename HASHER_RETURN_TYPE>
         inline ADAPTER_RETURN_TYPE mkReturnType1_ (HASHER_RETURN_TYPE hashVal, enable_if_t<is_same_v<ADAPTER_RETURN_TYPE, string>>* = nullptr)
         {
@@ -99,8 +101,20 @@ namespace Stroika::Foundation::Cryptography::Digest {
     template <>
     inline string HashValueCombine (string lhs, string rhs)
     {
-        // @todo sb some better way to combine, but this should work for now...
-        return lhs + rhs;
+        string result = lhs;
+        auto   i      = result.begin ();
+        auto   ri     = rhs.begin ();
+        while (i != result.end () && ri != rhs.end ()) {
+            *i = HashValueCombine (*i, *ri);
+            ++i;
+            ++ri;
+        }
+        // e.g. if lhs empty, result sb rhs, so we always look at all chars of both sides
+        while (ri != rhs.end ()) {
+            result += *ri;
+            ++ri;
+        }
+        return result;
     }
 
 }
