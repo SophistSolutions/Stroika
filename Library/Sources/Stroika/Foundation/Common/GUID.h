@@ -47,6 +47,20 @@ namespace Stroika::Foundation::Common {
 
     public:
         /**
+         *  Allow iterating and modifying in place of the GUID as a sequence of bytes
+         */
+        nonvirtual std::byte* begin ();
+        nonvirtual const std::byte* begin () const;
+
+    public:
+        /**
+         *  Allow iterating and modifying in place of the GUID as a sequence of bytes
+         */
+        nonvirtual std::byte* end ();
+        nonvirtual const std::byte* end () const;
+
+    public:
+        /**
          */
         static constexpr GUID Zero ();
 
@@ -69,6 +83,7 @@ namespace Stroika::Foundation::Common {
          */
         nonvirtual Characters::String ToString () const;
     };
+    static_assert (sizeof (GUID) == 16);
 
 #if __cpp_impl_three_way_comparison < 201907
     /**

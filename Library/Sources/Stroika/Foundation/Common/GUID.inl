@@ -30,7 +30,23 @@ namespace Stroika::Foundation::Common {
 #endif
     inline Common::GUID::GUID (const array<uint8_t, 16>& src)
     {
-        memcpy (this, src.data (), 16);
+        ::memcpy (this, src.data (), 16);
+    }
+    inline std::byte* Common::GUID::begin ()
+    {
+        return reinterpret_cast<std::byte*> (this);
+    }
+    inline const std::byte* Common::GUID::begin () const
+    {
+        return reinterpret_cast<const std::byte*> (this);
+    }
+    inline std::byte* Common::GUID::end ()
+    {
+        return reinterpret_cast<std::byte*> (this) + 16;
+    }
+    inline const std::byte* Common::GUID::end () const
+    {
+        return reinterpret_cast<const std::byte*> (this) + 16;
     }
     constexpr GUID GUID::Zero ()
     {
