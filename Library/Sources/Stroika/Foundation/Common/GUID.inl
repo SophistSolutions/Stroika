@@ -19,9 +19,9 @@ namespace Stroika::Foundation::Common {
      */
 #if qPlatform_Windows
     constexpr GUID::GUID (const ::GUID& src)
-        : Data1 (src.Data1)
-        , Data2 (src.Data2)
-        , Data3 (src.Data3)
+        : Data1{src.Data1}
+        , Data2{src.Data2}
+        , Data3{src.Data3}
     {
         for (size_t i = 0; i < NEltsOf (Data4); ++i) {
             Data4[i] = src.Data4[i];

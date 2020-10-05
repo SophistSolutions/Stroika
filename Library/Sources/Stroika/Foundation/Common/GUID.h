@@ -99,6 +99,19 @@ namespace Stroika::Foundation::Common {
 
 }
 
+namespace Stroika::Foundation::Memory {
+    class BLOB; // Forward declare to avoid mutual include issues
+}
+
+namespace Stroika::Foundation::Cryptography {
+    template <typename T>
+    struct DefaultSerializer; // Forward declare to avoid mutual include issues
+    template <>
+    struct DefaultSerializer<Stroika::Foundation::Common::GUID> {
+        Memory::BLOB operator() (const Stroika::Foundation::Common::GUID& arg) const;
+    };
+}
+
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************

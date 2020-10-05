@@ -7,7 +7,9 @@
 #include <random>
 
 #include "../Characters/Format.h"
+#include "../Cryptography/DefaultSerializer.h"
 #include "../DataExchange/CheckedConverter.h"
+#include "../Memory/BLOB.h"
 
 #include "GUID.h"
 
@@ -67,10 +69,20 @@ Common::GUID Common::GUID::GenerateNew ()
 {
     array<uint8_t, 16>         randomData;
     random_device              rd;
-    mt19937                    gen (rd ()); //Standard mersenne_twister_engine seeded with rd()
-    uniform_int_distribution<> uniformDist (0, 255);
+    mt19937                    gen{rd ()}; //Standard mersenne_twister_engine seeded with rd()
+    uniform_int_distribution<> uniformDist{0, 255};
     for (size_t i = 0; i < 16; ++i) {
         randomData[i] = static_cast<uint8_t> (uniformDist (gen));
     }
     return GUID{randomData};
+}
+
+/*
+ ********************************************************************************
+ ************** Cryptography::DefaultSerializer<Common::GUID> *******************
+ ********************************************************************************
+ */
+Memory::BLOB Cryptography::DefaultSerializer<Common::GUID>::operator() (const Common::GUID& arg) const
+{
+    return Memory::BLOB (arg.begin (), arg.end ());
 }
