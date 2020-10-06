@@ -101,19 +101,19 @@ namespace Stroika::Foundation::Memory {
     {
     }
     inline BLOB::BLOB (const initializer_list<byte>& bytes)
-        : fRep_ (bytes.size () == 0 ? _SharedIRep (_MakeSharedPtr<ZeroRep_> ()) : _SharedIRep (_MakeSharedPtr<BasicRep_> (bytes.begin (), bytes.end ())))
+        : fRep_{bytes.size () == 0 ? _SharedIRep (_MakeSharedPtr<ZeroRep_> ()) : _SharedIRep (_MakeSharedPtr<BasicRep_> (bytes.begin (), bytes.end ()))}
     {
     }
     inline BLOB::BLOB (const initializer_list<uint8_t>& bytes)
-        : fRep_ (bytes.size () == 0 ? _SharedIRep (_MakeSharedPtr<ZeroRep_> ()) : _SharedIRep (_MakeSharedPtr<BasicRep_> (bytes.begin (), bytes.end ())))
+        : fRep_{bytes.size () == 0 ? _SharedIRep (_MakeSharedPtr<ZeroRep_> ()) : _SharedIRep (_MakeSharedPtr<BasicRep_> (bytes.begin (), bytes.end ()))}
     {
     }
     inline BLOB::BLOB (const byte* start, const byte* end)
-        : fRep_ (start == end ? _SharedIRep (_MakeSharedPtr<ZeroRep_> ()) : _SharedIRep (_MakeSharedPtr<BasicRep_> (start, end)))
+        : fRep_{start == end ? _SharedIRep (_MakeSharedPtr<ZeroRep_> ()) : _SharedIRep (_MakeSharedPtr<BasicRep_> (start, end))}
     {
     }
     inline BLOB::BLOB (const uint8_t* start, const uint8_t* end)
-        : fRep_ (start == end ? _SharedIRep (_MakeSharedPtr<ZeroRep_> ()) : _SharedIRep (_MakeSharedPtr<BasicRep_> (start, end)))
+        : fRep_{start == end ? _SharedIRep (_MakeSharedPtr<ZeroRep_> ()) : _SharedIRep (_MakeSharedPtr<BasicRep_> (start, end))}
     {
     }
     inline BLOB::BLOB (const initializer_list<pair<const byte*, const byte*>>& startEndPairs)
@@ -129,7 +129,7 @@ namespace Stroika::Foundation::Memory {
     {
     }
     inline BLOB::BLOB (_SharedIRep&& rep)
-        : fRep_ (move (rep))
+        : fRep_{move (rep)}
     {
     }
     inline BLOB BLOB::Hex (const char* b)
