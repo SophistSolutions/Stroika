@@ -82,6 +82,14 @@ namespace Stroika::Foundation::Memory {
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      *  
      *      This is like memcmp() - bytewise unsigned comparison
+     * 
+     *  \note Performance
+     *      o   Copying a BLOB is just copying a shared_ptr
+     *      o   Allocation should be extremely cheap, due to the use of enabled_shared_from_this 
+     *          (which combines the two pointer allocations into one) and Memory::UseBlockAllocationIfAppropriate<>
+     *          which should use the block allocation storage mechansism, which is generally a lock free very fast allocator.
+     *          And the use of SmallStackBuffer<64> means that allocation of BLOBs of size <= 64 should requite no calls to the
+     *          global ::operator new/malloc/free/delete
      */
     class BLOB : private Debug::AssertExternallySynchronizedLock {
     public:
