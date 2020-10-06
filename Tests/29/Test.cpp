@@ -325,9 +325,6 @@ namespace {
                 using namespace Characters;
                 VerifyTestResult (Cryptography::Format<String> (Hash<string, USE_DIGESTER_>{}("x")) == L"9dd4e461268c8034f5c8564e155c67a6");
                 VerifyTestResult (Cryptography::Format<string> (Hash<string, USE_DIGESTER_>{}("x")) == "9dd4e461268c8034f5c8564e155c67a6");
-                auto a1 = Hash<string, USE_DIGESTER_>{}("x");
-                auto a2 = Common::GUID{Hash<string, USE_DIGESTER_>{}("x")}.ToString ();
-                auto a3 = Hash<string, USE_DIGESTER_, Common::GUID>{}("x").ToString ();
                 VerifyTestResult ((Common::GUID{Hash<string, USE_DIGESTER_>{}("x")} == Common::GUID{L"61e4d49d-8c26-3480-f5c8-564e155c67a6"}));
                 VerifyTestResult ((Hash<string, USE_DIGESTER_, Common::GUID>{}("x") == Common::GUID{L"61e4d49d-8c26-3480-f5c8-564e155c67a6"}));
             }
