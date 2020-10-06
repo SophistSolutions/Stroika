@@ -21,6 +21,9 @@
  *              lose ability to get that inference.
  *
  *      @todo   Change default return type for DigestDataToString<> to stroika string.
+ * 
+ *      @todo   Consider if this should be deprecated in favor of just using the Hash<> template that
+ *              now does much of the same thing, only arguably better
  */
 
 namespace Stroika::Foundation::Cryptography::Digest {
@@ -38,6 +41,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
      */
     template <typename DIGESTER, typename T, typename RESULT_TYPE = string>
     RESULT_TYPE DigestDataToString (const T& t);
+
 }
 
 /*
