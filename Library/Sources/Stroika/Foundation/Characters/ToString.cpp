@@ -75,6 +75,9 @@ namespace Stroika::Foundation::Characters {
             static_assert (sizeof (t) <= sizeof (int));
             wchar_t buf[1024];
             switch (flags) {
+                case std::ios_base::oct:
+                    (void)::swprintf (buf, NEltsOf (buf), L"%o", t);
+                    break;
                 case std::ios_base::dec:
                     (void)::swprintf (buf, NEltsOf (buf), L"%d", t);
                     break;
@@ -92,6 +95,9 @@ namespace Stroika::Foundation::Characters {
             wchar_t buf[1024];
             static_assert (sizeof (t) == sizeof (long int));
             switch (flags) {
+                case std::ios_base::oct:
+                    (void)::swprintf (buf, NEltsOf (buf), L"%lo", t);
+                    break;
                 case std::ios_base::dec:
                     (void)::swprintf (buf, NEltsOf (buf), L"%ld", t);
                     break;
@@ -109,6 +115,9 @@ namespace Stroika::Foundation::Characters {
             wchar_t buf[1024];
             static_assert (sizeof (t) == sizeof (long long int));
             switch (flags) {
+                case std::ios_base::oct:
+                    (void)::swprintf (buf, NEltsOf (buf), L"%llo", t);
+                    break;
                 case std::ios_base::dec:
                     (void)::swprintf (buf, NEltsOf (buf), L"%lld", t);
                     break;
