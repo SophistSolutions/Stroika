@@ -16,13 +16,23 @@ namespace Stroika::Foundation::Cryptography {
     using std::byte;
 
     namespace Private_ {
-        string mkArrayFmt_ (const uint8_t* start, const uint8_t* end);
+        string        mkArrayFmt_ (const uint8_t* start, const uint8_t* end);
+        inline string mkArrayFmt_ (const byte* start, const byte* end)
+        {
+            return mkArrayFmt_ (reinterpret_cast<const uint8_t*> (start), reinterpret_cast<const uint8_t*> (end));
+        }
         string mkFmt_ (unsigned int n);
         string mkFmt_ (unsigned long n);
         string mkFmt_ (unsigned long long n);
 
         using Characters::String;
 
+        template <size_t N>
+        inline string Format_ (const array<byte, N>& arr, const string*)
+        {
+            static_assert (N >= 1, "N >= 1");
+            return mkArrayFmt_ (Traversal::Iterator2Pointer (arr.begin ()), Traversal::Iterator2Pointer (arr.begin ()) + N);
+        }
         template <size_t N>
         inline string Format_ (const array<uint8_t, N>& arr, const string*)
         {

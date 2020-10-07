@@ -16,31 +16,20 @@
  *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
  *
  *  TODO:
- *      @todo   Can we overload function templates? Diff # template parms? So RESULT_TYPE is second arg? We
- *              almost always want to infer the 'T' arg. But if you specify result type you don't want to
- *              lose ability to get that inference.
- *
- *      @todo   Change default return type for DigestDataToString<> to stroika string.
  * 
- *      @todo   Consider if this should be deprecated in favor of just using the Hash<> template that
- *              now does much of the same thing, only arguably better
+ *          &&&DEPRECATED&&&&
+ *          ALMOST EQUIVILENT TO just forcing return type from Digester to String (or string)
+ *          AS OF Stroika 2.1b6
+ *  && ONLY DIFF IS THIS USES Streams::iostream::SerializeItemToBLOB instead of DefaultSerializer
  */
 
 namespace Stroika::Foundation::Cryptography::Digest {
 
     /**
-     *  A simple helper function to make it easier (fewer characters) for the most common
-     *  case, taking a data object and using operator << to insert it into a stream, and then
-     *  taking THAT and digesting it, and taking its result to compute a string of the hash (hex).
-     *
-     *  \par Example Usage
-     *      \code
-     *          SourceDefinition    tmp;    // some struct which defines ostream operator>>
-     *          string  digestStr = DigestDataToString<Digester<Algorithm::MD5>> (tmp);
-     *      \endcode
+     *          &&&& CONSIDER DEPRECATING &&&&&
      */
     template <typename DIGESTER, typename T, typename RESULT_TYPE = string>
-    RESULT_TYPE DigestDataToString (const T& t);
+    [[deprecated ("Since Stroika 2.1b6 use Digester<> directly or Hash - this is equivilent to Hash<T,DIGESTER,RESULT_TYPE,SERIALIZR=Streams::iostream::SerializeItemToBLOB)")]] RESULT_TYPE DigestDataToString (const T& t);
 
 }
 

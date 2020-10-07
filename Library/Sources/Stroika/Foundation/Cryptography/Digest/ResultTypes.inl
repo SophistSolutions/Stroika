@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
                                                                             (is_same_v<OUT_RESULT, string> or is_same_v<OUT_RESULT, Characters::String> or is_same_v<OUT_RESULT, Common::GUID>),
                                                                         short>* = nullptr)
         {
-            return Format (hashVal);
+            return Format<OUT_RESULT> (hashVal);
         }
     }
 

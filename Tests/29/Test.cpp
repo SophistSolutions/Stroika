@@ -22,7 +22,6 @@
 #include "Stroika/Foundation/Cryptography/Digest/Algorithm/Jenkins.h"
 #include "Stroika/Foundation/Cryptography/Digest/Algorithm/MD5.h"
 #include "Stroika/Foundation/Cryptography/Digest/Algorithm/SuperFastHash.h"
-#include "Stroika/Foundation/Cryptography/Digest/DigestDataToString.h"
 #include "Stroika/Foundation/Cryptography/Digest/Hash.h"
 #include "Stroika/Foundation/Cryptography/Encoding/Algorithm/AES.h"
 #include "Stroika/Foundation/Cryptography/Encoding/Algorithm/Base64.h"
@@ -196,16 +195,17 @@ namespace {
             {
                 const char kSrc[]        = "This is a very good test of a very good test";
                 const char kEncodedVal[] = "08c8888b86d6300ade93a10095a9083a";
-                VerifyTestResult (Format (DIGESTER_{}((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc))) == kEncodedVal);
+                VerifyTestResult (Format<string> (DIGESTER_{}((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc))) == kEncodedVal);
             }
             {
                 int    tmp       = 3;
-                string digestStr = Format (DIGESTER_{}(Streams::iostream::SerializeItemToBLOB (tmp)));
+                string digestStr = Format<string> (DIGESTER_{}(Streams::iostream::SerializeItemToBLOB (tmp)));
                 VerifyTestResult (digestStr == "eccbc87e4b5ce2fe28308fd9f2a7baf3");
             }
             {
-                int    tmp       = 3;
-                string digestStr = Digest::DigestDataToString<DIGESTER_> (tmp);
+                int tmp = 3;
+                //string digestStr = Digest::DigestDataToString<DIGESTER_> (tmp);
+                string digestStr = Digest::Hash<int, DIGESTER_, string>{}(tmp);
                 VerifyTestResult (digestStr == "eccbc87e4b5ce2fe28308fd9f2a7baf3");
             }
         }
