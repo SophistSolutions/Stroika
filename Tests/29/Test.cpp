@@ -30,6 +30,7 @@
 #include "Stroika/Foundation/Cryptography/Encoding/OpenSSLCryptoStream.h"
 #include "Stroika/Foundation/Cryptography/Format.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/IO/Network/InternetAddress.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Memory/SmallStackBuffer.h"
 #include "Stroika/Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
@@ -233,54 +234,58 @@ namespace {
                 VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}(L"xxx") != Hash<String>{}(L"xxx")));
                 VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}(L"x1") == Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}(L"x2")));
             }
-
-#if 0
+            {
+                auto ec1{make_error_code (std::errc::already_connected)};
+                auto ec2{make_error_code (std::errc::directory_not_empty)};
+                auto hasher = Hash<error_code, SystemHashDigester<error_code>>{};
+                VerifyTestResultWarning (hasher (ec1) != hasher (ec2));
+            }
             {
                 using namespace IO::Network;
-                //   VerifyTestResult (Hash<string>{}(L"x") != Hash<string>{}(L"y")); // practically this should never fail if not absolutely required
+                auto hasher = Hash<InternetAddress>{};
+                VerifyTestResultWarning ((hasher (InternetAddress{L"192.168.243.3"}) != hasher (InternetAddress{L"192.168.243.4"})));
             }
-#endif
         }
     }
 }
 
 namespace {
-    template <typename HASHER>
-    void DoCommonHasherTest_ (const byte* dataStart, const byte* dataEnd, uint32_t answer)
+    template <typename DIGESTER>
+    void DoCommonDigesterTest_ (const byte* dataStart, const byte* dataEnd, uint32_t answer)
     {
-        VerifyTestResult (HASHER{}(dataStart, dataEnd) == answer);
-        VerifyTestResult (HASHER{}(Memory::BLOB (dataStart, dataEnd).As<Streams::InputStream<byte>::Ptr> ()) == answer);
+        VerifyTestResult (DIGESTER{}(dataStart, dataEnd) == answer);
+        VerifyTestResult (DIGESTER{}(Memory::BLOB (dataStart, dataEnd).As<Streams::InputStream<byte>::Ptr> ()) == answer);
     }
 }
 
 namespace {
-    namespace Hash_CRC32 {
+    namespace Digest_CRC32_ {
 
         using namespace Cryptography::Digest;
 
         void DoRegressionTests_ ()
         {
-            Debug::TraceContextBumper ctx{"Hash_CRC32::DoRegressionTests_"};
+            Debug::TraceContextBumper ctx{"Digest_CRC32_::DoRegressionTests_"};
 
             // @todo -- RETHINK IF RESULTS SB SAME REGARDLESS OF ENDIAN - NOT CONSISTENT!!!! --LGP 2015-08-26 -- AIX
             {
                 // This result identical to that computed by http://www.zorc.breitbandkatze.de/crc.html -- LGP 2013-10-31
                 const char kSrc[] = "This is a very good test of a very good test";
-                DoCommonHasherTest_<Digester<Algorithm::CRC32>> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc), 3692548919);
-                DoCommonHasherTest_<Digester<Algorithm::CRC32, uint32_t>> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc), 3692548919);
+                DoCommonDigesterTest_<Digester<Algorithm::CRC32>> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc), 3692548919);
+                DoCommonDigesterTest_<Digester<Algorithm::CRC32, uint32_t>> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc), 3692548919);
             }
         }
     }
 }
 
 namespace {
-    namespace Hash_Jenkins {
+    namespace Digest_Jenkins_ {
 
         using namespace Cryptography::Digest;
 
         void DoRegressionTests_ ()
         {
-            Debug::TraceContextBumper ctx{"Hash_Jenkins::DoRegressionTests_"};
+            Debug::TraceContextBumper ctx{"Digest_Jenkins_::DoRegressionTests_"};
 
             using Configuration::Endian;
             using Configuration::EndianConverter;
@@ -300,20 +305,20 @@ namespace {
             }
             {
                 const char kSrc[] = "This is a very good test of a very good test";
-                DoCommonHasherTest_<USE_DIGESTER_> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc), 2786528596);
+                DoCommonDigesterTest_<USE_DIGESTER_> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc), 2786528596);
             }
         }
     }
 }
 
 namespace {
-    namespace Hash_MD5 {
+    namespace Digester_MD5_ {
 
         using namespace Cryptography::Digest;
 
         void DoRegressionTests_ ()
         {
-            Debug::TraceContextBumper ctx{"Hash_MD5::DoRegressionTests_"};
+            Debug::TraceContextBumper ctx{"Digester_MD5_::DoRegressionTests_"};
 
             using USE_DIGESTER_ = Digester<Algorithm::MD5>;
             {
@@ -333,13 +338,13 @@ namespace {
 }
 
 namespace {
-    namespace Hash_SuperFastHash {
+    namespace Digester_SuperFastHash_ {
 
         using namespace Cryptography::Digest;
 
         void DoRegressionTests_ ()
         {
-            Debug::TraceContextBumper ctx{"Hash_SuperFastHash::DoRegressionTests_"};
+            Debug::TraceContextBumper ctx{"Digester_SuperFastHash_::DoRegressionTests_"};
 
             // @todo -- RETHINK IF RESULTS SB SAME REGARDLESS OF ENDIAN - NOT CONSISTENT!!!! --LGP 2015-08-26 -- AIX
             using USE_DIGESTER_ = Digester<Algorithm::SuperFastHash>;
@@ -350,13 +355,13 @@ namespace {
             {
                 // special case where these collide
                 const char kSrc1[] = "        90010";
-                DoCommonHasherTest_<USE_DIGESTER_> ((const byte*)kSrc1, (const byte*)kSrc1 + ::strlen (kSrc1), 375771507);
+                DoCommonDigesterTest_<USE_DIGESTER_> ((const byte*)kSrc1, (const byte*)kSrc1 + ::strlen (kSrc1), 375771507);
                 const char kSrc2[] = "        10028";
-                DoCommonHasherTest_<USE_DIGESTER_> ((const byte*)kSrc2, (const byte*)kSrc2 + ::strlen (kSrc2), 375771507);
+                DoCommonDigesterTest_<USE_DIGESTER_> ((const byte*)kSrc2, (const byte*)kSrc2 + ::strlen (kSrc2), 375771507);
             }
             {
                 const char kSrc[] = "This is a very good test of a very good test";
-                DoCommonHasherTest_<USE_DIGESTER_> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc), 1181771593);
+                DoCommonDigesterTest_<USE_DIGESTER_> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc), 1181771593);
             }
         }
     }
@@ -573,10 +578,10 @@ namespace {
         Base64Test::DoRegressionTests_ ();
         MD5Test::DoRegressionTests_ ();
         HashMisc::DoRegressionTests_ ();
-        Hash_CRC32::DoRegressionTests_ ();
-        Hash_Jenkins::DoRegressionTests_ ();
-        Hash_MD5::DoRegressionTests_ ();
-        Hash_SuperFastHash::DoRegressionTests_ ();
+        Digest_CRC32_::DoRegressionTests_ ();
+        Digest_Jenkins_::DoRegressionTests_ ();
+        Digester_MD5_::DoRegressionTests_ ();
+        Digester_SuperFastHash_::DoRegressionTests_ ();
         AllSSLEncrytionRoundtrip::DoRegressionTests_ ();
         OpenSSLDeriveKeyTests_::DoRegressionTests_ ();
         OpenSSLEncryptDecryptTests_::DoRegressionTests_ ();
