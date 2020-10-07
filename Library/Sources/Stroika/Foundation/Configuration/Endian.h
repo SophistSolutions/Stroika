@@ -26,12 +26,14 @@ namespace Stroika::Foundation::Configuration {
         eBigByte, // byte-swapped big-endian
         eBigWord, // word-swapped big-endian
 
-        eLittleByte, // byte-swapped little-endian
+        eLittleByte, // byte-swapped little-endian  (e.g. x86)
         eLittleWord, // word-swapped little-endian
 
         eBig    = eBigByte,
-        eLittle = eLittleByte,
+        eLittle = eLittleByte,          // e.g. x86
         ePDP    = eLittleWord,
+
+        eX86 = eLittle      // so common, worth an alias
     };
 
     /**
