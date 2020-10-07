@@ -87,7 +87,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
             RESULT_TYPE result = lhs;
             auto        i      = result.begin ();
             auto        ri     = rhs.begin ();
-            while (i != result.end () && ri != rhs.end ()) {
+            while (i != result.end () and ri != rhs.end ()) {
                 *i = HashValueCombine (*i, *ri);
                 ++i;
                 ++ri;
