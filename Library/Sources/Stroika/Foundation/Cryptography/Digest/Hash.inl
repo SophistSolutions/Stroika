@@ -10,6 +10,7 @@
  */
 #include <type_traits>
 
+#include "ResultTypes.h"
 #include "../Format.h"
 
 namespace Stroika::Foundation::Cryptography::Digest {
@@ -37,27 +38,6 @@ namespace Stroika::Foundation::Cryptography::Digest {
         return this->operator() (from.begin (), from.end ());
     }
 
-    namespace Private_ {
-        // Adapt the digest return type to the return type declared by the Hasher (often the same)
-        template <typename ADAPTER_RETURN_TYPE, typename HASHER_RETURN_TYPE>
-        inline ADAPTER_RETURN_TYPE mkReturnType1_ (HASHER_RETURN_TYPE hashVal, enable_if_t<is_constructible_v<ADAPTER_RETURN_TYPE, HASHER_RETURN_TYPE>, void>* = nullptr)
-        {
-            return ADAPTER_RETURN_TYPE (hashVal);
-        }
-        // NOTE - mkReturnType1_<string,XXX> () here uses enable_if and is_same, since C++ doesn't currently allow partial function template
-        // specialization -- LGP 2020-10-02
-        template <typename ADAPTER_RETURN_TYPE, typename HASHER_RETURN_TYPE>
-        inline ADAPTER_RETURN_TYPE mkReturnType1_ (HASHER_RETURN_TYPE hashVal, enable_if_t<is_same_v<ADAPTER_RETURN_TYPE, string>>* = nullptr)
-        {
-            return Format (hashVal);
-        }
-        template <typename ADAPTER_RETURN_TYPE, typename HASHER_RETURN_TYPE>
-        inline ADAPTER_RETURN_TYPE mkReturnType_ (HASHER_RETURN_TYPE hashVal)
-        {
-            return mkReturnType1_<ADAPTER_RETURN_TYPE> (hashVal);
-        }
-    }
-
     /*
      ********************************************************************************
      ********************** Cryptography::Digest::Hash<T> ***************************
@@ -79,7 +59,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
             result = hash<T>{}(t);
         }
         else {
-            result = Private_::mkReturnType_<HASH_RETURN_TYPE> (DIGESTER{}(SERIALIZER{}(t)));
+            result = ConvertResult<HASH_RETURN_TYPE> (DIGESTER{}(SERIALIZER{}(t)));
         }
         if (fSeed) {
             result = HashValueCombine (*fSeed, result);
