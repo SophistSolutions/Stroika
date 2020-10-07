@@ -11,6 +11,8 @@
 
 #include <type_traits>
 
+#include "../Format.h"
+
 namespace Stroika::Foundation::Cryptography::Digest {
 
     namespace Private_ {
