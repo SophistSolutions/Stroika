@@ -10,8 +10,8 @@
  */
 #include <type_traits>
 
-#include "ResultTypes.h"
 #include "../Format.h"
+#include "ResultTypes.h"
 
 namespace Stroika::Foundation::Cryptography::Digest {
 
