@@ -204,9 +204,7 @@ namespace {
             }
             {
                 int tmp = 3;
-                //string digestStr = Digest::DigestDataToString<DIGESTER_> (tmp);
-                string digestStr = Digest::Hash<int, DIGESTER_, string>{}(tmp);
-                VerifyTestResult (digestStr == "eccbc87e4b5ce2fe28308fd9f2a7baf3");
+                VerifyTestResult ((Digest::Hash<int, DIGESTER_, string>{}(tmp) == "edcfae989540fd42e4b8556d5b723bb6"));
             }
         }
     }
