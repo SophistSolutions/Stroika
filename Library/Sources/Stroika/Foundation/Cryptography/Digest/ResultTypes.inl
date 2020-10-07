@@ -36,7 +36,9 @@ namespace Stroika::Foundation::Cryptography::Digest {
         // NOTE - mkReturnType1_<string,XXX> () here uses enable_if and is_same, since C++ doesn't currently allow partial function template
         // specialization -- LGP 2020-10-02
         template <typename OUT_RESULT, typename IN_RESULT>
-        inline OUT_RESULT mkReturnType_ (IN_RESULT hashVal, enable_if_t<not is_constructible_v<OUT_RESULT, IN_RESULT> && is_same_v<OUT_RESULT, string>, short>* = nullptr)
+        inline OUT_RESULT mkReturnType_ (IN_RESULT hashVal, enable_if_t<not is_constructible_v<OUT_RESULT, IN_RESULT> and
+                                                                            (is_same_v<OUT_RESULT, string> or is_same_v<OUT_RESULT, Characters::String> or is_same_v<OUT_RESULT, Common::GUID>),
+                                                                        short>* = nullptr)
         {
             return Format (hashVal);
         }

@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Cryptography {
         }
 
         template <typename CRYTO_RESULT_TO_FORMAT_TYPE>
-        inline Common::GUID Format_ (const CRYTO_RESULT_TO_FORMAT_TYPE& arr, const Common::GUID*)
+        Common::GUID Format_ (const CRYTO_RESULT_TO_FORMAT_TYPE& arr, const Common::GUID*)
         {
             string                  tmp = Format_ (arr, static_cast<const string*> (nullptr));
             std::array<uint8_t, 16> data{};
@@ -64,7 +64,7 @@ namespace Stroika::Foundation::Cryptography {
                     i = 0;
                 }
             }
-            return Common::GUID (data);
+            return Common::GUID{data};
         }
 
     }
@@ -73,11 +73,6 @@ namespace Stroika::Foundation::Cryptography {
     inline AS_RESULT_TYPE Format (const CRYTO_RESULT_TO_FORMAT_TYPE& digestResult)
     {
         return Private_::Format_ (digestResult, static_cast<const AS_RESULT_TYPE*> (nullptr));
-    }
-    template <typename CRYTO_RESULT_TO_FORMAT_TYPE>
-    inline string Format (const CRYTO_RESULT_TO_FORMAT_TYPE& digestResult)
-    {
-        return Format<string, CRYTO_RESULT_TO_FORMAT_TYPE> (digestResult);
     }
 
 }

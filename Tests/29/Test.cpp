@@ -266,11 +266,14 @@ namespace {
                 Memory::BLOB value2Hash                 = DefaultSerializer<InternetAddress>{}(InternetAddress{L"192.168.244.33"});
                 auto         h1                         = digesterWithDefaultResult (value2Hash);
                 uint8_t      h2                         = digesterWithResult_uint8_t (value2Hash);
-                VerifyTestResult (h1 == 2512011991); // experimentally derived values but they shouldn't float
+                VerifyTestResult (h1 == 2512011991); // experimentally derived values but they shouldn't float (actually may depend on endiannesss?)
                 VerifyTestResult (h2 == 215);
                 auto                 digesterWithResult_array40 = Digester<Digest::Algorithm::SuperFastHash, std::array<byte, 40>>{};
                 std::array<byte, 40> h3                         = digesterWithResult_array40 (value2Hash);
                 VerifyTestResult (h3[0] == std::byte{215} and h3[1] == std::byte{66} and h3[39] == std::byte{0});
+                if (Configuration::GetEndianness () == Configuration::Endian::eX86) {
+                    VerifyTestResult ((Digester<Digest::Algorithm::SuperFastHash, string>{}(value2Hash) == "0x2512011991"));
+                }
             }
             {
                 // copy array to smaller type
@@ -281,6 +284,9 @@ namespace {
                 auto         h1                         = digesterWithDefaultResult (value2Hash);
                 uint8_t      h2                         = digesterWithResult_uint8_t (value2Hash);
                 VerifyTestResult (h2 == h1[0]);
+                auto digesterWithResult_string = Digester<Digest::Algorithm::MD5, string>{};
+                VerifyTestResult (digesterWithResult_string (value2Hash) == "06d0b6f01666443614f2502b44386721");
+                VerifyTestResult ((Digester<Digest::Algorithm::MD5, String>{}(value2Hash) == L"06d0b6f01666443614f2502b44386721"));
             }
             {
                 using namespace IO::Network;
