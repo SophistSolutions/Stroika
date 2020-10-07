@@ -172,32 +172,6 @@ namespace Stroika::Foundation::Cryptography::Digest {
     template <typename RESULT_TYPE>
     RESULT_TYPE HashValueCombine (RESULT_TYPE lhs, RESULT_TYPE rhs);
 
-#if 0
-    /**
-     * 
-     * 
-     * &&&& CLEANUP DOCS BELOW AND MAKE CORRECT FOR NEW DESIGN AND INCORPORATE WHEN CORRECT/FINALIZED/FIGURED OUT
-     * 
-     * 
-     *  @note   This concept is similar to, and interoperable with the std::hash ().
-     *          These Hash () functions take generic digest algorithms and types of things to hash and
-     *          return generic return types. And they allow the flexability for a given set of input and
-     *          return types to use different hash functions in the same program. std::hash() lacks this flexability.
-     *
-     *          But for a given type (a std::hash () limitation) - you can define:
-     *
-     *          namespace std {
-     *              template <>
-     *              struct hash<YOUR_TYPE> {
-     *                  size_t operator ()(YOUR_TYPE value) const {
-     *                      // note the restrictions on TYPE_TO_COMPUTE_HASH_OF above
-     *                      return Hash<PICK_ANY_DIGESTER, YOUR_TYPE, size_t> (value);
-     *                  }
-     *              };
-     *          }
-     */
-#endif
-
 }
 
 /*
