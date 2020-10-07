@@ -54,15 +54,33 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *
      *  \par Example Usage
      *      \code
-     *          return Format<String> (Digester<Algorithm::MD5>{} (Memory::BLOB::Raw (sb.AsUTF8 ())));
+     *          return Digester<Algorithm::MD5>{} (Memory::BLOB::Raw (sb.AsUTF8 ())));
      *      \endcode
-     *
-     *  @see  DigestDataToString ()
      *
      *  \par Example Usage
      *      \code
-     *          SourceDefinition    tmp;    // some struct which defines ostream operator>>
-     *          string  digestStr = DigestDataToString<Digester<Algorithm::MD5>> (tmp);
+     *          // to convert to string
+     *          return Format<String> (Digester<Algorithm::MD5>{} (Memory::BLOB::Raw (sb.AsUTF8 ())));
+     *          // OR
+     *          return Digester<Algorithm::MD5, String>{} (Memory::BLOB::Raw (sb.AsUTF8 ())));
+     *      \endcode
+     *
+     *  \par Example Usage
+     *      \code
+     *          using namespace IO::Network;
+     *          auto         digesterWithDefaultResult  = Digester<Digest::Algorithm::SuperFastHash>{};
+     *          auto         digesterWithResult_uint8_t = Digester<Digest::Algorithm::SuperFastHash, uint8_t>{};
+     *          Memory::BLOB value2Hash                 = DefaultSerializer<InternetAddress>{}(InternetAddress{L"192.168.244.33"});
+     *          auto         h1                         = digesterWithDefaultResult (value2Hash);
+     *          uint8_t      h2                         = digesterWithResult_uint8_t (value2Hash);
+     *          VerifyTestResult (h1 == 2512011991); // experimentally derived values but they shouldn't float (actually may depend on endiannesss?)
+     *          VerifyTestResult (h2 == 215);
+     *          auto                 digesterWithResult_array40 = Digester<Digest::Algorithm::SuperFastHash, std::array<byte, 40>>{};
+     *          std::array<byte, 40> h3                         = digesterWithResult_array40 (value2Hash);
+     *          VerifyTestResult (h3[0] == std::byte{215} and h3[1] == std::byte{66} and h3[39] == std::byte{0});
+     *          if (Configuration::GetEndianness () == Configuration::Endian::eX86) {
+     *              VerifyTestResult ((Digester<Digest::Algorithm::SuperFastHash, string>{}(value2Hash) == "0x2512011991"));
+     *          }
      *      \endcode
      *
      *  @see  Hash ()
