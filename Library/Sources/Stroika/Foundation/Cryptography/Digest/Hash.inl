@@ -42,7 +42,6 @@ namespace Stroika::Foundation::Cryptography::Digest {
         template <typename ADAPTER_RETURN_TYPE, typename HASHER_RETURN_TYPE>
         inline ADAPTER_RETURN_TYPE mkReturnType1_ (HASHER_RETURN_TYPE hashVal, enable_if_t<is_constructible_v<ADAPTER_RETURN_TYPE, HASHER_RETURN_TYPE>, void>* = nullptr)
         {
-            //return static_cast<ADAPTER_RETURN_TYPE> (hashVal);
             return ADAPTER_RETURN_TYPE (hashVal);
         }
         // NOTE - mkReturnType1_<string,XXX> () here uses enable_if and is_same, since C++ doesn't currently allow partial function template

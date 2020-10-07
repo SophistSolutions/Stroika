@@ -239,6 +239,8 @@ namespace {
                 auto ec2{make_error_code (std::errc::directory_not_empty)};
                 auto hasher = Hash<error_code, SystemHashDigester<error_code>>{};
                 VerifyTestResultWarning (hasher (ec1) != hasher (ec2));
+                VerifyTestResult ((hasher (ec1) == hash<error_code>{}(ec1)));
+                VerifyTestResult ((hasher (ec2) == hash<error_code>{}(ec2)));
             }
             {
                 using namespace IO::Network;

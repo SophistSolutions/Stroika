@@ -13,11 +13,7 @@
 #include "../../Streams/InputStream.h"
 
 /*
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
- *
- *  TODO:
- *      @todo -- RETHINK IF RESULTS SB SAME REGARDLESS OF ENDIAN - NOT CONSISTENT!!!! --LGP 2015-08-26
- *
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  */
 
 namespace Stroika::Foundation::Cryptography::Digest {
@@ -25,11 +21,11 @@ namespace Stroika::Foundation::Cryptography::Digest {
     using Memory::BLOB;
 
     namespace Algorithm {
-
+        /**
+         *  No definition provided. It must be specialized for each algorithm.
+         */
         template <typename ALGORITHM>
-        struct DigesterDefaultTraitsForAlgorithm {
-            // TODO - REPLACE
-        };
+        struct DigesterDefaultTraitsForAlgorithm;
     }
 
     /**
@@ -80,6 +76,15 @@ namespace Stroika::Foundation::Cryptography::Digest {
         [[deprecated ("Since Stroika 2.1b6 - use instance of Digester and call operator()")]] static ReturnType ComputeDigest (const std::byte* from, const std::byte* to);
         [[deprecated ("Since Stroika 2.1b6 - use instance of Digester and call operator()")]] static ReturnType ComputeDigest (const BLOB& from);
         /**
+         *  The reason we support the overload BLOB, is that this is the most convenient and univeral argument
+         *  to a Digester.
+         *
+         *  The reason to provide an InputStream<> parameter, is that this allows operating a digest on some data
+         *  without loading it all into RAM at once.
+         *
+         *  The reason to provide a const byte* / const byte* overload is - well - maybe pointless - since
+         *  that can be quite efficiently turned into a BLOB, but its potentially a little more efficient for
+         *  perhaps important cases.
          */
         ReturnType operator() (const Streams::InputStream<std::byte>::Ptr& from) const;
         ReturnType operator() (const std::byte* from, const std::byte* to) const;
