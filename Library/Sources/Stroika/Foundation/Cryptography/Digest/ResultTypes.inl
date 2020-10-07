@@ -16,16 +16,27 @@
 namespace Stroika::Foundation::Cryptography::Digest {
 
     namespace Private_ {
-        // Adapt the digest return type to the return type declared by the Hasher (often the same)
-        template <typename ADAPTER_RETURN_TYPE, typename HASHER_RETURN_TYPE>
-        constexpr ADAPTER_RETURN_TYPE mkReturnType_ (HASHER_RETURN_TYPE hashVal, enable_if_t<is_constructible_v<ADAPTER_RETURN_TYPE, HASHER_RETURN_TYPE>, void>* = nullptr)
+        // Try to use simple constuction of result from argument if possible
+        template <typename OUT_RESULT, typename IN_RESULT>
+        constexpr OUT_RESULT mkReturnType_ (IN_RESULT hashVal, enable_if_t<is_constructible_v<OUT_RESULT, IN_RESULT>, void>* = nullptr)
         {
-            return ADAPTER_RETURN_TYPE (hashVal);
+            return OUT_RESULT (hashVal);
+        }
+        // Else if both (IN AND OUT) values trivially copyable, use memcpy (and zero fill result as needed)
+        template <typename OUT_RESULT, typename IN_RESULT>
+        OUT_RESULT mkReturnType_ (IN_RESULT hashVal,
+                                  enable_if_t<
+                                      not is_constructible_v<OUT_RESULT, IN_RESULT> and (is_trivially_copyable_v<IN_RESULT> and is_trivially_copyable_v<OUT_RESULT>), char>* = nullptr)
+        {
+            size_t     mBytes2Copy = std::min (sizeof (OUT_RESULT), sizeof (IN_RESULT));
+            OUT_RESULT result{}; // zero initialize non-copied bits (@todo could just zero-fill end bit)
+            ::memcpy (&result, &hashVal, mBytes2Copy);
+            return result;
         }
         // NOTE - mkReturnType1_<string,XXX> () here uses enable_if and is_same, since C++ doesn't currently allow partial function template
         // specialization -- LGP 2020-10-02
-        template <typename ADAPTER_RETURN_TYPE, typename HASHER_RETURN_TYPE>
-        inline ADAPTER_RETURN_TYPE mkReturnType_ (HASHER_RETURN_TYPE hashVal, enable_if_t<is_same_v<ADAPTER_RETURN_TYPE, string>>* = nullptr)
+        template <typename OUT_RESULT, typename IN_RESULT>
+        inline OUT_RESULT mkReturnType_ (IN_RESULT hashVal, enable_if_t<not is_constructible_v<OUT_RESULT, IN_RESULT> && is_same_v<OUT_RESULT, string>, short>* = nullptr)
         {
             return Format (hashVal);
         }

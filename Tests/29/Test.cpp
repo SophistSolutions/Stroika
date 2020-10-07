@@ -252,6 +252,54 @@ namespace {
 }
 
 namespace {
+    namespace DigestAltResults {
+        using namespace Cryptography::Digest;
+
+        void DoRegressionTests_ ()
+        {
+            Debug::TraceContextBumper ctx{"DigestAltResults::DoRegressionTests_"};
+            // Excercise uses of ConvertResult()
+            {
+                using namespace IO::Network;
+                auto         digesterWithDefaultResult  = Digester<Digest::Algorithm::SuperFastHash>{};
+                auto         digesterWithResult_uint8_t = Digester<Digest::Algorithm::SuperFastHash, uint8_t>{};
+                Memory::BLOB value2Hash                 = DefaultSerializer<InternetAddress>{}(InternetAddress{L"192.168.244.33"});
+                auto         h1                         = digesterWithDefaultResult (value2Hash);
+                uint8_t      h2                         = digesterWithResult_uint8_t (value2Hash);
+                VerifyTestResult (h1 == 2512011991); // experimentally derived values but they shouldn't float
+                VerifyTestResult (h2 == 215);
+                auto                 digesterWithResult_array40 = Digester<Digest::Algorithm::SuperFastHash, std::array<byte, 40>>{};
+                std::array<byte, 40> h3                         = digesterWithResult_array40 (value2Hash);
+                VerifyTestResult (h3[0] == std::byte{215} and h3[1] == std::byte{66} and h3[39] == std::byte{0});
+            }
+            {
+                // copy array to smaller type
+                using namespace IO::Network;
+                auto         digesterWithDefaultResult  = Digester<Digest::Algorithm::MD5>{};
+                auto         digesterWithResult_uint8_t = Digester<Digest::Algorithm::MD5, uint8_t>{};
+                Memory::BLOB value2Hash                 = DefaultSerializer<InternetAddress>{}(InternetAddress{L"192.168.244.33"});
+                auto         h1                         = digesterWithDefaultResult (value2Hash);
+                uint8_t      h2                         = digesterWithResult_uint8_t (value2Hash);
+                VerifyTestResult (h2 == h1[0]);
+            }
+            {
+                using namespace IO::Network;
+                auto    hasherWithDefaultResult  = Hash<InternetAddress, Digester<Digest::Algorithm::SuperFastHash>>{};
+                auto    hasherWithResult_uint8_t = Hash<InternetAddress, Digester<Digest::Algorithm::SuperFastHash>, uint8_t>{};
+                auto    value2Hash               = InternetAddress{L"192.168.244.33"};
+                auto    h1                       = hasherWithDefaultResult (value2Hash);
+                uint8_t h2                       = hasherWithResult_uint8_t (value2Hash);
+                VerifyTestResult (h1 == 2512011991); // experimentally derived values but they shouldn't float
+                VerifyTestResult (h2 == 215);
+                auto                 hasherWithResult_array40 = Hash<InternetAddress, Digester<Digest::Algorithm::SuperFastHash>, std::array<byte, 40>>{};
+                std::array<byte, 40> h3                       = hasherWithResult_array40 (value2Hash);
+                VerifyTestResult (h3[0] == std::byte{215} and h3[1] == std::byte{66} and h3[39] == std::byte{0});
+            }
+        }
+    }
+}
+
+namespace {
     template <typename DIGESTER>
     void DoCommonDigesterTest_ (const byte* dataStart, const byte* dataEnd, uint32_t answer)
     {
@@ -580,6 +628,7 @@ namespace {
         Base64Test::DoRegressionTests_ ();
         MD5Test::DoRegressionTests_ ();
         HashMisc::DoRegressionTests_ ();
+        DigestAltResults::DoRegressionTests_ ();
         Digest_CRC32_::DoRegressionTests_ ();
         Digest_Jenkins_::DoRegressionTests_ ();
         Digester_MD5_::DoRegressionTests_ ();
