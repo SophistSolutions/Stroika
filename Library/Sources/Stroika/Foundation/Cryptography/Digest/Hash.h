@@ -103,7 +103,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *  Other types should generate compile-time error.
      *
      *  Supported values for HASH_RETURN_TYPE, depend on the DIGESTER::ReturnType. This can be any type
-     *  cast convertible into HASH_RETURN_TYPE (typically an unsigned int), or std::string, or Characters::String.
+     *  cast convertible into HASH_RETURN_TYPE (typically an unsigned int), or std::string, or Characters::String, or Common::GUID, or array<byte, N> etc...
      *
      *  \par Example Usage
      *      \code
@@ -131,6 +131,18 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *          //constexpr auto altStringSerializer = [] (const String& s) { return s.empty () ? Memory::BLOB{} : Memory::BLOB ((const byte*)s.c_str (), (const byte*)s.c_str () + 1); };
      *          VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}(L"xxx") != Hash<String>{}(L"xxx")));
      *          VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}(L"x1") == Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}(L"x2")));
+     *      \endcode
+     * 
+     *  \par Example Usage (using explicit result type - typically string)
+     *      \code
+     *          using namespace IO::Network;
+     *          auto    hasherWithResult_uint8_t = Hash<InternetAddress, Digester<Digest::Algorithm::SuperFastHash>, uint8_t>{};
+     *          auto    value2Hash               = InternetAddress{L"192.168.244.33"};
+     *          uint8_t h2                       = hasherWithResult_uint8_t (value2Hash);
+     *          VerifyTestResult (h2 == 215);
+     *          auto                 hasherWithResult_array40 = Hash<InternetAddress, Digester<Digest::Algorithm::SuperFastHash>, std::array<byte, 40>>{};
+     *          std::array<byte, 40> h3                       = hasherWithResult_array40 (value2Hash);
+     *          VerifyTestResult ((Digester<Digest::Algorithm::MD5, String>{}(value2Hash) == L"..."));
      *      \endcode
      * 
      *      AND see docs on DefaultSerializer<> for how to explicitly specialize it for a given type (often better than passing
