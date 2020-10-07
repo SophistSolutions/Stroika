@@ -30,10 +30,10 @@ namespace Stroika::Foundation::Configuration {
         eLittleWord, // word-swapped little-endian
 
         eBig    = eBigByte,
-        eLittle = eLittleByte,          // e.g. x86
+        eLittle = eLittleByte, // e.g. x86
         ePDP    = eLittleWord,
 
-        eX86 = eLittle      // so common, worth an alias
+        eX86 = eLittle // so common, worth an alias
     };
 
     /**
