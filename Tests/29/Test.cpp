@@ -259,20 +259,38 @@ namespace {
             // Excercise uses of ConvertResult()
             {
                 using namespace IO::Network;
-                auto         digesterWithDefaultResult  = Digester<Digest::Algorithm::SuperFastHash>{};
-                auto         digesterWithResult_uint8_t = Digester<Digest::Algorithm::SuperFastHash, uint8_t>{};
-                Memory::BLOB value2Hash                 = DefaultSerializer<InternetAddress>{}(InternetAddress{L"192.168.244.33"});
-                auto         h1                         = digesterWithDefaultResult (value2Hash);
-                uint8_t      h2                         = digesterWithResult_uint8_t (value2Hash);
-                VerifyTestResult (h1 == 2512011991); // experimentally derived values but they shouldn't float (actually may depend on endiannesss?)
-                VerifyTestResult (h2 == 215);
+                auto                 digesterWithDefaultResult  = Digester<Digest::Algorithm::SuperFastHash>{};
+                auto                 digesterWithResult_uint8_t = Digester<Digest::Algorithm::SuperFastHash, uint8_t>{};
+                Memory::BLOB         value2Hash                 = DefaultSerializer<InternetAddress>{}(InternetAddress{L"192.168.244.33"});
+                auto                 h1                         = digesterWithDefaultResult (value2Hash);
+                uint8_t              h2                         = digesterWithResult_uint8_t (value2Hash);
                 auto                 digesterWithResult_array40 = Digester<Digest::Algorithm::SuperFastHash, std::array<byte, 40>>{};
                 std::array<byte, 40> h3                         = digesterWithResult_array40 (value2Hash);
-                VerifyTestResult (h3[0] == std::byte{215} and h3[1] == std::byte{66} and h3[39] == std::byte{0});
-                if (Configuration::GetEndianness () == Configuration::Endian::eX86) {
-                    VerifyTestResult ((Digester<Digest::Algorithm::SuperFastHash, string>{}(value2Hash) == "0x2512011991"));
+
+                /*
+                 *  NOTE - basically ALL these tests vary on a number of parameters.
+                 *      o   default serializer for string depends on sizeof wchar_t
+                 *      o   some values involve casts of integers of byte array data which depends on endianness
+                 *      but otherwise I dont think these values should float/vary (thus the VerifyTestResult tests).
+                 */
+                if (sizeof (wchar_t) == 2) {
+                    VerifyTestResult (h1 == 2512011991);
+                    VerifyTestResult (h2 == 215);
+                    VerifyTestResult (h3[0] == std::byte{215} and h3[1] == std::byte{66} and h3[39] == std::byte{0});
+                    if (Configuration ::GetEndianness () == Configuration::Endian::eX86) {
+                        VerifyTestResult ((Digester<Digest::Algorithm::SuperFastHash, string>{}(value2Hash) == "0x2512011991"));
+                    }
+                }
+                else if (sizeof (wchar_t) == 4) {
+                    VerifyTestResult (h1 == 3490201358);
+                    VerifyTestResult (h2 == 14);
+                    VerifyTestResult (h3[0] == std::byte{14} and h3[1] == std::byte{63} and h3[39] == std::byte{0});
+                    if (Configuration ::GetEndianness () == Configuration::Endian::eX86) {
+                        VerifyTestResult ((Digester<Digest::Algorithm::SuperFastHash, string>{}(value2Hash) == "0x3490201358"));
+                    }
                 }
             }
+
             {
                 // copy array to smaller type
                 using namespace IO::Network;
@@ -283,8 +301,19 @@ namespace {
                 uint8_t      h2                         = digesterWithResult_uint8_t (value2Hash);
                 VerifyTestResult (h2 == h1[0]);
                 auto digesterWithResult_string = Digester<Digest::Algorithm::MD5, string>{};
-                VerifyTestResult (digesterWithResult_string (value2Hash) == "06d0b6f01666443614f2502b44386721");
-                VerifyTestResult ((Digester<Digest::Algorithm::MD5, String>{}(value2Hash) == L"06d0b6f01666443614f2502b44386721"));
+
+                /*
+                 *  NOTE - basically ALL these tests vary on a number of parameters.
+                 *      o   default serializer for string depends on sizeof wchar_t
+                 */
+                if (sizeof (wchar_t) == 2) {
+                    VerifyTestResult (digesterWithResult_string (value2Hash) == "06d0b6f01666443614f2502b44386721");
+                    VerifyTestResult ((Digester<Digest::Algorithm::MD5, String>{}(value2Hash) == L"06d0b6f01666443614f2502b44386721"));
+                }
+                if (sizeof (wchar_t) == 4) {
+                    VerifyTestResult (digesterWithResult_string (value2Hash) == "32e6a57de2f9324edfc93863838d9015");
+                    VerifyTestResult ((Digester<Digest::Algorithm::MD5, String>{}(value2Hash) == L"32e6a57de2f9324edfc93863838d9015"));
+                }
             }
             {
                 using namespace IO::Network;
@@ -293,11 +322,23 @@ namespace {
                 auto    value2Hash               = InternetAddress{L"192.168.244.33"};
                 auto    h1                       = hasherWithDefaultResult (value2Hash);
                 uint8_t h2                       = hasherWithResult_uint8_t (value2Hash);
-                VerifyTestResult (h1 == 2512011991); // experimentally derived values but they shouldn't float
-                VerifyTestResult (h2 == 215);
                 auto                 hasherWithResult_array40 = Hash<InternetAddress, Digester<Digest::Algorithm::SuperFastHash>, std::array<byte, 40>>{};
                 std::array<byte, 40> h3                       = hasherWithResult_array40 (value2Hash);
-                VerifyTestResult (h3[0] == std::byte{215} and h3[1] == std::byte{66} and h3[39] == std::byte{0});
+
+                /*
+                 *  NOTE - basically ALL these tests vary on a number of parameters.
+                 *      o   default serializer for string depends on sizeof wchar_t
+                 */
+                if (sizeof (wchar_t) == 2) {
+                    VerifyTestResult (h1 == 2512011991); // experimentally derived values but they shouldn't float
+                    VerifyTestResult (h2 == 215);
+                    VerifyTestResult (h3[0] == std::byte{215} and h3[1] == std::byte{66} and h3[39] == std::byte{0});
+                }
+                if (sizeof (wchar_t) == 4) {
+                    VerifyTestResult (h1 == 3490201358); // experimentally derived values but they shouldn't float
+                    VerifyTestResult (h2 == 14);
+                    VerifyTestResult (h3[0] == std::byte{14} and h3[1] == std::byte{63} and h3[39] == std::byte{0});
+                }
             }
         }
     }
