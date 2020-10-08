@@ -147,7 +147,7 @@ namespace {
         if ('a' <= c and c <= 'f') {
             return byte ((c - 'a') + 10);
         }
-        Execution::Throw (Execution::RuntimeErrorException (L"Invalid HEX character in BLOB::Hex"sv));
+        Execution::Throw (Execution::RuntimeErrorException{L"Invalid HEX character in BLOB::Hex"sv});
     }
 }
 BLOB BLOB::Hex (const char* s, const char* e)
@@ -162,12 +162,12 @@ BLOB BLOB::Hex (const char* s, const char* e)
         if (i == e)
             [[UNLIKELY_ATTR]]
             {
-                Execution::Throw (Execution::RuntimeErrorException (L"Invalid partial HEX character in BLOB::Hex"sv));
+                Execution::Throw (Execution::RuntimeErrorException{L"Invalid partial HEX character in BLOB::Hex"sv});
             }
         b = byte (uint8_t (b << 4) + uint8_t (HexChar2Num_ (*i)));
         buf.push_back (b);
     }
-    return BLOB (buf.begin (), buf.end ());
+    return BLOB{buf.begin (), buf.end ()};
 }
 
 namespace {

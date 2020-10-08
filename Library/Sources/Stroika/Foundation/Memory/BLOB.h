@@ -43,11 +43,13 @@
  *              construct and operate on large BLOBs (as streams).
  *              [[NB SEE Streams::BLOB todo/project]]
  *
- *      @todo   Use (or document why not) ICompare API for our compare stuff.
- *
  *      @todo   Add MemoryMappedFileBLOB to Foundation/File section � and have it subclass
  *              BLOB (object slicing) � and have different CTOR, and different virtual Rep
  *              (decide semantics � not clear � readonly)
+ *          
+ *              MAYBE better static method MemoryMappedFileAsBLOB () instead of separete class since
+ *              then no object slicing, and we can document its just like the 'applicationlifetime' constructor - unsafe
+ *              if the underlying mapped file data ever changes.
  *
  *      @todo   Do CTOR that uses iterator start/end not just const byte* start, const byte* end.
  *

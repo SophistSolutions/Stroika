@@ -317,11 +317,11 @@ namespace {
             }
             {
                 using namespace IO::Network;
-                auto    hasherWithDefaultResult  = Hash<InternetAddress, Digester<Digest::Algorithm::SuperFastHash>>{};
-                auto    hasherWithResult_uint8_t = Hash<InternetAddress, Digester<Digest::Algorithm::SuperFastHash>, uint8_t>{};
-                auto    value2Hash               = InternetAddress{L"192.168.244.33"};
-                auto    h1                       = hasherWithDefaultResult (value2Hash);
-                uint8_t h2                       = hasherWithResult_uint8_t (value2Hash);
+                auto                 hasherWithDefaultResult  = Hash<InternetAddress, Digester<Digest::Algorithm::SuperFastHash>>{};
+                auto                 hasherWithResult_uint8_t = Hash<InternetAddress, Digester<Digest::Algorithm::SuperFastHash>, uint8_t>{};
+                auto                 value2Hash               = InternetAddress{L"192.168.244.33"};
+                auto                 h1                       = hasherWithDefaultResult (value2Hash);
+                uint8_t              h2                       = hasherWithResult_uint8_t (value2Hash);
                 auto                 hasherWithResult_array40 = Hash<InternetAddress, Digester<Digest::Algorithm::SuperFastHash>, std::array<byte, 40>>{};
                 std::array<byte, 40> h3                       = hasherWithResult_array40 (value2Hash);
 
