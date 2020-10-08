@@ -2,7 +2,7 @@
 #
 #
 ifndef StroikaRoot
-$(error("StroikaRoot must be defined and included before this file"))
+$(error "StroikaRoot must be defined and included before this file")
 endif
 
 .SUFFIXES:	${OBJ_SUFFIX} .cpp .i .h .swsp .a
@@ -35,8 +35,6 @@ clean::
 
 clobber::	clean
 	@rm -rf $(TARGETDIR)
-	@#rm -f $(TARGETEXE)
-	
 
 
 list-objs::
