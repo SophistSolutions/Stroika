@@ -114,8 +114,7 @@ namespace Stroika::Foundation::Cache {
     {
         size_t sz{fBits_.size ()};
         for (const HashFunctionType& f : fHashFunctions_) {
-            auto v         = f (elt);
-            fBits_[v % sz] = true;
+            fBits_[f (elt) % sz] = true;
         }
     }
     template <typename T>
