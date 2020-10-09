@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Common {
         return GUID{};
     }
 
-#if __cpp_impl_three_way_comparison < 201907
+#if __cpp_impl_three_way_comparison < 201907 or qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy
     /*
      ********************************************************************************
      ************************* Common::GUID operators *******************************

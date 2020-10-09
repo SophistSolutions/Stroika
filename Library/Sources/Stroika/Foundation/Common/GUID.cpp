@@ -54,7 +54,7 @@ Common::GUID::GUID (const string& src)
 }
 
 Common::GUID::GUID (const Characters::String& src)
-    : GUID (src.AsASCII ())
+    : GUID{src.AsASCII ()}
 {
 }
 

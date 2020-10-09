@@ -422,6 +422,17 @@ namespace {
                 VerifyTestResult ((Cryptography::Digest::Hash<string, USE_DIGESTER_, string>{}(kSrc)) == kEncodedVal);
             }
             {
+                // WRONG PLACE - NEED TO CREATE NEW FILE FOR Common::GUID tests
+                Common::GUID guidFromStr{L"61e4d49d-8c26-3480-f5c8-564e155c67a6"};
+                Common::GUID guidFromArray{Result128BitType{0x9d, 0xd4, 0xe4, 0x61, 0x26, 0x8c, 0x80, 0x34, 0xf5, 0xc8, 0x56, 0x4e, 0x15, 0x5c, 0x67, 0xa6}};
+                if (Configuration ::GetEndianness () == Configuration::Endian::eX86) {
+                    VerifyTestResult (memcmp (&guidFromStr, &guidFromArray, sizeof (Common::GUID)) == 0);
+                }
+                if (memcmp (&guidFromStr, &guidFromArray, sizeof (Common::GUID)) == 0) {
+                    VerifyTestResult (guidFromStr == guidFromArray); // fails due to qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy
+                }
+            }
+            {
                 using namespace Characters;
                 VerifyTestResult (Cryptography::Format<String> (Hash<string, USE_DIGESTER_>{}("x")) == L"9dd4e461268c8034f5c8564e155c67a6");
                 VerifyTestResult (Cryptography::Format<string> (Hash<string, USE_DIGESTER_>{}("x")) == "9dd4e461268c8034f5c8564e155c67a6");

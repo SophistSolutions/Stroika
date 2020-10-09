@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Common {
          */
         static GUID GenerateNew ();
 
-#if __cpp_impl_three_way_comparison >= 201907
+#if __cpp_impl_three_way_comparison >= 201907 && !qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy
     public:
         /**
          */
@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Common {
     };
     static_assert (sizeof (GUID) == 16);
 
-#if __cpp_impl_three_way_comparison < 201907
+#if __cpp_impl_three_way_comparison < 201907 or qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy
     /**
      *  Basic operator overloads with the obivous meaning, and simply indirect to @GUID::ThreeWayComparer ()
      */

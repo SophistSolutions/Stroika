@@ -600,6 +600,22 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 
 #endif
 
+
+
+
+#ifndef qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy
+
+#if defined(__GNUC__) && !defined(__clang__)
+// First found BROKEN IN GCC 10.0
+#define qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 10)
+#else
+#define qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy 0
+#endif
+
+#endif
+
+
+
 #ifndef qCompilerAndStdLib_GenericLambdaInsideGenericLambdaAssertCall_Buggy
 
 // Generates internal compiler error
