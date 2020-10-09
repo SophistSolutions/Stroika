@@ -600,9 +600,6 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 
 #endif
 
-
-
-
 #ifndef qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy
 
 #if defined(__GNUC__) && !defined(__clang__)
@@ -613,8 +610,6 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 #endif
 
 #endif
-
-
 
 #ifndef qCompilerAndStdLib_GenericLambdaInsideGenericLambdaAssertCall_Buggy
 
