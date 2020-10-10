@@ -73,7 +73,7 @@ jobs:
           name: Build
           no_output_timeout: 30m
           command: |
-            docker exec --workdir c:/Stroika buildContainer make tests -j4
+            docker exec --workdir c:/Stroika buildContainer make tests QUICK_BUILD=1 -j4
       # - run:
       #          name: DUMP FAIL LOGS
       #          #### DONT THINK THIS IS NEEDED ANYMORE!!! LOSE IF BUILDS
@@ -132,7 +132,7 @@ jobs:
           name: Build
           no_output_timeout: 30m
           command: |
-            docker exec --workdir c:/Stroika buildContainer make samples -j4
+            docker exec --workdir c:/Stroika buildContainer make samples QUICK_BUILD=1 -j4
 
   basic-debug-builds-test-ubuntu1804:
     docker:
@@ -148,7 +148,7 @@ jobs:
           command: ./configure Debug --config-tag Unix --apply-default-debug-flags --compiler-driver g++-8
       - run:
           name: Build
-          command: make all -j2
+          command: make QUICK_BUILD=1 all -j2
       - store_artifacts:
           path: ~/build-4-linux/Builds/Debug/Samples-AppSettings/
           destination: Samples
@@ -205,7 +205,7 @@ jobs:
           command: ./configure Debug --config-tag Unix --apply-default-debug-flags
       - run:
           name: Build
-          command: make all -j2
+          command: make all QUICK_BUILD=1 -j2
       - store_artifacts:
           path: ~/build-4-linux/Builds/Debug/Samples-AppSettings/
           destination: Samples
@@ -264,7 +264,7 @@ jobs:
             ./configure clang++-8-release-libc++-c++2a --config-tag Unix --compiler-driver clang++-8 --apply-default-release-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a
       - run:
           name: Build
-          command: make all -j2
+          command: make all QUICK_BUILD=1 -j2
       - run:
           name: Run Tests
           command: |

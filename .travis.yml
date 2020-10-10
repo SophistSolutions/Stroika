@@ -25,7 +25,7 @@ env:
     # suggested by https://docs.travis-ci.com/user/speeding-up-the-build/#parallelizing-your-build-on-one-virtual-machine
     # cat /proc/cpuinfo on unix, and %NUMBER_OF_PROCESSORS% on windows showed 2 CPUs, so -j 2
     # -j2 makes sense, -j3 empirically slightly faster (maybe - not consistent), but occasionally runs out of RAM (virtual mem exhuasted)--LGP 2020-03-09
-    - MAKEFLAGS="--jobs=3"
+    - MAKEFLAGS="--jobs=3 QUICK_BUILD=1"
 
 branches:
   only:
