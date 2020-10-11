@@ -1,327 +1,237 @@
-﻿/*
+/*
  * Copyright(c) Sophist Solutions, Inc. 1990-2020.  All rights reserved
  */
-//  TEST    Foundation::Execution::Exceptions
+//  TEST    Foundation::Database
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <iostream>
-#include <sstream>
-
-#if qPlatform_Windows
-#include <Windows.h>
-#include <winerror.h>
-#include <wininet.h> // for error codes
-#endif
-
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Debug/BackTrace.h"
+#include "Stroika/Foundation/Database/SQLite.h"
 #include "Stroika/Foundation/Debug/Trace.h"
-#include "Stroika/Foundation/Execution/Exceptions.h"
-#include "Stroika/Foundation/Execution/TimeOutException.h"
-#if qPlatform_Windows
-#include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
-#endif
+#include "Stroika/Foundation/IO/FileSystem/FileSystem.h"
+#include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
+#include "Stroika/Foundation/Time/Duration.h"
 
 #include "../TestHarness/TestHarness.h"
 
 using namespace Stroika::Foundation;
-using namespace Stroika::Foundation::Execution;
+using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::Database;
+using namespace Stroika::Foundation::Debug;
+using namespace Stroika::Foundation::Memory;
+using namespace Stroika::Foundation::Time;
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+#if qHasFeature_sqlite
 namespace {
-    void Test2_ThrowCatchStringException_ ()
-    {
-        Debug::TraceContextBumper ctx{L"Test2_ThrowCatchStringException_"};
-        {
-            try {
-                Throw (Exception (L"HiMom"));
-                VerifyTestResult (false);
-            }
-            catch (const Exception<>& e) {
-                VerifyTestResult (e.As<wstring> () == L"HiMom");
-            }
-        }
-        {
-            try {
-                Throw (Exception (L"HiMom"));
-                VerifyTestResult (false);
-            }
-            catch (const std::exception& e) {
-                VerifyTestResult (strcmp (e.what (), "HiMom") == 0);
-            }
-        }
-    }
-}
-
-namespace {
-    namespace Test3_SystemErrorException_ {
-        namespace Private_ {
-            void T1_system_error_ ()
-            {
-                static const int                kErr2TestFor_            = make_error_code (errc::bad_address).value (); // any value from errc would do
-                static const Characters::String kErr2TestForExpectedMsg_ = L"bad address {errno: 14}"sv;                 // maybe not always right due to locales?
-
-                try {
-                    ThrowPOSIXErrNo (kErr2TestFor_);
-                }
-                catch (const std::system_error& e) {
-                    VerifyTestResult (e.code ().value () == kErr2TestFor_);
-                    VerifyTestResult (e.code ().category () == system_category () or e.code ().category () == generic_category ());
-                    VerifyTestResult (Characters::ToString (e).Contains (kErr2TestForExpectedMsg_, Characters::CompareOptions::eCaseInsensitive));
-                }
-                catch (...) {
-                    DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
-                    VerifyTestResult (false); //oops
-                }
-                // and test throwing fancy unicode string
-
-                const Characters::String kMsgWithUnicode_ = L"zß水𝄋"; // this works even if using a code page / locale which doesn't support UNICODE/Chinese
-                try {
-                    Execution::Throw (SystemErrorException (kErr2TestFor_, generic_category (), kMsgWithUnicode_));
-                }
-                catch (const std::system_error& e) {
-                    VerifyTestResult (e.code ().value () == kErr2TestFor_);
-                    VerifyTestResult (e.code ().category () == generic_category ());
-                    VerifyTestResult (Characters::ToString (e).Contains (kMsgWithUnicode_, Characters::CompareOptions::eCaseInsensitive));
-                }
-                catch (...) {
-                    DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
-                    VerifyTestResult (false); //oops
-                }
-            }
-            void T2_TestTimeout_ ()
-            {
-                try {
-                    Execution::Throw (Execution::TimeOutException{});
-                }
-                catch (const system_error& e) {
-                    VerifyTestResult (e.code () == errc::timed_out);
-                    VerifyTestResult (e.code () != errc::already_connected);
-                }
-                catch (...) {
-                    DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
-                    VerifyTestResult (false); //oops
-                }
-                try {
-                    Execution::Throw (Execution::TimeOutException{});
-                }
-                catch (const Execution::TimeOutException& e) {
-                    VerifyTestResult (e.code () == errc::timed_out);
-                    VerifyTestResult (e.code () != errc::already_connected);
-                }
-                catch (...) {
-                    DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
-                    VerifyTestResult (false); //oops
-                }
-                const Characters::String kMsg1_ = L"to abcd 123 zß水𝄋";
-                try {
-                    Execution::Throw (Execution::TimeOutException{kMsg1_});
-                }
-                catch (const system_error& e) {
-                    VerifyTestResult (e.code () == errc::timed_out);
-                    VerifyTestResult (e.code () != errc::already_connected);
-                    VerifyTestResult (Characters::ToString (e).Contains (kMsg1_));
-                }
-                catch (...) {
-                    DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
-                    VerifyTestResult (false); //oops
-                }
-            }
-        }
-        void TestAll_ ()
-        {
-            Debug::TraceContextBumper ctx{L"Test3_SystemErrorException_"};
-            Private_::T1_system_error_ ();
-            Private_::T2_TestTimeout_ ();
-        }
-    }
-}
-
-namespace {
-    namespace Test4_Activities_ {
-        namespace Private {
-
-            void T1_Basics_ ()
-            {
-                using Characters::String;
-                String argument;
-
-                [[maybe_unused]] static constexpr Activity kBuildingThingy_{L"Building thingy"sv};
-
-                // constexpr only works if we lose the virtual in ~AsStringObj_ ()
-                static constexpr const auto kA1_{Activity<wstring_view>{L"a1"sv}};
-
-                static const auto kOtherActivity = Activity<String>{L"kOtherActivity"};
-
-                // automatic variable activity OK as long as it's lifetime longer than reference in DeclareActivity
-                auto otherActivity = Activity<String>{L"otherActivity" + argument}; // activities can be stack based, but these cost more to define
-
-                auto lazyEvalActivity = LazyEvalActivity ([&] () -> String { return argument.Repeat (5) + L"xxx"; });
-
-                DeclareActivity active1{&kA1_};
-                DeclareActivity active2{&kOtherActivity};
-                DeclareActivity active3{&otherActivity};
-                DeclareActivity active4{&lazyEvalActivity};
-
-                try {
-                    // something that will throw
-                    Execution::Throw (Exception<> (L"testing 123"));
-                }
-                catch (...) {
-                    String msg = Characters::ToString (current_exception ());
-                    VerifyTestResult (msg.Contains (L"testing 123"));
-                    VerifyTestResult (msg.Contains (L"a1"));
-                    VerifyTestResult (msg.Contains (L"kOtherActivity"));
-                    VerifyTestResult (msg.Contains (L"otherActivity"));
-                    VerifyTestResult (msg.Contains (L"xxx"));
-                }
-            }
-        }
-        void TestAll_ ()
-        {
-            Debug::TraceContextBumper ctx{L"Test4_Activities_"};
-            Private::T1_Basics_ ();
-        }
-    }
-}
-
-namespace {
-    namespace Test5_error_code_condition_compares_ {
-        namespace Private {
-            void Bug1_ ()
-            {
-                try {
-                    throw std::system_error (ENOENT, std::system_category ());
-                }
-                catch (std::system_error const& e) {
-                    VerifyTestResult (e.code ().value () == static_cast<int> (std::errc::no_such_file_or_directory)); // workaround?
-#if !qCompilerAndStdLib_error_code_compare_condition_Buggy
-                    VerifyTestResult (e.code () == std::errc::no_such_file_or_directory); // <- FAILS!?
-#endif
-                }
-                catch (...) {
-                    VerifyTestResult (false);
-                }
-            }
-#if qPlatform_Windows
-            void Bug2_Windows_Errors_Mapped_To_Conditions_ ()
-            {
-                VerifyTestResult ((error_code{ERROR_NOT_ENOUGH_MEMORY, system_category ()} == errc::not_enough_memory));
-                VerifyTestResult ((error_code{ERROR_OUTOFMEMORY, system_category ()} == errc::not_enough_memory));
-#if qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy
-                if ((error_code{WAIT_TIMEOUT, system_category ()} == errc::timed_out)) {
-                    DbgTrace (L"FIXED - qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy");
-                }
-                if ((error_code{ERROR_INTERNET_TIMEOUT, system_category ()} == errc::timed_out)) {
-                    DbgTrace (L"FIXED");
-                }
-#else
-                VerifyTestResult ((error_code{WAIT_TIMEOUT, system_category ()} == errc::timed_out));
-                VerifyTestResult ((error_code{ERROR_INTERNET_TIMEOUT, system_category ()} == errc::timed_out));
-#endif
-
-                try {
-                    ThrowSystemErrNo (ERROR_NOT_ENOUGH_MEMORY);
-                }
-                catch (const bad_alloc&) {
-                    // Good
-                }
-                catch (...) {
-                    VerifyTestResult (false);
-                }
-                try {
-                    ThrowSystemErrNo (ERROR_OUTOFMEMORY);
-                }
-                catch (const bad_alloc&) {
-                    // Good
-                }
-                catch (...) {
-                    VerifyTestResult (false);
-                }
-                try {
-                    ThrowSystemErrNo (WAIT_TIMEOUT);
-                }
-                catch (const TimeOutException&) {
-                    // Good
-                }
-                catch (...) {
-                    VerifyTestResult (false);
-                }
-                try {
-                    ThrowSystemErrNo (ERROR_INTERNET_TIMEOUT);
-                }
-                catch (const TimeOutException&) {
-                    // Good
-                }
-                catch (...) {
-                    VerifyTestResult (false);
-                }
-            }
-#endif
-        }
-        void TestAll_ ()
-        {
-            Debug::TraceContextBumper ctx{L"Test5_error_code_condition_compares_"};
-            Private::Bug1_ ();
-#if qPlatform_Windows
-            Private::Bug2_Windows_Errors_Mapped_To_Conditions_ ();
-#endif
-        }
-    }
-}
-
-namespace {
-    namespace Test6_Throw_Logging_with_and_without_srclines_in_stack_backtrace_ {
-        namespace Private {
-            void ThrowCatchStringException_ ()
-            {
-                Debug::TraceContextBumper ctx{L"ThrowCatchStringException_"};
+    namespace RegressionTest1_sqlite_ {
+        namespace PRIVATE_ {
+            using Statement = Database::SQLite::Connection::Statement;
+            enum class ScanKindType_ {
+                Background,
+                Reference,
+                Sample,
+                Stroika_Define_Enum_Bounds (Background, Sample)
+            };
+            using ScanIDType_                 = uint64_t;
+            using SpectrumType_               = Mapping<double, double>;
+            using PersistenceScanAuxDataType_ = Mapping<String, String>;
+            struct DB {
+            public:
+                DB (const filesystem::path& testDBFile)
                 {
+                    bool created = false;
                     try {
-                        Throw (Exception (L"HiMom"));
-                        VerifyTestResult (false);
+                        fDB_ = make_unique<Database::SQLite::Connection> (testDBFile, [&created] (Database::SQLite::Connection& db) { created = true; InitialSetup_ (db); });
                     }
-                    catch (const Exception<>& e) {
-                        VerifyTestResult (e.As<wstring> () == L"HiMom");
+                    catch (...) {
+                        DbgTrace (L"Error %s experiment DB: %s: %s", created ? L"creating" : L"opening", Characters::ToString (testDBFile).c_str (), Characters::ToString (current_exception ()).c_str ());
+                        Execution::ReThrow ();
+                    }
+                    if (created) {
+                        DbgTrace (L"Initialized new experiment DB: %s", Characters::ToString (testDBFile).c_str ());
+                    }
+                    else {
+                        DbgTrace (L"Opened experiment DB: %s", Characters::ToString (testDBFile).c_str ());
                     }
                 }
+                DB (Database::SQLite::Connection::InMemoryDBFlag)
                 {
+                    bool created = false;
                     try {
-                        Throw (Exception (L"HiMom"));
-                        VerifyTestResult (false);
+                        fDB_ = make_unique<Database::SQLite::Connection> (Database::SQLite::Connection::eInMemoryDB, [&created] (Database::SQLite::Connection& db) { created = true; InitialSetup_ (db); });
                     }
-                    catch (const std::exception& e) {
-                        VerifyTestResult (strcmp (e.what (), "HiMom") == 0);
+                    catch (...) {
+                        DbgTrace (L"Error %s experiment DB: %s: %s", created ? L"creating" : L"opening", L"MEMORY", Characters::ToString (current_exception ()).c_str ());
+                        Execution::ReThrow ();
                     }
+                    if (created) {
+                        DbgTrace (L"Initialized new experiment DB: %s", L"MEMORY");
+                    }
+                    else {
+                        DbgTrace (L"Opened experiment DB: %s", L"MEMORY");
+                    }
+                }
+                DB (const DB&)                 = delete;
+                nonvirtual DB&         operator= (const DB&) = delete;
+                nonvirtual ScanIDType_ ScanPersistenceAdd (const DateTime& ScanStart, const DateTime& ScanEnd, const optional<String>& ScanLabel, ScanKindType_ scanKind, const optional<SpectrumType_>& rawSpectrum)
+                {
+                    String insertSQL = [&] () {
+                        StringBuilder sb;
+                        sb += L"insert into Scans (StartAt, EndAt, ScanTypeIDRef, RawScanData, ScanLabel)";
+                        sb += L"select ";
+                        sb += L"'" + ScanStart.AsUTC ().Format (DateTime::PrintFormat::eISO8601) + L"',";
+                        sb += L"'" + ScanEnd.AsUTC ().Format (DateTime::PrintFormat::eISO8601) + L"',";
+                        sb += Characters::Format (L"%d", scanKind) + L",";
+                        if (rawSpectrum) {
+                            sb += L"'" + Database::SQLite::QuoteStringForDB (L"SomeLongASCIIStringS\r\r\n\t'omeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString") + L"',";
+                        }
+                        else {
+                            sb += L"NULL,";
+                        }
+                        if (ScanLabel) {
+                            sb += L"'" + Database::SQLite::QuoteStringForDB (*ScanLabel) + L"'";
+                        }
+                        else {
+                            sb += L"NULL";
+                        }
+                        sb += L";";
+                        return sb.str ();
+                    }();
+                    fDB_->Exec (L"%s", insertSQL.c_str ());
+                    Statement s{fDB_.get (), L"SELECT MAX(ScanId) FROM Scans;"};
+
+                    if (optional<Statement::RowType> r = s.GetNextRow ()) {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                        DbgTrace (L"ROW: %s", Characters::ToString (*r).c_str ());
+#endif
+                        return r->Lookup (L"MAX(ScanId)")->As<ScanIDType_> ();
+                    }
+                    AssertNotReached ();
+                    return ScanIDType_{};
+                }
+                nonvirtual optional<ScanIDType_> GetLastScan (ScanKindType_ scanKind)
+                {
+                    Statement s{fDB_.get (), L"select MAX(ScanId) from Scans where  ScanTypeIDRef='%d';", scanKind};
+                    if (optional<Statement::RowType> r = s.GetNextRow ()) {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                        DbgTrace (L"ROW: %s", Characters::ToString (*r).c_str ());
+#endif
+                        return r->Lookup (L"MAX(ScanId)")->As<ScanIDType_> ();
+                    }
+                    return nullopt;
+                }
+                static void InitialSetup_ (Database::SQLite::Connection& db)
+                {
+                    TraceContextBumper ctx ("ScanDB_::DB::InitialSetup_");
+                    auto               tableSetup_ScanTypes = [&db] () {
+                        db.Exec (L"create table 'ScanTypes' "
+                                 L"("
+                                 L"ScanTypeId tinyint Primary Key,"
+                                 L"TypeName varchar(255) not null"
+                                 L");");
+                        db.Exec (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Reference';", ScanKindType_::Reference);
+                        db.Exec (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Sample';", ScanKindType_::Sample);
+                        db.Exec (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Background';", ScanKindType_::Background);
+                    };
+                    auto tableSetup_Scans = [&db] () {
+                        db.Exec (
+                            L"create table 'Scans'"
+                            L"("
+                            L"ScanId integer Primary Key AUTOINCREMENT,"
+                            L"StartAt Datetime not null,"
+                            L"EndAt Datetime not null,"
+                            L"ScanTypeIDRef tinyint not null,"
+                            L"ScanLabel varchar,"
+                            L"Foreign key (ScanTypeIDRef) References ScanTypes (ScanTypeId)"
+                            L");");
+                    };
+                    auto tableSetup_ScanSets = [&db] () {
+                        db.Exec (
+                            L"Create table ScanSet"
+                            L"("
+                            L"ScanSetID bigint,"
+                            L"ScanIDRef integer,"
+                            L"Foreign key (ScanIdRef) References Scans(ScanId)"
+                            L");");
+                    };
+                    auto tableSetup_AuxData = [&db] () {
+                        db.Exec (
+                            L"Create table AuxData"
+                            L"("
+                            L"ScanSetIDRef bigint Primary Key,"
+                            L"Results varchar,"
+                            L"Foreign key (ScanSetIDRef) References ScanSet(ScanSetID)"
+                            L");");
+                    };
+                    auto tableSetup_ExtraForeignKeys = [&db] () {
+                        db.Exec (L"Alter table Scans add column DependsOnScanSetIdRef bigint references  ScanSet(ScanSetID);");
+                        db.Exec (L"Alter table Scans add column RawScanData BLOB;");
+                    };
+                    tableSetup_ScanTypes ();
+                    tableSetup_Scans ();
+                    tableSetup_ScanSets ();
+                    tableSetup_AuxData ();
+                    tableSetup_ExtraForeignKeys ();
+                }
+                unique_ptr<Database::SQLite::Connection> fDB_;
+            };
+        }
+        void DoIt ()
+        {
+            using namespace PRIVATE_;
+            TraceContextBumper ctx ("ScanDB::DB::RunTest");
+            auto               test = [] (PRIVATE_::DB& db, unsigned nTimesRanBefore) {
+                db.fDB_->Exec (L"select * from ScanTypes;");
+                {
+                    Statement s{db.fDB_.get (), L"select * from ScanTypes;"};
+                    while (optional<Statement::RowType> r = s.GetNextRow ()) {
+                        DbgTrace (L"ROW: %s", Characters::ToString (*r).c_str ());
+                    }
+                }
+                DbgTrace ("Latest Reference=%d", db.GetLastScan (ScanKindType_::Reference).value_or (static_cast<ScanIDType_> (-1)));
+                SpectrumType_      spectrum;
+                const unsigned int kNRecordsAddedPerTestCall = 100;
+                for (int i = 0; i < kNRecordsAddedPerTestCall; ++i) {
+                    DateTime    scanStartTime = DateTime::Now () - Duration (.1);
+                    DateTime    scanEndTime   = DateTime::Now ();
+                    ScanIDType_ sid           = db.ScanPersistenceAdd (scanStartTime, scanEndTime, String{L"Hi Mom"}, ScanKindType_::Reference, spectrum);
+                    Verify (sid == *db.GetLastScan (ScanKindType_::Reference));
+                    Verify (sid == nTimesRanBefore * kNRecordsAddedPerTestCall + i + 1);
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                    DbgTrace ("ScanPersistenceAdd returned id=%d, and laserScan reported=%d", (int)sid, (int)db.GetLastScan (ScanKindType_::Reference).Value (-1));
+#endif
+                }
+            };
+            {
+                // re-open the file several times and assure right number of records present
+                filesystem::path dbFileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "foo.db";
+                (void)remove (dbFileName);
+                for (unsigned int i = 0; i < 5; ++i) {
+                    PRIVATE_::DB db{dbFileName};
+                    test (db, i);
                 }
             }
-        }
-        void TestAll_ ()
-        {
-            Debug::TraceContextBumper ctx{L"Test6_Throw_Logging_with_and_without_srclines_in_stack_backtrace_"};
-            auto                      prevValue = Debug::BackTrace::Options::sDefault_IncludeSourceLines;
-            DbgTrace ("sDefault_IncludeSourceLines = true");
-            Debug::BackTrace::Options::sDefault_IncludeSourceLines = true;
-            Private::ThrowCatchStringException_ ();
-            DbgTrace ("sDefault_IncludeSourceLines = false");
-            Debug::BackTrace::Options::sDefault_IncludeSourceLines = false;
-            Private::ThrowCatchStringException_ ();
-            DbgTrace ("sDefault_IncludeSourceLines = <<default>>");
-            Debug::BackTrace::Options::sDefault_IncludeSourceLines = prevValue;
-            Private::ThrowCatchStringException_ ();
+            {
+                PRIVATE_::DB db{SQLite::Connection::eInMemoryDB};
+                test (db, 0);
+            }
         }
     }
 }
+#endif
 
 namespace {
 
     void DoRegressionTests_ ()
     {
-        Debug::TraceContextBumper ctx{L"DoRegressionTests_"};
-        Test2_ThrowCatchStringException_ ();
-        Test3_SystemErrorException_::TestAll_ ();
-        Test4_Activities_::TestAll_ ();
-        Test5_error_code_condition_compares_::TestAll_ ();
-        Test6_Throw_Logging_with_and_without_srclines_in_stack_backtrace_::TestAll_ ();
+#if qHasFeature_sqlite
+        RegressionTest1_sqlite_::DoIt ();
+#endif
     }
 }
 

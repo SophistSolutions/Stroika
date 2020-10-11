@@ -1,7 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2020.  All rights reserved
  */
-//  TEST    Foundation::Containers::DataStructures::SkipList
+//  TEST    Foundation::Containers::Private::DataStructures::STLContainerWrapper
+///             STATUS - ALL WRONG - REWRITE!!!!!
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
@@ -18,16 +19,18 @@
 using namespace Stroika;
 using namespace Stroika::Foundation;
 //using   namespace   Stroika::Foundation::Containers;
-//using   namespace   Stroika::Foundation::Containers::DataStructures;
-//using   namespace   Stroika::Foundation::Containers::Private::PatchingDataStructures;
 
 namespace {
+    static void Test1 ()
+    {
+    }
 }
 
 namespace {
 
     void DoRegressionTests_ ()
     {
+        Test1 ();
     }
 }
 

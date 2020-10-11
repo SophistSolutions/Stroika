@@ -1,237 +1,264 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2020.  All rights reserved
  */
-//  TEST    Foundation::Database
+//  TEST    Foundation::DataExchange::Other
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Characters/Format.h"
-#include "Stroika/Foundation/Characters/StringBuilder.h"
-#include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Database/SQLite.h"
+#include "Stroika/Foundation/DataExchange/Atom.h"
+#include "Stroika/Foundation/DataExchange/InternetMediaType.h"
+#include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
+#include "Stroika/Foundation/DataExchange/OptionsFile.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
-#include "Stroika/Foundation/IO/FileSystem/FileSystem.h"
+#include "Stroika/Foundation/Execution/ModuleGetterSetter.h"
+#include "Stroika/Foundation/IO/FileSystem/PathName.h"
 #include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
-#include "Stroika/Foundation/Time/Duration.h"
+#include "Stroika/Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
 
+#include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
 
+using namespace Stroika;
 using namespace Stroika::Foundation;
-using namespace Stroika::Foundation::Characters;
-using namespace Stroika::Foundation::Containers;
-using namespace Stroika::Foundation::Database;
-using namespace Stroika::Foundation::Debug;
-using namespace Stroika::Foundation::Memory;
-using namespace Stroika::Foundation::Time;
+using namespace Stroika::Foundation::DataExchange;
 
-// Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+using Execution::ModuleGetterSetter;
 
-#if qHasFeature_sqlite
 namespace {
-    namespace RegressionTest1_sqlite_ {
-        namespace PRIVATE_ {
-            using Statement = Database::SQLite::Connection::Statement;
-            enum class ScanKindType_ {
-                Background,
-                Reference,
-                Sample,
-                Stroika_Define_Enum_Bounds (Background, Sample)
-            };
-            using ScanIDType_                 = uint64_t;
-            using SpectrumType_               = Mapping<double, double>;
-            using PersistenceScanAuxDataType_ = Mapping<String, String>;
-            struct DB {
-            public:
-                DB (const filesystem::path& testDBFile)
-                {
-                    bool created = false;
-                    try {
-                        fDB_ = make_unique<Database::SQLite::Connection> (testDBFile, [&created] (Database::SQLite::Connection& db) { created = true; InitialSetup_ (db); });
-                    }
-                    catch (...) {
-                        DbgTrace (L"Error %s experiment DB: %s: %s", created ? L"creating" : L"opening", Characters::ToString (testDBFile).c_str (), Characters::ToString (current_exception ()).c_str ());
-                        Execution::ReThrow ();
-                    }
-                    if (created) {
-                        DbgTrace (L"Initialized new experiment DB: %s", Characters::ToString (testDBFile).c_str ());
-                    }
-                    else {
-                        DbgTrace (L"Opened experiment DB: %s", Characters::ToString (testDBFile).c_str ());
-                    }
-                }
-                DB (Database::SQLite::Connection::InMemoryDBFlag)
-                {
-                    bool created = false;
-                    try {
-                        fDB_ = make_unique<Database::SQLite::Connection> (Database::SQLite::Connection::eInMemoryDB, [&created] (Database::SQLite::Connection& db) { created = true; InitialSetup_ (db); });
-                    }
-                    catch (...) {
-                        DbgTrace (L"Error %s experiment DB: %s: %s", created ? L"creating" : L"opening", L"MEMORY", Characters::ToString (current_exception ()).c_str ());
-                        Execution::ReThrow ();
-                    }
-                    if (created) {
-                        DbgTrace (L"Initialized new experiment DB: %s", L"MEMORY");
-                    }
-                    else {
-                        DbgTrace (L"Opened experiment DB: %s", L"MEMORY");
-                    }
-                }
-                DB (const DB&)                 = delete;
-                nonvirtual DB&         operator= (const DB&) = delete;
-                nonvirtual ScanIDType_ ScanPersistenceAdd (const DateTime& ScanStart, const DateTime& ScanEnd, const optional<String>& ScanLabel, ScanKindType_ scanKind, const optional<SpectrumType_>& rawSpectrum)
-                {
-                    String insertSQL = [&] () {
-                        StringBuilder sb;
-                        sb += L"insert into Scans (StartAt, EndAt, ScanTypeIDRef, RawScanData, ScanLabel)";
-                        sb += L"select ";
-                        sb += L"'" + ScanStart.AsUTC ().Format (DateTime::PrintFormat::eISO8601) + L"',";
-                        sb += L"'" + ScanEnd.AsUTC ().Format (DateTime::PrintFormat::eISO8601) + L"',";
-                        sb += Characters::Format (L"%d", scanKind) + L",";
-                        if (rawSpectrum) {
-                            sb += L"'" + Database::SQLite::QuoteStringForDB (L"SomeLongASCIIStringS\r\r\n\t'omeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString") + L"',";
-                        }
-                        else {
-                            sb += L"NULL,";
-                        }
-                        if (ScanLabel) {
-                            sb += L"'" + Database::SQLite::QuoteStringForDB (*ScanLabel) + L"'";
-                        }
-                        else {
-                            sb += L"NULL";
-                        }
-                        sb += L";";
-                        return sb.str ();
-                    }();
-                    fDB_->Exec (L"%s", insertSQL.c_str ());
-                    Statement s{fDB_.get (), L"SELECT MAX(ScanId) FROM Scans;"};
-
-                    if (optional<Statement::RowType> r = s.GetNextRow ()) {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"ROW: %s", Characters::ToString (*r).c_str ());
-#endif
-                        return r->Lookup (L"MAX(ScanId)")->As<ScanIDType_> ();
-                    }
-                    AssertNotReached ();
-                    return ScanIDType_{};
-                }
-                nonvirtual optional<ScanIDType_> GetLastScan (ScanKindType_ scanKind)
-                {
-                    Statement s{fDB_.get (), L"select MAX(ScanId) from Scans where  ScanTypeIDRef='%d';", scanKind};
-                    if (optional<Statement::RowType> r = s.GetNextRow ()) {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"ROW: %s", Characters::ToString (*r).c_str ());
-#endif
-                        return r->Lookup (L"MAX(ScanId)")->As<ScanIDType_> ();
-                    }
-                    return nullopt;
-                }
-                static void InitialSetup_ (Database::SQLite::Connection& db)
-                {
-                    TraceContextBumper ctx ("ScanDB_::DB::InitialSetup_");
-                    auto               tableSetup_ScanTypes = [&db] () {
-                        db.Exec (L"create table 'ScanTypes' "
-                                 L"("
-                                 L"ScanTypeId tinyint Primary Key,"
-                                 L"TypeName varchar(255) not null"
-                                 L");");
-                        db.Exec (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Reference';", ScanKindType_::Reference);
-                        db.Exec (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Sample';", ScanKindType_::Sample);
-                        db.Exec (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Background';", ScanKindType_::Background);
-                    };
-                    auto tableSetup_Scans = [&db] () {
-                        db.Exec (
-                            L"create table 'Scans'"
-                            L"("
-                            L"ScanId integer Primary Key AUTOINCREMENT,"
-                            L"StartAt Datetime not null,"
-                            L"EndAt Datetime not null,"
-                            L"ScanTypeIDRef tinyint not null,"
-                            L"ScanLabel varchar,"
-                            L"Foreign key (ScanTypeIDRef) References ScanTypes (ScanTypeId)"
-                            L");");
-                    };
-                    auto tableSetup_ScanSets = [&db] () {
-                        db.Exec (
-                            L"Create table ScanSet"
-                            L"("
-                            L"ScanSetID bigint,"
-                            L"ScanIDRef integer,"
-                            L"Foreign key (ScanIdRef) References Scans(ScanId)"
-                            L");");
-                    };
-                    auto tableSetup_AuxData = [&db] () {
-                        db.Exec (
-                            L"Create table AuxData"
-                            L"("
-                            L"ScanSetIDRef bigint Primary Key,"
-                            L"Results varchar,"
-                            L"Foreign key (ScanSetIDRef) References ScanSet(ScanSetID)"
-                            L");");
-                    };
-                    auto tableSetup_ExtraForeignKeys = [&db] () {
-                        db.Exec (L"Alter table Scans add column DependsOnScanSetIdRef bigint references  ScanSet(ScanSetID);");
-                        db.Exec (L"Alter table Scans add column RawScanData BLOB;");
-                    };
-                    tableSetup_ScanTypes ();
-                    tableSetup_Scans ();
-                    tableSetup_ScanSets ();
-                    tableSetup_AuxData ();
-                    tableSetup_ExtraForeignKeys ();
-                }
-                unique_ptr<Database::SQLite::Connection> fDB_;
-            };
-        }
-        void DoIt ()
+    void Test1_Atom_ ()
+    {
+        Debug::TraceContextBumper ctx{"{}::Test1_Atom_"};
         {
-            using namespace PRIVATE_;
-            TraceContextBumper ctx ("ScanDB::DB::RunTest");
-            auto               test = [] (PRIVATE_::DB& db, unsigned nTimesRanBefore) {
-                db.fDB_->Exec (L"select * from ScanTypes;");
-                {
-                    Statement s{db.fDB_.get (), L"select * from ScanTypes;"};
-                    while (optional<Statement::RowType> r = s.GetNextRow ()) {
-                        DbgTrace (L"ROW: %s", Characters::ToString (*r).c_str ());
-                    }
-                }
-                DbgTrace ("Latest Reference=%d", db.GetLastScan (ScanKindType_::Reference).value_or (static_cast<ScanIDType_> (-1)));
-                SpectrumType_      spectrum;
-                const unsigned int kNRecordsAddedPerTestCall = 100;
-                for (int i = 0; i < kNRecordsAddedPerTestCall; ++i) {
-                    DateTime    scanStartTime = DateTime::Now () - Duration (.1);
-                    DateTime    scanEndTime   = DateTime::Now ();
-                    ScanIDType_ sid           = db.ScanPersistenceAdd (scanStartTime, scanEndTime, String{L"Hi Mom"}, ScanKindType_::Reference, spectrum);
-                    Verify (sid == *db.GetLastScan (ScanKindType_::Reference));
-                    Verify (sid == nTimesRanBefore * kNRecordsAddedPerTestCall + i + 1);
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    DbgTrace ("ScanPersistenceAdd returned id=%d, and laserScan reported=%d", (int)sid, (int)db.GetLastScan (ScanKindType_::Reference).Value (-1));
-#endif
-                }
-            };
+            Atom<> a = L"d";
+            Atom<> b = L"d";
+            VerifyTestResult (a == b);
+            VerifyTestResult (a.GetPrintName () == L"d");
+            VerifyTestResult (a.As<String> () == L"d");
+            VerifyTestResult (a.As<wstring> () == L"d");
+            VerifyTestResult (not a.empty ());
+        }
+        {
+            VerifyTestResult (Atom<> ().empty ());
+        }
+        {
+            Atom<> a = L"d";
+            Atom<> b = L"e";
+            VerifyTestResult (a != b);
+            VerifyTestResult (not a.empty ());
+            Atom<> c = a;
+            VerifyTestResult (c == a);
+        }
+    }
+}
+
+namespace {
+    void Test2_OptionsFile_ ()
+    {
+        Debug::TraceContextBumper ctx{"{}::Test2_OptionsFile_"};
+        struct MyData_ {
+            bool               fEnabled = false;
+            optional<DateTime> fLastSynchronizedAt;
+        };
+        OptionsFile of{
+            L"MyModule",
+            [] () -> ObjectVariantMapper {
+                ObjectVariantMapper mapper;
+                mapper.AddClass<MyData_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+                    {L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fEnabled)},
+                    {L"Last-Synchronized-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fLastSynchronizedAt)},
+                });
+                return mapper;
+            }(),
+            OptionsFile::kDefaultUpgrader,
+            [] (const String& moduleName, const String& fileSuffix) -> filesystem::path {
+                return IO::FileSystem::WellKnownLocations::GetTemporary () / IO::FileSystem::ToPath (moduleName + fileSuffix);
+            }};
+        MyData_ m = of.Read<MyData_> (MyData_ ()); // will return default values if file not present
+        of.Write (m);                              // test writing
+    }
+}
+
+namespace {
+    struct MyData_ {
+        bool               fEnabled = false;
+        optional<DateTime> fLastSynchronizedAt;
+    };
+    struct ModuleGetterSetter_Implementation_MyData_ {
+        ModuleGetterSetter_Implementation_MyData_ ()
+            : fOptionsFile_{
+                  L"MyModule",
+                  [] () -> ObjectVariantMapper {
+                      ObjectVariantMapper mapper;
+                      mapper.AddClass<MyData_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+                          {L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fEnabled)},
+                          {L"Last-Synchronized-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fLastSynchronizedAt)},
+                      });
+                      return mapper;
+                  }(),
+                  OptionsFile::kDefaultUpgrader,
+                  [] (const String& moduleName, const String& fileSuffix) -> filesystem::path {
+                      // for regression tests write to /tmp
+                      return IO::FileSystem::WellKnownLocations::GetTemporary () / IO::FileSystem::ToPath (moduleName + fileSuffix);
+                  }}
+            , fActualCurrentConfigData_ (fOptionsFile_.Read<MyData_> (MyData_ ()))
+        {
+            Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
+        }
+        MyData_ Get () const
+        {
+            return fActualCurrentConfigData_;
+        }
+        void Set (const MyData_& v)
+        {
+            fActualCurrentConfigData_ = v;
+            fOptionsFile_.Write (v);
+        }
+
+    private:
+        OptionsFile fOptionsFile_;
+        MyData_     fActualCurrentConfigData_; // automatically initialized just in time, and externally synchronized
+    };
+
+    ModuleGetterSetter<MyData_, ModuleGetterSetter_Implementation_MyData_> sModuleConfiguration_;
+
+    void Test3_ModuleGetterSetter_ ()
+    {
+        Debug::TraceContextBumper ctx{"{}::Test3_ModuleGetterSetter_"};
+        if (sModuleConfiguration_.Get ().fEnabled) {
+            auto n = sModuleConfiguration_.Get ();
+            sModuleConfiguration_.Set (n);
+        }
+    }
+}
+
+namespace Test4_VariantValue_ {
+    void RunTests ()
+    {
+        Debug::TraceContextBumper            ctx{"{}::Test4_VariantValue_"};
+        Containers::Collection<VariantValue> vc;
+        VariantValue                         vv{vc};
+    }
+}
+
+namespace {
+    namespace Test5_InternetMediaType_ {
+        void RunTests ()
+        {
+            Debug::TraceContextBumper ctx{"{}::Test5_InternetMediaType_"};
             {
-                // re-open the file several times and assure right number of records present
-                filesystem::path dbFileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "foo.db";
-                (void)remove (dbFileName);
-                for (unsigned int i = 0; i < 5; ++i) {
-                    PRIVATE_::DB db{dbFileName};
-                    test (db, i);
+                InternetMediaType ct0{L"text/plain"};
+                VerifyTestResult (ct0.GetType () == L"text");
+                VerifyTestResult (ct0.GetSubType () == L"plain");
+                VerifyTestResult (ct0.GetSuffix () == nullopt);
+
+                InternetMediaType ct1{L"text/plain;charset=ascii"};
+                VerifyTestResult ((ct1.GetParameters () == Containers::Mapping{Common::KeyValuePair<String, String>{L"charset", L"ascii"}}));
+                VerifyTestResult (ct1.GetSuffix () == nullopt);
+
+                InternetMediaType ct2{L"text/plain; charset = ascii"};
+                VerifyTestResult (ct1 == ct2);
+
+                InternetMediaType ct3{L"text/plain; charset = \"ascii\""};
+                VerifyTestResult (ct1 == ct3);
+
+                InternetMediaType ct4{L"text/plain; charset = \"ASCII\""}; // case insensitive compare key, but not value
+                VerifyTestResult (ct1 != ct4);
+
+                InternetMediaType ct5{L"application/vnd.ms-excel"};
+                VerifyTestResult (ct5.GetType () == L"application");
+                VerifyTestResult (ct5.GetSubType () == L"vnd.ms-excel");
+                VerifyTestResult (ct5.GetSuffix () == nullopt);
+
+                InternetMediaType ct6{L"application/mathml+xml"};
+                VerifyTestResult (ct6.GetType () == L"application");
+                VerifyTestResult (ct6.GetSubType () == L"mathml");
+                VerifyTestResult (ct6.GetSuffix () == L"xml");
+                VerifyTestResult (ct6.As<wstring> () == L"application/mathml+xml");
+            }
+            {
+                // Example from https://tools.ietf.org/html/rfc2045#page-10 - comments ignored, and quotes on value
+                InternetMediaType ct1{L"text/plain; charset=us-ascii (Plain text)"};
+                InternetMediaType ct2{L"text/plain; charset=\"us-ascii\""};
+                VerifyTestResult (ct1 == ct2);
+                VerifyTestResult (InternetMediaTypeRegistry::Get ().IsTextFormat (ct1));
+            }
+            {
+                auto dumpCT = [] (const String& label, InternetMediaType i) {
+                    [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Get ();
+                    DbgTrace (L"SUFFIX(%s)=%s", label.c_str (), Characters::ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str ());
+                    DbgTrace (L"ASSOCFILESUFFIXES(%s)=%s", label.c_str (), Characters::ToString (r.GetAssociatedFileSuffixes (i)).c_str ());
+                    DbgTrace (L"GetAssociatedPrettyName(%s)=%s", label.c_str (), Characters::ToString (r.GetAssociatedPrettyName (i)).c_str ());
+                };
+                auto checkCT = [] (InternetMediaType i, const Set<String>& possibleFileSuffixes) {
+                    [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Get ();
+                    using namespace Characters;
+                    if (not possibleFileSuffixes.Contains (r.GetPreferredAssociatedFileSuffix (i).value_or (L""))) {
+                        Stroika::TestHarness::WarnTestIssue (
+                            Format (L"File suffix mismatch for %s: got %s, expected %s", ToString (i).c_str (), ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str (), ToString (possibleFileSuffixes).c_str ()).c_str ());
+                    }
+                    if (not possibleFileSuffixes.Any ([&] (String suffix) -> bool { return r.GetAssociatedContentType (suffix) == i; })) {
+                        Stroika::TestHarness::WarnTestIssue (
+                            Format (L"GetAssociatedContentType for fileSuffixes %s (expected %s, got %s)",
+                                    ToString (possibleFileSuffixes).c_str (),
+                                    ToString (i).c_str (),
+                                    ToString (possibleFileSuffixes.Select<InternetMediaType> ([&] (String suffix) { return r.GetAssociatedContentType (suffix); }).As<Set<InternetMediaType>> ()).c_str ())
+                                .c_str ());
+                    }
+                };
+                dumpCT (L"PLAINTEXT", InternetMediaTypes::kText_PLAIN);
+                checkCT (InternetMediaTypes::kText_PLAIN, {L".txt"});
+                dumpCT (L"HTML", InternetMediaTypes::kText_HTML);
+                checkCT (InternetMediaTypes::kText_HTML, {L".html", L".htm"});
+                dumpCT (L"JSON", InternetMediaTypes::kJSON);
+                checkCT (InternetMediaTypes::kJSON, {L".json"});
+                dumpCT (L"PNG", InternetMediaTypes::kImage_PNG);
+                checkCT (InternetMediaTypes::kImage_PNG, {L".png"});
+                {
+                    VerifyTestResult (InternetMediaTypeRegistry::Get ().IsImageFormat (InternetMediaTypes::kImage_PNG));
+                    VerifyTestResult (not InternetMediaTypeRegistry::Get ().IsImageFormat (InternetMediaTypes::kJSON));
+                    VerifyTestResult (InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaTypes::kXML));
+                    VerifyTestResult (not InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaTypes::kText_PLAIN));
+                    VerifyTestResult (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kText_PLAIN));
+                    VerifyTestResult (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kXML));
+                    VerifyTestResult (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kText_HTML));
+                    VerifyTestResult (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kJSON));
+                    VerifyTestResult (not InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kImage_PNG));
+                    VerifyTestResult (not InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaType{L"text/foobar"}));
+                    VerifyTestResult (InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaType{L"text/foobar+xml"}));
                 }
             }
             {
-                PRIVATE_::DB db{SQLite::Connection::eInMemoryDB};
-                test (db, 0);
+                Debug::TraceContextBumper ctx1 ("InternetMediaTypeRegistry::Get ().GetMediaTypes()");
+                // enumerate all content types
+                for (auto ct : InternetMediaTypeRegistry::Get ().GetMediaTypes ()) {
+                    DbgTrace (L"i=%s", Characters::ToString (ct).c_str ());
+                }
+            }
+            {
+                Debug::TraceContextBumper ctx1 ("InternetMediaTypeRegistry - updating");
+                InternetMediaTypeRegistry origRegistry    = InternetMediaTypeRegistry::Get ();
+                InternetMediaTypeRegistry updatedRegistry = origRegistry;
+                const auto                kHFType_        = InternetMediaType{L"application/fake-heatlthframe-phr+xml"};
+                VerifyTestResult (not InternetMediaTypeRegistry::Get ().GetMediaTypes ().Contains (kHFType_));
+                updatedRegistry.AddOverride (kHFType_, InternetMediaTypeRegistry::OverrideRecord{nullopt, Containers::Set<String>{L".HPHR"}, L".HPHR"});
+                InternetMediaTypeRegistry::Set (updatedRegistry);
+                VerifyTestResult (InternetMediaTypeRegistry::Get ().IsXMLFormat (kHFType_));
+                VerifyTestResult (InternetMediaTypeRegistry::Get ().GetMediaTypes ().Contains (kHFType_));
+                VerifyTestResult (not origRegistry.GetMediaTypes ().Contains (kHFType_));
+                VerifyTestResult (updatedRegistry.GetMediaTypes ().Contains (kHFType_));
             }
         }
     }
 }
-#endif
 
 namespace {
-
     void DoRegressionTests_ ()
     {
-#if qHasFeature_sqlite
-        RegressionTest1_sqlite_::DoIt ();
-#endif
+        Test1_Atom_ ();
+        Test2_OptionsFile_ ();
+        Test3_ModuleGetterSetter_ ();
+        Test4_VariantValue_::RunTests ();
+        Test5_InternetMediaType_::RunTests ();
     }
 }
 

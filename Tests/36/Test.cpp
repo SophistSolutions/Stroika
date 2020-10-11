@@ -1,156 +1,314 @@
-/*
+﻿/*
  * Copyright(c) Sophist Solutions, Inc. 1990-2020.  All rights reserved
  */
-//  TEST    Foundation::Execution::ProcessRunner
+//  TEST    Foundation::Execution::Exceptions
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Debug/Trace.h"
-#include "Stroika/Foundation/Execution/ProcessRunner.h"
-#if qPlatform_POSIX
-#include "Stroika/Foundation/Execution/SignalHandlers.h"
+#include <iostream>
+#include <sstream>
+
+#if qPlatform_Windows
+#include <Windows.h>
+#include <winerror.h>
+#include <wininet.h> // for error codes
 #endif
-#include "Stroika/Foundation/Execution/Sleep.h"
-#include "Stroika/Foundation/Streams/MemoryStream.h"
-#include "Stroika/Foundation/Streams/SharedMemoryStream.h"
+
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Debug/BackTrace.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/TimeOutException.h"
+#if qPlatform_Windows
+#include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
+#endif
 
 #include "../TestHarness/TestHarness.h"
-
-using std::byte;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Execution;
 
-using Characters::String;
-
 namespace {
-    void RegressionTest1_ ()
+    void Test2_ThrowCatchStringException_ ()
     {
-        Debug::TraceContextBumper        ctx{L"RegressionTest1_"};
-        Streams::MemoryStream<byte>::Ptr myStdOut = Streams::MemoryStream<byte>::New ();
-        // quickie about to test..
-        ProcessRunner pr (L"echo hi mom", nullptr, myStdOut);
-        pr.Run ();
-    }
-    void RegressionTest2_ ()
-    {
-        Debug::TraceContextBumper        ctx{L"RegressionTest2_"};
-        Streams::MemoryStream<byte>::Ptr myStdOut = Streams::MemoryStream<byte>::New ();
-        // quickie about to test..
-        ProcessRunner pr (L"echo hi mom");
-        String        out = pr.Run (L"");
-        VerifyTestResult (out.Trim () == L"hi mom");
-    }
-    void RegressionTest3_Pipe_ ()
-    {
-        Debug::TraceContextBumper        ctx{L"RegressionTest3_Pipe_"};
-        Streams::MemoryStream<byte>::Ptr myStdOut = Streams::MemoryStream<byte>::New ();
-        ProcessRunner                    pr1 (L"echo hi mom");
-        Streams::MemoryStream<byte>::Ptr pipe = Streams::MemoryStream<byte>::New ();
-        ProcessRunner                    pr2 (L"cat");
-        pr1.SetStdOut (pipe);
-        pr2.SetStdIn (pipe);
-
-        Streams::MemoryStream<byte>::Ptr pr2Out = Streams::MemoryStream<byte>::New ();
-        pr2.SetStdOut (pr2Out);
-
-        pr1.Run ();
-        pr2.Run ();
-
-        String out = String::FromUTF8 (pr2Out.As<string> ());
-
-        VerifyTestResult (out.Trim () == L"hi mom");
-    }
-    void RegressionTest4_DocSample_ ()
-    {
-        Debug::TraceContextBumper ctx{L"RegressionTest4_DocSample_"};
-        // cat doesn't exist on windows (without cygwin or some such) - but the regression test code depends on that anyhow
-        // so this should be OK for now... -- LGP 2017-06-31
-        Memory::BLOB                     kData_{Memory::BLOB::Raw ("this is a test")};
-        Streams::MemoryStream<byte>::Ptr processStdIn  = Streams::MemoryStream<byte>::New (kData_);
-        Streams::MemoryStream<byte>::Ptr processStdOut = Streams::MemoryStream<byte>::New ();
-        ProcessRunner                    pr (L"cat", processStdIn, processStdOut);
-        pr.Run ();
-        VerifyTestResult (processStdOut.ReadAll () == kData_);
-    }
-}
-
-namespace {
-    namespace LargeDataSentThroughPipe_Test5_ {
-        namespace Private_ {
-            const Memory::BLOB k1K_   = Memory::BLOB::Raw ("0123456789abcdef").Repeat (1024 / 16);
-            const Memory::BLOB k1MB_  = k1K_.Repeat (1024);
-            const Memory::BLOB k16MB_ = k1MB_.Repeat (16);
-
-            void SingleProcessLargeDataSend_ ()
-            {
-                /*
-                 *  "Valgrind's memory management: out of memory:"
-                 *  This only happens with DEBUG builds and valgrind/helgrind. So run with less memory used, and it works better.
-                 *
-                 *  @see https://stroika.atlassian.net/browse/STK-713 if you see hang here
-                 */
-                Memory::BLOB                     testBLOB = (Debug::IsRunningUnderValgrind () && qDebug) ? k1K_ : k16MB_;
-                Streams::MemoryStream<byte>::Ptr myStdIn  = Streams::MemoryStream<byte>::New (testBLOB);
-                Streams::MemoryStream<byte>::Ptr myStdOut = Streams::MemoryStream<byte>::New ();
-                ProcessRunner                    pr (L"cat", myStdIn, myStdOut);
-                pr.Run ();
-                VerifyTestResult (myStdOut.ReadAll () == testBLOB);
+        Debug::TraceContextBumper ctx{L"Test2_ThrowCatchStringException_"};
+        {
+            try {
+                Throw (Exception (L"HiMom"));
+                VerifyTestResult (false);
+            }
+            catch (const Exception<>& e) {
+                VerifyTestResult (e.As<wstring> () == L"HiMom");
             }
         }
-        void DoTests ()
         {
-            Debug::TraceContextBumper ctx{L"LargeDataSentThroughPipe_Test5_::DoTests"};
-            Private_::SingleProcessLargeDataSend_ ();
+            try {
+                Throw (Exception (L"HiMom"));
+                VerifyTestResult (false);
+            }
+            catch (const std::exception& e) {
+                VerifyTestResult (strcmp (e.what (), "HiMom") == 0);
+            }
         }
     }
 }
 
 namespace {
-    namespace LargeDataSentThroughPipeBackground_Test6_ {
+    namespace Test3_SystemErrorException_ {
         namespace Private_ {
-            const Memory::BLOB k1K_   = Memory::BLOB::Raw ("0123456789abcdef").Repeat (1024 / 16);
-            const Memory::BLOB k1MB_  = k1K_.Repeat (1024);
-            const Memory::BLOB k16MB_ = k1MB_.Repeat (16);
-
-            void SingleProcessLargeDataSend_ ()
+            void T1_system_error_ ()
             {
-                Assert (k1MB_.size () == 1024 * 1024);
-                Streams::SharedMemoryStream<byte>::Ptr myStdIn  = Streams::SharedMemoryStream<byte>::New (); // note must use SharedMemoryStream cuz we want to distinguish EOF from no data written yet
-                Streams::SharedMemoryStream<byte>::Ptr myStdOut = Streams::SharedMemoryStream<byte>::New ();
-                ProcessRunner                          pr (L"cat", myStdIn, myStdOut);
-                ProcessRunner::BackgroundProcess       bg = pr.RunInBackground ();
-                Execution::Sleep (1);
-                VerifyTestResult (not myStdOut.ReadNonBlocking ().has_value ()); // sb no data available, but NOT EOF
-                /*
-                 *  "Valgrind's memory management: out of memory:"
-                 *  This only happens with DEBUG builds and valgrind/helgrind. So run with less memory used, and it works better.
-                 */
-                Memory::BLOB testBLOB = (Debug::IsRunningUnderValgrind () && qDebug) ? k1K_ : k16MB_;
-                myStdIn.Write (testBLOB);
-                myStdIn.CloseWrite (); // so cat process can finish
-                bg.WaitForDone ();
-                myStdOut.CloseWrite (); // one process done, no more writes to this stream
-                VerifyTestResult (myStdOut.ReadAll () == testBLOB);
+                static const int                kErr2TestFor_            = make_error_code (errc::bad_address).value (); // any value from errc would do
+                static const Characters::String kErr2TestForExpectedMsg_ = L"bad address {errno: 14}"sv;                 // maybe not always right due to locales?
+
+                try {
+                    ThrowPOSIXErrNo (kErr2TestFor_);
+                }
+                catch (const std::system_error& e) {
+                    VerifyTestResult (e.code ().value () == kErr2TestFor_);
+                    VerifyTestResult (e.code ().category () == system_category () or e.code ().category () == generic_category ());
+                    VerifyTestResult (Characters::ToString (e).Contains (kErr2TestForExpectedMsg_, Characters::CompareOptions::eCaseInsensitive));
+                }
+                catch (...) {
+                    DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
+                    VerifyTestResult (false); //oops
+                }
+                // and test throwing fancy unicode string
+
+                const Characters::String kMsgWithUnicode_ = L"zß水𝄋"; // this works even if using a code page / locale which doesn't support UNICODE/Chinese
+                try {
+                    Execution::Throw (SystemErrorException (kErr2TestFor_, generic_category (), kMsgWithUnicode_));
+                }
+                catch (const std::system_error& e) {
+                    VerifyTestResult (e.code ().value () == kErr2TestFor_);
+                    VerifyTestResult (e.code ().category () == generic_category ());
+                    VerifyTestResult (Characters::ToString (e).Contains (kMsgWithUnicode_, Characters::CompareOptions::eCaseInsensitive));
+                }
+                catch (...) {
+                    DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
+                    VerifyTestResult (false); //oops
+                }
+            }
+            void T2_TestTimeout_ ()
+            {
+                try {
+                    Execution::Throw (Execution::TimeOutException{});
+                }
+                catch (const system_error& e) {
+                    VerifyTestResult (e.code () == errc::timed_out);
+                    VerifyTestResult (e.code () != errc::already_connected);
+                }
+                catch (...) {
+                    DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
+                    VerifyTestResult (false); //oops
+                }
+                try {
+                    Execution::Throw (Execution::TimeOutException{});
+                }
+                catch (const Execution::TimeOutException& e) {
+                    VerifyTestResult (e.code () == errc::timed_out);
+                    VerifyTestResult (e.code () != errc::already_connected);
+                }
+                catch (...) {
+                    DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
+                    VerifyTestResult (false); //oops
+                }
+                const Characters::String kMsg1_ = L"to abcd 123 zß水𝄋";
+                try {
+                    Execution::Throw (Execution::TimeOutException{kMsg1_});
+                }
+                catch (const system_error& e) {
+                    VerifyTestResult (e.code () == errc::timed_out);
+                    VerifyTestResult (e.code () != errc::already_connected);
+                    VerifyTestResult (Characters::ToString (e).Contains (kMsg1_));
+                }
+                catch (...) {
+                    DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
+                    VerifyTestResult (false); //oops
+                }
             }
         }
-        void DoTests ()
+        void TestAll_ ()
         {
-            Debug::TraceContextBumper ctx{L"LargeDataSentThroughPipeBackground_Test6_::DoTests"};
-            Private_::SingleProcessLargeDataSend_ ();
+            Debug::TraceContextBumper ctx{L"Test3_SystemErrorException_"};
+            Private_::T1_system_error_ ();
+            Private_::T2_TestTimeout_ ();
         }
     }
 }
 
-void RegressionTes7_FaledRun_ ()
-{
-    Debug::TraceContextBumper ctx{L"RegressionTes7_FaledRun_"};
-    try {
-        ProcessRunner pr (L"mount /fasdkfjasdfjasdkfjasdklfjasldkfjasdfkj /dadsf/a/sdf/asdf//");
-        pr.Run ();
-        VerifyTestResult (false);
+namespace {
+    namespace Test4_Activities_ {
+        namespace Private {
+
+            void T1_Basics_ ()
+            {
+                using Characters::String;
+                String argument;
+
+                [[maybe_unused]] static constexpr Activity kBuildingThingy_{L"Building thingy"sv};
+
+                // constexpr only works if we lose the virtual in ~AsStringObj_ ()
+                static constexpr const auto kA1_{Activity<wstring_view>{L"a1"sv}};
+
+                static const auto kOtherActivity = Activity<String>{L"kOtherActivity"};
+
+                // automatic variable activity OK as long as it's lifetime longer than reference in DeclareActivity
+                auto otherActivity = Activity<String>{L"otherActivity" + argument}; // activities can be stack based, but these cost more to define
+
+                auto lazyEvalActivity = LazyEvalActivity ([&] () -> String { return argument.Repeat (5) + L"xxx"; });
+
+                DeclareActivity active1{&kA1_};
+                DeclareActivity active2{&kOtherActivity};
+                DeclareActivity active3{&otherActivity};
+                DeclareActivity active4{&lazyEvalActivity};
+
+                try {
+                    // something that will throw
+                    Execution::Throw (Exception<> (L"testing 123"));
+                }
+                catch (...) {
+                    String msg = Characters::ToString (current_exception ());
+                    VerifyTestResult (msg.Contains (L"testing 123"));
+                    VerifyTestResult (msg.Contains (L"a1"));
+                    VerifyTestResult (msg.Contains (L"kOtherActivity"));
+                    VerifyTestResult (msg.Contains (L"otherActivity"));
+                    VerifyTestResult (msg.Contains (L"xxx"));
+                }
+            }
+        }
+        void TestAll_ ()
+        {
+            Debug::TraceContextBumper ctx{L"Test4_Activities_"};
+            Private::T1_Basics_ ();
+        }
     }
-    catch (...) {
-        DbgTrace (L"got failure msg: %s", Characters::ToString (current_exception ()).c_str ());
+}
+
+namespace {
+    namespace Test5_error_code_condition_compares_ {
+        namespace Private {
+            void Bug1_ ()
+            {
+                try {
+                    throw std::system_error (ENOENT, std::system_category ());
+                }
+                catch (std::system_error const& e) {
+                    VerifyTestResult (e.code ().value () == static_cast<int> (std::errc::no_such_file_or_directory)); // workaround?
+#if !qCompilerAndStdLib_error_code_compare_condition_Buggy
+                    VerifyTestResult (e.code () == std::errc::no_such_file_or_directory); // <- FAILS!?
+#endif
+                }
+                catch (...) {
+                    VerifyTestResult (false);
+                }
+            }
+#if qPlatform_Windows
+            void Bug2_Windows_Errors_Mapped_To_Conditions_ ()
+            {
+                VerifyTestResult ((error_code{ERROR_NOT_ENOUGH_MEMORY, system_category ()} == errc::not_enough_memory));
+                VerifyTestResult ((error_code{ERROR_OUTOFMEMORY, system_category ()} == errc::not_enough_memory));
+#if qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy
+                if ((error_code{WAIT_TIMEOUT, system_category ()} == errc::timed_out)) {
+                    DbgTrace (L"FIXED - qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy");
+                }
+                if ((error_code{ERROR_INTERNET_TIMEOUT, system_category ()} == errc::timed_out)) {
+                    DbgTrace (L"FIXED");
+                }
+#else
+                VerifyTestResult ((error_code{WAIT_TIMEOUT, system_category ()} == errc::timed_out));
+                VerifyTestResult ((error_code{ERROR_INTERNET_TIMEOUT, system_category ()} == errc::timed_out));
+#endif
+
+                try {
+                    ThrowSystemErrNo (ERROR_NOT_ENOUGH_MEMORY);
+                }
+                catch (const bad_alloc&) {
+                    // Good
+                }
+                catch (...) {
+                    VerifyTestResult (false);
+                }
+                try {
+                    ThrowSystemErrNo (ERROR_OUTOFMEMORY);
+                }
+                catch (const bad_alloc&) {
+                    // Good
+                }
+                catch (...) {
+                    VerifyTestResult (false);
+                }
+                try {
+                    ThrowSystemErrNo (WAIT_TIMEOUT);
+                }
+                catch (const TimeOutException&) {
+                    // Good
+                }
+                catch (...) {
+                    VerifyTestResult (false);
+                }
+                try {
+                    ThrowSystemErrNo (ERROR_INTERNET_TIMEOUT);
+                }
+                catch (const TimeOutException&) {
+                    // Good
+                }
+                catch (...) {
+                    VerifyTestResult (false);
+                }
+            }
+#endif
+        }
+        void TestAll_ ()
+        {
+            Debug::TraceContextBumper ctx{L"Test5_error_code_condition_compares_"};
+            Private::Bug1_ ();
+#if qPlatform_Windows
+            Private::Bug2_Windows_Errors_Mapped_To_Conditions_ ();
+#endif
+        }
+    }
+}
+
+namespace {
+    namespace Test6_Throw_Logging_with_and_without_srclines_in_stack_backtrace_ {
+        namespace Private {
+            void ThrowCatchStringException_ ()
+            {
+                Debug::TraceContextBumper ctx{L"ThrowCatchStringException_"};
+                {
+                    try {
+                        Throw (Exception (L"HiMom"));
+                        VerifyTestResult (false);
+                    }
+                    catch (const Exception<>& e) {
+                        VerifyTestResult (e.As<wstring> () == L"HiMom");
+                    }
+                }
+                {
+                    try {
+                        Throw (Exception (L"HiMom"));
+                        VerifyTestResult (false);
+                    }
+                    catch (const std::exception& e) {
+                        VerifyTestResult (strcmp (e.what (), "HiMom") == 0);
+                    }
+                }
+            }
+        }
+        void TestAll_ ()
+        {
+            Debug::TraceContextBumper ctx{L"Test6_Throw_Logging_with_and_without_srclines_in_stack_backtrace_"};
+            auto                      prevValue = Debug::BackTrace::Options::sDefault_IncludeSourceLines;
+            DbgTrace ("sDefault_IncludeSourceLines = true");
+            Debug::BackTrace::Options::sDefault_IncludeSourceLines = true;
+            Private::ThrowCatchStringException_ ();
+            DbgTrace ("sDefault_IncludeSourceLines = false");
+            Debug::BackTrace::Options::sDefault_IncludeSourceLines = false;
+            Private::ThrowCatchStringException_ ();
+            DbgTrace ("sDefault_IncludeSourceLines = <<default>>");
+            Debug::BackTrace::Options::sDefault_IncludeSourceLines = prevValue;
+            Private::ThrowCatchStringException_ ();
+        }
     }
 }
 
@@ -159,19 +317,11 @@ namespace {
     void DoRegressionTests_ ()
     {
         Debug::TraceContextBumper ctx{L"DoRegressionTests_"};
-#if qPlatform_POSIX
-        // Many performance instruments use pipes
-        // @todo - REVIEW IF REALLY NEEDED AND WHY? SO LONG AS NO FAIL SHOULDNT BE?
-        //  --LGP 2014-02-05
-        Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
-#endif
-        RegressionTest1_ ();
-        RegressionTest2_ ();
-        RegressionTest3_Pipe_ ();
-        RegressionTest4_DocSample_ ();
-        LargeDataSentThroughPipe_Test5_::DoTests ();
-        LargeDataSentThroughPipeBackground_Test6_::DoTests ();
-        RegressionTes7_FaledRun_ ();
+        Test2_ThrowCatchStringException_ ();
+        Test3_SystemErrorException_::TestAll_ ();
+        Test4_Activities_::TestAll_ ();
+        Test5_error_code_condition_compares_::TestAll_ ();
+        Test6_Throw_Logging_with_and_without_srclines_in_stack_backtrace_::TestAll_ ();
     }
 }
 

@@ -1,13 +1,14 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2020.  All rights reserved
  */
-//  TEST    Foundation::Containers::DataStructures::DoublyLinkedList
+//  TEST    Foundation::Containers::DataStructures::LinkedList
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
 #include <sstream>
 
-#include "Stroika/Foundation/Containers/Private/PatchingDataStructures/DoublyLinkedList.h"
+#include "Stroika/Foundation/Containers/DataStructures/LinkedList.h"
+#include "Stroika/Foundation/Containers/Private/PatchingDataStructures/LinkedList.h"
 
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -19,6 +20,7 @@ using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Containers::DataStructures;
+using namespace Stroika::Foundation::Containers::Private;
 using namespace Stroika::Foundation::Containers::Private::PatchingDataStructures;
 
 using Traversal::kUnknownIteratorOwnerID;
@@ -26,8 +28,8 @@ using Traversal::kUnknownIteratorOwnerID;
 namespace {
     static void Test1 ()
     {
-        Private::PatchingDataStructures::DoublyLinkedList<size_t> someLL;
-        const size_t                                              kBigSize = 1001;
+        PatchingDataStructures::LinkedList<size_t> someLL;
+        const size_t                               kBigSize = 1001;
 
         Assert (kBigSize > 100);
         VerifyTestResult (someLL.GetLength () == 0);
@@ -61,7 +63,7 @@ namespace {
         {
             size_t i = 1;
             size_t cur;
-            for (Private::PatchingDataStructures::DoublyLinkedList<size_t>::ForwardIterator it (kUnknownIteratorOwnerID, &someLL); it.More (&cur, true); i++) {
+            for (PatchingDataStructures::LinkedList<size_t>::ForwardIterator it (kUnknownIteratorOwnerID, &someLL); it.More (&cur, true); i++) {
                 if (i == 100) {
                     someLL.AddAfter (it, 1);
                     break;
@@ -72,7 +74,7 @@ namespace {
         VerifyTestResult (someLL.GetLength () == kBigSize + 1);
         VerifyTestResult (someLL.GetAt (100) == 1); //  VerifyTestResult(someArray [100] == 1);
 
-        someLL.SetAt (101, someLL.GetAt (100) + 5);
+        someLL.SetAt (someLL.GetAt (100) + 5, 101);
 
         VerifyTestResult (someLL.GetAt (101) == 6);
         someLL.RemoveFirst ();
@@ -81,8 +83,8 @@ namespace {
 
     static void Test2 ()
     {
-        Private::PatchingDataStructures::DoublyLinkedList<SimpleClass> someLL;
-        const size_t                                                   kBigSize = 1000;
+        PatchingDataStructures::LinkedList<SimpleClass> someLL;
+        const size_t                                    kBigSize = 1000;
 
         VerifyTestResult (someLL.GetLength () == 0);
 
@@ -121,15 +123,15 @@ namespace {
         VerifyTestResult (someLL.GetLength () == 0);
 
         for (size_t i = kBigSize; i >= 1; --i) {
-            VerifyTestResult (not someLL.Contains (i));
+            VerifyTestResult (someLL.Lookup (i) == nullptr);
             someLL.Prepend (i);
             VerifyTestResult (someLL.GetFirst () == i);
-            VerifyTestResult (someLL.Contains (i));
+            VerifyTestResult (someLL.Lookup (i) != nullptr);
         }
         for (size_t i = 1; i <= kBigSize; ++i) {
             VerifyTestResult (someLL.GetFirst () == i);
             someLL.RemoveFirst ();
-            VerifyTestResult (not someLL.Contains (i));
+            VerifyTestResult (someLL.Lookup (i) == nullptr);
         }
         VerifyTestResult (someLL.GetLength () == 0);
 
