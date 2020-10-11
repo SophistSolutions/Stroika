@@ -63,7 +63,7 @@ jobs:
         - docker exec --workdir c:/Stroika buildContainer sh -c "./configure Debug --arch x86 --apply-default-debug-flags --Xerces no --OpenSSL no --lzma no --boost no"
         - docker exec --workdir c:/Stroika buildContainer cat ConfigurationFiles/Debug.xml
       script:
-        - docker exec --workdir c:/Stroika --env MAKEFLAGS=$MAKEFLAGS buildContainer make run-tests
+        - docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make run-tests
       env:
         - MATRIX_EVAL="Windows=true && RunTests=true"
 
@@ -89,8 +89,8 @@ jobs:
         - docker exec --workdir c:/Stroika buildContainer sh -c "./configure Release --arch x86 --apply-default-release-flags --Xerces no --OpenSSL no --lzma no --boost no"
         - docker exec --workdir c:/Stroika buildContainer cat ConfigurationFiles/Release.xml
       script:
-        - docker exec --workdir c:/Stroika --env MAKEFLAGS=$MAKEFLAGS buildContainer make third-party-components
-        - docker exec --workdir c:/Stroika --env MAKEFLAGS=$MAKEFLAGS buildContainer make samples
+        - docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make third-party-components
+        - docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make samples
       after_failure:
         - echo "HANDLING FAILURE DUMPING DEBUG STUFF:"
       env:
