@@ -255,7 +255,7 @@ namespace Stroika::Foundation::Common {
     };
 #if __cpp_lib_three_way_comparison >= 201907
     template <typename T>
-    struct ExtractComparisonTraits<compare_three_way<T>> {
+    struct ExtractComparisonTraits<compare_three_way<T, T>> {
         static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
     };
 #endif
