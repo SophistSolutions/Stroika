@@ -83,8 +83,13 @@ namespace Stroika::Foundation::Common {
         }
     };
 #else
-    template <class T, class U>
-    using compare_three_way = std::compare_three_way<T, U>;
+    template <class LT, class RT>
+    struct compare_three_way {
+        constexpr auto operator() (LT&& lhs, RT&& rhs) const
+        {
+            return std::compare_three_way{}(forward<LT> (lhs), forward<RT> (rhs));
+        }
+    };
 #endif
 
     /**
