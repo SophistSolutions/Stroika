@@ -210,7 +210,6 @@ namespace Stroika::Foundation::Execution {
     inline strong_ordering Thread::Ptr::operator<=> (nullptr_t) const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec1{*this};
-        //return fRep_ <=> nullptr;
 #if __cpp_impl_three_way_comparison < 201907
         return Common::ThreeWayCompare (fRep_, nullptr);
 #else
