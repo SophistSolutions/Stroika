@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Common {
      */
     template <typename T, typename TCOMPARER>
     constexpr OptionalThreeWayComparer<T, TCOMPARER>::OptionalThreeWayComparer (const TCOMPARER& comparer)
-        : fTComparer_ (comparer)
+        : fTComparer_{comparer}
     {
     }
     template <typename T, typename TCOMPARER>
@@ -139,12 +139,12 @@ namespace Stroika::Foundation::Common {
     constexpr ComparisonRelationType ComparisonRelationDeclaration<KIND, ACTUAL_COMPARER>::kComparisonRelationKind;
     template <ComparisonRelationType KIND, typename ACTUAL_COMPARER>
     inline constexpr ComparisonRelationDeclaration<KIND, ACTUAL_COMPARER>::ComparisonRelationDeclaration (const ACTUAL_COMPARER& actualComparer)
-        : fActualComparer (actualComparer)
+        : fActualComparer{actualComparer}
     {
     }
     template <ComparisonRelationType KIND, typename ACTUAL_COMPARER>
     inline constexpr ComparisonRelationDeclaration<KIND, ACTUAL_COMPARER>::ComparisonRelationDeclaration (ACTUAL_COMPARER&& actualComparer)
-        : fActualComparer (move (actualComparer))
+        : fActualComparer{move (actualComparer)}
     {
     }
     template <ComparisonRelationType KIND, typename ACTUAL_COMPARER>
@@ -193,12 +193,12 @@ namespace Stroika::Foundation::Common {
      */
     template <typename BASE_COMPARER>
     constexpr inline InOrderComparerAdapter<BASE_COMPARER>::InOrderComparerAdapter (const BASE_COMPARER& baseComparer)
-        : fBASE_COMPARER_ (baseComparer)
+        : fBASE_COMPARER_{baseComparer}
     {
     }
     template <typename BASE_COMPARER>
     constexpr inline InOrderComparerAdapter<BASE_COMPARER>::InOrderComparerAdapter (BASE_COMPARER&& baseComparer)
-        : fBASE_COMPARER_ (move (baseComparer))
+        : fBASE_COMPARER_{move (baseComparer)}
     {
     }
     template <typename BASE_COMPARER>
@@ -231,12 +231,12 @@ namespace Stroika::Foundation::Common {
      */
     template <typename BASE_COMPARER>
     constexpr EqualsComparerAdapter<BASE_COMPARER>::EqualsComparerAdapter (const BASE_COMPARER& baseComparer)
-        : fBASE_COMPARER_ (baseComparer)
+        : fBASE_COMPARER_{baseComparer}
     {
     }
     template <typename BASE_COMPARER>
     constexpr EqualsComparerAdapter<BASE_COMPARER>::EqualsComparerAdapter (BASE_COMPARER&& baseComparer)
-        : fBASE_COMPARER_ (move (baseComparer))
+        : fBASE_COMPARER_{move (baseComparer)}
     {
     }
     template <typename BASE_COMPARER>
@@ -272,12 +272,12 @@ namespace Stroika::Foundation::Common {
      */
     template <typename BASE_COMPARER>
     constexpr ThreeWayComparerAdapter<BASE_COMPARER>::ThreeWayComparerAdapter (const BASE_COMPARER& baseComparer)
-        : fBASE_COMPARER_ (baseComparer)
+        : fBASE_COMPARER_{baseComparer}
     {
     }
     template <typename BASE_COMPARER>
     constexpr ThreeWayComparerAdapter<BASE_COMPARER>::ThreeWayComparerAdapter (BASE_COMPARER&& baseComparer)
-        : fBASE_COMPARER_ (move (baseComparer))
+        : fBASE_COMPARER_{move (baseComparer)}
     {
     }
     template <typename BASE_COMPARER>
