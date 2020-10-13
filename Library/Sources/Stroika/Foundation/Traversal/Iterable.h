@@ -445,7 +445,7 @@ namespace Stroika::Foundation::Traversal {
         struct SequentialEqualsComparer;
 
     public:
-        template <typename T_THREEWAY_COMPARER = Common::compare_three_way<T, T>>
+        template <typename T_THREEWAY_COMPARER = Common::ThreeWayComparer<T, T>>
         struct SequentialThreeWayComparer;
 
     public:

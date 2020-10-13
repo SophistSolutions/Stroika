@@ -21,8 +21,7 @@ namespace Stroika::Foundation::Common {
     template <typename LT, typename RT>
     constexpr Common::strong_ordering ThreeWayCompare (LT&& lhs, RT&& rhs)
     {
-        return compare_three_way<LT, RT>{}(forward<LT> (lhs), forward<RT> (rhs));
-        // soon - maybe now - replace with - return ThreeWayComparer<LT>{}(forward<LT> (lhs), forward<RT> (rhs));
+        return ThreeWayComparer<LT, RT>{}(forward<LT> (lhs), forward<RT> (rhs));
     }
 
     /*

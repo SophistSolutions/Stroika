@@ -178,27 +178,27 @@ namespace Stroika::Foundation::Characters {
      */
     inline bool operator< (Character lhs, Character rhs)
     {
-        return Common::compare_three_way<Character, Character>{}(lhs, rhs) < 0;
+        return Common::ThreeWayComparer<Character, Character>{}(lhs, rhs) < 0;
     }
     inline bool operator<= (Character lhs, Character rhs)
     {
-        return Common::compare_three_way<Character, Character>{}(lhs, rhs) <= 0;
+        return Common::ThreeWayComparer<Character, Character>{}(lhs, rhs) <= 0;
     }
     inline bool operator== (Character lhs, Character rhs)
     {
-        return Common::compare_three_way<Character, Character>{}(lhs, rhs) == 0;
+        return Common::ThreeWayComparer<Character, Character>{}(lhs, rhs) == 0;
     }
     inline bool operator!= (Character lhs, Character rhs)
     {
-        return Common::compare_three_way<Character, Character>{}(lhs, rhs) != 0;
+        return Common::ThreeWayComparer<Character, Character>{}(lhs, rhs) != 0;
     }
     inline bool operator>= (Character lhs, Character rhs)
     {
-        return Common::compare_three_way<Character, Character>{}(lhs, rhs) >= 0;
+        return Common::ThreeWayComparer<Character, Character>{}(lhs, rhs) >= 0;
     }
     inline bool operator> (Character lhs, Character rhs)
     {
-        return Common::compare_three_way<Character, Character>{}(lhs, rhs) > 0;
+        return Common::ThreeWayComparer<Character, Character>{}(lhs, rhs) > 0;
     }
 #endif
 

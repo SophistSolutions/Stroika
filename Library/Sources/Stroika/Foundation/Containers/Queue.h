@@ -228,7 +228,7 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        template <typename ELEMENT_COMPARER = Common::compare_three_way<T, T>>
+        template <typename ELEMENT_COMPARER = Common::ThreeWayComparer<T, T>>
         using ThreeWayComparer = typename Iterable<T>::template SequentialThreeWayComparer<ELEMENT_COMPARER>;
 
 #if __cpp_impl_three_way_comparison >= 201907

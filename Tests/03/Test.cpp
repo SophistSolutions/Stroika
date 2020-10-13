@@ -9,10 +9,10 @@
 //  TEST    Foundation::Traveral
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Common/GUID.h"
-#include "Stroika/Foundation/Configuration/Endian.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Common/GUID.h"
+#include "Stroika/Foundation/Configuration/Endian.h"
 
 #include "../TestHarness/TestHarness.h"
 
@@ -25,7 +25,7 @@ namespace {
         Debug::TraceContextBumper ctx{L"{}::Test_1_SpaceshipAutoGenForOpEqualsForCommonGUIDBug_ ()"};
         {
             Common::GUID guidFromStr{L"61e4d49d-8c26-3480-f5c8-564e155c67a6"};
-            Common::GUID guidFromArray{array < uint8_t, 16> {0x9d, 0xd4, 0xe4, 0x61, 0x26, 0x8c, 0x80, 0x34, 0xf5, 0xc8, 0x56, 0x4e, 0x15, 0x5c, 0x67, 0xa6}};
+            Common::GUID guidFromArray{array<uint8_t, 16>{0x9d, 0xd4, 0xe4, 0x61, 0x26, 0x8c, 0x80, 0x34, 0xf5, 0xc8, 0x56, 0x4e, 0x15, 0x5c, 0x67, 0xa6}};
             if (Configuration ::GetEndianness () == Configuration::Endian::eX86) {
                 VerifyTestResult (memcmp (&guidFromStr, &guidFromArray, sizeof (Common::GUID)) == 0);
             }
@@ -35,8 +35,6 @@ namespace {
         }
     }
 }
-
-
 
 namespace {
     void DoRegressionTests_ ()

@@ -63,14 +63,16 @@ namespace Stroika::Foundation::Common {
 #endif
 
     /**
-     *  Portable to C++17 version of std::compare_three_way (in Stroika::Foundation::Common namespace to avoid rule 
-     *  of not adding stuff to std namespace).
+     *  \brief like std::compare_three_way{} (lhs, rhs), except class templated on T1/T2 instead of function, so you can bind function object for example in templates expecting one
      *
-     *  For code which requires C++20 or later, simply call std::compare_three_way instead.
+     *  \see See also ThreeWayCompare - nearly identical - but function template and can be used to deduce template arguments more easily
+     * 
+     *  \note DO NOT SPECIALIZE ThreeWayComparer<>, since its just a utility which trivailly wraps
+     *        std::compare_three_way in c++20, so just specialize std::compare_three_way<>::operator()...
      */
 #if __cpp_lib_three_way_comparison < 201907L
     template <class LT, class RT>
-    struct compare_three_way {
+    struct ThreeWayComparer {
         constexpr auto operator() (LT&& lhs, RT&& rhs) const
         {
             using CT = common_type_t<LT, RT>;
@@ -84,7 +86,7 @@ namespace Stroika::Foundation::Common {
     };
 #else
     template <class LT, class RT>
-    struct compare_three_way {
+    struct ThreeWayComparer {
         constexpr auto operator() (LT&& lhs, RT&& rhs) const
         {
             return std::compare_three_way{}(forward<LT> (lhs), forward<RT> (rhs));
@@ -93,16 +95,19 @@ namespace Stroika::Foundation::Common {
 #endif
 
     /**
-     *  \brief trivial wrapper calling ThreeWayComparer<T>{}(lhs,rhs) i.e. std::compare_three_way{} (lhs, rhs)
+     *  \brief trivial wrapper calling ThreeWayComparer<TL,TR>{}(lhs,rhs) i.e. std::compare_three_way{} (lhs, rhs)
      *
      *  Since the type of ThreeWayComparer cannot be deduced, you must write a painful:
      *      \code
-     *          Common::compare_three_ways<T1,T2>{} (lhs, rhs);   // this often looks much worse when 'T' is a long typename
+     *          Common::ThreeWayComparer<T1,T2>{} (lhs, rhs);   // this often looks much worse when 'T' is a long typename
      *      \endcode
      *
      *  This helper function allows for the type deduction, at the cost of not working with arguments to
      *  the comparer, and the cost of not re-using the comparer object. However, since the comparer is typically
      *  constexpr, that should be a modest (zero?) cost.
+     * 
+     *  \note Starting in c++20, calls to Common::ThreeWayCompare () can be trivially replaced with calls to
+     *        std::compare_three_way{} (lhs, rhs)
      *
      *  \par Example Usage
      *      \code
@@ -130,7 +135,7 @@ namespace Stroika::Foundation::Common {
      *  to use a case insensitive comparer for the strings, is tricky. THIS class solves that, by letting you pass in explicitly the 
      *  'base comparer'.
      */
-    template <typename T, typename TCOMPARER = compare_three_way<T, T>>
+    template <typename T, typename TCOMPARER = ThreeWayComparer<T, T>>
     struct OptionalThreeWayComparer {
         constexpr OptionalThreeWayComparer (const TCOMPARER& tComparer);
         constexpr strong_ordering operator() (const optional<T>& lhs, const optional<T>& rhs) const;
@@ -260,7 +265,11 @@ namespace Stroika::Foundation::Common {
     };
 #if __cpp_lib_three_way_comparison >= 201907
     template <typename T>
-    struct ExtractComparisonTraits<compare_three_way<T, T>> {
+    struct ExtractComparisonTraits<ThreeWayComparer<T, T>> {
+        static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
+    };
+    template <>
+    struct ExtractComparisonTraits<std::compare_three_way> {
         static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
     };
 #endif
