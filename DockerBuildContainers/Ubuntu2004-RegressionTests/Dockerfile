@@ -20,7 +20,7 @@ RUN apt-get install -y clang++-10
 RUN apt-get install -y libc++-10-dev libc++abi-10-dev
 
 # for testing configuration 'only-zlib-system-third-party-component'
-RUN  apt-get install zlib1g-dev
+RUN  apt-get install -y zlib1g-dev
 
 #Only needed to run with valgrind regtests
 RUN apt-get install -y valgrind
