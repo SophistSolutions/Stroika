@@ -25,7 +25,9 @@
 			"vector": "cpp",
 			"xhash": "cpp",
 			"xtree": "cpp",
-			"xutility": "cpp"
+			"xutility": "cpp",
+			"compare": "cpp",
+			"typeindex": "cpp"
 		}
 
 	}
