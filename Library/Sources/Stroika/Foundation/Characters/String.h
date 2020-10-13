@@ -69,7 +69,7 @@
  *
  *      @todo   PROBALY get rid of
  *                                      nonvirtual  void        SetCharAt (Character c, size_t i);
- *              and fofrce people to use StringBUilder. I think that maybe only mutator except operator+= which is
+ *              and force people to use StringBUilder. I think that maybe only mutator except operator+= which is
  *              (or can be) safe, and is just wildly helpful, so proabby keep that. But document rationale!
  *              (well - .clear() is also mutaotr and operator= obvously).
  *
