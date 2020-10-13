@@ -70,7 +70,7 @@ namespace Stroika::Foundation::DataExchange {
     inline ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper)
         : TypeMappingDetails (forTypeInfo, *reinterpret_cast<const FromGenericObjectMapperType*> (&fromObjectMapper), *reinterpret_cast<const ToGenericObjectMapperType*> (&toObjectMapper))
     {
-        Require (type_index (typeid (T)) == forTypeInfo);
+        Require (type_index{typeid (T)} == forTypeInfo);
     }
 #if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering ObjectVariantMapper::TypeMappingDetails::operator<=> (const TypeMappingDetails& rhs) const
@@ -109,7 +109,7 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T>
     inline ObjectVariantMapper::FromObjectMapperType<T> ObjectVariantMapper::TypeMappingDetails::FromObjectMapper () const
     {
-        Require (type_index (typeid (T)) == fForType);
+        Require (type_index{typeid (T)} == fForType);
         return FromObjectMapper<T> (fFromObjecttMapper);
     }
     template <typename T>
@@ -120,7 +120,7 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T>
     inline ObjectVariantMapper::ToObjectMapperType<T> ObjectVariantMapper::TypeMappingDetails::ToObjectMapper () const
     {
-        Require (type_index (typeid (T)) == fForType);
+        Require (type_index{typeid (T)} == fForType);
         return ToObjectMapper<T> (fToObjectMapper);
     }
 
