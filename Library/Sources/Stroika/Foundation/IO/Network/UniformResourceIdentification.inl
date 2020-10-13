@@ -40,11 +40,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         return TWC_ (*this, rhs) == 0;
     }
 #endif
-    inline Common::strong_ordering SchemeType::TWC_ (const SchemeType& lhs, const SchemeType& rhs)
-    {
-        using namespace Characters;
-        return Common::compare_three_way<String, String>{CompareOptions::eCaseInsensitive}(lhs, rhs);
-    }
 
 #if __cpp_impl_three_way_comparison < 201907
     /*

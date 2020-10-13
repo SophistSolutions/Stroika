@@ -89,6 +89,12 @@ optional<PortType> SchemeType::GetDefaultPort () const
     return kPredefined_.Lookup (*this);
 }
 
+Common::strong_ordering SchemeType::TWC_ (const SchemeType& lhs, const SchemeType& rhs)
+{
+    using namespace Characters;
+    return String::ThreeWayComparer{CompareOptions::eCaseInsensitive}(lhs, rhs);
+}
+
 /*
  ********************************************************************************
  ************************************ Host **************************************

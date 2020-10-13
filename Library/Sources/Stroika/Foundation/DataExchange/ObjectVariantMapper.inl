@@ -76,7 +76,7 @@ namespace Stroika::Foundation::DataExchange {
     inline strong_ordering ObjectVariantMapper::TypeMappingDetails::operator<=> (const TypeMappingDetails& rhs) const
     {
 #if __cpp_lib_three_way_comparison >= 201907
-        return std::compare_3way (fForType, rhs.fForType);
+        return std::compare_three_way{}(fForType, rhs.fForType);
 #else
         if (fForType < rhs.fForType) {
             return strong_ordering::less;
