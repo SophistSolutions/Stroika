@@ -863,9 +863,9 @@ namespace {
     void Test18_Compare_ ()
     {
         Debug::TraceContextBumper ctx{L"Test18_Compare_"};
-        const String              kHELLOWorld = String (L"Hello world");
+        const String              kHELLOWorld = String{L"Hello world"};
         VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eWithCase}(kHELLOWorld, kHELLOWorld) == 0));
-        VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eWithCase}(kHELLOWorld, String (L"Hello world")) == 0));
+        VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eWithCase}(kHELLOWorld, String{L"Hello world"}) == 0));
         VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eWithCase}(kHELLOWorld, kHELLOWorld.ToLowerCase ()) <= 0));
         VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eCaseInsensitive}(kHELLOWorld, kHELLOWorld.ToLowerCase ()) == 0));
         VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eCaseInsensitive}(L"fred", L"fredy") < 0));
