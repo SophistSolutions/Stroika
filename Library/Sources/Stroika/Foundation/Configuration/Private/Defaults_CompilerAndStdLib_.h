@@ -83,7 +83,7 @@
 #if __GNUC__ < 8
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v2.1 does not support versions prior to GCC 8 (v2.0 supports g++5 and g++6 and g++-7)"
 #endif
-#if __GNUC__ > 10 || (__GNUC__ == 10 && (__GNUC_MINOR__ > 0))
+#if __GNUC__ > 10 || (__GNUC__ == 10 && (__GNUC_MINOR__ > 2))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
@@ -593,6 +593,7 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 // VERIFIED BROKEN IN GCC 9.2
 // VERIFIED BROKEN IN GCC 9.3
 // VERIFIED BROKEN IN GCC 10.0
+// VERIFIED BROKEN IN GCC 10.2
 #define qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 10)
 #else
 #define qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy 0
@@ -604,6 +605,7 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 
 #if defined(__GNUC__) && !defined(__clang__)
 // First found BROKEN IN GCC 10.0
+// VERIFIED BROKEN IN GCC 10.2
 #define qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 10)
 #else
 #define qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy 0
