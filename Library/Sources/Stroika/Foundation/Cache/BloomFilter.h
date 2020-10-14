@@ -96,8 +96,9 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
+         *  return true if this was probably a change, and false if it was probably already present
          */
-        nonvirtual void Add (Configuration::ArgByValueType<T> elt);
+        nonvirtual bool Add (Configuration::ArgByValueType<T> elt);
 
     public:
         /**

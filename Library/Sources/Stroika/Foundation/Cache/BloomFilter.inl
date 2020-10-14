@@ -118,7 +118,7 @@ namespace Stroika::Foundation::Cache {
         return result;
     }
     template <typename T>
-    void BloomFilter<T>::Add (Configuration::ArgByValueType<T> elt)
+    bool BloomFilter<T>::Add (Configuration::ArgByValueType<T> elt)
     {
         size_t sz{fBits_.size ()};
         bool   apparentlyNewAddition = false;
@@ -133,6 +133,7 @@ namespace Stroika::Foundation::Cache {
         if (apparentlyNewAddition) {
             fApparentlyDistinctAddCalls_++;
         }
+        return apparentlyNewAddition;
     }
     template <typename T>
     inline void BloomFilter<T>::clear ()
