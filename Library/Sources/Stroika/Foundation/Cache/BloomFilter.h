@@ -28,6 +28,15 @@ namespace Stroika::Foundation::Cache {
      *      http://en.wikipedia.org/wiki/Bloom_filter
      *          fHashFunction.size () corresponds to 'k'
      *          fBitCount corresponds to 'm'
+     * 
+     * \note - when the bloom filter starts getting full, it becomes less useful. A good way to decide
+     *         when its time to recreate a larger bloom filter is with:
+     *          \code
+     *              runToProbOfFalsePositive = 0.5;   // ?? depends on your tolerance and cost of resizing bloom filter
+     *              if (addressesProbablyUsed.GetStatistics ().ProbabilityOfFalsePositive () >= runToProbOfFalsePositive) {
+     *                  ... resize bloom filter - means losing all existing data...
+     *          \endcode
+     * 
      */
     template <typename T>
     class BloomFilter {
@@ -115,16 +124,20 @@ namespace Stroika::Foundation::Cache {
 
     private:
         vector<HashFunctionType> fHashFunctions_;
-        vector<bool>             fBits_; // @todo use Set_Bitstring
+        vector<bool>             fBits_;                         // @todo use Set_Bitstring
+        unsigned int             fActualAddCalls_{};             // to support useful statistics, not strictly needed
+        unsigned int             fApparentlyDistinctAddCalls_{}; // ""
     };
 
     /**
      */
     template <typename T>
     struct BloomFilter<T>::Statistics {
-        size_t fHashFunctions;
-        size_t fBitCount;
-        size_t fBitsSet;
+        size_t       fHashFunctions;
+        size_t       fBitCount;
+        size_t       fBitsSet;
+        unsigned int fActualAddCalls;
+        unsigned int fApparentlyDistinctAddCalls;
 
     public:
         /**
@@ -134,6 +147,11 @@ namespace Stroika::Foundation::Cache {
          *  (roughly pct bits unset / number of hash functions). But I cannot find a reference for that so leaving this as is for now.
          */
         nonvirtual double GetFractionFull () const;
+
+    public:
+        /**
+         */
+        nonvirtual double ProbabilityOfFalsePositive () const;
 
     public:
         /**

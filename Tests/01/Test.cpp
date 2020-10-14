@@ -460,6 +460,56 @@ namespace {
                 DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
                 VerifyTestResultWarning (expectedFalsePositiveRange.Contains (falsePositives));
             }
+            void TestSuggestionsForFilterSize ()
+            {
+                Debug::TraceContextBumper ctx{"TestSuggestionsForFilterSize"};
+                using IO::Network::CIDR;
+                using IO::Network::InternetAddress;
+                using IO::Network::InternetAddressRange;
+
+                auto runTest = [] (CIDR cidr, double runToProbOfFalsePositive, double runToFractionFull, double bitSizeFactor = 1.0) {
+                    Debug::TraceContextBumper        ctx{L"runTest", L"cidr=%s, runToProbOfFalsePositive=%f, runToFractionFull=%f, bitSizeFactor=%f", Characters::ToString (cidr).c_str (), runToProbOfFalsePositive, runToFractionFull, bitSizeFactor};
+                    Containers::Set<InternetAddress> oracle;
+                    InternetAddressRange             scanAddressRange = cidr.GetRange ();
+                    BloomFilter<InternetAddress>     addressesProbablyUsed{BloomFilter<InternetAddress>{static_cast<size_t> (bitSizeFactor * scanAddressRange.GetNumberOfContainedPoints ())}};
+                    unsigned int                     nLoopIterations{};
+                    unsigned int                     nActualCollisions{};
+                    unsigned int                     nContainsMistakes{};
+                    while (true) {
+                        nLoopIterations++;
+                        auto bloomFilterStats = addressesProbablyUsed.GetStatistics ();
+                        //DbgTrace (L"***addressesProbablyUsed.GetStatistics ()=%s", Characters::ToString (bloomFilterStats).c_str ());
+                        if (bloomFilterStats.ProbabilityOfFalsePositive () < runToProbOfFalsePositive and
+                            double (bloomFilterStats.fApparentlyDistinctAddCalls) / scanAddressRange.GetNumberOfContainedPoints () < runToFractionFull) {
+                            static mt19937  sRng_{std::random_device{}()};
+                            unsigned int    selected              = uniform_int_distribution<unsigned int>{1, scanAddressRange.GetNumberOfContainedPoints () - 2}(sRng_);
+                            InternetAddress ia                    = scanAddressRange.GetLowerBound ().Offset (selected);
+                            bool            wasAlreadyPresent     = oracle.Contains (ia);
+                            bool            appearsAlreadyPresent = addressesProbablyUsed.Contains (ia);
+                            if (wasAlreadyPresent != appearsAlreadyPresent) {
+                                nContainsMistakes++;
+                            }
+                            if (wasAlreadyPresent) {
+                                nActualCollisions++;
+                            }
+                            addressesProbablyUsed.Add (ia);
+                            oracle.Add (ia);
+                        }
+                        else {
+                            DbgTrace (L"Completed full scan: nIterations=%d, nActualCollisions=%d, nContainsMistakes=%d, pctActualCoverage=%f", nLoopIterations, nActualCollisions, nContainsMistakes, double (oracle.size ()) / scanAddressRange.GetNumberOfContainedPoints ());
+                            DbgTrace (L"addressesProbablyUsed.GetStatistics ()=%s", Characters::ToString (addressesProbablyUsed.GetStatistics ()).c_str ());
+                            break;
+                        }
+                    }
+                };
+                runTest (CIDR{L"192.168.243.0/24"}, .5, .5);
+                runTest (CIDR{L"192.168.243.0/24"}, .5, .6);
+                runTest (CIDR{L"192.168.243.0/24"}, .5, .7);
+                runTest (CIDR{L"192.168.243.0/24"}, .5, .5, 2);
+                runTest (CIDR{L"192.168.243.0/24"}, .5, .6, 2);
+                runTest (CIDR{L"192.168.243.0/24"}, .5, .7, 2);
+                runTest (CIDR{L"192.168.243.0/24"}, .5, .8, 2);
+            }
         }
 
         void DoIt ()
@@ -469,6 +519,7 @@ namespace {
             Private_::SimpleInternetAddressTestWithExplicitHash ();
             Private_::SimpleInternetAddressTest ();
             Private_::SimpleBloomTestWithStroikaDigester ();
+            Private_::TestSuggestionsForFilterSize ();
         }
     }
 }

@@ -24,9 +24,14 @@ namespace Stroika::Foundation::Cache {
      ********************************************************************************
      */
     template <typename T>
-    nonvirtual double BloomFilter<T>::Statistics::GetFractionFull () const
+    inline double BloomFilter<T>::Statistics::GetFractionFull () const
     {
         return static_cast<double> (fBitsSet) / static_cast<double> (fBitCount);
+    }
+    template <typename T>
+    inline double BloomFilter<T>::Statistics::ProbabilityOfFalsePositive () const
+    {
+        return BloomFilter<T>::ProbabilityOfFalsePositive (fHashFunctions, fBitCount, fApparentlyDistinctAddCalls);
     }
     template <typename T>
     Characters::String BloomFilter<T>::Statistics::ToString () const
@@ -35,7 +40,10 @@ namespace Stroika::Foundation::Cache {
         sb += L"{";
         sb += L"fHashFunctions: " + Characters::ToString (fHashFunctions) + L", ";
         sb += L"fBitCount: " + Characters::ToString (fBitCount) + L", ";
-        sb += L"fBitsSet: " + Characters::ToString (fBitsSet);
+        sb += L"fBitsSet: " + Characters::ToString (fBitsSet) + L", ";
+        sb += L"fActualAddCalls: " + Characters::ToString (fActualAddCalls) + L", ";
+        sb += L"fApparentlyDistinctAddCalls: " + Characters::ToString (fApparentlyDistinctAddCalls) + L", ";
+        sb += L"ProbabilityOfFalsePositive: " + Characters::ToString (ProbabilityOfFalsePositive ());
         sb += L"}";
         return sb.str ();
     }
@@ -113,8 +121,17 @@ namespace Stroika::Foundation::Cache {
     void BloomFilter<T>::Add (Configuration::ArgByValueType<T> elt)
     {
         size_t sz{fBits_.size ()};
+        bool   apparentlyNewAddition = false;
         for (const HashFunctionType& f : fHashFunctions_) {
-            fBits_[f (elt) % sz] = true;
+            size_t idx = static_cast<size_t> (f (elt) % sz);
+            if (not fBits_[idx]) {
+                apparentlyNewAddition = true;
+            }
+            fBits_[idx] = true;
+        }
+        fActualAddCalls_++;
+        if (apparentlyNewAddition) {
+            fApparentlyDistinctAddCalls_++;
         }
     }
     template <typename T>
@@ -142,7 +159,7 @@ namespace Stroika::Foundation::Cache {
                 nTrue++;
             }
         }
-        return Statistics{fHashFunctions_.size (), fBits_.size (), nTrue};
+        return Statistics{fHashFunctions_.size (), fBits_.size (), nTrue, fActualAddCalls_, fApparentlyDistinctAddCalls_};
     }
 
 }
