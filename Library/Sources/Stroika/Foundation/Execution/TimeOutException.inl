@@ -24,7 +24,7 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     inline TimeOutException::TimeOutException (error_code ec, const Characters::String& message)
-        : SystemErrorException (ec, message)
+        : SystemErrorException{ec, message}
     {
     }
 

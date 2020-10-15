@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     inline ProgressMonitor::ProgressMonitor (const shared_ptr<Rep_>& rep)
-        : fRep_ (rep)
+        : fRep_{rep}
     {
     }
     inline ProgressMonitor::ProgressRangeType ProgressMonitor::GetProgress () const
@@ -67,21 +67,21 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     inline ProgressMonitor::Updater::Updater ()
-        : fRep_ ()
-        , fFromProg_ (0.0)
-        , fToProg_ (1.0)
+        : fRep_{}
+        , fFromProg_{0.0}
+        , fToProg_{1.0}
     {
     }
     inline ProgressMonitor::Updater::Updater (nullptr_t)
-        : fRep_ ()
-        , fFromProg_ (0.0)
-        , fToProg_ (1.0)
+        : fRep_{}
+        , fFromProg_{0.0}
+        , fToProg_{1.0}
     {
     }
     inline ProgressMonitor::Updater::Updater (const Updater& parentTask, ProgressRangeType fromProg, ProgressRangeType toProg)
-        : fRep_ (parentTask.fRep_)
-        , fFromProg_ (parentTask.fFromProg_ + fromProg * (parentTask.fToProg_ - parentTask.fFromProg_))
-        , fToProg_ (parentTask.fFromProg_ + toProg * (parentTask.fToProg_ - parentTask.fFromProg_))
+        : fRep_{parentTask.fRep_}
+        , fFromProg_{parentTask.fFromProg_ + fromProg * (parentTask.fToProg_ - parentTask.fFromProg_)}
+        , fToProg_{parentTask.fFromProg_ + toProg * (parentTask.fToProg_ - parentTask.fFromProg_)}
     {
         fFromProg_ = Math::PinToSpecialPoint (fFromProg_, parentTask.fFromProg_);
         fToProg_   = Math::PinToSpecialPoint (fToProg_, parentTask.fToProg_);

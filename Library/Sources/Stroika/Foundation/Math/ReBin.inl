@@ -59,17 +59,17 @@ namespace Stroika::Foundation::Math::ReBin {
         Require (bucket < GetBucketCount ());
         X_TYPE kDelta_ = (fXEnd_ - fXStart_) * (static_cast<X_TYPE> (1) / static_cast<X_TYPE> (GetBucketCount ()));
         X_TYPE s       = fXStart_ + (static_cast<X_TYPE> (bucket) * kDelta_);
-        return Range<X_TYPE> (s, s + kDelta_, Traversal::Openness::eClosed, Traversal::Openness::eOpen);
+        return Range<X_TYPE>{s, s + kDelta_, Traversal::Openness::eClosed, Traversal::Openness::eOpen};
     }
     template <typename X_TYPE, typename VALUE_TYPE>
     auto BasicDataDescriptor<X_TYPE, VALUE_TYPE>::GetIntersectingBuckets (const Traversal::Range<XType>& xrange) const -> Containers::Set<BucketIndexType>
     {
         using Traversal::DiscreteRange;
         if (xrange.GetUpperBound () < fXStart_) {
-            return Containers::Set<BucketIndexType> ();
+            return Containers::Set<BucketIndexType>{};
         }
         if (xrange.GetLowerBound () > fXEnd_) {
-            return Containers::Set<BucketIndexType> ();
+            return Containers::Set<BucketIndexType>{};
         }
 
         X_TYPE kDelta_ = (fXEnd_ - fXStart_) * (static_cast<X_TYPE> (1) / static_cast<X_TYPE> (GetBucketCount ()));
@@ -237,8 +237,8 @@ namespace Stroika::Foundation::Math::ReBin {
         using SRC_DATA_DESCRIPTOR = BasicDataDescriptor<X_OFFSET_TYPE, SRC_BUCKET_TYPE>;
         using TRG_DATA_DESCRIPTOR = UpdatableDataDescriptor<X_OFFSET_TYPE, TRG_BUCKET_TYPE>;
 
-        SRC_DATA_DESCRIPTOR srcData (srcStart, srcEnd, 1, 2);
-        TRG_DATA_DESCRIPTOR trgData (trgStart, trgEnd, 1, 2);
+        SRC_DATA_DESCRIPTOR srcData{srcStart, srcEnd, 1, 2};
+        TRG_DATA_DESCRIPTOR trgData{trgStart, trgEnd, 1, 2};
         trgData.clear (); // zero all the target buckets since this is a simple-usage variant and thats typically what will be wanted
         ReBin (srcData, &trgData);
     }

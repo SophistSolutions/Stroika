@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     inline WaitableEvent::WE_::WE_ (ResetType resetType)
-        : fResetType (resetType)
+        : fResetType{resetType}
     {
     }
     inline void WaitableEvent::WE_::Reset ()
@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     inline WaitableEvent::WaitableEvent (ResetType resetType)
-        : fWE_ (resetType)
+        : fWE_{resetType}
     {
     }
     inline void WaitableEvent::Reset ()
