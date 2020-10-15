@@ -38,6 +38,7 @@
 namespace Stroika::Foundation::Traversal {
 
     /**
+     *  \brief A DisjointRange is NOT a range, but a collection of non-overlapping (except at the edges) Ranges. It its BOUNDs (GetBounds) form a Range.
      *
      *  \note   NOT internally threadsafe. To use from multiple threads, use Synchronized<DisjointRange>, or otherwise protect.
      *
@@ -110,8 +111,20 @@ namespace Stroika::Foundation::Traversal {
     public:
         /**
          * if empty, returns empty range()
+         * 
+         * \note the resulting BOUNDS should captures the openness flags from the LHS and RHS bounds
+         *
+         *  // @todo need constexpr check if RangeType gas this CTOR (careful of case when used with DicreteRange)
          */
         nonvirtual RangeType GetBounds () const;
+
+    public:
+        /**
+         *  \brief like GetBounds (), but always returns a closed range
+         *
+         *  // @todo need constexpr check if RangeType gas this CTOR (careful of case when used with DicreteRange)
+         */
+        nonvirtual RangeType Closure () const;
 
 #if __cpp_impl_three_way_comparison >= 201907
     public:

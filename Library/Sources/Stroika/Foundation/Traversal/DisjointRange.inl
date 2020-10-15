@@ -34,6 +34,13 @@ namespace Stroika::Foundation::Traversal {
         for (auto i = start; i != end; ++i) {
             MergeIn_ (*i);
         }
+#if qDebug
+        for (auto i = fSubRanges_.begin (); i != fSubRanges_.end (); ++i) {
+            if (i + 1 != fSubRanges_.end ()) {
+                Ensure (i->GetUpperBound () <= (i + 1)->GetLowerBound ());
+            }
+        }
+#endif
     }
     template <typename T, typename RANGE_TYPE>
     inline auto DisjointRange<T, RANGE_TYPE>::SubRanges () const -> Containers::Sequence<RangeType>
@@ -58,7 +65,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename RANGE_TYPE>
     bool DisjointRange<T, RANGE_TYPE>::Contains (value_type elt) const
     {
-        return static_cast<bool> (fSubRanges_.FindFirstThat ([&elt] (RangeType r) { return r.Contains (elt); }));
+        return static_cast<bool> (fSubRanges_.FindFirstThat ([&elt] (const RangeType& r) { return r.Contains (elt); }));
     }
     template <typename T, typename RANGE_TYPE>
     bool DisjointRange<T, RANGE_TYPE>::Contains (const RangeType& rhs) const
@@ -71,6 +78,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename RANGE_TYPE>
     RANGE_TYPE DisjointRange<T, RANGE_TYPE>::GetBounds () const
     {
+        // NOTE: this code counts on the fact that the subranges are ORDERED
         size_t n = fSubRanges_.size ();
         switch (n) {
             case 0:
@@ -78,7 +86,25 @@ namespace Stroika::Foundation::Traversal {
             case 1:
                 return fSubRanges_[0];
             default:
-                return RangeType (fSubRanges_[0].GetLowerBound (), fSubRanges_.Last ()->GetUpperBound ());
+                // @todo need constexpr check if RangeType gas this CTOR (careful of case when used with DicreteRange)
+                //return RangeType{fSubRanges_[0].GetLowerBound (), fSubRanges_.Last ()->GetUpperBound (), fSubRanges_[0].GetLowerBoundOpenness (), fSubRanges_.Last ()->GetUpperBoundOpenness ()};
+                return RangeType{fSubRanges_[0].GetLowerBound (), fSubRanges_.Last ()->GetUpperBound ()};
+        }
+    }
+    template <typename T, typename RANGE_TYPE>
+    RANGE_TYPE DisjointRange<T, RANGE_TYPE>::Closure () const
+    {
+        // NOTE: this code counts on the fact that the subranges are ORDERED
+        size_t n = fSubRanges_.size ();
+        switch (n) {
+            case 0:
+                return RangeType{};
+            case 1:
+                return fSubRanges_[0];
+            default:
+                // @todo need constexpr check if RangeType gas this CTOR (careful of case when used with DicreteRange)
+                //return RangeType{fSubRanges_[0].GetLowerBound (), fSubRanges_.Last ()->GetUpperBound (), Openness::eClosed, Openness::eClosed};
+                return RangeType{fSubRanges_[0].GetLowerBound (), fSubRanges_.Last ()->GetUpperBound ()};
         }
     }
     template <typename T, typename RANGE_TYPE>
@@ -130,7 +156,8 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename RANGE_TYPE>
     auto DisjointRange<T, RANGE_TYPE>::UnionBounds (const DisjointRange& rhs) const -> RangeType
     {
-        // @todo could do more efficiently
+        // @todo could do more efficiently (since 1-dimensional and subranges ordered, just need to min (lhs of each)
+        // and max (rhs of each (and grab closedness of edge captured)
         return Union (rhs).GetBounds ();
     }
     template <typename T, typename RANGE_TYPE>
