@@ -20,6 +20,9 @@ SHELL=/bin/bash
 
 ECHO_BUILD_LINES?=0
 
+# Only applies to run-tests
+export TEST_FAILURES_CAUSE_FAILED_MAKE?=1
+
 
 .DEFAULT_GOAL := help
 

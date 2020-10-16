@@ -19,7 +19,7 @@ EXEPATTERN=../Builds/$(CONFIGURATION)/Tests/${BASEEXEPATTERN}
 
 
 # Only applies to run-tests
-TEST_FAILURES_CAUSE_FAILED_MAKE?=1
+export TEST_FAILURES_CAUSE_FAILED_MAKE?=1
 
 #SSH_REMOTE_WARNINGS_OFF=-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
 SSH_REMOTE_WARNINGS_OFF= -o StrictHostKeyChecking=no
