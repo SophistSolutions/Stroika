@@ -163,7 +163,10 @@ namespace Stroika::Foundation::Traversal {
      *  to ask for the start or end of an empty range. Empty ranges contain no points.
      *
      *  Since a range is half/open/closed by default, this means that
-     *      Range<int> (1,1) == Range<int> (3,3) would be true, since the are both empty.
+     *      Range<int>{1,1, Openness::eOpen, Openness::eOpen} == Range<int>{3,3, Openness::eOpen, Openness::eOpen} 
+     *  would be true, since the are both empty. but
+     *      Range<int>{1,1, Openness::eClosed, Openness::eClosed} != Range<int>{3,3, Openness::eClosed, Openness::eClosed} 
+     *  would be true, since neither is empty and they contain different points (1 vs 3).
      *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
@@ -209,9 +212,9 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \par Example Usage
          *      \code
-         *          Range<double> r1 (3, 5);
+         *          Range<double> r1{3, 5};
          *          VerifyTestResult (r1.Contains (3) or not r1.Contains (3));  // depends on TRAITS openness
-         *          Range<double> r2 { 3, 5, Openness::eOpen, Openness::eOpen };
+         *          Range<double> r2{ 3, 5, Openness::eOpen, Openness::eOpen };
          *          VerifyTestResult (not r2.Contains (3));
          *      \endcode
          */
@@ -397,8 +400,8 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \par Example Usage
          *      \code
-         *          Assert (Range<int> (3, 4).ToString () == L"[3 ... 4)");
-         *          Assert (Range<int> (3, 4).ToString ([] (int n) { return Characters::Format (L"%d", n); }) == L"[3 ... 4)");
+         *          Assert (Range<int>{3, 4}.ToString () == L"[3 ... 4)");
+         *          Assert (Range<int>{3, 4}.ToString ([] (int n) { return Characters::Format (L"%d", n); }) == L"[3 ... 4)");
          *      \endcode
          *
          *  @see Characters::ToString ();

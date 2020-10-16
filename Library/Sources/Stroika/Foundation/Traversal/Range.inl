@@ -61,30 +61,30 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T, typename TRAITS>
     constexpr Range<T, TRAITS>::Range ()
-        : Range (TRAITS::kLowerBoundOpenness, TRAITS::kUpperBoundOpenness)
+        : Range{TRAITS::kLowerBoundOpenness, TRAITS::kUpperBoundOpenness}
     {
         Ensure (empty ());
     }
     template <typename T, typename TRAITS>
     template <typename T2, typename TRAITS2>
     constexpr Range<T, TRAITS>::Range (const Range<T2, TRAITS>& src)
-        : Range (src.GetLowerBound (), src.GetUpperBound (), src.GetLowerBoundOpenness (), src.GetUpperBoundOpenness ())
+        : Range{src.GetLowerBound (), src.GetUpperBound (), src.GetLowerBoundOpenness (), src.GetUpperBoundOpenness ()}
     {
     }
     template <typename T, typename TRAITS>
     constexpr Range<T, TRAITS>::Range (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end)
-        : Range (begin, end, TRAITS::kLowerBoundOpenness, TRAITS::kUpperBoundOpenness)
+        : Range{begin, end, TRAITS::kLowerBoundOpenness, TRAITS::kUpperBoundOpenness}
     {
     }
     template <typename T, typename TRAITS>
     constexpr Range<T, TRAITS>::Range (const optional<T>& begin, const optional<T>& end)
-        : Range (begin.has_value () ? *begin : TRAITS::kLowerBound, end.has_value () ? *end : TRAITS::kUpperBound, TRAITS::kLowerBoundOpenness, TRAITS::kUpperBoundOpenness)
+        : Range{begin.has_value () ? *begin : TRAITS::kLowerBound, end.has_value () ? *end : TRAITS::kUpperBound, TRAITS::kLowerBoundOpenness, TRAITS::kUpperBoundOpenness}
     {
     }
     template <typename T, typename TRAITS>
     constexpr Range<T, TRAITS>::Range (Openness lhsOpen, Openness rhsOpen)
-        : fBegin_ (TRAITS::kUpperBound)
-        , fEnd_ (TRAITS::kLowerBound)
+        : fBegin_{TRAITS::kUpperBound}
+        , fEnd_{TRAITS::kLowerBound}
         , fBeginOpenness_ (lhsOpen)
         , fEndOpenness_ (rhsOpen)
     {
@@ -92,10 +92,10 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T, typename TRAITS>
     constexpr Range<T, TRAITS>::Range (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end, Openness lhsOpen, Openness rhsOpen)
-        : fBegin_ (begin)
-        , fEnd_ (end)
-        , fBeginOpenness_ (lhsOpen)
-        , fEndOpenness_ (rhsOpen)
+        : fBegin_{begin}
+        , fEnd_{end}
+        , fBeginOpenness_{lhsOpen}
+        , fEndOpenness_{rhsOpen}
     {
         Require (TRAITS::kLowerBound <= TRAITS::kUpperBound); // always required for class
         Require (TRAITS::kLowerBound <= begin);
@@ -104,7 +104,7 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T, typename TRAITS>
     constexpr Range<T, TRAITS>::Range (const optional<T>& begin, const optional<T>& end, Openness lhsOpen, Openness rhsOpen)
-        : Range (begin.has_value () ? *begin : TRAITS::kLowerBound, end.has_value () ? *end : TRAITS::kUpperBound, lhsOpen, rhsOpen)
+        : Range{begin.has_value () ? *begin : TRAITS::kLowerBound, end.has_value () ? *end : TRAITS::kUpperBound, lhsOpen, rhsOpen}
     {
     }
     template <typename T, typename TRAITS>

@@ -66,6 +66,24 @@ namespace {
             VerifyTestResult (x.GetLowerBound () == -3);
             VerifyTestResult (x.GetUpperBound () == 100);
         }
+        {
+            VerifyTestResult ((Range<int>{1, 1, Openness::eOpen, Openness::eOpen} == Range<int>{3, 3, Openness::eOpen, Openness::eOpen}));
+            VerifyTestResult ((Range<int>{1, 1, Openness::eClosed, Openness::eClosed} != Range<int>{3, 3, Openness::eClosed, Openness::eClosed}));
+        }
+        {
+            auto r1  = Range<int>{3, 6};
+            auto r2l = 2 * r1;
+            auto r2r = r1 * 2;
+            VerifyTestResult ((r2l == Range<int>{6, 12}));
+            VerifyTestResult ((r2r == Range<int>{6, 12}));
+        }
+        {
+            auto r1  = Range<int>{3, 6};
+            auto r2l = 2 + r1;
+            auto r2r = r1 + 2;
+            VerifyTestResult ((r2l == Range<int>{5, 8}));
+            VerifyTestResult ((r2r == Range<int>{5, 8}));
+        }
     }
 
     void Test_2_BasicDiscreteRangeIteration_ ()
