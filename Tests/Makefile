@@ -18,6 +18,9 @@ BASEEXEPATTERN=Test$$i${EXE_SUFFIX}
 EXEPATTERN=../Builds/$(CONFIGURATION)/Tests/${BASEEXEPATTERN}
 
 
+# Only applies to run-tests
+TEST_FAILURES_CAUSE_FAILED_MAKE?=1
+
 #SSH_REMOTE_WARNINGS_OFF=-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
 SSH_REMOTE_WARNINGS_OFF= -o StrictHostKeyChecking=no
 
@@ -200,13 +203,16 @@ else
     if [ "$(CrossCompiling)" = "true" ] && [ "$(REMOTE)" = "" ] ; then\
            echo "$$PREFIX" "Skiping cuz Cross-Compiling and REMOTE= not specified...";\
 	else\
+		FAILED=0;\
 		for i in $(TESTS); do\
 			TESTNAME=`ScriptsLib/PrintTestName $$i`;\
 			$(RUNTEST_REMOTECOPYSETUP);\
 			$(RUNTEST_REMOTECOPYSETUP2);\
 			TIMESTAMP=`date +%s`;\
-			EXERESULT="CRASHED";\
 			EXERESULT=`$(RUNTEST_EXE_RUN)`;\
+			if [ "$$EXERESULT" != "Succeeded" ]; then\
+			    FAILED=1;\
+			fi;\
 			if [ -e PerformanceDump.txt ]; then\
 			  mv PerformanceDump.txt ../Builds/$(CONFIGURATION)/PerformanceDump.txt 2>/dev/null;\
 			fi;\
@@ -217,6 +223,14 @@ else
 			    DIFFTIME=$$DIFFTIME" ";\
 			fi;\
 			echo "$$PREFIX[$$EXERESULT]  ($$DIFFTIME seconds)  [$$i]  $$TESTNAME  ($(RUNTEST_EXE_RUN_PRINTLINE))";\
-		done\
-        fi
+		done;\
+		if [ "$$FAILED" -ne 0 ]; then \
+			if [ "$$TEST_FAILURES_CAUSE_FAILED_MAKE" -ne 0 ]; then\
+				echo "$$PREFIX" "***SOME TESTS FAILED***";\
+				exit 1;\
+			else\
+				echo "$$PREFIX" "***SOME TESTS FAILED*** (exit suppressed by TEST_FAILURES_CAUSE_FAILED_MAKE)";\
+			fi;\
+		fi\
+    fi
 endif

@@ -68,6 +68,8 @@ help:
 	@$(ECHO) "    ECHO_BUILD_LINES=1           -    Causes make lines to be echoed which can help makefile debugging"
 	@$(ECHO) "    MAKE_INDENT_LEVEL=0          -    Helpful to neaten formatting when multiple levels of makes calling Stroika make"
 	@$(ECHO) "    QUICK_BUILD=1                -    Defaults=0, but if =1, skip some optional build steps (like openssl tests, CURRENT folders; used for some CI testing)"
+	@$(ECHO) "    TEST_FAILURES_CAUSE_FAILED_MAKE=0"
+	@$(ECHO) "                                      only applies to make run-tests, and prevents test failures from stopping make (like make -k on run-tests)"
 
 
 ifeq ($(CONFIGURATION),)
