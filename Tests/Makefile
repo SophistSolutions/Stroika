@@ -226,10 +226,10 @@ else
 		done;\
 		if [ "$$FAILED" -ne 0 ]; then \
 			if [ "$$TEST_FAILURES_CAUSE_FAILED_MAKE" -ne 0 ]; then\
-				echo "$$PREFIX" "***SOME TESTS FAILED***";\
+				echo "$$PREFIX" "   ***SOME TESTS FAILED***";\
 				exit 1;\
 			else\
-				echo "$$PREFIX" "***SOME TESTS FAILED*** (exit suppressed by TEST_FAILURES_CAUSE_FAILED_MAKE)";\
+				echo "$$PREFIX" "   ***SOME TESTS FAILED*** (exit suppressed by TEST_FAILURES_CAUSE_FAILED_MAKE)";\
 			fi;\
 		fi\
     fi
