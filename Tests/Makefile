@@ -210,6 +210,7 @@ else
 			$(RUNTEST_REMOTECOPYSETUP2);\
 			TIMESTAMP=`date +%s`;\
 			EXERESULT=`$(RUNTEST_EXE_RUN)`;\
+			EXERESULT=`echo $$EXERESULT | tr -d '\n' | tr -d '\r'`;\
 			if [ "$$EXERESULT" != "Succeeded" ]; then\
 			    FAILED=1;\
 			fi;\
@@ -217,14 +218,13 @@ else
 			  mv PerformanceDump.txt ../Builds/$(CONFIGURATION)/PerformanceDump.txt 2>/dev/null;\
 			fi;\
 			TIMESTAMP2=`date +%s`;\
-			EXERESULT=`echo $$EXERESULT | tr -d '\n' | tr -d '\r'`;\
 			DIFFTIME=`expr $$TIMESTAMP2 - $$TIMESTAMP`;\
 			if [ "$$DIFFTIME" -lt "10" ]; then\
 			    DIFFTIME=$$DIFFTIME" ";\
 			fi;\
 			echo "$$PREFIX[$$EXERESULT]  ($$DIFFTIME seconds)  [$$i]  $$TESTNAME  ($(RUNTEST_EXE_RUN_PRINTLINE))";\
 		done;\
-		if [ "$$FAILED" -ne 0 ]; then \
+		if [ "$$FAILED" -ne 0 ]; then\
 			if [ "$$TEST_FAILURES_CAUSE_FAILED_MAKE" -ne 0 ]; then\
 				echo "$$PREFIX" "   ***SOME TESTS FAILED***";\
 				exit 1;\
