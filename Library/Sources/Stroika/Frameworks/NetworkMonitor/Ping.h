@@ -96,6 +96,12 @@ namespace Stroika::Frameworks::NetworkMonitor::Ping {
 
     public:
         /**
+         *  \brief run the Ping () operation one time, and return the (timing) results.
+         * 
+         *  \note - the argument 'ttl' is really a number of hops (perhaps should change name). But
+         *        its typically referred to as a TTL because its implemented with a TTL field in the IP
+         *        header
+         *
          *  Can throw:
          *      TimeoutException
          *      InternetProtocol::ICMP::DestinationUnreachableException
