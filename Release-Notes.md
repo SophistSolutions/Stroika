@@ -27,6 +27,8 @@ especially those they need to be aware of when upgrading.
       - Decent implementation, with automatically derived hash functions (or explicltly specified)
       - Good support for autoconfigure number of bits
       - Support for stats reporting/regression tests, and docs/examples (e.g. GetFractionFull ()), manage false positive rates and test limits
+      - use new Cryptography::Digest::HashCombine and Cryptography::Digest::Hash\<T>
+        by default in BloomFilter due to complete unsuitablity of std::hash<> from libstdc++
 
   - Foundation::Characters
 
@@ -46,25 +48,16 @@ especially those they need to be aware of when upgrading.
 
   - Foundation::Cryptography
 
-    - new Cryptography::Digest::Hash structure mimicing std::hash<>
-    - use new Cryptography::Digest::HashCombine and Cryptography::Digest::Hash<T>
-      by default in BloomFilter due to complete unsuitabliyt of std::hash<> from libstdc++
-    - deprecated Digester<>::ComputeDigest and instead make Digester a function-object - so invoke
-      with (overloaded) operator()
-    - Added a bunch of hash<> specializations for differnt types, like String, InternetAddress, URI etc. Removed one from Hash definition (so done in T module not Hash module), and updated BloomFilter test to use that default as well
-    - moved struct Hash<Characters::String> specialization to String module, and fixed impl to be (hopefully) better/faster)
-    - marked Cryptography::Hash functions and DEPRECATED and replaced wtih Crytography::Digest::Hash functor: do specialization of that new guy for InternetAddress (more soon) and magic cleanups to new hash functor code mimicing API/functionalitiy we had in old API (seeding, and supporting differnt typest o be mapped as BLOB - basically merging the two apis
-    - Use struct instead of class for hash/Hash<>;
-      better deprecation; more support for specailizations of new Hash<>;
-      various cleanups / docs of new Hash code
+    - Cryptography::Hash DEPRECATED (use Cryptography::Digest::Hash)
+    - new Cryptography::Digest::Hash
+      - mimicing std::hash<>
+      - deprecated Digester<>::ComputeDigest and instead make Digester a function-object - so invoke with (overloaded) operator()
+      - refactored some of the Hash<> return converstion code into ConvertResult in Digest namepsace
+        - Improved Crypto/Digest ConvertResult code so it handles cases like uint32_t <-> byte-array, and added regression tests to that effect (works with direct digester use or hash template)
     - some of hash / digest values depend on sizeof wchar_t and endianness, so tried to update hardwired values in tests to accomodate this
-    - refactored some of the Hash<> return converstion code into ConvertResult in Digest namepsace
-    - Improved Crypto/Digest ConvertResult code so it handles cases like uint32_t <-> byte-array, and added regression tests to that effect (works with direct digester use or hash template)
-    - get rid of several specailizations of Hash<> and now isntead specialize DefaultSerializer
-    - cleanup docs and remove no longer needed Hash<> specializations (cuz done through
-      DefaultSerializer)
     - deprecated DigestDataToString - can use Digester or Hash directly specifying String result now - and related fixes to Format<> template for digests
-    - Factored new class/module DefaultSerializer\<T> out of the Hash<> code and use it as extra paraemter to Hash template: this will allow more narrow specialization - instead of specailaing the Hash code - we just speacialize the Serializer code in classes that need special serialization (like String, INternetAddress etc)
+    - Factored new class/module DefaultSerializer\<T> out of the Hash<> code and use it as extra paraemter to Hash template: this will allow more narrow specialization - instead of specailaing the Hash code - we just speacialize the Serializer code in classes that need special serialization (like String, InternetAddress etc)
+      - remove no longer needed Hash<> specializations (cuz done through DefaultSerializer), and did String, InternetAddress etc specialiations on new DefaultSerializer<>
 
   - Foundation::Execution
 
