@@ -9,7 +9,7 @@ especially those they need to be aware of when upgrading.
 
 ---
 
-### 2.1b6 {2020-10-19x}
+### 2.1b6 {2020-10-19}
 
 #### TLDR
 
