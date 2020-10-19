@@ -9,6 +9,105 @@ especially those they need to be aware of when upgrading.
 
 ---
 
+### 2.1b6 {2020-10-19x}
+
+#### TLDR
+
+- Bloom Filter implementation
+- Improved Cryptographic Digest library / hash support
+- Fixed rebuild all makefile bug
+
+#### Details
+
+- Library
+
+  - Foundation::Cache
+
+    - Bloom Filter
+      - Decent implementation, with automatically derived hash functions (or explicltly specified)
+      - Good support for autoconfigure number of bits
+      - Support for stats reporting/regression tests, and docs/examples (e.g. GetFractionFull ()), manage false positive rates and test limits
+
+  - Foundation::Characters
+
+    - Added overload for ToString() function for dec/hex parameter
+      **_not backeard compat (minor)_** ToString for unsinged int types now shows as dec instead of hex (except still hex for bytes)
+
+  - Foundation::Common
+
+    - Compare
+      - replaced Common::compare_three_way with Common::ThreeWayComparer (since I noticed funny choice for where templates go in C++20 compare_three_way ThreeWayComparer is still useful - I think); and cleanup various uses (no need for deprecation warnings cuz never really used and primarily encourging people to use ThreeWayCompare for now and std::compare_three_way{} (lhs, rhs) starting in C++20
+    - GUID
+      - for GUID class - static assert size is 16; and add iterators so can be treated as container of bytes
+
+  - Foundation::Configuration
+
+    - Endian: comments and added define for x86 Endian value
+
+  - Foundation::Cryptography
+
+    - new Cryptography::Digest::Hash structure mimicing std::hash<>
+    - use new Cryptography::Digest::HashCombine and Cryptography::Digest::Hash<T>
+      by default in BloomFilter due to complete unsuitabliyt of std::hash<> from libstdc++
+    - deprecated Digester<>::ComputeDigest and instead make Digester a function-object - so invoke
+      with (overloaded) operator()
+    - Added a bunch of hash<> specializations for differnt types, like String, InternetAddress, URI etc. Removed one from Hash definition (so done in T module not Hash module), and updated BloomFilter test to use that default as well
+    - moved struct Hash<Characters::String> specialization to String module, and fixed impl to be (hopefully) better/faster)
+    - marked Cryptography::Hash functions and DEPRECATED and replaced wtih Crytography::Digest::Hash functor: do specialization of that new guy for InternetAddress (more soon) and magic cleanups to new hash functor code mimicing API/functionalitiy we had in old API (seeding, and supporting differnt typest o be mapped as BLOB - basically merging the two apis
+    - Use struct instead of class for hash/Hash<>;
+      better deprecation; more support for specailizations of new Hash<>;
+      various cleanups / docs of new Hash code
+    - some of hash / digest values depend on sizeof wchar_t and endianness, so tried to update hardwired values in tests to accomodate this
+    - refactored some of the Hash<> return converstion code into ConvertResult in Digest namepsace
+    - Improved Crypto/Digest ConvertResult code so it handles cases like uint32_t <-> byte-array, and added regression tests to that effect (works with direct digester use or hash template)
+    - get rid of several specailizations of Hash<> and now isntead specialize DefaultSerializer
+    - cleanup docs and remove no longer needed Hash<> specializations (cuz done through
+      DefaultSerializer)
+    - deprecated DigestDataToString - can use Digester or Hash directly specifying String result now - and related fixes to Format<> template for digests
+    - Factored new class/module DefaultSerializer\<T> out of the Hash<> code and use it as extra paraemter to Hash template: this will allow more narrow specialization - instead of specailaing the Hash code - we just speacialize the Serializer code in classes that need special serialization (like String, INternetAddress etc)
+
+  - Foundation::Execution
+
+    - re-enabled supression for https://stroika.atlassian.net/browse/STK-677 - signal:Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler\_(int) - ubuntu 1910 sporadic issue
+
+  - Foundation::Traversal
+    - new Iterable\<T\>Repeat () function as well as regression tests
+    - Added Range\<T>::Times() support, and operator\* and operator+ overloads for Offset/Times
+    - Range\<T>
+      - Range (etc) docs, regression tests, and cleanups
+      - new DisjointRange<T, RANGE_TYPE>::Closure ()
+
+- Compilers Used/Supported
+
+  - windows docker test - VS_16_7_5
+  - support gcc 10.2
+  - Bug defines
+    - qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy condition and regression test and workaround
+  - some fixes for newer version of g++-10 c++20 support comparison operator more picky
+    fixed **cpp_lib_three_way_comparison bug with **cpp_lib_three_way_comparison >= 201907
+
+- Build System
+
+  - Fixed bug with Foundation makefile that caused 'REBUILD' command from visual studio to fail, due to creating a correupted cached-list-objs
+  - new make feature - TEST_FAILURES_CAUSE_FAILED_MAKE=0/1 (default 1 new behavior) so make run-tests stops when we get a failure
+  - optional QUICK_BUILD=1 makefile parameter to make which should speed some builds
+
+- TravisCI
+
+  - fix passing MAKEFLAGS to docker container
+
+- Tests
+
+  - renamed regression tests to add 'Common' to the list of tests, and moved test for qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy into that new regression test file
+
+- ThirdPartyComponents
+  - openssl
+    - tested 3.0 alpha7
+  - libcurl
+    Use 7.73.0
+
+---
+
 ### 2.1b5 {2020-09-12}
 
 #### TLDR
