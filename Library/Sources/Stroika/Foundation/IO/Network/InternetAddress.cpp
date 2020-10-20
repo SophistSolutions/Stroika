@@ -474,10 +474,10 @@ size_t std::hash<Stroika::Foundation::IO::Network::InternetAddress>::operator() 
 
 /*
  ********************************************************************************
- ******** Cryptography::DefaultSerializer<IO::Network::InternetAddress> *********
+ ******** DataExchange::DefaultSerializer<IO::Network::InternetAddress> *********
  ********************************************************************************
  */
-Memory::BLOB Cryptography::DefaultSerializer<IO::Network::InternetAddress>::operator() (const IO::Network::InternetAddress& arg) const
+Memory::BLOB DataExchange::DefaultSerializer<IO::Network::InternetAddress>::operator() (const IO::Network::InternetAddress& arg) const
 {
     return DefaultSerializer<Characters::String>{}(arg.As<Characters::String> ());
 }

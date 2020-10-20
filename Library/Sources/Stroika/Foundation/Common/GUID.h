@@ -103,7 +103,7 @@ namespace Stroika::Foundation::Memory {
     class BLOB; // Forward declare to avoid mutual include issues
 }
 
-namespace Stroika::Foundation::Cryptography {
+namespace Stroika::Foundation::DataExchange {
     template <typename T>
     struct DefaultSerializer; // Forward declare to avoid mutual include issues
     template <>

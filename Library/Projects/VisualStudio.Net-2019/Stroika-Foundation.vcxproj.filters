@@ -2031,8 +2031,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Hash.h">
       <Filter>Sources\Cryptography\Digest</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\DefaultSerializer.h">
-      <Filter>Sources\Cryptography</Filter>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\DefaultSerializer.h">
+      <Filter>Sources\DataExchange</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3324,8 +3324,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Hash.inl">
       <Filter>Sources\Cryptography\Digest</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\DefaultSerializer.inl">
-      <Filter>Sources\Cryptography</Filter>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\DefaultSerializer.inl">
+      <Filter>Sources\DataExchange</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

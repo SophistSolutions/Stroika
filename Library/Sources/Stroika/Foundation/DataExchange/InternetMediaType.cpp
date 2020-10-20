@@ -150,10 +150,10 @@ size_t std::hash<Stroika::Foundation::DataExchange::InternetMediaType>::operator
 
 /*
  ********************************************************************************
- ****** Cryptography::DefaultSerializer<DataExchange::InternetMediaType> ********
+ ****** DataExchange::DefaultSerializer<DataExchange::InternetMediaType> ********
  ********************************************************************************
  */
-Memory::BLOB Cryptography::DefaultSerializer<InternetMediaType>::operator() (const InternetMediaType& arg) const
+Memory::BLOB DataExchange::DefaultSerializer<InternetMediaType>::operator() (const InternetMediaType& arg) const
 {
     return DefaultSerializer<Characters::String>{}(arg.As<Characters::String> ());
 }

@@ -258,6 +258,7 @@ namespace {
             Debug::TraceContextBumper ctx{"DigestAltResults::DoRegressionTests_"};
             // Excercise uses of ConvertResult()
             {
+                using namespace DataExchange;
                 using namespace IO::Network;
                 auto                 digesterWithDefaultResult  = Digester<Digest::Algorithm::SuperFastHash>{};
                 auto                 digesterWithResult_uint8_t = Digester<Digest::Algorithm::SuperFastHash, uint8_t>{};
@@ -293,6 +294,7 @@ namespace {
 
             {
                 // copy array to smaller type
+                using namespace DataExchange;
                 using namespace IO::Network;
                 auto         digesterWithDefaultResult  = Digester<Digest::Algorithm::MD5>{};
                 auto         digesterWithResult_uint8_t = Digester<Digest::Algorithm::MD5, uint8_t>{};

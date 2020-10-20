@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2020.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Cryptography_DefaultSerializer_inl_
-#define _Stroika_Foundation_Cryptography_DefaultSerializer_inl_ 1
+#ifndef _Stroika_Foundation_DataExchange_DefaultSerializer_inl_
+#define _Stroika_Foundation_DataExchange_DefaultSerializer_inl_ 1
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
@@ -10,7 +10,7 @@
  */
 #include <type_traits>
 
-namespace Stroika::Foundation::Cryptography {
+namespace Stroika::Foundation::DataExchange {
 
     namespace Private_ {
         using std::byte;
@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Cryptography {
 
     /*
      ********************************************************************************
-     ************************ Cryptography::DefaultSerializer<T> ********************
+     ************************ DataExchange::DefaultSerializer<T> ********************
      ********************************************************************************
      */
     template <typename T>
@@ -51,4 +51,4 @@ namespace Stroika::Foundation::Cryptography {
 
 }
 
-#endif /*_Stroika_Foundation_Cryptography_DefaultSerializer_inl_*/
+#endif /*_Stroika_Foundation_DataExchange_DefaultSerializer_inl_*/

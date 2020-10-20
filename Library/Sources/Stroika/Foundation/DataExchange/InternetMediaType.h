@@ -8,8 +8,8 @@
 
 #include "../Characters/String.h"
 #include "../Containers/Mapping.h"
-#include "../Cryptography/DefaultSerializer.h"
 #include "../DataExchange/Atom.h"
+#include "../DataExchange/DefaultSerializer.h"
 
 /**
  *  \file
@@ -211,7 +211,7 @@ namespace std {
         size_t operator() (const Stroika::Foundation::DataExchange::InternetMediaType& arg) const;
     };
 }
-namespace Stroika::Foundation::Cryptography {
+namespace Stroika::Foundation::DataExchange {
     template <>
     struct DefaultSerializer<Stroika::Foundation::DataExchange::InternetMediaType> {
         Memory::BLOB operator() (const Stroika::Foundation::DataExchange::InternetMediaType& arg) const;

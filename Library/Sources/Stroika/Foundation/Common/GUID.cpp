@@ -7,8 +7,8 @@
 #include <random>
 
 #include "../Characters/Format.h"
-#include "../Cryptography/DefaultSerializer.h"
 #include "../DataExchange/CheckedConverter.h"
+#include "../DataExchange/DefaultSerializer.h"
 #include "../Memory/BLOB.h"
 
 #include "GUID.h"
@@ -79,10 +79,10 @@ Common::GUID Common::GUID::GenerateNew ()
 
 /*
  ********************************************************************************
- ************** Cryptography::DefaultSerializer<Common::GUID> *******************
+ ************** DataExchange::DefaultSerializer<Common::GUID> *******************
  ********************************************************************************
  */
-Memory::BLOB Cryptography::DefaultSerializer<Common::GUID>::operator() (const Common::GUID& arg) const
+Memory::BLOB DataExchange::DefaultSerializer<Common::GUID>::operator() (const Common::GUID& arg) const
 {
-    return Memory::BLOB (arg.begin (), arg.end ());
+    return Memory::BLOB{arg.begin (), arg.end ()};
 }

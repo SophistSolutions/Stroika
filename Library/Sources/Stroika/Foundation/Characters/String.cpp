@@ -1363,10 +1363,10 @@ size_t std::hash<String>::operator() (const String& arg) const
 
 /*
  ********************************************************************************
- ******************** Cryptography::DefaultSerializer<String> *******************
+ ******************** DataExchange::DefaultSerializer<String> *******************
  ********************************************************************************
  */
-Memory::BLOB Cryptography::DefaultSerializer<String>::operator() (const String& arg) const
+Memory::BLOB DataExchange::DefaultSerializer<String>::operator() (const String& arg) const
 {
     // NOTE: DefaultSerializer<String> MAY produce different byte patterns depending on sizeof (wchar_t)
     // We could avoid this by converting to UTF before creating the BLOB, but that would be slower and

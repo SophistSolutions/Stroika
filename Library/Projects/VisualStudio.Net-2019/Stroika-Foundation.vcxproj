@@ -411,7 +411,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Stack.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\Compare.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\Utilities.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\DefaultSerializer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\CRC32.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\Jenkins.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\MD5.h" />
@@ -443,6 +442,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\CheckedConverter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Reader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Zip\Reader.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\DefaultSerializer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaType.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaTypeRegistry.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\ObjectVariantMapper.h" />
@@ -821,7 +821,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\Utilities.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\TODO.md" />
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\DefaultSerializer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\CRC32.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\Jenkins.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\Makefile" />
@@ -860,6 +859,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Reader.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Zip\Makefile" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\DefaultSerializer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaType.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaTypeRegistry.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Makefile" />

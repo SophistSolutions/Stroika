@@ -24,7 +24,7 @@
 
 #include "../../Characters/String.h"
 #include "../../Configuration/Common.h"
-#include "../../Cryptography/DefaultSerializer.h"
+#include "../../DataExchange/DefaultSerializer.h"
 #include "../../Traversal/Iterable.h"
 
 #include "InternetProtocol/IP.h"
@@ -432,7 +432,7 @@ namespace std {
         size_t operator() (const Stroika::Foundation::IO::Network::InternetAddress& arg) const;
     };
 }
-namespace Stroika::Foundation::Cryptography {
+namespace Stroika::Foundation::DataExchange {
     template <>
     struct DefaultSerializer<Stroika::Foundation::IO::Network::InternetAddress> {
         Memory::BLOB operator() (const Stroika::Foundation::IO::Network::InternetAddress& arg) const;

@@ -9,9 +9,9 @@
 #include <cstdint>
 
 #include "../../Characters/String.h"
+#include "../../DataExchange/DefaultSerializer.h"
 #include "../../Memory/BLOB.h"
 
-#include "../DefaultSerializer.h"
 #include "Digester.h"
 
 #include "Algorithm/SuperFastHash.h" // for default algorithm
@@ -148,7 +148,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *      AND see docs on DefaultSerializer<> for how to explicitly specialize it for a given type (often better than passing
      *      an explicit serializer as in this example.
      */
-    template <typename T, typename DIGESTER = DefaultHashDigester, typename HASH_RETURN_TYPE = typename DIGESTER::ReturnType, typename SERIALIZER = DefaultSerializer<T>>
+    template <typename T, typename DIGESTER = DefaultHashDigester, typename HASH_RETURN_TYPE = typename DIGESTER::ReturnType, typename SERIALIZER = DataExchange::DefaultSerializer<T>>
     struct Hash {
         /**
          *  Seed parameter to the hash 'starts it off' in some unique state so that computed hashes will all take that
