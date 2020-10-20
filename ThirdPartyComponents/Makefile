@@ -208,9 +208,9 @@ endif
 
 clean clobber:
 ifeq ($(CONFIGURATION),)
-	@../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Stroika/ThirdPartyComponents $(call FUNCTION_CAPITALIZE_WORD,$@):"
+	@../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Stroika/ThirdPartyComponents $(call FUNCTION_CAPITALIZE_WORD,$@) ... "
 else
-	@../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Stroika/ThirdPartyComponents $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)}:"
+	@../ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Stroika/ThirdPartyComponents $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)} ... "
 endif
 	@$(MAKE) --directory ActivePerl --silent $@
 	@$(MAKE) --directory boost --silent $@
@@ -221,3 +221,4 @@ endif
 	@$(MAKE) --directory Xerces --silent $@
 	@$(MAKE) --directory WIX --silent $@
 	@$(MAKE) --directory zlib --silent $@
+	@$(ECHO) done

@@ -116,9 +116,9 @@ ifeq ($(CONFIGURATION),)
 	@ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika $(call FUNCTION_CAPITALIZE_WORD,$@):"
 ifeq ($(CONFIGURATION_TAGS),)
 	@#for clobber, quickly delete all interesting stuff (if no args so unrestricted) and in third party deletes stuff like 'CURRENT' folders
+	@rm -rf IntermediateFiles/*
 	@if [ "$@" == "clobber" ] ; then \
-		rm -rf IntermediateFiles/* Builds/*;\
-		$(MAKE) --directory ThirdPartyComponents --no-print-directory $@ CONFIGURATION= MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
+		$(MAKE) --directory ThirdPartyComponents --no-print-directory clobber CONFIGURATION= MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	fi
 endif
 	@for i in $(APPLY_CONFIGS) ; do\
@@ -127,6 +127,10 @@ endif
 else
 	@ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)}:"
+	@rm -rf IntermediateFiles/$(CONFIGURATION)
+	@if [ "$@" == "clean" ] ; then \
+		rm -rf Builds/$(CONFIGURATION);\
+	fi
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 	@$(MAKE) --directory Library --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 	@$(MAKE) --directory Tools --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
