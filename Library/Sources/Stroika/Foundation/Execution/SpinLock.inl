@@ -19,7 +19,7 @@ namespace Stroika::Foundation::Execution {
      ******************************** Execution::SpinLock ***************************
      ********************************************************************************
      */
-    inline SpinLock::SpinLock (BarrierFlag barrier)
+    inline SpinLock::SpinLock (BarrierType barrier)
         : fBarrierFlag_{barrier}
     {
 #if qStroika_FeatureSupported_Valgrind
@@ -62,10 +62,10 @@ namespace Stroika::Foundation::Execution {
              *  See https://stroika.atlassian.net/browse/STK-494 for notes on why this is right (using eReleaseAcquire/memory_order_acquire)
              */
             switch (fBarrierFlag_) {
-                case BarrierFlag::eReleaseAcquire:
+                case BarrierType::eReleaseAcquire:
                     atomic_thread_fence (memory_order_acquire);
                     break;
-                case BarrierFlag::eMemoryTotalOrder:
+                case BarrierType::eMemoryTotalOrder:
                     atomic_thread_fence (memory_order_seq_cst);
                     break;
                 default:
@@ -85,10 +85,10 @@ namespace Stroika::Foundation::Execution {
     {
         // See notes in try_lock () for cooresponding thread_fence calls()
         switch (fBarrierFlag_) {
-            case BarrierFlag::eReleaseAcquire:
+            case BarrierType::eReleaseAcquire:
                 atomic_thread_fence (memory_order_release);
                 break;
-            case BarrierFlag::eMemoryTotalOrder:
+            case BarrierType::eMemoryTotalOrder:
                 atomic_thread_fence (memory_order_seq_cst);
                 break;
             default:

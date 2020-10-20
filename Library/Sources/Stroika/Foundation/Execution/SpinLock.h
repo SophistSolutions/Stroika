@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Execution {
      *         is up to date with respect to other threads and acquire is needed on the lock. And to assure any changes made with
      *         the lock are seen in other threads a release atomic_fence() is required on the unlock.
      *
-     *         This is the DEFAULT behavior we provide with the default BarrierFlag - eReleaseAcquire
+     *         This is the DEFAULT behavior we provide with the default BarrierType - eReleaseAcquire
      */
     class SpinLock {
     public:
@@ -64,7 +64,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note subtly - eReleaseAcquire means acquire on lock, and release on unlock. This is the natural default for a mutex.
          */
-        enum class BarrierFlag {
+        enum class BarrierType {
             eNoBarrier,
             eReleaseAcquire,
             eMemoryTotalOrder,
@@ -80,7 +80,7 @@ namespace Stroika::Foundation::Execution {
          *  However, sometimes you want to spinlock and handle the memory ordering yourself. So that feature
          *  is optional (defaulting to the safer, but slower - true).
          */
-        SpinLock (BarrierFlag barrier = BarrierFlag::eDEFAULT);
+        SpinLock (BarrierType barrier = BarrierType::eDEFAULT);
         SpinLock (const SpinLock&) = delete;
 
 #if qStroika_FeatureSupported_Valgrind
@@ -107,7 +107,7 @@ namespace Stroika::Foundation::Execution {
         nonvirtual void unlock ();
 
     private:
-        BarrierFlag fBarrierFlag_;
+        BarrierType fBarrierFlag_;
 
     private:
         atomic_flag fLock_ = ATOMIC_FLAG_INIT;
