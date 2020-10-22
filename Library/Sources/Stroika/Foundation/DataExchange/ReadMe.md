@@ -1,4 +1,6 @@
-# This folder contains all the Stroika Library [Foundation](../ReadMe.md)::DataExchange source code
+# Stroika::[Foundation](../ReadMe.md)::DataExchange
+
+This folder contains all the Stroika Library [Foundation](../ReadMe.md)::DataExchange source code.
 
 This module is about data structures and formats - and NOT about the IO/networking interactions of
 an exchagne.
@@ -44,6 +46,9 @@ Others:
 - InternetMediaType - [InternetMediaType.h](InternetMediaType.h)
 - InternetMediaTypeRegistry - [InternetMediaTypeRegistry.h](InternetMediaTypeRegistry.h)
 - OptionsFile - [OptionsFile.h](OptionsFile.h)
+
+  Utility class for storing application options/configuration
+
 - StructFieldMetaInfo - [StructFieldMetaInfo.h](StructFieldMetaInfo.h)
 
 Folders:

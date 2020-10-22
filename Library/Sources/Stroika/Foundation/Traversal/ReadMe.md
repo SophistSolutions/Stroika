@@ -1,4 +1,8 @@
-# This folder contains all the Stroika Library [Foundation](../ReadMe.md)::Traversal source code
+# Stroika::[Foundation](../ReadMe.md)::Traversal
+
+This folder contains all the Stroika Library [Foundation](../ReadMe.md)::Traversal source code.
+
+> > > TODO DOCS
 
 ## Overview
 
@@ -7,12 +11,12 @@ be used for generators, like Range.
 
 GENERATOR:
 
-```
+```c++
 loop (yielder)
 {
-while (1) {
-yielder(val);
-}
+  while (1) {
+    yielder(val);
+  }
 }
 ```
 

@@ -1,4 +1,6 @@
-# This folder contains all the Stroika Library [Foundation](../ReadMe.md)::Containers source code
+# Stroika::[Foundation](../ReadMe.md)::Containers
+
+This folder contains all the Stroika Library [Foundation](../ReadMe.md)::Containers source code.
 
 ## Overview
 

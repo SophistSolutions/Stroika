@@ -1,4 +1,6 @@
-# This folder contains all the Stroika Library [Foundation](../ReadMe.md)::Streams source code
+# Stroika::[Foundation](../ReadMe.md)::Streams
+
+This folder contains all the Stroika Library [Foundation](../ReadMe.md)::Streams source code.
 
 ## Overview
 

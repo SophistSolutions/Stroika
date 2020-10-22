@@ -1,19 +1,21 @@
-# This folder contains all the Stroika Library Foundation source code
+# Stroika Library Foundation
 
-- [Cache/ReadMe.md](Cache/ReadMe.md)
-- [Characters/ReadMe.md](Characters/ReadMe.md)
-- [Common/ReadMe.md](Common/ReadMe.md)
-- [Configuration/ReadMe.md](Configuration/ReadMe.md)
-- [Containers/ReadMe.md](Containers/ReadMe.md)
-- [Cryptography/ReadMe.md](Cryptography/ReadMe.md)
+This folder contains all the Stroika Library Foundation source code.
+
+- [Cache/ReadMe.md](Cache/ReadMe.md) - Smart storage of partial data structures
+- [Characters/ReadMe.md](Characters/ReadMe.md) - Character and String classes
+- [Common/ReadMe.md](Common/ReadMe.md) - Various building blocks used elsewhere
+- [Configuration/ReadMe.md](Configuration/ReadMe.md) - Access system configuration
+- [Containers/ReadMe.md](Containers/ReadMe.md) - Stack, Set, Sequence, etc...
+- [Cryptography/ReadMe.md](Cryptography/ReadMe.md) - Hash<>, Encrpyt, etc...
 - [Database/ReadMe.md](Database/ReadMe.md)
-- [DataExchange/ReadMe.md](DataExchange/ReadMe.md)
+- [DataExchange/ReadMe.md](DataExchange/ReadMe.md) - VariantValue, Serializers, JSON, XML, etc...
 - [Debug/ReadMe.md](Debug/ReadMe.md)
-- [Execution/ReadMe.md](Execution/ReadMe.md)
-- [IO/ReadMe.md](IO/ReadMe.md)
+- [Execution/ReadMe.md](Execution/ReadMe.md) - ThreadPool, Logger, Process etc...
+- [IO/ReadMe.md](IO/ReadMe.md) - File and Network input/output etc...
 - [Linguistics/ReadMe.md](Linguistics/ReadMe.md)
-- [Math/ReadMe.md](Math/ReadMe.md)
-- [Memory/ReadMe.md](Memory/ReadMe.md)
-- [Streams/ReadMe.md](Streams/ReadMe.md)
-- [Time/ReadMe.md](Time/ReadMe.md)
-- [Traversal/ReadMe.md](Traversal/ReadMe.md)
+- [Math/ReadMe.md](Math/ReadMe.md) - Math utilities, Statistics, Optimization etc...
+- [Memory/ReadMe.md](Memory/ReadMe.md) - Block Allocation, BLOB, SharedByValue, SmallStackBuffer, etc...
+- [Streams/ReadMe.md](Streams/ReadMe.md) - Sequence of data elements made available over time
+- [Time/ReadMe.md](Time/ReadMe.md) - Date/Time related classes
+- [Traversal/ReadMe.md](Traversal/ReadMe.md) - Iterators, Generators, Ranges etc..

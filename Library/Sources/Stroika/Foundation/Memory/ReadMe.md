@@ -1,4 +1,6 @@
-# This folder contains all the Stroika Library [Foundation](../ReadMe.md)::Memory source code
+# Stroika::[Foundation](../ReadMe.md)::Memory
+
+This folder contains all the Stroika Library [Foundation](../ReadMe.md)::Memory source code
 
 > > TODO DOCS
 
