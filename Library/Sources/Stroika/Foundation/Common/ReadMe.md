@@ -1,6 +1,7 @@
 # Stroika::[Foundation](../ReadMe.md)::Common
 
 This folder contains all the Stroika Library [Foundation](../ReadMe.md)::Common source code.
+
 Main:
 
 - Compare - [Compare.h](Compare.h)
