@@ -1,9 +1,11 @@
-This Folder contains the Foundation::Execution source code.
+# This folder contains all the Stroika Library [Foundation](../ReadMe.md)::Execution source code
 
-	TODO: DOCUMENT BETTER THE DESIGN OF THREAD INTERUOPTION!!! (and overall orgnaizaiton of this module).
+> > TODO
 
-	>	Event
-		*  AutoReset Event (like Windwow CreateEvent (false, false).
+    TODO: DOCUMENT BETTER THE DESIGN OF THREAD INTERUOPTION!!! (and overall orgnaizaiton of this module).
 
-	>	ProcessRunner
-		*  Synchronously run external (process) commands, managing stdin/stdout/stderr - like popen()
+    >	Event
+    	*  AutoReset Event (like Windwow CreateEvent (false, false).
+
+    >	ProcessRunner
+    	*  Synchronously run external (process) commands, managing stdin/stdout/stderr - like popen()

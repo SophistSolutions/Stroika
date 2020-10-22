@@ -1,1 +1,3 @@
-This Folder contains the Foundation::Configuration source code.
+# This folder contains all the Stroika Library [Foundation](../ReadMe.md)::Configuration source code
+
+TODO DOCS

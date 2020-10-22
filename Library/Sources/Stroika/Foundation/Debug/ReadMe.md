@@ -1,1 +1,3 @@
-This Folder contains the Foundation::Debug source code.
+# This folder contains all the Stroika Library [Foundation](../ReadMe.md)::Debug source code
+
+> > TODO DOCS

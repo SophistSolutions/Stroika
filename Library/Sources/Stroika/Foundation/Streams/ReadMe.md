@@ -1,78 +1,81 @@
-Overview
---------
-  This folder contains all the Stroika Library Foundation::Streams source code..
+# This folder contains all the Stroika Library [Foundation](../ReadMe.md)::Streams source code
 
-  A Stream&lt;ELEMENT_TYPE&gt; is a sequence of data elements made available over time. These elements
-  are typically 'Bytes' - or 'Characters' - but can be any copyable type.
+## Overview
 
+This folder contains all the Stroika Library Foundation::Streams source code..
 
-Design Overview
---------
-   *   A Stream&lt;ELEMENT_TYPE&gt; is a sequence of data elements made available over time.
-       These elements are typically 'Bytes' - or 'Characters' - but can be 
-       any copyable type.
+A Stream\<ELEMENT_TYPE> is a sequence of data elements made available over time. These elements
+are typically 'Bytes' - or 'Characters' - but can be any copyable type.
 
-   *   Streams are created, and then handled ONLY through smart pointers. Assigning Streams
-       merely copies the 'smart pointer' to that same underlying stream. This means that offsets
-       and underlying data, are all shared.
- 
-   *   Streams have two parallel hierarchies, which mirror one another, of smart pointers and related
-       'virtual rep' objects which provide the API which implementers override.
- 
-   *   Seek Offsets are in elements of the kind of stream (e.g in Bytes for a Stream<byte>, and
-       in Characters for a Stream<Character>).
- 
-   *   Two important subclasses of Stream<> are InputStream<>::Ptr (for reading) and OutputStream<>::Ptr (for
-       writing). So that each can maintain its own intrinsic current offset (separate seek offset
-       for reading and writing) in mixed (input/output) streams, the actual offset APIs and
-       logic are in those subclasses.
- 
-   *   Stream APIs are intrinsically blocking. This makes working with them simpler, since code
-       using Streams doesn't need to be written to handle both blocking and non-blocking behavior.
-	   You can always use the stack to maintain the context of your operation (clearer than closures)
-	   and never be surprised when a 'mode' is set on a stream making it non-blocking.
- 
-   *   Relationship with std iostream
-       
-	   Stroika streams are in many ways similar to iostreams. They are interoperable with iostreams
-       through the Streams::iostream::(InputStreamFromStdIStream, InputStreamToStdIStream,
-       OutputStreamFromStdIStream, OutputStreamToStdIStream) classes.
+## Design Overview
 
-       *   Stroika Streams are much easier to create (just a few intuitive virtual methods
-       to override.
+- A Stream\<ELEMENT_TYPE> is a sequence of data elements made available over time.
+  These elements are typically 'Bytes' - or 'Characters' - but can be
+  any copyable type.
 
-       *   Stroika streams are unrelated to formatting of text (@todo what other mechanism do we offer?)
+- Streams are created, and then handled ONLY through smart pointers. Assigning Streams
+  merely copies the 'smart pointer' to that same underlying stream. This means that offsets
+  and underlying data, are all shared.
 
-       *   Stroika Streams are much easier to use and understand, with better internal error checking,
-           (like thread safety), and simpler, more consistent naming for offets/seeking, and seekability.
+- Streams have two parallel hierarchies, which mirror one another, of smart pointers and related
+  'virtual rep' objects which provide the API which implementers override.
 
-       *   Stroika supports non-seekable streams (needed for things like sockets, and certain special files, like
-           Linux procfs files).
+- Seek Offsets are in elements of the kind of stream (e.g in Bytes for a Stream<byte>, and
+  in Characters for a Stream<Character>).
 
-       *   Due to more orthoganal API, easier to provide intuitive simple adapters mapping one kind of stream
-           to another (such as binary streams to streams of text, like the .net TextReader).
+- Two important subclasses of Stream<> are InputStream<>::Ptr (for reading) and OutputStream<>::Ptr (for
+  writing). So that each can maintain its own intrinsic current offset (separate seek offset
+  for reading and writing) in mixed (input/output) streams, the actual offset APIs and
+  logic are in those subclasses.
 
-       *   (@todo - fill in more differences if there are any more?)
+- Stream APIs are intrinsically blocking (with exceptions below). This makes working with them simpler, since code
+  using Streams doesn't need to be written to handle both blocking and non-blocking behavior.
+  You can always use the stack to maintain the context of your operation (clearer than closures)
+  and never be surprised when a 'mode' is set on a stream making it non-blocking.
 
+  Note however, you CAN call certain 'async like' APIs to 'read-non-blocking', and check if data is available, to avoid blocking. Currently no 'callback' mechanism for async when data available - maybe with C++ 20 support for async?
 
-   *   Relationship with .Net Streams
-       *   Vaguely similar.
+- Relationship with std iostream
 
-       *   Reader/Writer classes not really needed, because the reading assistance APIs (like readlines) are baked
-           into InputStreamPtr<>/OutputStream<>
-		   
-       *   Seekability handed similarly
+  Stroika streams are in many ways similar to iostreams. They are interoperable with iostreams
+  through the Streams::iostream::(InputStreamFromStdIStream, InputStreamToStdIStream,
+  OutputStreamFromStdIStream, OutputStreamToStdIStream) classes.
 
-       *   Stroika Streams have no async APIs, and (currently) no 'CanRead' etc operations
+  - Stroika Streams are much easier to create (just a few intuitive virtual methods
+    to override.
 
-       *   more???
+  - Stroika streams are unrelated to formatting of text (@todo what other mechanism do we offer?)
 
- 
-   *   Relationship with Java8 Streams
-       *   These were inspirational. But Java Streams package is much more complex, with tons of tie
-		   ins to threaded processing, map reduce etc.
+  - Stroika Streams are much easier to use and understand, with better internal error checking,
+    (like thread safety), and simpler, more consistent naming for offets/seeking, and seekability.
 
-       *   I currently have stuff like 'fiter' builtin to Iterable. But maybe here would be sensible, and possibly
-	       better?
+  - Stroika supports non-seekable streams (needed for things like sockets, and certain special files, like
+    Linux procfs files).
 
-       *   As I have more time to consider this, I may move to more of an approach like Java8 Streams.
+  - Due to more orthoganal API, easier to provide intuitive simple adapters mapping one kind of stream
+    to another (such as binary streams to streams of text, like the .net TextReader).
+
+  - (@todo - fill in more differences if there are any more?)
+
+- Relationship with .Net Streams
+
+  - Vaguely similar.
+
+  - Reader/Writer classes not really needed, because the reading assistance APIs (like readlines) are baked
+    into InputStreamPtr<>/OutputStream<>
+
+  - Seekability handed similarly
+
+  - Stroika Streams do have APIs to read/write asyncronously (though not primary) and ability to check 'CanRead' - effectively (though should consider using that dotnet name???)
+
+  - more???
+
+- Relationship with Java8 Streams
+
+  - These were inspirational. But Java Streams package is much more complex, with tons of tie
+    ins to threaded processing, map reduce etc.
+
+  - I currently have stuff like 'fiter' builtin to Iterable. But maybe here would be sensible, and possibly
+    better?
+
+  - As I have more time to consider this, I may move to more of an approach like Java8 Streams.
