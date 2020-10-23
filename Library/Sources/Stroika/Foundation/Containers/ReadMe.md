@@ -55,29 +55,29 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
 
 ## Supported Containers Archtypes
 
-- [Association&lt;KEY_TYPE, VALUE_TYPE&gt;](Association.h)
+- [Association\<KEY_TYPE, VALUE_TYPE>](Association.h)
   - Allows for the association of two elements, and key and one or more values
   - NYI
-- [Bijection&lt;DOMAIN_TYPE, RANGE_TYPE&gt;](Bijection.h)
+- [Bijection\<DOMAIN_TYPE, RANGE_TYPE>](Bijection.h)
   - Bijection allows for the bijective (1-1) association of two elements
   - Supported backends: LinkedList
 - [Bag\<T>](Bag.h)
-  - The idea is to mimic that of a black bag (not like SmallTalk Bag<T> which Stroika Collection<> is closest to) - but randomized collection.
+  - The idea is to mimic that of a black bag (not like SmallTalk Bag\<T> which Stroika Collection<> is closest to) - but randomized collection.
   - NYI
 - [Collection\<T>](Collection.h)
   - a container to manage an un-ordered collection of items, without equality defined for T
   - Supported backends: Array, LinkedList, std::fowrad_list
-- [DataHyperRectange&lt; T, ... INDEXES&gt;](DataHyperRectange.h)
+- [DataHyperRectange\< T, ... INDEXES>](DataHyperRectange.h)
   - Aliases: Data-Cube, Date Cube, Hyper-Cube, Hypercube
-- [DenseDataHyperRectange&lt; T, ... INDEXES&gt;](DenseDataHyperRectange.h)
+- [DenseDataHyperRectange\< T, ... INDEXES>](DenseDataHyperRectange.h)
   - Supported backends: Vector
 - [Deque\<T>](Deque.h)
   - A Deque is a Queue that allows additions and removals at either end
   - Supported backends: DoublyLinkedList
-- [KeyedCollection&lt;KEY_TYPE, T&gt;](KeyedCollection.h)
+- [KeyedCollection\<KEY_TYPE, T>](KeyedCollection.h)
   - KeyedCollection adds most access patterns used in Mapping to a Collection, but stores only a single object. It takes a parameter
   - NYI
-- [Mapping&lt;KEY_TYPE, VALUE_TYPE&gt;](Mapping.h)
+- [Mapping\<KEY_TYPE, VALUE_TYPE>](Mapping.h)
   - Allows for the association of two elements: a key and a value. The key UNIQUELY specifies its associated value
   - Supported backends: Array, LinkedList, std::map
 - [MultiSet\<T>](MultiSet.h)
@@ -95,16 +95,16 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
 - [Set\<T>](Set.h)
   - a container of T, where once an item is added, additionally adds () do nothing.
   - Supported backends: LinkedList, std::set
-- [SortedAssociation&lt;KEY_TYPE, VALUE_TYPE&gt;](SortedAssociation.h)
+- [SortedAssociation\<KEY_TYPE, VALUE_TYPE>](SortedAssociation.h)
   - see Association.
   - NYI
 - [SortedCollection\<T>](SortedCollection.h)
   - See Collection; but adds parameter saying how T items sorted
   - Supported backends: LinkedList
-- [SortedKeyedCollection&lt;KEY_TYPE, T&gt;](SortedKeyedCollection.h)
+- [SortedKeyedCollection\<KEY_TYPE, T>](SortedKeyedCollection.h)
   - See KeyedCollection; but adds parameter saying how T items sorted
   - NYI
-- [SortedMapping&lt;KEY_TYPE, VALUE_TYPE&gt;](SortedMapping.h)
+- [SortedMapping\<KEY_TYPE, VALUE_TYPE>](SortedMapping.h)
   - See Mapping; but adds parameter saying how KEY_TYPE items sorted
   - Supported backends: std::map
 - [SortedMultiSet\<T>](SortedMultiSet.h)
@@ -113,7 +113,7 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
 - [SortedSet\<T>](SortedSet.h)
   - See Set; but adds parameter saying how T items sorted
   - Supported backends: std::set
-- [SparseDataHyperRectange&lt; T, ... INDEXES&gt;](SparseDataHyperRectangle.h)
+- [SparseDataHyperRectange\< T, ... INDEXES>](SparseDataHyperRectangle.h)
   - A DataHyperRectangle where you specify a special 'default' value, which will appear in any cell you 'get' without first setting (as if the hyper-rectangle was pre-initialized to that value).
   - Supported backends: std::map
 - [Stack\<T>](Stack.h)

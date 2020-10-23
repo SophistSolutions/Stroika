@@ -2,34 +2,29 @@
 
 This folder contains all the Stroika Library [Foundation](../ReadMe.md)::Memory source code
 
-> > TODO DOCS
-
 ## Overview
 
-This Folder contains the Foundation::Memory source code.
-
 This module covers low level memory access/allocation sharing patterns. For example, shared pointers,
-copy on write (SharedByValue) code, a generic Variant-union (VariantValue), and optional values (Optional<T>).
+copy on write (SharedByValue) code, a generic Variant-union (VariantValue).
 
 It also supports STL Allocators, memory debugging, and a BlockAllocation utility which is used internally
 in Stroika and CAN be used to greatly improve the efficiency of some memory access patterns.
 
 ## Modules
 
-- AnyVariantValue&lt;T&gt;
+- [Bits.h](Bits.h)
+- [BLOB.h](BLOB.h)
+- [BlockAllocated.h](BlockAllocated.h)
+- [BlockAllocator.h](BlockAllocator.h)
+- [Common.h](Common.h)
+- [MemoryAllocator.h](MemoryAllocator.h)
+- [Optional.h](Optional.h) - mostly deprecated due to std::optional (but a few handy helpers)
+- [Platform/](Platform/ReadMe.md)
+- [SharedByValue.h](SharedByValue.h) - a utility class to implement Copy-On-Write (aka COW)
+- [SharedPtr.h](SharedPtr.h)
+- [SmallStackBuffer.h](SmallStackBuffer.h) - very efficient array like class (uses stack where practical instead of heap)
 
-- Bits
-
-- BLOB
-
-- BlockAllocated&lt;T&gt;
-- BlockAllocator&lt;T&gt;
-
-- Optional&lt;T&gt;
-
-- SharedByValue&lt;T&gt;
-
-  SharedByValue is a utility class to implement Copy-On-Write (aka COW)
+OLD NOTES:
 
 - SharedPtr&lt;T&gt;
 

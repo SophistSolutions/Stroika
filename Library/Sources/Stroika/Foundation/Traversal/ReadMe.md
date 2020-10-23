@@ -2,12 +2,24 @@
 
 This folder contains all the Stroika Library [Foundation](../ReadMe.md)::Traversal source code.
 
-> > > TODO DOCS
-
 ## Overview
 
-Unsure about top-level modularity - but makes sense to move iterator/iterable out of container - since can and should
-be used for generators, like Range.
+Stroika Traversal classes are those related to traversing data strucutres. Things like Iterators, and Ranges are defined here.
+
+- [DiscreteRange.h](DiscreteRange.h) - range of integer like things
+- [DisjointRange.h](DisjointRange.h) - not a range - but a sequence of ranges
+- [DisjointDiscreteRange.h](DisjointDiscreteRange.h)
+- [FunctionalApplication.h](FunctionalApplication.h)
+- [Generator.h](Generator.h)
+- [Iterable.h](Iterable.h) - like C# IEnumerable\<T>
+- [IterableFromIterator.h](IterableFromIterator.h)
+- [Iterator.h](Iterator.h)
+- [RandomAccessIterator.h](RandomAccessIterator.h)
+- [Range.h](Range.h) - more like Ruby Range, not much like c++20 range
+
+---
+
+DRAFT FUTURE NOTES - INCOMPLETE BELOW...
 
 GENERATOR:
 
