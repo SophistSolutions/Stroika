@@ -6,8 +6,6 @@ This folder contains all the Stroika Library [Foundation](../ReadMe.md)::Contain
 
 ---
 
-This folder contains all the Stroika Library Foundation::Containers source code.
-
 Containers are objects that collect together a related (parameterized) set of objects.
 For example, a Stack\<T>, or Set\<T>, or Sequence\<T>.
 
