@@ -14,7 +14,7 @@ Cache Types:
 
   a Bloom filter is a probablistic set
 
-- CallerStalenessCache
+- CallerStalenessCache - [CallerStalenessCache.h](CallerStalenessCache.h)
 
   Track when something is added to the cache, and then the lookup function can avoid a costly call to compute something if its been recently enough added. Like TimedCache, except there is no global TTL on data, but the TTL is specified on each call to lookup.
 
@@ -31,6 +31,10 @@ Other:
 - Memoizer - [Memoizer.h](Memoizer.h)
 
   Cache (expensive) computation results transparently, using one of the Stroika cache types as a backend/plugin.
+
+- [Statistics.h](Statistics.h)
+- [SynchronizedCallerStalenessCache.h](SynchronizedCallerStalenessCache.h)
+- [SynchronizedLRUCache.h](SynchronizedLRUCache.h)
 
 TODO:
 
