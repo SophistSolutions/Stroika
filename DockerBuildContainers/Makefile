@@ -26,6 +26,8 @@ ifeq ($(shell uname),Linux)
 	docker build -f Ubuntu1910-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests .
 	docker build -f Ubuntu2004-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2004-small .
 	docker build -f Ubuntu2004-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests .
+	docker build -f Ubuntu2010-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2010-small .
+	docker build -f Ubuntu2010-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2010-regression-tests .
 	docker build -f Centos-7-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-centos-7-small .
 	docker build -f Centos-8-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-centos-8-small .
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev .
@@ -77,9 +79,11 @@ ifeq ($(shell uname),Linux)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-small:latest
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1910-small:latest
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-small:latest
+	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2010-small:latest
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests:latest
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests:latest
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:latest
+	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2010-regression-tests:latest
 	docker push sophistsolutionsinc/stroika-buildvm-centos-7-small:latest
 	docker push sophistsolutionsinc/stroika-buildvm-centos-8-small:latest
 	#no need to push this yet/now
@@ -94,9 +98,11 @@ ifeq ($(shell uname),Linux)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-small:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1910-small:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-small:$(STROIKA_VERSION)
+	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2010-small:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:$(STROIKA_VERSION)
+	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2010-regression-tests:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-centos-7-small:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-centos-8-small:$(STROIKA_VERSION)
 	#no need to push this yet/now
