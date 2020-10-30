@@ -66,6 +66,7 @@ ifeq ($(shell uname),Linux)
 	docker pull ubuntu:18.10
 	docker pull ubuntu:19.10
 	docker pull ubuntu:20.04
+	docker pull ubuntu:20.10
 	docker pull centos:centos7
 	docker pull centos:centos8
 endif

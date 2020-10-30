@@ -38,7 +38,7 @@ RUN apt-get install -y automake autoconf libtool-bin
 RUN apt-get install -y git
 
 #Only needed to use sanitizer builds
-RUN apt-get install -y libasan5 libubsan1
+RUN apt-get install -y libasan5 libasan6 libubsan1
 
 #locale support not strictly required, but some regression tests depend on it
 RUN apt-get install -y locales && locale-gen en_US en_US.UTF-8
