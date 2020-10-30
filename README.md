@@ -3,31 +3,42 @@
 Stroika is a C++ application framework designed to make high performance,
 modern, reliable and threaded applications easier to write.
 
+It is comprised of 2 layers, the [Foundation](Library/Sources/Stroika/Foundation/ReadMe.md), which provides directly usable classes which can be built off, and a series of domain specific [Framework](Library/Sources/Stroika/Frameworks/ReadMe.md)s which provide a rich collection of code in different domains. The Frameworks depend on the Foundation; Foundation modules frequently depend on each other; but Foundation layer code contains no dependencies outside of the Foundation (except on std-c++ layer libraries, and various ThirdPartyComponent libraries, like openssl).
+
 - Nearly all public interfaces and methods are well documented; implementations are clear and well commented.
 - An elaborate system of built-in assertions (including thread-safety assertions) helps document and enforce usage patterns (without performance cost in production builds).
 - Each release is tested with Valgrind, Google Sanitizers, and a variety of platforms and compilers, as well as a large body of regression tests (including most documentation examples) to help assure library correctness.
 - [Sample applications](Samples/ReadMe.md) help show common use cases (like building a web server into your app to deliver web-service content and APIs).
 - [Quick start using pre-built Docker containers](/Documentation/Building%20Stroika.md#build-with-docker) (for Windows, and Linux).
 
-## Stroika provides
+## Stroika [Foundation](Library/Sources/Stroika/Foundation/ReadMe.md) provides
 
-- [Cache classes](Library/Sources/Stroika/Foundation/Cache/ReadMe.md) (A variety of different caching/memoizing strategies directly supported).
-- [Characters classes](Library/Sources/Stroika/Foundation/Characters/ReadMe.md) (Simpler to use - especially with UNICODE - Strings class, with functional style mappings - to ToString\<template\>() for most Stroika objects).
-- [Container classes](Library/Sources/Stroika/Foundation/Containers/ReadMe.md) (Collection, Queue, Mapping, Sequence, Set, and much more with rich variety of backend implementations).
+- [Cache classes](Library/Sources/Stroika/Foundation/Cache/ReadMe.md) (a variety of different caching/memoizing strategies directly supported).
+- [Characters classes](Library/Sources/Stroika/Foundation/Characters/ReadMe.md) (simpler to use - especially with UNICODE - Strings class, with functional style mappings - to ToString\<template\>() for most Stroika objects).
+- [Container classes](Library/Sources/Stroika/Foundation/Containers/ReadMe.md) (Collection, Queue, Mapping, Sequence, Set, and much more, each with rich variety of backend implementations).
 - [DataExchange](Library/Sources/Stroika/Foundation/DataExchange/ReadMe.md) (VariantValue, rich collection of data format serializer/deserializers - like JSON, object to/from serialization mappings, and much more).
-- [Execution](Library/Sources/Stroika/Foundation/Execution/ReadMe.md) pattern classes (external process runner, synchronization patterns, blockingqueue, threadpools, and much more).
+- [Execution](Library/Sources/Stroika/Foundation/Execution/ReadMe.md) pattern classes (external process runner, synchronization patterns, blocking queue, thread pools, and much more).
 - [Networking](Library/Sources/Stroika/Foundation/IO/Network/ReadMe.md) support (high level socket wrappers, Web client fetching).
 - Simple, elegant [streams library](Library/Sources/Stroika/Foundation/Streams/ReadMe.md), with adapters for cryptography, compression, text transforms, etc.
 - Seamless integration with many important libraries, including: boost, libcurl, lzma sdk, openssl, sqlite, xerces, zlib (e.g. wrap a compression stream - using for example zlib).
-- [Framework libraries](Library/Sources/Stroika/Frameworks/ReadMe.md) for [network measurement](Library/Sources/Stroika/Frameworks/NetworkMonitor/ReadMe.md), SSDP/[UPnP](Library/Sources/Stroika/Frameworks/UPnP/ReadMe.md), [system performance monitoring](Library/Sources/Stroika/Frameworks/SystemPerformance/ReadMe.md), [text editing/word processor](Library/Sources/Stroika/Frameworks/Led/ReadMe.md), [web server](Library/Sources/Stroika/Frameworks/WebServer/ReadMe.md), [web services](Library/Sources/Stroika/Frameworks/WebService/ReadMe.md), and much more.
-- and much more...
+- and more...
+
+## Stroika [Framework](Library/Sources/Stroika/Frameworks/ReadMe.md)s provides
+
+- [network measurement](Library/Sources/Stroika/Frameworks/NetworkMonitor/ReadMe.md)
+- SSDP/[UPnP](Library/Sources/Stroika/Frameworks/UPnP/ReadMe.md)
+- [system performance monitoring](Library/Sources/Stroika/Frameworks/SystemPerformance/ReadMe.md)
+- [text editing/word processor](Library/Sources/Stroika/Frameworks/Led/ReadMe.md)
+- [web server](Library/Sources/Stroika/Frameworks/WebServer/ReadMe.md)
+- [web services](Library/Sources/Stroika/Frameworks/WebService/ReadMe.md)
+- and more...
 
 ## Trade-offs
 
-- Stroika's biggest strength is also its biggest weakness:
+Stroika's biggest strength is also its biggest weakness:
 
-  - There are smaller, more focused libraries that do many of the things Stroika does. Being single purpose is a form of modularity (good) and allows for easy adoption/integration. But libraries that do anything of any complexity must create their own infrastructure for a wide variety of building block problems (e.g. Xerces has its own stream classes, pistache date classes, etc). And if you have two such libraries, they are unlikely to interact seemlessly, and their support classes (for stuff like date and streams above) certainly won't.
-  - Stroika takes the approach of building its functionality in layers, leveraging other components (e.g. Streams and Containers) in lower layers (as well as standardized C++ libraries). This slightly increases the cost of adopting Stroika for something small (because pulling one thing in pulls many things in), but then pays dividends as you use it to accomplish a second or third task.
+- There are smaller, more focused libraries that do many of the things Stroika does. Being single purpose is a form of modularity (good) and allows for easy adoption/integration. But libraries that do anything of any complexity must create their own infrastructure for a wide variety of building block problems (e.g. Xerces has its own stream classes, pistache date classes, etc). And if you have two such libraries, they are unlikely to interact seemlessly, and their support classes (for stuff like date and streams above) certainly won't.
+- Stroika takes the approach of building its functionality in layers, leveraging other components (e.g. Streams and Containers) in lower layers (as well as standardized C++ libraries). This slightly increases the cost of adopting Stroika for something small (because pulling one thing in pulls many things in), but then pays dividends as you use it to accomplish a second or third task.
 
 ## Versions
 

@@ -51,7 +51,7 @@ namespace Stroika::Foundation::IO::Network {
      *
      *  \par Example Usage
      *      \code
-     *          Socket::Ptr      s  = ConnectionlessSocket { SocketAddress::INET, Socket::DGRAM };
+     *          Socket::Ptr      s  = ConnectionlessSocket{ SocketAddress::INET, Socket::DGRAM };
      *      \endcode
      *
      *  The Socket smart pointer objects can be freely assigned and passed around, but the
@@ -111,7 +111,7 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
-        */
+         */
         struct BindFlags {
             bool fReUseAddr : 1; // SO_REUSEADDR
             constexpr BindFlags (bool reUseAddr = false);
@@ -149,7 +149,7 @@ namespace Stroika::Foundation::IO::Network {
      *
      *  \par Example Usage
      *      \code
-     *          Socket::Ptr      s  = ConnectionlessSocket { SocketAddress::INET, Socket::DGRAM };
+     *          Socket::Ptr      s  = ConnectionlessSocket{ SocketAddress::INET, Socket::DGRAM };
      *      \endcode
      *
      *  \par Example Usage

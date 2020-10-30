@@ -4,8 +4,6 @@ This folder contains all the Stroika Library [Foundation](../ReadMe.md)::Streams
 
 ## Overview
 
-This folder contains all the Stroika Library Foundation::Streams source code..
-
 A Stream\<ELEMENT_TYPE> is a sequence of data elements made available over time. These elements
 are typically 'Bytes' - or 'Characters' - but can be any copyable type.
 
