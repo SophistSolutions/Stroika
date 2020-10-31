@@ -27,7 +27,7 @@ using namespace Stroika::Foundation::Database;
  ********************************************************************************
  */
 Database::Exception::Exception (const String& message)
-    : inherited (Format (L"Database connection error: %s", message.c_str ()))
+    : inherited {Format (L"Database connection error: %s", message.c_str ())}
 {
 }
 
@@ -37,7 +37,7 @@ Database::Exception::Exception (const String& message)
  ********************************************************************************
  */
 Database::NoDataException::NoDataException ()
-    : Exception (L"No Data"sv)
+    : Exception {L"No Data"sv}
 {
 }
 
@@ -59,15 +59,12 @@ namespace {
 }
 class Database::DBConnection::Rep {
 public:
-    SQLHDBC      fConnectionHandle;
-    SQLHENV      fODBCEnvironmentHandle;
-    unsigned int fNestedTransactionCount;
+    SQLHDBC      fConnectionHandle {nullptr};
+    SQLHENV      fODBCEnvironmentHandle{nullptr};
+    unsigned int fNestedTransactionCount{0};
 
 public:
     Rep (const wstring& dsn)
-        : fConnectionHandle (nullptr)
-        , fODBCEnvironmentHandle (nullptr)
-        , fNestedTransactionCount (0)
     {
         try {
             ThrowIfSQLError_ (SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &fODBCEnvironmentHandle), L"Error AllocHandle");
@@ -119,11 +116,11 @@ public:
         }
         catch (...) {
             if (fConnectionHandle != nullptr) {
-                SQLFreeHandle (SQL_HANDLE_DBC, fConnectionHandle);
+                ::SQLFreeHandle (SQL_HANDLE_DBC, fConnectionHandle);
                 fConnectionHandle = nullptr;
             }
             if (fODBCEnvironmentHandle != nullptr) {
-                SQLFreeHandle (SQL_HANDLE_ENV, fODBCEnvironmentHandle);
+                ::SQLFreeHandle (SQL_HANDLE_ENV, fODBCEnvironmentHandle);
                 fODBCEnvironmentHandle = nullptr;
             }
         }
@@ -131,19 +128,15 @@ public:
     virtual ~Rep ()
     {
         if (fConnectionHandle != nullptr) {
-            SQLFreeHandle (SQL_HANDLE_DBC, fConnectionHandle);
+            ::SQLFreeHandle (SQL_HANDLE_DBC, fConnectionHandle);
         }
         if (fODBCEnvironmentHandle != nullptr) {
-            SQLFreeHandle (SQL_HANDLE_ENV, fODBCEnvironmentHandle);
+            ::SQLFreeHandle (SQL_HANDLE_ENV, fODBCEnvironmentHandle);
         }
     }
 };
 Database::DBConnection::DBConnection (const wstring& dsn)
     : fRep (make_shared<Rep> (dsn))
-{
-}
-
-Database::DBConnection::~DBConnection ()
 {
 }
 

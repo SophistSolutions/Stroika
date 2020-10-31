@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Database {
 
     public:
         DBConnection (const wstring& dsn);
-        virtual ~DBConnection ();
+        virtual ~DBConnection () = default;
 
     public:
         nonvirtual unsigned int GetNestedTransactionCount () const;
