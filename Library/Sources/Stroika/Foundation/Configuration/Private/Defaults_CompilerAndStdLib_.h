@@ -1211,22 +1211,6 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 
 #endif
 
-#ifndef qCompilerAndStdLib_warning_explcitly_defaulted_threeway_compare_implictly_deleted_Buggy
-
-#if defined(__clang__) && defined(__APPLE__)
-// VERIFIED BROKEN on XCode 11.0
-#define qCompilerAndStdLib_warning_explcitly_defaulted_threeway_compare_implictly_deleted_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 11))
-#elif defined(__clang__) && !defined(__APPLE__)
-// still broken in clang++-8
-// still broken in clang++-9
-// still broken in clang++-10
-#define qCompilerAndStdLib_warning_explcitly_defaulted_threeway_compare_implictly_deleted_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
-#else
-#define qCompilerAndStdLib_warning_explcitly_defaulted_threeway_compare_implictly_deleted_Buggy 0
-#endif
-
-#endif
-
 /*
  * NOW ALLOWED IN C++17
 Test.cpp:173:31: error: template template argument has different template parameters than its corresponding template template parameter
