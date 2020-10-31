@@ -787,7 +787,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename RESULT_TYPE>
     inline RESULT_TYPE Iterable<T>::AccumulateValue (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op, ArgByValueType<RESULT_TYPE> defaultValue) const
     {
-        return Accumulate<RESULT_TYPE> (op).Value (defaultValue);
+        return Accumulate<RESULT_TYPE> (op).value_or (defaultValue);
     }
     template <typename T>
     optional<T> Iterable<T>::Min () const
@@ -798,7 +798,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename RESULT_TYPE>
     inline RESULT_TYPE Iterable<T>::MinValue (ArgByValueType<RESULT_TYPE> defaultValue) const
     {
-        return Min ().Value (defaultValue);
+        return Min ().value_or (defaultValue);
     }
     template <typename T>
     optional<T> Iterable<T>::Max () const
@@ -809,7 +809,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename RESULT_TYPE>
     inline RESULT_TYPE Iterable<T>::MaxValue (ArgByValueType<RESULT_TYPE> defaultValue) const
     {
-        return Max ().Value (defaultValue);
+        return Max ().value_or (defaultValue);
     }
     template <typename T>
     template <typename RESULT_TYPE>
@@ -839,7 +839,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename RESULT_TYPE>
     inline RESULT_TYPE Iterable<T>::SumValue (ArgByValueType<RESULT_TYPE> defaultValue) const
     {
-        return Sum ().Value (defaultValue);
+        return Sum ().value_or (defaultValue);
     }
     template <typename T>
     template <typename RESULT_TYPE, typename INORDER_COMPARE_FUNCTION>
@@ -864,7 +864,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename RESULT_TYPE>
     inline RESULT_TYPE Iterable<T>::MedianValue (ArgByValueType<RESULT_TYPE> defaultValue) const
     {
-        return Median ().Value (defaultValue);
+        return Median ().value_or (defaultValue);
     }
     template <typename T>
     Iterable<T> Iterable<T>::Repeat (size_t count) const
