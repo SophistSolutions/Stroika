@@ -1273,6 +1273,11 @@ Segmentation fault (core dumped)
 
 /*
  *
+ * 
+FAILED: RegressionTestFailure; replaced == L"abcdef";;Test.cpp: 753
+   []  (1  seconds)  [02]  Foundation::Characters::Strings  (../Builds/clang++-11-debug-libc++/Tests/Test02)
+
+
 @CONFIGVAR:     qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy
 
     String  replaced        =   stringWithCRLFs.ReplaceAll (RegularExpression (L"[\r\n]*", RegularExpression::eECMAScript), L"");
@@ -1291,7 +1296,8 @@ Segmentation fault (core dumped)
 // Broken in _LIBCPP_VERSION  8000
 // never tested 9000
 // Broken in _LIBCPP_VERSION  10000
-#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 10000))
+// Broken in _LIBCPP_VERSION  11000
+#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 11000))
 #else
 #define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy 0
 #endif
