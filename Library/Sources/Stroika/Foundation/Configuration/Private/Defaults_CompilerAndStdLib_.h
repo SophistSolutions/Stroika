@@ -540,7 +540,7 @@ ABORTING...
 // broken in _MSC_VER_2k19_16Pt2_
 // verified still broken in _MSC_VER_2k19_16Pt3_
 // Verified FIXED in _MSC_VER_2k19_16Pt4_
-#define qCompilerAndStdLib_constexpr_KeyValuePair_array_stdinitializer_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt3_)
+#define qCompilerAndStdLib_constexpr_KeyValuePair_array_stdinitializer_Buggy (_MSC_VER <= _MSC_VER_2k19_16Pt3_)
 #else
 #define qCompilerAndStdLib_constexpr_KeyValuePair_array_stdinitializer_Buggy 0
 #endif
@@ -562,7 +562,7 @@ ABORTING...
 // First noticed broken in _MSC_VER_2k19_16Pt1_
 // VERIFIED BROKEN _MSC_VER_2k19_16Pt2_
 // Fixed in _MSC_VER_2k19_16Pt3_
-#define qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt2_)
+#define qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy (_MSC_VER <= _MSC_VER_2k19_16Pt2_)
 #else
 #define qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy 0
 #endif
@@ -619,7 +619,7 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 #if defined(_MSC_VER)
 // First noticed broken _MSC_VER_2k19_16Pt2_
 // Fixed in _MSC_VER_2k19_16Pt3_
-#define qCompilerAndStdLib_GenericLambdaInsideGenericLambdaAssertCall_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt2_)
+#define qCompilerAndStdLib_GenericLambdaInsideGenericLambdaAssertCall_Buggy (_MSC_VER <= _MSC_VER_2k19_16Pt2_)
 #else
 #define qCompilerAndStdLib_GenericLambdaInsideGenericLambdaAssertCall_Buggy 0
 #endif
@@ -632,7 +632,7 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 #if defined(_MSC_VER)
 // First noticed broken _MSC_VER_2k19_16Pt2_
 // Fixed in _MSC_VER_2k19_16Pt3_
-#define qCompilerAndStdLib_template_GenericLambdaInsideGenericLambdaDeductionInternalError_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt2_)
+#define qCompilerAndStdLib_template_GenericLambdaInsideGenericLambdaDeductionInternalError_Buggy (_MSC_VER <= _MSC_VER_2k19_16Pt2_)
 #else
 #define qCompilerAndStdLib_template_GenericLambdaInsideGenericLambdaDeductionInternalError_Buggy 0
 #endif
@@ -664,7 +664,7 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 #elif defined(_MSC_VER)
 // verified still BROKEN in _MSC_VER_2k19_16Pt0_ (preview2)
 // SEEMS to work or maybe I dont have well recorded the problem. But no obvious problems with: _MS_VS_2k19_16Pt0Pt0pre43_
-#define qCompilerAndStdLib_constexpr_error_category_ctor_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k19_16Pt0Pt0pre4_)
+#define qCompilerAndStdLib_constexpr_error_category_ctor_Buggy (_MSC_FULL_VER <= _MS_VS_2k19_16Pt0Pt0pre4_)
 #else
 #define qCompilerAndStdLib_constexpr_error_category_ctor_Buggy 0
 #endif
@@ -801,7 +801,7 @@ STILL:
 // verified broken in _MSC_VER_2k19_16Pt4_
 // verified broken in _MSC_VER_2k19_16Pt5_
 // FIXED in _MSC_VER_2k19_16Pt6_
-#define qCompilerAndStdLib_using_in_template_invoke_other_template_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt5_)
+#define qCompilerAndStdLib_using_in_template_invoke_other_template_Buggy (_MSC_VER <= _MSC_VER_2k19_16Pt5_)
 #else
 #define qCompilerAndStdLib_using_in_template_invoke_other_template_Buggy 0
 #endif
@@ -816,7 +816,7 @@ STILL:
 #if defined(_MSC_VER)
 
 // FIRST broken in _MSC_VER_2k19_16Pt3_
-#define qCompilerAndStdLib_ATL_Assign_wstring_COMOBJ_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt3_)
+#define qCompilerAndStdLib_ATL_Assign_wstring_COMOBJ_Buggy (_MSC_VER <= _MSC_VER_2k19_16Pt3_)
 #else
 #define qCompilerAndStdLib_ATL_Assign_wstring_COMOBJ_Buggy 0
 #endif
@@ -898,7 +898,7 @@ In file included from ./ObjectVariantMapper.h:883:
 #ifndef qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
 #if defined(_MSC_VER)
 // first broken in in _MS_VS_2k17_15Pt9Pt7_
-#define qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
+#define qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
 #else
 #define qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy 0
 #endif
@@ -915,7 +915,7 @@ In file included from ./ObjectVariantMapper.h:883:
 #if defined(_MSC_VER)
 // assume broken in _MS_VS_2k17_15Pt7Pt3_
 // verified fixed in _MS_VS_2k17_15Pt7Pt4_
-#define qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt7Pt3_)
+#define qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy (_MSC_FULL_VER <= _MS_VS_2k17_15Pt7Pt3_)
 #else
 #define qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy 0
 #endif
@@ -948,7 +948,7 @@ In file included from ./ObjectVariantMapper.h:883:
 // assume broken in _MS_VS_2k17_15Pt7Pt5_
 // assume broken in _MS_VS_2k17_15Pt7Pt6_
 // Verified FIXED in _MSC_VER_2k17_15Pt8_
-#define qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt7_)
+#define qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy (_MSC_VER <= _MSC_VER_2k17_15Pt7_)
 #else
 #define qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy 0
 #endif
@@ -969,7 +969,7 @@ In file included from ./ObjectVariantMapper.h:883:
 // verified broken in _MSC_VER_2k19_16Pt3_
 // verified broken in _MSC_VER_2k19_16Pt4_
 // Appears FIXED in _MSC_VER_2k19_16Pt5_
-#define qCompilerAndStdLib_atomic_bool_initialize_before_main_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt4_)
+#define qCompilerAndStdLib_atomic_bool_initialize_before_main_Buggy (_MSC_VER <= _MSC_VER_2k19_16Pt4_)
 #else
 #define qCompilerAndStdLib_atomic_bool_initialize_before_main_Buggy 0
 #endif
@@ -1033,7 +1033,7 @@ In file included from ./ObjectVariantMapper.h:883:
 // still broken in _MSC_VER_2k17_15Pt8_
 // still broken in _MSC_VER_2k17_15Pt9_
 // FIXED in _MSC_VER_2k19_16Pt0_
-#define qCompilerAndStdLib_MaybeUnusedIgnoredInLambdas_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
+#define qCompilerAndStdLib_MaybeUnusedIgnoredInLambdas_Buggy (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
 #else
 #define qCompilerAndStdLib_MaybeUnusedIgnoredInLambdas_Buggy 0
 #endif
@@ -1070,7 +1070,7 @@ WORKAROUND:
 // verified still broken _MSC_VER_2k19_16Pt2_
 // verified still broken in _MSC_VER_2k19_16Pt3_
 // verified fixed in _MSC_VER_2k19_16Pt4_
-#define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k17_15Pt8_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k19_16Pt3_)
+#define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy  (_MSC_VER_2k17_15Pt8_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k19_16Pt3_)
 #else
 #define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy 0
 #endif
@@ -1098,11 +1098,11 @@ clang says:
 
 #if defined(__clang__) && !defined(__APPLE__)
 // Appears FIXED with clang++-9
-#define qCompilerAndStdLib_make_from_tuple_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 8))
+#define qCompilerAndStdLib_make_from_tuple_Buggy  ((__clang_major__ <= 8))
 #elif defined(_MSC_VER)
 // verified broken _MS_VS_2k19_16Pt0Pt0_
 // verified FIXED in _MSC_VER_2k19_16Pt1_
-#define qCompilerAndStdLib_make_from_tuple_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
+#define qCompilerAndStdLib_make_from_tuple_Buggy  (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_make_from_tuple_Buggy 0
 #endif
@@ -1264,7 +1264,7 @@ Segmentation fault (core dumped)
 #ifndef qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy
 
 #if defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy ((9 <= __clang_major__ && __clang_major__ <= 11))
+#define qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((9 <= __clang_major__ && __clang_major__ <= 11))
 #else
 #define qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy 0
 #endif
@@ -1376,7 +1376,7 @@ NOTE:
 // Assume broken in _MS_VS_2k17_15Pt5Pt5_
 // still broken in _MS_VS_2k17_15Pt6Pt0_
 // verfiied fixed with _MS_VS_2k17_15Pt7Pt1_
-#define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt6Pt0_)
+#define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy  (_MSC_FULL_VER <= _MS_VS_2k17_15Pt6Pt0_)
 #else
 #define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy 0
 #endif
@@ -1408,7 +1408,7 @@ NOTE:
 #ifndef qCompilerAndStdLib_TemplateUsingOfTemplateOfTemplateSpecializationVariadic_Buggy
 
 #if defined(_MSC_VER)
-#define qCompilerAndStdLib_TemplateUsingOfTemplateOfTemplateSpecializationVariadic_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
+#define qCompilerAndStdLib_TemplateUsingOfTemplateOfTemplateSpecializationVariadic_Buggy  (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
 #else
 #define qCompilerAndStdLib_TemplateUsingOfTemplateOfTemplateSpecializationVariadic_Buggy 0
 #endif
@@ -1439,7 +1439,7 @@ NOTE:
 // verified still broken in _MSC_VER_2k19_16Pt0_ (.0 preview 1)
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre2_
 // verified FIXED in _MS_VS_2k19_16Pt0Pt0pre3_
-#define qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MS_VS_2k17_15Pt7Pt1_ <= _MSC_FULL_VER && _MSC_FULL_VER <= _MS_VS_2k19_16Pt0Pt0pre2_)
+#define qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy  (_MS_VS_2k17_15Pt7Pt1_ <= _MSC_FULL_VER && _MSC_FULL_VER <= _MS_VS_2k19_16Pt0Pt0pre2_)
 #else
 #define qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy 0
 #endif
@@ -1701,7 +1701,7 @@ namespace {
 #if defined(_MSC_VER)
 // first noticed broken in _MSC_VER_2k17_15Pt8_
 // VERIFIED FIXED in _MSC_VER_2k17_15Pt9_
-#define qCompilerAndStdLib_lambda_expand_in_namespace_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt8_)
+#define qCompilerAndStdLib_lambda_expand_in_namespace_Buggy  (_MSC_VER <= _MSC_VER_2k17_15Pt8_)
 #else
 #define qCompilerAndStdLib_lambda_expand_in_namespace_Buggy 0
 #endif
@@ -1744,7 +1744,7 @@ namespace {
 // VERIFIED still broken in _MS_VS_2k19_16Pt0Pt0pre43_ (aka _MS_VS_2k19_16Pt0Pt0_)
 // VERIFIED still broken in _MSC_VER_2k19_16Pt1_
 // VERIFIED FIXED _MSC_VER_2k19_16Pt2_ (FIXED BUT INSTEAD WE NOW HAVE qCompilerAndStdLib_locale_utf8_string_convert_Buggy)
-#define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt1_)
+#define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy  (_MSC_VER <= _MSC_VER_2k19_16Pt1_)
 #else
 #define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy 0
 #endif
