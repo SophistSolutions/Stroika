@@ -19,6 +19,7 @@ RUN apt-get install -y clang++-10
 RUN apt-get install -y clang++-11
 # For reasons which elude me, installing libc++-N removes all the other
 # libc++ versions! There can be only one, so just test the most recent
+# https://askubuntu.com/questions/1227092/how-can-i-install-multiple-versions-of-llvm-libc-on-the-same-computer-at-the-s
 RUN apt-get install -y libc++-11-dev
 
 # for testing configuration 'only-zlib-system-third-party-component'
