@@ -446,6 +446,10 @@ basic-unix-test-configurations:
 	./configure clang++-10-debug-libc++ --config-tag Unix --compiler-driver clang++-10 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable;\
 	./configure clang++-10-debug-libc++-c++2a --config-tag Unix --compiler-driver clang++-10 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a;\
 	./configure clang++-10-release-libstdc++ --config-tag Unix --compiler-driver clang++-10 --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable;\
+	# clang-11\
+	./configure clang++-11-debug-libc++ --config-tag Unix --compiler-driver clang++-11 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable;\
+	./configure clang++-11-debug-libc++-c++2a --config-tag Unix --compiler-driver clang++-11 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a;\
+	./configure clang++-11-release-libstdc++ --config-tag Unix --compiler-driver clang++-11 --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable;\
 	#\
 	#32-bit not working now - asm bug - must debug...\
 	#./configure gcc-release-32 --compiler-driver "gcc -m32" --trace2file enable --assertions enable --only-if-has-compiler --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args -m32 --static-link-gccruntime disable;\
