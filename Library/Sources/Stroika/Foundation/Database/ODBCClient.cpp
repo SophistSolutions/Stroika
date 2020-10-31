@@ -27,7 +27,7 @@ using namespace Stroika::Foundation::Database;
  ********************************************************************************
  */
 Database::Exception::Exception (const String& message)
-    : inherited {Format (L"Database connection error: %s", message.c_str ())}
+    : inherited{Format (L"Database connection error: %s", message.c_str ())}
 {
 }
 
@@ -37,7 +37,7 @@ Database::Exception::Exception (const String& message)
  ********************************************************************************
  */
 Database::NoDataException::NoDataException ()
-    : Exception {L"No Data"sv}
+    : Exception{L"No Data"sv}
 {
 }
 
@@ -59,7 +59,7 @@ namespace {
 }
 class Database::DBConnection::Rep {
 public:
-    SQLHDBC      fConnectionHandle {nullptr};
+    SQLHDBC      fConnectionHandle{nullptr};
     SQLHENV      fODBCEnvironmentHandle{nullptr};
     unsigned int fNestedTransactionCount{0};
 

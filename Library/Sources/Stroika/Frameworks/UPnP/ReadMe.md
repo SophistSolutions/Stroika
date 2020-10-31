@@ -1,50 +1,33 @@
-# Stroika::[Frameworks](../ReadMe.md)::SystemPerformance
+# Stroika::[Frameworks](../ReadMe.md)::UPnP
 
-This Folder contains the [Frameworks](../ReadMe.md)::SystemPerformance Framework source code.
+This Folder contains the [Frameworks](../ReadMe.md)::UPnP Framework source code.
 
 ## Overview
 
 The Stroika UPnP framework is meant to eventually provide basic UPnP functionality
 including
 
-- SDP
+- SSDP (service discovery)
 - Events
 - Control
 
   For starters however, and probably for Stroika v2, we will ONLY support SSDP.
 
-SEE
+## References
 
 - http://www.upnp-hacks.org/upnp.html
 - http://quimby.gnus.org/internet-drafts/draft-cai-ssdp-v1-03.txt
 - https://wiki.gnome.org/action/show/Projects/GUPnP?action=show&redirect=GUPnP
 
-DEMO APP:
-Write simple test app - while running broadcasts
-Write simple test app - while running listens for all, or takes args to search for given string
-(DEMO - NOT TEST)
+## Sample/Demo apps
 
-    Client
-    	o	Search
-    	o	Listener
-    	o	CachingListener
+- [SSDPClient](../../../../../Samples/SSDPClient/ReadMe.md)
 
+  This sample demonstrates lisening for announcemnts, and searching for devices.
 
-    Server:
-    	o	Server
+- [SSDPServer](../../../../../Samples/SSDPServer/ReadMe.md)
 
-CLEINT CODE:
-for listener:
-create multicast socket. Send out igmp group add for multicast group.
-listen for right format messages (distingish alive/dead and have different flags
-we generate. Maybe even be smart about boucning, and track times, and if we get
-a dead with TS out of order with alive, treat properly (based on TS, not order of
-arrivaa)
-for search - must send multicast message on port 1900.
-Must allocate new UDP scoket on random port first (default). Send to muticast addr from that port and
-response goes to sending (seraching) port.
-Then listen (take param for timeout) - and return each answer. Maybe via callback interface for each
-found Device.
+  This sample demonstrates lisening for searches and responding, and periodic (and up/down) announcements
 
 ## Modules
 
