@@ -332,6 +332,10 @@ sub     GetClangVersion_
 	}
 	else {
 		my $ver = trim (`echo "$firstLine" |  sed 's/.*LLVM/x/' | sed 's/)//' |  awk '{print \$3;}'`);
+		# Starting in ubuntu 20.10, they switched to the format used by crapple
+		if ($ver == "version") {
+			$ver = trim(`echo "$firstLine" | awk '{print \$4}'`);
+		}
 		$ver = $ver * 1;
 		return $ver;
 	}
