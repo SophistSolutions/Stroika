@@ -1,26 +1,66 @@
-﻿The Led framework is a collection of libraries which support text editing. This includes
+﻿# Stroika::[Frameworks](../ReadMe.md)::Led
+
+This Folder contains the [Frameworks](../ReadMe.md)::Led Framework source code.
+
+The Led framework is a collection of libraries which support text editing. This includes
 code to serialize and deserialize rich text formats (such as RTF and HTML), and code to
-render rich text (including RTL text, tables, etc), support for interactors (full text 
+render rich text (including RTL text, tables, etc), support for interactors (full text
 editing/word processing functionality.
 
+## See the Sample apps
 
-History:
-	THIS snapshot is from HelathFrame (as of 2011-09-21).
+### [LedIt](../../../../../Samples/LedIt/ReadMe.md)
 
-	I MUST review the other snapshots I have on 
-		\Sandbox\Led (Dev and ARCHIVE_BACKUP_APX_2005_10_15)
-	
-	But get all this compiling, and get it compiling on unix too.
+Word Processor built using the Led framework
 
-	TEHN - when it all compiles - start rebasing it ontop of Stroika-Foundation.
+### [LedLineIt](../../../../../Samples/LedLineIt/ReadMe.md)
 
-	THEN - decide what todo about Sample apps for Led (stuff like LedIt, ActiveLedIt, etc).
+Simple Text Editor built using the Led framework
 
+## Modules
 
-	(Originally from that - but then rest that was never ported to HealthFrame - I grabbed the most recent other verison of Led I could find.
-	Too bad I wasn't more careful!
+- [BiDiLayoutEngine.h](BiDiLayoutEngine.h)
+- [ChunkedArrayTextStore.h](ChunkedArrayTextStore.h)
+- [Command.h](Command.h)
+- [Config.h](Config.h)
+- [FlavorPackage.h](FlavorPackage.h)
+- [GDI.h](GDI.h)
+- [HandySimple.h](HandySimple.h)
+- [HiddenText.h](HiddenText.h)
+- [IdleManager.h](IdleManager.h)
+- [LineBasedPartition.h](LineBasedPartition.h)
+- [Marker.h](Marker.h) - central concept in Led - used to track positions in the text buffer
+- [MarkerCover.h](MarkerCover.h) - set of markers that 'covers' (without overlap) - aka PARTITION of the text positions
+- [Platform/](Platform/ReadMe.md)
+- [SimpleLed.h](SimpleLed.h)
+- [SimpleTextImager.h](SimpleTextImager.h)
+- [SimpleTextInteractor.h](SimpleTextInteractor.h)
+- [SimpleTextStore.h](SimpleTextStore.h)
+- [SpellCheckEngine.h](SpellCheckEngine.h)
+- [SpellCheckEngine_Basic.h](SpellCheckEngine_Basic.h)
+- [StandardStyledTextImager.h](StandardStyledTextImager.h)
+- [StandardStyledTextInteractor.h](StandardStyledTextInteractor.h)
+- [StdDialogs.h](StdDialogs.h)
+- [StyledTextEmbeddedObjects.h](StyledTextEmbeddedObjects.h)
+- [StyledTextImager.h](StyledTextImager.h)
+- [StyledTextIO/](StyledTextIO/ReadMe.md)
+- [Support.h](Support.h)
+- [SyntaxColoring.h](SyntaxColoring.h)
+- [TextBreaks.h](TextBreaks.h)
+- [TextImager.h](TextImager.h) - a core building block abstract class which renders text to a GDI
+- [TextInteractor.h](TextInteractor.h) - a core building block abstract class inherits from TextImager and adds GUI interaction
+- [TextInteractorMixins.h](TextInteractorMixins.h)
+- [TextStore.h](TextStore.h)
+- [WordProcessor.h](WordProcessor.h)
+- [WordWrappedTextImager.h](WordWrappedTextImager.h)
+- [WordWrappedTextImager.h](WordWrappedTextImager.h)
 
-	Hopefully this Stroika project will make that easier going forward....
+## History/Notes
 
-	It may take a while before I have all this building/working ... again...
+THIS snapshot is from HealthFrame (as of 2011-09-21).
 
+I should review the other snapshots I have on
+
+```
+\Sandbox\Led (Dev and ARCHIVE_BACKUP_APX_2005_10_15)
+```
