@@ -72,7 +72,7 @@
 #if (__clang_major__ < 6) || (__clang_major__ == 6 && (__clang_minor__ < 0))
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v2.1 does not support versions prior to clang++ 6 (non-apple); note that Stroika v2.0 supports clang3.9, clang4, and clang5"
 #endif
-#if (__clang_major__ > 10) || (__clang_major__ == 10 && (__clang_minor__ > 0))
+#if (__clang_major__ > 11) || (__clang_major__ == 11 && (__clang_minor__ > 0))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of clang++ - (>10.0) USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
@@ -857,7 +857,8 @@ In file included from ./ObjectVariantMapper.h:883:
 // tested still generates error with clang++-8
 // tested still generates error with clang++-9
 // tested still generates error with clang++-10 (BUT MAYBE THIS ONLY WORKS IN C++20 - TRY AGAIN THAT WAY)
-#define qCompiler_noSanitizeAttributeForLamdas_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
+// tested still generates error with clang++-11 (BUT MAYBE THIS ONLY WORKS IN C++20 - TRY AGAIN THAT WAY)
+#define qCompiler_noSanitizeAttributeForLamdas_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 11))
 #elif defined(__GNUC__)
 // tested still generates warning with gcc8
 // appears fixed (at least no warning) with gcc9
@@ -1177,7 +1178,8 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 // still broken in clang++-8
 // still broken in clang++-9
 // still broken in clang++-10
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
+// still broken in clang++-11
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 11))
 #elif defined(_MSC_VER)
 // still broken in _MS_VS_2k17_15Pt1_
 // still broken in _MS_VS_2k17_15Pt3Pt2_
@@ -1241,7 +1243,8 @@ Test.cpp:173:31: error: template template argument has different template parame
 #define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 11))
 #elif defined(__clang__) && !defined(__APPLE__)
 // verified still broken in clang++-10
-#define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
+// verified still broken in clang++-11
+#define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 11))
 #else
 #define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy 0
 #endif
@@ -1277,7 +1280,7 @@ Segmentation fault (core dumped)
 #ifndef qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy
 
 #if defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy ((9 <= __clang_major__ && __clang_major__ <= 10))
+#define qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy ((9 <= __clang_major__ && __clang_major__ <= 11))
 #else
 #define qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy 0
 #endif
@@ -2136,7 +2139,7 @@ namespace Stroika::Foundation::Configuration {
             throw;
         }
     }
-}
+} // namespace Stroika::Foundation::Configuration
 #endif
 
 #endif /*defined(__cplusplus)*/
