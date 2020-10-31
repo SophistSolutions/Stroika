@@ -1070,7 +1070,7 @@ WORKAROUND:
 // verified still broken _MSC_VER_2k19_16Pt2_
 // verified still broken in _MSC_VER_2k19_16Pt3_
 // verified fixed in _MSC_VER_2k19_16Pt4_
-#define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy  (_MSC_VER_2k17_15Pt8_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k19_16Pt3_)
+#define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy (_MSC_VER_2k17_15Pt8_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k19_16Pt3_)
 #else
 #define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy 0
 #endif
@@ -1098,11 +1098,11 @@ clang says:
 
 #if defined(__clang__) && !defined(__APPLE__)
 // Appears FIXED with clang++-9
-#define qCompilerAndStdLib_make_from_tuple_Buggy  ((__clang_major__ <= 8))
+#define qCompilerAndStdLib_make_from_tuple_Buggy ((__clang_major__ <= 8))
 #elif defined(_MSC_VER)
 // verified broken _MS_VS_2k19_16Pt0Pt0_
 // verified FIXED in _MSC_VER_2k19_16Pt1_
-#define qCompilerAndStdLib_make_from_tuple_Buggy  (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
+#define qCompilerAndStdLib_make_from_tuple_Buggy (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
 #else
 #define qCompilerAndStdLib_make_from_tuple_Buggy 0
 #endif
@@ -1376,7 +1376,7 @@ NOTE:
 // Assume broken in _MS_VS_2k17_15Pt5Pt5_
 // still broken in _MS_VS_2k17_15Pt6Pt0_
 // verfiied fixed with _MS_VS_2k17_15Pt7Pt1_
-#define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy  (_MSC_FULL_VER <= _MS_VS_2k17_15Pt6Pt0_)
+#define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy (_MSC_FULL_VER <= _MS_VS_2k17_15Pt6Pt0_)
 #else
 #define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy 0
 #endif
@@ -1408,7 +1408,7 @@ NOTE:
 #ifndef qCompilerAndStdLib_TemplateUsingOfTemplateOfTemplateSpecializationVariadic_Buggy
 
 #if defined(_MSC_VER)
-#define qCompilerAndStdLib_TemplateUsingOfTemplateOfTemplateSpecializationVariadic_Buggy  (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
+#define qCompilerAndStdLib_TemplateUsingOfTemplateOfTemplateSpecializationVariadic_Buggy (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
 #else
 #define qCompilerAndStdLib_TemplateUsingOfTemplateOfTemplateSpecializationVariadic_Buggy 0
 #endif
@@ -1439,7 +1439,7 @@ NOTE:
 // verified still broken in _MSC_VER_2k19_16Pt0_ (.0 preview 1)
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre2_
 // verified FIXED in _MS_VS_2k19_16Pt0Pt0pre3_
-#define qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy  (_MS_VS_2k17_15Pt7Pt1_ <= _MSC_FULL_VER && _MSC_FULL_VER <= _MS_VS_2k19_16Pt0Pt0pre2_)
+#define qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy (_MS_VS_2k17_15Pt7Pt1_ <= _MSC_FULL_VER && _MSC_FULL_VER <= _MS_VS_2k19_16Pt0Pt0pre2_)
 #else
 #define qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy 0
 #endif
@@ -1701,7 +1701,7 @@ namespace {
 #if defined(_MSC_VER)
 // first noticed broken in _MSC_VER_2k17_15Pt8_
 // VERIFIED FIXED in _MSC_VER_2k17_15Pt9_
-#define qCompilerAndStdLib_lambda_expand_in_namespace_Buggy  (_MSC_VER <= _MSC_VER_2k17_15Pt8_)
+#define qCompilerAndStdLib_lambda_expand_in_namespace_Buggy (_MSC_VER <= _MSC_VER_2k17_15Pt8_)
 #else
 #define qCompilerAndStdLib_lambda_expand_in_namespace_Buggy 0
 #endif
@@ -1744,7 +1744,7 @@ namespace {
 // VERIFIED still broken in _MS_VS_2k19_16Pt0Pt0pre43_ (aka _MS_VS_2k19_16Pt0Pt0_)
 // VERIFIED still broken in _MSC_VER_2k19_16Pt1_
 // VERIFIED FIXED _MSC_VER_2k19_16Pt2_ (FIXED BUT INSTEAD WE NOW HAVE qCompilerAndStdLib_locale_utf8_string_convert_Buggy)
-#define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy  (_MSC_VER <= _MSC_VER_2k19_16Pt1_)
+#define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy (_MSC_VER <= _MSC_VER_2k19_16Pt1_)
 #else
 #define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy 0
 #endif
