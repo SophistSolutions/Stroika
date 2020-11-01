@@ -128,7 +128,7 @@ else
 	@ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)}:"
 	@rm -rf IntermediateFiles/$(CONFIGURATION)
-	@if [ "$@" == "clean" ] ; then \
+	@if [ "$@" == "clobber" ] ; then \
 		rm -rf Builds/$(CONFIGURATION);\
 	fi
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
