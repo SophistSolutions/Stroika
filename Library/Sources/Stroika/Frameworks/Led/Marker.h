@@ -136,10 +136,10 @@ namespace Stroika::Frameworks::Led {
     public:
         nonvirtual TextStore& GetTextStore () const;
 
-        /*
-     *  Trivial wrappers on owned TextStore
-     */
     public:
+        /*
+         *  Trivial wrappers on owned TextStore
+         */
         nonvirtual size_t FindNextCharacter (size_t afterPos) const;
         nonvirtual size_t FindPreviousCharacter (size_t beforePos) const;
         nonvirtual size_t GetLength () const;
@@ -188,9 +188,9 @@ namespace Stroika::Frameworks::Led {
         const Led_tChar* fTextInserted; // text that was/is to be inserted
         size_t           fTextLength;
         bool             fTextModified; // if true, fTextInserted contains any inserted text.
-        // if false, may have just been a font/style or some such change
-        bool fRealContentUpdate; // true if change is an action which needs to be 'saved'
-        //      and should be interpretted as 'dirtying' the document.
+                                        // if false, may have just been a font/style or some such change
+        bool fRealContentUpdate;        // true if change is an action which needs to be 'saved'
+                                        // and should be interpretted as 'dirtying' the document.
 
     public:
         nonvirtual size_t GetResultingRHS () const;
@@ -364,7 +364,7 @@ namespace Stroika::Frameworks::Led {
 
     private:
         TextStore& fTextStore;
-        Marker     fMarker;
+        Marker     fMarker{};
     };
 
     /*

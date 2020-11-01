@@ -13,7 +13,7 @@ using namespace Stroika::Frameworks::Led;
 
 /*
  ********************************************************************************
- ************************************ MarkerOwner *******************************
+ ********************************** MarkerOwner *********************************
  ********************************************************************************
  */
 /*
@@ -40,7 +40,7 @@ size_t MarkerOwner::FindPreviousCharacter (size_t beforePos) const
 */
 size_t MarkerOwner::GetLength () const
 {
-    return (GetTextStore ().GetLength ());
+    return GetTextStore ().GetLength ();
 }
 
 /*
@@ -49,7 +49,7 @@ size_t MarkerOwner::GetLength () const
 */
 size_t MarkerOwner::GetEnd () const
 {
-    return (GetTextStore ().GetEnd ());
+    return GetTextStore ().GetEnd ();
 }
 
 /*
@@ -76,9 +76,7 @@ void MarkerOwner::Assert_CharPosDoesNotSplitCharacter (size_t charPos) const
  ********************************************************************************
  */
 TempMarker::TempMarker (TextStore& ts, size_t start, size_t end)
-    : inherited ()
-    , fTextStore (ts)
-    , fMarker ()
+    : fTextStore{ts}
 {
     Require (start <= end);
     GetTextStore ().AddMarkerOwner (this);
