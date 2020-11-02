@@ -123,13 +123,13 @@ namespace Stroika::Foundation::Execution {
     {
         SET_OF_WAITABLE_EVENTS_RESULT result;
         /*
-            *  Create another WE as shared.
-            *  Stick it onto the list for each waitablevent
-            *  Wait on 'new private fake' enevt (and if it succeeeds, then check orig events and return right now)
-            *  Either way - undo additions
-            *
-            *  <<< @todo DOCUMENT AND EXPLAIN MUTEX >>>
-            */
+         *  Create another WE as shared.
+         *  Stick it onto the list for each waitablevent
+         *  Wait on 'new private fake' enevt (and if it succeeeds, then check orig events and return right now)
+         *  Either way - undo additions
+         *
+         *  <<< @todo DOCUMENT AND EXPLAIN MUTEX >>>
+         */
         shared_ptr<WE_>         we      = make_shared<WE_> (eAutoReset);
         [[maybe_unused]] auto&& cleanup = Finally (
             [we, waitableEventsStart, waitableEventsEnd] () noexcept {
