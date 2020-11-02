@@ -29,12 +29,12 @@ namespace Stroika::Foundation::Execution {
     }
     template <typename T, typename TRAITS>
     WaitForIOReady<T, TRAITS>::WaitForIOReady (const Traversal::Iterable<T>& fds, const TypeOfMonitorSet& flags, optional<pair<SDKPollableType, TypeOfMonitorSet>> pollable2Wakeup)
-        : WaitForIOReady (fds.template Select<pair<T, TypeOfMonitorSet>> ([&] (const T& t) { return make_pair (t, flags); }), pollable2Wakeup)
+        : WaitForIOReady{fds.template Select<pair<T, TypeOfMonitorSet>> ([&] (const T& t) { return make_pair (t, flags); }), pollable2Wakeup}
     {
     }
     template <typename T, typename TRAITS>
     WaitForIOReady<T, TRAITS>::WaitForIOReady (T fd, const TypeOfMonitorSet& flags, optional<pair<SDKPollableType, TypeOfMonitorSet>> pollable2Wakeup)
-        : WaitForIOReady (Containers::Collection<pair<T, TypeOfMonitorSet>>{make_pair (fd, flags)}, pollable2Wakeup)
+        : WaitForIOReady{Containers::Collection<pair<T, TypeOfMonitorSet>>{make_pair (fd, flags)}, pollable2Wakeup}
     {
     }
     template <typename T, typename TRAITS>

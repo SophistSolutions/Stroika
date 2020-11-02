@@ -118,6 +118,12 @@ namespace Stroika::Foundation::Execution {
         using LockType              = unique_lock<MUTEX>;
         using QuickLockType         = lock_guard<MUTEX>;
 
+        /**
+         */
+        ConditionVariable ()                         = default;
+        ConditionVariable (const ConditionVariable&) = delete;
+        nonvirtual ConditionVariable& operator= (const ConditionVariable&) = delete;
+
         MutexType          fMutex;
         CONDITION_VARIABLE fConditionVariable;
 

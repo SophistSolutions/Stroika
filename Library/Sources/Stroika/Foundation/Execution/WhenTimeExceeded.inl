@@ -18,9 +18,9 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     inline WhenTimeExceeded::WhenTimeExceeded (Time::DurationSecondsType callIfTakesLongerThan, const function<void (Time::DurationSecondsType)>& f)
-        : fStartedAt_ (Time::GetTickCount ())
-        , fCallIfTakesLongerThan_ (callIfTakesLongerThan)
-        , fRunIfTakesTooLong (f)
+        : fStartedAt_{Time::GetTickCount ()}
+        , fCallIfTakesLongerThan_{callIfTakesLongerThan}
+        , fRunIfTakesTooLong{f}
     {
     }
     inline WhenTimeExceeded::~WhenTimeExceeded ()
