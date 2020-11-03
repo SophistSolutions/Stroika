@@ -14,7 +14,7 @@ Just create one or more of these docker images, and run them as in:
 
 ### Unix
 
-- `docker run -it sophistsolutionsinc/stroika-buildvm-ubuntu1804-small`
+- `docker run -it sophistsolutionsinc/stroika-buildvm-ubuntu2004-small`
 
   First thing when you run docker image, cat /Getting-Started-With-Stroika.md
 

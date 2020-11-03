@@ -22,8 +22,6 @@ build-images:
 ifeq ($(shell uname),Linux)
 	docker build -f Ubuntu1804-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu1804-small .
 	docker build -f Ubuntu1804-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests .
-	docker build -f Ubuntu1910-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu1910-small .
-	docker build -f Ubuntu1910-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests .
 	docker build -f Ubuntu2004-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2004-small .
 	docker build -f Ubuntu2004-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests .
 	docker build -f Ubuntu2010-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2010-small .
@@ -45,8 +43,6 @@ tag-images:
 ifeq ($(shell uname),Linux)
 	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu1804-small sophistsolutionsinc/stroika-buildvm-ubuntu1804-small:$(STROIKA_VERSION)
 	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests  sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests:$(STROIKA_VERSION)
-	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu1910-small sophistsolutionsinc/stroika-buildvm-ubuntu1910-small:$(STROIKA_VERSION)
-	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests:$(STROIKA_VERSION)
 	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu2004-small sophistsolutionsinc/stroika-buildvm-ubuntu2004-small:$(STROIKA_VERSION)
 	docker tag sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:$(STROIKA_VERSION)
 	docker tag sophistsolutionsinc/stroika-buildvm-centos-7-small sophistsolutionsinc/stroika-buildvm-centos-7-small:$(STROIKA_VERSION)
@@ -63,8 +59,6 @@ endif
 pull-base-images:
 ifeq ($(shell uname),Linux)
 	docker pull ubuntu:18.04
-	docker pull ubuntu:18.10
-	docker pull ubuntu:19.10
 	docker pull ubuntu:20.04
 	docker pull ubuntu:20.10
 	docker pull centos:centos7
@@ -78,11 +72,9 @@ push-images:
 	#if you get errors doing this (permission denied) make sure you ran docker login (as sophists - else no permission to push these)
 ifeq ($(shell uname),Linux)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-small:latest
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1910-small:latest
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-small:latest
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2010-small:latest
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests:latest
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests:latest
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:latest
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2010-regression-tests:latest
 	docker push sophistsolutionsinc/stroika-buildvm-centos-7-small:latest
@@ -97,11 +89,9 @@ endif
 ifeq ($(STROIKA_VERSION_Final),true)
 ifeq ($(shell uname),Linux)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-small:$(STROIKA_VERSION)
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1910-small:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-small:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2010-small:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests:$(STROIKA_VERSION)
-	docker push sophistsolutionsinc/stroika-buildvm-ubuntu1910-regression-tests:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-ubuntu2010-regression-tests:$(STROIKA_VERSION)
 	docker push sophistsolutionsinc/stroika-buildvm-centos-7-small:$(STROIKA_VERSION)
