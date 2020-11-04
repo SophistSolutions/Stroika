@@ -57,6 +57,7 @@ namespace Stroika::Foundation::Execution {
             Thread::CheckForInterruption ();
             Time::DurationSecondsType remaining = timeoutAt - Time::GetTickCount ();
             if (remaining < 0) {
+                Ensure (lock.owns_lock ());
                 return cv_status::timeout;
             }
             remaining = min (remaining, fThreadAbortCheckFrequency);
@@ -83,11 +84,13 @@ namespace Stroika::Foundation::Execution {
                     if (stillRemaining < 0) {
                         return cv_status::timeout;
                     }
+                    Ensure (lock.owns_lock ());
                     return cv_status::no_timeout; // can be spurious wakeup, or real, no way to know
                 }
             }
             else {
                 Assert (tmp == cv_status::no_timeout);
+                Ensure (lock.owns_lock ());
                 return cv_status::no_timeout; // can be spurious wakeup, or real, no way to know
             }
         }
@@ -105,10 +108,13 @@ namespace Stroika::Foundation::Execution {
                  *  Somewhat ambiguous if this should check readyToWake just return false. Probably best to check, since the condition is met, and thats
                  *  probably more important than the timeout.
                  */
-                return readyToWake ();
+                auto result = readyToWake ();
+                Ensure (lock.owns_lock ());
+                return result;
             }
             // Maybe a real wakeup, or a spurious one, so just check the readyToWake() predicate again, and keep looping!
         }
+        Ensure (lock.owns_lock ());
         return true;
     }
     template <typename MUTEX, typename CONDITION_VARIABLE>
