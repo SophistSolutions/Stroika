@@ -38,6 +38,7 @@ namespace Stroika::Foundation::Debug {
 
 
 // EXPERIMENMTING - but __attribute__ ((no_sanitize ("thread"))) seemed to work to disable on function in g++-10 on ubuntu 20.10
+// at least on g++-10 appears to work before function or after () in function (but before better cuz I think docs for c++ func attributes reuqire that)
 #if defined(__clang__)
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD [[no_sanitize_thread]]
 #elif defined(__GNUC__)
