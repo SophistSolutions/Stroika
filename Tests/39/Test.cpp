@@ -88,7 +88,7 @@ namespace {
             Debug::TraceContextBumper traceCtx{"pingpong threads with event.wait(NOTIMEOUTS)"};
             // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
             struct FRED1 {
-                static void DoIt (void* ignored)
+                static void DoIt (void* ignored) Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD // workaround https://stroika.atlassian.net/browse/STK-717
                 {
                     int* argP = reinterpret_cast<int*> (ignored);
                     for (int i = 0; i < 10; i++) {
@@ -104,7 +104,7 @@ namespace {
                 }
             };
             struct FRED2 {
-                static void DoIt (void* ignored)
+                static void DoIt (void* ignored) Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD  // workaround https://stroika.atlassian.net/browse/STK-717
                 {
                     int* argP = reinterpret_cast<int*> (ignored);
                     for (int i = 0; i < 10; i++) {
@@ -139,7 +139,7 @@ namespace {
             Debug::TraceContextBumper traceCtx{"pingpong threads with event.wait(WITHTIMEOUT)"};
             // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
             struct FRED1 {
-                static void DoIt (void* ignored)
+                static void DoIt (void* ignored) Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD // workaround https://stroika.atlassian.net/browse/STK-717
                 {
                     int* argP = reinterpret_cast<int*> (ignored);
                     for (int i = 0; i < 10; i++) {
@@ -155,7 +155,7 @@ namespace {
                 }
             };
             struct FRED2 {
-                static void DoIt (void* ignored)
+                static void DoIt (void* ignored) Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD // workaround https://stroika.atlassian.net/browse/STK-717
                 {
                     int* argP = reinterpret_cast<int*> (ignored);
                     for (int i = 0; i < 10; i++) {

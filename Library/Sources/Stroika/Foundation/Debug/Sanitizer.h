@@ -36,6 +36,16 @@ namespace Stroika::Foundation::Debug {
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE(ARGS) [[no_sanitize (ARGS)]]
 #endif
 
+
+// EXPERIMENMTING - but __attribute__ ((no_sanitize ("thread"))) seemed to work to disable on function in g++-10 on ubuntu 20.10
+#if defined(__clang__)
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD [[no_sanitize_thread]]
+#elif defined(__GNUC__)
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD __attribute__ ((no_sanitize ("thread")))
+#else
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD
+#endif
+
 #if qCompiler_noSanitizeAttributeForLamdas_Buggy
 #define Stroika_Foundation_Debug_ATTRIBUTE_ForLambdas_NO_SANITIZE(ARGS)
 #elif defined(__clang__)
