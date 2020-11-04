@@ -63,9 +63,8 @@ bool WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutAt)
     unique_lock<mutex> lock (fConditionVariable.fMutex);
     if (fConditionVariable.wait_until (lock, timeoutAt, [this] () { return fTriggered; })) {
         if (fResetType == eAutoReset) {
-            Assert (lock.owns_lock ());
-            // cannot call Reset () directly because we (may???) already have the lock mutex? Maybe not cuz of cond variable?
-            fTriggered = false; // autoreset
+            Assert (lock.owns_lock ()); // cannot call Reset () directly because we already have the lock mutex
+            fTriggered = false;         // autoreset
         }
         return not kWaitQuietlyTimeoutResult;
     }
