@@ -762,6 +762,7 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
 #ifndef qCompiler_ThreadSantizer_SPR_717_Buggy
 
 #if defined(__GNUC__) && !defined(__clang__)
+// SEE https://stroika.atlassian.net/browse/STK-717
 // First seen broken in g++10, and only on ubuntu 20.10
 #define qCompiler_ThreadSantizer_SPR_717_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__GNUC__ == 10))
 #else
