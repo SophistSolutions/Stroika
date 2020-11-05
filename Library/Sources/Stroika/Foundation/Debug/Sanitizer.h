@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Debug {
     /// @todo understand why [[no_sanitize_thread]] (etc) syntax not working on gcc (no error but no effect - and often warning unrecognized)
 
 #if defined(__clang__)
-#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD [[no_sanitize_thread]]
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD [[gnu::no_sanitize_thread]]
 #elif defined(__GNUC__)
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD __attribute__ ((no_sanitize ("thread")))
 #else
@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Debug {
 #endif
 
 #if defined(__clang__)
-#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED [[no_sanitize_undefined]]
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED [[gnu::no_sanitize_undefined]]
 #elif defined(__GNUC__)
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED __attribute__ ((no_sanitize ("undefined")))
 #else
