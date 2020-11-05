@@ -835,51 +835,6 @@ STILL:
 
 #endif
 
-/**
- * get warnings like 
- *      warning: ‘no_sanitize’ attribute directive ignored [-Wattributes
- */
-#ifndef qCompiler_noSanitizeAttribute_Buggy
-#if defined(__clang__) && defined(__APPLE__)
-#define qCompiler_noSanitizeAttribute_Buggy 0
-#elif defined(__clang__) && !defined(__APPLE__)
-#define qCompiler_noSanitizeAttribute_Buggy ((__clang_major__ <= 6))
-#else
-// TYPO - THIS SHOULD BE ZERO - But the way its used is a bit of a misnomer - so leave this as is for now...
-#define qCompiler_noSanitizeAttribute_Buggy 1
-#endif
-#endif
-
-/**
- * REALLY UNSURE if this is a real bug or a misunderstanding.
- * 
- *  In file included from ObjectVariantMapper.cpp:19:
-In file included from ./ObjectVariantMapper.h:883:
-./ObjectVariantMapper.inl:931:130: error: 'no_sanitize' attribute cannot be applied to types
-        FromObjectMapperType<CLASS> fromObjectMapper = [fields] (const ObjectVariantMapper& mapper, const CLASS* fromObjOfTypeT) Stroika_Foundation_Debug_ATTRIBUTE_ForLambdas_NO_SANITIZE ...
-                                                                                                                                 ^
-./../Debug/Sanitizer.h:42
-*/
-#ifndef qCompiler_noSanitizeAttributeForLamdas_Buggy
-#if defined(__clang__) && defined(__APPLE__)
-// appears to work with XCode 10 on macos, if you use clang::no_sanitize for attribute name
-// VERIFIED STILL BROKEN on XCode 11.0
-#define qCompiler_noSanitizeAttributeForLamdas_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 11))
-#elif defined(__clang__) && !defined(__APPLE__)
-// tested still generates error with clang++-8
-// tested still generates error with clang++-9
-// tested still generates error with clang++-10 (BUT MAYBE THIS ONLY WORKS IN C++20 - TRY AGAIN THAT WAY)
-// tested still generates error with clang++-11 (BUT MAYBE THIS ONLY WORKS IN C++20 - TRY AGAIN THAT WAY)
-#define qCompiler_noSanitizeAttributeForLamdas_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 11))
-#elif defined(__GNUC__)
-// tested still generates warning with gcc8
-// appears fixed (at least no warning) with gcc9
-#define qCompiler_noSanitizeAttributeForLamdas_Buggy (__GNUC__ <= 8)
-#else
-#define qCompiler_noSanitizeAttributeForLamdas_Buggy 1
-#endif
-#endif
-
 /*
  *  https://timsong-cpp.github.io/cppwp/draft.pdf documents
             if (n > 5) [[unlikely]] { // n > 5 is considered to be arbitrarily unlikely

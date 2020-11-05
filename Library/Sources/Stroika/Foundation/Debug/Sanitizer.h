@@ -26,7 +26,7 @@
 #if defined(__cplusplus)
 namespace Stroika::Foundation::Debug {
 
-
+    /// @todo understand why [[no_sanitize_thread]] (etc) syntax not working on gcc (no error but no effect - and often warning unrecognized)
 
 #if defined(__clang__)
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD [[no_sanitize_thread]]
@@ -35,7 +35,6 @@ namespace Stroika::Foundation::Debug {
 #else
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD
 #endif
-
 
 #if defined(__clang__)
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED [[no_sanitize_undefined]]
