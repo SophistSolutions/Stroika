@@ -188,7 +188,8 @@ namespace {
 #if qPlatform_MacOS
     Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED
 #endif
-        Interface GetInterfaces_POSIX_mkInterface_ (int sd, const ifreq* i, optional<Interface> prevInterfaceObject2Update)
+        Interface
+        GetInterfaces_POSIX_mkInterface_ (int sd, const ifreq* i, optional<Interface> prevInterfaceObject2Update)
     {
         Interface newInterface            = prevInterfaceObject2Update.value_or (Interface{});
         newInterface.fInternalInterfaceID = String::FromSDKString (i->ifr_name);
@@ -433,7 +434,8 @@ namespace {
 #if qPlatform_MacOS
     Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED
 #endif
-        Traversal::Iterable<Interface> GetInterfaces_POSIX_ ()
+        Traversal::Iterable<Interface>
+        GetInterfaces_POSIX_ ()
     {
         // @todo - when we supported KeyedCollection - use KeyedCollection instead of mapping
         //Collection<Interface> result;

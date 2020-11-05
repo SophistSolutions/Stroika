@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Debug {
 #if defined(__clang__)
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD [[gnu::no_sanitize_thread]]
 #elif defined(__GNUC__)
-#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD __attribute__ ((no_sanitize ("thread")))
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD __attribute__ ((no_sanitize_thread))
 #else
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD
 #endif
@@ -39,15 +39,16 @@ namespace Stroika::Foundation::Debug {
 #if defined(__clang__)
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED [[gnu::no_sanitize_undefined]]
 #elif defined(__GNUC__)
-#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED __attribute__ ((no_sanitize ("undefined")))
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED __attribute__ ((no_sanitize_undefined))
 #else
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED
 #endif
 
 #if defined(__clang__)
+    // using [[gnu::no_sanitize_undefined]] syntax on clang++-10 on lambdas produces warning of syntax error but this seems to work?
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS __attribute__ ((no_sanitize_address))
 #elif defined(__GNUC__)
-#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS __attribute__ ((no_sanitize ("address")))
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS __attribute__ ((no_sanitize_address))
 #else
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
 #endif
