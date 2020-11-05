@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Debug {
     // using [[gnu::no_sanitize_undefined]] syntax on clang++-10 on lambdas produces warning of syntax error but this seems to work?
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS __attribute__ ((no_sanitize_address))
 #elif defined(__GNUC__)
-#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS __attribute__ ((no_sanitize_address))
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS [[no_sanitize_address]]
 #else
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
 #endif
