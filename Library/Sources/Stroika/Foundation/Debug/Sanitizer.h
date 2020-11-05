@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Debug {
 #if defined(__clang__)
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD [[gnu::no_sanitize_thread]]
 #elif defined(__GNUC__)
-#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD __attribute__ ((no_sanitize_thread))
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD [[gnu::no_sanitize_thread]]
 #else
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD
 #endif
@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Debug {
 #if defined(__clang__)
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED [[gnu::no_sanitize_undefined]]
 #elif defined(__GNUC__)
-#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED __attribute__ ((no_sanitize_undefined))
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED [[gnu::no_sanitize_undefined]]
 #else
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED
 #endif
