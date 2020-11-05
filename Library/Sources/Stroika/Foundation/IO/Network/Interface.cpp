@@ -186,7 +186,7 @@ namespace {
     //   Interface.cpp:210:71: runtime error: member access within misaligned address 0x70000a774c74 for type 'const ifreq', which requires 8 byte alignment
     //        0x70000a774c74: note: pointer points here
 #if qPlatform_MacOS
-    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("undefined")
+    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED
 #endif
         Interface GetInterfaces_POSIX_mkInterface_ (int sd, const ifreq* i, optional<Interface> prevInterfaceObject2Update)
     {
@@ -431,7 +431,7 @@ namespace {
         return newInterface;
     }
 #if qPlatform_MacOS
-    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("undefined")
+    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED
 #endif
         Traversal::Iterable<Interface> GetInterfaces_POSIX_ ()
     {

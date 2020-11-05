@@ -26,6 +26,8 @@
 #if defined(__cplusplus)
 namespace Stroika::Foundation::Debug {
 
+
+    #if 0
 #if qCompiler_noSanitizeAttribute_Buggy
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE(ARGS)
 #elif defined(__clang__)
@@ -35,15 +37,31 @@ namespace Stroika::Foundation::Debug {
 #else
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE(ARGS) [[no_sanitize (ARGS)]]
 #endif
+    #endif
 
-// EXPERIMENMTING - but __attribute__ ((no_sanitize ("thread"))) seemed to work to disable on function in g++-10 on ubuntu 20.10
-// at least on g++-10 appears to work before function or after () in function (but before better cuz I think docs for c++ func attributes reuqire that)
 #if defined(__clang__)
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD [[no_sanitize_thread]]
 #elif defined(__GNUC__)
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD __attribute__ ((no_sanitize ("thread")))
 #else
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD
+#endif
+
+
+#if defined(__clang__)
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED [[no_sanitize_undefined]]
+#elif defined(__GNUC__)
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED __attribute__ ((no_sanitize ("undefined")))
+#else
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED
+#endif
+
+#if defined(__clang__)
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS [[no_sanitize_address]]
+#elif defined(__GNUC__)
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS __attribute__ ((no_sanitize ("address")))
+#else
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
 #endif
 
 #if qCompiler_noSanitizeAttributeForLamdas_Buggy

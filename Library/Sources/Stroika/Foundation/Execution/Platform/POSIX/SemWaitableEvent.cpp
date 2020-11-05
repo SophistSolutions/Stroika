@@ -60,7 +60,7 @@ void SemWaitableEvent::Wait ()
 }
 
 // use no_sanitize(thread) to workaround https://stroika.atlassian.net/browse/STK-677
-Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("thread") void SemWaitableEvent::Set ()
+Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD void SemWaitableEvent::Set ()
 {
 #if qCompilerAndStdLib_unnamed_semaphores_Buggy
     sem_t* pSem = fSem_;
