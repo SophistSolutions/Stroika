@@ -76,7 +76,7 @@ namespace Stroika::Foundation::Debug {
 #if __STK_DBG_SAN_HAS_ASAN
     constexpr bool kBuiltWithAddressSanitizer = true;
 #else
-    constexpr bool kBuiltWithAddressSanitizer           = false;
+    constexpr bool kBuiltWithAddressSanitizer = false;
 #endif
 
     /**
@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Debug {
 #if __STK_DBG_SAN_HAS_TSAN
     constexpr bool kBuiltWithThreadSanitizer = true;
 #else
-    constexpr bool kBuiltWithThreadSanitizer            = false;
+    constexpr bool kBuiltWithThreadSanitizer = false;
 #endif
 
     /**
@@ -104,7 +104,7 @@ namespace Stroika::Foundation::Debug {
  */
 #if __STK_DBG_SAN_HAS_ASAN
 #if defined(__clang__)
-    // using [[gnu::no_sanitize_undefined]] syntax on clang++-10 on lambdas produces warning of syntax error but this seems to work?
+    // using [[gnu::no_sanitize_undefined]] syntax on clang++-10 on lambdas produces warning of no_sanitize_address undefined but this seems to work?
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS __attribute__ ((no_sanitize_address))
 #elif defined(__GNUC__)
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS [[gnu::no_sanitize_address]]
@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Debug {
 /*
  *  Macro: Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD
  */
-#if __STK_DBG_SAN_HAS_ASAN
+#if __STK_DBG_SAN_HAS_TSAN
 #if defined(__clang__) || defined(__GNUC__)
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD [[gnu::no_sanitize_thread]]
 #endif
@@ -129,8 +129,8 @@ namespace Stroika::Foundation::Debug {
 #if __STK_DBG_SAN_HAS_UBSAN
 #if defined(__clang__)
 #if defined(__APPLE__)
-// apple clang++ 11 gives warning no_sanitize_undefined unrecognized
-#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED [[no_sanitize ("undefined")]]
+// apple clang++ 11 gives warning no_sanitize_undefined unrecognized, and also doesn't like [[]] notation
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED __attribute__ ((no_sanitize ("undefined")))
 #else
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED [[gnu::no_sanitize_undefined]]
 #endif
