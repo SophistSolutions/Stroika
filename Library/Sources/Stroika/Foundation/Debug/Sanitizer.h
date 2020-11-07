@@ -37,7 +37,11 @@ namespace Stroika::Foundation::Debug {
 #endif
 
 #if defined(__clang__)
+#if defined(__APPLE__)
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED ((no_sanitize ("undefined")))
+#else
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED [[gnu::no_sanitize_undefined]]
+#endif
 #elif defined(__GNUC__)
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED [[gnu::no_sanitize_undefined]]
 #else
