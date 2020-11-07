@@ -26,14 +26,14 @@
 #if defined(__cplusplus)
 namespace Stroika::Foundation::Debug {
 
-	/**
-	 *  Detect if Address Sanitizer is enabled in this compilation.
-	 *
-	 *      Stroika_Foundation_Debug_Sanitizer_HAS_AddressSanitizer
-	 *
-	 *	\note this is defined as a macro, since sometimes its very hard to use constexpr to disable bunchs of code
-	 *		  BUT - use Debug::kBuiltWithAddressSanitizer in preference to this where you can.
-	 */
+    /**
+     *  Detect if Address Sanitizer is enabled in this compilation.
+     *
+     *      Stroika_Foundation_Debug_Sanitizer_HAS_AddressSanitizer
+     *
+     *  \note this is defined as a macro, since sometimes its very hard to use constexpr to disable bunchs of code
+     *        BUT - use Debug::kBuiltWithAddressSanitizer in preference to this where you can.
+     */
 #if !defined(Stroika_Foundation_Debug_Sanitizer_HAS_AddressSanitizer)
 #if defined(__SANITIZE_ADDRESS__)
 #define Stroika_Foundation_Debug_Sanitizer_HAS_AddressSanitizer 1
@@ -55,9 +55,9 @@ namespace Stroika::Foundation::Debug {
      */
     constexpr bool kBuiltWithAddressSanitizer = Stroika_Foundation_Debug_Sanitizer_HAS_AddressSanitizer;
 
-	/*
-	 *  Macro: Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
-	 */
+    /*
+     *  Macro: Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
+     */
 #if Stroika_Foundation_Debug_Sanitizer_HAS_AddressSanitizer
 #if defined(__clang__)
     // using [[gnu::no_sanitize_undefined]] syntax on clang++-10 on lambdas produces warning of no_sanitize_address undefined but this seems to work?
@@ -70,15 +70,14 @@ namespace Stroika::Foundation::Debug {
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
 #endif
 
-
-	/**
-	 *  Detect if Thread Sanitizer is enabled in this compilation.
-	 *
-	 *      Stroika_Foundation_Debug_Sanitizer_HAS_ThreadSanitizer
-	 *
-	 *	\note this is defined as a macro, since sometimes its very hard to use constexpr to disable bunchs of code
-	 *		  BUT - use Debug::kBuiltWithThreadSanitizer in preference to this where you can.
-	 */
+    /**
+     *  Detect if Thread Sanitizer is enabled in this compilation.
+     *
+     *      Stroika_Foundation_Debug_Sanitizer_HAS_ThreadSanitizer
+     *
+     *  \note this is defined as a macro, since sometimes its very hard to use constexpr to disable bunchs of code
+     *        BUT - use Debug::kBuiltWithThreadSanitizer in preference to this where you can.
+     */
 #if !defined(Stroika_Foundation_Debug_Sanitizer_HAS_ThreadSanitizer)
 #if defined(__SANITIZE_THREAD__)
 #define Stroika_Foundation_Debug_Sanitizer_HAS_ThreadSanitizer 1
@@ -100,27 +99,26 @@ namespace Stroika::Foundation::Debug {
      */
     constexpr bool kBuiltWithThreadSanitizer = Stroika_Foundation_Debug_Sanitizer_HAS_ThreadSanitizer;
 
-	/**
-	 *  Macro: Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD
-	 */
-	#if Stroika_Foundation_Debug_Sanitizer_HAS_ThreadSanitizer
-	#if defined(__clang__) || defined(__GNUC__)
-	#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD [[gnu::no_sanitize_thread]]
-	#endif
-	#endif
-	#if !defined(Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD)
-	#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD
-	#endif
+/**
+     *  Macro: Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD
+     */
+#if Stroika_Foundation_Debug_Sanitizer_HAS_ThreadSanitizer
+#if defined(__clang__) || defined(__GNUC__)
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD [[gnu::no_sanitize_thread]]
+#endif
+#endif
+#if !defined(Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD)
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD
+#endif
 
-
-	/**
-	 *  Detect if Undefined Behavior Sanitizer is enabled in this compilation.
-	 *
-	 *      Stroika_Foundation_Debug_Sanitizer_HAS_UndefinedBehaviorSanitizer
-	 *
-	 *	\note this is defined as a macro, since sometimes its very hard to use constexpr to disable bunchs of code
-	 *		  BUT - use Debug::kBuiltWithUndefinedBehaviorSanitizer in preference to this where you can.
-	 */
+    /**
+     *  Detect if Undefined Behavior Sanitizer is enabled in this compilation.
+     *
+     *      Stroika_Foundation_Debug_Sanitizer_HAS_UndefinedBehaviorSanitizer
+     *
+     *  \note this is defined as a macro, since sometimes its very hard to use constexpr to disable bunchs of code
+     *        BUT - use Debug::kBuiltWithUndefinedBehaviorSanitizer in preference to this where you can.
+     */
 #if !defined(Stroika_Foundation_Debug_Sanitizer_HAS_UndefinedBehaviorSanitizer)
 #if defined(__has_feature)
     // not documented - https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html - not sure if ever works
@@ -138,9 +136,9 @@ namespace Stroika::Foundation::Debug {
      */
     constexpr bool kBuiltWithUndefinedBehaviorSanitizer = Stroika_Foundation_Debug_Sanitizer_HAS_UndefinedBehaviorSanitizer;
 
-	/**
-	 *  Macro: Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED
-	 */
+    /**
+     *  Macro: Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED
+     */
 #if Stroika_Foundation_Debug_Sanitizer_HAS_UndefinedBehaviorSanitizer
 #if defined(__clang__)
 #if defined(__APPLE__)
