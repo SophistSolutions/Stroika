@@ -11,7 +11,7 @@ using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Debug;
 
-#if qDebug && (!qCompiler_SanitizerTooManyLocksBug || !Stroika_Foundation_Debug_Sanitizer_HAS_ThreadSanitizer)
+#if qDebug
 
 /*
  ********************************************************************************

@@ -103,7 +103,7 @@ namespace Stroika::Foundation::Debug {
          *  \note   Copy/Move constructor checks for existing locks while copying.
          *          Must be able to readlock source on copy, and have zero existing locks on src for move.
          */
-#if qDebug && (!qCompiler_SanitizerTooManyLocksBug || !Stroika_Foundation_Debug_Sanitizer_HAS_ThreadSanitizer)
+#if qDebug
         AssertExternallySynchronizedLock () noexcept;
 #else
         constexpr AssertExternallySynchronizedLock () noexcept = default;
@@ -161,7 +161,7 @@ namespace Stroika::Foundation::Debug {
          */
         nonvirtual void unlock_shared () const noexcept;
 
-#if qDebug && (!qCompiler_SanitizerTooManyLocksBug || !Stroika_Foundation_Debug_Sanitizer_HAS_ThreadSanitizer)
+#if qDebug
     private:
         nonvirtual void lock_ () const noexcept;
         nonvirtual void unlock_ () const noexcept;
