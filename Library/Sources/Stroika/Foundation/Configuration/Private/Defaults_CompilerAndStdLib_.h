@@ -1537,6 +1537,17 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 
 #endif
 
+#if !defined(qCompiler_SanitizerTooManyLocksBug)
+
+#if defined(__GNUC__)
+// Only seen on Ubuntu 20.10, g++-10
+#define qCompiler_SanitizerTooManyLocksBug (__GNUC__ == 10)
+#else
+#define qCompiler_SanitizerTooManyLocksBug 0
+#endif
+
+#endif
+
 /*
  */
 #ifndef qCompilerAndStdLib_locale_pctX_print_time_Buggy

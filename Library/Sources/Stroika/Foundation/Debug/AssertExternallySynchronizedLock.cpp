@@ -11,7 +11,8 @@ using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Debug;
 
-#if qDebug
+#if qDebug && (!qCompiler_SanitizerTooManyLocksBug || !__STK_DBG_SAN_HAS_TSAN)
+
 /*
  ********************************************************************************
  ****************** Debug::AssertExternallySynchronizedLock *********************

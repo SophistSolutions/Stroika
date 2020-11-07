@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Debug {
     inline AssertExternallySynchronizedLock::AssertExternallySynchronizedLock ([[maybe_unused]] AssertExternallySynchronizedLock&& src) noexcept
         : AssertExternallySynchronizedLock{}
     {
-#if qDebug
+#if qDebug && (!qCompiler_SanitizerTooManyLocksBug || !__STK_DBG_SAN_HAS_TSAN)
         try {
             lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
             Require (src.fLocks_ == 0 and src.fSharedLockThreads_->empty ()); // to move, the src can have no locks of any kind (since we change src)
@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Debug {
     }
     inline AssertExternallySynchronizedLock& AssertExternallySynchronizedLock::operator= ([[maybe_unused]] const AssertExternallySynchronizedLock& rhs) noexcept
     {
-#if qDebug
+#if qDebug && (!qCompiler_SanitizerTooManyLocksBug || !__STK_DBG_SAN_HAS_TSAN)
         try {
             DISABLE_COMPILER_MSC_WARNING_START (26110);                        // to copy, the src can have shared_locks, but no (write) locks
             shared_lock<const AssertExternallySynchronizedLock> critSec1{rhs}; // ""
@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Debug {
     }
     inline AssertExternallySynchronizedLock& AssertExternallySynchronizedLock::operator= ([[maybe_unused]] AssertExternallySynchronizedLock&& rhs) noexcept
     {
-#if qDebug
+#if qDebug && (!qCompiler_SanitizerTooManyLocksBug || !__STK_DBG_SAN_HAS_TSAN)
         try {
             lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
             Require (rhs.fLocks_ == 0 and rhs.fSharedLockThreads_->empty ()); // to move, the rhs can have no locks of any kind (since we change rhs)
@@ -73,25 +73,25 @@ namespace Stroika::Foundation::Debug {
     }
     inline void AssertExternallySynchronizedLock::lock () const noexcept
     {
-#if qDebug
+#if qDebug && (!qCompiler_SanitizerTooManyLocksBug || !__STK_DBG_SAN_HAS_TSAN)
         lock_ ();
 #endif
     }
     inline void AssertExternallySynchronizedLock::unlock () const noexcept
     {
-#if qDebug
+#if qDebug && (!qCompiler_SanitizerTooManyLocksBug || !__STK_DBG_SAN_HAS_TSAN)
         unlock_ ();
 #endif
     }
     inline void AssertExternallySynchronizedLock::lock_shared () const noexcept
     {
-#if qDebug
+#if qDebug && (!qCompiler_SanitizerTooManyLocksBug || !__STK_DBG_SAN_HAS_TSAN)
         lock_shared_ ();
 #endif
     }
     inline void AssertExternallySynchronizedLock::unlock_shared () const noexcept
     {
-#if qDebug
+#if qDebug && (!qCompiler_SanitizerTooManyLocksBug || !__STK_DBG_SAN_HAS_TSAN)
         unlock_shared_ ();
 #endif
     }

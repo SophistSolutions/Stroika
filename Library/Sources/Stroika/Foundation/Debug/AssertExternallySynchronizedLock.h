@@ -14,7 +14,9 @@
 #include <thread>
 
 #include "../Configuration/Common.h"
-#include "../Debug/Assertions.h"
+
+#include "Assertions.h"
+#include "Sanitizer.h"
 
 /**
  *  \file
@@ -159,7 +161,7 @@ namespace Stroika::Foundation::Debug {
          */
         nonvirtual void unlock_shared () const noexcept;
 
-#if qDebug
+#if qDebug && (!qCompiler_SanitizerTooManyLocksBug || !__STK_DBG_SAN_HAS_TSAN)
     private:
         nonvirtual void lock_ () const noexcept;
         nonvirtual void unlock_ () const noexcept;

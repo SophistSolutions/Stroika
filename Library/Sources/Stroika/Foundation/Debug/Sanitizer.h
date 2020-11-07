@@ -26,8 +26,7 @@
 #if defined(__cplusplus)
 namespace Stroika::Foundation::Debug {
 
-    namespace Private_ {
-        /*
+    /*
          *  Detect if each santizer is enabled, set a temporary macro flag __STK_DBG_SAN_HAS_{XXX}
          *  (for code factoring in this module) which we undefine when done.
          *
@@ -62,12 +61,11 @@ namespace Stroika::Foundation::Debug {
 
 #if !defined(__STK_DBG_SAN_HAS_UBSAN)
 #if defined(__has_feature)
-        // not documented - https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html - not sure if ever works
-        // appears to work on apple XCode 11 clang, at least
+    // not documented - https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html - not sure if ever works
+    // appears to work on apple XCode 11 clang, at least
 #define __STK_DBG_SAN_HAS_UBSAN __has_feature (undefined_behavior_sanitizer)
 #endif
 #endif
-    }
 
     /**
      *  \brief kBuiltWithAddressSanitizer can be checked in compiled code to see if the address sanitizer
@@ -144,13 +142,6 @@ namespace Stroika::Foundation::Debug {
 #if !defined(Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED)
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED
 #endif
-
-    namespace Private_ {
-        // REMOVE all these temporary macros, just used to simplify code inside this file
-#undef __STK_DBG_SAN_HAS_ASAN
-#undef __STK_DBG_SAN_HAS_TSAN
-#undef __STK_DBG_SAN_HAS_UBSAN
-    }
 
 }
 #endif
