@@ -76,7 +76,7 @@ namespace Stroika::Foundation::Debug {
 #if __STK_DBG_SAN_HAS_ASAN
     constexpr bool kBuiltWithAddressSanitizer = true;
 #else
-    constexpr bool kBuiltWithAddressSanitizer = false;
+    constexpr bool kBuiltWithAddressSanitizer           = false;
 #endif
 
     /**
@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Debug {
 #if __STK_DBG_SAN_HAS_TSAN
     constexpr bool kBuiltWithThreadSanitizer = true;
 #else
-    constexpr bool kBuiltWithThreadSanitizer  = false;
+    constexpr bool kBuiltWithThreadSanitizer            = false;
 #endif
 
     /**
