@@ -1537,13 +1537,18 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 
 #endif
 
-#if !defined(qCompiler_SanitizerTooManyLocksBug)
+// https://github.com/google/sanitizers/issues/1259
+// https://github.com/google/sanitizers/issues/950 (sometimes also shows up as)
+#if !defined(qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy)
 
-#if defined(__GNUC__)
+#if defined(__clang__) && !defined(__APPLE__)
+// Only seen on Ubuntu 20.10, clang++-11
+#define qCompiler_SanitizerFunctionPtrConversionSuppressionBug (__clang_major__ == 11)
+#elif defined(__GNUC__)
 // Only seen on Ubuntu 20.10, g++-10
-#define qCompiler_SanitizerTooManyLocksBug (__GNUC__ == 10)
+#define qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy (__GNUC__ == 10)
 #else
-#define qCompiler_SanitizerTooManyLocksBug 0
+#define qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy 0
 #endif
 
 #endif

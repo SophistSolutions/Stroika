@@ -369,6 +369,10 @@ namespace {
     void RegressionTest3_WaitableEvents_ ()
     {
         Debug::TraceContextBumper traceCtx{"RegressionTest3_WaitableEvents_"};
+        if (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
+            DbgTrace ("Skipping this test cuz double locks cause TSAN to die and cannot be easily suppressed");
+            return;
+        }
         WAITABLE_EVENTS_::NOTIMEOUTS_ ();
         WAITABLE_EVENTS_::PingBackAndForthWithSimpleTimeouts_ ();
         WAITABLE_EVENTS_::TEST_TIMEOUT_EXECPETIONS_ ();
