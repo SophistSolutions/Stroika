@@ -1554,6 +1554,43 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 #endif
 
 /*
+ON DEBUG builds on macos only
+
+   [Succeeded]  (2  seconds)  [41]  Foundation::Execution::Other  (../Builds/Debug/Tests/Test41)
+Interface.cpp:458:60: runtime error: member access within misaligned address 0x7ffee9ca61b4 for type 'const ifreq', which requires 8 byte alignment
+0x7ffee9ca61b4: note: pointer points here
+  00 00 00 00 6c 6f 30 00  00 00 00 00 00 00 00 00  00 00 00 00 10 02 00 00  7f 00 00 01 00 00 00 00
+              ^
+SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior Interface.cpp:458:60 in
+Interface.cpp:195:71: runtime error: member access within misaligned address 0x7ffee9ca61b4 for type 'const ifreq', which requires 8 byte alignment
+0x7ffee9ca61b4: note: pointer points here
+  00 00 00 00 6c 6f 30 00  00 00 00 00 00 00 00 00  00 00 00 00 10 02 00 00  7f 00 00 01 00 00 00 00
+              ^
+SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior Interface.cpp:195:71 in
+Interface.cpp:204:38: runtime error: member access within misaligned address 0x7ffee9ca61b4 for type 'const ifreq', which requires 8 byte alignment
+0x7ffee9ca61b4: note: pointer points here
+  00 00 00 00 6c 6f 30 00  00 00 00 00 00 00 00 00  00 00 00 00 10 02 00 00  7f 00 00 01 00 00 00 00
+              ^
+SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior Interface.cpp:204:38 in
+Interface.cpp:347:45: runtime error: member access within misaligned address 0x7ffee9ca61b4 for type 'const ifreq', which requires 8 byte alignment
+0x7ffee9ca61b4: note: pointer points here
+  00 00 00 00 6c 6f 30 00  00 00 00 00 00 00 00 00  00 00 00 00 10 02 00 00  7f 00 00 01 00 00 00 00
+
+
+PROBABLY not a sanitizer bug - but not totally clear what this is caused by
+TRIED alignas to fix on the array but no luck
+*/
+#if !defined(qMacUBSanitizerifreqAlignmentIssue_Buggy)
+
+#if defined(__clang__) && defined(__APPLE__)
+#define qMacUBSanitizerifreqAlignmentIssue_Buggy (__clang_major__ == 11)
+#else
+#define qMacUBSanitizerifreqAlignmentIssue_Buggy 0
+#endif
+
+#endif
+
+/*
  */
 #ifndef qCompilerAndStdLib_locale_pctX_print_time_Buggy
 

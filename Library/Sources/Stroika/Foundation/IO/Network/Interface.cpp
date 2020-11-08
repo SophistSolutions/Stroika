@@ -185,7 +185,7 @@ namespace {
     // NB: On macos, we get:
     //   Interface.cpp:210:71: runtime error: member access within misaligned address 0x70000a774c74 for type 'const ifreq', which requires 8 byte alignment
     //        0x70000a774c74: note: pointer points here
-#if qPlatform_MacOS
+#if qMacUBSanitizerifreqAlignmentIssue_Buggy
     Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED
 #endif
         Interface
@@ -431,7 +431,7 @@ namespace {
 #endif
         return newInterface;
     }
-#if qPlatform_MacOS
+#if qMacUBSanitizerifreqAlignmentIssue_Buggy
     Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED
 #endif
         Traversal::Iterable<Interface>
