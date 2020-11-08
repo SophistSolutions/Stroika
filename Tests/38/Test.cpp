@@ -80,7 +80,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
     if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
         DbgTrace ("Skipping this test cuz just gives false positives");
-        return EXIT_SUCCESS;
+        return Stroika::TestHarness::PrintPassOrFail ([] () {});
     }
     SignalHandlerRegistry::SafeSignalsManager safeSignals;
     Stroika::TestHarness::Setup ();
