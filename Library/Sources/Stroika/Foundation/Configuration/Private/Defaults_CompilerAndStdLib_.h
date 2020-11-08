@@ -1543,7 +1543,7 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 
 #if defined(__clang__) && !defined(__APPLE__)
 // Only seen on Ubuntu 20.10, clang++-11
-#define qCompiler_SanitizerFunctionPtrConversionSuppressionBug (__clang_major__ == 11)
+#define qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy (__clang_major__ == 11)
 #elif defined(__GNUC__)
 // Only seen on Ubuntu 20.10, g++-10
 #define qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy (__GNUC__ == 10)
