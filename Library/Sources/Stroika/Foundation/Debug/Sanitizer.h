@@ -57,6 +57,13 @@ namespace Stroika::Foundation::Debug {
 
     /*
      *  Macro: Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
+     *
+     *  \par Example Usage
+     *      \code
+     *          ToObjectMapperType<CLASS> toObjectMapper = [fields, preflightBeforeToObject] (const ObjectVariantMapper& mapper, const VariantValue& d, CLASS* intoObjOfTypeT) 
+     *              Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS 
+     *              -> void {...}
+     *      \endcode
      */
 #if Stroika_Foundation_Debug_Sanitizer_HAS_AddressSanitizer
 #if defined(__clang__)
@@ -99,8 +106,16 @@ namespace Stroika::Foundation::Debug {
      */
     constexpr bool kBuiltWithThreadSanitizer = Stroika_Foundation_Debug_Sanitizer_HAS_ThreadSanitizer;
 
-/**
+    /**
      *  Macro: Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD
+     *
+     *  \par Example Usage
+     *      \code
+     *          #if qCompiler_ThreadSantizer_SPR_717_Buggy
+     *              Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD
+     *          #endif
+     *          static void DoIt (void* ignored) {...}
+     *      \endcode
      */
 #if Stroika_Foundation_Debug_Sanitizer_HAS_ThreadSanitizer
 #if defined(__clang__) || defined(__GNUC__)
@@ -138,6 +153,14 @@ namespace Stroika::Foundation::Debug {
 
     /**
      *  Macro: Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED
+     *
+     *  \par Example Usage
+     *      \code
+     *          #if qSomeBugFlag
+     *              Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED
+     *          #endif
+     *              Interface GetInterfaces_POSIX_mkInterface_ (int sd, const ifreq* i) {...}
+     *      \endcode
      */
 #if Stroika_Foundation_Debug_Sanitizer_HAS_UndefinedBehaviorSanitizer
 #if defined(__clang__)
