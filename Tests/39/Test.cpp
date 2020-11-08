@@ -54,8 +54,7 @@ namespace {
         Debug::TraceContextBumper traceCtx{"RegressionTest2_"};
 
         // Make 2 concurrent threads, which share a critical section object to take turns updating a variable
-        auto DoIt = [](void* ignored) 
-		{
+        auto DoIt = [] (void* ignored) {
             int* argP = reinterpret_cast<int*> (ignored);
             for (int i = 0; i < 10; i++) {
                 lock_guard<recursive_mutex> critSect{sharedCriticalSection_};
@@ -1012,7 +1011,7 @@ namespace {
         void DoIt ()
         {
             Debug::TraceContextBumper ctx{"RegressionTest18_RWSynchronized_"};
-            static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+            static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
 
             // https://stroika.atlassian.net/browse/STK-632
             // Most likely some sort of memory corruption, and given notes in https://stroika.atlassian.net/browse/STK-632 - seems
@@ -1169,7 +1168,7 @@ namespace {
          */
         Debug::TraceContextBumper ctx{"RegressionTest22_SycnhonizedUpgradeLock_"};
 
-		static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+        static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
 
         // https://stroika.atlassian.net/browse/STK-632
         // This helgrind bug ONLY happens when we run this at the end. If we run this as the only test it works fine.

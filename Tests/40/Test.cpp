@@ -831,6 +831,10 @@ namespace {
             VerifyTestResult (runningThreads.size () == 0);
         });
 #endif
+        if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
+            DbgTrace ("Skipping this test cuz double locks cause TSAN to die and cannot be easily suppressed");
+            return;
+        }
         AssignAndIterateAtSameTimeTest_1_::DoIt ();
         IterateWhileMutatingContainer_Test_2_::DoIt ();
         Test3_SynchronizedOptional_::DoIt_ ();
