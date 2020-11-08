@@ -67,9 +67,12 @@ namespace {
 }
 
 namespace {
-
     void DoRegressionTests_ ()
     {
+        if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
+            DbgTrace ("Skipping this test cuz double locks cause TSAN to die and cannot be easily suppressed");
+            return;
+        }
         Test1_Direct_ ();
         Test2_Safe_ ();
     }
