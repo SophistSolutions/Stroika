@@ -54,27 +54,23 @@ namespace {
         Debug::TraceContextBumper traceCtx{"RegressionTest2_"};
 
         // Make 2 concurrent threads, which share a critical section object to take turns updating a variable
-        struct FRED {
-            static void DoIt (void* ignored)
-            {
-                int* argP = reinterpret_cast<int*> (ignored);
-                for (int i = 0; i < 10; i++) {
-                    lock_guard<recursive_mutex> critSect{sharedCriticalSection_};
-                    int                         tmp = *argP;
-                    Execution::Sleep (.001);
-                    //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
-                    *argP = tmp + 1;
-                }
+        auto DoIt = [](void* ignored) 
+		{
+            int* argP = reinterpret_cast<int*> (ignored);
+            for (int i = 0; i < 10; i++) {
+                lock_guard<recursive_mutex> critSect{sharedCriticalSection_};
+                int                         tmp = *argP;
+                Execution::Sleep (.001);
+                //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
+                *argP = tmp + 1;
             }
         };
 
         int         updaterValue = 0;
-        Thread::Ptr thread1      = Thread::New (bind (&FRED::DoIt, &updaterValue));
-        Thread::Ptr thread2      = Thread::New (bind (&FRED::DoIt, &updaterValue));
-        thread1.Start ();
-        thread2.Start ();
-        thread1.WaitForDone ();
-        thread2.WaitForDone ();
+        Thread::Ptr thread1      = Thread::New (bind (DoIt, &updaterValue));
+        Thread::Ptr thread2      = Thread::New (bind (DoIt, &updaterValue));
+        Thread::Start ({thread1, thread2});
+        Thread::WaitForDone ({thread1, thread2});
         VerifyTestResult (updaterValue == 2 * 10);
     }
 }
@@ -131,13 +127,11 @@ namespace {
             int         updaterValue = 0;
             Thread::Ptr thread1      = Thread::New (bind (&FRED1::DoIt, &updaterValue));
             Thread::Ptr thread2      = Thread::New (bind (&FRED2::DoIt, &updaterValue));
-            thread1.Start ();
-            thread2.Start ();
+            Thread::Start ({thread1, thread2});
             // Both threads start out waiting - until we get things rolling telling one to start.
             // Then they pingpong back and forther
             sRegTest3Event_T1_.Set ();
-            thread1.WaitForDone ();
-            thread2.WaitForDone ();
+            Thread::WaitForDone ({thread1, thread2});
             //DbgTrace ("Test3 - updaterValue = %d", updaterValue);
             // If there was a race - its unlikely you'd end up with exact 20 as your result
             VerifyTestResult (updaterValue == 2 * 10);
@@ -190,8 +184,7 @@ namespace {
             int         updaterValue = 0;
             Thread::Ptr thread1      = Thread::New (bind (&FRED1::DoIt, &updaterValue));
             Thread::Ptr thread2      = Thread::New (bind (&FRED2::DoIt, &updaterValue));
-            thread1.Start ();
-            thread2.Start ();
+            Thread::Start ({thread1, thread2});
             // Both threads start out waiting - until we get things rolling telling one to start.
             // Then they pingpong back and forther
             sRegTest3Event_T1_.Set ();
@@ -369,10 +362,6 @@ namespace {
     void RegressionTest3_WaitableEvents_ ()
     {
         Debug::TraceContextBumper traceCtx{"RegressionTest3_WaitableEvents_"};
-        if (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
-            DbgTrace ("Skipping this test cuz double locks cause TSAN to die and cannot be easily suppressed");
-            return;
-        }
         WAITABLE_EVENTS_::NOTIMEOUTS_ ();
         WAITABLE_EVENTS_::PingBackAndForthWithSimpleTimeouts_ ();
         WAITABLE_EVENTS_::TEST_TIMEOUT_EXECPETIONS_ ();
@@ -427,8 +416,7 @@ namespace {
                     syncofint   updaterValue = 0;
                     Thread::Ptr thread1      = Thread::New (bind (&FRED::DoIt, &updaterValue));
                     Thread::Ptr thread2      = Thread::New (bind (&FRED::DoIt, &updaterValue));
-                    thread1.Start ();
-                    thread2.Start ();
+                    Thread::Start ({thread1, thread2});
                     thread1.WaitForDone ();
                     thread2.WaitForDone ();
 #if qCompilerAndStdLib_TemplateEqualsCompareOverload_Buggy
@@ -776,8 +764,7 @@ namespace {
             we2.Set ();
         });
         Time::DurationSecondsType                  startAt = Time::GetTickCount ();
-        t1.Start ();
-        t2.Start ();
+        Thread::Start ({t1, t2});
         /*
          *  Saw this: FAILED: RegressionTestFailure; WaitableEvent::WaitForAny (Sequence<WaitableEvent*> ({&we1, &we2})) == set<WaitableEvent*> ({&we2});;..\..\..\38\Test.cpp: 712
          *      2017-10-10 - but just once and not since (and on loaded machine so that could have caused queer scheduling) - Windows ONLY
@@ -846,8 +833,7 @@ namespace {
                 sum -= i;
             }
         });
-        t1.Start ();
-        t2.Start ();
+        Thread::Start ({t1, t2});
         t1.WaitForDone ();
         t2.WaitForDone ();
         Stroika_Foundation_Debug_ValgrindDisableHelgrind_START (sum);
@@ -1026,7 +1012,7 @@ namespace {
         void DoIt ()
         {
             Debug::TraceContextBumper ctx{"RegressionTest18_RWSynchronized_"};
-            static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+            static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
 
             // https://stroika.atlassian.net/browse/STK-632
             // Most likely some sort of memory corruption, and given notes in https://stroika.atlassian.net/browse/STK-632 - seems
@@ -1183,7 +1169,7 @@ namespace {
          */
         Debug::TraceContextBumper ctx{"RegressionTest22_SycnhonizedUpgradeLock_"};
 
-        static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+		static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
 
         // https://stroika.atlassian.net/browse/STK-632
         // This helgrind bug ONLY happens when we run this at the end. If we run this as the only test it works fine.
@@ -1370,6 +1356,10 @@ namespace {
                 VerifyTestResult (runningThreads.size () == 0);
             });
 #endif
+        if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
+            DbgTrace ("Skipping this test cuz double locks cause TSAN to die and cannot be easily suppressed");
+            return;
+        }
         RegressionTest1_ ();
         RegressionTest2_ ();
         RegressionTest3_WaitableEvents_ ();
