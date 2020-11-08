@@ -50,9 +50,11 @@ namespace Stroika::Foundation::Streams {
         }
         virtual void CloseWrite () override
         {
-            [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
             Require (IsOpenWrite ());
-            fClosedForWrites_ = true;
+            {
+                [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
+                fClosedForWrites_               = true;
+            }
             fMoreDataWaiter_.Set ();
         }
         virtual bool IsOpenWrite () const override
@@ -75,21 +77,16 @@ namespace Stroika::Foundation::Streams {
             Require (intoStart < intoEnd);
             Require (IsOpenRead ());
             size_t nRequested = intoEnd - intoStart;
-            //bool   mustWaitForData{false};    // don't think we need that cuz fMoreDataWaiter_ being set does same thing
 
         tryAgain:
-            // if (mustWaitForData) {
             fMoreDataWaiter_.Wait ();
-            //}
 
-            [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
+            [[maybe_unused]] auto&& critSec = lock_guard{fMutex_}; // hold lock for everything EXCEPT wait
             Assert ((fData_.begin () <= fReadCursor_) and (fReadCursor_ <= fData_.end ()));
             size_t nAvail = fData_.end () - fReadCursor_;
             if (nAvail == 0 and not fClosedForWrites_) {
-                ///mustWaitForData = true;
-                fMoreDataWaiter_.Reset ();
-                goto tryAgain;
-                // cannot wait while we hold lock
+                fMoreDataWaiter_.Reset (); // ?? @todo consider - is this a race? If we reset at same time(apx) as someone else sets
+                goto tryAgain;             // cannot wait while we hold lock
             }
             size_t nCopied = min (nAvail, nRequested);
             {
@@ -154,14 +151,14 @@ namespace Stroika::Foundation::Streams {
         }
         virtual SeekOffsetType GetReadOffset () const override
         {
-            [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
             Require (IsOpenRead ());
+            [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
             return fReadCursor_ - fData_.begin ();
         }
         virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
         {
-            [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
             Require (IsOpenRead ());
+            [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
             fMoreDataWaiter_.Set (); // just means MAY be more data - readers check
             switch (whence) {
                 case Whence::eFromStart: {
@@ -215,14 +212,14 @@ namespace Stroika::Foundation::Streams {
         }
         virtual SeekOffsetType GetWriteOffset () const override
         {
-            [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
             Require (IsOpenWrite ());
+            [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
             return fWriteCursor_ - fData_.begin ();
         }
         virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
         {
-            [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
             Require (IsOpenWrite ());
+            [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
             fMoreDataWaiter_.Set (); // just means MAY be more data - readers check
             switch (whence) {
                 case Whence::eFromStart: {
@@ -334,7 +331,7 @@ namespace Stroika::Foundation::Streams {
      */
     template <typename ELEMENT_TYPE>
     inline SharedMemoryStream<ELEMENT_TYPE>::Ptr::Ptr (const shared_ptr<Rep_>& from)
-        : inherited (from)
+        : inherited{from}
     {
     }
     template <typename ELEMENT_TYPE>
