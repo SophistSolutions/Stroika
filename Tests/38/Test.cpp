@@ -4,6 +4,8 @@
 //  TEST    Foundation::Execution::Signals
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <cstdlib>
+
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Sanitizer.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -69,10 +71,6 @@ namespace {
 namespace {
     void DoRegressionTests_ ()
     {
-        if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
-            DbgTrace ("Skipping this test cuz double locks cause TSAN to die and cannot be easily suppressed");
-            return;
-        }
         Test1_Direct_ ();
         Test2_Safe_ ();
     }
@@ -80,6 +78,10 @@ namespace {
 
 int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
+    if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
+        DbgTrace ("Skipping this test cuz just gives false positives");
+        return EXIT_SUCCESS;
+    }
     SignalHandlerRegistry::SafeSignalsManager safeSignals;
     Stroika::TestHarness::Setup ();
     return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
