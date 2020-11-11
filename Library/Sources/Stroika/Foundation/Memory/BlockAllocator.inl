@@ -148,10 +148,10 @@ namespace Stroika::Foundation::Memory {
          *      "The race checker will create a happens-before arc from"...
          *      But this SEEMS to suggest I should call "HAPPENSBEFORE" before
          *      I change the location, and HAPPENSAFTER afterwards.
-		 *
-		 *		Dont use Stroika_Foundation_Debug_ValgrindMarkAddressAsAllocated, deallocated,
-		 *		since these cause false positive warnings about races (not sure - probably my misunderstanding
-		 *		about these macros).
+         *
+         *      Dont use Stroika_Foundation_Debug_ValgrindMarkAddressAsAllocated, deallocated,
+         *      since these cause false positive warnings about races (not sure - probably my misunderstanding
+         *      about these macros).
          *
          *  Before doing this thoroughly we would occasionally get:
 
