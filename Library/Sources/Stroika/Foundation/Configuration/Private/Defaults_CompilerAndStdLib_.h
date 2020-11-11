@@ -1539,6 +1539,23 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 
 // https://github.com/google/sanitizers/issues/1259
 // https://github.com/google/sanitizers/issues/950 (sometimes also shows up as)
+// THose were TSAN, but also shows up in valgrind/helgrind (so far only on Ubuntu 20.10) as:
+/*
+==3198448== Thread #2: Bug in libpthread: write lock granted on mutex/rwlock which is currently wr-held by a different thread
+==3198448==    at 0x4840EDF: ??? (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_helgrind-amd64-linux.so)
+==3198448==    by 0x2A9B48: __gthread_mutex_lock(pthread_mutex_t*) (gthr-default.h:749)
+==3198448==    by 0x2AC76D: std::mutex::lock() (std_mutex.h:100)
+==3198448==    by 0x2B050B: std::lock_guard<std::mutex>::lock_guard(std::mutex&) (std_mutex.h:159)
+==3198448==    by 0x40D5E1: Stroika::Foundation::Execution::WaitableEvent::WE_::Set() (WaitableEvent.inl:65)
+==3198448==    by 0x40D03E: Stroika::Foundation::Execution::WaitableEvent::Set() (WaitableEvent.cpp:96)
+==3198448==    by 0x3C9C2B: Stroika::Foundation::Execution::Thread::Ptr::Rep_::ThreadMain_(std::shared_ptr<Stroika::Foundation::Execution::Thread::Ptr::Rep_> const*) (Thread.cpp:589)
+==3198448==    by 0x3C88E3: Stroika::Foundation::Execution::Thread::Ptr::Rep_::DoCreate(std::shared_ptr<Stroika::Foundation::Execution::Thread::Ptr::Rep_> const*)::{lambda()#1}::operator()() const (Thread.cpp:319)
+==3198448==    by 0x3CEEE9: void std::__invoke_impl<void, Stroika::Foundation::Execution::Thread::Ptr::Rep_::DoCreate(std::shared_ptr<Stroika::Foundation::Execution::Thread::Ptr::Rep_> const*)::{lambda()#1}>(std::__invoke_other, Stroika::Foundation::Execution::Thread::Ptr::Rep_::DoCreate(std::shared_ptr<Stroika::Foundation::Execution::Thread::Ptr::Rep_> const*)::{lambda()#1}&&) (invoke.h:60)
+==3198448==    by 0x3CEE9E: std::__invoke_result<Stroika::Foundation::Execution::Thread::Ptr::Rep_::DoCreate(std::shared_ptr<Stroika::Foundation::Execution::Thread::Ptr::Rep_> const*)::{lambda()#1}>::type std::__invoke<Stroika::Foundation::Execution::Thread::Ptr::Rep_::DoCreate(std::shared_ptr<Stroika::Foundation::Execution::Thread::Ptr::Rep_> const*)::{lambda()#1}>(std::__invoke_result&&, (Stroika::Foundation::Execution::Thread::Ptr::Rep_::DoCreate(std::shared_ptr<Stroika::Foundation::Execution::Thread::Ptr::Rep_> const*)::{lambda()#1}&&)...) (invoke.h:95)
+==3198448==    by 0x3CEE4B: void std::thread::_Invoker<std::tuple<Stroika::Foundation::Execution::Thread::Ptr::Rep_::DoCreate(std::shared_ptr<Stroika::Foundation::Execution::Thread::Ptr::Rep_> const*)::{lambda()#1}> >::_M_invoke<0ul>(std::_Index_tuple<0ul>) (thread:264)
+==3198448==    by 0x3CEE1F: std::thread::_Invoker<std::tuple<Stroika::Foundation::Execution::Thread::Ptr::Rep_::DoCreate(std::shared_ptr<Stroika::Foundation::Execution::Thread::Ptr::Rep_> const*)::{lambda()#1}> >::operator()() (thread:271)
+==3198448== 
+*/
 #if !defined(qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy)
 
 #if defined(__clang__) && !defined(__APPLE__)
