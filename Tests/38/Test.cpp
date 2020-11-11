@@ -78,7 +78,9 @@ namespace {
 
 int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
-    if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
+    if (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and
+        (Debug::kBuiltWithThreadSanitizer or Debug::IsRunningUnderValgrind ())) {
+        // for valgrind, really only HELGRIND issue
         DbgTrace ("Skipping this test cuz just gives false positives");
         return Stroika::TestHarness::PrintPassOrFail ([] () {});
     }

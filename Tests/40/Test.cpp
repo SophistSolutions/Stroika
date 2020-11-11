@@ -831,7 +831,9 @@ namespace {
             VerifyTestResult (runningThreads.size () == 0);
         });
 #endif
-        if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
+        if (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and
+            (Debug::kBuiltWithThreadSanitizer or Debug::IsRunningUnderValgrind ())) {
+            // for valgrind, really only HELGRIND issue
             DbgTrace ("Skipping this test cuz double locks cause TSAN to die and cannot be easily suppressed");
             return;
         }

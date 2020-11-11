@@ -257,10 +257,14 @@ namespace {
 
         void Tests_ ()
         {
-            if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
+            if (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and
+                (Debug::kBuiltWithThreadSanitizer or Debug::IsRunningUnderValgrind ())) {
                 //  we get bogus lock inversion / deadlock warning because unlocks not recognized
                 DbgTrace ("Skipping this test cuz double locks cause TSAN to die and cannot be easily suppressed");
+                // for valgrind, really only HELGRIND issue
                 return;
+            }
+            if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
             }
             Private_::T1_ ();
         }
