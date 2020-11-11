@@ -71,8 +71,8 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASE, typename CTOR_ARGS>
     CComObjectWithARGS<BASE, CTOR_ARGS>::~CComObjectWithARGS () noexcept
     {
-        m_dwRef = -(LONG_MAX / 2);
-        FinalRelease ();
+        this->m_dwRef = -(LONG_MAX / 2);
+        this->FinalRelease ();
 #ifdef _ATL_DEBUG_INTERFACES
         _AtlDebugInterfacesModule.DeleteNonAddRefThunk (_GetRawUnknown ());
 #endif
@@ -81,12 +81,12 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASE, typename CTOR_ARGS>
     ULONG STDMETHODCALLTYPE CComObjectWithARGS<BASE, CTOR_ARGS>::AddRef ()
     {
-        return InternalAddRef ();
+        return this->InternalAddRef ();
     }
     template <typename BASE, typename CTOR_ARGS>
     ULONG STDMETHODCALLTYPE CComObjectWithARGS<BASE, CTOR_ARGS>::Release ()
     {
-        ULONG l = InternalRelease ();
+        ULONG l = this->InternalRelease ();
         if (l == 0) {
             delete this;
         }
@@ -96,7 +96,7 @@ namespace Stroika::Frameworks::Led::Platform {
     HRESULT STDMETHODCALLTYPE CComObjectWithARGS<BASE, CTOR_ARGS>::QueryInterface (REFIID iid, void** ppvObject) noexcept
     {
         //if _InternalQueryInterface is undefined then you forgot BEGIN_COM_MAP
-        return _InternalQueryInterface (iid, ppvObject);
+        return this->_InternalQueryInterface (iid, ppvObject);
     }
 
 }

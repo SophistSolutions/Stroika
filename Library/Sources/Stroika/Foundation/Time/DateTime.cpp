@@ -68,7 +68,7 @@ namespace {
     }
     Date mkDate_ (const SYSTEMTIME& sysTime)
     {
-        return Date{Year{sysTime.wYear}, MonthOfYear{sysTime.wMonth}, DayOfMonth{sysTime.wDay}};
+        return Date{Year (sysTime.wYear), MonthOfYear (sysTime.wMonth), DayOfMonth (sysTime.wDay)};
     }
 }
 #endif

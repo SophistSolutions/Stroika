@@ -503,7 +503,8 @@ public:
             mi = misStuff->fNextSubMarker;
         }
 
-        for (auto mi = OurStuff (m)->fFirstSubMarker; mi != NULL; mi = OurStuff (mi)->fNextSubMarker) {
+        auto mi = OurStuff (m)->fFirstSubMarker;
+        for (; mi != NULL; mi = OurStuff (mi)->fNextSubMarker) {
             Assert (OurStuff (mi)->fIsHackMarker);
             // Save args, then push new args
             stack.GrowToSize (stackDepth + 1);
@@ -1814,7 +1815,8 @@ RoutineTop:
         mi = misStuff->fNextSubMarker;
     }
 
-    for (Marker* mi = OurStuff (m)->fFirstSubMarker; mi != NULL; mi = OurStuff (mi)->fNextSubMarker) {
+    Marker* mi = OurStuff (m)->fFirstSubMarker;
+    for (; mi != NULL; mi = OurStuff (mi)->fNextSubMarker) {
         Assert (OurStuff (mi)->fIsHackMarker);
         // Save args, then push new args
         stack.GrowToSize (stackDepth + 1);

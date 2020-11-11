@@ -473,16 +473,16 @@ namespace Stroika::Frameworks::Led {
         };
 
         /*
-            *  Simply calls 'Replace ()'. Only purpose is that it is sometimes convenient to OVERRIDE in just
-            *  one place to filter user typing/text updates. And not have to worry about if the particular
-            *  bottleneck routine also gets used for 'programming-sourced' text updates. So all typing, and
-            *  user-insertions from things like paste (things you might want to validate) go through this
-            *  procedure. And you neededn't OVERRIDE 'Replace' itself, unless your refinements are intended to
-            *  apply even to programming-based text updates. NB: text updates stemming from apple-events/OLE
-            *  automation are considered 'user-updates' - and so vector through here. This is because they
-            *  would likely want to be validated.
-        ** DOCS INVALID - MEANING OF InteractiveReplace() REVISED
-            */
+         *  Simply calls 'Replace ()'. Only purpose is that it is sometimes convenient to OVERRIDE in just
+         *  one place to filter user typing/text updates. And not have to worry about if the particular
+         *  bottleneck routine also gets used for 'programming-sourced' text updates. So all typing, and
+         *  user-insertions from things like paste (things you might want to validate) go through this
+         *  procedure. And you neededn't OVERRIDE 'Replace' itself, unless your refinements are intended to
+         *  apply even to programming-based text updates. NB: text updates stemming from apple-events/OLE
+         *  automation are considered 'user-updates' - and so vector through here. This is because they
+         *  would likely want to be validated.
+ ** DOCS INVALID - MEANING OF InteractiveReplace() REVISED
+         */
     public:
         virtual void InteractiveReplace (const Led_tChar* withWhat, size_t withWhatCharCount, UpdateMode updateMode = eDefaultUpdate);
 
@@ -1040,9 +1040,9 @@ namespace Stroika::Frameworks::Led {
         {
             // Kooky I cannot just call base class CTOR that does all this - but then it invokes calls to RefreshWindowRect_ etc, before
             // THIS CTOR is done, so they call pure-virtual version!
-            SnagAttributesFromTablet ();
-            SetWindowRect (bounds);
-            GetTextStore ().Replace (0, 0, initialText.c_str (), initialText.length ());
+            this->SnagAttributesFromTablet ();
+            this->SetWindowRect (bounds);
+            this->GetTextStore ().Replace (0, 0, initialText.c_str (), initialText.length ());
         }
 
         // In case the imager is a TextInteractor - provide dummy implementations...

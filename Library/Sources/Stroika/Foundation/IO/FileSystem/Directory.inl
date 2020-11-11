@@ -13,6 +13,7 @@
 
 namespace Stroika::Foundation::IO::FileSystem {
 
+    DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
     template <>
     inline String Directory::As () const
     {
@@ -27,6 +28,7 @@ namespace Stroika::Foundation::IO::FileSystem {
     {
         return FromPath (fFileFullPath_).AsSDKString ();
     }
+    DISABLE_COMPILER_MSC_WARNING_END (4996)
 
 }
 

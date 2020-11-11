@@ -62,7 +62,7 @@ public:
     virtual BOOL DoSave (LPCTSTR lpszPathName, BOOL bReplace) override;
 
 public:
-    static CodePage LedLineItDocument::sHiddenDocOpenArg;
+    static CodePage sHiddenDocOpenArg;
 
 public:
     afx_msg void OnUpdateFileSave (CCmdUI* pCmdUI);

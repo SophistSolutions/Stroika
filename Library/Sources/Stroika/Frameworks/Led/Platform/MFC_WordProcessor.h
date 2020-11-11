@@ -85,16 +85,16 @@ namespace Stroika::Frameworks::Led::Platform {
                                             TextStore& ts, const StandardStyledTextImager::StyleDatabasePtr& styleDatabase,
                                             const WordProcessor::ParagraphDatabasePtr&   paragraphDatabase,
                                             const WordProcessor::HidableTextDatabasePtr& hiddenTextDatabase)
-                : FlavorPackageInternalizer (ts)
-                , inherited (ts, styleDatabase, paragraphDatabase, hiddenTextDatabase)
-                , fDocument (doc)
+                : FlavorPackageInternalizer{ts}
+                , inherited{ts, styleDatabase, paragraphDatabase, hiddenTextDatabase}
+                , fDocument{doc}
             {
             }
 
         public:
             virtual bool InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage, size_t from, size_t to) override
             {
-                Led_MFC_ControlItem::DocContextDefiner tmp (fDocument);
+                typename Led_MFC_ControlItem::DocContextDefiner tmp (fDocument);
                 return inherited::InternalizeBestFlavor (flavorPackage, from, to);
             }
 
@@ -248,7 +248,7 @@ namespace Stroika::Frameworks::Led::Platform {
         if (Led_MFC_ControlItem::DocContextDefiner::GetDoc () != NULL) {
             // suppress display but create CPaintDC object to eat update event (and accumulate window to re-inval just below)
             CPaintDC dc (this);
-            Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySuppressed.insert (GetHWND ());
+            Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySuppressed.insert (this->GetHWND ());
             return;
         }
         inherited::OnPaint ();

@@ -11,6 +11,7 @@
 #include <list>
 #include <vector>
 
+#include "../../Foundation/Containers/Common.h"
 #include "../../Foundation/Memory/BlockAllocated.h"
 #include "../../Foundation/Memory/SmallStackBuffer.h"
 
@@ -192,14 +193,13 @@ namespace Stroika::Frameworks::Led {
         @DESCRIPTION:   <p>A variant of @'TextStore::RemoveMarkers' which can be called with an array of any time 'T' that publicly
                         subclasses from @'Marker'.</p>
         */
-        nonvirtual void
-        RemoveTypedMarkers (T* const ma[], size_t mc)
+        nonvirtual void RemoveTypedMarkers (T* const ma[], size_t mc)
         {
             vector<Marker*> v;
             for (size_t i = 0; i < mc; ++i) {
                 v.push_back (ma[i]);
             }
-            RemoveMarkers (Containers::Start (v), mc);
+            RemoveMarkers (Foundation::Containers::Start (v), mc);
         }
 
         template <typename T>
@@ -207,8 +207,7 @@ namespace Stroika::Frameworks::Led {
         @METHOD:        TextStore::RemoveAndDeleteMarkers
         @DESCRIPTION:   <p>Calls @'TextStore::RemoveTypedMarkers' and then deletes each marker.</p>
         */
-        nonvirtual void
-        RemoveAndDeleteMarkers (T* const ma[], size_t mc)
+        nonvirtual void RemoveAndDeleteMarkers (T* const ma[], size_t mc)
         {
             RemoveTypedMarkers (ma, mc);
             for (size_t i = 0; i < mc; ++i) {

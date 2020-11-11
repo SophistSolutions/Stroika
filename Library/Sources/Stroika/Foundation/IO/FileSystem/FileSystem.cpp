@@ -237,7 +237,7 @@ filesystem::path IO::FileSystem::Ptr::CanonicalizeName (const filesystem::path& 
      *  PathCchCanonicalizeEx is better, but only works with windows 8 or later.
      */
     using Characters::StringBuilder;
-    String        tmp = ResolveShortcut (path2FileOrShortcut);
+    String        tmp = FromPath (ResolveShortcut (path2FileOrShortcut));
     StringBuilder sb;
     Components    c = GetPathComponents (path2FileOrShortcut);
     if (c.fAbsolutePath == Components::eAbsolutePath) {
@@ -296,7 +296,7 @@ filesystem::path IO::FileSystem::Ptr::GetFullPathName (const filesystem::path& p
     return filesystem::current_path () / pathName;
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 #elif qPlatform_Windows
-    String        name2Use          = pathName;
+    String        name2Use          = FromPath (pathName);
     const wchar_t kAnySizePrefix_[] = L"\\\\?\\";
     if (not name2Use.StartsWith (kAnySizePrefix_)) {
         name2Use = kAnySizePrefix_ + name2Use;

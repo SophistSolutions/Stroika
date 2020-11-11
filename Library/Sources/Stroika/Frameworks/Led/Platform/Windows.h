@@ -21,8 +21,10 @@
 #include "../../../Foundation/Characters/CString/Utilities.h"
 #include "../../../Foundation/Characters/CodePage.h"
 #include "../../../Foundation/Characters/Format.h"
+#include "../../../Foundation/Characters/LineEndings.h"
 #include "../../../Foundation/Debug/Trace.h"
 #include "../../../Foundation/Memory/SmallStackBuffer.h"
+#include "../../../Foundation/Time/Realtime.h"
 
 #include "../TextInteractor.h"
 
@@ -561,7 +563,7 @@ namespace Stroika::Frameworks::Led::Platform {
 #if qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug
         , fIMECurCharIdx (0)
 #endif
-        , fUpdateTablet (NULL)
+        , fUpdateTablet (nullptr)
         , fAllocatedTablet ()
         , fAcquireCount (0)
         , fMouseTrackingLastPoint ()
@@ -579,42 +581,41 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASE_INTERACTOR>
     Led_Win32_Helper<BASE_INTERACTOR>::~Led_Win32_Helper ()
     {
-        Assert (fUpdateTablet == NULL);
-        Assert (fAllocatedTablet.m_hDC == NULL);
-        Assert (fAllocatedTablet.m_hAttribDC == NULL);
+        Assert (fUpdateTablet == nullptr);
+        Assert (fAllocatedTablet.m_hDC == nullptr);
+        Assert (fAllocatedTablet.m_hAttribDC == nullptr);
         Assert (fAcquireCount == 0);
         Assert (fAutoScrollTimerID == 0); // I don't see how we can get destroyed while tracking?
     }
     template <typename BASE_INTERACTOR>
     LRESULT Led_Win32_Helper<BASE_INTERACTOR>::DefWindowProc (UINT message, WPARAM wParam, LPARAM lParam)
     {
-        return ::DefWindowProc (GetValidatedHWND (), message, wParam, lParam);
+        return ::DefWindowProc (this->GetValidatedHWND (), message, wParam, lParam);
     }
     template <typename BASE_INTERACTOR>
     LRESULT Led_Win32_Helper<BASE_INTERACTOR>::OnCreate_Msg (LPCREATESTRUCT createStruct)
     {
         RequireNotNull (createStruct);
-        if ((createStruct->style & WS_VSCROLL) and GetScrollBarType (v) == eScrollBarNever) {
-            SetScrollBarType (v, eScrollBarAlways);
+        if ((createStruct->style & WS_VSCROLL) and this->GetScrollBarType (TextInteractor::v) == TextInteractor::eScrollBarNever) {
+            this->SetScrollBarType (TextInteractor::v, TextInteractor::eScrollBarAlways);
         }
-        if ((createStruct->style & WS_HSCROLL) and GetScrollBarType (h) == eScrollBarNever) {
-            SetScrollBarType (h, eScrollBarAlways);
+        if ((createStruct->style & WS_HSCROLL) and this->GetScrollBarType (TextInteractor::h) == TextInteractor::eScrollBarNever) {
+            this->SetScrollBarType (TextInteractor::h, TextInteractor::eScrollBarAlways);
         }
-        return DefWindowProc (WM_CREATE, 0, reinterpret_cast<LPARAM> (createStruct));
+        return this->DefWindowProc (WM_CREATE, 0, reinterpret_cast<LPARAM> (createStruct));
     }
     template <typename BASE_INTERACTOR>
     void Led_Win32_Helper<BASE_INTERACTOR>::OnPaint_Msg ()
     {
-        HWND        hWnd = GetValidatedHWND ();
+        HWND        hWnd = this->GetValidatedHWND ();
         PAINTSTRUCT ps;
         HDC         hdc = ::BeginPaint (hWnd, &ps);
-
-        if (hdc != NULL) {
+        if (hdc != nullptr) {
             RECT boundsRect;
             Verify (::GetClipBox (hdc, &boundsRect) != ERROR);
             Led_Tablet_ tablet (hdc, Led_Tablet_::eDoesntOwnDC);
             try {
-                WindowDrawHelper (&tablet, AsLedRect (boundsRect), false);
+                this->WindowDrawHelper (&tablet, AsLedRect (boundsRect), false);
             }
             catch (...) {
                 ::EndPaint (hWnd, &ps);
@@ -626,7 +627,7 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASE_INTERACTOR>
     void Led_Win32_Helper<BASE_INTERACTOR>::OnSize_Msg ()
     {
-        OnSize_ ();
+        this->OnSize_ ();
     }
     template <typename BASE_INTERACTOR>
     /*
@@ -639,7 +640,7 @@ namespace Stroika::Frameworks::Led::Platform {
     {
 #if qWideCharacters && !qSDK_UNICODE
         {
-            CodePage useCodePage = Characters::Platform::Windows::Win32PrimaryLangIDToCodePage (LOWORD (::GetKeyboardLayout (NULL)));
+            CodePage useCodePage = Characters::Platform::Windows::Win32PrimaryLangIDToCodePage (LOWORD (::GetKeyboardLayout (nullptr)));
             char     ccc         = nChar;
             wchar_t  outC        = 0;
             int      xx          = ::MultiByteToWideChar (useCodePage, 0, &ccc, 1, &outC, 1);
@@ -654,12 +655,12 @@ namespace Stroika::Frameworks::Led::Platform {
             return;
         }
 
-        if (CheckIfDraggingBeepAndReturn ()) {
+        if (this->CheckIfDraggingBeepAndReturn ()) {
             return;
         }
 
         if (nChar == '\t') {
-            HandleTabCharacterTyped ();
+            this->HandleTabCharacterTyped ();
             return;
         }
 
@@ -670,10 +671,10 @@ namespace Stroika::Frameworks::Led::Platform {
             nChar = '\b';
         }
 
-        OnTypedNormalCharacter (static_cast<Led_tChar> (nChar), false, !!(::GetKeyState (VK_SHIFT) & 0x8000), false, !!(::GetKeyState (VK_CONTROL) & 0x8000), !!(::GetKeyState (VK_MENU) & 0x8000));
+        this->OnTypedNormalCharacter (static_cast<Led_tChar> (nChar), false, !!(::GetKeyState (VK_SHIFT) & 0x8000), false, !!(::GetKeyState (VK_CONTROL) & 0x8000), !!(::GetKeyState (VK_MENU) & 0x8000));
 
 #if qSupportWindowsSDKCallbacks
-        HWND hWnd = GetValidatedHWND ();
+        HWND hWnd = this->GetValidatedHWND ();
         (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, MAKELONG (GetWindowID (), EN_CHANGE), (LPARAM)hWnd);
 #endif
     }
@@ -712,10 +713,10 @@ namespace Stroika::Frameworks::Led::Platform {
             nChar = '\b';
         }
 
-        OnTypedNormalCharacter (static_cast<Led_tChar> (nChar), false, !!(::GetKeyState (VK_SHIFT) & 0x8000), false, !!(::GetKeyState (VK_CONTROL) & 0x8000), !!(::GetKeyState (VK_MENU) & 0x8000));
+        this->OnTypedNormalCharacter (static_cast<Led_tChar> (nChar), false, !!(::GetKeyState (VK_SHIFT) & 0x8000), false, !!(::GetKeyState (VK_CONTROL) & 0x8000), !!(::GetKeyState (VK_MENU) & 0x8000));
 
 #if qSupportWindowsSDKCallbacks
-        HWND hWnd = GetValidatedHWND ();
+        HWND hWnd = this->GetValidatedHWND ();
         (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, MAKELONG (GetWindowID (), EN_CHANGE), (LPARAM)hWnd);
 #endif
         return 0;
@@ -752,7 +753,7 @@ namespace Stroika::Frameworks::Led::Platform {
         }
 
 #if qWideCharacters
-        if (qSDK_UNICODE || ::IsWindowUnicode (GetValidatedHWND ())) {
+        if (qSDK_UNICODE || ::IsWindowUnicode (this->GetValidatedHWND ())) {
             // do nothing - 'nChar' is already a fine UNICODE character
             // NB: we COULD just check qSDK_UNICODE. But be nicer that MSFT. Allow for that a user
             // might want to create a UNICODE window without defining -D_UNICODE (see comments in
@@ -760,7 +761,7 @@ namespace Stroika::Frameworks::Led::Platform {
         }
 #if !qSDK_UNICODE
         else {
-            wstring tmpIMEBugWorkaroundCompString = Led_IME::Get ().GetCompositionResultStringW (GetValidatedHWND ());
+            wstring tmpIMEBugWorkaroundCompString = Led_IME::Get ().GetCompositionResultStringW (this->GetValidatedHWND ());
             if (fIMECurCharIdx < tmpIMEBugWorkaroundCompString.length ()) {
                 nChar = tmpIMEBugWorkaroundCompString[fIMECurCharIdx];
                 fIMECurCharIdx++;
@@ -788,7 +789,7 @@ namespace Stroika::Frameworks::Led::Platform {
         OnTypedNormalCharacter (nChar, false, !!(::GetKeyState (VK_SHIFT) & 0x8000), false, !!(::GetKeyState (VK_CONTROL) & 0x8000), !!(::GetKeyState (VK_MENU) & 0x8000));
 
 #if qSupportWindowsSDKCallbacks
-        HWND hWnd = GetValidatedHWND ();
+        HWND hWnd = this->GetValidatedHWND ();
         (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, MAKELONG (GetWindowID (), EN_CHANGE), (LPARAM)hWnd);
 #endif
         return 0;
@@ -828,6 +829,21 @@ namespace Stroika::Frameworks::Led::Platform {
         bool shiftPressed   = !!(::GetKeyState (VK_SHIFT) & 0x8000);
         bool controlPressed = !!(::GetKeyState (VK_CONTROL) & 0x8000);
 
+        using TextInteractor::eDefaultUpdate;
+        using TextInteractor::eImmediateUpdate;
+
+        using TextInteractor::eCursorBack;
+        using TextInteractor::eCursorByBuffer;
+        using TextInteractor::eCursorByChar;
+        using TextInteractor::eCursorByLine;
+        using TextInteractor::eCursorByRow;
+        using TextInteractor::eCursorByWord;
+        using TextInteractor::eCursorExtendingSelection;
+        using TextInteractor::eCursorForward;
+        using TextInteractor::eCursorMoving;
+        using TextInteractor::eCursorToEnd;
+        using TextInteractor::eCursorToStart;
+
         /*
          *  There are zillions of these virtual keycodes, and I'm unsure exactly if/how
          *  I'm to respond to each. All the ones here are listed in numeric order (the
@@ -852,165 +868,165 @@ namespace Stroika::Frameworks::Led::Platform {
                 if (CheckIfDraggingBeepAndReturn ()) {
                     return;
                 }
-                BreakInGroupedCommands ();
+                this->BreakInGroupedCommands ();
 
                 if (controlPressed) {
-                    SetSelection (GetMarkerPositionOfStartOfWindow (), GetMarkerPositionOfStartOfWindow ());
+                    this->SetSelection (this->GetMarkerPositionOfStartOfWindow (), this->GetMarkerPositionOfStartOfWindow ());
                 }
                 else {
                     FunnyMSPageUpDownAdjustSelectionHelper selectionAdjuster;
-                    bool                                   doFunny = GetFunnyMSPageUpDownAdjustSelectionBehavior ();
+                    bool                                   doFunny = this->GetFunnyMSPageUpDownAdjustSelectionBehavior ();
                     if (doFunny) {
                         selectionAdjuster.CaptureInfo (*this);
                     }
 
                     // NB: this isn't QUITE right for pageup - with differing height rows!!!!
                     // Do the actual scrolling - this is the only part that makes any sense!
-                    ScrollByIfRoom (-(int)GetTotalRowsInWindow ());
+                    this->ScrollByIfRoom (-(int)this->GetTotalRowsInWindow ());
 
                     if (doFunny) {
                         selectionAdjuster.CompleteAdjustment (*this);
                     }
                 }
 #if qPeekForMoreCharsOnUserTyping
-                UpdateIfNoKeysPending ();
+                this->UpdateIfNoKeysPending ();
 #endif
             } break;
 
             case VK_NEXT: { // page DOWN
-                if (CheckIfDraggingBeepAndReturn ()) {
+                if (this->CheckIfDraggingBeepAndReturn ()) {
                     return;
                 }
-                BreakInGroupedCommands ();
+                this->BreakInGroupedCommands ();
 
                 if (controlPressed) {
-                    SetSelection (GetMarkerPositionOfEndOfWindow (), GetMarkerPositionOfEndOfWindow ());
+                    this->SetSelection (this->GetMarkerPositionOfEndOfWindow (), this->GetMarkerPositionOfEndOfWindow ());
                 }
                 else {
                     FunnyMSPageUpDownAdjustSelectionHelper selectionAdjuster;
-                    bool                                   doFunny = GetFunnyMSPageUpDownAdjustSelectionBehavior ();
+                    bool                                   doFunny = this->GetFunnyMSPageUpDownAdjustSelectionBehavior ();
                     if (doFunny) {
                         selectionAdjuster.CaptureInfo (*this);
                     }
 
-                    ScrollByIfRoom (GetTotalRowsInWindow ());
+                    this->ScrollByIfRoom (this->GetTotalRowsInWindow ());
 
                     if (doFunny) {
                         selectionAdjuster.CompleteAdjustment (*this);
                     }
                 }
 #if qPeekForMoreCharsOnUserTyping
-                UpdateIfNoKeysPending ();
+                this->UpdateIfNoKeysPending ();
 #endif
             } break;
 
             case VK_END: {
-                if (CheckIfDraggingBeepAndReturn ()) {
+                if (this->CheckIfDraggingBeepAndReturn ()) {
                     return;
                 }
-                BreakInGroupedCommands ();
-                DoSingleCharCursorEdit (eCursorToEnd, controlPressed ? eCursorByBuffer : eCursorByRow, shiftPressed ? eCursorExtendingSelection : eCursorMoving,
-                                        qPeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
+                this->BreakInGroupedCommands ();
+                this->DoSingleCharCursorEdit (eCursorToEnd, controlPressed ? eCursorByBuffer : eCursorByRow, shiftPressed ? eCursorExtendingSelection : eCursorMoving,
+                                              qPeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
 #if qPeekForMoreCharsOnUserTyping
-                UpdateIfNoKeysPending ();
+                this->UpdateIfNoKeysPending ();
 #endif
             } break;
 
             case VK_HOME: {
-                if (CheckIfDraggingBeepAndReturn ()) {
+                if (this->CheckIfDraggingBeepAndReturn ()) {
                     return;
                 }
-                BreakInGroupedCommands ();
-                DoSingleCharCursorEdit (eCursorToStart, controlPressed ? eCursorByBuffer : eCursorByRow, shiftPressed ? eCursorExtendingSelection : eCursorMoving,
-                                        qPeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
+                this->BreakInGroupedCommands ();
+                this->DoSingleCharCursorEdit (eCursorToStart, controlPressed ? eCursorByBuffer : eCursorByRow, shiftPressed ? eCursorExtendingSelection : eCursorMoving,
+                                              qPeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
 #if qPeekForMoreCharsOnUserTyping
-                UpdateIfNoKeysPending ();
+                this->UpdateIfNoKeysPending ();
 #endif
             } break;
 
             case VK_LEFT: {
-                if (CheckIfDraggingBeepAndReturn ()) {
+                if (this->CheckIfDraggingBeepAndReturn ()) {
                     return;
                 }
-                BreakInGroupedCommands ();
-                DoSingleCharCursorEdit (eCursorBack, controlPressed ? eCursorByWord : eCursorByChar, shiftPressed ? eCursorExtendingSelection : eCursorMoving,
-                                        qPeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
+                this->BreakInGroupedCommands ();
+                this->DoSingleCharCursorEdit (eCursorBack, controlPressed ? eCursorByWord : eCursorByChar, shiftPressed ? eCursorExtendingSelection : eCursorMoving,
+                                              qPeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
 #if qPeekForMoreCharsOnUserTyping
-                UpdateIfNoKeysPending ();
+                this->UpdateIfNoKeysPending ();
 #endif
             } break;
 
             case VK_UP: {
-                if (CheckIfDraggingBeepAndReturn ()) {
+                if (this->CheckIfDraggingBeepAndReturn ()) {
                     return;
                 }
-                BreakInGroupedCommands ();
+                this->BreakInGroupedCommands ();
                 if (controlPressed) {
-                    if (GetControlArrowsScroll ()) {
+                    if (this->GetControlArrowsScroll ()) {
                         FunnyMSPageUpDownAdjustSelectionHelper selectionAdjuster;
-                        bool                                   doFunny = GetFunnyMSPageUpDownAdjustSelectionBehavior ();
+                        bool                                   doFunny = this->GetFunnyMSPageUpDownAdjustSelectionBehavior ();
                         if (doFunny) {
                             selectionAdjuster.CaptureInfo (*this);
                         }
-                        ScrollByIfRoom (-1);
+                        this->ScrollByIfRoom (-1);
                         if (doFunny) {
                             selectionAdjuster.CompleteAdjustment (*this);
                         }
                     }
                     else {
-                        DoSingleCharCursorEdit (eCursorToStart, eCursorByLine, shiftPressed ? eCursorExtendingSelection : eCursorMoving,
-                                                qPeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
+                        this->DoSingleCharCursorEdit (eCursorToStart, eCursorByLine, shiftPressed ? eCursorExtendingSelection : eCursorMoving,
+                                                      qPeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
                     }
                 }
                 else {
-                    DoSingleCharCursorEdit (eCursorBack, eCursorByRow, shiftPressed ? eCursorExtendingSelection : eCursorMoving,
-                                            qPeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
+                    this->DoSingleCharCursorEdit (eCursorBack, eCursorByRow, shiftPressed ? eCursorExtendingSelection : eCursorMoving,
+                                                  qPeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
                 }
 #if qPeekForMoreCharsOnUserTyping
-                UpdateIfNoKeysPending ();
+                this->UpdateIfNoKeysPending ();
 #endif
             } break;
 
             case VK_RIGHT: {
-                if (CheckIfDraggingBeepAndReturn ()) {
+                if (this->CheckIfDraggingBeepAndReturn ()) {
                     return;
                 }
-                BreakInGroupedCommands ();
-                DoSingleCharCursorEdit (eCursorForward, controlPressed ? eCursorByWord : eCursorByChar, shiftPressed ? eCursorExtendingSelection : eCursorMoving,
-                                        qPeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
+                this->BreakInGroupedCommands ();
+                this->DoSingleCharCursorEdit (eCursorForward, controlPressed ? eCursorByWord : eCursorByChar, shiftPressed ? eCursorExtendingSelection : eCursorMoving,
+                                              qPeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
 #if qPeekForMoreCharsOnUserTyping
-                UpdateIfNoKeysPending ();
+                this->UpdateIfNoKeysPending ();
 #endif
             } break;
 
             case VK_DOWN: {
-                if (CheckIfDraggingBeepAndReturn ()) {
+                if (this->CheckIfDraggingBeepAndReturn ()) {
                     return;
                 }
-                BreakInGroupedCommands ();
+                this->BreakInGroupedCommands ();
                 if (controlPressed) {
-                    if (GetControlArrowsScroll ()) {
+                    if (this->GetControlArrowsScroll ()) {
                         FunnyMSPageUpDownAdjustSelectionHelper selectionAdjuster;
-                        bool                                   doFunny = GetFunnyMSPageUpDownAdjustSelectionBehavior ();
+                        bool                                   doFunny = this->GetFunnyMSPageUpDownAdjustSelectionBehavior ();
                         if (doFunny) {
                             selectionAdjuster.CaptureInfo (*this);
                         }
-                        ScrollByIfRoom (1);
+                        this->ScrollByIfRoom (1);
                         if (doFunny) {
                             selectionAdjuster.CompleteAdjustment (*this);
                         }
                     }
                     else {
-                        DoSingleCharCursorEdit (eCursorToEnd, eCursorByLine, shiftPressed ? eCursorExtendingSelection : eCursorMoving,
-                                                qPeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
+                        this->DoSingleCharCursorEdit (eCursorToEnd, eCursorByLine, shiftPressed ? eCursorExtendingSelection : eCursorMoving,
+                                                      qPeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
                     }
                 }
                 else {
-                    DoSingleCharCursorEdit (eCursorForward, eCursorByRow, shiftPressed ? eCursorExtendingSelection : eCursorMoving,
-                                            qPeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
+                    this->DoSingleCharCursorEdit (eCursorForward, eCursorByRow, shiftPressed ? eCursorExtendingSelection : eCursorMoving,
+                                                  qPeekForMoreCharsOnUserTyping ? eDefaultUpdate : eImmediateUpdate);
                 }
 #if qPeekForMoreCharsOnUserTyping
-                UpdateIfNoKeysPending ();
+                this->UpdateIfNoKeysPending ();
 #endif
             } break;
 
@@ -1030,33 +1046,33 @@ namespace Stroika::Frameworks::Led::Platform {
             } break;
 
             case VK_DELETE: {
-                if (CheckIfDraggingBeepAndReturn ()) {
+                if (this->CheckIfDraggingBeepAndReturn ()) {
                     return;
                 }
 
-                BreakInGroupedCommands ();
+                this->BreakInGroupedCommands ();
 
                 /*
-                        *  If the selection is empty, then delete the following character (if any)
-                        *  and if it is non-empty - simply delete its contents.
-                        */
-                if (GetSelectionStart () == GetSelectionEnd ()) {
+                 *  If the selection is empty, then delete the following character (if any)
+                 *  and if it is non-empty - simply delete its contents.
+                 */
+                if (this->GetSelectionStart () == this->GetSelectionEnd ()) {
                     // note this doesn't change the selection - since we only delete following
                     // the selection...
                     //
                     // Also note that we count on the fact that it is safe toocall FindNextCharacter ()
                     // at the buffers end and it will pin to that end...
-                    SetSelection (GetSelectionStart (), FindNextCharacter (GetSelectionStart ()), eDefaultUpdate);
-                    InteractiveReplace (LED_TCHAR_OF (""), 0);
+                    this->SetSelection (this->GetSelectionStart (), this->FindNextCharacter (this->GetSelectionStart ()), eDefaultUpdate);
+                    this->InteractiveReplace (LED_TCHAR_OF (""), 0);
                 }
                 else {
-                    OnPerformCommand (kClear_CmdID);
+                    this->OnPerformCommand (TextInteractor::kClear_CmdID);
                 }
-                ScrollToSelection ();
-                Update ();
+                this->ScrollToSelection ();
+                this->Update ();
 #if qSupportWindowsSDKCallbacks
                 // Actually - sends EN_CHANGE even if selStart=sselEnd==ENDOFBUFFER (so nothing changed). But hopefully thats OK...
-                HWND hWnd = GetValidatedHWND ();
+                HWND hWnd = this->GetValidatedHWND ();
                 (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, MAKELONG (GetWindowID (), EN_CHANGE), (LPARAM)hWnd);
 #endif
             } break;
@@ -1078,7 +1094,7 @@ namespace Stroika::Frameworks::Led::Platform {
     bool
     Led_Win32_Helper<BASE_INTERACTOR>::OnSetCursor_Msg (HWND hWnd, UINT nHitTest, UINT message)
     {
-        if (nHitTest == HTCLIENT and hWnd == GetValidatedHWND ()) {
+        if (nHitTest == HTCLIENT and hWnd == this->GetValidatedHWND ()) {
             /*
              *  The SDK docs seem to indicate that you should call the inherited one, to see
              *  if your parent changed the cursor. But if you do, it changes the cursor
@@ -1094,21 +1110,21 @@ namespace Stroika::Frameworks::Led::Platform {
             // If cursor is over draggable text, then change cursor to an arrow.
             // Doug Stein says is according to Apple HIG guidelines - LGP 960804
             // SPR#0371
-            if (GetSelectionStart () != GetSelectionEnd ()) {
+            if (this->GetSelectionStart () != this->GetSelectionEnd ()) {
                 Led_Region r;
-                GetSelectionWindowRegion (&r, GetSelectionStart (), GetSelectionEnd ());
+                this->GetSelectionWindowRegion (&r, this->GetSelectionStart (), this->GetSelectionEnd ());
                 if (r.PtInRegion (AsPOINT (fMouseTrackingLastPoint))) {
-                    ::SetCursor (::LoadCursor (NULL, IDC_ARROW));
+                    ::SetCursor (::LoadCursor (nullptr, IDC_ARROW));
                     return true;
                 }
             }
 
-            ::SetCursor (::LoadCursor (NULL, IDC_IBEAM));
+            ::SetCursor (::LoadCursor (nullptr, IDC_IBEAM));
 
             return true;
         }
         else {
-            return !!DefWindowProc (WM_SETCURSOR, WPARAM (hWnd), MAKELPARAM (nHitTest, message));
+            return !!this->DefWindowProc (WM_SETCURSOR, WPARAM (hWnd), MAKELPARAM (nHitTest, message));
         }
     }
     template <typename BASE_INTERACTOR>
@@ -1139,12 +1155,12 @@ namespace Stroika::Frameworks::Led::Platform {
         Led_IME::Get ().Enable ();
 #endif
 
-        SetCaretShown (true);
-        SetSelectionShown (true);
+        this->SetCaretShown (true);
+        this->SetSelectionShown (true);
 
 #if qSupportWindowsSDKCallbacks
         // Notify the parent window...
-        HWND hWnd = GetValidatedHWND ();
+        HWND hWnd = this->GetValidatedHWND ();
         (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, (WPARAM)MAKELONG (GetWindowID (), EN_SETFOCUS), (LPARAM) (hWnd));
 #endif
     }
@@ -1155,22 +1171,22 @@ namespace Stroika::Frameworks::Led::Platform {
     */
     void Led_Win32_Helper<BASE_INTERACTOR>::OnKillFocus_Msg (HWND /*newWnd*/)
     {
-        if (PeekAtTextStore () == NULL) {
+        if (this->PeekAtTextStore () == nullptr) {
             /*
-                *  SPR#0893 - Its a reasonable practice to call SpecifyTextStore(NULL) in the DTOR of some subclass of a Led-based editor.
-                *  Then - if the window was focused - in later DTORs - the window will be destroyed (Led_Win32_Helper<BASE_INTERACTOR>::DTOR calls
-                *  DestroyWindow). That invokes KillFocus. In that case - just silently drop the killfocus on the floor.
-                */
+             *  SPR#0893 - Its a reasonable practice to call SpecifyTextStore(nullptr) in the DTOR of some subclass of a Led-based editor.
+             *  Then - if the window was focused - in later DTORs - the window will be destroyed (Led_Win32_Helper<BASE_INTERACTOR>::DTOR calls
+             *  DestroyWindow). That invokes KillFocus. In that case - just silently drop the killfocus on the floor.
+             */
             return;
         }
-        BreakInGroupedCommands ();
+        this->BreakInGroupedCommands ();
 
-        SetCaretShown (false);
-        SetSelectionShown (false);
+        this->SetCaretShown (false);
+        this->SetSelectionShown (false);
 
 #if qSupportWindowsSDKCallbacks
         // Notify the parent window...
-        HWND hWnd = GetValidatedHWND ();
+        HWND hWnd = this->GetValidatedHWND ();
         (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, (WPARAM)MAKELONG (GetWindowID (), EN_KILLFOCUS), (LPARAM) (hWnd));
 #endif
     }
@@ -1184,61 +1200,61 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASE_INTERACTOR>
     void Led_Win32_Helper<BASE_INTERACTOR>::OnTimer_Msg (UINT_PTR nEventID, TIMERPROC* proc)
     {
-        HWND hWnd = GetValidatedHWND ();
+        HWND hWnd = this->GetValidatedHWND ();
         if (nEventID == eAutoscrollingTimerEventID) {
             if (::GetCapture () == hWnd) {
                 // Since we have the capture, we got the last mouse moved event, and so we have a VALID value stored in
                 // fMouseTrackingLastPoint for the mouse location. Use that.
-                WhileSimpleMouseTracking (fMouseTrackingLastPoint, fDragAnchor);
+                this->WhileSimpleMouseTracking (fMouseTrackingLastPoint, fDragAnchor);
             }
             else {
-                StopAutoscrollTimer ();
+                this->StopAutoscrollTimer ();
             }
         }
         else {
-            DefWindowProc (WM_TIMER, nEventID, LPARAM (proc));
+            this->DefWindowProc (WM_TIMER, nEventID, LPARAM (proc));
         }
     }
     template <typename BASE_INTERACTOR>
     void Led_Win32_Helper<BASE_INTERACTOR>::OnLButtonDown_Msg (UINT nFlags, int x, int y)
     {
-        UpdateClickCount (Time::GetTickCount (), Led_Point (y, x));
-        OnNormalLButtonDown (nFlags, Led_Point (y, x));
+        this->UpdateClickCount (Foundation::Time::GetTickCount (), Led_Point (y, x));
+        this->OnNormalLButtonDown (nFlags, Led_Point (y, x));
     }
     template <typename BASE_INTERACTOR>
     void Led_Win32_Helper<BASE_INTERACTOR>::OnLButtonUp_Msg (UINT /*nFlags*/, int x, int y)
     {
-        HWND hWnd = GetValidatedHWND ();
+        HWND hWnd = this->GetValidatedHWND ();
         AssertNotNull (hWnd);
         if (::GetCapture () == hWnd) {
-            StopAutoscrollTimer ();
+            this->StopAutoscrollTimer ();
             Verify (::ReleaseCapture ());
-            WhileSimpleMouseTracking (Led_Point (y, x), fDragAnchor);
+            this->WhileSimpleMouseTracking (Led_Point (y, x), fDragAnchor);
         }
     }
     template <typename BASE_INTERACTOR>
     void Led_Win32_Helper<BASE_INTERACTOR>::OnLButtonDblClk_Msg (UINT /*nFlags*/, int x, int y)
     {
-        IncrementCurClickCount (Time::GetTickCount ());
+        this->IncrementCurClickCount (Foundation::Time::GetTickCount ());
 
         bool extendSelection = !!(::GetKeyState (VK_SHIFT) & 0x8000);
-        if (not ProcessSimpleClick (Led_Point (y, x), GetCurClickCount (), extendSelection, &fDragAnchor)) {
+        if (not this->ProcessSimpleClick (Led_Point (y, x), this->GetCurClickCount (), extendSelection, &fDragAnchor)) {
             return;
         }
 
-        HWND hWnd = GetValidatedHWND ();
+        HWND hWnd = this->GetValidatedHWND ();
         (void)::SetCapture (hWnd); //  We could loop doing a sub-eventloop here - but it seems more common
         //  Windows practice to just store up state information and wait on
         //  WM_MOUSEMOVE and WM_LButtonUp messages...
-        StartAutoscrollTimer ();
+        this->StartAutoscrollTimer ();
     }
     template <typename BASE_INTERACTOR>
     void Led_Win32_Helper<BASE_INTERACTOR>::OnMouseMove_Msg (UINT /*nFlags*/, int x, int y)
     {
-        HWND hWnd               = GetValidatedHWND ();
+        HWND hWnd               = this->GetValidatedHWND ();
         fMouseTrackingLastPoint = Led_Point (y, x); // save for OnTimer_Msg ()
         if (::GetCapture () == hWnd) {
-            WhileSimpleMouseTracking (Led_Point (y, x), fDragAnchor);
+            this->WhileSimpleMouseTracking (Led_Point (y, x), fDragAnchor);
         }
     }
     template <typename BASE_INTERACTOR>
@@ -1246,19 +1262,22 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         DbgTrace (Led_SDK_TCHAROF ("Led_Win32_Helper<BASE_INTERACTOR>::OnVScroll_Msg (nSBCode=%d,...)\n"), nSBCode);
 
+        using TextInteractor::eDefaultUpdate;
+        using TextInteractor::eImmediateUpdate;
+
         /*
          *  NB: the nPos is a 16-bit value - and we could have a 32-bit offset - so use GetScrollInfo  () to get the POS - rather
          *  than using this parameter.
          */
         if (nSBCode == SB_LINEDOWN or nSBCode == SB_LINEUP or
             nSBCode == SB_PAGEDOWN or nSBCode == SB_PAGEUP) {
-            if (not DelaySomeForScrollBarClick ()) {
+            if (not this->DelaySomeForScrollBarClick ()) {
                 return;
             }
         }
 
 #if qDynamiclyChooseAutoScrollIncrement
-        Foundation::Time::DurationSecondsType        now              = Time::GetTickCount ();
+        Foundation::Time::DurationSecondsType        now              = Foundation::Time::GetTickCount ();
         static Foundation::Time::DurationSecondsType sLastTimeThrough = 0.0f;
         const Foundation::Time::DurationSecondsType  kClickThreshold  = Led_GetDoubleClickTime () / 3;
         bool                                         firstClick       = (now - sLastTimeThrough > kClickThreshold);
@@ -1273,7 +1292,7 @@ namespace Stroika::Frameworks::Led::Platform {
 #endif
         switch (nSBCode) {
             case SB_BOTTOM: {
-                ScrollSoShowing (GetLength ());
+                this->ScrollSoShowing (this->GetLength ());
             } break;
 
             case SB_ENDSCROLL: {
@@ -1281,19 +1300,19 @@ namespace Stroika::Frameworks::Led::Platform {
             } break;
 
             case SB_LINEDOWN: {
-                ScrollByIfRoom (increment, eImmediateUpdate);
+                this->ScrollByIfRoom (increment, eImmediateUpdate);
             } break;
 
             case SB_LINEUP: {
-                ScrollByIfRoom (-increment, eImmediateUpdate);
+                this->ScrollByIfRoom (-increment, eImmediateUpdate);
             } break;
 
             case SB_PAGEDOWN: {
-                ScrollByIfRoom (GetTotalRowsInWindow ());
+                this->ScrollByIfRoom (this->GetTotalRowsInWindow ());
             } break;
 
             case SB_PAGEUP: {
-                ScrollByIfRoom (-(int)GetTotalRowsInWindow ());
+                this->ScrollByIfRoom (-(int)this->GetTotalRowsInWindow ());
             } break;
 
             case SB_THUMBTRACK:
@@ -1311,20 +1330,20 @@ namespace Stroika::Frameworks::Led::Platform {
                      *  we should use the passed in 'nPos'. Oh well - this seems to be working OK.
                      *      --  LGP 2003-01-20.
                      */
-                    SCROLLINFO scrollInfo = GetVScrollInfo ();
+                    SCROLLINFO scrollInfo = this->GetVScrollInfo ();
 #if qScrollTextDuringThumbTracking
                     newPos = scrollInfo.nTrackPos;
 #else
                     newPos = scrollInfo.nPos;
 #endif
-                    newPos = min (newPos, GetLength ());
+                    newPos = min (newPos, this->GetLength ());
 
                     /*
                      *  Beware about the fact that the verticalWindow size changes as we scroll (since it
                      *  is measured in number of Led_tChars on display in the window).
                      */
                     if (newPos + scrollInfo.nPage >= static_cast<UINT> (scrollInfo.nMax)) {
-                        newPos = GetLength ();
+                        newPos = this->GetLength ();
                     }
 
 #if qScrollTextDuringThumbTracking
@@ -1332,20 +1351,20 @@ namespace Stroika::Frameworks::Led::Platform {
                     scrollInfo.cbSize = sizeof (scrollInfo);
                     scrollInfo.fMask  = SIF_POS;
                     scrollInfo.nPos   = static_cast<UINT> (newPos);
-                    SetVScrollInfo (GetScrollBarType (v), scrollInfo);
+                    SetVScrollInfo (this->GetScrollBarType (TextInteractor::v), scrollInfo);
 #endif
                 }
 
 #if qScrollTextDuringThumbTracking
-                InvalidateScrollBarParameters (); // In case below SetHScrollPos doesn't cause inval (due to caching), make sure
-                                                  // things really get recomputed
+                this->InvalidateScrollBarParameters (); // In case below SetHScrollPos doesn't cause inval (due to caching), make sure
+                                                        // things really get recomputed
 #endif
 
-                SetTopRowInWindowByMarkerPosition (newPos);
+                this->SetTopRowInWindowByMarkerPosition (newPos);
             } break;
 
             case SB_TOP: {
-                ScrollSoShowing (0);
+                this->ScrollSoShowing (0);
             } break;
 
             default: {
@@ -1362,18 +1381,18 @@ namespace Stroika::Frameworks::Led::Platform {
     void Led_Win32_Helper<BASE_INTERACTOR>::OnHScroll_Msg (UINT nSBCode, UINT /*nPos*/, HWND /*hScrollBar*/)
     {
         /*
-            *  NB: the nPos is a 16-bit value - and we could have a 32-bit offset - so use GetScrollInfo  () to get the POS - rather
-            *  than using this parameter.
-            */
+         *  NB: the nPos is a 16-bit value - and we could have a 32-bit offset - so use GetScrollInfo  () to get the POS - rather
+         *  than using this parameter.
+         */
         if (nSBCode == SB_LINEDOWN or nSBCode == SB_LINEUP or
             nSBCode == SB_PAGEDOWN or nSBCode == SB_PAGEUP) {
-            if (not DelaySomeForScrollBarClick ()) {
+            if (not this->DelaySomeForScrollBarClick ()) {
                 return;
             }
         }
 
 #if qDynamiclyChooseAutoScrollIncrement
-        Foundation::Time::DurationSecondsType        now              = Time::GetTickCount ();
+        Foundation::Time::DurationSecondsType        now              = Foundation::Time::GetTickCount ();
         static Foundation::Time::DurationSecondsType sLastTimeThrough = 0.0f;
         const Foundation::Time::DurationSecondsType  kClickThreshold  = Led_GetDoubleClickTime ();
         bool                                         firstClick       = (now - sLastTimeThrough > kClickThreshold);
@@ -1385,7 +1404,7 @@ namespace Stroika::Frameworks::Led::Platform {
 
         switch (nSBCode) {
             case SB_BOTTOM: {
-                SetHScrollPos (ComputeMaxHScrollPos ());
+                this->SetHScrollPos (this->ComputeMaxHScrollPos ());
             } break;
 
             case SB_ENDSCROLL: {
@@ -1393,27 +1412,27 @@ namespace Stroika::Frameworks::Led::Platform {
             } break;
 
             case SB_LINEDOWN: {
-                SetHScrollPos (min<Led_Coordinate> (GetHScrollPos () + increment, ComputeMaxHScrollPos ()));
+                this->SetHScrollPos (min<Led_Coordinate> (this->GetHScrollPos () + increment, this->ComputeMaxHScrollPos ()));
             } break;
 
             case SB_LINEUP: {
-                if (GetHScrollPos () > 0) {
-                    SetHScrollPos (max<Led_Coordinate> (0, int (GetHScrollPos ()) - increment));
+                if (this->GetHScrollPos () > 0) {
+                    this->SetHScrollPos (max<Led_Coordinate> (0, int (this->GetHScrollPos ()) - increment));
                 }
             } break;
 
             case SB_PAGEDOWN: {
-                const Led_Coordinate kPixelsAtATime = GetWindowRect ().GetWidth () / 2;
-                SetHScrollPos (min<Led_Coordinate> (GetHScrollPos () + kPixelsAtATime, ComputeMaxHScrollPos ()));
+                const Led_Coordinate kPixelsAtATime = this->GetWindowRect ().GetWidth () / 2;
+                this->SetHScrollPos (min<Led_Coordinate> (this->GetHScrollPos () + kPixelsAtATime, this->ComputeMaxHScrollPos ()));
             } break;
 
             case SB_PAGEUP: {
-                const Led_Coordinate kPixelsAtATime = GetWindowRect ().GetWidth () / 2;
-                if (GetHScrollPos () > kPixelsAtATime) {
-                    SetHScrollPos (GetHScrollPos () - kPixelsAtATime);
+                const Led_Coordinate kPixelsAtATime = this->GetWindowRect ().GetWidth () / 2;
+                if (this->GetHScrollPos () > kPixelsAtATime) {
+                    this->SetHScrollPos (this->GetHScrollPos () - kPixelsAtATime);
                 }
                 else {
-                    SetHScrollPos (0);
+                    this->SetHScrollPos (0);
                 }
             } break;
 
@@ -1428,12 +1447,12 @@ namespace Stroika::Frameworks::Led::Platform {
                 fSBarThumbTracking = (nSBCode == SB_THUMBTRACK);
 #endif
                 /*
-                        *  It is not totally clear why we use GetHScrollInfo instead of the passed in
-                        *  'nPos' for tracking. The current docs (2003-01-20) seem to indicate
-                        *  we should use the passed in 'nPos'. Oh well - this seems to be working OK.
-                        *      --  LGP 2003-01-20.
-                        */
-                SCROLLINFO scrollInfo = GetHScrollInfo ();
+                 *  It is not totally clear why we use GetHScrollInfo instead of the passed in
+                 *  'nPos' for tracking. The current docs (2003-01-20) seem to indicate
+                 *  we should use the passed in 'nPos'. Oh well - this seems to be working OK.
+                 *      --  LGP 2003-01-20.
+                 */
+                SCROLLINFO scrollInfo = this->GetHScrollInfo ();
 #if qScrollTextDuringThumbTracking
                 size_t newPos = scrollInfo.nTrackPos;
 #else
@@ -1445,19 +1464,19 @@ namespace Stroika::Frameworks::Led::Platform {
                 scrollInfo.cbSize = sizeof (scrollInfo);
                 scrollInfo.fMask  = SIF_POS;
                 scrollInfo.nPos   = static_cast<int> (newPos);
-                SetHScrollInfo (GetScrollBarType (h), scrollInfo);
+                this->SetHScrollInfo (this->GetScrollBarType (TextInteractor::h), scrollInfo);
 #endif
 
 #if qScrollTextDuringThumbTracking
-                InvalidateScrollBarParameters (); // In case below SetHScrollPos doesn't cause inval (due to caching), make sure
-                                                  // things really get recomputed
+                this->InvalidateScrollBarParameters (); // In case below SetHScrollPos doesn't cause inval (due to caching), make sure
+                                                        // things really get recomputed
 #endif
 
-                SetHScrollPos (min<Led_Coordinate> (static_cast<Led_Coordinate> (newPos), ComputeMaxHScrollPos ()));
+                this->SetHScrollPos (min<Led_Coordinate> (static_cast<Led_Coordinate> (newPos), this->ComputeMaxHScrollPos ()));
             } break;
 
             case SB_TOP: {
-                SetHScrollPos (0);
+                this->SetHScrollPos (0);
             } break;
 
             default: {
@@ -1473,12 +1492,13 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASE_INTERACTOR>
     bool Led_Win32_Helper<BASE_INTERACTOR>::OnMouseWheel_Msg (WPARAM wParam, LPARAM lParam)
     {
+        using TextInteractor::eImmediateUpdate;
 #if (_WIN32_WINNT >= 0x0400) || (_WIN32_WINDOWS > 0x0400)
         UINT keyState = LOWORD (wParam); //GET_KEYSTATE_WPARAM (wParam);
         // we don't handle anything but scrolling just now (comment from MFC).
         // Not really sure how these special keys are SUPPOSED to be treated?
         if (keyState & (MK_SHIFT | MK_CONTROL)) {
-            return !!DefWindowProc (WM_MOUSEWHEEL, wParam, lParam);
+            return !!this->DefWindowProc (WM_MOUSEWHEEL, wParam, lParam);
         }
 
         short zDelta = (short)HIWORD (wParam); //GET_WHEEL_DELTA_WPARAM (wParam);
@@ -1496,17 +1516,17 @@ namespace Stroika::Frameworks::Led::Platform {
 
         // Pin - cuz result can be 'WHEEL_PAGESCROLL' - or just exceed a single page - and we are only supposed to scroll a max of
         // page per delta/WHEEL_DELTA, according to WM_MOUSEWHEEL docs.
-        int totalRowsInWindow = static_cast<int> (GetTotalRowsInWindow ());
+        int totalRowsInWindow = static_cast<int> (this->GetTotalRowsInWindow ());
         scrollLines           = min (scrollLines, totalRowsInWindow);
 
-        ScrollByIfRoom (-nTicks * scrollLines, eImmediateUpdate);
+        this->ScrollByIfRoom (-nTicks * scrollLines, eImmediateUpdate);
 #endif
         return true;
     }
     template <typename BASE_INTERACTOR>
     /*
     @METHOD:        Led_Win32_Helper<BASE_INTERACTOR>::GetDefaultWindowMargins
-    @DESCRIPTION:   <p>Arguments can be NULL, and only non-NULL pointers filled in.</p>
+    @DESCRIPTION:   <p>Arguments can be nullptr, and only non-nullptr pointers filled in.</p>
                 <p>See @'Led_Win32_Helper<BASE_INTERACTOR>::SetDefaultWindowMargins'.</p>
     */
     inline Led_TWIPS_Rect
@@ -1531,8 +1551,8 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         if (fDefaultWindowMargins != defaultWindowMargins) {
             fDefaultWindowMargins = defaultWindowMargins;
-            if (GetHWND () != NULL) {
-                OnSize_ (); // take into account new margins...
+            if (this->GetHWND () != nullptr) {
+                this->OnSize_ (); // take into account new margins...
             }
         }
     }
@@ -1591,22 +1611,22 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASE_INTERACTOR>
     void Led_Win32_Helper<BASE_INTERACTOR>::OnEnable_Msg (bool /*enable*/)
     {
-        Refresh ();
+        this->Refresh ();
     }
     template <typename BASE_INTERACTOR>
     void Led_Win32_Helper<BASE_INTERACTOR>::OnSize_ ()
     {
-        InvalidateScrollBarParameters (); // Cuz even if no layoutwidth change, we still change page size for scrollbars, if any...
+        this->InvalidateScrollBarParameters (); // Cuz even if no layoutwidth change, we still change page size for scrollbars, if any...
         RECT     cr;
         Led_Rect r;
         {
-            HWND hWnd = GetValidatedHWND ();
+            HWND hWnd = this->GetValidatedHWND ();
             Verify (::GetClientRect (hWnd, &cr));
             r = AsLedRect (cr);
         }
         try {
-            Tablet_Acquirer tablet (this);
-            Led_Rect        wmr = tablet->CvtFromTWIPS (GetDefaultWindowMargins ());
+            TextInteractor::Tablet_Acquirer tablet (this);
+            Led_Rect                        wmr = tablet->CvtFromTWIPS (GetDefaultWindowMargins ());
             r.top += wmr.GetTop ();
             r.left += wmr.GetLeft ();
             r.bottom -= wmr.GetBottom ();
@@ -1625,15 +1645,17 @@ namespace Stroika::Frameworks::Led::Platform {
         DbgTrace (Led_SDK_TCHAROF ("Led_Win32_Helper<>::OnSize_ (clientRect=(%d,%d,%d,%d), windowRect <= (%d,%d,%d,%d))\n"),
                   cr.top, cr.left, cr.bottom, cr.right,
                   r.top, r.left, r.bottom, r.right);
-        SetWindowRect (r);
+        this->SetWindowRect (r);
     }
     template <typename BASE_INTERACTOR>
     void Led_Win32_Helper<BASE_INTERACTOR>::RefreshWindowRect_ (const Led_Rect& windowRectArea, UpdateMode updateMode) const
     {
+        using TextInteractor::eDelayedUpdate;
+        using TextInteractor::eImmediateUpdate;
         HWND hWnd = GetHWND ();
-        if (hWnd != NULL) {
+        if (hWnd != nullptr) {
             Assert (::IsWindow (hWnd));
-            updateMode = RealUpdateMode (updateMode);
+            updateMode = this->RealUpdateMode (updateMode);
             switch (updateMode) {
                 case eDelayedUpdate: {
                     if (not windowRectArea.IsEmpty ()) {
@@ -1644,7 +1666,7 @@ namespace Stroika::Frameworks::Led::Platform {
                 case eImmediateUpdate: {
                     if (not windowRectArea.IsEmpty ()) {
                         RECT tmp = AsRECT (windowRectArea);
-                        Verify (::RedrawWindow (hWnd, &tmp, NULL, RDW_INVALIDATE | RDW_UPDATENOW));
+                        Verify (::RedrawWindow (hWnd, &tmp, nullptr, RDW_INVALIDATE | RDW_UPDATENOW));
                     }
                 } break;
             }
@@ -1657,9 +1679,9 @@ namespace Stroika::Frameworks::Led::Platform {
             // Unclear if I should use RedrawWindow (&windowRectArea, RDW_UPDATENOW or UpdateWindow???
             RECT tmp  = AsRECT (windowRectArea);
             HWND hWnd = GetHWND ();
-            if (hWnd != NULL) {
+            if (hWnd != nullptr) {
                 Assert (::IsWindow (hWnd));
-                Verify (::RedrawWindow (hWnd, &tmp, NULL, RDW_UPDATENOW));
+                Verify (::RedrawWindow (hWnd, &tmp, nullptr, RDW_UPDATENOW));
             }
         }
     }
@@ -1674,7 +1696,7 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         Require (fAcquireCount < 100); // not really a requirement - but hard to see how this could happen in LEGIT usage...
         // almost certainly a bug...
-        if (fUpdateTablet != NULL) {
+        if (fUpdateTablet != nullptr) {
             fAcquireCount++;
             return (fUpdateTablet);
         }
@@ -1685,19 +1707,19 @@ namespace Stroika::Frameworks::Led::Platform {
          *  editor (for LEC's memory concerns - LGP 950524).
          */
         if (fAcquireCount == 0) {
-            Assert (fAllocatedTablet.m_hDC == NULL);
-            Assert (fAllocatedTablet.m_hAttribDC == NULL);
+            Assert (fAllocatedTablet.m_hDC == nullptr);
+            Assert (fAllocatedTablet.m_hAttribDC == nullptr);
             HWND hWnd = GetHWND ();
-            if (hWnd == NULL) {
-                throw NoTabletAvailable ();
+            if (hWnd == nullptr) {
+                throw TextInteractor::NoTabletAvailable ();
             }
             Assert (::IsWindow (hWnd));
             HDC hdc = ::GetWindowDC (hWnd);
             AssertNotNull (hdc);
             Verify (fAllocatedTablet.Attach (hdc));
         }
-        Assert (fAllocatedTablet.m_hDC != NULL);
-        Assert (fAllocatedTablet.m_hAttribDC != NULL);
+        Assert (fAllocatedTablet.m_hDC != nullptr);
+        Assert (fAllocatedTablet.m_hAttribDC != nullptr);
         fAcquireCount++;
         return (&fAllocatedTablet);
     }
@@ -1724,14 +1746,14 @@ namespace Stroika::Frameworks::Led::Platform {
         DbgTrace (Led_SDK_TCHAROF ("Led_Win32_Helper<>::WindowDrawHelper (subsetToDraw= (%d, %d, %d, %d))\n"),
                   subsetToDraw.top, subsetToDraw.left, subsetToDraw.bottom, subsetToDraw.right);
         TemporarilyUseTablet tmpUseTablet (*this, tablet, TemporarilyUseTablet::eDontDoTextMetricsChangedCall);
-        Draw (subsetToDraw, printing);
+        this->Draw (subsetToDraw, printing);
 
         /*
          *  The user specified a DefaultWindowMargin - lies outside of our WindowRect, and so
          *  won't get drawn by the normal Led draw mechanism. Make sure it gets erased here.
          */
-        Led_Rect       wr = GetWindowRect ();
-        Led_TWIPS_Rect wm = GetDefaultWindowMargins ();
+        Led_Rect       wr = this->GetWindowRect ();
+        Led_TWIPS_Rect wm = this->GetDefaultWindowMargins ();
         if (wm.GetTop () != 0 or wm.GetLeft () != 0 or wm.GetBottom () != 0 or wm.GetRight () != 0) {
             Led_Rect wmr = tablet->CvtFromTWIPS (wm);
             // Erase our TOP margin
@@ -1739,7 +1761,7 @@ namespace Stroika::Frameworks::Led::Platform {
                 Led_Rect barRect = subsetToDraw;
                 barRect.bottom   = wr.top;
                 if (not barRect.IsEmpty ()) {
-                    EraseBackground (tablet, barRect, false);
+                    this->EraseBackground (tablet, barRect, false);
                 }
             }
             // Erase our LHS margin
@@ -1747,7 +1769,7 @@ namespace Stroika::Frameworks::Led::Platform {
                 Led_Rect barRect = subsetToDraw;
                 barRect.right    = wr.left;
                 if (not barRect.IsEmpty ()) {
-                    EraseBackground (tablet, barRect, false);
+                    this->EraseBackground (tablet, barRect, false);
                 }
             }
             // Erase our Bottom margin
@@ -1755,7 +1777,7 @@ namespace Stroika::Frameworks::Led::Platform {
                 Led_Rect barRect = subsetToDraw;
                 barRect.top      = wr.bottom;
                 if (not barRect.IsEmpty ()) {
-                    EraseBackground (tablet, barRect, false);
+                    this->EraseBackground (tablet, barRect, false);
                 }
             }
             // Erase our RHS margin
@@ -1763,12 +1785,12 @@ namespace Stroika::Frameworks::Led::Platform {
                 Led_Rect barRect = subsetToDraw;
                 barRect.left     = wr.right;
                 if (not barRect.IsEmpty ()) {
-                    EraseBackground (tablet, barRect, false);
+                    this->EraseBackground (tablet, barRect, false);
                 }
             }
         }
 
-        UpdateCaretState_ ();
+        this->UpdateCaretState_ ();
     }
     template <typename BASE_INTERACTOR>
     /*
@@ -1793,7 +1815,7 @@ namespace Stroika::Frameworks::Led::Platform {
     bool Led_Win32_Helper<BASE_INTERACTOR>::CheckIfDraggingBeepAndReturn ()
     {
         HWND hWnd = GetHWND ();
-        if (hWnd != NULL and ::GetCapture () == hWnd) {
+        if (hWnd != nullptr and ::GetCapture () == hWnd) {
 // we must be tracking - drop characters typed at that point on the floor
 // send a beep message as well to indicate that the characters are being dropped!
 #if 1
@@ -1818,21 +1840,21 @@ namespace Stroika::Frameworks::Led::Platform {
     void
     Led_Win32_Helper<BASE_INTERACTOR>::HandleTabCharacterTyped ()
     {
-        HWND hWnd = GetValidatedHWND ();
-        if (GetStyle () & WS_TABSTOP) {
+        HWND hWnd = this->GetValidatedHWND ();
+        if (this->GetStyle () & WS_TABSTOP) {
             HWND parent = ::GetParent (hWnd);
-            if (parent != NULL) {
+            if (parent != nullptr) {
                 bool shiftPressed = !!(::GetKeyState (VK_SHIFT) & 0x8000);
                 if (shiftPressed) {
-                    PostMessage (parent, WM_NEXTDLGCTL, 1, false);
+                    ::PostMessage (parent, WM_NEXTDLGCTL, 1, false);
                 }
                 else {
-                    PostMessage (parent, WM_NEXTDLGCTL, 0, false);
+                    ::PostMessage (parent, WM_NEXTDLGCTL, 0, false);
                 }
             }
         }
         else {
-            OnTypedNormalCharacter ('\t', false, !!(::GetKeyState (VK_SHIFT) & 0x8000), false, !!(::GetKeyState (VK_CONTROL) & 0x8000), !!(::GetKeyState (VK_MENU) & 0x8000));
+            this->OnTypedNormalCharacter ('\t', false, !!(::GetKeyState (VK_SHIFT) & 0x8000), false, !!(::GetKeyState (VK_CONTROL) & 0x8000), !!(::GetKeyState (VK_MENU) & 0x8000));
 #if qSupportWindowsSDKCallbacks
             (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, MAKELONG (GetWindowID (), EN_CHANGE), (LPARAM)hWnd);
 #endif
@@ -1846,13 +1868,13 @@ namespace Stroika::Frameworks::Led::Platform {
     void
     Led_Win32_Helper<BASE_INTERACTOR>::AboutToUpdateText (const UpdateInfo& updateInfo)
     {
-        if (GetHWND () != NULL and CheckIfCurrentUpdateIsInteractive () and updateInfo.fRealContentUpdate) {
+        if (GetHWND () != nullptr and this->CheckIfCurrentUpdateIsInteractive () and updateInfo.fRealContentUpdate) {
             /*
-                *  Make sure we've been realized (fully constructed), and also only check if this is an interactive update.
-                */
-            DWORD dwStyle = GetStyle ();
+             *  Make sure we've been realized (fully constructed), and also only check if this is an interactive update.
+             */
+            DWORD dwStyle = this->GetStyle ();
             if (dwStyle & WS_DISABLED || dwStyle & ES_READONLY) {
-                OnBadUserInput (); // should throw out
+                this->OnBadUserInput (); // should throw out
             }
         }
         inherited::AboutToUpdateText (updateInfo);
@@ -1866,7 +1888,7 @@ namespace Stroika::Frameworks::Led::Platform {
     Led_Win32_Helper<BASE_INTERACTOR>::DidUpdateText (const UpdateInfo& updateInfo) noexcept
     {
         inherited::DidUpdateText (updateInfo);
-        DidUpdateText_ (updateInfo);
+        this->DidUpdateText_ (updateInfo);
     }
     template <typename BASE_INTERACTOR>
     /*
@@ -1878,19 +1900,19 @@ namespace Stroika::Frameworks::Led::Platform {
     Led_Win32_Helper<BASE_INTERACTOR>::DidUpdateText_ (const UpdateInfo& updateInfo) noexcept
     {
         if (updateInfo.fTextModified) {
-            SetCurClickCount (0, Time::GetTickCount ());
+            this->SetCurClickCount (0, Foundation::Time::GetTickCount ());
         }
-        fDragAnchor = min (fDragAnchor, GetEnd ()); // SPR#0637 reported we could sometimes get crash while mousing/typing. This SHOULD prevent fDragAnchor ever
+        fDragAnchor = min (fDragAnchor, this->GetEnd ()); // SPR#0637 reported we could sometimes get crash while mousing/typing. This SHOULD prevent fDragAnchor ever
         // getting invalid... NB: I never reproduced the problem.
     }
     template <typename BASE_INTERACTOR>
     void Led_Win32_Helper<BASE_INTERACTOR>::SetScrollBarType (VHSelect vh, ScrollBarType scrollBarType)
     {
-        if (GetScrollBarType (vh) != scrollBarType) {
+        if (this->GetScrollBarType (vh) != scrollBarType) {
             inherited::SetScrollBarType (vh, scrollBarType);
-            HWND hWnd = GetHWND ();
-            if (hWnd != NULL) {
-                ::InvalidateRect (hWnd, NULL, true);
+            HWND hWnd = this->GetHWND ();
+            if (hWnd != nullptr) {
+                ::InvalidateRect (hWnd, nullptr, true);
             }
         }
     }
@@ -1902,11 +1924,10 @@ namespace Stroika::Frameworks::Led::Platform {
             <p>See also @'Led_Win32_Helper<BASE_INTERACTOR>::SetHScrollInfo',
             @'Led_Win32_Helper<BASE_INTERACTOR>::ShouldUpdateVScrollBar'.</p>
     */
-    bool
-    Led_Win32_Helper<BASE_INTERACTOR>::ShouldUpdateHScrollBar () const
+    bool Led_Win32_Helper<BASE_INTERACTOR>::ShouldUpdateHScrollBar () const
     {
         //NB: we must update sbar even if NEVER - when the style is ON, cuz we may need to HIDE the sbar
-        return GetScrollBarType (h) != eScrollBarNever or (GetStyle () & WS_HSCROLL);
+        return this->GetScrollBarType (TextInteractor::h) != TextInteractor::eScrollBarNever or (this->GetStyle () & WS_HSCROLL);
     }
     template <typename BASE_INTERACTOR>
     /*
@@ -1917,7 +1938,7 @@ namespace Stroika::Frameworks::Led::Platform {
     Led_Win32_Helper<BASE_INTERACTOR>::ShouldUpdateVScrollBar () const
     {
         //NB: we must update sbar even if NEVER - when the style is ON, cuz we may need to HIDE the sbar
-        return GetScrollBarType (v) != eScrollBarNever or (GetStyle () & WS_VSCROLL);
+        return this->GetScrollBarType (TextInteractor::v) != TextInteractor::eScrollBarNever or (GetStyle () & WS_VSCROLL);
     }
     template <typename BASE_INTERACTOR>
     /*
@@ -1929,8 +1950,8 @@ namespace Stroika::Frameworks::Led::Platform {
     bool
     Led_Win32_Helper<BASE_INTERACTOR>::TypeAndScrollInfoSBVisible (ScrollBarType scrollbarAppears, const SCROLLINFO& scrollInfo) const
     {
-        return (scrollbarAppears == eScrollBarAlways) or
-               (scrollbarAppears == eScrollBarAsNeeded and scrollInfo.nMin + static_cast<int> (scrollInfo.nPage) <= scrollInfo.nMax);
+        return (scrollbarAppears == TextInteractor::eScrollBarAlways) or
+               (scrollbarAppears == TextInteractor::eScrollBarAsNeeded and scrollInfo.nMin + static_cast<int> (scrollInfo.nPage) <= scrollInfo.nMax);
     }
     template <typename BASE_INTERACTOR>
     /*
@@ -1945,11 +1966,10 @@ namespace Stroika::Frameworks::Led::Platform {
     SCROLLINFO
     Led_Win32_Helper<BASE_INTERACTOR>::GetHScrollInfo (UINT nMask) const
     {
-        SCROLLINFO scrollInfo;
-        memset (&scrollInfo, 0, sizeof (scrollInfo));
+        ::SCROLLINFO scrollInfo{};
         scrollInfo.cbSize = sizeof (scrollInfo);
         scrollInfo.fMask  = nMask;
-        Verify (::GetScrollInfo (GetValidatedHWND (), SB_HORZ, &scrollInfo));
+        Verify (::GetScrollInfo (this->GetValidatedHWND (), SB_HORZ, &scrollInfo));
         return scrollInfo;
     }
     template <typename BASE_INTERACTOR>
@@ -1966,11 +1986,11 @@ namespace Stroika::Frameworks::Led::Platform {
                   scrollbarAppears, scrollInfo.nMin, scrollInfo.nMax, scrollInfo.nPage, scrollInfo.nPos, showBar);
 
         /*
-            *  As near as I can tell - the below call to ::SetScrollInfo () should be sufficient to show/hide the SBAR. And - often
-            *  it is. But - unfortunately - sometimes its not. This seems to be the only way to assure it always gets re-shown.
-            *      -- LGP 2003-11-05
-            */
-        ::ShowScrollBar (GetValidatedHWND (), SB_HORZ, showBar);
+         *  As near as I can tell - the below call to ::SetScrollInfo () should be sufficient to show/hide the SBAR. And - often
+         *  it is. But - unfortunately - sometimes its not. This seems to be the only way to assure it always gets re-shown.
+         *      -- LGP 2003-11-05
+         */
+        ::ShowScrollBar (this->GetValidatedHWND (), SB_HORZ, showBar);
         SCROLLINFO si = scrollInfo;
         if (showBar) {
             si.fMask |= SIF_DISABLENOSCROLL;
@@ -1978,12 +1998,12 @@ namespace Stroika::Frameworks::Led::Platform {
         else {
             si.fMask &= ~SIF_DISABLENOSCROLL;
         }
-        (void)::SetScrollInfo (GetValidatedHWND (), SB_HORZ, &si, redraw);
+        (void)::SetScrollInfo (this->GetValidatedHWND (), SB_HORZ, &si, redraw);
     }
     template <typename BASE_INTERACTOR>
     void Led_Win32_Helper<BASE_INTERACTOR>::SetHScrollInfo (const SCROLLINFO& scrollInfo, bool redraw)
     {
-        SetHScrollInfo (GetScrollBarType (h), scrollInfo, redraw);
+        this->SetHScrollInfo (this->GetScrollBarType (TextInteractor::h), scrollInfo, redraw);
     }
     template <typename BASE_INTERACTOR>
     /*
@@ -1993,11 +2013,10 @@ namespace Stroika::Frameworks::Led::Platform {
     SCROLLINFO
     Led_Win32_Helper<BASE_INTERACTOR>::GetVScrollInfo (UINT nMask) const
     {
-        SCROLLINFO scrollInfo;
-        memset (&scrollInfo, 0, sizeof (scrollInfo));
+        ::SCROLLINFO scrollInfo{};
         scrollInfo.cbSize = sizeof (scrollInfo);
         scrollInfo.fMask  = nMask;
-        Verify (::GetScrollInfo (GetValidatedHWND (), SB_VERT, &scrollInfo));
+        Verify (::GetScrollInfo (this->GetValidatedHWND (), SB_VERT, &scrollInfo));
         return scrollInfo;
     }
     template <typename BASE_INTERACTOR>
@@ -2013,11 +2032,11 @@ namespace Stroika::Frameworks::Led::Platform {
                   scrollbarAppears, scrollInfo.nMin, scrollInfo.nMax, scrollInfo.nPage, scrollInfo.nPos, showBar);
 
         /*
-            *  As near as I can tell - the below call to ::SetScrollInfo () should be sufficient to show/hide the SBAR. And - often
-            *  it is. But - unfortunately - sometimes its not. This seems to be the only way to assure it always gets re-shown.
-            *      -- LGP 2003-11-05
-            */
-        ::ShowScrollBar (GetValidatedHWND (), SB_VERT, showBar);
+         *  As near as I can tell - the below call to ::SetScrollInfo () should be sufficient to show/hide the SBAR. And - often
+         *  it is. But - unfortunately - sometimes its not. This seems to be the only way to assure it always gets re-shown.
+         *      -- LGP 2003-11-05
+         */
+        ::ShowScrollBar (this->GetValidatedHWND (), SB_VERT, showBar);
         SCROLLINFO si = scrollInfo;
         if (showBar) {
             si.fMask |= SIF_DISABLENOSCROLL;
@@ -2025,43 +2044,43 @@ namespace Stroika::Frameworks::Led::Platform {
         else {
             si.fMask &= ~SIF_DISABLENOSCROLL;
         }
-        (void)::SetScrollInfo (GetValidatedHWND (), SB_VERT, &si, redraw);
+        (void)::SetScrollInfo (this->GetValidatedHWND (), SB_VERT, &si, redraw);
     }
     template <typename BASE_INTERACTOR>
     void Led_Win32_Helper<BASE_INTERACTOR>::SetVScrollInfo (const SCROLLINFO& scrollInfo, bool redraw)
     {
-        SetVScrollInfo (GetScrollBarType (v), scrollInfo, redraw);
+        this->SetVScrollInfo (this->GetScrollBarType (TextInteractor::v), scrollInfo, redraw);
     }
     template <typename BASE_INTERACTOR>
     void Led_Win32_Helper<BASE_INTERACTOR>::InvalidateScrollBarParameters ()
     {
-        HWND hWnd = GetHWND ();
-        if (hWnd != NULL) { // only if we've been realized!
+        HWND hWnd = this->GetHWND ();
+        if (hWnd != nullptr) { // only if we've been realized!
             Assert (::IsWindow (hWnd));
             inherited::InvalidateScrollBarParameters_ ();
-            InvalidateScrollBarParameters_ ();
+            this->InvalidateScrollBarParameters_ ();
         }
     }
     template <typename BASE_INTERACTOR>
     inline void Led_Win32_Helper<BASE_INTERACTOR>::InvalidateScrollBarParameters_ ()
     {
-        InvalidateCaretState ();
+        this->InvalidateCaretState ();
     }
     template <typename BASE_INTERACTOR>
     void Led_Win32_Helper<BASE_INTERACTOR>::InvalidateCaretState ()
     {
         /*
-            *  Note that we simply invalidate the area where the caret will go (or where it was)
-            *  and we actually update the position in our draw method because otherwise
-            *  if the user code changed the selection many times at once - we might see the caret
-            *  dance all over the screen. We could force an update on a timer even just
-            *  in case we never get a draw event - and that might be wise - but the problem is
-            *  that this might still happen while the owning software was performing so
-            *  long procedure. For now - we'll keep things simple. Maybe later if a need appears
-            *  we can use a timer - or some other notification.
-            */
-        HWND hWnd = GetHWND ();
-        if (hWnd != NULL) {
+         *  Note that we simply invalidate the area where the caret will go (or where it was)
+         *  and we actually update the position in our draw method because otherwise
+         *  if the user code changed the selection many times at once - we might see the caret
+         *  dance all over the screen. We could force an update on a timer even just
+         *  in case we never get a draw event - and that might be wise - but the problem is
+         *  that this might still happen while the owning software was performing so
+         *  long procedure. For now - we'll keep things simple. Maybe later if a need appears
+         *  we can use a timer - or some other notification.
+         */
+        HWND hWnd = this->GetHWND ();
+        if (hWnd != nullptr) {
             Assert (::IsWindow (hWnd));
             ::HideCaret (hWnd);
         }
@@ -2070,20 +2089,20 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASE_INTERACTOR>
     void Led_Win32_Helper<BASE_INTERACTOR>::UpdateCaretState_ ()
     {
-        HWND hWnd = GetHWND ();
-        if (hWnd != NULL) {
-            if (GetCaretShown () and GetCaretShownSituation () and ::GetFocus () == hWnd) {
+        HWND hWnd = this->GetHWND ();
+        if (hWnd != nullptr) {
+            if (this->GetCaretShown () and this->GetCaretShownSituation () and ::GetFocus () == hWnd) {
                 // also turn off/on based on if empty selection...
 
                 ::HideCaret (hWnd);
 
-                Led_Rect caretRect = CalculateCaretRect ();
+                Led_Rect caretRect = this->CalculateCaretRect ();
 
                 if (caretRect.IsEmpty ()) {
 #if qProvideIMESupport
                     // if caret is to be invisible, then make sure the IME is moved
                     // offscreen (maybe should be hidden?) - SPR#1359
-                    Led_Rect wr = GetWindowRect ();
+                    Led_Rect wr = this->GetWindowRect ();
                     Led_IME::Get ().NotifyPosition (hWnd, (SHORT)wr.GetLeft (), (SHORT)wr.GetBottom () + 1000);
 #endif
                 }
@@ -2131,7 +2150,7 @@ namespace Stroika::Frameworks::Led::Platform {
     Led_Win32_Helper<BASE_INTERACTOR>::UpdateScrollBars ()
     {
         DbgTrace (Led_SDK_TCHAROF ("Led_Win32_Helper<>::UpdateScrollBars () with winStart=%d, winEnd=%d)\n"),
-                  GetMarkerPositionOfStartOfWindow (), GetMarkerPositionOfEndOfWindow ());
+                  this->GetMarkerPositionOfStartOfWindow (), this->GetMarkerPositionOfEndOfWindow ());
 
 // Don't allow SetVScrollInfo/SetHScrollInfo () calls during a thumb track - because MS Windows scrollbar
 // control SOMETIMES doesn't react well (npos not properly adjusted) when you reset the page size during
@@ -2149,43 +2168,43 @@ namespace Stroika::Frameworks::Led::Platform {
 
         inherited::UpdateScrollBars_ ();
 
-        HWND hWnd = GetHWND ();
-        if (hWnd != NULL) {
+        HWND hWnd = this->GetHWND ();
+        if (hWnd != nullptr) {
 // Hmm. Think this is wrong ... Wrong place for this ... Leave alone for now. Fix later (and HORZ CASE TOO) LGP 970107
 #if qSupportWindowsSDKCallbacks
             (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, MAKELONG (GetWindowID (), EN_VSCROLL), (LPARAM)hWnd);
 #endif
 
-            if (ShouldUpdateHScrollBar ()) {
-                SCROLLINFO scrollInfo;
+            if (this->ShouldUpdateHScrollBar ()) {
+                ::SCROLLINFO scrollInfo;
                 (void)::memset (&scrollInfo, 0, sizeof (scrollInfo));
                 scrollInfo.cbSize = sizeof (scrollInfo);
                 scrollInfo.fMask  = SIF_PAGE | SIF_POS | SIF_RANGE;
 
                 scrollInfo.nMin  = 0; // always use zero as base
-                scrollInfo.nPage = GetWindowRect ().GetWidth ();
-                scrollInfo.nMax  = scrollInfo.nPage + ComputeMaxHScrollPos ();
-                scrollInfo.nPos  = GetHScrollPos ();
+                scrollInfo.nPage = this->GetWindowRect ().GetWidth ();
+                scrollInfo.nMax  = scrollInfo.nPage + this->ComputeMaxHScrollPos ();
+                scrollInfo.nPos  = this->GetHScrollPos ();
 
                 // set pagesize ++ since that appears to be what the MS SDK expects. They expect
                 // min+page > (not >=) max implies the evevator is full, and nPos+nPage> (not >=) nMax implies at END OF DOC
                 //          -- LGP 2003-11-05
                 ++scrollInfo.nPage;
 
-                SetHScrollInfo (GetScrollBarType (h), scrollInfo);
+                this->SetHScrollInfo (this->GetScrollBarType (TextInteractor::h), scrollInfo);
             }
-            if (ShouldUpdateVScrollBar ()) {
-                size_t startOfWindow      = GetMarkerPositionOfStartOfWindow ();
-                size_t endOfWindow        = GetMarkerPositionOfEndOfWindow ();
+            if (this->ShouldUpdateVScrollBar ()) {
+                size_t startOfWindow      = this->GetMarkerPositionOfStartOfWindow ();
+                size_t endOfWindow        = this->GetMarkerPositionOfEndOfWindow ();
                 size_t verticalWindowSpan = endOfWindow - startOfWindow;
 
-                SCROLLINFO scrollInfo;
+                ::SCROLLINFO scrollInfo;
                 (void)::memset (&scrollInfo, 0, sizeof (scrollInfo));
                 scrollInfo.cbSize = sizeof (scrollInfo);
                 scrollInfo.fMask  = SIF_PAGE | SIF_POS | SIF_RANGE;
 
                 scrollInfo.nMin  = 0; // always use zero as base
-                scrollInfo.nMax  = static_cast<int> (GetLength ());
+                scrollInfo.nMax  = static_cast<int> (this->GetLength ());
                 scrollInfo.nPage = static_cast<UINT> (verticalWindowSpan);
                 scrollInfo.nPos  = static_cast<int> (startOfWindow);
 
@@ -2194,17 +2213,17 @@ namespace Stroika::Frameworks::Led::Platform {
                 //          -- LGP 2003-11-05
                 ++scrollInfo.nPage;
 
-                SetVScrollInfo (GetScrollBarType (v), scrollInfo);
+                this->SetVScrollInfo (this->GetScrollBarType (TextInteractor::v), scrollInfo);
             }
         }
     }
     template <typename BASE_INTERACTOR>
     void Led_Win32_Helper<BASE_INTERACTOR>::OnNormalLButtonDown (UINT /*nFlags*/, const Led_Point& at)
     {
-        BreakInGroupedCommands ();
+        this->BreakInGroupedCommands ();
         fMouseTrackingLastPoint = at;
-        if (not(GetStyle () & WS_DISABLED)) {
-            HWND hWnd = GetValidatedHWND ();
+        if (not(this->GetStyle () & WS_DISABLED)) {
+            HWND hWnd = this->GetValidatedHWND ();
 
             if (::GetFocus () != hWnd) {
                 (void)::SetFocus (hWnd);
@@ -2212,7 +2231,7 @@ namespace Stroika::Frameworks::Led::Platform {
 
             bool extendSelection = !!(::GetKeyState (VK_SHIFT) & 0x8000);
 
-            if (not ProcessSimpleClick (at, GetCurClickCount (), extendSelection, &fDragAnchor)) {
+            if (not this->ProcessSimpleClick (at, this->GetCurClickCount (), extendSelection, &fDragAnchor)) {
                 return;
             }
 
@@ -2224,14 +2243,14 @@ namespace Stroika::Frameworks::Led::Platform {
                 *  window if part of it needed it beyond just the part within the selection.
                 */
             //  Update_ ();
-            Update ();
+            this->Update ();
 
             (void)::SetCapture (hWnd); //  We could loop doing a sub-eventloop here - but it seems more common
             //  Windows practice to just store up state information and wait on
             //  WM_MOUSEMOVE and WM_LButtonUp messages...
-            StartAutoscrollTimer ();
+            this->StartAutoscrollTimer ();
 
-            Assert (fDragAnchor <= GetEnd ()); // Subtle point. fDragAnchor is passed as a hidden variable to
+            Assert (fDragAnchor <= this->GetEnd ()); // Subtle point. fDragAnchor is passed as a hidden variable to
             // other routines - but ONLY when we have the CAPTURE. If the capture
             // is not set, then 'fDragAnchor' is assumed to have an invalid value,
             // This implies that text shouldn't be changed while we have the mouse
@@ -2242,29 +2261,29 @@ namespace Stroika::Frameworks::Led::Platform {
     void Led_Win32_Helper<BASE_INTERACTOR>::StartAutoscrollTimer ()
     {
         /*
-            *  Not sure about this - just for debug sake??? - Did LButonUp get dropped on the floor somehow? - LGP 960530
-            */
+         *  Not sure about this - just for debug sake??? - Did LButonUp get dropped on the floor somehow? - LGP 960530
+         */
         Assert (fAutoScrollTimerID == 0);
 
         if (fAutoScrollTimerID == 0) {
             const int kTimeout = 20; // 20 milliseconds - update autoscroll every 1/50
-            // second.
-            Verify ((fAutoScrollTimerID = ::SetTimer (GetValidatedHWND (), eAutoscrollingTimerEventID, kTimeout, NULL)) != 0);
+                                     // second.
+            Verify ((fAutoScrollTimerID = ::SetTimer (this->GetValidatedHWND (), eAutoscrollingTimerEventID, kTimeout, nullptr)) != 0);
         }
     }
     template <typename BASE_INTERACTOR>
     void Led_Win32_Helper<BASE_INTERACTOR>::StopAutoscrollTimer ()
     {
         if (fAutoScrollTimerID != 0) {
-            Verify (::KillTimer (GetValidatedHWND (), eAutoscrollingTimerEventID));
+            Verify (::KillTimer (this->GetValidatedHWND (), eAutoscrollingTimerEventID));
             fAutoScrollTimerID = 0;
         }
     }
     template <typename BASE_INTERACTOR>
     bool Led_Win32_Helper<BASE_INTERACTOR>::OnCopyCommand_Before ()
     {
-        if (not ::OpenClipboard (GetValidatedHWND ())) {
-            OnBadUserInput ();
+        if (not ::OpenClipboard (this->GetValidatedHWND ())) {
+            this->OnBadUserInput ();
             return false;
         }
         (void)::EmptyClipboard (); // should we test for errors?
@@ -2280,14 +2299,14 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         inherited::OnCopyCommand_After ();
         if (not ::CloseClipboard ()) {
-            OnBadUserInput ();
+            this->OnBadUserInput ();
         }
     }
     template <typename BASE_INTERACTOR>
     bool Led_Win32_Helper<BASE_INTERACTOR>::OnPasteCommand_Before ()
     {
-        if (not ::OpenClipboard (GetValidatedHWND ())) {
-            OnBadUserInput ();
+        if (not ::OpenClipboard (this->GetValidatedHWND ())) {
+            this->OnBadUserInput ();
             return false;
         }
         bool result = inherited::OnPasteCommand_Before ();
@@ -2302,20 +2321,20 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         inherited::OnPasteCommand_After ();
         if (not ::CloseClipboard ()) {
-            OnBadUserInput ();
+            this->OnBadUserInput ();
         }
     }
     template <typename BASE_INTERACTOR>
     /*
     @METHOD:        Led_Win32_Helper<BASE_INTERACTOR>::GetStyle
     @DESCRIPTION:   <p>Return the HWND's style (::GetWindowLong(...,GWL_STYLE). If the
-                HWND is NULL, then return a style of 0.</p>
+                HWND is nullptr, then return a style of 0.</p>
     */
     nonvirtual DWORD
     Led_Win32_Helper<BASE_INTERACTOR>::GetStyle () const
     {
         HWND hWnd = GetHWND ();
-        if (hWnd == NULL) {
+        if (hWnd == nullptr) {
             return 0;
         }
         else {
@@ -2326,7 +2345,7 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASE_INTERACTOR>
     inline int Led_Win32_Helper<BASE_INTERACTOR>::GetWindowID () const
     {
-        return (::GetWindowLong (GetValidatedHWND (), GWL_ID));
+        return (::GetWindowLong (this->GetValidatedHWND (), GWL_ID));
     }
     template <typename BASE_INTERACTOR>
     inline HWND Led_Win32_Helper<BASE_INTERACTOR>::GetValidatedHWND () const
@@ -2341,9 +2360,9 @@ namespace Stroika::Frameworks::Led::Platform {
 #if !qNestedClassesInTemplateClassesDontExpandCompilerBug
     template <typename BASE_INTERACTOR>
     inline Led_Win32_Helper<BASE_INTERACTOR>::TemporarilyUseTablet::TemporarilyUseTablet (Led_Win32_Helper<BASE_INTERACTOR>& editor, Led_Tablet t, DoTextMetricsChangedCall tmChanged)
-        : fEditor (editor)
-        , fOldTablet (editor.fUpdateTablet)
-        , fDoTextMetricsChangedCall (tmChanged)
+        : fEditor{editor}
+        , fOldTablet{editor.fUpdateTablet}
+        , fDoTextMetricsChangedCall{tmChanged}
     {
         editor.fUpdateTablet = t;
         if (tmChanged == eDoTextMetricsChangedCall) {
@@ -2363,7 +2382,7 @@ namespace Stroika::Frameworks::Led::Platform {
     //class Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>
     template <typename BASECLASS>
     Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::Led_Win32_Win32SDKMessageMimicHelper ()
-        : inherited ()
+        : inherited{}
     {
     }
     template <typename BASECLASS>
@@ -2378,73 +2397,73 @@ namespace Stroika::Frameworks::Led::Platform {
         RequireNotNull (result);
         switch (message) {
             case WM_SETTEXT:
-                *result = OnMsgSetText (wParam, lParam);
+                *result = this->OnMsgSetText (wParam, lParam);
                 return true;
             case WM_GETTEXT:
-                *result = OnMsgGetText (wParam, lParam);
+                *result = this->OnMsgGetText (wParam, lParam);
                 return true;
             case WM_GETTEXTLENGTH:
-                *result = OnMsgGetTextLength (wParam, lParam);
+                *result = this->OnMsgGetTextLength (wParam, lParam);
                 return true;
             case EM_GETSEL:
-                *result = OnMsgGetSel (wParam, lParam);
+                *result = this->OnMsgGetSel (wParam, lParam);
                 return true;
             case EM_SETREADONLY:
-                *result = OnMsgSetReadOnly (wParam, lParam);
+                *result = this->OnMsgSetReadOnly (wParam, lParam);
                 return true;
             case EM_GETFIRSTVISIBLELINE:
-                *result = OnMsgGetFirstVisibleLine (wParam, lParam);
+                *result = this->OnMsgGetFirstVisibleLine (wParam, lParam);
                 return true;
             case EM_LINEINDEX:
-                *result = OnMsgLineIndex (wParam, lParam);
+                *result = this->OnMsgLineIndex (wParam, lParam);
                 return true;
             case EM_GETLINECOUNT:
-                *result = OnMsgLineCount (wParam, lParam);
+                *result = this->OnMsgLineCount (wParam, lParam);
                 return true;
             case EM_CANUNDO:
-                *result = OnMsgCanUndo (wParam, lParam);
+                *result = this->OnMsgCanUndo (wParam, lParam);
                 return true;
             case EM_UNDO:
-                *result = OnMsgUndo (wParam, lParam);
+                *result = this->OnMsgUndo (wParam, lParam);
                 return true;
             case EM_EMPTYUNDOBUFFER:
-                *result = OnMsgEmptyUndoBuffer (wParam, lParam);
+                *result = this->OnMsgEmptyUndoBuffer (wParam, lParam);
                 return true;
             case WM_CLEAR:
-                *result = OnMsgClear (wParam, lParam);
+                *result = this->OnMsgClear (wParam, lParam);
                 return true;
             case WM_CUT:
-                *result = OnMsgCut (wParam, lParam);
+                *result = this->OnMsgCut (wParam, lParam);
                 return true;
             case WM_COPY:
-                *result = OnMsgCopy (wParam, lParam);
+                *result = this->OnMsgCopy (wParam, lParam);
                 return true;
             case WM_PASTE:
-                *result = OnMsgPaste (wParam, lParam);
+                *result = this->OnMsgPaste (wParam, lParam);
                 return true;
             case EM_LINEFROMCHAR:
-                *result = OnMsgLineFromChar (wParam, lParam);
+                *result = this->OnMsgLineFromChar (wParam, lParam);
                 return true;
             case EM_LINELENGTH:
-                *result = OnMsgLineLength (wParam, lParam);
+                *result = this->OnMsgLineLength (wParam, lParam);
                 return true;
             case EM_LINESCROLL:
-                *result = OnMsgLineScroll (wParam, lParam);
+                *result = this->OnMsgLineScroll (wParam, lParam);
                 return true;
             case EM_REPLACESEL:
-                *result = OnMsgReplaceSel (wParam, lParam);
+                *result = this->OnMsgReplaceSel (wParam, lParam);
                 return true;
             case EM_SETSEL:
-                *result = OnMsgSetSel (wParam, lParam);
+                *result = this->OnMsgSetSel (wParam, lParam);
                 return true;
             case EM_SCROLLCARET:
-                *result = OnMsgScrollCaret (wParam, lParam);
+                *result = this->OnMsgScrollCaret (wParam, lParam);
                 return true;
             case WM_GETFONT:
-                *result = OnMsgGetFont (wParam, lParam);
+                *result = this->OnMsgGetFont (wParam, lParam);
                 return true;
             case WM_SETFONT:
-                *result = OnMsgSetFont (wParam, lParam);
+                *result = this->OnMsgSetFont (wParam, lParam);
                 return true;
             default:
                 return false;
@@ -2458,21 +2477,21 @@ namespace Stroika::Frameworks::Led::Platform {
         LPSTR lpText     = (LPSTR)lParam;
         Require (cchTextMax > 0); // cuz we require appending NUL character
 
-        size_t                              len = GetLength ();
+        size_t                              len = this->GetLength ();
         Memory::SmallStackBuffer<Led_tChar> buf (len);
-        CopyOut (0, len, buf);
+        this->CopyOut (0, len, buf);
         size_t                              len2 = 2 * len;
         Memory::SmallStackBuffer<Led_tChar> buf2 (len2);
         len2 = Characters::NLToNative<Led_tChar> (buf, len, buf2, len2);
 #if qWideCharacters
         // Assume they want ANSI code page text?
-        int nChars = ::WideCharToMultiByte (CP_ACP, 0, buf2, static_cast<int> (len2), lpText, cchTextMax - 1, NULL, NULL);
+        int nChars = ::WideCharToMultiByte (CP_ACP, 0, buf2, static_cast<int> (len2), lpText, cchTextMax - 1, nullptr, nullptr);
 #else
         size_t nChars = min (size_t (cchTextMax) - 1, len2);
         (void)::memcpy (lpText, buf2, nChars);
 #endif
         lpText[nChars] = '\0';
-        return (nChars);
+        return nChars;
     }
     template <typename BASECLASS>
     LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgSetText (WPARAM /*wParam*/, LPARAM lParam)
@@ -2486,8 +2505,8 @@ namespace Stroika::Frameworks::Led::Platform {
             *  markers. And - also - this SetTextPtr () operation could fail in the middle
             *  leaving an empty text buffer as the result.
             */
-        Replace (0, GetEnd (), LED_TCHAR_OF (""), 0);
-        if (lpText != NULL) {
+        this->Replace (0, this->GetEnd (), LED_TCHAR_OF (""), 0);
+        if (lpText != nullptr) {
             size_t                              len = ::strlen (lpText);
             Memory::SmallStackBuffer<Led_tChar> buf (len);
 #if qWideCharacters
@@ -2497,7 +2516,7 @@ namespace Stroika::Frameworks::Led::Platform {
             (void)::memcpy (buf, lpText, len);
 #endif
             len = Characters::NormalizeTextToNL<Led_tChar> (buf, len, buf, len);
-            Replace (0, 0, buf, len);
+            this->Replace (0, 0, buf, len);
         }
 
         return 0;
@@ -2507,38 +2526,36 @@ namespace Stroika::Frameworks::Led::Platform {
     {
 //*2 cuz of CRLF worst case, and *2 cuz of unicode->MBYTE worst case (is that so - worst case? - maybe not needed to multiply there).
 #if qWideCharacters
-        return (4 * GetLength ()); // always enuf for unicode chars...
+        return (4 * this->GetLength ()); // always enuf for unicode chars...
 #else
-        return (GetLength () * 2);
+        return this->GetLength () * 2;
 #endif
     }
     template <typename BASECLASS>
     LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgGetSel (WPARAM wParam, LPARAM lParam)
     {
-        DWORD iSelStart = static_cast<DWORD> (GetSelectionStart ());
-        DWORD iSelEnd   = static_cast<DWORD> (GetSelectionEnd ());
-
-        if (wParam != NULL) {
+        DWORD iSelStart = static_cast<DWORD> (this->GetSelectionStart ());
+        DWORD iSelEnd   = static_cast<DWORD> (this->GetSelectionEnd ());
+        if (wParam != 0) {
             *reinterpret_cast<DWORD*> (wParam) = iSelStart;
         }
-        if (lParam != NULL) {
+        if (lParam != 0) {
             *reinterpret_cast<DWORD*> (lParam) = iSelEnd;
         }
-
         DWORD dw = (((WORD)iSelStart) << 16) | ((WORD)iSelEnd);
         return dw;
     }
     template <typename BASECLASS>
     LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgGetFirstVisibleLine (WPARAM /*wParam*/, LPARAM /*lParam*/)
     {
-        Assert (GetTopRowInWindow () >= 0);
-        return (GetTopRowInWindow ());
+        Assert (this->GetTopRowInWindow () >= 0);
+        return this->GetTopRowInWindow ();
     }
     template <typename BASECLASS>
     LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgSetReadOnly (WPARAM wParam, LPARAM /*lParam*/)
     {
-        HWND  hWnd     = GetValidatedHWND ();
-        DWORD dwStyle  = GetStyle ();
+        HWND  hWnd     = this->GetValidatedHWND ();
+        DWORD dwStyle  = this->GetStyle ();
         bool  readOnly = !!wParam;
         if (readOnly) {
             dwStyle |= ES_READONLY;
@@ -2553,39 +2570,39 @@ namespace Stroika::Frameworks::Led::Platform {
                 TextInteractor* ti = this;
                 ti->Refresh ();
             } // funky refresh call to avoid ambiguity when baseclass has other 'Refresh' methods - as in COleControl
-            if (GetCommandHandler () != NULL) {
-                GetCommandHandler ()->Commit ();
+            if (this->GetCommandHandler () != nullptr) {
+                this->GetCommandHandler ()->Commit ();
             }
         }
-        return (1);
+        return 1;
     }
     template <typename BASECLASS>
     LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgLineIndex (WPARAM wParam, LPARAM /*lParam*/)
     {
-        size_t row = (int (wParam) == -1) ? GetRowContainingPosition (GetSelectionEnd ()) : (size_t (wParam));
+        size_t row = (int (wParam) == -1) ? this->GetRowContainingPosition (this->GetSelectionEnd ()) : (size_t (wParam));
         if (row < 0) {
             row = 0;
         }
-        row = min (row, GetRowCount () - 1);
-        return (GetStartOfRow (row));
+        row = min (row, this->GetRowCount () - 1);
+        return (this->GetStartOfRow (row));
     }
     template <typename BASECLASS>
     LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgLineCount (WPARAM /*wParam*/, LPARAM /*lParam*/)
     {
-        return (GetRowCount ()); // 1-based for SDK API here...
+        return this->GetRowCount (); // 1-based for SDK API here...
     }
     template <typename BASECLASS>
     LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgCanUndo (WPARAM /*wParam*/, LPARAM /*lParam*/)
     {
-        CommandHandler* ch = GetCommandHandler ();
-        return (ch != NULL and ch->CanUndo ());
+        CommandHandler* ch = this->GetCommandHandler ();
+        return ch != nullptr and ch->CanUndo ();
     }
     template <typename BASECLASS>
     LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgUndo (WPARAM /*wParam*/, LPARAM /*lParam*/)
     {
-        CommandHandler* ch = GetCommandHandler ();
-        if (ch != NULL and ch->CanUndo ()) {
-            OnUndoCommand ();
+        CommandHandler* ch = this->GetCommandHandler ();
+        if (ch != nullptr and ch->CanUndo ()) {
+            this->OnUndoCommand ();
             return (true);
         }
         return (false);
@@ -2593,8 +2610,8 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASECLASS>
     LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgEmptyUndoBuffer (WPARAM /*wParam*/, LPARAM /*lParam*/)
     {
-        CommandHandler* ch = GetCommandHandler ();
-        if (ch != NULL) {
+        CommandHandler* ch = this->GetCommandHandler ();
+        if (ch != nullptr) {
             ch->Commit ();
         }
         return 0; // return value ignored...
@@ -2602,9 +2619,9 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASECLASS>
     LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgClear (WPARAM /*wParam*/, LPARAM /*lParam*/)
     {
-        OnClearCommand ();
+        this->OnClearCommand ();
 #if qSupportWindowsSDKCallbacks
-        HWND hWnd = GetValidatedHWND ();
+        HWND hWnd = this->GetValidatedHWND ();
         (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, MAKELONG (::GetWindowLong (hWnd, GWL_ID), EN_CHANGE), (LPARAM)hWnd);
 #endif
         return 0; // return value ignored...
@@ -2612,9 +2629,9 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASECLASS>
     LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgCut (WPARAM /*wParam*/, LPARAM /*lParam*/)
     {
-        OnCutCommand ();
+        this->OnCutCommand ();
 #if qSupportWindowsSDKCallbacks
-        HWND hWnd = GetValidatedHWND ();
+        HWND hWnd = this->GetValidatedHWND ();
         (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, MAKELONG (::GetWindowLong (hWnd, GWL_ID), EN_CHANGE), (LPARAM)hWnd);
 #endif
         return 0; // return value ignored...
@@ -2622,15 +2639,15 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASECLASS>
     LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgCopy (WPARAM /*wParam*/, LPARAM /*lParam*/)
     {
-        OnCopyCommand ();
+        this->OnCopyCommand ();
         return 0; // return value ignored...
     }
     template <typename BASECLASS>
     LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgPaste (WPARAM /*wParam*/, LPARAM /*lParam*/)
     {
-        OnPasteCommand ();
+        this->OnPasteCommand ();
 #if qSupportWindowsSDKCallbacks
-        HWND hWnd = GetValidatedHWND ();
+        HWND hWnd = this->GetValidatedHWND ();
         (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, MAKELONG (::GetWindowLong (hWnd, GWL_ID), EN_CHANGE), (LPARAM)hWnd);
 #endif
         return 0; // return value ignored...
@@ -2640,28 +2657,28 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         ptrdiff_t nIndex = ptrdiff_t (wParam);
         if (nIndex == -1) {
-            nIndex = static_cast<ptrdiff_t> (GetSelectionStart ());
+            nIndex = static_cast<ptrdiff_t> (this->GetSelectionStart ());
         }
         if (nIndex < 0) {
             nIndex = 0;
         }
         Assert (nIndex >= 0); // so we can cast to size_t safely
-        if (size_t (nIndex) > GetEnd ()) {
-            nIndex = GetEnd ();
+        if (size_t (nIndex) > this->GetEnd ()) {
+            nIndex = this->GetEnd ();
         }
-        return (GetRowContainingPosition (nIndex));
+        return this->GetRowContainingPosition (nIndex);
     }
     template <typename BASECLASS>
     LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgLineLength (WPARAM wParam, LPARAM /*lParam*/)
     {
-        size_t row = (int (wParam) == -1) ? GetRowContainingPosition (GetSelectionEnd ()) : (size_t (wParam));
+        size_t row = (int (wParam) == -1) ? this->GetRowContainingPosition (this->GetSelectionEnd ()) : (size_t (wParam));
         if (row < 0) {
             row = 0;
         }
-        if (row > GetRowCount () - 1) {
-            row = GetRowCount () - 1;
+        if (row > this->GetRowCount () - 1) {
+            row = this->GetRowCount () - 1;
         }
-        return (GetEndOfRow (row) - GetStartOfRow (row)); // Not sure if we should count NL, or not???
+        return this->GetEndOfRow (row) - this->GetStartOfRow (row); // Not sure if we should count NL, or not???
     }
     template <typename BASECLASS>
     LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgLineScroll (WPARAM wParam, LPARAM lParam)
@@ -2669,8 +2686,8 @@ namespace Stroika::Frameworks::Led::Platform {
         [[maybe_unused]] int nChars = int (wParam); // NOTE THAT FOR NOW WE IGNORE nChars since we only
         // support word-wrapped text for this release...
         int nLines = int (lParam);
-        ScrollByIfRoom (nLines);
-        return !!(GetStyle () & ES_MULTILINE);
+        this->ScrollByIfRoom (nLines);
+        return !!(this->GetStyle () & ES_MULTILINE);
     }
     template <typename BASECLASS>
     LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgReplaceSel ([[maybe_unused]] WPARAM wParam, LPARAM lParam)
@@ -2692,7 +2709,7 @@ namespace Stroika::Frameworks::Led::Platform {
 #endif
         size_t nLen = Characters::NormalizeTextToNL<Led_tChar> (buf, len, buf, len);
         Assert (ValidateTextForCharsetConformance (buf, nLen));
-        Replace (GetSelectionStart (), GetSelectionEnd (), buf, nLen);
+        this->Replace (this->GetSelectionStart (), this->GetSelectionEnd (), buf, nLen);
         return 0; // result ignored...
     }
     template <typename BASECLASS>
@@ -2704,7 +2721,7 @@ namespace Stroika::Frameworks::Led::Platform {
         ptrdiff_t nStart = ptrdiff_t (wParam);
         ptrdiff_t nEnd   = ptrdiff_t (lParam);
         if (nEnd == -1) {
-            nEnd = GetLength ();
+            nEnd = this->GetLength ();
         }
         if (nStart < 0) {
             nStart = 0;
@@ -2712,85 +2729,85 @@ namespace Stroika::Frameworks::Led::Platform {
         if (nEnd < 0) {
             nEnd = 0;
         }
-        if (size_t (nEnd) > GetEnd ()) {
-            nEnd = static_cast<ptrdiff_t> (GetEnd ());
+        if (size_t (nEnd) > this->GetEnd ()) {
+            nEnd = static_cast<ptrdiff_t> (this->GetEnd ());
         }
         if (nStart > nEnd) {
             swap (nStart, nEnd);
         }
-        SetSelection (static_cast<ptrdiff_t> (nStart), static_cast<ptrdiff_t> (nEnd));
+        this->SetSelection (static_cast<ptrdiff_t> (nStart), static_cast<ptrdiff_t> (nEnd));
         return 0; // result ignored...
     }
     template <typename BASECLASS>
     LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgScrollCaret (WPARAM /*wParam*/, LPARAM /*lParam*/)
     {
-        ScrollToSelection ();
+        this->ScrollToSelection ();
         return 0; // result ignored...
     }
     template <typename BASECLASS>
     LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgGetFont (WPARAM /*wParam*/, LPARAM /*lParam*/)
     {
         /*
-            *      just use fDefaultFontCache as a convenient way to keep track of this object
-            *  so we delete it in the end...
-            *
-            *      But - we want to be careful not only delete this when need be. We could update
-            *  this cache every time the font changes. But I'd rather have all this localized,
-            *  and only pay the price when this function is called. This function is probably
-            *  quite rarely called (certainly not by anything within Led itself!).
-            *
-            *      The reason we want to delete this only when we have to, is because we have no
-            *  way of knowing who kept refernces to the HFONT we return. So we delete it only
-            *  when we change fonts, and someone asks again - and on DTOR of this object.
-            */
-        Led_FontSpecification defaultFont = GetDefaultSelectionFont ();
+         *      just use fDefaultFontCache as a convenient way to keep track of this object
+         *  so we delete it in the end...
+         *
+         *      But - we want to be careful not only delete this when need be. We could update
+         *  this cache every time the font changes. But I'd rather have all this localized,
+         *  and only pay the price when this function is called. This function is probably
+         *  quite rarely called (certainly not by anything within Led itself!).
+         *
+         *      The reason we want to delete this only when we have to, is because we have no
+         *  way of knowing who kept refernces to the HFONT we return. So we delete it only
+         *  when we change fonts, and someone asks again - and on DTOR of this object.
+         */
+        Led_FontSpecification defaultFont = this->GetDefaultSelectionFont ();
         LOGFONT               defaultFontLF;
         defaultFont.GetOSRep (&defaultFontLF);
 
-        if (fDefaultFontCache.m_hObject != NULL) { // Seeing if font changed...
+        if (fDefaultFontCache.m_hObject != nullptr) { // Seeing if font changed...
             Led_FontObject tmpHackToTestFont;
             Verify (tmpHackToTestFont.CreateFontIndirect (&defaultFontLF));
 
-            LOGFONT tmpHackToTestFontLF;
-            (void)::memset (&tmpHackToTestFontLF, 0, sizeof (tmpHackToTestFontLF));
+            ::LOGFONT tmpHackToTestFontLF{};
             Verify (tmpHackToTestFont.GetObject (sizeof (tmpHackToTestFontLF), &tmpHackToTestFontLF));
 
-            LOGFONT currentLF;
-            (void)::memset (&currentLF, 0, sizeof (currentLF));
+            ::LOGFONT currentLF{};
             Verify (fDefaultFontCache.GetObject (sizeof (currentLF), &currentLF));
 
             if (::memcmp (&currentLF, &tmpHackToTestFontLF, sizeof (currentLF)) != 0) {
                 fDefaultFontCache.DeleteObject ();
-                Assert (fDefaultFontCache.m_hObject == NULL);
+                Assert (fDefaultFontCache.m_hObject == nullptr);
             }
         }
 
-        if (fDefaultFontCache.m_hObject == NULL) {
+        if (fDefaultFontCache.m_hObject == nullptr) {
             fDefaultFontCache.CreateFontIndirect (&defaultFontLF);
         }
-        return ((LRESULT)fDefaultFontCache.m_hObject);
+        return (LRESULT)fDefaultFontCache.m_hObject;
     }
     template <typename BASECLASS>
     LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgSetFont (WPARAM wParam, LPARAM lParam)
     {
+        using TextInteractor::eDefaultUpdate;
+        using TextInteractor::eNoUpdate;
         Led_IncrementalFontSpecification fontSpec;
         {
             HFONT fontToUse = reinterpret_cast<HFONT> (wParam);
-            if (fontToUse == NULL) {
+            if (fontToUse == nullptr) {
                 fontToUse = reinterpret_cast<HFONT> (::GetStockObject (DEFAULT_GUI_FONT));
             }
             LOGFONT lf;
             ::GetObject (fontToUse, sizeof (lf), &lf);
             fontSpec.SetOSRep (lf);
         }
-        SetDefaultFont (fontSpec, lParam ? eDefaultUpdate : eNoUpdate);
-        return (0);
+        this->SetDefaultFont (fontSpec, lParam ? eDefaultUpdate : eNoUpdate);
+        return 0;
     }
 
     //  class   SimpleWin32WndProcHelper
     inline SimpleWin32WndProcHelper::SimpleWin32WndProcHelper ()
-        : fHWnd (NULL)
-        , fSuperWindowProc (NULL)
+        : fHWnd{nullptr}
+        , fSuperWindowProc{nullptr}
     {
     }
     inline HWND SimpleWin32WndProcHelper::GetHWND () const
@@ -2799,17 +2816,17 @@ namespace Stroika::Frameworks::Led::Platform {
     }
     inline void SimpleWin32WndProcHelper::SetHWND (HWND hWnd)
     {
-        if (fHWnd != NULL) {
+        if (fHWnd != nullptr) {
             ::SetWindowLongPtr (fHWnd, GWLP_USERDATA, 0); // reset back to original value
         }
         fHWnd = hWnd;
-        if (fHWnd != NULL) {
+        if (fHWnd != nullptr) {
             ::SetWindowLongPtr (fHWnd, GWLP_USERDATA, reinterpret_cast<DWORD_PTR> (this));
         }
     }
     inline HWND SimpleWin32WndProcHelper::GetValidatedHWND () const
     {
-        HWND hWnd = GetHWND ();
+        HWND hWnd = this->GetHWND ();
         AssertNotNull (hWnd);
         Assert (::IsWindow (hWnd));
         return (hWnd);
@@ -2822,22 +2839,22 @@ namespace Stroika::Frameworks::Led::Platform {
     {
 #if !qSDK_UNICODE
         if (IsWindowUNICODE ()) {
-            return ::SendMessageW (GetValidatedHWND (), msg, wParam, lParam);
+            return ::SendMessageW (this->GetValidatedHWND (), msg, wParam, lParam);
         }
 #endif
-        return ::SendMessage (GetValidatedHWND (), msg, wParam, lParam);
+        return ::SendMessage (this->GetValidatedHWND (), msg, wParam, lParam);
     }
     inline bool SimpleWin32WndProcHelper::IsWindowRealized () const
     {
-        return GetHWND () != NULL;
+        return this->GetHWND () != nullptr;
     }
     inline void SimpleWin32WndProcHelper::Assert_Window_Realized () const
     {
-        Assert (IsWindowRealized ());
+        Assert (this->IsWindowRealized ());
     }
     inline void SimpleWin32WndProcHelper::Require_Window_Realized () const
     {
-        Require (IsWindowRealized ());
+        Require (this->IsWindowRealized ());
     }
     inline bool SimpleWin32WndProcHelper::IsWindowUNICODE () const
     {
@@ -2860,12 +2877,12 @@ namespace Stroika::Frameworks::Led::Platform {
     */
     inline bool SimpleWin32WndProcHelper::SubclassWindow (HWND hWnd)
     {
-        Require (fSuperWindowProc == NULL); // don't call twice!
-        Require (fHWnd == NULL);            // don't call after already created! - use this instead of SetHWnd ()!!!
+        Require (fSuperWindowProc == nullptr); // don't call twice!
+        Require (fHWnd == nullptr);            // don't call after already created! - use this instead of SetHWnd ()!!!
         RequireNotNull (hWnd);
         Require (::IsWindow (hWnd));
         fSuperWindowProc = reinterpret_cast<WNDPROC> (::SetWindowLongPtr (hWnd, GWLP_WNDPROC, reinterpret_cast<DWORD_PTR> (StaticWndProc)));
-        if (fSuperWindowProc == NULL) {
+        if (fSuperWindowProc == nullptr) {
             return false;
         }
         SetHWND (hWnd);
@@ -2877,12 +2894,12 @@ namespace Stroika::Frameworks::Led::Platform {
     */
     inline bool SimpleWin32WndProcHelper::SubclassWindowW (HWND hWnd)
     {
-        Require (fSuperWindowProc == NULL); // don't call twice!
-        Require (fHWnd == NULL);            // don't call after already created! - use this instead of SetHWnd ()!!!
+        Require (fSuperWindowProc == nullptr); // don't call twice!
+        Require (fHWnd == nullptr);            // don't call after already created! - use this instead of SetHWnd ()!!!
         RequireNotNull (hWnd);
         Require (::IsWindow (hWnd));
         fSuperWindowProc = reinterpret_cast<WNDPROC> (::SetWindowLongPtr (hWnd, GWLP_WNDPROC, reinterpret_cast<DWORD_PTR> (StaticWndProc)));
-        if (fSuperWindowProc == NULL) {
+        if (fSuperWindowProc == nullptr) {
             return false;
         }
         SetHWND (hWnd);
@@ -2890,40 +2907,40 @@ namespace Stroika::Frameworks::Led::Platform {
     }
     inline LRESULT SimpleWin32WndProcHelper::WndProc (UINT message, WPARAM wParam, LPARAM lParam)
     {
-        return DefWindowProc (message, wParam, lParam);
+        return this->DefWindowProc (message, wParam, lParam);
     }
     inline LRESULT SimpleWin32WndProcHelper::DefWindowProc (UINT message, WPARAM wParam, LPARAM lParam)
     {
 #if !qSDK_UNICODE
         if (IsWindowUNICODE ()) {
-            if (fSuperWindowProc == NULL) {
-                return ::DefWindowProcW (GetValidatedHWND (), message, wParam, lParam);
+            if (fSuperWindowProc == nullptr) {
+                return ::DefWindowProcW (this->GetValidatedHWND (), message, wParam, lParam);
             }
             else {
-                return ::CallWindowProcW (fSuperWindowProc, GetValidatedHWND (), message, wParam, lParam);
+                return ::CallWindowProcW (fSuperWindowProc, this->GetValidatedHWND (), message, wParam, lParam);
             }
         }
 #endif
-        if (fSuperWindowProc == NULL) {
-            return ::DefWindowProc (GetValidatedHWND (), message, wParam, lParam);
+        if (fSuperWindowProc == nullptr) {
+            return ::DefWindowProc (this->GetValidatedHWND (), message, wParam, lParam);
         }
         else {
-            return ::CallWindowProc (fSuperWindowProc, GetValidatedHWND (), message, wParam, lParam);
+            return ::CallWindowProc (fSuperWindowProc, this->GetValidatedHWND (), message, wParam, lParam);
         }
     }
 
     //  class   Led_Win32_SimpleWndProc_Helper<BASE_WIN32_HELPER>
     template <typename BASE_WIN32_HELPER>
     Led_Win32_SimpleWndProc_Helper<BASE_WIN32_HELPER>::Led_Win32_SimpleWndProc_Helper ()
-        : BASE_WIN32_HELPER ()
-        , fHWnd (NULL)
-        , fSuperWindowProc (NULL)
+        : BASE_WIN32_HELPER{}
+        , fHWnd{nullptr}
+        , fSuperWindowProc{nullptr}
     {
     }
     template <typename BASE_WIN32_HELPER>
     Led_Win32_SimpleWndProc_Helper<BASE_WIN32_HELPER>::~Led_Win32_SimpleWndProc_Helper ()
     {
-        if (GetHWND () != NULL) {
+        if (GetHWND () != nullptr) {
             ::DestroyWindow (GetHWND ());
         }
     }
@@ -2945,8 +2962,8 @@ namespace Stroika::Frameworks::Led::Platform {
     Led_Win32_SimpleWndProc_Helper<BASE_WIN32_HELPER>::Create (DWORD dwExStyle, LPCTSTR lpClassName, LPCTSTR lpWindowName, DWORD dwStyle, int x, int y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance)
     {
         Led_SDK_String tmpClassName;
-        if (lpClassName == NULL) {
-            tmpClassName = Characters::CString::Format (_T("Led_Win32_SimpleWndProc_Helper<>-%d-%p"), ::GetCurrentProcessId (), &StaticWndProc);
+        if (lpClassName == nullptr) {
+            tmpClassName = Foundation::Characters::CString::Format (_T("Led_Win32_SimpleWndProc_Helper<>-%d-%p"), ::GetCurrentProcessId (), &StaticWndProc);
             lpClassName  = tmpClassName.c_str ();
             {
                 static bool sRegistered = false;
@@ -2971,16 +2988,16 @@ namespace Stroika::Frameworks::Led::Platform {
             }
         }
         [[maybe_unused]] HWND hWnd = ::CreateWindowEx (dwExStyle, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, this);
-        Assert (hWnd == GetValidatedHWND ()); // already pre-set on the WM_CREATE message...
+        Assert (hWnd == this->GetValidatedHWND ()); // already pre-set on the WM_CREATE message...
     }
     template <typename BASE_WIN32_HELPER>
     void Led_Win32_SimpleWndProc_Helper<BASE_WIN32_HELPER>::SetHWND (HWND hWnd)
     {
-        if (fHWnd != NULL) {
+        if (fHWnd != nullptr) {
             ::SetWindowLongPtr (fHWnd, GWLP_USERDATA, 0); // reset back to original value
         }
         fHWnd = hWnd;
-        if (fHWnd != NULL) {
+        if (fHWnd != nullptr) {
             ::SetWindowLongPtr (fHWnd, GWLP_USERDATA, reinterpret_cast<DWORD_PTR> (this));
         }
     }
@@ -2993,7 +3010,7 @@ namespace Stroika::Frameworks::Led::Platform {
     void Led_Win32_SimpleWndProc_Helper<BASE_INTERACTOR>::OnNCDestroy_Msg ()
     {
         (void)DefWindowProc (WM_NCDESTROY, 0, 0);
-        SetHWND (NULL);
+        SetHWND (nullptr);
     }
     template <typename BASE_INTERACTOR>
     /*
@@ -3006,12 +3023,12 @@ namespace Stroika::Frameworks::Led::Platform {
     bool
     Led_Win32_SimpleWndProc_Helper<BASE_INTERACTOR>::SubclassWindow (HWND hWnd)
     {
-        Require (fSuperWindowProc == NULL); // don't call twice!
-        Require (fHWnd == NULL);            // don't call after already created! - use this instead of SetHWnd ()!!!
+        Require (fSuperWindowProc == nullptr); // don't call twice!
+        Require (fHWnd == nullptr);            // don't call after already created! - use this instead of SetHWnd ()!!!
         RequireNotNull (hWnd);
         Require (::IsWindow (hWnd));
         fSuperWindowProc = reinterpret_cast<WNDPROC> (::SetWindowLong (hWnd, GWLP_WNDPROC, reinterpret_cast<LONG> (StaticWndProc)));
-        if (fSuperWindowProc == NULL) {
+        if (fSuperWindowProc == nullptr) {
             return false;
         }
         SetHWND (hWnd);
@@ -3035,13 +3052,13 @@ namespace Stroika::Frameworks::Led::Platform {
     bool
     Led_Win32_SimpleWndProc_Helper<BASE_INTERACTOR>::ReplaceWindow (HWND hWnd)
     {
-        Require (fSuperWindowProc == NULL); // don't call twice!
-        Require (fHWnd == NULL);            // don't call after already created! - use this instead of SetHWnd ()!!!
+        Require (fSuperWindowProc == nullptr); // don't call twice!
+        Require (fHWnd == nullptr);            // don't call after already created! - use this instead of SetHWnd ()!!!
         RequireNotNull (hWnd);
         Require (::IsWindow (hWnd));
 
         HWND parent = ::GetParent (hWnd);
-        if (parent == NULL) {
+        if (parent == nullptr) {
             return false;
         }
         int id = ::GetWindowLong (hWnd, GWL_ID);
@@ -3060,8 +3077,8 @@ namespace Stroika::Frameworks::Led::Platform {
         LOGFONT useFont;
         bool    justUseSystemFont = true;
         {
-            HFONT hFont = NULL;
-            if ((hFont = (HFONT)::SendMessage (hWnd, WM_GETFONT, 0, 0L)) != NULL) {
+            HFONT hFont = nullptr;
+            if ((hFont = (HFONT)::SendMessage (hWnd, WM_GETFONT, 0, 0L)) != nullptr) {
                 if (::GetObject (hFont, sizeof (LOGFONT), &useFont)) {
                     justUseSystemFont = false;
                 }
@@ -3071,10 +3088,10 @@ namespace Stroika::Frameworks::Led::Platform {
         // Delete the old widget window.
         ::DestroyWindow (hWnd);
         DISABLE_COMPILER_MSC_WARNING_START (4312)
-        Create (exStyle, NULL, NULL, dwStyle | WS_CHILD,
+        Create (exStyle, nullptr, nullptr, dwStyle | WS_CHILD,
                 wp.rcNormalPosition.left, wp.rcNormalPosition.top,
                 wp.rcNormalPosition.right - wp.rcNormalPosition.left, wp.rcNormalPosition.bottom - wp.rcNormalPosition.top,
-                parent, (HMENU)id, NULL);
+                parent, (HMENU)id, nullptr);
         DISABLE_COMPILER_MSC_WARNING_END (4312)
 
         /*
@@ -3086,48 +3103,48 @@ namespace Stroika::Frameworks::Led::Platform {
                 Verify (fontToUse.CreateFontIndirect (&useFont));
             }
             bool redrawFlag = true;
-            (void)::SendMessage (GetValidatedHWND (), WM_SETFONT, justUseSystemFont ? NULL : reinterpret_cast<WPARAM> (static_cast<HFONT> (fontToUse)), redrawFlag);
+            (void)::SendMessage (this->GetValidatedHWND (), WM_SETFONT, justUseSystemFont ? NULL : reinterpret_cast<WPARAM> (static_cast<HFONT> (fontToUse)), redrawFlag);
         }
         return true;
     }
     template <typename BASE_INTERACTOR>
     void Led_Win32_SimpleWndProc_Helper<BASE_INTERACTOR>::HookSubclassWindow ()
     {
-        HWND  hWnd    = GetValidatedHWND ();
+        HWND  hWnd    = this->GetValidatedHWND ();
         DWORD dwStyle = ::GetWindowLong (hWnd, GWL_STYLE);
-        if ((dwStyle & WS_VSCROLL) and GetScrollBarType (v) == eScrollBarNever) {
-            SetScrollBarType (v, eScrollBarAlways);
+        if ((dwStyle & WS_VSCROLL) and this->GetScrollBarType (TextInteractor::v) == TextInteractor::eScrollBarNever) {
+            this->SetScrollBarType (TextInteractor::v, TextInteractor::eScrollBarAlways);
         }
-        if ((dwStyle & WS_HSCROLL) and GetScrollBarType (h) == eScrollBarNever) {
-            SetScrollBarType (h, eScrollBarAlways);
+        if ((dwStyle & WS_HSCROLL) and this->GetScrollBarType (TextInteractor::h) == TextInteractor::eScrollBarNever) {
+            this->SetScrollBarType (TextInteractor::h, TextInteractor::eScrollBarAlways);
         }
-        OnSize_Msg ();
+        this->OnSize_Msg ();
     }
     template <typename BASE_WIN32_HELPER>
     LRESULT CALLBACK Led_Win32_SimpleWndProc_Helper<BASE_WIN32_HELPER>::StaticWndProc (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
         if (message == WM_CREATE) {
-            LPCREATESTRUCT lpcs = (LPCREATESTRUCT)lParam;
+            ::LPCREATESTRUCT lpcs = (::LPCREATESTRUCT)lParam;
             AssertNotNull (lpcs);
             Led_Win32_SimpleWndProc_Helper<BASE_WIN32_HELPER>* pThis = reinterpret_cast<Led_Win32_SimpleWndProc_Helper<BASE_WIN32_HELPER>*> (lpcs->lpCreateParams);
-            Assert (pThis->GetHWND () == NULL); // cuz not set yet...
+            Assert (pThis->GetHWND () == nullptr); // cuz not set yet...
             pThis->SetHWND (hWnd);
         }
 
         Led_Win32_SimpleWndProc_Helper<BASE_WIN32_HELPER>* pThis = reinterpret_cast<Led_Win32_SimpleWndProc_Helper<BASE_WIN32_HELPER>*> (::GetWindowLongPtr (hWnd, GWLP_USERDATA));
 
-        if (pThis == NULL) {
+        if (pThis == nullptr) {
             /*
-                *  The only time I know of where this can happen is that these messages can be passed before the WM_CREATE.
-                *  Seeing this assertion isn't necesarily a bug - but its a clue something wrong maybe going on.
-                *
-                *  As of 2012-09-16 - I see a few new (sb irrelevant) messages...
-                */
+             *  The only time I know of where this can happen is that these messages can be passed before the WM_CREATE.
+             *  Seeing this assertion isn't necesarily a bug - but its a clue something wrong maybe going on.
+             *
+             *  As of 2012-09-16 - I see a few new (sb irrelevant) messages...
+             */
             Assert (message == WM_GETMINMAXINFO or message == WM_NCCREATE or message == WM_NCCALCSIZE or message == 0x0093 or message == 0x0094 or message == WM_NCMOUSELEAVE);
             return ::DefWindowProc (hWnd, message, wParam, lParam);
         }
 
-        Assert (pThis != NULL);
+        Assert (pThis != nullptr);
         Assert (pThis->GetHWND () == hWnd);
         return pThis->WndProc (message, wParam, lParam);
     }
@@ -3138,77 +3155,77 @@ namespace Stroika::Frameworks::Led::Platform {
 #define MY_GET_Y_LPARAM(lp) ((int)(short)HIWORD (lp))
         switch (message) {
             case WM_CREATE:
-                return OnCreate_Msg (reinterpret_cast<LPCREATESTRUCT> (lParam));
+                return this->OnCreate_Msg (reinterpret_cast<::LPCREATESTRUCT> (lParam));
             case WM_PAINT:
-                OnPaint_Msg ();
+                this->OnPaint_Msg ();
                 break;
             case WM_SIZE:
-                OnSize_Msg ();
+                this->OnSize_Msg ();
                 break;
             case WM_CHAR:
-                OnChar_Msg (static_cast<UINT> (wParam), lParam);
+                this->OnChar_Msg (static_cast<UINT> (wParam), lParam);
                 break;
 #if qWideCharacters
             case WM_UNICHAR:
-                return OnUniChar_Msg (wParam, lParam);
+                return this->OnUniChar_Msg (wParam, lParam);
                 break;
 #endif
 #if qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug
             case WM_IME_CHAR:
-                return OnIMEChar_Msg (wParam, lParam);
+                return this->OnIMEChar_Msg (wParam, lParam);
             case WM_IME_COMPOSITION:
-                return OnIME_COMPOSITION_Msg (wParam, lParam);
+                return this->OnIME_COMPOSITION_Msg (wParam, lParam);
             case WM_IME_ENDCOMPOSITION:
-                return OnIME_ENDCOMPOSITION_Msg (wParam, lParam);
+                return this->OnIME_ENDCOMPOSITION_Msg (wParam, lParam);
 #endif
             case WM_KEYDOWN:
-                OnKeyDown_Msg (static_cast<UINT> (wParam), lParam);
+                this->OnKeyDown_Msg (static_cast<UINT> (wParam), lParam);
                 break;
             case WM_SETCURSOR:
-                return OnSetCursor_Msg ((HWND)wParam, LOWORD (lParam), HIWORD (lParam));
+                return this->OnSetCursor_Msg ((HWND)wParam, LOWORD (lParam), HIWORD (lParam));
             case WM_GETDLGCODE:
-                return OnGetDlgCode_Msg ();
+                return this->OnGetDlgCode_Msg ();
             case WM_SETFOCUS:
-                OnSetFocus_Msg (HWND (wParam));
+                this->OnSetFocus_Msg (HWND (wParam));
                 break;
             case WM_KILLFOCUS:
-                OnKillFocus_Msg (HWND (wParam));
+                this->OnKillFocus_Msg (HWND (wParam));
                 break;
             case WM_ERASEBKGND:
-                return OnEraseBkgnd_Msg (HDC (wParam));
+                return this->OnEraseBkgnd_Msg (HDC (wParam));
             case WM_TIMER:
-                OnTimer_Msg (wParam, reinterpret_cast<TIMERPROC*> (lParam));
+                this->OnTimer_Msg (wParam, reinterpret_cast<::TIMERPROC*> (lParam));
                 break;
             case WM_LBUTTONDOWN:
-                OnLButtonDown_Msg (static_cast<UINT> (wParam), MY_GET_X_LPARAM (lParam), MY_GET_Y_LPARAM (lParam));
+                this->OnLButtonDown_Msg (static_cast<UINT> (wParam), MY_GET_X_LPARAM (lParam), MY_GET_Y_LPARAM (lParam));
                 break;
             case WM_LBUTTONUP:
-                OnLButtonUp_Msg (static_cast<UINT> (wParam), MY_GET_X_LPARAM (lParam), MY_GET_Y_LPARAM (lParam));
+                this->OnLButtonUp_Msg (static_cast<UINT> (wParam), MY_GET_X_LPARAM (lParam), MY_GET_Y_LPARAM (lParam));
                 break;
             case WM_LBUTTONDBLCLK:
-                OnLButtonDblClk_Msg (static_cast<UINT> (wParam), MY_GET_X_LPARAM (lParam), MY_GET_Y_LPARAM (lParam));
+                this->OnLButtonDblClk_Msg (static_cast<UINT> (wParam), MY_GET_X_LPARAM (lParam), MY_GET_Y_LPARAM (lParam));
                 break;
             case WM_MOUSEMOVE:
-                OnMouseMove_Msg (static_cast<UINT> (wParam), MY_GET_X_LPARAM (lParam), MY_GET_Y_LPARAM (lParam));
+                this->OnMouseMove_Msg (static_cast<UINT> (wParam), MY_GET_X_LPARAM (lParam), MY_GET_Y_LPARAM (lParam));
                 break;
             case WM_VSCROLL:
-                OnVScroll_Msg (LOWORD (wParam), (short)HIWORD (wParam), HWND (lParam));
+                this->OnVScroll_Msg (LOWORD (wParam), (short)HIWORD (wParam), HWND (lParam));
                 break;
             case WM_HSCROLL:
-                OnHScroll_Msg (LOWORD (wParam), (short)HIWORD (wParam), HWND (lParam));
+                this->OnHScroll_Msg (LOWORD (wParam), (short)HIWORD (wParam), HWND (lParam));
                 break;
 #if (_WIN32_WINNT >= 0x0400) || (_WIN32_WINDOWS > 0x0400)
             case WM_MOUSEWHEEL:
-                return OnMouseWheel_Msg (wParam, lParam);
+                return this->OnMouseWheel_Msg (wParam, lParam);
 #endif
             case WM_ENABLE:
-                OnEnable_Msg (!!wParam);
+                this->OnEnable_Msg (!!wParam);
                 break;
             case WM_NCDESTROY:
-                OnNCDestroy_Msg ();
+                this->OnNCDestroy_Msg ();
                 break;
             default:
-                return DefWindowProc (message, wParam, lParam);
+                return this->DefWindowProc (message, wParam, lParam);
         }
 #undef MY_GET_X_LPARAM
 #undef MY_GET_Y_LPARAM
@@ -3217,25 +3234,25 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASE_WIN32_HELPER>
     LRESULT Led_Win32_SimpleWndProc_Helper<BASE_WIN32_HELPER>::DefWindowProc (UINT message, WPARAM wParam, LPARAM lParam)
     {
-        if (fSuperWindowProc == NULL) {
+        if (fSuperWindowProc == nullptr) {
             return inherited::DefWindowProc (message, wParam, lParam);
         }
         else {
-            return (*fSuperWindowProc) (GetValidatedHWND (), message, wParam, lParam);
+            return (*fSuperWindowProc) (this->GetValidatedHWND (), message, wParam, lParam);
         }
     }
 
     //  class   Led_Win32_SimpleWndProc_HelperWithSDKMessages<BASE_CLASS>
     template <typename BASE_CLASS>
     inline Led_Win32_SimpleWndProc_HelperWithSDKMessages<BASE_CLASS>::Led_Win32_SimpleWndProc_HelperWithSDKMessages ()
-        : inherited ()
+        : inherited{}
     {
     }
     template <typename BASE_CLASS>
     LRESULT Led_Win32_SimpleWndProc_HelperWithSDKMessages<BASE_CLASS>::WndProc (UINT message, WPARAM wParam, LPARAM lParam)
     {
         LRESULT result = 0;
-        if (HandleMessage (message, wParam, lParam, &result)) {
+        if (this->HandleMessage (message, wParam, lParam, &result)) {
             return result;
         }
         else {

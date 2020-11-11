@@ -8,6 +8,7 @@
 #if qHasFeature_ATLMFC
 
 #include <afxext.h>
+#include <atlstr.h>
 
 DISABLE_COMPILER_MSC_WARNING_START (5054)
 #include <afxole.h>
@@ -290,7 +291,7 @@ void Led_MFC_ControlItem::OnGetItemPosition (CRect& rPosition)
     //  You can obtain the view by calling Led_MFC_ControlItem::GetActiveView.
 
     // return correct rectangle (in pixels) in rPosition
-    rPosition = AsCRect (GetActiveView ().GetCharWindowLocation (GetStart ()));
+    rPosition = AsCRect (GetActiveView ().GetCharWindowLocation (this->GetStart ()));
 }
 
 BOOL Led_MFC_ControlItem::DoVerb (LONG nVerb, CView* pView, LPMSG lpMsg)
@@ -463,7 +464,7 @@ Led_SDK_String Led_MFC_ControlItem::GetObjClassName () const
     GetClassID (&clsid);
     LPOLESTR oleStr = NULL;
     if (::ProgIDFromCLSID (clsid, &oleStr) == S_OK) {
-        Led_SDK_String result = CString (oleStr);
+        Led_SDK_String result = Led_SDK_String (::CString (oleStr));
         ::CoTaskMemFree (oleStr);
         return result;
     }

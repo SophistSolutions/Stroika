@@ -79,10 +79,10 @@ namespace Stroika::Frameworks::Led {
                 : inherited (t, bounds, initialText)
             {
                 /*
-                    * Good performance hack (shutting off ImageUsingOffscreenBitmaps), plus critical for
-                    *  how we do the EraseBackground () below.
-                    */
-                SetImageUsingOffscreenBitmaps (false);
+                 * Good performance hack (shutting off ImageUsingOffscreenBitmaps), plus critical for
+                 *  how we do the EraseBackground () below.
+                 */
+                this->SetImageUsingOffscreenBitmaps (false);
             }
             virtual void EraseBackground ([[maybe_unused]] Led_Tablet tablet, [[maybe_unused]] const Led_Rect& subsetToDraw, [[maybe_unused]] bool printing) override
             {
@@ -97,7 +97,7 @@ namespace Stroika::Frameworks::Led {
                 Led_Coordinate l = 0;
                 Led_Coordinate r = 0;
                 inherited::GetLayoutMargins (row, &l, &r);
-                r = max (static_cast<Led_Coordinate> (GetWindowRect ().GetWidth ()), l + 1);
+                r = max (static_cast<Led_Coordinate> (this->GetWindowRect ().GetWidth ()), l + 1);
                 Ensure (r > l);
                 if (lhs != NULL) {
                     *lhs = l;

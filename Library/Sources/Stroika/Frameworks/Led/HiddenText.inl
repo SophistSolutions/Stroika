@@ -83,7 +83,7 @@ namespace Stroika::Frameworks::Led {
                                                           const Led_Rect& drawInto, const Led_Rect& invalidRect, Led_Coordinate useBaseLine,
                                                           Led_Distance* pixelsDrawn)
     {
-        if (IsShown ()) {
+        if (this->IsShown ()) {
             inherited::DrawSegment (imager, runElement, tablet, from, to, text, drawInto, invalidRect, useBaseLine, pixelsDrawn);
         }
         else {
@@ -94,7 +94,7 @@ namespace Stroika::Frameworks::Led {
     void HidableTextMarkerHelper<BASECLASS>::MeasureSegmentWidth (const StyledTextImager* imager, const StyledTextImager::RunElement& runElement, size_t from, size_t to, const Led_tChar* text,
                                                                   Led_Distance* distanceResults) const
     {
-        if (IsShown ()) {
+        if (this->IsShown ()) {
             inherited::MeasureSegmentWidth (imager, runElement, from, to, text, distanceResults);
         }
         else {
@@ -107,7 +107,7 @@ namespace Stroika::Frameworks::Led {
     template <typename BASECLASS>
     Led_Distance HidableTextMarkerHelper<BASECLASS>::MeasureSegmentHeight (const StyledTextImager* imager, const StyledTextImager::RunElement& runElement, size_t from, size_t to) const
     {
-        if (IsShown ()) {
+        if (this->IsShown ()) {
             return inherited::MeasureSegmentHeight (imager, runElement, from, to);
         }
         else {
@@ -117,7 +117,7 @@ namespace Stroika::Frameworks::Led {
     template <typename BASECLASS>
     Led_Distance HidableTextMarkerHelper<BASECLASS>::MeasureSegmentBaseLine (const StyledTextImager* imager, const StyledTextImager::RunElement& runElement, size_t from, size_t to) const
     {
-        if (IsShown ()) {
+        if (this->IsShown ()) {
             return inherited::MeasureSegmentBaseLine (imager, runElement, from, to);
         }
         else {
@@ -127,8 +127,8 @@ namespace Stroika::Frameworks::Led {
 
     //  class   FontSpecHidableTextMarkerOwner::FontSpecHidableTextMarker
     inline HidableTextMarkerOwner::FontSpecHidableTextMarker::FontSpecHidableTextMarker (const Led_IncrementalFontSpecification& styleInfo)
-        : inherited ()
-        , fFontSpecification (styleInfo)
+        : inherited{}
+        , fFontSpecification{styleInfo}
     {
     }
 
@@ -140,9 +140,9 @@ namespace Stroika::Frameworks::Led {
 
     //  class   ColoredUniformHidableTextMarkerOwner
     inline ColoredUniformHidableTextMarkerOwner::ColoredUniformHidableTextMarkerOwner (TextStore& textStore)
-        : inherited (textStore)
-        , fColor (Led_Color::kRed)
-        , fColored (false)
+        : inherited{textStore}
+        , fColor{Led_Color::kRed}
+        , fColored{false}
     {
     }
     inline Led_Color ColoredUniformHidableTextMarkerOwner::GetColor () const

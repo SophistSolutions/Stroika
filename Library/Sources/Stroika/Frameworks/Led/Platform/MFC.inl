@@ -106,7 +106,7 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     HWND Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::GetHWND () const
     {
-        return m_hWnd;
+        return this->m_hWnd;
     }
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     int Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnCreate (LPCREATESTRUCT lpCreateStruct)
@@ -115,12 +115,12 @@ namespace Stroika::Frameworks::Led::Platform {
         if (MFC_BASE_CLASS::OnCreate (lpCreateStruct) != 0) {
             return -1; // failed to create
         }
-        TabletChangedMetrics (); // maybe should catch failures here, and return -1?
-        if ((lpCreateStruct->style & WS_VSCROLL) and GetScrollBarType (v) == eScrollBarNever) {
-            SetScrollBarType (v, eScrollBarAlways);
+        this->TabletChangedMetrics (); // maybe should catch failures here, and return -1?
+        if ((lpCreateStruct->style & WS_VSCROLL) and this->GetScrollBarType (TextInteractor::v) == TextInteractor::eScrollBarNever) {
+            this->SetScrollBarType (TextInteractor::v, TextInteractor::eScrollBarAlways);
         }
-        if ((lpCreateStruct->style & WS_HSCROLL) and GetScrollBarType (h) == eScrollBarNever) {
-            SetScrollBarType (h, eScrollBarAlways);
+        if ((lpCreateStruct->style & WS_HSCROLL) and this->GetScrollBarType (TextInteractor::h) == TextInteractor::eScrollBarNever) {
+            this->SetScrollBarType (TextInteractor::h, TextInteractor::eScrollBarAlways);
         }
         return 0; // sucess
     }
@@ -130,7 +130,7 @@ namespace Stroika::Frameworks::Led::Platform {
         CPaintDC dc (this);
         CRect    boundsRect = CRect (0, 0, 0, 0);
         Verify (dc.GetClipBox (&boundsRect) != ERROR);
-        WindowDrawHelper (Led_MFC_TabletFromCDC (&dc), AsLedRect (boundsRect), false);
+        this->WindowDrawHelper (Led_MFC_TabletFromCDC (&dc), AsLedRect (boundsRect), false);
     }
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     /*
@@ -141,27 +141,27 @@ namespace Stroika::Frameworks::Led::Platform {
     BOOL
     Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnSetCursor (CWnd* pWnd, UINT nHitTest, UINT message)
     {
-        return OnSetCursor_Msg (pWnd->GetSafeHwnd (), nHitTest, message);
+        return this->OnSetCursor_Msg (pWnd->GetSafeHwnd (), nHitTest, message);
     }
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     UINT Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnGetDlgCode ()
     {
-        return OnGetDlgCode_Msg ();
+        return this->OnGetDlgCode_Msg ();
     }
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     void Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnChar (UINT nChar, UINT nRepCnt, UINT nFlags)
     {
-        OnChar_Msg (nChar, nRepCnt + (nFlags << 16));
+        this->OnChar_Msg (nChar, nRepCnt + (nFlags << 16));
     }
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     void Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnKeyDown (UINT nChar, UINT nRepCnt, UINT nFlags)
     {
-        OnKeyDown_Msg (nChar, nRepCnt + (nFlags << 16));
+        this->OnKeyDown_Msg (nChar, nRepCnt + (nFlags << 16));
     }
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     void Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnMouseMove (UINT nFlags, CPoint oPoint)
     {
-        OnMouseMove_Msg (nFlags, oPoint.x, oPoint.y);
+        this->OnMouseMove_Msg (nFlags, oPoint.x, oPoint.y);
     }
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     /*
@@ -213,7 +213,7 @@ namespace Stroika::Frameworks::Led::Platform {
     inline Led_Rect
     Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::GetWindowRect () const
     {
-        return (TextImager::GetWindowRect ());
+        return TextImager::GetWindowRect ();
     }
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     inline void Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::GetWindowRect (LPRECT lpRect) const
@@ -231,65 +231,65 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     void Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnLButtonDown (UINT nFlags, CPoint oPoint)
     {
-        OnLButtonDown_Msg (nFlags, oPoint.x, oPoint.y);
+        this->OnLButtonDown_Msg (nFlags, oPoint.x, oPoint.y);
     }
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     void Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnLButtonUp (UINT nFlags, CPoint oPoint)
     {
-        OnLButtonUp_Msg (nFlags, oPoint.x, oPoint.y);
+        this->OnLButtonUp_Msg (nFlags, oPoint.x, oPoint.y);
     }
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     void Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnLButtonDblClk (UINT nFlags, CPoint oPoint)
     {
-        OnLButtonDblClk_Msg (nFlags, oPoint.x, oPoint.y);
+        this->OnLButtonDblClk_Msg (nFlags, oPoint.x, oPoint.y);
     }
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     void Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnSetFocus (CWnd* pOldWnd)
     {
         MFC_BASE_CLASS::OnSetFocus (pOldWnd);
-        OnSetFocus_Msg (pOldWnd->GetSafeHwnd ());
+        this->OnSetFocus_Msg (pOldWnd->GetSafeHwnd ());
     }
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     void Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnKillFocus (CWnd* pNewWnd)
     {
-        OnKillFocus_Msg (pNewWnd->GetSafeHwnd ());
+        this->OnKillFocus_Msg (pNewWnd->GetSafeHwnd ());
         MFC_BASE_CLASS::OnKillFocus (pNewWnd);
     }
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     void Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnSize (UINT nType, int cx, int cy)
     {
         MFC_BASE_CLASS::OnSize (nType, cx, cy);
-        OnSize_Msg ();
+        this->OnSize_Msg ();
     }
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     BOOL Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnEraseBkgnd (CDC* pDC)
     {
-        return OnEraseBkgnd_Msg (pDC->GetSafeHdc ());
+        return this->OnEraseBkgnd_Msg (pDC->GetSafeHdc ());
     }
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     void Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnVScroll (UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
     {
-        OnVScroll_Msg (nSBCode, nPos, pScrollBar->GetSafeHwnd ());
+        this->OnVScroll_Msg (nSBCode, nPos, pScrollBar->GetSafeHwnd ());
     }
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     void Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnHScroll (UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
     {
-        OnHScroll_Msg (nSBCode, nPos, pScrollBar->GetSafeHwnd ());
+        this->OnHScroll_Msg (nSBCode, nPos, pScrollBar->GetSafeHwnd ());
     }
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     BOOL Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnMouseWheel (UINT fFlags, short zDelta, CPoint point)
     {
-        return OnMouseWheel_Msg (MAKEWPARAM (fFlags, zDelta), MAKELPARAM (point.x, point.y));
+        return this->OnMouseWheel_Msg (MAKEWPARAM (fFlags, zDelta), MAKELPARAM (point.x, point.y));
     }
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     void Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnEnable (BOOL bEnable)
     {
-        OnEnable_Msg (!!bEnable);
+        this->OnEnable_Msg (!!bEnable);
     }
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     void Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnTimer (UINT_PTR nEventID)
     {
-        OnTimer_Msg (nEventID, NULL);
+        this->OnTimer_Msg (nEventID, NULL);
     }
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     inline LRESULT Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnUniChar ([[maybe_unused]] WPARAM wParam, [[maybe_unused]] LPARAM lParam)
@@ -331,7 +331,7 @@ namespace Stroika::Frameworks::Led::Platform {
     void Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnUpdateCommand_MSG (CCmdUI* pCmdUI)
     {
         RequireNotNull (pCmdUI);
-        if (not OnUpdateCommand (Led_MFC_TmpCmdUpdater (pCmdUI))) {
+        if (not this->OnUpdateCommand (Led_MFC_TmpCmdUpdater (pCmdUI))) {
             pCmdUI->Enable (false); // disable commands by default (SPR#1462)
         }
     }
@@ -339,12 +339,12 @@ namespace Stroika::Frameworks::Led::Platform {
     void Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnPerformCommand_MSG (UINT commandNumber)
     {
         IdleManager::NonIdleContext nonIdleContext;
-        (void)OnPerformCommand (MFC_CommandNumberMapping::Get ().Lookup (commandNumber));
+        (void)this->OnPerformCommand (MFC_CommandNumberMapping::Get ().Lookup (commandNumber));
     }
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     const AFX_MSGMAP* Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::GetMessageMap () const
     {
-        return GetThisMessageMap ();
+        return this->GetThisMessageMap ();
     }
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     const AFX_MSGMAP* PASCAL Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::GetThisMessageMap ()
@@ -401,166 +401,166 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASECLASS>
     inline BOOL Led_MFC_MimicMFCAPIHelper<BASECLASS>::Create (DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID)
     {
-        return (BASECLASS::Create (NULL, NULL, dwStyle, rect, pParentWnd, nID));
+        return BASECLASS::Create (NULL, NULL, dwStyle, rect, pParentWnd, nID);
     }
     template <typename BASECLASS>
     inline BOOL Led_MFC_MimicMFCAPIHelper<BASECLASS>::CanUndo () const
     {
-        Assert (::IsWindow (m_hWnd));
-        return (BOOL)::SendMessage (m_hWnd, EM_CANUNDO, 0, 0);
+        Assert (::IsWindow (this->m_hWnd));
+        return (BOOL)::SendMessage (this->m_hWnd, EM_CANUNDO, 0, 0);
     }
     template <typename BASECLASS>
     inline int Led_MFC_MimicMFCAPIHelper<BASECLASS>::GetLineCount_CEdit () const
     {
-        Assert (::IsWindow (m_hWnd));
-        return (int)::SendMessage (m_hWnd, EM_GETLINECOUNT, 0, 0);
+        Assert (::IsWindow (this->m_hWnd));
+        return (int)::SendMessage (this->m_hWnd, EM_GETLINECOUNT, 0, 0);
     }
     template <typename BASECLASS>
     inline BOOL Led_MFC_MimicMFCAPIHelper<BASECLASS>::GetModify () const
     {
         Assert (false); // though THIS code is fine - we haven't yet hooked the callback, so this call will
         // produce poor results... LGP 941129
-        Assert (::IsWindow (m_hWnd));
-        return (BOOL)::SendMessage (m_hWnd, EM_GETMODIFY, 0, 0);
+        Assert (::IsWindow (this->m_hWnd));
+        return (BOOL)::SendMessage (this->m_hWnd, EM_GETMODIFY, 0, 0);
     }
     template <typename BASECLASS>
     inline void Led_MFC_MimicMFCAPIHelper<BASECLASS>::SetModify (BOOL bModified)
     {
         Assert (false); // though THIS code is fine - we haven't yet hooked the callback, so this call will
         // produce poor results... LGP 941129
-        Assert (::IsWindow (m_hWnd));
-        ::SendMessage (m_hWnd, EM_SETMODIFY, bModified, 0);
+        Assert (::IsWindow (this->m_hWnd));
+        ::SendMessage (this->m_hWnd, EM_SETMODIFY, bModified, 0);
     }
     template <typename BASECLASS>
     inline void Led_MFC_MimicMFCAPIHelper<BASECLASS>::GetRect (LPRECT lpRect) const
     {
         Assert (false); // though THIS code is fine - we haven't yet hooked the callback, so this call will
         // produce poor results... LGP 941129
-        Assert (::IsWindow (m_hWnd));
-        ::SendMessage (m_hWnd, EM_GETRECT, 0, (LPARAM)lpRect);
+        Assert (::IsWindow (this->m_hWnd));
+        ::SendMessage (this->m_hWnd, EM_GETRECT, 0, (LPARAM)lpRect);
     }
     template <typename BASECLASS>
     inline void Led_MFC_MimicMFCAPIHelper<BASECLASS>::GetSel (int& nStartChar, int& nEndChar) const
     {
-        Assert (::IsWindow (m_hWnd));
-        ::SendMessage (m_hWnd, EM_GETSEL, (WPARAM)&nStartChar, (LPARAM)&nEndChar);
+        Assert (::IsWindow (this->m_hWnd));
+        ::SendMessage (this->m_hWnd, EM_GETSEL, (WPARAM)&nStartChar, (LPARAM)&nEndChar);
     }
     template <typename BASECLASS>
     inline DWORD Led_MFC_MimicMFCAPIHelper<BASECLASS>::GetSel () const
     {
-        Assert (::IsWindow (m_hWnd));
-        return ::SendMessage (m_hWnd, EM_GETSEL, 0, 0);
+        Assert (::IsWindow (this->m_hWnd));
+        return ::SendMessage (this->m_hWnd, EM_GETSEL, 0, 0);
     }
     template <typename BASECLASS>
     inline int Led_MFC_MimicMFCAPIHelper<BASECLASS>::GetLine (int nIndex, LPTSTR lpszBuffer) const
     {
         Assert (false); // though THIS code is fine - we haven't yet hooked the callback, so this call will
         // produce poor results... LGP 941129
-        Assert (::IsWindow (m_hWnd));
-        return (int)::SendMessage (m_hWnd, EM_GETLINE, nIndex, (LPARAM)lpszBuffer);
+        Assert (::IsWindow (this->m_hWnd));
+        return (int)::SendMessage (this->m_hWnd, EM_GETLINE, nIndex, (LPARAM)lpszBuffer);
     }
     template <typename BASECLASS>
     inline int Led_MFC_MimicMFCAPIHelper<BASECLASS>::GetLine (int nIndex, LPTSTR lpszBuffer, int nMaxLength) const
     {
         Assert (false); // though THIS code is fine - we haven't yet hooked the callback, so this call will
         // produce poor results... LGP 941129
-        Assert (::IsWindow (m_hWnd));
+        Assert (::IsWindow (this->m_hWnd));
         *(LPWORD)lpszBuffer = (WORD)nMaxLength;
-        return (int)::SendMessage (m_hWnd, EM_GETLINE, nIndex, (LPARAM)lpszBuffer);
+        return (int)::SendMessage (this->m_hWnd, EM_GETLINE, nIndex, (LPARAM)lpszBuffer);
     }
     template <typename BASECLASS>
     inline void Led_MFC_MimicMFCAPIHelper<BASECLASS>::EmptyUndoBuffer ()
     {
-        Assert (::IsWindow (m_hWnd));
-        ::SendMessage (m_hWnd, EM_EMPTYUNDOBUFFER, 0, 0);
+        Assert (::IsWindow (this->m_hWnd));
+        ::SendMessage (this->m_hWnd, EM_EMPTYUNDOBUFFER, 0, 0);
     }
     template <typename BASECLASS>
     inline BOOL Led_MFC_MimicMFCAPIHelper<BASECLASS>::FmtLines (BOOL bAddEOL)
     {
         Assert (false); // though THIS code is fine - we haven't yet hooked the callback, so this call will
         // produce poor results... LGP 941129
-        Assert (::IsWindow (m_hWnd));
-        return (BOOL)::SendMessage (m_hWnd, EM_FMTLINES, bAddEOL, 0);
+        Assert (::IsWindow (this->m_hWnd));
+        return (BOOL)::SendMessage (this->m_hWnd, EM_FMTLINES, bAddEOL, 0);
     }
     template <typename BASECLASS>
     inline void Led_MFC_MimicMFCAPIHelper<BASECLASS>::LimitText (int nChars)
     {
         Assert (false); // though THIS code is fine - we haven't yet hooked the callback, so this call will
         // produce poor results... LGP 941129
-        Assert (::IsWindow (m_hWnd));
-        ::SendMessage (m_hWnd, EM_LIMITTEXT, nChars, 0);
+        Assert (::IsWindow (this->m_hWnd));
+        ::SendMessage (this->m_hWnd, EM_LIMITTEXT, nChars, 0);
     }
     template <typename BASECLASS>
     inline int Led_MFC_MimicMFCAPIHelper<BASECLASS>::LineFromChar (int nIndex) const
     {
-        Assert (::IsWindow (m_hWnd));
-        return (int)::SendMessage (m_hWnd, EM_LINEFROMCHAR, nIndex, 0);
+        Assert (::IsWindow (this->m_hWnd));
+        return (int)::SendMessage (this->m_hWnd, EM_LINEFROMCHAR, nIndex, 0);
     }
     template <typename BASECLASS>
     inline int Led_MFC_MimicMFCAPIHelper<BASECLASS>::LineIndex (int nLine) const
     {
-        Assert (::IsWindow (m_hWnd));
-        return (int)::SendMessage (m_hWnd, EM_LINEINDEX, nLine, 0);
+        Assert (::IsWindow (this->m_hWnd));
+        return (int)::SendMessage (this->m_hWnd, EM_LINEINDEX, nLine, 0);
     }
     template <typename BASECLASS>
     inline int Led_MFC_MimicMFCAPIHelper<BASECLASS>::LineLength (int nLine) const
     {
-        Assert (::IsWindow (m_hWnd));
-        return (int)::SendMessage (m_hWnd, EM_LINELENGTH, nLine, 0);
+        Assert (::IsWindow (this->m_hWnd));
+        return (int)::SendMessage (this->m_hWnd, EM_LINELENGTH, nLine, 0);
     }
     template <typename BASECLASS>
     inline void Led_MFC_MimicMFCAPIHelper<BASECLASS>::LineScroll (int nLines, int nChars)
     {
-        Assert (::IsWindow (m_hWnd));
-        ::SendMessage (m_hWnd, EM_LINESCROLL, nChars, nLines);
+        Assert (::IsWindow (this->m_hWnd));
+        ::SendMessage (this->m_hWnd, EM_LINESCROLL, nChars, nLines);
     }
     template <typename BASECLASS>
     inline void Led_MFC_MimicMFCAPIHelper<BASECLASS>::ReplaceSel (LPCTSTR lpszNewText)
     {
         AssertNotNull (lpszNewText);
-        Assert (::IsWindow (m_hWnd));
-        ::SendMessage (m_hWnd, EM_REPLACESEL, 0, (LPARAM)lpszNewText);
+        Assert (::IsWindow (this->m_hWnd));
+        ::SendMessage (this->m_hWnd, EM_REPLACESEL, 0, (LPARAM)lpszNewText);
     }
     template <typename BASECLASS>
     inline void Led_MFC_MimicMFCAPIHelper<BASECLASS>::SetPasswordChar (TCHAR ch)
     {
         Assert (false); // though THIS code is fine - we haven't yet hooked the callback, so this call will
         // produce poor results... LGP 941129
-        Assert (::IsWindow (m_hWnd));
-        ::SendMessage (m_hWnd, EM_SETPASSWORDCHAR, ch, 0);
+        Assert (::IsWindow (this->m_hWnd));
+        ::SendMessage (this->m_hWnd, EM_SETPASSWORDCHAR, ch, 0);
     }
     template <typename BASECLASS>
     inline void Led_MFC_MimicMFCAPIHelper<BASECLASS>::SetRect (LPCRECT lpRect)
     {
         Assert (false); // though THIS code is fine - we haven't yet hooked the callback, so this call will
         // produce poor results... LGP 941129
-        Assert (::IsWindow (m_hWnd));
-        ::SendMessage (m_hWnd, EM_SETRECT, 0, (LPARAM)lpRect);
+        Assert (::IsWindow (this->m_hWnd));
+        ::SendMessage (this->m_hWnd, EM_SETRECT, 0, (LPARAM)lpRect);
     }
     template <typename BASECLASS>
     inline void Led_MFC_MimicMFCAPIHelper<BASECLASS>::SetRectNP (LPCRECT lpRect)
     {
         Assert (false); // though THIS code is fine - we haven't yet hooked the callback, so this call will
         // produce poor results... LGP 941129
-        Assert (::IsWindow (m_hWnd));
-        ::SendMessage (m_hWnd, EM_SETRECTNP, 0, (LPARAM)lpRect);
+        Assert (::IsWindow (this->m_hWnd));
+        ::SendMessage (this->m_hWnd, EM_SETRECTNP, 0, (LPARAM)lpRect);
     }
     template <typename BASECLASS>
     inline void Led_MFC_MimicMFCAPIHelper<BASECLASS>::SetSel (DWORD dwSelection, BOOL bNoScroll)
     {
-        Assert (::IsWindow (m_hWnd));
-        ::SendMessage (m_hWnd, EM_SETSEL, LOWORD (dwSelection), HIWORD (dwSelection));
+        Assert (::IsWindow (this->m_hWnd));
+        ::SendMessage (this->m_hWnd, EM_SETSEL, LOWORD (dwSelection), HIWORD (dwSelection));
         if (not bNoScroll) {
-            ::SendMessage (m_hWnd, EM_SCROLLCARET, 0, 0);
+            ::SendMessage (this->m_hWnd, EM_SCROLLCARET, 0, 0);
         }
     }
     template <typename BASECLASS>
     inline void Led_MFC_MimicMFCAPIHelper<BASECLASS>::SetSel (int nStartChar, int nEndChar, BOOL bNoScroll)
     {
-        Assert (::IsWindow (m_hWnd));
-        ::SendMessage (m_hWnd, EM_SETSEL, nStartChar, nEndChar);
+        Assert (::IsWindow (this->m_hWnd));
+        ::SendMessage (this->m_hWnd, EM_SETSEL, nStartChar, nEndChar);
         if (not bNoScroll) {
-            ::SendMessage (m_hWnd, EM_SCROLLCARET, 0, 0);
+            ::SendMessage (this->m_hWnd, EM_SCROLLCARET, 0, 0);
         }
     }
     template <typename BASECLASS>
@@ -568,82 +568,77 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         Assert (false); // though THIS code is fine - we haven't yet hooked the callback, so this call will
         // produce poor results... LGP 941129
-        Assert (::IsWindow (m_hWnd));
-        return (BOOL)::SendMessage (m_hWnd, EM_SETTABSTOPS, nTabStops, (LPARAM)rgTabStops);
+        Assert (::IsWindow (this->m_hWnd));
+        return (BOOL)::SendMessage (this->m_hWnd, EM_SETTABSTOPS, nTabStops, (LPARAM)rgTabStops);
     }
     template <typename BASECLASS>
     inline void Led_MFC_MimicMFCAPIHelper<BASECLASS>::SetTabStops ()
     {
         Assert (false); // though THIS code is fine - we haven't yet hooked the callback, so this call will
         // produce poor results... LGP 941129
-        Assert (::IsWindow (m_hWnd));
-        Verify (::SendMessage (m_hWnd, EM_SETTABSTOPS, 0, 0));
+        Assert (::IsWindow (this->m_hWnd));
+        Verify (::SendMessage (this->m_hWnd, EM_SETTABSTOPS, 0, 0));
     }
     template <typename BASECLASS>
     inline BOOL Led_MFC_MimicMFCAPIHelper<BASECLASS>::SetTabStops (const int& cxEachStop)
     {
         Assert (false); // though THIS code is fine - we haven't yet hooked the callback, so this call will
         // produce poor results... LGP 941129
-        Assert (::IsWindow (m_hWnd));
-        return (BOOL)::SendMessage (m_hWnd, EM_SETTABSTOPS, 1, (LPARAM) (LPINT)&cxEachStop);
+        Assert (::IsWindow (this->m_hWnd));
+        return (BOOL)::SendMessage (this->m_hWnd, EM_SETTABSTOPS, 1, (LPARAM) (LPINT)&cxEachStop);
     }
     template <typename BASECLASS>
     inline BOOL Led_MFC_MimicMFCAPIHelper<BASECLASS>::Undo ()
     {
-        Assert (::IsWindow (m_hWnd));
-        return (BOOL)::SendMessage (m_hWnd, EM_UNDO, 0, 0);
+        Assert (::IsWindow (this->m_hWnd));
+        return (BOOL)::SendMessage (this->m_hWnd, EM_UNDO, 0, 0);
     }
     template <typename BASECLASS>
     inline void Led_MFC_MimicMFCAPIHelper<BASECLASS>::Clear ()
     {
-        Assert (::IsWindow (m_hWnd));
-        ::SendMessage (m_hWnd, WM_CLEAR, 0, 0);
+        Assert (::IsWindow (this->m_hWnd));
+        ::SendMessage (this->m_hWnd, WM_CLEAR, 0, 0);
     }
     template <typename BASECLASS>
     inline void Led_MFC_MimicMFCAPIHelper<BASECLASS>::Copy ()
     {
-        Assert (::IsWindow (m_hWnd));
-        ::SendMessage (m_hWnd, WM_COPY, 0, 0);
+        Assert (::IsWindow (this->m_hWnd));
+        ::SendMessage (this->m_hWnd, WM_COPY, 0, 0);
     }
     template <typename BASECLASS>
     inline void Led_MFC_MimicMFCAPIHelper<BASECLASS>::Cut ()
     {
-        Assert (::IsWindow (m_hWnd));
-        ::SendMessage (m_hWnd, WM_CUT, 0, 0);
+        Assert (::IsWindow (this->m_hWnd));
+        ::SendMessage (this->m_hWnd, WM_CUT, 0, 0);
     }
     template <typename BASECLASS>
     inline void Led_MFC_MimicMFCAPIHelper<BASECLASS>::Paste ()
     {
-        Assert (::IsWindow (m_hWnd));
-        ::SendMessage (m_hWnd, WM_PASTE, 0, 0);
+        Assert (::IsWindow (this->m_hWnd));
+        ::SendMessage (this->m_hWnd, WM_PASTE, 0, 0);
     }
     template <typename BASECLASS>
     inline BOOL Led_MFC_MimicMFCAPIHelper<BASECLASS>::SetReadOnly (BOOL bReadOnly)
     {
-        Assert (::IsWindow (m_hWnd));
-        return (BOOL)::SendMessage (m_hWnd, EM_SETREADONLY, bReadOnly, 0L);
+        Assert (::IsWindow (this->m_hWnd));
+        return (BOOL)::SendMessage (this->m_hWnd, EM_SETREADONLY, bReadOnly, 0L);
     }
     template <typename BASECLASS>
     inline int Led_MFC_MimicMFCAPIHelper<BASECLASS>::GetFirstVisibleLine () const
     {
-        Assert (::IsWindow (m_hWnd));
-        return (int)::SendMessage (m_hWnd, EM_GETFIRSTVISIBLELINE, 0, 0L);
+        Assert (::IsWindow (this->m_hWnd));
+        return (int)::SendMessage (this->m_hWnd, EM_GETFIRSTVISIBLELINE, 0, 0L);
     }
     template <typename BASECLASS>
     inline TCHAR Led_MFC_MimicMFCAPIHelper<BASECLASS>::GetPasswordChar () const
     {
         Assert (false); // though THIS code is fine - we haven't yet hooked the callback, so this call will
         // produce poor results... LGP 941129
-        Assert (::IsWindow (m_hWnd));
-        return (TCHAR)::SendMessage (m_hWnd, EM_GETPASSWORDCHAR, 0, 0L);
+        Assert (::IsWindow (this->m_hWnd));
+        return (TCHAR)::SendMessage (this->m_hWnd, EM_GETPASSWORDCHAR, 0, 0L);
     }
 
     //  class   Led_MFC_OptionalWin32SDKMessageMimicHelper<BASECLASS>
-    template <typename BASECLASS>
-    Led_MFC_OptionalWin32SDKMessageMimicHelper<BASECLASS>::Led_MFC_OptionalWin32SDKMessageMimicHelper ()
-        : inherited ()
-    {
-    }
     template <typename BASECLASS>
     const AFX_MSGMAP* Led_MFC_OptionalWin32SDKMessageMimicHelper<BASECLASS>::GetMessageMap () const
     {
@@ -760,7 +755,7 @@ namespace Stroika::Frameworks::Led::Platform {
          *  For now though, just do it the simple way...
          */
         Led_Region r;
-        GetSelectionWindowRegion (&r, GetSelectionStart (), GetSelectionEnd ());
+        this->GetSelectionWindowRegion (&r, this->GetSelectionStart (), this->GetSelectionEnd ());
         return !!r.PtInRegion (AsCPoint (clickedWhere));
     }
     template <typename BASECLASS>
@@ -768,44 +763,46 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         const Foundation::Time::DurationSecondsType kTimeEnoughToRestoreSelection = 0.3f;
 
-        if (GetStyle () & WS_DISABLED) {
+        using TextInteractor::eDefaultUpdate;
+
+        if (this->GetStyle () & WS_DISABLED) {
             return;
         }
-        if (GetFocus () != this) {
-            SetFocus ();
+        if (this->GetFocus () != this) {
+            this->SetFocus ();
         }
 
         /*
          *  Be sure to reset these so on a double click after what looked like a single
          *  click we don't grab the old anchor (see spr#0438).
          */
-        fMouseTrackingLastPoint = AsLedPoint (oPoint);
-        fDragAnchor             = GetCharAtClickLocation (fMouseTrackingLastPoint);
+        this->fMouseTrackingLastPoint = AsLedPoint (oPoint);
+        this->fDragAnchor             = this->GetCharAtClickLocation (this->fMouseTrackingLastPoint);
 
         Assert (sCurrentDragInfo == NULL);
         sCurrentDragInfo = new LedStartDragAndDropContext (this);
 
-        sCurrentDragInfo->fOurDragStart = GetSelectionStart ();
-        sCurrentDragInfo->fOurDragEnd   = GetSelectionEnd ();
+        sCurrentDragInfo->fOurDragStart = this->GetSelectionStart ();
+        sCurrentDragInfo->fOurDragEnd   = this->GetSelectionEnd ();
 
         try {
             COleDataSource                  dataSrc;
             Led_MFCWriterDAndDFlavorPackage flavorPackage (&dataSrc);
-            ExternalizeFlavors (flavorPackage);
+            this->ExternalizeFlavors (flavorPackage);
 
             Led_Region selectionRegion;
-            GetSelectionWindowRegion (&selectionRegion, GetSelectionStart (), GetSelectionEnd ());
+            this->GetSelectionWindowRegion (&selectionRegion, this->GetSelectionStart (), this->GetSelectionEnd ());
 
-            Foundation::Time::DurationSecondsType startDragSelectAt = Time::GetTickCount (); // Grab it after the ExternalizeFlavors call in case thats slow (SPR#1498).
-            DROPEFFECT                            dropResult        = DROPEFFECT_COPY;
-            if (not(GetStyle () & ES_READONLY)) {
+            Foundation::Time::DurationSecondsType startDragSelectAt = Foundation::Time::GetTickCount (); // Grab it after the ExternalizeFlavors call in case thats slow (SPR#1498).
+            ::DROPEFFECT                          dropResult        = DROPEFFECT_COPY;
+            if (not(this->GetStyle () & ES_READONLY)) {
                 // Assure we don't change read-only text.
                 dropResult |= DROPEFFECT_MOVE;
             }
             dropResult = dataSrc.DoDragDrop (dropResult);
 #if qDebug
             {
-                if (GetStyle () & ES_READONLY) {
+                if (this->GetStyle () & ES_READONLY) {
                     Assert (not(dropResult & DROPEFFECT_MOVE));
                 }
             }
@@ -813,31 +810,31 @@ namespace Stroika::Frameworks::Led::Platform {
             switch (dropResult) {
                 case DROPEFFECT_NONE: {
                     AssertNotNull (sCurrentDragInfo);
-                    if (Time::GetTickCount () - startDragSelectAt > kTimeEnoughToRestoreSelection) {
+                    if (Foundation::Time::GetTickCount () - startDragSelectAt > kTimeEnoughToRestoreSelection) {
                         /*
-                            *   SPR#1374 - on aborted drag - restore the selection to its original value, rather
-                            *   than setting it to an empty selection where the user had clicked.
-                            */
-                        SetSelection (sCurrentDragInfo->fOurDragStart, sCurrentDragInfo->fOurDragEnd);
+                         *   SPR#1374 - on aborted drag - restore the selection to its original value, rather
+                         *   than setting it to an empty selection where the user had clicked.
+                         */
+                        this->SetSelection (sCurrentDragInfo->fOurDragStart, sCurrentDragInfo->fOurDragEnd);
                     }
                     else {
                         // for a very short click - just treat it as a regular click - changing the
                         // selection to an insertion point where the user clicked.
                         size_t ignored = 0;
-                        (void)ProcessSimpleClick (fMouseTrackingLastPoint, 1, false, &ignored);
+                        (void)this->ProcessSimpleClick (this->fMouseTrackingLastPoint, 1, false, &ignored);
                     }
                 } break;
                 case DROPEFFECT_MOVE: {
                     /*
-                            *  delete the original text on a MOVE
-                            */
-                    InteractiveModeUpdater iuMode (*this);
+                     *  delete the original text on a MOVE
+                     */
+                    TextInteractor::InteractiveModeUpdater iuMode{*this};
                     AssertNotNull (sCurrentDragInfo);
-                    UndoableContextHelper undoContext (*this,
-                                                       sCurrentDragInfo->fWeRecievedDrop ? Led_SDK_String () : GetCommandNames ().fDragCommandName,
-                                                       sCurrentDragInfo->fOrigSelection.GetStart (),
-                                                       sCurrentDragInfo->fOrigSelection.GetEnd (),
-                                                       true);
+                    TextInteractor::UndoableContextHelper undoContext (*this,
+                                                                       sCurrentDragInfo->fWeRecievedDrop ? Led_SDK_String () : GetCommandNames ().fDragCommandName,
+                                                                       sCurrentDragInfo->fOrigSelection.GetStart (),
+                                                                       sCurrentDragInfo->fOrigSelection.GetEnd (),
+                                                                       true);
                     {
                         TextInteractor::InteractiveReplace_ (undoContext.GetUndoRegionStart (), undoContext.GetUndoRegionEnd (), LED_TCHAR_OF (""), 0, false, false, eDefaultUpdate);
                     }
@@ -849,7 +846,7 @@ namespace Stroika::Frameworks::Led::Platform {
             }
 
             // must do here, even if NOT a MOVE - cuz we skipped this in the OnDrop code...
-            BreakInGroupedCommands ();
+            this->BreakInGroupedCommands ();
         }
         catch (...) {
             delete sCurrentDragInfo;
@@ -863,20 +860,21 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASECLASS>
     void Led_MFC_DragAndDropWindow<BASECLASS>::HandleSharedDragOverUpdateSelCode ()
     {
+        using TextInteractor::eImmediateUpdate;
         CClientDC dc (this);
         if (fPrevDropEffect != DROPEFFECT_NONE) {
             // erase previous focus rect
             dc.DrawFocusRect (CRect (fDragPoint, fDragSize));
         }
 
-        size_t newPos = GetCharAtClickLocation (AsLedPoint (fDragPoint));
+        size_t newPos = this->GetCharAtClickLocation (AsLedPoint (fDragPoint));
 
         // Auto-scroll if necessary...
-        if (newPos < GetMarkerPositionOfStartOfWindow ()) {
-            ScrollByIfRoom (-1, eImmediateUpdate);
+        if (newPos < this->GetMarkerPositionOfStartOfWindow ()) {
+            this->ScrollByIfRoom (-1, eImmediateUpdate);
         }
-        else if (newPos > GetMarkerPositionOfEndOfWindow ()) {
-            ScrollByIfRoom (1, eImmediateUpdate);
+        else if (newPos > this->GetMarkerPositionOfEndOfWindow ()) {
+            this->ScrollByIfRoom (1, eImmediateUpdate);
         }
 
         if (fPrevDropEffect != DROPEFFECT_NONE) {
@@ -888,19 +886,20 @@ namespace Stroika::Frameworks::Led::Platform {
     DROPEFFECT Led_MFC_DragAndDropWindow<BASECLASS>::HelperDragEnter (COleDataObject* pDataObject, DWORD dwKeyState, CPoint point)
     {
         // We allow dropping any time - I think... - See page 444 of MSVC4.0 Visual C++ Tutorial for hints on how to check if we accept...
-        StartDragAutoscrollTimer ();
+        this->StartDragAutoscrollTimer ();
         if (not GetObjectInfo (pDataObject, &fDragSize, &fDragOffset)) {
             return DROPEFFECT_NONE;
         }
         CClientDC dc (NULL);
         dc.HIMETRICtoDP (&fDragSize);
         dc.HIMETRICtoDP (&fDragOffset);
-        DROPEFFECT result = HelperDragOver (pDataObject, dwKeyState, point);
+        DROPEFFECT result = this->HelperDragOver (pDataObject, dwKeyState, point);
         return result;
     }
     template <typename BASECLASS>
     DROPEFFECT Led_MFC_DragAndDropWindow<BASECLASS>::HelperDragOver (COleDataObject* /*pDataObject*/, DWORD dwKeyState, CPoint point)
     {
+        using TextInteractor::eImmediateUpdate;
         point -= fDragOffset; //  adjust target rect by cursor offset
 
         // See  See page 444 of MSVC4.0 Visual C++ Tutorial for hints on how to check if we accept...
@@ -929,28 +928,27 @@ namespace Stroika::Frameworks::Led::Platform {
                 dc.DrawFocusRect (CRect (fDragPoint, fDragSize));
             }
 
-            size_t newPos = GetCharAtClickLocation (AsLedPoint (point));
+            size_t newPos = this->GetCharAtClickLocation (AsLedPoint (point));
 
             // Disalow dragging selection ontop of itself...
             if (sCurrentDragInfo != NULL and sCurrentDragInfo->fLedMFCView == this and (newPos >= sCurrentDragInfo->fOurDragStart and newPos <= sCurrentDragInfo->fOurDragEnd)) {
-                SetSelection (sCurrentDragInfo->fOurDragStart, sCurrentDragInfo->fOurDragEnd);
-                Update ();
+                this->SetSelection (sCurrentDragInfo->fOurDragStart, sCurrentDragInfo->fOurDragEnd);
+                this->Update ();
                 fPrevDropEffect = DROPEFFECT_NONE;
                 return DROPEFFECT_NONE;
             }
 
             // either scroll, or adjust the selection...
-            if (newPos < GetMarkerPositionOfStartOfWindow ()) {
-                ScrollByIfRoom (-1, eImmediateUpdate);
+            if (newPos < this->GetMarkerPositionOfStartOfWindow ()) {
+                this->ScrollByIfRoom (-1, eImmediateUpdate);
             }
-            else if (newPos > GetMarkerPositionOfEndOfWindow ()) {
-                ScrollByIfRoom (1, eImmediateUpdate);
+            else if (newPos > this->GetMarkerPositionOfEndOfWindow ()) {
+                this->ScrollByIfRoom (1, eImmediateUpdate);
             }
 
-            if (newPos >= GetMarkerPositionOfStartOfWindow () and
-                newPos <= GetMarkerPositionOfEndOfWindow ()) {
-                SetSelection (newPos, newPos);
-                Update ();
+            if (newPos >= this->GetMarkerPositionOfStartOfWindow () and newPos <= this->GetMarkerPositionOfEndOfWindow ()) {
+                this->SetSelection (newPos, newPos);
+                this->Update ();
             }
 
             fPrevDropEffect = de;
@@ -966,6 +964,7 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASECLASS>
     BOOL Led_MFC_DragAndDropWindow<BASECLASS>::HelperDrop (COleDataObject* pDataObject, DROPEFFECT /*dropEffect*/, CPoint /*point*/)
     {
+        using namespace Stroika::Foundation;
         RequireNotNull (pDataObject);
 
         // Cleanup focus rect...
@@ -993,8 +992,8 @@ namespace Stroika::Frameworks::Led::Platform {
 
         Led_MFCReaderDAndDFlavorPackage flavors (pDataObject);
 
-        bool         doSmartCNP = GetSmartCutAndPasteMode () and flavors.GetFlavorAvailable_TEXT ();
-        SmartCNPInfo smartCNPInfo;
+        bool                         doSmartCNP = this->GetSmartCutAndPasteMode () and flavors.GetFlavorAvailable_TEXT ();
+        TextInteractor::SmartCNPInfo smartCNPInfo;
         if (doSmartCNP) {
             size_t                              length     = flavors.GetFlavorSize (kTEXTClipFormat);
             Led_ClipFormat                      textFormat = kTEXTClipFormat;
@@ -1005,24 +1004,24 @@ namespace Stroika::Frameworks::Led::Platform {
                 if (nTChars > 0) {
                     nTChars--; // on windows, the text buffer contains a trailing NUL-byte
                 }
-                doSmartCNP = LooksLikeSmartPastableText (buf, nTChars, &smartCNPInfo);
+                doSmartCNP = this->LooksLikeSmartPastableText (buf, nTChars, &smartCNPInfo);
             }
         }
 
-        BreakInGroupedCommands ();
+        this->BreakInGroupedCommands ();
 
-        InteractiveModeUpdater iuMode (*this);
-        size_t                 ucSelStart = (sCurrentDragInfo != NULL and sCurrentDragInfo->fLedMFCView == this) ? sCurrentDragInfo->fOrigSelection.GetStart () : GetSelectionStart ();
-        size_t                 ucSelEnd   = (sCurrentDragInfo != NULL and sCurrentDragInfo->fLedMFCView == this) ? sCurrentDragInfo->fOrigSelection.GetEnd () : GetSelectionEnd ();
-        UndoableContextHelper  undoContext (
+        TextInteractor::InteractiveModeUpdater iuMode (*this);
+        size_t                                 ucSelStart = (sCurrentDragInfo != NULL and sCurrentDragInfo->fLedMFCView == this) ? sCurrentDragInfo->fOrigSelection.GetStart () : this->GetSelectionStart ();
+        size_t                                 ucSelEnd   = (sCurrentDragInfo != NULL and sCurrentDragInfo->fLedMFCView == this) ? sCurrentDragInfo->fOrigSelection.GetEnd () : this->GetSelectionEnd ();
+        TextInteractor::UndoableContextHelper  undoContext (
             *this,
             (sCurrentDragInfo != NULL and sCurrentDragInfo->fLedMFCView == this) ? GetCommandNames ().fDragNDropCommandName : GetCommandNames ().fDropCommandName,
-            GetSelectionStart (), GetSelectionEnd (),
+            this->GetSelectionStart (), this->GetSelectionEnd (),
             ucSelStart, ucSelEnd,
             false);
         {
             try {
-                InternalizeBestFlavor (flavors);
+                this->InternalizeBestFlavor (flavors);
             }
             catch (...) {
 #if _MFC_VER > 0x0E00
@@ -1039,14 +1038,14 @@ namespace Stroika::Frameworks::Led::Platform {
                 throw;
             }
             if (doSmartCNP) {
-                OptionallyAddExtraSpaceForSmartCutAndPasteModeAdds (undoContext.GetUndoRegionStart (), smartCNPInfo);
+                this->OptionallyAddExtraSpaceForSmartCutAndPasteModeAdds (undoContext.GetUndoRegionStart (), smartCNPInfo);
             }
         }
         undoContext.CommandComplete ();
 
         // If WE INITED DRAG - don't do break here, do it in HandleDragSelect () so it can incorporate a DELETE TEXT on MOVE...
         if (sCurrentDragInfo == NULL or sCurrentDragInfo->fLedMFCView != this) {
-            BreakInGroupedCommands ();
+            this->BreakInGroupedCommands ();
         }
 
         return true;
@@ -1102,14 +1101,14 @@ namespace Stroika::Frameworks::Led::Platform {
             //const int kTimeout    =   25; // 25 milliseconds - update autoscroll every 1/40
             const int kTimeout = 20; // 20 milliseconds - update autoscroll every 1/50
             // second.
-            Verify ((fDragAutoScrollTimerID = SetTimer (eAutoscrolling4DragTimerEventID, kTimeout, NULL)) != 0);
+            Verify ((fDragAutoScrollTimerID = this->SetTimer (eAutoscrolling4DragTimerEventID, kTimeout, NULL)) != 0);
         }
     }
     template <typename BASECLASS>
     void Led_MFC_DragAndDropWindow<BASECLASS>::StopDragAutoscrollTimer ()
     {
         if (fDragAutoScrollTimerID != 0) {
-            Verify (KillTimer (eAutoscrolling4DragTimerEventID));
+            Verify (this->KillTimer (eAutoscrolling4DragTimerEventID));
             fDragAutoScrollTimerID = 0;
         }
     }
@@ -1117,7 +1116,7 @@ namespace Stroika::Frameworks::Led::Platform {
     void Led_MFC_DragAndDropWindow<BASECLASS>::OnTimer (UINT_PTR nEventID)
     {
         if (nEventID == eAutoscrolling4DragTimerEventID) {
-            HandleSharedDragOverUpdateSelCode ();
+            this->HandleSharedDragOverUpdateSelCode ();
         }
         else {
             inherited::OnTimer (nEventID);
@@ -1188,7 +1187,7 @@ namespace Stroika::Frameworks::Led::Platform {
     Led_MFC_CViewHelper<BASECLASS>::OnPreparePrinting (CPrintInfo* pInfo)
     {
         // default preparation
-        return DoPreparePrinting (pInfo);
+        return this->DoPreparePrinting (pInfo);
     }
     template <typename BASECLASS>
     /*
@@ -1203,8 +1202,8 @@ namespace Stroika::Frameworks::Led::Platform {
         // THIS CODE IS KINDOF HACKISH - SHOULD HAVE A PAGENATE STAGE/FUNCTION!!! TO FILL THIS ARRAY!!!
         Assert (fPrintInfo == NULL);
         BASECLASS::OnBeginPrinting (pDC, pInfo);
-        fPrintInfo = new PrintInfo (*this, pDC, GetWindowRect (), GetMarkerPositionOfStartOfWindow (), GetForceAllRowsShowing ());
-        SetForceAllRowsShowing (false);
+        fPrintInfo = new PrintInfo (*this, pDC, this->GetWindowRect (), this->GetMarkerPositionOfStartOfWindow (), this->GetForceAllRowsShowing ());
+        this->SetForceAllRowsShowing (false);
     }
     template <typename BASECLASS>
     void Led_MFC_CViewHelper<BASECLASS>::OnPrint (CDC* pDC, CPrintInfo* /*pInfo*/)
@@ -1214,25 +1213,25 @@ namespace Stroika::Frameworks::Led::Platform {
         // That doesn't have todo with scrolling? Just DrawFromSize_tOffset? Maybe - into rect.
         // Make the MRTI::Draw() vector to that?
         ASSERT_VALID (pDC);
-        Led_MFC_TabletFromCDC tablet (pDC);
-        TemporarilyUseTablet  tmpUseTablet (*this, tablet, TemporarilyUseTablet::eDontDoTextMetricsChangedCall);
-        CRect                 boundsRect = CRect (0, 0, 0, 0);
+        Led_MFC_TabletFromCDC                    tablet (pDC);
+        typename BASECLASS::TemporarilyUseTablet tmpUseTablet{*this, tablet, BASECLASS::TemporarilyUseTablet::eDontDoTextMetricsChangedCall};
+        CRect                                    boundsRect = CRect (0, 0, 0, 0);
         Verify (pDC->GetClipBox (&boundsRect) != ERROR);
-        Draw (AsLedRect (boundsRect), true);
+        this->Draw (AsLedRect (boundsRect), true);
     }
     template <typename BASECLASS>
     void Led_MFC_CViewHelper<BASECLASS>::OnEndPrinting (CDC* pDC, CPrintInfo* pInfo)
     {
-        if (fPrintInfo == NULL) {
+        if (fPrintInfo == nullptr) {
             // Can be NULL if print fails, cuz no printer installed
             BASECLASS::OnEndPrinting (pDC, pInfo);
         }
         else {
-            SetForceAllRowsShowing (fPrintInfo->fSavedForceAllRowsFlag);
-            SetWindowRect (fPrintInfo->fOldWindowRect);
-            SetTopRowInWindowByMarkerPosition (fPrintInfo->fSavedScrollPos);
+            this->SetForceAllRowsShowing (fPrintInfo->fSavedForceAllRowsFlag);
+            this->SetWindowRect (fPrintInfo->fOldWindowRect);
+            this->SetTopRowInWindowByMarkerPosition (fPrintInfo->fSavedScrollPos);
             delete fPrintInfo;
-            fPrintInfo = NULL;
+            fPrintInfo = nullptr;
             BASECLASS::OnEndPrinting (pDC, pInfo);
         }
     }
@@ -1252,14 +1251,14 @@ namespace Stroika::Frameworks::Led::Platform {
                 // after 3.0 - as is anticipated.
                 // I changed the args to CalculateWindowRect() to accomodate this bugfix.
                 //
-                Led_Rect oldWR = GetWindowRect ();
-                Led_Rect newWR = CalculatePrintingRect (pDC);
-                SetWindowRect (newWR);
+                Led_Rect oldWR = this->GetWindowRect ();
+                Led_Rect newWR = this->CalculatePrintingRect (pDC);
+                this->SetWindowRect (newWR);
             }
             CView::OnPrepareDC (pDC, pInfo);
             if (fPrintInfo->fWindowStarts.size () == 0) {
                 fPrintInfo->fWindowStarts.push_back (0);
-                SetTopRowInWindowByMarkerPosition (0, eNoUpdate);
+                this->SetTopRowInWindowByMarkerPosition (0, TextInteractor::eNoUpdate);
             }
             pInfo->m_bContinuePrinting = true; // Assume scroll forward succeeded
             // First page into our fWindowStarts cache enuf pages to satisfy this 'goto page' request. NB:
@@ -1267,12 +1266,12 @@ namespace Stroika::Frameworks::Led::Platform {
             // to earlier - incorrect - Led comments - LGP 981007
             while (fPrintInfo->fWindowStarts.size () < pInfo->m_nCurPage) {
                 // advanced one page...
-                if (GetMarkerPositionOfEndOfWindow () == GetTextStore ().GetEnd ()) {
+                if (this->GetMarkerPositionOfEndOfWindow () == this->GetTextStore ().GetEnd ()) {
                     pInfo->m_bContinuePrinting = false; // scroll forward failed
                     return;
                 }
-                SetTopRowInWindowByMarkerPosition (FindNextCharacter (GetMarkerPositionOfEndOfWindow ()), eNoUpdate);
-                size_t newStart = GetMarkerPositionOfStartOfWindow ();
+                this->SetTopRowInWindowByMarkerPosition (this->FindNextCharacter (this->GetMarkerPositionOfEndOfWindow ()), TextInteractor::eNoUpdate);
+                size_t newStart = this->GetMarkerPositionOfStartOfWindow ();
                 if (newStart == fPrintInfo->fWindowStarts.back ()) {
                     pInfo->m_bContinuePrinting = false; // scroll forward failed
                     return;
@@ -1282,8 +1281,8 @@ namespace Stroika::Frameworks::Led::Platform {
                 }
             }
             // scroll forward/back to some page in our (now filled in cache) page list
-            SetTopRowInWindowByMarkerPosition (fPrintInfo->fWindowStarts[pInfo->m_nCurPage - 1]);
-            if (GetMarkerPositionOfEndOfWindow () == GetTextStore ().GetEnd ()) {
+            this->SetTopRowInWindowByMarkerPosition (fPrintInfo->fWindowStarts[pInfo->m_nCurPage - 1]);
+            if (this->GetMarkerPositionOfEndOfWindow () == this->GetTextStore ().GetEnd ()) {
                 pInfo->SetMaxPage (pInfo->m_nCurPage);
                 return;
             }
@@ -1303,8 +1302,8 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         RequireNotNull (pDC);
         /*
-            *  See SPR#1079, and SPR#1153 about whats going on here.
-            */
+         *  See SPR#1079, and SPR#1153 about whats going on here.
+         */
         CRect winRect = CRect (0, 0, pDC->GetDeviceCaps (HORZRES), pDC->GetDeviceCaps (VERTRES));
         pDC->DPtoLP (&winRect);
         Led_Rect useRect    = AsLedRect (winRect);
@@ -1318,7 +1317,7 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASECLASS>
     void Led_MFC_CViewHelper<BASECLASS>::InvalidateScrollBarParameters ()
     {
-        if (fPrintInfo == NULL) {
+        if (fPrintInfo == nullptr) {
             inherited::InvalidateScrollBarParameters ();
         }
     }
@@ -1330,7 +1329,7 @@ namespace Stroika::Frameworks::Led::Platform {
     void
     Led_MFC_CViewHelper<BASECLASS>::UpdateScrollBars ()
     {
-        if (fPrintInfo != NULL) {
+        if (fPrintInfo != nullptr) {
             return; // ignore while in print mode...
         }
         inherited::UpdateScrollBars ();
@@ -1345,35 +1344,36 @@ namespace Stroika::Frameworks::Led::Platform {
     Led_MFC_CViewHelper<BASECLASS>::DeleteContents ()
     {
         ASSERT_VALID (this);
-        AssertNotNull (m_hWnd);
-        SetWindowText (NULL);
+        AssertNotNull (this->m_hWnd);
+        this->SetWindowText (nullptr);
         ASSERT_VALID (this);
     }
     template <typename BASECLASS>
     void Led_MFC_CViewHelper<BASECLASS>::Serialize (CArchive& ar)
     {
         // Probably not the right thing todo, but a simple enuf hack for now - LGP 950511
-        SerializeRaw (ar);
+        this->SerializeRaw (ar);
     }
     template <typename BASECLASS>
     void Led_MFC_CViewHelper<BASECLASS>::SerializeRaw (CArchive& ar)
     {
         ASSERT_VALID (this);
-        AssertNotNull (m_hWnd);
+        AssertNotNull (this->m_hWnd);
         if (ar.IsStoring ()) {
-            WriteToArchive (ar);
+            this->WriteToArchive (ar);
         }
         else {
             CFile* file = ar.GetFile ();
             ASSERT_VALID (file);
             DWORD dwLen = static_cast<DWORD> (file->GetLength ()); // maybe should subtract current offset?
-            ReadFromArchive (ar, (UINT)dwLen);
+            this->ReadFromArchive (ar, (UINT)dwLen);
         }
         ASSERT_VALID (this);
     }
     template <typename BASECLASS>
     void Led_MFC_CViewHelper<BASECLASS>::ReadFromArchive (CArchive& ar, UINT nLen)
     {
+        using namespace Stroika::Foundation;
         ASSERT_VALID (this);
 
         Memory::SmallStackBuffer<Led_tChar> buf (nLen);
@@ -1383,24 +1383,25 @@ namespace Stroika::Frameworks::Led::Platform {
         // Replace the editing edit buffer with the newly loaded data
         nLen = static_cast<UINT> (Characters::NormalizeTextToNL<Led_tChar> (buf, nLen, buf, nLen));
         if (ValidateTextForCharsetConformance (buf, nLen)) {
-            Replace (0, 0, buf, nLen);
+            this->Replace (0, 0, buf, nLen);
         }
         else {
-            OnBadUserInput ();
+            this->OnBadUserInput ();
         }
 
-        Invalidate ();
+        this->Invalidate ();
 
         ASSERT_VALID (this);
     }
     template <typename BASECLASS>
     void Led_MFC_CViewHelper<BASECLASS>::WriteToArchive (CArchive& ar)
     {
+        using namespace Foundation;
         ASSERT_VALID (this);
 
-        size_t                              nLen = GetLength ();
+        size_t                              nLen = this->GetLength ();
         Memory::SmallStackBuffer<Led_tChar> buf (nLen);
-        CopyOut (0, nLen, buf);
+        this->CopyOut (0, nLen, buf);
         Memory::SmallStackBuffer<Led_tChar> buf2 (2 * nLen);
         nLen = Characters::NLToNative<Led_tChar> (buf, nLen, buf2, 2 * nLen);
         ar.Write (buf2, static_cast<UINT> (nLen * sizeof (Led_tChar)));
@@ -1410,14 +1411,14 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASECLASS>
     void Led_MFC_CViewHelper<BASECLASS>::OnLButtonDown (UINT nFlags, CPoint oPoint)
     {
-        UpdateClickCount (Time::GetTickCount (), AsLedPoint (oPoint));
+        this->UpdateClickCount (Foundation::Time::GetTickCount (), AsLedPoint (oPoint));
 
-        if (m_pDocument != NULL and dynamic_cast<COleDocument*> (m_pDocument) != NULL) {
+        if (this->m_pDocument != NULL and dynamic_cast<COleDocument*> (this->m_pDocument) != NULL) {
             // Any time we get a click, make sure there are no active in-place activations.
             // Any click anyplace outside the active item is ignored, except for deactivating
             // that item.
-            AssertMember (m_pDocument, COleDocument); //
-            COleDocument&   doc   = *(COleDocument*)m_pDocument;
+            AssertMember (this->m_pDocument, COleDocument); //
+            COleDocument&   doc   = *(COleDocument*)this->m_pDocument;
             COleClientItem* pItem = doc.GetInPlaceActiveItem (this);
             if (pItem != NULL) {
                 pItem->Close ();
@@ -1425,32 +1426,32 @@ namespace Stroika::Frameworks::Led::Platform {
             }
         }
 
-        if (GetCurClickCount () == 1 and IsADragSelect (AsLedPoint (oPoint))) {
-            HandleDragSelect (nFlags, oPoint);
+        if (this->GetCurClickCount () == 1 and this->IsADragSelect (AsLedPoint (oPoint))) {
+            this->HandleDragSelect (nFlags, oPoint);
         }
         else {
-            OnNormalLButtonDown (nFlags, AsLedPoint (oPoint));
+            this->OnNormalLButtonDown (nFlags, AsLedPoint (oPoint));
         }
     }
     template <typename BASECLASS>
     DROPEFFECT Led_MFC_CViewHelper<BASECLASS>::OnDragEnter (COleDataObject* pDataObject, DWORD dwKeyState, CPoint point)
     {
-        return HelperDragEnter (pDataObject, dwKeyState, point);
+        return this->HelperDragEnter (pDataObject, dwKeyState, point);
     }
     template <typename BASECLASS>
     DROPEFFECT Led_MFC_CViewHelper<BASECLASS>::OnDragOver (COleDataObject* pDataObject, DWORD dwKeyState, CPoint point)
     {
-        return HelperDragOver (pDataObject, dwKeyState, point);
+        return this->HelperDragOver (pDataObject, dwKeyState, point);
     }
     template <typename BASECLASS>
     BOOL Led_MFC_CViewHelper<BASECLASS>::OnDrop (COleDataObject* pDataObject, DROPEFFECT dropEffect, CPoint point)
     {
-        return HelperDrop (pDataObject, dropEffect, point);
+        return this->HelperDrop (pDataObject, dropEffect, point);
     }
     template <typename BASECLASS>
     void Led_MFC_CViewHelper<BASECLASS>::OnDragLeave ()
     {
-        HelperDragLeave ();
+        this->HelperDragLeave ();
     }
     template <typename BASECLASS>
     void Led_MFC_CViewHelper<BASECLASS>::OnPaint ()
@@ -1473,34 +1474,34 @@ namespace Stroika::Frameworks::Led::Platform {
          *  If it is desired to make this work then we must use a NEW imager (as with LedIt! PowerPlant)
          *  to print to.
          */
-        if (fPrintInfo != NULL) {
+        if (fPrintInfo != nullptr) {
             return;
         }
 
         CRect boundsRect = CRect (0, 0, 0, 0);
         Verify (pDC->GetClipBox (&boundsRect) != ERROR);
-        WindowDrawHelper (Led_MFC_TabletFromCDC (pDC), AsLedRect (boundsRect), false);
+        this->WindowDrawHelper (Led_MFC_TabletFromCDC (pDC), AsLedRect (boundsRect), false);
     }
     template <typename BASECLASS>
-    int Led_MFC_CViewHelper<BASECLASS>::OnCreate (LPCREATESTRUCT lpCreateStruct)
+    int Led_MFC_CViewHelper<BASECLASS>::OnCreate (::LPCREATESTRUCT lpCreateStruct)
     {
         if (inherited::OnCreate (lpCreateStruct) != 0) {
             return -1; // failed to create
         }
-        TabletChangedMetrics (); // maybe should catch failures here, and return -1?
-        return 0;                // sucess
+        this->TabletChangedMetrics (); // maybe should catch failures here, and return -1?
+        return 0;                      // sucess
     }
     template <typename BASECLASS>
     void Led_MFC_CViewHelper<BASECLASS>::OnVScroll (UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
     {
-        if (m_pDocument != NULL and dynamic_cast<COleDocument*> (m_pDocument) != NULL) {
+        if (this->m_pDocument != NULL and dynamic_cast<COleDocument*> (this->m_pDocument) != NULL) {
             // Don't allow scrolling while there is an in-place active item.
             // Wish we had a better interface for this... Maybe we should be deactivating
             // SBARS when we activate item??? For now, interpret scroll attempt as a request
             // to deactivate...
             // LGP 960530
-            AssertMember (m_pDocument, COleDocument);
-            COleDocument&   doc   = *(COleDocument*)m_pDocument;
+            AssertMember (this->m_pDocument, COleDocument);
+            COleDocument&   doc   = *(COleDocument*)this->m_pDocument;
             COleClientItem* pItem = doc.GetInPlaceActiveItem (this);
             if (pItem != NULL) {
                 pItem->Close ();
@@ -1512,14 +1513,14 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASECLASS>
     void Led_MFC_CViewHelper<BASECLASS>::OnHScroll (UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
     {
-        if (m_pDocument != NULL and dynamic_cast<COleDocument*> (m_pDocument) != NULL) {
+        if (this->m_pDocument != NULL and dynamic_cast<COleDocument*> (this->m_pDocument) != NULL) {
             // Don't allow scrolling while there is an in-place active item.
             // Wish we had a better interface for this... Maybe we should be deactivating
             // SBARS when we activate item??? For now, interpret scroll attempt as a request
             // to deactivate...
             // LGP 960530
-            AssertMember (m_pDocument, COleDocument); //
-            COleDocument&   doc   = *(COleDocument*)m_pDocument;
+            AssertMember (this->m_pDocument, COleDocument); //
+            COleDocument&   doc   = *(COleDocument*)this->m_pDocument;
             COleClientItem* pItem = doc.GetInPlaceActiveItem (this);
             if (pItem != NULL) {
                 pItem->Close ();
@@ -1568,7 +1569,7 @@ namespace Stroika::Frameworks::Led::Platform {
             inherited::OnChar (nChar, nRepCnt, nFlags);
         }
         catch (...) {
-            HandleException ();
+            this->HandleException ();
         }
     }
     template <typename BASECLASS>
@@ -1578,7 +1579,7 @@ namespace Stroika::Frameworks::Led::Platform {
             return inherited::OnIMEChar (wParam, lParam);
         }
         catch (...) {
-            HandleException ();
+            this->HandleException ();
             return 0;
         }
     }
@@ -1589,7 +1590,7 @@ namespace Stroika::Frameworks::Led::Platform {
             inherited::OnKeyDown (nChar, nRepCnt, nFlags);
         }
         catch (...) {
-            HandleException ();
+            this->HandleException ();
         }
     }
     template <typename BASECLASS>
@@ -1599,7 +1600,7 @@ namespace Stroika::Frameworks::Led::Platform {
             return inherited::OnMsgPaste (wParam, lParam);
         }
         catch (...) {
-            HandleException ();
+            this->HandleException ();
             return 0;
         }
     }
@@ -1610,7 +1611,7 @@ namespace Stroika::Frameworks::Led::Platform {
             inherited::OnLButtonDown (nFlags, oPoint);
         }
         catch (...) {
-            HandleException ();
+            this->HandleException ();
         }
     }
     template <typename BASECLASS>
@@ -1620,7 +1621,7 @@ namespace Stroika::Frameworks::Led::Platform {
             inherited::OnLButtonUp (nFlags, oPoint);
         }
         catch (...) {
-            HandleException ();
+            this->HandleException ();
         }
     }
     template <typename BASECLASS>
@@ -1630,7 +1631,7 @@ namespace Stroika::Frameworks::Led::Platform {
             inherited::OnLButtonDblClk (nFlags, oPoint);
         }
         catch (...) {
-            HandleException ();
+            this->HandleException ();
         }
     }
     template <typename BASECLASS>
@@ -1640,7 +1641,7 @@ namespace Stroika::Frameworks::Led::Platform {
             return inherited::OnCmdMsg (nID, nCode, pExtra, pHandlerInfo);
         }
         catch (...) {
-            HandleException ();
+            this->HandleException ();
             return 1;
         }
     }

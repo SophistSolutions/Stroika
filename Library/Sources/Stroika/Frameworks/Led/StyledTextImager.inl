@@ -61,19 +61,19 @@ namespace Stroika::Frameworks::Led {
                                                                       Led_Distance*    distanceResults) const
     {
         RequireNotNull (imager);
-        imager->MeasureSegmentWidth_ (MakeFontSpec (imager, runElement), from, to, text, distanceResults);
+        imager->MeasureSegmentWidth_ (this->MakeFontSpec (imager, runElement), from, to, text, distanceResults);
     }
     template <class BASECLASS>
     Led_Distance SimpleStyleMarkerByFontSpec<BASECLASS>::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
     {
         RequireNotNull (imager);
-        return (imager->MeasureSegmentHeight_ (MakeFontSpec (imager, runElement), from, to));
+        return (imager->MeasureSegmentHeight_ (this->MakeFontSpec (imager, runElement), from, to));
     }
     template <class BASECLASS>
     Led_Distance SimpleStyleMarkerByFontSpec<BASECLASS>::MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
     {
         RequireNotNull (imager);
-        return (imager->MeasureSegmentBaseLine_ (MakeFontSpec (imager, runElement), from, to));
+        return (imager->MeasureSegmentBaseLine_ (this->MakeFontSpec (imager, runElement), from, to));
     }
 
     // class SimpleStyleMarkerByIncrementalFontSpec<BASECLASS>
@@ -126,7 +126,7 @@ namespace Stroika::Frameworks::Led {
 
         RunElement re = MungeRunElement (runElement);
         if (re.fMarker == nullptr) {
-            imager->DrawSegment_ (tablet, MakeFontSpec (imager, re), from, to, text, drawInto, useBaseLine, pixelsDrawn);
+            imager->DrawSegment_ (tablet, this->MakeFontSpec (imager, re), from, to, text, drawInto, useBaseLine, pixelsDrawn);
         }
         else {
             re.fMarker->DrawSegment (imager, re, tablet, from, to, text, drawInto, invalidRect, useBaseLine, pixelsDrawn);
@@ -141,7 +141,7 @@ namespace Stroika::Frameworks::Led {
         RequireNotNull (imager);
         RunElement re = MungeRunElement (runElement);
         if (re.fMarker == nullptr) {
-            imager->MeasureSegmentWidth_ (MakeFontSpec (imager, re), from, to, text, distanceResults);
+            imager->MeasureSegmentWidth_ (this->MakeFontSpec (imager, re), from, to, text, distanceResults);
         }
         else {
             re.fMarker->MeasureSegmentWidth (imager, re, from, to, text, distanceResults);
@@ -153,7 +153,7 @@ namespace Stroika::Frameworks::Led {
         RequireNotNull (imager);
         RunElement re = MungeRunElement (runElement);
         if (re.fMarker == nullptr) {
-            return (imager->MeasureSegmentHeight_ (MakeFontSpec (imager, re), from, to));
+            return (imager->MeasureSegmentHeight_ (this->MakeFontSpec (imager, re), from, to));
         }
         else {
             return (re.fMarker->MeasureSegmentHeight (imager, re, from, to));
@@ -165,7 +165,7 @@ namespace Stroika::Frameworks::Led {
         RequireNotNull (imager);
         RunElement re = MungeRunElement (runElement);
         if (re.fMarker == nullptr) {
-            return (imager->MeasureSegmentBaseLine_ (MakeFontSpec (imager, re), from, to));
+            return (imager->MeasureSegmentBaseLine_ (this->MakeFontSpec (imager, re), from, to));
         }
         else {
             return (re.fMarker->MeasureSegmentBaseLine (imager, re, from, to));

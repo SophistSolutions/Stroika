@@ -320,14 +320,14 @@ namespace Stroika::Frameworks::Led::Platform {
         using inherited = Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>;
 
     protected:
-        Led_MFC_OptionalWin32SDKMessageMimicHelper ();
+        Led_MFC_OptionalWin32SDKMessageMimicHelper () = default;
 
     public:
         template <int MESSAGE_NUMBER>
         afx_msg LRESULT OnMFCSDKMessageDispatcher (WPARAM wParam, LPARAM lParam)
         {
             LRESULT result = 0;
-            Verify (HandleMessage (MESSAGE_NUMBER, wParam, lParam, &result));
+            Verify (this->HandleMessage (MESSAGE_NUMBER, wParam, lParam, &result));
             return result;
         }
 
@@ -509,12 +509,11 @@ namespace Stroika::Frameworks::Led::Platform {
     protected:
         struct PrintInfo {
             PrintInfo (BASECLASS& editor, CDC* useTablet, Led_Rect oldWindowRect, size_t savedScrollPos, bool savedForceAlLRowsFlag)
-                : fTmpTablet (useTablet)
-                , fOldUpdateTablet (editor, fTmpTablet, TemporarilyUseTablet::eDontDoTextMetricsChangedCall)
-                , fOldWindowRect (oldWindowRect)
-                , fSavedScrollPos (savedScrollPos)
-                , fSavedForceAllRowsFlag (savedForceAlLRowsFlag)
-                , fWindowStarts ()
+                : fTmpTablet{useTablet}
+                , fOldUpdateTablet{editor, fTmpTablet, BASECLASS::TemporarilyUseTablet::eDontDoTextMetricsChangedCall}
+                , fOldWindowRect{oldWindowRect}
+                , fSavedScrollPos{savedScrollPos}
+                , fSavedForceAllRowsFlag{savedForceAlLRowsFlag}
             {
             }
             Led_MFC_TabletFromCDC                    fTmpTablet;
@@ -740,17 +739,17 @@ namespace Stroika::Frameworks::Led::Platform {
     @CLASS:         LED_MFC_HANDLE_COMMAND
     @DESCRIPTION:   <p>Trivial helper for building MFC message maps.</p>
     */
-#define LED_MFC_HANDLE_COMMAND(A)                  \
-    ON_COMMAND_RANGE (A, A, &OnPerformCommand_MSG) \
-    ON_UPDATE_COMMAND_UI (A, &OnUpdateCommand_MSG)
+#define LED_MFC_HANDLE_COMMAND(A)                        \
+    ON_COMMAND_RANGE (A, A, &ThisClass::OnPerformCommand_MSG) \
+    ON_UPDATE_COMMAND_UI (A, &ThisClass::OnUpdateCommand_MSG)
 
 /*
     @CLASS:         LED_MFC_HANDLE_COMMAND_RANGE
     @DESCRIPTION:   <p>Trivial helper for building MFC message maps.</p>
     */
-#define LED_MFC_HANDLE_COMMAND_RANGE(A, B)         \
-    ON_COMMAND_RANGE (A, B, &OnPerformCommand_MSG) \
-    ON_UPDATE_COMMAND_UI_RANGE (A, B, &OnUpdateCommand_MSG)
+#define LED_MFC_HANDLE_COMMAND_RANGE(A, B)               \
+    ON_COMMAND_RANGE (A, B, &ThisClass::OnPerformCommand_MSG) \
+    ON_UPDATE_COMMAND_UI_RANGE (A, B, &ThisClass::OnUpdateCommand_MSG)
 
 /*
     @CLASS:         LED_MFC_HANDLE_COMMAND_M

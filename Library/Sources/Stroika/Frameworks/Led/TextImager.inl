@@ -315,12 +315,11 @@ namespace Stroika::Frameworks::Led {
             switch (dci) {
                 case eDefaultTextColor:
                     return fDefaultFont.GetTextColor ();
-                    ;
-                case eDefaultBackgroundColor:
+                case TextImager::eDefaultBackgroundColor:
                     return Led_GetTextBackgroundColor ();
-                case eDefaultSelectedTextColor:
+                case TextImager::eDefaultSelectedTextColor:
                     return Led_GetSelectedTextColor ();
-                case eDefaultSelectedTextBackgroundColor:
+                case TextImager::eDefaultSelectedTextBackgroundColor:
                     return Led_GetSelectedTextBackgroundColor ();
                 default:
                     Assert (false); /*NOTREACHED*/
@@ -430,34 +429,30 @@ namespace Stroika::Frameworks::Led {
                 does NOT call @'TrivialImager<TEXTSTORE,IMAGER>::SnagAttributesFromTablet' - so you must in your subclass.</p>
     */
     TrivialImager<TEXTSTORE, IMAGER>::TrivialImager (Led_Tablet t)
-        : IMAGER ()
-        , fTablet (t)
-        , fTextStore ()
-        , fBackgroundTransparent (false)
+        : IMAGER{}
+        , fTablet{t}
+        , fTextStore{}
+        , fBackgroundTransparent{false}
     {
-        SpecifyTextStore (&fTextStore);
+        this->SpecifyTextStore (&fTextStore);
     }
     template <typename TEXTSTORE, typename IMAGER>
     TrivialImager<TEXTSTORE, IMAGER>::TrivialImager (Led_Tablet t, Led_Rect bounds, const Led_tString& initialText)
-        : IMAGER ()
-        , fTablet (t)
-        , fTextStore ()
-        , fBackgroundTransparent (false)
+        : TrivialImager{t}
     {
-        SpecifyTextStore (&fTextStore);
         SnagAttributesFromTablet ();
-        SetWindowRect (bounds);
+        this->SetWindowRect (bounds);
         fTextStore.Replace (0, 0, initialText.c_str (), initialText.length ());
     }
     template <typename TEXTSTORE, typename IMAGER>
     TrivialImager<TEXTSTORE, IMAGER>::~TrivialImager ()
     {
-        SpecifyTextStore (nullptr);
+        this->SpecifyTextStore (nullptr);
     }
     template <typename TEXTSTORE, typename IMAGER>
     void TrivialImager<TEXTSTORE, IMAGER>::Draw (bool printing)
     {
-        Draw (GetWindowRect (), printing);
+        Draw (this->GetWindowRect (), printing);
     }
     template <typename TEXTSTORE, typename IMAGER>
     void TrivialImager<TEXTSTORE, IMAGER>::Draw (const Led_Rect& subsetToDraw, bool printing)
@@ -500,8 +495,8 @@ namespace Stroika::Frameworks::Led {
         Verify (hFont != nullptr);
         LOGFONT lf;
         Verify (::GetObject (hFont, sizeof (LOGFONT), &lf));
-        SetDefaultFont (Led_FontSpecification (lf));
-        SetDefaultTextColor (eDefaultBackgroundColor, Led_Color (::GetBkColor (fTablet->m_hAttribDC)));
+        this->SetDefaultFont (Led_FontSpecification (lf));
+        this->SetDefaultTextColor (TextImager::eDefaultBackgroundColor, Led_Color (::GetBkColor (fTablet->m_hAttribDC)));
         if (::GetBkMode (fTablet->m_hAttribDC) == TRANSPARENT) {
             SetBackgroundTransparent (true);
         }
@@ -515,7 +510,7 @@ namespace Stroika::Frameworks::Led {
     inline Led_Color
     TrivialImager<TEXTSTORE, IMAGER>::GetBackgroundColor () const
     {
-        return GetEffectiveDefaultTextColor (eDefaultBackgroundColor);
+        return this->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor);
     }
     template <typename TEXTSTORE, typename IMAGER>
     /*
@@ -527,7 +522,7 @@ namespace Stroika::Frameworks::Led {
     inline void
     TrivialImager<TEXTSTORE, IMAGER>::SetBackgroundColor (Led_Color c)
     {
-        SetDefaultTextColor (eDefaultBackgroundColor, c);
+        this->SetDefaultTextColor (TextImager::eDefaultBackgroundColor, c);
     }
     template <typename TEXTSTORE, typename IMAGER>
     /*
