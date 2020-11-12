@@ -1628,7 +1628,11 @@ bool ActiveLedItControl::DrawExtraDesignModeBorder () const
 HMENU ActiveLedItControl::GenerateContextMenu ()
 {
     if (fConextMenu != NULL) {
-        CComQIPtr<IALCommandList> cm = fConextMenu;
+#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+        CComQIPtr<IALCommandList> cm = (IDispatch*)fConextMenu;
+#else
+        CComQIPtr<IALCommandList>    cm = fConextMenu;
+#endif
         if (cm != NULL) {
             HMENU menu = NULL;
             if (SUCCEEDED (cm->GeneratePopupMenu (fAcceleratorTable, &menu))) {
@@ -1653,7 +1657,11 @@ int ActiveLedItControl::OnCreate (LPCREATESTRUCT lpCreateStruct)
         return -1;
     }
 
+#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+    CComQIPtr<IALToolbarList> tbl = (IDispatch*)fToolbarList;
+#else
     CComQIPtr<IALToolbarList> tbl = fToolbarList;
+#endif
     if (tbl.p != NULL) {
         tbl->NotifyOfOwningActiveLedIt (CComQIPtr<IDispatch> (GetControllingUnknown ()), m_hWnd);
     }
@@ -1701,7 +1709,11 @@ void ActiveLedItControl::Layout ()
         GetClientRect (&cr);
 
         try {
+#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+            CComQIPtr<IALToolbarList> tbl = (IDispatch*)fToolbarList;
+#else
             CComQIPtr<IALToolbarList> tbl = fToolbarList;
+#endif
             if (tbl.p != NULL) {
                 UINT preferredHeight = 0;
                 Led_ThrowIfErrorHRESULT (tbl->get_PreferredHeight (&preferredHeight));
@@ -2635,7 +2647,11 @@ void ActiveLedItControl::OLE_SetToolbarList (VARIANT& newValue)
     try {
         IdleManager::NonIdleContext nonIdleContext;
         {
+#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+            CComQIPtr<IALToolbarList> tbl = (IDispatch*)fToolbarList;
+#else
             CComQIPtr<IALToolbarList> tbl = fToolbarList;
+#endif
             if (tbl.p != NULL) {
                 tbl->NotifyOfOwningActiveLedIt (NULL, NULL);
             }
@@ -2651,7 +2667,11 @@ void ActiveLedItControl::OLE_SetToolbarList (VARIANT& newValue)
             Led_ThrowIfErrorHRESULT (DISP_E_TYPEMISMATCH);
         }
         {
+#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+            CComQIPtr<IALToolbarList> tbl = (IDispatch*)fToolbarList;
+#else
             CComQIPtr<IALToolbarList> tbl = fToolbarList;
+#endif
             if (tbl.p != NULL) {
                 tbl->NotifyOfOwningActiveLedIt (CComQIPtr<IDispatch> (GetControllingUnknown ()), m_hWnd);
             }
@@ -2981,7 +3001,11 @@ HACCEL ActiveLedItControl::GetCurrentWin32AccelTable ()
     const float kTimeBetweenRecomputes = 10.0f;
     if (fWin32AccelTable == NULL or Time::GetTickCount () - fLastAccelTableUpdateAt > kTimeBetweenRecomputes) {
         {
+#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+            CComQIPtr<IALAcceleratorTable> accelTable = (IDispatch*)fAcceleratorTable;
+#else
             CComQIPtr<IALAcceleratorTable> accelTable = fAcceleratorTable;
+#endif
             if (accelTable.p != NULL) {
                 HACCEL maybeNewAccelTable = NULL;
                 accelTable->GenerateWin32AcceleratorTable (&maybeNewAccelTable);
@@ -3312,7 +3336,11 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
 {
     if (wstring (builtinToolbarName) == L"Standard") {
         CComPtr<IDispatch>    newTB = MakeNewToolbar ();
-        CComQIPtr<IALToolbar> tb    = newTB;
+#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+        CComQIPtr<IALToolbar> tb = (IDispatch*)newTB;
+#else
+        CComQIPtr<IALToolbar> tb = newTB;
+#endif
         Led_ThrowIfErrorHRESULT (tb->MergeAdd (MakeBuiltinToolbar (L"EditBar")));
         Led_ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
         Led_ThrowIfErrorHRESULT (tb->MergeAdd (MakeBuiltinToolbar (L"FormatBar")));
@@ -3325,7 +3353,11 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
 
     if (wstring (builtinToolbarName) == L"StandardToolsOnly") { // not including format bar - assumes will be added separately
         CComPtr<IDispatch>    newTB = MakeNewToolbar ();
-        CComQIPtr<IALToolbar> tb    = newTB;
+#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+        CComQIPtr<IALToolbar> tb = (IDispatch*)newTB;
+#else
+        CComQIPtr<IALToolbar> tb = newTB;
+#endif
         Led_ThrowIfErrorHRESULT (tb->MergeAdd (MakeBuiltinToolbar (L"EditBar")));
         Led_ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
         Led_ThrowIfErrorHRESULT (tb->MergeAdd (MakeBuiltinToolbar (L"SelectBar")));
@@ -3340,7 +3372,11 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
 
     if (wstring (builtinToolbarName) == L"FormatBar") {
         CComPtr<IDispatch>    newTB = MakeNewToolbar ();
-        CComQIPtr<IALToolbar> tb    = newTB;
+#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+        CComQIPtr<IALToolbar> tb = (IDispatch*)newTB;
+#else
+        CComQIPtr<IALToolbar> tb = newTB;
+#endif
         Led_ThrowIfErrorHRESULT (tb->MergeAdd (MakeBuiltinToolbar (L"CharacterFormatBar")));
         Led_ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
         Led_ThrowIfErrorHRESULT (tb->MergeAdd (MakeBuiltinToolbar (L"ParagraphFormatBar")));
@@ -3349,7 +3385,11 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
 
     if (wstring (builtinToolbarName) == L"EditBar") {
         CComPtr<IDispatch>    newTB = MakeNewToolbar ();
-        CComQIPtr<IALToolbar> tb    = newTB;
+#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+        CComQIPtr<IALToolbar> tb = (IDispatch*)newTB;
+#else
+        CComQIPtr<IALToolbar> tb = newTB;
+#endif
         Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("Undo"))));
         Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("Redo"))));
         Led_ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
@@ -3361,7 +3401,11 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
 
     if (wstring (builtinToolbarName) == L"SelectBar") {
         CComPtr<IDispatch>    newTB = MakeNewToolbar ();
-        CComQIPtr<IALToolbar> tb    = newTB;
+#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+        CComQIPtr<IALToolbar> tb = (IDispatch*)newTB;
+#else
+        CComQIPtr<IALToolbar> tb = newTB;
+#endif
         Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("Find"))));
         Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("Replace"))));
         Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("CheckSpelling"))));
@@ -3370,7 +3414,11 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
 
     if (wstring (builtinToolbarName) == L"InsertBar") {
         CComPtr<IDispatch>    newTB = MakeNewToolbar ();
-        CComQIPtr<IALToolbar> tb    = newTB;
+#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+        CComQIPtr<IALToolbar> tb = (IDispatch*)newTB;
+#else
+        CComQIPtr<IALToolbar> tb = newTB;
+#endif
         Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("InsertTable"))));
         Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("InsertURL"))));
         Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("InsertSymbol"))));
@@ -3379,7 +3427,11 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
 
     if (wstring (builtinToolbarName) == L"CharacterFormatBar") {
         CComPtr<IDispatch>    newTB = MakeNewToolbar ();
-        CComQIPtr<IALToolbar> tb    = newTB;
+#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+        CComQIPtr<IALToolbar> tb = (IDispatch*)newTB;
+#else
+        CComQIPtr<IALToolbar> tb = newTB;
+#endif
         Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("FontNameComboBox"))));
         Led_ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
         Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("FontSizeComboBox"))));
@@ -3393,7 +3445,11 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
 
     if (wstring (builtinToolbarName) == L"ParagraphFormatBar") {
         CComPtr<IDispatch>    newTB = MakeNewToolbar ();
-        CComQIPtr<IALToolbar> tb    = newTB;
+#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+        CComQIPtr<IALToolbar> tb = (IDispatch*)newTB;
+#else
+        CComQIPtr<IALToolbar> tb = newTB;
+#endif
         Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("JustifyLeft"))));
         Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("JustifyCenter"))));
         Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("JustifyRight"))));
@@ -3484,7 +3540,11 @@ CComPtr<IDispatch> ActiveLedItControl::mkIconElement (int iconResID)
 {
     CComPtr<IDispatch> item;
     item.Attach (OLE_MakeIconButtonToolbarItem ());
+#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+    CComQIPtr<IALIconButtonToolbarElement> newIconButton = (IDispatch*)item;
+#else
     CComQIPtr<IALIconButtonToolbarElement> newIconButton = item;
+#endif
 
     CComPtr<IDispatch> picture;
     {
@@ -3503,7 +3563,11 @@ CComPtr<IDispatch> ActiveLedItControl::mkIconElement (int iconResID)
 CComPtr<IDispatch> ActiveLedItControl::mkIconElement (const ToolBarIconSpec& s)
 {
     CComPtr<IDispatch>                     item       = mkIconElement (s.fIconResId);
-    CComQIPtr<IALIconButtonToolbarElement> iconButton = item;
+#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+    CComQIPtr<IALIconButtonToolbarElement> iconButton = (IDispatch*)item;
+#else
+    CComQIPtr<IALIconButtonToolbarElement> iconButton    = item;
+#endif
 
     Led_ThrowIfErrorHRESULT (iconButton->put_Command (CComVariant (s.fCmdName)));
     Led_ThrowIfErrorHRESULT (iconButton->put_ButtonStyle (s.fButtonStyle));
@@ -3513,7 +3577,11 @@ CComPtr<IDispatch> ActiveLedItControl::mkIconElement (const ToolBarIconSpec& s)
 CComPtr<IDispatch> ActiveLedItControl::mkIconElement (int iconResID, CComPtr<IDispatch> cmdList)
 {
     CComPtr<IDispatch>                     item       = mkIconElement (iconResID);
-    CComQIPtr<IALIconButtonToolbarElement> iconButton = item;
+#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+    CComQIPtr<IALIconButtonToolbarElement> iconButton = (IDispatch*)item;
+#else
+    CComQIPtr<IALIconButtonToolbarElement> iconButton    = item;
+#endif
 
     Led_ThrowIfErrorHRESULT (iconButton->put_Command (CComVariant (cmdList)));
     return item;
@@ -3525,7 +3593,11 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinComboBoxToolbarItem (CComPtr<I
         CComObject<ActiveLedIt_ComboBoxToolbarElement>* o = NULL;
         Led_ThrowIfErrorHRESULT (CComObject<ActiveLedIt_ComboBoxToolbarElement>::CreateInstance (&o));
         CComQIPtr<IDispatch>                 result     = o->GetUnknown ();
+#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+        CComQIPtr<IALComboBoxToolbarElement> alcomboBox = (IDispatch*)result;
+#else
         CComQIPtr<IALComboBoxToolbarElement> alcomboBox = result;
+#endif
         Led_ThrowIfErrorHRESULT (alcomboBox->put_CommandList (cmdList));
         return result;
     }

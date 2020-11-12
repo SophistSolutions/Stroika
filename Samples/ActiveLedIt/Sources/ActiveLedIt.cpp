@@ -35,7 +35,7 @@ inline const void* LoadDLLResource (long resID, LPCTSTR resType)
 
 //  Support for registering in the ComponentCategoryManager - that we are a SAFE control, to avoid nasty warnings
 //  when running embedded in IE
-static HRESULT CreateComponentCategory (CATID catid, WCHAR* catDescription)
+static HRESULT CreateComponentCategory (CATID catid, const WCHAR* catDescription)
 {
     ICatRegister* pcr = NULL;
     HRESULT       hr  = S_OK;

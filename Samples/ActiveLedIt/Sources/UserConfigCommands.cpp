@@ -117,7 +117,11 @@ namespace {
         }
         operator wstring ()
         {
+#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+            CComQIPtr<IALCommand> c = (IDispatch*)fDisp;
+#else
             CComQIPtr<IALCommand> c = fDisp;
+#endif
             CComBSTR              name;
             Led_ThrowIfErrorHRESULT (c->get_InternalName (&name));
             return wstring (name);
@@ -132,7 +136,11 @@ namespace {
         }
         operator wstring ()
         {
+#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+            CComQIPtr<IALAcceleratorElement> c = (IDispatch*)fDisp;
+#else
             CComQIPtr<IALAcceleratorElement> c = fDisp;
+#endif
             CComBSTR                         name;
             Led_ThrowIfErrorHRESULT (c->get_CommandInternalName (&name));
             return wstring (name);
@@ -391,7 +399,11 @@ STDMETHODIMP AL_CommandListHelper::GeneratePopupMenu (IDispatch* acceleratorTabl
         }
         HMENU hMenu = ::CreatePopupMenu ();
         for (vector<CComPtr<IDispatch>>::iterator i = fOwnedItems.begin (); i != fOwnedItems.end (); ++i) {
-            CComQIPtr<IALCommand> alc = *i;
+#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+            CComQIPtr<IALCommand> alc = (IDispatch*)*i;
+#else
+            CComQIPtr<IALCommand>            alc = *i;
+#endif
             CComBSTR              cmdName;
             Led_ThrowIfErrorHRESULT (alc->get_Name (&cmdName));
             Led_ThrowIfErrorHRESULT (alc->AppendSelfToMenu (hMenu, acceleratorTable));
@@ -410,7 +422,11 @@ STDMETHODIMP AL_CommandListHelper::LookupCommand (BSTR internalName, IDispatch**
     try {
         *val = NULL;
         for (vector<CComPtr<IDispatch>>::iterator i = fOwnedItems.begin (); i != fOwnedItems.end (); ++i) {
-            CComQIPtr<IALCommand> alc = *i;
+#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+            CComQIPtr<IALCommand> alc = (IDispatch*)*i;
+#else
+            CComQIPtr<IALCommand>            alc  = *i;
+#endif
             CComBSTR              iName;
             Led_ThrowIfErrorHRESULT (alc->get_InternalName (&iName));
             if (iName == internalName) {
@@ -419,7 +435,11 @@ STDMETHODIMP AL_CommandListHelper::LookupCommand (BSTR internalName, IDispatch**
                 (*val)->AddRef ();
                 return S_OK;
             }
-            CComQIPtr<IALCommandList> alcl = *i;
+#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+            CComQIPtr<IALCommandList> alcl = (IDispatch*)*i;
+#else
+            CComQIPtr<IALCommandList>        alcl = *i;
+#endif
             if (alcl.p != NULL) {
                 // If its a popup menu - recurse
                 Led_ThrowIfErrorHRESULT (alcl->LookupCommand (internalName, val));
@@ -769,7 +789,11 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::Lookup (BSTR cmdInternalName, IDispat
     try {
         *pVal = NULL;
         for (vector<CComPtr<IDispatch>>::const_iterator i = fAccelerators.begin (); i != fAccelerators.end (); ++i) {
-            CComQIPtr<IALAcceleratorElement> ae = *i;
+#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+            CComQIPtr<IALAcceleratorElement> ae = (IDispatch*)*i;
+#else
+            CComQIPtr<IALAcceleratorElement> ae   = *i;
+#endif
             CComBSTR                         itsInternalCmdName;
             Led_ThrowIfErrorHRESULT (ae->get_CommandInternalName (&itsInternalCmdName));
             if (CComBSTR (cmdInternalName) == itsInternalCmdName) {
@@ -820,12 +844,20 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::GenerateWin32AcceleratorTable (HACCEL
         return E_INVALIDARG;
     }
     try {
+#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+        CComQIPtr<IALCommandList> builtins = (IDispatch*)GenerateBuiltinCommandsObject ();
+#else
         CComQIPtr<IALCommandList> builtins = GenerateBuiltinCommandsObject ();
+#endif
 
         Memory::SmallStackBuffer<ACCEL> accels (fAccelerators.size ());
         size_t                          goodKeysFound = 0;
         for (vector<CComPtr<IDispatch>>::const_iterator i = fAccelerators.begin (); i != fAccelerators.end (); ++i) {
+#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+            CComQIPtr<IALAcceleratorElement> ae = (IDispatch*)*i;
+#else
             CComQIPtr<IALAcceleratorElement> ae = *i;
+#endif
             CComBSTR                         internalCmdName;
             Led_ThrowIfErrorHRESULT (ae->get_CommandInternalName (&internalCmdName));
             UINT cmdNum = 0;
@@ -836,7 +868,11 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::GenerateWin32AcceleratorTable (HACCEL
                 for (long ii = 0; ii < bicc; ++ii) {
                     CComPtr<IDispatch> e;
                     Led_ThrowIfErrorHRESULT (builtins->get_Item (ii, &e));
+#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+                    CComQIPtr<IALCommand> alc = (IDispatch*)e;
+#else
                     CComQIPtr<IALCommand> alc = e;
+#endif
                     CComBSTR              bicCmdName;
                     Led_ThrowIfErrorHRESULT (alc->get_InternalName (&bicCmdName));
                     if (bicCmdName == internalCmdName) {
@@ -1036,7 +1072,11 @@ STDMETHODIMP AL_CommandHelper::AppendSelfToMenu (HMENU menu, IDispatch* accelera
                 CComPtr<IDispatch> accelElt;
                 Led_ThrowIfErrorHRESULT (at->Lookup (CComBSTR (fInternalName.c_str ()), &accelElt));
                 if (accelElt.p != NULL) {
+#if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+                    CComQIPtr<IALAcceleratorElement> accelerator = (IDispatch*)accelElt;
+#else
                     CComQIPtr<IALAcceleratorElement> accelerator = accelElt;
+#endif
 
                     AcceleratorModifierFlag modFlag = static_cast<AcceleratorModifierFlag> (0);
                     Led_ThrowIfErrorHRESULT (accelerator->get_ModifierFlag (&modFlag));
