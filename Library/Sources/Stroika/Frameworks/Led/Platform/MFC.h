@@ -739,7 +739,7 @@ namespace Stroika::Frameworks::Led::Platform {
     @CLASS:         LED_MFC_HANDLE_COMMAND
     @DESCRIPTION:   <p>Trivial helper for building MFC message maps.</p>
     */
-#define LED_MFC_HANDLE_COMMAND(A)                        \
+#define LED_MFC_HANDLE_COMMAND(A)                             \
     ON_COMMAND_RANGE (A, A, &ThisClass::OnPerformCommand_MSG) \
     ON_UPDATE_COMMAND_UI (A, &ThisClass::OnUpdateCommand_MSG)
 
@@ -747,7 +747,7 @@ namespace Stroika::Frameworks::Led::Platform {
     @CLASS:         LED_MFC_HANDLE_COMMAND_RANGE
     @DESCRIPTION:   <p>Trivial helper for building MFC message maps.</p>
     */
-#define LED_MFC_HANDLE_COMMAND_RANGE(A, B)               \
+#define LED_MFC_HANDLE_COMMAND_RANGE(A, B)                    \
     ON_COMMAND_RANGE (A, B, &ThisClass::OnPerformCommand_MSG) \
     ON_UPDATE_COMMAND_UI_RANGE (A, B, &ThisClass::OnUpdateCommand_MSG)
 

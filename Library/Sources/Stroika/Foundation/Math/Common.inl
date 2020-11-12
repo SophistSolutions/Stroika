@@ -119,7 +119,7 @@ namespace Stroika::Foundation::Math {
     template <typename INT_TYPE, typename FLOAT_TYPE>
     constexpr INT_TYPE Round (FLOAT_TYPE x)
     {
-        FLOAT_TYPE tmp = round (x);
+        FLOAT_TYPE tmp = ::round (x);
         if (tmp > 0) {
 #if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 10)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 13))
             DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wimplicit-int-float-conversion\""); // warning: implicit conversion from 'std::__1::numeric_limits<long>::type' (aka 'long') to 'double' changes value from 9223372036854775807 to 9223372036854775808
@@ -145,13 +145,12 @@ namespace Stroika::Foundation::Math {
         const inline TC mkCompareEpsilon_ (TC l, [[maybe_unused]] TC r)
         {
             static_assert (is_floating_point_v<TC>, "can only be used for float values");
-#if 1
             if (l < -10 or l > 10) {
-                static const TC kScale_ = pow (static_cast<TC> (10), -(numeric_limits<TC>::digits10 - 1)); // @todo constexpr? is pow() constexpr?
+                // no constexpr pow() - https://stackoverflow.com/questions/17347935/constexpr-math-functions
+                static const TC kScale_ = pow (static_cast<TC> (10), -(numeric_limits<TC>::digits10 - static_cast<TC> (1)));
                 return fabs (l) * kScale_;
             }
-#endif
-            return (10000 * numeric_limits<TC>::epsilon ());
+            return 10000 * numeric_limits<TC>::epsilon ();
         }
     }
     template <typename T1, typename T2, typename EPSILON_TYPE, typename TC>
@@ -162,13 +161,13 @@ namespace Stroika::Foundation::Math {
         if (isnan (diff)) {
             // nan-nan, or inf-inf
             // maybe other cases shouldnt be considered nearly equals?
-            return fpclassify (l) == fpclassify (r);
+            return ::fpclassify (l) == ::fpclassify (r);
         }
         if (isinf (diff)) {
             static const TC kEpsilon_ = Private_::mkCompareEpsilon_ (numeric_limits<TC>::max (), numeric_limits<TC>::max ());
             /* 
-                *  Need to use a temporary of type TC, because T1 or T2 maybe a type of a special temporary value which cannot be assigned to (like Sequence<>::TemporaryItem....
-                */
+             *  Need to use a temporary of type TC, because T1 or T2 maybe a type of a special temporary value which cannot be assigned to (like Sequence<>::TemporaryItem....
+             */
             TC useL = l;
             if (not isinf (useL) and fabs (useL - numeric_limits<TC>::max ()) <= kEpsilon_) {
                 useL = numeric_limits<TC>::infinity ();
@@ -385,7 +384,7 @@ namespace Stroika::Foundation::Math {
         if (v == 2) {
             return true; // special case
         }
-        T checkUpTo = T (sqrt (v) + 1);
+        T checkUpTo = T (::sqrt (v) + 1);
         // Check each number from 3 up to checkUpTo and see if its a divisor
         for (T d = 2; d <= checkUpTo; ++d) {
             if (v % d == 0) {

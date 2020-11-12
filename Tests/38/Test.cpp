@@ -78,12 +78,14 @@ namespace {
 
 int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
+    DISABLE_COMPILER_MSC_WARNING_START (4127) // BAD warning to use if constexpr - IsRunningUnderValgrind not constexpr
     if (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and
         (Debug::kBuiltWithThreadSanitizer or Debug::IsRunningUnderValgrind ())) {
         // for valgrind, really only HELGRIND issue
         DbgTrace ("Skipping this test cuz just gives false positives");
         return Stroika::TestHarness::PrintPassOrFail ([] () {});
     }
+    DISABLE_COMPILER_MSC_WARNING_END (4127)
     SignalHandlerRegistry::SafeSignalsManager safeSignals;
     Stroika::TestHarness::Setup ();
     return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);

@@ -17,7 +17,7 @@ namespace Stroika::Foundation::Configuration {
      ********************************************************************************
      */
     inline SystemConfiguration::SystemConfiguration (const BootInformation& bi, const CPU& ci, const Memory& mi, const OperatingSystem& oi, const ComputerNames& cn)
-        : SystemConfiguration (bi, ci, mi, oi, oi, cn)
+        : SystemConfiguration{bi, ci, mi, oi, oi, cn}
     {
     }
     inline SystemConfiguration::SystemConfiguration (const BootInformation& bi, const CPU& ci, const Memory& mi, const OperatingSystem& actualOS, const OperatingSystem& apparentOS, const ComputerNames& cn)
@@ -36,8 +36,8 @@ namespace Stroika::Foundation::Configuration {
      ********************************************************************************
      */
     inline SystemConfiguration::CPU::CoreDetails::CoreDetails (unsigned int socketID, const String& modelName)
-        : fSocketID (socketID)
-        , fModelName (modelName)
+        : fSocketID{socketID}
+        , fModelName{modelName}
     {
     }
 
