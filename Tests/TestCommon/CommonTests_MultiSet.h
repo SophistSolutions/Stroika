@@ -254,7 +254,7 @@ namespace CommonTests {
                         }
                     }
                     for (auto it [[maybe_unused]] = s.begin ();
-                        it != s.end (); ++it) {
+                         it != s.end (); ++it) {
                         for (auto it1 [[maybe_unused]] : s.UniqueElements ()) {
                             applyToContainer (s);
                         }
