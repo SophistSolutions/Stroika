@@ -161,7 +161,7 @@ namespace Stroika::Foundation::Math {
         if (isnan (diff)) {
             // nan-nan, or inf-inf
             // maybe other cases shouldnt be considered nearly equals?
-            return ::fpclassify (l) == ::fpclassify (r);
+            return std::fpclassify (l) == std::fpclassify (r);
         }
         if (isinf (diff)) {
             static const TC kEpsilon_ = Private_::mkCompareEpsilon_ (numeric_limits<TC>::max (), numeric_limits<TC>::max ());
