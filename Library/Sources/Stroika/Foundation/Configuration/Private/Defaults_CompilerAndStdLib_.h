@@ -161,6 +161,9 @@
 // _MSC_VER=1927
 #define _MSC_VER_2k19_16Pt7_ 1927
 
+// _MSC_VER=1928
+#define _MSC_VER_2k19_16Pt8_ 1928
+
 #if _MSC_VER < 1910
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2017 (use Stroika v2.0 or earlier)"
 #elif _MSC_VER <= _MSC_VER_2k17_15Pt7_
@@ -296,6 +299,18 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 #define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt8_)
 #else
 #define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy 0
+#endif
+
+#endif
+
+///C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_MultiSet.h(246): error C2760: syntax error: unexpected token ';', expected ')'
+// You can use [[maybe_unused]] after the identifier, but not before the auto
+#ifndef qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy
+
+#if defined(_MSC_VER)
+#define qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER == _MSC_VER_2k19_16Pt8_)
+#else
+#define qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy 0
 #endif
 
 #endif

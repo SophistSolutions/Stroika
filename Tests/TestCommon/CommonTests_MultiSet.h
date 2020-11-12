@@ -243,23 +243,25 @@ namespace CommonTests {
                     }
                     applyToContainer (s);
 
-                    for ([[maybe_unused]] auto it = s.begin (); it != s.end (); ++it) {
-                        Lambda_Arg_Unused_BWA (it);
-                        for ([[maybe_unused]] auto it1 : s.Elements ()) {
-                            Lambda_Arg_Unused_BWA (it1);
+                    for (
+#if !qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy
+                        [[maybe_unused]]
+#endif
+                        auto it = s.begin ();
+                        it != s.end (); ++it) {
+                        for (auto it1 [[maybe_unused]] : s.Elements ()) {
                             applyToContainer (s);
                         }
                     }
-                    for ([[maybe_unused]] auto it = s.begin (); it != s.end (); ++it) {
-                        for ([[maybe_unused]] auto it1 : s.UniqueElements ()) {
-                            Lambda_Arg_Unused_BWA (it1);
+                    for (auto it [[maybe_unused]] = s.begin ();
+                        it != s.end (); ++it) {
+                        for (auto it1 [[maybe_unused]] : s.UniqueElements ()) {
                             applyToContainer (s);
                         }
                     }
                     {
                         auto saved = s;
-                        for ([[maybe_unused]] auto it = s.begin (); it != s.end (); ++it) {
-                            Lambda_Arg_Unused_BWA (it);
+                        for (auto it [[maybe_unused]] = s.begin (); it != s.end (); ++it) {
                             s.RemoveAll ();
                         }
                         s = saved;
@@ -267,8 +269,7 @@ namespace CommonTests {
                     {
                         auto saved = s;
                         s.Add (32);
-                        for ([[maybe_unused]] auto it1 : s) {
-                            Lambda_Arg_Unused_BWA (it1);
+                        for (auto it1 [[maybe_unused]] : s) {
                             s.RemoveAll ();
                             applyToContainer (s);
                         }
@@ -276,36 +277,30 @@ namespace CommonTests {
                     }
 
                     {
-                        for ([[maybe_unused]] auto it = s.begin (); it != s.end (); ++it) {
+                        for (auto it [[maybe_unused]] = s.begin (); it != s.end (); ++it) {
                             [[maybe_unused]] auto tmp = s;
                             s.Add (1);
                         }
                         for (auto it = s.begin (); it != s.end (); ++it) {
                             auto tmp = s;
-                            for ([[maybe_unused]] auto it1 : tmp) {
+                            for (auto it1 [[maybe_unused]] : tmp) {
                             }
                             s.Add (1);
                         }
                         for (auto it = s.begin (); it != s.end (); ++it) {
                             auto tmp = s.Elements ();
-                            for ([[maybe_unused]] auto it1 : tmp) {
-                                Lambda_Arg_Unused_BWA (it1);
+                            for (auto it1 [[maybe_unused]] : tmp) {
                             }
                         }
                     }
 
-                    // This next case fails - 2014-01-01
-                    // Sent email to Sterl - I think the bug is that we must BreakReferences when
-                    // copying a new object - if it has any active iterators. But think that through!
-                    // -- LGP 2014-01-01
                     for (auto it = s.begin (); it != s.end (); ++it) {
                         auto tmp = s.Elements ();
                         s.Add (1);
                     }
 
                     for (auto it = s.begin (); it != s.end (); ++it) {
-                        for ([[maybe_unused]] auto it1 : s.Elements ()) {
-                            Lambda_Arg_Unused_BWA (it1);
+                        for (auto it1 [[maybe_unused]] : s.Elements ()) {
                             if (s.TotalOccurrences () < 25) {
                                 s.Add (1);
                             }
@@ -314,16 +309,14 @@ namespace CommonTests {
                         }
                     }
                     for (auto it = s.begin (); it != s.end (); ++it) {
-                        for ([[maybe_unused]] auto it1 : s.Elements ()) {
-                            Lambda_Arg_Unused_BWA (it1);
+                        for (auto it1 [[maybe_unused]] : s.Elements ()) {
                             s.RemoveAll ();
                             applyToContainer (s);
                         }
                     }
                     s.Add (3);
                     for (auto it = s.begin (); it != s.end (); ++it) {
-                        for ([[maybe_unused]] auto it1 : s.UniqueElements ()) {
-                            Lambda_Arg_Unused_BWA (it1);
+                        for (auto it1 [[maybe_unused]] : s.UniqueElements ()) {
                             s.RemoveAll ();
                             applyToContainer (s);
                         }
@@ -443,7 +436,7 @@ namespace CommonTests {
                     }
                     for (auto it = s.begin (); it != s.end (); ++it) {
                         for ([[maybe_unused]] auto it1 : s.Elements ()) {
-                            Lambda_Arg_Unused_BWA (it1);
+                            //Lambda_Arg_Unused_BWA (it1);
                             if (s.TotalOccurrences () < 25) {
                                 s.Add (1);
                             }
@@ -465,7 +458,7 @@ namespace CommonTests {
                     testingSchema.ApplyToContainerExtraTest (s);
                     for (auto it = s.begin (); it != s.end (); ++it) {
                         for ([[maybe_unused]] auto it1 : s.Elements ()) {
-                            Lambda_Arg_Unused_BWA (it1);
+                            //Lambda_Arg_Unused_BWA (it1);
                             if (s.TotalOccurrences () < 25) {
                                 s.Add (1);
                             }
