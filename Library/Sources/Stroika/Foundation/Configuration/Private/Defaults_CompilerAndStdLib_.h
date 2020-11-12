@@ -536,6 +536,26 @@ ABORTING...
 #endif
 
 /*
+ Compiling Samples/WebService/Sources/Model.cpp ...
+C:\Sandbox\Stroika\DevRoot\Samples\WebService\Sources\Model.cpp(98): fatal error C1001: Internal compiler error.
+(compiler file 'msc1.cpp', line 1584)
+ To work around this problem, try simplifying or changing the program near the locations listed above.
+If possible please provide a repro here: https://developercommunity.visualstudio.com
+Please choose the Technical Support command on the Visual C++
+ Help menu, or open the Technical Support help file for more information
+INTERNAL COMPILER ERROR in 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29333\bin\HostX64\x64\cl.exe'
+    Please choose the Technical Support command on the Visual C++
+*/
+#ifndef qCompilerAndStdLib_static_initializer_lambda_funct_init_Buggy
+#if defined(_MSC_VER)
+// First broken in _MSC_VER_2k19_16Pt8_
+#define qCompilerAndStdLib_static_initializer_lambda_funct_init_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER == _MSC_VER_2k19_16Pt8_)
+#else
+#define qCompilerAndStdLib_static_initializer_lambda_funct_init_Buggy 0
+#endif
+#endif
+
+/*
     1>C:\Sandbox\Stroika\DevRoot\Tests\45\Test.cpp(317,33): error C2672:  'Stroika::Foundation::Memory::NEltsOf_REAL_': no matching overloaded function found
     1>C:\Sandbox\Stroika\DevRoot\Tests\45\Test.cpp(326,13): error C2893:  Failed to specialize function template 'size_t Stroika::Foundation::Memory::NEltsOf_REAL_(const ARRAY_TYPE (&)[SIZE_OF_ARRAY])'
     1>C:\Sandbox\Stroika\DevRoot\Tests\45\Test.cpp(326,13): message :  With the following template arguments:
