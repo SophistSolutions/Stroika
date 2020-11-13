@@ -120,9 +120,9 @@ namespace {
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
             CComQIPtr<IALCommand> c = (IDispatch*)fDisp;
 #else
-            CComQIPtr<IALCommand> c = fDisp;
+            CComQIPtr<IALCommand>            c    = fDisp;
 #endif
-            CComBSTR              name;
+            CComBSTR name;
             Led_ThrowIfErrorHRESULT (c->get_InternalName (&name));
             return wstring (name);
         }
@@ -139,9 +139,9 @@ namespace {
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
             CComQIPtr<IALAcceleratorElement> c = (IDispatch*)fDisp;
 #else
-            CComQIPtr<IALAcceleratorElement> c = fDisp;
+            CComQIPtr<IALAcceleratorElement> c    = fDisp;
 #endif
-            CComBSTR                         name;
+            CComBSTR name;
             Led_ThrowIfErrorHRESULT (c->get_CommandInternalName (&name));
             return wstring (name);
         }
@@ -402,9 +402,9 @@ STDMETHODIMP AL_CommandListHelper::GeneratePopupMenu (IDispatch* acceleratorTabl
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
             CComQIPtr<IALCommand> alc = (IDispatch*)*i;
 #else
-            CComQIPtr<IALCommand>            alc = *i;
+            CComQIPtr<IALCommand>            alc  = *i;
 #endif
-            CComBSTR              cmdName;
+            CComBSTR cmdName;
             Led_ThrowIfErrorHRESULT (alc->get_Name (&cmdName));
             Led_ThrowIfErrorHRESULT (alc->AppendSelfToMenu (hMenu, acceleratorTable));
         }
@@ -427,7 +427,7 @@ STDMETHODIMP AL_CommandListHelper::LookupCommand (BSTR internalName, IDispatch**
 #else
             CComQIPtr<IALCommand>            alc  = *i;
 #endif
-            CComBSTR              iName;
+            CComBSTR iName;
             Led_ThrowIfErrorHRESULT (alc->get_InternalName (&iName));
             if (iName == internalName) {
                 *val = *i;
@@ -794,7 +794,7 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::Lookup (BSTR cmdInternalName, IDispat
 #else
             CComQIPtr<IALAcceleratorElement> ae   = *i;
 #endif
-            CComBSTR                         itsInternalCmdName;
+            CComBSTR itsInternalCmdName;
             Led_ThrowIfErrorHRESULT (ae->get_CommandInternalName (&itsInternalCmdName));
             if (CComBSTR (cmdInternalName) == itsInternalCmdName) {
                 *pVal = *i;
@@ -858,7 +858,7 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::GenerateWin32AcceleratorTable (HACCEL
 #else
             CComQIPtr<IALAcceleratorElement> ae = *i;
 #endif
-            CComBSTR                         internalCmdName;
+            CComBSTR internalCmdName;
             Led_ThrowIfErrorHRESULT (ae->get_CommandInternalName (&internalCmdName));
             UINT cmdNum = 0;
             if (cmdNum == 0) {
@@ -873,7 +873,7 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::GenerateWin32AcceleratorTable (HACCEL
 #else
                     CComQIPtr<IALCommand> alc = e;
 #endif
-                    CComBSTR              bicCmdName;
+                    CComBSTR bicCmdName;
                     Led_ThrowIfErrorHRESULT (alc->get_InternalName (&bicCmdName));
                     if (bicCmdName == internalCmdName) {
                         // trick to extract CMD# from the element

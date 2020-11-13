@@ -659,7 +659,7 @@ LRESULT ActiveLedIt_ComboBoxToolbarElement::OnCBSelChange ([[maybe_unused]] USHO
 #else
             CComQIPtr<IALCommand> alc = fCommandListCache[r];
 #endif
-            CComBSTR              internalName;
+            CComBSTR internalName;
             Led_ThrowIfErrorHRESULT (alc->get_InternalName (&internalName));
             CComPtr<IDispatch> al              = fOwningActiveLedIt;
             CComVariant        internalNameCCV = internalName;
@@ -824,7 +824,7 @@ STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::UpdateEnableState ()
 #else
                         CComVariant alcmdCCV = *i;
 #endif
-                        Led_ThrowIfErrorHRESULT(al.Invoke1(DISPID_CommandChecked, &alcmdCCV, &result));
+                        Led_ThrowIfErrorHRESULT (al.Invoke1 (DISPID_CommandChecked, &alcmdCCV, &result));
                         Led_ThrowIfErrorHRESULT (result.ChangeType (VT_BOOL));
                         if (result.boolVal) {
                             idxSelected = i - fCommandListCache.begin ();
@@ -899,7 +899,7 @@ void ActiveLedIt_ComboBoxToolbarElement::UpdatePopupObj ()
 #else
                     CComQIPtr<IALCommand> alc = e;
 #endif
-                    CComBSTR              name;
+                    CComBSTR name;
                     Led_ThrowIfErrorHRESULT (alc->get_Name (&name));
                     fCommandListCache.push_back (alc);
                     Led_SDK_String itemPrintName = Led_Wide2SDKString (wstring (name));
@@ -1144,7 +1144,7 @@ void ActiveLedIt_Toolbar::DoLayout ()
 #else
         CComQIPtr<IALToolbarElement> tbi = *i;
 #endif
-        UINT                         preferredWidth = 0;
+        UINT preferredWidth = 0;
         Led_ThrowIfErrorHRESULT (tbi->get_PreferredWidth (&preferredWidth));
         UINT preferredHeight = 0;
         Led_ThrowIfErrorHRESULT (tbi->get_PreferredHeight (&preferredHeight));
@@ -1342,7 +1342,7 @@ STDMETHODIMP ActiveLedIt_Toolbar::get_PreferredHeight (UINT* pVal)
 #else
             CComQIPtr<IALToolbarElement> tbi = *i;
 #endif
-            UINT                         preferredHeight = 0;
+            UINT preferredHeight = 0;
             Led_ThrowIfErrorHRESULT (tbi->get_PreferredHeight (&preferredHeight));
             maxHeight = max (maxHeight, preferredHeight);
         }
@@ -1370,7 +1370,7 @@ STDMETHODIMP ActiveLedIt_Toolbar::get_PreferredWidth (UINT* pVal)
 #else
             CComQIPtr<IALToolbarElement> tbi = *i;
 #endif
-            UINT                         preferredWidth = 0;
+            UINT preferredWidth = 0;
             Led_ThrowIfErrorHRESULT (tbi->get_PreferredWidth (&preferredWidth));
             totalPrefWidth += preferredWidth;
         }
@@ -1641,7 +1641,7 @@ STDMETHODIMP ActiveLedIt_ToolbarList::get_PreferredHeight (UINT* pVal)
 #else
             CComQIPtr<IALToolbar> tb = *i;
 #endif
-            UINT                  preferredHeight = 0;
+            UINT preferredHeight = 0;
             Led_ThrowIfErrorHRESULT (tb->get_PreferredHeight (&preferredHeight));
             totalHeight += preferredHeight;
         }
@@ -1673,7 +1673,7 @@ STDMETHODIMP ActiveLedIt_ToolbarList::get_PreferredWidth (UINT* pVal)
 #else
             CComQIPtr<IALToolbar> tb = *i;
 #endif
-            UINT                  preferredWidth = 0;
+            UINT preferredWidth = 0;
             Led_ThrowIfErrorHRESULT (tb->get_PreferredWidth (&preferredWidth));
             maxWidth = max (maxWidth, preferredWidth);
         }

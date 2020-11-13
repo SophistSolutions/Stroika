@@ -1631,7 +1631,7 @@ HMENU ActiveLedItControl::GenerateContextMenu ()
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
         CComQIPtr<IALCommandList> cm = (IDispatch*)fConextMenu;
 #else
-        CComQIPtr<IALCommandList>    cm = fConextMenu;
+        CComQIPtr<IALCommandList> cm = fConextMenu;
 #endif
         if (cm != NULL) {
             HMENU menu = NULL;
@@ -2650,7 +2650,7 @@ void ActiveLedItControl::OLE_SetToolbarList (VARIANT& newValue)
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
             CComQIPtr<IALToolbarList> tbl = (IDispatch*)fToolbarList;
 #else
-            CComQIPtr<IALToolbarList> tbl = fToolbarList;
+            CComQIPtr<IALToolbarList>      tbl        = fToolbarList;
 #endif
             if (tbl.p != NULL) {
                 tbl->NotifyOfOwningActiveLedIt (NULL, NULL);
@@ -2670,7 +2670,7 @@ void ActiveLedItControl::OLE_SetToolbarList (VARIANT& newValue)
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
             CComQIPtr<IALToolbarList> tbl = (IDispatch*)fToolbarList;
 #else
-            CComQIPtr<IALToolbarList> tbl = fToolbarList;
+            CComQIPtr<IALToolbarList>      tbl        = fToolbarList;
 #endif
             if (tbl.p != NULL) {
                 tbl->NotifyOfOwningActiveLedIt (CComQIPtr<IDispatch> (GetControllingUnknown ()), m_hWnd);
@@ -3335,7 +3335,7 @@ IDispatch* ActiveLedItControl::OLE_MakeSeparatorToolbarItem ()
 CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinToolbarName)
 {
     if (wstring (builtinToolbarName) == L"Standard") {
-        CComPtr<IDispatch>    newTB = MakeNewToolbar ();
+        CComPtr<IDispatch> newTB = MakeNewToolbar ();
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
         CComQIPtr<IALToolbar> tb = (IDispatch*)newTB;
 #else
@@ -3352,7 +3352,7 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
     }
 
     if (wstring (builtinToolbarName) == L"StandardToolsOnly") { // not including format bar - assumes will be added separately
-        CComPtr<IDispatch>    newTB = MakeNewToolbar ();
+        CComPtr<IDispatch> newTB = MakeNewToolbar ();
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
         CComQIPtr<IALToolbar> tb = (IDispatch*)newTB;
 #else
@@ -3371,7 +3371,7 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
     }
 
     if (wstring (builtinToolbarName) == L"FormatBar") {
-        CComPtr<IDispatch>    newTB = MakeNewToolbar ();
+        CComPtr<IDispatch> newTB = MakeNewToolbar ();
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
         CComQIPtr<IALToolbar> tb = (IDispatch*)newTB;
 #else
@@ -3384,7 +3384,7 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
     }
 
     if (wstring (builtinToolbarName) == L"EditBar") {
-        CComPtr<IDispatch>    newTB = MakeNewToolbar ();
+        CComPtr<IDispatch> newTB = MakeNewToolbar ();
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
         CComQIPtr<IALToolbar> tb = (IDispatch*)newTB;
 #else
@@ -3400,7 +3400,7 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
     }
 
     if (wstring (builtinToolbarName) == L"SelectBar") {
-        CComPtr<IDispatch>    newTB = MakeNewToolbar ();
+        CComPtr<IDispatch> newTB = MakeNewToolbar ();
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
         CComQIPtr<IALToolbar> tb = (IDispatch*)newTB;
 #else
@@ -3413,7 +3413,7 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
     }
 
     if (wstring (builtinToolbarName) == L"InsertBar") {
-        CComPtr<IDispatch>    newTB = MakeNewToolbar ();
+        CComPtr<IDispatch> newTB = MakeNewToolbar ();
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
         CComQIPtr<IALToolbar> tb = (IDispatch*)newTB;
 #else
@@ -3426,7 +3426,7 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
     }
 
     if (wstring (builtinToolbarName) == L"CharacterFormatBar") {
-        CComPtr<IDispatch>    newTB = MakeNewToolbar ();
+        CComPtr<IDispatch> newTB = MakeNewToolbar ();
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
         CComQIPtr<IALToolbar> tb = (IDispatch*)newTB;
 #else
@@ -3444,7 +3444,7 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
     }
 
     if (wstring (builtinToolbarName) == L"ParagraphFormatBar") {
-        CComPtr<IDispatch>    newTB = MakeNewToolbar ();
+        CComPtr<IDispatch> newTB = MakeNewToolbar ();
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
         CComQIPtr<IALToolbar> tb = (IDispatch*)newTB;
 #else
@@ -3562,7 +3562,7 @@ CComPtr<IDispatch> ActiveLedItControl::mkIconElement (int iconResID)
 
 CComPtr<IDispatch> ActiveLedItControl::mkIconElement (const ToolBarIconSpec& s)
 {
-    CComPtr<IDispatch>                     item       = mkIconElement (s.fIconResId);
+    CComPtr<IDispatch> item = mkIconElement (s.fIconResId);
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
     CComQIPtr<IALIconButtonToolbarElement> iconButton = (IDispatch*)item;
 #else
@@ -3576,7 +3576,7 @@ CComPtr<IDispatch> ActiveLedItControl::mkIconElement (const ToolBarIconSpec& s)
 
 CComPtr<IDispatch> ActiveLedItControl::mkIconElement (int iconResID, CComPtr<IDispatch> cmdList)
 {
-    CComPtr<IDispatch>                     item       = mkIconElement (iconResID);
+    CComPtr<IDispatch> item = mkIconElement (iconResID);
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
     CComQIPtr<IALIconButtonToolbarElement> iconButton = (IDispatch*)item;
 #else
@@ -3592,7 +3592,7 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinComboBoxToolbarItem (CComPtr<I
     try {
         CComObject<ActiveLedIt_ComboBoxToolbarElement>* o = NULL;
         Led_ThrowIfErrorHRESULT (CComObject<ActiveLedIt_ComboBoxToolbarElement>::CreateInstance (&o));
-        CComQIPtr<IDispatch>                 result     = o->GetUnknown ();
+        CComQIPtr<IDispatch> result = o->GetUnknown ();
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
         CComQIPtr<IALComboBoxToolbarElement> alcomboBox = (IDispatch*)result;
 #else
