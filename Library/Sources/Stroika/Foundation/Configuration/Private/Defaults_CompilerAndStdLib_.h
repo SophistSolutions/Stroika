@@ -337,13 +337,13 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 
 #endif
 
-#if 0
+/*
 // Get runtime failure in Test_12_DateRange_ in 
 FAILED : RegressionTestFailure;
 dr.Contains (dr.GetMidpoint ());
 C :\Sandbox\Stroika\DevRoot\Tests\48\Test.cpp : 750
-        [](3 seconds)[48] Foundation::Time (../ Builds / Release - U - 32 / Tests / Test48.exe)
-#endif
+        [](3 seconds)[49] Foundation::Time (../Builds/Release-U-32/Tests/Test49.exe)
+ */
 #ifndef qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy
 
 #if defined(_MSC_VER)
@@ -351,7 +351,7 @@ C :\Sandbox\Stroika\DevRoot\Tests\48\Test.cpp : 750
 // still broken in _MSC_VER_2k19_16Pt7_
 // SUDDENLY BROKEN in VC2k17 - 15.9.29 (but not in .28 I think)
 // still broken in _MSC_VER_2k19_16Pt8_
-#define qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (((_MSC_VER <= _MSC_VER_2k19_16Pt8_) && !qDebug && defined (_M_IX86))
+#define qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (((_MSC_VER <= _MSC_VER_2k19_16Pt8_) && !qDebug && defined (_M_IX86)))
 #else
 #define qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy 0
 #endif
