@@ -121,22 +121,22 @@ namespace Stroika::Foundation::Time {
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get
          *        equivalent to "%H:%M:%S"
          */
-        [[deprecated ("just use kISO8601Format since Stroika 2.1b7")]] static constexpr wchar_t kISO8601FormatArray[] = L"%T";
         static inline const String                                                              kISO8601Format        = L"%T";
+        [[deprecated ("just use kISO8601Format since Stroika 2.1b7")]] static constexpr wchar_t kISO8601FormatArray[] = L"%T";
 
     public:
         /**
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get
          */
-        [[deprecated ("just use kLocaleStandardFormat since Stroika 2.1b7")]] static constexpr wchar_t kLocaleStandardFormatArray[] = L"%X";
         static inline const String                                                                     kLocaleStandardFormat        = L"%X"sv;
+        [[deprecated ("just use kLocaleStandardFormat since Stroika 2.1b7")]] static constexpr wchar_t kLocaleStandardFormatArray[] = L"%X";
 
     public:
         /**
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get 
          */
-        [[deprecated ("just use kLocaleStandardAlternateFormat since Stroika 2.1b7")]] static constexpr wchar_t kLocaleStandardAlternateFormatArray[] = L"%EX";
         static inline const String                                                                              kLocaleStandardAlternateFormat        = L"%EX"sv;
+        [[deprecated ("just use kLocaleStandardAlternateFormat since Stroika 2.1b7")]] static constexpr wchar_t kLocaleStandardAlternateFormatArray[] = L"%EX";
 
     public:
         /**

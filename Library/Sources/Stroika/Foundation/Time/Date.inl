@@ -83,13 +83,13 @@ namespace Stroika::Foundation::Time {
     constexpr inline Date::JulianRepType Date::jday_ (MonthOfYear month, DayOfMonth day, Year year)
     {
         /*
-            * Convert Gregorian calendar date to the corresponding Julian day number
-            * j.  Algorithm 199 from Communications of the ACM, Volume 6, No. 8,
-            * (Aug. 1963), p. 444.  Gregorian calendar started on Sep. 14, 1752.
-            * This function not valid before that.
-            *
-            * (This code originally from NIHCL)
-            */
+         * Convert Gregorian calendar date to the corresponding Julian day number
+         * j.  Algorithm 199 from Communications of the ACM, Volume 6, No. 8,
+         * (Aug. 1963), p. 444.  Gregorian calendar started on Sep. 14, 1752.
+         * This function not valid before that.
+         *
+         * (This code originally from NIHCL)
+         */
         if (month == MonthOfYear::eEmptyMonthOfYear or day == DayOfMonth::eEmptyDayOfMonth or year == Year::eEmptyYear) {
             return Date::kEmptyJulianRep;
         }

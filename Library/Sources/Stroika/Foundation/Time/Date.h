@@ -247,22 +247,22 @@ namespace Stroika::Foundation::Time {
          *  \note sometimes represented as %F (see https://en.cppreference.com/w/cpp/chrono/c/wcsftime), but that's not supported in https://en.cppreference.com/w/cpp/locale/time_get/get.
          *        so equivilent to %Y-%m-%d
          */
-        static [[deprecated("just use kISO8601Format since Stroika 2.1b7")]]constexpr wchar_t kISO8601FormatArray[] = L"%Y-%m-%d";
-        static inline const String kISO8601Format        = L"%Y-%m-%d"sv;
+        [[deprecated ("just use kISO8601Format since Stroika 2.1b7")]] static constexpr wchar_t kISO8601FormatArray[] = L"%Y-%m-%d";
+        static inline const String                                                              kISO8601Format        = L"%Y-%m-%d"sv;
 
     public:
         /**
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get
          */
-        static [[deprecated ("just use kLocaleStandardFormat since Stroika 2.1b7")]] constexpr wchar_t kLocaleStandardFormatArray[] = L"%x";
-        static inline const String kLocaleStandardFormat        = L"%x"sv;
+        [[deprecated ("just use kLocaleStandardFormat since Stroika 2.1b7")]] static constexpr wchar_t kLocaleStandardFormatArray[] = L"%x";
+        static inline const String                                                                     kLocaleStandardFormat        = L"%x"sv;
 
     public:
         /**
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get 
          */
-        static [[deprecated ("just use kLocaleStandardAlternateFormat since Stroika 2.1b7")]] constexpr wchar_t kLocaleStandardAlternateFormatArray[] = L"%Ex";
-        static inline const String kLocaleStandardAlternateFormat        = L"%Ex"sv;
+        [[deprecated ("just use kLocaleStandardAlternateFormat since Stroika 2.1b7")]] s taticconstexpr wchar_t kLocaleStandardAlternateFormatArray[] = L"%Ex";
+        static inline const String                                                                              kLocaleStandardAlternateFormat        = L"%Ex"sv;
 
     public:
         /**
