@@ -350,7 +350,7 @@ C :\Sandbox\Stroika\DevRoot\Tests\48\Test.cpp : 750
 // first/only found broken in _MSC_VER_2k19_16Pt6_ - and only in RELEASE and 32-bit builds
 // still broken in _MSC_VER_2k19_16Pt7_
 // still broken in _MSC_VER_2k19_16Pt8_
-#define qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (((_MSC_VER_2k19_16Pt6_ >= _MSC_VER && _MSC_VER <= _MSC_VER_2k19_16Pt8_) && !qDebug && defined (_M_IX86)))
+#define qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (((_MSC_VER_2k19_16Pt6_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k19_16Pt8_) && !qDebug && defined (_M_IX86)))
 #else
 #define qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy 0
 #endif
