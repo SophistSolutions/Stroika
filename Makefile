@@ -405,74 +405,95 @@ basic-unix-test-configurations:
 	./configure DEFAULT_CONFIG --config-tag Unix --only-if-has-compiler;\
 	./configure no-third-party-components --config-tag Unix --only-if-has-compiler --LibCurl no --lzma no --zlib no --OpenSSL no --sqlite no --Xerces no --boost no;\
 	./configure only-zlib-system-third-party-component --config-tag Unix --only-if-has-compiler --LibCurl no --lzma no --zlib system --OpenSSL no --sqlite no --Xerces no --boost no;\
-	# g++-8\
-	./configure g++-8-debug-c++17 --config-tag Unix --compiler-driver g++-8 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17;\
-	./configure g++-8-release-c++17 --config-tag Unix --compiler-driver g++-8 --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17;\
-	./configure g++-8-debug-c++2a --config-tag Unix --compiler-driver g++-8 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2a;\
-	./configure my-g++-8.3-debug-c++2a --config-tag Unix --compiler-driver /private-compiler-builds/gcc-8.3.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --no-sanitize address --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:/private-compiler-builds/gcc-8.3.0/lib64' --only-if-has-compiler --cppstd-version c++2a;\
-	# A few sanitize/configs (must do explicit -g++-8 versions for ubuntu 1804 since its default g++ is 7 and not supported any longer)\
-	./configure g++-8-release-sanitize_address_undefined --config-tag Unix --only-if-has-compiler --compiler-driver g++-8 --apply-default-release-flags --trace2file enable --cppstd-version c++17 --sanitize none,address,undefined;\
-	./configure g++-8-release-sanitize_thread_undefined --config-tag Unix --only-if-has-compiler --compiler-driver g++-8 --apply-default-release-flags --trace2file enable --cppstd-version c++17 --sanitize none,thread,undefined --append-run-prefix "TSAN_OPTIONS=suppressions=$(StroikaRoot)/Tests/ThreadSanitizerSuppressions.supp";\
-	# g++-9\
-	./configure g++-9-debug-c++17 --config-tag Unix --compiler-driver g++-9 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17;\
-	./configure g++-9-release-c++17 --config-tag Unix --compiler-driver g++-9 --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17;\
-	./configure g++-9-debug-c++2a --config-tag Unix --compiler-driver g++-9 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2a;\
-	# g++-10\
-	./configure g++-10-debug-c++17 --config-tag Unix --compiler-driver g++-10 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17;\
-	./configure g++-10-release-c++17 --config-tag Unix --compiler-driver g++-10 --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17;\
-	./configure g++-10-debug-c++2a --config-tag Unix --compiler-driver g++-10 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2a;\
-	#\
-	# clang++-6\
-	#no-sanitize undefined - due to issue with ObjectVariantMapper I cannot find better way to resolve - https://stroika.atlassian.net/browse/STK-601 - I THINK \
-	./configure clang++-6-debug-libc++ --config-tag Unix --compiler-driver clang++-6.0 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --no-sanitize undefined;\
-	./configure clang++-6-release-libstdc++ --config-tag Unix --compiler-driver clang++-6.0 --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable;\
-	# clang++-7\
-	./configure clang++-7-debug-libc++ --config-tag Unix --compiler-driver clang++-7 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable;\
-	./configure clang++-7-debug-libc++-c++2a --config-tag Unix --compiler-driver clang++-7 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a;\
-	./configure clang++-7-release-libstdc++ --config-tag Unix --compiler-driver clang++-7 --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable;\
-	# --no-sanitize and --lto disable calls for clang7 just because of how I built it...\
-	./configure my-clang++-7-debug-libc++ --config-tag Unix --compiler-driver /private-compiler-builds/clang-7.0.0/bin/clang++ --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --no-sanitize address --no-sanitize undefined;\
-	./configure my-clang++-7-debug-libc++-c++2a --config-tag Unix --compiler-driver /private-compiler-builds/clang-7.0.0/bin/clang++ --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --no-sanitize address --no-sanitize undefined --cppstd-version c++2a;\
-	./configure my-clang++-7-release-libstdc++ --config-tag Unix --compiler-driver /private-compiler-builds/clang-7.0.0/bin/clang++ --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable --lto disable;\
-	# clang-8\
-	./configure clang++-8-debug-libc++ --config-tag Unix --compiler-driver clang++-8 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable;\
-	./configure clang++-8-debug-libc++-c++2a --config-tag Unix --compiler-driver clang++-8 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a;\
-	./configure clang++-8-release-libstdc++ --config-tag Unix --compiler-driver clang++-8 --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable;\
-	# clang-9\
-	./configure clang++-9-debug-libc++ --config-tag Unix --compiler-driver clang++-9 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable;\
-	./configure clang++-9-debug-libc++-c++2a --config-tag Unix --compiler-driver clang++-9 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a;\
-	./configure clang++-9-release-libstdc++ --config-tag Unix --compiler-driver clang++-9 --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable;\
-	# clang-10\
-	./configure clang++-10-debug-libc++ --config-tag Unix --compiler-driver clang++-10 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable;\
-	./configure clang++-10-debug-libc++-c++2a --config-tag Unix --compiler-driver clang++-10 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a;\
-	./configure clang++-10-release-libstdc++ --config-tag Unix --compiler-driver clang++-10 --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable;\
-	# clang-11\
-	./configure clang++-11-debug-libc++ --config-tag Unix --compiler-driver clang++-11 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable;\
-	./configure clang++-11-debug-libc++-c++2a --config-tag Unix --compiler-driver clang++-11 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a;\
-	./configure clang++-11-release-libstdc++ --config-tag Unix --compiler-driver clang++-11 --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable;\
+	make --silent basic-unix-test-configurations_g++_versions_;\
+	make --silent basic-unix-test-configurations_clang++_versions_;\
 	#\
 	#32-bit not working now - asm bug - must debug...\
 	#./configure gcc-release-32 --compiler-driver "gcc -m32" --trace2file enable --assertions enable --only-if-has-compiler --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args -m32 --static-link-gccruntime disable;\
 	#\
-	# A few sanitize/configs (must do explicit -g++-8 versions for ubuntu 1804 since its default g++ is 7 and not supported any longer)\
-	./configure g++-debug-sanitize_leak --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,leak --trace2file enable;\
-	./configure g++-debug-sanitize_address --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,address,undefined --trace2file enable;\
-	./configure g++-debug-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --trace2file enable --cppstd-version c++17 --sanitize none,thread,undefined --append-run-prefix "TSAN_OPTIONS=suppressions=$(StroikaRoot)/Tests/ThreadSanitizerSuppressions.supp";\
-	./configure g++-debug-sanitize_undefined --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,address,undefined --trace2file enable;\
-	./configure g++-release-sanitize_address_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++17 --sanitize none,address,undefined;\
-	./configure g++-release-sanitize_thread_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++17 --sanitize none,thread,undefined --append-run-prefix "TSAN_OPTIONS=suppressions=$(StroikaRoot)/Tests/ThreadSanitizerSuppressions.supp";\
+	make --silent basic-unix-test-configurations_sanitizer_configs_;\
 	#\
 	./configure g++-optimized --only-if-has-compiler --config-tag Unix --apply-default-release-flags;\
 	#\
-	###Builds with a few special flags to make valgrind work better\
-	#nb: using default installed C++ compiler cuz of matching installed libraries on host computer\
-	./configure g++-valgrind-debug-SSLPurify --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none;\
-	./configure g++-valgrind-debug-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify  --apply-default-debug-flags --trace2file enable --block-allocation disable --sanitize none;\
-	##https://stroika.atlassian.net/browse/STK-674 - avoid warning\
-	##https://stroika.atlassian.net/browse/STK-702 - avoid another warning (lto disable for valgrind)\
-	./configure g++-valgrind-release-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable -lto disable;\
-	# A few valgrind (must do explicit -g++-8 versions for ubuntu 1804 since its default g++ is 7 and not supported any longer)\
-	./configure g++--8-valgrind-debug-SSLPurify --compiler-driver g++-8 --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none;\
+	make --silent basic-unix-test-configurations_valgrind_configs_;\
+
+
+basic-unix-test-configurations_g++_versions_:
+	# g++-8
+	./configure g++-8-debug-c++17 --config-tag Unix --compiler-driver g++-8 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17;
+	./configure g++-8-release-c++17 --config-tag Unix --compiler-driver g++-8 --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17;
+	./configure g++-8-debug-c++2a --config-tag Unix --compiler-driver g++-8 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2a;
+	./configure my-g++-8.3-debug-c++2a --config-tag Unix --compiler-driver /private-compiler-builds/gcc-8.3.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --no-sanitize address --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:/private-compiler-builds/gcc-8.3.0/lib64' --only-if-has-compiler --cppstd-version c++2a;
+	# A few sanitize/configs (must do explicit -g++-8 versions for ubuntu 1804 since its default g++ is 7 and not supported any longer)
+	./configure g++-8-release-sanitize_address_undefined --config-tag Unix --only-if-has-compiler --compiler-driver g++-8 --apply-default-release-flags --trace2file enable --cppstd-version c++17 --sanitize none,address,undefined;
+	./configure g++-8-release-sanitize_thread_undefined --config-tag Unix --only-if-has-compiler --compiler-driver g++-8 --apply-default-release-flags --trace2file enable --cppstd-version c++17 --sanitize none,thread,undefined --append-run-prefix "TSAN_OPTIONS=suppressions=$(StroikaRoot)/Tests/ThreadSanitizerSuppressions.supp";
+	# g++-9
+	./configure g++-9-debug-c++17 --config-tag Unix --compiler-driver g++-9 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17;
+	./configure g++-9-release-c++17 --config-tag Unix --compiler-driver g++-9 --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17;
+	./configure g++-9-debug-c++2a --config-tag Unix --compiler-driver g++-9 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2a;
+	# g++-10
+	./configure g++-10-debug-c++17 --config-tag Unix --compiler-driver g++-10 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17;
+	./configure g++-10-release-c++17 --config-tag Unix --compiler-driver g++-10 --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17;
+	./configure g++-10-debug-c++2a --config-tag Unix --compiler-driver g++-10 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2a;
+
+basic-unix-test-configurations_clang++_versions_:
+	#
+	# clang++-6
+	#no-sanitize undefined - due to issue with ObjectVariantMapper I cannot find better way to resolve - https://stroika.atlassian.net/browse/STK-601 - I THINK
+	./configure clang++-6-debug-libc++ --config-tag Unix --compiler-driver clang++-6.0 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --no-sanitize undefined;
+	./configure clang++-6-release-libstdc++ --config-tag Unix --compiler-driver clang++-6.0 --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable;
+	# clang++-7
+	./configure clang++-7-debug-libc++ --config-tag Unix --compiler-driver clang++-7 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable;
+	./configure clang++-7-debug-libc++-c++2a --config-tag Unix --compiler-driver clang++-7 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a;
+	./configure clang++-7-release-libstdc++ --config-tag Unix --compiler-driver clang++-7 --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable;
+	# --no-sanitize and --lto disable calls for clang7 just because of how I built it...
+	./configure my-clang++-7-debug-libc++ --config-tag Unix --compiler-driver /private-compiler-builds/clang-7.0.0/bin/clang++ --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --no-sanitize address --no-sanitize undefined;
+	./configure my-clang++-7-debug-libc++-c++2a --config-tag Unix --compiler-driver /private-compiler-builds/clang-7.0.0/bin/clang++ --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --no-sanitize address --no-sanitize undefined --cppstd-version c++2a;
+	./configure my-clang++-7-release-libstdc++ --config-tag Unix --compiler-driver /private-compiler-builds/clang-7.0.0/bin/clang++ --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable --lto disable;
+	# clang-8
+	./configure clang++-8-debug-libc++ --config-tag Unix --compiler-driver clang++-8 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable;
+	./configure clang++-8-debug-libc++-c++2a --config-tag Unix --compiler-driver clang++-8 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a;
+	./configure clang++-8-release-libstdc++ --config-tag Unix --compiler-driver clang++-8 --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable;
+	# clang-9
+	./configure clang++-9-debug-libc++ --config-tag Unix --compiler-driver clang++-9 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable;
+	./configure clang++-9-debug-libc++-c++2a --config-tag Unix --compiler-driver clang++-9 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a;
+	./configure clang++-9-release-libstdc++ --config-tag Unix --compiler-driver clang++-9 --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable;
+	# clang-10
+	./configure clang++-10-debug-libc++ --config-tag Unix --compiler-driver clang++-10 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable;
+	./configure clang++-10-debug-libc++-c++2a --config-tag Unix --compiler-driver clang++-10 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a;
+	./configure clang++-10-release-libstdc++ --config-tag Unix --compiler-driver clang++-10 --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable;
+	# clang-11
+	./configure clang++-11-debug-libc++ --config-tag Unix --compiler-driver clang++-11 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable;
+	./configure clang++-11-debug-libc++-c++2a --config-tag Unix --compiler-driver clang++-11 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a;
+	./configure clang++-11-release-libstdc++ --config-tag Unix --compiler-driver clang++-11 --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable;
+
+basic-unix-test-configurations_sanitizer_configs_:
+	# A few sanitize/configs (must do explicit -g++-8 versions for ubuntu 1804 since its default g++ is 7 and not supported any longer)
+	./configure g++-debug-sanitize_leak --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,leak --trace2file enable;
+	./configure g++-debug-sanitize_address --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,address,undefined --trace2file enable;
+	if [[ $$(lsb_release -rs 2>/dev/null) == "20.10" ]]; then\
+		ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Skipping configuration g++-debug-sanitize_thread to WORKAROUND qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy";\
+	else\
+		./configure g++-debug-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --trace2file enable --cppstd-version c++17 --sanitize none,thread,undefined --append-run-prefix "TSAN_OPTIONS=suppressions=$(StroikaRoot)/Tests/ThreadSanitizerSuppressions.supp";\
+	fi
+	./configure g++-debug-sanitize_undefined --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,address,undefined --trace2file enable;
+	./configure g++-release-sanitize_address_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++17 --sanitize none,address,undefined;
+	if [[ $$(lsb_release -rs 2>/dev/null) == "20.10" ]]; then\
+		ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Skipping configuration g++-debug-sanitize_thread to WORKAROUND qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy";\
+	else\
+		./configure g++-release-sanitize_thread_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++17 --sanitize none,thread,undefined --append-run-prefix "TSAN_OPTIONS=suppressions=$(StroikaRoot)/Tests/ThreadSanitizerSuppressions.supp";\
+	fi
+
+basic-unix-test-configurations_valgrind_configs_:
+	###Builds with a few special flags to make valgrind work better
+	#nb: using default installed C++ compiler cuz of matching installed libraries on host computer
+	./configure g++-valgrind-debug-SSLPurify --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none;
+	./configure g++-valgrind-debug-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify  --apply-default-debug-flags --trace2file enable --block-allocation disable --sanitize none;
+	##https://stroika.atlassian.net/browse/STK-674 - avoid warning
+	##https://stroika.atlassian.net/browse/STK-702 - avoid another warning (lto disable for valgrind)
+	./configure g++-valgrind-release-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable -lto disable;
+	# A few valgrind (must do explicit -g++-8 versions for ubuntu 1804 since its default g++ is 7 and not supported any longer)
+	./configure g++--8-valgrind-debug-SSLPurify --compiler-driver g++-8 --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none;
 
 
 raspberrypi-cross-compile-test-configurations:
