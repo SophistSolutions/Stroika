@@ -122,9 +122,6 @@ Date::FormatException::FormatException ()
  *********************************** Date ***************************************
  ********************************************************************************
  */
-const String Date::kISO8601Format                 = String_Constant{kISO8601FormatArray};
-const String Date::kLocaleStandardFormat          = String_Constant{kLocaleStandardFormatArray};
-const String Date::kLocaleStandardAlternateFormat = String_Constant{kLocaleStandardAlternateFormatArray};
 
 //x parses the locale's standard date representation
 // all Ex parses the locale's alternative date representation, e.g. expecting 平成23年 (year Heisei 23) instead of 2011年 (year 2011) in ja_JP localeconst Traversal::Iterable<String> Date::kDefaultParseFormats{

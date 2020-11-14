@@ -110,10 +110,6 @@ namespace {
 }
 #endif
 
-const String TimeOfDay::kLocaleStandardFormat          = String_Constant{kLocaleStandardFormatArray};
-const String TimeOfDay::kLocaleStandardAlternateFormat = String_Constant{kLocaleStandardAlternateFormatArray};
-const String TimeOfDay::kISO8601Format                 = String_Constant{kISO8601FormatArray}; // equivalent to String_Constant{L"%H:%M:%S"}
-
 //%t        Any white space.
 //%T        The time as %H : %M : %S. (iso8601 format)
 //%r        is the time as %I:%M:%S %p

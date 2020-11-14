@@ -242,11 +242,6 @@ DateTime::DateTime (const ::FILETIME& fileTime, const optional<Timezone>& tz) no
 }
 #endif
 
-const String DateTime::kLocaleStandardFormat          = String_Constant{kLocaleStandardFormatArray};
-const String DateTime::kLocaleStandardAlternateFormat = String_Constant{kLocaleStandardAlternateFormatArray};
-
-const String DateTime::kShortLocaleFormatPattern = L"%x %X"sv;
-
 const Traversal::Iterable<String> DateTime::kDefaultParseFormats{
     kLocaleStandardFormat,
     kLocaleStandardAlternateFormat,

@@ -157,15 +157,15 @@ namespace Stroika::Foundation::Time {
         /**
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get
          */
-        static constexpr wchar_t kLocaleStandardFormatArray[] = L"%c";
-        static const String      kLocaleStandardFormat;
+        [[deprecated ("just use kLocaleStandardFormat since Stroika 2.1b7")]] static constexpr wchar_t kLocaleStandardFormatArray[] = L"%c";
+        static inline const String      kLocaleStandardFormat        = L"%c"sv;
 
     public:
         /**
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get 
          */
-        static constexpr wchar_t kLocaleStandardAlternateFormatArray[] = L"%Ec";
-        static const String      kLocaleStandardAlternateFormat;
+        [[deprecated ("just use kLocaleStandardAlternateFormat since Stroika 2.1b7")]] static constexpr wchar_t kLocaleStandardAlternateFormatArray[] = L"%Ec";
+        static inline const String kLocaleStandardAlternateFormat        = L"%Ec"sv;
 
     public:
         /**
@@ -179,7 +179,7 @@ namespace Stroika::Foundation::Time {
          *      o   %c                  - writes standard date and time string
          *      o   %x %X               - writes localized date representation / writes localized time representation
          */
-        static const String kShortLocaleFormatPattern; // "%x %X"
+        static inline const String kShortLocaleFormatPattern = L"%x %X"sv;
 
     public:
         /**
