@@ -764,7 +764,8 @@ namespace {
             Date      d2 = DateTime::Now ().GetDate () + 1;
             String    t1 = Characters::ToString (d1);
             DateRange dr{d1, d2};
-            //Stroika::Foundation::Debug::Emitter::Get ().EmitTraceMessage (L"drContains=%d", dr.Contains (dr.GetMidpoint ()));
+            Stroika::Foundation::Debug::Emitter::Get ().EmitTraceMessage (L"dr=%d", Characters::ToString (dr).c_str ());
+            Stroika::Foundation::Debug::Emitter::Get ().EmitTraceMessage (L"drContains=%d", dr.Contains (dr.GetMidpoint ()));
 #else
             DateRange dr{DateTime::Now ().GetDate () - 1, DateTime::Now ().GetDate () + 1};
 #endif
