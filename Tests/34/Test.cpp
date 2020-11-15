@@ -207,22 +207,22 @@ namespace {
                 };
                 dumpCT (L"PLAINTEXT", InternetMediaTypes::kText_PLAIN);
                 checkCT (InternetMediaTypes::kText_PLAIN, {L".txt"});
-                dumpCT (L"HTML", InternetMediaTypes::kText_HTML);
-                checkCT (InternetMediaTypes::kText_HTML, {L".html", L".htm"});
+                dumpCT (L"HTML", InternetMediaTypes::kHTML);
+                checkCT (InternetMediaTypes::kHTML, {L".html", L".htm"});
                 dumpCT (L"JSON", InternetMediaTypes::kJSON);
                 checkCT (InternetMediaTypes::kJSON, {L".json"});
-                dumpCT (L"PNG", InternetMediaTypes::kImage_PNG);
-                checkCT (InternetMediaTypes::kImage_PNG, {L".png"});
+                dumpCT (L"PNG", InternetMediaTypes::kPNG);
+                checkCT (InternetMediaTypes::kPNG, {L".png"});
                 {
-                    VerifyTestResult (InternetMediaTypeRegistry::Get ().IsImageFormat (InternetMediaTypes::kImage_PNG));
+                    VerifyTestResult (InternetMediaTypeRegistry::Get ().IsImageFormat (InternetMediaTypes::kPNG));
                     VerifyTestResult (not InternetMediaTypeRegistry::Get ().IsImageFormat (InternetMediaTypes::kJSON));
                     VerifyTestResult (InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaTypes::kXML));
                     VerifyTestResult (not InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaTypes::kText_PLAIN));
                     VerifyTestResult (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kText_PLAIN));
                     VerifyTestResult (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kXML));
-                    VerifyTestResult (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kText_HTML));
+                    VerifyTestResult (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kHTML));
                     VerifyTestResult (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kJSON));
-                    VerifyTestResult (not InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kImage_PNG));
+                    VerifyTestResult (not InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kPNG));
                     VerifyTestResult (not InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaType{L"text/foobar"}));
                     VerifyTestResult (InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaType{L"text/foobar+xml"}));
                 }

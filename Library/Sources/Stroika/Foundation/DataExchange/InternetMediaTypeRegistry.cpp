@@ -44,10 +44,10 @@ namespace {
     using OverrideRecord = InternetMediaTypeRegistry::OverrideRecord;
     static const inline Mapping<InternetMediaType, OverrideRecord> kDefaults_{initializer_list<KeyValuePair<InternetMediaType, OverrideRecord>>{
         {InternetMediaTypes::kText_PLAIN, OverrideRecord{nullopt, Containers::Set<String>{L".txt"_k}, L".txt"_k}},
-        {InternetMediaTypes::kText_CSS, OverrideRecord{nullopt, Containers::Set<String>{L".css"_k}, L".css"_k}},
-        {InternetMediaTypes::kText_HTML, OverrideRecord{nullopt, Containers::Set<String>{L".htm"_k, L".html"_k}, L".htm"_k}},
+        {InternetMediaTypes::kCSS, OverrideRecord{nullopt, Containers::Set<String>{L".css"_k}, L".css"_k}},
+        {InternetMediaTypes::kHTML, OverrideRecord{nullopt, Containers::Set<String>{L".htm"_k, L".html"_k}, L".htm"_k}},
         {InternetMediaTypes::kJSON, OverrideRecord{nullopt, Containers::Set<String>{L".json"_k}, L".json"_k}},
-        {InternetMediaTypes::kImage_PNG, OverrideRecord{nullopt, Containers::Set<String>{L".png"_k}, L".png"_k}},
+        {InternetMediaTypes::kPNG, OverrideRecord{nullopt, Containers::Set<String>{L".png"_k}, L".png"_k}},
         {InternetMediaTypes::kXML, OverrideRecord{nullopt, Containers::Set<String>{L".xml"_k}, L".xml"_k}},
     }};
 }
@@ -70,10 +70,10 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
     // These are adjustable by API, serve the purpose of providing a default on systems with no MIME content database -- LGP 2020-07-27
     static const inline Mapping<InternetMediaType, OverrideRecord> kDefaults_{initializer_list<KeyValuePair<InternetMediaType, OverrideRecord>>{
         {InternetMediaTypes::kText_PLAIN, OverrideRecord{nullopt, Containers::Set<String>{L".txt"_k}, L".txt"_k}},
-        {InternetMediaTypes::kText_CSS, OverrideRecord{nullopt, Containers::Set<String>{L".css"_k}, L".css"_k}},
-        {InternetMediaTypes::kText_HTML, OverrideRecord{nullopt, Containers::Set<String>{L".htm"_k, L".html"_k}, L".htm"_k}},
+        {InternetMediaTypes::kCSS, OverrideRecord{nullopt, Containers::Set<String>{L".css"_k}, L".css"_k}},
+        {InternetMediaTypes::kHTML, OverrideRecord{nullopt, Containers::Set<String>{L".htm"_k, L".html"_k}, L".htm"_k}},
         {InternetMediaTypes::kJSON, OverrideRecord{nullopt, Containers::Set<String>{L".json"_k}, L".json"_k}},
-        {InternetMediaTypes::kImage_PNG, OverrideRecord{nullopt, Containers::Set<String>{L".png"_k}, L".png"_k}},
+        {InternetMediaTypes::kPNG, OverrideRecord{nullopt, Containers::Set<String>{L".png"_k}, L".png"_k}},
         {InternetMediaTypes::kXML, OverrideRecord{nullopt, Containers::Set<String>{L".xml"_k}, L".xml"_k}},
     }};
 #endif
@@ -732,12 +732,12 @@ bool InternetMediaTypeRegistry::IsTextFormat (const InternetMediaType& ct) const
         if (ct.GetSubType<AtomType> () == InternetMediaTypes::kJSON.GetSubType<AtomType> ()) {
             return true;
         }
-        Assert (InternetMediaTypes::kApplication_XSLT.GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
-        if (ct.GetSubType<AtomType> () == InternetMediaTypes::kApplication_XSLT.GetSubType<AtomType> ()) {
+        Assert (InternetMediaTypes::kXSLT.GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
+        if (ct.GetSubType<AtomType> () == InternetMediaTypes::kXSLT.GetSubType<AtomType> ()) {
             return true;
         }
-        Assert (InternetMediaTypes::kApplication_RTF.GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
-        if (ct.GetSubType<AtomType> () == InternetMediaTypes::kApplication_RTF.GetSubType<AtomType> ()) {
+        Assert (InternetMediaTypes::kRTF.GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
+        if (ct.GetSubType<AtomType> () == InternetMediaTypes::kRTF.GetSubType<AtomType> ()) {
             return true;
         }
     }
@@ -767,8 +767,8 @@ bool InternetMediaTypeRegistry::IsXMLFormat (const InternetMediaType& ct) const
         if (ct.GetSubType<AtomType> () == InternetMediaTypes::kXML.GetSubType<AtomType> ()) {
             return true;
         }
-        Assert (InternetMediaTypes::kApplication_XSLT.GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
-        if (ct.GetSubType<AtomType> () == InternetMediaTypes::kApplication_XSLT.GetSubType<AtomType> ()) {
+        Assert (InternetMediaTypes::kXSLT.GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
+        if (ct.GetSubType<AtomType> () == InternetMediaTypes::kXSLT.GetSubType<AtomType> ()) {
             return true;
         }
     }

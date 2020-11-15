@@ -106,10 +106,9 @@ namespace Stroika::Foundation::Execution {
          *
          *  \par Example Usage
          *      \code
-         *          namespace PredefinedInternetMediaType {  constexpr Execution::VirtualConstant<InternetMediaType,...> kImage_PNG;
+         *          namespace PredefinedInternetMediaType {  constexpr Execution::VirtualConstant<InternetMediaType,...> kPNG;
          *
-         *          bool checkIsImage1 = kImage_PNG ().IsImageFormat ();
-         *          bool checkIsImage3 = kImage_PNG.IsImageFormat ();       // FAIL - WONT COMPILE - the main difference between VirtualConstant and actual constant of type T
+         *          bool checkIsImage1 = kPNG.IsImageFormat ();
          *      \endcode
          */
         const BASETYPE operator() () const;
@@ -120,10 +119,9 @@ namespace Stroika::Foundation::Execution {
          *
          *  \par Example Usage
          *      \code
-         *          namespace PredefinedInternetMediaType {  constexpr Execution::VirtualConstant<InternetMediaType,...> kImage_PNG;
+         *          namespace PredefinedInternetMediaType {  constexpr Execution::VirtualConstant<InternetMediaType,...> kPNG;
          *
-         *          bool checkIsImage2 = kImage_PNG->IsImageFormat ();
-         *          bool checkIsImage3 = kImage_PNG.IsImageFormat ();       // FAIL - WONT COMPILE - the main difference between VirtualConstant and actual constant of type T
+         *          bool checkIsImage2 = kPNG.IsImageFormat ();
          *      \endcode
          */
         const BASETYPE* operator-> () const;

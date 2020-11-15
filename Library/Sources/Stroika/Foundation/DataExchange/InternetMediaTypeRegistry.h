@@ -395,34 +395,27 @@ namespace Stroika::Foundation::DataExchange {
         /**
          *  \brief image/png
          */
-        inline const InternetMediaType kImage_PNG{Types::kImage, L"png"sv};
+        inline const InternetMediaType kPNG{Types::kImage, L"png"sv};
 
         /**
          *  \brief image/gif
          */
-        inline const InternetMediaType kImage_GIF{Types::kImage, L"gif"sv};
+        inline const InternetMediaType kGIF{Types::kImage, L"gif"sv};
 
         /**
          *  \brief image/jpeg
          */
-        inline const InternetMediaType kImage_JPEG{Types::kImage, L"jpeg"sv};
+        inline const InternetMediaType kJPEG{Types::kImage, L"jpeg"sv};
 
         /**
          * \brief text/html
          */
-        inline const InternetMediaType kText_HTML{Types::kText, L"html"sv};
+        inline const InternetMediaType kHTML{Types::kText, L"html"sv};
 
         /**
          * \brief text/css
          */
-        inline const InternetMediaType kText_CSS{Types::kText, L"css"sv};
-
-        [[deprecated ("Since Stroika v2.1b2 - use kHTML (probably - not same thing)")]] inline const InternetMediaType kText_XHTML{Types::kText, L"xhtml"sv};
-
-        // deprecated - https://www.w3.org/2006/02/son-of-3023/draft-murata-kohn-lilley-xml-04.html#:~:text=Text%2Fxml%20Registration%20(deprecated),-MIME%20media%20type&text=Although%20listed%20as%20an%20optional,based%20content%20negotiation%20in%20HTTP.
-        [[deprecated ("use kXML instead")]] inline const InternetMediaType kText_XML{Types::kText, L"xml"sv};
-
-        [[deprecated ("use kXML instead")]] inline const InternetMediaType kApplication_XML{Types::kApplication, L"xml"sv};
+        inline const InternetMediaType kCSS{Types::kText, L"css"sv};
 
         /**
          *  \brief text/plain
@@ -432,7 +425,7 @@ namespace Stroika::Foundation::DataExchange {
         /**
          *  \brief text/cvs
          */
-        inline const InternetMediaType kText_CSV{Types::kText, L"csv"sv};
+        inline const InternetMediaType kCSV{Types::kText, L"csv"sv};
 
         /**
          *  \brief application/json
@@ -461,7 +454,7 @@ namespace Stroika::Foundation::DataExchange {
         /**
          *  \brief application/x-xslt
          */
-        inline const InternetMediaType kApplication_XSLT{Types::kApplication, L"x-xslt"sv};
+        inline const InternetMediaType kXSLT{Types::kApplication, L"x-xslt"sv};
 
         /**
          */
@@ -470,12 +463,12 @@ namespace Stroika::Foundation::DataExchange {
         /**
          * Microsoft RTF - Rich Text Format
          */
-        inline const InternetMediaType kApplication_RTF{Types::kApplication, L"rtf"sv};
+        inline const InternetMediaType kRTF{Types::kApplication, L"rtf"sv};
 
         /**
          *  \brief application/zip
          */
-        inline const InternetMediaType kApplication_Zip{Types::kApplication, L"zip"sv};
+        inline const InternetMediaType kZip{Types::kApplication, L"zip"sv};
 
     }
 
