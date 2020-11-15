@@ -158,14 +158,14 @@ namespace Stroika::Foundation::Time {
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get
          */
         static inline const String                                                                     kLocaleStandardFormat        = L"%c"sv;
-        [[deprecated ("just use kLocaleStandardFormat since Stroika 2.1b7")]] static constexpr wchar_t kLocaleStandardFormatArray[] = L"%c";
+       static constexpr wchar_t kLocaleStandardFormat_AsArray[] = L"%c";
 
     public:
         /**
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get 
          */
         static inline const String                                                                              kLocaleStandardAlternateFormat        = L"%Ec"sv;
-        [[deprecated ("just use kLocaleStandardAlternateFormat since Stroika 2.1b7")]] static constexpr wchar_t kLocaleStandardAlternateFormatArray[] = L"%Ec";
+         static constexpr wchar_t kLocaleStandardAlternateFormat_AsArray[] = L"%Ec";
 
     public:
         /**

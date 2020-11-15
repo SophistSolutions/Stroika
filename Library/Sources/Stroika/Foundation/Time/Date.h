@@ -247,22 +247,22 @@ namespace Stroika::Foundation::Time {
          *  \note sometimes represented as %F (see https://en.cppreference.com/w/cpp/chrono/c/wcsftime), but that's not supported in https://en.cppreference.com/w/cpp/locale/time_get/get.
          *        so equivilent to %Y-%m-%d
          */
-        [[deprecated ("just use kISO8601Format since Stroika 2.1b7")]] static constexpr wchar_t kISO8601FormatArray[] = L"%Y-%m-%d";
-        static inline const String                                                              kISO8601Format        = L"%Y-%m-%d"sv;
+        static inline const String kISO8601Format        = L"%Y-%m-%d"sv;
+        static constexpr wchar_t   kISO8601Format_AsArray[] = L"%Y-%m-%d";         // occasionally needed for initializers before main
 
     public:
         /**
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get
          */
-        [[deprecated ("just use kLocaleStandardFormat since Stroika 2.1b7")]] static constexpr wchar_t kLocaleStandardFormatArray[] = L"%x";
-        static inline const String                                                                     kLocaleStandardFormat        = L"%x"sv;
+        static inline const String kLocaleStandardFormat           = L"%x"sv;
+        static constexpr wchar_t   kLocaleStandardFormat_AsArray[] = L"%x";
 
     public:
         /**
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get 
          */
-        [[deprecated ("just use kLocaleStandardAlternateFormat since Stroika 2.1b7")]] static constexpr wchar_t kLocaleStandardAlternateFormatArray[] = L"%Ex";
-        static inline const String                                                                              kLocaleStandardAlternateFormat        = L"%Ex"sv;
+        static inline const String kLocaleStandardAlternateFormat           = L"%Ex"sv;
+        static constexpr wchar_t   kLocaleStandardAlternateFormat_AsArray[] = L"%Ex";
 
     public:
         /**
