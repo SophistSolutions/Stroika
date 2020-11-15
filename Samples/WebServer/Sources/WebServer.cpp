@@ -75,14 +75,14 @@ namespace {
             response->writeln (L"</ul>");
             response->writeln (L"</body></html>");
 
-            response->SetContentType (DataExchange::InternetMediaTypes::kText_HTML);
+            response->SetContentType (DataExchange::InternetMediaTypes::kHTML);
         }
         // Can declare arguments as Message* message
         static void SetAppState_ (Message* message)
         {
             String argsAsString = Streams::TextReader::New (message->PeekRequest ()->GetBody ()).ReadAll ();
             message->PeekResponse ()->writeln (L"<html><body><p>Hi SetAppState (" + argsAsString.As<wstring> () + L")</p></body></html>");
-            message->PeekResponse ()->SetContentType (DataExchange::InternetMediaTypes::kText_HTML);
+            message->PeekResponse ()->SetContentType (DataExchange::InternetMediaTypes::kHTML);
         }
     };
 }
