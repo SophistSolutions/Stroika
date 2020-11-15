@@ -247,8 +247,8 @@ namespace Stroika::Foundation::Time {
          *  \note sometimes represented as %F (see https://en.cppreference.com/w/cpp/chrono/c/wcsftime), but that's not supported in https://en.cppreference.com/w/cpp/locale/time_get/get.
          *        so equivilent to %Y-%m-%d
          */
-        static inline const String kISO8601Format        = L"%Y-%m-%d"sv;
-        static constexpr wchar_t   kISO8601Format_AsArray[] = L"%Y-%m-%d";         // occasionally needed for initializers before main
+        static inline const String kISO8601Format           = L"%Y-%m-%d"sv;
+        static constexpr wchar_t   kISO8601Format_AsArray[] = L"%Y-%m-%d"; // occasionally needed for initializers before main
 
     public:
         /**
