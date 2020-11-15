@@ -49,7 +49,7 @@ namespace {
  */
 DataExchange::Private_::AtomModuleData::AtomModuleData ()
 {
-    Assert (sAtomMgrDefaultRep_ == nullptr);
+    //Assert (sAtomMgrDefaultRep_ == nullptr);
     sAtomMgrDefaultRep_         = new AtomManager_Default_Rep_ ();
     sAtomMgrCaseInsensitiveRep_ = new AtomManager_CaseInsensitive_Rep_ ();
 }
@@ -69,6 +69,12 @@ DataExchange::Private_::AtomModuleData::~AtomModuleData ()
  */
 auto AtomManager_Default::Intern (const String& s) -> AtomInternalType
 {
+    if (sAtomMgrDefaultRep_ != nullptr) {
+        sAtomMgrDefaultRep_ = new AtomManager_Default_Rep_ ();
+    }
+    if (sAtomMgrCaseInsensitiveRep_ != nullptr) {
+        sAtomMgrCaseInsensitiveRep_ = new AtomManager_CaseInsensitive_Rep_ ();
+    }
     AtomInternalType v;
     if (s.empty ()) {
         v = kEmpty;
@@ -103,6 +109,12 @@ String AtomManager_Default::Extract (AtomInternalType atomI)
  */
 auto AtomManager_CaseInsensitive::Intern (const String& s) -> AtomInternalType
 {
+    if (sAtomMgrDefaultRep_ != nullptr) {
+        sAtomMgrDefaultRep_ = new AtomManager_Default_Rep_ ();
+    }
+    if (sAtomMgrCaseInsensitiveRep_ != nullptr) {
+        sAtomMgrCaseInsensitiveRep_ = new AtomManager_CaseInsensitive_Rep_ ();
+    }
     AtomInternalType v;
     if (s.empty ()) {
         v = kEmpty;
