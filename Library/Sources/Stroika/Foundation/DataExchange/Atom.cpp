@@ -28,6 +28,17 @@ namespace {
         Sequence<String>                                       fSeq;
     };
     AtomManager_Default_Rep_* sAtomMgrDefaultRep_;
+    inline void               AssureInited_sAtomMgrDefaultRep_ ()
+    {
+        static once_flag sOnceFlag_;
+        call_once (sOnceFlag_, [] () {
+            atexit ([] () {
+                delete sAtomMgrDefaultRep_;
+            });
+            AssertNotNull (sAtomMgrDefaultRep_);
+            sAtomMgrDefaultRep_ = new AtomManager_Default_Rep_ ();
+        });
+    }
 }
 namespace {
     struct AtomManager_CaseInsensitive_Rep_ {
@@ -40,26 +51,17 @@ namespace {
         Sequence<String>                                       fSeq;
     };
     AtomManager_CaseInsensitive_Rep_* sAtomMgrCaseInsensitiveRep_;
-}
-
-/*
- ********************************************************************************
- *************** DataExchange::Private_::AtomModuleData *************************
- ********************************************************************************
- */
-DataExchange::Private_::AtomModuleData::AtomModuleData ()
-{
-    //Assert (sAtomMgrDefaultRep_ == nullptr);
-    sAtomMgrDefaultRep_         = new AtomManager_Default_Rep_ ();
-    sAtomMgrCaseInsensitiveRep_ = new AtomManager_CaseInsensitive_Rep_ ();
-}
-
-DataExchange::Private_::AtomModuleData::~AtomModuleData ()
-{
-    delete sAtomMgrDefaultRep_;
-    sAtomMgrDefaultRep_ = nullptr;
-    delete sAtomMgrCaseInsensitiveRep_;
-    sAtomMgrCaseInsensitiveRep_ = nullptr;
+    inline void                       AssureInited_sAtomMgrCaseInsensitiveRep_ ()
+    {
+        static once_flag sOnceFlag_;
+        call_once (sOnceFlag_, [] () {
+            atexit ([] () {
+                delete sAtomMgrCaseInsensitiveRep_;
+            });
+            AssertNotNull (sAtomMgrCaseInsensitiveRep_);
+            sAtomMgrCaseInsensitiveRep_ = new AtomManager_CaseInsensitive_Rep_ ();
+        });
+    }
 }
 
 /*
@@ -69,12 +71,7 @@ DataExchange::Private_::AtomModuleData::~AtomModuleData ()
  */
 auto AtomManager_Default::Intern (const String& s) -> AtomInternalType
 {
-    if (sAtomMgrDefaultRep_ != nullptr) {
-        sAtomMgrDefaultRep_ = new AtomManager_Default_Rep_ ();
-    }
-    if (sAtomMgrCaseInsensitiveRep_ != nullptr) {
-        sAtomMgrCaseInsensitiveRep_ = new AtomManager_CaseInsensitive_Rep_ ();
-    }
+    AssureInited_sAtomMgrDefaultRep_ ();
     AtomInternalType v;
     if (s.empty ()) {
         v = kEmpty;
@@ -95,6 +92,7 @@ auto AtomManager_Default::Intern (const String& s) -> AtomInternalType
 
 String AtomManager_Default::Extract (AtomInternalType atomI)
 {
+    RequireNotNull (sAtomMgrDefaultRep_); // must intern before extracting
     if (atomI == kEmpty) {
         return String{};
     }
@@ -104,17 +102,12 @@ String AtomManager_Default::Extract (AtomInternalType atomI)
 
 /*
  ********************************************************************************
- ******************** DataExchange::AtomManager_CaseInsensitive *****************
+ ****************** DataExchange::AtomManager_CaseInsensitive *******************
  ********************************************************************************
  */
 auto AtomManager_CaseInsensitive::Intern (const String& s) -> AtomInternalType
 {
-    if (sAtomMgrDefaultRep_ != nullptr) {
-        sAtomMgrDefaultRep_ = new AtomManager_Default_Rep_ ();
-    }
-    if (sAtomMgrCaseInsensitiveRep_ != nullptr) {
-        sAtomMgrCaseInsensitiveRep_ = new AtomManager_CaseInsensitive_Rep_ ();
-    }
+    AssureInited_sAtomMgrCaseInsensitiveRep_ ();
     AtomInternalType v;
     if (s.empty ()) {
         v = kEmpty;
@@ -135,6 +128,7 @@ auto AtomManager_CaseInsensitive::Intern (const String& s) -> AtomInternalType
 
 String AtomManager_CaseInsensitive::Extract (AtomInternalType atomI)
 {
+    RequireNotNull (sAtomMgrCaseInsensitiveRep_); // must intern before extracting
     if (atomI == kEmpty) {
         return String{};
     }

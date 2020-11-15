@@ -12,7 +12,6 @@
 #include <type_traits>
 
 #include "../Common/Compare.h"
-#include "../Execution/ModuleInit.h"
 
 namespace Stroika::Foundation::DataExchange {
 
@@ -144,17 +143,6 @@ namespace Stroika::Foundation::DataExchange {
     }
 #endif
 
-    namespace Private_ {
-        struct AtomModuleData {
-            AtomModuleData ();
-            ~AtomModuleData ();
-        };
-    }
-
-}
-
-namespace {
-    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::DataExchange::Private_::AtomModuleData> _Stroika_Foundation_DataExchange_Atom_ModuleData_; // this object constructed for the CTOR/DTOR per-module side-effects
 }
 
 #endif /*_Stroika_Foundation_DataExchange_Atom_inl_*/
