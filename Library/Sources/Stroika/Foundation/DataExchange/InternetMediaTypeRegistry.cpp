@@ -226,16 +226,19 @@ void InternetMediaTypeRegistry::Set (const InternetMediaTypeRegistry& r)
 
 auto InternetMediaTypeRegistry::GetOverrides () const -> Mapping<InternetMediaType, OverrideRecord>
 {
+    AssertNotNull (fFrontEndRep_);
     return fFrontEndRep_->GetOverrides ();
 }
 
 void InternetMediaTypeRegistry::SetOverrides (const Mapping<InternetMediaType, OverrideRecord>& overrides)
 {
+    AssertNotNull (fFrontEndRep_);
     fFrontEndRep_->SetOverrides (overrides);
 }
 
 void InternetMediaTypeRegistry::AddOverride (const InternetMediaType& mediaType, const OverrideRecord& overrideRec)
 {
+    AssertNotNull (fFrontEndRep_);
     fFrontEndRep_->AddOverride (mediaType, overrideRec);
 }
 
@@ -688,11 +691,13 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
 
 Set<InternetMediaType> InternetMediaTypeRegistry::GetMediaTypes () const
 {
+    AssertNotNull (fFrontEndRep_);
     return fFrontEndRep_->GetMediaTypes (nullopt);
 }
 
 Set<InternetMediaType> InternetMediaTypeRegistry::GetMediaTypes (InternetMediaType::AtomType majorType) const
 {
+    AssertNotNull (fFrontEndRep_);
     return fFrontEndRep_->GetMediaTypes (majorType);
 }
 
@@ -713,6 +718,7 @@ optional<InternetMediaType> InternetMediaTypeRegistry::GetAssociatedContentType 
         return nullopt;
     }
     Assert (fileSuffix[0] == '.');
+    AssertNotNull (fFrontEndRep_);
     return fFrontEndRep_->GetAssociatedContentType (fileSuffix);
 }
 
