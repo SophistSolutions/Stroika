@@ -147,8 +147,8 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *
      *  \note   Supported Response Types (For the VariantValue response type overload)
      *          o  nullopt (no response written)
-     *          o  DataExchange::InternetMediaTypes::JSON_CT ()
-     *          o  DataExchange::InternetMediaTypes::kText_PLAIN ()
+     *          o  DataExchange::InternetMediaTypes::JSON_CT
+     *          o  DataExchange::InternetMediaTypes::kText_PLAIN
      */
     void WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription);
     void WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const Memory::BLOB& responseValue);
