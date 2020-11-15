@@ -91,7 +91,7 @@ public:
                             // demo getting argument from the body
                             if (not number) {
                                 // read if content-type is text (not json)
-                                if (m->PeekRequest ()->GetContentType () and DataExchange::InternetMediaTypeRegistry::Get ().IsA (Stroika::Foundation::DataExchange::InternetMediaTypes::kText_PLAIN (), *m->PeekRequest ()->GetContentType ())) {
+                                if (m->PeekRequest ()->GetContentType () and DataExchange::InternetMediaTypeRegistry::Get ().IsA (Stroika::Foundation::DataExchange::InternetMediaTypes::kText_PLAIN, *m->PeekRequest ()->GetContentType ())) {
                                     String argsAsString = Streams::TextReader::New (m->PeekRequest ()->GetBody ()).ReadAll ();
                                     number              = kMapper.ToObject<Number> (DataExchange::VariantValue (argsAsString));
                                 }
