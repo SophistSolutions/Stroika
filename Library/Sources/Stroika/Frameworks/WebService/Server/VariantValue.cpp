@@ -138,13 +138,13 @@ void Server::VariantValue::WriteResponse (Response* response, const WebServiceMe
 
 void Server::VariantValue::WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const VariantValue& responseValue)
 {
-    Require (not webServiceDescription.fResponseType.has_value () or (webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kJSON () or webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kText_PLAIN ())); // all we support for now
+    Require (not webServiceDescription.fResponseType.has_value () or (webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kJSON or webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kText_PLAIN)); // all we support for now
     if (webServiceDescription.fResponseType) {
-        if (webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kJSON ()) {
+        if (webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kJSON) {
             response->write (Variant::JSON::Writer{}.WriteAsBLOB (responseValue));
             response->SetContentType (*webServiceDescription.fResponseType);
         }
-        else if (webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kText_PLAIN ()) {
+        else if (webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kText_PLAIN) {
             response->write (Variant::JSON::Writer{}.WriteAsBLOB (responseValue));
             response->SetContentType (*webServiceDescription.fResponseType);
         }
@@ -165,6 +165,7 @@ void Server::VariantValue::WriteResponse (Response* response, const WebServiceMe
 WebServer::RequestHandler Server::VariantValue::mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const function<Memory::BLOB (WebServer::Message* m)>& f)
 {
     return [=] (WebServer::Message* m) {
+        RequireNotNull (m);
         ExpectedMethod (m->GetRequestReference (), webServiceDescription);
         if (webServiceDescription.fResponseType) {
             m->PeekResponse ()->SetContentType (*webServiceDescription.fResponseType);

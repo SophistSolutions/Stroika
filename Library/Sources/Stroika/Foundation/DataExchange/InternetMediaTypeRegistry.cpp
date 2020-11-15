@@ -728,16 +728,16 @@ bool InternetMediaTypeRegistry::IsTextFormat (const InternetMediaType& ct) const
     }
     // well known types that can be treated as text (@todo need some way to extend this API)? - Maybe not here but in REGISTRY
     if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kApplication) {
-        Assert (InternetMediaTypes::kJSON->GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
-        if (ct.GetSubType<AtomType> () == InternetMediaTypes::kJSON->GetSubType<AtomType> ()) {
+        Assert (InternetMediaTypes::kJSON.GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
+        if (ct.GetSubType<AtomType> () == InternetMediaTypes::kJSON.GetSubType<AtomType> ()) {
             return true;
         }
-        Assert (InternetMediaTypes::kApplication_XSLT->GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
-        if (ct.GetSubType<AtomType> () == InternetMediaTypes::kApplication_XSLT->GetSubType<AtomType> ()) {
+        Assert (InternetMediaTypes::kApplication_XSLT.GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
+        if (ct.GetSubType<AtomType> () == InternetMediaTypes::kApplication_XSLT.GetSubType<AtomType> ()) {
             return true;
         }
-        Assert (InternetMediaTypes::kApplication_RTF->GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
-        if (ct.GetSubType<AtomType> () == InternetMediaTypes::kApplication_RTF->GetSubType<AtomType> ()) {
+        Assert (InternetMediaTypes::kApplication_RTF.GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
+        if (ct.GetSubType<AtomType> () == InternetMediaTypes::kApplication_RTF.GetSubType<AtomType> ()) {
             return true;
         }
     }
@@ -763,12 +763,12 @@ bool InternetMediaTypeRegistry::IsXMLFormat (const InternetMediaType& ct) const
     // @todo look into info in type files/backend to make extensible
     using AtomType = InternetMediaType::AtomType;
     if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kApplication) {
-        Assert (InternetMediaTypes::kXML->GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
-        if (ct.GetSubType<AtomType> () == InternetMediaTypes::kXML->GetSubType<AtomType> ()) {
+        Assert (InternetMediaTypes::kXML.GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
+        if (ct.GetSubType<AtomType> () == InternetMediaTypes::kXML.GetSubType<AtomType> ()) {
             return true;
         }
-        Assert (InternetMediaTypes::kApplication_XSLT->GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
-        if (ct.GetSubType<AtomType> () == InternetMediaTypes::kApplication_XSLT->GetSubType<AtomType> ()) {
+        Assert (InternetMediaTypes::kApplication_XSLT.GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
+        if (ct.GetSubType<AtomType> () == InternetMediaTypes::kApplication_XSLT.GetSubType<AtomType> ()) {
             return true;
         }
     }
@@ -798,43 +798,4 @@ bool InternetMediaTypeRegistry::IsA (const InternetMediaType& moreGeneralType, c
     // compare just the subtypes, for prefix equals
     // @todo temporary algorithm - works for old HealtFrame code but add some more general mechanism - configurable and based on /user/share/MIME
     return moreSpecificType.GetSubType<String> ().StartsWith (moreGeneralType.GetSubType<String> (), Characters::CompareOptions::eCaseInsensitive);
-}
-
-/*
- ********************************************************************************
- *************************** MimeTypes::Private::INIT ***************************
- ********************************************************************************
- */
-DataExchange::Private_::InternetMediaType_ModuleData_::InternetMediaType_ModuleData_ ()
-    : kText_Type{L"text"sv}
-    , kImage_Type{L"image"sv}
-    , kApplication_Type{L"application"sv}
-
-    , kOctetStream_CT (kApplication_Type, L"octet-stream"sv)
-
-    , kImage_PNG_CT (kImage_Type, L"png"sv)
-    , kImage_GIF_CT (kImage_Type, L"gif"sv)
-    , kImage_JPEG_CT (kImage_Type, L"jpeg"sv)
-
-    , kText_CSS_CT (kText_Type, L"css"sv)
-    , kText_HTML_CT (kText_Type, L"html"sv)
-    , kText_XHTML_CT (kText_Type, L"xhtml"sv)
-    , kApplication_XML_CT (kApplication_Type, L"xml"sv)
-    , kText_XML_CT (kText_Type, L"xml"sv) // **deprecated**
-    , kText_PLAIN_CT (kText_Type, L"plain"sv)
-    , kText_CSV_CT (kText_Type, L"csv"sv)
-
-    , kJSON_CT (kApplication_Type, L"json"sv)
-
-    , kPDF_CT (kApplication_Type, L"pdf"sv)
-
-    , kURL_CT (kText_Type, L"text/uri-list"sv)
-
-    , kXML_CT (kApplication_Type, L"xml"sv)
-
-    , kXSLT_CT (kApplication_Type, L"x-xslt"sv)
-    , kJavaArchive_CT (kApplication_Type, L"java-archive"sv)
-    , kApplication_RTF_CT (kApplication_Type, L"rtf"sv)
-    , kApplication_Zip_CT (kApplication_Type, L"zip"sv)
-{
 }

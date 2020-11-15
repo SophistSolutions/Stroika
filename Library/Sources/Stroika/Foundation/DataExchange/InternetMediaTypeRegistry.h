@@ -353,34 +353,6 @@ namespace Stroika::Foundation::DataExchange {
      *  \note
      *      @see http://www.iana.org/assignments/media-types/media-types.xhtml
      */
-    namespace PredefinedInternetMediaType {
-        namespace PRIVATE_ {
-
-            const InternetMediaType::AtomType& Text_Type ();
-            const InternetMediaType::AtomType& Image_Type ();
-            const InternetMediaType::AtomType& Application_Type ();
-
-            const InternetMediaType& OctetStream_CT ();
-            const InternetMediaType& Image_PNG_CT ();
-            const InternetMediaType& Image_GIF_CT ();
-            const InternetMediaType& Image_JPEG_CT ();
-            const InternetMediaType& Text_CSS_CT ();
-            const InternetMediaType& Text_HTML_CT ();
-            const InternetMediaType& Text_XHTML_CT ();
-            const InternetMediaType& Application_XML_CT ();
-            const InternetMediaType& Text_XML_CT ();
-            const InternetMediaType& Text_PLAIN_CT ();
-            const InternetMediaType& Text_CSV_CT ();
-            const InternetMediaType& JSON_CT ();
-            const InternetMediaType& PDF_CT ();
-            const InternetMediaType& URL_CT ();
-            const InternetMediaType& XML_CT ();
-            const InternetMediaType& XSLT_CT ();
-            const InternetMediaType& JavaArchive_CT ();
-            const InternetMediaType& Application_RTF_CT ();
-            const InternetMediaType& Application_Zip_CT ();
-        }
-    }
 
     /**
      *  The currently registered types are: 
@@ -428,82 +400,82 @@ namespace Stroika::Foundation::DataExchange {
         /**
          *  \brief image/gif
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Image_GIF_CT> kImage_GIF;
+        inline const InternetMediaType kImage_GIF{Types::kImage, L"gif"sv};
 
         /**
          *  \brief image/jpeg
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Image_JPEG_CT> kImage_JPEG;
+        inline const InternetMediaType kImage_JPEG{Types::kImage, L"jpeg"sv};
 
         /**
          * \brief text/html
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Text_HTML_CT> kText_HTML;
+        inline const InternetMediaType kText_HTML{Types::kText, L"html"sv};
 
         /**
          * \brief text/css
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Text_CSS_CT> kText_CSS;
+        inline const InternetMediaType kText_CSS{Types::kText, L"css"sv};
 
-        [[deprecated ("Since Stroika v2.1b2 - use kHTML (probably - not same thing)")]] constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Text_XHTML_CT> kText_XHTML;
+        [[deprecated ("Since Stroika v2.1b2 - use kHTML (probably - not same thing)")]] inline const InternetMediaType kText_XHTML{Types::kText, L"xhtml"sv};
 
         // deprecated - https://www.w3.org/2006/02/son-of-3023/draft-murata-kohn-lilley-xml-04.html#:~:text=Text%2Fxml%20Registration%20(deprecated),-MIME%20media%20type&text=Although%20listed%20as%20an%20optional,based%20content%20negotiation%20in%20HTTP.
-        [[deprecated ("use kXML instead")]] constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Text_XML_CT> kText_XML;
+        [[deprecated ("use kXML instead")]] inline const InternetMediaType kText_XML{Types::kText, L"xml"sv};
 
-        [[deprecated ("use kXML instead")]] constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Application_XML_CT> kApplication_XML;
+        [[deprecated ("use kXML instead")]] inline const InternetMediaType kApplication_XML{Types::kApplication, L"xml"sv};
 
         /**
          *  \brief text/plain
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Text_PLAIN_CT> kText_PLAIN;
+        inline const InternetMediaType kText_PLAIN{Types::kText, L"plain"sv};
 
         /**
          *  \brief text/cvs
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Text_CSV_CT> kText_CSV;
+        inline const InternetMediaType kText_CSV{Types::kText, L"csv"sv};
 
         /**
          *  \brief application/json
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::JSON_CT> kJSON;
+        inline const InternetMediaType kJSON{Types::kApplication, L"json"sv};
 
         /**
          *  \brief application/pdf
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::PDF_CT> kPDF;
+        inline const InternetMediaType kPDF{Types::kApplication, L"pdf"sv};
 
         /**
          * \brief text/uri-list (@see https://tools.ietf.org/html/rfc2483#section-5)
          *
          *  \note until Stroika 2.1b2, this was defined as application/x-url
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::URL_CT> kURL;
+        inline const InternetMediaType kURL{Types::kText, L"uri-list"sv};
 
         /**
          *  \brief application/xml (@see https://www.w3.org/2006/02/son-of-3023/draft-murata-kohn-lilley-xml-04.html#rfc.section.3.2)
          *
          *  \note use this because text/xml deprecated - https://www.w3.org/2006/02/son-of-3023/draft-murata-kohn-lilley-xml-04.html#:~:text=Text%2Fxml%20Registration%20(deprecated),-MIME%20media%20type&text=Although%20listed%20as%20an%20optional,based%20content%20negotiation%20in%20HTTP.
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::XML_CT> kXML;
+        inline const InternetMediaType kXML{Types::kApplication, L"xml"sv};
 
         /**
          *  \brief application/x-xslt
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::XSLT_CT> kApplication_XSLT;
+        inline const InternetMediaType kApplication_XSLT{Types::kApplication, L"x-xslt"sv};
 
         /**
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::JavaArchive_CT> kJavaArchive;
+        inline const InternetMediaType kJavaArchive{Types::kApplication, L"java-archive"sv};
 
         /**
          * Microsoft RTF - Rich Text Format
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Application_RTF_CT> kApplication_RTF;
+        inline const InternetMediaType kApplication_RTF{Types::kApplication, L"rtf"sv};
 
         /**
          *  \brief application/zip
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Application_Zip_CT> kApplication_Zip;
+        inline const InternetMediaType kApplication_Zip{Types::kApplication, L"zip"sv};
 
     }
 
