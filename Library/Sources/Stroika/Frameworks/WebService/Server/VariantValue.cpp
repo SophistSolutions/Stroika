@@ -54,7 +54,7 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
     if (bodyContentType.value_or (kDefaultCT_) == DataExchange::InternetMediaTypes::kJSON) {
         return body.empty () ? Mapping<String, DataExchange::VariantValue>{} : ClientErrorException::TreatExceptionsAsClientError ([&] () { return Variant::JSON::Reader ().Read (body).As<Mapping<String, DataExchange::VariantValue>> (); });
     }
-    Execution::Throw (ClientErrorException (L"Unrecognized content-type"sv));
+    Execution::Throw (ClientErrorException{L"Unrecognized content-type"sv});
 }
 
 /*
