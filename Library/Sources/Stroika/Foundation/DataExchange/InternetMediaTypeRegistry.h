@@ -337,19 +337,6 @@ namespace Stroika::Foundation::DataExchange {
     };
 
     /**
-     *  NB: these are basically constants, but declaring them as
-     *      const   InternetMediaType   kHealthBookURL_CT                   =   ContentType (L"application/x-healthbook-url");
-     *  causes the string CTOR for ContentType to be evaluated multiple times - once for each module this CPP file is loaded
-     *  into (way overkill - esp if not used).
-     *
-     *  I tried declaring these as extern const ContentType& kImage_CT;
-     *  but that produced problems accessing them at application startup (deadly embrace of startup module issues).
-     *
-     *  This appears the best compromise. They get initialized once (using the ModuleInit<> code) - and effectively
-     *  referenced (after inlining) through an extra pointer, but that should be the limit of the overhead - if the
-     *  compilers do a decent job.
-     *      -- LGP 2009-05-29
-     *
      *  \note
      *      @see http://www.iana.org/assignments/media-types/media-types.xhtml
      */
