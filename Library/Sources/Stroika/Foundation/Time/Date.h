@@ -261,7 +261,7 @@ namespace Stroika::Foundation::Time {
         /**
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get 
          */
-        [[deprecated ("just use kLocaleStandardAlternateFormat since Stroika 2.1b7")]] s taticconstexpr wchar_t kLocaleStandardAlternateFormatArray[] = L"%Ex";
+        [[deprecated ("just use kLocaleStandardAlternateFormat since Stroika 2.1b7")]] static constexpr wchar_t kLocaleStandardAlternateFormatArray[] = L"%Ex";
         static inline const String                                                                              kLocaleStandardAlternateFormat        = L"%Ex"sv;
 
     public:

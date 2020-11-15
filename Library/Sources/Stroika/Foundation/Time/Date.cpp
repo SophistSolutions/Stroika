@@ -151,7 +151,7 @@ Date Date::Parse (const String& rep, ParseFormat pf)
             DISABLE_COMPILER_MSC_WARNING_END (4996)
             if (nItems == 3) {
                 Date result = Date{Safe_jday_ (MonthOfYear (month), DayOfMonth (day), Year (year))};
-                Ensure (result == Parse (rep, locale::classic (), {String_Constant{kISO8601FormatArray}}));
+                Ensure (result == Parse (rep, locale::classic (), {kISO8601Format}));
                 return result;
             }
         } break;
@@ -285,7 +285,7 @@ String Date::Format (PrintFormat pf) const
             Year        y = Year::eEmptyYear;
             mdy (&m, &d, &y);
             Verify (::swprintf (buf, NEltsOf (buf), L"%04d-%02d-%02d", y, m, d) == 10);
-            Ensure (buf == Format (locale::classic (), String_Constant{kISO8601FormatArray}));
+            Ensure (buf == Format (locale::classic (), kISO8601Format));
             return buf;
         } break;
         case PrintFormat::eJavascript: {
@@ -315,8 +315,7 @@ String Date::Format (PrintFormat pf) const
 
 String Date::Format (const locale& l) const
 {
-    static const String kLocaleStandardFormat_ = String_Constant{kLocaleStandardFormatArray}; // copied kLocaleStandardFormat_ cuz can be used before main ()
-    return Format (l, kLocaleStandardFormat_);
+    return Format (l, kLocaleStandardFormat);
 }
 
 String Date::Format (const String& formatPattern) const
