@@ -35,7 +35,7 @@ namespace {
             atexit ([] () {
                 delete sAtomMgrDefaultRep_;
             });
-            AssertNotNull (sAtomMgrDefaultRep_);
+            Assert (sAtomMgrDefaultRep_ == nullptr);
             sAtomMgrDefaultRep_ = new AtomManager_Default_Rep_ ();
         });
     }
@@ -58,7 +58,7 @@ namespace {
             atexit ([] () {
                 delete sAtomMgrCaseInsensitiveRep_;
             });
-            AssertNotNull (sAtomMgrCaseInsensitiveRep_);
+            Assert (sAtomMgrCaseInsensitiveRep_ == nullptr);
             sAtomMgrCaseInsensitiveRep_ = new AtomManager_CaseInsensitive_Rep_ ();
         });
     }
