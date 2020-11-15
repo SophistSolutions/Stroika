@@ -395,21 +395,21 @@ namespace Stroika::Foundation::DataExchange {
          *
          *  This is the major type (atom) making up a class of InternetMediaTypes.
          */
-        constexpr Execution::VirtualConstant<InternetMediaType::AtomType, PredefinedInternetMediaType::PRIVATE_::Application_Type> kApplication;
+        inline const InternetMediaType::AtomType kApplication{L"application"sv};
 
         /**
          *  \brief 'image'
          *
          *  This is the major type (atom) making up a class of InternetMediaTypes.
          */
-        constexpr Execution::VirtualConstant<InternetMediaType::AtomType, PredefinedInternetMediaType::PRIVATE_::Image_Type> kImage;
+        inline const InternetMediaType::AtomType kImage{L"image"sv};
 
         /**
          *  \brief 'text'
          *
          *  This is the major type (atom) making up a class of InternetMediaTypes.
          */
-        constexpr Execution::VirtualConstant<InternetMediaType::AtomType, PredefinedInternetMediaType::PRIVATE_::Text_Type> kText;
+        inline const InternetMediaType::AtomType kText{L"text"sv};
 
     }
 
@@ -418,12 +418,12 @@ namespace Stroika::Foundation::DataExchange {
         /**
          *  \brief application/octet-stream
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::OctetStream_CT> kOctetStream;
+        inline const InternetMediaType kOctetStream{Types::kApplication, L"octet-stream"sv};
 
         /**
          *  \brief image/png
          */
-        constexpr Execution::VirtualConstant<InternetMediaType, PredefinedInternetMediaType::PRIVATE_::Image_PNG_CT> kImage_PNG;
+        inline const InternetMediaType kImage_PNG{Types::kImage, L"png"sv};
 
         /**
          *  \brief image/gif

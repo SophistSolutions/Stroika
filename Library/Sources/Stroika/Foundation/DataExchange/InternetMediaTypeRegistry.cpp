@@ -720,23 +720,23 @@ bool InternetMediaTypeRegistry::IsTextFormat (const InternetMediaType& ct) const
 {
     // @todo look into info in type files/backend to make extensible
     using AtomType = InternetMediaType::AtomType;
-    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kText ()) {
+    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kText) {
         return true;
     }
     if (IsXMLFormat (ct)) {
         return true;
     }
     // well known types that can be treated as text (@todo need some way to extend this API)? - Maybe not here but in REGISTRY
-    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kApplication ()) {
-        Assert (InternetMediaTypes::kJSON->GetType<AtomType> () == InternetMediaTypes::Types::kApplication ());
+    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kApplication) {
+        Assert (InternetMediaTypes::kJSON->GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
         if (ct.GetSubType<AtomType> () == InternetMediaTypes::kJSON->GetSubType<AtomType> ()) {
             return true;
         }
-        Assert (InternetMediaTypes::kApplication_XSLT->GetType<AtomType> () == InternetMediaTypes::Types::kApplication ());
+        Assert (InternetMediaTypes::kApplication_XSLT->GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
         if (ct.GetSubType<AtomType> () == InternetMediaTypes::kApplication_XSLT->GetSubType<AtomType> ()) {
             return true;
         }
-        Assert (InternetMediaTypes::kApplication_RTF->GetType<AtomType> () == InternetMediaTypes::Types::kApplication ());
+        Assert (InternetMediaTypes::kApplication_RTF->GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
         if (ct.GetSubType<AtomType> () == InternetMediaTypes::kApplication_RTF->GetSubType<AtomType> ()) {
             return true;
         }
@@ -748,7 +748,7 @@ bool InternetMediaTypeRegistry::IsImageFormat (const InternetMediaType& ct) cons
 {
     // @todo look into info in type files/backend to make extensible
     using AtomType = InternetMediaType::AtomType;
-    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kImage ()) {
+    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kImage) {
         return true;
     }
     /*
@@ -762,17 +762,17 @@ bool InternetMediaTypeRegistry::IsXMLFormat (const InternetMediaType& ct) const
 {
     // @todo look into info in type files/backend to make extensible
     using AtomType = InternetMediaType::AtomType;
-    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kApplication ()) {
-        Assert (InternetMediaTypes::kXML->GetType<AtomType> () == InternetMediaTypes::Types::kApplication ());
+    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kApplication) {
+        Assert (InternetMediaTypes::kXML->GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
         if (ct.GetSubType<AtomType> () == InternetMediaTypes::kXML->GetSubType<AtomType> ()) {
             return true;
         }
-        Assert (InternetMediaTypes::kApplication_XSLT->GetType<AtomType> () == InternetMediaTypes::Types::kApplication ());
+        Assert (InternetMediaTypes::kApplication_XSLT->GetType<AtomType> () == InternetMediaTypes::Types::kApplication);
         if (ct.GetSubType<AtomType> () == InternetMediaTypes::kApplication_XSLT->GetSubType<AtomType> ()) {
             return true;
         }
     }
-    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kText ()) {
+    if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kText) {
         static const AtomType kXMLAtom_ = L"xml"sv;
         if (ct.GetSubType<AtomType> () == kXMLAtom_) {
             return true;
