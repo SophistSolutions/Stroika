@@ -29,6 +29,14 @@
 namespace Stroika::Foundation::Execution {
 
     /**
+     *  \note NEARLY DEPRECATED! This can generally be replaced by use of static inline constants, and
+     *        call_once(). ALL use of ModuleInit<> in Stroia (as of v2.1b7) has been replaced. This isn't deprecated
+     *        yet as it MAY have some performance advantages (forcing initialization to happen once before main instead
+     *        of checking at each call / entry point).
+     * 
+     *        BUT - its probably possible to get that same performance advtange profile using static inline, so maybe just
+     *        go to that and deprecate this?
+     * 
      *  For the most part, using ModuleInitializer<> automatically takes care of all your module interdependencies
      *  automatically, just by #including the right files. This is true because the #include dependency graph
      *  matches the module dependency graph. But if you have module interdependencies which are not captured by
