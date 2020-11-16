@@ -22,9 +22,8 @@
 #include "Common.h"
 
 /**
- *  \brief qStroika_Foundation_Memory_BlockAllocator_UseLockFree_ provides a lock-free implementation of BlockAllocator (which should be faster)
- *
- *  STILL EXPERIMENTAL< but appears to be working well so leave on by default
+ *  \brief qStroika_Foundation_Memory_BlockAllocator_UseLockFree_ provides a lock-free 
+ *         implementation of BlockAllocator (which should be faster)
  */
 //#define qStroika_Foundation_Memory_BlockAllocator_UseLockFree_   0
 #if !defined(qStroika_Foundation_Memory_BlockAllocator_UseLockFree_)
@@ -82,18 +81,12 @@ namespace Stroika::Foundation::Memory {
          */
         constexpr bool kUseSpinLock_ = !qStroika_Foundation_Memory_BlockAllocator_UseLockFree_ and Execution::kSpinLock_IsFasterThan_mutex;
 
-        struct BlockAllocator_ModuleInit_ {
-            BlockAllocator_ModuleInit_ ();
-            ~BlockAllocator_ModuleInit_ ();
-        };
-
         using LockType_ = conditional_t<kUseSpinLock_, Execution::SpinLock, mutex>;
-        extern LockType_* sLock_;
 
         inline LockType_& GetLock_ ()
         {
-            AssertNotNull (sLock_); // automatically initailized by BlockAllocated::Private_::ActualModuleInit
-            return *sLock_;
+            static LockType_ sLock_;
+            return sLock_;
         }
 
         void                    DoDeleteHandlingLocksExceptionsEtc_ (void* p, void** staticNextLinkP) noexcept;
@@ -280,6 +273,7 @@ namespace Stroika::Foundation::Memory {
 #if qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
         // cannot compact lock-free - no biggie
 #else
+        using std::byte;
         [[maybe_unused]] auto&& critSec = lock_guard{Private_::GetLock_ ()};
 
         // step one: put all the links into a single, sorted vector
@@ -438,11 +432,5 @@ namespace Stroika::Foundation::Memory {
         return Math::RoundUpTo (sizeof (T), sizeof (void*));
     }
 }
-
-#if !qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
-namespace {
-    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Memory::Private_::BlockAllocator_ModuleInit_> _Stroika_Foundation_Memory_BlockAllocator_ModuleInit_; // this object constructed for the CTOR/DTOR per-module side-effects
-}
-#endif
 
 #endif /*_Stroika_Foundation_Memory_BlockAllocator_inl_*/

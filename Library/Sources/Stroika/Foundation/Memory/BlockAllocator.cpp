@@ -15,29 +15,6 @@ using namespace Stroika::Foundation::Execution;
 
 using namespace Execution;
 
-#if !qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
-Memory::Private_::LockType_* Memory::Private_::sLock_ = nullptr;
-#endif
-
-#if !qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
-/*
- ********************************************************************************
- *********************** BlockAllocator_ModuleInit_ *****************************
- ********************************************************************************
- */
-BlockAllocator_ModuleInit_::BlockAllocator_ModuleInit_ ()
-{
-    Require (sLock_ == nullptr);
-    sLock_ = new Private_::LockType_ ();
-}
-
-BlockAllocator_ModuleInit_::~BlockAllocator_ModuleInit_ ()
-{
-    RequireNotNull (sLock_);
-    delete sLock_;
-    sLock_ = nullptr;
-}
-#endif
 
 /*
  ********************************************************************************
@@ -46,11 +23,7 @@ BlockAllocator_ModuleInit_::~BlockAllocator_ModuleInit_ ()
  */
 Execution::ModuleDependency Memory::MakeModuleDependency_BlockAllocator ()
 {
-#if qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
     return Execution::ModuleDependency ([] () {}, [] () {});
-#else
-    return Execution::ModuleInitializer<Private_::BlockAllocator_ModuleInit_>::GetDependency ();
-#endif
 }
 
 /*
