@@ -16,10 +16,7 @@
  *  \version    <a href="Code-Status.md">Alpha-Late</a>
  *
  * TODO:
- *      @todo   IF we ever fix Duration to use constexpr for its kMin/kMax, then we can consider doing likewise here, and
- *              losing the ModuleInit<> code (instead using static  constexpr Duration  kLowerBound;).
- *
- *              If we fix, lose note about kLowerBound/etc on DurationRange type.
+ *      @todo   IF we ever fix Duration to use constexpr lose note about kLowerBound/etc on DurationRange type.
  */
 
 namespace Stroika::Foundation::Time {

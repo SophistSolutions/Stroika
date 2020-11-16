@@ -340,6 +340,17 @@ For this reason, a handful of Stroika APIs follow the convention of a suffix of:
 
 ---
 
+## Magic Statics (Initialization)
+
+Instead of using ModuleInit\<> - which Stroika used until 2.1b7, we now use
+a combination of magic-inits, in most places, but occasionally call_once() with atexit().
+
+This MAY not be a great idea. Its a little simpler, and will look more standardized to most eyes. But the ModuleInit<> mechaism trades off performace at startup for later performance not having to check if initialized. So not sure its a good switch.
+
+<https://stackoverflow.com/questions/26759511/do-magic-statics-guarantee-that-right-side-is-executed-only-once>
+
+---
+
 ## Final Singleton objects (kThe, Get, Set)
 
 Singleton objects are a common pattern. Stroika doesn't use these a ton, but some. One issue with singletons to be careful about is thread safety. Stroika leverages a couple of patterns to handle this.

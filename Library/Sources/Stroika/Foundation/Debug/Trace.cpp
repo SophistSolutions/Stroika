@@ -83,16 +83,7 @@ namespace {
     }
 }
 
-/*
- ********************************************************************************
- ************************ Private_::TraceModuleData_ ****************************
- ********************************************************************************
- */
 namespace {
-    recursive_mutex* sEmitTraceCritSec_ = nullptr;
-#if qTraceToFile
-    ofstream* sTraceFile = nullptr;
-#endif
 #if qDefaultTracingOn
     thread_local unsigned int tTraceContextDepth_{0}; // no need for atomic access because thread_local
 #endif
@@ -147,95 +138,32 @@ namespace {
 }
 #endif
 
-Debug::Private_::TraceModuleData_::TraceModuleData_ ()
-#if qTraceToFile
-    // clang-format off
-    : fTraceFileName{ mkTraceFileName_ ()}
-// clang-format on
-#endif
-{
-    Assert (sEmitTraceCritSec_ == nullptr);
-    sEmitTraceCritSec_ = new recursive_mutex{};
-#if qTraceToFile
-    Assert (sTraceFile == nullptr);
-    sTraceFile = new ofstream{};
-    sTraceFile->open (Emitter::Get ().GetTraceFileName ().c_str (), ios::out | ios::binary);
-#endif
-    DbgTrace (L"***Starting TraceLog***");
-#if qCompiler_LimitLengthBeforeMainCrash_Buggy
-    DbgTrace ("EXEPath=%s", Execution::GetEXEPath ().native ().c_str ());
-#else
-    DbgTrace (L"EXEPath=%s", Characters::ToString (Execution::GetEXEPath ()).c_str ());
-#endif
-    TraceContextBumper ctx{L"debug-state"};
-    DbgTrace (L"Debug::kBuiltWithAddressSanitizer = %s", Characters::ToString (Debug::kBuiltWithAddressSanitizer).c_str ());
-    DbgTrace (L"Debug::IsRunningUnderValgrind () = %s", Characters::ToString (Debug::IsRunningUnderValgrind ()).c_str ());
-}
-
-Debug::Private_::TraceModuleData_::~TraceModuleData_ ()
-{
-    delete sEmitTraceCritSec_;
-    sEmitTraceCritSec_ = nullptr;
-#if qTraceToFile
-    AssertNotNull (sTraceFile);
-    sTraceFile->close ();
-    delete sTraceFile;
-    sTraceFile = nullptr;
-#endif
-}
-
 namespace {
     inline recursive_mutex& GetEmitCritSection_ ()
     {
-        EnsureNotNull (sEmitTraceCritSec_);
-        return *sEmitTraceCritSec_;
+        static recursive_mutex sEmitTraceCritSec_;
+        return sEmitTraceCritSec_;
     }
 }
-
-#if qTraceToFile
-SDKString Emitter::GetTraceFileName () const
-{
-    return Execution::ModuleInitializer<Private_::TraceModuleData_>::Actual ().fTraceFileName;
-}
-#endif
-
-#if qTraceToFile
-namespace {
-    void Emit2File_ (const char* text) noexcept
-    {
-        RequireNotNull (text);
-        RequireNotNull (sTraceFile);
-        try {
-            if (sTraceFile->is_open ()) {
-                (*sTraceFile) << text;
-                sTraceFile->flush ();
-            }
-        }
-        catch (...) {
-            AssertNotReached ();
-        }
-    }
-    void Emit2File_ (const wchar_t* text) noexcept
-    {
-        RequireNotNull (text);
-        try {
-            Emit2File_ (WideStringToUTF8 (text).c_str ());
-        }
-        catch (...) {
-            AssertNotReached ();
-        }
-    }
-}
-#endif
 
 /*
  ********************************************************************************
- ******************** Debug::MakeModuleDependency_Trace *************************
+ *********************** Debug::Private_::EmitFirstTime *************************
  ********************************************************************************
  */
-Execution::ModuleDependency Debug::MakeModuleDependency_Trace ()
+void Debug::Private_::EmitFirstTime (Emitter& emitter)
 {
-    return Execution::ModuleInitializer<Debug::Private_::TraceModuleData_>::GetDependency ();
+    // Cannot call DbgTrace or TraceContextBumper in this code (else hang cuz calls back to Emitter::Get ())
+    emitter.EmitTraceMessage (L"***Starting TraceLog***");
+#if qCompiler_LimitLengthBeforeMainCrash_Buggy
+    emitter.EmitTraceMessage ("EXEPath=%s", Execution::GetEXEPath ().native ().c_str ());
+#else
+    emitter.EmitTraceMessage (L"EXEPath=%s", Characters::ToString (Execution::GetEXEPath ()).c_str ());
+#endif
+    emitter.EmitTraceMessage (L"debug-state {");
+    emitter.EmitTraceMessage (L"  Debug::kBuiltWithAddressSanitizer = %s", Characters::ToString (Debug::kBuiltWithAddressSanitizer).c_str ());
+    emitter.EmitTraceMessage (L"  Debug::IsRunningUnderValgrind () = %s", Characters::ToString (Debug::IsRunningUnderValgrind ()).c_str ());
+    emitter.EmitTraceMessage (L"}");
 }
 
 /*
@@ -243,6 +171,43 @@ Execution::ModuleDependency Debug::MakeModuleDependency_Trace ()
  ************************************ Emitter ***********************************
  ********************************************************************************
  */
+#if qTraceToFile
+SDKString Emitter::GetTraceFileName () const
+{
+    static filesystem::path sTraceFileName_ = mkTraceFileName_ ();
+    return sTraceFileName_;
+}
+#endif
+
+#if qTraceToFile
+namespace {
+    void Emit2File_ (Emitter& emitter, const char* text) noexcept
+    {
+        RequireNotNull (text);
+        static ofstream sTraceFile_{emitter.GetTraceFileName ().c_str (), ios::out | ios::binary};
+        try {
+            if (sTraceFile_.is_open ()) {
+                sTraceFile_ << text;
+                sTraceFile_.flush ();
+            }
+        }
+        catch (...) {
+            AssertNotReached ();
+        }
+    }
+    void Emit2File_ (Emitter& emitter, const wchar_t* text) noexcept
+    {
+        RequireNotNull (text);
+        try {
+            Emit2File_ (emitter, WideStringToUTF8 (text).c_str ());
+        }
+        catch (...) {
+            AssertNotReached ();
+        }
+    }
+}
+#endif
+
 /*
 @DESCRIPTION:   <p>This function takes a 'format' argument and then any number of additional arguments - exactly
             like std::printf (). It calls std::vsprintf () internally. This can be called directly - regardless of the
@@ -479,7 +444,7 @@ void Emitter::DoEmit_ (const char* p) noexcept
     }
 #endif
 #if qTraceToFile
-    Emit2File_ (p);
+    Emit2File_ (*this, p);
 #endif
 }
 
@@ -500,7 +465,7 @@ void Emitter::DoEmit_ (const wchar_t* p) noexcept
     }
 #endif
 #if qTraceToFile
-    Emit2File_ (p);
+    Emit2File_ (*this, p);
 #endif
 }
 

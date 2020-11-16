@@ -359,12 +359,6 @@ namespace {
  ********************************************************************************
  */
 SAXReader_ModuleInit_::SAXReader_ModuleInit_ ()
-#if qDefaultTracingOn
-    : fDebugTraceDependency
-{
-    Debug::MakeModuleDependency_Trace ()
-}
-#endif
 {
 #if qHasFeature_Xerces
     TraceContextBumper ctx ("XML::SAXReader_ModuleInit_::SAXReader_ModuleInit_");

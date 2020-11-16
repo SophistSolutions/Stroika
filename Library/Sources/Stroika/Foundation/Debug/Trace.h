@@ -16,7 +16,6 @@
 #include "../Characters/SDKChar.h"
 #include "../Characters/SDKString.h"
 #include "../Configuration/Common.h"
-#include "../Execution/ModuleInit.h"
 #include "../Time/Realtime.h"
 #include "CompileTimeFlagChecker.h"
 
@@ -66,10 +65,6 @@ namespace Stroika::Foundation::Debug {
 #if !defined(qDefaultTracingOn)
 #error "qDefaultTracingOn should normally be defined indirectly by StroikaConfig.h"
 #endif
-
-    namespace Private_ {
-        struct TraceModuleData_;
-    }
 
     /**
      * \brief if true, emit a much shorter thread ID, making - I suspect (testing) for terser and clearer tracelogs. 
@@ -147,9 +142,6 @@ namespace Stroika::Foundation::Debug {
         nonvirtual void DoEmit_ (const wchar_t* p) noexcept;
         nonvirtual void DoEmit_ (const char* p, const char* e) noexcept;
         nonvirtual void DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept;
-
-    private:
-        friend struct Private_::TraceModuleData_;
     };
 
     /**
@@ -298,12 +290,6 @@ namespace Stroika::Foundation::Debug {
 #define DbgTrace _NoOp_
 #endif
 #endif
-
-    /**
-     *  Used to force/reference this module from another module to assure static constructed module objects constructed earlier enough.
-     *  VERY RARELY needed/used.
-     */
-    Execution::ModuleDependency MakeModuleDependency_Trace ();
 
 }
 

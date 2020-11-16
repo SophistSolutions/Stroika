@@ -21,9 +21,6 @@ namespace Stroika::Foundation::DataExchange::XML {
     struct SAXReader_ModuleInit_ {
         SAXReader_ModuleInit_ ();
         ~SAXReader_ModuleInit_ ();
-#if qDefaultTracingOn
-        Execution::ModuleDependency fDebugTraceDependency;
-#endif
     };
 
 }
