@@ -16,7 +16,6 @@
 #include "../Characters/SDKChar.h"
 #include "../Characters/SDKString.h"
 #include "../Configuration/Common.h"
-#include "../Execution/ModuleInit.h"
 #include "../Time/Realtime.h"
 #include "CompileTimeFlagChecker.h"
 
