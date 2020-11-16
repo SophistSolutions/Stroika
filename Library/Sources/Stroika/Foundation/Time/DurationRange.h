@@ -24,8 +24,8 @@ namespace Stroika::Foundation::Time {
     namespace Private_ {
         using namespace Traversal;
         struct DurationRangeTraitsType_ : RangeTraits::ExplicitRangeTraitsWithoutMinMax<Duration, Openness::eClosed, Openness::eClosed, DurationSecondsType, DurationSecondsType> {
-            static const Duration& kLowerBound;
-            static const Duration& kUpperBound;
+            static inline const Duration kLowerBound = Duration::min ();
+            static inline const Duration kUpperBound = Duration::max ();
 
             static Duration GetNext (Duration i);
             static Duration GetPrevious (Duration i);

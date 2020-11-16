@@ -9,8 +9,6 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../Execution/ModuleInit.h"
-
 namespace Stroika::Foundation::Time {
 
     /*
@@ -27,18 +25,6 @@ namespace Stroika::Foundation::Time {
         return Duration{nextafter (i.As<double> (), numeric_limits<double>::min ())};
     }
 
-    namespace Private_ {
-        struct DurationRange_ModuleData_ {
-            DurationRange_ModuleData_ ();
-            const Duration fLowerBound;
-            const Duration fUpperBound;
-        };
-    }
-
-}
-
-namespace {
-    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Time::Private_::DurationRange_ModuleData_> _Stroika_Foundation_Time_DurationRange_ModuleData_; // this object constructed for the CTOR/DTOR per-module side-effects
 }
 
 #endif /*_Stroika_Foundation_Time_DurationRange_inl_*/

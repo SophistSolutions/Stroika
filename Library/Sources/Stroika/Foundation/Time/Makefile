@@ -21,7 +21,6 @@ Objs	=	\
 	$(ObjDir)Date${OBJ_SUFFIX}\
 	$(ObjDir)DateTime${OBJ_SUFFIX}\
 	$(ObjDir)Duration${OBJ_SUFFIX}\
-	$(ObjDir)DurationRange${OBJ_SUFFIX}\
 	$(ObjDir)Realtime${OBJ_SUFFIX}\
 	$(ObjDir)TimeOfDay${OBJ_SUFFIX}\
 	$(ObjDir)Timezone${OBJ_SUFFIX}\
