@@ -12,6 +12,7 @@
 #include "../Configuration/Common.h"
 
 #include "ConditionVariable.h"
+#include "SpinLock.h"
 
 /**
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
@@ -288,6 +289,9 @@ namespace Stroika::Foundation::Execution {
         static void WaitForAllUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeoutAt);
         template <typename ITERATOR_OF_WAITABLE_EVENTS>
         static void WaitForAllUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeoutAt);
+
+    private:
+        static inline SpinLock sExtraWaitableEventsMutex_;
 #endif
 
     private:

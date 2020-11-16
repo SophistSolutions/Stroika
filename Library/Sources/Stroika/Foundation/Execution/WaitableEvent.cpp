@@ -95,7 +95,7 @@ void WaitableEvent::Set ()
 #endif
     fWE_.Set ();
 #if qExecution_WaitableEvent_SupportWaitForMultipleObjects
-    [[maybe_unused]] auto&& critSec = lock_guard{_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_};
+    [[maybe_unused]] auto&& critSec = lock_guard{sExtraWaitableEventsMutex_};
     for (const auto& i : fExtraWaitableEvents_) {
         i->Set ();
     }

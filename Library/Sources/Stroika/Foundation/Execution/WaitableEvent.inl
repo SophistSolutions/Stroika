@@ -11,20 +11,7 @@
  */
 #include "Common.h"
 #include "Finally.h"
-#include "ModuleInit.h"
-#include "SpinLock.h"
 #include "Thread.h"
-
-#if qExecution_WaitableEvent_SupportWaitForMultipleObjects
-namespace Stroika::Foundation::Execution::Private_ {
-    struct WaitableEvent_ModuleInit_ {
-        SpinLock fExtraWaitableEventsMutex_;
-    };
-}
-namespace {
-    extern Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Execution::Private_::WaitableEvent_ModuleInit_> _Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_; // this object constructed for the CTOR/DTOR per-module side-effects
-}
-#endif
 
 namespace Stroika::Foundation::Execution {
 
@@ -134,13 +121,13 @@ namespace Stroika::Foundation::Execution {
         [[maybe_unused]] auto&& cleanup = Finally (
             [we, waitableEventsStart, waitableEventsEnd] () noexcept {
                 Thread::SuppressInterruptionInContext suppressThreadInterrupts;
-                [[maybe_unused]] auto&&               critSec = lock_guard{_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_};
+                [[maybe_unused]] auto&&               critSec = lock_guard{sExtraWaitableEventsMutex_};
                 for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
                     (*i)->fExtraWaitableEvents_.remove (we);
                 }
             });
         {
-            [[maybe_unused]] auto&& critSec = lock_guard{_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_};
+            [[maybe_unused]] auto&& critSec = lock_guard{sExtraWaitableEventsMutex_};
             for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
                 (*i)->fExtraWaitableEvents_.push_front (we);
             }
@@ -189,13 +176,13 @@ namespace Stroika::Foundation::Execution {
         [[maybe_unused]] auto&& cleanup = Finally (
             [we, waitableEventsStart, waitableEventsEnd] () noexcept {
                 Thread::SuppressInterruptionInContext suppressThreadInterrupts;
-                [[maybe_unused]] auto&&               critSec = lock_guard{_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_};
+                [[maybe_unused]] auto&&               critSec = lock_guard{sExtraWaitableEventsMutex_};
                 for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
                     (*i)->fExtraWaitableEvents_.remove (we);
                 }
             });
         {
-            [[maybe_unused]] auto&& critSec = lock_guard{_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_};
+            [[maybe_unused]] auto&& critSec = lock_guard{sExtraWaitableEventsMutex_};
             for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
                 (*i)->fExtraWaitableEvents_.push_front (we);
             }
@@ -228,11 +215,5 @@ namespace Stroika::Foundation::Execution {
     }
 #endif
 }
-
-#if qExecution_WaitableEvent_SupportWaitForMultipleObjects
-namespace {
-    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Execution::Private_::WaitableEvent_ModuleInit_> _Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_; // this object constructed for the CTOR/DTOR per-module side-effects
-}
-#endif
 
 #endif /*_Stroika_Foundation_Execution_WaitableEvent_inl_*/
