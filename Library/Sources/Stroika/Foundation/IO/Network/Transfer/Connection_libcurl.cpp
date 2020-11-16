@@ -38,9 +38,13 @@ CompileTimeFlagChecker_SOURCE (Stroika::Foundation::IO::Network::Transfer, qHasF
 
 #if qHasFeature_LibCurl
 namespace {
-    struct ModuleInit_ {
-        ModuleInit_ ()
-        {
+    inline void AssureLibCurlInitialized_ ()
+    {
+        static once_flag sOnceFlag_;
+        call_once (sOnceFlag_, [] () {
+            atexit ([] () {
+                ::curl_global_cleanup ();
+            });
             /*
              *  @todo review CURL_GLOBAL_SSL
              *
@@ -49,13 +53,8 @@ namespace {
              *  CURL_GLOBAL_SSL needed for now, but could interfere with other openssl uses
              */
             Verify (::curl_global_init (CURL_GLOBAL_SSL | CURL_GLOBAL_ACK_EINTR) == 0);
-        }
-        ~ModuleInit_ ()
-        {
-            ::curl_global_cleanup ();
-        }
-    };
-    ModuleInit_ sIniter_;
+        });
+    }
 }
 #endif
 
@@ -113,6 +112,7 @@ public:
     Rep_ (const Connection::Options& options)
         : fOptions_{options}
     {
+        AssureLibCurlInitialized_ ();
     }
     Rep_ (const Rep_&) = delete;
     virtual ~Rep_ ();
@@ -239,7 +239,7 @@ size_t Connection_LibCurl::Rep_::s_RequestPayloadReadHandler_ (char* buffer, siz
 size_t Connection_LibCurl::Rep_::RequestPayloadReadHandler_ (byte* buffer, size_t bufSize)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("Connection_LibCurl::Rep_::RequestPayloadReadHandler_");
+    Debug::TraceContextBumper ctx{"Connection_LibCurl::Rep_::RequestPayloadReadHandler_"};
 #endif
     size_t bytes2Copy = fUploadData_.size () - fUploadDataCursor_;
     bytes2Copy        = min (bytes2Copy, bufSize);

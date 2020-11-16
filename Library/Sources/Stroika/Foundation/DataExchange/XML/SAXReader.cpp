@@ -148,7 +148,10 @@ namespace {
     public:
         MyXercesMemMgr_ ()
 #if qXMLDBTrackAllocs
-            : fAllocator{fBaseAllocator}
+            : fAllocator
+        {
+            fBaseAllocator
+        }
 #endif
         {
         }
