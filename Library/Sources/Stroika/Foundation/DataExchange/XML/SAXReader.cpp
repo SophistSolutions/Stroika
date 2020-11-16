@@ -99,13 +99,13 @@ namespace {
         // nb: casts required cuz Xerces doesn't (currently) use wchar_t/char16_t/char32_t but something the sizeof char16_t
         // --LGP 2016-07-29
         if constexpr (sizeof (XMLCh) == sizeof (wchar_t)) {
-            return String (reinterpret_cast<const wchar_t*> (s), reinterpret_cast<const wchar_t*> (e));
+            return String{reinterpret_cast<const wchar_t*> (s), reinterpret_cast<const wchar_t*> (e)};
         }
         else if constexpr (sizeof (XMLCh) == sizeof (char16_t)) {
-            return String (reinterpret_cast<const char16_t*> (s), reinterpret_cast<const char16_t*> (e));
+            return String{reinterpret_cast<const char16_t*> (s), reinterpret_cast<const char16_t*> (e)};
         }
         else if constexpr (sizeof (XMLCh) == sizeof (char32_t)) {
-            return String (reinterpret_cast<const char32_t*> (s), reinterpret_cast<const char32_t*> (e));
+            return String{reinterpret_cast<const char32_t*> (s), reinterpret_cast<const char32_t*> (e)};
         }
         else {
             AssertNotReached ();
@@ -117,13 +117,13 @@ namespace {
         // nb: casts required cuz Xerces doesn't (currently) use wchar_t/char16_t/char32_t but something the sizeof char16_t
         // --LGP 2016-07-29
         if constexpr (sizeof (XMLCh) == sizeof (wchar_t)) {
-            return String (reinterpret_cast<const wchar_t*> (t));
+            return String{reinterpret_cast<const wchar_t*> (t)};
         }
         else if constexpr (sizeof (XMLCh) == sizeof (char16_t)) {
-            return String (reinterpret_cast<const char16_t*> (t));
+            return String{reinterpret_cast<const char16_t*> (t)};
         }
         else if constexpr (sizeof (XMLCh) == sizeof (char32_t)) {
-            return String (reinterpret_cast<const char32_t*> (t));
+            return String{reinterpret_cast<const char32_t*> (t)};
         }
         else {
             AssertNotReached ();
@@ -148,11 +148,7 @@ namespace {
     public:
         MyXercesMemMgr_ ()
 #if qXMLDBTrackAllocs
-            : fBaseAllocator{}
-            , fAllocator{fBaseAllocator}
-            , fLastSnapshot
-        {
-        }
+            : fAllocator{fBaseAllocator}
 #endif
         {
         }
@@ -169,7 +165,7 @@ namespace {
 #if qXMLDBTrackAllocs
         void DUMPCurMemStats ()
         {
-            TraceContextBumper      ctx ("MyXercesMemMgr_::DUMPCurMemStats");
+            TraceContextBumper      ctx{"MyXercesMemMgr_::DUMPCurMemStats"};
             [[maybe_unused]] auto&& critSec = lock_guard{fLastSnapshot_CritSection};
             fAllocator.DUMPCurMemStats (fLastSnapshot);
             // now copy current map to prev for next time this gets called
@@ -313,7 +309,6 @@ namespace {
      *      -- LGP 2007-07-03
      */
     struct UsingLibInterHelper {
-#if qHasFeature_Xerces
         struct UsingLibInterHelper_XERCES {
             MyXercesMemMgr_* fUseXercesMemoryManager;
             UsingLibInterHelper_XERCES ()
@@ -326,7 +321,7 @@ namespace {
             }
             ~UsingLibInterHelper_XERCES ()
             {
-                TraceContextBumper ctx ("~UsingLibInterHelper_XERCES");
+                TraceContextBumper ctx{"~UsingLibInterHelper_XERCES"};
                 XMLPlatformUtils::Terminate ();
                 Assert (sStdIStream_InputStream_COUNT_ == 0);
 #if qUseMyXMLDBMemManager
@@ -335,47 +330,30 @@ namespace {
             }
         };
         UsingLibInterHelper_XERCES fXERCES;
-#endif
 
         UsingLibInterHelper ();
     };
     UsingLibInterHelper::UsingLibInterHelper ()
-        :
-#if qHasFeature_Xerces
-        fXERCES ()
-#endif
     {
     }
 }
 
 namespace {
     UsingLibInterHelper* sUsingLibInterHelper = nullptr;
-}
-#endif
 
-/*
- ********************************************************************************
- **************** DataExcahnge::XML::SAXReader_ModuleInit_ **********************
- ********************************************************************************
- */
-SAXReader_ModuleInit_::SAXReader_ModuleInit_ ()
-{
-#if qHasFeature_Xerces
-    TraceContextBumper ctx ("XML::SAXReader_ModuleInit_::SAXReader_ModuleInit_");
-    Require (sUsingLibInterHelper == nullptr);
-    sUsingLibInterHelper = new UsingLibInterHelper ();
-#endif
+    inline void AssureXercesInitialized_ ()
+    {
+        static once_flag sOnceFlag_;
+        call_once (sOnceFlag_, [] () {
+            atexit ([] () {
+                delete sUsingLibInterHelper;
+            });
+            Assert (sUsingLibInterHelper == nullptr);
+            sUsingLibInterHelper = new UsingLibInterHelper ();
+        });
+    }
 }
-
-SAXReader_ModuleInit_::~SAXReader_ModuleInit_ ()
-{
-#if qHasFeature_Xerces
-    TraceContextBumper ctx ("XML::SAXReader_ModuleInit_::~SAXReader_ModuleInit_");
-    RequireNotNull (sUsingLibInterHelper);
-    delete sUsingLibInterHelper;
-    sUsingLibInterHelper = nullptr;
 #endif
-}
 
 #if qHasFeature_Xerces
 namespace {
@@ -385,7 +363,7 @@ namespace {
         class StdIStream_InputStream : public XERCES_CPP_NAMESPACE_QUALIFIER BinInputStream {
         public:
             StdIStream_InputStream (InputStream<byte>::Ptr in)
-                : fSource (in)
+                : fSource{in}
             {
 #if qDebug
                 sStdIStream_InputStream_COUNT_++;
@@ -418,13 +396,13 @@ namespace {
 
     public:
         StdIStream_InputSource (InputStream<byte>::Ptr in, const XMLCh* const bufId = nullptr)
-            : InputSource (bufId)
-            , fSource (in)
+            : InputSource{bufId}
+            , fSource{in}
         {
         }
         virtual BinInputStream* makeStream () const override
         {
-            return new (getMemoryManager ()) StdIStream_InputStream (fSource);
+            return new (getMemoryManager ()) StdIStream_InputStream{fSource};
         }
 
     protected:
@@ -437,9 +415,9 @@ namespace {
         class ISWithProg : public StdIStream_InputSource::StdIStream_InputStream {
         public:
             ISWithProg (const InputStream<byte>::Ptr& in, ProgressMonitor::Updater progressCallback)
-                : StdIStream_InputStream (in)
-                , fProgress (progressCallback, 0.0f, 1.0f)
-                , fTotalSize (0.0f)
+                : StdIStream_InputStream{in}
+                , fProgress{progressCallback, 0.0f, 1.0f}
+                , fTotalSize{0.0f}
             {
                 // @todo - redo for if non-seekable streams - just set flag saying not seeakble and do right thing with progress. ....
                 /// for now we raise exceptions
@@ -481,13 +459,13 @@ namespace {
 
     public:
         StdIStream_InputSourceWithProgress (InputStream<byte>::Ptr in, ProgressMonitor::Updater progressCallback, const XMLCh* const bufId = nullptr)
-            : StdIStream_InputSource (in, bufId)
-            , fProgressCallback (progressCallback)
+            : StdIStream_InputSource{in, bufId}
+            , fProgressCallback{progressCallback}
         {
         }
         virtual BinInputStream* makeStream () const override
         {
-            return new (getMemoryManager ()) ISWithProg (fSource, fProgressCallback);
+            return new (getMemoryManager ()) ISWithProg{fSource, fProgressCallback};
         }
 
     private:
@@ -511,7 +489,7 @@ namespace {
 
     public:
         SAX2PrintHandlers_ (StructuredStreamEvents::IConsumer& callback)
-            : fCallback (callback)
+            : fCallback{callback}
         {
         }
 
@@ -556,7 +534,8 @@ namespace {
 void XML::SAXParse ([[maybe_unused]] const Streams::InputStream<byte>::Ptr& in, [[maybe_unused]] StructuredStreamEvents::IConsumer& callback, [[maybe_unused]] Execution::ProgressMonitor::Updater progress)
 {
 #if qHasFeature_Xerces
-    SAX2PrintHandlers_        handler (callback);
+    AssureXercesInitialized_ ();
+    SAX2PrintHandlers_        handler{callback};
     shared_ptr<SAX2XMLReader> parser = shared_ptr<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager));
     SetupCommonParserFeatures_ (*parser, false);
     parser->setContentHandler (&handler);
