@@ -12,7 +12,6 @@
 #include <regex>
 
 #include "../Debug/Assertions.h"
-#include "../Execution/ModuleInit.h"
 #include "../Execution/Throw.h"
 
 namespace Stroika::Foundation::Characters {

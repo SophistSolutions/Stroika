@@ -59,11 +59,6 @@
  *     @todo    Then, when constexpr works, debug why/if we can make work the qCompilerAndStdLib_constexpr_Buggy/constexpr
  *              stuff for min () / max  ()
  *
- *              For now using ModuleInit<> code to assure proper construction order.
- *
- *              After I get this working, consider fixing derivitate classes like DurationRange
- *              to also use constexpr - but this one must work first!
- *
  *      @todo   POSSIBLY add support for Precision (see Characters::Float2String) - once that module has clenaned up
  *              notion of precision. Not sure how to add unobtrusively. - for As<String>()? optional param?...
  *              Maybe Float2StringOptions is optional param to As<String> ()???
