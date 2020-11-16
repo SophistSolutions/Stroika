@@ -10,8 +10,6 @@
 
 #include "../Configuration/Common.h"
 
-#include "../Execution/ModuleInit.h"
-
 /**
  *  \file
  *
@@ -126,11 +124,6 @@ namespace Stroika::Foundation::Memory {
         // ensure return value is >= sizeof (T), and has legit alignment for T
         static constexpr size_t AdjustSizeForPool_ ();
     };
-
-    /**
-     *  This can be referenced in your ModuleInit<> to force correct inter-module construction order.
-     */
-    Execution::ModuleDependency MakeModuleDependency_BlockAllocator ();
 
 }
 

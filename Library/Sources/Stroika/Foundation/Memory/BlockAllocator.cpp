@@ -15,17 +15,6 @@ using namespace Stroika::Foundation::Execution;
 
 using namespace Execution;
 
-
-/*
- ********************************************************************************
- ************** Memory::MakeModuleDependency_BlockAllocator *********************
- ********************************************************************************
- */
-Execution::ModuleDependency Memory::MakeModuleDependency_BlockAllocator ()
-{
-    return Execution::ModuleDependency ([] () {}, [] () {});
-}
-
 /*
  ********************************************************************************
  *********** Memory::Private_::DoDeleteHandlingLocksExceptionsEtc_ **************

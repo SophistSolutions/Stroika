@@ -16,7 +16,6 @@
 #include "../Common/Compare.h"
 #include "../Containers/Sequence.h"
 #include "../Containers/Set.h"
-#include "../Execution/ModuleInit.h"
 #include "../Execution/Synchronized.h"
 #include "../Memory/SharedByValue.h"
 #include "../Traversal/Iterable.h"
@@ -1542,10 +1541,6 @@ namespace Stroika::Foundation::Characters {
     String operator+ (const String& lhs, const String& rhs);
     String operator+ (const wchar_t* lhs, const String& rhs);
 
-    /**
-     *  This can be referenced in your ModuleInitializer<> to force correct inter-module construction order.
-     */
-    Execution::ModuleDependency MakeModuleDependency_String ();
 }
 
 namespace std {

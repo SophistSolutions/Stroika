@@ -1022,22 +1022,4 @@ namespace Stroika::Foundation::Traversal {
     }
 }
 
-namespace Stroika::Foundation::Characters {
-
-    /*
-     ********************************************************************************
-     ********************************* String_ModuleInit_ ***************************
-     ********************************************************************************
-     */
-    struct String_ModuleInit_ {
-        String_ModuleInit_ ();
-        Execution::ModuleDependency fBlockAllocationDependency;
-    };
-
-}
-
-namespace {
-    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Characters::String_ModuleInit_> _Stroika_Foundation_Characters_String_ModuleInit_; // this object constructed for the CTOR/DTOR per-module side-effects
-}
-
 #endif // _Stroika_Foundation_Characters_String_inl_

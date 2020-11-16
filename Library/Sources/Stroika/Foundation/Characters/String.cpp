@@ -1330,26 +1330,6 @@ String Characters::operator+ (const wchar_t* lhs, const String& rhs)
 
 /*
  ********************************************************************************
- *********** Characters::MakeModuleDependency_String ****************************
- ********************************************************************************
- */
-Execution::ModuleDependency Characters::MakeModuleDependency_String ()
-{
-    return Execution::ModuleInitializer<String_ModuleInit_>::GetDependency ();
-}
-
-/*
- ********************************************************************************
- ******************** Characters::String_ModuleInit_ ****************************
- ********************************************************************************
- */
-String_ModuleInit_::String_ModuleInit_ ()
-    : fBlockAllocationDependency (Memory::MakeModuleDependency_BlockAllocator ())
-{
-}
-
-/*
- ********************************************************************************
  *********** hash<Stroika::Foundation::Characters::String> **********************
  ********************************************************************************
  */
