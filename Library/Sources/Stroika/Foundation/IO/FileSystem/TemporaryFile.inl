@@ -9,22 +9,6 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika::Foundation::IO::FileSystem::Private {
-    class FileUtilsModuleData_ {
-    public:
-        FileUtilsModuleData_ ();
-        ~FileUtilsModuleData_ ();
-
-    private:
-        AppTempFileManager fAppTempFileManager;
-
-    private:
-        friend class IO::FileSystem::AppTempFileManager; // so AppTempFileManager::Get () can reference fAppTempFileManager
-    };
-}
-namespace {
-    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::IO::FileSystem::Private::FileUtilsModuleData_> _Stroika_Foundation_IO_FileSystem_TemporaryFile_ModuleInit_; // this object constructed for the CTOR/DTOR per-module side-effects
-}
 
 namespace Stroika::Foundation::IO::FileSystem {
 
@@ -35,7 +19,8 @@ namespace Stroika::Foundation::IO::FileSystem {
      */
     inline AppTempFileManager& AppTempFileManager::Get ()
     {
-        return Execution::ModuleInitializer<Private::FileUtilsModuleData_>::Actual ().fAppTempFileManager;
+        static AppTempFileManager sAppTempFileManager_;
+        return sAppTempFileManager_;
     }
     inline String AppTempFileManager::GetMasterTempDir () const
     {

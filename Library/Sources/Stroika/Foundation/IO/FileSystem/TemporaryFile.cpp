@@ -53,20 +53,6 @@ using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 
 /*
  ********************************************************************************
- **************** FileSystem::Private::FileUtilsModuleData_ *********************
- ********************************************************************************
- */
-IO::FileSystem::Private::FileUtilsModuleData_::FileUtilsModuleData_ ()
-    : fAppTempFileManager ()
-{
-}
-
-IO::FileSystem::Private::FileUtilsModuleData_::~FileUtilsModuleData_ ()
-{
-}
-
-/*
- ********************************************************************************
  *********************** FileSystem::AppTempFileManager *************************
  ********************************************************************************
  */

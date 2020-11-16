@@ -29,9 +29,6 @@
 
 namespace Stroika::Foundation::IO::FileSystem {
 
-    namespace Private {
-        class FileUtilsModuleData_;
-    }
     class AppTempFileManager {
     private:
         AppTempFileManager ();
@@ -49,9 +46,6 @@ namespace Stroika::Foundation::IO::FileSystem {
 
     private:
         String fTmpDir;
-
-    private:
-        friend class Private::FileUtilsModuleData_;
     };
 
     class ScopedTmpDir {
