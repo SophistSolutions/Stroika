@@ -23,8 +23,6 @@
  * TODO:
  *      @todo   Very rough draft based on code used in HealthFrame. Major cleanups required.
  *
- *
- *
  */
 
 namespace Stroika::Foundation::IO::FileSystem {
@@ -49,14 +47,11 @@ namespace Stroika::Foundation::IO::FileSystem {
     };
 
     class ScopedTmpDir {
-    private:
-        ScopedTmpDir (const ScopedTmpDir&);
-        ScopedTmpDir& operator= (const ScopedTmpDir&);
-
     public:
         ScopedTmpDir (const String& fileNameBase);
-        //                    ScopedTmpDir (TempFileLibrarian& tfl, const String& fileNameBase);
+        ScopedTmpDir (const ScopedTmpDir&) = delete;
         ~ScopedTmpDir ();
+        ScopedTmpDir& operator= (const ScopedTmpDir&) = delete;
 
     public:
         nonvirtual           operator Directory () const;
@@ -67,14 +62,11 @@ namespace Stroika::Foundation::IO::FileSystem {
     };
 
     class ScopedTmpFile {
-    private:
-        ScopedTmpFile (const ScopedTmpFile&) = delete;
-        ScopedTmpFile& operator= (const ScopedTmpFile&) = delete;
-
     public:
         ScopedTmpFile (const String& fileNameBase);
-        //                  ScopedTmpFile (TempFileLibrarian& tfl, const String& fileNameBase);
+        ScopedTmpFile (const ScopedTmpFile&) = delete;
         ~ScopedTmpFile ();
+        ScopedTmpFile& operator= (const ScopedTmpFile&) = delete;
 
     public:
         operator String () const;

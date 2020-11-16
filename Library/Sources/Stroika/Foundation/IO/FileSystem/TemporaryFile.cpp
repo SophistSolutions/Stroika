@@ -330,7 +330,7 @@ ScopedTmpDir::~ScopedTmpDir ()
  ********************************************************************************
  */
 ScopedTmpFile::ScopedTmpFile (const String& fileNameBase)
-    : fTmpFile (AppTempFileManager::Get ().GetTempFile (fileNameBase))
+    : fTmpFile{AppTempFileManager::Get ().GetTempFile (fileNameBase)}
 {
 }
 
