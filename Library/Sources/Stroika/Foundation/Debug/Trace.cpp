@@ -161,10 +161,10 @@ void Debug::Private_::EmitFirstTime (Emitter& emitter)
 #else
     emitter.EmitTraceMessage (L"EXEPath=%s", Characters::ToString (Execution::GetEXEPath ()).c_str ());
 #endif
-    emitter.EmitTraceMessage (L"debug-state {");
+    emitter.EmitTraceMessage (L"<debug-state {>");
     emitter.EmitTraceMessage (L"  Debug::kBuiltWithAddressSanitizer = %s", Characters::ToString (Debug::kBuiltWithAddressSanitizer).c_str ());
     emitter.EmitTraceMessage (L"  Debug::IsRunningUnderValgrind () = %s", Characters::ToString (Debug::IsRunningUnderValgrind ()).c_str ());
-    emitter.EmitTraceMessage (L"}");
+    emitter.EmitTraceMessage (L"</debug-state>");
 }
 
 /*
