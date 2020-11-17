@@ -27,17 +27,10 @@ namespace {
         Mapping<String, AtomManager_Default::AtomInternalType> fMap;
         Sequence<String>                                       fSeq;
     };
-    AtomManager_Default_Rep_* sAtomMgrDefaultRep_;
-    inline void               AssureInited_sAtomMgrDefaultRep_ ()
+    inline AtomManager_Default_Rep_& GetAtomManager_Default_Rep_ ()
     {
-        static once_flag sOnceFlag_;
-        call_once (sOnceFlag_, [] () {
-            atexit ([] () {
-                delete sAtomMgrDefaultRep_;
-            });
-            Assert (sAtomMgrDefaultRep_ == nullptr);
-            sAtomMgrDefaultRep_ = new AtomManager_Default_Rep_ ();
-        });
+        static AtomManager_Default_Rep_ sRep_{};
+        return sRep_;
     }
 }
 namespace {
@@ -50,17 +43,10 @@ namespace {
         Mapping<String, AtomManager_Default::AtomInternalType> fMap{String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive}};
         Sequence<String>                                       fSeq;
     };
-    AtomManager_CaseInsensitive_Rep_* sAtomMgrCaseInsensitiveRep_;
-    inline void                       AssureInited_sAtomMgrCaseInsensitiveRep_ ()
+    inline AtomManager_CaseInsensitive_Rep_& GetAtomManager_CaseInsensitive_Rep_ ()
     {
-        static once_flag sOnceFlag_;
-        call_once (sOnceFlag_, [] () {
-            atexit ([] () {
-                delete sAtomMgrCaseInsensitiveRep_;
-            });
-            Assert (sAtomMgrCaseInsensitiveRep_ == nullptr);
-            sAtomMgrCaseInsensitiveRep_ = new AtomManager_CaseInsensitive_Rep_ ();
-        });
+        static AtomManager_CaseInsensitive_Rep_ sRep_{};
+        return sRep_;
     }
 }
 
@@ -71,20 +57,20 @@ namespace {
  */
 auto AtomManager_Default::Intern (const String& s) -> AtomInternalType
 {
-    AssureInited_sAtomMgrDefaultRep_ ();
     AtomInternalType v;
     if (s.empty ()) {
         v = kEmpty;
     }
     else {
-        [[maybe_unused]] auto&& critSec = lock_guard{sAtomMgrDefaultRep_->fCritSec};
-        auto                    i       = sAtomMgrDefaultRep_->fMap.Lookup (s);
+        auto&                   mgr     = GetAtomManager_Default_Rep_ ();
+        [[maybe_unused]] auto&& critSec = lock_guard{mgr.fCritSec};
+        auto                    i       = mgr.fMap.Lookup (s);
         if (i.has_value ()) {
             return *i;
         }
-        v = sAtomMgrDefaultRep_->fSeq.GetLength ();
-        sAtomMgrDefaultRep_->fSeq.Append (s);
-        sAtomMgrDefaultRep_->fMap.Add (s, v);
+        v = mgr.fSeq.GetLength ();
+        mgr.fSeq.Append (s);
+        mgr.fMap.Add (s, v);
     }
     Ensure (Extract (v) == s);
     return v;
@@ -92,12 +78,12 @@ auto AtomManager_Default::Intern (const String& s) -> AtomInternalType
 
 String AtomManager_Default::Extract (AtomInternalType atomI)
 {
-    RequireNotNull (sAtomMgrDefaultRep_); // must intern before extracting
     if (atomI == kEmpty) {
         return String{};
     }
-    [[maybe_unused]] auto&& critSec = lock_guard{sAtomMgrDefaultRep_->fCritSec};
-    return (sAtomMgrDefaultRep_->fSeq)[atomI];
+    auto&                   mgr     = GetAtomManager_Default_Rep_ ();
+    [[maybe_unused]] auto&& critSec = lock_guard{mgr.fCritSec};
+    return (mgr.fSeq)[atomI];
 }
 
 /*
@@ -107,20 +93,20 @@ String AtomManager_Default::Extract (AtomInternalType atomI)
  */
 auto AtomManager_CaseInsensitive::Intern (const String& s) -> AtomInternalType
 {
-    AssureInited_sAtomMgrCaseInsensitiveRep_ ();
     AtomInternalType v;
     if (s.empty ()) {
         v = kEmpty;
     }
     else {
-        [[maybe_unused]] auto&& critSec = lock_guard{sAtomMgrCaseInsensitiveRep_->fCritSec};
-        auto                    i       = sAtomMgrCaseInsensitiveRep_->fMap.Lookup (s);
+        auto&                   mgr     = GetAtomManager_CaseInsensitive_Rep_ ();
+        [[maybe_unused]] auto&& critSec = lock_guard{mgr.fCritSec};
+        auto                    i       = mgr.fMap.Lookup (s);
         if (i.has_value ()) {
             return *i;
         }
-        v = sAtomMgrCaseInsensitiveRep_->fSeq.GetLength ();
-        sAtomMgrCaseInsensitiveRep_->fSeq.Append (s);
-        sAtomMgrCaseInsensitiveRep_->fMap.Add (s, v);
+        v = mgr.fSeq.GetLength ();
+        mgr.fSeq.Append (s);
+        mgr.fMap.Add (s, v);
     }
     Ensure (Extract (v) == s);
     return v;
@@ -128,10 +114,10 @@ auto AtomManager_CaseInsensitive::Intern (const String& s) -> AtomInternalType
 
 String AtomManager_CaseInsensitive::Extract (AtomInternalType atomI)
 {
-    RequireNotNull (sAtomMgrCaseInsensitiveRep_); // must intern before extracting
     if (atomI == kEmpty) {
         return String{};
     }
-    [[maybe_unused]] auto&& critSec = lock_guard{sAtomMgrCaseInsensitiveRep_->fCritSec};
-    return (sAtomMgrCaseInsensitiveRep_->fSeq)[atomI];
+    auto&                   mgr     = GetAtomManager_CaseInsensitive_Rep_ ();
+    [[maybe_unused]] auto&& critSec = lock_guard{mgr.fCritSec};
+    return (mgr.fSeq)[atomI];
 }

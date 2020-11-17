@@ -349,6 +349,26 @@ This MAY not be a great idea. Its a little simpler, and will look more standardi
 
 <https://stackoverflow.com/questions/26759511/do-magic-statics-guarantee-that-right-side-is-executed-only-once>
 
+Generally, when you have a shared bit of static content and are sure its only accessed after main, you can store it as:
+
+```c++
+namespace {
+  mutex sMyMutex_;  // for example
+}
+```
+
+But if this may be used before main,
+
+```c++
+namespace {
+  mutex& sMyMutex_Get_ ()
+  {
+    static mutex sMyMutex_;
+    return sMyMutex_;
+  }
+}
+```
+
 ---
 
 ## Final Singleton objects (kThe, Get, Set)
