@@ -256,6 +256,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'RUN_PREFIX'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy>");
+		if (defined $pps) {
+			$configuration {'qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<MakeDefine>");
 		if (defined $pps) {
 			push (@useExtraMakeDefines, $pps);
@@ -264,7 +268,9 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			push (@packageConfigLinkLines, $pps);
 		}
-	print (OUT "    </PkgConfigLinkLineAppendages>\n");
+		print (OUT "    </PkgConfigLinkLineAppendages>\n");
+
+
 
 	}
 	$configuration {'ExtraMakeDefines'} = \@useExtraMakeDefines;
