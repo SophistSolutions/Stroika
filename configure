@@ -149,6 +149,7 @@ my $FEATUREFLAG_sqlite = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_LZMA = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_librt = undef;
 my $FEATUREFLAG_WIX = undef;
+my $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = undef;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
 my $INCLUDE_SYMBOLS_LIB = true;
 my $INCLUDE_SYMBOLS_EXE = DEFAULT_BOOL_OPTIONS;
@@ -937,6 +938,18 @@ sub	SetDefaultForCompilerDriver_
 		else {
 			$STRIP = $ma . "-strip";
 		}
+	}
+	if (trim (`lsb_release -rs 2>/dev/null`) == "20.10") {
+		# so far only seen on ubuntu 20.10, clang++11, and g++10
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and (10.0 <= GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) and GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 11.0)) {
+			$qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = true;
+		}
+		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus) and (11.0 <= GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) and GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 12.0)) {
+			$qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = true;
+		}
+	}
+	if (defined ($qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) and $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) {
+		push (@useExtraCDefines, '#define qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy 1');
 	}
 	if (!(defined $FEATUREFLAG_librt) and (!("$^O" eq "cygwin"))) {
 		$FEATUREFLAG_librt = $LIBFEATUREFLAG_UseSystem;
@@ -2399,8 +2412,10 @@ sub	WriteConfigFile_
 
 	print (OUT "    <RUN_PREFIX>$RUN_PREFIX</RUN_PREFIX>\n");
 
-	
-	
+	if (defined ($qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy)) {
+		print (OUT "    <qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy>$qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy</qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy>\n");
+	}
+
 	print (OUT "</Configuration>\n");
 	close(OUT);
 }
