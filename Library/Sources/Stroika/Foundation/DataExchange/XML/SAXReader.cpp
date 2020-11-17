@@ -343,17 +343,9 @@ namespace {
 
 namespace {
     UsingLibInterHelper* sUsingLibInterHelper = nullptr;
-
     inline void AssureXercesInitialized_ ()
     {
-        static once_flag sOnceFlag_;
-        call_once (sOnceFlag_, [] () {
-            atexit ([] () {
-                delete sUsingLibInterHelper;
-            });
-            Assert (sUsingLibInterHelper == nullptr);
-            sUsingLibInterHelper = new UsingLibInterHelper ();
-        });
+        static UsingLibInterHelper sUsingLibInterHelper_;
     }
 }
 #endif
