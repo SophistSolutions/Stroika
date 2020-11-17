@@ -154,6 +154,7 @@ namespace {
 void Debug::Private_::EmitFirstTime (Emitter& emitter)
 {
     // Cannot call DbgTrace or TraceContextBumper in this code (else hang cuz calls back to Emitter::Get ())
+    // which is why this function takes Emitter as argument!
     emitter.EmitTraceMessage (L"***Starting TraceLog***");
 #if qCompiler_LimitLengthBeforeMainCrash_Buggy
     emitter.EmitTraceMessage ("EXEPath=%s", Execution::GetEXEPath ().native ().c_str ());
