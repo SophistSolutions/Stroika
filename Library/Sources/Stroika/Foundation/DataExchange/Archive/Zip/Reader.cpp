@@ -2608,7 +2608,6 @@ private:
                 return myThis;
             };
             this->zread_file = [] (voidpf opaqueStream, [[maybe_unused]] voidpf stream, void* buf, uLong size) -> uLong {
-                Lambda_Arg_Unused_BWA (stream);
                 Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
                 MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
                 Assert (myThis->fOpened_);
@@ -2621,14 +2620,12 @@ private:
                 return static_cast<uLong> (UNZ_PARAMERROR);
             };
             this->ztell64_file = [] (voidpf opaqueStream, [[maybe_unused]] voidpf stream) -> ZPOS64_T {
-                Lambda_Arg_Unused_BWA (stream);
                 Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
                 MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
                 Assert (myThis->fOpened_);
                 return myThis->fInStream_.GetOffset ();
             };
             this->zseek64_file = [] (voidpf opaqueStream, [[maybe_unused]] voidpf stream, ZPOS64_T offset, int origin) -> long {
-                Lambda_Arg_Unused_BWA (stream);
                 Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
                 MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
                 Assert (myThis->fOpened_);
@@ -2649,8 +2646,6 @@ private:
                 return UNZ_OK;
             };
             this->zclose_file = [] ([[maybe_unused]] voidpf opaqueStream, [[maybe_unused]] voidpf stream) -> int {
-                Lambda_Arg_Unused_BWA (opaqueStream);
-                Lambda_Arg_Unused_BWA (stream);
 #if qDebug
                 Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
                 MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
@@ -2660,7 +2655,6 @@ private:
                 return UNZ_OK;
             };
             this->zerror_file = [] (voidpf opaqueStream, [[maybe_unused]] voidpf stream) -> int {
-                Lambda_Arg_Unused_BWA (stream);
                 Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
                 [[maybe_unused]] MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
                 Assert (myThis->fOpened_);

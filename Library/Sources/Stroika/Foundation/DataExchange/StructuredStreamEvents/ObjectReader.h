@@ -990,7 +990,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     private:
         ContainerType*                      fValuePtr_{};
         optional<ReaderFromVoidStarFactory> fReaderRactory_{}; // if missing, use Context::GetObjectReaderRegistry ().MakeContextReader ()
-        function<bool (Name)>               fReadThisName_{[] ([[maybe_unused]] const Name& n) { Lambda_Arg_Unused_BWA (n); return true; }};
+        function<bool (Name)>               fReadThisName_{[] ([[maybe_unused]] const Name& n) { return true; }};
         ElementType                         fProxyValue_{TRAITS::kDefaultValue};
         shared_ptr<IElementConsumer>        fActiveSubReader_{};
     };

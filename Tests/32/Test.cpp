@@ -724,8 +724,8 @@ namespace {
         {
             ObjectVariantMapper mapper;
             using IO::Network::CIDR;
-            mapper.Add<CIDR> ([] ([[maybe_unused]] const ObjectVariantMapper& mapper, const CIDR* obj) -> VariantValue { Lambda_Arg_Unused_BWA (mapper); return obj->ToString (); },
-                              [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, CIDR* intoObj) -> void { Lambda_Arg_Unused_BWA (mapper); *intoObj = CIDR{d.As<String> ()}; });
+            mapper.Add<CIDR> ([] ([[maybe_unused]] const ObjectVariantMapper& mapper, const CIDR* obj) -> VariantValue { return obj->ToString (); },
+                              [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, CIDR* intoObj) -> void { *intoObj = CIDR{d.As<String> ()}; });
         }
         {
             struct RGBColor {
@@ -739,11 +739,9 @@ namespace {
 
             mapper.Add<RGBColor> (
                 [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const RGBColor* obj) -> VariantValue {
-                    Lambda_Arg_Unused_BWA (mapper);
                     return L"#" + Characters::Format (L"%2x%2x%2x", obj->red, obj->green, obj->blue);
                 },
                 [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, RGBColor* intoObj) -> void {
-                    Lambda_Arg_Unused_BWA (mapper);
                     String tmpInBuf = d.As<String> ();
                     if (tmpInBuf.length () != 7) {
                         Execution::Throw (DataExchange::BadFormatException (L"RGBColor sb length 7"));
@@ -795,8 +793,8 @@ namespace {
     const ObjectVariantMapper dev::kMapper_ = [] () {
         ObjectVariantMapper mapper;
         using IO::Network::CIDR;
-        mapper.Add<CIDR> ([] ([[maybe_unused]] const ObjectVariantMapper& mapper, const CIDR* obj) -> VariantValue { Lambda_Arg_Unused_BWA (mapper); return obj->ToString (); },
-                          [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, CIDR* intoObj) -> void { Lambda_Arg_Unused_BWA (mapper); *intoObj = CIDR{d.As<String> ()}; });
+        mapper.Add<CIDR> ([] ([[maybe_unused]] const ObjectVariantMapper& mapper, const CIDR* obj) -> VariantValue { return obj->ToString (); },
+                          [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, CIDR* intoObj) -> void { *intoObj = CIDR{d.As<String> ()}; });
         return mapper;
     }();
 }

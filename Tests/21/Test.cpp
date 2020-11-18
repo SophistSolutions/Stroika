@@ -597,7 +597,6 @@ namespace {
         auto counter = [] (SEQ s) -> size_t {
             size_t cnt = 0;
             for ([[maybe_unused]] auto i : s) {
-                Lambda_Arg_Unused_BWA (i);
                 ++cnt;
             }
             return cnt;

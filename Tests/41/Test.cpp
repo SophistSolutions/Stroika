@@ -52,15 +52,15 @@ namespace {
     {
         // Make sure Function<> works as well as std::function
         {
-            Function<int (bool)> f = [] ([[maybe_unused]] bool b) -> int { Lambda_Arg_Unused_BWA (b); return 3; };
+            Function<int (bool)> f = [] ([[maybe_unused]] bool b) -> int { return 3; };
             VerifyTestResult (f (true) == 3);
             function<int (bool)> ff = f;
             VerifyTestResult (ff (true) == 3);
         }
         // Make sure Function<> serves its one purpose - being comparable
         {
-            Function<int (bool)> f1 = [] ([[maybe_unused]] bool b) -> int { Lambda_Arg_Unused_BWA (b); return 3; };
-            Function<int (bool)> f2 = [] ([[maybe_unused]] bool b) -> int { Lambda_Arg_Unused_BWA (b); return 3; };
+            Function<int (bool)> f1 = [] ([[maybe_unused]] bool b) -> int { return 3; };
+            Function<int (bool)> f2 = [] ([[maybe_unused]] bool b) -> int { return 3; };
 
             VerifyTestResult (f1 != f2);
             VerifyTestResult (f1 < f2 or f2 < f1);

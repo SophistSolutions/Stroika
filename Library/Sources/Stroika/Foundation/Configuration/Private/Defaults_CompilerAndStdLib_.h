@@ -1044,23 +1044,6 @@ STILL:
 
 #endif
 
-#ifndef qCompilerAndStdLib_MaybeUnusedIgnoredInLambdas_Buggy
-
-#if defined(_MSC_VER)
-// first noted in _MS_VS_2k17_15Pt7Pt3_
-// still broken in _MS_VS_2k17_15Pt7Pt4_
-// assume broken in _MS_VS_2k17_15Pt7Pt5_
-// assume broken in _MS_VS_2k17_15Pt7Pt6_
-// still broken in _MSC_VER_2k17_15Pt8_
-// still broken in _MSC_VER_2k17_15Pt9_
-// FIXED in _MSC_VER_2k19_16Pt0_
-#define qCompilerAndStdLib_MaybeUnusedIgnoredInLambdas_Buggy (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
-#else
-#define qCompilerAndStdLib_MaybeUnusedIgnoredInLambdas_Buggy 0
-#endif
-
-#endif
-
 /*
  *
  *  c:\sandbox\stroika\devroot-v2.0\library\sources\stroika\foundation\containers\sortedmapping.h(100): fatal error C1001
@@ -2083,14 +2066,6 @@ namespace {
 #define dont_inline __attribute__ ((noinline))
 #else
 #define dont_inline __declspec(noinline)
-#endif
-
-#if !defined(Lambda_Arg_Unused_BWA)
-#if qCompilerAndStdLib_MaybeUnusedIgnoredInLambdas_Buggy
-#define Lambda_Arg_Unused_BWA(x) ((void)&x)
-#else
-#define Lambda_Arg_Unused_BWA(x)
-#endif
 #endif
 
 /*

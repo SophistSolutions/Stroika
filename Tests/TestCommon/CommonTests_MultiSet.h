@@ -436,7 +436,6 @@ namespace CommonTests {
                     }
                     for (auto it = s.begin (); it != s.end (); ++it) {
                         for ([[maybe_unused]] auto it1 : s.Elements ()) {
-                            //Lambda_Arg_Unused_BWA (it1);
                             if (s.TotalOccurrences () < 25) {
                                 s.Add (1);
                             }
@@ -458,7 +457,6 @@ namespace CommonTests {
                     testingSchema.ApplyToContainerExtraTest (s);
                     for (auto it = s.begin (); it != s.end (); ++it) {
                         for ([[maybe_unused]] auto it1 : s.Elements ()) {
-                            //Lambda_Arg_Unused_BWA (it1);
                             if (s.TotalOccurrences () < 25) {
                                 s.Add (1);
                             }

@@ -343,7 +343,7 @@ namespace {
 
 namespace {
     UsingLibInterHelper* sUsingLibInterHelper = nullptr;
-    inline void AssureXercesInitialized_ ()
+    inline void          AssureXercesInitialized_ ()
     {
         static UsingLibInterHelper sUsingLibInterHelper_;
     }

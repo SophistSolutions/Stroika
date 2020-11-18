@@ -92,13 +92,10 @@ namespace CommonTests {
 
                 for (size_t i = 1; i <= s.GetLength (); i++) {
                     for ([[maybe_unused]] auto&& it : s) {
-                        Lambda_Arg_Unused_BWA (it);
                     }
                 }
                 for ([[maybe_unused]] auto&& it : s) {
-                    Lambda_Arg_Unused_BWA (it);
                     for ([[maybe_unused]] auto&& it1 : s) {
-                        Lambda_Arg_Unused_BWA (it1);
                         s.RemoveAll ();
                     }
                 }
@@ -106,9 +103,7 @@ namespace CommonTests {
                 VerifyTestResult (s.GetLength () == 0);
 
                 for ([[maybe_unused]] auto&& it1 : s) {
-                    Lambda_Arg_Unused_BWA (it1);
                     for ([[maybe_unused]] auto&& it2 : s) {
-                        Lambda_Arg_Unused_BWA (it2);
                         VerifyTestResult (false);
                     }
                 }

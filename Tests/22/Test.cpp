@@ -33,7 +33,6 @@ namespace {
     {
         using T                  = typename CONCRETE_CONTAINER::value_type;
         auto extraChecksFunction = [] ([[maybe_unused]] const Set<T>& s) {
-            Lambda_Arg_Unused_BWA (s);
             // only work todo on sorted sets
         };
         CommonTests::SetTests::Test_All_For_Type<CONCRETE_CONTAINER, Set<T>> (factory, extraChecksFunction);

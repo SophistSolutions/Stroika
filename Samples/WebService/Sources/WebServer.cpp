@@ -65,7 +65,7 @@ public:
                   Route{
                       MethodsRegularExpressions::kOptions,
                       RegularExpression::kAny,
-                      [] ([[maybe_unused]] Message* m) { Lambda_Arg_Unused_BWA (m); }},
+                      [] ([[maybe_unused]] Message* m) { }},
 
                   Route{L""_RegEx, DefaultPage_},
 

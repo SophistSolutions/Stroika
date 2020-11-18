@@ -757,14 +757,12 @@ namespace Stroika::Foundation::DataExchange {
         static_assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE), "underlyingtype?");
         FromObjectMapperType<ENUM_TYPE> fromObjectMapper = [nameMap] ([[maybe_unused]] const ObjectVariantMapper& mapper, const ENUM_TYPE* fromObjOfTypeT) -> VariantValue {
             RequireNotNull (fromObjOfTypeT);
-            Lambda_Arg_Unused_BWA (mapper);
             Assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE));
             Assert (static_cast<ENUM_TYPE> (static_cast<SerializeAsType> (*fromObjOfTypeT)) == *fromObjOfTypeT); // no round-trip loss
             return VariantValue (*nameMap.Lookup (*fromObjOfTypeT));
         };
         ToObjectMapperType<ENUM_TYPE> toObjectMapper = [nameMap] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, ENUM_TYPE* intoObjOfTypeT) -> void {
             RequireNotNull (intoObjOfTypeT);
-            Lambda_Arg_Unused_BWA (mapper);
             auto optVal = nameMap.InverseLookup (d.As<String> ());
             if (not optVal.has_value ())
                 [[UNLIKELY_ATTR]]
@@ -796,12 +794,10 @@ namespace Stroika::Foundation::DataExchange {
         static_assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE), "underlyingtype?");
         FromObjectMapperType<ENUM_TYPE> fromObjectMapper = [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const ENUM_TYPE* fromObjOfTypeT) -> VariantValue {
             RequireNotNull (fromObjOfTypeT);
-            Lambda_Arg_Unused_BWA (mapper);
             Assert (static_cast<ENUM_TYPE> (static_cast<SerializeAsType> (*fromObjOfTypeT)) == *fromObjOfTypeT); // no round-trip loss
             return VariantValue (static_cast<SerializeAsType> (*fromObjOfTypeT));
         };
         ToObjectMapperType<ENUM_TYPE> toObjectMapper = [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, ENUM_TYPE* intoObjOfTypeT) -> void {
-            Lambda_Arg_Unused_BWA (mapper);
             RequireNotNull (intoObjOfTypeT);
             *intoObjOfTypeT = static_cast<ENUM_TYPE> (d.As<SerializeAsType> ());
             Assert (static_cast<SerializeAsType> (*intoObjOfTypeT) == d.As<SerializeAsType> ()); // no round-trip loss
@@ -903,7 +899,6 @@ namespace Stroika::Foundation::DataExchange {
     template <typename CLASS>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, [[maybe_unused]] size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void (VariantValue*)>& preflightBeforeToObject) const
     {
-        Lambda_Arg_Unused_BWA (n);
 #if qDebug
         for (auto i : fields) {
             Require (i.fFieldMetaInfo.fOffset < n);
