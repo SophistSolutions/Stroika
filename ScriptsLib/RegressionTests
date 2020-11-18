@@ -391,6 +391,7 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 				if [[ `ScriptsLib\GetConfigurationParameter $o qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy` -eq 0 ]] ; then
 					RunLocalValgrind_ helgrind $o ""
 				else
+					NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN - 1))
 					echo "skipping configuration: $o due to qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy">>$TEST_OUT_FILE 2>&1
 				fi
 			done
