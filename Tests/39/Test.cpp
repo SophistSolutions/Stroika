@@ -1355,14 +1355,11 @@ namespace {
                 VerifyTestResult (runningThreads.size () == 0);
             });
 #endif
-        DISABLE_COMPILER_MSC_WARNING_START (4127) // BAD warning to use if constexpr - IsRunningUnderValgrind not constexpr
-        if (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and
-            (Debug::kBuiltWithThreadSanitizer or Debug::IsRunningUnderValgrind ())) {
+        if (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
             // for valgrind, really only HELGRIND issue
             DbgTrace ("Skipping this test cuz double locks cause TSAN to die and cannot be easily suppressed");
             return;
         }
-        DISABLE_COMPILER_MSC_WARNING_END (4127)
         RegressionTest1_ ();
         RegressionTest2_ ();
         RegressionTest3_WaitableEvents_ ();

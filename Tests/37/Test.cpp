@@ -136,14 +136,11 @@ namespace {
         void DoTests ()
         {
             Debug::TraceContextBumper ctx{L"LargeDataSentThroughPipeBackground_Test6_::DoTests"};
-            DISABLE_COMPILER_MSC_WARNING_START (4127) // BAD warning to use if constexpr - IsRunningUnderValgrind not constexpr
-            if (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and
-                (Debug::kBuiltWithThreadSanitizer or Debug::IsRunningUnderValgrind ())) {
+            if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
                 // for valgrind, really only HELGRIND issue
                 DbgTrace ("Skipping this test cuz double locks cause TSAN to die and cannot be easily suppressed, and conditional variables broken checking on ubuntu 20.10 g++10");
                 return;
             }
-            DISABLE_COMPILER_MSC_WARNING_END (4127)
             Private_::SingleProcessLargeDataSend_ ();
         }
     }

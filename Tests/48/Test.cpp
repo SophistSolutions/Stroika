@@ -257,15 +257,11 @@ namespace {
 
         void Tests_ ()
         {
-            DISABLE_COMPILER_MSC_WARNING_START (4127) // BAD warning to use if constexpr - IsRunningUnderValgrind not constexpr
-            if (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and
-                (Debug::kBuiltWithThreadSanitizer or Debug::IsRunningUnderValgrind ())) {
+            if (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
                 //  we get bogus lock inversion / deadlock warning because unlocks not recognized
                 DbgTrace ("Skipping this test cuz double locks cause TSAN to die and cannot be easily suppressed");
-                // for valgrind, really only HELGRIND issue
                 return;
             }
-            DISABLE_COMPILER_MSC_WARNING_END (4127)
             Private_::T1_ ();
         }
     }
