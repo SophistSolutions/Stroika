@@ -22,11 +22,13 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 # CHECK FOR UPDATED VERSIONS https://www.openssl.org/source/
 #
 
+# alpha8 only tried on windows but seems same - must handle 'legacy' issue, and then re-run more carefully
 # alpha7 fails on openssl regtests win and unix in regtests - like below error message - but probably due to Review https://github.com/openssl/openssl/issues/9349 - add legacy provider (though unix also has asan issue so maybe more)
 # alpha6 fails on openssl regtests win and unix in regtests - like below error message - but probably due to Review https://github.com/openssl/openssl/issues/9349 - add legacy provider (though unix also has asan issue so maybe more)
 # alpha5 fails on openssl regtests (make tests hangs on unix after long time - after test 80-test_x509aux.t, tests seem to complete on windows, but regtests fail with error:03000086:digital envelope routines::initialization error)
 # alpha4 fails on openssl regtests (make tests hangs on unix)
 # alpha2 works mostly bug regtests fail with error:060000CA:digital envelope routines::fetch failed
+VERSION=3.0.0-alpha8
 #VERSION=3.0.0-alpha7
 #VERSION=3.0.0-alpha6
 
