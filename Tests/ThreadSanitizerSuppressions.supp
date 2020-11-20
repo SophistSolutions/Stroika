@@ -3,6 +3,7 @@ race:__interceptor_pipe
 #workaround https://stroika.atlassian.net/browse/STK-673 - Ubuntu 1810 only
 race:pipe
 
+
 #workaround https://stroika.atlassian.net/browse/STK-677 - sem_post() called from inside signal handler, and can spoil errno	- rare and only seen so far on Ubunt1804 but should affect anything
 # REMOVED workaround when I added code that should eliminate the problem in SemWaitableEvent::Set(). Not sure tsan will see
 # this as a fix, so must test quite a few times (this was hard to reproduce) -- LGP 2018-12-13
@@ -27,6 +28,7 @@ race:pipe
 # supresses on ubuntu 1910
 signal:Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler_(int)
 
+
 #https://stroika.atlassian.net/browse/STK-647 - possible deadlock/bug detected by tsan (debug iterators and FirstPassSignalHandler_
 #since hard to reproduce hard to write/test supressions - want to match on BOTH FirstPassSignalHandler_ AND AssertExternallySynchronizedLock (in one stacktrace)
 #NB: This is ONLY needed on DEBUG builds
@@ -37,9 +39,3 @@ signal:Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHan
 # Ideally, we would match on having ONE of these in one stack, and the other in the other stack, but could come in either order
 deadlock:Stroika::Foundation::Debug::AssertExternallySynchronizedLock::AssertExternallySynchronizedLock
 deadlock:Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler_
-
-# So far only seen on Ubuntu 20.10
-# https://stroika.atlassian.net/browse/STK-716
-# WARNING: ThreadSanitizer: double lock of a mutex (pid=3131387)
-mutex:Stroika::Foundation::Execution::WaitableEvent::WE_::Set()
-race:Stroika::Foundation::Execution::WaitableEvent::WE_::Set()
