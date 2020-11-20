@@ -388,11 +388,11 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 			echo "Running valgrind helgrind test because INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS"
 			echo "$PREFIX_OUT_LABEL" "Running valgrind helgrind test because INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS" >>$TEST_OUT_FILE 2>&1
 			for o in ${LOCAL_VALGRIND_CONFIGS[@]} ; do
-				if [[ `ScriptsLib/GetConfigurationParameter $o qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy` -eq 0 ]] ; then
-					RunLocalValgrind_ helgrind $o ""
-				else
+				if [[ `ScriptsLib/GetConfigurationParameter $o qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy` -eq 1 ]] ; then
 					NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN - 1))
 					echo "skipping configuration: $o due to qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy">>$TEST_OUT_FILE 2>&1
+				else
+					RunLocalValgrind_ helgrind $o ""
 				fi
 			done
 		else
@@ -473,7 +473,7 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 		#HELGRIND ON a few sample apps
 		if [[ ("$INCLUDE_VALGRIND_HELGRIND_TESTS" -ne 0) && ("$NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS" -ne 0 ) ]] ; then
 			for cfg in ${LOCAL_VALGRIND_CONFIGS} ; do
-				if [[ `ScriptsLib/GetConfigurationParameter $o qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy` -ne 0 ]] ; then
+				if [[ `ScriptsLib/GetConfigurationParameter $o qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy` -eq 1 ]] ; then
 					echo "skipping configuration: $cfg due to qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy">>$TEST_OUT_FILE 2>&1
 					continue;
 				fi
