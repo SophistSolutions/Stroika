@@ -3189,7 +3189,7 @@ Led_Rect TextInteractor::CalculateCaretRect () const
         // the preceeding text is hidden.
         if (caretRect.top < origCaretRect.top) {
             Led_Distance diff = origCaretRect.GetTop () - caretRect.GetTop ();
-            caretRect += Led_Point{diff, 0};
+            caretRect += Led_Point (diff, 0);
         }
 
         // pin CaretRect to full rowRect
