@@ -3170,7 +3170,7 @@ Led_Rect TextInteractor::CalculateCaretRect () const
         Led_Rect      caretRect     = GetCharWindowLocation (charAfterPos);
 
         if (caretRect.GetBottom () < GetWindowRect ().GetTop () or caretRect.GetTop () > GetWindowRect ().GetBottom ()) {
-            return Led_Rect {0, 0, 0, 0};
+            return Led_Rect{0, 0, 0, 0};
         }
 
         Led_Rect        origCaretRect = caretRect;
