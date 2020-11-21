@@ -342,7 +342,7 @@ namespace {
 }
 
 namespace {
-    inline void          AssureXercesInitialized_ ()
+    inline void AssureXercesInitialized_ ()
     {
         static UsingLibInterHelper sUsingLibInterHelper_;
     }
