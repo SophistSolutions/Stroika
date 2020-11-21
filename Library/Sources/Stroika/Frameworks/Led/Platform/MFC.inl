@@ -5,6 +5,8 @@
 #define _Stroika_Frameworks_Led_Platform_MFC_inl_ 1
 
 #include "../../../Foundation/Characters/LineEndings.h"
+#include "../../../Foundation/Characters/ToString.h"
+#include "../../../Foundation/Debug/Trace.h"
 
 namespace Stroika::Frameworks::Led::Platform {
 
@@ -338,6 +340,7 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     void Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnPerformCommand_MSG (UINT commandNumber)
     {
+        using namespace Stroika::Foundation;
         IdleManager::NonIdleContext nonIdleContext;
         try {
             (void)this->OnPerformCommand (MFC_CommandNumberMapping::Get ().Lookup (commandNumber));

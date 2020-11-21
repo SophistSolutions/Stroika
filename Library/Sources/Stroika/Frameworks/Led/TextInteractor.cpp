@@ -1767,7 +1767,7 @@ void TextInteractor::ScrollSoShowing (size_t markerPos, size_t andTryToShowMarke
 
 void TextInteractor::SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont, UpdateMode updateMode)
 {
-    TemporarilySetUpdateMode updateModeSetter (*this, updateMode);
+    TemporarilySetUpdateMode updateModeSetter{*this, updateMode};
     TextImager*              tim = this; // Dynamicly bind to 1-arg version. Direct call would select overloaded version from this class!
     tim->SetDefaultFont (defaultFont);
     Refresh ();
@@ -1831,7 +1831,7 @@ void TextInteractor::PostScrollHelper (PreScrollInfo preScrollInfo)
         if (preScrollInfo.fTryTodoScrollbits and preScrollInfo.fOldHScrollPos == GetHScrollPos ()) {
             Led_Rect windowRect = GetWindowRect ();
 
-            Tablet_Acquirer tablet_ (this);
+            Tablet_Acquirer tablet_{this};
             Led_Tablet      tablet = tablet_;
             if (preScrollInfo.fOldWindowStart > newStartOfWindow) {
                 /*                                    *
@@ -2201,8 +2201,8 @@ void TextInteractor::ExpandedFromAndToInPostReplace (size_t from, size_t newTo,
 void TextInteractor::InteractiveReplace (const Led_tChar* withWhat, size_t withWhatCharCount, UpdateMode updateMode)
 {
     BreakInGroupedCommandsIfDifferentCommand (GetCommandNames ().fTypingCommandName);
-    InteractiveModeUpdater iuMode (*this);
-    UndoableContextHelper  undoContext (*this, GetCommandNames ().fTypingCommandName, withWhatCharCount == 0);
+    InteractiveModeUpdater iuMode{*this};
+    UndoableContextHelper  undoContext{*this, GetCommandNames ().fTypingCommandName, withWhatCharCount == 0};
     {
         InteractiveReplace_ (undoContext.GetUndoRegionStart (), undoContext.GetUndoRegionEnd (), withWhat, withWhatCharCount, true, true, updateMode);
         bool anyChanges = InteractiveReplaceEarlyPostReplaceHook (withWhatCharCount);
@@ -2236,13 +2236,13 @@ void TextInteractor::InteractiveReplace_ (size_t from, size_t to, const Led_tCha
         }
     }
 
-    TempMarker newSel (GetTextStore (), to + 1, to + 1); // NB: This marker pos MAY split a character - but that should cause
+    TempMarker newSel{GetTextStore (), to + 1, to + 1}; // NB: This marker pos MAY split a character - but that should cause
     // no problems.
     // We are only keeping this temporarily and we subtract one at the
     // end. Just want to make it past point where we do the insertion
     // so we get the right adjustment on
 
-    Tablet_Acquirer performanceHackTablet (this); // sometimes acquiring/releaseing the tablet can be expensive,
+    Tablet_Acquirer performanceHackTablet{this}; // sometimes acquiring/releaseing the tablet can be expensive,
     // and as a result of stuff later in this call, it happens
     // several times. By acquiring it here, we make the other calls
     // much cheaper (cuz its basicly free to acquire when already
@@ -2753,7 +2753,7 @@ void TextInteractor::OnCopyCommand_CopyFlavors ()
 
 bool TextInteractor::ShouldEnablePasteCommand () const
 {
-    return (Led_ClipboardObjectAcquire::FormatAvailable_TEXT ());
+    return Led_ClipboardObjectAcquire::FormatAvailable_TEXT ();
 }
 
 /*
@@ -2882,7 +2882,7 @@ void TextInteractor::InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage,
 
     bool good = false;
     {
-        TempMarker newSel (GetTextStore (), end + 1, end + 1); // NB: This marker pos MAY split a multibyte character - but that should cause
+        TempMarker newSel{GetTextStore (), end + 1, end + 1}; // NB: This marker pos MAY split a multibyte character - but that should cause
         // no problems.
         // We are only keeping this temporarily and we subtract one at the
         // end. Just want to make it past point where we do the insertion
@@ -2928,7 +2928,7 @@ void TextInteractor::InternalizeFlavor_Specific (ReaderFlavorPackage& flavorPack
 
     bool good = false;
     {
-        TempMarker newSel (GetTextStore (), end + 1, end + 1); // NB: This marker pos MAY split a multibyte character - but that should cause
+        TempMarker newSel{GetTextStore (), end + 1, end + 1}; // NB: This marker pos MAY split a multibyte character - but that should cause
         // no problems.
         // We are only keeping this temporarily and we subtract one at the
         // end. Just want to make it past point where we do the insertion
@@ -3040,7 +3040,7 @@ void TextInteractor::OnBadUserInput ()
 {
     // you may want to OVERRIDE this to do a staged alert, or to throw an exception???
     //Led_BeepNotify ();
-    throw BadUserInput (); // default catcher should call Led_BeepNotify ()
+    throw BadUserInput{}; // default catcher should call Led_BeepNotify ()
 }
 
 /*
@@ -3124,7 +3124,7 @@ bool TextInteractor::GetCaretShownSituation () const
     size_t selStart = 0;
     size_t selEnd   = 0;
     GetSelection (&selStart, &selEnd);
-    return (selStart == selEnd);
+    return selStart == selEnd;
 }
 
 /*
@@ -3170,7 +3170,7 @@ Led_Rect TextInteractor::CalculateCaretRect () const
         Led_Rect      caretRect     = GetCharWindowLocation (charAfterPos);
 
         if (caretRect.GetBottom () < GetWindowRect ().GetTop () or caretRect.GetTop () > GetWindowRect ().GetBottom ()) {
-            return (Led_Rect (0, 0, 0, 0));
+            return Led_Rect {0, 0, 0, 0};
         }
 
         Led_Rect        origCaretRect = caretRect;
@@ -3189,7 +3189,7 @@ Led_Rect TextInteractor::CalculateCaretRect () const
         // the preceeding text is hidden.
         if (caretRect.top < origCaretRect.top) {
             Led_Distance diff = origCaretRect.GetTop () - caretRect.GetTop ();
-            caretRect += Led_Point (diff, 0);
+            caretRect += Led_Point{diff, 0};
         }
 
         // pin CaretRect to full rowRect
@@ -3214,10 +3214,10 @@ Led_Rect TextInteractor::CalculateCaretRect () const
         caretRect.SetRight (caretRect.GetLeft () + kCaretWidth);
 
         Ensure (not caretRect.IsEmpty ());
-        return (caretRect);
+        return caretRect;
     }
     else {
-        return (Led_Rect (0, 0, 0, 0));
+        return (Led_Rect{0, 0, 0, 0});
     }
 }
 
@@ -3333,9 +3333,9 @@ bool TextInteractor::HandledMByteCharTyping (char theChar)
 float TextInteractor::GetTickCountBetweenBlinks ()
 {
 #if qPlatform_MacOS
-    return (::GetCaretTime () / 60.0);
+    return ::GetCaretTime () / 60.0;
 #elif qStroika_FeatureSupported_XWindows
-    return (0.4f);
+    return 0.4f;
 #endif
 }
 #endif
