@@ -83,11 +83,7 @@ namespace {
             Debug::TraceContextBumper traceCtx{"pingpong threads with event.wait(NOTIMEOUTS)"};
             // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
             struct FRED1 {
-#if qCompiler_ThreadSantizer_SPR_717_Buggy
-                Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD
-#endif
-                    static void
-                    DoIt (void* ignored)
+                static void DoIt (void* ignored)
                 {
                     int* argP = reinterpret_cast<int*> (ignored);
                     for (int i = 0; i < 10; i++) {
@@ -103,11 +99,7 @@ namespace {
                 }
             };
             struct FRED2 {
-#if qCompiler_ThreadSantizer_SPR_717_Buggy
-                Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD
-#endif
-                    static void
-                    DoIt (void* ignored)
+                static void DoIt (void* ignored)
                 {
                     int* argP = reinterpret_cast<int*> (ignored);
                     for (int i = 0; i < 10; i++) {
@@ -140,11 +132,7 @@ namespace {
             Debug::TraceContextBumper traceCtx{"pingpong threads with event.wait(WITHTIMEOUT)"};
             // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
             struct FRED1 {
-#if qCompiler_ThreadSantizer_SPR_717_Buggy
-                Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD
-#endif
-                    static void
-                    DoIt (void* ignored)
+                static void DoIt (void* ignored)
                 {
                     int* argP = reinterpret_cast<int*> (ignored);
                     for (int i = 0; i < 10; i++) {
@@ -160,11 +148,7 @@ namespace {
                 }
             };
             struct FRED2 {
-#if qCompiler_ThreadSantizer_SPR_717_Buggy
-                Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD
-#endif
-                    static void
-                    DoIt (void* ignored)
+                static void DoIt (void* ignored)
                 {
                     int* argP = reinterpret_cast<int*> (ignored);
                     for (int i = 0; i < 10; i++) {
