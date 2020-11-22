@@ -1545,40 +1545,6 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 #define qCompilerAndStdLib_insert_or_assign_Buggy (__cplusplus < kStrokia_Foundation_Configuration_cplusplus_17)
 #endif
 
-/*
-@CONFIGVAR:     qCompiler_SanitizerFunctionPtrConversionSuppressionBug
- *
- *  Running regression tests (built with clang (4 and 5) and sanitizer debug options)
- *      clang++-debug/Test31
- *      clang++-debug/Test33
- *      clang++-debug/Test40
- *
-        /usr/bin/../lib/gcc/x86_64-linux-gnu/7.2.0/../../../../include/c++/7.2.0/bits/std_function.h:706:14: runtime error: call to function (unknown) through pointer to incorrect function type 'Stroika::Foundation::DataExchange::VariantValue (*)(const std::_Any_data &, const Stroika::Foundation::DataExchange::ObjectVariantMapper &, const void *&&)'
-        (/home/lewis/Sandbox/Stroika-Dev/Builds/clang++-debug/Test31+0x176a5a0): note: (unknown) defined here
-        SUMMARY: AddressSanitizer: undefined-behavior /usr/bin/../lib/gcc/x86_64-linux-gnu/7.2.0/../../../../include/c++/7.2.0/bits/std_function.h:706:14 in
-        /usr/bin/../lib/gcc/x86_64-linux-gnu/7.2.0/../../../../include/c++/7.2.0/bits/std_function.h:706:14: runtime error: call to function (unknown) through pointer to incorrect function type 'void (*)(const std::_Any_data &, const Stroika::Foundation::DataExchange::ObjectVariantMapper &, const Stroika::Foundation::DataExchange::VariantValue &, void *&&)'
-        (/home/lewis/Sandbox/Stroika-Dev/Builds/clang++-debug/Test31+0x176b760): note: (unknown) defined here
-        SUMMARY: AddressSanitizer: undefined-behavior /usr/bin/../lib/gcc/x86_64-linux-gnu/7.2.0/../../../../include/c++/7.2.0/bits/std_function.h:706:14 in
-
- * @see https://stroika.atlassian.net/browse/STK-601 for details on why this is needed (ObjectVariantMapper)
- *
- *  NOTE - this is really NOT A BUG. I just cannot find a clean way to disable this (CORRECT BUT OK) runtime warning (well ubsan calls it an error but ...)
- *  THIS "BUG" really just tracks that fact that I cannot find a clean way to suppress this valid warning
- *
- *  \note @see `configure` for actual workaround to this bug - not in C++ code
-*/
-#if !defined(qCompiler_SanitizerFunctionPtrConversionSuppressionBug)
-
-#if defined(__clang__) && !defined(__APPLE__)
-// This appears still an issue (dont want to say broken exactly) in clang++-8 - real issue, but I cannot get suppression to work so far
-// APPEARS MAYBE FIXED in Clang++-9 - marking as so - but we still have UBSAN disabled in configure (see if I can get rid of that)
-#define qCompiler_SanitizerFunctionPtrConversionSuppressionBug (__clang_major__ <= 8)
-#else
-#define qCompiler_SanitizerFunctionPtrConversionSuppressionBug 0
-#endif
-
-#endif
-
 // https://github.com/google/sanitizers/issues/1259
 // https://github.com/google/sanitizers/issues/950 (sometimes also shows up as)
 // THose were TSAN, but also shows up in valgrind/helgrind (so far only on Ubuntu 20.10) as:
@@ -1598,6 +1564,8 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 ==3198448==    by 0x3CEE1F: std::thread::_Invoker<std::tuple<Stroika::Foundation::Execution::Thread::Ptr::Rep_::DoCreate(std::shared_ptr<Stroika::Foundation::Execution::Thread::Ptr::Rep_> const*)::{lambda()#1}> >::operator()() (thread:271)
 ==3198448== 
 */
+// NOTE: I think underlying issue is probably with the tsan/helgrind (probably now common) instrumentation in
+// lib std c++. which is why I use same bug define for tsan and valgrind
 #if !defined(qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy)
 
 // Now set in the configure script, because this depends on the OS, in additional to the compiler version

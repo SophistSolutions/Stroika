@@ -927,10 +927,6 @@ namespace Stroika::Foundation::DataExchange {
         }
 #endif
         /*
-         *  @see qCompiler_SanitizerFunctionPtrConversionSuppressionBug
-         *
-         *  @see https://stroika.atlassian.net/browse/STK-601
-         *
          *  NOTE - we technically call function objects with illegal parameters on each field (data member) of a class.
          *  Each field has a type 'T' - but in this template, we don't know it. We know its type_info object, but there is
          *  no way in C++ to map that back to a type for use an a FromObjectMapperType<T>/ToObjectMapperType<T> function object.
