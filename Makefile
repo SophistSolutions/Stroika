@@ -440,31 +440,33 @@ basic-unix-test-configurations_clang++_versions_:
 	#
 	# clang++-6
 	./configure clang++-6-debug-libc++ --config-tag Unix --compiler-driver clang++-6.0 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable
-	./configure clang++-6-release-libstdc++ --config-tag Unix --compiler-driver clang++-6.0 --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable
+	./configure clang++-6-release-libstdc++ --config-tag Unix --compiler-driver clang++-6.0 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable
 	# clang++-7
 	./configure clang++-7-debug-libc++ --config-tag Unix --compiler-driver clang++-7 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable
 	./configure clang++-7-debug-libc++-c++2a --config-tag Unix --compiler-driver clang++-7 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a
-	./configure clang++-7-release-libstdc++ --config-tag Unix --compiler-driver clang++-7 --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable
+	./configure clang++-7-release-libstdc++ --config-tag Unix --compiler-driver clang++-7 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable
 	# --no-sanitize and --lto disable calls for clang7 just because of how I built it...
 	./configure my-clang++-7-debug-libc++ --config-tag Unix --compiler-driver /private-compiler-builds/clang-7.0.0/bin/clang++ --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --no-sanitize address --no-sanitize undefined
 	./configure my-clang++-7-debug-libc++-c++2a --config-tag Unix --compiler-driver /private-compiler-builds/clang-7.0.0/bin/clang++ --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --no-sanitize address --no-sanitize undefined --cppstd-version c++2a
-	./configure my-clang++-7-release-libstdc++ --config-tag Unix --compiler-driver /private-compiler-builds/clang-7.0.0/bin/clang++ --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable --lto disable
+	./configure my-clang++-7-release-libstdc++ --config-tag Unix --compiler-driver /private-compiler-builds/clang-7.0.0/bin/clang++ --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable --lto disable
 	# clang-8
 	./configure clang++-8-debug-libc++ --config-tag Unix --compiler-driver clang++-8 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable
 	./configure clang++-8-debug-libc++-c++2a --config-tag Unix --compiler-driver clang++-8 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a
-	./configure clang++-8-release-libstdc++ --config-tag Unix --compiler-driver clang++-8 --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable
+	./configure clang++-8-release-libstdc++ --config-tag Unix --compiler-driver clang++-8 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable
 	# clang-9
 	./configure clang++-9-debug-libc++ --config-tag Unix --compiler-driver clang++-9 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable
 	./configure clang++-9-debug-libc++-c++2a --config-tag Unix --compiler-driver clang++-9 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a
-	./configure clang++-9-release-libstdc++ --config-tag Unix --compiler-driver clang++-9 --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable
+	./configure clang++-9-release-libstdc++ --config-tag Unix --compiler-driver clang++-9 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable
 	# clang-10
-	./configure clang++-10-debug-libc++ --config-tag Unix --compiler-driver clang++-10 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable
-	./configure clang++-10-debug-libc++-c++2a --config-tag Unix --compiler-driver clang++-10 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a
-	./configure clang++-10-release-libstdc++ --config-tag Unix --compiler-driver clang++-10 --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable
+	#### --no-sanitize=undefined for https://stroika.atlassian.net/browse/STK-601
+	./configure clang++-10-debug-libc++ --config-tag Unix --compiler-driver clang++-10 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --no-sanitize=undefined
+	./configure clang++-10-debug-libc++-c++2a --config-tag Unix --compiler-driver clang++-10 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a --no-sanitize=undefined
+	./configure clang++-10-release-libstdc++ --config-tag Unix --compiler-driver clang++-10 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable
 	# clang-11
-	./configure clang++-11-debug-libc++ --config-tag Unix --compiler-driver clang++-11 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable
-	./configure clang++-11-debug-libc++-c++2a --config-tag Unix --compiler-driver clang++-11 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a
-	./configure clang++-11-release-libstdc++ --config-tag Unix --compiler-driver clang++-11 --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable
+	#### --no-sanitize=undefined for https://stroika.atlassian.net/browse/STK-601
+	./configure clang++-11-debug-libc++ --config-tag Unix --compiler-driver clang++-11 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --no-sanitize=undefined
+	./configure clang++-11-debug-libc++-c++2a --config-tag Unix --compiler-driver clang++-11 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a --no-sanitize=undefined
+	./configure clang++-11-release-libstdc++ --config-tag Unix --compiler-driver clang++-11 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable
 
 basic-unix-test-configurations_sanitizer_configs_:
 	# A few sanitize/configs (must do explicit -g++-8 versions for ubuntu 1804 since its default g++ is 7 and not supported any longer)
