@@ -23,18 +23,12 @@ FROM ${BASE_IMAGE}
 ARG VS_Latest=https://aka.ms/vs/16/release/vs_buildtools.exe
 ARG VS_16_5_5=https://download.visualstudio.microsoft.com/download/pr/68d6b204-9df0-4fcc-abcc-08ee0eff9cb2/17af83ed545d1287df7575786c326009e459708b60a6821d2a4f5606ef8efb9e/vs_BuildTools.exe
 ARG VS_16_6_5=https://download.visualstudio.microsoft.com/download/pr/067fd8d0-753e-4161-8780-dfa3e577839e/4776935864d08e66183acd5b3647c9616da989c60afbfe100d4afc459f7e5785/vs_BuildTools.exe
-ARG VS_16_7_0=https://download.visualstudio.microsoft.com/download/pr/584a5fcf-dd07-4c36-add9-620e858c9a35/db7bb08710348d6aeade52a30d9bd0987cebb489fdea82c776416128e14eb69f/vs_BuildTools.exe
-ARG VS_16_7_1=https://download.visualstudio.microsoft.com/download/pr/e3850c73-59c6-4c05-9db6-a47a74b67daf/a673e9459f6989d54a1d9b720a37386c18010757fe63840808daf0836d31ef7c/vs_BuildTools.exe
-ARG VS_16_7_2=https://download.visualstudio.microsoft.com/download/pr/befdb1f9-8676-4693-b031-65ee44835915/ffd743061c54a94cc93c41f944b139f31d1294a532626e0bce6e944c5284f0e6/vs_BuildTools.exe
-ARG VS_16_7_3=https://download.visualstudio.microsoft.com/download/pr/44fbb1ed-c06e-41c9-bc39-3d7f2083d61b/f860b197d3b8c07a1e59a49df13244a034b4a56693087bd8aabc440d9f989c7b/vs_BuildTools.exe
-ARG VS_16_7_4=https://download.visualstudio.microsoft.com/download/pr/6c56603d-6cb9-4f23-8d58-dcc8eb8b3563/1c4b90a8d28fa9f524415dac5a45066ba6f52f1049975f9637fa1d713fa7f162/vs_BuildTools.exe
-ARG VS_16_7_5=https://download.visualstudio.microsoft.com/download/pr/e8bc3741-cb70-42aa-9b4e-2bd497de85dd/f3713de3e01b7829d529f67d6240116b73cc0743974bb5373a052f9629cc24d2/vs_BuildTools.exe
-ARG VS_16_7_6=https://download.visualstudio.microsoft.com/download/pr/6b655578-de8c-4862-ad77-65044ca714cf/eb69a008b2fa89b91c20ef09aef64525104b7863078a327324b4389f55c546d6/vs_BuildTools.exe
 ARG VS_16_7_7=https://download.visualstudio.microsoft.com/download/pr/a319c7ec-a0bd-4619-b966-4c58a50f7c76/8ba9f0872faf7640709098adbd88f156902529de9032d214844bec363865d99e/vs_BuildTools.exe
 ARG VS_16_8_1=https://download.visualstudio.microsoft.com/download/pr/2f4a234d-6e7c-4049-8248-6d9ac0d05c96/11f7d9f212a5195ed9680cda0baddced4eb99d06762c769163498344fa239d5b/vs_BuildTools.exe
+ARG VS_16_8_2=https://download.visualstudio.microsoft.com/download/pr/9d2147aa-7b01-4336-b665-8fe07735e5ee/61cc248a8f240911db3e7ae5f0d0cd7358211d9a9424202e7a69786bb6d34357/vs_BuildTools.exe
 
 SHELL ["powershell"]
-RUN Invoke-WebRequest "$env:VS_16_8_1" `
+RUN Invoke-WebRequest "$env:VS_16_8_2" `
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
 SHELL ["cmd", "/S", "/C"]
 RUN %TEMP%\vs_buildtools.exe `
