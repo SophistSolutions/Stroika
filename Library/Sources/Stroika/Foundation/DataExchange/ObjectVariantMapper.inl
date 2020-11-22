@@ -601,7 +601,7 @@ namespace Stroika::Foundation::DataExchange {
             ToObjectMapperType<tuple<T1, T2>>{[] (const ObjectVariantMapper& mapper, const VariantValue& d, tuple<T1, T2>* intoObj) -> void {
                 Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
                 if (s.size () < 2) {
-                    Execution::Throw (BadFormatException{L"Array size out of range for tuple/2"});
+                    Execution::Throw (BadFormatException{L"Array size out of range for tuple/2"sv});
                 };
                 *intoObj = make_tuple (mapper.ToObject<T1> (s[0]), mapper.ToObject<T2> (s[1]));
             }}};
@@ -685,7 +685,7 @@ namespace Stroika::Foundation::DataExchange {
                 [[UNLIKELY_ATTR]]
                 {
                     DbgTrace (L"Array ('%s') actual size %d out of range", Characters::ToString (typeid (T[SZ])).c_str (), static_cast<int> (s.size ()));
-                    Execution::Throw (BadFormatException{L"Array size out of range"_k});
+                    Execution::Throw (BadFormatException{L"Array size out of range"sv});
                 }
             ToObjectMapperType<T>
                 valueMapper{mapper.ToObjectMapper<T> ()}; // optimization if > 1 array elt, and anti-optimization array.size == 0
