@@ -1265,6 +1265,12 @@ Segmentation fault (core dumped)
 
 #endif
 
+// https://stroika.atlassian.net/browse/STK-665
+#ifndef qCompilerAndStdLib_ASAN_Issue_665_Buggy
+// for now define off, and see where this breaks/is needed
+#define qCompilerAndStdLib_ASAN_Issue_665_Buggy 0
+#endif
+
 /*
  *
  * 

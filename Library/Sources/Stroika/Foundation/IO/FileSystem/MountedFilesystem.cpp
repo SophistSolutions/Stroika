@@ -162,7 +162,7 @@ namespace {
         //  @todo fix address sanitizer issue? APPEARS not my bug --LGP 2018-09-28
         //  RETRY AFTER gcc8
         //
-        constexpr bool kUseWatcher_{Debug::kBuiltWithAddressSanitizer ? false : true};
+        constexpr bool kUseWatcher_{qCompilerAndStdLib_ASAN_Issue_665_Buggy && Debug::kBuiltWithAddressSanitizer ? false : true};
         if (kUseWatcher_) {
             static const Watcher_Proc_Mounts_                                 sWatcher_{kUseFile2List_};
             static Execution::Synchronized<Collection<MountedFilesystemType>> sLastResult_;
