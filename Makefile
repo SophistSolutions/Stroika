@@ -471,14 +471,14 @@ basic-unix-test-configurations_sanitizer_configs_:
 	./configure g++-debug-sanitize_leak --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,leak --trace2file enable
 	./configure g++-debug-sanitize_address --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,address,undefined --trace2file enable
 	if [[ $$(lsb_release -rs 2>/dev/null) == "20.10" ]]; then\
-		ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Skipping configuration g++-debug-sanitize_thread to WORKAROUND qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy - TSAN just too many false positives to be useful";\
+		ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Skipping configuration g++-debug-sanitize_thread to WORKAROUND qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy -https://stroika.atlassian.net/browse/STK-717 - TSAN just too many false positives to be useful";\
 	else\
 		./configure g++-debug-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --trace2file enable --cppstd-version c++17 --sanitize none,thread,undefined --append-run-prefix "TSAN_OPTIONS=suppressions=$(StroikaRoot)/Tests/ThreadSanitizerSuppressions.supp";\
 	fi
 	./configure g++-debug-sanitize_undefined --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,address,undefined --trace2file enable
 	./configure g++-release-sanitize_address_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++17 --sanitize none,address,undefined
 	if [[ $$(lsb_release -rs 2>/dev/null) == "20.10" ]]; then\
-		ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Skipping configuration g++-release-sanitize_thread_undefined to WORKAROUND qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy- TSAN just too many false positives to be useful";\
+		ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Skipping configuration g++-release-sanitize_thread_undefined to WORKAROUND qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy- https://stroika.atlassian.net/browse/STK-717 - TSAN just too many false positives to be useful";\
 	else\
 		./configure g++-release-sanitize_thread_undefined --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++17 --sanitize none,thread,undefined --append-run-prefix "TSAN_OPTIONS=suppressions=$(StroikaRoot)/Tests/ThreadSanitizerSuppressions.supp";\
 	fi

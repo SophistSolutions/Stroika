@@ -832,7 +832,7 @@ namespace {
         });
 #endif
         if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
-            // for valgrind, really only HELGRIND issue
+            // workaround TSAN HERE - but valgrind issue in RegressionTests script -  https://stroika.atlassian.net/browse/STK-717
             DbgTrace ("Skipping this test cuz double locks cause TSAN to die and cannot be easily suppressed");
             return;
         }

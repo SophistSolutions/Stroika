@@ -1554,6 +1554,7 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 */
 // NOTE: I think underlying issue is probably with the tsan/helgrind (probably now common) instrumentation in
 // lib std c++. which is why I use same bug define for tsan and valgrind
+// https://stroika.atlassian.net/browse/STK-717
 #if !defined(qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy)
 
 // Now set in the configure script, because this depends on the OS, in additional to the compiler version
