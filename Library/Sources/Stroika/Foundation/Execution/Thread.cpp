@@ -126,7 +126,7 @@ namespace {
 #if qPlatform_Windows
 namespace {
 #if (_WIN32_WINNT < 0x0502)
-    namespace XXX {
+    namespace XXX_ {
         struct CLIENT_ID {
             DWORD UniqueProcess;
             DWORD UniqueThread;
@@ -155,7 +155,7 @@ namespace {
 #else
         // See details in http://www.codeguru.com/forum/showthread.php?t=355572 on this... - backcompat - only support
         // GetThreadId (HANDLE) in Win 2003 Server or later
-        using namespace XXX;
+        using namespace XXX_;
         static DLLLoader                   ntdll (SDKSTR ("ntdll.dll"));
         static pfnNtQueryInformationThread NtQueryInformationThread = (pfnNtQueryInformationThread)ntdll.GetProcAddress ("NtQueryInformationThread");
         if (NtQueryInformationThread == nullptr)
@@ -844,12 +844,7 @@ void Thread::Ptr::SetThreadPriority (Priority priority) const
 String Thread::Ptr::GetThreadName () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    if (fRep_ == nullptr) {
-        return String{};
-    }
-    else {
-        return fRep_->fThreadName_;
-    }
+    return fRep_ == nullptr ? String{} : fRep_->fThreadName_;
 }
 
 void Thread::Ptr::SetThreadName (const String& threadName) const
@@ -866,12 +861,7 @@ void Thread::Ptr::SetThreadName (const String& threadName) const
 Characters::String Thread::Ptr::ToString () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    if (fRep_ == nullptr) {
-        return L"nullptr";
-    }
-    else {
-        return fRep_->ToString ();
-    }
+    return fRep_ == nullptr ? L"nullptr"sv : fRep_->ToString ();
 }
 
 void Thread::Ptr::Start () const
@@ -939,7 +929,7 @@ void Thread::Ptr::Abort () const
 
 void Thread::Ptr::Interrupt () const
 {
-    Debug::TraceContextBumper ctx ("Thread::Interrupt");
+    Debug::TraceContextBumper ctx{"Thread::Interrupt"};
     Require (*this != nullptr);
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
 
@@ -994,10 +984,8 @@ void Thread::Ptr::ThrowIfDoneWithException () const
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::ThrowIfDoneWithException", L"*this=%s", Characters::ToString (*this).c_str ())};
 #endif
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    if (fRep_) {
-        if (fRep_->fStatus_ == Status::eCompleted and fRep_->fSavedException_) {
-            ReThrow (fRep_->fSavedException_, L"Rethrowing exception across threads");
-        }
+    if (fRep_ and fRep_->fStatus_ == Status::eCompleted and fRep_->fSavedException_) {
+        ReThrow (fRep_->fSavedException_, L"Rethrowing exception across threads");
     }
 }
 
@@ -1281,7 +1269,7 @@ string Execution::Thread::FormatThreadID_A (Thread::IDType threadID, const Forma
 
 /*
  ********************************************************************************
- ********************* Execution::Thread::CheckForInterruption ************
+ ********************** Execution::Thread::CheckForInterruption *****************
  ********************************************************************************
  */
 void Execution::Thread::CheckForInterruption ()
