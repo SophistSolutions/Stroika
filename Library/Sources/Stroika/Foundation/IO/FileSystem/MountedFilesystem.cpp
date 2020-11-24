@@ -49,7 +49,7 @@ namespace {
     struct Watcher_Proc_Mounts_ {
         int mfd;
         Watcher_Proc_Mounts_ (const filesystem::path& fn)
-            : mfd (::open (fn.c_str (), O_RDONLY, 0))
+            : mfd{::open (fn.c_str (), O_RDONLY, 0)}
         {
         }
         ~Watcher_Proc_Mounts_ ()
@@ -71,7 +71,7 @@ namespace {
             pfd.fd      = mfd;
             pfd.events  = POLLERR | POLLPRI;
             pfd.revents = 0;
-            if ((rv = poll (&pfd, 1, 0)) >= 0) {
+            if ((rv = ::poll (&pfd, 1, 0)) >= 0) {
                 if (pfd.revents & POLLERR) {
                     return true;
                 }
@@ -155,27 +155,15 @@ namespace {
     Collection<MountedFilesystemType> ReadMountInfo_FromProcFSMounts_ ()
     {
         // Note - /procfs files always unseekable
-        static const filesystem::path kUseFile2List_{"/proc/mounts"};
-        // https://stroika.atlassian.net/browse/STK-665
-        // kUseWatcher_ seems safe and much faster. But on gcc8, produces a mysterious error with address sanitizer, do disable
-        // for now
-        //  @todo fix address sanitizer issue? APPEARS not my bug --LGP 2018-09-28
-        //  RETRY AFTER gcc8
-        //
-        constexpr bool kUseWatcher_{qCompilerAndStdLib_ASAN_Issue_665_Buggy && Debug::kBuiltWithAddressSanitizer ? false : true};
-        if (kUseWatcher_) {
-            static const Watcher_Proc_Mounts_                                 sWatcher_{kUseFile2List_};
-            static Execution::Synchronized<Collection<MountedFilesystemType>> sLastResult_;
-            static bool                                                       sFirstTime_{true};
-            if (sFirstTime_ or sWatcher_.IsNewAvail ()) {
-                sLastResult_ = ReadMountInfo_MTabLikeFile_ (FileInputStream::New (kUseFile2List_, FileInputStream::eNotSeekable));
-                sFirstTime_  = false;
-            }
-            return sLastResult_;
+        static const filesystem::path                                     kUseFile2List_{"/proc/mounts"};
+        static const Watcher_Proc_Mounts_                                 sWatcher_{kUseFile2List_};
+        static Execution::Synchronized<Collection<MountedFilesystemType>> sLastResult_;
+        static bool                                                       sFirstTime_{true};
+        if (sFirstTime_ or sWatcher_.IsNewAvail ()) {
+            sLastResult_ = ReadMountInfo_MTabLikeFile_ (FileInputStream::New (kUseFile2List_, FileInputStream::eNotSeekable));
+            sFirstTime_  = false;
         }
-        else {
-            return ReadMountInfo_MTabLikeFile_ (FileInputStream::New (kUseFile2List_, FileInputStream::eNotSeekable));
-        }
+        return sLastResult_;
     }
 }
 #endif
