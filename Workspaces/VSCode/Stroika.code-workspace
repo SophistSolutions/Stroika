@@ -88,7 +88,8 @@
 			"xtr1common": "cpp",
 			"*.ipp": "cpp",
 			"clocale": "cpp",
-			"csetjmp": "cpp"
+			"csetjmp": "cpp",
+			"*.inc": "cpp"
 		}
 
 	}

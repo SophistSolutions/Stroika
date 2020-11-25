@@ -1,14 +1,16 @@
 {
+   # Verified 2020-11-24: this is still required on Ubuntu 18.04. Seems fixed on all subsequent (20.04 and 20.10) releases.
    https://stroika.atlassian.net/browse/STK-626 PART3 (UBUNTU 1810 and earlier - fixed in Ubuntu 1904)
    Memcheck:Addr32
    ...
    fun:_ZNKSt7codecvtIwc11__mbstate_tE6do_outERS0_PKwS4_RS4_PcS6_RS6_
    ...
 }
-#{
-#   https://stroika.atlassian.net/browse/STK-704
-#   Memcheck:Cond
-#   ...
-#   fun:_ZN7Stroika10Foundation10Characters12Float2String*_19Float2StringOptionsE
-#   ...
-#}
+{
+   # Verified 2020-11-24: This is ONLY broken on g++-valgrind-release-SSLPurify-NoBlockAlloc, Ubuntu 20.04 (works fine on 18.04 and 20.10).
+   https://stroika.atlassian.net/browse/STK-704
+   Memcheck:Cond
+   ...
+   fun:_ZN7Stroika10Foundation10Characters12Float2String*_19Float2StringOptionsE
+   ...
+}
