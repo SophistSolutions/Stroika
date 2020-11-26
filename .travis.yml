@@ -29,7 +29,6 @@ env:
 
 branches:
   only:
-    - v2.1-Dev
     - v2.1-Release
 
 jobs:
