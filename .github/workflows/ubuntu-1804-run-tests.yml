@@ -9,11 +9,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
     container: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
     steps:
       - uses: actions/checkout@v2
       - name: configure Debug
-        run: ./configure Debug --config-tag Unix --apply-default-debug-flags
+        run: ./configure Debug --compiler-driver g++-8 --apply-default-debug-flags --trace2file enable --cppstd-version c++17
       - name: info
         run: |
           cat /Getting-Started-With-Stroika.md
@@ -22,6 +24,6 @@ jobs:
           g++ --version
           cat /proc/cpuinfo
       - name: make
-        run: make QUICK_BUILD=1 tests -j2
+        run: make tests
       - name: make run-tests
         run: make run-tests
