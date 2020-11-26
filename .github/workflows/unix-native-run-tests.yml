@@ -5,7 +5,7 @@ name: unix-native-run-tests
 on:
   push:
     branches:
-      - v2.1-Dev
+      - disabled
 
 jobs:
   build:

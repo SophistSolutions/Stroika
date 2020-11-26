@@ -29,9 +29,9 @@ jobs:
       # No need to explicitly call make third-party-components, libraries, but breaking out
       # as step allows the summary to show the time for each part.
       - name: Make third-party-components
-        run: third-party-components
+        run: make third-party-components
       - name: Make libraries
-        run: libraries
+        run: make libraries
       - name: Make all
         run: make all
       - name: Run Tests
