@@ -15,7 +15,7 @@ jobs:
       - name: configure Debug
         run: ./configure Debug --config-tag Unix --apply-default-debug-flags
       - name: info
-        run: \
+        run: |
           cat /Getting-Started-With-Stroika.md
           pwd
           cat ConfigurationFiles/Debug.xml

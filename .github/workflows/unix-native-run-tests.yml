@@ -1,8 +1,10 @@
+# PRELIM (but maybe never finsih) running tests using stright github actions with no docker
+
 name: unix-native-run-tests
 
 on:
   push:
-    branches: [v2.1-Dev, v2.1-Release]
+    branches: []
   pull_request:
     branches: []
 
