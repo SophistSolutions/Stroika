@@ -5,7 +5,7 @@ name: unix-native-run-tests
 on:
   push:
     branches:
-      - disabled
+      - v2.1-Dev
 
 jobs:
   build:
@@ -13,7 +13,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - run: cat /proc/cpuinfo
+      - name: Build System Info
+        run: |
+          echo "CWD=" `pwd`
+          cat /proc/cpuinfo
+          df -h
       - name: configure Debug
         run: ./configure Debug --config-tag Unix --apply-default-debug-flags
       - name: make

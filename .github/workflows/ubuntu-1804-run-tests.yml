@@ -21,6 +21,7 @@ jobs:
         run: |
           echo "CWD=" `pwd`
           cat /proc/cpuinfo
+          df -h
       - name: Configure Debug
         run: |
           ./configure Debug --compiler-driver g++-8 --apply-default-debug-flags --trace2file enable --cppstd-version c++17
