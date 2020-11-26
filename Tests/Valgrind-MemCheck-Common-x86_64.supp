@@ -7,6 +7,13 @@
    ...
 }
 {
+   https://stroika.atlassian.net/browse/STK-626 PART2 (UBUNTU 1810 and earlier - fixed in Ubuntu 1904)
+   Memcheck:Cond
+   ...
+   fun:_ZNKSt7codecvtIwc11__mbstate_tE6do_outERS0_PKwS4_RS4_PcS6_RS6_
+   ...
+}
+{
    # Verified 2020-11-24: This is ONLY broken on g++-valgrind-release-SSLPurify-NoBlockAlloc, Ubuntu 20.04 (works fine on 18.04 and 20.10).
    https://stroika.atlassian.net/browse/STK-704
    Memcheck:Cond
