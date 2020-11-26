@@ -1,0 +1,20 @@
+name: ubuntu-1804-run-tests
+
+on:
+  push:
+    branches: [v2.1-Dev, v2.1-Release]
+  pull_request:
+    branches: []
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
+    steps:
+      - uses: actions/checkout@v2
+      - name: configure Debug
+        run: ./configure Debug --config-tag Unix --apply-default-debug-flags
+      - name: make
+        run: make QUICK_BUILD=1 tests -j2
+      - name: make run-tests
+        run: make run-tests
