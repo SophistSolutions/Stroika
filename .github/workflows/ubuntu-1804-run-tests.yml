@@ -1,4 +1,6 @@
-name: ubuntu-1804-run-tests
+# PRELIM attempt at running a variety of tests on ubuntu 18.04 LTS
+
+name: ubuntu-18.04-g++-8
 
 on:
   push:
@@ -7,23 +9,34 @@ on:
     branches: []
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
     env:
+      # vm appears to have 2 virtual CPUs, and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
     container: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
     steps:
       - uses: actions/checkout@v2
-      - name: configure Debug
-        run: ./configure Debug --compiler-driver g++-8 --apply-default-debug-flags --trace2file enable --cppstd-version c++17
-      - name: info
+      - name: Build System Info
         run: |
-          cat /Getting-Started-With-Stroika.md
-          pwd
-          cat ConfigurationFiles/Debug.xml
-          g++ --version
+          echo "CWD=" `pwd`
           cat /proc/cpuinfo
-      - name: make
-        run: make tests
-      - name: make run-tests
+      - name: Configure Debug
+        run: |
+          ./configure Debug --compiler-driver g++-8 --apply-default-debug-flags --trace2file enable --cppstd-version c++17
+          cat ConfigurationFiles/Debug.xml
+      # No need to explicitly call make third-party-components, libraries, but breaking out
+      # as step allows the summary to show the time for each part.
+      - name: Make third-party-components
+        run: third-party-components
+      - name: Make libraries
+        run: libraries
+      - name: Make all
+        run: make all
+      - name: Run Tests
         run: make run-tests
+      - name: Archive Results
+        uses: actions/upload-artifact@v2
+        with:
+          name: Sample apps
+          path: Builds/Debug/Sample-*

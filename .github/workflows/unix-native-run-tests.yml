@@ -4,9 +4,8 @@ name: unix-native-run-tests
 
 on:
   push:
-    branches: []
-  pull_request:
-    branches: []
+    branches:
+      - disabled
 
 jobs:
   build:
