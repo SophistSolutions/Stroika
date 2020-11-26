@@ -39,9 +39,16 @@ jobs:
         run: make all
       - name: Run Tests
         run: make run-tests
-      - name: Archive Results
+      - name: Archive Samples Results
         uses: actions/upload-artifact@v2
         with:
           name: Sample apps
           path: |
-            Builds
+            Builds/Debug/Samples-*
+      - name: Archive Performance Log Results
+        uses: actions/upload-artifact@v2
+        with:
+          name: Log Data
+          path: |
+            Builds/Debug/PerformanceDump.txt
+            /tmp/Trace*.txt
