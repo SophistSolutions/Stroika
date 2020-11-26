@@ -1,6 +1,6 @@
 # PRELIM attempt at running a variety of tests on ubuntu 18.04 LTS
 
-name: ubuntu-18.04-g++-8
+name: ubuntu-matrix
 
 on:
   push:
@@ -10,26 +10,34 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runs_on }}
     strategy:
       matrix:
-        container_image:
-          - sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
+        include:
+          - runs_on: ubuntu-latest
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
+            compiler: g++-8
+            cpp_version: c++17
+          - runs_on: ubuntu-latest
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
+            compiler: g++-10
+            cpp_version: c++17
     env:
       # vm appears to have 2 virtual CPUs, and QUICK_BUILD avoids some internal testing
-      MAKEFLAGS: "--jobs=4 QUICK_BUILD=1"
+      MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
     container: ${{ matrix.container_image }}
     steps:
       - uses: actions/checkout@v2
       - name: Build System Info
         run: |
           echo "CWD=" `pwd`
-          cat /proc/cpuinfo
+          grep "model name" /proc/cpuinfo | head -1
+          grep processor /proc/cpuinfo | wc -l
           grep MemTotal /proc/meminfo
           df -h
       - name: Configure Debug
         run: |
-          ./configure Debug --compiler-driver g++-8 --apply-default-debug-flags --trace2file enable --cppstd-version c++17
+          ./configure Debug --compiler-driver ${{ matrix.compiler }} --apply-default-debug-flags --trace2file enable --cppstd-version ${{ matrix.cpp_version }}
           cat ConfigurationFiles/Debug.xml
       # No need to explicitly call make third-party-components, libraries, but breaking out
       # as step allows the summary to show the time for each part.
