@@ -28,8 +28,11 @@ jobs:
           cat ConfigurationFiles/Debug.xml
       # No need to explicitly call make third-party-components, libraries, but breaking out
       # as step allows the summary to show the time for each part.
+      # Break out third-party-components to do clean so we dont run out of disk space
       - name: Make third-party-components
-        run: make third-party-components
+        run: |
+          make third-party-components
+          make clean
       - name: Make libraries
         run: make libraries
       - name: Make all
