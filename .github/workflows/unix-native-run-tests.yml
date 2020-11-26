@@ -16,8 +16,6 @@ jobs:
     - name: configure Debug
       run:  ./configure Debug --config-tag Unix --apply-default-debug-flags
     - name: make
-      run: make
-    - name: make check
-      run: make check
+      run: make tests
     - name: make run-tests
       run: make run-tests
