@@ -22,7 +22,7 @@ jobs:
             cpp_version: c++17
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable
-            if: ${{ github.ref==refs/heads/v2.1-Release }}
+            if: ${{ github.ref=='refs/heads/v2.1-Release' }}
           - displayTargetName: ubuntu-20.04-g++-10-DBG
             os: unix
             compiler: g++-10
