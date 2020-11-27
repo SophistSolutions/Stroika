@@ -14,17 +14,23 @@ jobs:
     strategy:
       matrix:
         include:
-          - runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
+          - displayTargetName: ubuntu-18.04
             compiler: g++-8
+            runs_on: ubuntu-latest
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
             cpp_version: c++17
-          - runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
+            config_name: Debug
+            extra_config_args: --apply-default-debug-flags --trace2file enable
+          - displayTargetName: ubuntu-20.04
             compiler: g++-10
+            runs_on: ubuntu-latest
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
             cpp_version: c++17
+            config_name: Debug
+            extra_config_args: --apply-default-debug-flags --trace2file enable
     env:
       # vm appears to have 2 virtual CPUs, and QUICK_BUILD avoids some internal testing
-      MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
+      MAKEFLAGS: "--jobs=2 QUICK_BUILD=1"
     container: ${{ matrix.container_image }}
     steps:
       - uses: actions/checkout@v2
@@ -35,9 +41,9 @@ jobs:
           grep processor /proc/cpuinfo | wc -l
           grep MemTotal /proc/meminfo
           df -h
-      - name: Configure Debug
+      - name: Configure ${{ matrix.config_name }}
         run: |
-          ./configure Debug --compiler-driver ${{ matrix.compiler }} --apply-default-debug-flags --trace2file enable --cppstd-version ${{ matrix.cpp_version }}
+          ./configure ${{ matrix.config_name }} --compiler-driver ${{ matrix.compiler }} ${{ matrix.extra_config_args }} --cppstd-version ${{ matrix.cpp_version }}
           cat ConfigurationFiles/Debug.xml
       # No need to explicitly call make third-party-components, libraries, but breaking out
       # as step allows the summary to show the time for each part.
@@ -57,11 +63,11 @@ jobs:
         with:
           name: Sample apps
           path: |
-            Builds/Debug/Samples-*
+            Builds/${{ matrix.config_name }}/Samples-*
       - name: Archive Performance Log Results
         uses: actions/upload-artifact@v2
         with:
           name: Log Data
           path: |
-            Builds/Debug/PerformanceDump.txt
+            Builds/${{ matrix.config_name }}/PerformanceDump.txt
             /tmp/Trace*.txt
