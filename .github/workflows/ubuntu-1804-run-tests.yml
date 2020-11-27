@@ -43,6 +43,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build System Info
         run: |
+          lsb_release -d 2>/dev/null || true
           echo "CWD=" `pwd`
           grep "model name" /proc/cpuinfo | head -1
           grep processor /proc/cpuinfo | wc -l
