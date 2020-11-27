@@ -13,6 +13,11 @@ jobs:
     runs-on: ${{ matrix.runs_on }}
     strategy:
       matrix:
+        isFullTest:
+          - ${{ github.ref=='refs/heads/v2.1-Release' }}
+        exclude:
+          - isFullTest: false
+            fullTestOnly: true
         include:
           - displayTargetName: ubuntu-18.04-g++-8-DBG
             os: unix
@@ -22,7 +27,7 @@ jobs:
             cpp_version: c++17
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable
-            if: ${{ github.ref=='refs/heads/v2.1-Release' }}
+            fullTestOnly: false
           - displayTargetName: ubuntu-20.04-g++-10-DBG
             os: unix
             compiler: g++-10
@@ -31,7 +36,7 @@ jobs:
             cpp_version: c++17
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable
-            if: ${{ github.ref=='refs/heads/v2.1-Release' }}
+            fullTestOnly: false
           - displayTargetName: ubuntu-20.04-clang++-10
             os: unix
             compiler: clang++-10
@@ -40,6 +45,7 @@ jobs:
             cpp_version: c++17
             config_name: Release
             extra_config_args: --apply-default-release-flags --trace2file enable
+            fullTestOnly: true
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=5 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
