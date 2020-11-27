@@ -14,23 +14,30 @@ jobs:
     strategy:
       matrix:
         include:
-          - displayTargetName: ubuntu-18.04
+          - displayTargetName: ubuntu-18.04-g++-8-DBG
             compiler: g++-8
             runs_on: ubuntu-latest
             container_image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
             cpp_version: c++17
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable
-          - displayTargetName: ubuntu-20.04
+          - displayTargetName: ubuntu-20.04-g++-10-DBG
             compiler: g++-10
             runs_on: ubuntu-latest
             container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
             cpp_version: c++17
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable
+          - displayTargetName: ubuntu-20.04-clang++-11
+            compiler: clang++-11
+            runs_on: ubuntu-latest
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
+            cpp_version: c++17
+            config_name: Release
+            extra_config_args: --apply-default-release-flags --trace2file enable
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=5 (empirical), and QUICK_BUILD avoids some internal testing
-      MAKEFLAGS: "--jobs=5 QUICK_BUILD=1"
+      MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
     container: ${{ matrix.container_image }}
     steps:
       - uses: actions/checkout@v2
