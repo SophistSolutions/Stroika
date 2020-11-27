@@ -47,7 +47,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build System Info
-        if: ${{ matrix.os==unix }}
+        if: ${{ matrix.os=='unix' }}
         run: |
           lsb_release -d 2>/dev/null || true
           echo "CWD=" `pwd`
