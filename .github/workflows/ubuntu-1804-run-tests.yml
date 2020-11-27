@@ -29,8 +29,8 @@ jobs:
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable
     env:
-      # vm appears to have 2 virtual CPUs, and QUICK_BUILD avoids some internal testing
-      MAKEFLAGS: "--jobs=2 QUICK_BUILD=1"
+      # vm has 2 virtual CPUs, but 8GB ram, so jobs=5 (empirical), and QUICK_BUILD avoids some internal testing
+      MAKEFLAGS: "--jobs=5 QUICK_BUILD=1"
     container: ${{ matrix.container_image }}
     steps:
       - uses: actions/checkout@v2
@@ -44,7 +44,7 @@ jobs:
       - name: Configure ${{ matrix.config_name }}
         run: |
           ./configure ${{ matrix.config_name }} --compiler-driver ${{ matrix.compiler }} ${{ matrix.extra_config_args }} --cppstd-version ${{ matrix.cpp_version }}
-          cat ConfigurationFiles/Debug.xml
+          cat ConfigurationFiles/${{ matrix.config_name }}.xml
       # No need to explicitly call make third-party-components, libraries, but breaking out
       # as step allows the summary to show the time for each part.
       # Break out third-party-components to do clean so we dont run out of disk space
@@ -61,13 +61,13 @@ jobs:
       - name: Archive Samples Results
         uses: actions/upload-artifact@v2
         with:
-          name: Sample apps
+          name: Sample apps (${{ matrix.displayTargetName }})
           path: |
             Builds/${{ matrix.config_name }}/Samples-*
       - name: Archive Performance Log Results
         uses: actions/upload-artifact@v2
         with:
-          name: Log Data
+          name: Log Data (${{ matrix.displayTargetName }})
           path: |
             Builds/${{ matrix.config_name }}/PerformanceDump.txt
             /tmp/Trace*.txt
