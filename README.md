@@ -69,8 +69,16 @@ Stroika's biggest strength is also its biggest weakness:
   | **v2.1-Release**                                                               | [![Link](https://circleci.com/gh/SophistSolutions/Stroika/tree/v2.1-Release.svg?style=shield)](https://circleci.com/gh/SophistSolutions/Stroika/tree/v2.1-Release) |                                              |
   | **v2.1-Dev**                                                                   |     [![Link](https://circleci.com/gh/SophistSolutions/Stroika/tree/v2.1-Dev.svg?style=shield)](https://circleci.com/gh/SophistSolutions/Stroika/tree/v2.1-Dev)     |                                              |
 
+- Github Actions
+
+  | [Branches](https://app.circleci.com/pipelines/github/SophistSolutions/Stroika) |                                                                                               Status                                                                                                | [.github/workflows/ubuntu-1804-run-tests.yml](.github/workflows/ubuntu-1804-run-tests.yml) |
+  | ------------------------------------------------------------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | ------------------------------------------------------------------------------------------ |
+  | **v2.1-Release**                                                               | [![Link](https://github.com/SophistSolutions/Stroika/workflows/ubuntu-matrix/badge.svg?branch=v2.1-Release)](htthttps://github.com/SophistSolutions/Stroika/actions?query=workflow%3Aubuntu-matrix) |                                                                                            |
+  | **v2.1-Dev**                                                                   |    [![Link](https://github.com/SophistSolutions/Stroika/workflows/ubuntu-matrix/badge.svg?branch=v2.1-Dev)](https://github.com/SophistSolutions/Stroika/actions?query=workflow%3Aubuntu-matrix)     |                                                                                            |
+
 - Travis CI
 
+  - **DEPRECATED** - probably losing support for travisci soon
   - Autobuilds Linux configurations, MacOS, and Windows.
   - Some configurations work using docker.
 

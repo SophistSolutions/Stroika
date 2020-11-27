@@ -1,4 +1,8 @@
 #
+# CLOSE TO GIVING UP on TravisCI. Sent several emails about their new policy and they never responded.
+# Doesn't appear I can use for opensource (free) anymore, so probably giving up. Will give a few weeks to see
+# if anything changes --LGP 2020-11-27
+#
 # The purpose of this file is to configure Travis CI build system integration.
 #   @see https://travis-ci.com/SophistSolutions/Stroika
 #
