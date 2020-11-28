@@ -433,7 +433,7 @@ namespace Stroika::Foundation::Traversal {
     {
         Require (emptyResult.empty ());
         RESULT_CONTAINER result = emptyResult;
-        for (const auto& i : Where (includeIfTrue)) {
+        for (const auto i : Where (includeIfTrue)) {
             result.Add (i);
         }
         return result;
@@ -448,7 +448,7 @@ namespace Stroika::Foundation::Traversal {
             tmp = vector<T>{t1.begin (), t1.end ()};
         }
         else {
-            for (const auto& i : *this) {
+            for (const auto i : *this) {
                 if (find_if (tmp.begin (), tmp.end (), [&] (ArgByValueType<T> n) { return equalsComparer (n, i); }) == tmp.end ()) {
                     tmp.push_back (i);
                 }
@@ -580,7 +580,7 @@ namespace Stroika::Foundation::Traversal {
     {
         RESULT result{};
         bool   firstTime{true};
-        for (const auto& i : *this) {
+        for (const auto i : *this) {
             if (firstTime) {
                 result    = convertToT (i);
                 firstTime = false;
@@ -699,7 +699,7 @@ namespace Stroika::Foundation::Traversal {
     inline optional<T> Iterable<T>::First (const function<bool (ArgByValueType<T>)>& that) const
     {
         RequireNotNull (that);
-        for (const auto& i : *this) {
+        for (const auto i : *this) {
             if (that (i)) {
                 return i;
             }
@@ -735,7 +735,7 @@ namespace Stroika::Foundation::Traversal {
     {
         RequireNotNull (that);
         optional<T> result;
-        for (const auto& i : *this) {
+        for (const auto i : *this) {
             if (that (i)) {
                 result = i;
             }
@@ -761,7 +761,7 @@ namespace Stroika::Foundation::Traversal {
     bool Iterable<T>::All (const function<bool (ArgByValueType<T>)>& testEachElt) const
     {
         RequireNotNull (testEachElt);
-        for (const auto& i : *this) {
+        for (const auto i : *this) {
             if (not testEachElt (i)) {
                 return false;
             }

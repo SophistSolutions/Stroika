@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Containers {
     template <typename EQUALS_COMPARER>
     bool Collection<T>::Contains (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer) const
     {
-        for (const auto& i : *this) {
+        for (const auto i : *this) {
             if (equalsComparer (i, item)) {
                 return true;
             }
