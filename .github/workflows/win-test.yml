@@ -1,4 +1,10 @@
-# PRELIM (but maybe never finsih) running tests using stright github actions with no docker
+# Because we running the containers direcly in job.container
+# fails (as of 2020-11-27) with a message saying this only works on linux, we do similarly
+# but invoking the docker as a program on windows
+#
+# If we can use the container label/tool for windows, we can use the build-test-workflow instead of
+# this workflow (with only minor changes)
+#
 
 name: build-test-workflow-WINDOWS
 
@@ -38,6 +44,7 @@ jobs:
         run: |
           docker ps -a
           docker exec buildContainer systeminfo
+          docker exec buildContainer df -h
       - name: Git Checkout
         shell: "bash"
         run: |
@@ -60,3 +67,4 @@ jobs:
         shell: "bash"
         run: |
           df -h
+          docker exec buildContainer df -h
