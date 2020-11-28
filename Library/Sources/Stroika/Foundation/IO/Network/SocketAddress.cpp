@@ -54,7 +54,7 @@ String SocketAddress::ToString () const
 Traversal::Iterable<SocketAddress> Network::SocketAddresses (const Traversal::Iterable<InternetAddress>& internetAddresses, PortType portNumber)
 {
     Containers::Collection<SocketAddress> tmp;
-    for (const auto& i : internetAddresses) {
+    for (const auto i : internetAddresses) {
         tmp += SocketAddress{i, portNumber};
     }
     return tmp;
