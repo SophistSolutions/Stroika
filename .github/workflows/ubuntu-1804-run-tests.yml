@@ -11,6 +11,7 @@ on:
 jobs:
   build-and-test:
     runs-on: ${{ matrix.runs_on }}
+    if: matrix.fullTestOnly == (github.ref == 'refs/heads/v2.1-Release')
     strategy:
       matrix:
         include:
@@ -41,7 +42,6 @@ jobs:
             config_name: Release
             extra_config_args: --apply-default-release-flags --trace2file enable
             fullTestOnly: true
-    if: ${{ matrix.fullTestOnly == (github.ref == 'refs/heads/v2.1-Release') }}
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=5 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
