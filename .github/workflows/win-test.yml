@@ -6,36 +6,47 @@ on:
   push:
     branches:
       - v2.1-Dev
+      - v2.1-Release
 
 jobs:
   win-docker-bld:
     runs-on: windows-latest
-
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=5 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
-      BRANCH: "v2.1-Dev"
     steps:
       - uses: actions/checkout@v2
+      # https://stackoverflow.com/questions/58033366/how-to-get-current-branch-within-github-actions
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
       - name: Build System Info
         run: |
-          echo "CWD=" `pwd`
+          echo "CWD:" && pwd
           df -h
           systeminfo
-          echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
+          echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%
       - name: docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
         run: docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
-      - name: xStart docker build environmentx
+      - name: Start docker build environment
         run: |
-          "docker run
-          --tty
-          --memory 4G --cpus 2 --storage-opt 'size=35GB'
-          --detach --name buildContainer
-          sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 || echo 'Failed: $?'"
-      - name: print info about systemin
+          docker run --tty --memory 5G --cpus 2 --storage-opt 'size=35GB' --detach --name buildContainer sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+      - name: Print Info about docker system
         run: |
           docker ps -a
           docker exec buildContainer systeminfo
-      - name: xxxxxx
+      - name: Git Checkout
         run: |
-          docker exec buildContainer sh -c "git clone https://github.com/SophistSolutions/Stroika.git && cd Stroika && git checkout %BRANCH%"
+          docker exec buildContainer sh -c "git clone https://github.com/SophistSolutions/Stroika.git && cd Stroika && git checkout ${{ steps.extract_branch.outputs.branch }}"
+      # Only for build speed: --Xerces no --OpenSSL no --lzma no --boost no
+      - name: Configure
+        run: |
+          docker exec --workdir c:/Stroika buildContainer sh -c "./configure Debug --arch x86 --apply-default-debug-flags --Xerces no --OpenSSL no --lzma no --boost no"
+          docker exec --workdir c:/Stroika buildContainer cat ConfigurationFiles/Debug.xml
+      - name: Build
+        run: |
+          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make all
+      - name: Run-Tests
+        run: |
+          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make run-tests
