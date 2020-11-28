@@ -17,5 +17,10 @@ jobs:
         run: |
           echo "CWD=" `pwd`
           df -h
-      - name: xxx
+          systeminfo
+          echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
+      - name: docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
         run: docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+      - name: xStart docker build environmentx
+        run: |
+          docker run --storage-opt "size=100GB" --memory 10G --cpus 4 --tty --detach --name buildContainer sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
