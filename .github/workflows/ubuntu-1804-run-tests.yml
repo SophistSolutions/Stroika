@@ -29,6 +29,7 @@ jobs:
             cpp_version: c++17
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable
+            fullTestOnly: false
           - displayTargetName: ubuntu-20.04-g++-10-DBG
             os: unix
             compiler: g++-10
@@ -37,6 +38,7 @@ jobs:
             cpp_version: c++17
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable
+            fullTestOnly: false
           - displayTargetName: ubuntu-20.04-clang++-10
             os: unix
             compiler: clang++-10
