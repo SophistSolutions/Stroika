@@ -19,7 +19,7 @@ jobs:
           - false
         exclude:
           - isFullTest: false
-            fullTestOnly: false
+            fullTestOnly: true
         include:
           - displayTargetName: ubuntu-18.04-g++-8-DBG
             os: unix
