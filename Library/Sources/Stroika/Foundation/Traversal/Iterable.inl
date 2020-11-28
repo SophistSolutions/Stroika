@@ -288,9 +288,9 @@ namespace Stroika::Foundation::Traversal {
          *  An extremely inefficient but space-constant implementation. N^2 and check
          *  a contains b and b contains a
          */
-        for (const auto& ti : lhs) {
+        for (const auto ti : lhs) {
             bool contained = false;
-            for (const auto& ri : rhs) {
+            for (const auto ri : rhs) {
                 if (equalsComparer (ti, ri)) {
                     contained = true;
                     break;
@@ -300,9 +300,9 @@ namespace Stroika::Foundation::Traversal {
                 return false;
             }
         }
-        for (const auto& ri : rhs) {
+        for (const auto ri : rhs) {
             bool contained = false;
-            for (const auto& ti : lhs) {
+            for (const auto ti : lhs) {
                 if (equalsComparer (ti, ri)) {
                     contained = true;
                     break;
@@ -337,12 +337,12 @@ namespace Stroika::Foundation::Traversal {
          *  An extremely in-efficient but space-constant implementation. N^3 and check
          *  a contains b and b contains a
          */
-        for (const auto& ti : lhs) {
+        for (const auto ti : lhs) {
             if (tallyOf (lhs, ti) != tallyOf (rhs, ti)) {
                 return false;
             }
         }
-        for (const auto& ti : rhs) {
+        for (const auto ti : rhs) {
             if (tallyOf (lhs, ti) != tallyOf (rhs, ti)) {
                 return false;
             }
