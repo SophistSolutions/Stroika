@@ -8,9 +8,13 @@ on:
       - v2.1-Dev
 
 jobs:
-  build:
+  win-docker-bld:
     runs-on: windows-latest
 
+    env:
+      # vm has 2 virtual CPUs, but 8GB ram, so jobs=5 (empirical), and QUICK_BUILD avoids some internal testing
+      MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
+      BRANCH: "v2.1-Dev"
     steps:
       - uses: actions/checkout@v2
       - name: Build System Info
@@ -23,4 +27,15 @@ jobs:
         run: docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
       - name: xStart docker build environmentx
         run: |
-          docker run --storage-opt "size=100GB" --memory 10G --cpus 4 --tty --detach --name buildContainer sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+          "docker run
+          --tty
+          --memory 4G --cpus 2 --storage-opt 'size=35GB'
+          --detach --name buildContainer
+          sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 || echo 'Failed: $?'"
+      - name: print info about systemin
+        run: |
+          docker ps -a
+          docker exec buildContainer systeminfo
+      - name: xxxxxx
+        run: |
+          docker exec buildContainer sh -c "git clone https://github.com/SophistSolutions/Stroika.git && cd Stroika && git checkout %BRANCH%"
