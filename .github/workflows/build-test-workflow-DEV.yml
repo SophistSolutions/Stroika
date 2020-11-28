@@ -1,17 +1,27 @@
-# PRELIM attempt at running a variety of tests on ubuntu 18.04 LTS
+# build-test-workflow-DEV.yml and build-test-workflow-RELEASE.yml neary
+# identical, but a few tests are commented out (to not needlessly stress CI system)
+# for DEV builds
+#
+# NOTE: I've tried many tricks - none which seem to work - to get this working on one file with one
+# workflow and tests
+#     https://github.community/t/what-is-the-correct-if-condition-syntax-for-checking-matrix-os-version/16221
+#     https://github.community/t/how-to-conditionally-include-exclude-items-in-matrix-eg-based-on-branch/16853
+#
+# but none seem to work
+#
+#
 
-name: ubuntu-matrix
+name: build-test-workflow-DEV
 
 on:
   push:
-    branches: [v2.1-Dev, v2.1-Release]
+    branches: [v2.1-Dev]
   pull_request:
     branches: []
 
 jobs:
   build-and-test:
     runs-on: ${{ matrix.runs_on }}
-    if: matrix.fullTestOnly == (github.ref == 'refs/heads/v2.1-Release')
     strategy:
       matrix:
         include:
@@ -24,15 +34,15 @@ jobs:
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable
             fullTestOnly: false
-          - displayTargetName: ubuntu-20.04-g++-10-DBG
-            os: unix
-            compiler: g++-10
-            runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
-            cpp_version: c++17
-            config_name: Debug
-            extra_config_args: --apply-default-debug-flags --trace2file enable
-            fullTestOnly: false
+          # - displayTargetName: ubuntu-20.04-g++-10-DBG
+          #   os: unix
+          #   compiler: g++-10
+          #   runs_on: ubuntu-latest
+          #   container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
+          #   cpp_version: c++17
+          #   config_name: Debug
+          #   extra_config_args: --apply-default-debug-flags --trace2file enable
+          #   fullTestOnly: false
           - displayTargetName: ubuntu-20.04-clang++-10
             os: unix
             compiler: clang++-10

@@ -1,0 +1,100 @@
+# build-test-workflow-DEV.yml and build-test-workflow-RELEASE.yml neary
+# identical, but a few tests are commented out (to not needlessly stress CI system)
+# for DEV builds
+#
+# NOTE: I've tried many tricks - none which seem to work - to get this working on one file with one
+# workflow and tests
+#     https://github.community/t/what-is-the-correct-if-condition-syntax-for-checking-matrix-os-version/16221
+#     https://github.community/t/how-to-conditionally-include-exclude-items-in-matrix-eg-based-on-branch/16853
+#
+# but none seem to work
+#
+#
+
+name: build-test-workflow-Release
+
+on:
+  push:
+    branches: [v2.1-Release]
+  pull_request:
+    branches: []
+
+jobs:
+  build-and-test:
+    runs-on: ${{ matrix.runs_on }}
+    strategy:
+      matrix:
+        include:
+          - displayTargetName: ubuntu-18.04-g++-8-DBG
+            os: unix
+            compiler: g++-8
+            runs_on: ubuntu-latest
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
+            cpp_version: c++17
+            config_name: Debug
+            extra_config_args: --apply-default-debug-flags --trace2file enable
+            fullTestOnly: false
+          - displayTargetName: ubuntu-20.04-g++-10-DBG
+            os: unix
+            compiler: g++-10
+            runs_on: ubuntu-latest
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
+            cpp_version: c++17
+            config_name: Debug
+            extra_config_args: --apply-default-debug-flags --trace2file enable
+            fullTestOnly: false
+          - displayTargetName: ubuntu-20.04-clang++-10
+            os: unix
+            compiler: clang++-10
+            runs_on: ubuntu-latest
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
+            cpp_version: c++17
+            config_name: Release
+            extra_config_args: --apply-default-release-flags --trace2file enable
+            fullTestOnly: true
+    env:
+      # vm has 2 virtual CPUs, but 8GB ram, so jobs=5 (empirical), and QUICK_BUILD avoids some internal testing
+      MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
+    container: ${{ matrix.container_image }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build System Info
+        if: ${{ matrix.os=='unix' }}
+        run: |
+          lsb_release -d 2>/dev/null || true
+          echo "CWD=" `pwd`
+          echo "nproc=" `nproc`
+          grep "model name" /proc/cpuinfo | head -1
+          grep processor /proc/cpuinfo | wc -l
+          grep MemTotal /proc/meminfo
+          df -h
+      - name: Configure ${{ matrix.config_name }}
+        run: |
+          ./configure ${{ matrix.config_name }} --compiler-driver ${{ matrix.compiler }} ${{ matrix.extra_config_args }} --cppstd-version ${{ matrix.cpp_version }}
+          cat ConfigurationFiles/${{ matrix.config_name }}.xml
+      # No need to explicitly call make third-party-components, libraries, but breaking out
+      # as step allows the summary to show the time for each part.
+      # Break out third-party-components to do clean so we dont run out of disk space
+      - name: Make third-party-components
+        run: |
+          make third-party-components
+          make clean
+      - name: Make libraries
+        run: make libraries
+      - name: Make all
+        run: make all
+      - name: Run Tests
+        run: make run-tests
+      - name: Archive Samples Results
+        uses: actions/upload-artifact@v2
+        with:
+          name: Sample apps (${{ matrix.displayTargetName }})
+          path: |
+            Builds/${{ matrix.config_name }}/Samples-*
+      - name: Archive Performance Log Results
+        uses: actions/upload-artifact@v2
+        with:
+          name: Log Data (${{ matrix.displayTargetName }})
+          path: |
+            Builds/${{ matrix.config_name }}/PerformanceDump.txt
+            /tmp/Trace*.txt
