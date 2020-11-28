@@ -1,6 +1,6 @@
 # PRELIM (but maybe never finsih) running tests using stright github actions with no docker
 
-name: wintest
+name: build-test-workflow-WINDOWS
 
 on:
   push:
