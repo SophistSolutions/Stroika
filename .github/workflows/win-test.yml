@@ -22,11 +22,12 @@ jobs:
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: extract_branch
       - name: Build System Info
+        shell: "bash"
         run: |
-          echo "CWD:" && pwd
+          echo -n "CWD: `pwd`"
           df -h
           systeminfo
-          echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%
+          echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
       - name: docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
         run: docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
       - name: Start docker build environment
@@ -55,3 +56,7 @@ jobs:
         shell: "bash"
         run: |
           docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make run-tests
+      - name: Build System Info
+        shell: "bash"
+        run: |
+          df -h
