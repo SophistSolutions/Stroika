@@ -479,7 +479,7 @@ namespace Stroika::Foundation::Traversal {
             tmp = vector<RESULT>{t1.begin (), t1.end ()};
         }
         else {
-            for (const T& i : *this) {
+            for (const T i : *this) {
                 RESULT item2Test = extractElt (i);
                 if (find_if (tmp.begin (), tmp.end (), [&] (ArgByValueType<T> n) { return equalsComparer (n, item2Test); }) == tmp.end ()) {
                     tmp.push_back (item2Test);
@@ -773,7 +773,7 @@ namespace Stroika::Foundation::Traversal {
     optional<RESULT_TYPE> Iterable<T>::Accumulate (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op) const
     {
         optional<RESULT_TYPE> result;
-        for (const T& i : *this) {
+        for (const T i : *this) {
             if (result) {
                 result = op (i, *result);
             }
@@ -968,7 +968,7 @@ namespace Stroika::Foundation::Traversal {
     {
         Require (n < size ());
         size_t idx = n;
-        for (const T& i : *this) {
+        for (const T i : *this) {
             if (idx == 0) {
                 return i;
             }
@@ -981,7 +981,7 @@ namespace Stroika::Foundation::Traversal {
     T Iterable<T>::NthValue (size_t n, ArgByValueType<T> defaultValue) const
     {
         size_t idx = n;
-        for (const T& i : *this) {
+        for (const T i : *this) {
             if (idx == 0) {
                 return i;
             }

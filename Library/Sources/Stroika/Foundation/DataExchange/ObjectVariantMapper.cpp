@@ -247,7 +247,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Containers::Mapping
     using ACTUAL_ELEMENT_TYPE                                  = Mapping<String, String>;
     FromObjectMapperType<ACTUAL_ELEMENT_TYPE> fromObjectMapper = [] (const ObjectVariantMapper&, const ACTUAL_ELEMENT_TYPE* fromObjOfTypeT) -> VariantValue {
         Mapping<String, VariantValue> m;
-        for (const auto& i : *fromObjOfTypeT) {
+        for (const auto i : *fromObjOfTypeT) {
             // really could do either way - but second more efficient
             //m.Add (i.first, mapper.Serialize (typeid (String), reinterpret_cast<const byte*> (&i.second)));
             m.Add (i.fKey, i.fValue);

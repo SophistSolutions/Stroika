@@ -35,7 +35,7 @@ struct Listener::Rep_ {
         DbgTrace (L"Listener::Rep_::CTOR (addres=%s, ...)", Characters::ToString (addrs).c_str ());
 #endif
         Sequence<ConnectionOrientedMasterSocket::Ptr> masterSockets;
-        for (const auto& addr : addrs) {
+        for (const auto addr : addrs) {
             ConnectionOrientedMasterSocket::Ptr ms = ConnectionOrientedMasterSocket::New (addr.GetAddressFamily (), Socket::STREAM);
             ms.Bind (addr, bindFlags); // do in CTOR (not thread) so throw propagated
             ms.Listen (backlog);

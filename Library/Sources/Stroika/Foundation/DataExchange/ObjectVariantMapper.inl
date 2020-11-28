@@ -432,7 +432,7 @@ namespace Stroika::Foundation::DataExchange {
             Sequence<VariantValue> s;
             if (not fromObjOfTypeT->empty ()) {
                 FromObjectMapperType<T> valueMapper{mapper.FromObjectMapper<T> ()};
-                for (const auto& i : *fromObjOfTypeT) {
+                for (const auto i : *fromObjOfTypeT) {
                     s.Append (mapper.FromObject<T> (valueMapper, i));
                 }
             }
