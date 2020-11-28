@@ -13,8 +13,6 @@ jobs:
     runs-on: ${{ matrix.runs_on }}
     strategy:
       matrix:
-        isFullTest:
-          - ${{ github.ref=='refs/heads/v2.1-Release' }}
         include:
           - displayTargetName: ubuntu-18.04-g++-8-DBG
             os: unix
@@ -43,11 +41,11 @@ jobs:
             config_name: Release
             extra_config_args: --apply-default-release-flags --trace2file enable
             fullTestOnly: true
+    if: ${{ ((github.ref=='refs/heads/v2.1-Release') == matrix.fullTestOnly) }}
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=5 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
     container: ${{ matrix.container_image }}
-    if: ${{ ((github.ref=='refs/heads/v2.1-Release') == matrix.isFullTest) }}
     steps:
       - uses: actions/checkout@v2
       - name: Build System Info
