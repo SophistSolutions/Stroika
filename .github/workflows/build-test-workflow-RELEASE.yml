@@ -25,6 +25,16 @@ jobs:
     strategy:
       matrix:
         include:
+          ### SADLY: Container operations are only supported on Linux runners
+          # - displayTargetName: windows-DBG
+          #   os: windows
+          #   compiler: g++-8
+          #   runs_on: windows-latest
+          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+          #   cpp_version: c++17
+          #   config_name: Debug
+          #   extra_config_args: --apply-default-debug-flags --trace2file enable
+          #   fullTestOnly: false
           - displayTargetName: ubuntu-18.04-g++-8-DBG
             os: unix
             compiler: g++-8

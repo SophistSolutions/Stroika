@@ -1,12 +1,11 @@
 # PRELIM (but maybe never finsih) running tests using stright github actions with no docker
 
-name: unix-native-run-tests
+name: wintest
 
 on:
   push:
     branches:
       - v2.1-Dev
-      - v2.1-Release
 
 jobs:
   build:
@@ -18,9 +17,5 @@ jobs:
         run: |
           echo "CWD=" `pwd`
           df -h
-      - name: configure Debug
-        run: ./configure Debug --apply-default-debug-flags
-      - name: make
-        run: make tests
-      - name: make run-tests
-        run: make run-tests
+      - name: xxx
+        run: docker pull sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19

@@ -25,42 +25,43 @@ jobs:
     strategy:
       matrix:
         include:
-          - displayTargetName: windows-DBG
-            os: windows
+          ### SADLY: Container operations are only supported on Linux runners
+          # - displayTargetName: windows-DBG
+          #   os: windows
+          #   compiler: g++-8
+          #   runs_on: windows-latest
+          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+          #   cpp_version: c++17
+          #   config_name: Debug
+          #   extra_config_args: --apply-default-debug-flags --trace2file enable
+          #   fullTestOnly: false
+          - displayTargetName: ubuntu-18.04-g++-8-DBG
+            os: unix
             compiler: g++-8
-            runs_on: windows-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+            runs_on: ubuntu-latest
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
             cpp_version: c++17
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable
             fullTestOnly: false
-          # - displayTargetName: ubuntu-18.04-g++-8-DBG
-          #   os: unix
-          #   compiler: g++-8
-          #   runs_on: ubuntu-latest
-          #   container_image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
-          #   cpp_version: c++17
-          #   config_name: Debug
-          #   extra_config_args: --apply-default-debug-flags --trace2file enable
-          #   fullTestOnly: false
-          # - displayTargetName: ubuntu-20.04-g++-10-DBG
-          #   os: unix
-          #   compiler: g++-10
-          #   runs_on: ubuntu-latest
-          #   container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
-          #   cpp_version: c++17
-          #   config_name: Debug
-          #   extra_config_args: --apply-default-debug-flags --trace2file enable
-          #   fullTestOnly: false
-          # - displayTargetName: ubuntu-20.04-clang++-10
-          #   os: unix
-          #   compiler: clang++-10
-          #   runs_on: ubuntu-latest
-          #   container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
-          #   cpp_version: c++17
-          #   config_name: Release
-          #   extra_config_args: --apply-default-release-flags --trace2file enable
-          #   fullTestOnly: true
+          - displayTargetName: ubuntu-20.04-g++-10-DBG
+            os: unix
+            compiler: g++-10
+            runs_on: ubuntu-latest
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
+            cpp_version: c++17
+            config_name: Debug
+            extra_config_args: --apply-default-debug-flags --trace2file enable
+            fullTestOnly: false
+          - displayTargetName: ubuntu-20.04-clang++-10
+            os: unix
+            compiler: clang++-10
+            runs_on: ubuntu-latest
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
+            cpp_version: c++17
+            config_name: Release
+            extra_config_args: --apply-default-release-flags --trace2file enable
+            fullTestOnly: true
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=5 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
