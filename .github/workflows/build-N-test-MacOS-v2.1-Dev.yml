@@ -45,6 +45,12 @@ jobs:
           df -h
           system_profiler SPSoftwareDataType
           sw_vers
+      # If we had docker ability, most of these would be built into a docker file
+      - name: Install Basic Build requirements
+        run: |
+          brew install gnu-sed
+          brew install p7zip
+          make install-realpath
       - name: Configure
         run: |
           ./configure ${{ matrix.config_name }} ${{ matrix.extra_config_args }}
