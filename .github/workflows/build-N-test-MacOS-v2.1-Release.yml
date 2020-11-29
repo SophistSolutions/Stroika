@@ -1,0 +1,87 @@
+#
+# Because MacOS doesn't (really) support docker (cannot run xcode inside container), we just do a full
+# vm build, installing needed dependencies here
+#
+
+name: build-N-test-MacOS-v2.1-Release
+
+on:
+  push:
+    branches:
+      # - v2.1-Dev
+      - v2.1-Release
+  workflow_dispatch:
+    inputs:
+      ignored:
+        description: "ignored"
+        required: false
+        default: ""
+
+jobs:
+  build-n-test:
+    runs-on: ${{ matrix.runs_on }}
+    strategy:
+      matrix:
+        # Add to extra_config_args for build speed: --Xerces no --OpenSSL no --lzma no --boost no
+        include:
+          - displayTargetName: MacOS-Debug
+            os: macos-10.15
+            runs_on: macos-10.15
+            config_name: Debug
+            extra_config_args: --apply-default-debug-flags --trace2file enable
+          - displayTargetName: MacOS
+            os: macos-10.15
+            runs_on: macos-10.15
+            config_name: Release
+            extra_config_args: --apply-default-release-flags
+    env:
+      # vm has 2 virtual CPUs, but 8GB ram, so jobs=5 (empirical), and QUICK_BUILD avoids some internal testing
+      MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build System Info
+        run: |
+          echo "CWD: `pwd`"
+          df -h
+          system_profiler SPSoftwareDataType
+          sw_vers
+      # If we had docker ability, most of these would be built into a docker file
+      - name: Install Basic Build requirements
+        run: |
+          brew install gnu-sed
+          brew install p7zip
+          brew install automake
+          make install-realpath
+      - name: Configure
+        run: |
+          ./configure ${{ matrix.config_name }} ${{ matrix.extra_config_args }}
+          cat ConfigurationFiles/${{ matrix.config_name }}.xml
+      - name: Build third-party-components
+        run: |
+          make third-party-components
+          make clean
+      - name: Build Library
+        run: |
+          make libraries
+      - name: Build All
+        run: |
+          make all
+      - name: Run-Tests
+        run: |
+          make run-tests
+      - name: Build System Info
+        run: |
+          df -h
+      - name: Archive Performance Log Results
+        uses: actions/upload-artifact@v2
+        with:
+          name: Log Results (${{ matrix.displayTargetName }})
+          path: |
+            Builds/${{ matrix.config_name }}/PerformanceDump.txt
+            $TMPDIR/Trace*.txt
+      - name: Archive Sample Results
+        uses: actions/upload-artifact@v2
+        with:
+          name: Samples (${{ matrix.displayTargetName }})
+          path: |
+            Builds/${{ matrix.config_name }}/Samples-*
