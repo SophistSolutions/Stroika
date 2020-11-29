@@ -326,7 +326,7 @@ namespace Stroika::Foundation::Traversal {
     {
         auto tallyOf = [&equalsComparer] (const auto& c, T item) -> size_t {
             size_t total = 0;
-            for (const auto& ti : c) {
+            for (const auto ti : c) {
                 if (equalsComparer (ti, item)) {
                     total++;
                 }
