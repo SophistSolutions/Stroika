@@ -1,6 +1,7 @@
-# build-test-workflow-DEV.yml and build-test-workflow-RELEASE.yml neary
+#
+# build-N-test-v2.1-Dev and build-N-test-v2.1-Release are neary
 # identical, but a few tests are commented out (to not needlessly stress CI system)
-# for DEV builds
+# for v2.1-Dev builds
 #
 # NOTE: I've tried many tricks - none which seem to work - to get this working on one file with one
 # workflow and tests
@@ -9,21 +10,20 @@
 #
 # but none seem to work
 #
-#
 
-name: build-test-workflow-Release
+name: build-N-test-v2.1-Dev
 
 on:
   push:
-    branches: [v2.1-Release]
-  pull_request:
-    branches: []
+    branches:
+      - v2.1-Dev
+      #- v2.1-Release
   workflow_dispatch:
     inputs:
-      logLevel:
-        description: "Log level"
-        required: true
-        default: "warning"
+      ignored:
+        description: "ignored"
+        required: false
+        default: ""
 
 jobs:
   build-and-test:
@@ -31,7 +31,7 @@ jobs:
     strategy:
       matrix:
         include:
-          ### SADLY: Container operations are only supported on Linux runners
+          # ## SADLY: Container operations are only supported on Linux runners
           # - displayTargetName: windows-DBG
           #   os: windows
           #   compiler: g++-8
@@ -40,7 +40,19 @@ jobs:
           #   cpp_version: c++17
           #   config_name: Debug
           #   extra_config_args: --apply-default-debug-flags --trace2file enable
-          - displayTargetName: ubuntu-18.04-g++-8-DBG
+
+          ## centos 8
+          - displayTargetName: centos-8
+            os: unix
+            compiler: g++
+            runs_on: ubuntu-latest
+            container_image: sophistsolutionsinc/stroika-buildvm-centos-8-small
+            cpp_version: c++17
+            config_name: Release
+            extra_config_args: --apply-default-release-flags
+
+          ## ubuntu 18.04
+          - displayTargetName: ubuntu-18.04-g++-8 (Debug)
             os: unix
             compiler: g++-8
             runs_on: ubuntu-latest
@@ -48,7 +60,17 @@ jobs:
             cpp_version: c++17
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable
-          - displayTargetName: ubuntu-20.04-g++-10-DBG
+
+          ## ubuntu 20.04
+          - displayTargetName: ubuntu-20.04-g++-9 (Debug)
+            os: unix
+            compiler: g++-9
+            runs_on: ubuntu-latest
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
+            cpp_version: c++17
+            config_name: Debug
+            extra_config_args: --apply-default-debug-flags --trace2file enable
+          - displayTargetName: ubuntu-20.04-g++-10 (Debug)
             os: unix
             compiler: g++-10
             runs_on: ubuntu-latest
@@ -56,6 +78,22 @@ jobs:
             cpp_version: c++17
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable
+          - displayTargetName: ubuntu-20.04-g++-10
+            os: unix
+            compiler: g++-10
+            runs_on: ubuntu-latest
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
+            cpp_version: c++17
+            config_name: Release
+            extra_config_args: --apply-default-release-flags --trace2file enable
+          - displayTargetName: ubuntu-20.04-g++-10-c++2a
+            os: unix
+            compiler: g++-10
+            runs_on: ubuntu-latest
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
+            cpp_version: c++2a
+            config_name: Release
+            extra_config_args: --apply-default-release-flags
           - displayTargetName: ubuntu-20.04-clang++-10
             os: unix
             compiler: clang++-10
@@ -80,13 +118,17 @@ jobs:
           grep processor /proc/cpuinfo | wc -l
           grep MemTotal /proc/meminfo
           df -h
+      - name: Build System Info (Windows)
+        if: ${{ matrix.os=='windows' }}
+        run: |
+          echo "CWD=" `pwd`
+          df -h
       - name: Configure ${{ matrix.config_name }}
         run: |
           ./configure ${{ matrix.config_name }} --compiler-driver ${{ matrix.compiler }} ${{ matrix.extra_config_args }} --cppstd-version ${{ matrix.cpp_version }}
           cat ConfigurationFiles/${{ matrix.config_name }}.xml
-      # No need to explicitly call make third-party-components, libraries, but breaking out
-      # as step allows the summary to show the time for each part.
-      # Break out third-party-components to do clean so we dont run out of disk space
+      # Break out third-party-components to do clean so we dont run out of disk space, and break out TPC AND library
+      # to show the summary time for each part
       - name: Make third-party-components
         run: |
           make third-party-components
