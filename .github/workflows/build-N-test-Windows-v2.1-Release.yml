@@ -66,7 +66,7 @@ jobs:
       - name: Build System Info
         shell: "bash"
         run: |
-          echo -n "CWD: `pwd`"
+          echo "CWD: `pwd`"
           df -h
           systeminfo
           echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS

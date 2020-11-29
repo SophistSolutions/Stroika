@@ -41,7 +41,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build System Info
         run: |
-          echo -n "CWD: `pwd`"
+          echo "CWD: `pwd`"
           df -h
           system_profiler SPSoftwareDataType
           sw_vers
