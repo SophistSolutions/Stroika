@@ -22,7 +22,7 @@ on:
         default: "warning"
 
 jobs:
-  win-docker-bld:
+  build-n-test:
     runs-on: ${{ matrix.runs_on }}
     strategy:
       matrix:

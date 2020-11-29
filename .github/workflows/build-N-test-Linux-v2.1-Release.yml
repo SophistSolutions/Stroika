@@ -11,7 +11,7 @@
 # but none seem to work
 #
 
-name: build-N-test-v2.1-Release
+name: build-N-test-Linux-v2.1-Release
 
 on:
   push:
@@ -26,7 +26,7 @@ on:
         default: ""
 
 jobs:
-  build-and-test:
+  build-n-test:
     runs-on: ${{ matrix.runs_on }}
     strategy:
       matrix:

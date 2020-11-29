@@ -1,0 +1,82 @@
+#
+# Because MacOS doesn't (really) support docker (cannot run xcode inside container), we just do a full
+# vm build, installing needed dependencies here
+#
+
+name: build-N-test-MacOS-v2.1-Dev
+
+on:
+  push:
+    branches:
+      - v2.1-Dev
+      #- v2.1-Release
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: "Log level"
+        required: true
+        default: "warning"
+
+jobs:
+  build-n-test:
+    runs-on: ${{ matrix.runs_on }}
+    strategy:
+      matrix:
+        # Add to extra_config_args for build speed: --Xerces no --OpenSSL no --lzma no --boost no
+        include:
+          - displayTargetName: MacOS-x86-Debug
+            os: macos-10.15
+            runs_on: macos-10.15
+            config_name: Debug
+            extra_config_args: --arch x86 --apply-default-debug-flags --trace2file enable
+    env:
+      # vm has 2 virtual CPUs, but 8GB ram, so jobs=5 (empirical), and QUICK_BUILD avoids some internal testing
+      MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build System Info
+        shell: "bash"
+        run: |
+          echo -n "CWD: `pwd`"
+          df -h
+          systeminfo
+          echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
+      - name: Configure
+        shell: "bash"
+        run: |
+          ./configure ${{ matrix.config_name }} ${{ matrix.extra_config_args }}
+          cat ConfigurationFiles/${{ matrix.config_name }}.xml
+      - name: Build third-party-components
+        shell: "bash"
+        run: |
+          make third-party-components
+          make clean
+      - name: Build Library
+        shell: "bash"
+        run: |
+          make libraries
+      - name: Build --apply-default-debug-flags
+        shell: "bash"
+        run: |
+          make all
+      - name: Run-Tests
+        shell: "bash"
+        run: |
+          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make run-tests
+      - name: Build System Info
+        shell: "bash"
+        run: |
+          df -h
+      - name: Archive Performance Log Results
+        uses: actions/upload-artifact@v2
+        with:
+          name: Log Results (${{ matrix.displayTargetName }})
+          path: |
+            Builds/${{ matrix.config_name }}/PerformanceDump.txt
+            $TMPDIR/Trace*.txt
+      - name: Archive Sample Results
+        uses: actions/upload-artifact@v2
+        with:
+          name: Samples (${{ matrix.displayTargetName }})
+          path: |
+            Builds/${{ matrix.config_name }}/Samples-*
