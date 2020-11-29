@@ -247,11 +247,7 @@ namespace Stroika::Foundation::Traversal {
          *              TraitsType::kLowerBoundOpenness, TraitsType::kUpperBoundOpenness
          *          );
          */
-#if qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy
-        static Range FullRange ();
-#else
         static constexpr Range FullRange ();
-#endif
 
     public:
         /**
