@@ -78,7 +78,7 @@ This mostly conists of GNU make, and perl (see details below depending on your p
 
 #### For MacOS
 
-- XCode 11 or later
+- XCode 12 or later
   - install from appstore,
   - Then from command line
     - xcode-select –install
