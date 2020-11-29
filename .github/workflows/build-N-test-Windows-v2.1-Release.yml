@@ -16,10 +16,10 @@ on:
       - v2.1-Release
   workflow_dispatch:
     inputs:
-      logLevel:
-        description: "Log level"
-        required: true
-        default: "warning"
+      ignored:
+        description: "ignored"
+        required: false
+        default: ""
 
 jobs:
   build-n-test:
