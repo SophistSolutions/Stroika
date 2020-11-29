@@ -1261,6 +1261,7 @@ Segmentation fault (core dumped)
 #ifndef qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy
 
 #if defined(__clang__) && !defined(__APPLE__)
+// This apears to be FIXED in XCODE 12
 #define qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((9 <= __clang_major__ && __clang_major__ <= 11))
 #else
 #define qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy 0
