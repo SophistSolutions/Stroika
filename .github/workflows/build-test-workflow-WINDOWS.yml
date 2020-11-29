@@ -13,7 +13,12 @@ on:
     branches:
       - v2.1-Dev
       - v2.1-Release
-  workflow_dispatch: true
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: "Log level"
+        required: true
+        default: "warning"
 
 jobs:
   win-docker-bld:

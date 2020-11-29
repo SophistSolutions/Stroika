@@ -18,6 +18,12 @@ on:
     branches: [v2.1-Dev]
   pull_request:
     branches: []
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: "Log level"
+        required: true
+        default: "warning"
 
 jobs:
   build-and-test:
