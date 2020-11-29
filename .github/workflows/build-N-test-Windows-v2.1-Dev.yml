@@ -116,10 +116,10 @@ jobs:
         with:
           name: Log Results (${{ matrix.displayTargetName }})
           path: |
-            ${{ env.ARTIFACTS_DIR }}/Builds/${{ matrix.config_name }}/PerformanceDump.txt
+            ${{ env.ARTIFACTS_DIR }}PerformanceDump.txt
       - name: Archive Sample Results
         uses: actions/upload-artifact@v2
         with:
           name: Samples (${{ matrix.displayTargetName }})
           path: |
-            ${{ env.ARTIFACTS_DIR }}/Builds/${{ matrix.config_name }}/Samples-*
+            ${{ env.ARTIFACTS_DIR }}Samples-*
