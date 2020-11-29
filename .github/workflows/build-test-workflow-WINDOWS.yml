@@ -94,15 +94,16 @@ jobs:
           docker stop buildContainer
           docker cp buildContainer:Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR 2> /dev/null
           rm -rf $ARTIFACTS_DIR/ThirdPartyComponents
+          ls -l $ARTIFACTS_DIR
       - name: Archive Performance Log Results
         uses: actions/upload-artifact@v2
         with:
           name: Log Results (${{ matrix.displayTargetName }})
           path: |
-            Builds/${{ matrix.config_name }}/PerformanceDump.txt
+            $ARTIFACTS_DIR/Builds/${{ matrix.config_name }}/PerformanceDump.txt
       - name: Archive Sample Results
         uses: actions/upload-artifact@v2
         with:
           name: Samples (${{ matrix.displayTargetName }})
           path: |
-            Builds/${{ matrix.config_name }}/Samples-*
+            $ARTIFACTS_DIR/Builds/${{ matrix.config_name }}/Samples-*
