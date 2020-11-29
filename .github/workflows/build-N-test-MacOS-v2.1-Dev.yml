@@ -29,11 +29,11 @@ jobs:
             runs_on: macos-10.15
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable
-          - displayTargetName: MacOS
-            os: macos-10.15
-            runs_on: macos-10.15
-            config_name: Release
-            extra_config_args: --apply-default-release-flags
+          # - displayTargetName: MacOS
+          #   os: macos-10.15
+          #   runs_on: macos-10.15
+          #   config_name: Release
+          #   extra_config_args: --apply-default-release-flags
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=5 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
@@ -50,6 +50,7 @@ jobs:
         run: |
           brew install gnu-sed
           brew install p7zip
+          brew install automake
           make install-realpath
       - name: Configure
         run: |
