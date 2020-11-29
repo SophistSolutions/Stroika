@@ -14,9 +14,6 @@
  *  \file
  *
  *  \version    <a href="Code-Status.md">Alpha-Late</a>
- *
- * TODO:
- *      @todo   IF we ever fix Duration to use constexpr lose note about kLowerBound/etc on DurationRange type.
  */
 
 namespace Stroika::Foundation::Time {
