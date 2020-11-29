@@ -1609,7 +1609,8 @@ TRIED alignas to fix on the array but no luck
 
 #if defined(__clang__) && defined(__APPLE__)
 // First Noted BROKEN on XCode 11.0
-#define qCompilerAndStdLib_locale_pctX_print_time_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 11))
+// First Noted BROKEN on XCode 12.0
+#define qCompilerAndStdLib_locale_pctX_print_time_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
 #else
 #define qCompilerAndStdLib_locale_pctX_print_time_Buggy 0
 #endif
