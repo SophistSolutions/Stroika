@@ -818,7 +818,7 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
 
 #if defined(__clang__) && defined(__APPLE__)
 // Appears still BROKEN in XCODE 12
-#define qCompiler_LimitLengthBeforeMainCrash_Buggy ((11 <= __clang_major__) && (__clang_major__ <= 12))
+#define qCompiler_LimitLengthBeforeMainCrash_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((11 <= __clang_major__) && (__clang_major__ <= 12))
 #else
 #define qCompiler_LimitLengthBeforeMainCrash_Buggy 0
 #endif
