@@ -25,6 +25,8 @@ on:
         required: false
         default: ""
 
+## NB: JOBS section IDENTICAL between v2.1-Dev and 2.1-Release files EXCEPT that on v2.1-Dev file
+## comment out all entries marked with includeInDevBranchBuilds: false
 jobs:
   build-n-test:
     runs-on: ${{ matrix.runs_on }}
@@ -49,7 +51,8 @@ jobs:
             container_image: sophistsolutionsinc/stroika-buildvm-centos-8-small
             cpp_version: c++17
             config_name: Release
-            extra_config_args: --apply-default-release-flags
+            extra_config_args: --apply-default-release-flags --trace2file enable
+            includeInDevBranchBuilds: true
 
           ## ubuntu 18.04
           - displayTargetName: ubuntu-18.04-g++-8 (Debug)
@@ -60,8 +63,9 @@ jobs:
             cpp_version: c++17
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable
+            includeInDevBranchBuilds: true
 
-          ## ubuntu 20.04
+          # ubuntu 20.04
           - displayTargetName: ubuntu-20.04-g++-9 (Debug)
             os: unix
             compiler: g++-9
@@ -70,6 +74,7 @@ jobs:
             cpp_version: c++17
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable
+            includeInDevBranchBuilds: false
           - displayTargetName: ubuntu-20.04-g++-10 (Debug)
             os: unix
             compiler: g++-10
@@ -78,6 +83,7 @@ jobs:
             cpp_version: c++17
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable
+            includeInDevBranchBuilds: false
           - displayTargetName: ubuntu-20.04-g++-10
             os: unix
             compiler: g++-10
@@ -86,6 +92,7 @@ jobs:
             cpp_version: c++17
             config_name: Release
             extra_config_args: --apply-default-release-flags --trace2file enable
+            includeInDevBranchBuilds: true
           - displayTargetName: ubuntu-20.04-g++-10-c++2a
             os: unix
             compiler: g++-10
@@ -93,7 +100,8 @@ jobs:
             container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
             cpp_version: c++2a
             config_name: Release
-            extra_config_args: --apply-default-release-flags
+            extra_config_args: --apply-default-release-flags --trace2file enable
+            includeInDevBranchBuilds: false
           - displayTargetName: ubuntu-20.04-clang++-10
             os: unix
             compiler: clang++-10
@@ -102,6 +110,7 @@ jobs:
             cpp_version: c++17
             config_name: Release
             extra_config_args: --apply-default-release-flags --trace2file enable
+            includeInDevBranchBuilds: false
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=5 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"

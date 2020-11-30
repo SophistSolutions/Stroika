@@ -17,6 +17,8 @@ on:
         required: false
         default: ""
 
+## NB: JOBS section IDENTICAL between v2.1-Dev and 2.1-Release files EXCEPT that on v2.1-Dev file
+## comment out all entries marked with includeInDevBranchBuilds: false
 jobs:
   build-n-test:
     runs-on: ${{ matrix.runs_on }}
@@ -29,11 +31,13 @@ jobs:
             runs_on: macos-10.15
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable
+            includeInDevBranchBuilds: true
           - displayTargetName: MacOS
             os: macos-10.15
             runs_on: macos-10.15
             config_name: Release
-            extra_config_args: --apply-default-release-flags
+            extra_config_args: --apply-default-release-flags --trace2file enable
+            includeInDevBranchBuilds: false
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=5 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
