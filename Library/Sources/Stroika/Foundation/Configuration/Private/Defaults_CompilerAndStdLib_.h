@@ -813,11 +813,12 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
 #endif
 
 // Debug builds - only fails running samples - not tests - crashes
+// ./Builds/Debug/Samples-SystemPerformanceClient/SystemPerformanceClient - MacOS Only
 #ifndef qCompiler_LimitLengthBeforeMainCrash_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
-// Appears fixed in XCODE 12
-#define qCompiler_LimitLengthBeforeMainCrash_Buggy ((__clang_major__ == 11))
+// Appears still BROKEN in XCODE 12
+#define qCompiler_LimitLengthBeforeMainCrash_Buggy ((11 <= __clang_major__) && (__clang_major__ <= 12))
 #else
 #define qCompiler_LimitLengthBeforeMainCrash_Buggy 0
 #endif
