@@ -115,6 +115,9 @@ jobs:
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
     container: ${{ matrix.container_image }}
     steps:
+      - name: if published
+        if: ${{ !matrix.includeInDevBranchBuilds }}
+        run: exit 1
       - uses: actions/checkout@v2
       - name: Build System Info
         if: ${{ matrix.os=='unix' }}
