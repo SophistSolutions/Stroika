@@ -79,7 +79,7 @@ namespace {
     {
         FromObjectMapperType<T> fromObjectMapper = [] (const ObjectVariantMapper&, const T* fromObjOfTypeT) -> VariantValue {
             RequireNotNull (fromObjOfTypeT);
-            return VariantValue (static_cast<UseVariantType> (*fromObjOfTypeT));
+            return VariantValue{static_cast<UseVariantType> (*fromObjOfTypeT)};
         };
         ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
             RequireNotNull (intoObjOfTypeT);
@@ -178,7 +178,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<filesystem::path> (
 {
     FromObjectMapperType<filesystem::path> fromObjectMapper = [] (const ObjectVariantMapper&, const filesystem::path* fromObjOfTypeT) -> VariantValue {
         RequireNotNull (fromObjOfTypeT);
-        return VariantValue (IO::FileSystem::FromPath (*fromObjOfTypeT));
+        return VariantValue{IO::FileSystem::FromPath (*fromObjOfTypeT)};
     };
     ToObjectMapperType<filesystem::path> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, filesystem::path* intoObjOfTypeT) -> void {
         RequireNotNull (intoObjOfTypeT);
@@ -221,7 +221,7 @@ template <>
 TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Time::Duration> ()
 {
     FromObjectMapperType<Time::Duration> fromObjectMapper = [] (const ObjectVariantMapper&, const Time::Duration* fromObjOfTypeT) -> VariantValue {
-        return VariantValue ((fromObjOfTypeT)->As<String> ());
+        return VariantValue{(fromObjOfTypeT)->As<String> ()};
     };
     ToObjectMapperType<Time::Duration> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, Time::Duration* intoObjOfTypeT) -> void {
         *intoObjOfTypeT = Duration (d.As<String> ());
@@ -233,7 +233,7 @@ template <>
 TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Time::TimeOfDay> ()
 {
     FromObjectMapperType<Time::TimeOfDay> fromObjectMapper = [] ([[maybe_unused]] const ObjectVariantMapper&, const Time::TimeOfDay* fromObjOfTypeT) -> VariantValue {
-        return VariantValue (fromObjOfTypeT->GetAsSecondsCount ());
+        return VariantValue{fromObjOfTypeT->GetAsSecondsCount ()};
     };
     ToObjectMapperType<Time::TimeOfDay> toObjectMapper = [] ([[maybe_unused]] const ObjectVariantMapper&, const VariantValue& d, Time::TimeOfDay* intoObjOfTypeT) -> void {
         *reinterpret_cast<TimeOfDay*> (intoObjOfTypeT) = TimeOfDay (d.As<uint32_t> ());
@@ -252,7 +252,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Containers::Mapping
             //m.Add (i.first, mapper.Serialize (typeid (String), reinterpret_cast<const byte*> (&i.second)));
             m.Add (i.fKey, i.fValue);
         }
-        return VariantValue (m);
+        return VariantValue{m};
     };
     ToObjectMapperType<ACTUAL_ELEMENT_TYPE> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, ACTUAL_ELEMENT_TYPE* intoObjOfTypeT) -> void {
         Mapping<String, VariantValue> m = d.As<Mapping<String, VariantValue>> ();
@@ -271,7 +271,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Containers::Mapping
 {
     using ACTUAL_ELEMENT_TYPE                                  = Mapping<String, VariantValue>;
     FromObjectMapperType<ACTUAL_ELEMENT_TYPE> fromObjectMapper = [] (const ObjectVariantMapper&, const ACTUAL_ELEMENT_TYPE* fromObjOfTypeT) -> VariantValue {
-        return VariantValue (*fromObjOfTypeT);
+        return VariantValue{*fromObjOfTypeT};
     };
     ToObjectMapperType<ACTUAL_ELEMENT_TYPE> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, ACTUAL_ELEMENT_TYPE* intoObjOfTypeT) -> void {
         *intoObjOfTypeT = d.As<Mapping<String, VariantValue>> ();
@@ -285,7 +285,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Memory::BLO
     // Note - callers can easily replace this converter
     using T                                  = Memory::BLOB;
     FromObjectMapperType<T> fromObjectMapper = [] (const ObjectVariantMapper&, const T* fromObjOfTypeT) -> VariantValue {
-        return VariantValue (String::FromASCII (Cryptography::Encoding::Algorithm::EncodeBase64 (*fromObjOfTypeT)));
+        return VariantValue{String::FromASCII (Cryptography::Encoding::Algorithm::EncodeBase64 (*fromObjOfTypeT))};
     };
     ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
         *intoObjOfTypeT = Cryptography::Encoding::Algorithm::DecodeBase64 (d.As<String> ());
@@ -297,7 +297,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network
 {
     using T                                  = IO::Network::InternetAddress;
     FromObjectMapperType<T> fromObjectMapper = [] (const ObjectVariantMapper&, const T* fromObjOfTypeT) -> VariantValue {
-        return VariantValue (fromObjOfTypeT->ToString ());
+        return VariantValue{fromObjOfTypeT->ToString ()};
     };
     ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
         *intoObjOfTypeT = T (d.As<String> ());
@@ -309,7 +309,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network
 {
     using T                                  = IO::Network::URI;
     FromObjectMapperType<T> fromObjectMapper = [] (const ObjectVariantMapper&, const T* fromObjOfTypeT) -> VariantValue {
-        return VariantValue (fromObjOfTypeT->As<String> ());
+        return VariantValue{fromObjOfTypeT->As<String> ()};
     };
     ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
         *intoObjOfTypeT = T::Parse (d.As<String> ());
@@ -396,7 +396,7 @@ namespace {
 }
 
 ObjectVariantMapper::ObjectVariantMapper ()
-    : fTypeMappingRegistry_ (GetDefaultTypeMappers_ ())
+    : fTypeMappingRegistry_{GetDefaultTypeMappers_ ()}
 {
 }
 
@@ -430,7 +430,7 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::Lookup_ (const type
     auto i = fTypeMappingRegistry_.Lookup (forTypeInfo);
 #if qDebug
     if (not i.has_value ()) {
-        Debug::TraceContextBumper ctx ("ObjectVariantMapper::Lookup_");
+        Debug::TraceContextBumper ctx{"ObjectVariantMapper::Lookup_"};
         DbgTrace (L"(forTypeInfo = %s) - UnRegistered Type!", Characters::ToString (forTypeInfo).c_str ());
     }
 #endif

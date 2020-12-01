@@ -422,7 +422,6 @@ namespace Stroika::Foundation::DataExchange {
         (void)Lookup_ (typeid (T)); // just for side-effect of assert check
 #endif
     }
-
     template <typename ACTUAL_CONTAINER_TYPE>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_WithAdder ()
     {
@@ -472,7 +471,7 @@ namespace Stroika::Foundation::DataExchange {
                 Sequence<VariantValue> encodedPair;
                 encodedPair.Append (mapper.FromObject<DOMAIN_TYPE> (domainMapper, i.first));
                 encodedPair.Append (mapper.FromObject<RANGE_TYPE> (rangeMapper, i.second));
-                s.Append (VariantValue (encodedPair));
+                s.Append (VariantValue{encodedPair});
             }
             return VariantValue (s);
         };
@@ -790,7 +789,7 @@ namespace Stroika::Foundation::DataExchange {
         FromObjectMapperType<ENUM_TYPE> fromObjectMapper = [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const ENUM_TYPE* fromObjOfTypeT) -> VariantValue {
             RequireNotNull (fromObjOfTypeT);
             Assert (static_cast<ENUM_TYPE> (static_cast<SerializeAsType> (*fromObjOfTypeT)) == *fromObjOfTypeT); // no round-trip loss
-            return VariantValue (static_cast<SerializeAsType> (*fromObjOfTypeT));
+            return VariantValue{static_cast<SerializeAsType> (*fromObjOfTypeT)};
         };
         ToObjectMapperType<ENUM_TYPE> toObjectMapper = [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, ENUM_TYPE* intoObjOfTypeT) -> void {
             RequireNotNull (intoObjOfTypeT);
@@ -817,7 +816,7 @@ namespace Stroika::Foundation::DataExchange {
             for (const Common::KeyValuePair<KEY_TYPE, VALUE_TYPE>&& i : *fromObjOfTypeT) {
                 m.Add (mapper.FromObject<KEY_TYPE> (keyMapper, i.fKey).template As<String> (), mapper.FromObject<VALUE_TYPE> (valueMapper, i.fValue));
             }
-            return VariantValue (m);
+            return VariantValue{m};
         };
         ToObjectMapperType<ACTUAL_CONTAINTER_TYPE> toObjectMapper = [] (const ObjectVariantMapper& mapper, const VariantValue& d, ACTUAL_CONTAINTER_TYPE* intoObjOfTypeT) -> void {
             RequireNotNull (intoObjOfTypeT);
@@ -847,13 +846,13 @@ namespace Stroika::Foundation::DataExchange {
             using value_type = typename RANGE_TYPE::value_type;
             Mapping<String, VariantValue> m;
             if (fromObjOfTypeT->empty ()) {
-                return VariantValue ();
+                return VariantValue{};
             }
             else {
                 FromObjectMapperType<value_type> valueMapper{mapper.FromObjectMapper<value_type> ()};
                 m.Add (kLowerBoundLabel_, mapper.FromObject<value_type> (valueMapper, fromObjOfTypeT->GetLowerBound ()));
                 m.Add (kUpperBoundLabel_, mapper.FromObject<value_type> (valueMapper, fromObjOfTypeT->GetUpperBound ()));
-                return VariantValue (m);
+                return VariantValue{m};
             }
         };
         ToObjectMapperType<RANGE_TYPE> toObjectMapper = [] (const ObjectVariantMapper& mapper, const VariantValue& d, RANGE_TYPE* intoObjOfTypeT) -> void {
@@ -868,19 +867,19 @@ namespace Stroika::Foundation::DataExchange {
                     [[UNLIKELY_ATTR]]
                     {
                         DbgTrace (L"Range ('%s') element needs LowerBound and UpperBound", Characters::ToString (typeid (RANGE_TYPE)).c_str ());
-                        Execution::Throw (BadFormatException (String_Constant (L"Range needs LowerBound and UpperBound")));
+                        Execution::Throw (BadFormatException{L"Range needs LowerBound and UpperBound"sv});
                     }
                 if (not m.ContainsKey (kLowerBoundLabel_))
                     [[UNLIKELY_ATTR]]
                     {
                         DbgTrace (L"Range ('%s') element needs LowerBound", Characters::ToString (typeid (RANGE_TYPE)).c_str ());
-                        Execution::Throw (BadFormatException (String_Constant (L"Range needs 'LowerBound' element")));
+                        Execution::Throw (BadFormatException{L"Range needs 'LowerBound' element"sv});
                     }
                 if (not m.ContainsKey (kUpperBoundLabel_))
                     [[UNLIKELY_ATTR]]
                     {
                         DbgTrace (L"Range ('%s') element needs UpperBound", Characters::ToString (typeid (RANGE_TYPE)).c_str ());
-                        Execution::Throw (BadFormatException (String_Constant (L"Range needs 'UpperBound' element")));
+                        Execution::Throw (BadFormatException{L"Range needs 'UpperBound' element"sv});
                     }
                 ToObjectMapperType<value_type>
                     valueMapper{mapper.ToObjectMapper<value_type> ()};

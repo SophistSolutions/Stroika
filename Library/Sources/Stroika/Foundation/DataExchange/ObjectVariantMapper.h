@@ -324,10 +324,10 @@ namespace Stroika::Foundation::DataExchange {
          *              [](const ObjectVariantMapper& mapper, const VariantValue& d, RGBColor* intoObj) -> void {
          *                  String tmpInBuf = d.As<String> ();
          *                  if (tmpInBuf.length () != 7) {
-         *                      Execution::Throw (DataExchange::BadFormatException (L"RGBColor should have length 7"));
+         *                      Execution::Throw (DataExchange::BadFormatException{L"RGBColor should have length 7")};
          *                  }
          *                  if (tmpInBuf[0] != '#') {
-         *                      Execution::Throw (DataExchange::BadFormatException (L"RGBColor must start with #"));
+         *                      Execution::Throw (DataExchange::BadFormatException{L"RGBColor must start with #")};
          *                  }
          *                  auto readColorComponent = [](const wchar_t* start, const wchar_t* end) -> uint8_t {
          *                      wchar_t buf[1024];
@@ -337,7 +337,7 @@ namespace Stroika::Foundation::DataExchange {
          *                      wchar_t* e      = nullptr;
          *                      auto     result = wcstoul (buf, &e, 16);
          *                      if (e != buf + 2) {
-         *                          Execution::Throw (DataExchange::BadFormatException (L"expected 6 hex bytes"));
+         *                          Execution::Throw (DataExchange::BadFormatException{L"expected 6 hex bytes")};
          *                      }
          *                      Assert (result <= 255);
          *                      return static_cast<uint8_t> (result);
@@ -457,14 +457,14 @@ namespace Stroika::Foundation::DataExchange {
          *          });
          *
          *          MyConfig_   tmp;
-         *          tmp.fURL2_ = IO::Network::URI (L"http://localhost:1234");
+         *          tmp.fURL2_ = IO::Network::URI{L"http://localhost:1234"};
          *          VariantValue v = mapper.Serialize  (tmp);
          *
          *          Streams::MemoryStream<byte>   tmpStream;
          *          DataExchange::JSON::PrettyPrint (v, tmpStream);
          *
          *          // THEN deserialized, and mapped back to C++ object form
-         *          tmp = mapper.ToObject<MyConfig_> (DataExchange::JSON::Reader (tmpStream));
+         *          tmp = mapper.ToObject<MyConfig_> (DataExchange::JSON::Reader{tmpStream});
          *      \endcode
          */
         template <typename CLASS>
