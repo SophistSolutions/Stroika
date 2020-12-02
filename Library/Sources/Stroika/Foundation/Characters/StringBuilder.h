@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Characters {
      */
     class StringBuilder : private Debug::AssertExternallySynchronizedLock {
     public:
-        StringBuilder ();
+        StringBuilder ()                     = default;
         StringBuilder (const StringBuilder&) = default;
         StringBuilder (const String& initialValue);
 
@@ -198,8 +198,8 @@ namespace Stroika::Foundation::Characters {
         nonvirtual void reserve (size_t newCapacity);
 
     private:
-        mutable Memory::SmallStackBuffer<wchar_t> fData_;   // maybe nul-terminated
-        size_t                                    fLength_; // seperate from SmallStackBuffer<>::GetLength ()
+        mutable Memory::SmallStackBuffer<wchar_t> fData_{0};   // maybe nul-terminated
+        size_t                                    fLength_{0}; // seperate from SmallStackBuffer<>::GetLength ()
     };
 
 }

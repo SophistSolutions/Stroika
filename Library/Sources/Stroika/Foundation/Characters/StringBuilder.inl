@@ -21,14 +21,7 @@ namespace Stroika::Foundation::Characters {
      ***************************** Implementation Details ***************************
      ********************************************************************************
      */
-    inline StringBuilder::StringBuilder ()
-        : fData_{0}
-        , fLength_{0}
-    {
-    }
     inline StringBuilder::StringBuilder (const String& initialValue)
-        : fData_{0}
-        , fLength_{0}
     {
         operator+= (initialValue);
     }
@@ -243,7 +236,7 @@ namespace Stroika::Foundation::Characters {
     inline String StringBuilder::str () const
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        return String (fData_.begin (), fData_.begin () + fLength_);
+        return String{fData_.begin (), fData_.begin () + fLength_};
     }
     template <>
     inline void StringBuilder::As (String* into) const

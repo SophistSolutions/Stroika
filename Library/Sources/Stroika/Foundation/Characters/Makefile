@@ -25,7 +25,6 @@ Objs	=	\
 	$(ObjDir)Format${OBJ_SUFFIX}\
 	$(ObjDir)RegularExpression${OBJ_SUFFIX}\
 	$(ObjDir)String${OBJ_SUFFIX}\
-	$(ObjDir)StringBuilder${OBJ_SUFFIX}\
 	$(ObjDir)String2Int${OBJ_SUFFIX}\
 	$(ObjDir)ToString${OBJ_SUFFIX}\
 
