@@ -4,7 +4,6 @@
 #include "../../../StroikaPreComp.h"
 
 #include "../../../../Foundation/Characters/Format.h"
-#include "../../../../Foundation/Characters/String_Constant.h"
 #include "../../../../Foundation/Characters/ToString.h"
 #include "../../../../Foundation/Execution/Sleep.h"
 #include "../../../../Foundation/Execution/Thread.h"
@@ -40,7 +39,7 @@ void PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, const
         Require (not a.fTarget.empty ());
     }
 #endif
-    static const String kThreadName_{String_Constant{L"SSDP Periodic Notifier"}};
+    static const String kThreadName_{L"SSDP Periodic Notifier"sv};
     fListenThread_ = Execution::Thread::New (
         [advertisements, fi] () {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);

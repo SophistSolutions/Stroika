@@ -4,7 +4,6 @@
 #include "../StroikaPreComp.h"
 
 #include "../Characters/Format.h"
-#include "../Characters/String_Constant.h"
 
 #include "BadFormatException.h"
 
@@ -37,7 +36,7 @@ namespace {
         }
         if (fileOffset.has_value ()) {
             if (not result.empty ()) {
-                result += L"; "_k;
+                result += L"; "sv;
             }
             result += Format (L"; FileOffset %d", *fileOffset);
         }

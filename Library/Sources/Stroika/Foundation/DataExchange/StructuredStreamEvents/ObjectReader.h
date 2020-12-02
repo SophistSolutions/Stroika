@@ -846,7 +846,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     template <typename T>
     class RangeReader : public IElementConsumer {
     public:
-        static const inline pair<Name, Name> kDefaultBoundsNames{Name{Characters::String_Constant{L"LowerBound"}, Name::eAttribute}, Name{Characters::String_Constant{L"UpperBound"}, Name::eAttribute}};
+        static const inline pair<Name, Name> kDefaultBoundsNames{Name{L"LowerBound"sv, Name::eAttribute}, Name{L"UpperBound"sv, Name::eAttribute}};
 
     public:
         /**

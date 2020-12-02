@@ -4,8 +4,6 @@
 #include "../StroikaPreComp.h"
 
 #include "../Characters/Format.h"
-#include "../Characters/String_Constant.h"
-#include "../Containers/Concrete/Queue_Array.h"
 #include "../Debug/Trace.h"
 
 #include "Signals.h"
@@ -13,8 +11,6 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
-
-using Characters::String_Constant;
 
 /*
  ********************************************************************************
@@ -25,52 +21,52 @@ Characters::String Execution::SignalToName (SignalID signal)
 {
     switch (signal) {
         case SIGINT:
-            return String_Constant (L"SIGINT");
+            return L"SIGINT"sv;
         case SIGILL:
-            return String_Constant (L"SIGILL");
+            return L"SIGILL"sv;
         case SIGSEGV:
-            return String_Constant (L"SIGSEGV");
+            return L"SIGSEGV"sv;
         case SIGABRT:
-            return String_Constant (L"SIGABRT");
+            return L"SIGABRT"sv;
         case SIGFPE:
-            return String_Constant (L"SIGFPE");
+            return L"SIGFPE"sv;
 #if defined(SIGSYS)
         case SIGSYS:
-            return String_Constant (L"SIGSYS");
+            return L"SIGSYS"sv;
 #endif
 #if defined(SIGBUS)
         case SIGBUS:
-            return String_Constant (L"SIGBUS");
+            return L"SIGBUS"sv;
 #endif
 #if defined(SIGUSR1)
         case SIGUSR1:
-            return String_Constant (L"SIGUSR1");
+            return L"SIGUSR1"sv;
 #endif
 #if defined(SIGUSR2)
         case SIGUSR2:
-            return String_Constant (L"SIGUSR2");
+            return L"SIGUSR2"sv;
 #endif
 #if defined(SIGHUP)
         case SIGHUP:
-            return String_Constant (L"SIGHUP");
+            return L"SIGHUP"sv;
 #endif
         case SIGTERM:
-            return String_Constant (L"SIGTERM");
+            return L"SIGTERM"sv;
 #if defined(SIGPIPE)
         case SIGPIPE:
-            return String_Constant (L"SIGPIPE");
+            return L"SIGPIPE"sv;
 #endif
 #if defined(SIGQUIT)
         case SIGQUIT:
-            return String_Constant (L"SIGQUIT");
+            return L"SIGQUIT"sv;
 #endif
 #if defined(SIGXCPU)
         case SIGXCPU:
-            return String_Constant (L"SIGXCPU");
+            return L"SIGXCPU"sv;
 #endif
 #if defined(SIGXFSZ)
         case SIGXFSZ:
-            return String_Constant (L"SIGXFSZ");
+            return L"SIGXFSZ"sv;
 #endif
 
         default:

@@ -13,7 +13,6 @@
 #include <optional>
 
 #include "../../../Foundation/Characters/String.h"
-#include "../../../Foundation/Characters/String_Constant.h"
 #include "../../../Foundation/Configuration/Common.h"
 #include "../../../Foundation/Containers/Mapping.h"
 #include "../../../Foundation/IO/Network/SocketAddress.h"
@@ -32,7 +31,6 @@
 namespace Stroika::Frameworks::UPnP::SSDP {
 
     using Foundation::Characters::String;
-    using Foundation::Characters::String_Constant;
     using Foundation::Containers::Mapping;
     using Foundation::IO::Network::URI;
     using Foundation::Memory::BLOB;
@@ -86,11 +84,11 @@ namespace Stroika::Frameworks::UPnP::SSDP {
 
     /**
      */
-    static const String_Constant kTarget_UPNPRootDevice{L"upnp:rootdevice"};
+    static const String kTarget_UPNPRootDevice{L"upnp:rootdevice"sv};
 
     /**
      */
-    static const String_Constant kTarget_SSDPAll{L"ssdp:all"};
+    static const String kTarget_SSDPAll{L"ssdp:all"sv};
 
     /**
      */

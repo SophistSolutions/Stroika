@@ -36,7 +36,6 @@
 #include "../../Characters/CString/Utilities.h"
 #include "../../Characters/Format.h"
 #include "../../Characters/StringBuilder.h"
-#include "../../Characters/String_Constant.h"
 #include "../../Characters/ToString.h"
 #include "../../Containers/Collection.h"
 #include "../../Containers/Mapping.h"

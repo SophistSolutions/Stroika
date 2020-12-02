@@ -10,7 +10,6 @@
 #include "../../Foundation/Characters/CString/Utilities.h"
 #include "../../Foundation/Characters/Format.h"
 #include "../../Foundation/Characters/StringBuilder.h"
-#include "../../Foundation/Characters/String_Constant.h"
 #include "../../Foundation/Characters/ToString.h"
 #include "../../Foundation/Containers/Common.h"
 #include "../../Foundation/DataExchange/BadFormatException.h"
@@ -140,7 +139,7 @@ void Response::AppendToCommaSeperatedHeader (const String& headerName, const Str
             AddHeader (headerName, value);
         }
         else {
-            AddHeader (headerName, *o + String_Constant{L", "} + value);
+            AddHeader (headerName, *o + L", "sv + value);
         }
     }
     else {
@@ -187,7 +186,7 @@ Mapping<String, String> Response::GetEffectiveHeaders () const
         if (DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (fContentType_)) {
             // Don't override already specifed characterset
             Containers::Mapping<String, String> params = useContentType.GetParameters ();
-            params.Add (L"charset"_k, Characters::GetCharsetString (fCodePage_), AddReplaceMode::eAddIfMissing);
+            params.Add (L"charset"sv, Characters::GetCharsetString (fCodePage_), AddReplaceMode::eAddIfMissing);
             useContentType = InternetMediaType{useContentType.GetType<AtomType> (), useContentType.GetSubType<AtomType> (), useContentType.GetSuffix (), params};
         }
         tmp.Add (IO::Network::HTTP::HeaderName::kContentType, useContentType.As<wstring> ());
@@ -271,8 +270,8 @@ void Response::Redirect (const String& url)
     fBytes_.clear ();
 
     // PERHAPS should clear some header values???
-    AddHeader (L"Connection"_k, L"close"_k); // needed for redirect
-    AddHeader (L"Location"_k, url);          // needed for redirect
+    AddHeader (L"Connection"sv, L"close"sv); // needed for redirect
+    AddHeader (L"Location"sv, url);          // needed for redirect
     SetStatus (StatusCodes::kMovedPermanently);
     Flush ();
     fState_ = State::eCompleted;

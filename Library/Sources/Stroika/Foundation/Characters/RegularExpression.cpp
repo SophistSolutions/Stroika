@@ -7,8 +7,6 @@
 
 #include "../Containers/Sequence.h"
 
-#include "String_Constant.h"
-
 #include "RegularExpression.h"
 
 using namespace Stroika::Foundation;

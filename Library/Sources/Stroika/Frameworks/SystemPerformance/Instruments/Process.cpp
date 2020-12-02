@@ -18,7 +18,6 @@
 #include "../../../Foundation/Characters/CString/Utilities.h"
 #include "../../../Foundation/Characters/String2Int.h"
 #include "../../../Foundation/Characters/StringBuilder.h"
-#include "../../../Foundation/Characters/String_Constant.h"
 #include "../../../Foundation/Configuration/SystemConfiguration.h"
 #include "../../../Foundation/Containers/Mapping.h"
 #include "../../../Foundation/Containers/MultiSet.h"
@@ -60,7 +59,6 @@ using namespace Stroika::Frameworks::SystemPerformance;
 using namespace Stroika::Frameworks::SystemPerformance::Instruments;
 using namespace Stroika::Frameworks::SystemPerformance::Instruments::Process;
 
-using Characters::String_Constant;
 using IO::FileSystem::FileInputStream;
 using Streams::TextReader;
 using Time::DurationSecondsType;
@@ -1266,16 +1264,16 @@ namespace {
 
 #if qUseWMICollectionSupport_
 namespace {
-    const String kProcessID_{L"ID Process"_k};
-    const String kThreadCount_{L"Thread Count"_k};
-    const String kIOReadBytesPerSecond_{L"IO Read Bytes/sec"_k};
-    const String kIOWriteBytesPerSecond_{L"IO Write Bytes/sec"_k};
-    const String kPercentProcessorTime_{L"% Processor Time"_k}; // % Processor Time is the percentage of elapsed time that all of process threads
+    const String kProcessID_{L"ID Process"sv};
+    const String kThreadCount_{L"Thread Count"sv};
+    const String kIOReadBytesPerSecond_{L"IO Read Bytes/sec"sv};
+    const String kIOWriteBytesPerSecond_{L"IO Write Bytes/sec"sv};
+    const String kPercentProcessorTime_{L"% Processor Time"sv}; // % Processor Time is the percentage of elapsed time that all of process threads
     // used the processor to execution instructions. An instruction is the basic unit of
     // execution in a computer, a thread is the object that executes instructions, and a
     // process is the object created when a program is run. Code executed to handle some
     // hardware interrupts and trap conditions are included in this count.
-    const String kElapsedTime_{L"Elapsed Time"_k}; // The total elapsed time, in seconds, that this process has been running.
+    const String kElapsedTime_{L"Elapsed Time"sv}; // The total elapsed time, in seconds, that this process has been running.
 }
 #endif
 
@@ -1291,12 +1289,12 @@ namespace {
         Mapping<pid_t, PerfStats_> fContextStats_;
 
 #if qUseWMICollectionSupport_
-        WMICollector fProcessWMICollector_{String_Constant{L"Process"}, {WMICollector::kWildcardInstance}, { kProcessID_,
-                                                                                                             kThreadCount_,
-                                                                                                             kIOReadBytesPerSecond_,
-                                                                                                             kIOWriteBytesPerSecond_,
-                                                                                                             kPercentProcessorTime_,
-                                                                                                             kElapsedTime_ }};
+        WMICollector fProcessWMICollector_{L"Process"sv, {WMICollector::kWildcardInstance}, { kProcessID_,
+                                                                                              kThreadCount_,
+                                                                                              kIOReadBytesPerSecond_,
+                                                                                              kIOWriteBytesPerSecond_,
+                                                                                              kPercentProcessorTime_,
+                                                                                              kElapsedTime_ }};
 #endif
         CapturerWithContext_Windows_ (const Options& options)
             : CapturerWithContext_COMMON_{options}
@@ -1765,7 +1763,7 @@ namespace {
     };
 }
 
-const MeasurementType SystemPerformance::Instruments::Process::kProcessMapMeasurement = MeasurementType{String_Constant{L"Process-Details"}};
+const MeasurementType SystemPerformance::Instruments::Process::kProcessMapMeasurement = MeasurementType{L"Process-Details"sv};
 
 namespace {
     class MyCapturer_ : public Instrument::ICapturer {
@@ -1808,7 +1806,7 @@ namespace {
 Instrument SystemPerformance::Instruments::Process::GetInstrument (const Options& options)
 {
     return Instrument{
-        InstrumentNameType{L"Process"_k},
+        InstrumentNameType{L"Process"sv},
         Instrument::SharedByValueCaptureRepType (make_unique<MyCapturer_> (CapturerWithContext_{options})),
         {kProcessMapMeasurement},
         GetObjectVariantMapper ()};

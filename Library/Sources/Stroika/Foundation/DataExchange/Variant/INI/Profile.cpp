@@ -6,7 +6,6 @@
 #include "../../../Characters/FloatConversion.h"
 #include "../../../Characters/Format.h"
 #include "../../../Characters/String2Int.h"
-#include "../../../Characters/String_Constant.h"
 #include "../../../Streams/TextReader.h"
 #include "../../BadFormatException.h"
 
@@ -17,8 +16,6 @@ using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::Variant;
 using namespace Stroika::Foundation::DataExchange::Variant::INI;
-
-using Characters::String_Constant;
 
 Profile INI::Convert (VariantValue v)
 {

@@ -5,7 +5,6 @@
 
 #include "../../../Foundation/Characters/Format.h"
 #include "../../../Foundation/Characters/StringBuilder.h"
-#include "../../../Foundation/Characters/String_Constant.h"
 #include "../../../Foundation/Characters/ToString.h"
 #include "../../../Foundation/Containers/Mapping.h"
 #include "../../../Foundation/DataExchange/InternetMediaTypeRegistry.h"

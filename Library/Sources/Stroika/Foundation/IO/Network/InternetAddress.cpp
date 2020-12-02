@@ -10,7 +10,6 @@
 #endif
 
 #include "../../Characters/CString/Utilities.h"
-#include "../../Characters/String_Constant.h"
 #include "../../Containers/Collection.h"
 #include "../../Debug/Trace.h"
 #include "../../Execution/Exceptions.h"

@@ -10,6 +10,7 @@
 
 #include "../Configuration/Common.h"
 #include "../Configuration/Enumeration.h"
+#include "../Debug/AssertExternallySynchronizedLock.h"
 #include "../Memory/Common.h"
 
 /**

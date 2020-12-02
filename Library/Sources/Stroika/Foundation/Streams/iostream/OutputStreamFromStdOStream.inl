@@ -10,7 +10,6 @@
  ********************************************************************************
  */
 
-#include "../../Characters/String_Constant.h"
 #include "../../Debug/AssertExternallySynchronizedLock.h"
 #include "../../Execution/Exceptions.h"
 #include "../../Execution/Throw.h"

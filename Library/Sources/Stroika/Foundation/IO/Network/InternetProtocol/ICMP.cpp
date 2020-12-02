@@ -4,7 +4,6 @@
 #include "../../../StroikaPreComp.h"
 
 #include "../../../Characters/Format.h"
-#include "../../../Characters/String_Constant.h"
 #include "../../../Streams/TextReader.h"
 #include "../HTTP/Headers.h"
 
@@ -87,7 +86,7 @@ InternetProtocol::ICMP::V4::UnknownICMPPacket::UnknownICMPPacket (ICMP_PacketTyp
  ********************************************************************************
  */
 InternetProtocol::ICMP::V4::TTLExpiredException::TTLExpiredException (const InternetAddress& reachedIP)
-    : inherited{L"ICMP TTL Expired."_k}
+    : inherited{L"ICMP TTL Expired."sv}
     , fReachedIP_{reachedIP}
 {
 }

@@ -3,8 +3,6 @@
  */
 #include "../../StroikaPreComp.h"
 
-#include "../../Characters/String_Constant.h"
-
 #include "SerializationConfiguration.h"
 
 using namespace Stroika;
@@ -19,7 +17,7 @@ using namespace Stroika::Foundation::DataExchange::XML;
  ********************************************************************************
  */
 SerializationConfiguration::SerializationConfiguration ()
-    : fDocumentElementName_{L"Document"_k}
-    , fArrayElementName_{L"Array"_k}
+    : fDocumentElementName_{L"Document"sv}
+    , fArrayElementName_{L"Array"sv}
 {
 }

@@ -18,7 +18,6 @@
 #include "../../Characters/Format.h"
 #include "../../Characters/String.h"
 #include "../../Characters/StringBuilder.h"
-#include "../../Characters/String_Constant.h"
 #include "../../Characters/ToString.h"
 #include "../../DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #include "../../Debug/Sanitizer.h"
@@ -143,7 +142,7 @@ namespace {
                 }
                 filesystem::path    mountedAt = ToPath (line[1]);
                 String              fstype    = line[2];
-                static const String kNone_{L"none"_k};
+                static const String kNone_{L"none"sv};
                 results.Add (MountedFilesystemType{mountedAt, devName == kNone_ ? Set<filesystem::path>{} : Set<filesystem::path>{IO::FileSystem::ToPath (devName)}, fstype}); // special name none often used when there is no name
             }
         }

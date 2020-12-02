@@ -326,7 +326,7 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
         overrideHeaders = kSilenceTheseHeaders_ + overrideHeaders;
     }
     if (fOptions_.fAuthentication and fOptions_.fAuthentication->GetOptions () == Connection::Options::Authentication::Options::eProactivelySendAuthentication) {
-        overrideHeaders.Add (String_Constant (HeaderName::kAuthorization), fOptions_.fAuthentication->GetAuthToken ());
+        overrideHeaders.Add (String_Constant{HeaderName::kAuthorization}, fOptions_.fAuthentication->GetAuthToken ());
     }
     {
         constexpr bool kDefault_FailConnectionIfSSLCertificateInvalid{false};
@@ -376,7 +376,7 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
     // grab initial headers and do POST/etc based on args in request...
     curl_slist* tmpH = nullptr;
     for (auto i : overrideHeaders) {
-        tmpH = ::curl_slist_append (tmpH, (i.fKey + String_Constant (L": ") + i.fValue).AsUTF8 ().c_str ());
+        tmpH = ::curl_slist_append (tmpH, (i.fKey + L": "sv + i.fValue).AsUTF8 ().c_str ());
     }
     AssertNotNull (fCurlHandle_);
     ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HTTPHEADER, tmpH));

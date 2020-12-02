@@ -11,7 +11,6 @@
 #include "../../Characters/Format.h"
 #include "../../Characters/String.h"
 #include "../../Characters/StringBuilder.h"
-#include "../../Characters/String_Constant.h"
 #include "../../Characters/ToString.h"
 #include "../../Memory/SmallStackBuffer.h"
 

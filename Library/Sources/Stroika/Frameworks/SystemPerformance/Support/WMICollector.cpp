@@ -14,7 +14,6 @@
 #include "../../../Foundation/Characters/CString/Utilities.h"
 #include "../../../Foundation/Characters/FloatConversion.h"
 #include "../../../Foundation/Characters/Format.h"
-#include "../../../Foundation/Characters/String_Constant.h"
 #include "../../../Foundation/Containers/Sequence.h"
 #include "../../../Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #include "../../../Foundation/Debug/Assertions.h"
@@ -33,7 +32,6 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::SystemPerformance;
 using namespace Stroika::Frameworks::SystemPerformance::Support;
 
-using Characters::String_Constant;
 using Debug::AssertExternallySynchronizedLock;
 
 #if defined(_MSC_VER)

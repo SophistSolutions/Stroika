@@ -10,7 +10,6 @@
  ********************************************************************************
  */
 #include "../../Characters/String2Int.h"
-#include "../../Characters/String_Constant.h"
 #include "../../Characters/ToString.h"
 #include "../BadFormatException.h"
 

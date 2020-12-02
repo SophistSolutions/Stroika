@@ -43,18 +43,15 @@ using namespace Stroika::Frameworks::WebServer;
  ********************************************************************************
  */
 Request::Request (const Streams::InputStream<byte>::Ptr& inStream)
-    : fInputStream_ (inStream)
-    , fHTTPVersion_ ()
-    , fURL_ ()
-    , fHeaders_ ()
+    : fInputStream_{inStream}
 {
 }
 
 void Request::SetHTTPVersion (const String& versionOrVersionLabel)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    static const String_Constant                       kLabeled_10_{L"HTTP/1.0"};
-    static const String_Constant                       kLabeled_11_{L"HTTP/1.1"};
+    static const String                                kLabeled_10_{L"HTTP/1.0"sv};
+    static const String                                kLabeled_11_{L"HTTP/1.1"sv};
     auto                                               versionStringComparer = String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive};
     if (versionOrVersionLabel == kLabeled_11_ or versionOrVersionLabel == IO::Network::HTTP::Versions::kOnePointOne or versionStringComparer (versionOrVersionLabel, kLabeled_11_)) {
         fHTTPVersion_ = IO::Network::HTTP::Versions::kOnePointOne;
@@ -73,7 +70,7 @@ void Request::SetHTTPVersion (const String& versionOrVersionLabel)
 bool Request::GetKeepAliveRequested () const
 {
     if (auto connectionHdr = this->fHeaders_.Lookup (IO::Network::HTTP::HeaderName::kConnection)) {
-        return String::EqualsComparer{CompareOptions::eCaseInsensitive}(*connectionHdr, L"Keep-Alive");
+        return String::EqualsComparer{CompareOptions::eCaseInsensitive}(*connectionHdr, L"Keep-Alive"sv);
     }
     // @todo convert version to number and compare that way
     return fHTTPVersion_ == IO::Network::HTTP::Versions::kOnePointOne;

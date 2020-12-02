@@ -6,8 +6,6 @@
 #include "../Debug/Demangle.h"
 #include "../Execution/Exceptions.h"
 
-#include "String_Constant.h"
-
 #include "ToString.h"
 
 using namespace Stroika::Foundation;
@@ -188,8 +186,6 @@ namespace Stroika::Foundation::Characters {
             if (auto p = dynamic_cast<const Execution::ExceptionStringHelper*> (&t)) {
                 return p->As<String> ();
             }
-            //saying Exception: first produces 'Exception: HTTP exception: status 404 (URL not found)}' - redundant. Not sure about all cases, but try this way.
-            //return String_Constant {L"Exception: " } + String::FromNarrowSDKString (t.what ()) + String_Constant {L"}" };
             return String::FromNarrowSDKString (t.what ());
         }
     }

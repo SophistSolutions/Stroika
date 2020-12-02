@@ -6,7 +6,6 @@
 #include "../../Characters/CString/Utilities.h"
 #include "../../Characters/String2Int.h"
 #include "../../Characters/StringBuilder.h"
-#include "../../Characters/String_Constant.h"
 #include "../../Debug/Trace.h"
 #include "../../Execution/Exceptions.h"
 #include "../../Math/Common.h"

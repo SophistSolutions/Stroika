@@ -9,7 +9,6 @@
 #include <optional>
 
 #include "../../Characters/String.h"
-#include "../../Characters/String_Constant.h"
 #include "../../Time/Date.h"
 #include "../../Time/DateTime.h"
 #include "../../Time/Duration.h"
@@ -30,18 +29,18 @@ namespace Stroika::Foundation::DataExchange::XML {
 
     using Characters::String;
 
-    /*
+    /**
      */
     string QuoteForXMLAttribute (const string& s);
     string QuoteForXMLAttribute (const wstring& s); // encode non-ascii characters as entity-references
     string QuoteForXMLAttribute (const String& s);
     string QuoteForXMLAttribute (const optional<String>& s);
 
-    /*
+    /**
      */
     String QuoteForXMLAttributeW (const String& s);
 
-    /*
+    /**
      * This function only emits ascii characters (so makes no assumptions about the codepage used for writing xml). It
      * emits non-ascii characters as entity references.
      */
@@ -50,13 +49,13 @@ namespace Stroika::Foundation::DataExchange::XML {
     string QuoteForXML (const String& s);
     string QuoteForXML (const optional<String>& s);
 
-    /*
+    /**
      */
     String QuoteForXMLW (const String& s);
 
     class Indenter {
     public:
-        Indenter (const String& indentText = Characters::String_Constant (L"\t"));
+        Indenter (const String& indentText = L"\t"sv);
 
     public:
         nonvirtual void Indent (unsigned int indentLevel, ostream& out) const;
@@ -67,7 +66,7 @@ namespace Stroika::Foundation::DataExchange::XML {
         wstring fTabW_;
     };
 
-    /*
+    /**
      * Format values for XML output.
      *      PROBABLY should map QuoteForXML to this overloaded name?
      *

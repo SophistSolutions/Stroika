@@ -9,7 +9,6 @@
 #include "../../Foundation/Characters/FloatConversion.h"
 #include "../../Foundation/Characters/Format.h"
 #include "../../Foundation/Characters/String2Int.h"
-#include "../../Foundation/Characters/String_Constant.h"
 #include "../../Foundation/Characters/ToString.h"
 #include "../../Foundation/Containers/Common.h"
 #include "../../Foundation/DataExchange/BadFormatException.h"
@@ -121,19 +120,19 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
         if (tokens[1].empty ()) {
             // should check if GET/PUT/DELETE etc...
             DbgTrace (L"tokens=%s, line='%s'", Characters::ToString (tokens).c_str (), line.c_str ());
-            Execution::Throw (ClientErrorException (String_Constant (L"Bad HTTP Request line - missing host-relative URL")));
+            Execution::Throw (ClientErrorException{L"Bad HTTP Request line - missing host-relative URL"sv});
         }
         using IO::Network::URL;
         request->SetURL (URI{tokens[1]});
         if (request->GetHTTPMethod ().empty ()) {
             // should check if GET/PUT/DELETE etc...
             DbgTrace (L"tokens=%s, line='%s'", Characters::ToString (tokens).c_str (), line.c_str ());
-            Execution::Throw (ClientErrorException (String_Constant (L"Bad METHOD in Request HTTP line")));
+            Execution::Throw (ClientErrorException{L"Bad METHOD in Request HTTP line"sv});
         }
     }
     while (true) {
-        static String_Constant kCRLF_{L"\r\n"};
-        String                 line = fMsgHeaderInTextStream.ReadLine ();
+        static const String kCRLF_{L"\r\n"sv};
+        String              line = fMsgHeaderInTextStream.ReadLine ();
         if (line == kCRLF_ or line.empty ()) {
             break; // done
         }
@@ -142,7 +141,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
         size_t i = line.find (':');
         if (i == string::npos) {
             DbgTrace (L"line=%s", Characters::ToString (line).c_str ());
-            Execution::Throw (ClientErrorException (String_Constant (L"Bad HTTP Request missing colon in headers")));
+            Execution::Throw (ClientErrorException{L"Bad HTTP Request missing colon in headers"sv});
         }
         else {
             String hdr   = line.SubString (0, i).Trim ();
@@ -349,7 +348,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
         // From https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
         //      HTTP/1.1 applications that do not support persistent connections MUST include the "close" connection option in every message.
         GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kConnection,
-                                  thisMessageKeepAlive ? String_Constant{L"Keep-Alive"} : String_Constant{L"close"});
+                                  thisMessageKeepAlive ? L"Keep-Alive"sv : L"close"sv);
 
         GetResponse ().End ();
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog

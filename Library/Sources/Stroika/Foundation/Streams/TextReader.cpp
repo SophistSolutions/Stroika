@@ -3,7 +3,6 @@
  */
 #include "../StroikaPreComp.h"
 
-#include "../Characters/String_Constant.h"
 #include "../Containers/Common.h"
 #include "../Debug/AssertExternallySynchronizedLock.h"
 #include "../Execution/Common.h"
@@ -18,7 +17,6 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Streams;
 
 using Characters::String;
-using Characters::String_Constant;
 using Memory::SmallStackBuffer;
 using Memory::SmallStackBufferCommon;
 

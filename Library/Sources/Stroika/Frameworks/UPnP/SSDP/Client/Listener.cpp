@@ -5,7 +5,6 @@
 
 #include <vector>
 
-#include "../../../../Foundation/Characters/String_Constant.h"
 #include "../../../../Foundation/Characters/ToString.h"
 #include "../../../../Foundation/Containers/Bijection.h"
 #include "../../../../Foundation/Containers/Collection.h"

@@ -235,7 +235,7 @@ Response Connection_WinHTTP::Rep_::Send (const Request& request)
     {
         // We must have an empty 'accept-encoding' to prevent being sent stuff in gzip/deflate format, which WinHTTP
         // appears to not decode (and neither do I).
-        useHeadersMap.Add (String_Constant (HeaderName::kAcceptEncoding), String{});
+        useHeadersMap.Add (String_Constant{HeaderName::kAcceptEncoding}, String{});
     }
     Cache::EvalContext cacheContext;
     if (fOptions_.fCache != nullptr) {
@@ -245,12 +245,12 @@ Response Connection_WinHTTP::Rep_::Send (const Request& request)
         }
     }
     {
-        if (useHeadersMap.Lookup (String_Constant (HeaderName::kUserAgent), &userAgent)) {
-            useHeadersMap.Remove (String_Constant (HeaderName::kUserAgent));
+        if (useHeadersMap.Lookup (String_Constant{HeaderName::kUserAgent}, &userAgent)) {
+            useHeadersMap.Remove (String_Constant{HeaderName::kUserAgent});
         }
     }
     if (fOptions_.fAuthentication and fOptions_.fAuthentication->GetOptions () == Connection::Options::Authentication::Options::eProactivelySendAuthentication) {
-        useHeadersMap.Add (String_Constant (HeaderName::kAuthorization), fOptions_.fAuthentication->GetAuthToken ());
+        useHeadersMap.Add (String_Constant{HeaderName::kAuthorization}, fOptions_.fAuthentication->GetAuthToken ());
     }
     String useHeaderStrBuf;
     {

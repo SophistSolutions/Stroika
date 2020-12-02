@@ -3,7 +3,6 @@
  */
 #include "../../../StroikaPreComp.h"
 
-#include "../../../Characters/String_Constant.h"
 #include "../../../Streams/TextWriter.h"
 
 #include "../../XML/WriterUtils.h"

@@ -3,8 +3,6 @@
  */
 #include "../../../StroikaPreComp.h"
 
-#include "../../../Characters/String_Constant.h"
-
 #include "Writer.h"
 
 using std::byte;
@@ -14,7 +12,6 @@ using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Streams;
 
 using Characters::Character;
-using Characters::String_Constant;
 
 /*
  ********************************************************************************

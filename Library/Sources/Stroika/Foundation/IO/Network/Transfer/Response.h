@@ -7,7 +7,6 @@
 #include "../../../StroikaPreComp.h"
 
 #include "../../../Characters/String.h"
-#include "../../../Characters/String_Constant.h"
 #include "../../../Configuration/Common.h"
 #include "../../../Containers/Mapping.h"
 #include "../../../DataExchange/InternetMediaType.h"

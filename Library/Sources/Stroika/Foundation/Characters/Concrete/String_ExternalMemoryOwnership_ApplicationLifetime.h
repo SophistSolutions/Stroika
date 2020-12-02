@@ -40,8 +40,8 @@ namespace Stroika::Foundation::Characters::Concrete {
      *  \par Example:
      *      \code
      *          String  tmp1    =   L"FRED";
-     *          String  tmp2    =   String (L"FRED");
-     *          String  tmp3    =   String_ExternalMemoryOwnership_ApplicationLifetime (L"FRED");
+     *          String  tmp2    =   String{L"FRED"};
+     *          String  tmp3    =   String_ExternalMemoryOwnership_ApplicationLifetime{L"FRED"};
      *          String  tmp4    =   L"FRED"sv;
      *
      *          extern String saved;

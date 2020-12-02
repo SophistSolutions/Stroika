@@ -4,7 +4,6 @@
 #include "../../../StroikaPreComp.h"
 
 #include "../../../../Foundation/Characters/Format.h"
-#include "../../../../Foundation/Characters/String_Constant.h"
 
 #include "../../../../Foundation/Execution/Sleep.h"
 #include "../../../../Foundation/Execution/Thread.h"
@@ -51,7 +50,7 @@ namespace {
         Debug::TraceContextBumper ctx ("Read SSDP Packet");
         DbgTrace (L"firstLine: %s", firstLine.c_str ());
 #endif
-        static const String kNOTIFY_LEAD = String_Constant (L"M-SEARCH ");
+        static const String kNOTIFY_LEAD = L"M-SEARCH "sv;
         if (firstLine.length () > kNOTIFY_LEAD.length () and firstLine.SubString (0, kNOTIFY_LEAD.length ()) == kNOTIFY_LEAD) {
             SSDP::Advertisement da;
             while (true) {
@@ -132,7 +131,7 @@ void SearchResponder::Run (const Iterable<Advertisement>& advertisements)
         Require (not a.fTarget.empty ());
     }
 #endif
-    static const String kThreadName_{String_Constant{L"SSDP Search Responder"}};
+    static const String kThreadName_{L"SSDP Search Responder"sv};
     fListenThread_ = Execution::Thread::New (
         [advertisements] () {
             Debug::TraceContextBumper ctx{"SSDP SearchResponder thread loop"};

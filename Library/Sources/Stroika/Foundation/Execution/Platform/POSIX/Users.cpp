@@ -5,7 +5,6 @@
 
 #include <unistd.h>
 
-#include "../../../Characters/String_Constant.h"
 #include "../../../Memory/SmallStackBuffer.h"
 #include "../../Exceptions.h"
 
@@ -16,7 +15,6 @@ using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Execution::Platform::POSIX;
 
 using Characters::String;
-using Characters::String_Constant;
 using Memory::SmallStackBuffer;
 using Memory::SmallStackBufferCommon;
 

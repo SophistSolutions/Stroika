@@ -608,7 +608,6 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T1, typename T2, typename T3>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const tuple<T1, T2, T3>*)
     {
-        using Characters::String_Constant;
         // render as array of three elements
         return TypeMappingDetails{
             typeid (tuple<T1, T2, T3>),
@@ -618,7 +617,7 @@ namespace Stroika::Foundation::DataExchange {
             ToObjectMapperType<tuple<T1, T2, T3>>{[] (const ObjectVariantMapper& mapper, const VariantValue& d, tuple<T1, T2, T3>* intoObj) -> void {
                 Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
                 if (s.size () < 3) {
-                    Execution::Throw (BadFormatException (String_Constant (L"Array size out of range for tuple/3")));
+                    Execution::Throw (BadFormatException{L"Array size out of range for tuple/3"sv});
                 };
                 *intoObj = make_tuple (mapper.ToObject<T1> (s[0]), mapper.ToObject<T2> (s[1]), mapper.ToObject<T3> (s[2]));
             }}};
@@ -664,7 +663,6 @@ namespace Stroika::Foundation::DataExchange {
     template <typename T, size_t SZ>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const T (*)[SZ])
     {
-        using Characters::String_Constant;
         // @todo - see https://stroika.atlassian.net/browse/STK-581 - to switch from generic to 'T' based mapper.
         auto fromObjectMapper = [] (const ObjectVariantMapper& mapper, const void* fromObjOfTypeT) -> VariantValue {
             RequireNotNull (fromObjOfTypeT);
@@ -701,7 +699,6 @@ namespace Stroika::Foundation::DataExchange {
     template <typename KEY_TYPE, typename VALUE_TYPE, typename ACTUAL_CONTAINER_TYPE>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_WithKeyValuePairAdd_ ()
     {
-        using Characters::String_Constant;
         auto fromObjectMapper = [] (const ObjectVariantMapper& mapper, const ACTUAL_CONTAINER_TYPE* fromObjOfTypeT) -> VariantValue {
             RequireNotNull (fromObjOfTypeT);
             FromObjectMapperType<KEY_TYPE>   keyMapper{mapper.FromObjectMapper<KEY_TYPE> ()};
@@ -745,7 +742,6 @@ namespace Stroika::Foundation::DataExchange {
     template <typename ENUM_TYPE>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap)
     {
-        using Characters::String_Constant;
         static_assert (is_enum_v<ENUM_TYPE>, "MakeCommonSerializer_NamedEnumerations only works for enum types");
         using SerializeAsType = typename underlying_type<ENUM_TYPE>::type;
         static_assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE), "underlyingtype?");
@@ -776,7 +772,6 @@ namespace Stroika::Foundation::DataExchange {
     template <typename ENUM_TYPE>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_EnumAsInt ()
     {
-        using Characters::String_Constant;
         /*
          *  Note: we cannot get the enumeration print names - in general. That would be nicer to read, but we don't have
          *  the data, and this is simple and efficient.
@@ -838,9 +833,8 @@ namespace Stroika::Foundation::DataExchange {
     template <typename RANGE_TYPE>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Range_ ()
     {
-        using Characters::String_Constant;
-        static const String_Constant     kLowerBoundLabel_{L"LowerBound"};
-        static const String_Constant     kUpperBoundLabel_{L"UpperBound"};
+        static const String              kLowerBoundLabel_{L"LowerBound"sv};
+        static const String              kUpperBoundLabel_{L"UpperBound"sv};
         FromObjectMapperType<RANGE_TYPE> fromObjectMapper = [] (const ObjectVariantMapper& mapper, const RANGE_TYPE* fromObjOfTypeT) -> VariantValue {
             RequireNotNull (fromObjOfTypeT);
             using value_type = typename RANGE_TYPE::value_type;

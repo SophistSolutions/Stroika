@@ -579,7 +579,7 @@ String Time::GetFormattedAge (const optional<Date>& birthDate, const optional<Da
         return Format (L"%d", yearDiff);
     }
     else {
-        return String_Constant (L"?");
+        return L"?"sv;
     }
 }
 

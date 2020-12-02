@@ -5,14 +5,11 @@
 
 #include "../Characters/SDKString.h"
 #include "../Characters/StringBuilder.h"
-#include "../Characters/String_Constant.h"
 
 #include "CommandLine.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Execution;
-
-using Characters::String_Constant;
 
 /*
  ********************************************************************************

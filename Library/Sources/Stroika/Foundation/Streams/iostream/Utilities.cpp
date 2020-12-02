@@ -3,7 +3,6 @@
  */
 #include "../../StroikaPreComp.h"
 
-#include "../../Characters/String_Constant.h"
 #include "../../Containers/Common.h"
 #include "../../Execution/Exceptions.h"
 #include "../../Execution/Throw.h"
@@ -20,8 +19,6 @@ using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::Streams::iostream;
-
-using Characters::String_Constant;
 
 /*
  ********************************************************************************

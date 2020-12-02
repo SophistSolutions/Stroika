@@ -191,8 +191,8 @@ optional<bool> Timezone::IsDaylightSavingsTime (const Date& date, const optional
 Characters::String Timezone::ToString () const
 {
     // This format is just comsetic and for information (debugging) purposes, and follows no standards
-    static const String_Constant kUTC_{L"UTC"};
-    static const String_Constant kLocaltime_{L"localtime"};
+    static const String kUTC_{L"UTC"sv};
+    static const String kLocaltime_{L"localtime"sv};
     switch (fTZ_) {
         case TZ_::eUTC:
             return kUTC_;

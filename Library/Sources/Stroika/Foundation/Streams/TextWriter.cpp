@@ -8,7 +8,6 @@
 
 #include "../Characters/CodePage.h"
 #include "../Characters/Format.h"
-#include "../Characters/String_Constant.h"
 #include "../Containers/Common.h"
 #include "../Debug/AssertExternallySynchronizedLock.h"
 #include "../Execution/Common.h"

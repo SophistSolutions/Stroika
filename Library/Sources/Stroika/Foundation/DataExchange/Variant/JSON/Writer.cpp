@@ -5,7 +5,6 @@
 
 #include "../../../Characters/FloatConversion.h"
 #include "../../../Characters/StringBuilder.h"
-#include "../../../Characters/String_Constant.h"
 #include "../../../Streams/TextWriter.h"
 
 #include "Writer.h"
@@ -18,7 +17,6 @@ using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Streams;
 
 using Characters::Character;
-using Characters::String_Constant;
 
 /*
  * TODO:
@@ -38,7 +36,7 @@ namespace {
                 fSpacesPerIndent = 0;
             }
             if (fSpacesPerIndent != 0) {
-                fIndentSpace = (L" "_k).Repeat (fSpacesPerIndent);
+                fIndentSpace = String{L" "sv}.Repeat (fSpacesPerIndent);
             }
         }
         Characters::Float2StringOptions fFloatOptions;
@@ -232,11 +230,11 @@ class Variant::JSON::Writer::Rep_ : public Variant::Writer::_IRep {
 public:
     Options_ fOptions_;
     Rep_ (const Options& options)
-        : fOptions_ (options)
+        : fOptions_{options}
     {
     }
     Rep_ (const Options_& options)
-        : fOptions_ (options)
+        : fOptions_{options}
     {
     }
     virtual _SharedPtrIRep Clone () const override
@@ -245,7 +243,7 @@ public:
     }
     virtual String GetDefaultFileSuffix () const override
     {
-        return String_Constant (L".json");
+        return L".json"sv;
     }
     virtual void Write (const VariantValue& v, const Streams::OutputStream<byte>::Ptr& out) override
     {

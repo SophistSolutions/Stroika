@@ -3,7 +3,6 @@
  */
 #include "../StroikaPreComp.h"
 
-#include "../../Foundation/Characters/String_Constant.h"
 #include "../../Foundation/IO/Network/LinkMonitor.h"
 
 #include "Device.h"
@@ -24,7 +23,7 @@ String UPnP::MungePrimaryMacAddrIntoBaseDeviceID (String baseDeviceID)
     Require (baseDeviceID.length () == 36); // also require layout normal as in 315CAAE0-1335-57BF-A178-24C9EE756627 but check later
     String result  = baseDeviceID;
     String macAddr = IO::Network::GetPrimaryNetworkDeviceMacAddress ();
-    macAddr        = macAddr.ReplaceAll (L"-"_k, String{});
+    macAddr        = macAddr.ReplaceAll (L"-"sv, String{});
     if (macAddr.length () > 12) {
         macAddr = macAddr.SubString (0, 12);
     }

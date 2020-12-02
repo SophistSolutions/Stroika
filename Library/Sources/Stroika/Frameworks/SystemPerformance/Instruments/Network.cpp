@@ -11,7 +11,6 @@
 
 #include "../../../Foundation/Characters/FloatConversion.h"
 #include "../../../Foundation/Characters/String2Int.h"
-#include "../../../Foundation/Characters/String_Constant.h"
 #include "../../../Foundation/Containers/Mapping.h"
 #include "../../../Foundation/Containers/Sequence.h"
 #include "../../../Foundation/Containers/Set.h"
@@ -42,7 +41,6 @@ using namespace Stroika::Frameworks::SystemPerformance;
 using namespace Stroika::Frameworks::SystemPerformance::Instruments::Network;
 
 using Characters::Character;
-using Characters::String_Constant;
 using Containers::Mapping;
 using Containers::Sequence;
 using Containers::Set;
@@ -68,12 +66,12 @@ using SystemPerformance::Support::WMICollector;
 
 #if qUseWMICollectionSupport_
 namespace {
-    const String_Constant kBytesReceivedPerSecond_{L"Bytes Received/sec"};
-    const String_Constant kBytesSentPerSecond_{L"Bytes Sent/sec"};
-    const String_Constant kPacketsReceivedPerSecond_{L"Packets Received/sec"};
-    const String_Constant kPacketsSentPerSecond_{L"Packets Sent/sec"};
-    const String_Constant kTCPSegmentsPerSecond_{L"Segments/sec"};
-    const String_Constant kSegmentsRetransmittedPerSecond_{L"Segments Retransmitted/sec"};
+    const String kBytesReceivedPerSecond_{L"Bytes Received/sec"sv};
+    const String kBytesSentPerSecond_{L"Bytes Sent/sec"sv};
+    const String kPacketsReceivedPerSecond_{L"Packets Received/sec"sv};
+    const String kPacketsSentPerSecond_{L"Packets Sent/sec"sv};
+    const String kTCPSegmentsPerSecond_{L"Segments/sec"sv};
+    const String kSegmentsRetransmittedPerSecond_{L"Segments Retransmitted/sec"sv};
 }
 #endif
 
@@ -229,7 +227,7 @@ namespace {
             RequireNotNull (accumSummary);
             DataExchange::Variant::CharacterDelimitedLines::Reader reader{{':', ' ', '\t'}};
             static const filesystem::path                          kProcFileName_{"/proc/net/dev"};
-            //static    const String_Constant kProcFileName_ { L"c:\\Sandbox\\VMSharedFolder\\proc-net-dev" };
+            //static    const String kProcFileName_ { L"c:\\Sandbox\\VMSharedFolder\\proc-net-dev"sv };
             // Note - /procfs files always unseekable
             unsigned int nLine  = 0;
             unsigned int n2Skip = 2;
@@ -333,9 +331,9 @@ namespace {
                         firstTime = false;
                     }
                     else {
-                        static const String_Constant kInSegs_{L"InSegs"};
-                        static const String_Constant kOutSegs_{L"OutSegs"};
-                        static const String_Constant kRetransSegs_{L"RetransSegs"};
+                        static const String kInSegs_{L"InSegs"sv};
+                        static const String kOutSegs_{L"OutSegs"sv};
+                        static const String kRetransSegs_{L"RetransSegs"sv};
                         if (auto idx = labelMap.Lookup (kInSegs_)) {
                             if (*idx < line.length ()) {
                                 Memory::AccumulateIf (&totalTCPSegments, Characters::String2Int<uint64_t> (line[*idx]));
@@ -365,9 +363,9 @@ namespace {
 namespace {
     struct CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
 #if qUseWMICollectionSupport_
-        WMICollector fNetworkWMICollector_{String_Constant{L"Network Interface"}, {}, {kBytesReceivedPerSecond_, kBytesSentPerSecond_, kPacketsReceivedPerSecond_, kPacketsSentPerSecond_}};
-        WMICollector fTCPv4WMICollector_{String_Constant{L"TCPv4"}, {}, {kTCPSegmentsPerSecond_, kSegmentsRetransmittedPerSecond_}};
-        WMICollector fTCPv6WMICollector_{String_Constant{L"TCPv6"}, {}, {kTCPSegmentsPerSecond_, kSegmentsRetransmittedPerSecond_}};
+        WMICollector fNetworkWMICollector_{L"Network Interface"sv, {}, {kBytesReceivedPerSecond_, kBytesSentPerSecond_, kPacketsReceivedPerSecond_, kPacketsSentPerSecond_}};
+        WMICollector fTCPv4WMICollector_{L"TCPv4"sv, {}, {kTCPSegmentsPerSecond_, kSegmentsRetransmittedPerSecond_}};
+        WMICollector fTCPv6WMICollector_{L"TCPv6"sv, {}, {kTCPSegmentsPerSecond_, kSegmentsRetransmittedPerSecond_}};
         Set<String>  fAvailableInstances_;
 #endif
         CapturerWithContext_Windows_ (Options options)
@@ -529,7 +527,7 @@ namespace {
 }
 
 namespace {
-    const MeasurementType kNetworkInterfacesMeasurement_ = MeasurementType (String_Constant (L"Network-Interfaces"));
+    const MeasurementType kNetworkInterfacesMeasurement_ = MeasurementType (L"Network-Interfaces"sv);
 }
 
 /*
@@ -634,7 +632,7 @@ namespace {
 Instrument SystemPerformance::Instruments::Network::GetInstrument (Options options)
 {
     return Instrument (
-        InstrumentNameType (String_Constant{L"Network"}),
+        InstrumentNameType{L"Network"sv},
         Instrument::SharedByValueCaptureRepType (make_unique<MyCapturer_> (CapturerWithContext_{options})),
         {kNetworkInterfacesMeasurement_},
         GetObjectVariantMapper ());

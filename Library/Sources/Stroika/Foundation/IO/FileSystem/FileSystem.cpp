@@ -250,12 +250,12 @@ filesystem::path IO::FileSystem::Ptr::CanonicalizeName (const filesystem::path& 
             sb += c.fServerAndShare->fServer + L"\\" + c.fServerAndShare->fShare;
         }
         else {
-            Execution::Throw (FileSystem::Exception{make_error_code (errc::no_such_file_or_directory), L"for absolute path need drive letter or server/share"_k, path2FileOrShortcut});
+            Execution::Throw (FileSystem::Exception{make_error_code (errc::no_such_file_or_directory), String{L"for absolute path need drive letter or server/share"sv}, path2FileOrShortcut});
         }
     }
     else {
         if (c.fDriveLetter) {
-            sb += *c.fDriveLetter + L":";
+            sb += *c.fDriveLetter + L":"sv;
         }
     }
     bool prefixWIthSlash = false;

@@ -10,7 +10,6 @@
 #include <cstdlib>
 #endif
 
-#include "../../Characters/String_Constant.h"
 #include "../../Execution/Throw.h"
 #if qPlatform_Windows
 #include "../../Execution/Platform/Windows/Exception.h"
@@ -27,7 +26,6 @@ using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::FileSystem;
 
 using Characters::SDKChar;
-using Characters::String_Constant;
 
 /*
  ********************************************************************************

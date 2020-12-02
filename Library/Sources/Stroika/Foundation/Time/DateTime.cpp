@@ -604,10 +604,10 @@ String DateTime::Format (PrintFormat pf) const
             String r = fDate_.Format (Date::PrintFormat::eISO8601);
             if (fTimeOfDay_.has_value ()) {
                 String timeStr = fTimeOfDay_->Format (TimeOfDay::PrintFormat::eISO8601);
-                r += L"T"_k + timeStr;
+                r += L"T"sv + timeStr;
                 if (fTimezone_) {
                     if (fTimezone_ == Timezone::kUTC) {
-                        static const String kZ_{L"Z"_k};
+                        static const String kZ_{L"Z"sv};
                         r += kZ_;
                     }
                     else {

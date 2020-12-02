@@ -6,7 +6,6 @@
 #include "../../../Characters/FloatConversion.h"
 #include "../../../Characters/Format.h"
 #include "../../../Characters/String2Int.h"
-#include "../../../Characters/String_Constant.h"
 #include "../../../Streams/TextReader.h"
 #include "../../BadFormatException.h"
 
@@ -34,7 +33,7 @@ public:
     }
     virtual String GetDefaultFileSuffix () const override
     {
-        return L".ini"_k;
+        return L".ini"sv;
     }
     virtual VariantValue Read (const Streams::InputStream<byte>::Ptr& in) override
     {

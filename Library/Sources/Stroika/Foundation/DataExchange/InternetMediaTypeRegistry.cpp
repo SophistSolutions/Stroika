@@ -43,12 +43,12 @@ using FileSuffixType = InternetMediaTypeRegistry::FileSuffixType;
 namespace {
     using OverrideRecord = InternetMediaTypeRegistry::OverrideRecord;
     static const inline Mapping<InternetMediaType, OverrideRecord> kDefaults_{initializer_list<KeyValuePair<InternetMediaType, OverrideRecord>>{
-        {InternetMediaTypes::kText_PLAIN, OverrideRecord{nullopt, Containers::Set<String>{L".txt"_k}, L".txt"_k}},
-        {InternetMediaTypes::kCSS, OverrideRecord{nullopt, Containers::Set<String>{L".css"_k}, L".css"_k}},
-        {InternetMediaTypes::kHTML, OverrideRecord{nullopt, Containers::Set<String>{L".htm"_k, L".html"_k}, L".htm"_k}},
-        {InternetMediaTypes::kJSON, OverrideRecord{nullopt, Containers::Set<String>{L".json"_k}, L".json"_k}},
-        {InternetMediaTypes::kPNG, OverrideRecord{nullopt, Containers::Set<String>{L".png"_k}, L".png"_k}},
-        {InternetMediaTypes::kXML, OverrideRecord{nullopt, Containers::Set<String>{L".xml"_k}, L".xml"_k}},
+        {InternetMediaTypes::kText_PLAIN, OverrideRecord{nullopt, Containers::Set<String>{L".txt"sv}, L".txt"sv}},
+        {InternetMediaTypes::kCSS, OverrideRecord{nullopt, Containers::Set<String>{L".css"sv}, L".css"sv}},
+        {InternetMediaTypes::kHTML, OverrideRecord{nullopt, Containers::Set<String>{L".htm"sv, L".html"sv}, L".htm"sv}},
+        {InternetMediaTypes::kJSON, OverrideRecord{nullopt, Containers::Set<String>{L".json"sv}, L".json"sv}},
+        {InternetMediaTypes::kPNG, OverrideRecord{nullopt, Containers::Set<String>{L".png"sv}, L".png"sv}},
+        {InternetMediaTypes::kXML, OverrideRecord{nullopt, Containers::Set<String>{L".xml"sv}, L".xml"sv}},
     }};
 }
 #endif
@@ -69,12 +69,12 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
     // Baked in predefined initial user-overrides.
     // These are adjustable by API, serve the purpose of providing a default on systems with no MIME content database -- LGP 2020-07-27
     static const inline Mapping<InternetMediaType, OverrideRecord> kDefaults_{initializer_list<KeyValuePair<InternetMediaType, OverrideRecord>>{
-        {InternetMediaTypes::kText_PLAIN, OverrideRecord{nullopt, Containers::Set<String>{L".txt"_k}, L".txt"_k}},
-        {InternetMediaTypes::kCSS, OverrideRecord{nullopt, Containers::Set<String>{L".css"_k}, L".css"_k}},
-        {InternetMediaTypes::kHTML, OverrideRecord{nullopt, Containers::Set<String>{L".htm"_k, L".html"_k}, L".htm"_k}},
-        {InternetMediaTypes::kJSON, OverrideRecord{nullopt, Containers::Set<String>{L".json"_k}, L".json"_k}},
-        {InternetMediaTypes::kPNG, OverrideRecord{nullopt, Containers::Set<String>{L".png"_k}, L".png"_k}},
-        {InternetMediaTypes::kXML, OverrideRecord{nullopt, Containers::Set<String>{L".xml"_k}, L".xml"_k}},
+        {InternetMediaTypes::kText_PLAIN, OverrideRecord{nullopt, Containers::Set<String>{L".txt"sv}, L".txt"sv}},
+        {InternetMediaTypes::kCSS, OverrideRecord{nullopt, Containers::Set<String>{L".css"sv}, L".css"sv}},
+        {InternetMediaTypes::kHTML, OverrideRecord{nullopt, Containers::Set<String>{L".htm"sv, L".html"sv}, L".htm"sv}},
+        {InternetMediaTypes::kJSON, OverrideRecord{nullopt, Containers::Set<String>{L".json"sv}, L".json"sv}},
+        {InternetMediaTypes::kPNG, OverrideRecord{nullopt, Containers::Set<String>{L".png"sv}, L".png"sv}},
+        {InternetMediaTypes::kXML, OverrideRecord{nullopt, Containers::Set<String>{L".xml"sv}, L".xml"sv}},
     }};
 #endif
 
@@ -311,7 +311,7 @@ auto InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend () -> shared_ptr<IBac
                 }
             }
             // Because on raspberrypi/debian, this comes out with a crazy default for text\plain -- LGP 2020-07-27
-            fMediaType2PreferredSuffixMap_.Add (InternetMediaTypes::kText_PLAIN, L".txt"_k);
+            fMediaType2PreferredSuffixMap_.Add (InternetMediaTypes::kText_PLAIN, L".txt"sv);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"succeeded with %d fSuffix2MediaTypeMap entries, and %d fMediaType2PreferredSuffixMap entries", fSuffix2MediaTypeMap_.size (), fMediaType2PreferredSuffixMap_.size ());
 #endif

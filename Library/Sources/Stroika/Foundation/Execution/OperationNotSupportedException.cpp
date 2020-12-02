@@ -3,8 +3,6 @@
  */
 #include "../StroikaPreComp.h"
 
-#include "../Characters/String_Constant.h"
-
 #include "OperationNotSupportedException.h"
 
 using namespace Stroika::Foundation;
@@ -17,14 +15,13 @@ using namespace Stroika::Foundation::Execution;
  ********************************************************************************
  */
 OperationNotSupportedException::OperationNotSupportedException ()
-    : Execution::RuntimeErrorException<> (L"Operation Not Supported"sv)
-    , fOperationName_ ()
+    : Execution::RuntimeErrorException<>{L"Operation Not Supported"sv}
 {
 }
 
 OperationNotSupportedException::OperationNotSupportedException (const String& operationName)
-    : Execution::RuntimeErrorException<> (L"Operation '"sv + operationName + L"' Not Supported"sv)
-    , fOperationName_ (operationName)
+    : Execution::RuntimeErrorException<>{L"Operation '"sv + operationName + L"' Not Supported"sv}
+    , fOperationName_{operationName}
 {
 }
 

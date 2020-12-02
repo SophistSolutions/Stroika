@@ -26,7 +26,6 @@
 #include "../Characters/SDKString.h"
 #include "../Characters/String2Int.h"
 #include "../Characters/StringBuilder.h"
-#include "../Characters/String_Constant.h"
 #include "../Characters/ToString.h"
 #if qPlatform_Windows
 #include "../Configuration/Platform/Windows/Registry.h"
@@ -556,7 +555,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
     static const OperatingSystem kCachedResult_ = [] () -> OperatingSystem {
         OperatingSystem tmp;
 #if qPlatform_POSIX
-        tmp.fTokenName = String_Constant (L"Unix");
+        tmp.fTokenName = L"Unix"sv;
         try {
             tmp.fTokenName = Execution::ProcessRunner (L"uname").Run (String{}).Trim ();
         }
@@ -833,7 +832,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Appar
         }
         String useWinMajorMinorVersionNameStr     = winCompatabilityVersionName.value_or (L"unknown"sv);
         String useWinMajorMinorVersionNumberStr   = winCompatabilityVersionNumber.value_or (L"unknown"sv);
-        tmp.fShortPrettyName                      = L"Windows "_k + useWinMajorMinorVersionNameStr;
+        tmp.fShortPrettyName                      = L"Windows "sv + useWinMajorMinorVersionNameStr;
         tmp.fPrettyNameWithMajorVersion           = tmp.fShortPrettyName;
         tmp.fPrettyNameWithVersionDetails         = tmp.fShortPrettyName;
         tmp.fMajorMinorVersionString              = useWinMajorMinorVersionNumberStr;

@@ -23,7 +23,6 @@
 #include "../../../Foundation/Characters/CString/Utilities.h"
 #include "../../../Foundation/Characters/FloatConversion.h"
 #include "../../../Foundation/Characters/String2Int.h"
-#include "../../../Foundation/Characters/String_Constant.h"
 #include "../../../Foundation/Configuration/SystemConfiguration.h"
 #include "../../../Foundation/Containers/Mapping.h"
 #include "../../../Foundation/Containers/Sequence.h"
@@ -55,7 +54,6 @@ using namespace Stroika::Frameworks::SystemPerformance;
 using namespace Stroika::Frameworks::SystemPerformance::Instruments::Filesystem;
 
 using Characters::String2Int;
-using Characters::String_Constant;
 using IO::FileSystem::FileInputStream;
 using Streams::TextReader;
 using Time::DurationSecondsType;
@@ -137,15 +135,15 @@ String Instruments::Filesystem::Info::ToString () const
 
 namespace {
 #if qUseWMICollectionSupport_
-    const String_Constant kDiskReadBytesPerSec_{L"Disk Read Bytes/sec"};
-    const String_Constant kDiskWriteBytesPerSec_{L"Disk Write Bytes/sec"};
-    const String_Constant kDiskReadsPerSec_{L"Disk Reads/sec"};
-    const String_Constant kDiskWritesPerSec_{L"Disk Writes/sec"};
-    const String_Constant kPctDiskReadTime_{L"% Disk Read Time"};
-    const String_Constant kPctDiskWriteTime_{L"% Disk Write Time"};
-    const String_Constant kAveDiskReadQLen_{L"Avg. Disk Read Queue Length"};
-    const String_Constant kAveDiskWriteQLen_{L"Avg. Disk Write Queue Length"};
-    const String_Constant kPctIdleTime_{L"% Idle Time"};
+    const String kDiskReadBytesPerSec_{L"Disk Read Bytes/sec"sv};
+    const String kDiskWriteBytesPerSec_{L"Disk Write Bytes/sec"sv};
+    const String kDiskReadsPerSec_{L"Disk Reads/sec"sv};
+    const String kDiskWritesPerSec_{L"Disk Writes/sec"sv};
+    const String kPctDiskReadTime_{L"% Disk Read Time"sv};
+    const String kPctDiskWriteTime_{L"% Disk Write Time"sv};
+    const String kAveDiskReadQLen_{L"Avg. Disk Read Queue Length"sv};
+    const String kAveDiskWriteQLen_{L"Avg. Disk Write Queue Length"sv};
+    const String kPctIdleTime_{L"% Idle Time"sv};
 
     constexpr bool kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_{false};
     /*

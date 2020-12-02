@@ -20,7 +20,6 @@
 
 #include "../../Foundation/Characters/Format.h"
 #include "../../Foundation/Characters/SDKString.h"
-#include "../../Foundation/Characters/String_Constant.h"
 #include "../../Foundation/Characters/ToString.h"
 #include "../../Foundation/Containers/Common.h"
 #include "../../Foundation/Debug/Assertions.h"
@@ -502,12 +501,12 @@ Main::State Main::RunTilIdleService::_GetState () const
 
 void Main::RunTilIdleService::_Install ()
 {
-    Execution::Throw (Execution::OperationNotSupportedException{L"Install"_k});
+    Execution::Throw (Execution::OperationNotSupportedException{L"Install"sv});
 }
 
 void Main::RunTilIdleService::_UnInstall ()
 {
-    Execution::Throw (Execution::OperationNotSupportedException{L"UnInstall"_k});
+    Execution::Throw (Execution::OperationNotSupportedException{L"UnInstall"sv});
 }
 
 void Main::RunTilIdleService::_RunAsService ()

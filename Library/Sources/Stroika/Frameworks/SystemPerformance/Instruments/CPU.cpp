@@ -12,7 +12,6 @@
 #include <filesystem>
 
 #include "../../../Foundation/Characters/FloatConversion.h"
-#include "../../../Foundation/Characters/String_Constant.h"
 #include "../../../Foundation/Configuration/SystemConfiguration.h"
 #include "../../../Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #include "../../../Foundation/DataExchange/Variant/JSON/Writer.h"
@@ -54,9 +53,9 @@ using SystemPerformance::Support::WMICollector;
 
 #if qUseWMICollectionSupport_
 namespace {
-    const String kInstanceName_{L""_k};
+    const String kInstanceName_{L""sv};
 
-    const String kProcessorQueueLength_{L"Processor Queue Length"_k};
+    const String kProcessorQueueLength_{L"Processor Queue Length"sv};
 }
 #endif
 
@@ -523,7 +522,7 @@ Instrument SystemPerformance::Instruments::CPU::GetInstrument (Options options)
 {
     CapturerWithContext_ useCaptureContext{options}; // capture context so copyable in mutable lambda
     return Instrument (
-        InstrumentNameType (String_Constant (L"CPU")),
+        InstrumentNameType (L"CPU"sv),
         Instrument::SharedByValueCaptureRepType (make_unique<MyCapturer_> (CapturerWithContext_{options})),
         {kCPUMeasurment_},
         GetObjectVariantMapper ());

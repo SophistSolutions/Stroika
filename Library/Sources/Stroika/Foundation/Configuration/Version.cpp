@@ -16,8 +16,6 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Configuration;
 
-using Characters::String_Constant;
-
 /*
  ********************************************************************************
  *********************************** Version ************************************
@@ -167,7 +165,7 @@ Characters::String Version::AsPrettyVersionString () const
         verSubStagStr = Characters::Format (L"%d", fVerSubStage);
     }
     if (not fFinalBuild) {
-        verSubStagStr += String_Constant (L"x");
+        verSubStagStr += L"x"sv;
     }
     return Characters::Format (L"%d.%d%s%s", fMajorVer, fMinorVer, stageStr.c_str (), verSubStagStr.c_str ());
 }

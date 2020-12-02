@@ -3,8 +3,6 @@
  */
 #include "../StroikaPreComp.h"
 
-#include "../Characters/String_Constant.h"
-
 #include "EOFException.h"
 
 using namespace Stroika::Foundation;

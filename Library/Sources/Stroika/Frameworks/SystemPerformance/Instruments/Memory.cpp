@@ -5,7 +5,6 @@
 
 #include "../../../Foundation/Characters/FloatConversion.h"
 #include "../../../Foundation/Characters/String2Int.h"
-#include "../../../Foundation/Characters/String_Constant.h"
 #include "../../../Foundation/Configuration/SystemConfiguration.h"
 #include "../../../Foundation/Containers/Mapping.h"
 #include "../../../Foundation/Containers/Sequence.h"
@@ -35,7 +34,6 @@ using namespace Stroika::Frameworks::SystemPerformance;
 using namespace Stroika::Frameworks::SystemPerformance::Instruments::Memory;
 
 using Characters::Character;
-using Characters::String_Constant;
 using Containers::Mapping;
 using Containers::Sequence;
 using Containers::Set;
@@ -57,18 +55,18 @@ using SystemPerformance::Support::WMICollector;
 
 #if qUseWMICollectionSupport_
 namespace {
-    const String_Constant kInstanceName_{L"_Total"};
+    const String kInstanceName_{L"_Total"sv};
 
-    const String_Constant kCommittedBytes_{L"Committed Bytes"};
-    const String_Constant kCommitLimit_{L"Commit Limit"};
-    const String_Constant kHardPageFaultsPerSec_{L"Pages/sec"};
-    const String_Constant kPagesOutPerSec_{L"Pages Output/sec"};
+    const String kCommittedBytes_{L"Committed Bytes"sv};
+    const String kCommitLimit_{L"Commit Limit"sv};
+    const String kHardPageFaultsPerSec_{L"Pages/sec"sv};
+    const String kPagesOutPerSec_{L"Pages Output/sec"sv};
 
-    const String_Constant kFreeMem_{L"Free & Zero Page List Bytes"};
+    const String kFreeMem_{L"Free & Zero Page List Bytes"sv};
 
     // Something of an empirical WAG (kHardwareReserved*) but not super important to get right -- LGP 2015-09-24
-    const String_Constant kHardwareReserved1_{L"System Driver Resident Bytes"};
-    const String_Constant kHardwareReserved2_{L"System Driver Total Bytes"};
+    const String kHardwareReserved1_{L"System Driver Resident Bytes"sv};
+    const String kHardwareReserved2_{L"System Driver Total Bytes"sv};
 }
 #endif
 
@@ -202,16 +200,16 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
 #endif
-                static const String_Constant kMemTotalLabel_{L"MemTotal"};
-                static const String_Constant kMemFreelLabel_{L"MemFree"};
-                static const String_Constant kMemAvailableLabel_{L"MemAvailable"};
-                static const String_Constant kActiveLabel_{L"Active"};
-                static const String_Constant kInactiveLabel_{L"Inactive"};
-                static const String_Constant kCommitLimitLabel_{L"CommitLimit"};
-                static const String_Constant kCommitted_ASLabel_{L"Committed_AS"};
-                static const String_Constant kSwapTotalLabel_{L"SwapTotal"};
-                static const String_Constant kSReclaimableLabel_{L"SReclaimable"};
-                static const String_Constant kSlabLabel_{L"Slab"};
+                static const String kMemTotalLabel_{L"MemTotal"sv};
+                static const String kMemFreelLabel_{L"MemFree"sv};
+                static const String kMemAvailableLabel_{L"MemAvailable"sv};
+                static const String kActiveLabel_{L"Active"sv};
+                static const String kInactiveLabel_{L"Inactive"sv};
+                static const String kCommitLimitLabel_{L"CommitLimit"sv};
+                static const String kCommitted_ASLabel_{L"Committed_AS"sv};
+                static const String kSwapTotalLabel_{L"SwapTotal"sv};
+                static const String kSReclaimableLabel_{L"SReclaimable"sv};
+                static const String kSlabLabel_{L"Slab"sv};
                 ReadMemInfoLine_ (&memTotal, kMemTotalLabel_, line);
                 ReadMemInfoLine_ (&updateResult->fPhysicalMemory.fFree, kMemFreelLabel_, line);
                 ReadMemInfoLine_ (&updateResult->fPhysicalMemory.fAvailable, kMemAvailableLabel_, line);
@@ -265,9 +263,9 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
 #endif
-                        static const String_Constant kpgfaultLabel_{L"pgfault"};
-                        static const String_Constant kpgpgoutLabel_{L"pgpgout"};
-                        static const String_Constant kpgmajfaultLabel_{L"pgmajfault"};
+                        static const String kpgfaultLabel_{L"pgfault"sv};
+                        static const String kpgpgoutLabel_{L"pgpgout"sv};
+                        static const String kpgmajfaultLabel_{L"pgmajfault"sv};
                         nFound += ReadVMStatLine_ (&pgfault, kpgfaultLabel_, line);
                         // Unsure if this should be pgpgout or pgpgout, or none of the above. On a system with no swap, I seem to get both happening,
                         // which makes no sense
@@ -305,7 +303,7 @@ namespace {
 namespace {
     struct CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
 #if qUseWMICollectionSupport_
-        WMICollector fMemoryWMICollector_{String_Constant{L"Memory"}, {kInstanceName_}, {kCommittedBytes_, kCommitLimit_, kHardPageFaultsPerSec_, kPagesOutPerSec_, kFreeMem_, kHardwareReserved1_, kHardwareReserved2_}};
+        WMICollector fMemoryWMICollector_{L"Memory"sv, {kInstanceName_}, {kCommittedBytes_, kCommitLimit_, kHardPageFaultsPerSec_, kPagesOutPerSec_, kFreeMem_, kHardwareReserved1_, kHardwareReserved2_}};
 #endif
         CapturerWithContext_Windows_ (const Options& options)
             : CapturerWithContext_COMMON_ (options)
@@ -481,7 +479,7 @@ ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
 }
 
 namespace {
-    const MeasurementType kMemoryUsageMeasurement_ = MeasurementType (String_Constant (L"Memory-Usage"));
+    const MeasurementType kMemoryUsageMeasurement_ = MeasurementType (L"Memory-Usage"sv);
 }
 
 namespace {
@@ -524,7 +522,7 @@ namespace {
 Instrument SystemPerformance::Instruments::Memory::GetInstrument (Options options)
 {
     return Instrument (
-        InstrumentNameType{String_Constant (L"Memory")},
+        InstrumentNameType{L"Memory"sv},
         Instrument::SharedByValueCaptureRepType (make_unique<MyCapturer_> (CapturerWithContext_{options})),
         {kMemoryUsageMeasurement_},
         GetObjectVariantMapper ());

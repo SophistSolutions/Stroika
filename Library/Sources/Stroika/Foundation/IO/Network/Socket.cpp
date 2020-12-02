@@ -128,7 +128,7 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
     }
     catch (const Execution::SystemErrorException<>& e) {
         if (e.code () == errc::permission_denied) {
-            Throw (SystemErrorException<> (e.code (), e.GetBasicErrorMessage () + L"(probably already bound with SO_EXCLUSIVEADDRUSE)"_k));
+            Throw (SystemErrorException<>{e.code (), e.GetBasicErrorMessage () + L"(probably already bound with SO_EXCLUSIVEADDRUSE)"sv});
         }
         else {
             ReThrow ();
@@ -136,7 +136,7 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
     }
     catch (const system_error& e) {
         if (e.code () == errc::permission_denied) {
-            Throw (SystemErrorException<> (e.code (), L"(probably already bound with SO_EXCLUSIVEADDRUSE)"sv));
+            Throw (SystemErrorException<>{e.code (), L"(probably already bound with SO_EXCLUSIVEADDRUSE)"sv});
         }
         else {
             ReThrow ();

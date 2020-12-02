@@ -192,7 +192,7 @@ namespace {
             case FP_NAN: {
                 Assert (isnan (f));
                 Assert (!isinf (f));
-                static const String kNAN_STR_{L"NAN"_k};
+                static const String kNAN_STR_{L"NAN"sv};
                 return kNAN_STR_;
             }
 #if qCompilerAndStdLib_valgrind_fpclassify_check_Buggy && qDebug
@@ -200,8 +200,8 @@ namespace {
                 if (Debug::IsRunningUnderValgrind ()) {
                     if (isinf (f)) {
                         DbgTrace ("fpclassify (%f) = %d", (double)f, fpclassify (f));
-                        static const String kNEG_INF_STR_{L"-INF"_k};
-                        static const String kINF_STR_{L"INF"_k};
+                        static const String kNEG_INF_STR_{L"-INF"sv};
+                        static const String kINF_STR_{L"INF"sv};
                         return f > 0 ? kINF_STR_ : kNEG_INF_STR_;
                     }
                 }

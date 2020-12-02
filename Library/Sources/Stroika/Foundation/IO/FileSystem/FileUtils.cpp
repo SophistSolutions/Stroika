@@ -127,7 +127,7 @@ void IO::FileSystem::SetFileAccessWideOpened (const filesystem::path& filePathNa
     if (filePathName.empty ())
         [[UNLIKELY_ATTR]]
         {
-            Execution::Throw (Exception (make_error_code (errc::no_such_file_or_directory), L"bad filename"_k));
+            Execution::Throw (Exception{make_error_code (errc::no_such_file_or_directory), L"bad filename"sv});
         }
     struct stat s;
     IO::FileSystem::Exception::ThrowPOSIXErrNoIfNegative (::stat (filePathName.generic_string ().c_str (), &s), filePathName);

@@ -7,7 +7,6 @@
 #include "../../StroikaPreComp.h"
 
 #include "../../../Foundation/Characters/String.h"
-#include "../../../Foundation/Characters/String_Constant.h"
 #include "../../../Foundation/Configuration/Common.h"
 #include "../../../Foundation/Configuration/SystemConfiguration.h"
 #include "../../../Foundation/IO/Network/SocketAddress.h"
@@ -34,7 +33,6 @@ namespace Stroika::Frameworks::UPnP::SSDP {
     }
 
     using Foundation::Characters::String;
-    using Foundation::Characters::String_Constant;
 
     /**
      *  MakeServerHeaderValue

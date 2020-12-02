@@ -4,7 +4,6 @@
 #include "../../StroikaPreComp.h"
 
 #include "../../Characters/String.h"
-#include "../../Characters/String_Constant.h"
 #include "../../Memory/SmallStackBuffer.h"
 
 #include "PathName.h"

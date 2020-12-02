@@ -10,7 +10,6 @@
 
 #include "../Characters/Format.h"
 #include "../Characters/StringBuilder.h"
-#include "../Characters/String_Constant.h"
 #if qPlatform_Windows
 #include "../Characters/Platform/Windows/SmartBSTR.h"
 #endif
@@ -34,7 +33,6 @@ using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Time;
 
-using Characters::String_Constant;
 using Containers::Sequence;
 
 using namespace Time;
@@ -301,7 +299,7 @@ String TimeOfDay::Format (PrintFormat pf) const
 
 String TimeOfDay::Format (const locale& l) const
 {
-    return Format (l, L"%X"_k); // %X locale dependent
+    return Format (l, L"%X"sv); // %X locale dependent
 }
 
 String TimeOfDay::Format (const String& formatPattern) const

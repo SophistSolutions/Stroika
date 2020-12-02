@@ -4,7 +4,6 @@
 #include "../../../StroikaPreComp.h"
 
 #include "../../../Characters/Format.h"
-#include "../../../Characters/String_Constant.h"
 #include "../../../Streams/TextReader.h"
 
 #include "../../BadFormatException.h"
@@ -18,7 +17,6 @@ using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::XML;
 
 using Characters::Character;
-using Characters::String_Constant;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -37,7 +35,7 @@ public:
     }
     virtual String GetDefaultFileSuffix () const override
     {
-        return String_Constant (L".xml");
+        return L".xml"sv;
     }
     virtual VariantValue Read (const Streams::InputStream<byte>::Ptr& in) override
     {

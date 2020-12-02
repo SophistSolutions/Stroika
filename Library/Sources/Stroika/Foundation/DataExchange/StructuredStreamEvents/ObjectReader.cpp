@@ -7,7 +7,6 @@
 #include "../../Characters/FloatConversion.h"
 #include "../../Characters/Format.h"
 #include "../../Characters/String2Int.h"
-#include "../../Characters/String_Constant.h"
 #include "../../Debug/Trace.h"
 #include "../../Time/Date.h"
 #include "../../Time/DateRange.h"
@@ -25,7 +24,6 @@ using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::StructuredStreamEvents;
 using namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReader;
 
-using Characters::String_Constant;
 using Time::Date;
 using Time::DateTime;
 using Time::Duration;
@@ -196,7 +194,7 @@ Context::Context (const Registry& registry, const shared_ptr<IElementConsumer>& 
 #if qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
 String Context::TraceLeader_ () const
 {
-    static const String_Constant kOneTabLevel_{L"    "};
+    static const String kOneTabLevel_{L"    "sv};
     return kOneTabLevel_.Repeat (static_cast<unsigned int> (fStack_.size ()));
 }
 #endif

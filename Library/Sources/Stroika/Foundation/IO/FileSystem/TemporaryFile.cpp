@@ -22,7 +22,6 @@
 
 #include "../../Characters/CString/Utilities.h"
 #include "../../Characters/Format.h"
-#include "../../Characters/String_Constant.h"
 #include "../../Execution/Common.h"
 #include "../../Execution/Exceptions.h"
 #if qPlatform_Windows
@@ -92,7 +91,7 @@ AppTempFileManager::AppTempFileManager ()
     // But whatever we do, the DLL may do also, so we must use what is in the filesystem
     // to disambiguiate.
     //
-    tmpDir += String_Constant (L"HealthFrameWorks\\");
+    tmpDir += L"HealthFrameWorks\\"sv;
     CreateDirectory (tmpDir);
     for (int i = 0; i < INT_MAX; ++i) {
         String d = tmpDir + Format (L"%s-%d-%d\\", exeFileName.c_str (), ::GetCurrentProcessId (), i + rand ());
@@ -136,7 +135,7 @@ String AppTempFileManager::GetTempFile (const String& fileNameBase)
 
     SDKString::size_type suffixStart = fn.rfind ('.');
     if (suffixStart == SDKString::npos) {
-        fn += String_Constant (L".txt");
+        fn += L".txt"sv;
         suffixStart = fn.rfind ('.');
     }
     int attempts = 0;

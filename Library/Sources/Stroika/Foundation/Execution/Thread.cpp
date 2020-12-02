@@ -15,7 +15,6 @@
 #include "../Characters/CString/Utilities.h"
 #include "../Characters/Format.h"
 #include "../Characters/String.h"
-#include "../Characters/String_Constant.h"
 #include "../Characters/ToString.h"
 #include "../Containers/Set.h"
 #include "../Debug/Trace.h"
