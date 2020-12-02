@@ -181,7 +181,7 @@ namespace {
 
 String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
 {
-    auto                         lingMgr = Linguistics::MessageUtiltiesManager::Get ();
+    auto                lingMgr = Linguistics::MessageUtiltiesManager::Get ();
     static const String kCommaSpace_{L", "sv};
     if (empty ()) {
         return String{};

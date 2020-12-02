@@ -1294,7 +1294,6 @@ void String::erase (size_t from, size_t count)
     *this            = RemoveAt (from, from + min (count, max2Erase));
 }
 
-
 /*
  ********************************************************************************
  ******************************** operator"" _k *********************************
@@ -1304,9 +1303,6 @@ String operator"" _k (const wchar_t* s, size_t len)
 {
     return String_Constant{s, s + len};
 }
-
-
-
 
 /*
  ********************************************************************************
