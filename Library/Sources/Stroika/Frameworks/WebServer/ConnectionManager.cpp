@@ -6,7 +6,6 @@
 #include <algorithm>
 #include <cstdlib>
 
-#include "../../Foundation/Characters/String_Constant.h"
 #include "../../Foundation/Characters/ToString.h"
 #include "../../Foundation/Containers/Common.h"
 #include "../../Foundation/DataExchange/BadFormatException.h"

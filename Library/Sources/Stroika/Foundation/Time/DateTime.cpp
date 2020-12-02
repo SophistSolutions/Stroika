@@ -9,7 +9,6 @@
 
 #include "../Characters/Format.h"
 #include "../Characters/RegularExpression.h"
-#include "../Characters/String_Constant.h"
 #if qPlatform_Windows
 #include "../Characters/Platform/Windows/SmartBSTR.h"
 #endif
@@ -667,7 +666,7 @@ String DateTime::Format (const locale& l, const String& formatPattern) const
 
 #if qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy
     if (l == locale::classic () and formatPattern == kLocaleStandardFormat) {
-        static const String_Constant kAltPattern_{L"%a %b %e %T %Y"};
+        static const String kAltPattern_{L"%a %b %e %T %Y"sv};
         tmput.put (oss, oss, ' ', &when, kAltPattern_.c_str (), kAltPattern_.c_str () + kAltPattern_.length ());
         return String (oss.str ());
     }

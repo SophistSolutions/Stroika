@@ -9,7 +9,6 @@
 #include "../Characters/CString/Utilities.h"
 #include "../Characters/FloatConversion.h"
 #include "../Characters/Format.h"
-#include "../Characters/String_Constant.h"
 #include "../Debug/Assertions.h"
 #include "../Debug/Trace.h"
 #include "../Linguistics/MessageUtilities.h"
@@ -22,7 +21,6 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Time;
 
-using Characters::String_Constant;
 using Debug::TraceContextBumper;
 
 using namespace Time;
@@ -184,7 +182,7 @@ namespace {
 String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
 {
     auto                         lingMgr = Linguistics::MessageUtiltiesManager::Get ();
-    static const String_Constant kCommaSpace_{L", "};
+    static const String kCommaSpace_{L", "sv};
     if (empty ()) {
         return String{};
     }
@@ -193,7 +191,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
      *      There is a space between the numerical value and unit symbol, even when the value is used
      *      in an adjectival sense, except in the case of superscript units for plane angle.
      */
-    static const String_Constant kSpaceBeforeUnit_{L" "};
+    static const String kSpaceBeforeUnit_{L" "sv};
 
     InternalNumericFormatType_ t        = As<InternalNumericFormatType_> ();
     bool                       isNeg    = (t < 0);

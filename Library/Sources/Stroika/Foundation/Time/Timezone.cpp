@@ -13,7 +13,6 @@
 
 #include "../Characters/Format.h"
 #include "../Characters/String.h"
-#include "../Characters/String_Constant.h"
 #include "../Configuration/Common.h"
 #include "../Containers/Mapping.h"
 #include "../DataExchange/Variant/INI/Reader.h"
@@ -237,8 +236,8 @@ TimeZoneInformationType Time::GetCurrentLocaleTimezoneInfo ()
         // WEAK but maybe effective way
         // http://www.linuxforums.org/forum/red-hat-fedora-linux/162483-changing-timezone-rhel-5-4-centos.html
         try {
-            DataExchange::INI::Profile p = DataExchange::INI::Reader{}.ReadProfile (IO::FileSystem::FileInputStream::New (String_Constant { L"/etc/sysconfig/clock" }));
-            if (auto o = p.fUnnamedSection.fProperties.Lookup (String_Constant { L"ZONE" })) {
+            DataExchange::INI::Profile p = DataExchange::INI::Reader{}.ReadProfile (IO::FileSystem::FileInputStream::New ( L"/etc/sysconfig/clock"sv));
+            if (auto o = p.fUnnamedSection.fProperties.Lookup (L"ZONE"sv)) {
                 result.fID =  *o;
             }
         }
@@ -257,15 +256,15 @@ TimeZoneInformationType Time::GetCurrentLocaleTimezoneInfo ()
             using   Common::KeyValuePair;
             // Table from Hand-coded for a few empirical cases around 2015-06-01
             static const    Mapping<String, String> kUNIXTZAbbrev2OlsonName_ =  {
-                KeyValuePair<String, String> { String_Constant { L"CST" },      String_Constant { L"America/Chicago" } },
-                KeyValuePair<String, String> { String_Constant { L"CDT" },      String_Constant { L"America/Chicago" } },
-                KeyValuePair<String, String> { String_Constant { L"CST6CDT" },  String_Constant { L"America/Chicago" } },
-                KeyValuePair<String, String> { String_Constant { L"EDT" },      String_Constant { L"America/New_York" } },
-                KeyValuePair<String, String> { String_Constant { L"EST" },      String_Constant { L"America/New_York" } },
-                KeyValuePair<String, String> { String_Constant { L"EST5EDT" },  String_Constant { L"America/New_York" } },
-                KeyValuePair<String, String> { String_Constant { L"PDT" },      String_Constant { L"America/Los_Angeles" } },
-                KeyValuePair<String, String> { String_Constant { L"PST" },      String_Constant { L"America/Los_Angeles" } },
-                KeyValuePair<String, String> { String_Constant { L"PDT8PST" },  String_Constant { L"America/Los_Angeles" } },
+                KeyValuePair<String, String> {  L"CST"sv,      L"America/Chicago"sv },
+                KeyValuePair<String, String> {  L"CDT"sv,      L"America/Chicago"sv },
+                KeyValuePair<String, String> {  L"CST6CDT"sv,   L"America/Chicago"sv },
+                KeyValuePair<String, String> {  L"EDT" sv,       L"America/New_York"sv },
+                KeyValuePair<String, String> {  L"EST"sv,       L"America/New_York"sv },
+                KeyValuePair<String, String> {  L"EST5EDT"sv,   L"America/New_York"sv },
+                KeyValuePair<String, String> {  L"PDT"sv,       L"America/Los_Angeles"sv },
+                KeyValuePair<String, String> {  L"PST"sv,       L"America/Los_Angeles"sv },
+                KeyValuePair<String, String> {  L"PDT8PST"sv,   L"America/Los_Angeles"sv },
             };
             result.fID = kUNIXTZAbbrev2OlsonName_.LookupValue (tzAbbrev, tzAbbrev);
         }

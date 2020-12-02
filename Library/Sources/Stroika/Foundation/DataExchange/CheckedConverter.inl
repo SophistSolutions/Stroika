@@ -12,7 +12,6 @@
 
 #include <type_traits>
 
-#include "../Characters/String_Constant.h"
 #include "../Execution/Throw.h"
 #include "../Math/Common.h"
 
@@ -48,13 +47,13 @@ namespace Stroika::Foundation::DataExchange {
         typename RANGE_TYPE::value_type useE = Private_::CheckedConverter_Range_Helper_Pinner_ (e, RANGE_TYPE::TraitsType::kLowerBound, RANGE_TYPE::TraitsType::kUpperBound);
         // Note: these checks MUST use <= and >= and IGNORE openness, because the bounds need not be in the range.
         if (not(RANGE_TYPE::TraitsType::kLowerBound <= useS)) {
-            Execution::Throw (BadFormatException{L"Value < RangeType lower bounds"sv});
+            Execution::Throw (BadFormatException{L"Value less than RangeType lower bounds"sv});
         }
         if (not(useS <= useE)) {
-            Execution::Throw (BadFormatException{L"Range start must be less than end"sv});
+            Execution::Throw (BadFormatException{L"Range start must be less than or equal to end"sv});
         }
         if (not(useE <= RANGE_TYPE::TraitsType::kUpperBound)) {
-            Execution::Throw (BadFormatException{L"Range end must be less than Range traits end"sv});
+            Execution::Throw (BadFormatException{L"Range end must be less than or equal to Range traits end"sv});
         }
         return RANGE_TYPE (useS, useE);
     }
@@ -67,15 +66,14 @@ namespace Stroika::Foundation::DataExchange {
     template <typename RANGE_TYPE>
     typename RANGE_TYPE::value_type CheckedConverter_ValueInRange (typename RANGE_TYPE::value_type val, const RANGE_TYPE& range)
     {
-        using Characters::String_Constant;
         typename RANGE_TYPE::value_type useVal = Private_::CheckedConverter_Range_Helper_Pinner_ (val, RANGE_TYPE::TraitsType::kLowerBound, RANGE_TYPE::TraitsType::kUpperBound);
         if (not range.Contains (useVal)) {
             if (useVal <= range.GetLowerBound ()) {
-                Execution::Throw (BadFormatException (String_Constant (L"Value out of range (too low)")));
+                Execution::Throw (BadFormatException{L"Value out of range (too low)"sv});
             }
             else {
                 Assert (useVal >= range.GetUpperBound ());
-                Execution::Throw (BadFormatException (String_Constant (L"Value out of range (exceeds max)")));
+                Execution::Throw (BadFormatException{L"Value out of range (exceeds max)"sv});
             }
         }
         return useVal;

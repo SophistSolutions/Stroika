@@ -12,15 +12,5 @@
 
 namespace Stroika::Foundation::Characters {
 
-    /*
-     ********************************************************************************
-     ******************************** operator"" _k *********************************
-     ********************************************************************************
-     */
-    inline String_Constant operator"" _k (const wchar_t* s, size_t len)
-    {
-        return String_Constant{s, s + len};
-    }
-
 }
 #endif // _Stroika_Foundation_Characters_String_Constant_inl_
