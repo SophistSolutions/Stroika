@@ -154,7 +154,7 @@ jobs:
           name: Sample apps (${{ matrix.displayTargetName }})
           path: |
             Builds/${{ matrix.config_name }}/Samples-*
-      - name: Archive Performance Log Results
+      - name: Archive Log Results
         uses: actions/upload-artifact@v2
         with:
           name: Log Data (${{ matrix.displayTargetName }})
