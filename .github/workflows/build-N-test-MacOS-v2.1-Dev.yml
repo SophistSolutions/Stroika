@@ -80,6 +80,12 @@ jobs:
           echo "XXX"
           echo $TMPDIR
           echo ${{ env.TMPDIR }}
+          echo steps TO JSON:
+          echo ${{ toJson(steps) }}
+          echo runner TO JSON:
+          echo ${{ toJson(runner) }}
+          echo ENV TO JSON:
+          echo ${{ toJson(env) }}
           echo "YYY"
           ls -l ${{ env.TMPDIR }}/Trace*.txt
       - name: Build System Info2
