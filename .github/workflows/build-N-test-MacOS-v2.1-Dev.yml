@@ -76,13 +76,14 @@ jobs:
       - name: Build System Info
         run: |
           df -h
+          echo ${{ env.TMPDIR }}
       - name: Archive Performance Log Results
         uses: actions/upload-artifact@v2
         with:
           name: Log Results (${{ matrix.displayTargetName }})
           path: |
             Builds/${{ matrix.config_name }}/PerformanceDump.txt
-            ${{ env.TMPDIR}}/Trace*.txt
+            ${{ env.TMPDIR }}/Trace*.txt
       - name: Archive Sample Results
         uses: actions/upload-artifact@v2
         with:
