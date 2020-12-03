@@ -76,8 +76,11 @@ jobs:
       - name: Build System Info
         run: |
           df -h
+          printenv
+          echo "XXX"
+          printenv TMPDIR
           echo ${{ env.TMPDIR }}
-      - name: Archive Performance Log Results
+      - name: Archive Log Results
         uses: actions/upload-artifact@v2
         with:
           name: Log Results (${{ matrix.displayTargetName }})
