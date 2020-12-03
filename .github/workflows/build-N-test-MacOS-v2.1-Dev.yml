@@ -83,8 +83,9 @@ jobs:
           echo "TMPDIR"
           echo $TMPDIR
           echo "TMPDIR using ENV.TMPDIR="
-          echo ${{ env.TMPDIR }}
-          ls -l ${{ env.TMPDIR }}/Trace*.txt
+          # Just the echo line here causes GitHub-Actions-MacOS to die here...
+          #echo ${{ env.TMPDIR }}
+          #ls -l ${{ env.TMPDIR }}/Trace*.txt
       - name: Build System Info
         shell: bash
         run: |
