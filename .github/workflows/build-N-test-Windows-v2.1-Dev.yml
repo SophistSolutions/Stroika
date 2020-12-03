@@ -114,13 +114,13 @@ jobs:
         shell: "bash"
         # due to flaws in docker (windows must stop) - and cp no wildcards
         run: |
-          docker exec --workdir c:/Stroika buildContainer bash -c 'mkdir TMPLOGFILES && cp $TEMP/Trace*.txt TRACE_LOGS/'
+          docker exec --workdir c:/Stroika buildContainer bash -c 'mkdir TRACE_LOGS && cp $TEMP/Trace*.txt TRACE_LOGS/'
           docker stop buildContainer
           docker cp buildContainer:Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR 2> /dev/null
           docker cp buildContainer:Stroika/TRACE_LOGS $ARTIFACTS_DIR 2> /dev/null
           rm -rf $ARTIFACTS_DIR/{ThirdPartyComponents,Tests,*.lib}
           ls -l $ARTIFACTS_DIR
-      - name: Archive Performance Log Results
+      - name: Archive Log Results
         uses: actions/upload-artifact@v2
         with:
           name: Log Results (${{ matrix.displayTargetName }})

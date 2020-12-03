@@ -78,8 +78,9 @@ jobs:
           df -h
           printenv
           echo "XXX"
-          printenv TMPDIR
           echo ${{ env.TMPDIR }}
+          echo "YYY"
+          ls -l ${{ env.TMPDIR }}/Trace*.txt
       - name: Archive Log Results
         uses: actions/upload-artifact@v2
         with:
