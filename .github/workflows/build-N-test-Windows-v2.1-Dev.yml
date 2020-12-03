@@ -109,7 +109,6 @@ jobs:
         run: |
           df -h
           docker exec buildContainer df -h
-          docker exec buildContainer printenv
       - name: Copy Build Artifacts
         shell: "bash"
         # due to flaws in docker (windows must stop) - and cp no wildcards
@@ -119,7 +118,6 @@ jobs:
           docker cp buildContainer:Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR 2> /dev/null
           docker cp buildContainer:Stroika/TRACE_LOGS $ARTIFACTS_DIR 2> /dev/null
           rm -rf $ARTIFACTS_DIR/{ThirdPartyComponents,Tests,*.lib}
-          ls -l $ARTIFACTS_DIR
       - name: Archive Log Results
         uses: actions/upload-artifact@v2
         with:

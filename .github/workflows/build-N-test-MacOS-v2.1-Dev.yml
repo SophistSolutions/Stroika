@@ -78,6 +78,17 @@ jobs:
           df -h
           printenv
           echo "XXX"
+          echo $TMPDIR
+          echo ${{ env.TMPDIR }}
+          echo "YYY"
+          ls -l ${{ env.TMPDIR }}/Trace*.txt
+      - name: Build System Info2
+        shell: bash
+        run: |
+          df -h
+          printenv
+          echo "XXX"
+          echo $TMPDIR
           echo ${{ env.TMPDIR }}
           echo "YYY"
           ls -l ${{ env.TMPDIR }}/Trace*.txt
