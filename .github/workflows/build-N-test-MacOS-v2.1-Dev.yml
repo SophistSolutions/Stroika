@@ -73,40 +73,30 @@ jobs:
       - name: Run-Tests
         run: |
           make run-tests
-      - name: Build System Info
+      - name: Workaround GitHub-Actions-MacOS Issue with env.TMPDIR
         run: |
-          df -h
+          mkdir /tmp/LOGS-ARCHIVE
+          cp $TMPDIR/Trace*.txt /tmp/LOGS-ARCHIVE
+      - name: DEBUG Workaround GitHub-Actions-MacOS Issue with env.TMPDIR
+        run: |
           printenv
-          echo "XXX"
+          echo "TMPDIR"
           echo $TMPDIR
+          echo "TMPDIR using ENV.TMPDIR="
           echo ${{ env.TMPDIR }}
-          #echo steps TO JSON:
-          #echo ${{ toJson(steps) }}
-          #echo runner TO JSON:
-          #echo ${{ toJson(runner) }}
-          #echo ENV TO JSON:
-          #echo ${{ toJson(env) }}
-          echo "YYY1"
-          ls -l ${{ env.TMPDIR }}
-          echo "YYY2"
           ls -l ${{ env.TMPDIR }}/Trace*.txt
-      - name: Build System Info2
+      - name: Build System Info
         shell: bash
         run: |
           df -h
-          printenv
-          echo "XXX"
-          echo $TMPDIR
-          echo ${{ env.TMPDIR }}
-          echo "YYY"
-          ls -l ${{ env.TMPDIR }}/Trace*.txt
       - name: Archive Log Results
         uses: actions/upload-artifact@v2
         with:
           name: Log Results (${{ matrix.displayTargetName }})
           path: |
             Builds/${{ matrix.config_name }}/PerformanceDump.txt
-            ${{ env.TMPDIR }}/Trace*.txt
+            /tmp/LOGS-ARCHIVE
+            #${{ env.TMPDIR }}/Trace*.txt
       - name: Archive Sample Results
         uses: actions/upload-artifact@v2
         with:
