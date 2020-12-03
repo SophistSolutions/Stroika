@@ -76,6 +76,7 @@ jobs:
       - name: Build System Info
         run: |
           df -h
+          printenv
       - name: Archive Performance Log Results
         uses: actions/upload-artifact@v2
         with:
