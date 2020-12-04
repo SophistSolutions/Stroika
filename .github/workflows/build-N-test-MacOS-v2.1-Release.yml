@@ -73,16 +73,29 @@ jobs:
       - name: Run-Tests
         run: |
           make run-tests
+      - name: Workaround GitHub-Actions-MacOS Issue with env.TMPDIR
+        run: |
+          mkdir /tmp/LOGS-ARCHIVE
+          cp $TMPDIR/Trace*.txt /tmp/LOGS-ARCHIVE
+      - name: DEBUG Workaround GitHub-Actions-MacOS Issue with env.TMPDIR
+        run: |
+          printenv
+          echo "TMPDIR"
+          echo $TMPDIR
+          echo "TMPDIR using ENV.TMPDIR=${{ env.TMPDIR }}"
+          # Just the echo line above shows empty, and then the ls line causes exit 1/failure
+          #ls -l ${{ env.TMPDIR }}/Trace*.txt
       - name: Build System Info
         run: |
           df -h
-      - name: Archive Performance Log Results
+      - name: Archive Log Results
         uses: actions/upload-artifact@v2
         with:
           name: Log Results (${{ matrix.displayTargetName }})
           path: |
             Builds/${{ matrix.config_name }}/PerformanceDump.txt
-            $TMPDIR/Trace*.txt
+            /tmp/LOGS-ARCHIVE
+            #${{ env.TMPDIR }}/Trace*.txt
       - name: Archive Sample Results
         uses: actions/upload-artifact@v2
         with:

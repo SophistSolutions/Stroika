@@ -82,12 +82,10 @@ jobs:
           printenv
           echo "TMPDIR"
           echo $TMPDIR
-          echo "TMPDIR using ENV.TMPDIR="
-          # Just the echo line here causes GitHub-Actions-MacOS to die here...
-          #echo ${{ env.TMPDIR }}
+          echo "TMPDIR using ENV.TMPDIR=${{ env.TMPDIR }}"
+          # Just the echo line above shows empty, and then the ls line causes exit 1/failure
           #ls -l ${{ env.TMPDIR }}/Trace*.txt
       - name: Build System Info
-        shell: bash
         run: |
           df -h
       - name: Archive Log Results
