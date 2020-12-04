@@ -79,12 +79,11 @@ jobs:
           cp $TMPDIR/Trace*.txt /tmp/LOGS-ARCHIVE
       - name: DEBUG Workaround GitHub-Actions-MacOS Issue with env.TMPDIR
         run: |
-          printenv
-          echo "TMPDIR"
-          echo $TMPDIR
+          echo "TMPDIR=$TMPDIR"
           echo "TMPDIR using ENV.TMPDIR=${{ env.TMPDIR }}"
           # Just the echo line above shows empty, and then the ls line causes exit 1/failure
           #ls -l ${{ env.TMPDIR }}/Trace*.txt
+          #if this gets fixed, then lose Workaround GitHub-Actions-MacOS, and directly reference ${{ env.TMPDIR }}/Trace*.txt in Archive Log Results
       - name: Build System Info
         run: |
           df -h
