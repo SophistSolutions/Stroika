@@ -9,7 +9,7 @@ of bits) which hopefully as nearly as possible (given the length of the digest) 
 
 A digest is generally of fixed length - often 4, or 16, or 20 bytes long.
 
-We have Algorithms - that take a stream of bytes and convert it to a Digester<>::ReturnType. This is
+Digest Algorithms - take a stream of bytes and convert it to a Digester<>::ReturnType. This is
 all template driven (at least the types and choice of algorithm) - so invoking a hash algorithm
 can be inlined.
 

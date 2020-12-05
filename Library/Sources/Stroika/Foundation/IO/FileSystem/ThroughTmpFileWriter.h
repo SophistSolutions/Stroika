@@ -23,6 +23,8 @@ namespace Stroika::Foundation::IO::FileSystem {
     using Characters::String;
 
     /**
+     * \brief utility to atomically update/write a file.
+     * 
      * Specify the name of a file to write, and an optional file suffix for a tempfile, and
      * support writing through the tempfile, and then atomicly renaming the file when done.
      *
@@ -40,7 +42,7 @@ namespace Stroika::Foundation::IO::FileSystem {
      *
      *  \par Example Usage
      *      \code
-     *          ThroughTmpFileWriter    tmpFile (targetFileName);
+     *          ThroughTmpFileWriter    tmpFile{targetFileName};
      *          IO::FileSystem::FileOutputStream::Ptr outStream = IO::FileSystem::FileOutputStream::New (tmpFile.GetFilePath ());
      *          YourCodeToWriteDataToStream (your_data, out);
      *          out.clear();        // close like this so we can throw exception - cannot throw if we count on DTOR
@@ -49,7 +51,7 @@ namespace Stroika::Foundation::IO::FileSystem {
      *
      *  \par Example Usage
      *      \code
-     *          ThroughTmpFileWriter    tmpFile (targetFileName);
+     *          ThroughTmpFileWriter    tmpFile{targetFileName};
      *          {
      *              FileOutputStream  out (tmpFile.GetTmpFilePath ());
      *              YourCodeToWriteDataToStream (your_data, out);
