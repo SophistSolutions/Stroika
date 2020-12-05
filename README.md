@@ -54,7 +54,7 @@ Stroika's biggest strength is also its biggest weakness:
 
 - Stroika v2.1
 
-  Regularly tested on x86, arm, gcc8 thru gcc10, clang 6 thru clang 10, Visual Studio 17 and Visual Studio 19, XCode 12.
+  Regularly tested on x86, arm, gcc8 thru gcc10, clang 6 thru clang 11, Visual Studio 17 and Visual Studio 19, XCode 12.
 
 ## CI System Integration
 

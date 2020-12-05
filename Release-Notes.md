@@ -7,6 +7,128 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+### 2.1b7x {2020-12-05}
+
+#### TLDR
+
+- Switched from TravisCI to GitHub Actions for CI
+- Major cleanup of workarounds / suppressions for valgrind/sanitizers
+- Support Ubuntu 20.10 (except tsan/helgrind broken on 20.10)
+
+#### Details
+
+- Build System
+
+  - CI Systems
+
+    - TravisCI
+      - Deprecated support for TravisCI, since the appear to no longer support free usage for opensource projects (their site says they do, but my support requests for more credits were never answered)
+    - Github Actions
+      - Implemented support for MacOS/Windows/Unix
+      - **very nice**, mostly docker based
+      - Docker works poorly but acceptably on windows
+      - Docker UNAVAILABLE on MacOS (Crapple fault, not github) - so directly built code for macos
+
+  - Build Scripts / Makefiles
+
+    - several cleanups to make clean/clobber
+
+      (e.g aggressive in top level make to assure intermediatefiles/builds dirs approrpiately cleaned/clobbered)
+
+    - workaround Add '+' to parent make rule issue
+
+    - workaround at bug define qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy from configure script - and document in https://stroika.atlassian.net/browse/STK-717
+
+    - Docker/Windows - sync up Windows-MinGW-VS2k19/Dockerfile with cygwin version - tested and still broken installing msys under docker on windows
+
+    - got rid of explicit set of --no-sanitize in makefile due to https://stroika.atlassian.net/browse/STK-601 and instead check and add automatically inside configure script (I already had that before so dont need the makefile changes)
+
+  - Compilers Used/Supported
+
+    - g++ { 8, 9, 10 }
+    - Clang++ { unix: 7, 8, 9, 10, 11; XCode: 12 }
+    - MSVC: { 15.9.25, 16.8.2 }
+    - Changes
+      - Bug Defines:
+        - qCompilerAndStdLib_warning_explcitly_defaulted_threeway_compare_implictly_deleted_Buggy deleted since no longer refernced anyplace
+        - lose obsolete bug defines qCompiler_noSanitizeAttribute_Buggy and qCompiler_noSanitizeAttributeForLamdas_Buggy
+        - document qMacUBSanitizerifreqAlignmentIssue_Buggy ubsan macos workaround a bit
+        - new bug define qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy
+        - new qCompilerAndStdLib_static_initializer_lambda_funct_init_Buggy workaround
+        - new workaround qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+        - had to expand workaround for qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy
+        - lose obsolete qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy reference
+        - lose qCompiler_SanitizerFunctionPtrConversionSuppressionBug (since workaround differently - see https://stroika.atlassian.net/browse/STK-601)
+        - lose workaround for qCompilerAndStdLib_ASAN_Issue_665_Buggy and https://stroika.atlassian.net/browse/STK-665 - since can no longer reproduce on any platform
+
+  - OS/Platforms Used/Supported
+    - Windows
+      - version 2004
+      - WSL v1
+    - MacOS
+      - 10.15.5 (Catalina)
+    - Linux: { Ubuntu: [1804, 2004, 2010], Centos: [7, 8], Raspbian }
+  - Hardware Used/Supported
+
+    - x86
+    - x64
+    - arm (linux/raspberrypi - cross-compiled)
+
+  - Sanitizers & Valgrind
+    - Added TSAN suppression for apparent ubuntu tsan bug - https://stroika.atlassian.net/browse/STK-716
+    - experiemntal Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD for https://stroika.atlassian.net/browse/STK-717
+    - Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD
+    - @todo DOCS - overall what we did to cleanup valigrind/sanitizers
+    - Many fewer valgrind/sanitizer supressions in supressions files (retested most)
+    - CLeanup use of valgrind supressions in BlockAllocator, HOPEFULLY enuf to cure occasional warnings abStroika_Foundation_Debug_ValgrindMarkAddressAsAllocatedout races (since sporadic and not well documented, must test more to be sure)
+    - marked https://stroika.atlassian.net/browse/STK-672 https://stroika.atlassian.net/browse/STK-695 as no longer reproducible, and resolved in jira and lost the valgrind workarounds
+
+- Documentation
+
+  - Many improvements to per-directory summaries of modules/overviews/ReadMe.md
+
+- Library/General
+
+  - avoid a few compiler warnings about iterating over a range and declaring iterator variable const T&, and just declare const T (since iterator doesnt return references, it returns values so no advantage in declarting const T& and slightly misleading
+
+- Library/Foundation
+
+  - Characters
+    - moved operator \_k from String_Constant.h to String.h and changed return type to String
+      - this way - no need for extra include (its logically part of String)
+      - if you need return type = String_Constant use that CTOR explicitly (cannot imageine why needed)
+      - only downside is loss of inline, but thats probably taken care of by modern LTO anyhow
+      - So now much simpler stroika code - rarely including String_Constant.h
+  - Cryptography
+    - renamed Cryptography::DefaultSerializer to DataExchange::DefaultSerializer
+      - more logical place for the type - **not backward compat** but hard to deprecate old names and only released that way for one version
+  - DataExchange
+    - simplify InternetMediaTypes namespace in InternetMediaTypesRegistry - no more use of virtualconstnat
+      **not fully backward compatible but easy to react to** (replace function call with access of global constant)
+  - Debug
+
+    - Cleanup macros/defines in Debug/Sanitizer.h
+
+  - Execution
+    - lose call to siginterrupt - was uneeded due to call to sigaction with no SA_RESTART, and now deprecated
+    - NEARLY deprecate ModuleInit
+      - use call_once and atexit() inslide Atom library in place of ModuleInit (and most other places)
+      - document where/why it may still be useful, so keep, but dont use (as much) - use static inline magic init
+  - Time
+    - deprecate a few constexpr wchar_t kLocaleStandardAlternateFormatArray elements and use static line const String instead
+
+- Library/Frameworks
+
+  - Led
+    - Led_MFC - OnPerformCommand_MSG () - catch exceptions and suppress them (logging) - to avoid crash that occurs when exceptions are propagates through a wndproc (caused LedIt/LedLineIt to sometimes crash on bad clipboard state during paste)
+
+- Samples
+
+- ThirdPartyComponents
+  - openssl
+    - tested openssl 3.0 alpha8
+    - openssl 1.1.1h
+
 ---
 
 ### 2.1b6 {2020-10-19}
