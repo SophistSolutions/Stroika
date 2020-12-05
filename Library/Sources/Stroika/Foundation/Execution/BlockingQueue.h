@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Execution {
      *                  q.EndOfInput ();
      *              },
      *              Thread::eAutoStart,
-     *              String { L"Producer" }
+     *              L"Producer"_k
      *          );
      *          Thread::Ptr  consumerThread = Thread::New (
      *              [&q] () {
@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Execution {
      *                  }
      *              },
      *              Thread::eAutoStart,
-     *              String { L"Consumer" }
+     *              L"Consumer"_k
      *          );
      *          Time::DurationSecondsType killAt = 10.0 + Time::GetTickCount ();
      *          while (counter != expectedValue and Time::GetTickCount () < killAt) {
