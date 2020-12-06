@@ -57,7 +57,6 @@ ifeq (Windows,$(findstring Windows,$(OS)))
 endif
 
 
-
 pull-base-images:
 ifeq ($(shell uname),Linux)
 	docker pull ubuntu:18.04
@@ -69,6 +68,7 @@ endif
 ifeq (Windows,$(findstring Windows,$(OS)))
 	docker pull mcr.microsoft.com/windows/servercore:ltsc2019
 endif
+
 
 push-images:
 	#if you get errors doing this (permission denied) make sure you ran docker login (as sophists - else no permission to push these)
