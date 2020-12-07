@@ -13,35 +13,13 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md">Alpha-Late</a>
+ *  *** FILE DEPRECATED ***
  */
 
 namespace Stroika::Foundation::Time {
 
-    namespace Private_ {
-        using namespace Traversal;
-        struct DurationRangeTraitsType_ : RangeTraits::ExplicitRangeTraitsWithoutMinMax<Duration, Openness::eClosed, Openness::eClosed, DurationSecondsType, DurationSecondsType> {
-            static inline const Duration kLowerBound = Duration::min ();
-            static inline const Duration kUpperBound = Duration::max ();
-
-            static Duration GetNext (Duration i);
-            static Duration GetPrevious (Duration i);
-        };
-    };
-
-    /**
-     *  \note   This type properties (kLowerBound/kUpperBound) can only be used after static initialization, and before
-     *          static de-initializaiton.
-     */
-    using DurationRange = Traversal::Range<Duration, Time::Private_::DurationRangeTraitsType_>;
+    using DurationRange [[deprecated ("Since Stroika v2.1b8, just use Range<Duration>")]] = Traversal::Range<Duration>;
 
 }
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-#include "DurationRange.inl"
 
 #endif /*_Stroika_Foundation_Time_DurationRange_h_*/

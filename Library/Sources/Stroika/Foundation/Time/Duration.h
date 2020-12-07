@@ -19,6 +19,7 @@
 #include "../Characters/String.h"
 #include "../Configuration/Common.h"
 #include "../Execution/Exceptions.h"
+#include "../Traversal/Range.h"
 
 #include "Common.h"
 
@@ -437,6 +438,23 @@ namespace Stroika::Foundation::Time {
      *  Must operators not needed (inherited from duration<>) - but these needed when LHS of operator is not a duration type
      */
     Duration operator* (long double lhs, const Duration& rhs);
+
+}
+
+namespace Stroika::Foundation::Traversal::RangeTraits {
+
+    /**
+     *  \note   This type's properties (kLowerBound/kUpperBound) can only be used after static initialization, and before
+     *          static de-initializaiton.
+     */
+    template <>
+    struct DefaultRangeTraits<Time::Duration> : RangeTraits::ExplicitRangeTraitsWithoutMinMax<Time::Duration, Openness::eClosed, Openness::eClosed, Time::DurationSecondsType, Time::DurationSecondsType> {
+        static inline const Time::Duration kLowerBound = Time::Duration::min ();
+        static inline const Time::Duration kUpperBound = Time::Duration::max ();
+
+        static Time::Duration GetNext (Time::Duration i);
+        static Time::Duration GetPrevious (Time::Duration i);
+    };
 
 }
 

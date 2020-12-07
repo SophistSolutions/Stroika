@@ -410,7 +410,7 @@ namespace Stroika::Foundation::DataExchange {
          *      o   Mapping<String, VariantValue>
          *      o   TimeOfDay
          *      o   VariantValue
-         *      o   DurationRange/DateRange/DateTimeRange
+         *      o   Range<Duration>/DateRange/DateTimeRange
          *      o   Common::GUID
          *      o   optional<EACH_OF_THE_ABOVE>
          *

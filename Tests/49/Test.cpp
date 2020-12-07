@@ -19,7 +19,6 @@
 #include "Stroika/Foundation/Time/DateTime.h"
 #include "Stroika/Foundation/Time/DateTimeRange.h"
 #include "Stroika/Foundation/Time/Duration.h"
-#include "Stroika/Foundation/Time/DurationRange.h"
 #include "Stroika/Foundation/Time/Realtime.h"
 
 #include "../TestHarness/TestHarness.h"
@@ -705,8 +704,9 @@ namespace {
     void Test_11_DurationRange_ ()
     {
         TraceContextBumper ctx{"Test_11_DurationRange_"};
-        DurationRange      d1;
-        DurationRange      d2 = DurationRange::FullRange ();
+        using Traversal::Range;
+        Range<Duration> d1;
+        Range<Duration> d2 = Range<Duration>::FullRange ();
         VerifyTestResult (d1.empty ());
         VerifyTestResult (not d2.empty ());
         VerifyTestResult (d2.GetLowerBound () == Duration::min ());

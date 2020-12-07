@@ -10,7 +10,6 @@ There is code for managing Dates, Time Durations, RealTime values (ticks), and t
 - [DateTime.h](DateTime.h) - date and time combined
 - [DateTimeRange.h](DateTimeRange.h)
 - [Duration.h](Duration.h) - chrono::duration\<> but without template bother, and with formatting/ISO-8601 suport
-- [DurationRange.h](DurationRange.h)
 - [Realtime.h](Realtime.h) - DurationSecondsType, GetTickCount (), etc...
 - [TimeOfDay.h](TimeOfDay.h) - intra-day time
 - [Timezone.h](Timezone.h)

@@ -15,7 +15,6 @@
 #include "../Time/DateTime.h"
 #include "../Time/DateTimeRange.h"
 #include "../Time/Duration.h"
-#include "../Time/DurationRange.h"
 
 #include "ObjectVariantMapper.h"
 
@@ -358,7 +357,7 @@ namespace {
             ObjectVariantMapper::MakeCommonSerializer<Time::TimeOfDay> (),
             ObjectVariantMapper::MakeCommonSerializer<Mapping<String, String>> (),
             ObjectVariantMapper::MakeCommonSerializer<Mapping<String, VariantValue>> (),
-            ObjectVariantMapper::MakeCommonSerializer<Time::DurationRange> (),
+            ObjectVariantMapper::MakeCommonSerializer<Traversal::Range<Time::Duration>> (),
             ObjectVariantMapper::MakeCommonSerializer<Time::DateRange> (),
             ObjectVariantMapper::MakeCommonSerializer<Time::DateTimeRange> (),
             ObjectVariantMapper::MakeCommonSerializer<Common::GUID> (),
@@ -386,7 +385,7 @@ namespace {
             ObjectVariantMapper::MakeCommonSerializer<optional<Time::TimeOfDay>> (),
             ObjectVariantMapper::MakeCommonSerializer<optional<Mapping<String, String>>> (),
             ObjectVariantMapper::MakeCommonSerializer<optional<Mapping<String, VariantValue>>> (),
-            ObjectVariantMapper::MakeCommonSerializer<optional<Time::DurationRange>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<Traversal::Range<Time::Duration>>> (),
             ObjectVariantMapper::MakeCommonSerializer<optional<Time::DateRange>> (),
             ObjectVariantMapper::MakeCommonSerializer<optional<Time::DateTimeRange>> (),
             ObjectVariantMapper::MakeCommonSerializer<optional<Common::GUID>> (),

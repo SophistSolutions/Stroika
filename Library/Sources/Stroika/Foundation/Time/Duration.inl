@@ -309,4 +309,22 @@ namespace Stroika::Foundation::Time {
 
 }
 
+namespace Stroika::Foundation::Traversal::RangeTraits {
+
+    /*
+     ********************************************************************************
+     ************************* RangeTraits::DefaultRangeTraits **********************
+     ********************************************************************************
+     */
+    inline Time::Duration DefaultRangeTraits<Time::Duration>::GetNext (Time::Duration i)
+    {
+        return Time::Duration{nextafter (i.As<double> (), numeric_limits<double>::max ())};
+    }
+    inline Time::Duration DefaultRangeTraits<Time::Duration>::GetPrevious (Time::Duration i)
+    {
+        return Time::Duration{nextafter (i.As<double> (), numeric_limits<double>::min ())};
+    }
+
+}
+
 #endif /*_Stroika_Foundation_Time_Duration_inl_*/

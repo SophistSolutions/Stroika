@@ -15,7 +15,6 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/IO/Network/InternetAddress.h"
 #include "Stroika/Foundation/Time/DateTimeRange.h"
-#include "Stroika/Foundation/Time/DurationRange.h"
 #include "Stroika/Foundation/Traversal/DiscreteRange.h"
 #include "Stroika/Foundation/Traversal/DisjointDiscreteRange.h"
 #include "Stroika/Foundation/Traversal/DisjointRange.h"
@@ -802,12 +801,12 @@ namespace {
         using Time::DurationRange;
 
         {
-            DurationRange a{Duration ("PT.5S"), Duration ("PT2M")};
-            DurationRange b{Duration ("PT1S"), Duration ("PT2M")};
+            Range<Duration> a{Duration ("PT.5S"), Duration ("PT2M")};
+            Range<Duration> b{Duration ("PT1S"), Duration ("PT2M")};
             Verify ((a ^ b) == b);
         }
         {
-            DurationRange a{Duration ("PT.5S"), Duration ("PT2M")};
+            Range<Duration> a{Duration ("PT.5S"), Duration ("PT2M")};
             VerifyTestResult (a.Pin (Duration ("PT.5S")) == Duration ("PT.5S"));
             VerifyTestResult (a.Pin (Duration ("PT0S")) == Duration ("PT.5S"));
             VerifyTestResult (a.Pin (Duration ("PT5M")) == Duration ("PT2M"));
