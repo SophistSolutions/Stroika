@@ -245,7 +245,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Filesystem {
     /**
      *  Instrument returning Info object (cross-platform).
      */
-    Instrument GetInstrument (Options options = Options ());
+    Instrument GetInstrument (Options options = Options{});
 
 }
 

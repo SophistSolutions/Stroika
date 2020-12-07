@@ -326,7 +326,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Process {
     /**
      *  Instrument returning ProcessMapType measurements.
      */
-    Instrument GetInstrument (const Options& options = Options ());
+    Instrument GetInstrument (const Options& options = Options{});
 
 }
 

@@ -567,13 +567,13 @@ LedItView::LedItView (
 #endif
     )
     : inherited ()
-    , fWrapToWindow (Options ().GetWrapToWindow ())
+    , fWrapToWindow (Options{}.GetWrapToWindow ())
 {
-    SetSmartCutAndPasteMode (Options ().GetSmartCutAndPaste ());
+    SetSmartCutAndPasteMode (Options{}.GetSmartCutAndPaste ());
 
-    SetShowParagraphGlyphs (Options ().GetShowParagraphGlyphs ());
-    SetShowTabGlyphs (Options ().GetShowTabGlyphs ());
-    SetShowSpaceGlyphs (Options ().GetShowSpaceGlyphs ());
+    SetShowParagraphGlyphs (Options{}.GetShowParagraphGlyphs ());
+    SetShowTabGlyphs (Options{}.GetShowTabGlyphs ());
+    SetShowSpaceGlyphs (Options{}.GetShowSpaceGlyphs ());
 #if qPlatform_MacOS
     SetScrollBarType (h, fWrapToWindow ? eScrollBarNever : eScrollBarAsNeeded);
     SetScrollBarType (v, eScrollBarAlways);
@@ -585,7 +585,7 @@ LedItView::LedItView (
     SetStyleDatabase (owningDoc->GetStyleDatabase ());
     SetParagraphDatabase (owningDoc->GetParagraphDatabase ());
     SetHidableTextDatabase (owningDoc->GetHidableTextDatabase ());
-    //SetShowHiddenText (Options ().GetShowHiddenText ());
+    //SetShowHiddenText (Options{}.GetShowHiddenText ());
     SetCommandHandler (&owningDoc->GetCommandHandler ());
     SetSpellCheckEngine (&LedItApplication::Get ().fSpellCheckEngine);
 #endif
@@ -613,7 +613,7 @@ void LedItView::OnInitialUpdate ()
     SetStyleDatabase (GetDocument ().GetStyleDatabase ());
     SetParagraphDatabase (GetDocument ().GetParagraphDatabase ());
     SetHidableTextDatabase (GetDocument ().GetHidableTextDatabase ());
-    SetShowHiddenText (Options ().GetShowHiddenText ());
+    SetShowHiddenText (Options{}.GetShowHiddenText ());
     SetCommandHandler (&GetDocument ().GetCommandHandler ());
     SetSpellCheckEngine (LedItApplication::Get ().fSpellCheckEngine.get ());
 
@@ -622,7 +622,7 @@ void LedItView::OnInitialUpdate ()
         bool docModified = GetDocument ().IsModified ();
         // For an empty doc - grab from the default, and otherwise grab from the document itself
         if (GetEnd () == 0) {
-            SetEmptySelectionStyle (Options ().GetDefaultNewDocFont ());
+            SetEmptySelectionStyle (Options{}.GetDefaultNewDocFont ());
         }
         else {
             SetEmptySelectionStyle ();
@@ -789,19 +789,19 @@ void LedItView::OnShowHideGlyphCommand (CommandNumber cmdNum)
 {
     inherited::OnShowHideGlyphCommand (cmdNum);
 
-    Options ().SetShowParagraphGlyphs (GetShowParagraphGlyphs ());
-    Options ().SetShowTabGlyphs (GetShowTabGlyphs ());
-    Options ().SetShowSpaceGlyphs (GetShowSpaceGlyphs ());
+    Options{}.SetShowParagraphGlyphs (GetShowParagraphGlyphs ());
+    Options{}.SetShowTabGlyphs (GetShowTabGlyphs ());
+    Options{}.SetShowSpaceGlyphs (GetShowSpaceGlyphs ());
 }
 
 LedItView::SearchParameters LedItView::GetSearchParameters () const
 {
-    return Options ().GetSearchParameters ();
+    return Options{}.GetSearchParameters ();
 }
 
 void LedItView::SetSearchParameters (const SearchParameters& sp)
 {
-    Options ().SetSearchParameters (sp);
+    Options{}.SetSearchParameters (sp);
 }
 
 void LedItView::SetShowHiddenText (bool showHiddenText)

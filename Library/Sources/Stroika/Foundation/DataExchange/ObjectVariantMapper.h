@@ -806,17 +806,17 @@ namespace Stroika::Foundation::DataExchange {
      *
      *  \par Example Usage
      *       \code
-     *          ObjectVariantMapper::StructFieldInfo {L"fInt1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt1)},
+     *          ObjectVariantMapper::StructFieldInfo{L"fInt1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt1)},
      *      \endcode
      *
      *  \par Example Usage
      *      \code
-     *          ObjectVariantMapper::StructFieldInfo {L"fInt2", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt2), ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
+     *          ObjectVariantMapper::StructFieldInfo{L"fInt2", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt2), ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
      *      \endcode
      *
      *  \par Example Usage
      *      \code
-     *          ObjectVariantMapper::StructFieldInfo {L"fBasicArray1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fBasicArray1), ObjectVariantMapper::MakeCommonSerializer<int[5]> ()},
+     *          ObjectVariantMapper::StructFieldInfo{L"fBasicArray1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fBasicArray1), ObjectVariantMapper::MakeCommonSerializer<int[5]> ()},
      *      \endcode
      *
      */

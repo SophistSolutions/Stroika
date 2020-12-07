@@ -319,7 +319,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Memory {
     /**
      *  Instrument returning Info measurements.
      */
-    Instrument GetInstrument (Options options = Options ());
+    Instrument GetInstrument (Options options = Options{});
 }
 
 namespace Stroika::Frameworks::SystemPerformance {

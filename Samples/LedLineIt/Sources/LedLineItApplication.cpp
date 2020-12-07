@@ -671,7 +671,7 @@ void LedLineItApplication::OnToggleTreatTabAsIndentCharOptionUpdateCommandUI (CC
 {
     RequireNotNull (pCmdUI);
     pCmdUI->Enable ();
-    pCmdUI->SetCheck (Options ().GetTreatTabAsIndentChar ());
+    pCmdUI->SetCheck (Options{}.GetTreatTabAsIndentChar ());
 }
 
 void LedLineItApplication::OnToggleTreatTabAsIndentCharOptionCommand ()
@@ -684,7 +684,7 @@ void LedLineItApplication::OnToggleAutoIndentOptionUpdateCommandUI (CCmdUI* pCmd
 {
     RequireNotNull (pCmdUI);
     pCmdUI->Enable ();
-    pCmdUI->SetCheck (Options ().GetAutoIndent ());
+    pCmdUI->SetCheck (Options{}.GetAutoIndent ());
 }
 
 void LedLineItApplication::OnToggleSmartCutNPasteOptionCommand ()
@@ -698,7 +698,7 @@ void LedLineItApplication::OnToggleSmartCutNPasteOptionUpdateCommandUI (CCmdUI* 
 {
     RequireNotNull (pCmdUI);
     pCmdUI->Enable ();
-    pCmdUI->SetCheck (Options ().GetSmartCutAndPaste ());
+    pCmdUI->SetCheck (Options{}.GetSmartCutAndPaste ());
 }
 
 #if qSupportSyntaxColoring
@@ -727,13 +727,13 @@ void LedLineItApplication::OnSyntaxColoringOptionUpdateCommandUI (CCmdUI* pCmdUI
     pCmdUI->Enable ();
     switch (pCmdUI->m_nID) {
         case kNoSyntaxColoringCmd:
-            pCmdUI->SetCheck (Options ().GetSyntaxColoringOption () == Options::eSyntaxColoringNone);
+            pCmdUI->SetCheck (Options{}.GetSyntaxColoringOption () == Options::eSyntaxColoringNone);
             break;
         case kCPlusPlusSyntaxColoringCmd:
-            pCmdUI->SetCheck (Options ().GetSyntaxColoringOption () == Options::eSyntaxColoringCPlusPlus);
+            pCmdUI->SetCheck (Options{}.GetSyntaxColoringOption () == Options::eSyntaxColoringCPlusPlus);
             break;
         case kVBSyntaxColoringCmd:
-            pCmdUI->SetCheck (Options ().GetSyntaxColoringOption () == Options::eSyntaxColoringVB);
+            pCmdUI->SetCheck (Options{}.GetSyntaxColoringOption () == Options::eSyntaxColoringVB);
             break;
         default:
             Assert (false);
@@ -743,7 +743,7 @@ void LedLineItApplication::OnSyntaxColoringOptionUpdateCommandUI (CCmdUI* pCmdUI
 
 void LedLineItApplication::OnChooseDefaultFontCommand ()
 {
-    Led_FontSpecification fsp = Options ().GetDefaultNewDocFont ();
+    Led_FontSpecification fsp = Options{}.GetDefaultNewDocFont ();
 
     LOGFONT lf;
     (void)::memset (&lf, 0, sizeof (lf));
@@ -760,13 +760,13 @@ void LedLineItApplication::OnChooseDefaultFontCommand ()
 
     FontDlgWithNoColorNoStyles dlog (&lf);
     if (dlog.DoModal () == IDOK) {
-        Options ().SetDefaultNewDocFont (Led_FontSpecification (*dlog.m_cf.lpLogFont));
+        Options{}.SetDefaultNewDocFont (Led_FontSpecification (*dlog.m_cf.lpLogFont));
     }
 }
 
 void LedLineItApplication::UpdateViewsForPrefsChange ()
 {
-    bool smartCutNPaste = Options ().GetSmartCutAndPaste ();
+    bool smartCutNPaste = Options{}.GetSmartCutAndPaste ();
 
     // Update each open view
     POSITION tp = GetFirstDocTemplatePosition ();

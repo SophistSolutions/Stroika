@@ -1202,7 +1202,7 @@ void LedItApplication::OnToggleSmartCutNPasteOption_UpdateCommandUI (CMD_ENABLER
 {
     RequireNotNull (enabler);
     enabler->SetEnabled (true);
-    enabler->SetChecked (Options ().GetSmartCutAndPaste ());
+    enabler->SetChecked (Options{}.GetSmartCutAndPaste ());
 }
 
 void LedItApplication::OnToggleWrapToWindowOptionCommand ()
@@ -1216,7 +1216,7 @@ void LedItApplication::OnToggleWrapToWindowOption_UpdateCommandUI (CMD_ENABLER* 
 {
     RequireNotNull (enabler);
     enabler->SetEnabled (true);
-    enabler->SetChecked (Options ().GetWrapToWindow ());
+    enabler->SetChecked (Options{}.GetWrapToWindow ());
 }
 
 void LedItApplication::OnToggleShowHiddenTextOptionCommand ()
@@ -1230,14 +1230,14 @@ void LedItApplication::OnToggleShowHiddenTextOption_UpdateCommandUI (CMD_ENABLER
 {
     RequireNotNull (enabler);
     enabler->SetEnabled (true);
-    enabler->SetChecked (Options ().GetShowHiddenText ());
+    enabler->SetChecked (Options{}.GetShowHiddenText ());
 }
 
 void LedItApplication::UpdateViewsForPrefsChange ()
 {
-    bool wrapToWindow   = Options ().GetWrapToWindow ();
-    bool smartCutNPaste = Options ().GetSmartCutAndPaste ();
-    bool showHiddenText = Options ().GetShowHiddenText ();
+    bool wrapToWindow   = Options{}.GetWrapToWindow ();
+    bool smartCutNPaste = Options{}.GetSmartCutAndPaste ();
+    bool showHiddenText = Options{}.GetShowHiddenText ();
 
 #if qPlatform_MacOS
     const TArray<LDocument*>&  docList = LDocument::GetDocumentList ();
@@ -1584,7 +1584,7 @@ void LedItApplication::OnToggleShowHiddenTextOptionUpdateCommandUI (CCmdUI* pCmd
 void LedItApplication::OnChooseDefaultFontCommand ()
 {
 #if qPlatform_Windows
-    Led_FontSpecification fsp = Options ().GetDefaultNewDocFont ();
+    Led_FontSpecification fsp = Options{}.GetDefaultNewDocFont ();
 
     LOGFONT lf;
     (void)::memset (&lf, 0, sizeof (lf));
@@ -1601,7 +1601,7 @@ void LedItApplication::OnChooseDefaultFontCommand ()
 
     CFontDialog dlog (&lf);
     if (dlog.DoModal () == IDOK) {
-        Options ().SetDefaultNewDocFont (Led_FontSpecification (*dlog.m_cf.lpLogFont));
+        Options{}.SetDefaultNewDocFont (Led_FontSpecification (*dlog.m_cf.lpLogFont));
     }
 #else
     Led_Assert (false); // NYI

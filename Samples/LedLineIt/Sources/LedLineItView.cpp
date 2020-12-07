@@ -293,9 +293,9 @@ LedLineItView::LedLineItView ()
     , fSyntaxColoringMarkerOwner (NULL)
 #endif
 {
-    SetDefaultFont (Options ().GetDefaultNewDocFont ());
+    SetDefaultFont (Options{}.GetDefaultNewDocFont ());
 
-    SetSmartCutAndPasteMode (Options ().GetSmartCutAndPaste ());
+    SetSmartCutAndPasteMode (Options{}.GetSmartCutAndPaste ());
     SetControlArrowsScroll (true);
     SetScrollBarType (h, eScrollBarAlways);
     SetScrollBarType (v, eScrollBarAlways);
@@ -349,7 +349,7 @@ void LedLineItView::ResetSyntaxColoringTable ()
         static const TableDrivenKeywordSyntaxAnalyzer kVisualBasicAnalyzer (TableDrivenKeywordSyntaxAnalyzer::kVisualBasicKeywords);
 
         const SyntaxAnalyzer* analyzer = NULL;
-        switch (Options ().GetSyntaxColoringOption ()) {
+        switch (Options{}.GetSyntaxColoringOption ()) {
             case Options::eSyntaxColoringNone: /* nothing - analyzer already NULL*/
                 break;
             case Options::eSyntaxColoringCPlusPlus:
@@ -494,7 +494,7 @@ Led_Distance LedLineItView::ComputeMaxHScrollPos () const
 
 void LedLineItView::OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed, bool controlPressed, bool altKeyPressed)
 {
-    if (theChar == '\t' and Options ().GetTreatTabAsIndentChar ()) {
+    if (theChar == '\t' and Options{}.GetTreatTabAsIndentChar ()) {
         // Check if the selection looks like its likely an auto-indent situation...
         bool shiftSituation = GetSelectionStart () != GetSelectionEnd ();
         if (shiftSituation) {
@@ -531,7 +531,7 @@ void LedLineItView::OnTypedNormalCharacter (Led_tChar theChar, bool optionPresse
     }
 
     inherited::OnTypedNormalCharacter (theChar, optionPressed, shiftPressed, commandPressed, controlPressed, altKeyPressed);
-    if (theChar == '\n' and GetSelectionStart () == GetSelectionEnd () and Options ().GetAutoIndent ()) {
+    if (theChar == '\n' and GetSelectionStart () == GetSelectionEnd () and Options{}.GetAutoIndent ()) {
         // Find the "indent level" of the previous line, and insert that much space here.
         size_t rowStart     = GetStartOfRowContainingPosition (GetSelectionEnd ());
         size_t prevRowStart = GetStartOfPrevRowFromRowContainingPosition (GetSelectionEnd ());
@@ -685,12 +685,12 @@ Led_Distance LedLineItView::PickOtherFontHeight (Led_Distance origHeight)
 
 LedLineItView::SearchParameters LedLineItView::GetSearchParameters () const
 {
-    return Options ().GetSearchParameters ();
+    return Options{}.GetSearchParameters ();
 }
 
 void LedLineItView::SetSearchParameters (const SearchParameters& sp)
 {
-    Options ().SetSearchParameters (sp);
+    Options{}.SetSearchParameters (sp);
 }
 
 void LedLineItView::OnGotoLineCommand ()

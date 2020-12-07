@@ -3,7 +3,7 @@
 This folder contains all the Stroika Library [Foundation](../ReadMe.md)::DataExchange source code.
 
 This module is about data structures and formats - and NOT about the IO/networking interactions of
-an exchagne.
+an exchange.
 
 This module contains code relating to serialization and deserializaiton of structured data.
 

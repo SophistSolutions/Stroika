@@ -162,9 +162,9 @@ namespace Stroika::Foundation::Characters {
      *  values to "INF".
      *      @see http://en.cppreference.com/w/cpp/string/byte/strtof
      */
-    String Float2String (float f, const Float2StringOptions& options = Float2StringOptions ());
-    String Float2String (double f, const Float2StringOptions& options = Float2StringOptions ());
-    String Float2String (long double f, const Float2StringOptions& options = Float2StringOptions ());
+    String Float2String (float f, const Float2StringOptions& options = Float2StringOptions{});
+    String Float2String (double f, const Float2StringOptions& options = Float2StringOptions{});
+    String Float2String (long double f, const Float2StringOptions& options = Float2StringOptions{});
 
     /**
      *  String2Float/1:

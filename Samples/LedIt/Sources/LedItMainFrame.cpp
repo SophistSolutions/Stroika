@@ -135,7 +135,7 @@ int LedItMainFrame::OnCreate (LPCREATESTRUCT lpCreateStruct)
     fFormatBar->EnableDocking (CBRS_ALIGN_TOP | CBRS_ALIGN_BOTTOM);
     DockControlBar (&fToolBar);
     DockControlBar (fFormatBar);
-    SetDockState (Options ().GetDocBarState ());
+    SetDockState (Options{}.GetDocBarState ());
 
     DragAcceptFiles ();
 
@@ -146,7 +146,7 @@ void LedItMainFrame::OnClose ()
 {
     CDockState dockState;
     GetDockState (dockState);
-    Options ().SetDocBarState (dockState);
+    Options{}.SetDocBarState (dockState);
     inherited::OnClose ();
 }
 

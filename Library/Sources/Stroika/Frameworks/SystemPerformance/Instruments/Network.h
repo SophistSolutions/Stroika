@@ -160,7 +160,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Network {
     /**
      *  Instrument returning Info measurements.
      */
-    Instrument GetInstrument (Options options = Options ());
+    Instrument GetInstrument (Options options = Options{});
 
 }
 
