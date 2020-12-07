@@ -798,7 +798,7 @@ namespace {
     {
         Debug::TraceContextBumper ctx{L"{}::Test17_DurationRange_"};
         using Time::Duration;
-        using Time::DurationRange;
+        using Traversal::Range;
 
         {
             Range<Duration> a{Duration ("PT.5S"), Duration ("PT2M")};
