@@ -87,29 +87,29 @@ namespace Stroika::Foundation::Traversal {
         };
 
         /**
-        * @todo redo using using - document it would be nice if there was some select_t (https://stackoverflow.com/questions/32785105/implementing-a-switch-type-trait-with-stdconditional-t-chain-calls)
-        * 
+         *
+         * @todo redo using using - document it would be nice if there was some select_t (https://stackoverflow.com/questions/32785105/implementing-a-switch-type-trait-with-stdconditional-t-chain-calls)
+         * 
          */
         template <typename T>
-        struct DefaultDiscreteRangeTraits : conditional_t<
-                                                is_enum_v<T>, DefaultDiscreteRangeTraits_Enum<T>,
-                                                conditional_t<
-                                                    is_integral_v<T>, DefaultDiscreteRangeTraits_Integral<T>,
-                                                    DefaultDiscreteRangeTraits_DefaultRangeTraits<T>>> {
-        };
+        using DefaultDiscreteRangeTraits = conditional_t<
+            is_enum_v<T>, DefaultDiscreteRangeTraits_Enum<T>,
+            conditional_t<
+                is_integral_v<T>, DefaultDiscreteRangeTraits_Integral<T>,
+                DefaultDiscreteRangeTraits_DefaultRangeTraits<T>>>;
 
     }
 
     /**
      *  \par Example Usage
      *      \code
-     *          vector<int> v = DiscreteRange<int> (1,10).Elements ().As<vector<int>> ();
+     *          vector<int> v = DiscreteRange<int>{1,10}.Elements ().As<vector<int>> ();
      *          // equiv to vector<int> v = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
      *      \endcode
      *
      *  \par OR
      *      \code
-     *          for (auto i : DiscreteRange<int> (1,10)) {
+     *          for (auto i : DiscreteRange<int>{1,10}) {
      *              ...i = 1..10
      *          }
      *      \endcode
