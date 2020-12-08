@@ -29,6 +29,8 @@
 #include "TimeOfDay.h"
 #include "Timezone.h"
 
+#include "../Traversal/Range"
+
 /**
  *  \file
  *
