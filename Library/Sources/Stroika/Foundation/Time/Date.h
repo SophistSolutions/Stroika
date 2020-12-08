@@ -479,10 +479,10 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
 
     /**
      *  \note   DefaultRangeTraits<Time::Date> properties (kLowerBound/kUpperBound) can only be used after static initialization, and before
-     *          static de-initializaiton.
+     *          static de-initialization.
      */
     template <>
-    struct DefaultRangeTraits<Time::Date> : RangeTraits::ExplicitRangeTraitsWithoutMinMax<Time::Date, Openness::eClosed, Openness::eClosed, int, unsigned int> {
+    struct DefaultRangeTraits<Time::Date> : ExplicitRangeTraitsWithoutMinMax<Time::Date, Openness::eClosed, Openness::eClosed, int, unsigned int> {
         static const Time::Date kLowerBound;
         static const Time::Date kUpperBound;
 

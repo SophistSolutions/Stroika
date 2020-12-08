@@ -121,7 +121,7 @@ namespace Stroika::Foundation::Execution {
      *
      *  One slightly subtle point about this - if Module A depends on Module B in its implementation,
      *  but not its HEADERS, it STILL may need to #include the headers for Module B (in cases where
-     *  Module B uses this mechanism) to assure the right order of initializaiton.
+     *  Module B uses this mechanism) to assure the right order of initialization.
      *
      * The type argument MODULE_DATA - is the code which actually performs the real, module-specific
      * initialization.

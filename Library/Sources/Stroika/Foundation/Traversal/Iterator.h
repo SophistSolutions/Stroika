@@ -688,7 +688,7 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \em Design Note
          *      We chose to use a pointer parameter instead of a return value to avoid extra
-         *      initializaiton/copying. Note that the return value optimization rule doesn't apply
+         *      initialization/copying. Note that the return value optimization rule doesn't apply
          *      to assignment, but only initialization.
          *
          */

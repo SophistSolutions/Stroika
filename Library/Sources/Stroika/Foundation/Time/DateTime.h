@@ -563,6 +563,28 @@ namespace Stroika::Foundation::Math {
     bool NearlyEquals (Time::DateTime l, Time::DateTime r, const Time::Duration& epsilon);
 }
 
+namespace Stroika::Foundation::Time {
+    class Duration;
+}
+
+namespace Stroika::Foundation::Traversal::RangeTraits {
+
+    /**
+     *  \note   DefaultRangeTraits<Time::DateTime> properties (kLowerBound/kUpperBound) can only be used after static initialization, and before
+     *          static de-initialization.
+     */
+    template <>
+    struct DefaultRangeTraits<Time::DateTime> : ExplicitRangeTraitsWithoutMinMax<Time::DateTime, Openness::eClosed, Openness::eClosed, Time::Duration, Time::Duration> {
+        static const Time::DateTime kLowerBound;
+        static const Time::DateTime kUpperBound;
+
+        // @todo - not important (just used for PinValue I think)
+        // static Time::DateTime GetNext (Time::DateTime n);
+        // static Time::DateTime GetPrevious (Time::DateTime n);
+    };
+
+}
+
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************

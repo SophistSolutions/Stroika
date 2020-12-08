@@ -445,12 +445,12 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
 
     /**
      *  \note   This type's properties (kLowerBound/kUpperBound) can only be used after static initialization, and before
-     *          static de-initializaiton.
+     *          static de-initialization.
      */
     template <>
-    struct DefaultRangeTraits<Time::Duration> : RangeTraits::ExplicitRangeTraitsWithoutMinMax<Time::Duration, Openness::eClosed, Openness::eClosed, Time::DurationSecondsType, Time::DurationSecondsType> {
-        static inline const Time::Duration kLowerBound = Time::Duration::min ();
-        static inline const Time::Duration kUpperBound = Time::Duration::max ();
+    struct DefaultRangeTraits<Time::Duration> : ExplicitRangeTraitsWithoutMinMax<Time::Duration, Openness::eClosed, Openness::eClosed, Time::DurationSecondsType, Time::DurationSecondsType> {
+        static const Time::Duration kLowerBound;
+        static const Time::Duration kUpperBound;
 
         static Time::Duration GetNext (Time::Duration i);
         static Time::Duration GetPrevious (Time::Duration i);
