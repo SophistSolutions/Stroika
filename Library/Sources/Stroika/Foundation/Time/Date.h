@@ -490,14 +490,6 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
         static Time::Date GetPrevious (Time::Date n);
     };
 
-    template <typename T>
-    struct DefaultDiscreteRangeTraits;
-
-    template <>
-    struct DefaultDiscreteRangeTraits<Time::Date> : DefaultRangeTraits<Time::Date> {
-        using RangeTraitsType = DefaultRangeTraits<Time::Date>;
-    };
-
 }
 
 /*

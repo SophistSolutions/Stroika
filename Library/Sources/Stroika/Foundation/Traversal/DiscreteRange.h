@@ -82,7 +82,20 @@ namespace Stroika::Foundation::Traversal {
         /**
          */
         template <typename T>
-        struct DefaultDiscreteRangeTraits : conditional_t<is_enum_v<T>, DefaultDiscreteRangeTraits_Enum<T>, DefaultDiscreteRangeTraits_Integral<T>> {
+        struct DefaultDiscreteRangeTraits_DefaultRangeTraits : DefaultRangeTraits<T> {
+            using RangeTraitsType = DefaultRangeTraits<T>;
+        };
+
+        /**
+        * @todo redo using using - document it would be nice if there was some select_t (https://stackoverflow.com/questions/32785105/implementing-a-switch-type-trait-with-stdconditional-t-chain-calls)
+        * 
+         */
+        template <typename T>
+        struct DefaultDiscreteRangeTraits : conditional_t<
+                                                is_enum_v<T>, DefaultDiscreteRangeTraits_Enum<T>,
+                                                conditional_t<
+                                                    is_integral_v<T>, DefaultDiscreteRangeTraits_Integral<T>,
+                                                    DefaultDiscreteRangeTraits_DefaultRangeTraits<T>>> {
         };
 
     }
