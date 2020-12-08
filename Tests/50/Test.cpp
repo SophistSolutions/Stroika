@@ -15,6 +15,7 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/IO/Network/InternetAddress.h"
 #include "Stroika/Foundation/Time/DateTime.h"
+#include "Stroika/Foundation/Time/Duration.h"
 #include "Stroika/Foundation/Traversal/DiscreteRange.h"
 #include "Stroika/Foundation/Traversal/DisjointDiscreteRange.h"
 #include "Stroika/Foundation/Traversal/DisjointRange.h"
@@ -642,7 +643,7 @@ namespace {
             roundTrip (Set<int>{3, 4});
             roundTrip (Set<int>{1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 100});
             roundTrip (Set<int>{4, 5, 6, 7, 8, 9, 10, 11, 100, 102, 103, 104});
-            roundTrip (Set<int> ((DiscreteRange<int>{1, 1000}).Elements ()));
+            roundTrip (Set<int>{(DiscreteRange<int>{1, 1000}).Elements ()});
         }
     }
 }
@@ -651,16 +652,16 @@ namespace {
     void Test14_ToString_ ()
     {
         Debug::TraceContextBumper ctx{L"{}::Test14_ToString_"};
-        VerifyTestResult (Range<int> (3, 4).ToString ([] (int n) { return Characters::Format (L"%d", n); }) == L"[3 ... 4)");
-        VerifyTestResult (Range<int> (3, 4).ToString () == L"[3 ... 4)");
+        VerifyTestResult ((Range<int>{3, 4}.ToString ([] (int n) { return Characters::Format (L"%d", n); }) == L"[3 ... 4)"));
+        VerifyTestResult ((Range<int>{3, 4}.ToString () == L"[3 ... 4)"));
         {
             using namespace Time;
-            VerifyTestResult (Range<DateTime> (DateTime (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4))), DateTime (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5)))).ToString () == L"[4/4/03 ... 4/5/03]");
+            VerifyTestResult ((Range<DateTime>{DateTime (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4))), DateTime (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5)))}.ToString () == L"[4/4/03 ... 4/5/03]"));
         }
         {
             Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale (L"en", L"us")};
             using namespace Time;
-            VerifyTestResult (Range<DateTime> (DateTime (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4))), DateTime (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5)))).ToString () == L"[4/4/1903 ... 4/5/1903]");
+            VerifyTestResult ((Range<DateTime>{DateTime{Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4))}, DateTime{Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5))}}.ToString () == L"[4/4/1903 ... 4/5/1903]"));
         }
     }
 }
