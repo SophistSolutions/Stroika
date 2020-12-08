@@ -158,6 +158,11 @@ namespace Stroika::Foundation::Configuration {
         }}};
 }
 
+//#include "Duration.h"
+namespace Stroika::Foundation::Time {
+    class Duration;
+}
+
 namespace Stroika::Foundation::Traversal::RangeTraits {
 
     /**
