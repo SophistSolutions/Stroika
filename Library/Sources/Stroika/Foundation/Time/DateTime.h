@@ -29,7 +29,7 @@
 #include "TimeOfDay.h"
 #include "Timezone.h"
 
-#include "../Traversal/Range"
+#include "../Traversal/Range.h"
 
 /**
  *  \file
