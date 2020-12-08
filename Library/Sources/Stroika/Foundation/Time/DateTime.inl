@@ -158,4 +158,22 @@ namespace Stroika::Foundation::Configuration {
         }}};
 }
 
+namespace Stroika::Foundation::Traversal::RangeTraits {
+
+    /**
+     *  \note   DefaultRangeTraits<Time::DateTime> properties (kLowerBound/kUpperBound) can only be used after static initialization, and before
+     *          static de-initializaiton.
+     */
+    template <>
+    struct DefaultRangeTraits<Time::DateTime> : RangeTraits::ExplicitRangeTraitsWithoutMinMax<Time::DateTime, Openness::eClosed, Openness::eClosed, Time::Duration, Time::Duration> {
+        static constexpr Time::DateTime kLowerBound{Time::DateTime::kMin};
+        static constexpr Time::DateTime kUpperBound{Time::DateTime::kMax};
+
+        // @todo - not important (just used for PinValue I think)
+        // static Time::DateTime GetNext (Time::DateTime n);
+        // static Time::DateTime GetPrevious (Time::DateTime n);
+    };
+
+}
+
 #endif /*_Stroika_Foundation_Time_DateTime_inl_*/

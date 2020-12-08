@@ -13,23 +13,14 @@
 
 /**
  *  \file
- *
- *  \version    <a href="Code-Status.md">Beta</a>
+ *  *** FILE DEPRECATED ***
  */
 
 namespace Stroika::Foundation::Time {
 
-    namespace Private_ {
-        using namespace Traversal;
-        struct DateTimeRangeTraitsType_ : RangeTraits::ExplicitRangeTraitsWithoutMinMax<DateTime, Openness::eClosed, Openness::eClosed, Time::Duration, Time::Duration> {
-            static constexpr DateTime kLowerBound{DateTime::kMin};
-            static constexpr DateTime kUpperBound{DateTime::kMax};
-        };
-    }
-
     /**
      */
-    using DateTimeRange = Traversal::Range<DateTime, Time::Private_::DateTimeRangeTraitsType_>;
+    using DateTimeRange [[deprecated ("Since Stroika v2.1b8, just use Range<DateTime>")]] = Traversal::Range<DateTime>;
 
 }
 
@@ -38,6 +29,5 @@ namespace Stroika::Foundation::Time {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "DateTimeRange.inl"
 
 #endif /*_Stroika_Foundation_Time_DateTimeRange_h_*/

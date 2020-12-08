@@ -358,8 +358,9 @@ namespace {
             ObjectVariantMapper::MakeCommonSerializer<Mapping<String, String>> (),
             ObjectVariantMapper::MakeCommonSerializer<Mapping<String, VariantValue>> (),
             ObjectVariantMapper::MakeCommonSerializer<Traversal::Range<Time::Duration>> (),
-            ObjectVariantMapper::MakeCommonSerializer<Time::DateRange> (),
-            ObjectVariantMapper::MakeCommonSerializer<Time::DateTimeRange> (),
+            ObjectVariantMapper::MakeCommonSerializer<Traversal::Range<Time::Date>> (),
+            ObjectVariantMapper::MakeCommonSerializer<Traversal::DiscreteRange<Time::Date>> (),
+            ObjectVariantMapper::MakeCommonSerializer<Traversal::Range<Time::DateTime>> (),
             ObjectVariantMapper::MakeCommonSerializer<Common::GUID> (),
 
             ObjectVariantMapper::MakeCommonSerializer<optional<bool>> (),
@@ -386,8 +387,9 @@ namespace {
             ObjectVariantMapper::MakeCommonSerializer<optional<Mapping<String, String>>> (),
             ObjectVariantMapper::MakeCommonSerializer<optional<Mapping<String, VariantValue>>> (),
             ObjectVariantMapper::MakeCommonSerializer<optional<Traversal::Range<Time::Duration>>> (),
-            ObjectVariantMapper::MakeCommonSerializer<optional<Time::DateRange>> (),
-            ObjectVariantMapper::MakeCommonSerializer<optional<Time::DateTimeRange>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<Traversal::Range<Time::Date>>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<Traversal::DiscreteRange<Time::Date>>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<Traversal::Range<Time::DateTime>>> (),
             ObjectVariantMapper::MakeCommonSerializer<optional<Common::GUID>> (),
         }};
         return sDefaults_;

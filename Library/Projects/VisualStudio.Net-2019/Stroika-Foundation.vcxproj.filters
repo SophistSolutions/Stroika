@@ -2427,15 +2427,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\Generator.inl">
       <Filter>Sources\Traversal</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Time\DateRange.inl">
-      <Filter>Sources\Time</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Time\DateTimeRange.inl">
-      <Filter>Sources\Time</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Time\DurationRange.inl">
-      <Filter>Sources\Time</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.inl">
       <Filter>Sources\Characters</Filter>
     </None>

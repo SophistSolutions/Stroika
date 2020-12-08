@@ -13,46 +13,24 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md">Alpha-Late</a>
+ *  *** FILE DEPRECATED ***
  */
 
 namespace Stroika::Foundation::Time {
-
-    namespace Private_ {
-        using namespace Traversal;
-        struct DateRangePlainTraitsType_ : RangeTraits::ExplicitRangeTraitsWithoutMinMax<Date, Openness::eClosed, Openness::eClosed, int, unsigned int> {
-            static constexpr Date kLowerBound{Date::kMin};
-            static constexpr Date kUpperBound{Date::kMax};
-        };
-        struct DateRangeTraitsType_ : DateRangePlainTraitsType_ {
-            static Date GetNext (Date n)
-            {
-                return n.AddDays (1);
-            }
-            using RangeTraitsType = DateRangePlainTraitsType_;
-        };
-    };
 
     /**
      *  \brief  typically use DateRange, but SimpleDateRange can be used as constexpr (since its not iterable)
      *
      *  @see DateRange
      */
-    using SimpleDateRange = Traversal::Range<Date, Time::Private_::DateRangePlainTraitsType_>;
+    using SimpleDateRange [[deprecated ("Since Stroika v2.1b8, just use Range<Date>")]] = Traversal::Range<Date>;
 
     /**
      *
      *  @see SimpleDateRange
      */
-    using DateRange = Traversal::DiscreteRange<Date, Time::Private_::DateRangeTraitsType_>;
+    using DateRange [[deprecated ("Since Stroika v2.1b8, just use DiscreteRange<Date>")]] = Traversal::DiscreteRange<Date>;
 
 }
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-#include "DateRange.inl"
 
 #endif /*_Stroika_Foundation_Time_DateRange_h_*/

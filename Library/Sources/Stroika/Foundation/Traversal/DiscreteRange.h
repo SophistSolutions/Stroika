@@ -58,6 +58,10 @@ namespace Stroika::Foundation::Traversal {
             {
                 return static_cast<T> (static_cast<int> (n) + 1);
             }
+            static constexpr T GetPrevious (T n)
+            {
+                return static_cast<T> (static_cast<int> (n) - 1);
+            }
             using RangeTraitsType = ExplicitRangeTraits_Integral<T, MIN, MAX, Openness::eClosed, Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>;
         };
 

@@ -9,9 +9,7 @@
 #include "../../Characters/String2Int.h"
 #include "../../Debug/Trace.h"
 #include "../../Time/Date.h"
-#include "../../Time/DateRange.h"
 #include "../../Time/DateTime.h"
-#include "../../Time/DateTimeRange.h"
 #include "../../Time/Duration.h"
 
 #include "../BadFormatException.h"

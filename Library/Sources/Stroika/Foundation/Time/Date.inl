@@ -285,4 +285,20 @@ namespace Stroika::Foundation::Configuration {
 
 }
 
+namespace Stroika::Foundation::Traversal::RangeTraits {
+
+    inline constexpr Time::Date DefaultRangeTraits<Time::Date>::kLowerBound{Time::Date::kMin};
+    inline constexpr Time::Date DefaultRangeTraits<Time::Date>::kUpperBound{Time::Date::kMax};
+
+    /// need getNext/GetPrev here excelt if causes constexpr issues
+    inline Time::Date DefaultRangeTraits<Time::Date>::GetNext (Time::Date n)
+    {
+        return n.AddDays (1);
+    }
+    inline Time::Date DefaultRangeTraits<Time::Date>::GetPrevious (Time::Date n)
+    {
+        return n.AddDays (-1);
+    }
+};
+
 #endif /*_Stroika_Foundation_Time_Date_inl_*/

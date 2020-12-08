@@ -318,11 +318,11 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
      */
     inline Time::Duration DefaultRangeTraits<Time::Duration>::GetNext (Time::Duration i)
     {
-        return Time::Duration{nextafter (i.As<double> (), numeric_limits<double>::max ())};
+        return Time::Duration{::nextafter (i.As<double> (), numeric_limits<double>::max ())};
     }
     inline Time::Duration DefaultRangeTraits<Time::Duration>::GetPrevious (Time::Duration i)
     {
-        return Time::Duration{nextafter (i.As<double> (), numeric_limits<double>::min ())};
+        return Time::Duration{::nextafter (i.As<double> (), numeric_limits<double>::min ())};
     }
 
 }

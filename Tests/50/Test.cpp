@@ -14,7 +14,7 @@
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/IO/Network/InternetAddress.h"
-#include "Stroika/Foundation/Time/DateTimeRange.h"
+#include "Stroika/Foundation/Time/DateTime.h"
 #include "Stroika/Foundation/Traversal/DiscreteRange.h"
 #include "Stroika/Foundation/Traversal/DisjointDiscreteRange.h"
 #include "Stroika/Foundation/Traversal/DisjointRange.h"
@@ -655,12 +655,12 @@ namespace {
         VerifyTestResult (Range<int> (3, 4).ToString () == L"[3 ... 4)");
         {
             using namespace Time;
-            VerifyTestResult (DateTimeRange (DateTime (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4))), DateTime (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5)))).ToString () == L"[4/4/03 ... 4/5/03]");
+            VerifyTestResult (Range<DateTime> (DateTime (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4))), DateTime (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5)))).ToString () == L"[4/4/03 ... 4/5/03]");
         }
         {
             Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale (L"en", L"us")};
             using namespace Time;
-            VerifyTestResult (DateTimeRange (DateTime (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4))), DateTime (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5)))).ToString () == L"[4/4/1903 ... 4/5/1903]");
+            VerifyTestResult (Range<DateTime> (DateTime (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4))), DateTime (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5)))).ToString () == L"[4/4/1903 ... 4/5/1903]");
         }
     }
 }
@@ -680,12 +680,12 @@ namespace {
         VerifyTestResult (Range<int> (3, 4).Format () == L"[3 ... 4)");
         {
             using   namespace   Time;
-            VerifyTestResult (DateTimeRange (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4)), Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5))).Format () == L"[4/4/03 ... 4/5/03]");
+            VerifyTestResult (Range<DateTime> (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4)), Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5))).Format () == L"[4/4/03 ... 4/5/03]");
         }
         {
             Configuration::ScopedUseLocale tmpLocale { Configuration::FindNamedLocale (L"en", L"us") };
             using   namespace   Time;
-            VerifyTestResult (DateTimeRange (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4)), Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5))).Format () == L"[4/4/1903 ... 4/5/1903]");
+            VerifyTestResult (Range<DateTime> (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4)), Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5))).Format () == L"[4/4/1903 ... 4/5/1903]");
         }
 #endif
     }

@@ -17,6 +17,7 @@
 #include "../Configuration/Common.h"
 #include "../Configuration/Enumeration.h"
 #include "../Execution/Exceptions.h"
+#include "../Traversal/Range.h"
 
 #include "Common.h"
 
@@ -471,6 +472,31 @@ namespace Stroika::Foundation::Time {
 
     String GetFormattedAge (const optional<Date>& birthDate, const optional<Date>& deathDate = {});                                 // returns ? if not a good src date
     String GetFormattedAgeWithUnit (const optional<Date>& birthDate, const optional<Date>& deathDate = {}, bool abbrevUnit = true); // returns ? if not a good src date
+
+}
+
+namespace Stroika::Foundation::Traversal::RangeTraits {
+
+    /**
+     *  \note   DefaultRangeTraits<Time::Date> properties (kLowerBound/kUpperBound) can only be used after static initialization, and before
+     *          static de-initializaiton.
+     */
+    template <>
+    struct DefaultRangeTraits<Time::Date> : RangeTraits::ExplicitRangeTraitsWithoutMinMax<Time::Date, Openness::eClosed, Openness::eClosed, int, unsigned int> {
+        static const Time::Date kLowerBound;
+        static const Time::Date kUpperBound;
+
+        static Time::Date GetNext (Time::Date n);
+        static Time::Date GetPrevious (Time::Date n);
+    };
+
+    template <typename T>
+    struct DefaultDiscreteRangeTraits;
+
+    template <>
+    struct DefaultDiscreteRangeTraits<Time::Date> : DefaultRangeTraits<Time::Date> {
+        using RangeTraitsType = DefaultRangeTraits<Time::Date>;
+    };
 
 }
 

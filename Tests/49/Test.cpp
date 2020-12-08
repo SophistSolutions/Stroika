@@ -15,11 +15,12 @@
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Math/Common.h"
 #include "Stroika/Foundation/Time/Date.h"
-#include "Stroika/Foundation/Time/DateRange.h"
 #include "Stroika/Foundation/Time/DateTime.h"
 #include "Stroika/Foundation/Time/DateTimeRange.h"
 #include "Stroika/Foundation/Time/Duration.h"
 #include "Stroika/Foundation/Time/Realtime.h"
+#include "Stroika/Foundation/Traversal/DiscreteRange.h"
+#include "Stroika/Foundation/Traversal/Range.h"
 
 #include "../TestHarness/TestHarness.h"
 
@@ -717,18 +718,19 @@ namespace {
 namespace {
     void Test_12_DateRange_ ()
     {
-        TraceContextBumper ctx ("Test_12_DateRange_");
+        TraceContextBumper ctx{"Test_12_DateRange_"};
+        using Traversal::DiscreteRange;
         {
-            DateRange d1;
-            DateRange d2 = DateRange::FullRange ();
+            DiscreteRange<Date> d1;
+            DiscreteRange<Date> d2 = DiscreteRange<Date>::FullRange ();
             VerifyTestResult (d1.empty ());
             VerifyTestResult (not d2.empty ());
             VerifyTestResult (d2.GetLowerBound () == Date::kMin);
             VerifyTestResult (d2.GetUpperBound () == Date::kMax);
         }
         {
-            DateRange    dr{Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5)), Date (Year (1903), MonthOfYear::eApril, DayOfMonth (6))};
-            unsigned int i = 0;
+            DiscreteRange<Date> dr{Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5)), Date (Year (1903), MonthOfYear::eApril, DayOfMonth (6))};
+            unsigned int        i = 0;
             for (Date d : dr) {
                 ++i;
                 VerifyTestResult (d.GetYear () == Year (1903));
@@ -743,8 +745,8 @@ namespace {
             VerifyTestResult (i == 2);
         }
         {
-            DateRange    dr{Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5)), Date (Year (1903), MonthOfYear::eApril, DayOfMonth (6))};
-            unsigned int i = 0;
+            DiscreteRange<Date> dr{Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5)), Date (Year (1903), MonthOfYear::eApril, DayOfMonth (6))};
+            unsigned int        i = 0;
             for (Date d : dr.Elements ()) {
                 ++i;
                 VerifyTestResult (d.GetYear () == Year (1903));
@@ -760,14 +762,14 @@ namespace {
         }
         {
 #if qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy
-            Date      d1 = DateTime::Now ().GetDate () - 1;
-            Date      d2 = DateTime::Now ().GetDate () + 1;
-            String    t1 = Characters::ToString (d1);
-            DateRange dr{d1, d2};
+            Date                d1 = DateTime::Now ().GetDate () - 1;
+            Date                d2 = DateTime::Now ().GetDate () + 1;
+            String              t1 = Characters::ToString (d1);
+            DiscreteRange<Date> dr{d1, d2};
             Stroika::Foundation::Debug::Emitter::Get ().EmitTraceMessage (L"dr=%d", Characters::ToString (dr).c_str ());
             Stroika::Foundation::Debug::Emitter::Get ().EmitTraceMessage (L"drContains=%d", dr.Contains (dr.GetMidpoint ()));
 #else
-            DateRange dr{DateTime::Now ().GetDate () - 1, DateTime::Now ().GetDate () + 1};
+            DiscreteRange<Date> dr{DateTime::Now ().GetDate () - 1, DateTime::Now ().GetDate () + 1};
 #endif
             VerifyTestResult (dr.Contains (dr.GetMidpoint ()));
         }
@@ -778,16 +780,17 @@ namespace {
     void Test_13_DateTimeRange_ ()
     {
         TraceContextBumper ctx ("Test_13_DateTimeRange_");
+        using Traversal::Range;
         {
-            DateTimeRange d1;
-            DateTimeRange d2 = DateTimeRange::FullRange ();
+            Range<DateTime> d1;
+            Range<DateTime> d2 = Range<DateTime>::FullRange ();
             VerifyTestResult (d1.empty ());
             VerifyTestResult (not d2.empty ());
             VerifyTestResult (d2.GetLowerBound () == DateTime::kMin);
             VerifyTestResult (d2.GetUpperBound () == DateTime::kMax);
         }
         {
-            DateTimeRange d1{DateTime{Date{Year (2000), MonthOfYear::eApril, DayOfMonth (20)}}, DateTime{Date{Year (2000), MonthOfYear::eApril, DayOfMonth (22)}}};
+            Range<DateTime> d1{DateTime{Date{Year (2000), MonthOfYear::eApril, DayOfMonth (20)}}, DateTime{Date{Year (2000), MonthOfYear::eApril, DayOfMonth (22)}}};
             VerifyTestResult (d1.GetDistanceSpanned () / 2 == Duration ("PT1D"));
             // SEE https://stroika.atlassian.net/browse/STK-514 for accuracy of compare (sb .1 or less)
             VerifyTestResult (Math::NearlyEquals (d1.GetMidpoint (), Date{Year (2000), MonthOfYear::eApril, DayOfMonth (21)}, DurationSecondsType (2)));
