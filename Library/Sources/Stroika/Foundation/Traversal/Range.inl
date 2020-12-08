@@ -108,7 +108,7 @@ namespace Stroika::Foundation::Traversal {
     {
     }
     template <typename T, typename TRAITS>
-    constexpr Range<T, TRAITS> Range<T, TRAITS>::Circle (Configuration::ArgByValueType<T> center, Configuration::ArgByValueType<UnsignedDifferenceType> radius, Openness lhsOpen, Openness rhsOpen)
+    constexpr Range<T, TRAITS> Range<T, TRAITS>::Ball (Configuration::ArgByValueType<T> center, Configuration::ArgByValueType<UnsignedDifferenceType> radius, Openness lhsOpen, Openness rhsOpen)
     {
         return Range{center - radius, center + radius, lhsOpen, rhsOpen};
     }
@@ -121,9 +121,9 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename TRAITS>
     constexpr Range<T, TRAITS> Range<T, TRAITS>::FullRange ()
     {
-        return Range (
+        return Range{
             TraitsType::kLowerBound, TraitsType::kUpperBound,
-            TraitsType::kLowerBoundOpenness, TraitsType::kUpperBoundOpenness);
+            TraitsType::kLowerBoundOpenness, TraitsType::kUpperBoundOpenness};
     }
     template <typename T, typename TRAITS>
     constexpr bool Range<T, TRAITS>::empty () const
@@ -188,21 +188,44 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename TRAITS>
     constexpr bool Range<T, TRAITS>::Contains (const Range& containee) const
     {
-        // @todo fix - NOT QUITE RIGHT!!!
+        /*
+         *  First, ANY empty set is contained in any other set: \forall A: \emptyset  \subseteq A
+         */
         if (containee.empty ()) {
             return true; // \forall A: \emptyset  \subseteq A
         }
-        if (GetLowerBound () < containee.GetLowerBound () and containee.GetUpperBound () < GetUpperBound ()) {
-            return true;
+        /*
+         *  Roughly, a non-empty range is contained in a range iff both ends are contained - but we need to take care of openness
+         *  edge conditions.
+         * 
+         *  if BOTH container and containee are open, the container wont CONTAIN the lower bound of the containee if the lower bounds are equal
+         * 
+         *  Check lower bound and upper bound separately.
+         */
+        switch (containee.GetLowerBoundOpenness ()) {
+            case Openness::eClosed:
+                if (not Contains (containee.GetLowerBound ())) {
+                    return false;
+                }
+                [[fallthrough]];
+            case Openness::eOpen:
+                if (containee.GetLowerBound () < GetLowerBound ()) {
+                    return false;
+                }
+                break;
         }
-// @todo fix - NOT QUITE RIGHT!!!
-// NOT quite right because of openness
-#if 0
-        if (fBeginOpenness_ == Openness::eClosed and r == fBegin_) {
-            return true;
+        switch (containee.GetUpperBoundOpenness ()) {
+            case Openness::eClosed:
+                if (not Contains (containee.GetUpperBound ())) {
+                    return false;
+                }
+                [[fallthrough]];
+            case Openness::eOpen:
+                if (containee.GetUpperBound () > GetUpperBound ()) {
+                    return false;
+                }
         }
-#endif
-        return GetLowerBound () <= containee.GetLowerBound () and containee.GetUpperBound () <= GetUpperBound ();
+        return true;
     }
     template <typename T, typename TRAITS>
     constexpr Range<T, TRAITS> Range<T, TRAITS>::Closure () const

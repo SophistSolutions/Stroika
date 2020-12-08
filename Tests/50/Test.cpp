@@ -49,6 +49,19 @@ namespace {
             VerifyTestResult (not r.Contains (3));
         }
         {
+            Range<int> rc (3, 7, Openness::eClosed, Openness::eClosed);
+            Range<int> ro{3, 7, Openness::eOpen, Openness::eOpen};
+            VerifyTestResult (rc.Contains (ro));
+            VerifyTestResult (not ro.Contains (rc));
+            Range<int> ri (4, 6);
+            VerifyTestResult (rc.Contains (ri));
+            VerifyTestResult (ro.Contains (ri));
+            VerifyTestResult (not ri.Contains (rc));
+            VerifyTestResult (not ri.Contains (ro));
+            Range<int> e{};
+            VerifyTestResult (rc.Contains (e)); // any set contains the empty set
+        }
+        {
 #if 0
             ////// MAYBE GET RID OF THIS???
             Range<int> r1 (3, 5);
