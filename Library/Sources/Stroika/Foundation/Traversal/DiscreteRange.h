@@ -51,17 +51,17 @@ namespace Stroika::Foundation::Traversal {
     namespace RangeTraits {
 
         template <typename T, T MIN, T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-        struct [[deprecated ("Since Stroika 2.1b8 use DefaultRangeTraits_Integral")]] ExplicitDiscreteRangeTraits : DefaultRangeTraits_Integral<T, MIN, MAX, Openness::eClosed, Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>
+        struct [[deprecated ("Since Stroika 2.1b8 use Default_Integral")]] ExplicitDiscreteRangeTraits : Default_Integral<T, MIN, MAX, Openness::eClosed, Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>
         {
-            using RangeTraitsType = DefaultRangeTraits_Integral<T, MIN, MAX, Openness::eClosed, Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>;
+            using RangeTraitsType = Default_Integral<T, MIN, MAX, Openness::eClosed, Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>;
         };
         template <typename T>
-        struct /*[[deprecated ("Since Stroika 2.1b8 use DefaultRangeTraits_Enum")]]*/ DefaultDiscreteRangeTraits_Enum : DefaultRangeTraits_Enum<T>
+        struct /*[[deprecated ("Since Stroika 2.1b8 use Default_Enum")]]*/ DefaultDiscreteRangeTraits_Enum : Default_Enum<T>
         {
-           using RangeTraitsType = DefaultRangeTraits_Enum<T>;
+           using RangeTraitsType = Default_Enum<T>;
         };
         template <typename T>
-        struct /*[[deprecated ("Since Stroika 2.1b8 use DefaultRangeTraits_Integral")]]*/ DefaultDiscreteRangeTraits_Integral : DefaultRangeTraits_Integral<T> {
+        struct /*[[deprecated ("Since Stroika 2.1b8 use Default_Integral")]]*/ DefaultDiscreteRangeTraits_Integral : Default_Integral<T> {
             using RangeTraitsType = DefaultDiscreteRangeTraits_Integral<T>;
         };
 

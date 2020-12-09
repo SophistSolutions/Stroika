@@ -74,7 +74,7 @@ namespace {
 #endif
         }
         {
-            using RT         = RangeTraits::DefaultRangeTraits_Integral<int, -3, 100, Openness::eClosed, Openness::eClosed, int, unsigned int>;
+            using RT         = RangeTraits::Default_Integral<int, -3, 100, Openness::eClosed, Openness::eClosed, int, unsigned int>;
             Range<int, RT> x = Range<int, RT>::FullRange ();
             VerifyTestResult (x.GetLowerBound () == -3);
             VerifyTestResult (x.GetUpperBound () == 100);
@@ -160,8 +160,8 @@ namespace {
             Color max2 = RangeTraits::DefaultDiscreteRangeTraits_Enum<Color>::kUpperBound;
             Color min3 = RangeTraits::ExplicitDiscreteRangeTraits<Color, Color::eSTART, Color::eLAST, int, unsigned int>::kLowerBound;
             Color max3 = RangeTraits::ExplicitDiscreteRangeTraits<Color, Color::eSTART, Color::eLAST, int, unsigned int>::kUpperBound;
-            Color min4 = RangeTraits::DefaultRangeTraits_Integral<Color, Color::eSTART, Color::eLAST, Openness::eClosed, Openness::eClosed, int, unsigned int>::kLowerBound;
-            Color max4 = RangeTraits::DefaultRangeTraits_Integral<Color, Color::eSTART, Color::eLAST, Openness::eClosed, Openness::eClosed, int, unsigned int>::kUpperBound;
+            Color min4 = RangeTraits::Default_Integral<Color, Color::eSTART, Color::eLAST, Openness::eClosed, Openness::eClosed, int, unsigned int>::kLowerBound;
+            Color max4 = RangeTraits::Default_Integral<Color, Color::eSTART, Color::eLAST, Openness::eClosed, Openness::eClosed, int, unsigned int>::kUpperBound;
             VerifyTestResult (Color::red == Color::eSTART and Color::green == Color::eLAST);
             VerifyTestResult (min1 == Color::eSTART and max1 == Color::eLAST);
             VerifyTestResult (min2 == Color::eSTART and max2 == Color::eLAST);
