@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Traversal {
         /**
          */
         template <typename T, T MIN, T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-        struct ExplicitDiscreteRangeTraits : ExplicitRangeTraits_Integral<T, MIN, MAX, Openness::eClosed, Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
+        struct ExplicitDiscreteRangeTraits : DefaultRangeTraits_Integral<T, MIN, MAX, Openness::eClosed, Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
             static constexpr T GetNext (T n)
             {
                 return static_cast<T> (static_cast<int> (n) + 1);
@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Traversal {
             {
                 return static_cast<T> (static_cast<int> (n) - 1);
             }
-            using RangeTraitsType = ExplicitRangeTraits_Integral<T, MIN, MAX, Openness::eClosed, Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>;
+            using RangeTraitsType = DefaultRangeTraits_Integral<T, MIN, MAX, Openness::eClosed, Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>;
         };
 
         /**
