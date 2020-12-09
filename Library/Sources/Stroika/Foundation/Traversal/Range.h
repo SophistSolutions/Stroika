@@ -120,7 +120,7 @@ namespace Stroika::Foundation::Traversal {
 
         template <typename T>
         struct DefaultRangeTraits_Enum : DefaultRangeTraits_Integral<T,
-                                                                     T::eSTART, T::eLAST, Openness::eClosed, Openness::eClosed, make_signed<underlying_type_t<T>>, make_unsigned<underlying_type_t<T>>> {
+                                                                     T::eSTART, T::eLAST, Openness::eClosed, Openness::eClosed, make_signed_t<underlying_type_t<T>>, make_unsigned_t<underlying_type_t<T>>> {
         };
 
         namespace Private_ {

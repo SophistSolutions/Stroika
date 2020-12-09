@@ -53,15 +53,8 @@ namespace Stroika::Foundation::Traversal {
         /**
          */
         template <typename T, T MIN, T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-        struct ExplicitDiscreteRangeTraits : DefaultRangeTraits_Integral<T, MIN, MAX, Openness::eClosed, Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
-            static constexpr T GetNext (T n)
-            {
-                return static_cast<T> (static_cast<int> (n) + 1);
-            }
-            static constexpr T GetPrevious (T n)
-            {
-                return static_cast<T> (static_cast<int> (n) - 1);
-            }
+        struct /*[[deprecated ("Since Stroika 2.1b8 use DefaultRangeTraits_Integral")]]*/ ExplicitDiscreteRangeTraits : DefaultRangeTraits_Integral<T, MIN, MAX, Openness::eClosed, Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>
+        {
             using RangeTraitsType = DefaultRangeTraits_Integral<T, MIN, MAX, Openness::eClosed, Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>;
         };
 
@@ -70,13 +63,15 @@ namespace Stroika::Foundation::Traversal {
          *  if you've applied the Stroika_Define_Enum_Bounds() macro to the given enumeration.
          */
         template <typename T>
-        struct DefaultDiscreteRangeTraits_Enum : ExplicitDiscreteRangeTraits<T, T::eSTART, T::eLAST, int, unsigned int> {
+        struct DefaultDiscreteRangeTraits_Enum : DefaultRangeTraits_Enum<T> {
+            using RangeTraitsType = DefaultRangeTraits_Enum<T>;
         };
 
         /**
          */
         template <typename T>
-        struct DefaultDiscreteRangeTraits_Integral : ExplicitDiscreteRangeTraits<T, numeric_limits<T>::lowest (), numeric_limits<T>::max (), decltype (T{} - T{}), make_unsigned_t<decltype (T{} - T{})>> {
+        struct DefaultDiscreteRangeTraits_Integral : DefaultRangeTraits_Integral<T> {
+            using RangeTraitsType = DefaultDiscreteRangeTraits_Integral<T>;
         };
 
         /**
