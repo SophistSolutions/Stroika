@@ -169,7 +169,6 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T, typename TRAITS>
     constexpr DiscreteRange<T, TRAITS>::DiscreteRange (const Range<T, typename TRAITS::RangeTraitsType>& r)
-        : inherited ()
     {
         // Could do more efficiently
         if (not r.empty ()) {
