@@ -21,15 +21,15 @@ namespace Stroika::Foundation::Traversal {
         T    fEnd;
         bool fAtEnd;
         MyIteratorRep_ ()
-            : fCur (TRAITS::kLowerBound)
-            , fEnd (TRAITS::kLowerBound)
-            , fAtEnd (true)
+            : fCur{TRAITS::kLowerBound}
+            , fEnd{TRAITS::kLowerBound}
+            , fAtEnd{true}
         {
         }
         MyIteratorRep_ (T start, T end)
-            : fCur (start)
-            , fEnd (end)
-            , fAtEnd (false)
+            : fCur{start}
+            , fEnd{end}
+            , fAtEnd{false}
         {
         }
         virtual void More (optional<T>* result, bool advance) override
@@ -52,8 +52,8 @@ namespace Stroika::Foundation::Traversal {
         virtual IteratorOwnerID GetOwner () const override
         {
             /*
-                *  This return value allows any two DiscreteRange iterators (of the same type) to be compared.
-                */
+             *  This return value allows any two DiscreteRange iterators (of the same type) to be compared.
+             */
             return typeid (*this).name ();
         }
         virtual bool Equals ([[maybe_unused]] const typename Iterator<T>::IRep* rhs) const override
@@ -86,15 +86,15 @@ namespace Stroika::Foundation::Traversal {
             T    fEnd;
             bool fForcedEnd;
             MyRep_ ()
-                : fStart (TRAITS::kLowerBound)
-                , fEnd (TRAITS::kLowerBound)
-                , fForcedEnd (true)
+                : fStart{TRAITS::kLowerBound}
+                , fEnd{TRAITS::kLowerBound}
+                , fForcedEnd{true}
             {
             }
             MyRep_ (T start, T end)
-                : fStart (start)
-                , fEnd (end)
-                , fForcedEnd (false)
+                : fStart{start}
+                , fEnd{end}
+                , fForcedEnd{false}
             {
             }
             virtual _IterableRepSharedPtr Clone ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const
@@ -106,10 +106,10 @@ namespace Stroika::Foundation::Traversal {
             {
                 // DiscreteRange doesn't track specific 'envelope' owner
                 if (fForcedEnd) {
-                    return Iterator<T> (Iterator<T>::template MakeSmartPtr<DiscreteRange::MyIteratorRep_> ());
+                    return Iterator<T>{Iterator<T>::template MakeSmartPtr<DiscreteRange::MyIteratorRep_> ()};
                 }
                 else {
-                    return Iterator<T> (Iterator<T>::template MakeSmartPtr<DiscreteRange::MyIteratorRep_> (fStart, fEnd));
+                    return Iterator<T>{Iterator<T>::template MakeSmartPtr<DiscreteRange::MyIteratorRep_> (fStart, fEnd)};
                 }
             }
             virtual size_t GetLength () const
@@ -142,11 +142,11 @@ namespace Stroika::Foundation::Traversal {
             }
         };
         MyIterable_ ()
-            : Iterable<T> (Iterable<T>::template MakeSmartPtr<MyRep_> ())
+            : Iterable<T>{Iterable<T>::template MakeSmartPtr<MyRep_> ()}
         {
         }
         MyIterable_ (T start, T end)
-            : Iterable<T> (Iterable<T>::template MakeSmartPtr<MyRep_> (start, end))
+            : Iterable<T>{Iterable<T>::template MakeSmartPtr<MyRep_> (start, end)}
         {
         }
     };
@@ -158,27 +158,27 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T, typename TRAITS>
     constexpr DiscreteRange<T, TRAITS>::DiscreteRange (T begin, T end)
-        : inherited (begin, end)
+        : inherited{begin, end}
     {
         Require (begin <= end);
     }
     template <typename T, typename TRAITS>
     constexpr DiscreteRange<T, TRAITS>::DiscreteRange (const optional<T>& begin, const optional<T>& end)
-        : inherited (begin, end)
+        : inherited{begin, end}
     {
     }
     template <typename T, typename TRAITS>
-    constexpr DiscreteRange<T, TRAITS>::DiscreteRange (const Range<T, typename TRAITS::RangeTraitsType>& r)
+    constexpr DiscreteRange<T, TRAITS>::DiscreteRange (const Range<T, TRAITS>& r)
     {
         // Could do more efficiently
         if (not r.empty ()) {
-            *this = DiscreteRange (r.GetLowerBound (), r.GetUpperBound ());
+            *this = DiscreteRange{r.GetLowerBound (), r.GetUpperBound ()};
         }
     }
     template <typename T, typename TRAITS>
     constexpr DiscreteRange<T, TRAITS> DiscreteRange<T, TRAITS>::FullRange ()
     {
-        return DiscreteRange (TRAITS::kLowerBound, TRAITS::kUpperBound);
+        return DiscreteRange{TRAITS::kLowerBound, TRAITS::kUpperBound};
     }
     template <typename T, typename TRAITS>
     constexpr Range<T, TRAITS> DiscreteRange<T, TRAITS>::Intersection (const Range<T, TRAITS>& rhs) const
@@ -188,7 +188,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename TRAITS>
     constexpr DiscreteRange<T, TRAITS> DiscreteRange<T, TRAITS>::Intersection (const DiscreteRange& rhs) const
     {
-        return DiscreteRange (inherited::Intersection (rhs));
+        return DiscreteRange{inherited::Intersection (rhs)};
     }
     template <typename T, typename TRAITS>
     constexpr Range<T, TRAITS> DiscreteRange<T, TRAITS>::UnionBounds (const Range<T, TRAITS>& rhs) const
@@ -199,7 +199,7 @@ namespace Stroika::Foundation::Traversal {
     constexpr DiscreteRange<T, TRAITS> DiscreteRange<T, TRAITS>::UnionBounds (const DiscreteRange& rhs) const
     {
         auto r = inherited::UnionBounds (rhs);
-        return DiscreteRange (r.GetLowerBound (), r.GetUpperBound ());
+        return DiscreteRange{r.GetLowerBound (), r.GetUpperBound ()};
     }
     template <typename T, typename TRAITS>
     constexpr typename DiscreteRange<T, TRAITS>::UnsignedDifferenceType DiscreteRange<T, TRAITS>::GetNumberOfContainedPoints () const
@@ -215,7 +215,7 @@ namespace Stroika::Foundation::Traversal {
     constexpr auto DiscreteRange<T, TRAITS>::Offset (SignedDifferenceType o) const -> DiscreteRange
     {
         Require (not this->empty ());
-        return DiscreteRange (inherited::Offset (o));
+        return DiscreteRange{inherited::Offset (o)};
     }
     template <typename T, typename TRAITS>
     Iterable<T> DiscreteRange<T, TRAITS>::Elements () const
@@ -234,7 +234,7 @@ namespace Stroika::Foundation::Traversal {
             return Iterator<T>::GetEmptyIterator ();
         }
         else {
-            return Iterator<T> (Iterator<T>::template MakeSmartPtr<MyIteratorRep_> (this->GetLowerBound (), this->GetUpperBound ()));
+            return Iterator<T>{Iterator<T>::template MakeSmartPtr<MyIteratorRep_> (this->GetLowerBound (), this->GetUpperBound ())};
         }
     }
     template <typename T, typename TRAITS>

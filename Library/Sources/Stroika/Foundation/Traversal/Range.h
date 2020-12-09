@@ -118,9 +118,12 @@ namespace Stroika::Foundation::Traversal {
             }
         };
 
+        /**
+         *  DefaultRangeTraits_Enum<> can be used to generate an automatic traits object (with bounds)
+         *  if you've applied the Stroika_Define_Enum_Bounds() macro to the given enumeration.
+         */
         template <typename T>
-        struct DefaultRangeTraits_Enum : DefaultRangeTraits_Integral<T,
-                                                                     T::eSTART, T::eLAST, Openness::eClosed, Openness::eClosed, make_signed_t<underlying_type_t<T>>, make_unsigned_t<underlying_type_t<T>>> {
+        struct DefaultRangeTraits_Enum : DefaultRangeTraits_Integral<T, T::eSTART, T::eLAST, Openness::eClosed, Openness::eClosed, make_signed_t<underlying_type_t<T>>, make_unsigned_t<underlying_type_t<T>>> {
         };
 
         namespace Private_ {

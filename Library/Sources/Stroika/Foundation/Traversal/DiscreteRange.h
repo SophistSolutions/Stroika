@@ -50,27 +50,18 @@ namespace Stroika::Foundation::Traversal {
 
     namespace RangeTraits {
 
-        /**
-         */
         template <typename T, T MIN, T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-        struct /*[[deprecated ("Since Stroika 2.1b8 use DefaultRangeTraits_Integral")]]*/ ExplicitDiscreteRangeTraits : DefaultRangeTraits_Integral<T, MIN, MAX, Openness::eClosed, Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>
+        struct [[deprecated ("Since Stroika 2.1b8 use DefaultRangeTraits_Integral")]] ExplicitDiscreteRangeTraits : DefaultRangeTraits_Integral<T, MIN, MAX, Openness::eClosed, Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>
         {
             using RangeTraitsType = DefaultRangeTraits_Integral<T, MIN, MAX, Openness::eClosed, Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>;
         };
-
-        /**
-         *  DefaultDiscreteRangeTraits_Enum<> can be used to generate an automatic traits object (with bounds)
-         *  if you've applied the Stroika_Define_Enum_Bounds() macro to the given enumeration.
-         */
         template <typename T>
-        struct DefaultDiscreteRangeTraits_Enum : DefaultRangeTraits_Enum<T> {
-            using RangeTraitsType = DefaultRangeTraits_Enum<T>;
+        struct /*[[deprecated ("Since Stroika 2.1b8 use DefaultRangeTraits_Enum")]]*/ DefaultDiscreteRangeTraits_Enum : DefaultRangeTraits_Enum<T>
+        {
+           using RangeTraitsType = DefaultRangeTraits_Enum<T>;
         };
-
-        /**
-         */
         template <typename T>
-        struct DefaultDiscreteRangeTraits_Integral : DefaultRangeTraits_Integral<T> {
+        struct /*[[deprecated ("Since Stroika 2.1b8 use DefaultRangeTraits_Integral")]]*/ DefaultDiscreteRangeTraits_Integral : DefaultRangeTraits_Integral<T> {
             using RangeTraitsType = DefaultDiscreteRangeTraits_Integral<T>;
         };
 
@@ -78,7 +69,7 @@ namespace Stroika::Foundation::Traversal {
          */
         template <typename T>
         struct DefaultDiscreteRangeTraits_DefaultRangeTraits : DefaultRangeTraits<T> {
-            using RangeTraitsType = DefaultRangeTraits<T>;
+    //        using RangeTraitsType = DefaultRangeTraits<T>;
         };
 
         /**
@@ -122,9 +113,9 @@ namespace Stroika::Foundation::Traversal {
      *          iterable with all possible legal values of the enum.
      */
     template <typename T, typename TRAITS = RangeTraits::DefaultDiscreteRangeTraits<T>>
-    class DiscreteRange : public Range<T, typename TRAITS::RangeTraitsType> {
+    class DiscreteRange : public Range<T, TRAITS> {
     private:
-        using inherited = Range<T, typename TRAITS::RangeTraitsType>;
+        using inherited = Range<T, TRAITS>;
 
     public:
         /**
@@ -153,7 +144,7 @@ namespace Stroika::Foundation::Traversal {
         explicit constexpr DiscreteRange () = default;
         explicit constexpr DiscreteRange (T begin, T end);
         explicit constexpr DiscreteRange (const optional<T>& begin, const optional<T>& end);
-        explicit constexpr DiscreteRange (const Range<T, typename TRAITS::RangeTraitsType>& r);
+        explicit constexpr DiscreteRange (const Range<T, TRAITS>& r);
 
     public:
         /**
