@@ -106,7 +106,9 @@ namespace Stroika::Foundation::Traversal {
             static constexpr T kLowerBound = MIN;
             static constexpr T kUpperBound = MAX;
 
-            #if 0
+            #if 1
+            // Needed temporarily (and maybe better) - cuz of regtest 50 - with Test_3_SimpleDiscreteRangeWithEnumsTest_::Color
+            // apparently not trigger then is_integral_v<> test???
             static constexpr T GetNext (T n)
             {
                 return static_cast<T> (static_cast<int> (n) + 1);
