@@ -27,10 +27,8 @@ vpath %cpp $(SrcDir)
 Objs	=	\
 	$(ObjDir)AllInstruments${OBJ_SUFFIX}\
 	$(ObjDir)Capturer${OBJ_SUFFIX}\
-	$(ObjDir)CaptureSet${OBJ_SUFFIX}\
 	$(ObjDir)Instrument${OBJ_SUFFIX}\
 	$(ObjDir)Measurement${OBJ_SUFFIX}\
-	$(ObjDir)MeasurementSet${OBJ_SUFFIX}\
 
 
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk

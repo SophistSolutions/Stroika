@@ -23,9 +23,9 @@ using namespace Stroika::Frameworks::SystemPerformance;
  ********************************************************************************
  */
 Instrument::Instrument (InstrumentNameType instrumentName, const SharedByValueCaptureRepType& capturer, const Set<MeasurementType>& capturedMeasurements, const DataExchange::ObjectVariantMapper& objectVariantMapper)
-    : fInstrumentName (instrumentName)
-    , fCapFun_ (capturer)
-    , fCapturedMeasurements (capturedMeasurements)
-    , fObjectVariantMapper (objectVariantMapper)
+    : fInstrumentName{instrumentName}
+    , fCapFun_{capturer}
+    , fCapturedMeasurements{capturedMeasurements}
+    , fObjectVariantMapper{objectVariantMapper}
 {
 }

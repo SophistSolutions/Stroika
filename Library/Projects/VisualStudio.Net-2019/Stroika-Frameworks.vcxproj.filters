@@ -529,16 +529,10 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Capturer.cpp">
       <Filter>System-Performance</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CaptureSet.cpp">
-      <Filter>System-Performance</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instrument.cpp">
       <Filter>System-Performance</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.cpp">
-      <Filter>System-Performance</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\MeasurementSet.cpp">
       <Filter>System-Performance</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\Device.cpp">
