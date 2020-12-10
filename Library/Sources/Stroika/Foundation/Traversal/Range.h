@@ -76,7 +76,9 @@ namespace Stroika::Foundation::Traversal {
             static constexpr Openness kUpperBoundOpenness{UPPER_BOUND_OPEN};
 
             /**
-             *  Return the Next possible value, or if already at the end of the range, the same value.
+             *  Return the Next possible value.
+             * 
+             *  \req arg != last-possible-value
              *
              *  \note its hard todo GetNext() for floating point as constexpr because underlying function in cmath not yet constexpr (as of C++17)
              */
@@ -86,7 +88,9 @@ namespace Stroika::Foundation::Traversal {
             static value_type GetNext (value_type i, enable_if_t<is_floating_point_v<SFINAE>>* = nullptr);
 
             /**
-             *  Return the Previous possible value, or if already at the end of the range, the same value.
+             *  Return the Previous possible value.
+             * 
+             *  \req arg != first-possible-value
              *
              *  \note its hard todo GetPrevious() for floating point as constexpr because underlying function in cmath not yet constexpr (as of C++17)
              */
@@ -178,12 +182,6 @@ namespace Stroika::Foundation::Traversal {
          */
         template <typename T>
         struct Default_Enum : Explicit<T, T::eSTART, T::eLAST, Openness::eClosed, Openness::eClosed, make_signed_t<underlying_type_t<T>>, make_unsigned_t<underlying_type_t<T>>> {
-            //workaround inherited version not working for some reason???
-            // REGTEST 50 fails running - not advancing - line 176
-            static constexpr T GetNext (T n)
-            {
-                return static_cast<T> (static_cast<int> (n) + 1);
-            }
         };
 
         namespace Private_ {

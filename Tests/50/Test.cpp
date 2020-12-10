@@ -97,6 +97,18 @@ namespace {
             VerifyTestResult ((r2l == Range<int>{5, 8}));
             VerifyTestResult ((r2r == Range<int>{5, 8}));
         }
+        {
+            auto r1 = Range<int>{3, 6};
+            VerifyTestResult (r1.Pin (3) == 3);
+            VerifyTestResult (r1.Pin (2) == 3);
+            VerifyTestResult (r1.Pin (8) == 6);
+        }
+        {
+            auto r1 = Range<int>{3, 3};
+            VerifyTestResult (r1.Pin (3) == 3);
+            VerifyTestResult (r1.Pin (2) == 3);
+            VerifyTestResult (r1.Pin (8) == 3);
+        }
     }
 
     void Test_2_BasicDiscreteRangeIteration_ ()
@@ -167,6 +179,10 @@ namespace {
             VerifyTestResult (min2 == Color::eSTART and max2 == Color::eLAST);
             VerifyTestResult (min3 == Color::eSTART and max3 == Color::eLAST);
             VerifyTestResult (min4 == Color::eSTART and max4 == Color::eLAST);
+        }
+        {
+            VerifyTestResult (RangeTraits::Default_Enum<Color>::GetNext (Color::eSTART) == Color::blue);
+            VerifyTestResult (RangeTraits::Default_Enum<Color>::GetPrevious (Color::blue) == Color::red);
         }
         {
             int             nItemsHit = 0;
@@ -815,16 +831,16 @@ namespace {
         using Traversal::Range;
 
         {
-            Range<Duration> a{Duration ("PT.5S"), Duration ("PT2M")};
-            Range<Duration> b{Duration ("PT1S"), Duration ("PT2M")};
+            Range<Duration> a{Duration{"PT.5S"}, Duration{"PT2M"}};
+            Range<Duration> b{Duration{"PT1S"}, Duration{"PT2M"}};
             Verify ((a ^ b) == b);
         }
         {
-            Range<Duration> a{Duration ("PT.5S"), Duration ("PT2M")};
-            VerifyTestResult (a.Pin (Duration ("PT.5S")) == Duration ("PT.5S"));
-            VerifyTestResult (a.Pin (Duration ("PT0S")) == Duration ("PT.5S"));
-            VerifyTestResult (a.Pin (Duration ("PT5M")) == Duration ("PT2M"));
-            VerifyTestResult (a.Pin (Duration ("PT10S")) == Duration ("PT10S"));
+            Range<Duration> a{Duration{"PT.5S"}, Duration{"PT2M"}};
+            VerifyTestResult (a.Pin (Duration{"PT.5S"}) == Duration{"PT.5S"});
+            VerifyTestResult (a.Pin (Duration{"PT0S"}) == Duration{"PT.5S"});
+            VerifyTestResult (a.Pin (Duration{"PT5M"}) == Duration{"PT2M"});
+            VerifyTestResult (a.Pin (Duration{"PT10S"}) == Duration{"PT10S"});
         }
     }
 }

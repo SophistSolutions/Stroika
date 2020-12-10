@@ -21,25 +21,29 @@ namespace Stroika::Foundation::Traversal {
     template <typename SFINAE>
     constexpr T RangeTraits::Explicit<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetNext (value_type i, enable_if_t<is_integral_v<SFINAE> or is_enum_v<SFINAE>>*)
     {
-        return i == numeric_limits<value_type>::max () ? i : static_cast<value_type> (static_cast<UNSIGNED_DIFF_TYPE> (i) + 1);
+        Require (i != MAX);
+        return static_cast<value_type> (static_cast<UNSIGNED_DIFF_TYPE> (i) + 1);
     }
     template <typename T, T MIN, T MAX, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
     template <typename SFINAE>
     inline T RangeTraits::Explicit<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetNext (value_type i, enable_if_t<is_floating_point_v<SFINAE>>*)
     {
-        return i == numeric_limits<value_type>::max () ? i : nextafter (i, numeric_limits<value_type>::max ());
+        Require (i != MAX);
+        return nextafter (i, MAX);
     }
     template <typename T, T MIN, T MAX, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
     template <typename SFINAE>
     constexpr T RangeTraits::Explicit<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetPrevious (value_type i, enable_if_t<is_integral_v<SFINAE> or is_enum_v<SFINAE>>*)
     {
-        return i == numeric_limits<value_type>::min () ? i : static_cast<value_type> (static_cast<SIGNED_DIFF_TYPE> (i) - 1);
+        Require (i != MIN);
+        return static_cast<value_type> (static_cast<SIGNED_DIFF_TYPE> (i) - 1);
     }
     template <typename T, T MIN, T MAX, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
     template <typename SFINAE>
     inline T RangeTraits::Explicit<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetPrevious (value_type i, enable_if_t<is_floating_point_v<SFINAE>>*)
     {
-        return i == numeric_limits<value_type>::min () ? i : nextafter (i, numeric_limits<value_type>::min ());
+        Require (i != MIN);
+        return nextafter (i, MIN);
     }
     template <typename T, T MIN, T MAX, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
     template <typename TYPE2CHECK, typename SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE>
@@ -199,12 +203,12 @@ namespace Stroika::Foundation::Traversal {
     constexpr T Range<T, TRAITS>::Pin (T v) const
     {
         if (v < fBegin_) {
-            T tmp{fBeginOpenness_ == Openness::eClosed ? fBegin_ : TraitsType::GetNext (fBegin_)};
+            T tmp{fBeginOpenness_ == Openness::eClosed ? fBegin_ : (fBegin_ == fEnd_ ? fEnd_ : TraitsType::GetNext (fBegin_))};
             Require (Contains (tmp));
             return tmp;
         }
         else if (v > fEnd_) {
-            T tmp{fEndOpenness_ == Openness::eClosed ? fEnd_ : TraitsType::GetPrevious (fEnd_)};
+            T tmp{fEndOpenness_ == Openness::eClosed ? fEnd_ : (fEnd_ == fBegin_ ? fBegin_ : TraitsType::GetPrevious (fEnd_))};
             Require (Contains (tmp));
             return tmp;
         }
