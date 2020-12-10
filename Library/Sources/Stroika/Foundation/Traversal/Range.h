@@ -60,6 +60,58 @@ namespace Stroika::Foundation::Traversal {
     namespace RangeTraits {
 
         /**
+         *  Explicit<> can be used to specify inline (type) all the details for the range functionality
+         *  for a given type T. Also, it provides often usable default implementations of things like GetNext, GetPrevious ().
+         */
+        template <typename T, T MIN = numeric_limits<T>::lowest (), T MAX = numeric_limits<T>::max (), Openness LOWER_BOUND_OPEN = Openness::eClosed, Openness UPPER_BOUND_OPEN = Openness::eClosed, typename SIGNED_DIFF_TYPE = decltype (T{} - T{}), typename UNSIGNED_DIFF_TYPE = make_unsigned_t<SIGNED_DIFF_TYPE>>
+        struct Explicit {
+            using value_type             = T;
+            using SignedDifferenceType   = SIGNED_DIFF_TYPE;
+            using UnsignedDifferenceType = UNSIGNED_DIFF_TYPE;
+
+            static constexpr T kLowerBound{MIN};
+            static constexpr T kUpperBound{MAX};
+
+            static constexpr Openness kLowerBoundOpenness{LOWER_BOUND_OPEN};
+            static constexpr Openness kUpperBoundOpenness{UPPER_BOUND_OPEN};
+
+            /**
+             *  Return the Next possible value, or if already at the end of the range, the same value.
+             *
+             *  \note its hard todo GetNext() for floating point as constexpr because underlying function in cmath not yet constexpr (as of C++17)
+             */
+            template <typename SFINAE = value_type>
+            static constexpr value_type GetNext (value_type i, enable_if_t<is_integral_v<SFINAE> or is_enum_v<SFINAE>>* = nullptr);
+            template <typename SFINAE = value_type>
+            static value_type GetNext (value_type i, enable_if_t<is_floating_point_v<SFINAE>>* = nullptr);
+
+            /**
+             *  Return the Previous possible value, or if already at the end of the range, the same value.
+             *
+             *  \note its hard todo GetPrevious() for floating point as constexpr because underlying function in cmath not yet constexpr (as of C++17)
+             */
+            template <typename SFINAE = value_type>
+            static constexpr value_type GetPrevious (value_type i, enable_if_t<is_integral_v<SFINAE> or is_enum_v<SFINAE>>* = nullptr);
+            template <typename SFINAE = value_type>
+            static value_type GetPrevious (value_type i, enable_if_t<is_floating_point_v<SFINAE>>* = nullptr);
+
+            /**
+             *  Compute the difference between two elements of type T for the Range (RHS - LHS)
+             */
+            template <typename TYPE2CHECK = value_type, typename SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = enable_if_t<is_enum_v<TYPE2CHECK> or is_convertible_v<TYPE2CHECK, SignedDifferenceType>>>
+            static constexpr SignedDifferenceType Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE* = nullptr);
+            template <typename TYPE2CHECK = value_type, typename SFINAE_CANNOT_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = enable_if_t<not(is_enum_v<TYPE2CHECK> or is_convertible_v<TYPE2CHECK, SignedDifferenceType>)>>
+            static constexpr SignedDifferenceType Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, ...);
+        };
+
+        /**
+         * Exactly like Explicit<> - except openness parameters are first so we can default the rest.
+         */
+        template <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, T MIN = numeric_limits<T>::lowest (), T MAX = numeric_limits<T>::max (), typename SIGNED_DIFF_TYPE = decltype (T{} - T{}), typename UNSIGNED_DIFF_TYPE = make_unsigned_t<SIGNED_DIFF_TYPE>>
+        struct ExplicitOpenness : Explicit<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
+        };
+
+        /**
          *  ExplicitRangeTraitsWithoutMinMax<> can be used to specify in line line (type) all the details for the range functionality
          *  for a given type T.
          */
@@ -106,7 +158,7 @@ namespace Stroika::Foundation::Traversal {
             static constexpr T kLowerBound = MIN;
             static constexpr T kUpperBound = MAX;
 
-            #if 1
+#if 1
             // Needed temporarily (and maybe better) - cuz of regtest 50 - with Test_3_SimpleDiscreteRangeWithEnumsTest_::Color
             // apparently not trigger then is_integral_v<> test???
             static constexpr T GetNext (T n)
@@ -117,7 +169,7 @@ namespace Stroika::Foundation::Traversal {
             {
                 return static_cast<T> (static_cast<int> (n) - 1);
             }
-            #endif
+#endif
         };
 
         /**
@@ -125,7 +177,13 @@ namespace Stroika::Foundation::Traversal {
          *  if you've applied the Stroika_Define_Enum_Bounds() macro to the given enumeration.
          */
         template <typename T>
-        struct Default_Enum : Default_Integral<T, T::eSTART, T::eLAST, Openness::eClosed, Openness::eClosed, make_signed_t<underlying_type_t<T>>, make_unsigned_t<underlying_type_t<T>>> {
+        struct Default_Enum : Explicit<T, T::eSTART, T::eLAST, Openness::eClosed, Openness::eClosed, make_signed_t<underlying_type_t<T>>, make_unsigned_t<underlying_type_t<T>>> {
+            //workaround inherited version not working for some reason???
+            // REGTEST 50 fails running - not advancing - line 176
+            static constexpr T GetNext (T n)
+            {
+                return static_cast<T> (static_cast<int> (n) + 1);
+            }
         };
 
         namespace Private_ {
@@ -140,8 +198,8 @@ namespace Stroika::Foundation::Traversal {
          */
         template <typename T>
         struct Default_Arithmetic : enable_if_t<
-                                                   is_arithmetic_v<T>,
-                                                   ExplicitRangeTraitsWithoutMinMax<T, Openness::eClosed, Openness::eOpen, Private_::BaseDifferenceType_<T>, Private_::UnsignedDifferenceType_<T>>> {
+                                        is_arithmetic_v<T>,
+                                        ExplicitRangeTraitsWithoutMinMax<T, Openness::eClosed, Openness::eOpen, Private_::BaseDifferenceType_<T>, Private_::UnsignedDifferenceType_<T>>> {
             static constexpr T kLowerBound = numeric_limits<T>::lowest ();
             static constexpr T kUpperBound = numeric_limits<T>::max ();
         };
@@ -158,20 +216,18 @@ namespace Stroika::Foundation::Traversal {
         };
 #else
         template <typename T>
-        struct DefaultRangeTraits :  conditional_t<
-            is_enum_v<T>, DefaultRangeTraits_Enum<T>,
-            conditional_t<
-                                            is_integral_v<T>, Default_Integral<T>,
-                conditional_t<
+        struct DefaultRangeTraits : conditional_t<
+                                        is_enum_v<T>, Default_Enum<T>,
+                                        conditional_t<
+                                            is_integral_v<T>, Default_Integral2<T>,
+                                            conditional_t<
                                                 is_arithmetic_v<T>, Default_Arithmetic<T>,
                                                 void>>> {
         };
 #endif
 
-
-
         template <typename T, T MIN = numeric_limits<T>::lowest (), T MAX = numeric_limits<T>::max (), Openness LOWER_BOUND_OPEN = Openness::eClosed, Openness UPPER_BOUND_OPEN = Openness::eClosed, typename SIGNED_DIFF_TYPE = decltype (T{} - T{}), typename UNSIGNED_DIFF_TYPE = make_unsigned_t<SIGNED_DIFF_TYPE>>
-        struct [[deprecated ("Since Stroika 2.1b8 use Default_Integral")]] ExplicitRangeTraits_Integral : Default_Integral<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>{}; 
+        struct [[deprecated ("Since Stroika 2.1b8 use Default_Integral")]] ExplicitRangeTraits_Integral : Default_Integral<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>{};
     }
 
     template <typename T, typename RANGE_TYPE>
