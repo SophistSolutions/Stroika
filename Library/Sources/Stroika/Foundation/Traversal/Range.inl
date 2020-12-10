@@ -322,15 +322,15 @@ namespace Stroika::Foundation::Traversal {
         }
         T l = max (fBegin_, rhs.fBegin_);
         T r = min (fEnd_, rhs.fEnd_);
-        if (l <= r) {
+        if (l < r) {
             // lhs/rhs ends are closed iff BOTH lhs/rhs contains that point
             Openness lhsO = Contains (l) and rhs.Contains (l) ? Openness::eClosed : Openness::eOpen;
             Openness rhsO = Contains (r) and rhs.Contains (r) ? Openness::eClosed : Openness::eOpen;
-            return Range (l, r, lhsO, rhsO);
+            if (l != r or (lhsO == Openness::eClosed and rhsO == Openness::eClosed)) {
+                return Range{l, r, lhsO, rhsO};
+            }
         }
-        else {
-            return Range ();
-        }
+        return Range{};
     }
     template <typename T, typename TRAITS>
     inline DisjointRange<T, Range<T, TRAITS>> Range<T, TRAITS>::Union (const Range& rhs) const
