@@ -107,7 +107,10 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T, typename TRAITS>
     constexpr Range<T, TRAITS>::Range ()
-        : Range{TRAITS::kLowerBoundOpenness, TRAITS::kUpperBoundOpenness}
+        : fBegin_{TRAITS::kUpperBound}
+        , fEnd_{TRAITS::kLowerBound}
+        , fBeginOpenness_{TRAITS::kLowerBoundOpenness}
+        , fEndOpenness_{TRAITS::kUpperBoundOpenness}
     {
         Ensure (empty ());
     }
@@ -128,15 +131,6 @@ namespace Stroika::Foundation::Traversal {
     {
     }
     template <typename T, typename TRAITS>
-    constexpr Range<T, TRAITS>::Range (Openness lhsOpen, Openness rhsOpen)
-        : fBegin_{TRAITS::kUpperBound}
-        , fEnd_{TRAITS::kLowerBound}
-        , fBeginOpenness_ (lhsOpen)
-        , fEndOpenness_ (rhsOpen)
-    {
-        Ensure (empty ());
-    }
-    template <typename T, typename TRAITS>
     constexpr Range<T, TRAITS>::Range (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end, Openness lhsOpen, Openness rhsOpen)
         : fBegin_{begin}
         , fEnd_{end}
@@ -147,6 +141,8 @@ namespace Stroika::Foundation::Traversal {
         Require (TRAITS::kLowerBound <= begin);
         Require (begin <= end);
         Require (end <= TRAITS::kUpperBound);
+        Require (begin < end or (lhsOpen == Openness::eClosed and rhsOpen == Openness::eClosed));
+        Ensure (not empty ());
     }
     template <typename T, typename TRAITS>
     constexpr Range<T, TRAITS>::Range (const optional<T>& begin, const optional<T>& end, Openness lhsOpen, Openness rhsOpen)
@@ -202,13 +198,17 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename TRAITS>
     constexpr T Range<T, TRAITS>::Pin (T v) const
     {
-        if (v < fBegin_) {
-            T tmp{fBeginOpenness_ == Openness::eClosed ? fBegin_ : (fBegin_ == fEnd_ ? fEnd_ : TraitsType::GetNext (fBegin_))};
+        Require (not empty ());
+        Assert (fBegin_ != fEnd_ or (fBeginOpenness_ == Openness::eClosed and fEndOpenness_ == Openness::eClosed));
+        if (v < fBegin_ or (v == fBegin_ and fBeginOpenness_ == Openness::eOpen)) {
+            // must advance
+            T tmp{fBeginOpenness_ == Openness::eClosed ? fBegin_ : TraitsType::GetNext (fBegin_)};
             Require (Contains (tmp));
             return tmp;
         }
-        else if (v > fEnd_) {
-            T tmp{fEndOpenness_ == Openness::eClosed ? fEnd_ : (fEnd_ == fBegin_ ? fBegin_ : TraitsType::GetPrevious (fEnd_))};
+        else if (v > fEnd_ or (v == fEnd_ and fEndOpenness_ == Openness::eOpen)) {
+            // must retreat
+            T tmp{fEndOpenness_ == Openness::eClosed ? fEnd_ : TraitsType::GetPrevious (fEnd_)};
             Require (Contains (tmp));
             return tmp;
         }

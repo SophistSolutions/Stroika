@@ -80,7 +80,7 @@ namespace {
             VerifyTestResult (x.GetUpperBound () == 100);
         }
         {
-            VerifyTestResult ((Range<int>{1, 1, Openness::eOpen, Openness::eOpen} == Range<int>{3, 3, Openness::eOpen, Openness::eOpen}));
+            // ALLOW THIS WHEN WE HAVE NEW CHECKED OPTINAL PARANM - VerifyTestResult ((Range<int>{1, 1, Openness::eOpen, Openness::eOpen} == Range<int>{3, 3, Openness::eOpen, Openness::eOpen}));
             VerifyTestResult ((Range<int>{1, 1, Openness::eClosed, Openness::eClosed} != Range<int>{3, 3, Openness::eClosed, Openness::eClosed}));
         }
         {
@@ -98,13 +98,20 @@ namespace {
             VerifyTestResult ((r2r == Range<int>{5, 8}));
         }
         {
-            auto r1 = Range<int>{3, 6};
+            auto r1 = Range<int, RangeTraits::ExplicitOpenness<int, Openness::eOpen, Openness::eOpen>>{3, 6};
+            VerifyTestResult (r1.Pin (3) == 4);
+            VerifyTestResult (r1.Pin (2) == 4);
+            VerifyTestResult (r1.Pin (8) == 5);
+        }
+        {
+            auto r1 = Range<int, RangeTraits::ExplicitOpenness<int, Openness::eClosed, Openness::eClosed>>{3, 6};
             VerifyTestResult (r1.Pin (3) == 3);
             VerifyTestResult (r1.Pin (2) == 3);
+            VerifyTestResult (r1.Pin (4) == 4);
             VerifyTestResult (r1.Pin (8) == 6);
         }
         {
-            auto r1 = Range<int>{3, 3};
+            auto r1 = Range<int, RangeTraits::ExplicitOpenness<int, Openness::eClosed, Openness::eClosed>>{3, 3};
             VerifyTestResult (r1.Pin (3) == 3);
             VerifyTestResult (r1.Pin (2) == 3);
             VerifyTestResult (r1.Pin (8) == 3);
@@ -541,11 +548,11 @@ namespace {
             VerifyTestResult (dr.Contains (3));
         }
         {
-            using RT  = Range<float>;
+            using RT  = Range<float, RangeTraits::ExplicitOpenness<float,Openness::eClosed, Openness::eClosed>>;
             using DRT = DisjointRange<RT::value_type, RT>;
             DRT dr{RT{1, 5}, RT{2, 2}};
             VerifyTestResult (not dr.empty ());
-            VerifyTestResult (dr.GetBounds () == RT (1, 5));
+            VerifyTestResult ((dr.GetBounds () == RT{1, 5}));
             VerifyTestResult (dr.SubRanges ().size () == 1);
             VerifyTestResult (dr.Contains (3));
         }

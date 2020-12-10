@@ -63,7 +63,14 @@ namespace Stroika::Foundation::Traversal {
          *  Explicit<> can be used to specify inline (type) all the details for the range functionality
          *  for a given type T. Also, it provides often usable default implementations of things like GetNext, GetPrevious ().
          */
-        template <typename T, T MIN = numeric_limits<T>::lowest (), T MAX = numeric_limits<T>::max (), Openness LOWER_BOUND_OPEN = Openness::eClosed, Openness UPPER_BOUND_OPEN = Openness::eClosed, typename SIGNED_DIFF_TYPE = decltype (T{} - T{}), typename UNSIGNED_DIFF_TYPE = make_unsigned_t<SIGNED_DIFF_TYPE>>
+        template <
+            typename T,
+            T        MIN                = numeric_limits<T>::lowest (),
+            T        MAX                = numeric_limits<T>::max (),
+            Openness LOWER_BOUND_OPEN   = Openness::eClosed,
+            Openness UPPER_BOUND_OPEN   = Openness::eClosed,
+            typename SIGNED_DIFF_TYPE   = decltype (T{} - T{}),
+            typename UNSIGNED_DIFF_TYPE = conditional_t<is_integral_v<T>, make_unsigned_t<SIGNED_DIFF_TYPE>, SIGNED_DIFF_TYPE>>
         struct Explicit {
             using value_type             = T;
             using SignedDifferenceType   = SIGNED_DIFF_TYPE;
@@ -111,8 +118,18 @@ namespace Stroika::Foundation::Traversal {
         /**
          * Exactly like Explicit<> - except openness parameters are first so we can default the rest.
          */
-        template <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, T MIN = numeric_limits<T>::lowest (), T MAX = numeric_limits<T>::max (), typename SIGNED_DIFF_TYPE = decltype (T{} - T{}), typename UNSIGNED_DIFF_TYPE = make_unsigned_t<SIGNED_DIFF_TYPE>>
-        struct ExplicitOpenness : Explicit<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
+        template <
+            typename T,
+            Openness LOWER_BOUND_OPEN,
+            Openness UPPER_BOUND_OPEN,
+            T        MIN              = numeric_limits<T>::lowest (),
+            T        MAX              = numeric_limits<T>::max (),
+            typename SIGNED_DIFF_TYPE = decltype (T{} - T{}),
+            // @todo debug why conditional_t<> not working -   using RT  = Range<float, RangeTraits::ExplicitOpenness<float,Openness::eClosed, Openness::eClosed>>;
+            //typename UNSIGNED_DIFF_TYPE = conditional_t<is_integral_v<T>, make_unsigned_t<SIGNED_DIFF_TYPE>, SIGNED_DIFF_TYPE>
+            typename UNSIGNED_DIFF_TYPE = SIGNED_DIFF_TYPE
+        >
+        struct ExplicitOpenness : Explicit<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
         };
 
         /**
@@ -191,17 +208,23 @@ namespace Stroika::Foundation::Traversal {
             using UnsignedDifferenceType_ = BaseDifferenceType_<T>;
         }
 
+
         /**
          *  This defaults to a half-open (lhs closed, rhs-open) range, and should work for any arithmetic type (where you can subtract elements, etc)
          */
+#if 0
         template <typename T>
         struct Default_Arithmetic : enable_if_t<
                                         is_arithmetic_v<T>,
-                                        ExplicitRangeTraitsWithoutMinMax<T, Openness::eClosed, Openness::eOpen, Private_::BaseDifferenceType_<T>, Private_::UnsignedDifferenceType_<T>>> {
+                                        Explicit<T, numeric_limits<T>::lowest (), numeric_limits<T>::max (), Openness::eClosed, Openness::eOpen, T, T>> {
+        };
+#else
+        template <typename T>
+        struct Default_Arithmetic : ExplicitRangeTraitsWithoutMinMax<T, Openness::eClosed, Openness::eOpen, Private_::BaseDifferenceType_<T>, Private_::UnsignedDifferenceType_<T>> {
             static constexpr T kLowerBound = numeric_limits<T>::lowest ();
             static constexpr T kUpperBound = numeric_limits<T>::max ();
         };
-
+#endif
         /**
          *  DefaultRangeTraits<> contains the default traits used by a Range<> class. For most builtin types, this will
          *  be fine. For many Stroika types, specializations exist, so that you can just use Range<T> directly.
@@ -237,6 +260,8 @@ namespace Stroika::Foundation::Traversal {
      * 
      *  A range always has a lower and upper bound (if not specified in CTOR, its specified by the type traits) so no
      *  unbounded ranges).
+     * 
+     *  For a range to contain a single point, min=max, and both sides must be closed (else its a require error)
      *
      *  This Range<> template is similar to Ruby range, and fairly DIFFERENT from the std::range<> template.
      *
@@ -254,9 +279,9 @@ namespace Stroika::Foundation::Traversal {
      *  A note about an empty range. All empty ranges (of the same type) are equal to one another. It is illegal
      *  to ask for the start or end of an empty range. Empty ranges contain no points.
      *
-     *  Since a range is half/open/closed by default, this means that
-     *      Range<int>{1,1, Openness::eOpen, Openness::eOpen} == Range<int>{3,3, Openness::eOpen, Openness::eOpen} 
-     *  would be true, since the are both empty. but
+     *  It is illegal to call:
+     *      Range<int>{1,1, Openness::eOpen, Openness::eOpen} since this would produce an empty range.
+     *
      *      Range<int>{1,1, Openness::eClosed, Openness::eClosed} != Range<int>{3,3, Openness::eClosed, Openness::eClosed} 
      *  would be true, since neither is empty and they contain different points (1 vs 3).
      *
@@ -299,8 +324,10 @@ namespace Stroika::Foundation::Traversal {
          *  Range () creates an empty range.
          *
          *  optional values - if omitted - are replaced with the TRAITS::kLowerBound and TRAITS::kUpperBound values (as well as 'TRAITs' default openness).
+         *  Constructors with actual numeric values (begin/end) MUST construct non-empty ranges (begin == end ==> both sides closed).
          *
          *  \req begin <= end (after substitution of optional values)
+         *  \req begin < end or LHS/RHS CLOSED (after substitution of optional values)
          *
          *  \par Example Usage
          *      \code
@@ -315,7 +342,6 @@ namespace Stroika::Foundation::Traversal {
         constexpr explicit Range (const Range<T2, TRAITS>& src);
         constexpr explicit Range (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end);
         constexpr explicit Range (const optional<T>& begin, const optional<T>& end);
-        constexpr explicit Range (Openness lhsOpen, Openness rhsOpen);
         constexpr explicit Range (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end, Openness lhsOpen, Openness rhsOpen);
         constexpr explicit Range (const optional<T>& begin, const optional<T>& end, Openness lhsOpen, Openness rhsOpen);
 
