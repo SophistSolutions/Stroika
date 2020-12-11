@@ -114,6 +114,10 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T, typename TRAITS = RangeTraits::DefaultDiscreteRangeTraits<T>>
     class DiscreteRange : public Range<T, TRAITS> {
+    public:
+        static_assert (TRAITS::kLowerBoundOpenness == Openness::eClosed);
+        static_assert (TRAITS::kUpperBoundOpenness == Openness::eClosed);
+
     private:
         using inherited = Range<T, TRAITS>;
 
