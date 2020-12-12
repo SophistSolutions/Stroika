@@ -2031,6 +2031,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\DefaultSerializer.h">
       <Filter>Sources\DataExchange</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\TemplateUtilities.h">
+      <Filter>Sources\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -3258,9 +3261,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Linguistics\MessageUtilities.inl">
       <Filter>Sources\Linguistics</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Common\Immortalize.inl">
-      <Filter>Sources\Common</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\AccessMode.inl">
       <Filter>Sources\IO</Filter>
     </None>
@@ -3314,6 +3314,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\DefaultSerializer.inl">
       <Filter>Sources\DataExchange</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Common\TemplateUtilities.inl">
+      <Filter>Sources\Common</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

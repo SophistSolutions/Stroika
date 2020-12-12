@@ -16,7 +16,7 @@
 #endif
 
 #include "../../Characters/Format.h"
-#include "../../Common/Immortalize.h"
+#include "../../Common/TemplateUtilities.h"
 #include "../../Containers/Collection.h"
 #include "../../Execution/Exceptions.h"
 #include "../../Execution/Finally.h"

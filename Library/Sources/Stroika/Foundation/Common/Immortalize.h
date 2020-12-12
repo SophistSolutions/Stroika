@@ -6,21 +6,13 @@
 
 #include "../StroikaPreComp.h"
 
-/**
- *  \file
- *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
- */
+#include "TemplateUtilities.h"
 
+_DeprecatedFile_ ("Use TemplateUtilities.h")    // Search for Immortalize.h
+
+    // WARN FILE DEPRECATED
 namespace Stroika::Foundation::Common {
 
-    /**
-     *  Create a singleton of a class initialized once, but whose DTOR is never called.
-     *
-     *  Based on template <class _Ty> _Ty& _Immortalize() from VS2k19 runtime library....
-     */
-    template <class T>
-    T& Immortalize ();
 
 }
 
@@ -29,6 +21,5 @@ namespace Stroika::Foundation::Common {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "Immortalize.inl"
 
 #endif /*_Stroika_Foundation_Common_Immportalize_h_*/

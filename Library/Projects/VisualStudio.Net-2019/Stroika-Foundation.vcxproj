@@ -289,6 +289,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\GUID.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Immortalize.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\TemplateUtilities.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Concepts.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\ConceptsBase.h" />
@@ -709,9 +710,9 @@
     <None Include="..\..\Sources\Stroika\Foundation\Common\CountedValue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Common\EmptyObjectForConstructorSideEffect.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Common\GUID.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Common\Immortalize.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Common\Makefile" />
+    <None Include="..\..\Sources\Stroika\Foundation\Common\TemplateUtilities.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\.gitignore" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Common.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Concepts.inl" />

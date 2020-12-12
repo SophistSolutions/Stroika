@@ -10,7 +10,7 @@
 #endif
 
 #include "../../../Characters/String.h"
-#include "../../../Common/Immortalize.h"
+#include "../../../Common/TemplateUtilities.h"
 #include "../../../Configuration/Common.h"
 #include "../../../Containers/Common.h"
 #include "../../../Debug/Trace.h"
