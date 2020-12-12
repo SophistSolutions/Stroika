@@ -12,12 +12,23 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Common/GUID.h"
+#include "Stroika/Foundation/Common/TemplateUtilities.h"
 #include "Stroika/Foundation/Configuration/Endian.h"
 
 #include "../TestHarness/TestHarness.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Common;
 using namespace Stroika::Foundation::Traversal;
+
+static_assert (is_same_v<Identity<double>::type, double>);
+
+static_assert (is_same_v<DifferenceType<int>, int>);
+static_assert (is_same_v<DifferenceType<double>, double>);
+
+static_assert (is_same_v<UnsignedOfIf<int>, unsigned int>);
+static_assert (is_same_v<UnsignedOfIf<double>, double>);
+static_assert (is_same_v<UnsignedOfIf<string>, string>);
 
 namespace {
     void Test_1_SpaceshipAutoGenForOpEqualsForCommonGUIDBug_ ()
