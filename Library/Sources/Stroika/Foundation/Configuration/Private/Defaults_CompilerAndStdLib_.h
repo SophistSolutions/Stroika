@@ -2046,17 +2046,24 @@ namespace {
 #endif
 #endif
 
+//#ifndef STRINGIFY
+//#define STRINGIFY(a) #a
+//#endif
+
+#ifndef _Stroika_Foundation_Configuration_Private_DO_PRAGMA_
+#define _Stroika_Foundation_Configuration_Private_DO_PRAGMA_(x) _Pragma (#x)
+#endif
+
 /*
  *  Wrap this macro around entire declaration, as in:
  *       _DeprecatedFile_ ("DEPRECATED in v2.0a32 - use IO::FileSystem::DirectoryIterator");
  */
-#define STRINGIFY(a) #a
 #if !defined(_DeprecatedFile_)
 #define _DeprecatedFile_(MESSAGE) \
-    _Pragma (STRINGIFY (message##DEPRECATED##MESSAGE))
+    _Stroika_Foundation_Configuration_Private_DO_PRAGMA_ (message ("WARNING: Deprecated File: " MESSAGE))
 #endif
 
-/*
+ /*
  * https://en.cppreference.com/w/User:D41D8CD98F/feature_testing_macros
  * https://en.cppreference.com/w/cpp/language/attributes/no_unique_address
  */
