@@ -14,48 +14,48 @@ namespace Stroika::Foundation::Traversal {
 
     /*
      ********************************************************************************
-     RangeTraits::Explicit<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>
+     ********** RangeTraits::Explicit<T, OPENNESS, BOUNDS, DIFF_TYPE> ***************
      ********************************************************************************
      */
-    template <typename T, T MIN, T MAX, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+    template <typename T, typename OPENNESS, typename BOUNDS, typename DIFF_TYPE>
     template <typename SFINAE>
-    constexpr T RangeTraits::Explicit<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetNext (value_type i, enable_if_t<is_integral_v<SFINAE> or is_enum_v<SFINAE>>*)
+    constexpr T RangeTraits::Explicit<T, OPENNESS, BOUNDS, DIFF_TYPE>::GetNext (value_type i, enable_if_t<is_integral_v<SFINAE> or is_enum_v<SFINAE>>*)
     {
-        Require (i != MAX);
-        return static_cast<value_type> (static_cast<UNSIGNED_DIFF_TYPE> (i) + 1);
+        Require (i != kUpperBound);
+        return static_cast<value_type> (static_cast<UnsignedDifferenceType> (i) + 1);
     }
-    template <typename T, T MIN, T MAX, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+    template <typename T, typename OPENNESS, typename BOUNDS, typename DIFF_TYPE>
     template <typename SFINAE>
-    inline T RangeTraits::Explicit<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetNext (value_type i, enable_if_t<is_floating_point_v<SFINAE>>*)
+    inline T RangeTraits::Explicit<T, OPENNESS, BOUNDS, DIFF_TYPE>::GetNext (value_type i, enable_if_t<is_floating_point_v<SFINAE>>*)
     {
-        Require (i != MAX);
-        return nextafter (i, MAX);
+        Require (i != kUpperBound);
+        return nextafter (i, kUpperBound);
     }
-    template <typename T, T MIN, T MAX, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+    template <typename T, typename OPENNESS, typename BOUNDS, typename DIFF_TYPE>
     template <typename SFINAE>
-    constexpr T RangeTraits::Explicit<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetPrevious (value_type i, enable_if_t<is_integral_v<SFINAE> or is_enum_v<SFINAE>>*)
+    constexpr T RangeTraits::Explicit<T, OPENNESS, BOUNDS, DIFF_TYPE>::GetPrevious (value_type i, enable_if_t<is_integral_v<SFINAE> or is_enum_v<SFINAE>>*)
     {
-        Require (i != MIN);
-        return static_cast<value_type> (static_cast<SIGNED_DIFF_TYPE> (i) - 1);
+        Require (i != kLowerBound);
+        return static_cast<value_type> (static_cast<SignedDifferenceType> (i) - 1);
     }
-    template <typename T, T MIN, T MAX, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+    template <typename T, typename OPENNESS, typename BOUNDS, typename DIFF_TYPE>
     template <typename SFINAE>
-    inline T RangeTraits::Explicit<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetPrevious (value_type i, enable_if_t<is_floating_point_v<SFINAE>>*)
+    inline T RangeTraits::Explicit<T, OPENNESS, BOUNDS, DIFF_TYPE>::GetPrevious (value_type i, enable_if_t<is_floating_point_v<SFINAE>>*)
     {
-        Require (i != MIN);
-        return nextafter (i, MIN);
+        Require (i != kLowerBound);
+        return nextafter (i, kLowerBound);
     }
-    template <typename T, T MIN, T MAX, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+    template <typename T, typename OPENNESS, typename BOUNDS, typename DIFF_TYPE>
     template <typename TYPE2CHECK, typename SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE>
-    inline constexpr auto RangeTraits::Explicit<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE*) -> SignedDifferenceType
+    inline constexpr auto RangeTraits::Explicit<T, OPENNESS, BOUNDS, DIFF_TYPE>::Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE*) -> SignedDifferenceType
     {
-        return static_cast<SIGNED_DIFF_TYPE> (rhs) - static_cast<SIGNED_DIFF_TYPE> (lhs);
+        return static_cast<SignedDifferenceType> (rhs) - static_cast<SignedDifferenceType> (lhs);
     }
-    template <typename T, T MIN, T MAX, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+    template <typename T, typename OPENNESS, typename BOUNDS, typename DIFF_TYPE>
     template <typename TYPE2CHECK, typename SFINAE_CANNOT_CONVERT_TYPE_TO_SIGNEDDIFFTYPE>
-    inline constexpr auto RangeTraits::Explicit<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, ...) -> SignedDifferenceType
+    inline constexpr auto RangeTraits::Explicit<T, OPENNESS, BOUNDS, DIFF_TYPE>::Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, ...) -> SignedDifferenceType
     {
-        return static_cast<SIGNED_DIFF_TYPE> (rhs - lhs);
+        return static_cast<SignedDifferenceType> (rhs - lhs);
     }
 
     /*
@@ -318,11 +318,11 @@ namespace Stroika::Foundation::Traversal {
     constexpr Range<T, TRAITS> Range<T, TRAITS>::Intersection (const Range& rhs) const
     {
         if (empty () or rhs.empty ()) {
-            return Range ();
+            return Range{};
         }
         T l = max (fBegin_, rhs.fBegin_);
         T r = min (fEnd_, rhs.fEnd_);
-        if (l < r) {
+        if (l <= r) {
             // lhs/rhs ends are closed iff BOTH lhs/rhs contains that point
             Openness lhsO = Contains (l) and rhs.Contains (l) ? Openness::eClosed : Openness::eOpen;
             Openness rhsO = Contains (r) and rhs.Contains (r) ? Openness::eClosed : Openness::eOpen;

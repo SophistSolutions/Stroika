@@ -51,9 +51,16 @@ namespace Stroika::Foundation::Traversal {
     namespace RangeTraits {
 
         template <typename T, T MIN, T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-        struct [[deprecated ("Since Stroika 2.1b8 use Default_Integral")]] ExplicitDiscreteRangeTraits : Default_Integral<T, MIN, MAX, Openness::eClosed, Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>
+        struct [[deprecated ("Since Stroika 2.1b8 use Default_Integral")]] ExplicitDiscreteRangeTraits : 
+            Explicit<T,
+            ExplicitOpenness<Openness::eClosed, Openness::eClosed>,
+            ExplicitBounds<T, MIN, MAX>,
+            ExplicitDifferenceTypes<SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>>
         {
-            using RangeTraitsType = Default_Integral<T, MIN, MAX, Openness::eClosed, Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>;
+            using RangeTraitsType = Explicit<T,
+                                             ExplicitOpenness<Openness::eClosed, Openness::eClosed>,
+                                             ExplicitBounds<T, MIN, MAX>,
+                                             ExplicitDifferenceTypes<SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>>;
         };
         template <typename T>
         struct /*[[deprecated ("Since Stroika 2.1b8 use Default_Enum")]]*/ DefaultDiscreteRangeTraits_Enum : Default_Enum<T>

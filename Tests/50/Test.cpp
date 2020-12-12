@@ -74,7 +74,8 @@ namespace {
 #endif
         }
         {
-            using RT         = RangeTraits::Default_Integral<int, -3, 100, Openness::eClosed, Openness::eClosed, int, unsigned int>;
+            using namespace RangeTraits;
+            using RT         = Explicit<int, DefaultOpenness<int>, ExplicitBounds<int,-3, 100>>;
             Range<int, RT> x = Range<int, RT>::FullRange ();
             VerifyTestResult (x.GetLowerBound () == -3);
             VerifyTestResult (x.GetUpperBound () == 100);
@@ -98,20 +99,23 @@ namespace {
             VerifyTestResult ((r2r == Range<int>{5, 8}));
         }
         {
-            auto r1 = Range<int, RangeTraits::ExplicitOpenness<int, Openness::eOpen, Openness::eOpen>>{3, 6};
+            using namespace RangeTraits;
+            auto r1 = Range<int, Explicit<int, ExplicitOpenness<Openness::eOpen, Openness::eOpen>>>{3, 6};
             VerifyTestResult (r1.Pin (3) == 4);
             VerifyTestResult (r1.Pin (2) == 4);
             VerifyTestResult (r1.Pin (8) == 5);
         }
         {
-            auto r1 = Range<int, RangeTraits::ExplicitOpenness<int, Openness::eClosed, Openness::eClosed>>{3, 6};
+            using namespace RangeTraits;
+            auto r1 = Range<int, Explicit<int, ExplicitOpenness<Openness::eClosed, Openness::eClosed>>>{3, 6};
             VerifyTestResult (r1.Pin (3) == 3);
             VerifyTestResult (r1.Pin (2) == 3);
             VerifyTestResult (r1.Pin (4) == 4);
             VerifyTestResult (r1.Pin (8) == 6);
         }
         {
-            auto r1 = Range<int, RangeTraits::ExplicitOpenness<int, Openness::eClosed, Openness::eClosed>>{3, 3};
+            using namespace RangeTraits;
+            auto r1 = Range<int, Explicit<int, ExplicitOpenness<Openness::eClosed, Openness::eClosed>>>{3, 3};
             VerifyTestResult (r1.Pin (3) == 3);
             VerifyTestResult (r1.Pin (2) == 3);
             VerifyTestResult (r1.Pin (8) == 3);
@@ -173,23 +177,22 @@ namespace {
         };
 
         {
-            Color min1 = RangeTraits::DefaultDiscreteRangeTraits<Color>::kLowerBound;
-            Color max1 = RangeTraits::DefaultDiscreteRangeTraits<Color>::kUpperBound;
-            Color min2 = RangeTraits::DefaultDiscreteRangeTraits_Enum<Color>::kLowerBound;
-            Color max2 = RangeTraits::DefaultDiscreteRangeTraits_Enum<Color>::kUpperBound;
-            Color min3 = RangeTraits::ExplicitDiscreteRangeTraits<Color, Color::eSTART, Color::eLAST, int, unsigned int>::kLowerBound;
-            Color max3 = RangeTraits::ExplicitDiscreteRangeTraits<Color, Color::eSTART, Color::eLAST, int, unsigned int>::kUpperBound;
-            Color min4 = RangeTraits::Default_Integral<Color, Color::eSTART, Color::eLAST, Openness::eClosed, Openness::eClosed, int, unsigned int>::kLowerBound;
-            Color max4 = RangeTraits::Default_Integral<Color, Color::eSTART, Color::eLAST, Openness::eClosed, Openness::eClosed, int, unsigned int>::kUpperBound;
+            using namespace RangeTraits;
+            Color min1 = DefaultDiscreteRangeTraits<Color>::kLowerBound;
+            Color max1 = DefaultDiscreteRangeTraits<Color>::kUpperBound;
+            Color min2 = DefaultDiscreteRangeTraits_Enum<Color>::kLowerBound;
+            Color max2 = DefaultDiscreteRangeTraits_Enum<Color>::kUpperBound;
+            Color min3 = Explicit<Color, DefaultOpenness<Color>, ExplicitBounds<Color, Color::eSTART, Color::eLAST>>::kLowerBound;
+            Color max3 = Explicit<Color, DefaultOpenness<Color>, ExplicitBounds<Color, Color::eSTART, Color::eLAST>>::kUpperBound;
             VerifyTestResult (Color::red == Color::eSTART and Color::green == Color::eLAST);
             VerifyTestResult (min1 == Color::eSTART and max1 == Color::eLAST);
             VerifyTestResult (min2 == Color::eSTART and max2 == Color::eLAST);
             VerifyTestResult (min3 == Color::eSTART and max3 == Color::eLAST);
-            VerifyTestResult (min4 == Color::eSTART and max4 == Color::eLAST);
         }
         {
-            VerifyTestResult (RangeTraits::Default_Enum<Color>::GetNext (Color::eSTART) == Color::blue);
-            VerifyTestResult (RangeTraits::Default_Enum<Color>::GetPrevious (Color::blue) == Color::red);
+            using namespace RangeTraits;
+            VerifyTestResult (Default_Enum<Color>::GetNext (Color::eSTART) == Color::blue);
+            VerifyTestResult (Default_Enum<Color>::GetPrevious (Color::blue) == Color::red);
         }
         {
             int             nItemsHit = 0;
@@ -203,9 +206,10 @@ namespace {
             VerifyTestResult (lastItemHit == Color::green);
         }
         {
+            using namespace RangeTraits;
             int             nItemsHit = 0;
             optional<Color> lastItemHit;
-            for (auto i : DiscreteRange<Color, RangeTraits::DefaultDiscreteRangeTraits<Color>>::FullRange ().Elements ()) {
+            for (auto i : DiscreteRange<Color, DefaultDiscreteRangeTraits<Color>>::FullRange ().Elements ()) {
                 nItemsHit++;
                 VerifyTestResult (not lastItemHit.has_value () or *lastItemHit < i);
                 lastItemHit = i;
@@ -216,7 +220,7 @@ namespace {
         {
             int             nItemsHit = 0;
             optional<Color> lastItemHit;
-            for (auto i : DiscreteRange<Color> (optional<Color> (), optional<Color> ()).Elements ()) {
+            for (auto i : DiscreteRange<Color> (optional<Color>{}, optional<Color>{}).Elements ()) {
                 nItemsHit++;
                 VerifyTestResult (not lastItemHit.has_value () or *lastItemHit < i);
                 lastItemHit = i;
@@ -227,7 +231,7 @@ namespace {
         {
             int             nItemsHit = 0;
             optional<Color> lastItemHit;
-            DiscreteRange<Color> (optional<Color> (), optional<Color> ()).Elements ().Apply ([&nItemsHit, &lastItemHit] (Color i) {
+            DiscreteRange<Color> (optional<Color> (), optional<Color>{}).Elements ().Apply ([&nItemsHit, &lastItemHit] (Color i) {
                 nItemsHit++;
                 VerifyTestResult (not lastItemHit.has_value () or *lastItemHit < i);
                 lastItemHit = i;
@@ -543,12 +547,13 @@ namespace {
             using DRT = DisjointRange<RT::value_type, RT>;
             DRT dr{RT{1, 5}, RT{3, 7}, RT{5, 9}};
             VerifyTestResult (not dr.empty ());
-            VerifyTestResult (dr.GetBounds () == RT (1, 9));
+            VerifyTestResult ((dr.GetBounds () == RT{1, 9}));
             VerifyTestResult (dr.SubRanges ().size () == 1);
             VerifyTestResult (dr.Contains (3));
         }
         {
-            using RT  = Range<float, RangeTraits::ExplicitOpenness<float,Openness::eClosed, Openness::eClosed>>;
+            using namespace RangeTraits;
+            using RT  = Range<float, Explicit<float, ExplicitOpenness<Openness::eClosed, Openness::eClosed>>>;
             using DRT = DisjointRange<RT::value_type, RT>;
             DRT dr{RT{1, 5}, RT{2, 2}};
             VerifyTestResult (not dr.empty ());

@@ -12,6 +12,7 @@
 
 #include "../Characters/String.h"
 #include "../Characters/ToString.h"
+#include "../Common/TemplateUtilities.h"
 #include "../Configuration/Common.h"
 
 /**
@@ -60,27 +61,81 @@ namespace Stroika::Foundation::Traversal {
     namespace RangeTraits {
 
         /**
+         */
+        template <typename DIFFERENCE_TYPE, typename UNSIGNED_DIFFERENCE_TYPE>
+        struct ExplicitDifferenceTypes {
+            using SignedDifferenceType   = DIFFERENCE_TYPE;
+            using UnsignedDifferenceType = UNSIGNED_DIFFERENCE_TYPE;
+        };
+
+        /**
+         */
+        template <
+            typename T,
+            typename CHECK           = T,
+            typename SFINAE_SIGNED   = Common::DifferenceType<T>,
+            typename SFINAE_UNSIGNED = Common::UnsignedOfIf<SFINAE_SIGNED>>
+        struct DefaultDifferenceTypes : ExplicitDifferenceTypes<SFINAE_SIGNED, SFINAE_UNSIGNED> {
+        };
+
+        /**
+         */
+        template <Openness LOWER_BOUND, Openness UPPER_BOUND>
+        struct ExplicitOpenness {
+            static constexpr Openness kLowerBound{LOWER_BOUND};
+            static constexpr Openness kUpperBound{UPPER_BOUND};
+        };
+
+        /**
+         * @todo change to depend on type T
+         */
+        template <typename T>
+        using DefaultOpenness = ExplicitOpenness<Openness::eClosed, Openness::eClosed>;
+
+        /**
+         * Sadly this doesn't work for floating point types, so you must declare your own class with kLowerBounds and kUpperBounds, and pass its
+         * type.
+         * 
+         *      https://stackoverflow.com/questions/2183087/why-cant-i-use-float-value-as-a-template-parameter
+         * 
+         *  More confusingly, this limitation, though part of the C++ standard, only appears to be enforced by gcc/clang compilers, and
+         *  not MSVC (as of 2020-12-11)
+         */
+        template <typename T, T MIN, T MAX>
+        struct ExplicitBounds {
+            static constexpr T kLowerBound{MIN};
+            static constexpr T kUpperBound{MAX};
+        };
+
+        /**
+         * \note implementation of DefaultBounds<> cannot use ExplicitBounds<> because that wont work with floating point types
+         */
+        template <typename T>
+        struct DefaultBounds {
+            static constexpr T kLowerBound{numeric_limits<T>::lowest ()};
+            static constexpr T kUpperBound{numeric_limits<T>::max ()};
+        };
+
+        /**
          *  Explicit<> can be used to specify inline (type) all the details for the range functionality
          *  for a given type T. Also, it provides often usable default implementations of things like GetNext, GetPrevious ().
          */
         template <
             typename T,
-            T        MIN                = numeric_limits<T>::lowest (),
-            T        MAX                = numeric_limits<T>::max (),
-            Openness LOWER_BOUND_OPEN   = Openness::eClosed,
-            Openness UPPER_BOUND_OPEN   = Openness::eClosed,
-            typename SIGNED_DIFF_TYPE   = decltype (T{} - T{}),
-            typename UNSIGNED_DIFF_TYPE = conditional_t<is_integral_v<T>, make_unsigned_t<SIGNED_DIFF_TYPE>, SIGNED_DIFF_TYPE>>
+            typename OPENNESS = DefaultOpenness<T>,
+            typename BOUNDS   = DefaultBounds<T>,
+            typename DIFF_TYPE = DefaultDifferenceTypes<T>
+        >
         struct Explicit {
             using value_type             = T;
-            using SignedDifferenceType   = SIGNED_DIFF_TYPE;
-            using UnsignedDifferenceType = UNSIGNED_DIFF_TYPE;
+            using SignedDifferenceType   = typename DIFF_TYPE::SignedDifferenceType;
+            using UnsignedDifferenceType = typename DIFF_TYPE::UnsignedDifferenceType;
 
-            static constexpr T kLowerBound{MIN};
-            static constexpr T kUpperBound{MAX};
+            static constexpr T kLowerBound{BOUNDS::kLowerBound};
+            static constexpr T kUpperBound{BOUNDS::kUpperBound};
 
-            static constexpr Openness kLowerBoundOpenness{LOWER_BOUND_OPEN};
-            static constexpr Openness kUpperBoundOpenness{UPPER_BOUND_OPEN};
+            static constexpr Openness kLowerBoundOpenness{OPENNESS::kLowerBound};
+            static constexpr Openness kUpperBoundOpenness{OPENNESS::kUpperBound};
 
             /**
              *  Return the Next possible value.
@@ -113,23 +168,6 @@ namespace Stroika::Foundation::Traversal {
             static constexpr SignedDifferenceType Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE* = nullptr);
             template <typename TYPE2CHECK = value_type, typename SFINAE_CANNOT_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = enable_if_t<not(is_enum_v<TYPE2CHECK> or is_convertible_v<TYPE2CHECK, SignedDifferenceType>)>>
             static constexpr SignedDifferenceType Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, ...);
-        };
-
-        /**
-         * Exactly like Explicit<> - except openness parameters are first so we can default the rest.
-         */
-        template <
-            typename T,
-            Openness LOWER_BOUND_OPEN,
-            Openness UPPER_BOUND_OPEN,
-            T        MIN              = numeric_limits<T>::lowest (),
-            T        MAX              = numeric_limits<T>::max (),
-            typename SIGNED_DIFF_TYPE = decltype (T{} - T{}),
-            // @todo debug why conditional_t<> not working -   using RT  = Range<float, RangeTraits::ExplicitOpenness<float,Openness::eClosed, Openness::eClosed>>;
-            //typename UNSIGNED_DIFF_TYPE = conditional_t<is_integral_v<T>, make_unsigned_t<SIGNED_DIFF_TYPE>, SIGNED_DIFF_TYPE>
-            typename UNSIGNED_DIFF_TYPE = SIGNED_DIFF_TYPE
-        >
-        struct ExplicitOpenness : Explicit<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
         };
 
         /**
@@ -174,6 +212,12 @@ namespace Stroika::Foundation::Traversal {
             static constexpr SignedDifferenceType Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, ...);
         };
 
+
+        #if 1
+        template<typename T>
+        struct Default_Integral : Explicit<T> {
+        };
+        #else
         template <typename T, T MIN = numeric_limits<T>::lowest (), T MAX = numeric_limits<T>::max (), Openness LOWER_BOUND_OPEN = Openness::eClosed, Openness UPPER_BOUND_OPEN = Openness::eClosed, typename SIGNED_DIFF_TYPE = decltype (T{} - T{}), typename UNSIGNED_DIFF_TYPE = make_unsigned_t<SIGNED_DIFF_TYPE>>
         struct Default_Integral : ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
             static constexpr T kLowerBound = MIN;
@@ -192,26 +236,25 @@ namespace Stroika::Foundation::Traversal {
             }
 #endif
         };
+        #endif
 
         /**
          *  Default_Enum<> can be used to generate an automatic traits object (with bounds)
          *  if you've applied the Stroika_Define_Enum_Bounds() macro to the given enumeration.
          */
         template <typename T>
-        struct Default_Enum : Explicit<T, T::eSTART, T::eLAST, Openness::eClosed, Openness::eClosed, make_signed_t<underlying_type_t<T>>, make_unsigned_t<underlying_type_t<T>>> {
+        struct Default_Enum : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eClosed>, ExplicitBounds<T, T::eSTART, T::eLAST>> {
         };
 
-        namespace Private_ {
-            template <typename T>
-            using BaseDifferenceType_ = decltype (T{} - T{});
-            template <typename T>
-            using UnsignedDifferenceType_ = BaseDifferenceType_<T>;
-        }
-
-
         /**
-         *  This defaults to a half-open (lhs closed, rhs-open) range, and should work for any arithmetic type (where you can subtract elements, etc)
+         *  This defaults to a half-open (lhs closed, rhs-open) range, and should work for any arithmetic type
+         *  (where you can subtract elements, etc)
          */
+        #if 1
+        template <typename T>
+            struct Default_Arithmetic : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eOpen> > {
+        };
+#else
 #if 0
         template <typename T>
         struct Default_Arithmetic : enable_if_t<
@@ -220,11 +263,12 @@ namespace Stroika::Foundation::Traversal {
         };
 #else
         template <typename T>
-        struct Default_Arithmetic : ExplicitRangeTraitsWithoutMinMax<T, Openness::eClosed, Openness::eOpen, Private_::BaseDifferenceType_<T>, Private_::UnsignedDifferenceType_<T>> {
+        struct Default_Arithmetic : ExplicitRangeTraitsWithoutMinMax<T, Openness::eClosed, Openness::eOpen, Common::DifferenceType<T>, Common::UnsignedOfIf< Common::DifferenceType<T>>> {
             static constexpr T kLowerBound = numeric_limits<T>::lowest ();
             static constexpr T kUpperBound = numeric_limits<T>::max ();
         };
 #endif
+        #endif
         /**
          *  DefaultRangeTraits<> contains the default traits used by a Range<> class. For most builtin types, this will
          *  be fine. For many Stroika types, specializations exist, so that you can just use Range<T> directly.
@@ -240,7 +284,7 @@ namespace Stroika::Foundation::Traversal {
         struct DefaultRangeTraits : conditional_t<
                                         is_enum_v<T>, Default_Enum<T>,
                                         conditional_t<
-                                            is_integral_v<T>, Default_Integral2<T>,
+                                            is_integral_v<T>, Default_Integral<T>,
                                             conditional_t<
                                                 is_arithmetic_v<T>, Default_Arithmetic<T>,
                                                 void>>> {
@@ -248,7 +292,13 @@ namespace Stroika::Foundation::Traversal {
 #endif
 
         template <typename T, T MIN = numeric_limits<T>::lowest (), T MAX = numeric_limits<T>::max (), Openness LOWER_BOUND_OPEN = Openness::eClosed, Openness UPPER_BOUND_OPEN = Openness::eClosed, typename SIGNED_DIFF_TYPE = decltype (T{} - T{}), typename UNSIGNED_DIFF_TYPE = make_unsigned_t<SIGNED_DIFF_TYPE>>
-        struct [[deprecated ("Since Stroika 2.1b8 use Default_Integral")]] ExplicitRangeTraits_Integral : Default_Integral<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>{};
+        struct [[deprecated ("Since Stroika 2.1b8 use Default_Integral or Explicit<>")]] ExplicitRangeTraits_Integral : 
+            Explicit<T,
+            ExplicitOpenness<LOWER_BOUND_OPEN, UPPER_BOUND_OPEN>, 
+            ExplicitBounds<T, MIN, MAX>,
+            ExplicitDifferenceTypes<SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>
+            >{};
+
     }
 
     template <typename T, typename RANGE_TYPE>
