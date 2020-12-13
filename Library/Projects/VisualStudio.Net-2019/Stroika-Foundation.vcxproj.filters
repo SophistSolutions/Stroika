@@ -3060,9 +3060,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\CIDR.inl">
       <Filter>Sources\IO\Network</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddressRange.inl">
-      <Filter>Sources\IO\Network</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaTypeRegistry.inl">
       <Filter>Sources\DataExchange</Filter>
     </None>

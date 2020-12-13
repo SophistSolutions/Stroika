@@ -983,7 +983,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Versions.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddressRange.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\ICMP.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\IP.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\Makefile" />

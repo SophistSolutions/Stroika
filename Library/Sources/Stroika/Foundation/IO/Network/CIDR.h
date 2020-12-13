@@ -11,8 +11,9 @@
 #endif
 
 #include "../../Characters/String.h"
+#include "../../Traversal/DiscreteRange.h"
 
-#include "InternetAddressRange.h"
+#include "InternetAddress.h"
 
 /**
  *  \file
@@ -78,7 +79,7 @@ namespace Stroika::Foundation::IO::Network {
          *          }
          *      \endcode
          */
-        nonvirtual InternetAddressRange GetRange () const;
+        nonvirtual Traversal::DiscreteRange<InternetAddress> GetRange () const;
 
 #if __cpp_impl_three_way_comparison >= 201907
     public:

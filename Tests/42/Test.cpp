@@ -533,14 +533,14 @@ namespace {
     namespace Test5_CIDR_ {
         void DoTests_ ()
         {
-            Debug::TraceContextBumper ctx ("Test5_CIDR_::DoTests_");
+            Debug::TraceContextBumper ctx{"Test5_CIDR_::DoTests_"};
             {
                 CIDR cidr{L"10.70.0.0/15"};
                 auto cidr2 = CIDR{InternetAddress{L"10.70.0.0"}, 15};
                 VerifyTestResult (cidr == cidr2);
                 VerifyTestResult (Characters::ToString (cidr) == L"10.70.0.0/15");
                 VerifyTestResult (cidr.GetNumberOfSignificantBits () == 15);
-                VerifyTestResult ((cidr.GetRange () == InternetAddressRange{InternetAddress{10, 70, 0, 0}, InternetAddress{10, 71, 255, 255}}));
+                VerifyTestResult ((cidr.GetRange () == Traversal::DiscreteRange<InternetAddress>{InternetAddress{10, 70, 0, 0}, InternetAddress{10, 71, 255, 255}}));
             }
             {
                 auto cidr = CIDR{InternetAddress{"192.168.56.1"}, 24};

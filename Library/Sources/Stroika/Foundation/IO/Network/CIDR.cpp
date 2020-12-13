@@ -62,9 +62,9 @@ String Network::CIDR::ToString () const
     return Characters::ToString (fBaseAddress_) + L"/" + Characters::ToString ((int)fSignificantBits_);
 }
 
-IO::Network::InternetAddressRange Network::CIDR::GetRange () const
+Traversal::DiscreteRange<Network::InternetAddress> Network::CIDR::GetRange () const
 {
     Require (fBaseAddress_.GetAddressSize ().has_value ());
     size_t offset = *fBaseAddress_.GetAddressSize () * 8 - fSignificantBits_;
-    return InternetAddressRange{fBaseAddress_, fBaseAddress_.PinLowOrderBitsToMax (static_cast<unsigned int> (offset))};
+    return Traversal::DiscreteRange<Network::InternetAddress>{fBaseAddress_, fBaseAddress_.PinLowOrderBitsToMax (static_cast<unsigned int> (offset))};
 }

@@ -19,7 +19,6 @@
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/IO/Network/CIDR.h"
 #include "Stroika/Foundation/IO/Network/InternetAddress.h"
-#include "Stroika/Foundation/IO/Network/InternetAddressRange.h"
 #include "Stroika/Foundation/Memory/Optional.h"
 #include "Stroika/Foundation/Traversal/DiscreteRange.h"
 
@@ -465,16 +464,16 @@ namespace {
                 Debug::TraceContextBumper ctx{"TestSuggestionsForFilterSize"};
                 using IO::Network::CIDR;
                 using IO::Network::InternetAddress;
-                using IO::Network::InternetAddressRange;
+                using Traversal::DiscreteRange;
 
                 auto runTest = [] (CIDR cidr, double runToProbOfFalsePositive, double runToFractionFull, double bitSizeFactor = 1.0) {
-                    Debug::TraceContextBumper        ctx{L"runTest", L"cidr=%s, runToProbOfFalsePositive=%f, runToFractionFull=%f, bitSizeFactor=%f", Characters::ToString (cidr).c_str (), runToProbOfFalsePositive, runToFractionFull, bitSizeFactor};
-                    Containers::Set<InternetAddress> oracle;
-                    InternetAddressRange             scanAddressRange = cidr.GetRange ();
-                    BloomFilter<InternetAddress>     addressesProbablyUsed{BloomFilter<InternetAddress>{static_cast<size_t> (bitSizeFactor * scanAddressRange.GetNumberOfContainedPoints ())}};
-                    unsigned int                     nLoopIterations{};
-                    unsigned int                     nActualCollisions{};
-                    unsigned int                     nContainsMistakes{};
+                    Debug::TraceContextBumper                 ctx{L"runTest", L"cidr=%s, runToProbOfFalsePositive=%f, runToFractionFull=%f, bitSizeFactor=%f", Characters::ToString (cidr).c_str (), runToProbOfFalsePositive, runToFractionFull, bitSizeFactor};
+                    Containers::Set<InternetAddress>          oracle;
+                    Traversal::DiscreteRange<InternetAddress> scanAddressRange = cidr.GetRange ();
+                    BloomFilter<InternetAddress>              addressesProbablyUsed{BloomFilter<InternetAddress>{static_cast<size_t> (bitSizeFactor * scanAddressRange.GetNumberOfContainedPoints ())}};
+                    unsigned int                              nLoopIterations{};
+                    unsigned int                              nActualCollisions{};
+                    unsigned int                              nContainsMistakes{};
                     while (true) {
                         nLoopIterations++;
                         auto bloomFilterStats = addressesProbablyUsed.GetStatistics ();
