@@ -35,58 +35,10 @@
  *              and if something reasonable to be done about it - do so (compiler bug or ambiguity due to optional)
  *              or just that template inference of types doesn't work as well as I thought...
  *
- *      @todo   GetNext() not quite right - using 'int'.
- *
- *      @todo   DefaultDiscreteRangeTraits_Enum  : ExplicitDiscreteRangeTraits<T, T::eSTART, T::eLAST, int, unsigned int> {
- *              should use  underlying_type - but not sure why it didnt work easily.
- *
  *      @todo   Try to rewrite using Generator<> code... See if that simplifies things...
- *
- *      @todo   DefaultDiscreteRangeTraits_Enum and DefaultDiscreteRangeTraits_Integral<> should do better
- *              auto-computing the 'differnce' type
  */
 
 namespace Stroika::Foundation::Traversal {
-
-    namespace RangeTraits {
-
-        /**
-         *
-         * @todo redo using using - document it would be nice if there was some select_t (https://stackoverflow.com/questions/32785105/implementing-a-switch-type-trait-with-stdconditional-t-chain-calls)
-         * 
-         */
-        template <typename T>
-        using DefaultDiscreteRangeTraits = conditional_t<
-            is_enum_v<T>, Default_Enum<T>,
-            conditional_t<
-                is_integral_v<T>, Default_Integral<T>,
-                Default<T>>>;
-
-
-        // ---------------- DEPRECATED -----------------
-        template <typename T, T MIN, T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-        struct [[deprecated ("Since Stroika 2.1b8 use Default_Integral")]] ExplicitDiscreteRangeTraits : Explicit<T,
-                                                                                                                  ExplicitOpenness<Openness::eClosed, Openness::eClosed>,
-                                                                                                                  ExplicitBounds<T, MIN, MAX>,
-                                                                                                                  ExplicitDifferenceTypes<SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>>
-        {
-            using RangeTraitsType = Explicit<T,
-                                             ExplicitOpenness<Openness::eClosed, Openness::eClosed>,
-                                             ExplicitBounds<T, MIN, MAX>,
-                                             ExplicitDifferenceTypes<SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>>;
-        };
-        template <typename T>
-        struct [[deprecated ("Since Stroika 2.1b8 use Default_Enum")]] DefaultDiscreteRangeTraits_Enum : Default_Enum<T>
-        {
-            using RangeTraitsType = Default_Enum<T>;
-        };
-        template <typename T>
-        struct [[deprecated ("Since Stroika 2.1b8 use Default_Integral")]] DefaultDiscreteRangeTraits_Integral : Default_Integral<T>
-        {
-            using RangeTraitsType = DefaultDiscreteRangeTraits_Integral<T>;
-        };
-
-    }
 
     /**
      *  \par Example Usage
@@ -114,7 +66,7 @@ namespace Stroika::Foundation::Traversal {
      *          provides  the start/end, DiscreteRange<SOME_ENUM>::FullRange ().Elements () returns an
      *          iterable with all possible legal values of the enum.
      */
-    template <typename T, typename TRAITS = RangeTraits::DefaultDiscreteRangeTraits<T>>
+    template <typename T, typename TRAITS = RangeTraits::Default<T>>
     class DiscreteRange : public Range<T, TRAITS> {
     public:
         static_assert (TRAITS::kLowerBoundOpenness == Openness::eClosed);
@@ -146,6 +98,7 @@ namespace Stroika::Foundation::Traversal {
          *  DiscreteRange () with no arguments produces an empty sequence.
          *
          *  \req begin <= end (after substitution of optional values)
+         *  \req src range must be eClosed on both sides
          */
         explicit constexpr DiscreteRange () = default;
         explicit constexpr DiscreteRange (T begin, T end);
@@ -226,6 +179,40 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T, typename TRAITS>
     DiscreteRange<T, TRAITS> operator^ (const DiscreteRange<T, TRAITS>& lhs, const DiscreteRange<T, TRAITS>& rhs);
+
+
+
+    namespace RangeTraits {
+        // ---------------- DEPRECATED -----------------
+        template <typename T>
+        using DefaultDiscreteRangeTraits[[deprecated ("Since Stroika 2.1b8 use Default")]] = conditional_t<
+            is_enum_v<T>, Default_Enum<T>,
+            conditional_t<
+                is_integral_v<T>, Default_Integral<T>,
+                Default<T>>>;
+        template <typename T, T MIN, T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+        struct [[deprecated ("Since Stroika 2.1b8 use Default_Integral")]] ExplicitDiscreteRangeTraits : Explicit<T,
+                                                                                                                  ExplicitOpenness<Openness::eClosed, Openness::eClosed>,
+                                                                                                                  ExplicitBounds<T, MIN, MAX>,
+                                                                                                                  ExplicitDifferenceTypes<SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>>
+        {
+            using RangeTraitsType = Explicit<T,
+                                             ExplicitOpenness<Openness::eClosed, Openness::eClosed>,
+                                             ExplicitBounds<T, MIN, MAX>,
+                                             ExplicitDifferenceTypes<SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>>;
+        };
+        template <typename T>
+        struct [[deprecated ("Since Stroika 2.1b8 use Default_Enum")]] DefaultDiscreteRangeTraits_Enum : Default_Enum<T>
+        {
+            using RangeTraitsType = Default_Enum<T>;
+        };
+        template <typename T>
+        struct [[deprecated ("Since Stroika 2.1b8 use Default_Integral")]] DefaultDiscreteRangeTraits_Integral : Default_Integral<T>
+        {
+            using RangeTraitsType = DefaultDiscreteRangeTraits_Integral<T>;
+        };
+
+    }
 
 }
 

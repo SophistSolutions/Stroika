@@ -178,10 +178,10 @@ namespace {
 
         {
             using namespace RangeTraits;
-            Color min1 = DefaultDiscreteRangeTraits<Color>::kLowerBound;
-            Color max1 = DefaultDiscreteRangeTraits<Color>::kUpperBound;
-            Color min2 = DefaultDiscreteRangeTraits_Enum<Color>::kLowerBound;
-            Color max2 = DefaultDiscreteRangeTraits_Enum<Color>::kUpperBound;
+            Color min1 = Default<Color>::kLowerBound;
+            Color max1 = Default<Color>::kUpperBound;
+            Color min2 = Default_Enum<Color>::kLowerBound;
+            Color max2 = Default_Enum<Color>::kUpperBound;
             Color min3 = Explicit<Color, DefaultOpenness<Color>, ExplicitBounds<Color, Color::eSTART, Color::eLAST>>::kLowerBound;
             Color max3 = Explicit<Color, DefaultOpenness<Color>, ExplicitBounds<Color, Color::eSTART, Color::eLAST>>::kUpperBound;
             VerifyTestResult (Color::red == Color::eSTART and Color::green == Color::eLAST);

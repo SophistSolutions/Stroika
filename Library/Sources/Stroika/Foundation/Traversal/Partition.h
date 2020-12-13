@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Traversal {
     /**
      *  Checks if the given collection of ranges 'cover' an interval, with no overlap (sharing no points).
      *
-     *  \note Half open intervals are generally best candidates for creating partitions
+     *  \note Half open (Range) intervals are generally best candidates for creating partitions
      * 
      *  \pre the Range elements RANGE_TYPE - must be natively sortable (note we do not require that they be given in order)
      *

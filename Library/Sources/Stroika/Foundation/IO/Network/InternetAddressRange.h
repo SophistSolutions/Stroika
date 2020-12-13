@@ -21,7 +21,7 @@ namespace Stroika::Foundation::IO::Network {
     using Characters::String;
 
     namespace Private_ {
-        struct InternetAddressRangeTraits_ : Traversal::RangeTraits::ExplicitRangeTraitsWithoutMinMax<InternetAddress, Traversal::Openness::eClosed, Traversal::Openness::eClosed, int, unsigned int> {
+        struct InternetAddressRangeTraits_ : Traversal::RangeTraits::ExplicitOpennessAndDifferenceType<InternetAddress, Traversal::RangeTraits::ExplicitOpenness<Traversal::Openness::eClosed, Traversal::Openness::eClosed>, Traversal::RangeTraits::ExplicitDifferenceTypes<int, unsigned int>> {
             static InternetAddress GetNext (InternetAddress n)
             {
                 return n == kUpperBound ? n : n.Offset (1);
@@ -48,7 +48,7 @@ namespace Stroika::Foundation::IO::Network {
     /**
      *  \par Example Usage
      *      \code
-     *          for (InternetAddress ia : CIDR  { L"192.168.243.0/24" }.GetRange ()) {
+     *          for (InternetAddress ia : CIDR{ L"192.168.243.0/24" }.GetRange ()) {
      *               print (ia);
      *          }
      *      \endcode

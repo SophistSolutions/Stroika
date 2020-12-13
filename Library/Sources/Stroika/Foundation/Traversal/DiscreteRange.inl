@@ -172,6 +172,8 @@ namespace Stroika::Foundation::Traversal {
     {
         // Could do more efficiently
         if (not r.empty ()) {
+            Require (r.GetLowerBoundOpenness () == Openness::eClosed);
+            Require (r.GetUpperBoundOpenness () == Openness::eClosed);
             *this = DiscreteRange{r.GetLowerBound (), r.GetUpperBound ()};
         }
     }
@@ -215,7 +217,7 @@ namespace Stroika::Foundation::Traversal {
     constexpr auto DiscreteRange<T, TRAITS>::Offset (SignedDifferenceType o) const -> DiscreteRange
     {
         Require (not this->empty ());
-        return DiscreteRange{inherited::Offset (o)};
+        return inherited::Offset (o);
     }
     template <typename T, typename TRAITS>
     Iterable<T> DiscreteRange<T, TRAITS>::Elements () const

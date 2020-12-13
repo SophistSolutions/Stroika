@@ -49,11 +49,13 @@ namespace Stroika::Foundation::Traversal {
     };
 
     /**
+     *  \note - ALL these RangeTraits helper classes use template <> struct instead of template<> using because
+     *          as of C++17, you cannot do template specialization of using templates (otherwise using would be better)
      */
     namespace RangeTraits {
 
         /**
-         *  \note really just used to construct Explicit<>
+         *  \note really just used to construct Explicit<> or ExplicitOpennessAndDifferenceType<>
          */
         template <typename DIFFERENCE_TYPE, typename UNSIGNED_DIFFERENCE_TYPE>
         struct ExplicitDifferenceTypes {
@@ -62,18 +64,17 @@ namespace Stroika::Foundation::Traversal {
         };
 
         /**
-         *  \note really just used to construct Explicit<>
+         *  \note really just used to construct Explicit<> or ExplicitOpennessAndDifferenceType<>
          */
         template <
             typename T,
             typename CHECK           = T,
             typename SFINAE_SIGNED   = Common::DifferenceType<T>,
             typename SFINAE_UNSIGNED = Common::UnsignedOfIf<SFINAE_SIGNED>>
-        struct DefaultDifferenceTypes : ExplicitDifferenceTypes<SFINAE_SIGNED, SFINAE_UNSIGNED> {
-        };
+        struct DefaultDifferenceTypes : ExplicitDifferenceTypes<SFINAE_SIGNED, SFINAE_UNSIGNED> {};
 
         /**
-         *  \note really just used to construct Explicit<>
+         *  \note really just used to construct Explicit<> or ExplicitOpennessAndDifferenceType<>
          */
         template <Openness LOWER_BOUND, Openness UPPER_BOUND>
         struct ExplicitOpenness {
@@ -82,11 +83,11 @@ namespace Stroika::Foundation::Traversal {
         };
 
         /**
-         *  \note really just used to construct Explicit<>
+         *  \note really just used to construct Explicit<> or ExplicitOpennessAndDifferenceType<>
          * @todo change to depend on type T
          */
         template <typename T>
-        using DefaultOpenness = ExplicitOpenness<Openness::eClosed, Openness::eClosed>;
+        struct DefaultOpenness : ExplicitOpenness<Openness::eClosed, Openness::eClosed> {};
 
         /**
          *  \note really just used to construct Explicit<>
@@ -117,10 +118,12 @@ namespace Stroika::Foundation::Traversal {
         };
 
         /**
+         *  The ONLY reason this exists (as opposed to just Explicit<> is because we cannot create templates taking arguments
+         *  of BOUNDS sometimes (because the VALUES MIN/MAX cannot be used as template parameters).
          */
         template <
             typename T,
-            typename OPENNESS,
+            typename OPENNESS  = DefaultOpenness<T>,
             typename DIFF_TYPE = DefaultDifferenceTypes<T>>
         struct ExplicitOpennessAndDifferenceType {
             using value_type             = T;
