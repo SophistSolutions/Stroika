@@ -117,6 +117,29 @@ namespace Stroika::Foundation::Traversal {
         };
 
         /**
+         */
+        template <
+            typename T,
+            typename OPENNESS,
+            typename DIFF_TYPE = DefaultDifferenceTypes<T>>
+        struct ExplicitOpennessAndDifferenceType {
+            using value_type             = T;
+            using SignedDifferenceType   = typename DIFF_TYPE::SignedDifferenceType;
+            using UnsignedDifferenceType = typename DIFF_TYPE::UnsignedDifferenceType;
+
+            static constexpr Openness kLowerBoundOpenness{OPENNESS::kLowerBound};
+            static constexpr Openness kUpperBoundOpenness{OPENNESS::kUpperBound};
+
+            /**
+             *  Compute the difference between two elements of type T for the Range (RHS - LHS)
+             */
+            template <typename TYPE2CHECK = value_type, typename SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = enable_if_t<is_enum_v<TYPE2CHECK> or is_convertible_v<TYPE2CHECK, SignedDifferenceType>>>
+            static constexpr SignedDifferenceType Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE* = nullptr);
+            template <typename TYPE2CHECK = value_type, typename SFINAE_CANNOT_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = enable_if_t<not(is_enum_v<TYPE2CHECK> or is_convertible_v<TYPE2CHECK, SignedDifferenceType>)>>
+            static constexpr SignedDifferenceType Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, ...);
+        };
+
+        /**
          *  \note Only used to construct/define a specific Range<> type
          *
          *  Explicit<> can be used to specify inline (type) all the details for the range functionality
@@ -127,16 +150,15 @@ namespace Stroika::Foundation::Traversal {
             typename OPENNESS  = DefaultOpenness<T>,
             typename BOUNDS    = DefaultBounds<T>,
             typename DIFF_TYPE = DefaultDifferenceTypes<T>>
-        struct Explicit {
+        struct Explicit : ExplicitOpennessAndDifferenceType<T,OPENNESS,  DIFF_TYPE> {
+            using inherited = ExplicitOpennessAndDifferenceType<T,OPENNESS,  DIFF_TYPE>;
             using value_type             = T;
-            using SignedDifferenceType   = typename DIFF_TYPE::SignedDifferenceType;
-            using UnsignedDifferenceType = typename DIFF_TYPE::UnsignedDifferenceType;
+            //using value_type           = typename inherited::value_type;
+            using SignedDifferenceType   = typename inherited::SignedDifferenceType;
+            using UnsignedDifferenceType = typename inherited::UnsignedDifferenceType;
 
             static constexpr T kLowerBound{BOUNDS::kLowerBound};
             static constexpr T kUpperBound{BOUNDS::kUpperBound};
-
-            static constexpr Openness kLowerBoundOpenness{OPENNESS::kLowerBound};
-            static constexpr Openness kUpperBoundOpenness{OPENNESS::kUpperBound};
 
             /**
              *  Return the Next possible value.
@@ -161,14 +183,6 @@ namespace Stroika::Foundation::Traversal {
             static constexpr value_type GetPrevious (value_type i, enable_if_t<is_integral_v<SFINAE> or is_enum_v<SFINAE>>* = nullptr);
             template <typename SFINAE = value_type>
             static value_type GetPrevious (value_type i, enable_if_t<is_floating_point_v<SFINAE>>* = nullptr);
-
-            /**
-             *  Compute the difference between two elements of type T for the Range (RHS - LHS)
-             */
-            template <typename TYPE2CHECK = value_type, typename SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = enable_if_t<is_enum_v<TYPE2CHECK> or is_convertible_v<TYPE2CHECK, SignedDifferenceType>>>
-            static constexpr SignedDifferenceType Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE* = nullptr);
-            template <typename TYPE2CHECK = value_type, typename SFINAE_CANNOT_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = enable_if_t<not(is_enum_v<TYPE2CHECK> or is_convertible_v<TYPE2CHECK, SignedDifferenceType>)>>
-            static constexpr SignedDifferenceType Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, ...);
         };
 
         /**

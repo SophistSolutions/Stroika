@@ -14,6 +14,24 @@ namespace Stroika::Foundation::Traversal {
 
     /*
      ********************************************************************************
+     **** RangeTraits::ExplicitOpennessAndDifferenceType<T, OPENNESS, DIFF_TYPE> ****
+     ********************************************************************************
+     */
+    template <typename T, typename OPENNESS, typename DIFF_TYPE>
+    template <typename TYPE2CHECK, typename SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE>
+    inline constexpr auto RangeTraits::ExplicitOpennessAndDifferenceType<T, OPENNESS, DIFF_TYPE>::Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE*) -> SignedDifferenceType
+    {
+        return static_cast<SignedDifferenceType> (rhs) - static_cast<SignedDifferenceType> (lhs);
+    }
+    template <typename T, typename OPENNESS, typename DIFF_TYPE>
+    template <typename TYPE2CHECK, typename SFINAE_CANNOT_CONVERT_TYPE_TO_SIGNEDDIFFTYPE>
+    inline constexpr auto RangeTraits::ExplicitOpennessAndDifferenceType<T, OPENNESS, DIFF_TYPE>::Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, ...) -> SignedDifferenceType
+    {
+        return static_cast<SignedDifferenceType> (rhs - lhs);
+    }
+
+    /*
+     ********************************************************************************
      ********** RangeTraits::Explicit<T, OPENNESS, BOUNDS, DIFF_TYPE> ***************
      ********************************************************************************
      */
@@ -44,18 +62,6 @@ namespace Stroika::Foundation::Traversal {
     {
         Require (i != kLowerBound);
         return nextafter (i, kLowerBound);
-    }
-    template <typename T, typename OPENNESS, typename BOUNDS, typename DIFF_TYPE>
-    template <typename TYPE2CHECK, typename SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE>
-    inline constexpr auto RangeTraits::Explicit<T, OPENNESS, BOUNDS, DIFF_TYPE>::Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE*) -> SignedDifferenceType
-    {
-        return static_cast<SignedDifferenceType> (rhs) - static_cast<SignedDifferenceType> (lhs);
-    }
-    template <typename T, typename OPENNESS, typename BOUNDS, typename DIFF_TYPE>
-    template <typename TYPE2CHECK, typename SFINAE_CANNOT_CONVERT_TYPE_TO_SIGNEDDIFFTYPE>
-    inline constexpr auto RangeTraits::Explicit<T, OPENNESS, BOUNDS, DIFF_TYPE>::Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, ...) -> SignedDifferenceType
-    {
-        return static_cast<SignedDifferenceType> (rhs - lhs);
     }
 
     /*

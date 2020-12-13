@@ -448,13 +448,14 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
      *          static de-initialization.
      */
     template <>
-    struct Default<Time::Duration> : ExplicitRangeTraitsWithoutMinMax<Time::Duration, Openness::eClosed, Openness::eClosed, Time::DurationSecondsType, Time::DurationSecondsType> {
+    struct Default<Time::Duration> : ExplicitOpennessAndDifferenceType<Time::Duration, ExplicitOpenness<Openness::eClosed, Openness::eClosed>, ExplicitDifferenceTypes<Time::DurationSecondsType, Time::DurationSecondsType>> {
         static const Time::Duration kLowerBound;
         static const Time::Duration kUpperBound;
 
         static Time::Duration GetNext (Time::Duration i);
         static Time::Duration GetPrevious (Time::Duration i);
     };
+
 
 }
 

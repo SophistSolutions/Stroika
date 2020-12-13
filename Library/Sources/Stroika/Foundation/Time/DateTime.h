@@ -574,7 +574,7 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
      *          static de-initialization.
      */
     template <>
-    struct Default<Time::DateTime> : ExplicitRangeTraitsWithoutMinMax<Time::DateTime, Openness::eClosed, Openness::eClosed, Time::Duration, Time::Duration> {
+    struct Default<Time::DateTime> : ExplicitOpennessAndDifferenceType<Time::DateTime, ExplicitOpenness<Openness::eClosed, Openness::eClosed>, ExplicitDifferenceTypes<Time::Duration, Time::Duration>> {
         static const Time::DateTime kLowerBound;
         static const Time::DateTime kUpperBound;
 
