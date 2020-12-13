@@ -82,11 +82,20 @@ namespace Stroika::Foundation::Traversal {
         };
 
         /**
+         *  \brief This defines the default openness for a given type T, except for specializaitons. This is used
+         *         by Explict<>, and indirectly by Range<> itself.
+         *         Generally its eClosed, by default, except for the upper bound on floating point Ranges.
+         *         The reason for this exception on floating point, is that its often helpful to have a series of
+         *         ranges that form a partition, and that works out more easily with half-open intervals.
+         *
          *  \note really just used to construct Explicit<> or ExplicitOpennessAndDifferenceType<>
-         * @todo change to depend on type T
          */
         template <typename T>
-        struct DefaultOpenness : ExplicitOpenness<Openness::eClosed, Openness::eClosed> {};
+        struct DefaultOpenness : conditional_t<
+                                     is_floating_point_v<T>,
+                                     ExplicitOpenness<Openness::eClosed, Openness::eOpen>,
+                                     ExplicitOpenness<Openness::eClosed, Openness::eClosed>> {
+        };
 
         /**
          *  \note really just used to construct Explicit<>
@@ -152,9 +161,9 @@ namespace Stroika::Foundation::Traversal {
             typename OPENNESS  = DefaultOpenness<T>,
             typename BOUNDS    = DefaultBounds<T>,
             typename DIFF_TYPE = DefaultDifferenceTypes<T>>
-        struct Explicit : ExplicitOpennessAndDifferenceType<T,OPENNESS,  DIFF_TYPE> {
-            using inherited = ExplicitOpennessAndDifferenceType<T,OPENNESS,  DIFF_TYPE>;
-            using value_type             = T;
+        struct Explicit : ExplicitOpennessAndDifferenceType<T, OPENNESS, DIFF_TYPE> {
+            using inherited  = ExplicitOpennessAndDifferenceType<T, OPENNESS, DIFF_TYPE>;
+            using value_type = T;
             //using value_type           = typename inherited::value_type;  // @todo debug why this doesn't work!
             using SignedDifferenceType   = typename inherited::SignedDifferenceType;
             using UnsignedDifferenceType = typename inherited::UnsignedDifferenceType;
@@ -191,7 +200,8 @@ namespace Stroika::Foundation::Traversal {
          *  \note Only used to construct/define a specific Range<> type
          */
         template <typename T>
-        struct Default_Integral : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eClosed>> {};
+        struct Default_Integral : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eClosed>> {
+        };
 
         /**
          *  \note Only used to construct/define a specific Range<> type
@@ -200,7 +210,8 @@ namespace Stroika::Foundation::Traversal {
          *  if you've applied the Stroika_Define_Enum_Bounds() macro to the given enumeration.
          */
         template <typename T>
-        struct Default_Enum : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eClosed>, ExplicitBounds<T, T::eSTART, T::eLAST>> {};
+        struct Default_Enum : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eClosed>, ExplicitBounds<T, T::eSTART, T::eLAST>> {
+        };
 
         /**
          *  \note Only used to construct/define a specific Range<> type
@@ -209,7 +220,8 @@ namespace Stroika::Foundation::Traversal {
          *  (where you can subtract elements, etc)
          */
         template <typename T>
-        struct Default_Arithmetic : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eOpen>> {};
+        struct Default_Arithmetic : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eOpen>> {
+        };
 
         /**
          *  Default<> contains the default traits used by a Range<> class. For most builtin types, this will
@@ -225,17 +237,16 @@ namespace Stroika::Foundation::Traversal {
          */
         template <typename T>
         struct Default : conditional_t<
-                                        is_enum_v<T>, typename Common::LazyType<Default_Enum, T>::type,
-                                        conditional_t<
-                                            is_integral_v<T>, typename Common::LazyType<Default_Integral, T>::type,
-                                            conditional_t<
-                                                is_arithmetic_v<T>, typename Common::LazyType<Default_Arithmetic, T>::type,
-                                                void>>> {};
-
+                             is_enum_v<T>, typename Common::LazyType<Default_Enum, T>::type,
+                             conditional_t<
+                                 is_integral_v<T>, typename Common::LazyType<Default_Integral, T>::type,
+                                 conditional_t<
+                                     is_arithmetic_v<T>, typename Common::LazyType<Default_Arithmetic, T>::type,
+                                     void>>> {
+        };
 
         template <typename T>
-        struct [[deprecated ("Since Stroika 2.1b8 use Default<>")]] DefaultRangeTraits : Default<T>{
-        };
+        struct [[deprecated ("Since Stroika 2.1b8 use Default<>")]] DefaultRangeTraits : Default<T>{};
         template <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE = make_unsigned_t<SIGNED_DIFF_TYPE>>
         struct [[deprecated ("Since Stroika 2.1b8 use Explicit<>")]] ExplicitRangeTraitsWithoutMinMax
         {
