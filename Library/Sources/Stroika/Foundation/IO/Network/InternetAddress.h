@@ -442,14 +442,21 @@ namespace Stroika::Foundation::DataExchange {
 
 namespace Stroika::Foundation::Traversal::RangeTraits {
 
-    template<>
-    struct Default<IO::Network::InternetAddress> : ExplicitOpennessAndDifferenceType<IO::Network::InternetAddress, ExplicitOpenness<Openness::eClosed, Openness::eClosed>, ExplicitDifferenceTypes<int, unsigned int>> {
-        
-        static const IO::Network::InternetAddress kLowerBound;
-        static const IO::Network::InternetAddress kUpperBound;
+    template <>
+    struct DefaultOpenness<IO::Network::InternetAddress> : ExplicitOpenness<Openness::eClosed, Openness::eClosed> {
+    };
+    template <>
+    struct DefaultDifferenceTypes<IO::Network::InternetAddress> : ExplicitDifferenceTypes<int, unsigned int> {
+    };
+    template <>
+    struct Default<IO::Network::InternetAddress> : ExplicitOpennessAndDifferenceType<IO::Network::InternetAddress> {
+        using InternetAddress = IO::Network::InternetAddress;
 
-        static Stroika::Foundation::IO::Network::InternetAddress GetNext (Stroika::Foundation::IO::Network::InternetAddress n);
-        static Stroika::Foundation::IO::Network::InternetAddress GetPrevious (Stroika::Foundation::IO::Network::InternetAddress n);
+        static const InternetAddress kLowerBound;
+        static const InternetAddress kUpperBound;
+
+        static InternetAddress GetNext (InternetAddress n);
+        static InternetAddress GetPrevious (InternetAddress n);
 
         static constexpr auto Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs) -> SignedDifferenceType;
     };

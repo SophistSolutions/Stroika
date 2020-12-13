@@ -38,6 +38,8 @@ namespace Stroika::Foundation::Traversal {
     /**
      *  Openness is used to define whether an end of a range is open or closed. Open means
      *  not containing the endpoint, and closed means containing the endpoint.
+     * 
+     *  \note   no support for the concepts of open and closed or neigher open nor closed
      *
      *  \note   Configuration::DefaultNames<> supported
      */
@@ -57,7 +59,7 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  \note really just used to construct Explicit<> or ExplicitOpennessAndDifferenceType<>
          */
-        template <typename DIFFERENCE_TYPE, typename UNSIGNED_DIFFERENCE_TYPE>
+        template <typename DIFFERENCE_TYPE, typename UNSIGNED_DIFFERENCE_TYPE = Common::UnsignedOfIf<DIFFERENCE_TYPE>>
         struct ExplicitDifferenceTypes {
             using SignedDifferenceType   = DIFFERENCE_TYPE;
             using UnsignedDifferenceType = UNSIGNED_DIFFERENCE_TYPE;
@@ -66,12 +68,9 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  \note really just used to construct Explicit<> or ExplicitOpennessAndDifferenceType<>
          */
-        template <
-            typename T,
-            typename CHECK           = T,
-            typename SFINAE_SIGNED   = Common::DifferenceType<T>,
-            typename SFINAE_UNSIGNED = Common::UnsignedOfIf<SFINAE_SIGNED>>
-        struct DefaultDifferenceTypes : ExplicitDifferenceTypes<SFINAE_SIGNED, SFINAE_UNSIGNED> {};
+        template <typename T>
+        struct DefaultDifferenceTypes : ExplicitDifferenceTypes<Common::DifferenceType<T>> {
+        };
 
         /**
          *  \note really just used to construct Explicit<> or ExplicitOpennessAndDifferenceType<>
@@ -156,7 +155,7 @@ namespace Stroika::Foundation::Traversal {
         struct Explicit : ExplicitOpennessAndDifferenceType<T,OPENNESS,  DIFF_TYPE> {
             using inherited = ExplicitOpennessAndDifferenceType<T,OPENNESS,  DIFF_TYPE>;
             using value_type             = T;
-            //using value_type           = typename inherited::value_type;
+            //using value_type           = typename inherited::value_type;  // @todo debug why this doesn't work!
             using SignedDifferenceType   = typename inherited::SignedDifferenceType;
             using UnsignedDifferenceType = typename inherited::UnsignedDifferenceType;
 
@@ -192,8 +191,7 @@ namespace Stroika::Foundation::Traversal {
          *  \note Only used to construct/define a specific Range<> type
          */
         template <typename T>
-        struct Default_Integral : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eClosed>> {
-        };
+        struct Default_Integral : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eClosed>> {};
 
         /**
          *  \note Only used to construct/define a specific Range<> type
@@ -202,8 +200,7 @@ namespace Stroika::Foundation::Traversal {
          *  if you've applied the Stroika_Define_Enum_Bounds() macro to the given enumeration.
          */
         template <typename T>
-        struct Default_Enum : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eClosed>, ExplicitBounds<T, T::eSTART, T::eLAST>> {
-        };
+        struct Default_Enum : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eClosed>, ExplicitBounds<T, T::eSTART, T::eLAST>> {};
 
         /**
          *  \note Only used to construct/define a specific Range<> type
@@ -212,8 +209,7 @@ namespace Stroika::Foundation::Traversal {
          *  (where you can subtract elements, etc)
          */
         template <typename T>
-        struct Default_Arithmetic : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eOpen>> {
-        };
+        struct Default_Arithmetic : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eOpen>> {};
 
         /**
          *  Default<> contains the default traits used by a Range<> class. For most builtin types, this will
@@ -234,8 +230,7 @@ namespace Stroika::Foundation::Traversal {
                                             is_integral_v<T>, typename Common::LazyType<Default_Integral, T>::type,
                                             conditional_t<
                                                 is_arithmetic_v<T>, typename Common::LazyType<Default_Arithmetic, T>::type,
-                                                void>>> {
-        };
+                                                void>>> {};
 
 
         template <typename T>

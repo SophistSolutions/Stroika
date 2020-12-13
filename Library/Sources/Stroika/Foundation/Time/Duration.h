@@ -26,7 +26,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md">Alpha-Late</a>
+ *  \version    <a href="Code-Status.md">Beta</a>
  *
  * TODO:
  *      @todo   See if I can get constexpr Duration working.
@@ -299,11 +299,11 @@ namespace Stroika::Foundation::Time {
          *
          *  \par Example Usage
          *      \code
-         *          VerifyTestResult (Duration (L"PT1.4S").PrettyPrintAge () == L"now");
-         *          VerifyTestResult (Duration (L"-PT9M").PrettyPrintAge () == L"now");
-         *          VerifyTestResult (Duration (L"-PT20M").PrettyPrintAge () == L"20 minutes ago");
-         *          VerifyTestResult (Duration (L"PT20M").PrettyPrintAge () == L"20 minutes from now");
-         *          VerifyTestResult (Duration (L"PT4H").PrettyPrintAge () == L"4 hours from now");
+         *          VerifyTestResult (Duration{L"PT1.4S"}.PrettyPrintAge () == L"now");
+         *          VerifyTestResult (Duration{L"-PT9M"}.PrettyPrintAge () == L"now");
+         *          VerifyTestResult (Duration{L"-PT20M"}.PrettyPrintAge () == L"20 minutes ago");
+         *          VerifyTestResult (Duration{L"PT20M"}.PrettyPrintAge () == L"20 minutes from now");
+         *          VerifyTestResult (Duration{L"PT4H"}.PrettyPrintAge () == L"4 hours from now");
          *      \endcode
          */
         nonvirtual Characters::String PrettyPrintAge (const AgePrettyPrintInfo& agePrettyPrintInfo = kDefaultAgePrettyPrintInfo, const PrettyPrintInfo& prettyPrintInfo = kDefaultPrettyPrintInfo) const;
@@ -443,19 +443,24 @@ namespace Stroika::Foundation::Time {
 
 namespace Stroika::Foundation::Traversal::RangeTraits {
 
+    template <>
+    struct DefaultOpenness<Time::Duration> : ExplicitOpenness<Openness::eClosed, Openness::eClosed> {
+    };
+    template <>
+    struct DefaultDifferenceTypes<Time::Duration> : ExplicitDifferenceTypes<Time::DurationSecondsType> {
+    };
     /**
      *  \note   This type's properties (kLowerBound/kUpperBound) can only be used after static initialization, and before
      *          static de-initialization.
      */
     template <>
-    struct Default<Time::Duration> : ExplicitOpennessAndDifferenceType<Time::Duration, ExplicitOpenness<Openness::eClosed, Openness::eClosed>, ExplicitDifferenceTypes<Time::DurationSecondsType, Time::DurationSecondsType>> {
+    struct Default<Time::Duration> : ExplicitOpennessAndDifferenceType<Time::Duration> {
         static const Time::Duration kLowerBound;
         static const Time::Duration kUpperBound;
 
         static Time::Duration GetNext (Time::Duration i);
         static Time::Duration GetPrevious (Time::Duration i);
     };
-
 
 }
 

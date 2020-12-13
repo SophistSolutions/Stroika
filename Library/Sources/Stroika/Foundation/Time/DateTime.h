@@ -569,12 +569,18 @@ namespace Stroika::Foundation::Time {
 
 namespace Stroika::Foundation::Traversal::RangeTraits {
 
+    template <>
+    struct DefaultOpenness<Time::DateTime> : ExplicitOpenness<Openness::eClosed, Openness::eClosed> {
+    };
+    template <>
+    struct DefaultDifferenceTypes<Time::DateTime> : ExplicitDifferenceTypes<Time::Duration> {
+    };
     /**
      *  \note   Default<Time::DateTime> properties (kLowerBound/kUpperBound) can only be used after static initialization, and before
      *          static de-initialization.
      */
     template <>
-    struct Default<Time::DateTime> : ExplicitOpennessAndDifferenceType<Time::DateTime, ExplicitOpenness<Openness::eClosed, Openness::eClosed>, ExplicitDifferenceTypes<Time::Duration, Time::Duration>> {
+    struct Default<Time::DateTime> : ExplicitOpennessAndDifferenceType<Time::DateTime> {
         static const Time::DateTime kLowerBound;
         static const Time::DateTime kUpperBound;
 
