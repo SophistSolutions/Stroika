@@ -209,7 +209,7 @@ namespace {
             using namespace RangeTraits;
             int             nItemsHit = 0;
             optional<Color> lastItemHit;
-            for (auto i : DiscreteRange<Color, DefaultDiscreteRangeTraits<Color>>::FullRange ().Elements ()) {
+            for (auto i : DiscreteRange<Color, Default<Color>>::FullRange ().Elements ()) {
                 nItemsHit++;
                 VerifyTestResult (not lastItemHit.has_value () or *lastItemHit < i);
                 lastItemHit = i;
