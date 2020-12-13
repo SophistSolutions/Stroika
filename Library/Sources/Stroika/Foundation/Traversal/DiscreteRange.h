@@ -50,35 +50,6 @@ namespace Stroika::Foundation::Traversal {
 
     namespace RangeTraits {
 
-        template <typename T, T MIN, T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-        struct [[deprecated ("Since Stroika 2.1b8 use Default_Integral")]] ExplicitDiscreteRangeTraits : 
-            Explicit<T,
-            ExplicitOpenness<Openness::eClosed, Openness::eClosed>,
-            ExplicitBounds<T, MIN, MAX>,
-            ExplicitDifferenceTypes<SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>>
-        {
-            using RangeTraitsType = Explicit<T,
-                                             ExplicitOpenness<Openness::eClosed, Openness::eClosed>,
-                                             ExplicitBounds<T, MIN, MAX>,
-                                             ExplicitDifferenceTypes<SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>>;
-        };
-        template <typename T>
-        struct /*[[deprecated ("Since Stroika 2.1b8 use Default_Enum")]]*/ DefaultDiscreteRangeTraits_Enum : Default_Enum<T>
-        {
-           using RangeTraitsType = Default_Enum<T>;
-        };
-        template <typename T>
-        struct /*[[deprecated ("Since Stroika 2.1b8 use Default_Integral")]]*/ DefaultDiscreteRangeTraits_Integral : Default_Integral<T> {
-            using RangeTraitsType = DefaultDiscreteRangeTraits_Integral<T>;
-        };
-
-        /**
-         */
-        template <typename T>
-        struct DefaultDiscreteRangeTraits_DefaultRangeTraits : DefaultRangeTraits<T> {
-    //        using RangeTraitsType = DefaultRangeTraits<T>;
-        };
-
         /**
          *
          * @todo redo using using - document it would be nice if there was some select_t (https://stackoverflow.com/questions/32785105/implementing-a-switch-type-trait-with-stdconditional-t-chain-calls)
@@ -86,10 +57,34 @@ namespace Stroika::Foundation::Traversal {
          */
         template <typename T>
         using DefaultDiscreteRangeTraits = conditional_t<
-            is_enum_v<T>, DefaultDiscreteRangeTraits_Enum<T>,
+            is_enum_v<T>, Default_Enum<T>,
             conditional_t<
-                is_integral_v<T>, DefaultDiscreteRangeTraits_Integral<T>,
-                DefaultDiscreteRangeTraits_DefaultRangeTraits<T>>>;
+                is_integral_v<T>, Default_Integral<T>,
+                DefaultRangeTraits<T>>>;
+
+
+        // ---------------- DEPRECATED -----------------
+        template <typename T, T MIN, T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+        struct [[deprecated ("Since Stroika 2.1b8 use Default_Integral")]] ExplicitDiscreteRangeTraits : Explicit<T,
+                                                                                                                  ExplicitOpenness<Openness::eClosed, Openness::eClosed>,
+                                                                                                                  ExplicitBounds<T, MIN, MAX>,
+                                                                                                                  ExplicitDifferenceTypes<SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>>
+        {
+            using RangeTraitsType = Explicit<T,
+                                             ExplicitOpenness<Openness::eClosed, Openness::eClosed>,
+                                             ExplicitBounds<T, MIN, MAX>,
+                                             ExplicitDifferenceTypes<SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>>;
+        };
+        template <typename T>
+        struct [[deprecated ("Since Stroika 2.1b8 use Default_Enum")]] DefaultDiscreteRangeTraits_Enum : Default_Enum<T>
+        {
+            using RangeTraitsType = Default_Enum<T>;
+        };
+        template <typename T>
+        struct [[deprecated ("Since Stroika 2.1b8 use Default_Integral")]] DefaultDiscreteRangeTraits_Integral : Default_Integral<T>
+        {
+            using RangeTraitsType = DefaultDiscreteRangeTraits_Integral<T>;
+        };
 
     }
 
