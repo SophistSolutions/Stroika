@@ -26,6 +26,7 @@
 #include "../../Configuration/Common.h"
 #include "../../DataExchange/DefaultSerializer.h"
 #include "../../Traversal/Iterable.h"
+#include "../../Traversal/Range.h"
 
 #include "InternetProtocol/IP.h"
 
@@ -437,6 +438,22 @@ namespace Stroika::Foundation::DataExchange {
     struct DefaultSerializer<Stroika::Foundation::IO::Network::InternetAddress> {
         Memory::BLOB operator() (const Stroika::Foundation::IO::Network::InternetAddress& arg) const;
     };
+}
+
+namespace Stroika::Foundation::Traversal::RangeTraits {
+
+    template<>
+    struct Default<IO::Network::InternetAddress> : ExplicitOpennessAndDifferenceType<IO::Network::InternetAddress, ExplicitOpenness<Openness::eClosed, Openness::eClosed>, ExplicitDifferenceTypes<int, unsigned int>> {
+        
+        static const IO::Network::InternetAddress kLowerBound;
+        static const IO::Network::InternetAddress kUpperBound;
+
+        static Stroika::Foundation::IO::Network::InternetAddress GetNext (Stroika::Foundation::IO::Network::InternetAddress n);
+        static Stroika::Foundation::IO::Network::InternetAddress GetPrevious (Stroika::Foundation::IO::Network::InternetAddress n);
+
+        static constexpr auto Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs) -> SignedDifferenceType;
+    };
+
 }
 
 /*

@@ -330,4 +330,35 @@ namespace Stroika::Foundation::IO::Network {
 
 }
 
+namespace Stroika::Foundation::Traversal::RangeTraits {
+
+    inline IO::Network::InternetAddress Default<IO::Network::InternetAddress>::GetNext (IO::Network::InternetAddress n)
+    {
+        Require (n != kUpperBound);
+        return n.Offset (1);
+    }
+    inline IO::Network::InternetAddress Default<IO::Network::InternetAddress>::GetPrevious (IO::Network::InternetAddress n)
+    {
+        Require (n != kLowerBound);
+        AssertNotImplemented ();
+        return kLowerBound;
+        //return n.Offset (-1);
+    }
+    constexpr auto Default<IO::Network::InternetAddress>::Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs) -> SignedDifferenceType
+    {
+        using IO::Network::InternetAddress;
+        Require (lhs.GetAddressFamily () == InternetAddress::AddressFamily::V4);
+        Require (rhs.GetAddressFamily () == InternetAddress::AddressFamily::V4); // because otherwise we need bignums to track difference
+        array<uint8_t, 4> l = lhs.As<array<uint8_t, 4>> ();
+        array<uint8_t, 4> r = rhs.As<array<uint8_t, 4>> ();
+        return (SignedDifferenceType (r[0]) - SignedDifferenceType (l[0])) * (1 << 24) +
+               (SignedDifferenceType (r[1]) - SignedDifferenceType (l[1])) * (1 << 16) +
+               (SignedDifferenceType (r[2]) - SignedDifferenceType (l[2])) * (1 << 8) +
+               (SignedDifferenceType (r[3]) - SignedDifferenceType (l[3])) * (1 << 0);
+    }
+    inline constexpr IO::Network::InternetAddress Default<IO::Network::InternetAddress>::kLowerBound = IO::Network::InternetAddress::min ();
+    inline constexpr IO::Network::InternetAddress Default<IO::Network::InternetAddress>::kUpperBound = IO::Network::InternetAddress::max ();
+
+}
+
 #endif /*_Stroika_Foundation_IO_Network_InternetAddress_inl_*/

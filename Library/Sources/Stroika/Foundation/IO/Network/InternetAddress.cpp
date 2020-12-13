@@ -104,7 +104,7 @@ namespace {
 
 /*
  ********************************************************************************
- ********************* IO::Network::InternetAddress *****************************
+ *********************** IO::Network::InternetAddress ***************************
  ********************************************************************************
  */
 InternetAddress::InternetAddress (const string& s, AddressFamily af)
@@ -388,7 +388,6 @@ InternetAddress InternetAddress::KeepSignifcantBits (unsigned int significantBit
 
 InternetAddress InternetAddress::Offset (uint64_t o) const
 {
-    // rough draft - NEEDS TESTING - LGP 2019-02-17
     vector<uint8_t> addressAsArrayOfBytes = As<vector<uint8_t>> ();
     Require (addressAsArrayOfBytes.size () >= 4);
     size_t idx = addressAsArrayOfBytes.size () - 1;
