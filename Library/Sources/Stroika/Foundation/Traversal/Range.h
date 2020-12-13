@@ -122,10 +122,9 @@ namespace Stroika::Foundation::Traversal {
          */
         template <
             typename T,
-            typename OPENNESS = DefaultOpenness<T>,
-            typename BOUNDS   = DefaultBounds<T>,
-            typename DIFF_TYPE = DefaultDifferenceTypes<T>
-        >
+            typename OPENNESS  = DefaultOpenness<T>,
+            typename BOUNDS    = DefaultBounds<T>,
+            typename DIFF_TYPE = DefaultDifferenceTypes<T>>
         struct Explicit {
             using value_type             = T;
             using SignedDifferenceType   = typename DIFF_TYPE::SignedDifferenceType;
@@ -212,31 +211,11 @@ namespace Stroika::Foundation::Traversal {
             static constexpr SignedDifferenceType Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, ...);
         };
 
-
-        #if 1
-        template<typename T>
-        struct Default_Integral : Explicit<T> {
+        /**
+         */
+        template <typename T>
+        struct Default_Integral : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eClosed>> {
         };
-        #else
-        template <typename T, T MIN = numeric_limits<T>::lowest (), T MAX = numeric_limits<T>::max (), Openness LOWER_BOUND_OPEN = Openness::eClosed, Openness UPPER_BOUND_OPEN = Openness::eClosed, typename SIGNED_DIFF_TYPE = decltype (T{} - T{}), typename UNSIGNED_DIFF_TYPE = make_unsigned_t<SIGNED_DIFF_TYPE>>
-        struct Default_Integral : ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
-            static constexpr T kLowerBound = MIN;
-            static constexpr T kUpperBound = MAX;
-
-#if 1
-            // Needed temporarily (and maybe better) - cuz of regtest 50 - with Test_3_SimpleDiscreteRangeWithEnumsTest_::Color
-            // apparently not trigger then is_integral_v<> test???
-            static constexpr T GetNext (T n)
-            {
-                return static_cast<T> (static_cast<int> (n) + 1);
-            }
-            static constexpr T GetPrevious (T n)
-            {
-                return static_cast<T> (static_cast<int> (n) - 1);
-            }
-#endif
-        };
-        #endif
 
         /**
          *  Default_Enum<> can be used to generate an automatic traits object (with bounds)
@@ -250,54 +229,50 @@ namespace Stroika::Foundation::Traversal {
          *  This defaults to a half-open (lhs closed, rhs-open) range, and should work for any arithmetic type
          *  (where you can subtract elements, etc)
          */
-        #if 1
         template <typename T>
-            struct Default_Arithmetic : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eOpen> > {
+        struct Default_Arithmetic : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eOpen>> {
         };
-#else
-#if 0
-        template <typename T>
-        struct Default_Arithmetic : enable_if_t<
-                                        is_arithmetic_v<T>,
-                                        Explicit<T, numeric_limits<T>::lowest (), numeric_limits<T>::max (), Openness::eClosed, Openness::eOpen, T, T>> {
-        };
-#else
-        template <typename T>
-        struct Default_Arithmetic : ExplicitRangeTraitsWithoutMinMax<T, Openness::eClosed, Openness::eOpen, Common::DifferenceType<T>, Common::UnsignedOfIf< Common::DifferenceType<T>>> {
-            static constexpr T kLowerBound = numeric_limits<T>::lowest ();
-            static constexpr T kUpperBound = numeric_limits<T>::max ();
-        };
-#endif
-        #endif
+
         /**
          *  DefaultRangeTraits<> contains the default traits used by a Range<> class. For most builtin types, this will
          *  be fine. For many Stroika types, specializations exist, so that you can just use Range<T> directly.
          * 
          *  But you may find it handy to define your own Range 'traits' object.
+         * 
+         * \note Would be nice to use using syntax and not introduce a new type, but apparently
+         *       using declarations cannot be specailized in C++17 (@todo add reference)
          */
 #if 1
+        template <typename T>
+        struct DefaultRangeTraits : conditional_t<
+                                        is_enum_v<T>, typename Common::LazyType<Default_Enum, T>::type,
+                                        conditional_t<
+                                            is_integral_v<T>, typename Common::LazyType<Default_Integral, T>::type,
+                                            conditional_t<
+                                                is_arithmetic_v<T>, typename Common::LazyType<Default_Arithmetic, T>::type,
+                                                void>>> {
+        };
+#elif 1
         template <typename T>
         struct DefaultRangeTraits : Default_Arithmetic<T> {
         };
 #else
         template <typename T>
         struct DefaultRangeTraits : conditional_t<
-                                        is_enum_v<T>, Default_Enum<T>,
+                                        is_enum_v<T>, Common::LazyType<Default_Enum<T>>,
                                         conditional_t<
-                                            is_integral_v<T>, Default_Integral<T>,
+                                            is_integral_v<T>, Common::LazyType<Default_Integral<T>>,
                                             conditional_t<
-                                                is_arithmetic_v<T>, Default_Arithmetic<T>,
+                                                is_arithmetic_v<T>, Common::LazyType<Default_Arithmetic<T>>,
                                                 void>>> {
         };
 #endif
 
         template <typename T, T MIN = numeric_limits<T>::lowest (), T MAX = numeric_limits<T>::max (), Openness LOWER_BOUND_OPEN = Openness::eClosed, Openness UPPER_BOUND_OPEN = Openness::eClosed, typename SIGNED_DIFF_TYPE = decltype (T{} - T{}), typename UNSIGNED_DIFF_TYPE = make_unsigned_t<SIGNED_DIFF_TYPE>>
-        struct [[deprecated ("Since Stroika 2.1b8 use Default_Integral or Explicit<>")]] ExplicitRangeTraits_Integral : 
-            Explicit<T,
-            ExplicitOpenness<LOWER_BOUND_OPEN, UPPER_BOUND_OPEN>, 
-            ExplicitBounds<T, MIN, MAX>,
-            ExplicitDifferenceTypes<SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>
-            >{};
+        struct [[deprecated ("Since Stroika 2.1b8 use Default_Integral or Explicit<>")]] ExplicitRangeTraits_Integral : Explicit<T,
+                                                                                                                                 ExplicitOpenness<LOWER_BOUND_OPEN, UPPER_BOUND_OPEN>,
+                                                                                                                                 ExplicitBounds<T, MIN, MAX>,
+                                                                                                                                 ExplicitDifferenceTypes<SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>>{};
 
     }
 

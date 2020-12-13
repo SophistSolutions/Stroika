@@ -75,7 +75,7 @@ namespace {
         }
         {
             using namespace RangeTraits;
-            using RT         = Explicit<int, DefaultOpenness<int>, ExplicitBounds<int,-3, 100>>;
+            using RT         = Explicit<int, DefaultOpenness<int>, ExplicitBounds<int, -3, 100>>;
             Range<int, RT> x = Range<int, RT>::FullRange ();
             VerifyTestResult (x.GetLowerBound () == -3);
             VerifyTestResult (x.GetUpperBound () == 100);
@@ -693,8 +693,8 @@ namespace {
     void Test14_ToString_ ()
     {
         Debug::TraceContextBumper ctx{L"{}::Test14_ToString_"};
-        VerifyTestResult ((Range<int>{3, 4}.ToString ([] (int n) { return Characters::Format (L"%d", n); }) == L"[3 ... 4)"));
-        VerifyTestResult ((Range<int>{3, 4}.ToString () == L"[3 ... 4)"));
+        VerifyTestResult ((Range<int>{3, 4}.ToString ([] (int n) { return Characters::Format (L"%d", n); }) == L"[3 ... 4]"));
+        VerifyTestResult ((Range<int>{3, 4}.ToString () == L"[3 ... 4]"));
         {
             using namespace Time;
             VerifyTestResult ((Range<DateTime>{DateTime (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4))), DateTime (Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5)))}.ToString () == L"[4/4/03 ... 4/5/03]"));
@@ -713,7 +713,17 @@ namespace {
         Debug::TraceContextBumper ctx{L"{}::Test15_Partition_"};
         {
             using Containers::Sequence;
-            using RT = Range<int>;
+            using RangeTraits::Explicit;
+            using RangeTraits::ExplicitOpenness;
+            using RT = Range<double>;
+            VerifyTestResult (not IsPartition (Sequence<RT>{RT{1, 2}, RT{3, 4}}));
+            VerifyTestResult (IsPartition (Sequence<RT>{RT{1, 2}, RT{2, 4}}));
+        }
+        {
+            using Containers::Sequence;
+            using RangeTraits::Explicit;
+            using RangeTraits::ExplicitOpenness;
+            using RT = Range<int, Explicit<int, ExplicitOpenness<Openness::eClosed, Openness::eOpen>>>; // half open intervals best for partitions
             VerifyTestResult (not IsPartition (Sequence<RT>{RT{1, 2}, RT{3, 4}}));
             VerifyTestResult (IsPartition (Sequence<RT>{RT{1, 2}, RT{2, 4}}));
         }

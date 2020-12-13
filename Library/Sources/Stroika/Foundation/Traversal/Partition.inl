@@ -17,7 +17,7 @@ namespace Stroika::Foundation::Traversal {
             using Common::KeyValuePair;
             using Containers::SortedMapping;
             using Debug::TraceContextBumper;
-            TraceContextBumper ctx ("IsPartition_Helper_");
+            TraceContextBumper ctx{"IsPartition_Helper_"};
             using namespace Traversal;
             using value_type = typename RANGETYPE::value_type;
             SortedMapping<value_type, RANGETYPE> tmp;
