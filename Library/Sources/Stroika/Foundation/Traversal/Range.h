@@ -24,14 +24,6 @@
  *      This module was inspired by Ruby Range class, but in the end, it was mostly based on HealthFrame's
  *      DateRangeType/DateTimeRangeType code.
  *
- *      I tried to find a way to implement a TRAITS based solution for including MIN-MAX automatically, but
- *      this was very difficult due to the restrictions in C++11 that non-type parameters must be
- *      (essentially) integers. There is the ability to use const-reference data, but attempts to
- *      use that triggered issues with inter-module construction order.
- *
- *      Just explicitly defining traits objects with min/max seems like the way to do for now...
- *          -- LGP 2013-10-17
- *
  *  TODO:
  *          @todo   Carefully review intersection/unionbounds code for new open/closed parameters. Either make sure
  *                  it works or at least more carefully document in method headers the quirks of the
@@ -61,6 +53,7 @@ namespace Stroika::Foundation::Traversal {
     namespace RangeTraits {
 
         /**
+         *  \note really just used to construct Explicit<>
          */
         template <typename DIFFERENCE_TYPE, typename UNSIGNED_DIFFERENCE_TYPE>
         struct ExplicitDifferenceTypes {
@@ -69,6 +62,7 @@ namespace Stroika::Foundation::Traversal {
         };
 
         /**
+         *  \note really just used to construct Explicit<>
          */
         template <
             typename T,
@@ -79,6 +73,7 @@ namespace Stroika::Foundation::Traversal {
         };
 
         /**
+         *  \note really just used to construct Explicit<>
          */
         template <Openness LOWER_BOUND, Openness UPPER_BOUND>
         struct ExplicitOpenness {
@@ -87,12 +82,15 @@ namespace Stroika::Foundation::Traversal {
         };
 
         /**
+         *  \note really just used to construct Explicit<>
          * @todo change to depend on type T
          */
         template <typename T>
         using DefaultOpenness = ExplicitOpenness<Openness::eClosed, Openness::eClosed>;
 
         /**
+         *  \note really just used to construct Explicit<>
+         *
          * Sadly this doesn't work for floating point types, so you must declare your own class with kLowerBounds and kUpperBounds, and pass its
          * type.
          * 
@@ -108,6 +106,8 @@ namespace Stroika::Foundation::Traversal {
         };
 
         /**
+         *  \note really just used to construct Explicit<>
+         *
          * \note implementation of DefaultBounds<> cannot use ExplicitBounds<> because that wont work with floating point types
          */
         template <typename T>
@@ -117,6 +117,8 @@ namespace Stroika::Foundation::Traversal {
         };
 
         /**
+         *  \note Only used to construct/define a specific Range<> type
+         *
          *  Explicit<> can be used to specify inline (type) all the details for the range functionality
          *  for a given type T. Also, it provides often usable default implementations of things like GetNext, GetPrevious ().
          */
@@ -170,11 +172,58 @@ namespace Stroika::Foundation::Traversal {
         };
 
         /**
-         *  ExplicitRangeTraitsWithoutMinMax<> can be used to specify in line line (type) all the details for the range functionality
-         *  for a given type T.
+         *  \note Only used to construct/define a specific Range<> type
          */
+        template <typename T>
+        struct Default_Integral : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eClosed>> {
+        };
+
+        /**
+         *  \note Only used to construct/define a specific Range<> type
+         *
+         *  Default_Enum<> can be used to generate an automatic traits object (with bounds)
+         *  if you've applied the Stroika_Define_Enum_Bounds() macro to the given enumeration.
+         */
+        template <typename T>
+        struct Default_Enum : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eClosed>, ExplicitBounds<T, T::eSTART, T::eLAST>> {
+        };
+
+        /**
+         *  \note Only used to construct/define a specific Range<> type
+         *
+         *  This defaults to a half-open (lhs closed, rhs-open) range, and should work for any arithmetic type
+         *  (where you can subtract elements, etc)
+         */
+        template <typename T>
+        struct Default_Arithmetic : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eOpen>> {
+        };
+
+        /**
+         *  DefaultRangeTraits<> contains the default traits used by a Range<> class. For most builtin types, this will
+         *  be fine. For many Stroika types, specializations exist, so that you can just use Range<T> directly.
+         * 
+         *  But you may find it handy to define your own Range 'traits' object.
+         *
+         * \note The default OPENNESS for DefaultRangeTraits varies by TYPE T. Integer and enums are both
+         *       fully closed by default, and other arithmetic types (floats) are half open [)
+         *
+         * \note Would be nice to use using syntax and not introduce a new type, but apparently
+         *       using declarations cannot be specailized in C++17 (@todo add reference)
+         */
+        template <typename T>
+        struct DefaultRangeTraits : conditional_t<
+                                        is_enum_v<T>, typename Common::LazyType<Default_Enum, T>::type,
+                                        conditional_t<
+                                            is_integral_v<T>, typename Common::LazyType<Default_Integral, T>::type,
+                                            conditional_t<
+                                                is_arithmetic_v<T>, typename Common::LazyType<Default_Arithmetic, T>::type,
+                                                void>>> {
+        };
+
+
         template <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE = make_unsigned_t<SIGNED_DIFF_TYPE>>
-        struct ExplicitRangeTraitsWithoutMinMax {
+        struct [[deprecated ("Since Stroika 2.1b8 use Explicit<>")]] ExplicitRangeTraitsWithoutMinMax
+        {
             using value_type             = T;
             using SignedDifferenceType   = SIGNED_DIFF_TYPE;
             using UnsignedDifferenceType = UNSIGNED_DIFF_TYPE;
@@ -210,63 +259,6 @@ namespace Stroika::Foundation::Traversal {
             template <typename TYPE2CHECK = value_type, typename SFINAE_CANNOT_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = enable_if_t<not(is_enum_v<TYPE2CHECK> or is_convertible_v<TYPE2CHECK, SignedDifferenceType>)>>
             static constexpr SignedDifferenceType Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, ...);
         };
-
-        /**
-         */
-        template <typename T>
-        struct Default_Integral : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eClosed>> {
-        };
-
-        /**
-         *  Default_Enum<> can be used to generate an automatic traits object (with bounds)
-         *  if you've applied the Stroika_Define_Enum_Bounds() macro to the given enumeration.
-         */
-        template <typename T>
-        struct Default_Enum : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eClosed>, ExplicitBounds<T, T::eSTART, T::eLAST>> {
-        };
-
-        /**
-         *  This defaults to a half-open (lhs closed, rhs-open) range, and should work for any arithmetic type
-         *  (where you can subtract elements, etc)
-         */
-        template <typename T>
-        struct Default_Arithmetic : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eOpen>> {
-        };
-
-        /**
-         *  DefaultRangeTraits<> contains the default traits used by a Range<> class. For most builtin types, this will
-         *  be fine. For many Stroika types, specializations exist, so that you can just use Range<T> directly.
-         * 
-         *  But you may find it handy to define your own Range 'traits' object.
-         * 
-         * \note Would be nice to use using syntax and not introduce a new type, but apparently
-         *       using declarations cannot be specailized in C++17 (@todo add reference)
-         */
-#if 1
-        template <typename T>
-        struct DefaultRangeTraits : conditional_t<
-                                        is_enum_v<T>, typename Common::LazyType<Default_Enum, T>::type,
-                                        conditional_t<
-                                            is_integral_v<T>, typename Common::LazyType<Default_Integral, T>::type,
-                                            conditional_t<
-                                                is_arithmetic_v<T>, typename Common::LazyType<Default_Arithmetic, T>::type,
-                                                void>>> {
-        };
-#elif 1
-        template <typename T>
-        struct DefaultRangeTraits : Default_Arithmetic<T> {
-        };
-#else
-        template <typename T>
-        struct DefaultRangeTraits : conditional_t<
-                                        is_enum_v<T>, Common::LazyType<Default_Enum<T>>,
-                                        conditional_t<
-                                            is_integral_v<T>, Common::LazyType<Default_Integral<T>>,
-                                            conditional_t<
-                                                is_arithmetic_v<T>, Common::LazyType<Default_Arithmetic<T>>,
-                                                void>>> {
-        };
-#endif
 
         template <typename T, T MIN = numeric_limits<T>::lowest (), T MAX = numeric_limits<T>::max (), Openness LOWER_BOUND_OPEN = Openness::eClosed, Openness UPPER_BOUND_OPEN = Openness::eClosed, typename SIGNED_DIFF_TYPE = decltype (T{} - T{}), typename UNSIGNED_DIFF_TYPE = make_unsigned_t<SIGNED_DIFF_TYPE>>
         struct [[deprecated ("Since Stroika 2.1b8 use Default_Integral or Explicit<>")]] ExplicitRangeTraits_Integral : Explicit<T,
@@ -309,6 +301,9 @@ namespace Stroika::Foundation::Traversal {
      *
      *      Range<int>{1,1, Openness::eClosed, Openness::eClosed} != Range<int>{3,3, Openness::eClosed, Openness::eClosed} 
      *  would be true, since neither is empty and they contain different points (1 vs 3).
+     *
+     * \note The default OPENNESS for DefaultRangeTraits varies by TYPE T. Integer and enums are both
+     *       fully closed by default, and other arithmetic types (floats) are half open [)
      *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
@@ -357,7 +352,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Range<double> r1{3, 5};
-         *          VerifyTestResult (r1.Contains (3) or not r1.Contains (3));  // depends on TRAITS openness
+         *          VerifyTestResult (r1.Contains (3) and not r1.Contains (3));  // because default arithmetic traits have [) half open
          *          Range<double> r2{ 3, 5, Openness::eOpen, Openness::eOpen };
          *          VerifyTestResult (not r2.Contains (3));
          *      \endcode
