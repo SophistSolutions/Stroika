@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Traversal {
      RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>
      ********************************************************************************
      */
-    DISABLE_COMPILER_MSC_WARNING_START (4996)   // dont warn we deprecated
+    DISABLE_COMPILER_MSC_WARNING_START (4996) // dont warn we deprecated
     template <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
     template <typename SFINAE>
     constexpr T RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetNext (value_type i, enable_if_t<is_integral_v<SFINAE>>*)

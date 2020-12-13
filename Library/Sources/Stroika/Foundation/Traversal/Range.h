@@ -199,19 +199,19 @@ namespace Stroika::Foundation::Traversal {
         };
 
         /**
-         *  DefaultRangeTraits<> contains the default traits used by a Range<> class. For most builtin types, this will
+         *  Default<> contains the default traits used by a Range<> class. For most builtin types, this will
          *  be fine. For many Stroika types, specializations exist, so that you can just use Range<T> directly.
          * 
          *  But you may find it handy to define your own Range 'traits' object.
          *
-         * \note The default OPENNESS for DefaultRangeTraits varies by TYPE T. Integer and enums are both
+         * \note The default OPENNESS for Default varies by TYPE T. Integer and enums are both
          *       fully closed by default, and other arithmetic types (floats) are half open [)
          *
          * \note Would be nice to use using syntax and not introduce a new type, but apparently
          *       using declarations cannot be specailized in C++17 (@todo add reference)
          */
         template <typename T>
-        struct DefaultRangeTraits : conditional_t<
+        struct Default : conditional_t<
                                         is_enum_v<T>, typename Common::LazyType<Default_Enum, T>::type,
                                         conditional_t<
                                             is_integral_v<T>, typename Common::LazyType<Default_Integral, T>::type,
@@ -221,6 +221,9 @@ namespace Stroika::Foundation::Traversal {
         };
 
 
+        template <typename T>
+        struct [[deprecated ("Since Stroika 2.1b8 use Default<>")]] DefaultRangeTraits : Default<T>{
+        };
         template <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE = make_unsigned_t<SIGNED_DIFF_TYPE>>
         struct [[deprecated ("Since Stroika 2.1b8 use Explicit<>")]] ExplicitRangeTraitsWithoutMinMax
         {
@@ -302,7 +305,7 @@ namespace Stroika::Foundation::Traversal {
      *      Range<int>{1,1, Openness::eClosed, Openness::eClosed} != Range<int>{3,3, Openness::eClosed, Openness::eClosed} 
      *  would be true, since neither is empty and they contain different points (1 vs 3).
      *
-     * \note The default OPENNESS for DefaultRangeTraits varies by TYPE T. Integer and enums are both
+     * \note The default OPENNESS for Default varies by TYPE T. Integer and enums are both
      *       fully closed by default, and other arithmetic types (floats) are half open [)
      *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
@@ -317,7 +320,7 @@ namespace Stroika::Foundation::Traversal {
      *  @see DisjointRange
      *  @see DisjointDiscreteRange
      */
-    template <typename T, typename TRAITS = RangeTraits::DefaultRangeTraits<T>>
+    template <typename T, typename TRAITS = RangeTraits::Default<T>>
     class Range {
     public:
         /**

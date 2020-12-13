@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Traversal {
             is_enum_v<T>, Default_Enum<T>,
             conditional_t<
                 is_integral_v<T>, Default_Integral<T>,
-                DefaultRangeTraits<T>>>;
+                Default<T>>>;
 
 
         // ---------------- DEPRECATED -----------------

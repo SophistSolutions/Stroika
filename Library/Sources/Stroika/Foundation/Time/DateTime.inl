@@ -159,8 +159,8 @@ namespace Stroika::Foundation::Configuration {
 }
 
 namespace Stroika::Foundation::Traversal::RangeTraits {
-    inline constexpr Time::DateTime DefaultRangeTraits<Time::DateTime>::kLowerBound{Time::DateTime::kMin};
-    inline constexpr Time::DateTime DefaultRangeTraits<Time::DateTime>::kUpperBound{Time::DateTime::kMax};
+    inline constexpr Time::DateTime Default<Time::DateTime>::kLowerBound{Time::DateTime::kMin};
+    inline constexpr Time::DateTime Default<Time::DateTime>::kUpperBound{Time::DateTime::kMax};
 }
 
 #endif /*_Stroika_Foundation_Time_DateTime_inl_*/

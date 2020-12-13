@@ -570,11 +570,11 @@ namespace Stroika::Foundation::Time {
 namespace Stroika::Foundation::Traversal::RangeTraits {
 
     /**
-     *  \note   DefaultRangeTraits<Time::DateTime> properties (kLowerBound/kUpperBound) can only be used after static initialization, and before
+     *  \note   Default<Time::DateTime> properties (kLowerBound/kUpperBound) can only be used after static initialization, and before
      *          static de-initialization.
      */
     template <>
-    struct DefaultRangeTraits<Time::DateTime> : ExplicitRangeTraitsWithoutMinMax<Time::DateTime, Openness::eClosed, Openness::eClosed, Time::Duration, Time::Duration> {
+    struct Default<Time::DateTime> : ExplicitRangeTraitsWithoutMinMax<Time::DateTime, Openness::eClosed, Openness::eClosed, Time::Duration, Time::Duration> {
         static const Time::DateTime kLowerBound;
         static const Time::DateTime kUpperBound;
 
