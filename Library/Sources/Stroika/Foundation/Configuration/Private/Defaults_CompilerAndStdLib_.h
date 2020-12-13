@@ -2113,14 +2113,14 @@ namespace {
  *
  *  \par Example Usage
  *      \code
- *      Stroika_Foundation_Configuration_STRUCT_PACKED (struct ICMPHeader {
- *          byte     type; // ICMP packet type
- *          byte     code; // Type sub code
- *          uint16_t checksum;
- *          uint16_t id;
- *          uint16_t seq;
- *          uint32_t timestamp; // not part of ICMP, but we need it
- *      });
+ *          Stroika_Foundation_Configuration_STRUCT_PACKED (struct ICMPHeader {
+ *              byte     type; // ICMP packet type
+ *              byte     code; // Type sub code
+ *              uint16_t checksum;
+ *              uint16_t id;
+ *              uint16_t seq;
+ *              uint32_t timestamp; // not part of ICMP, but we need it
+ *          });
  *      \endcode
  *
  */
