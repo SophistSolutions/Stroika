@@ -241,53 +241,6 @@ namespace Stroika::Foundation::Traversal {
                                      void>>> {
         };
 
-        template <typename T>
-        struct [[deprecated ("Since Stroika 2.1b8 use Default<>")]] DefaultRangeTraits : Default<T>{};
-        template <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE = make_unsigned_t<SIGNED_DIFF_TYPE>>
-        struct [[deprecated ("Since Stroika 2.1b8 use Explicit<>")]] ExplicitRangeTraitsWithoutMinMax
-        {
-            using value_type             = T;
-            using SignedDifferenceType   = SIGNED_DIFF_TYPE;
-            using UnsignedDifferenceType = UNSIGNED_DIFF_TYPE;
-
-            static constexpr Openness kLowerBoundOpenness = LOWER_BOUND_OPEN;
-            static constexpr Openness kUpperBoundOpenness = UPPER_BOUND_OPEN;
-
-            /**
-             *  Return the Next possible value, or if already at the end of the range, the same value.
-             *
-             *  \note its hard todo GetNext() for floating point as constexpr because underlying function in cmath not yet constexpr (as of C++17)
-             */
-            template <typename SFINAE = value_type>
-            static constexpr value_type GetNext (value_type i, enable_if_t<is_integral_v<SFINAE>>* = nullptr);
-            template <typename SFINAE = value_type>
-            static value_type GetNext (value_type i, enable_if_t<is_floating_point_v<SFINAE>>* = nullptr);
-
-            /**
-             *  Return the Previous possible value, or if already at the end of the range, the same value.
-             *
-             *  \note its hard todo GetPrevious() for floating point as constexpr because underlying function in cmath not yet constexpr (as of C++17)
-             */
-            template <typename SFINAE = value_type>
-            static constexpr value_type GetPrevious (value_type i, enable_if_t<is_integral_v<SFINAE>>* = nullptr);
-            template <typename SFINAE = value_type>
-            static value_type GetPrevious (value_type i, enable_if_t<is_floating_point_v<SFINAE>>* = nullptr);
-
-            /**
-             *  Compute the difference between two elements of type T for the Range (RHS - LHS)
-             */
-            template <typename TYPE2CHECK = value_type, typename SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = enable_if_t<is_enum_v<TYPE2CHECK> or is_convertible_v<TYPE2CHECK, SignedDifferenceType>>>
-            static constexpr SignedDifferenceType Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE* = nullptr);
-            template <typename TYPE2CHECK = value_type, typename SFINAE_CANNOT_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = enable_if_t<not(is_enum_v<TYPE2CHECK> or is_convertible_v<TYPE2CHECK, SignedDifferenceType>)>>
-            static constexpr SignedDifferenceType Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, ...);
-        };
-
-        template <typename T, T MIN = numeric_limits<T>::lowest (), T MAX = numeric_limits<T>::max (), Openness LOWER_BOUND_OPEN = Openness::eClosed, Openness UPPER_BOUND_OPEN = Openness::eClosed, typename SIGNED_DIFF_TYPE = decltype (T{} - T{}), typename UNSIGNED_DIFF_TYPE = make_unsigned_t<SIGNED_DIFF_TYPE>>
-        struct [[deprecated ("Since Stroika 2.1b8 use Default_Integral or Explicit<>")]] ExplicitRangeTraits_Integral : Explicit<T,
-                                                                                                                                 ExplicitOpenness<LOWER_BOUND_OPEN, UPPER_BOUND_OPEN>,
-                                                                                                                                 ExplicitBounds<T, MIN, MAX>,
-                                                                                                                                 ExplicitDifferenceTypes<SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>>{};
-
     }
 
     template <typename T, typename RANGE_TYPE>
