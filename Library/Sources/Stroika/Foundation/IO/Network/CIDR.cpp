@@ -3,19 +3,16 @@
  */
 #include "../../StroikaPreComp.h"
 
-#include "../../Characters/CString/Utilities.h"
 #include "../../Characters/String2Int.h"
 #include "../../Characters/StringBuilder.h"
 #include "../../Debug/Trace.h"
 #include "../../Execution/Exceptions.h"
 #include "../../Math/Common.h"
-#include "../../Memory/SmallStackBuffer.h"
 
 #include "CIDR.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
-using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 
@@ -62,9 +59,9 @@ String Network::CIDR::ToString () const
     return Characters::ToString (fBaseAddress_) + L"/" + Characters::ToString ((int)fSignificantBits_);
 }
 
-Traversal::DiscreteRange<Network::InternetAddress> Network::CIDR::GetRange () const
+Traversal::DiscreteRange<InternetAddress> Network::CIDR::GetRange () const
 {
     Require (fBaseAddress_.GetAddressSize ().has_value ());
     size_t offset = *fBaseAddress_.GetAddressSize () * 8 - fSignificantBits_;
-    return Traversal::DiscreteRange<Network::InternetAddress>{fBaseAddress_, fBaseAddress_.PinLowOrderBitsToMax (static_cast<unsigned int> (offset))};
+    return Traversal::DiscreteRange<InternetAddress>{fBaseAddress_, fBaseAddress_.PinLowOrderBitsToMax (static_cast<unsigned int> (offset))};
 }
