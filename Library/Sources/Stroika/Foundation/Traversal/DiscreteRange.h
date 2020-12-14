@@ -209,7 +209,7 @@ namespace Stroika::Foundation::Traversal {
         template <typename T>
         struct [[deprecated ("Since Stroika 2.1b8 use Default_Integral")]] DefaultDiscreteRangeTraits_Integral : Default_Integral<T>
         {
-            using RangeTraitsType = DefaultDiscreteRangeTraits_Integral<T>;
+            using RangeTraitsType = Default_Integral<T>;
         };
 
     }
