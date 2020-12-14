@@ -703,7 +703,8 @@ sub	SetDefaultForCompilerDriver_
 			}
 		}
 		if ($ARCH eq "") {
-			die ("reorg code so this set first");
+			$ARCH = "x86_64";
+			print STDERR "WARNING: guessing the target arch x86_64: use --arch (x86 or x86_64) instead!\n";
 		}
 	}
 
