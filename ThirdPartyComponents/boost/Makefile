@@ -33,9 +33,9 @@ PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canoni
 OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/")"
 
 
-VERSION=1_74_0
+VERSION=1_75_0
+#VERSION=1_74_0
 #VERSION=1_73_0
-#VERSION=1_72_0
 VERSION_WITH_DOTS=$(shell echo $(VERSION) | sed s/_/\./g)
 VERSION_WITH_2DOTS=$(VERSION_WITH_DOTS)
 ZIPPEDFILE=../Origs-Cache/boost_$(VERSION).tar.gz
@@ -91,8 +91,6 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/boost/config.hpp				\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/boost/process.hpp			\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/boost/type_traits.hpp
-
-## just a smatering of test files to see if it looks like copied
 PRODUCED_OUTPUT_ARTIFACTS+=	\
 	$(PER_CONFIGURATION_BUILDS_DIR)lib/libboost_date_time$(LIB_SUFFIX)	\
 	$(PER_CONFIGURATION_BUILDS_DIR)lib/libboost_filesystem$(LIB_SUFFIX)	\
