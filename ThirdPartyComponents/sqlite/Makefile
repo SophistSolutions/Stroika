@@ -14,11 +14,9 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
-VERSION=3330000
+VERSION=3340000
+#VERSION=3330000
 #VERSION=3320300
-#VERSION=3320100
-#VERSION=3310100
-#VERSION=3300100
 
 #
 # Download of SQLITE from www.sqlite.org mysteriously started failing on the macos machines only for travisci
