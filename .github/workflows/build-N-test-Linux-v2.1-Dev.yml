@@ -66,15 +66,16 @@ jobs:
             includeInDevBranchBuilds: true
 
           # ubuntu 20.04
-          - displayTargetName: ubuntu-20.04-g++-9 (Debug)
-            os: unix
-            compiler: g++-9
-            runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
-            cpp_version: c++17
-            config_name: Debug
-            extra_config_args: --apply-default-debug-flags --trace2file enable
-            includeInDevBranchBuilds: false
+          # - displayTargetName: ubuntu-20.04-g++-9 (Debug)
+          #   os: unix
+          #   compiler: g++-9
+          #   runs_on: ubuntu-latest
+          #   container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
+          #   cpp_version: c++17
+          #   config_name: Debug
+          #   extra_config_args: --apply-default-debug-flags --trace2file enable
+          #   includeInDevBranchBuilds: false
+
           # - displayTargetName: ubuntu-20.04-g++-10 (Debug)
           #   os: unix
           #   compiler: g++-10
@@ -84,6 +85,7 @@ jobs:
           #   config_name: Debug
           #   extra_config_args: --apply-default-debug-flags --trace2file enable
           #   includeInDevBranchBuilds: false
+
           - displayTargetName: ubuntu-20.04-g++-10
             os: unix
             compiler: g++-10
@@ -93,6 +95,7 @@ jobs:
             config_name: Release
             extra_config_args: --apply-default-release-flags --trace2file enable
             includeInDevBranchBuilds: true
+
           # - displayTargetName: ubuntu-20.04-g++-10-c++2a
           #   os: unix
           #   compiler: g++-10
@@ -102,6 +105,7 @@ jobs:
           #   config_name: Release
           #   extra_config_args: --apply-default-release-flags --trace2file enable
           #   includeInDevBranchBuilds: false
+
           # - displayTargetName: ubuntu-20.04-clang++-10
           #   os: unix
           #   compiler: clang++-10
@@ -111,7 +115,12 @@ jobs:
           #   config_name: Release
           #   extra_config_args: --apply-default-release-flags --trace2file enable
           #   includeInDevBranchBuilds: false
-    if: github.ref == 'refs/heads/v2.1-Release' || matrix.includeInDevBranchBuilds
+
+    ### ATTEMPT TO COMPRESS 2 workflow files into one, but so far not working
+    ### SEE
+    ### https://stackoverflow.com/questions/65384420/how-to-make-a-github-action-matrix-element-conditional/65385385#65385385
+    ###
+    #if: github.ref == 'refs/heads/v2.1-Release' || matrix.includeInDevBranchBuilds
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=5 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
