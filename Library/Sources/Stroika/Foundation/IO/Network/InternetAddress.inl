@@ -337,12 +337,12 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
         Require (n != kUpperBound);
         return n.Offset (1);
     }
-    inline IO::Network::InternetAddress Default<IO::Network::InternetAddress>::GetPrevious (IO::Network::InternetAddress n)
+    inline IO::Network::InternetAddress Default<IO::Network::InternetAddress>::GetPrevious (IO::Network::InternetAddress n [[maybe_unused]])
     {
         Require (n != kLowerBound);
         AssertNotImplemented ();
         return kLowerBound;
-        //return n.Offset (-1);
+        //return n.Offset (-1); // must fix InternetAddress::Offset to support signed offsets
     }
     constexpr auto Default<IO::Network::InternetAddress>::Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs) -> SignedDifferenceType
     {
