@@ -21,15 +21,12 @@ namespace Stroika::Foundation ::Streams {
      */
     template <typename ELEMENT_TYPE>
     class BufferedOutputStream<ELEMENT_TYPE>::Rep_ : public OutputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
-        static const size_t kMinBufSize_     = 1 * 1024;
-        static const size_t kDefaultBufSize_ = 16 * 1024;
+        static constexpr size_t kMinBufSize_{1 * 1024};
+        static constexpr size_t kDefaultBufSize_{16 * 1024};
 
     public:
         Rep_ (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut)
-            : OutputStream<ELEMENT_TYPE>::_IRep{}
-            , fBuffer_{}
-            , fRealOut_{realOut}
-            , fAborted_{false}
+            : fRealOut_{realOut}
         {
             fBuffer_.reserve (kDefaultBufSize_);
         }
@@ -107,10 +104,10 @@ namespace Stroika::Foundation ::Streams {
             Require (IsOpenWrite ());
             lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
             /*
-                    * Minimize the number of writes at the possible cost of extra copying.
-                    *
-                    * See if there is room in the buffer, and use it up. Only when no more room do we flush.
-                    */
+             * Minimize the number of writes at the possible cost of extra copying.
+             *
+             * See if there is room in the buffer, and use it up. Only when no more room do we flush.
+             */
             size_t bufSpaceRemaining   = fBuffer_.capacity () - fBuffer_.size ();
             size_t size2WriteRemaining = end - start;
 
@@ -125,8 +122,8 @@ namespace Stroika::Foundation ::Streams {
             size2WriteRemaining -= copy2Buffer;
 
             /*
-                    * At this point - either the buffer is full, OR we are done writing. EITHER way - if the buffer is full - we may as well write it now.
-                    */
+             * At this point - either the buffer is full, OR we are done writing. EITHER way - if the buffer is full - we may as well write it now.
+             */
             if (fBuffer_.capacity () == fBuffer_.size ()) {
                 Flush_ ();
                 Assert (fBuffer_.empty ());
@@ -163,9 +160,9 @@ namespace Stroika::Foundation ::Streams {
         }
 
     private:
-        vector<ELEMENT_TYPE>                     fBuffer_;
-        typename OutputStream<ELEMENT_TYPE>::Ptr fRealOut_;
-        bool                                     fAborted_;
+        vector<ELEMENT_TYPE>                     fBuffer_{};
+        typename OutputStream<ELEMENT_TYPE>::Ptr fRealOut_{};
+        bool                                     fAborted_{false};
     };
 
     /*

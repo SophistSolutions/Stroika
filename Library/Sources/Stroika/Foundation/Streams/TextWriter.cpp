@@ -30,7 +30,7 @@ namespace {
 class TextWriter::UnSeekable_UTF8_Rep_ : public OutputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedLock {
 public:
     UnSeekable_UTF8_Rep_ (const OutputStream<byte>::Ptr& src, bool useBOM)
-        : _fSource (src)
+        : _fSource{src}
     {
         constexpr byte kBOM_[]{byte{0xEF}, byte{0xBB}, byte{0xBF}}; //  see http://en.wikipedia.org/wiki/Byte_order_mark
         if (useBOM) {
@@ -106,7 +106,7 @@ protected:
 class TextWriter::UnSeekable_WCharT_Rep_ : public OutputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedLock {
 public:
     UnSeekable_WCharT_Rep_ (const OutputStream<byte>::Ptr& src, bool useBOM)
-        : _fSource (src)
+        : _fSource{src}
     {
         constexpr Character kBOM = L'\xFEFF'; //  same whether 16 or 32 bit encoding -- see http://en.wikipedia.org/wiki/Byte_order_mark
         if (useBOM) {
@@ -162,8 +162,8 @@ protected:
 class TextWriter::Seekable_UTF8_Rep_ : public UnSeekable_UTF8_Rep_ {
 public:
     Seekable_UTF8_Rep_ (const OutputStream<byte>::Ptr& src, bool useBOM)
-        : UnSeekable_UTF8_Rep_ (src, useBOM)
-        , fOffset_ (0)
+        : UnSeekable_UTF8_Rep_{src, useBOM}
+        , fOffset_{0}
     {
     }
 
@@ -201,8 +201,8 @@ private:
 class TextWriter::Seekable_WCharT_Rep_ : public UnSeekable_WCharT_Rep_ {
 public:
     Seekable_WCharT_Rep_ (const OutputStream<byte>::Ptr& src, bool useBOM)
-        : UnSeekable_WCharT_Rep_ (src, useBOM)
-        , fOffset_ (0)
+        : UnSeekable_WCharT_Rep_{src, useBOM}
+        , fOffset_{0}
     {
     }
 

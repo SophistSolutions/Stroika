@@ -30,15 +30,15 @@ namespace Stroika::Foundation::Streams {
      */
     template <typename ELEMENT_TYPE>
     inline InputOutputStream<ELEMENT_TYPE>::Ptr::Ptr (const _SharedIRep& rep)
-        : InputStream<ELEMENT_TYPE>::Ptr (rep)
-        , OutputStream<ELEMENT_TYPE>::Ptr (rep)
+        : InputStream<ELEMENT_TYPE>::Ptr{rep}
+        , OutputStream<ELEMENT_TYPE>::Ptr{rep}
     {
         RequireNotNull (rep);
     }
     template <typename ELEMENT_TYPE>
     inline InputOutputStream<ELEMENT_TYPE>::Ptr::Ptr (nullptr_t)
-        : InputStream<ELEMENT_TYPE>::Ptr (nullptr)
-        , OutputStream<ELEMENT_TYPE>::Ptr (nullptr)
+        : InputStream<ELEMENT_TYPE>::Ptr{nullptr}
+        , OutputStream<ELEMENT_TYPE>::Ptr{nullptr}
     {
     }
     template <typename ELEMENT_TYPE>

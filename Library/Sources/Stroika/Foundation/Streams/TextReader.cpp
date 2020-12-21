@@ -27,9 +27,9 @@ namespace {
 class TextReader::FromBinaryStreamBaseRep_ : public InputStream<Character>::_IRep, protected Debug::AssertExternallySynchronizedLock {
 public:
     FromBinaryStreamBaseRep_ (const InputStream<byte>::Ptr& src, const MyWCharTConverterType_& charConverter)
-        : _fSource (src)
-        , _fCharConverter (charConverter)
-        , _fOffset (0)
+        : _fSource{src}
+        , _fCharConverter{charConverter}
+        , _fOffset{0}
     {
     }
 
@@ -191,7 +191,7 @@ class TextReader::UnseekableBinaryStreamRep_ : public FromBinaryStreamBaseRep_ {
 
 public:
     UnseekableBinaryStreamRep_ (const InputStream<byte>::Ptr& src, const MyWCharTConverterType_& charConverter)
-        : inherited (src, charConverter)
+        : inherited{src, charConverter}
     {
     }
 };
@@ -201,8 +201,8 @@ class TextReader::CachingSeekableBinaryStreamRep_ : public FromBinaryStreamBaseR
 
 public:
     CachingSeekableBinaryStreamRep_ (const InputStream<byte>::Ptr& src, const MyWCharTConverterType_& charConverter, ReadAhead readAhead)
-        : FromBinaryStreamBaseRep_ (src, charConverter)
-        , fReadAheadAllowed_ (readAhead == ReadAhead::eReadAheadAllowed)
+        : FromBinaryStreamBaseRep_{src, charConverter}
+        , fReadAheadAllowed_{readAhead == ReadAhead::eReadAheadAllowed}
     {
     }
 
@@ -356,8 +356,8 @@ private:
 class TextReader::IterableAdapterStreamRep_ : public InputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedLock {
 public:
     IterableAdapterStreamRep_ (const Traversal::Iterable<Character>& src)
-        : fSource_ (src)
-        , fSrcIter_ (fSource_.begin ())
+        : fSource_{src}
+        , fSrcIter_{fSource_.begin ()}
     {
     }
 

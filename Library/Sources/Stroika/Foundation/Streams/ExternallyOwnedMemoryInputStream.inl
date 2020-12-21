@@ -25,9 +25,9 @@ namespace Stroika::Foundation::Streams {
         Rep_ ()            = delete;
         Rep_ (const Rep_&) = delete;
         Rep_ (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end)
-            : fStart_ (start)
-            , fEnd_ (end)
-            , fCursor_ (start)
+            : fStart_{start}
+            , fEnd_{end}
+            , fCursor_{start}
         {
         }
 
