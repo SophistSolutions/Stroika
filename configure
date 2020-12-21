@@ -218,6 +218,7 @@ sub	DoHelp_
 		print("	    --ZLib {build-only|use|use-system|no}           /* Enables/disables use of ZLib for this configuration [default use] */\n");
 		print("	    --WIX {use|use-system|no}                       /* Enables/disables use of WIX (Windows Only) - to build windows installers*/\n");
 		print("	    --lzma {build-only|use|use-system|no}           /* Enables/disables use of LZMA SDK for this configuration [default use] */\n");
+		print("	    --no-third-party-components           			/* equivilent to --ActivePerl no --LibCurl no --boost no --OpenSSL no --WinHTTP no --ATLMFC no --Xerces no --sqlite no --ZLib no --WIX no --lzma no  */\n");
 		print("	    --trace2file { enable|disable|default }         /* Enables/disable trace2file feature */\n");
 		print("	    --static-link-gccruntime { enable|disable }     /* Enables/disable gcc runtime static link (only applies if gcc family compiler) */\n");
 		print("	    --make-define {ARG}                             /* Define makefile define for the given configuration: text of arg appears as line in Configuration.mk */\n");
@@ -1313,6 +1314,16 @@ sub	ParseCommandLine_Remaining_
 			$i++;
 			$var = $args[$i];
 			$FEATUREFLAG_LZMA = $var;
+		}
+		elsif ((lc ($var) eq "-no-third-party-components") or (lc ($var) eq "--no-third-party-components")) {
+			$FEATUREFLAG_ATLMFC = "no";
+			$FEATUREFLAG_boost = "no";
+			$FEATUREFLAG_LIBCURL = "no";
+			$FEATUREFLAG_LZMA = "no";
+			$FEATUREFLAG_OpenSSL = "no";
+			$FEATUREFLAG_sqlite = "no";
+			$FEATUREFLAG_WinHTTP = "no";
+			$FEATUREFLAG_ZLib = "no";
 		}
 		elsif ((lc ($var) eq "-trace2file") or (lc ($var) eq "--trace2file")) {
 			$i++;
