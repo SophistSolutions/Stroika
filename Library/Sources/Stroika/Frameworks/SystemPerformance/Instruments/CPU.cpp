@@ -367,7 +367,7 @@ namespace {
         };
         WinSysTimeCaptureContext_ fContext_;
         CapturerWithContext_Windows_ (const Options& options)
-            : CapturerWithContext_COMMON_ (options)
+            : CapturerWithContext_COMMON_{options}
         {
             capture_ (); // Force fill of context
         }
@@ -455,7 +455,7 @@ namespace {
         using inherited = CapturerWithContext_COMMON_;
 #endif
         CapturerWithContext_ (Options options)
-            : inherited (options)
+            : inherited{options}
         {
         }
         Info capture ()
@@ -487,7 +487,7 @@ namespace {
 
     public:
         MyCapturer_ (const CapturerWithContext_& ctx)
-            : fCaptureContext (ctx)
+            : fCaptureContext{ctx}
         {
         }
         virtual MeasurementSet Capture () override

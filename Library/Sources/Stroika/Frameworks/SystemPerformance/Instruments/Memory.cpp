@@ -117,8 +117,8 @@ namespace {
         DurationSecondsType fPostponeCaptureUntil_{0};
         DurationSecondsType fLastCapturedAt_{};
         CapturerWithContext_COMMON_ (const Options& options)
-            : fOptions_ (options)
-            , fMinimumAveragingInterval_ (options.fMinimumAveragingInterval)
+            : fOptions_{options}
+            , fMinimumAveragingInterval_{options.fMinimumAveragingInterval}
         {
         }
         DurationSecondsType GetLastCaptureAt () const { return fLastCapturedAt_; }
@@ -140,7 +140,7 @@ namespace {
         Time::DurationSecondsType fSaved_VMPageStats_At{};
 
         CapturerWithContext_Linux_ (Options options)
-            : CapturerWithContext_COMMON_ (options)
+            : CapturerWithContext_COMMON_{options}
         {
             // for side-effect of  updating aved_MajorPageFaultsSinc etc
             try {
@@ -306,7 +306,7 @@ namespace {
         WMICollector fMemoryWMICollector_{L"Memory"sv, {kInstanceName_}, {kCommittedBytes_, kCommitLimit_, kHardPageFaultsPerSec_, kPagesOutPerSec_, kFreeMem_, kHardwareReserved1_, kHardwareReserved2_}};
 #endif
         CapturerWithContext_Windows_ (const Options& options)
-            : CapturerWithContext_COMMON_ (options)
+            : CapturerWithContext_COMMON_{options}
         {
             capture_ (); // to pre-seed context
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -316,9 +316,12 @@ namespace {
 #endif
         }
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
-            : CapturerWithContext_COMMON_ (from)
+            : CapturerWithContext_COMMON_
+        {
+            from
+        }
 #if qUseWMICollectionSupport_
-            , fMemoryWMICollector_ (from.fMemoryWMICollector_)
+        , fMemoryWMICollector_ (from.fMemoryWMICollector_)
 #endif
         {
 #if qUseWMICollectionSupport_
@@ -413,7 +416,7 @@ namespace {
         using inherited = CapturerWithContext_COMMON_;
 #endif
         CapturerWithContext_ (Options options)
-            : inherited (options)
+            : inherited{options}
         {
         }
         Instruments::Memory::Info capture ()
@@ -488,7 +491,7 @@ namespace {
 
     public:
         MyCapturer_ (const CapturerWithContext_& ctx)
-            : fCaptureContext (ctx)
+            : fCaptureContext{ctx}
         {
         }
         virtual MeasurementSet Capture () override

@@ -141,8 +141,8 @@ namespace {
         DurationSecondsType fLastCapturedAt{};
         CapturerWithContext_COMMON_ () = delete;
         CapturerWithContext_COMMON_ (const Options& options)
-            : fOptions_ (options)
-            , fMinimumAveragingInterval_ (options.fMinimumAveragingInterval)
+            : fOptions_{options}
+            , fMinimumAveragingInterval_{options.fMinimumAveragingInterval}
         {
         }
         DurationSecondsType GetLastCaptureAt () const { return fLastCapturedAt; }
@@ -174,7 +174,7 @@ namespace {
         };
         optional<LastSum> fLastSum;
         CapturerWithContext_POSIX_ (Options options)
-            : CapturerWithContext_COMMON_ (options)
+            : CapturerWithContext_COMMON_{options}
         {
             // hack for side-effect of  updating aved_MajorPageFaultsSinc etc
             try {
@@ -369,7 +369,7 @@ namespace {
         Set<String>  fAvailableInstances_;
 #endif
         CapturerWithContext_Windows_ (Options options)
-            : CapturerWithContext_COMMON_ (options)
+            : CapturerWithContext_COMMON_{options}
         {
 #if qUseWMICollectionSupport_
             fAvailableInstances_ = fNetworkWMICollector_.GetAvailableInstaces ();
@@ -385,12 +385,15 @@ namespace {
 #endif
         }
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
-            : CapturerWithContext_COMMON_ (from)
+            : CapturerWithContext_COMMON_
+        {
+            from
+        }
 #if qUseWMICollectionSupport_
-            , fNetworkWMICollector_ (from.fNetworkWMICollector_)
-            , fTCPv4WMICollector_ (from.fTCPv4WMICollector_)
-            , fTCPv6WMICollector_ (from.fTCPv6WMICollector_)
-            , fAvailableInstances_ (from.fAvailableInstances_)
+        , fNetworkWMICollector_{from.fNetworkWMICollector_}, fTCPv4WMICollector_{from.fTCPv4WMICollector_}, fTCPv6WMICollector_{from.fTCPv6WMICollector_}, fAvailableInstances_
+        {
+            from.fAvailableInstances_
+        }
 #endif
         {
 #if qUseWMICollectionSupport_
@@ -512,7 +515,7 @@ namespace {
         using inherited = CapturerWithContext_Windows_;
 #endif
         CapturerWithContext_ (Options options)
-            : inherited (options)
+            : inherited{options}
         {
         }
         Instruments::Network::Info capture ()
@@ -597,7 +600,7 @@ namespace {
 
     public:
         MyCapturer_ (const CapturerWithContext_& ctx)
-            : fCaptureContext (ctx)
+            : fCaptureContext{ctx}
         {
         }
         virtual MeasurementSet Capture () override

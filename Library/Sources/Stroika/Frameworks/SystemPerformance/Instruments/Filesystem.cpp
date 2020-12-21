@@ -168,8 +168,8 @@ namespace {
 
     protected:
         CapturerWithContext_COMMON_ (const Options& options)
-            : fOptions_ (options)
-            , fMinimumAveragingInterval_ (options.fMinimumAveragingInterval)
+            : fOptions_{options}
+            , fMinimumAveragingInterval_{options.fMinimumAveragingInterval}
         {
         }
 
@@ -275,7 +275,7 @@ namespace {
 
     public:
         CapturerWithContext_Linux_ (Options options)
-            : CapturerWithContext_COMMON_ (options)
+            : CapturerWithContext_COMMON_{options}
         {
             // for side-effect of setting fContextStats_
             try {
@@ -657,9 +657,12 @@ namespace {
         WMICollector fLogicalDiskWMICollector_;
 #endif
         CapturerWithContext_Windows_ (Options options)
-            : CapturerWithContext_COMMON_ (options)
+            : CapturerWithContext_COMMON_
+        {
+            options
+        }
 #if qUseWMICollectionSupport_
-            , fLogicalDiskWMICollector_
+        , fLogicalDiskWMICollector_
         {
             L"LogicalDisk"sv, {},
             {
@@ -679,9 +682,15 @@ namespace {
 #endif
         }
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
-            : CapturerWithContext_COMMON_ (from)
+            : CapturerWithContext_COMMON_
+        {
+            from
+        }
 #if qUseWMICollectionSupport_
-            , fLogicalDiskWMICollector_ (from.fLogicalDiskWMICollector_)
+        , fLogicalDiskWMICollector_
+        {
+            from.fLogicalDiskWMICollector_
+        }
 #endif
         {
 #if qUseWMICollectionSupport_
@@ -1004,7 +1013,7 @@ namespace {
         using inherited = CapturerWithContext_COMMON_;
 #endif
         CapturerWithContext_ (Options options)
-            : inherited (options)
+            : inherited{options}
         {
         }
         Info capture ()
@@ -1091,7 +1100,7 @@ namespace {
 
     public:
         MyCapturer_ (const CapturerWithContext_& ctx)
-            : fCaptureContext (ctx)
+            : fCaptureContext{ctx}
         {
         }
         virtual MeasurementSet Capture () override
