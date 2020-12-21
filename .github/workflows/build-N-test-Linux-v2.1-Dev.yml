@@ -66,15 +66,15 @@ jobs:
             includeInDevBranchBuilds: true
 
           # ubuntu 20.04
-          # - displayTargetName: ubuntu-20.04-g++-9 (Debug)
-          #   os: unix
-          #   compiler: g++-9
-          #   runs_on: ubuntu-latest
-          #   container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
-          #   cpp_version: c++17
-          #   config_name: Debug
-          #   extra_config_args: --apply-default-debug-flags --trace2file enable
-          #   includeInDevBranchBuilds: false
+          - displayTargetName: ubuntu-20.04-g++-9 (Debug)
+            os: unix
+            compiler: g++-9
+            runs_on: ubuntu-latest
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
+            cpp_version: c++17
+            config_name: Debug
+            extra_config_args: --apply-default-debug-flags --trace2file enable
+            includeInDevBranchBuilds: false
           # - displayTargetName: ubuntu-20.04-g++-10 (Debug)
           #   os: unix
           #   compiler: g++-10
@@ -111,6 +111,7 @@ jobs:
           #   config_name: Release
           #   extra_config_args: --apply-default-release-flags --trace2file enable
           #   includeInDevBranchBuilds: false
+    if: 'github.ref == "refs/heads/v2.1-Release" || includeInDevBranchBuilds'
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=5 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
