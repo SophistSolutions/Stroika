@@ -36,10 +36,12 @@ using Memory::BLOB;
 
 namespace {
     struct Options_ {
-        enum class Operation { eList,
-                               eExtract,
-                               eCreate,
-                               eUpdate };
+        enum class Operation {
+            eList,
+            eExtract,
+            eCreate,
+            eUpdate
+        };
         Operation                  fOperation;
         filesystem::path           fArchiveFileName;
         optional<filesystem::path> fOutputDirectory; // applies only if extract
@@ -126,7 +128,7 @@ namespace {
             return move (Archive::Zip::Reader{IO::FileSystem::FileInputStream::New (archiveName)});
         }
 #endif
-        Execution::Throw (Execution::Exception (L"Unrecognized format"sv));
+        Execution::Throw (Execution::Exception{L"Unrecognized format"sv});
     }
 }
 

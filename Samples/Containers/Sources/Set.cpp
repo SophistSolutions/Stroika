@@ -39,8 +39,10 @@ namespace {
         {
             vector<int> c{3, 4, 5};
             Set<int>    s9{1, 2, 3};
-            Set<int>    s10{Common::DeclareEqualsComparer ([] (int l, int r) { return l == r; }), c};
-            Assert (s10.Contains (3) and not s10.Contains (88));
+            // Construct a set with an arbitrary comparison routine (in this case comparing mod 11)
+            Set<int> s10{Common::DeclareEqualsComparer ([] (int l, int r) { return (l % 11) == (r % 11); }), c};
+            Assert (s10.Contains (3) and s10.Contains (3 + 11) and not s10.Contains (6));
+            DbgTrace (L"s10=%s", Characters::ToString (s10).c_str ());
         }
     }
 }
