@@ -33,7 +33,7 @@ using HTTP::ClientErrorException;
 
 struct Router::Rep_ : Interceptor::_IRep {
     Rep_ (const Sequence<Route>& routes)
-        : fRoutes_ (routes)
+        : fRoutes_{routes}
     {
     }
     virtual void HandleFault ([[maybe_unused]] Message* m, [[maybe_unused]] const exception_ptr& e) noexcept override
@@ -139,7 +139,7 @@ struct Router::Rep_ : Interceptor::_IRep {
  ********************************************************************************
  */
 Router::Router (const Sequence<Route>& routes)
-    : inherited (make_shared<Rep_> (routes))
+    : inherited{make_shared<Rep_> (routes)}
 {
 }
 

@@ -82,8 +82,8 @@ String Pinger::ResultType::ToString () const
  ********************************************************************************
  */
 Pinger::Pinger (const InternetAddress& addr, const Options& options)
-    : fDestination_ (addr)
-    , fOptions_ (options)
+    : fDestination_{addr}
+    , fOptions_{options}
     , fICMPPacketSize_{Options::kAllowedICMPPayloadSizeRange.Pin (options.fPacketPayloadSize.value_or (Options::kDefaultPayloadSize)) + sizeof (ICMP::V4::PacketHeader)}
     , fSendPacket_{fICMPPacketSize_}
     , fSocket_{IO::Network::ConnectionlessSocket::New (SocketAddress::INET, Socket::RAW, IPPROTO_ICMP)}

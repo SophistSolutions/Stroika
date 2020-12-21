@@ -102,12 +102,12 @@ namespace Stroika::Frameworks::UPnP {
         nonvirtual String ToString () const;
     };
 
-    /*
-    */
+    /**
+     */
     Memory::BLOB Serialize (const DeviceDescription& dd);
 
-    /*
-    */
+    /**
+     */
     DeviceDescription DeSerialize (const Memory::BLOB& b);
 
 }

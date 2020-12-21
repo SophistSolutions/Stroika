@@ -241,14 +241,6 @@ namespace {
  ******************************** TextLayoutBlock *******************************
  ********************************************************************************
  */
-TextLayoutBlock::TextLayoutBlock ()
-{
-}
-
-TextLayoutBlock::~TextLayoutBlock ()
-{
-}
-
 /*
 @METHOD:        TextLayoutBlock::GetCharacterDirection
 @DESCRIPTION:

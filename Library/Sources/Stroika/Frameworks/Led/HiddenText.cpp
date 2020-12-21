@@ -26,11 +26,7 @@ using namespace Stroika::Frameworks::Led;
  ********************************************************************************
  */
 HidableTextMarkerOwner::HidableTextMarkerOwner (TextStore& textStore)
-    : inherited ()
-    , fInternalizer ()
-    , fExternalizer ()
-    , fTextStore (textStore)
-    , fMarkersToBeDeleted ()
+    : fTextStore{textStore}
 {
     SetInternalizer (shared_ptr<FlavorPackageInternalizer> ()); // sets default
     SetExternalizer (shared_ptr<FlavorPackageExternalizer> ()); // DITTO
@@ -499,8 +495,8 @@ void HidableTextMarkerOwner::Invariant_ () const
  ********************************************************************************
  */
 UniformHidableTextMarkerOwner::UniformHidableTextMarkerOwner (TextStore& textStore)
-    : inherited (textStore)
-    , fHidden (false)
+    : inherited{textStore}
+    , fHidden{false}
 {
 }
 

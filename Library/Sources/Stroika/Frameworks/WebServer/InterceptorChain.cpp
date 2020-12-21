@@ -13,7 +13,7 @@ using namespace Stroika::Frameworks::WebServer;
 // This class MUST be re-entrant (internally synchronized)- and is STATELESS - so no syncro needed
 struct InterceptorChain::Rep_ : InterceptorChain::_IRep {
     Rep_ (const Sequence<Interceptor>& interceptors)
-        : fInterceptors_ (interceptors)
+        : fInterceptors_{interceptors}
     {
     }
     virtual Sequence<Interceptor> GetInterceptors () const override
@@ -53,7 +53,7 @@ struct InterceptorChain::Rep_ : InterceptorChain::_IRep {
  ********************************************************************************
  */
 InterceptorChain::InterceptorChain (const Sequence<Interceptor>& interceptors)
-    : fRep_ (make_shared<Rep_> (interceptors))
+    : fRep_{make_shared<Rep_> (interceptors)}
 {
 }
 

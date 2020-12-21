@@ -37,10 +37,6 @@ using namespace Stroika::Frameworks::UPnP::SSDP::Server;
 ******************************** SearchResponder *******************************
 ********************************************************************************
 */
-SearchResponder::SearchResponder ()
-{
-}
-
 namespace {
     void ParsePacketAndRespond_ (Streams::InputStream<Character>::Ptr in, const Iterable<Advertisement>& advertisements, ConnectionlessSocket::Ptr useSocket, SocketAddress sendTo)
     {

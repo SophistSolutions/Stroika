@@ -32,7 +32,7 @@ shared_ptr<ILogHandler::MessageInstance> ILogHandler::Started (Message* m)
  */
 struct LoggingInterceptor::Rep_ : Interceptor::_IRep {
     Rep_ (const shared_ptr<ILogHandler>& logger)
-        : fLogger_ (logger)
+        : fLogger_{logger}
     {
     }
     virtual void HandleFault (Message* m, [[maybe_unused]] const exception_ptr& e) noexcept override
@@ -69,6 +69,6 @@ struct LoggingInterceptor::Rep_ : Interceptor::_IRep {
 };
 
 LoggingInterceptor::LoggingInterceptor (const shared_ptr<ILogHandler>& logger)
-    : inherited (make_shared<Rep_> (logger))
+    : inherited{make_shared<Rep_> (logger)}
 {
 }

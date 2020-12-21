@@ -73,8 +73,8 @@ namespace Stroika::Frameworks::Led {
     */
     class TextLayoutBlock {
     protected:
-        TextLayoutBlock ();
-        virtual ~TextLayoutBlock ();
+        TextLayoutBlock () = default;
+        virtual ~TextLayoutBlock () = default;
 
     public:
         nonvirtual const Led_tChar* PeekAtRealText () const;

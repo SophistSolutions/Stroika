@@ -39,9 +39,8 @@ public:
     FrequencyInfo           fFrequencyInfo;
     URI                     fLocation;
     Rep_ (const Device& d, const DeviceDescription& dd, const FrequencyInfo& fi)
-        : fAdvertisements ()
-        , fFrequencyInfo (fi)
-        , fLocation (d.fLocation)
+        : fFrequencyInfo{fi}
+        , fLocation{d.fLocation}
     {
         {
             SSDP::Advertisement dan;

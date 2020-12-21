@@ -21,7 +21,7 @@ using namespace Stroika::Frameworks::Led;
 
 class ChunkedArrayTextStore::TextChunk {
 public:
-    TextChunk ();
+    TextChunk () = default;
     TextChunk (const Led_tChar* copyFrom, size_t bytesToCopy);
 
 public:
@@ -41,17 +41,13 @@ public:
     nonvirtual void             DeleteAfter (size_t howMany, size_t after) noexcept;
 
 private:
-    size_t    fTotalTcharsUsed;
+    size_t    fTotalTcharsUsed{0};
     Led_tChar fData[kTextChunkSize];
 };
 
 //  class   ChunkedArrayTextStore::TextChunk
-inline ChunkedArrayTextStore::TextChunk::TextChunk ()
-    : fTotalTcharsUsed (0)
-{
-}
 inline ChunkedArrayTextStore::TextChunk::TextChunk (const Led_tChar* copyFrom, size_t bytesToCopy)
-    : fTotalTcharsUsed (bytesToCopy)
+    : fTotalTcharsUsed{bytesToCopy}
 {
     Assert (bytesToCopy <= kTextChunkSize);
     AssertNotNull (copyFrom);
@@ -118,19 +114,7 @@ const size_t kEnufChildrenToApplyHackMarkers = 50;
 // This is what goes in a fTextStoreHook of a Marker* when we add it...
 class ChunkedArrayMarkerHook : public Marker::HookData, public Memory::UseBlockAllocationIfAppropriate<ChunkedArrayMarkerHook> {
 public:
-    ChunkedArrayMarkerHook ()
-        : Marker::HookData ()
-        , fParent (NULL)
-        , fIsHackMarker (false)
-        , fIsDeletedMarker (false)
-        , fIsPreRemoved (false)
-        , fFirstSubMarker (NULL)
-        , fNextSubMarker (NULL)
-        , fStart (0)
-        , fLength (0)
-        , fOwner (NULL)
-    {
-    }
+    ChunkedArrayMarkerHook () = default;
 
 public:
     virtual MarkerOwner* GetOwner () const override;
@@ -149,13 +133,13 @@ public:
     Marker* fFirstSubMarker; // singly linked list of submarkers
     Marker* fNextSubMarker;  // (next link with same parent)
 
-    Marker*      fParent;
-    bool         fIsHackMarker : 1;
-    bool         fIsDeletedMarker : 1; // true only for REAL markers who are deleted
-    bool         fIsPreRemoved : 1;
-    size_t       fStart;
-    size_t       fLength;
-    MarkerOwner* fOwner;
+    Marker*      fParent{nullptr};
+    bool         fIsHackMarker : 1 {false};
+    bool         fIsDeletedMarker : 1 {false}; // true only for REAL markers who are deleted
+    bool         fIsPreRemoved : 1 {false};
+    size_t       fStart{0};
+    size_t       fLength{0};
+    MarkerOwner* fOwner{nullptr};
 };
 
 // Subclass only to do block allocation
@@ -382,19 +366,19 @@ private:
 
 public:
     ChunkedArrayMarkerOwnerHook (MarkerOwner* mo, size_t len)
-        : inherited ()
-        ,
+        :
 #if qUseLRUCacheForRecentlyLookedUpMarkers
-        fCache (2)
+        fCache{2}
         ,
 #endif
-        fRootMarker ()
+        fRootMarker
+    {
+    }
 #if qKeepChunkedArrayStatistics
-        , fTotalMarkersPresent (0)
-        , fTotalHackMarkersPresent (0)
-        , fPeakTotalMarkersPresent (0)
-        , fPeakHackMarkersPresent (0)
-        , fTotalHackMarkersAlloced (0)
+    , fTotalMarkersPresent{0}, fTotalHackMarkersPresent{0}, fPeakTotalMarkersPresent{0}, fPeakHackMarkersPresent{0}, fTotalHackMarkersAlloced
+    {
+        0
+    }
 #endif
     {
         Assert (fRootMarker.fTextStoreHook == NULL);
@@ -631,11 +615,9 @@ inline ChunkedArrayMarkerOwnerHook* GetAMOH (Marker* m)
  *  can be joined - then do so.
  */
 ChunkedArrayTextStore::ChunkedArrayTextStore ()
-    : inherited ()
-    , fLength (0)
-    , fTextChunks ()
-    , fCachedChunkIndex (0)
-    , fCachedChunkIndexesOffset (0)
+    : fLength{0}
+    , fCachedChunkIndex{0}
+    , fCachedChunkIndexesOffset{0}
 {
     fTextStoreHook = new ChunkedArrayMarkerOwnerHook (this, 2);
 }

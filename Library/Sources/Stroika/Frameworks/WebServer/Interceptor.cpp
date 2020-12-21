@@ -21,8 +21,8 @@ class Interceptor::MyRep_ : public Interceptor::_IRep {
 
 public:
     MyRep_ (const function<void (Message*)>& handleMessage, const function<void (Message*, const exception_ptr&)>& handleFault)
-        : fHandleMessage_ (handleMessage)
-        , fHandleFault_ (handleFault)
+        : fHandleMessage_{handleMessage}
+        , fHandleFault_{handleFault}
     {
     }
     virtual void HandleFault (Message* m, const exception_ptr& e) noexcept override
@@ -41,7 +41,7 @@ public:
  ********************************************************************************
  */
 Interceptor::Interceptor (const function<void (Message*)>& handleMessage, const function<void (Message*, const exception_ptr&)>& handleFault)
-    : Interceptor (make_shared<MyRep_> (handleMessage, handleFault))
+    : Interceptor{make_shared<MyRep_> (handleMessage, handleFault)}
 {
 }
 
