@@ -616,7 +616,8 @@ namespace {
             DurationSecondsType before         = fCaptureContext.fLastCapturedAt;
             Info                rawMeasurement = fCaptureContext.capture ();
             if (outMeasuredAt != nullptr) {
-                *outMeasuredAt = Range<DurationSecondsType> (before, fCaptureContext.fLastCapturedAt);
+                using Traversal::Openness;
+                *outMeasuredAt = Range<DurationSecondsType> (before, fCaptureContext.fLastCapturedAt, Openness::eClosed, Openness::eClosed);
             }
             return rawMeasurement;
         }
