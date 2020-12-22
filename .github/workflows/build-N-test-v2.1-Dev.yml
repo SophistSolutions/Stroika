@@ -77,6 +77,7 @@ jobs:
             cpp_version: c++17
             config_name: Debug
             extra_config_args: --apply-default-release-flags --trace2file enable --compiler-driver arm-linux-gnueabihf-g++-8 --cross-compiling true
+            includeInDevBranchBuilds: true
 
           # ubuntu 20.04
           # - displayTargetName: ubuntu-20.04-g++-9 (Debug)
