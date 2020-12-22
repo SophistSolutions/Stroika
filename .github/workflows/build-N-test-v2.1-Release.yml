@@ -16,7 +16,7 @@ name: build-N-test-v2.1-Release
 on:
   push:
     branches:
-      #- v2.1-Dev
+      - v2.1-Dev
       - v2.1-Release
   workflow_dispatch:
     inputs:
@@ -31,6 +31,10 @@ jobs:
   build-n-test-Linux:
     runs-on: ${{ matrix.runs_on }}
     strategy:
+      #
+      # Configuration notes
+      #   o --debug-symbols false to reduce build disk size (and we aren't debugging anyhow) in many debug configurations
+      #
       matrix:
         include:
           # ## SADLY: Container operations are only supported on Linux runners
@@ -62,8 +66,17 @@ jobs:
             container_image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
             cpp_version: c++17
             config_name: Debug
-            extra_config_args: --apply-default-debug-flags --trace2file enable
+            extra_config_args: --apply-default-debug-flags --trace2file enable --debug-symbols false
             includeInDevBranchBuilds: true
+
+          - displayTargetName: ubuntu-18.04-cross-compile-raspberrypi (Debug)
+            os: unix
+            compiler: g++-8
+            runs_on: ubuntu-latest
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests
+            cpp_version: c++17
+            config_name: Debug
+            extra_config_args: --apply-default-release-flags --trace2file enable --compiler-driver arm-linux-gnueabihf-g++-8 --cross-compiling true
 
           # ubuntu 20.04
           - displayTargetName: ubuntu-20.04-g++-9 (Debug)
@@ -73,7 +86,7 @@ jobs:
             container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
             cpp_version: c++17
             config_name: Debug
-            extra_config_args: --apply-default-debug-flags --trace2file enable
+            extra_config_args: --apply-default-debug-flags --trace2file enable --debug-symbols false
             includeInDevBranchBuilds: false
 
           - displayTargetName: ubuntu-20.04-g++-10 (Debug)
@@ -83,7 +96,7 @@ jobs:
             container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests
             cpp_version: c++17
             config_name: Debug
-            extra_config_args: --apply-default-debug-flags --trace2file enable
+            extra_config_args: --apply-default-debug-flags --trace2file enable --debug-symbols false
             includeInDevBranchBuilds: false
 
           - displayTargetName: ubuntu-20.04-g++-10
