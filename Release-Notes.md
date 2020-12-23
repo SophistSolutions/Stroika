@@ -9,7 +9,7 @@ especially those they need to be aware of when upgrading.
 
 ---
 
-### 2.1b8x {2020-12-06x}
+### 2.1b8x {2020-12-23}
 
 #### TLDR
 
@@ -20,8 +20,9 @@ especially those they need to be aware of when upgrading.
 - Build System
   - make all no longer invokes make check (unneeded, cna do explicitly, and we often do make all, no point in check)
   - Git Actions: merge Unix, Windows, MacOS workaflows into one (3 jobs instead of 3 workflows)
-  - better error message (really just warning instead of failure when configure on windows without --arch
-  - new configure option --no-third-party-components; and used it in Makefile for similarly named configuration test
+  - configure
+    - better error message (really just warning instead of failure when configure on windows without --arch
+    - new configure option --no-third-party-components; and used it in Makefile for similarly named configuration test
   - Compilers Used/Supported
     - g++ { 8, 9, 10 }
     - Clang++ { unix: 7, 8, 9, 10, 11; XCode: 12 }
