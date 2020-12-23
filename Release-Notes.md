@@ -7,79 +7,60 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+---
+
 ### 2.1b8x {2020-12-06x}
 
 #### TLDR
 
-- Deprecated DateTimeRange, DurationRange, etc, and instead greatly improved Traits<> handling for Range, and DiscreteRange<> so can just use those directly
+- Deprecated DateTimeRange, DurationRange, etc, and instead greatly improved Traits<> handling for Range, and DiscreteRange<> so they can be used directly (e.g Range\<Duration>{})
 
 #### Details
 
-    Deprecated DurationRange: use Traversal::Range<Duration> directly instead (used specialization)
-    deprecated DateTimeRange and DateRange and SimpleDateRange: use Traversal::DiscreteRange<Date>, Traversal::Range<Date>, and Traversal::Range<DateTime> instead
-    Deprecated InternetAddressRange<> - just use DiscreteRange<InternetAddress>> directly
-
-
-    Range<>: renamed Circle -> Ball (deprecated old name); and re-implemnted Contains(Range) and added regtests
-
-    more clenaups to Traversal::RangeTraits specializations for datetime ranges code
-
-    Traversal/DiscreteRange defaults to DefaultDiscreteRangeTraits if no other defined so non logner need to speicalize DefaultDiscreteRangeTraits for Date
-    cleanups for DefaultRangeTraits; deprecated ExplicitRangeTraits_Integral (use DefaultRangeTraits_Integral)
-    name cleanups with RangeTraits::Default_Integral<> etc - no backward compat issues since never released
-    fixed regression - need override of GetPrevious/GetNext for now
-    Range<> code - some progress - on new RangeTraits::Explicit<> - not fully working but right now all regtests sitll passing
-    Range<> TRAITS GetNext/GetPrevious - refine definition edge cases (stricter) - and fix call to assure arg follows requires and other cleans and better regtests
-
-    Many changes to Ranges code: better document edge condition about illegal single point with half open/half closed; better assertion checking in CTORs for range and fixes (related) to Range::Pin code - now correct and has better asertions; lose range CTOR constexpr explicit Range (Openness lhsOpen, Openness rhsOpen);progress on range Explicit/ExplicitOpenness, but not in great shape yet
-
-    fixed Range<>::Interaction to hanlde stricter Range constructor about empty args
-    static asserts for DiscreteRange
-
-    new DefaultBounds, ExplicitBounds
-    DefaultOpenness, ExplicitOpenness
-    DefaultDifferenceTypes, ExplicitDifferenceTypes
-    working together with new Explicit () type traits (and using new TemplateUtilities)
-
-    range code: ExplicitOpennessAndDifferenceType<> template to replace ExplicitRangeTraitsWithoutMinMax
-    more cleanups on Range<> and related traits code - mostly small - but deprecated DefaultDiscreteRangeTraits - use Default<> now
-    Traversal::RangeTraits::Default<> for IntenetAddress
-
-    Foreach stroika type whwere we specialize RangeTraits::Default, also specialize DefaultOpenness, and DEfaultDifferenceType, and DefaultDifferenceType takes just one arg, and ExplicitDifferenceTypes second arg now can be defaulted
-
-    renamed Common/Immortalize.h to Common/TemplateUtilites.h (deprecating old name); and added several new utilities there like UnsignedOfIf DifferenceType LazyType  and Identity<>
-    several regtests for new Identity/DifferenceType/UnsignedOfIf templates
-
-    fixed _DeprecatedFile_ () macro
-
-    fixed readme link to github actions summary badges
-
 - Build System
-  make all no longer invokes make check (unneeded, cna do explicitly, and we often do make all, no point in check)
-
-  better error message (really just warning instead of failure when configure on windows without --arch
-
-  lose remaining support for travisci: they sent email (support) saying I could use the free acount for my opensource project, but then didnt actually change anything
-
-  new configure option --no-third-party-components; and used it in Makefile for similarly named configuration test
-
+  - make all no longer invokes make check (unneeded, cna do explicitly, and we often do make all, no point in check)
+  - Git Actions: merge Unix, Windows, MacOS workaflows into one (3 jobs instead of 3 workflows)
+  - better error message (really just warning instead of failure when configure on windows without --arch
+  - new configure option --no-third-party-components; and used it in Makefile for similarly named configuration test
+  - Compilers Used/Supported
+    - g++ { 8, 9, 10 }
+    - Clang++ { unix: 7, 8, 9, 10, 11; XCode: 12 }
+    - MSVC: { 15.9.30, 16.8.3 }
+    - Changes
+      - use vs 16.8.3
+  - update readme.md links to github actions (new smaller number of worflows)
+- Library/Foundation
+  - Foundation::Common
+    - renamed Common/Immortalize.h to Common/TemplateUtilites.h (deprecating old name);
+    - added several new utilities there like UnsignedOfIf DifferenceType LazyType and Identity<>
+    - several regtests for new Identity/DifferenceType/UnsignedOfIf templates
+  - Foundation::Configuration
+    - fixed _DeprecatedFile_ () macro
+  - Foundation::Traversal
+    - Range (and DiscreteRange)
+      - Deprecated DurationRange, DateTimeRange, DateRange, SimpleDateRange, and InternetAddressRange: instead use Range\<T> or DiscreteRange\<T> directly for the appropriate contained type. Specailizations of RangeTraits classes like DefaultBounds<> etc provided for some special classes (like InternetAddress, Duration etc).
+      - Range<>: renamed Circle -> Ball (deprecated old name); and re-implemnted Contains(Range) and added regtests
+      - MAJOR cleanup of RangeTraits
+        - all the existing tratis replaced with
+        - DefaultOpenness, DefaultBounds, DefaultDifferenceTypes
+        - and ExplicitDifferenceTypes, ExplicitOpenness, ExplicitBounds
+      - DiscreteRange now just uses regular RangeTraits
+      - RangeTraits default renamed to just Default (and have Default_Enum, Default_Integral etc)
+      - tighten semantics and clean definitions of GetPrevious/GetNext
+      - better document edge condition about illegal single point with half open/half closed; better assertion checking in CTORs for range and fixes (related) to Range::Pin code - now correct and has better asertions; lose range CTOR constexpr explicit Range (Openness lhsOpen, Openness rhsOpen);progress on range Explicit/ExplicitOpenness, but not in great shape yet
+      - fixed Range<>::Interaction to hanlde stricter Range constructor about empty args
+      - static asserts for DiscreteRange
+      - Foreach stroika type whwere we specialize RangeTraits::Default, also specialize DefaultOpenness, and DEfaultDifferenceType, and DefaultDifferenceType takes just one arg, and ExplicitDifferenceTypes second arg now can be defaulted
+- Documentation
+  - fixed readme link to github actions summary badges
+  - lose remaining support for travisci: they sent email (support) saying I could use the free acount for my opensource project, but then didnt actually change anything
+- Samples
+  Small code cleanups
 - ThirdPartyComponents changes
-
-  - sqlite 3.34
-  - openssl 1.1.1i
-  - libcurl 7.74
   - boost 1.75
-
-- Comppilers
-
-  - Changes
-    use vs 16.8.3
-
-- sample code cleanups
-
-- Git Actions: merge Unix, Windows, MacOS workaflows into one (3 jobs instead of 3 workflows)
-
-  update readme.md links to github actions (new smaller number of worflows)
+  - libcurl 7.74
+  - openssl 1.1.1i
+  - sqlite 3.34
 
 ---
 
