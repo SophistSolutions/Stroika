@@ -1204,9 +1204,9 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_a (bool start, const char* tex
             }
         }
         fCurAHRefStart          = size_t (-1);
-        fCurAHRefText           = string ();
+        fCurAHRefText           = string{};
         fHiddenTextMode         = false;
-        fHiddenTextAccumulation = Led_tString ();
+        fHiddenTextAccumulation = Led_tString{};
         fLastCharSpace          = false;
     }
 #else

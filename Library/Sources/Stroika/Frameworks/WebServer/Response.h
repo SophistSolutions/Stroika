@@ -214,7 +214,7 @@ namespace Stroika::Frameworks::WebServer {
          * The overrideReason - if specified (not empty) will be used associated with the given status in the HTTP response, and otherwise one will
          * be automatically generated based on the status.
          */
-        nonvirtual void SetStatus (Status newStatus, const String& overrideReason = wstring ());
+        nonvirtual void SetStatus (Status newStatus, const String& overrideReason = wstring{});
 
     public:
         /*

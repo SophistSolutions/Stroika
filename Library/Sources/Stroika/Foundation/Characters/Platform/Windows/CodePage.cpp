@@ -26,7 +26,7 @@ using namespace Stroika::Foundation::Characters::Platform::Windows;
 string Characters::Platform::Windows::BSTRStringToUTF8 (const BSTR bstr)
 {
     if (bstr == nullptr) {
-        return string ();
+        return string{};
     }
     else {
         int    srcStrLen    = ::SysStringLen (bstr);
@@ -69,7 +69,7 @@ wstring Characters::Platform::Windows::BSTR2wstring (VARIANT b)
         return BSTR2wstring (b.bstrVal);
     }
     else {
-        return wstring ();
+        return wstring{};
     }
 }
 

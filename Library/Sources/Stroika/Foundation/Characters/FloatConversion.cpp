@@ -128,7 +128,7 @@ namespace {
         static thread_local stringstream s;
         static const ios_base::fmtflags  kDefaultIOSFmtFlags_ = s.flags (); // Just copy out of the first constructed stringstream
 
-        s.str (string ());
+        s.str (string{});
         s.clear ();
 
         static const locale kCLocale_ = locale::classic ();

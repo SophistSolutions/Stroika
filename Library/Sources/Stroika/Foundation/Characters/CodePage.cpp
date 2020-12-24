@@ -3705,7 +3705,7 @@ wstring Characters::MapUNICODETextWithMaybeBOMTowstring (const char* start, cons
 {
     Require (start <= end);
     if (start == end) {
-        return wstring ();
+        return wstring{};
     }
     else {
         size_t                    outBufSize = end - start;
@@ -3714,7 +3714,7 @@ wstring Characters::MapUNICODETextWithMaybeBOMTowstring (const char* start, cons
         MapSBUnicodeTextWithMaybeBOMToUNICODE (start, end - start, wideBuf, &outCharCount);
         Assert (outCharCount <= outBufSize);
         if (outCharCount == 0) {
-            return wstring ();
+            return wstring{};
         }
 
         // The wideBuf may be NUL-terminated or not (depending on whether the input was NUL-terminated or not).

@@ -288,13 +288,13 @@ namespace Stroika::Foundation::Characters {
      ********************************************************************************
      */
     inline CodePageConverter::CodePageConverter (CodePage codePage)
-        : fHandleBOM (false)
-        , fCodePage (codePage)
+        : fHandleBOM{false}
+        , fCodePage{codePage}
     {
     }
     inline CodePageConverter::CodePageConverter (CodePage codePage, [[maybe_unused]] HandleBOMFlag h)
-        : fHandleBOM (true)
-        , fCodePage (codePage)
+        : fHandleBOM{true}
+        , fCodePage{codePage}
     {
         Require (h == eHandleBOM);
     }

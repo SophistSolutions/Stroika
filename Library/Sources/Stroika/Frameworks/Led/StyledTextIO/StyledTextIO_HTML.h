@@ -242,10 +242,10 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         nonvirtual void   WriteInnerBody (WriterContext& writerContext);
         nonvirtual void   WriteBodyCharacter (WriterContext& writerContext, Led_tChar c);
         nonvirtual void   WriteTable (WriterContext& writerContext, Table* table);
-        nonvirtual void   WriteOpenTag (WriterContext& writerContext, const string& tagName, const string& tagExtras = string ());
+        nonvirtual void   WriteOpenTag (WriterContext& writerContext, const string& tagName, const string& tagExtras = string{});
         nonvirtual void   WriteOpenTagSpecial (WriterContext& writerContext, const string& tagName, const string& tagFullText);
         nonvirtual void   WriteCloseTag (WriterContext& writerContext, const string& tagName);
-        nonvirtual void   WriteOpenCloseTag (WriterContext& writerContext, const string& tagName, const string& tagExtras = string ());
+        nonvirtual void   WriteOpenCloseTag (WriterContext& writerContext, const string& tagName, const string& tagExtras = string{});
         nonvirtual bool   IsTagOnStack (WriterContext& writerContext, const string& tagName);
         nonvirtual void   EmitBodyFontInfoChange (WriterContext& writerContext, const Led_FontSpecification& newOne, bool skipDoingOpenTags);
         nonvirtual void   AssureStyleRunSummaryBuilt (WriterContext& writerContext);

@@ -24,7 +24,7 @@ namespace Stroika::Foundation::DataExchange::XML {
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
     struct NamespaceDefinition {
-        NamespaceDefinition (const wstring& uri, const wstring& prefix = wstring ());
+        NamespaceDefinition (const wstring& uri, const wstring& prefix = wstring{});
 
         wstring fURI;    // required non-null
         wstring fPrefix; // can be nullptr
@@ -61,7 +61,7 @@ namespace Stroika::Foundation::DataExchange::XML {
         nonvirtual void                        SetNamespaces (const vector<NamespaceDefinition>& namespaces);
 
     public:
-        nonvirtual void Add (const wstring& uri, const wstring& prefix = wstring ());
+        nonvirtual void Add (const wstring& uri, const wstring& prefix = wstring{});
 
     private:
         vector<NamespaceDefinition> fNamespaces;

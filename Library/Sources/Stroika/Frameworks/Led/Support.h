@@ -766,7 +766,7 @@ namespace Stroika::Frameworks::Led {
 #endif
     };
 
-    string MakeSophistsAppNameVersionURL (const string& relURL, const string& appName, const string& extraArgs = string ());
+    string MakeSophistsAppNameVersionURL (const string& relURL, const string& appName, const string& extraArgs = string{});
 
 }
 

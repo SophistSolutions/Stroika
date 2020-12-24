@@ -95,7 +95,7 @@ string XML::QuoteForXMLAttribute (const String& s)
 string XML::QuoteForXMLAttribute (const optional<String>& s)
 {
     if (not s.has_value ()) {
-        return string ();
+        return string{};
     }
     return QuoteForXMLAttribute (*s);
 }
@@ -207,7 +207,7 @@ string XML::QuoteForXML (const String& s)
 string XML::QuoteForXML (const optional<String>& s)
 {
     if (not s.has_value ()) {
-        return string ();
+        return string{};
     }
     return QuoteForXML (*s);
 }

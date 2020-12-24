@@ -104,10 +104,10 @@ namespace Stroika::Foundation::Characters::Platform::Windows {
     inline wstring BSTR2wstring (BSTR b)
     {
         if (b == nullptr) {
-            return wstring ();
+            return wstring{};
         }
         else {
-            return wstring (b);
+            return wstring{b};
         }
     }
 

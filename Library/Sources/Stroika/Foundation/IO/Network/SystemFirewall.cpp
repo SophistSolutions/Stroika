@@ -129,15 +129,15 @@ namespace {
         VARIANT_BOOL enabled = VARIANT_FALSE;
         ThrowIfErrorHRESULT (pFwRule->get_Enabled (&enabled));
         return Rule{
-            name == nullptr ? wstring () : wstring (name),
-            desc == nullptr ? wstring () : wstring (desc),
-            group == nullptr ? wstring () : wstring (group),
-            application == nullptr ? wstring () : wstring (application),
+            name == nullptr ? wstring{} : wstring{name},
+            desc == nullptr ? wstring{} : wstring{desc},
+            group == nullptr ? wstring{} : wstring{group},
+            application == nullptr ? wstring{} : wstring{application},
             (NET_FW_PROFILE_TYPE2) (profileMask),
             direction,
             (NET_FW_IP_PROTOCOL_) (protocol),
-            localPorts == nullptr ? wstring () : wstring (localPorts),
-            remotePorts == nullptr ? wstring () : wstring (remotePorts),
+            localPorts == nullptr ? wstring{} : wstring{localPorts},
+            remotePorts == nullptr ? wstring{} : wstring{remotePorts},
             action,
             enabled != VARIANT_FALSE};
     }

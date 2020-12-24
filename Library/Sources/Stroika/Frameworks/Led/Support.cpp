@@ -678,7 +678,7 @@ vector<wstring> Led::UnpackVectorOfStringsFromVariantArray (const VARIANT& v)
 void Led::DumpSupportedInterfaces (IUnknown* obj, const char* objectName, const char* levelPrefix)
 {
     {
-        string label = objectName == nullptr ? string () : Characters::CString::Format (" (named '%s')", objectName);
+        string label = objectName == nullptr ? string{} : Characters::CString::Format (" (named '%s')", objectName);
         string msg   = Characters::CString::Format ("Dumping interfaces for object%s at %p:\n", label.c_str (), obj);
         ::OutputDebugStringA (msg.c_str ());
 
@@ -790,7 +790,7 @@ void Led::DumpSupportedInterfaces (IUnknown* obj, const char* objectName, const 
 void Led::DumpObjectsInIterator (IEnumUnknown* iter, const char* iteratorName, const char* levelPrefix)
 {
     {
-        string label = iteratorName == nullptr ? string () : Characters::CString::Format (" (named '%s')", iteratorName);
+        string label = iteratorName == nullptr ? string{} : Characters::CString::Format (" (named '%s')", iteratorName);
         string msg   = Characters::CString::Format ("Dumping objects (and their interface names) for iterator%s at %p\n", label.c_str (), iter);
         ::OutputDebugStringA (msg.c_str ());
         if (levelPrefix == nullptr) {
@@ -1381,7 +1381,7 @@ HSZ Led_URLManager::ClientArguments (const char* pFormat, ...)
     while (*pTraverse != '\0') {
         //  Erase temp data from our last pass.
         caNumpad[0] = '\0';
-        csBuffer    = string ();
+        csBuffer    = string{};
         //  Compare our current format to the known formats
         if (0 == strncmp (pTraverse, "DW", 2)) {
             //  A DWORD.
@@ -1635,7 +1635,7 @@ void Led_URLManager::ServerReturned (HDDEDATA hArgs, const char* pFormat, ...)
 
             if (pExtract == nullptr) {
                 //pCS->Empty();
-                *pCS = string ();
+                *pCS = string{};
             }
             else {
                 //  Fun thing about a qouted string, is that we need
@@ -1657,7 +1657,7 @@ void Led_URLManager::ServerReturned (HDDEDATA hArgs, const char* pFormat, ...)
             string* pCS = va_arg (VarList, string*);
 
             if (pExtract == nullptr) {
-                *pCS = string ();
+                *pCS = string{};
             }
             else {
                 *pCS = pExtract;

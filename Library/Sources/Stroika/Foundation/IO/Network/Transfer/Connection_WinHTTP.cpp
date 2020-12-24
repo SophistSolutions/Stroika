@@ -143,7 +143,7 @@ namespace {
         }
         else {
             Execution::ThrowSystemErrNo (error);
-            return wstring ();
+            return wstring{};
         }
     }
 }
