@@ -9,7 +9,7 @@ especially those they need to be aware of when upgrading.
 
 ---
 
-### 2.1b8x {2020-12-23}
+### 2.1b8 {2020-12-24}
 
 #### TLDR
 
@@ -18,7 +18,7 @@ especially those they need to be aware of when upgrading.
 #### Details
 
 - Build System
-  - make all no longer invokes make check (unneeded, cna do explicitly, and we often do make all, no point in check)
+  - make all no longer invokes make check (unneeded, can do explicitly, and we often do make all, no point in check)
   - Git Actions: merge Unix, Windows, MacOS workaflows into one (3 jobs instead of 3 workflows)
   - configure
     - better error message (really just warning instead of failure when configure on windows without --arch
