@@ -35,6 +35,7 @@ ZIPPEDFILE=../Origs-Cache/$(BASENAME).7z
 
 FETCHURLS=
 FETCHURLS+=http://www.7-zip.org/a/$(BASENAME).7z
+FETCHURLS+=https://sourceforge.net/projects/sevenzip/files/LZMA%20SDK/$(BASENAME).7z
 
 
 PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)/
