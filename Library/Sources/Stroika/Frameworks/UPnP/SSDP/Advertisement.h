@@ -77,23 +77,20 @@ namespace Stroika::Frameworks::UPnP::SSDP {
         auto operator<=> (const Advertisement&) const = default;
 #endif
 
-        private:
-        static Foundation::DataExchange::ObjectVariantMapper kMapperGetter_ ();
-
-public:
-    /**
+        /**
          *  Mapper to facilitiate serialization
          */
-        static inline const Foundation::Execution::VirtualConstant<Foundation::DataExchange::ObjectVariantMapper> kMapper{kMapperGetter_};
-
-
+        static const Foundation::Execution::VirtualConstant<Foundation::DataExchange::ObjectVariantMapper> kMapper;
 
         /**
          *  @see Characters::ToString ();
          */
         nonvirtual String ToString () const;
 
+    private:
+        static Foundation::DataExchange::ObjectVariantMapper kMapperGetter_ ();
     };
+    inline const Foundation::Execution::VirtualConstant<Foundation::DataExchange::ObjectVariantMapper> Advertisement::kMapper{Advertisement::kMapperGetter_};
 
     /**
      */

@@ -100,11 +100,12 @@ String DeviceDescription::ToString () const
     return sb.str ();
 }
 
-DISABLE_COMPILER_MSC_WARNING_START (4573);
-DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
-const ObjectVariantMapper DeviceDescription::kMapper = [] () {
+ ObjectVariantMapper DeviceDescription::mkMapper_ ()
+{
     ObjectVariantMapper mapper;
 
+DISABLE_COMPILER_MSC_WARNING_START (4573);
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
     mapper.AddClass<Icon> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
         {L"Alive", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Icon, fMimeType)},
         {L"USN", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Icon, fHorizontalPixels)},
@@ -144,10 +145,11 @@ const ObjectVariantMapper DeviceDescription::kMapper = [] () {
         {L"Icons", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fIcons)},
         {L"Services", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fServices)},
     });
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+    DISABLE_COMPILER_MSC_WARNING_END (4573);
     return mapper;
-}();
-DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
-DISABLE_COMPILER_MSC_WARNING_END (4573);
+};
+
 
 /*
  ********************************************************************************
