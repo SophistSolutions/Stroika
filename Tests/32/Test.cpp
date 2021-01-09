@@ -16,6 +16,7 @@
 #include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
 #include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
 #include "Stroika/Foundation/IO/Network/CIDR.h"
+#include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Math/Common.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Time/DateTime.h"

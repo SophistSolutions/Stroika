@@ -13,7 +13,7 @@
 namespace Stroika::Foundation::Execution {
 
     /**
-     * \brief Declare what appears to be a constant, but where the value is derived from a function call result each time its used
+     * \brief Declare what appears to be a constant, but where the value is derived from a function call result (the first time) its used (so lazy initialize)
      *
      *  In C++, you sometimes want to define a global constant, but run into problems because of order of initialization
      *  of global constants (across files). This class solves that problem by allowing you to manage the construction
@@ -26,33 +26,15 @@ namespace Stroika::Foundation::Execution {
      *
      *  \par Example Usage
      *      \code
-     *          // Use with ModuleInitializer<> to manage one-time creation of underlying constant, so created just
-     *          // once
-     *          namespace PRIVATE_ {
-     *              inline const InternetMediaType& OctetStream_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kOctetStream_CT; }
-     *          }
-     *
-     *          // and use VirtualConstant to make that appear a regular constant of type InternetMediaType (mostly)
-     *          constexpr VirtualConstant<InternetMediaType, PRIVATE_::OctetStream_CT> kOctetStream;
-     *          ...
-     *          InternetMediaType ia = kOctetStream;
-     *      \endcode
-     *
-     *  \par Example Usage
-     *      \code
-     *          // Use a single static file scope constant (perhaps in one file)
-     *          static const String                            x{L"X"};
-     *          inline const String&                           kX_ () { return x; }
-     *          const VirtualConstant<String, &kX_> kX;
+     *          inline const String&                           kXGetter_ () { return L"X"; }
+     *          const VirtualConstant<String> kX {kXGetter_};
      *          ...
      *          const String a = kX;
      *      \endcode
      *
      *  \par Example Usage
      *      \code
-     *          // Use a static variable initialized within the fetching function
-     *          inline const String& kX_ () { static const String x{L"6"}; return x; }
-     *          const Execution::VirtualConstant<String, &kX_> kX;
+     *          const Execution::VirtualConstant<String> kX {[] () { return L"6"; }};
      *          ...
      *          const String a = kX;
      *      \endcode
@@ -68,7 +50,7 @@ namespace Stroika::Foundation::Execution {
      *              T   t;
      *              t.m ();
      *          When you replace 'T t' with
-     *              VirtualConstant<T,...> t;
+     *              VirtualConstant<T> t;
      *              you must call t().m();
      *          OR
      *              you must call t->m();
@@ -77,28 +59,24 @@ namespace Stroika::Foundation::Execution {
      *          optional<T> {} == VirtualConstant<T,...> {} won't work. To workaround, simply
      *          apply () after the VirtualConstant<> instance.
      *
-     *  \note   It's suggested you always declare VirtualConstants as constexpr to help assure they take up no
-     *          data space in your application - and are just syntactic sugar on accessing the underlying accessor
-     *          function.
-     *
-     *  \req    VALUE_GETTER template parameter must return a pointer to a constant object of lifetime >=
-     *          the first time VALUE_GETTER to well-after (OK  that's a little ambiguous - but should be OK
-     *          in general).
-     *
+     *  \note   constexpr VirtualConstant<> not yet supported, but hopefully will be soon. In the meantime,
+     *          strongly suggested to use inline const variable declarations.
+     *  
      *  TODO:
-     *      @todo   https://stroika.atlassian.net/browse/STK-639 - It would be nice if the
-     *              VirtualConstant<> template could auto-compute typename T, or support using 
-     *              lambdas for the function
+     *      @todo   See https://stackoverflow.com/questions/53977787/constexpr-version-of-stdfunction - and
+     *              get constexpr version of VirtualConstant working
      *          
      */
     template <typename T>
     struct VirtualConstant {
         /**
-         *  oneTimeGetter is a function (can be a lambda()) which computes the given value.
+         *  oneTimeGetter is a function (can be a lambda()) which computes the given value. It is called 
+         *  just once, and LAZILY, the first time the given VirtualConstant value is required.
          */
         VirtualConstant () = delete;
         template <typename F>
         constexpr VirtualConstant (F oneTimeGetter);
+        VirtualConstant& operator= (const VirtualConstant&) = delete;
 
         /**
          *  A virtual constant can be automatically assigned to its underlying base type.
@@ -113,9 +91,9 @@ namespace Stroika::Foundation::Execution {
          *
          *  \par Example Usage
          *      \code
-         *          namespace PredefinedInternetMediaType {  constexpr Execution::VirtualConstant<InternetMediaType,...> kPNG;
+         *          namespace PredefinedInternetMediaType {  const inline Execution::VirtualConstant<InternetMediaType> kPNG...
          *
-         *          bool checkIsImage1 = kPNG.IsImageFormat ();
+         *          bool checkIsImage1 = PredefinedInternetMediaType::kPNG().IsImageFormat ();
          *      \endcode
          */
         nonvirtual const T operator() () const;
@@ -126,9 +104,9 @@ namespace Stroika::Foundation::Execution {
          *
          *  \par Example Usage
          *      \code
-         *          namespace PredefinedInternetMediaType {  constexpr Execution::VirtualConstant<InternetMediaType,...> kPNG;
+         *          namespace PredefinedInternetMediaType {  const inline Execution::VirtualConstant<InternetMediaType> kPNG = ...
          *
-         *          bool checkIsImage2 = kPNG.IsImageFormat ();
+         *          bool checkIsImage2 = PredefinedInternetMediaType::kPNG->IsImageFormat ();
          *      \endcode
          */
         nonvirtual const T* operator-> () const;
@@ -137,6 +115,7 @@ namespace Stroika::Foundation::Execution {
         const function<T()> fOneTimeGetter_;
         const T& Getter_ () const;
     };
+
 }
 
 /*

@@ -130,24 +130,27 @@ namespace {
     namespace Test4_VirtualConstant_ {
         namespace Private_ {
             namespace T1_ {
-                static const String                            x{L"3"};
-                inline const String&                           kX_ () { return x; }
-                const Execution::VirtualConstant<String, &kX_> kX;
-                void                                           DoIt ()
+                static const String                      x{L"3"};
+                const Execution::VirtualConstant<String> kX = [=] () { return x; };
+                void                                     DoIt ()
                 {
                     const String a = kX;
                 }
             }
             namespace T2_ {
-                inline const String& kX_ ()
-                {
-                    static const String x{L"6"};
-                    return x;
-                }
-                const Execution::VirtualConstant<String, &kX_> kX;
-                void                                           DoIt ()
+                const Execution::VirtualConstant<String> kX = [=] () { return L"6"; };
+                void                                     DoIt ()
                 {
                     const String a = kX;
+                }
+            }
+            namespace T3_ {
+                // @todo get constexpr working - see docs for VirtualConstant
+                //constexpr Execution::VirtualConstant<int> kX = [] () { return 3; };
+                const Execution::VirtualConstant<int> kX = [] () { return 3; };
+                void                                  DoIt ()
+                {
+                    const int a = kX;
                 }
             }
         }
@@ -155,6 +158,7 @@ namespace {
         {
             Private_::T1_::DoIt ();
             Private_::T2_::DoIt ();
+            Private_::T3_::DoIt ();
         }
     }
 }

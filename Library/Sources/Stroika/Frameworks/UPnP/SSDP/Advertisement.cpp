@@ -49,7 +49,8 @@ String Advertisement::ToString () const
 
 DISABLE_COMPILER_MSC_WARNING_START (4573);
 DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
- ObjectVariantMapper Advertisement::kMapperGetter_  () {
+ObjectVariantMapper Advertisement::kMapperGetter_ ()
+{
     ObjectVariantMapper mapper;
     mapper.AddCommonType<Set<String>> ();
     mapper.AddCommonType<optional<Set<String>>> ();
