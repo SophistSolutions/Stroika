@@ -408,16 +408,16 @@ namespace Stroika::Foundation::DataExchange {
          *      o   Date
          *      o   DateTime
          *      o   Duration
+         *      o   Common::GUID
          *      o   InternetMediaType
          *      o   IO::Network::InternetAddress
          *      o   IO::Network::URI
-         *      o   String
          *      o   Mapping<String, String>
          *      o   Mapping<String, VariantValue>
+         *      o   String
          *      o   TimeOfDay
          *      o   VariantValue
          *      o   Range<Duration>/Range<Date>/DiscreteRange<Date>/Range<DateTime>
-         *      o   Common::GUID
          *      o   optional<EACH_OF_THE_ABOVE>
          *
          *  @todo - IT SOON WILL CONTAIN Sequence<String>, and Sequence<Variant>, as well as vector<> of those types.
