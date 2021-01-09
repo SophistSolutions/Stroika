@@ -134,8 +134,8 @@ namespace Stroika::Foundation::Execution {
         nonvirtual const T* operator-> () const;
 
     private:
-        constexpr function<T()> fOneTimeGetter_;
-        const T& Getter_ ();
+        const function<T()> fOneTimeGetter_;
+        const T& Getter_ () const;
     };
 }
 

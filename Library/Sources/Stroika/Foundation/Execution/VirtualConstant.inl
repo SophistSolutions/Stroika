@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Execution {
         return &(Getter_ ());
     }
     template <typename T>
-    const inline T& VirtualConstant<T>::Getter_ ()
+    const inline T& VirtualConstant<T>::Getter_ () const
     {
         static const T kCachedValue_ = fOneTimeGetter_ ();
         return kCachedValue_;
