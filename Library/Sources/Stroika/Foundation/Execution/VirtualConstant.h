@@ -91,14 +91,21 @@ namespace Stroika::Foundation::Execution {
      *              lambdas for the function
      *          
      */
-    template <typename BASETYPE, const BASETYPE& (*VALUE_GETTER) ()>
+    template <typename T>
     struct VirtualConstant {
+        /**
+         *  oneTimeGetter is a function (can be a lambda()) which computes the given value.
+         */
+        VirtualConstant () = delete;
+        template <typename F>
+        constexpr VirtualConstant (F oneTimeGetter);
+
         /**
          *  A virtual constant can be automatically assigned to its underlying base type.
          *  Due to how conversion operators work, this won't always be helpful (like with overloading
          *  or multiple levels of conversions). But when it works (80% of the time) - its helpful.
          */
-        operator const BASETYPE () const;
+        nonvirtual operator const T () const;
 
         /**
          *  This works 100% of the time. Just use the function syntax, and you get back a constant of the desired
@@ -111,7 +118,7 @@ namespace Stroika::Foundation::Execution {
          *          bool checkIsImage1 = kPNG.IsImageFormat ();
          *      \endcode
          */
-        const BASETYPE operator() () const;
+        nonvirtual const T operator() () const;
 
         /**
          *  This works 100% of the time. Just use the operator-> syntax, and you get back a constant of the desired
@@ -124,9 +131,12 @@ namespace Stroika::Foundation::Execution {
          *          bool checkIsImage2 = kPNG.IsImageFormat ();
          *      \endcode
          */
-        const BASETYPE* operator-> () const;
-    };
+        nonvirtual const T* operator-> () const;
 
+    private:
+        constexpr function<T()> fOneTimeGetter_;
+        const T& Getter_ ();
+    };
 }
 
 /*

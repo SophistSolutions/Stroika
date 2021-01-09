@@ -14,24 +14,37 @@ namespace Stroika::Foundation::Execution {
 
     /*
      ********************************************************************************
-     ******************* VirtualConstant<BASETYPE, VALUE_GETTER> ********************
+     ******************* VirtualConstant<T> ********************
      ********************************************************************************
      */
-    template <typename BASETYPE, const BASETYPE& (*VALUE_GETTER) ()>
-    inline VirtualConstant<BASETYPE, VALUE_GETTER>::operator const BASETYPE () const
+    template <typename T>
+    template <typename F>
+    constexpr VirtualConstant<T>::VirtualConstant (F oneTimeGetter)
+        : fOneTimeGetter_{oneTimeGetter}
     {
-        return VALUE_GETTER ();
     }
-    template <typename BASETYPE, const BASETYPE& (*VALUE_GETTER) ()>
-    inline const BASETYPE VirtualConstant<BASETYPE, VALUE_GETTER>::operator() () const
+    template <typename T>
+    inline VirtualConstant<T>::operator const T () const
     {
-        return VALUE_GETTER ();
+        return Getter_ ();
     }
-    template <typename BASETYPE, const BASETYPE& (*VALUE_GETTER) ()>
-    inline const BASETYPE* VirtualConstant<BASETYPE, VALUE_GETTER>::operator-> () const
+    template <typename T>
+    inline const T VirtualConstant<T>::operator() () const
     {
-        return &VALUE_GETTER ();
+        return Getter_ ();
     }
+    template <typename T>
+    inline const T* VirtualConstant<T>::operator-> () const
+    {
+        return &(Getter_ ());
+    }
+    template <typename T>
+    const inline T& VirtualConstant<T>::Getter_ ()
+    {
+        static const T kCachedValue_ = fOneTimeGetter_ ();
+        return kCachedValue_;
+    }
+
 
 }
 

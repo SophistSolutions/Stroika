@@ -16,6 +16,7 @@
 #include "../../../Foundation/Configuration/Common.h"
 #include "../../../Foundation/Containers/Mapping.h"
 #include "../../../Foundation/DataExchange/ObjectVariantMapper.h"
+#include "../../../Foundation/Execution/VirtualConstant.h"
 #include "../../../Foundation/IO/Network/SocketAddress.h"
 #include "../../../Foundation/IO/Network/URI.h"
 #include "../../../Foundation/Memory/BLOB.h"
@@ -76,15 +77,22 @@ namespace Stroika::Frameworks::UPnP::SSDP {
         auto operator<=> (const Advertisement&) const = default;
 #endif
 
-        /**
+        private:
+        static Foundation::DataExchange::ObjectVariantMapper kMapperGetter_ ();
+
+public:
+    /**
          *  Mapper to facilitiate serialization
          */
-        static const Foundation::DataExchange::ObjectVariantMapper kMapper;
+        static inline const Foundation::Execution::VirtualConstant<Foundation::DataExchange::ObjectVariantMapper> kMapper{kMapperGetter_};
+
+
 
         /**
          *  @see Characters::ToString ();
          */
         nonvirtual String ToString () const;
+
     };
 
     /**

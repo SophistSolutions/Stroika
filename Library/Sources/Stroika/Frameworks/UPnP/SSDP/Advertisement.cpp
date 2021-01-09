@@ -49,7 +49,7 @@ String Advertisement::ToString () const
 
 DISABLE_COMPILER_MSC_WARNING_START (4573);
 DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
-const ObjectVariantMapper Advertisement::kMapper = [] () {
+ ObjectVariantMapper Advertisement::kMapperGetter_  () {
     ObjectVariantMapper mapper;
     mapper.AddCommonType<Set<String>> ();
     mapper.AddCommonType<optional<Set<String>>> ();
@@ -61,7 +61,7 @@ const ObjectVariantMapper Advertisement::kMapper = [] () {
         {L"RawHeaders", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Advertisement, fRawHeaders)},
     });
     return mapper;
-}();
+};
 DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 DISABLE_COMPILER_MSC_WARNING_END (4573);
 
