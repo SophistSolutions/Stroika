@@ -12,7 +12,6 @@
 #include "../Characters/String.h"
 #include "../Containers/Mapping.h"
 #include "../Containers/Set.h"
-#include "../Execution/VirtualConstant.h"
 #include "../Memory/SharedByValue.h"
 
 #include "InternetMediaType.h"
