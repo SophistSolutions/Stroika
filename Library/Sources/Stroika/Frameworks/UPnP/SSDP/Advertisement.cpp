@@ -18,6 +18,7 @@
 using std::byte;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::IO::Network;
 
@@ -45,6 +46,24 @@ String Advertisement::ToString () const
     sb += L"}";
     return sb.str ();
 }
+
+DISABLE_COMPILER_MSC_WARNING_START (4573);
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+const ObjectVariantMapper Advertisement::kMapper = [] () {
+    ObjectVariantMapper mapper;
+    mapper.AddCommonType<Set<String>> ();
+    mapper.AddCommonType<optional<Set<String>>> ();
+    mapper.AddClass<Advertisement> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+        {L"Alive", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Advertisement, fAlive), ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
+        {L"USN", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Advertisement, fUSN)},
+        {L"Server", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Advertisement, fServer)},
+        {L"Target", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Advertisement, fTarget)},
+        {L"RawHeaders", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Advertisement, fRawHeaders)},
+    });
+    return mapper;
+}();
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+DISABLE_COMPILER_MSC_WARNING_END (4573);
 
 /*
  ********************************************************************************

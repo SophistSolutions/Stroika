@@ -10,6 +10,7 @@
 #include "../../Foundation/Configuration/Common.h"
 #include "../../Foundation/Containers/Collection.h"
 #include "../../Foundation/DataExchange/InternetMediaType.h"
+#include "../../Foundation/DataExchange/ObjectVariantMapper.h"
 #include "../../Foundation/IO/Network/URI.h"
 #include "../../Foundation/Memory/BLOB.h"
 
@@ -95,6 +96,11 @@ namespace Stroika::Frameworks::UPnP {
         optional<Collection<Service>> fServices;
 
         DeviceDescription () = default;
+
+        /**
+         *  Mapper to facilitiate serialization
+         */
+        static const Foundation::DataExchange::ObjectVariantMapper kMapper;
 
         /**
          *  @see Characters::ToString ();

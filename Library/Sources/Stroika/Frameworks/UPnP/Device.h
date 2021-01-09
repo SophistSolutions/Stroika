@@ -8,6 +8,7 @@
 
 #include "../../Foundation/Characters/String.h"
 #include "../../Foundation/Configuration/Common.h"
+#include "../../Foundation/DataExchange/ObjectVariantMapper.h"
 #include "../../Foundation/IO/Network/URI.h"
 
 /*
@@ -30,6 +31,11 @@ namespace Stroika::Frameworks::UPnP {
         String fDeviceID; // this is the UUID (e.g. 315CAAE0-668D-47C7-A178-24C9EE756627)
         URI    fLocation;
         String fServer;
+
+        /**
+         *  Mapper to facilitiate serialization
+         */
+        static const Foundation::DataExchange::ObjectVariantMapper kMapper;
     };
 
     /**

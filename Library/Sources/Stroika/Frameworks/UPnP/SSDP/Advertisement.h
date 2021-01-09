@@ -15,6 +15,7 @@
 #include "../../../Foundation/Characters/String.h"
 #include "../../../Foundation/Configuration/Common.h"
 #include "../../../Foundation/Containers/Mapping.h"
+#include "../../../Foundation/DataExchange/ObjectVariantMapper.h"
 #include "../../../Foundation/IO/Network/SocketAddress.h"
 #include "../../../Foundation/IO/Network/URI.h"
 #include "../../../Foundation/Memory/BLOB.h"
@@ -27,7 +28,6 @@
  *
  *  And http://www.upnp-hacks.org/upnp.html for more hints.
  */
-
 namespace Stroika::Frameworks::UPnP::SSDP {
 
     using Foundation::Characters::String;
@@ -75,6 +75,11 @@ namespace Stroika::Frameworks::UPnP::SSDP {
 #else
         auto operator<=> (const Advertisement&) const = default;
 #endif
+
+        /**
+         *  Mapper to facilitiate serialization
+         */
+        static const Foundation::DataExchange::ObjectVariantMapper kMapper;
 
         /**
          *  @see Characters::ToString ();

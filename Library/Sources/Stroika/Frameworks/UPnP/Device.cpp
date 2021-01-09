@@ -9,13 +9,33 @@
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::DataExchange;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::UPnP;
 
 /*
+ ********************************************************************************
+ ************************************* Device ***********************************
+ ********************************************************************************
+ */
+DISABLE_COMPILER_MSC_WARNING_START (4573);
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+const ObjectVariantMapper Device::kMapper = [] () {
+    ObjectVariantMapper mapper;
+    mapper.AddClass<Device> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+        {L"Alive", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Device, fDeviceID)},
+        {L"USN", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Device, fLocation)},
+        {L"Server", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Device, fServer)},
+    });
+    return mapper;
+}();
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+DISABLE_COMPILER_MSC_WARNING_END (4573);
+
+/*
 ********************************************************************************
-******************************* DeviceDescription ******************************
+********************** MungePrimaryMacAddrIntoBaseDeviceID *********************
 ********************************************************************************
 */
 String UPnP::MungePrimaryMacAddrIntoBaseDeviceID (String baseDeviceID)

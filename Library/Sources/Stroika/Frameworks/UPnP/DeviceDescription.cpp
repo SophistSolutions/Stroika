@@ -21,6 +21,7 @@
 using std::byte;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::DataExchange;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::UPnP;
@@ -98,6 +99,55 @@ String DeviceDescription::ToString () const
     sb += L"}";
     return sb.str ();
 }
+
+DISABLE_COMPILER_MSC_WARNING_START (4573);
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+const ObjectVariantMapper DeviceDescription::kMapper = [] () {
+    ObjectVariantMapper mapper;
+
+    mapper.AddClass<Icon> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+        {L"Alive", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Icon, fMimeType)},
+        {L"USN", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Icon, fHorizontalPixels)},
+        {L"Server", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Icon, fVerticalPixels)},
+        {L"Target", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Icon, fColorDepth)},
+        {L"RawHeaders", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Icon, fURL)},
+    });
+    mapper.AddCommonType<Collection<Icon>> ();
+    mapper.AddCommonType<optional<Collection<Icon>>> ();
+
+    mapper.AddClass<Service> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+        {L"Alive", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Service, fServiceType)},
+        {L"USN", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Service, fServiceID)},
+        {L"Server", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Service, fSCPDURL)},
+        {L"Target", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Service, fControlURL)},
+        {L"RawHeaders", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Service, fEventSubURL)},
+    });
+    mapper.AddCommonType<Collection<Service>> ();
+    mapper.AddCommonType<optional<Collection<Service>>> ();
+
+    mapper.AddCommonType<optional<String>> ();
+    mapper.AddCommonType<optional<URI>> ();
+
+    mapper.AddClass<DeviceDescription> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+        {L"PresentationURL", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fPresentationURL)},
+        {L"DeviceType", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fDeviceType)},
+        {L"ManufactureName", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fManufactureName)},
+        {L"FriendlyName", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fFriendlyName)},
+        {L"ManufacturingURL", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fManufacturingURL)},
+        {L"ModelDescription", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fModelDescription)},
+        {L"ModelName", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fModelName)},
+        {L"ModelNumber", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fModelNumber)},
+        {L"ModelURL", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fModelURL)},
+        {L"SerialNumber", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fSerialNumber)},
+        {L"UDN", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fUDN)},
+        {L"UPC", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fUPC)},
+        {L"Icons", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fIcons)},
+        {L"Services", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fServices)},
+    });
+    return mapper;
+}();
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+DISABLE_COMPILER_MSC_WARNING_END (4573);
 
 /*
  ********************************************************************************
