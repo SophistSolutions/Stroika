@@ -10,11 +10,15 @@
 #include "../Cryptography/Encoding/Algorithm/Base64.h"
 #include "../Debug/Trace.h"
 #include "../IO/FileSystem/PathName.h"
+#include "../IO/Network/InternetAddress.h"
+#include "../IO/Network/URI.h"
 #include "../Time/Date.h"
 #include "../Time/DateRange.h"
 #include "../Time/DateTime.h"
 #include "../Time/DateTimeRange.h"
 #include "../Time/Duration.h"
+
+#include "InternetMediaType.h"
 
 #include "ObjectVariantMapper.h"
 
@@ -288,6 +292,18 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Memory::BLO
     };
     ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
         *intoObjOfTypeT = Cryptography::Encoding::Algorithm::DecodeBase64 (d.As<String> ());
+    };
+    return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
+}
+
+TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const InternetMediaType*)
+{
+    using T                                  = InternetMediaType;
+    FromObjectMapperType<T> fromObjectMapper = [] (const ObjectVariantMapper&, const T* fromObjOfTypeT) -> VariantValue {
+        return VariantValue{fromObjOfTypeT->ToString ()};
+    };
+    ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
+        *intoObjOfTypeT = T (d.As<String> ());
     };
     return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
 }

@@ -50,7 +50,7 @@ namespace Stroika::Foundation::DataExchange {
     }
     template <typename T>
     inline VariantValue::VariantValue (const optional<T>& val)
-        : VariantValue {val.has_value () ? VariantValue{*val} : VariantValue{}}
+        : VariantValue{val.has_value () ? VariantValue{*val} : VariantValue{}}
     {
     }
     inline VariantValue& VariantValue::operator= (VariantValue&& rhs) noexcept

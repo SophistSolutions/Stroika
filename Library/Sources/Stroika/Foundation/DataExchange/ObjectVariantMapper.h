@@ -28,8 +28,6 @@
 #include "../Containers/SortedMapping.h"
 #include "../Containers/SortedSet.h"
 #include "../Execution/Synchronized.h"
-#include "../IO/Network/InternetAddress.h"
-#include "../IO/Network/URI.h"
 #include "../Memory/Common.h"
 #include "../Memory/Optional.h"
 #include "../Traversal/DiscreteRange.h"
@@ -118,6 +116,13 @@
  *              Anyhow - this is a long-term todo item, so no need to work out details now.
  */
 
+namespace Stroika::Foundation::DataExchange {
+    class InternetMediaType;
+}
+namespace Stroika::Foundation::IO::Network {
+    class InternetAddress;
+    class URI;
+}
 namespace Stroika::Foundation::Memory {
     class BLOB;
 }
@@ -403,6 +408,7 @@ namespace Stroika::Foundation::DataExchange {
          *      o   Date
          *      o   DateTime
          *      o   Duration
+         *      o   InternetMediaType
          *      o   IO::Network::InternetAddress
          *      o   IO::Network::URI
          *      o   String
@@ -719,6 +725,7 @@ namespace Stroika::Foundation::DataExchange {
         template <typename T, typename TRAITS>
         static TypeMappingDetails MakeCommonSerializer_ (const Execution::Synchronized<T, TRAITS>*);
         static TypeMappingDetails MakeCommonSerializer_ (const Memory::BLOB*);
+        static TypeMappingDetails MakeCommonSerializer_ (const InternetMediaType*);
         static TypeMappingDetails MakeCommonSerializer_ (const IO::Network::InternetAddress*);
         static TypeMappingDetails MakeCommonSerializer_ (const IO::Network::URI*);
         template <typename T>
