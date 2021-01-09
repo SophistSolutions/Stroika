@@ -48,6 +48,11 @@ namespace Stroika::Foundation::DataExchange {
         : fVal_{move (src.fVal_)}
     {
     }
+    template <typename T>
+    inline VariantValue::VariantValue (const optional<T>& val)
+        : VariantValue {val.has_value () ? VariantValue{*val} : VariantValue{}}
+    {
+    }
     inline VariantValue& VariantValue::operator= (VariantValue&& rhs) noexcept
     {
         fVal_ = move (rhs.fVal_);

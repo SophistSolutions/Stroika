@@ -222,7 +222,8 @@ namespace Stroika::Foundation::DataExchange {
         VariantValue (Sequence<VariantValue>&& val);
         VariantValue (const VariantValue& src) = default;
         VariantValue (VariantValue&& src) noexcept;
-
+        template <typename T>
+        VariantValue (const optional<T>& val);
     private:
         VariantValue (const string& val) = delete;
         VariantValue (const char* val)   = delete;
