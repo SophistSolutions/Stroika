@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <!--
+  <Type Name="Stroika::Foundation::Memory::Optional_Traits_Inplace_Storage&lt;*&gt;::StorageType_&lt;*,0&gt;">
+    <DisplayString Condition="fEngaged_">
+      {fEngagedValue_}
+    </DisplayString>
+    <DisplayString Condition="!fEngaged_">Missing</DisplayString>
+  </Type>
+  -->
   <Type Name="Stroika::Foundation::Characters::String">
     <DisplayString>
       {((Stroika::Foundation::Characters::String::_IRep*)_fRep.fSharedImpl_.fEnvelope_.fPtr_)->_fStart}</DisplayString>
@@ -24,21 +32,24 @@
       <Item Name="length">size ()</Item>
     </Expand>
   </Type>
-  <Type Name="Stroika::Foundation::Memory::Optional_Traits_Inplace_Storage&lt;*&gt;::StorageType_&lt;*,0&gt;">
-    <DisplayString Condition="fEngaged_">
-      {fEngagedValue_}
-    </DisplayString>
-    <DisplayString Condition="!fEngaged_">Missing</DisplayString>
-  </Type>
-  <Type Name="Stroika::Foundation::Memory::Optional_Traits_Inplace_Storage&lt;*&gt;::StorageType_&lt;*,1&gt;">
-    <DisplayString Condition="fValue_!=nullptr">
-      {*fValue_}
-    </DisplayString>
-    <DisplayString Condition="fValue_==nullptr">Missing</DisplayString>
-  </Type>
-  <Type Name="Stroika::Foundation::Memory::Optional&lt;*&gt;">
+  <Type Name="Stroika::Foundation::Common::GUID">
     <DisplayString>
-     {fStorage_}
+      {ToString ()}
+    </DisplayString>
+  </Type>
+  <Type Name="Stroika::Foundation::IO::Network::CIDR">
+    <DisplayString>
+      {ToString ()}
+    </DisplayString>
+  </Type>
+  <Type Name="Stroika::Foundation::IO::Network::InternetAddress">
+    <DisplayString>
+      {ToString ()}
+    </DisplayString>
+  </Type>
+  <Type Name="Stroika::Foundation::IO::Network::SocketAddress">
+    <DisplayString>
+      {ToString ()}
     </DisplayString>
   </Type>
   <Type Name="Stroika::Foundation::IO::Network::URI">
@@ -46,5 +57,4 @@
       {ToString ()}
     </DisplayString>
   </Type>
-
 </AutoVisualizer>
