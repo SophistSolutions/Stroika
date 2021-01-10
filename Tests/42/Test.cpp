@@ -483,22 +483,7 @@ namespace {
     {
         Debug::TraceContextBumper trcCtx ("Test3_NetworkInterfaceList_");
         for (Interface iFace : SystemInterfacesMgr{}.GetAll ()) {
-            Debug::TraceContextBumper trcCtx1 ("iface");
-            DbgTrace (L"interface-full-details: %s", Characters::ToString (iFace).c_str ());
-            DbgTrace (L"fInternalInterfaceID: %s", iFace.fInternalInterfaceID.c_str ());
-#if qPlatform_POSIX
-            DbgTrace (L"InterfaceName: %s", iFace.GetInterfaceName ().c_str ());
-#endif
-            DbgTrace (L"Friendly-name: %s", iFace.fFriendlyName.c_str ());
-            if (iFace.fDescription.has_value ()) {
-                DbgTrace (L"description: %s", iFace.fDescription->c_str ());
-            }
-            if (iFace.fType.has_value ()) {
-                DbgTrace (L"type: %s", Configuration::DefaultNames<Interface::Type>{}.GetName (*iFace.fType));
-            }
-            DbgTrace (L"WirelessInfo: %s", Characters::ToString (iFace.fWirelessInfo).c_str ());
-            DbgTrace (L"bindings: %s", Characters::ToString (iFace.fBindings).c_str ());
-            DbgTrace (L"status: %s", Characters::ToString (iFace.fStatus).c_str ());
+            DbgTrace (L"iFace: %s", Characters::ToString (iFace).c_str ());
         }
     }
 }

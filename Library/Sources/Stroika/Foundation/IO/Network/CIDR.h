@@ -56,7 +56,14 @@ namespace Stroika::Foundation::IO::Network {
     public:
         /**
          */
-        nonvirtual InternetAddress GetInternetAddress () const;
+        nonvirtual InternetAddress GetBaseInternetAddress () const;
+
+    public:
+        [[deprecated ("Since Stroika 2.1b9, use GetBaseInternetAddress")]]
+        InternetAddress GetInternetAddressx () const
+        {
+            return GetBaseInternetAddress ();
+        }
 
     public:
         /**

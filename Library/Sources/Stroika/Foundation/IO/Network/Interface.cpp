@@ -141,6 +141,9 @@ String Interface::ToString () const
     Characters::StringBuilder sb;
     sb += L"{";
     sb += L"Internal-Interface-ID: " + Characters::ToString (fInternalInterfaceID) + L", ";
+#if qPlatform_POSIX
+    sb += L"InterfaceName: " + Characters::ToString (GetInterfaceName ()) + L", ";
+#endif
     sb += L"Friendly-Name: " + Characters::ToString (fFriendlyName) + L", ";
     if (fDescription) {
         sb += L"Description: " + Characters::ToString (*fDescription) + L", ";
@@ -163,7 +166,9 @@ String Interface::ToString () const
     if (fWirelessInfo) {
         sb += L"Wireless-Info: " + Characters::ToString (fWirelessInfo) + L", ";
     }
-    sb += L"Bindings: " + Characters::ToString (fBindings) + L", ";
+    sb += L"BoundAddressRanges: " + Characters::ToString (fBoundAddressRanges) + L", ";
+    sb += L"BoundAddresses: " + Characters::ToString (fBoundAddresses) + L", ";
+
     sb += L"Gateways: " + Characters::ToString (fGateways) + L", ";
     sb += L"DNS-Servers: " + Characters::ToString (fDNSServers) + L", ";
     if (fStatus) {
@@ -419,10 +424,11 @@ namespace {
             SocketAddress sa{i->ifr_addr};
             if (sa.IsInternetAddress ()) {
 #if qPlatform_Linux || qPlatform_MacOS
-                newInterface.fBindings.Add (CIDR{sa.GetInternetAddress (), getNetMaskAsPrefix (sd, i->ifr_name)});
+                newInterface.fBoundAddressRanges.Add (CIDR{sa.GetInternetAddress (), getNetMaskAsPrefix (sd, i->ifr_name)});
 #else
-                newInterface.fBindings.Add (sa.GetInternetAddress ());
+                newInterface.fBoundAddressRanges.Add (sa.GetInternetAddress ());
 #endif
+                newInterface.fBoundAddresses.Add (sa.GetInternetAddress ());
             }
         }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -820,19 +826,22 @@ namespace {
                 for (PIP_ADAPTER_UNICAST_ADDRESS pu = currAddresses->FirstUnicastAddress; pu != nullptr; pu = pu->Next) {
                     SocketAddress sa{pu->Address};
                     if (sa.IsInternetAddress ()) {
-                        newInterface.fBindings.Add (pu->OnLinkPrefixLength == 255 ? sa.GetInternetAddress () : CIDR{sa.GetInternetAddress (), pu->OnLinkPrefixLength});
+                        newInterface.fBoundAddressRanges.Add (pu->OnLinkPrefixLength == 255 ? sa.GetInternetAddress () : CIDR{sa.GetInternetAddress (), pu->OnLinkPrefixLength});
+                        newInterface.fBoundAddresses.Add (sa.GetInternetAddress ());
                     }
                 }
                 for (PIP_ADAPTER_ANYCAST_ADDRESS pa = currAddresses->FirstAnycastAddress; pa != nullptr; pa = pa->Next) {
                     SocketAddress sa{pa->Address};
                     if (sa.IsInternetAddress ()) {
-                        newInterface.fBindings.Add (sa.GetInternetAddress ());
+                        newInterface.fBoundAddressRanges.Add (sa.GetInternetAddress ());
+                        newInterface.fBoundAddresses.Add (sa.GetInternetAddress ());
                     }
                 }
                 for (PIP_ADAPTER_MULTICAST_ADDRESS pm = currAddresses->FirstMulticastAddress; pm != nullptr; pm = pm->Next) {
                     SocketAddress sa{pm->Address};
                     if (sa.IsInternetAddress ()) {
-                        newInterface.fBindings.Add (sa.GetInternetAddress ());
+                        newInterface.fBoundAddressRanges.Add (sa.GetInternetAddress ());
+                        newInterface.fBoundAddresses.Add (sa.GetInternetAddress ());
                     }
                 }
                 for (PIP_ADAPTER_GATEWAY_ADDRESS_LH pa = currAddresses->FirstGatewayAddress; pa != nullptr; pa = pa->Next) {
@@ -959,7 +968,7 @@ optional<Interface> SystemInterfacesMgr::GetContainingAddress (const InternetAdd
 #endif
     // @todo - a much more efficent implementation - maybe good enuf to use caller staleness cache with a few seconds staleness
     for (Interface i : GetAll ()) {
-        if (i.fBindings.Any ([&ia] (CIDR c) { return c.GetRange ().Contains (ia); })) {
+        if (i.fBoundAddressRanges.Any ([&ia] (CIDR c) { return c.GetRange ().Contains (ia); })) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"found interface %s", internalInterfaceID.c_str ());
 #endif
