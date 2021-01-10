@@ -131,14 +131,14 @@ namespace {
         namespace Private_ {
             namespace T1_ {
                 static const String                      x{L"3"};
-                const Execution::VirtualConstant<String> kX = [=] () { return x; };
+                const Execution::VirtualConstant<String> kX = [] () { return x; };
                 void                                     DoIt ()
                 {
                     const String a = kX;
                 }
             }
             namespace T2_ {
-                const Execution::VirtualConstant<String> kX = [=] () { return L"6"; };
+                const Execution::VirtualConstant<String> kX = [] () { return L"6"; };
                 void                                     DoIt ()
                 {
                     const String a = kX;
