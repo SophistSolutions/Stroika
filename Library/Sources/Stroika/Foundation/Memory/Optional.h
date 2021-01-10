@@ -143,23 +143,23 @@ namespace Stroika::Foundation::Memory {
     optional<T> OptionalValue (const optional<T>& l, const optional<T>& r);
 
     /**
-         *  'Constructor' taking const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* is to allow easier interoperability
-         *  with code that uses null-pointers to mean 'is-missing': nullptr means missing, and if non null,
-         *  derefrence and copy.
-         *
-         *  \par Example Usage
-         *      \code
-         *      float*  d1  =   nullptr;
-         *      double* d2  =   nullptr;
-         *      Assert (not Optional<double>::OptionalFromNullable (d1).has_value ());
-         *      Assert (not Optional<double>::OptionalFromNullable (d2).has_value ());
-         *      \endcode
-         *
-         *  \note   I tried making this an Optional<T> constructor overload, but it lead to dangerous confusion with things like
-         *          URL url = URL (L"dyn:/StyleSheet.css?ThemeName=Cupertino", URL::eStroikaPre20a50BackCompatMode);
-         *          VerifyTestResult (url.GetScheme () == L"dyn");
-         *          // wchar_t* overload is optional gets STRING with value "d";
-         */
+     *  'Constructor' taking const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* is to allow easier interoperability
+     *  with code that uses null-pointers to mean 'is-missing': nullptr means missing, and if non null,
+     *  derefrence and copy.
+     *
+     *  \par Example Usage
+     *      \code
+     *      float*  d1  =   nullptr;
+     *      double* d2  =   nullptr;
+     *      Assert (not Optional<double>::OptionalFromNullable (d1).has_value ());
+     *      Assert (not Optional<double>::OptionalFromNullable (d2).has_value ());
+     *      \endcode
+     *
+     *  \note   I tried making this an Optional<T> constructor overload, but it lead to dangerous confusion with things like
+     *          URL url = URL (L"dyn:/StyleSheet.css?ThemeName=Cupertino", URL::eStroikaPre20a50BackCompatMode);
+     *          VerifyTestResult (url.GetScheme () == L"dyn");
+     *          // wchar_t* overload is optional gets STRING with value "d";
+     */
     template <typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename T = RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename SFINAE_SAFE_CONVERTIBLE = enable_if_t<Configuration::is_explicitly_convertible<RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, T>::value>>
     optional<T> OptionalFromNullable (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* from);
 
