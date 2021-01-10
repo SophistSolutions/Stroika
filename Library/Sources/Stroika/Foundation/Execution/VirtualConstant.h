@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Execution {
      *
      *  \par Example Usage
      *      \code
-     *          inline const String&                           kXGetter_ () { return L"X"; }
+     *          inline String                 kXGetter_ () { return L"X"; }
      *          const VirtualConstant<String> kX {kXGetter_};
      *          ...
      *          const String a = kX;
