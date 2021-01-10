@@ -100,11 +100,11 @@ String DeviceDescription::ToString () const
     return sb.str ();
 }
 
- ObjectVariantMapper DeviceDescription::mkMapper_ ()
+ObjectVariantMapper DeviceDescription::mkMapper_ ()
 {
     ObjectVariantMapper mapper;
 
-DISABLE_COMPILER_MSC_WARNING_START (4573);
+    DISABLE_COMPILER_MSC_WARNING_START (4573);
     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
     mapper.AddClass<Icon> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
         {L"Alive", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Icon, fMimeType)},
@@ -149,7 +149,6 @@ DISABLE_COMPILER_MSC_WARNING_START (4573);
     DISABLE_COMPILER_MSC_WARNING_END (4573);
     return mapper;
 };
-
 
 /*
  ********************************************************************************
