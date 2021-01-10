@@ -17,6 +17,9 @@
 #if qPlatform_Windows
 #include "../Execution/Platform/Windows/Exception.h"
 #endif
+#if qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy
+#include "../Execution/VirtualConstant.h"
+#endif
 #include "../Execution/Synchronized.h"
 #include "../IO/FileSystem/FileInputStream.h"
 #include "../IO/FileSystem/PathName.h"
@@ -42,16 +45,22 @@ using FileSuffixType = InternetMediaTypeRegistry::FileSuffixType;
 #if qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy
 namespace {
     using OverrideRecord = InternetMediaTypeRegistry::OverrideRecord;
-    static const inline Mapping<InternetMediaType, OverrideRecord> kDefaults_{initializer_list<KeyValuePair<InternetMediaType, OverrideRecord>>{
-        {InternetMediaTypes::kText_PLAIN, OverrideRecord{nullopt, Containers::Set<String>{L".txt"sv}, L".txt"sv}},
-        {InternetMediaTypes::kCSS, OverrideRecord{nullopt, Containers::Set<String>{L".css"sv}, L".css"sv}},
-        {InternetMediaTypes::kHTML, OverrideRecord{nullopt, Containers::Set<String>{L".htm"sv, L".html"sv}, L".htm"sv}},
-        {InternetMediaTypes::kJSON, OverrideRecord{nullopt, Containers::Set<String>{L".json"sv}, L".json"sv}},
-        {InternetMediaTypes::kPNG, OverrideRecord{nullopt, Containers::Set<String>{L".png"sv}, L".png"sv}},
-        {InternetMediaTypes::kXML, OverrideRecord{nullopt, Containers::Set<String>{L".xml"sv}, L".xml"sv}},
-    }};
+    Mapping<InternetMediaType, OverrideRecord> mkDefaults_ ()
+    {
+        static const Mapping<InternetMediaType, OverrideRecord> kDefaults_{initializer_list<KeyValuePair<InternetMediaType, OverrideRecord>>{
+            {InternetMediaTypes::kText_PLAIN, OverrideRecord{nullopt, Containers::Set<String>{L".txt"sv}, L".txt"sv}},
+            {InternetMediaTypes::kCSS, OverrideRecord{nullopt, Containers::Set<String>{L".css"sv}, L".css"sv}},
+            {InternetMediaTypes::kHTML, OverrideRecord{nullopt, Containers::Set<String>{L".htm"sv, L".html"sv}, L".htm"sv}},
+            {InternetMediaTypes::kJSON, OverrideRecord{nullopt, Containers::Set<String>{L".json"sv}, L".json"sv}},
+            {InternetMediaTypes::kPNG, OverrideRecord{nullopt, Containers::Set<String>{L".png"sv}, L".png"sv}},
+            {InternetMediaTypes::kXML, OverrideRecord{nullopt, Containers::Set<String>{L".xml"sv}, L".xml"sv}},
+        }};
+        return kDefaults_;
+    }
+    VirtualConstant<Mapping<InternetMediaType, OverrideRecord>> kDefaults_{mkDefaults_};
 }
 #endif
+
 /**
  *  @todo NYI UPDATING the frontend. Implement APIs to externally add mappings and be sure copying the InternetMediaTypeRegistry and using that
  *  in isolation works as well (use COW)
@@ -211,17 +220,33 @@ InternetMediaTypeRegistry::InternetMediaTypeRegistry (const shared_ptr<IBackendR
 }
 
 namespace {
+#if qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy
+    Execution::Synchronized<InternetMediaTypeRegistry>& sThe_ ()
+    {
+        static Execution::Synchronized<InternetMediaTypeRegistry> sThe_;
+        return sThe_;
+    }
+#else
     Execution::Synchronized<InternetMediaTypeRegistry> sThe_;
+#endif
 }
 
 InternetMediaTypeRegistry InternetMediaTypeRegistry::Get ()
 {
+#if qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy
+    return sThe_ ().load ();
+#else
     return sThe_.load ();
+#endif
 }
 
 void InternetMediaTypeRegistry::Set (const InternetMediaTypeRegistry& r)
 {
+#if qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy
+    sThe_ ().store (r);
+#else
     sThe_.store (r);
+#endif
 }
 
 auto InternetMediaTypeRegistry::GetOverrides () const -> Mapping<InternetMediaType, OverrideRecord>
