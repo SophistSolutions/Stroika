@@ -6,7 +6,8 @@ StroikaRoot=$(abspath ../..)/
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 VERSION=311
-FOLDERNAMEVER=wix$(VERSION)1rtm
+FOLDERNAMEVER=wix$(VERSION)2rtm
+#FOLDERNAMEVER=wix$(VERSION)1rtm
 FILEVERNAME=wix$(VERSION)-binaries
 
 ZIPPEDFILE=../Origs-Cache/$(FILEVERNAME).zip
