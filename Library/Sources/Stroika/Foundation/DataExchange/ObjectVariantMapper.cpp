@@ -312,8 +312,12 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const InternetMed
 TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network::CIDR*)
 {
     using T                                  = IO::Network::CIDR;
-    FromObjectMapperType<T> fromObjectMapper = [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const T* obj) -> VariantValue { return obj->ToString (); };
-    ToObjectMapperType<T>   toObjectMapper   = [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, T* intoObj) -> void { *intoObj = T{d.As<String> ()}; };
+    FromObjectMapperType<T> fromObjectMapper = [] (const ObjectVariantMapper&, const T* fromObjOfTypeT) -> VariantValue {
+        return VariantValue{fromObjOfTypeT->ToString ()};
+    };
+    ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
+        *intoObjOfTypeT = T (d.As<String> ());
+    };
     return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
 }
 
