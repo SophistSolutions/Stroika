@@ -120,6 +120,7 @@ namespace Stroika::Foundation::DataExchange {
     class InternetMediaType;
 }
 namespace Stroika::Foundation::IO::Network {
+    class CIDR;
     class InternetAddress;
     class URI;
 }
@@ -574,6 +575,8 @@ namespace Stroika::Foundation::DataExchange {
          *      o   Time::DateTime
          *      o   Characters::String
          *      o   VariantValue
+         *      o   IO::Network::CIDR
+         *      o   IO::Network::InternetAddress
          *      o   IO::Network::URI
          *      o   Time::TimeOfDay
          *      o   Common::GUID
@@ -726,6 +729,7 @@ namespace Stroika::Foundation::DataExchange {
         static TypeMappingDetails MakeCommonSerializer_ (const Execution::Synchronized<T, TRAITS>*);
         static TypeMappingDetails MakeCommonSerializer_ (const Memory::BLOB*);
         static TypeMappingDetails MakeCommonSerializer_ (const InternetMediaType*);
+        static TypeMappingDetails MakeCommonSerializer_ (const IO::Network::CIDR*);
         static TypeMappingDetails MakeCommonSerializer_ (const IO::Network::InternetAddress*);
         static TypeMappingDetails MakeCommonSerializer_ (const IO::Network::URI*);
         template <typename T>

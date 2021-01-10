@@ -10,6 +10,7 @@
 #include "../Cryptography/Encoding/Algorithm/Base64.h"
 #include "../Debug/Trace.h"
 #include "../IO/FileSystem/PathName.h"
+#include "../IO/Network/CIDR.h"
 #include "../IO/Network/InternetAddress.h"
 #include "../IO/Network/URI.h"
 #include "../Time/Date.h"
@@ -305,6 +306,14 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const InternetMed
     ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
         *intoObjOfTypeT = T (d.As<String> ());
     };
+    return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
+}
+
+TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network::CIDR*)
+{
+    using T                                  = IO::Network::CIDR;
+    FromObjectMapperType<T> fromObjectMapper = [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const T* obj) -> VariantValue { return obj->ToString (); };
+    ToObjectMapperType<T>   toObjectMapper   = [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, T* intoObj) -> void { *intoObj = T{d.As<String> ()}; };
     return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
 }
 
