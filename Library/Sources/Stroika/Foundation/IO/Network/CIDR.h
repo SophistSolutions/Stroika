@@ -60,7 +60,7 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         [[deprecated ("Since Stroika 2.1b9, use GetBaseInternetAddress")]]
-        InternetAddress GetInternetAddressx () const
+        InternetAddress GetInternetAddress () const
         {
             return GetBaseInternetAddress ();
         }
