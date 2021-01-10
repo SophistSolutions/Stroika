@@ -31,6 +31,7 @@ namespace Stroika::Foundation::Common {
     struct GUID {
         /**
          *  \note - when converting from a string, GUID allows the leading/trailing {} to be optionally provided.
+         *  no argument CTOR, creates an all-zero GUID.
          */
         constexpr GUID () = default;
 #if qPlatform_Windows
@@ -62,6 +63,7 @@ namespace Stroika::Foundation::Common {
     public:
         /**
          */
+        [[deprecated ("Since v2.1b9 - just use default CTOR")]]
         static constexpr GUID Zero ();
 
     public:
