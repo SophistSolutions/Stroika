@@ -150,7 +150,7 @@ namespace {
                 const Execution::VirtualConstant<int> kX = [] () { return 3; };
                 void                                  DoIt ()
                 {
-                    const int a = kX;
+                    const int [[maybe_unused]] a = kX;
                 }
             }
         }
