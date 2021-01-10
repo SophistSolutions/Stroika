@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2020.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Traversal_Range_h_
 #define _Stroika_Foundation_Traversal_Range_h_ 1
@@ -69,7 +69,8 @@ namespace Stroika::Foundation::Traversal {
          *  \note really just used to construct Explicit<> or ExplicitOpennessAndDifferenceType<>
          */
         template <typename T>
-        struct DefaultDifferenceTypes : ExplicitDifferenceTypes<Common::DifferenceType<T>> {};
+        struct DefaultDifferenceTypes : ExplicitDifferenceTypes<Common::DifferenceType<T>> {
+        };
 
         /**
          *  \note really just used to construct Explicit<> or ExplicitOpennessAndDifferenceType<>
@@ -199,7 +200,8 @@ namespace Stroika::Foundation::Traversal {
          *  \note Only used to construct/define a specific Range<> type
          */
         template <typename T>
-        struct Default_Integral : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eClosed>> {};
+        struct Default_Integral : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eClosed>> {
+        };
 
         /**
          *  \note Only used to construct/define a specific Range<> type
@@ -208,7 +210,8 @@ namespace Stroika::Foundation::Traversal {
          *  if you've applied the Stroika_Define_Enum_Bounds() macro to the given enumeration.
          */
         template <typename T>
-        struct Default_Enum : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eClosed>, ExplicitBounds<T, T::eSTART, T::eLAST>> {};
+        struct Default_Enum : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eClosed>, ExplicitBounds<T, T::eSTART, T::eLAST>> {
+        };
 
         /**
          *  \note Only used to construct/define a specific Range<> type
@@ -217,7 +220,8 @@ namespace Stroika::Foundation::Traversal {
          *  (where you can subtract elements, etc)
          */
         template <typename T>
-        struct Default_Arithmetic : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eOpen>> {};
+        struct Default_Arithmetic : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eOpen>> {
+        };
 
         /**
          *  Default<> contains the default traits used by a Range<> class. For most builtin types, this will

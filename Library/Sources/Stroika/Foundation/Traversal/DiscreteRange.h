@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2020.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Traversal_DiscreteRange_h_
 #define _Stroika_Foundation_Traversal_DiscreteRange_h_ 1
@@ -180,12 +180,10 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename TRAITS>
     DiscreteRange<T, TRAITS> operator^ (const DiscreteRange<T, TRAITS>& lhs, const DiscreteRange<T, TRAITS>& rhs);
 
-
-
     namespace RangeTraits {
         // ---------------- DEPRECATED -----------------
         template <typename T>
-        using DefaultDiscreteRangeTraits[[deprecated ("Since Stroika 2.1b8 use Default")]] = conditional_t<
+        using DefaultDiscreteRangeTraits [[deprecated ("Since Stroika 2.1b8 use Default")]] = conditional_t<
             is_enum_v<T>, Default_Enum<T>,
             conditional_t<
                 is_integral_v<T>, Default_Integral<T>,

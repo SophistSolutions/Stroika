@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2020.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Common_GUID_h_
 #define _Stroika_Foundation_Common_GUID_h_ 1
@@ -63,8 +63,7 @@ namespace Stroika::Foundation::Common {
     public:
         /**
          */
-        [[deprecated ("Since v2.1b9 - just use default CTOR")]]
-        static constexpr GUID Zero ();
+        [[deprecated ("Since v2.1b9 - just use default CTOR")]] static constexpr GUID Zero ();
 
     public:
         /**

@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright(c) Sophist Solutions, Inc. 1990-2020.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Configuration_Private_Defaults_CompilerAndStdLib_h_
 #define _Stroika_Foundation_Configuration_Private_Defaults_CompilerAndStdLib_h_ 1
@@ -2063,7 +2063,7 @@ namespace {
     _Stroika_Foundation_Configuration_Private_DO_PRAGMA_ (message ("WARNING: Deprecated File: " MESSAGE))
 #endif
 
- /*
+/*
  * https://en.cppreference.com/w/User:D41D8CD98F/feature_testing_macros
  * https://en.cppreference.com/w/cpp/language/attributes/no_unique_address
  */

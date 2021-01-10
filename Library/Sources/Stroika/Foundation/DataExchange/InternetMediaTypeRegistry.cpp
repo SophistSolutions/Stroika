@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2020.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
  */
 #include "../StroikaPreComp.h"
 
@@ -77,13 +77,25 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
 #if !qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy
     // Baked in predefined initial user-overrides.
     // These are adjustable by API, serve the purpose of providing a default on systems with no MIME content database -- LGP 2020-07-27
-    static const inline Mapping<InternetMediaType, OverrideRecord> kDefaults_{initializer_list<KeyValuePair<InternetMediaType, OverrideRecord>>{
-        {InternetMediaTypes::kText_PLAIN, OverrideRecord{nullopt, Containers::Set<String>{L".txt"sv}, L".txt"sv}},
-        {InternetMediaTypes::kCSS, OverrideRecord{nullopt, Containers::Set<String>{L".css"sv}, L".css"sv}},
-        {InternetMediaTypes::kHTML, OverrideRecord{nullopt, Containers::Set<String>{L".htm"sv, L".html"sv}, L".htm"sv}},
-        {InternetMediaTypes::kJSON, OverrideRecord{nullopt, Containers::Set<String>{L".json"sv}, L".json"sv}},
-        {InternetMediaTypes::kPNG, OverrideRecord{nullopt, Containers::Set<String>{L".png"sv}, L".png"sv}},
-        {InternetMediaTypes::kXML, OverrideRecord{nullopt, Containers::Set<String>{L".xml"sv}, L".xml"sv}},
+    static const inline Mapping<InternetMediaType, OverrideRecord> kDefaults_{initializer_list<KeyValuePair<InternetMediaType, OverrideRecord>> {
+        {InternetMediaTypes::kText_PLAIN, OverrideRecord { nullopt,
+                                                           Containers::Set<String>{L".txt"sv},
+                                                           L".txt"sv }},
+        {InternetMediaTypes::kCSS, OverrideRecord { nullopt,
+                                                    Containers::Set<String>{L".css"sv},
+                                                    L".css"sv }},
+        {InternetMediaTypes::kHTML, OverrideRecord { nullopt,
+                                                     Containers::Set<String>{L".htm"sv, L".html"sv},
+                                                     L".htm"sv }},
+        {InternetMediaTypes::kJSON, OverrideRecord { nullopt,
+                                                     Containers::Set<String>{L".json"sv},
+                                                     L".json"sv }},
+        {InternetMediaTypes::kPNG, OverrideRecord { nullopt,
+                                                    Containers::Set<String>{L".png"sv},
+                                                    L".png"sv }},
+        {InternetMediaTypes::kXML, OverrideRecord { nullopt,
+                                                    Containers::Set<String>{L".xml"sv},
+                                                    L".xml"sv }},
     }};
 #endif
 

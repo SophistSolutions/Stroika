@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2020.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
  */
 #ifndef _Stroika_Frameworks_UPnP_DeviceDescription_h_
 #define _Stroika_Frameworks_UPnP_DeviceDescription_h_ 1
@@ -108,11 +108,10 @@ namespace Stroika::Frameworks::UPnP {
          */
         nonvirtual String ToString () const;
 
-        private:
+    private:
         static Foundation::DataExchange::ObjectVariantMapper mkMapper_ ();
     };
     const inline Foundation::Execution::VirtualConstant<Foundation::DataExchange::ObjectVariantMapper> DeviceDescription::kMapper{DeviceDescription::mkMapper_};
-
 
     /**
      */

@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2020.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_Network_CIDR_h_
 #define _Stroika_Foundation_IO_Network_CIDR_h_ 1
@@ -59,8 +59,7 @@ namespace Stroika::Foundation::IO::Network {
         nonvirtual InternetAddress GetBaseInternetAddress () const;
 
     public:
-        [[deprecated ("Since Stroika 2.1b9, use GetBaseInternetAddress")]]
-        InternetAddress GetInternetAddress () const
+        [[deprecated ("Since Stroika 2.1b9, use GetBaseInternetAddress")]] InternetAddress GetInternetAddress () const
         {
             return GetBaseInternetAddress ();
         }

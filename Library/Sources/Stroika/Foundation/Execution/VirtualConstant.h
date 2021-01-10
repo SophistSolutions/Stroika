@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2020.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Execution_VirtualConstant_h_
 #define _Stroika_Foundation_Execution_VirtualConstant_h_ 1
@@ -112,8 +112,8 @@ namespace Stroika::Foundation::Execution {
         nonvirtual const T* operator-> () const;
 
     private:
-        const function<T()> fOneTimeGetter_;
-        const T& Getter_ () const;
+        const function<T ()> fOneTimeGetter_;
+        const T&             Getter_ () const;
     };
 
 }

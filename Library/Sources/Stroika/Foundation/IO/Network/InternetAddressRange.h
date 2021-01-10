@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2020.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_Network_InternetAddressRange_h_
 #define _Stroika_Foundation_IO_Network_InternetAddressRange_h_ 1
@@ -28,7 +28,7 @@ namespace Stroika::Foundation::IO::Network {
      *          }
      *      \endcode
      */
-    using InternetAddressRange [[deprecated("Since Stroika 2.1b8, use DiscreteRange<InternetAddress>")]] = Traversal::DiscreteRange<InternetAddress>;
+    using InternetAddressRange [[deprecated ("Since Stroika 2.1b8, use DiscreteRange<InternetAddress>")]] = Traversal::DiscreteRange<InternetAddress>;
 
 }
 

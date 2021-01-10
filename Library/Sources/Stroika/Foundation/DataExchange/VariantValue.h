@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2020.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Memory_VariantValue_h_
 #define _Stroika_Foundation_Memory_VariantValue_h_ 1
@@ -224,6 +224,7 @@ namespace Stroika::Foundation::DataExchange {
         VariantValue (VariantValue&& src) noexcept;
         template <typename T>
         VariantValue (const optional<T>& val);
+
     private:
         VariantValue (const string& val) = delete;
         VariantValue (const char* val)   = delete;

@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2020.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
  */
 #ifndef _Stroika_Frameworks_UPnP_SSDP_Server_SearchResponder_h_
 #define _Stroika_Frameworks_UPnP_SSDP_Server_SearchResponder_h_ 1
@@ -33,7 +33,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
      */
     class SearchResponder {
     public:
-        SearchResponder () = default;
+        SearchResponder ()                       = default;
         SearchResponder (const SearchResponder&) = delete;
         const SearchResponder operator= (const SearchResponder&) = delete;
         ~SearchResponder ()                                      = default;
