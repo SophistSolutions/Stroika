@@ -96,7 +96,7 @@ namespace {
                 //@todo tmphack - need to try a bunch and look for 'access'
                 urlHostRelPath += fDefaultIndexFileNames[0];
             }
-            return (fFSRoot_ / filesystem::path (urlHostRelPath.As<wstring> ()));
+            return fFSRoot_ / filesystem::path (urlHostRelPath.As<wstring> ());
         }
     };
 }

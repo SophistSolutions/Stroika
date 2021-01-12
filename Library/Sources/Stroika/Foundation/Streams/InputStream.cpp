@@ -142,7 +142,7 @@ Memory::BLOB InputStream<byte>::Ptr::ReadAll (size_t upTo) const
         if (size >= numeric_limits<size_t>::max ())
             [[UNLIKELY_ATTR]]
             {
-                Execution::Throw (bad_alloc ());
+                Execution::Throw (bad_alloc{});
             }
         size_t sb = static_cast<size_t> (size);
         sb        = min (sb, upTo);
@@ -181,6 +181,6 @@ Memory::BLOB InputStream<byte>::Ptr::ReadAll (size_t upTo) const
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace ("returning %llu bytes", static_cast<unsigned long long> (r.size ()));
 #endif
-    return BLOB (r);
+    return BLOB{r};
 }
 DISABLE_COMPILER_MSC_WARNING_END (6262)
