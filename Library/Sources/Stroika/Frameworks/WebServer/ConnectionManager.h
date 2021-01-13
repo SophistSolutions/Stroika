@@ -285,7 +285,20 @@ namespace Stroika::Frameworks::WebServer {
     };
 
     struct ConnectionManager::Options {
+        /**
+         *  This is the max number of TCP connections the webserver will allow to keep around, before starting
+         *  to reject new connections.
+         * 
+         *  \note NYI - just uses as a hint for other values
+         */
         optional<unsigned int>      fMaxConnections;
+
+        /**
+         *  This is basically the number of threads to use. It can be automatically inferred from fMaxConnections
+         *  but can be specified explicitly.
+         */
+        optional<unsigned int> fMaxConcurrentlyHandledConnections;
+
         optional<Socket::BindFlags> fBindFlags;
         optional<String>            fServerHeader;
         optional<CORSModeSupport>   fCORSModeSupport;

@@ -136,8 +136,21 @@ public:
                                     } }})},
 
               }}
-        , fWSImpl_{wsImpl}
-        , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRouter_, ConnectionManager::Options{{}, Socket::BindFlags{}, String{L"Stroika-Sample-WebServices/"} + AppVersion::kVersion.AsMajorMinorString ()}}
+        , fWSImpl_
+    {
+        wsImpl
+    }
+#if __cpp_designated_initializers
+    , fConnectionMgr_
+    {
+        SocketAddresses (InternetAddresses_Any (), portNumber), kRouter_, ConnectionManager::Options { .fBindFlags = Socket::BindFlags{}, .fServerHeader = L"Stroika-Sample-WebServices/"_k + AppVersion::kVersion.AsMajorMinorString () }
+    }
+#else
+    , fConnectionMgr_
+    {
+        SocketAddresses (InternetAddresses_Any (), portNumber), kRouter_, ConnectionManager::Options { {}, {}, Socket::BindFlags{}, L"Stroika-Sample-WebServices/"_k + AppVersion::kVersion.AsMajorMinorString () }
+    }
+#endif
     {
         // @todo - move this to some framework-specific regtests...
         using VariantValue         = DataExchange::VariantValue;

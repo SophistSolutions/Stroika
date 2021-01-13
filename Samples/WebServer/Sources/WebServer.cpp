@@ -45,20 +45,33 @@ namespace {
         const Router      kRouter_;
         ConnectionManager fConnectionMgr_;
         MyWebServer_ (uint16_t portNumber)
-            : kRouter_{
-                  Sequence<Route>{
-                      Route{L""_RegEx, DefaultPage_},
-                      Route{L"POST"_RegEx, L"SetAppState"_RegEx, SetAppState_},
-                      Route{L"GET"_RegEx, L"FRED"_RegEx, [] (Request*, Response* response) {
-                                response->write (L"FRED");
-                                response->SetContentType (DataExchange::InternetMediaTypes::kText_PLAIN);
-                            }},
-                      Route{
-                          L"Files/.*"_RegEx,
-                          FileSystemRouter{Execution::GetEXEDir () / L"html", L"Files"_k, Sequence<String>{L"index.html"_k}},
-                      },
-                  }}
-            , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRouter_, ConnectionManager::Options{{}, Socket::BindFlags{}, String{L"Stroika-Sample-WebServer/"} + AppVersion::kVersion.AsMajorMinorString ()}}
+            : kRouter_
+        {
+            Sequence<Route>
+            {
+                Route{L""_RegEx, DefaultPage_},
+                    Route{L"POST"_RegEx, L"SetAppState"_RegEx, SetAppState_},
+                    Route{L"GET"_RegEx, L"FRED"_RegEx, [] (Request*, Response* response) {
+                              response->write (L"FRED");
+                              response->SetContentType (DataExchange::InternetMediaTypes::kText_PLAIN);
+                          }},
+                    Route{
+                        L"Files/.*"_RegEx,
+                        FileSystemRouter{Execution::GetEXEDir () / L"html", L"Files"_k, Sequence<String>{L"index.html"_k}},
+                    },
+            }
+        }
+#if __cpp_designated_initializers
+        , fConnectionMgr_
+        {
+            SocketAddresses (InternetAddresses_Any (), portNumber), kRouter_, ConnectionManager::Options { .fBindFlags = Socket::BindFlags{}, .fServerHeader = L"Stroika-Sample-WebServer/"_k + AppVersion::kVersion.AsMajorMinorString () }
+        }
+#else
+        , fConnectionMgr_
+        {
+            SocketAddresses (InternetAddresses_Any (), portNumber), kRouter_, ConnectionManager::Options { {}, {}, Socket::BindFlags{}, L"Stroika-Sample-WebServer/"_k + AppVersion::kVersion.AsMajorMinorString () }
+        }
+#endif
         {
         }
         // Can declare arguments as Request*,Response*
