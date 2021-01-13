@@ -112,7 +112,12 @@ namespace {
                             FD_SET (fSD_, &myset);
                             timeval time_out = timeout.As<timeval> ();
                             Handle_ErrNoResultInterruption ([&] () -> int {
-                                return ::select (fSD_ + 1, NULL, &myset, nullptr, &time_out);
+                                auto r = ::select (fSD_ + 1, NULL, &myset, nullptr, &time_out);
+                                if (r == 0) {
+                                    // https://man7.org/linux/man-pages/man2/select.2.html - "The return value may be zero if the timeout expired before any file descriptors became ready"
+                                    Execution::Throw (Execution::TimeOutException::kThe);
+                                }
+                                return r;
                             });
                             // Check the errno value returned...
                             if (auto err = getsockopt<int> (SOL_SOCKET, SO_ERROR)) {
