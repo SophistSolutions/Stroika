@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Debug {
      *  \par Example Usage
      *      \code
      *          {
-     *              TraceContextBumper ctx ("do_some_call");
+     *              TraceContextBumper ctx{"do_some_call"};
      *              TimingTrace         ttrc;
      *              do_some_call();
      *          }
