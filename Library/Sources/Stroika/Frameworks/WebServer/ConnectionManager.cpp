@@ -105,7 +105,7 @@ namespace {
  */
 constexpr unsigned int                       ConnectionManager::Options::kDefault_MaxConnections;
 constexpr Socket::BindFlags                  ConnectionManager::Options::kDefault_BindFlags;
-const optional<String>                       ConnectionManager::Options::kDefault_ServerHeader = L"Stroika/2.0"sv;
+const optional<String>                       ConnectionManager::Options::kDefault_ServerHeader = L"Stroika/2.1"sv;
 constexpr ConnectionManager::CORSModeSupport ConnectionManager::Options::kDefault_CORSModeSupport;
 constexpr Time::DurationSecondsType          ConnectionManager::Options::kDefault_AutomaticTCPDisconnectOnClose;
 constexpr optional<int>                      ConnectionManager::Options::kDefault_Linger;
@@ -118,7 +118,7 @@ constexpr optional<int>                      ConnectionManager::Options::kDefaul
 const ConnectionManager::Options ConnectionManager::kDefaultOptions;
 
 ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Router& router, const Options& options)
-    : ConnectionManager (Sequence<SocketAddress>{bindAddress}, router, options)
+    : ConnectionManager{Sequence<SocketAddress>{bindAddress}, router, options}
 {
 }
 
@@ -156,6 +156,7 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
                  ComputeConnectionBacklog_ (options)}
     , fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([this] () { WaitForReadyConnectionLoop_ (); }, L"WebServer-ConnectionMgr-Wait4IOReady"_k)}
 {
+    DbgTrace (L"Constructing WebServer::ConnectionManager (%p), with threadpoolSize=%d, backlog=%d", this, fActiveConnectionThreads_.GetPoolSize (), ComputeConnectionBacklog_ (options));
     fWaitForReadyConnectionThread_.Start (); // start here instead of autostart so a guaranteed initialized before thead main starts - see https://stroika.atlassian.net/browse/STK-706
 }
 
