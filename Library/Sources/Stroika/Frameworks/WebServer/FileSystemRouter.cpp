@@ -46,7 +46,7 @@ namespace {
         void HandleMessage (Message* m)
         {
 #if qDefaultTracingOn
-            Debug::TimingTrace ttrc{L"FSRouterRep_::HandleMessage", .1}; // prelim - gather info on whether worht supporting ETAGs etc - why is this sometimes somewhat slow
+            Debug::TimingTrace ttrc{L"FSRouterRep_::HandleMessage", .001}; // prelim - gather info on whether worht supporting ETAGs etc - why is this sometimes somewhat slow
 #endif
             /*
              * @todo rewrite to incrementally copy file from stream, not read all into RAM
