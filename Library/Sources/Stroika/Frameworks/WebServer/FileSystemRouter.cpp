@@ -6,6 +6,7 @@
 #include "../../Foundation/Characters/ToString.h"
 #include "../../Foundation/DataExchange/InternetMediaType.h"
 #include "../../Foundation/DataExchange/InternetMediaTypeRegistry.h"
+#include "../../Foundation/Debug/TimingTrace.h"
 #include "../../Foundation/IO/FileSystem/Common.h"
 #include "../../Foundation/IO/FileSystem/FileInputStream.h"
 #include "../../Foundation/IO/FileSystem/PathName.h"
@@ -44,6 +45,9 @@ namespace {
         }
         void HandleMessage (Message* m)
         {
+#if qDefaultTracingOn
+            Debug::TimingTrace ttrc{L"FSRouterRep_::HandleMessage", .1}; // prelim - gather info on whether worht supporting ETAGs etc - why is this sometimes somewhat slow
+#endif
             /*
              * @todo rewrite to incrementally copy file from stream, not read all into RAM
              */
@@ -67,7 +71,7 @@ namespace {
             }
             catch (const system_error& e) {
 #if qCompilerAndStdLib_error_code_compare_condition_Buggy
-                // not sure how to workaround this, but fixed in latest gcc's
+                // not sure how to workaround this, but fixed in the latest gcc (GLIBCXX 9)
 #endif
                 if (e.code () == errc::no_such_file_or_directory) {
                     Execution::Throw (ClientErrorException{StatusCodes::kNotFound});
