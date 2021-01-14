@@ -1,38 +1,41 @@
+#https://clang.llvm.org/docs/ClangFormatStyleOptions.html
 BasedOnStyle: LLVM
-AccessModifierOffset : -4
+AccessModifierOffset: -4
 AlignTrailingComments: true
-AlwaysBreakTemplateDeclarations : true
+AlwaysBreakTemplateDeclarations: true
 AlignConsecutiveAssignments: true
-AlignConsecutiveDeclarations : true
-BreakBeforeBraces: Custom 
+AlignConsecutiveDeclarations: true
+AlignAfterOpenBracket: Align
+BreakBeforeBraces: Custom
 BraceWrapping:
-  AfterClass:				false
-  AfterControlStatement:	false
-  AfterEnum:				false
-  AfterFunction:			true
-  AfterNamespace:			false
-  AfterObjCDeclaration:		false
-  AfterStruct:				false
-  AfterUnion:				false
-  BeforeCatch:				true
-  BeforeElse:				true
-  IndentBraces:				false
-BreakConstructorInitializersBeforeComma : true
+  AfterClass: false
+  AfterControlStatement: false
+  AfterEnum: false
+  AfterFunction: true
+  AfterNamespace: false
+  AfterObjCDeclaration: false
+  AfterStruct: false
+  AfterUnion: false
+  BeforeCatch: true
+  BeforeElse: true
+  IndentBraces: false
+BreakConstructorInitializersBeforeComma: true
 #ColumnLimit:     160
-ColumnLimit:     0
-Cpp11BracedListStyle : true
+ColumnLimit: 0
+Cpp11BracedListStyle: true
 FixNamespaceComments: false
 IndentWidth: 4
 IndentCaseLabels: true
 KeepEmptyLinesAtTheStartOfBlocks: true
 NamespaceIndentation: All
-PointerAlignment : Left
-ReflowComments:  false
-SortIncludes : true
+PointerAlignment: Left
+ReflowComments: false
+SortIncludes: true
 SpaceBeforeParens: Always
-SpacesInAngles : false
-SpacesInParentheses : false
+SpacesInAngles: false
+SpacesInParentheses: false
 SpacesBeforeTrailingComments: 1
-Standard : Cpp11
+#used to say Cpp11, and attempts to set Cpp14, or > get errors, Auto works, but worse
+Standard: Cpp11
 TabWidth: 4
 UseTab: Never
