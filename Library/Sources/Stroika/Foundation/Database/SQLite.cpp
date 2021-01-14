@@ -84,10 +84,9 @@ Connection::Statement::Statement (Connection* db, const wchar_t* formatQuery, ..
 #endif
     int rc = ::sqlite3_prepare_v2 (db->Peek (), query.AsUTF8 ().c_str (), -1, &fStatementObj_, NULL);
     if (rc != SQLITE_OK)
-        [[UNLIKELY_ATTR]]
-        {
-            Execution::Throw (Exception (Characters::Format (L"SQLite Error %s:", String::FromUTF8 (::sqlite3_errmsg (db->Peek ())).c_str ())));
-        }
+        [[UNLIKELY_ATTR]] {
+        Execution::Throw (Exception (Characters::Format (L"SQLite Error %s:", String::FromUTF8 (::sqlite3_errmsg (db->Peek ())).c_str ())));
+    }
     AssertNotNull (fStatementObj_);
     fParamsCount_ = ::sqlite3_column_count (fStatementObj_);
     for (unsigned int i = 0; i < fParamsCount_; ++i) {
@@ -175,12 +174,11 @@ Connection::Connection (const URI& dbURL, const function<void (Connection&)>& db
         }
     }
     else if (e != SQLITE_OK)
-        [[UNLIKELY_ATTR]]
-        {
-            Assert (fDB_ == nullptr);
-            // @todo add error string
-            Execution::Throw (Exception (Characters::Format (L"SQLite Error %d:", e)));
-        }
+        [[UNLIKELY_ATTR]] {
+        Assert (fDB_ == nullptr);
+        // @todo add error string
+        Execution::Throw (Exception (Characters::Format (L"SQLite Error %d:", e)));
+    }
 }
 
 Connection::Connection (const filesystem::path& dbPath, const function<void (Connection&)>& dbInitializer)
@@ -204,12 +202,11 @@ Connection::Connection (const filesystem::path& dbPath, const function<void (Con
         }
     }
     else if (e != SQLITE_OK)
-        [[UNLIKELY_ATTR]]
-        {
-            Assert (fDB_ == nullptr);
-            // @todo add error string
-            Execution::Throw (Exception (Characters::Format (L"SQLite Error %d:", e)));
-        }
+        [[UNLIKELY_ATTR]] {
+        Assert (fDB_ == nullptr);
+        // @todo add error string
+        Execution::Throw (Exception (Characters::Format (L"SQLite Error %d:", e)));
+    }
 }
 
 Connection::Connection (InMemoryDBFlag, const function<void (Connection&)>& dbInitializer)
@@ -227,12 +224,11 @@ Connection::Connection (InMemoryDBFlag, const function<void (Connection&)>& dbIn
         }
     }
     else if (e != SQLITE_OK)
-        [[UNLIKELY_ATTR]]
-        {
-            Assert (fDB_ == nullptr);
-            // @todo add error string
-            Execution::Throw (Exception (Characters::Format (L"SQLite Error %d:", e)));
-        }
+        [[UNLIKELY_ATTR]] {
+        Assert (fDB_ == nullptr);
+        // @todo add error string
+        Execution::Throw (Exception (Characters::Format (L"SQLite Error %d:", e)));
+    }
 }
 
 Connection::~Connection ()
@@ -252,15 +248,14 @@ void Connection::Exec (const wchar_t* formatCmd2Exec, ...)
     char* db_err{};
     int   e = ::sqlite3_exec (fDB_, cmd2Exec.AsUTF8 ().c_str (), NULL, 0, &db_err);
     if (e != SQLITE_OK)
-        [[UNLIKELY_ATTR]]
-        {
-            if (db_err == nullptr or *db_err == '\0') {
-                DbgTrace (L"Failed doing sqllite command: %s", cmd2Exec.c_str ());
-                Execution::Throw (Exception (Characters::Format (L"SQLite Error %d", e)));
-            }
-            else {
-                Execution::Throw (Exception (Characters::Format (L"SQLite Error %d: %s", e, String::FromUTF8 (db_err).c_str ())));
-            }
+        [[UNLIKELY_ATTR]] {
+        if (db_err == nullptr or *db_err == '\0') {
+            DbgTrace (L"Failed doing sqllite command: %s", cmd2Exec.c_str ());
+            Execution::Throw (Exception (Characters::Format (L"SQLite Error %d", e)));
         }
+        else {
+            Execution::Throw (Exception (Characters::Format (L"SQLite Error %d: %s", e, String::FromUTF8 (db_err).c_str ())));
+        }
+    }
 }
 #endif

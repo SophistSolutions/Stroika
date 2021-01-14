@@ -175,10 +175,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         if (this->_fHead == nullptr)
-            [[UNLIKELY_ATTR]]
-            {
-                Prepend (item);
-            }
+            [[UNLIKELY_ATTR]] {
+            Prepend (item);
+        }
         else {
             Link* last = this->_fHead;
             for (; last->fNext != nullptr; last = last->fNext)

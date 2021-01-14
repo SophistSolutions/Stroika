@@ -349,10 +349,9 @@ RetryWithAuth:
         DWORD dwSize = 0;
         do {
             if (Time::GetTickCount () > endBy)
-                [[UNLIKELY_ATTR]]
-                {
-                    Execution::Throw (Execution::TimeOutException::kThe);
-                }
+                [[UNLIKELY_ATTR]] {
+                Execution::Throw (Execution::TimeOutException::kThe);
+            }
 
             // Check for available data.
             dwSize = 0;

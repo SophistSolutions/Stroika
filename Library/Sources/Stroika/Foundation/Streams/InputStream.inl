@@ -201,10 +201,9 @@ namespace Stroika::Foundation::Streams {
         POD_TYPE tmp; // intentionally don't zero-initialize
         size_t   n{ReadAll (reinterpret_cast<byte*> (&tmp), reinterpret_cast<byte*> (&tmp + 1))};
         if (n == sizeof (tmp))
-            [[LIKELY_ATTR]]
-            {
-                return tmp;
-            }
+            [[LIKELY_ATTR]] {
+            return tmp;
+        }
         else {
             Execution::Throw ((n == 0) ? EOFException::kThe : EOFException (true));
         }

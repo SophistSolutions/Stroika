@@ -215,18 +215,17 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l, const Traversal:
         (void)tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
 #endif
         if ((errState & ios::badbit) or (errState & ios::failbit))
-            [[UNLIKELY_ATTR]]
-            {
+            [[UNLIKELY_ATTR]] {
 #if qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy
-                {
-                    errState = (::strptime (rep.AsNarrowSDKString ().c_str (), formatPattern.AsNarrowSDKString ().c_str (), &when) == nullptr) ? ios::failbit : ios::goodbit;
-                    if (errState == ios::goodbit) {
-                        break;
-                    }
+            {
+                errState = (::strptime (rep.AsNarrowSDKString ().c_str (), formatPattern.AsNarrowSDKString ().c_str (), &when) == nullptr) ? ios::failbit : ios::goodbit;
+                if (errState == ios::goodbit) {
+                    break;
                 }
-#endif
-                continue;
             }
+#endif
+            continue;
+        }
         else {
             break;
         }

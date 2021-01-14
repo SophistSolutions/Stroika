@@ -220,10 +220,9 @@ namespace Stroika::Foundation::Containers {
     {
         for (T i : rhs) {
             if (Contains (i))
-                [[UNLIKELY_ATTR]]
-                {
-                    return true;
-                }
+                [[UNLIKELY_ATTR]] {
+                return true;
+            }
         }
         return false;
     }

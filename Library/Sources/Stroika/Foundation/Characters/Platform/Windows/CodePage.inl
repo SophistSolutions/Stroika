@@ -133,37 +133,37 @@ namespace Stroika::Foundation::Characters::Platform::Windows {
 #ifdef ANSI_CHARSET
         Assert (ANSI_CHARSET == 0);
 #else
-        const unsigned char ANSI_CHARSET        = 0;
+        const unsigned char ANSI_CHARSET = 0;
 #endif
 #ifdef DEFAULT_CHARSET
         Assert (DEFAULT_CHARSET == 1);
 #else
-        const unsigned char DEFAULT_CHARSET     = 1;
+        const unsigned char DEFAULT_CHARSET = 1;
 #endif
 #ifdef MAC_CHARSET
         Assert (MAC_CHARSET == 77);
 #else
-        const unsigned char MAC_CHARSET         = 77;
+        const unsigned char MAC_CHARSET = 77;
 #endif
 #ifdef SHIFTJIS_CHARSET
         Assert (SHIFTJIS_CHARSET == 128);
 #else
-        const unsigned char SHIFTJIS_CHARSET    = 128;
+        const unsigned char SHIFTJIS_CHARSET = 128;
 #endif
 #ifdef HANGEUL_CHARSET
         Assert (HANGEUL_CHARSET == 129);
 #else
-        const unsigned char HANGEUL_CHARSET     = 129;
+        const unsigned char HANGEUL_CHARSET = 129;
 #endif
 #ifdef JOHAB_CHARSET
         Assert (JOHAB_CHARSET == 130);
 #else
-        const unsigned char JOHAB_CHARSET       = 130;
+        const unsigned char JOHAB_CHARSET = 130;
 #endif
 #ifdef GB2312_CHARSET
         Assert (GB2312_CHARSET == 134);
 #else
-        const unsigned char GB2312_CHARSET      = 134;
+        const unsigned char GB2312_CHARSET = 134;
 #endif
 #ifdef CHINESEBIG5_CHARSET
         Assert (CHINESEBIG5_CHARSET == 136);
@@ -173,52 +173,52 @@ namespace Stroika::Foundation::Characters::Platform::Windows {
 #ifdef GREEK_CHARSET
         Assert (GREEK_CHARSET == 161);
 #else
-        const unsigned char GREEK_CHARSET       = 161;
+        const unsigned char GREEK_CHARSET = 161;
 #endif
 #ifdef TURKISH_CHARSET
         Assert (TURKISH_CHARSET == 162);
 #else
-        const unsigned char TURKISH_CHARSET     = 162;
+        const unsigned char TURKISH_CHARSET = 162;
 #endif
 #ifdef VIETNAMESE_CHARSET
         Assert (VIETNAMESE_CHARSET == 163);
 #else
-        const unsigned char VIETNAMESE_CHARSET  = 163;
+        const unsigned char VIETNAMESE_CHARSET = 163;
 #endif
 #ifdef HEBREW_CHARSET
         Assert (HEBREW_CHARSET == 177);
 #else
-        const unsigned char HEBREW_CHARSET      = 177;
+        const unsigned char HEBREW_CHARSET = 177;
 #endif
 #ifdef ARABIC_CHARSET
         Assert (ARABIC_CHARSET == 178);
 #else
-        const unsigned char ARABIC_CHARSET      = 178;
+        const unsigned char ARABIC_CHARSET = 178;
 #endif
 #ifdef BALTIC_CHARSET
         Assert (BALTIC_CHARSET == 186);
 #else
-        const unsigned char BALTIC_CHARSET      = 186;
+        const unsigned char BALTIC_CHARSET = 186;
 #endif
 #ifdef RUSSIAN_CHARSET
         Assert (RUSSIAN_CHARSET == 204);
 #else
-        const unsigned char RUSSIAN_CHARSET     = 204;
+        const unsigned char RUSSIAN_CHARSET = 204;
 #endif
 #ifdef THAI_CHARSET
         Assert (THAI_CHARSET == 222);
 #else
-        const unsigned char THAI_CHARSET        = 222;
+        const unsigned char THAI_CHARSET = 222;
 #endif
 #ifdef EASTEUROPE_CHARSET
         Assert (EASTEUROPE_CHARSET == 238);
 #else
-        const unsigned char EASTEUROPE_CHARSET  = 238;
+        const unsigned char EASTEUROPE_CHARSET = 238;
 #endif
 #ifdef OEM_CHARSET
         Assert (OEM_CHARSET == 255);
 #else
-        const unsigned char OEM_CHARSET         = 255;
+        const unsigned char OEM_CHARSET = 255;
 #endif
 
         switch (lfCharSet) {

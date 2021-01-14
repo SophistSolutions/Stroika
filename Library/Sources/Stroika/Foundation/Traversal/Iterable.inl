@@ -241,10 +241,9 @@ namespace Stroika::Foundation::Traversal {
         size_t                   idx{0};
         function<optional<T> ()> getNext = [tmp, idx] () mutable -> optional<T> {
             if (idx < tmp.size ())
-                [[LIKELY_ATTR]]
-                {
-                    return tmp[idx++];
-                }
+                [[LIKELY_ATTR]] {
+                return tmp[idx++];
+            }
             else {
                 return nullopt;
             }
@@ -849,10 +848,9 @@ namespace Stroika::Foundation::Traversal {
         sort (tmp.begin (), tmp.end (), compare);
         size_t sz{tmp.size ()};
         if (sz == 0)
-            [[UNLIKELY_ATTR]]
-            {
-                return nullopt;
-            }
+            [[UNLIKELY_ATTR]] {
+            return nullopt;
+        }
         if ((sz % 2) == 0) {
             return (static_cast<RESULT_TYPE> (tmp[sz / 2]) + static_cast<RESULT_TYPE> (tmp[sz / 2 - 1])) / static_cast<RESULT_TYPE> (2);
         }
@@ -882,17 +880,15 @@ namespace Stroika::Foundation::Traversal {
                 function<optional<T> ()> getNext = [origList, repeatCountIndex, innerIndex, count] () mutable -> optional<T> {
                     Again:
                         if (innerIndex < origList.size ())
-                            [[LIKELY_ATTR]]
-                            {
-                                return origList[innerIndex++];
-                            }
+                            [[LIKELY_ATTR]] {
+                            return origList[innerIndex++];
+                        }
                         if (repeatCountIndex < count)
-                            [[LIKELY_ATTR]]
-                            {
-                                repeatCountIndex++;
-                                innerIndex = 0;
-                                goto Again;
-                            }
+                            [[LIKELY_ATTR]] {
+                            repeatCountIndex++;
+                            innerIndex = 0;
+                            goto Again;
+                        }
                         return nullopt;
                 };
                 return CreateGenerator (getNext);

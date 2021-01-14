@@ -42,10 +42,9 @@ namespace Stroika::Foundation::Execution {
             // interface seems to be defined only for char*, not wide strings: may need to map procName as well
             const char* err = dlerror ();
             if (err != nullptr)
-                [[UNLIKELY_ATTR]]
-                {
-                    Execution::Throw (DLLException (err));
-                }
+                [[UNLIKELY_ATTR]] {
+                Execution::Throw (DLLException (err));
+            }
         }
         return addr;
 #endif

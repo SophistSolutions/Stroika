@@ -588,7 +588,7 @@ void StyledTextIOSrcStream_FileDescriptor::ReadInWindow ([[maybe_unused]] size_t
     fBufferWindowStart = startAt;
     fBufferWindowEnd   = startAt + count;
 #else
-    Assert (false);     // NYI
+    Assert (false); // NYI
 #endif
 }
 

@@ -154,20 +154,18 @@ namespace Stroika::Foundation::Execution {
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         if (fRep_ == nullptr)
-            [[UNLIKELY_ATTR]]
-            {
-                return IDType{};
-            }
+            [[UNLIKELY_ATTR]] {
+            return IDType{};
+        }
         return fRep_->GetID ();
     }
     inline Thread::NativeHandleType Thread::Ptr::GetNativeHandle () const noexcept
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         if (fRep_ == nullptr)
-            [[UNLIKELY_ATTR]]
-            {
-                return NativeHandleType{};
-            }
+            [[UNLIKELY_ATTR]] {
+            return NativeHandleType{};
+        }
         return fRep_->GetNativeHandle ();
     }
     inline void Thread::Ptr::reset () noexcept
@@ -179,10 +177,9 @@ namespace Stroika::Foundation::Execution {
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         if (fRep_ == nullptr)
-            [[UNLIKELY_ATTR]]
-            {
-                return nullptr;
-            }
+            [[UNLIKELY_ATTR]] {
+            return nullptr;
+        }
         return fRep_->fRunnable_;
     }
 #if __cpp_impl_three_way_comparison >= 201907
@@ -271,10 +268,9 @@ namespace Stroika::Foundation::Execution {
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         if (fRep_ == nullptr)
-            [[UNLIKELY_ATTR]]
-            {
-                return Status::eNull;
-            }
+            [[UNLIKELY_ATTR]] {
+            return Status::eNull;
+        }
         return GetStatus_ ();
     }
     inline void Thread::Ptr::Join (Time::DurationSecondsType timeout) const
@@ -374,10 +370,9 @@ namespace Stroika::Foundation::Execution {
         // note that it is not important that this be protected/thread safe, since the value is just advisory/hint
         static unsigned int n = 0;
         if (++n % kEveryNTimes == kEveryNTimes - 1)
-            [[UNLIKELY_ATTR]]
-            {
-                CheckForInterruption ();
-            }
+            [[UNLIKELY_ATTR]] {
+            CheckForInterruption ();
+        }
     }
 
 }

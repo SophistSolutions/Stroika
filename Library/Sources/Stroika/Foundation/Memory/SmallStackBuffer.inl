@@ -78,11 +78,10 @@ namespace Stroika::Foundation::Memory {
         Invariant ();
         DestroyElts_ (this->begin (), this->end ());
         if (fLiveData_ != BufferAsT_ ())
-            [[UNLIKELY_ATTR]]
-            {
-                // we must have used the heap...
-                Deallocate_ (LiveDataAsAllocatedBytes_ ());
-            }
+            [[UNLIKELY_ATTR]] {
+            // we must have used the heap...
+            Deallocate_ (LiveDataAsAllocatedBytes_ ());
+        }
     }
     template <typename T, size_t BUF_SIZE>
     template <size_t FROM_BUF_SIZE>
@@ -175,13 +174,12 @@ namespace Stroika::Foundation::Memory {
         if (nElements > fSize_) {
             // Growing
             if (nElements > capacity ())
-                [[UNLIKELY_ATTR]]
-                {
-                    /*
+                [[UNLIKELY_ATTR]] {
+                /*
                  *   If we REALLY must grow, the double in size so unlikely we'll have to grow/malloc/copy again.
                  */
-                    reserve (max (nElements, capacity () * 2));
-                }
+                reserve (max (nElements, capacity () * 2));
+            }
             fSize_ = nElements;
         }
         else if (nElements < fSize_) {

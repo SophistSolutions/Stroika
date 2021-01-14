@@ -85,11 +85,10 @@ namespace Stroika::Foundation::Streams::iostream {
             using StreamElementType = typename OStreamType::char_type;
             fOriginalStream_.write (reinterpret_cast<const StreamElementType*> (start), end - start);
             if (fOriginalStream_.fail ())
-                [[UNLIKELY_ATTR]]
-                {
-                    using namespace Characters;
-                    Execution::Throw (Execution::RuntimeErrorException (L"Failed to write from ostream"sv));
-                }
+                [[UNLIKELY_ATTR]] {
+                using namespace Characters;
+                Execution::Throw (Execution::RuntimeErrorException (L"Failed to write from ostream"sv));
+            }
         }
         virtual void Flush () override
         {
@@ -97,11 +96,10 @@ namespace Stroika::Foundation::Streams::iostream {
             Require (IsOpenWrite ());
             fOriginalStream_.flush ();
             if (fOriginalStream_.fail ())
-                [[UNLIKELY_ATTR]]
-                {
-                    using namespace Characters;
-                    Execution::Throw (Execution::RuntimeErrorException (L"Failed to flush ostream"sv));
-                }
+                [[UNLIKELY_ATTR]] {
+                using namespace Characters;
+                Execution::Throw (Execution::RuntimeErrorException (L"Failed to flush ostream"sv));
+            }
         }
 
     private:

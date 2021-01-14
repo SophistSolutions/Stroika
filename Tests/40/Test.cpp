@@ -727,7 +727,8 @@ namespace {
 namespace {
     namespace Test11_SynchronizedCaches_ {
         namespace Private_ {
-            static const size_t kIOverallRepeatCount_ = kVerySlow_ ? 10 : kSortaSlow_ ? 50 : 1000;
+            static const size_t kIOverallRepeatCount_ = kVerySlow_ ? 10 : kSortaSlow_ ? 50
+                                                                                      : 1000;
             void                SyncLRUCacheT1_ ()
             {
                 Debug::TraceContextBumper traceCtx ("{}SyncLRUCacheT1_...");

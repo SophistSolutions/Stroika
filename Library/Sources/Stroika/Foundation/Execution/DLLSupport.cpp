@@ -53,10 +53,9 @@ namespace {
         // either main module or not found
         const char* err = dlerror ();
         if (err != nullptr)
-            [[UNLIKELY_ATTR]]
-            {
-                Execution::Throw (DLLException{err});
-            }
+            [[UNLIKELY_ATTR]] {
+            Execution::Throw (DLLException{err});
+        }
 #endif
         Execution::ThrowSystemErrNo ();
     }
@@ -162,10 +161,9 @@ DLLHandle DLLLoader::LoadDLL (const SDKChar* dllName, int flags) /// *** DEPRECA
         // either main module or not found
         const char* err = ::dlerror ();
         if (err != nullptr)
-            [[UNLIKELY_ATTR]]
-            {
-                Execution::Throw (DLLException{err});
-            }
+            [[UNLIKELY_ATTR]] {
+            Execution::Throw (DLLException{err});
+        }
     }
     return module;
 }
@@ -183,10 +181,9 @@ DLLLoader::~DLLLoader ()
     if (::dlclose (fModule_) != 0) {
         const char* err = ::dlerror ();
         if (err != nullptr)
-            [[UNLIKELY_ATTR]]
-            {
-                Execution::Throw (DLLException{err});
-            }
+            [[UNLIKELY_ATTR]] {
+            Execution::Throw (DLLException{err});
+        }
     }
 #endif
 }

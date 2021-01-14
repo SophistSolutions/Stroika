@@ -517,21 +517,18 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*_fData};
         if (advance)
-            [[LIKELY_ATTR]]
-            {
-                this->_fSuppressMore = false;
-            }
+            [[LIKELY_ATTR]] {
+            this->_fSuppressMore = false;
+        }
         Invariant ();
         if (not Done ())
-            [[LIKELY_ATTR]]
-            {
-                if (current != nullptr)
-                    [[LIKELY_ATTR]]
-                    {
-                        *current = *_fCurrent;
-                    }
-                return true;
+            [[LIKELY_ATTR]] {
+            if (current != nullptr)
+                [[LIKELY_ATTR]] {
+                *current = *_fCurrent;
             }
+            return true;
+        }
         return false;
     }
     template <typename T>
@@ -609,15 +606,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this->_fData};
         this->Invariant ();
         if (advance)
-            [[LIKELY_ATTR]]
-            {
-                if (not this->_fSuppressMore and not this->Done ())
-                    [[LIKELY_ATTR]]
-                    {
-                        Assert (this->_fCurrent < this->_fEnd);
-                        this->_fCurrent++;
-                    }
+            [[LIKELY_ATTR]] {
+            if (not this->_fSuppressMore and not this->Done ())
+                [[LIKELY_ATTR]] {
+                Assert (this->_fCurrent < this->_fEnd);
+                this->_fCurrent++;
             }
+        }
         return inherited::More (current, advance);
     }
     template <typename T>
@@ -626,20 +621,18 @@ namespace Stroika::Foundation::Containers::DataStructures {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this->_fData};
         this->Invariant ();
         if (advance)
-            [[LIKELY_ATTR]]
-            {
-                if (this->_fSuppressMore)
-                    [[UNLIKELY_ATTR]]
-                    {
-                        this->_fSuppressMore = false;
-                    }
-                else {
-                    if (not this->Done ()) {
-                        Assert (this->_fCurrent < this->_fEnd);
-                        this->_fCurrent++;
-                    }
+            [[LIKELY_ATTR]] {
+            if (this->_fSuppressMore)
+                [[UNLIKELY_ATTR]] {
+                this->_fSuppressMore = false;
+            }
+            else {
+                if (not this->Done ()) {
+                    Assert (this->_fCurrent < this->_fEnd);
+                    this->_fCurrent++;
                 }
             }
+        }
         this->Invariant ();
         if (this->Done ()) {
             *result = nullopt;
@@ -678,21 +671,19 @@ namespace Stroika::Foundation::Containers::DataStructures {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this->_fData};
         this->Invariant ();
         if (advance)
-            [[LIKELY_ATTR]]
-            {
-                if (not this->_fSuppressMore and not this->Done ())
-                    [[LIKELY_ATTR]]
-                    {
-                        if (this->_fCurrent == this->_fStart) {
-                            this->_fCurrent = this->_fEnd; // magic to indicate done
-                            Ensure (this->Done ());
-                        }
-                        else {
-                            this->_fCurrent--;
-                            Ensure (not this->Done ());
-                        }
-                    }
+            [[LIKELY_ATTR]] {
+            if (not this->_fSuppressMore and not this->Done ())
+                [[LIKELY_ATTR]] {
+                if (this->_fCurrent == this->_fStart) {
+                    this->_fCurrent = this->_fEnd; // magic to indicate done
+                    Ensure (this->Done ());
+                }
+                else {
+                    this->_fCurrent--;
+                    Ensure (not this->Done ());
+                }
             }
+        }
         return inherited::More (current, advance);
     }
     template <typename T>

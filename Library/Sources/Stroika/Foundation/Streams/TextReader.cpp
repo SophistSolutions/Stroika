@@ -253,11 +253,10 @@ protected:
             size_t n = inherited::Read (intoStart, intoEnd);
             if (n != 0) {
                 if (origOffset + n > numeric_limits<size_t>::max ())
-                    [[UNLIKELY_ATTR]]
-                    {
-                        // size_t can be less bits than SeekOffsetType, in which case we cannot cahce all in RAM
-                        Execution::Throw (range_error ("seek past max size for size_t"));
-                    }
+                    [[UNLIKELY_ATTR]] {
+                    // size_t can be less bits than SeekOffsetType, in which case we cannot cahce all in RAM
+                    Execution::Throw (range_error ("seek past max size for size_t"));
+                }
                 pushIntoCacheBuf (intoStart, intoStart + n);
             }
             return n;
@@ -270,11 +269,10 @@ protected:
             size_t  n = inherited::Read (reinterpret_cast<Character*> (std::begin (buf)), reinterpret_cast<Character*> (std::end (buf)));
             if (n != 0) {
                 if (origOffset + n > numeric_limits<size_t>::max ())
-                    [[UNLIKELY_ATTR]]
-                    {
-                        // size_t can be less bits than SeekOffsetType, in which case we cannot cahce all in RAM
-                        Execution::Throw (range_error ("seek past max size for size_t"));
-                    }
+                    [[UNLIKELY_ATTR]] {
+                    // size_t can be less bits than SeekOffsetType, in which case we cannot cahce all in RAM
+                    Execution::Throw (range_error ("seek past max size for size_t"));
+                }
                 pushIntoCacheBuf (reinterpret_cast<Character*> (std::begin (buf)), reinterpret_cast<Character*> (std::begin (buf)) + n);
                 n = intoEnd - intoStart;
                 (void)::memcpy (intoStart, std::begin (buf), n * sizeof (wchar_t));
@@ -290,20 +288,18 @@ protected:
         switch (whence) {
             case Whence::eFromStart: {
                 if (offset < 0)
-                    [[UNLIKELY_ATTR]]
-                    {
-                        Execution::Throw (range_error ("seek"));
-                    }
+                    [[UNLIKELY_ATTR]] {
+                    Execution::Throw (range_error ("seek"));
+                }
                 SeekTo_ (static_cast<SeekOffsetType> (offset));
             } break;
             case Whence::eFromCurrent: {
                 Streams::SeekOffsetType       curOffset = _fOffset;
                 Streams::SignedSeekOffsetType newOffset = curOffset + offset;
                 if (newOffset < 0)
-                    [[UNLIKELY_ATTR]]
-                    {
-                        Execution::Throw (range_error ("seek"));
-                    }
+                    [[UNLIKELY_ATTR]] {
+                    Execution::Throw (range_error ("seek"));
+                }
                 SeekOffsetType uNewOffset = static_cast<SeekOffsetType> (newOffset);
                 SeekTo_ (static_cast<size_t> (uNewOffset));
             } break;
@@ -325,10 +321,9 @@ private:
         while (_fOffset < offset) {
             Character c;
             if (Read (&c, &c + 1) == 0)
-                [[UNLIKELY_ATTR]]
-                {
-                    Execution::Throw (range_error ("seek"));
-                }
+                [[UNLIKELY_ATTR]] {
+                Execution::Throw (range_error ("seek"));
+            }
         }
         Ensure (_fOffset == offset);
     }
@@ -441,43 +436,37 @@ protected:
         switch (whence) {
             case Whence::eFromStart: {
                 if (offset < 0)
-                    [[UNLIKELY_ATTR]]
-                    {
-                        Execution::Throw (range_error ("seek"));
-                    }
+                    [[UNLIKELY_ATTR]] {
+                    Execution::Throw (range_error ("seek"));
+                }
                 if (static_cast<SeekOffsetType> (offset) > sourceLen)
-                    [[UNLIKELY_ATTR]]
-                    {
-                        Execution::Throw (range_error ("seek"));
-                    }
+                    [[UNLIKELY_ATTR]] {
+                    Execution::Throw (range_error ("seek"));
+                }
                 newOffset = static_cast<SeekOffsetType> (offset);
             } break;
             case Whence::eFromCurrent: {
                 Streams::SignedSeekOffsetType tmpOffset = fOffset_ + offset;
                 if (tmpOffset < 0)
-                    [[UNLIKELY_ATTR]]
-                    {
-                        Execution::Throw (range_error ("seek"));
-                    }
+                    [[UNLIKELY_ATTR]] {
+                    Execution::Throw (range_error ("seek"));
+                }
                 if (static_cast<SeekOffsetType> (tmpOffset) > sourceLen)
-                    [[UNLIKELY_ATTR]]
-                    {
-                        Execution::Throw (range_error ("seek"));
-                    }
+                    [[UNLIKELY_ATTR]] {
+                    Execution::Throw (range_error ("seek"));
+                }
                 newOffset = static_cast<SeekOffsetType> (tmpOffset);
             } break;
             case Whence::eFromEnd: {
                 Streams::SignedSeekOffsetType tmpOffset = fSource_.GetLength () + offset;
                 if (tmpOffset < 0)
-                    [[UNLIKELY_ATTR]]
-                    {
-                        Execution::Throw (range_error ("seek"));
-                    }
+                    [[UNLIKELY_ATTR]] {
+                    Execution::Throw (range_error ("seek"));
+                }
                 if (static_cast<SeekOffsetType> (tmpOffset) > sourceLen)
-                    [[UNLIKELY_ATTR]]
-                    {
-                        Execution::Throw (range_error ("seek"));
-                    }
+                    [[UNLIKELY_ATTR]] {
+                    Execution::Throw (range_error ("seek"));
+                }
                 newOffset = static_cast<SeekOffsetType> (tmpOffset);
             } break;
         }

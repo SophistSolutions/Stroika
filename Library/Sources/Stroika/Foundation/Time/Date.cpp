@@ -230,7 +230,7 @@ Date Date::Parse_ (const String& rep, const locale& l, const Traversal::Iterable
     if ((errState & ios::badbit) or (errState & ios::failbit)) [[UNLIKELY_ATTR]] {
         Execution::Throw (FormatException::kThe);
     }
-        // clang-format on
+    // clang-format on
 
 #if qDebug && qDo_Aggressive_InternalChekcingOfUnderlyingLibrary_To_Debug_Locale_Date_Issues_
     TestDateLocaleRoundTripsForDateWithThisLocaleLib_ (AsDate_ (when), l);
@@ -355,11 +355,10 @@ Date Date::AddDays (SignedJulianRepType dayCount) const
     Date result = *this;
     result.fJulianDateRep_ += dayCount;
     if (result.fJulianDateRep_ < Date::kMinJulianRep)
-        [[UNLIKELY_ATTR]]
-        {
-            static const range_error kRangeErrror_{"Date::AddDays cannot add days to go before the first julian calandar day"};
-            Execution::Throw (kRangeErrror_);
-        }
+        [[UNLIKELY_ATTR]] {
+        static const range_error kRangeErrror_{"Date::AddDays cannot add days to go before the first julian calandar day"};
+        Execution::Throw (kRangeErrror_);
+    }
     return result;
 }
 

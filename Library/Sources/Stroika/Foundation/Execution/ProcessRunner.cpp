@@ -416,10 +416,9 @@ String ProcessRunner::GetEffectiveCmdLine_ () const
     }
     Characters::StringBuilder sb;
     if (not fExecutable_.has_value ())
-        [[UNLIKELY_ATTR]]
-        {
-            Execution::Throw (Execution::Exception (L"need command-line or executable path to run a process"sv));
-        }
+        [[UNLIKELY_ATTR]] {
+        Execution::Throw (Execution::Exception (L"need command-line or executable path to run a process"sv));
+    }
     sb += IO::FileSystem::FromPath (*fExecutable_);
     for (String i : fArgs_) {
         sb += +L" " + i;
@@ -1228,10 +1227,9 @@ pid_t Execution::DetachedProcessRunner (const String& commandLine)
     {
         Sequence<String> tmp{Execution::ParseCommandLine (commandLine)};
         if (tmp.size () == 0)
-            [[UNLIKELY_ATTR]]
-            {
-                Execution::Throw (Execution::Exception (L"invalid command argument to DetachedProcessRunner"sv));
-            }
+            [[UNLIKELY_ATTR]] {
+            Execution::Throw (Execution::Exception (L"invalid command argument to DetachedProcessRunner"sv));
+        }
         exe  = IO::FileSystem::ToPath (tmp[0]);
         args = tmp;
     }

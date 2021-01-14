@@ -432,10 +432,9 @@ void ThreadPool::WaitForNextTask_ (TaskType* result)
     RequireNotNull (result);
     while (true) {
         if (fAborted_)
-            [[UNLIKELY_ATTR]]
-            {
-                Execution::Throw (Thread::AbortException::kThe);
-            }
+            [[UNLIKELY_ATTR]] {
+            Execution::Throw (Thread::AbortException::kThe);
+        }
 
         {
             [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};

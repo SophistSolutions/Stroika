@@ -86,11 +86,10 @@ protected:
             goto Again;
         }
         if (r != codecvt_utf8<wchar_t>::ok)
-            [[UNLIKELY_ATTR]]
-            {
-                // not sure waht to throw!
-                Execution::Throw (Execution::RuntimeErrorException (L"Error converting characters codepage"sv));
-            }
+            [[UNLIKELY_ATTR]] {
+            // not sure waht to throw!
+            Execution::Throw (Execution::RuntimeErrorException (L"Error converting characters codepage"sv));
+        }
     }
     virtual void Flush () override
     {

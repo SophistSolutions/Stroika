@@ -39,10 +39,9 @@ namespace Stroika::Foundation::IO::FileSystem {
     inline INT_TYPE Exception::ThrowPOSIXErrNoIfNegative (INT_TYPE returnCode, const path& p1, const path& p2)
     {
         if (returnCode < 0)
-            [[UNLIKELY_ATTR]]
-            {
-                ThrowPOSIXErrNo (errno, p1, p2);
-            }
+            [[UNLIKELY_ATTR]] {
+            ThrowPOSIXErrNo (errno, p1, p2);
+        }
         return returnCode;
     }
 

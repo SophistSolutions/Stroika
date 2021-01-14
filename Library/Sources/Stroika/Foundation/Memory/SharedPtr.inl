@@ -563,10 +563,9 @@ namespace Stroika::Foundation::Execution {
     inline void ThrowIfNull (const Memory::SharedPtr<T>& p)
     {
         if (p.get () == nullptr)
-            [[UNLIKELY_ATTR]]
-            {
-                Execution::Throw (bad_alloc (), "ThrowIfNull (SharedPtr<T> ()) - throwing bad_alloc ()");
-            }
+            [[UNLIKELY_ATTR]] {
+            Execution::Throw (bad_alloc (), "ThrowIfNull (SharedPtr<T> ()) - throwing bad_alloc ()");
+        }
     }
 }
 

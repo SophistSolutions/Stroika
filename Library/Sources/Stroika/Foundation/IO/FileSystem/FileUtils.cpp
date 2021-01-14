@@ -125,10 +125,9 @@ void IO::FileSystem::SetFileAccessWideOpened (const filesystem::path& filePathNa
 #elif qPlatform_POSIX
     ////TODO: Somewhat PRIMITIVE - TMPHACK
     if (filePathName.empty ())
-        [[UNLIKELY_ATTR]]
-        {
-            Execution::Throw (Exception{make_error_code (errc::no_such_file_or_directory), L"bad filename"_k});
-        }
+        [[UNLIKELY_ATTR]] {
+        Execution::Throw (Exception{make_error_code (errc::no_such_file_or_directory), L"bad filename"_k});
+    }
     struct stat s;
     IO::FileSystem::Exception::ThrowPOSIXErrNoIfNegative (::stat (filePathName.generic_string ().c_str (), &s), filePathName);
 
@@ -235,11 +234,10 @@ DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-decla
 void IO::FileSystem::CreateDirectoryForFile (const filesystem::path& filePath)
 {
     if (filePath.empty ())
-        [[UNLIKELY_ATTR]]
-        {
-            // NOT sure this is the best exception to throw here?
-            Execution::Throw (IO::FileSystem::Exception (make_error_code (errc::no_such_file_or_directory), filePath));
-        }
+        [[UNLIKELY_ATTR]] {
+        // NOT sure this is the best exception to throw here?
+        Execution::Throw (IO::FileSystem::Exception (make_error_code (errc::no_such_file_or_directory), filePath));
+    }
     if (IO::FileSystem::Default ().Access (filePath)) {
         // were done
         return;

@@ -531,7 +531,7 @@ bool FilteredSFPutDLog::PickFile (ConstStr255Param defaultName, FSSpec* result, 
     static RoutineDescriptor dlgProcHook_ = BUILD_ROUTINE_DESCRIPTOR (uppDlgHookYDProcInfo, SFPutDlgHook);
     RoutineDescriptor* dlgProcHook = &dlgProcHook_;
 #else
-    DlgHookYDProcPtr    dlgProcHook = &SFPutDlgHook;
+    DlgHookYDProcPtr dlgProcHook = &SFPutDlgHook;
 #endif
     StandardFileReply sfResult;
     ::CustomPutFile (saveAsPrompt, defaultName, &sfResult, 0, where, dlgProcHook, NULL, NULL, NULL, this);

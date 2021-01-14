@@ -50,10 +50,9 @@ BSTR Characters::Platform::Windows::UTF8StringToBSTR (const char* ws)
     int    stringLength = ::MultiByteToWideChar (CP_UTF8, 0, ws, static_cast<int> (wsLen), nullptr, 0);
     BSTR   result       = ::SysAllocStringLen (nullptr, stringLength);
     if (result == nullptr)
-        [[UNLIKELY_ATTR]]
-        {
-            Execution::Throw (bad_alloc ());
-        }
+        [[UNLIKELY_ATTR]] {
+        Execution::Throw (bad_alloc ());
+    }
     Verify (::MultiByteToWideChar (kCodePage_UTF8, 0, ws, static_cast<int> (wsLen), result, stringLength) == stringLength);
     return result;
 }

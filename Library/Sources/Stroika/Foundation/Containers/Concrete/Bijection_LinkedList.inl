@@ -205,10 +205,9 @@ namespace Stroika::Foundation::Containers::Concrete {
                     optional<DOMAIN_TYPE> back;
                     if (InverseLookup (newElt, &back)) {
                         if (not fDomainEqualsComparer_ (key, *back))
-                            [[UNLIKELY_ATTR]]
-                            {
-                                Execution::Throw (Bijection_Base::InjectivityViolation{});
-                            }
+                            [[UNLIKELY_ATTR]] {
+                            Execution::Throw (Bijection_Base::InjectivityViolation{});
+                        }
                     }
                 } break;
                 default:

@@ -36,15 +36,13 @@ uid_t Platform::POSIX::UserName2UID (const String& name)
     struct passwd* result = nullptr;
     int            err    = getpwnam_r (name.AsNarrowSDKString ().c_str (), &pwd, buf, bufsize, &result);
     if (err < 0)
-        [[UNLIKELY_ATTR]]
-        {
-            ThrowPOSIXErrNo (err);
-        }
+        [[UNLIKELY_ATTR]] {
+        ThrowPOSIXErrNo (err);
+    }
     if (result == nullptr)
-        [[UNLIKELY_ATTR]]
-        {
-            Execution::Throw (RuntimeErrorException (L"No such username"sv));
-        }
+        [[UNLIKELY_ATTR]] {
+        Execution::Throw (RuntimeErrorException (L"No such username"sv));
+    }
     return pwd.pw_uid;
 }
 

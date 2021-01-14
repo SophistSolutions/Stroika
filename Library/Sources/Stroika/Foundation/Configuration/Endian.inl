@@ -33,10 +33,12 @@ namespace Stroika::Foundation::Configuration {
     inline constexpr Endian GetEndianness ()
     {
 #if !qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
-        return (Private_::kMix_.cdat[0] == 4) ? Endian::eLittleByte :         // aka little endian
-                   (Private_::kMix_.cdat[0] == 1) ? Endian::eBigByte :        // aka big endian
-                       (Private_::kMix_.cdat[0] == 2) ? Endian::eLittleWord : // aka little PDP
-                           Endian::eBigWord;
+        return (Private_::kMix_.cdat[0] == 4) ? Endian::eLittleByte : // aka little endian
+                   (Private_::kMix_.cdat[0] == 1) ? Endian::eBigByte
+                                                  : // aka big endian
+                   (Private_::kMix_.cdat[0] == 2) ? Endian::eLittleWord
+                                                  : // aka little PDP
+                   Endian::eBigWord;
 #else
 #if (defined(__BYTE_ORDER) && __BYTE_ORDER == __BIG_ENDIAN) ||             \
     (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__) || \

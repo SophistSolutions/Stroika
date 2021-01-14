@@ -73,8 +73,8 @@ void StyledTextIOReader_PlainText::Read ()
     Assert (charsRead <= len);
     Led_tChar* useBuf = wbuf;
 #else
-    size_t             charsRead = len;
-    Led_tChar*         useBuf    = buf;
+    size_t     charsRead = len;
+    Led_tChar* useBuf    = buf;
 #endif
     charsRead = Characters::NormalizeTextToNL<Led_tChar> (useBuf, charsRead, useBuf, charsRead);
     GetSinkStream ().AppendText (useBuf, charsRead, nullptr);

@@ -484,11 +484,10 @@ namespace Stroika::Foundation::DataExchange {
             for (const VariantValue&& encodedPair : s) {
                 Sequence<VariantValue> p = encodedPair.As<Sequence<VariantValue>> ();
                 if (p.size () != 2)
-                    [[UNLIKELY_ATTR]]
-                    {
-                        DbgTrace (L"Bijection ('%s') element with item count (%d) other than 2", Characters::ToString (typeid (Bijection<DOMAIN_TYPE, RANGE_TYPE>)).c_str (), static_cast<int> (p.size ()));
-                        Execution::Throw (BadFormatException{L"Mapping element with item count other than 2"sv});
-                    }
+                    [[UNLIKELY_ATTR]] {
+                    DbgTrace (L"Bijection ('%s') element with item count (%d) other than 2", Characters::ToString (typeid (Bijection<DOMAIN_TYPE, RANGE_TYPE>)).c_str (), static_cast<int> (p.size ()));
+                    Execution::Throw (BadFormatException{L"Mapping element with item count other than 2"sv});
+                }
                 intoObjOfTypeT->Add (mapper.ToObject<DOMAIN_TYPE> (domainMapper, p[0]), mapper.ToObject<RANGE_TYPE> (rangeMapper, p[1]));
             }
         };
@@ -679,13 +678,12 @@ namespace Stroika::Foundation::DataExchange {
             Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
             T*                     actualMember{reinterpret_cast<T*> (intoObjOfTypeT)};
             if (s.size () > SZ)
-                [[UNLIKELY_ATTR]]
-                {
-                    DbgTrace (L"Array ('%s') actual size %d out of range", Characters::ToString (typeid (T[SZ])).c_str (), static_cast<int> (s.size ()));
-                    Execution::Throw (BadFormatException{L"Array size out of range"sv});
-                }
+                [[UNLIKELY_ATTR]] {
+                DbgTrace (L"Array ('%s') actual size %d out of range", Characters::ToString (typeid (T[SZ])).c_str (), static_cast<int> (s.size ()));
+                Execution::Throw (BadFormatException{L"Array size out of range"sv});
+            }
             ToObjectMapperType<T>
-                valueMapper{mapper.ToObjectMapper<T> ()}; // optimization if > 1 array elt, and anti-optimization array.size == 0
+                   valueMapper{mapper.ToObjectMapper<T> ()}; // optimization if > 1 array elt, and anti-optimization array.size == 0
             size_t idx = 0;
             for (const auto&& i : s) {
                 actualMember[idx++] = mapper.ToObject<T> (valueMapper, i);
@@ -728,12 +726,11 @@ namespace Stroika::Foundation::DataExchange {
             for (const VariantValue&& encodedPair : s) {
                 Sequence<VariantValue> p = encodedPair.As<Sequence<VariantValue>> ();
                 if (p.size () != 2)
-                    [[UNLIKELY_ATTR]]
-                    {
-                        using namespace Characters;
-                        DbgTrace (L"Container with Key/Value pair ('%s') element with item count (%d) other than 2", Characters::ToString (typeid (ACTUAL_CONTAINER_TYPE)).c_str (), static_cast<int> (p.size ()));
-                        Execution::Throw (BadFormatException{L"Container with Key/Value pair element with item count other than 2"_k});
-                    }
+                    [[UNLIKELY_ATTR]] {
+                    using namespace Characters;
+                    DbgTrace (L"Container with Key/Value pair ('%s') element with item count (%d) other than 2", Characters::ToString (typeid (ACTUAL_CONTAINER_TYPE)).c_str (), static_cast<int> (p.size ()));
+                    Execution::Throw (BadFormatException{L"Container with Key/Value pair element with item count other than 2"_k});
+                }
                 intoObjOfTypeT->Add (mapper.ToObject<KEY_TYPE> (keyMapper, p[0]), mapper.ToObject<VALUE_TYPE> (valueMapper, p[1]));
             }
         };
@@ -755,11 +752,10 @@ namespace Stroika::Foundation::DataExchange {
             RequireNotNull (intoObjOfTypeT);
             auto optVal = nameMap.InverseLookup (d.As<String> ());
             if (not optVal.has_value ())
-                [[UNLIKELY_ATTR]]
-                {
-                    DbgTrace (L"Enumeration ('%s') value '%s' out of range", Characters::ToString (typeid (ENUM_TYPE)).c_str (), d.As<String> ().c_str ());
-                    Execution::Throw (BadFormatException{L"Enumeration value out of range"sv});
-                }
+                [[UNLIKELY_ATTR]] {
+                DbgTrace (L"Enumeration ('%s') value '%s' out of range", Characters::ToString (typeid (ENUM_TYPE)).c_str (), d.As<String> ().c_str ());
+                Execution::Throw (BadFormatException{L"Enumeration value out of range"sv});
+            }
             *intoObjOfTypeT = *optVal;
         };
         return TypeMappingDetails{typeid (ENUM_TYPE), fromObjectMapper, toObjectMapper};
@@ -791,12 +787,11 @@ namespace Stroika::Foundation::DataExchange {
             *intoObjOfTypeT = static_cast<ENUM_TYPE> (d.As<SerializeAsType> ());
             Assert (static_cast<SerializeAsType> (*intoObjOfTypeT) == d.As<SerializeAsType> ()); // no round-trip loss
             if (not(ENUM_TYPE::eSTART <= *intoObjOfTypeT and *intoObjOfTypeT < ENUM_TYPE::eEND))
-                [[UNLIKELY_ATTR]]
-                {
-                    using namespace Characters;
-                    DbgTrace (L"Enumeration ('%s') value %d out of range", Characters::ToString (typeid (ENUM_TYPE)).c_str (), static_cast<int> (*intoObjOfTypeT));
-                    Execution::Throw (BadFormatException{L"Enumeration value out of range"_k});
-                }
+                [[UNLIKELY_ATTR]] {
+                using namespace Characters;
+                DbgTrace (L"Enumeration ('%s') value %d out of range", Characters::ToString (typeid (ENUM_TYPE)).c_str (), static_cast<int> (*intoObjOfTypeT));
+                Execution::Throw (BadFormatException{L"Enumeration value out of range"_k});
+            }
         };
         return TypeMappingDetails{typeid (ENUM_TYPE), fromObjectMapper, toObjectMapper};
     }
@@ -858,25 +853,22 @@ namespace Stroika::Foundation::DataExchange {
             }
             else {
                 if (m.size () != 2)
-                    [[UNLIKELY_ATTR]]
-                    {
-                        DbgTrace (L"Range ('%s') element needs LowerBound and UpperBound", Characters::ToString (typeid (RANGE_TYPE)).c_str ());
-                        Execution::Throw (BadFormatException{L"Range needs LowerBound and UpperBound"sv});
-                    }
+                    [[UNLIKELY_ATTR]] {
+                    DbgTrace (L"Range ('%s') element needs LowerBound and UpperBound", Characters::ToString (typeid (RANGE_TYPE)).c_str ());
+                    Execution::Throw (BadFormatException{L"Range needs LowerBound and UpperBound"sv});
+                }
                 if (not m.ContainsKey (kLowerBoundLabel_))
-                    [[UNLIKELY_ATTR]]
-                    {
-                        DbgTrace (L"Range ('%s') element needs LowerBound", Characters::ToString (typeid (RANGE_TYPE)).c_str ());
-                        Execution::Throw (BadFormatException{L"Range needs 'LowerBound' element"sv});
-                    }
+                    [[UNLIKELY_ATTR]] {
+                    DbgTrace (L"Range ('%s') element needs LowerBound", Characters::ToString (typeid (RANGE_TYPE)).c_str ());
+                    Execution::Throw (BadFormatException{L"Range needs 'LowerBound' element"sv});
+                }
                 if (not m.ContainsKey (kUpperBoundLabel_))
-                    [[UNLIKELY_ATTR]]
-                    {
-                        DbgTrace (L"Range ('%s') element needs UpperBound", Characters::ToString (typeid (RANGE_TYPE)).c_str ());
-                        Execution::Throw (BadFormatException{L"Range needs 'UpperBound' element"sv});
-                    }
+                    [[UNLIKELY_ATTR]] {
+                    DbgTrace (L"Range ('%s') element needs UpperBound", Characters::ToString (typeid (RANGE_TYPE)).c_str ());
+                    Execution::Throw (BadFormatException{L"Range needs 'UpperBound' element"sv});
+                }
                 ToObjectMapperType<value_type>
-                    valueMapper{mapper.ToObjectMapper<value_type> ()};
+                           valueMapper{mapper.ToObjectMapper<value_type> ()};
                 value_type from{mapper.ToObject<value_type> (valueMapper, *m.Lookup (kLowerBoundLabel_))};
                 value_type to{mapper.ToObject<value_type> (valueMapper, *m.Lookup (kUpperBoundLabel_))};
                 *intoObjOfTypeT = CheckedConverter_Range<RANGE_TYPE> (from, to);

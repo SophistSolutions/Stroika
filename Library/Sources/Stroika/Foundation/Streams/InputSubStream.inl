@@ -156,10 +156,9 @@ namespace Stroika::Foundation::Streams {
             }
             if (fForcedEndInReal_) {
                 if (offset > static_cast<SignedSeekOffsetType> (*fForcedEndInReal_))
-                    [[UNLIKELY_ATTR]]
-                    {
-                        Execution::Throw (EOFException::kThe);
-                    }
+                    [[UNLIKELY_ATTR]] {
+                    Execution::Throw (EOFException::kThe);
+                }
             }
         }
 

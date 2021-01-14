@@ -287,11 +287,10 @@ filesystem::path IO::FileSystem::Ptr::GetFullPathName (const filesystem::path& p
     }
 #if qPlatform_POSIX
     if (pathName.empty ())
-        [[UNLIKELY_ATTR]]
-        {
-            //throw bad path name @todo improve exception
-            Execution::Throw (Execution::Exception (L"invalid pathname"sv));
-        }
+        [[UNLIKELY_ATTR]] {
+        //throw bad path name @todo improve exception
+        Execution::Throw (Execution::Exception (L"invalid pathname"sv));
+    }
     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
     return filesystem::current_path () / pathName;
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
@@ -346,7 +345,7 @@ C:
 #if qPlatform_Windows
     const Set<Character> kSlashChars_ = {'\\', '/'};
 #else
-    const Set<Character>      kSlashChars_ = {'/'};
+    const Set<Character> kSlashChars_ = {'/'};
 #endif
     Sequence<String> rawComponents = fileName.Tokenize (kSlashChars_, false);
     Iterator<String> i             = rawComponents.begin ();

@@ -414,10 +414,9 @@ Duration::InternalNumericFormatType_ Duration::ParseTime_ (const string& s)
         i     = SkipWhitespace_ (i + 1, s.end ());
     }
     if (*i == 'P')
-        [[LIKELY_ATTR]]
-        {
-            i = SkipWhitespace_ (i + 1, s.end ());
-        }
+        [[LIKELY_ATTR]] {
+        i = SkipWhitespace_ (i + 1, s.end ());
+    }
     else {
         Execution::Throw (FormatException::kThe);
     }
@@ -431,15 +430,13 @@ Duration::InternalNumericFormatType_ Duration::ParseTime_ (const string& s)
         string::const_iterator firstDigitI = i;
         string::const_iterator lastDigitI  = FindFirstNonDigitOrDot_ (i, s.end ());
         if (lastDigitI == s.end ())
-            [[UNLIKELY_ATTR]]
-            {
-                Execution::Throw (FormatException::kThe);
-            }
+            [[UNLIKELY_ATTR]] {
+            Execution::Throw (FormatException::kThe);
+        }
         if (firstDigitI == lastDigitI)
-            [[UNLIKELY_ATTR]]
-            {
-                Execution::Throw (FormatException::kThe);
-            }
+            [[UNLIKELY_ATTR]] {
+            Execution::Throw (FormatException::kThe);
+        }
         /*
          *  According to http://en.wikipedia.org/wiki/ISO_8601
          *      "The smallest value used may also have a decimal fraction, as in "P0.5Y" to indicate

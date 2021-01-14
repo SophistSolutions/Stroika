@@ -195,11 +195,10 @@ namespace Stroika::Foundation::Configuration {
         RequireNotNull (name);
         const ENUM_TYPE* tmp = PeekValue (name);
         if (tmp == nullptr)
-            [[UNLIKELY_ATTR]]
-            {
-                //Execution::Throw (notFoundException);
-                throw (notFoundException);
-            }
+            [[UNLIKELY_ATTR]] {
+            //Execution::Throw (notFoundException);
+            throw (notFoundException);
+        }
         return *tmp;
     }
     template <typename ENUM_TYPE>

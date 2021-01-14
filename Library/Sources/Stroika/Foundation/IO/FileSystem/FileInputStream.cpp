@@ -205,10 +205,9 @@ public:
         switch (whence) {
             case Whence::eFromStart: {
                 if (offset < 0)
-                    [[UNLIKELY_ATTR]]
-                    {
-                        Execution::Throw (range_error ("seek"));
-                    }
+                    [[UNLIKELY_ATTR]] {
+                    Execution::Throw (range_error ("seek"));
+                }
 #if qPlatform_Windows
                 return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_SET)));
 #elif qPlatform_Linux

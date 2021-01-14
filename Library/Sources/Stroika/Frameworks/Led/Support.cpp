@@ -483,7 +483,7 @@ Led_ClipboardObjectAcquire::Led_ClipboardObjectAcquire (Led_ClipFormat clipType)
     }
     Assert (::GetHandleSize (fOSClipHandle) == result);
     ::HLock (fOSClipHandle);
-    fLockedData    = *fOSClipHandle;
+    fLockedData = *fOSClipHandle;
 #endif
 #elif qPlatform_Windows
     // perhaps rewrite to use exceptions, but for now - when no cliptype avail - set flag so GoodClip() method can check -
@@ -1047,7 +1047,7 @@ void Led_URLManager::Open_IC (const string& url)
     //  OSErr   err =   ::ICGeneralFindConfigFile (icInstance, true, true, 0, nullptr);
     OSErr err = noErr;
 #else
-    ICError err    = ::ICFindConfigFile (icInstance, 0, nullptr);
+    ICError err = ::ICFindConfigFile (icInstance, 0, nullptr);
 #endif
     if (err == noErr) {
         long urlStart = 0;

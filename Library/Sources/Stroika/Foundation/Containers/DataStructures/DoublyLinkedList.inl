@@ -109,17 +109,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
         _fHead = new Link (item, nullptr, _fHead);
         if (_fHead->fNext != nullptr)
-            [[LIKELY_ATTR]]
-            {
-                // backlink second item to first
-                _fHead->fNext->fPrev = _fHead;
-            }
+            [[LIKELY_ATTR]] {
+            // backlink second item to first
+            _fHead->fNext->fPrev = _fHead;
+        }
         if (_fTail == nullptr)
-            [[UNLIKELY_ATTR]]
-            {
-                // if last is null, list was empty, so first==last now
-                _fTail = _fHead;
-            }
+            [[UNLIKELY_ATTR]] {
+            // if last is null, list was empty, so first==last now
+            _fTail = _fHead;
+        }
         Invariant ();
     }
     template <typename T>
@@ -129,17 +127,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
         _fTail = new Link (item, _fTail, nullptr);
         if (_fTail->fPrev != nullptr)
-            [[LIKELY_ATTR]]
-            {
-                // forward link second to last item to its prev
-                _fTail->fPrev->fNext = _fTail;
-            }
+            [[LIKELY_ATTR]] {
+            // forward link second to last item to its prev
+            _fTail->fPrev->fNext = _fTail;
+        }
         if (_fHead == nullptr)
-            [[UNLIKELY_ATTR]]
-            {
-                // if head is null, list was empty, so first==last now
-                _fHead = _fTail;
-            }
+            [[UNLIKELY_ATTR]] {
+            // if head is null, list was empty, so first==last now
+            _fHead = _fTail;
+        }
         Invariant ();
     }
     template <typename T>

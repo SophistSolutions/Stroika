@@ -2676,10 +2676,9 @@ public:
         , fZipFile_ (unzOpen2_64 ("", &fInSeekStream_))
     {
         if (fZipFile_ == nullptr)
-            [[UNLIKELY_ATTR]]
-            {
-                Execution::Throw (Execution::RuntimeErrorException (L"failed to open zipfile"sv));
-            }
+            [[UNLIKELY_ATTR]] {
+            Execution::Throw (Execution::RuntimeErrorException (L"failed to open zipfile"sv));
+        }
     }
     ~Rep_ ()
     {
@@ -2692,10 +2691,9 @@ public:
         unz_global_info64 gi;
         int               err = unzGetGlobalInfo64 (fZipFile_, &gi);
         if (err != UNZ_OK)
-            [[UNLIKELY_ATTR]]
-            {
-                Execution::Throw (Execution::RuntimeErrorException (Characters::Format (L"error %d with zipfile in unzGetGlobalInfo", err)));
-            }
+            [[UNLIKELY_ATTR]] {
+            Execution::Throw (Execution::RuntimeErrorException (Characters::Format (L"error %d with zipfile in unzGetGlobalInfo", err)));
+        }
         for (size_t i = 0; i < gi.number_entry; i++) {
             char            filename_inzip[10 * 1024];
             unz_file_info64 file_info;
@@ -2704,19 +2702,17 @@ public:
             //char charCrypt = ' ';
             err = unzGetCurrentFileInfo64 (fZipFile_, &file_info, filename_inzip, sizeof (filename_inzip), NULL, 0, NULL, 0);
             if (err != UNZ_OK)
-                [[UNLIKELY_ATTR]]
-                {
-                    Execution::Throw (Execution::RuntimeErrorException (Characters::Format (L"error %d with zipfile in unzGetCurrentFileInfo64", err)));
-                    break;
-                }
+                [[UNLIKELY_ATTR]] {
+                Execution::Throw (Execution::RuntimeErrorException (Characters::Format (L"error %d with zipfile in unzGetCurrentFileInfo64", err)));
+                break;
+            }
             if ((i + 1) < gi.number_entry) {
                 err = unzGoToNextFile_ (fZipFile_);
                 if (err != UNZ_OK)
-                    [[UNLIKELY_ATTR]]
-                    {
-                        Execution::Throw (Execution::RuntimeErrorException (Characters::Format (L"error %d with zipfile in unzGoToNextFile", err)));
-                        break;
-                    }
+                    [[UNLIKELY_ATTR]] {
+                    Execution::Throw (Execution::RuntimeErrorException (Characters::Format (L"error %d with zipfile in unzGoToNextFile", err)));
+                    break;
+                }
             }
             //tmphac
             if (filename_inzip[::strlen (filename_inzip) - 1] == '/') {
@@ -2806,10 +2802,9 @@ public:
     virtual Memory::BLOB GetData (const String& fileName) const override
     {
         if (unzLocateFile_ (fZipFile_, fileName.AsNarrowSDKString ().c_str (), 1) != UNZ_OK)
-            [[UNLIKELY_ATTR]]
-            {
-                Execution::Throw (Execution::RuntimeErrorException (Characters::Format (L"File '%s' not found", fileName.c_str ())));
-            }
+            [[UNLIKELY_ATTR]] {
+            Execution::Throw (Execution::RuntimeErrorException (Characters::Format (L"File '%s' not found", fileName.c_str ())));
+        }
         const char*                      password = nullptr;
         int                              err      = unzOpenCurrentFilePassword (fZipFile_, password);
         [[maybe_unused]] auto&&          cleanup  = Execution::Finally ([this] () { unzCloseCurrentFile_ (fZipFile_); });
@@ -2818,10 +2813,9 @@ public:
             byte buf[10 * 1024];
             err = unzReadCurrentFile_ (fZipFile_, buf, static_cast<unsigned int> (NEltsOf (buf)));
             if (err < 0)
-                [[UNLIKELY_ATTR]]
-                {
-                    Execution::Throw (Execution::RuntimeErrorException (Characters::Format (L"File '%s' error %d extracting", fileName.c_str (), err)));
-                }
+                [[UNLIKELY_ATTR]] {
+                Execution::Throw (Execution::RuntimeErrorException (Characters::Format (L"File '%s' error %d extracting", fileName.c_str (), err)));
+            }
             else if (err > 0) {
                 Assert (static_cast<size_t> (err) <= NEltsOf (buf));
                 tmpBuf.Write (buf, buf + err);

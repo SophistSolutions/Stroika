@@ -150,10 +150,9 @@ optional<String> Execution::MatchesCommandLineArgumentWithValue (const Iterable<
     if (i != argList.end ()) {
         ++i;
         if (i == argList.end ())
-            [[UNLIKELY_ATTR]]
-            {
-                Execution::Throw (InvalidCommandLineArgument{});
-            }
+            [[UNLIKELY_ATTR]] {
+            Execution::Throw (InvalidCommandLineArgument{});
+        }
         else {
             return optional<String> (*i);
         }

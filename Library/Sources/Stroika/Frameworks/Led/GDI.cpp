@@ -1418,7 +1418,7 @@ void Led_Tablet_::FrameRegion (const Led_Region& r, const Led_Color& c)
     Led_Brush brush = Led_Brush (c.GetOSRep ());
     (void)::FrameRgn (*this, r, brush, 1, 1);
 #else
-    Assert (false);                                  // NYI
+    Assert (false); // NYI
 #endif
 }
 
@@ -1692,7 +1692,7 @@ void Led_Tablet_::TabbedTextOut ([[maybe_unused]] const Led_FontMetrics& precomp
             widthSoFar = ::GetPortPenLocation (Led_GetCurrentGDIPort (), &junk)->h - cursor.h;
         }
 #else
-        widthSoFar                      = Led_GetCurrentGDIPort ()->pnLoc.h - cursor.h;
+        widthSoFar = Led_GetCurrentGDIPort ()->pnLoc.h - cursor.h;
 #endif
 #elif qPlatform_Windows
         int oldBkMode = SetBkMode (TRANSPARENT);

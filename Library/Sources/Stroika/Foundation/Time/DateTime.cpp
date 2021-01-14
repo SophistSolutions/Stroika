@@ -200,7 +200,7 @@ DateTime::DateTime (const ::timespec& tmTime, const optional<Timezone>& tz) noex
     if (errno_t e = ::gmtime_s (&tmTimeDataBuf, &unixTime)) {
         ThrowPOSIXErrNo (e);
     };
-    ::tm*        tmTimeData = &tmTimeDataBuf;
+    ::tm* tmTimeData = &tmTimeDataBuf;
 #else
     ::tm* tmTimeData = ::gmtime (&unixTime); // not threadsafe
 #endif
@@ -262,10 +262,9 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
         } break;
         case ParseFormat::eISO8601: {
             if (rep.empty ())
-                [[UNLIKELY_ATTR]]
-                {
-                    Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
-                }
+                [[UNLIKELY_ATTR]] {
+                Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
+            }
 
             int year   = 0;
             int month  = 0;

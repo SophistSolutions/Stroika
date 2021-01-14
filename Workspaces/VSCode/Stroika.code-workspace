@@ -89,7 +89,8 @@
 			"*.ipp": "cpp",
 			"clocale": "cpp",
 			"csetjmp": "cpp",
-			"*.inc": "cpp"
+			"*.inc": "cpp",
+			"future": "cpp"
 		}
 
 	}

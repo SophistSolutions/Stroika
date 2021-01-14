@@ -160,10 +160,9 @@ Response Connection::Ptr::Send (const Request& r)
     DeclareActivity        declaredActivity{GetOptions ().fDeclareActivities.value_or (kDeclareActivitiesFlag_Default_) ? &activity : nullptr};
     Response               response = fRep_->Send (r);
     if (not response.GetSucceeded ())
-        [[UNLIKELY_ATTR]]
-        {
-            Throw (Exception (response));
-        }
+        [[UNLIKELY_ATTR]] {
+        Throw (Exception (response));
+    }
     Ensure (response.GetSucceeded ());
     return response;
 }

@@ -139,7 +139,9 @@ CRect RulerItem::GetHitRectPix ()
     int nx = GetHorzPosPix ();
     return CRect (
         CPoint (
-            (m_nAlignment == TA_CENTER) ? (nx - m_size.cx / 2) : (m_nAlignment == TA_LEFT) ? nx : nx - m_size.cx, m_nYPosPix),
+            (m_nAlignment == TA_CENTER) ? (nx - m_size.cx / 2) : (m_nAlignment == TA_LEFT) ? nx
+                                                                                           : nx - m_size.cx,
+            m_nYPosPix),
         m_size);
 }
 

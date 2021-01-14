@@ -496,10 +496,9 @@ DateTime VariantValue::As () const
 String VariantValue::AsString_ () const
 {
     if (fVal_ == nullptr)
-        [[UNLIKELY_ATTR]]
-        {
-            return String{};
-        }
+        [[UNLIKELY_ATTR]] {
+        return String{};
+    }
     switch (fVal_->GetType ()) {
         case Type::eNull: {
             AssertNotReached ();
@@ -611,10 +610,9 @@ map<wstring, VariantValue> VariantValue::As () const
 {
     using namespace Characters;
     if (fVal_ == nullptr)
-        [[UNLIKELY_ATTR]]
-        {
-            return map<wstring, VariantValue> ();
-        }
+        [[UNLIKELY_ATTR]] {
+        return map<wstring, VariantValue> ();
+    }
     switch (fVal_->GetType ()) {
         case Type::eMap: {
             auto v = dynamic_cast<const TIRep_<Mapping<String, VariantValue>>*> (fVal_.get ());
@@ -639,10 +637,9 @@ Mapping<String, VariantValue> VariantValue::As () const
 {
     using namespace Characters;
     if (fVal_ == nullptr)
-        [[UNLIKELY_ATTR]]
-        {
-            return Mapping<String, VariantValue> ();
-        }
+        [[UNLIKELY_ATTR]] {
+        return Mapping<String, VariantValue> ();
+    }
     switch (fVal_->GetType ()) {
         case Type::eMap: {
             auto v = dynamic_cast<const TIRep_<Mapping<String, VariantValue>>*> (fVal_.get ());
@@ -668,10 +665,9 @@ template <>
 Sequence<VariantValue> VariantValue::As () const
 {
     if (fVal_ == nullptr)
-        [[UNLIKELY_ATTR]]
-        {
-            return Sequence<VariantValue> ();
-        }
+        [[UNLIKELY_ATTR]] {
+        return Sequence<VariantValue> ();
+    }
     switch (fVal_->GetType ()) {
         case Type::eArray: {
             auto v = dynamic_cast<const TIRep_<Sequence<VariantValue>>*> (fVal_.get ());

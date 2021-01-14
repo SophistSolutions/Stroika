@@ -51,10 +51,9 @@ namespace {
     void ThrowIfSQLError_ (SQLRETURN r, const wstring& message)
     {
         if ((r != SQL_SUCCESS) and (r != SQL_SUCCESS_WITH_INFO))
-            [[UNLIKELY_ATTR]]
-            {
-                Execution::Throw (Exception (message));
-            }
+            [[UNLIKELY_ATTR]] {
+            Execution::Throw (Exception{message});
+        }
     }
 }
 class Database::DBConnection::Rep {
@@ -110,7 +109,7 @@ public:
                     else if (errValue == SQL_NO_DATA) {
                         errorString += L"SQL no data";
                     }
-                    Execution::Throw (Exception (errorString));
+                    Execution::Throw (Exception{errorString});
                 }
             }
         }
@@ -136,7 +135,7 @@ public:
     }
 };
 Database::DBConnection::DBConnection (const wstring& dsn)
-    : fRep (make_shared<Rep> (dsn))
+    : fRep{make_shared<Rep> (dsn)}
 {
 }
 
