@@ -17,15 +17,17 @@ namespace Stroika::Foundation::Execution {
      ************************ Execution::WhenTimeExceeded ***************************
      ********************************************************************************
      */
-    inline WhenTimeExceeded::WhenTimeExceeded (Time::DurationSecondsType callIfTakesLongerThan, nullptr_t f)
+    inline WhenTimeExceeded::WhenTimeExceeded ([[maybe_unused]] Time::DurationSecondsType callIfTakesLongerThan, [[maybe_unused]] nullptr_t f)
         : fRunIfTakesTooLong_{nullptr}
     {
     }
     inline WhenTimeExceeded::WhenTimeExceeded (Time::DurationSecondsType callIfTakesLongerThan, const function<void (Time::DurationSecondsType)>& f)
-        : fStartedAt_{Time::GetTickCount ()}
-        , fCallIfTakesLongerThan_{callIfTakesLongerThan}
+        : fCallIfTakesLongerThan_{callIfTakesLongerThan}
         , fRunIfTakesTooLong_{f}
     {
+        if (f != nullptr) {
+            fStartedAt_ = Time::GetTickCount ();
+        }
     }
     inline WhenTimeExceeded::~WhenTimeExceeded ()
     {
