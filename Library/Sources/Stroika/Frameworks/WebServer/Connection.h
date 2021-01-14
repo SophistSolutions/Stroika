@@ -44,22 +44,19 @@ namespace Stroika::Frameworks::WebServer {
     /**
      *  \brief  A Connection object represents the state (and socket) for an ongoing, active, HTTP Connection, managed by the ConnectionManager class
      *
-     *  TODO:
-     *      \note @todo https://stroika.atlassian.net/browse/STK-638 - WebServer ConnectionManager (and Connection) handling restructure - so while reading headers, only one thread used
-     *
      *  This tends to get used internally by the ConnectionManager, but you can use it directly. For example:
      *
      *  \par Example Usage
      *      \code
      *          Connection conn{acceptedSocketConnection,
      *                       Sequence<Interceptor>{
-     *                          Interceptor (
+     *                          Interceptor{
      *                              [=](Message* m) {
      *                                  Response* response = m->PeekResponse ();
      *                                  response->AddHeader (IO::Network::HTTP::HeaderName::kServer, L"stroika-ssdp-server-demo");
      *                                  response->write (Stroika::Frameworks::UPnP::Serialize (d, dd));
      *                                  response->SetContentType (DataExchange::InternetMediaTypes::kXML);
-     *                               })}};
+     *                               }}}};
      *          conn.SetRemainingConnectionMessages (Connection::Remaining{0, 0}); // disable keep-alives
      *          conn.ReadAndProcessMessage ();
      *      \endcode

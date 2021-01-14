@@ -40,8 +40,8 @@ namespace {
     struct ServerHeadersInterceptor_ : public Interceptor {
         struct Rep_ : Interceptor::_IRep {
             Rep_ (const optional<String>& serverHeader, ConnectionManager::CORSModeSupport corsSupportMode)
-                : fServerHeader_ (serverHeader)
-                , fCORSModeSupport (corsSupportMode)
+                : fServerHeader_{serverHeader}
+                , fCORSModeSupport{corsSupportMode}
             {
             }
             virtual void HandleFault ([[maybe_unused]] Message* m, [[maybe_unused]] const exception_ptr& e) noexcept override
@@ -71,7 +71,7 @@ namespace {
             const ConnectionManager::CORSModeSupport fCORSModeSupport;
         };
         ServerHeadersInterceptor_ (const optional<String>& serverHeader, ConnectionManager::CORSModeSupport corsSupportMode)
-            : Interceptor (make_shared<Rep_> (serverHeader, corsSupportMode))
+            : Interceptor{make_shared<Rep_> (serverHeader, corsSupportMode)}
         {
         }
     };
@@ -115,8 +115,6 @@ constexpr optional<int>                      ConnectionManager::Options::kDefaul
  ************************* WebServer::ConnectionManager *************************
  ********************************************************************************
  */
-const ConnectionManager::Options ConnectionManager::kDefaultOptions;
-
 ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Router& router, const Options& options)
     : ConnectionManager{Sequence<SocketAddress>{bindAddress}, router, options}
 {
@@ -149,7 +147,7 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
     , fAutomaticTCPDisconnectOnClose_{options.fAutomaticTCPDisconnectOnClose.value_or (Options::kDefault_AutomaticTCPDisconnectOnClose)}
     , fRouter_{router}
     , fInterceptorChain_{mkInterceptorChain_ (fRouter_, fEarlyInterceptors_, fBeforeInterceptors_, fAfterInterceptors_)}
-    , fActiveConnectionThreads_{ComputeThreadPoolSize_ (options), options.fThreadPoolName} // implementation detail - due to EXPENSIVE blcoking read strategy - see https://stroika.atlassian.net/browse/STK-638
+    , fActiveConnectionThreads_{ComputeThreadPoolSize_ (options), options.fThreadPoolName}
     , fListener_{bindAddresses,
                  options.fBindFlags.value_or (Options::kDefault_BindFlags),
                  [this] (const ConnectionOrientedStreamSocket::Ptr& s) { onConnect_ (s); },
@@ -180,7 +178,7 @@ void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s
 void ConnectionManager::WaitForReadyConnectionLoop_ ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::WaitForReadyConnectionLoop_"));
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::WaitForReadyConnectionLoop_")};
 #endif
 
     // run til thread aborted
@@ -198,7 +196,7 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
 
                 auto handleActivatedConnection = [this, readyConnection] () mutable {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    Debug::TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::...processConnectionLoop"));
+                    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::...processConnectionLoop")};
 #endif
 
                     /*

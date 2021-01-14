@@ -40,9 +40,7 @@ namespace Stroika::Frameworks::WebServer {
      *  and it will monitor the connections, and when any is ready with more input, it will assign the
      *  appropriate handler to handle the request, and produce the response.
      *
-     *  TODO:
-     *      \note Connection (and therefore also ConnectionManager) doesn't CURRENTLY support HTTP keepalives (https://stroika.atlassian.net/browse/STK-637)
-     *      \note @todo https://stroika.atlassian.net/browse/STK-638 - WebServer ConnectionManager (and Connection) handling restructure - so while reading headers, only one thread used
+     *  \note The connection manager supports HTTP keep-alives, to keep the connection open.
      *
      *  \note Default ordering for interceptors:
      *        interceptors += earlyInterceptors;
@@ -53,7 +51,7 @@ namespace Stroika::Frameworks::WebServer {
     class ConnectionManager {
     public:
         struct Options;
-        static const Options kDefaultOptions;
+        static inline const Options kDefaultOptions;
 
     public:
         /**
@@ -332,7 +330,7 @@ namespace Stroika::Frameworks::WebServer {
          */
         optional<unsigned int> fTCPBacklog;
 
-        static constexpr unsigned int              kDefault_MaxConnections{25}; // temporarily - until we can fix https://stroika.atlassian.net/browse/STK-638
+        static constexpr unsigned int              kDefault_MaxConnections{25};
         static constexpr Socket::BindFlags         kDefault_BindFlags{};
         static const optional<String>              kDefault_ServerHeader;
         static constexpr CORSModeSupport           kDefault_CORSModeSupport{CORSModeSupport::eDEFAULT};
