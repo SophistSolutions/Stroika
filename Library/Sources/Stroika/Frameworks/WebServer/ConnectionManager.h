@@ -289,7 +289,7 @@ namespace Stroika::Frameworks::WebServer {
          *  This is the max number of TCP connections the webserver will allow to keep around, before starting
          *  to reject new connections.
          * 
-         *  \note NYI - just uses as a hint for other values
+         *  \note NYI tracking and rejecting extra connections - just used as a hint for other values
          */
         optional<unsigned int>      fMaxConnections;
 
