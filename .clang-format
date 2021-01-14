@@ -1,6 +1,7 @@
 #https://clang.llvm.org/docs/ClangFormatStyleOptions.html
 BasedOnStyle: LLVM
 AccessModifierOffset: -4
+AllowShortLambdasOnASingleLine: All
 AlignTrailingComments: true
 AlwaysBreakTemplateDeclarations: true
 AlignConsecutiveAssignments: true
