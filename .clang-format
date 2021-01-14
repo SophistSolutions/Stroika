@@ -35,7 +35,6 @@ SpaceBeforeParens: Always
 SpacesInAngles: false
 SpacesInParentheses: false
 SpacesBeforeTrailingComments: 1
-#used to say Cpp11, and attempts to set Cpp14, or > get errors, Auto works, but worse
-Standard: Cpp11
+Standard: c++20
 TabWidth: 4
 UseTab: Never
