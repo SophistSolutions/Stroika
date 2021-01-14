@@ -51,7 +51,7 @@ namespace Stroika::Frameworks::WebServer {
     class ConnectionManager {
     public:
         struct Options;
-        static inline const Options kDefaultOptions;
+        static const Options kDefaultOptions;
 
     public:
         /**
@@ -337,6 +337,8 @@ namespace Stroika::Frameworks::WebServer {
         static constexpr Time::DurationSecondsType kDefault_AutomaticTCPDisconnectOnClose{2.0};
         static constexpr optional<int>             kDefault_Linger{};
     };
+
+     inline const ConnectionManager::Options ConnectionManager::kDefaultOptions;
 
 }
 
