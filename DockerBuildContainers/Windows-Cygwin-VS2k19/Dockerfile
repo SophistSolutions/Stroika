@@ -27,9 +27,10 @@ ARG VS_16_7_7=https://download.visualstudio.microsoft.com/download/pr/a319c7ec-a
 ARG VS_16_8_1=https://download.visualstudio.microsoft.com/download/pr/2f4a234d-6e7c-4049-8248-6d9ac0d05c96/11f7d9f212a5195ed9680cda0baddced4eb99d06762c769163498344fa239d5b/vs_BuildTools.exe
 ARG VS_16_8_2=https://download.visualstudio.microsoft.com/download/pr/9d2147aa-7b01-4336-b665-8fe07735e5ee/61cc248a8f240911db3e7ae5f0d0cd7358211d9a9424202e7a69786bb6d34357/vs_BuildTools.exe
 ARG VS_16_8_3=https://download.visualstudio.microsoft.com/download/pr/9b3476ff-6d0a-4ff8-956d-270147f21cd4/0df5becfebf4ae2418f5fae653feebf3888b0af00d3df0415cb64875147e9be3/vs_BuildTools.exe
+ARG VS_16_8_4=https://download.visualstudio.microsoft.com/download/pr/3a7354bc-d2e4-430f-92d0-9abd031b5ee5/51d0c7235e474051f0605cfe54d28d7e20017d8a97bb3aebd09d573c370b0d14/vs_BuildTools.exe
 
 SHELL ["powershell"]
-RUN Invoke-WebRequest "$env:VS_16_8_3" `
+RUN Invoke-WebRequest "$env:VS_16_8_4" `
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
 SHELL ["cmd", "/S", "/C"]
 RUN %TEMP%\vs_buildtools.exe `
