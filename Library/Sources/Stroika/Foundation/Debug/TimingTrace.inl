@@ -17,19 +17,51 @@ namespace Stroika::Foundation::Debug {
      ********************************************************************************
      */
     inline TimingTrace::TimingTrace (Time::DurationSecondsType warnIfLongerThan)
-        : WhenTimeExceeded{warnIfLongerThan, [] (Time::DurationSecondsType timeTaken) noexcept { DbgTrace ("(timeTaken=%f seconds)", timeTaken); }}
+        : WhenTimeExceeded
+    {
+        warnIfLongerThan,
+#if qDefaultTracingOn
+            [] (Time::DurationSecondsType timeTaken) noexcept { DbgTrace ("(timeTaken=%f seconds)", timeTaken); }
+#else
+            nullptr
+#endif
+    }
     {
     }
     inline TimingTrace::TimingTrace (const char* label, Time::DurationSecondsType warnIfLongerThan)
-        : WhenTimeExceeded{warnIfLongerThan, [=] (Time::DurationSecondsType timeTaken) noexcept { DbgTrace ("%s (timeTaken=%f seconds)", label, timeTaken); }}
+        : WhenTimeExceeded
+    {
+        warnIfLongerThan,
+#if qDefaultTracingOn
+            [=] (Time::DurationSecondsType timeTaken) noexcept { DbgTrace ("%s (timeTaken=%f seconds)", label, timeTaken); }
+#else
+            nullptr
+#endif
+    }
     {
     }
     inline TimingTrace::TimingTrace (const wchar_t* label, Time::DurationSecondsType warnIfLongerThan)
-        : WhenTimeExceeded{warnIfLongerThan, [=] (Time::DurationSecondsType timeTaken) noexcept { DbgTrace (L"%s (timeTaken=%f seconds)", label, timeTaken); }}
+        : WhenTimeExceeded
+    {
+        warnIfLongerThan,
+#if qDefaultTracingOn
+            [=] (Time::DurationSecondsType timeTaken) noexcept { DbgTrace (L"%s (timeTaken=%f seconds)", label, timeTaken); }
+#else
+            nullptr
+#endif
+    }
     {
     }
     inline TimingTrace::TimingTrace (const Characters::String& label, Time::DurationSecondsType warnIfLongerThan)
-        : WhenTimeExceeded{warnIfLongerThan, [=] (Time::DurationSecondsType timeTaken) noexcept { DbgTrace (L"%s (timeTaken=%f seconds)", label.c_str (), timeTaken); }}
+        : WhenTimeExceeded
+    {
+        warnIfLongerThan,
+#if qDefaultTracingOn
+            [=] (Time::DurationSecondsType timeTaken) noexcept { DbgTrace (L"%s (timeTaken=%f seconds)", label.c_str (), timeTaken); }
+#else
+            nullptr
+#endif
+    }
     {
     }
 

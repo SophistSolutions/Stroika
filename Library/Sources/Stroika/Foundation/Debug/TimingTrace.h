@@ -12,7 +12,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  */
 
@@ -48,7 +48,10 @@ namespace Stroika::Foundation::Debug {
      *              </do_some_call>
      *      \endcode
      *
-     * \note   Aliases Performance Trace, PerforamnceTrace
+     * \note   This implementation should mostly disappear when qDefaultTracingOn is disabled (and so the DbgTrace() calls wouldn't do anything)
+     *         To do something like this when when qDefaultTracingOn is off, see the base class WhenTimeExceeded
+     *
+     * \note   Aliases Performance Trace, PerformanceTrace
      */
     class TimingTrace : private Execution::WhenTimeExceeded {
     public:
