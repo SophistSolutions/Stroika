@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Debug {
     }
     {
     }
-    inline TimingTrace::TimingTrace (const char* label, Time::DurationSecondsType warnIfLongerThan)
+    inline TimingTrace::TimingTrace ([[maybe_unused]]const char* label, Time::DurationSecondsType warnIfLongerThan)
         : WhenTimeExceeded
     {
         warnIfLongerThan,
@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Debug {
     }
     {
     }
-    inline TimingTrace::TimingTrace (const wchar_t* label, Time::DurationSecondsType warnIfLongerThan)
+    inline TimingTrace::TimingTrace ([[maybe_unused]] const wchar_t* label, Time::DurationSecondsType warnIfLongerThan)
         : WhenTimeExceeded
     {
         warnIfLongerThan,
@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Debug {
     }
     {
     }
-    inline TimingTrace::TimingTrace (const Characters::String& label, Time::DurationSecondsType warnIfLongerThan)
+    inline TimingTrace::TimingTrace ([[maybe_unused]] const Characters::String& label, Time::DurationSecondsType warnIfLongerThan)
         : WhenTimeExceeded
     {
         warnIfLongerThan,
