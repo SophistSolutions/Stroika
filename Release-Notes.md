@@ -7,6 +7,60 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+### 2.1b9....
+
+- Build System And Tools
+
+  - fixed makefile typo - must use = in bash to compare strings (when using [)
+  - .clang-format
+
+    - .clang-format various cleanups, comments and docs
+    - newer version of clang-format (11 => 12 pre-release)
+
+  - VisualStudio-Stroika-Foundation-Debugger-Template.natvis
+    - remove a few obsolte type entries, and add a few new ones (GUID, SocketAddress, cDIR, etc)
+  - Compiler Versions
+    - Visual Studio 16.8.4
+  - Compiler bug workarounds
+    - Slightly embellished qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy workaround needed
+
+- Foundation Library
+
+  - Common
+    - docs about GUID CTOR, and deprecated GUID::Zero
+  - DataExchange
+    - VariantValue() now takes optional<> overload CTOR
+    - ObjectVariantMapper
+      - MakeCommonSerializer \<CIDR> supported
+      - InternetMediaType also supported by MakeCommonSerialzer and included in default mapper
+      - fewer direct #includes in .h (forward declare)
+  - Debug
+    - Cleanups to TimingTrace so it takes advantage of Execution::WhenTimeExceeded optimization so when qDefaultTracingOn off, this will generally disappear from the code (in addition to doing nothing).
+  - Execution
+    - **INCOMPATIBLE** change to VirtualConstant - major rewrite
+    - Cleanups to WhenTimeExceeded code - so can be nearly completly
+      optimized away when you pass in nullptr argument (maybe completely).
+  - IO::Network
+    - Added a few 'well known ports' (VNC, etc)
+    - Renamed IO::Network::Interface::fBindings -> fBoundAddressRanges (**not backward compatible but rarely used**)
+    - Added IO::Network::Interface::fBindings -> fBoundAddresses
+    - Renamed CIDR::GetInternetAddress ()->CIDR::GetBaseInternetAddress () - deprecating old name.
+    - Fixed bug in IO::Network::ConnectionOrientedStreamSocket(TIMEOUT) - POSIX only bug - throw Execution::TimeOutException::kThe on timeout, don't mistakenly report success!
+
+- Frameworks Library
+
+  - UPnP
+    - added a few ObjectVariantMapper kMapper definitions to facilitate serializing these objects
+  - WebServer
+    - cosmetic cleanups
+    - Options:
+      - webserver api fMaxConcurrentlyHandledConnections support; and updated samples (api change not backward compat UNLESS using **cpp_designated_initializers - so started using **cpp_designated_initializers
+
+- ThirdPartyComponents
+
+  - Added mirror for lzma sdk zip
+  - wix 3.112rtm
+
 ---
 
 ### 2.1b8 {2020-12-24}
