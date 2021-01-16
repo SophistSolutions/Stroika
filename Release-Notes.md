@@ -7,8 +7,6 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
----
-
 ### 2.1b9 {2021-01-16}
 
 #### TLDR
@@ -93,9 +91,9 @@ especially those they need to be aware of when upgrading.
   - ASan, TSan, UBSan
   - Valgrind (helgrind/memcheck)
 - Build Systems
-  - CircleCI
-  - GitHub Actions
-  - Regression tests (with output checked in)
+  - [CircleCI](https://app.circleci.com/pipelines/github/SophistSolutions/Stroika)
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika)
+  - Regression tests [Correctness-Results](../Tests/HistoricalRegressionTestResults/2.1) [Performance-Results](../Tests/HistoricalPerformanceRegressionTestResults/2.1)
 
 ---
 
