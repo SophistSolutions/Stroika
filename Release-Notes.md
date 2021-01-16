@@ -83,7 +83,7 @@ especially those they need to be aware of when upgrading.
   - MacOS
     - 10.15.5 (Catalina)
   - Linux: { Ubuntu: [18.04, 20.04, 20.10], Centos: [7, 8], Raspbian(cross-compiled) }
-- Hardware Used/Supported
+- Hardware Tested/Supported
   - x86
   - x64
   - arm (linux/raspberrypi - cross-compiled)
