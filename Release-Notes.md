@@ -17,7 +17,7 @@ especially those they need to be aware of when upgrading.
 - DataExchange::VariantValue() now takes optional<> overload CTOR, and a few additions to ObjectVariantMapper predefined mappers
 - Frameworks::WebServer construction enhancements
 
-#### Details
+#### Change-Details
 
 - Build System And Tools
 
@@ -70,6 +70,32 @@ especially those they need to be aware of when upgrading.
 
   - Added mirror for lzma sdk zip
   - WIX 3.112rtm
+
+#### Release-Validation
+
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10 }
+  - Clang++ { unix: 7, 8, 9, 10, 11; XCode: 12 }
+  - MSVC: { 15.9.31, 16.8.4 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - version 2004
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v1
+  - MacOS
+    - 10.15.5 (Catalina)
+  - Linux: { Ubuntu: [1804, 2004, 2010], Centos: [7, 8], Raspbian(cross-compiled) }
+- Hardware Used/Supported
+  - x86
+  - x64
+  - arm (linux/raspberrypi - cross-compiled)
+- Sanitizers
+  - ASan, TSan, UBSan
+  - Valgrind (helgrind/memcheck)
+- Build Systems
+  - CircleCI
+  - GitHub Actions
+  - Regression tests (with output checked in)
 
 ---
 
