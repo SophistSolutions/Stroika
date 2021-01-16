@@ -93,7 +93,7 @@ especially those they need to be aware of when upgrading.
 - Build Systems
   - [CircleCI](https://app.circleci.com/pipelines/github/SophistSolutions/Stroika)
   - [GitHub Actions](https://github.com/SophistSolutions/Stroika)
-  - Regression tests [Correctness-Results](../Tests/HistoricalRegressionTestResults/2.1) [Performance-Results](../Tests/HistoricalPerformanceRegressionTestResults/2.1)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
 
 ---
 
