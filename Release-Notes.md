@@ -77,12 +77,12 @@ especially those they need to be aware of when upgrading.
   - MSVC: { 15.9.31, 16.8.4 }
 - OS/Platforms Tested/Supported
   - Windows
-    - version 2004
+    - version 20H2
     - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
     - WSL v1
   - MacOS
     - 10.15.5 (Catalina)
-  - Linux: { Ubuntu: [1804, 2004, 2010], Centos: [7, 8], Raspbian(cross-compiled) }
+  - Linux: { Ubuntu: [18.04, 20.04, 20.10], Centos: [7, 8], Raspbian(cross-compiled) }
 - Hardware Used/Supported
   - x86
   - x64
@@ -92,7 +92,7 @@ especially those they need to be aware of when upgrading.
   - Valgrind (helgrind/memcheck)
 - Build Systems
   - [CircleCI](https://app.circleci.com/pipelines/github/SophistSolutions/Stroika)
-  - [GitHub Actions](https://github.com/SophistSolutions/Stroika)
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
   - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
 
 ---
