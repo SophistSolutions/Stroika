@@ -7,7 +7,17 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 2.1b9....
+---
+
+### 2.1b9 {2021-01-16}
+
+#### TLDR
+
+- Fixed design flaw with IO::Network::Interface bindings (fBindings->fBoundAddressRanges, added fBoundAddresses)
+- DataExchange::VariantValue() now takes optional<> overload CTOR, and a few additions to ObjectVariantMapper predefined mappers
+- Frameworks::WebServer construction enhancements
+
+#### Details
 
 - Build System And Tools
 
@@ -59,7 +69,7 @@ especially those they need to be aware of when upgrading.
 - ThirdPartyComponents
 
   - Added mirror for lzma sdk zip
-  - wix 3.112rtm
+  - WIX 3.112rtm
 
 ---
 
