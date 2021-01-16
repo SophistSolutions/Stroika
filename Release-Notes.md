@@ -26,7 +26,7 @@ especially those they need to be aware of when upgrading.
     - newer version of clang-format (11 => 12 pre-release)
 
   - VisualStudio-Stroika-Foundation-Debugger-Template.natvis
-    - remove a few obsolte type entries, and add a few new ones (GUID, SocketAddress, CDIR, etc)
+    - remove a few obsolte type entries, and add a few new ones (GUID, SocketAddress, CIDR, etc)
   - Compiler Versions
     - Visual Studio 16.8.4
   - Compiler bug workarounds
