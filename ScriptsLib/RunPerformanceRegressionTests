@@ -22,6 +22,7 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ] ; then
     # Do something under GNU/Linux platform
     EXE=${EXE-"Builds/g++-optimized/Tests/Test51"}
 	if [ ! -e "$EXE" ] ; then EXE="Builds/Release/Tests/Test51"; fi
+	if [ ! -e "$EXE" ] ; then EXE="Builds/g++-8-release-c++17/Tests/Test51"; fi
 	if [ "$USE_TEST_BASENAME" == "UNKNOWN" ] ; then USE_TEST_BASENAME="linux-g++-7.3-x64"; fi
     CMDRUN_PREFIX="nice -10 taskset -c 0 "
 elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ] ; then
@@ -38,6 +39,7 @@ else
     echo "WARNING - unrecognized OS"
 fi
 
+if [ ! -e "$EXE" ] ; then echo "Warning: $EXE not found"; fi
 
 echo -n "$CMDRUN_PREFIX" "$EXE --x $MULTIPLIER --show > Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$VER.txt ... "
 $CMDRUN_PREFIX $EXE --x $MULTIPLIER --show > Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$VER.txt
