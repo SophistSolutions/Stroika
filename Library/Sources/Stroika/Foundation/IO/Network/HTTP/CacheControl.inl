@@ -22,7 +22,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     }
 
 #if __cpp_impl_three_way_comparison < 201907
-    inline bool operator== (const CacheControl::MaxAge& lhs, const CacheControl::MaxAge& rhs)
+    inline bool operator== (const CacheControl::MaxStale& lhs, const CacheControl::MaxStale& rhs)
     {
         return lhs.fValue == rhs.fValue;
     }
