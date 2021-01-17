@@ -924,6 +924,10 @@ namespace Stroika::Foundation::Characters {
          *  This is often called 'Split' in other APIs. This is NOT (as is now) a replacement for flex, but just for
          *  simple, but common string splitting needs (though if I had a regexp param, it may approach the power of flex).
          *
+         *  \note If this->length () == 0, this method returns a list of length 0;
+         *  \note Its fine for the split character/characters to be missing, in which case this
+         *        returns a list of length 1
+         *
          *  \par Example Usage
          *      \code
          *          String  t { L"ABC DEF G" };
@@ -934,7 +938,7 @@ namespace Stroika::Foundation::Characters {
          *  \par Example Usage
          *      \code
          *          String  t { L"foo=   7" };
-         *          auto    tt = t.Tokenize (Set<Character> { '=' });
+         *          auto    tt = t.Tokenize ({ '=' });
          *          Assert (t.length () == 2);
          *          Assert (t[1] == L"7");
          *      \endcode
