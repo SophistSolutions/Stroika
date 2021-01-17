@@ -240,17 +240,32 @@ namespace Stroika::Foundation::IO::Network {
         optional<WirelessInfo> fWirelessInfo; // has_value () if-and-only-if type fType == eWIFI
 
         /**
-         *  until Stroika 2.1b9, this was called fBindings
-         *  These are the ranges of addresses (bindings?) associated with this network interface.
-         *  Except for special cases (e.g. promiscuous mode) these are the only addreses paid attention to on this
-         *  network interface
          */
-        Containers::Collection<CIDR> fBoundAddressRanges; // can be IPv4 or IPv6
+        struct Bindings {
+            /**
+             *  until Stroika 2.1b9, this was called Network::fBindings
+             *  These are the ranges of addresses (bindings?) associated with this network interface.
+             *  Except for special cases (e.g. promiscuous mode) these are the only addreses expected to be one hop away on this
+             *  network interface
+             */
+            Containers::Collection<CIDR> fAddressRanges; // can be IPv4 or IPv6
+
+            /**
+             *  Very similar to fAddressRanges, but these addresses are the ones we listen to, as targetted for this
+             *  machine.
+             */
+            Containers::Collection<InternetAddress> fAddresses; // can be IPv4 or IPv6
+
+            /**
+             *  @see Characters::ToString ();
+             */
+            nonvirtual String ToString () const;
+        };
 
         /**
-         *   Very similar to fBoundAddressRanges
+         *  until Stroika 2.1b9, this was Containers::Collection<CIDR>: now fBindings.fAddressRanges
          */
-        Containers::Collection<InternetAddress> fBoundAddresses; // can be IPv4 or IPv6
+        Bindings fBindings;
 
         /**
          *  Typically there will be zero or one, and if one, this is the default gateway. This maybe missing if it couldn't be retrieved from the operating system.
