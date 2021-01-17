@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T, typename TRAITS>
     template <typename... ARGUMENT_TYPES>
     inline Synchronized<T, TRAITS>::Synchronized (ARGUMENT_TYPES&&... args)
-        : fProtectedValue_ (forward<ARGUMENT_TYPES> (args)...)
+        : fProtectedValue_(forward<ARGUMENT_TYPES> (args)...)
     {
 #if qStroika_FeatureSupported_Valgrind
         if (TRAITS::kSupportSharedLocks) {
@@ -357,7 +357,7 @@ namespace Stroika::Foundation::Execution {
      */
     template <typename T, typename TRAITS>
     inline Synchronized<T, TRAITS>::ReadableReference::ReadableReference (const Synchronized* s, _ExternallyLocked)
-        : fT ((RequireNotNull (s), &s->fProtectedValue_))
+        : fT{(RequireNotNull (s), &s->fProtectedValue_)}
     {
         RequireNotNull (s);
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -369,8 +369,8 @@ namespace Stroika::Foundation::Execution {
     }
     template <typename T, typename TRAITS>
     inline Synchronized<T, TRAITS>::ReadableReference::ReadableReference (const Synchronized* s)
-        : fT ((RequireNotNull (s), &s->fProtectedValue_))
-        , fSharedLock_ ((RequireNotNull (s), s->fMutex_))
+        : fT{(RequireNotNull (s), &s->fProtectedValue_)}
+        , fSharedLock_{(RequireNotNull (s), s->fMutex_)}
     {
         RequireNotNull (fT);
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -383,7 +383,7 @@ namespace Stroika::Foundation::Execution {
     }
     template <typename T, typename TRAITS>
     inline Synchronized<T, TRAITS>::ReadableReference::ReadableReference (ReadableReference&& src)
-        : fT (src.fT)
+        : fT{src.fT}
         , fSharedLock_{std::move (src.fSharedLock_)}
     {
         if constexpr (TRAITS::kDbgTraceLockUnlockIfNameSet) {

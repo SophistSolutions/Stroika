@@ -21,24 +21,24 @@ namespace Stroika::Foundation::Execution {
      */
     template <typename T, typename TRAITS>
     UpdatableWaitForIOReady<T, TRAITS>::UpdatableWaitForIOReady (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds)
-        : fEventFD_ (WaitForIOReady_Support::mkEventFD ())
+        : fEventFD_{WaitForIOReady_Support::mkEventFD ()}
         , fPollable2Wakeup_{fEventFD_->GetWaitInfo ()}
         , fData_{fds}
     {
     }
     template <typename T, typename TRAITS>
     inline UpdatableWaitForIOReady<T, TRAITS>::UpdatableWaitForIOReady ()
-        : UpdatableWaitForIOReady (Traversal::Iterable<pair<T, TypeOfMonitorSet>>{})
+        : UpdatableWaitForIOReady{Traversal::Iterable<pair<T, TypeOfMonitorSet>>{}}
     {
     }
     template <typename T, typename TRAITS>
     UpdatableWaitForIOReady<T, TRAITS>::UpdatableWaitForIOReady (const Traversal::Iterable<T>& fds, const TypeOfMonitorSet& flags)
-        : UpdatableWaitForIOReady (fds.template Select<pair<T, TypeOfMonitorSet>> ([&] (const T& t) { return make_pair (t, flags); }))
+        : UpdatableWaitForIOReady{fds.template Select<pair<T, TypeOfMonitorSet>> ([&] (const T& t) { return make_pair (t, flags); })}
     {
     }
     template <typename T, typename TRAITS>
     UpdatableWaitForIOReady<T, TRAITS>::UpdatableWaitForIOReady (const T& fd, const TypeOfMonitorSet& flags)
-        : UpdatableWaitForIOReady (Containers::Collection<pair<T, TypeOfMonitorSet>>{make_pair (fd, flags)})
+        : UpdatableWaitForIOReady{Containers::Collection<pair<T, TypeOfMonitorSet>>{make_pair (fd, flags)}}
     {
     }
     template <typename T, typename TRAITS>

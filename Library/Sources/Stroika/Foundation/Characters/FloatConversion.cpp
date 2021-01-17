@@ -26,11 +26,11 @@ using namespace Stroika::Foundation::Memory;
 
 /*
  ********************************************************************************
- ************************** Float2StringOptions *********************************
+ **************************** Float2StringOptions *******************************
  ********************************************************************************
  */
 Float2StringOptions::Float2StringOptions (UseCurrentLocale)
-    : fUseLocale_ (locale{})
+    : fUseLocale_{locale{}}
 {
 }
 
