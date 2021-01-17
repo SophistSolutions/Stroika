@@ -13,9 +13,7 @@
 #include "../../../Streams/InputStream.h"
 #include "../../../Time/DateTime.h"
 
-/*
- * TODO:
- *      (o)
+/**
  */
 
 namespace Stroika::Foundation::IO::Network::HTTP {

@@ -12,9 +12,7 @@
 
 #include "Status.h"
 
-/*
- * TODO:
- *      (o)
+/**
  */
 
 namespace Stroika::Foundation::IO::Network::HTTP {

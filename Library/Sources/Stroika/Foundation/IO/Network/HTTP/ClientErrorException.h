@@ -8,7 +8,7 @@
 
 #include "Exception.h"
 
-/*
+/**
  */
 
 namespace Stroika::Foundation::IO::Network::HTTP {

@@ -24,7 +24,7 @@ using namespace Stroika::Foundation::Streams;
  ********************************************************************************
  */
 Cookie::Cookie (const String& name, const String& value, const Mapping<String, String>& attributes)
-    : Cookie (name, value)
+    : Cookie{name, value}
 {
     for (const auto& i : attributes) {
         AddAttribute (i.fKey, i.fValue);
