@@ -84,11 +84,9 @@ especially those they need to be aware of when upgrading.
     - 10.15.5 (Catalina)
   - Linux: { Ubuntu: [18.04, 20.04, 20.10], Centos: [7, 8], Raspbian(cross-compiled) }
 - Hardware Tested/Supported
-  - x86
-  - x64
-  - arm (linux/raspberrypi - cross-compiled)
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled)
 - Sanitizers
-  - ASan, TSan, UBSan
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
   - Valgrind (helgrind/memcheck)
 - Build Systems
   - [CircleCI](https://app.circleci.com/pipelines/github/SophistSolutions/Stroika)
