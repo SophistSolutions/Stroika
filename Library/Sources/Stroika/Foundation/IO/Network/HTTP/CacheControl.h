@@ -32,8 +32,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     struct CacheControl {
 
         /**
-         *  The constructor overload taking headerValue, parses the header, SILENTLY ignorning anything
-         *  in the header which is unrecognized.
+         *  The Parse the header, SILENTLY ignorning anything in the header which is unrecognized.
          */
         static CacheControl Parse (const Characters::String& headerValue);
 
