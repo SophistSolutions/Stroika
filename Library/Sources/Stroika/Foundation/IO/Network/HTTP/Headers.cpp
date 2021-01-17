@@ -68,10 +68,10 @@ Collection<KeyValuePair<String, String>> Headers::As () const
         results.Add (KeyValuePair<String, String>{HeaderName::kCacheControl, fCacheControl_->As<String> ()});
     }
     if (fContentLength_) {
-        results.Add (KeyValuePair<String, String>{HeaderName::kContentType, Characters::Format (L"%ld", fContentLength_)});
+        results.Add (KeyValuePair<String, String>{HeaderName::kContentLength, Characters::Format (L"%ld", fContentLength_)});
     }
     if (fContentType_) {
-        results.Add (KeyValuePair<String, String>{HeaderName::kContentLength, fContentType_->As<String> ()});
+        results.Add (KeyValuePair<String, String>{HeaderName::kContentType, fContentType_->As<String> ()});
     }
     return results;
 }

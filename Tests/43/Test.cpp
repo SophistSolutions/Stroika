@@ -10,6 +10,7 @@
 
 #include "Stroika/Foundation/IO/Network/HTTP/CacheControl.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Cookies.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 
 #include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
@@ -84,6 +85,32 @@ namespace {
             }
         }
     }
+    namespace HTTPHeaders_Test03_ {
+        void RunAll ()
+        {
+            {
+                IO::Network::HTTP::Headers h;
+                h.SetContentLength (3);
+                VerifyTestResult ((h.As<Mapping<String, String>> () == initializer_list<KeyValuePair<String, String>>{{L"Content-Length", L"3"}}));
+            }
+            {
+                IO::Network::HTTP::Headers h;
+                h.SetContentLength (3);
+                h.SetCacheControl (CacheControl{CacheControl::eNoCache});
+                VerifyTestResult ((h.As<Mapping<String, String>> () == initializer_list<KeyValuePair<String, String>>{{L"Cache-Control", L"no-cache"}, {L"Content-Length", L"3"}}));
+            }
+            {
+                IO::Network::HTTP::Headers h{
+                    initializer_list<KeyValuePair<String, String>>{
+                        {L"Cache-Control", L"no-cache"},
+                        {L"blah-blah", L"unknown-header"},
+                        {L"Content-Length", L"3"}}};
+                VerifyTestResult (h.GetContentLength () == 3);
+                VerifyTestResult (h.GetCacheControl () == CacheControl{CacheControl::eNoCache});
+                VerifyTestResult ((h.As<Mapping<String, String>> () == initializer_list<KeyValuePair<String, String>>{{L"Cache-Control", L"no-cache"}, {L"Content-Length", L"3"}, {L"blah-blah", L"unknown-header"}}));
+            }
+        }
+    }
 }
 
 namespace {
@@ -91,6 +118,7 @@ namespace {
     {
         Cookies_Test01_::RunAll ();
         CacheControl_Test02_::RunAll ();
+        HTTPHeaders_Test03_::RunAll ();
     }
 }
 

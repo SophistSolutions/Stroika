@@ -130,9 +130,9 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         optional<InternetMediaType>              fContentType_;
     };
     template <>
-    nonvirtual Mapping<String, String> Headers::As () const;
+    Mapping<String, String> Headers::As () const;
     template <>
-    nonvirtual Collection<KeyValuePair<String, String>> Headers::As () const;
+    Collection<KeyValuePair<String, String>> Headers::As () const;
 
 }
 
