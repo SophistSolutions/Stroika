@@ -10,7 +10,7 @@
 
 #include "../../../Characters/RegularExpression.h"
 
-/*
+/**
  */
 
 namespace Stroika::Foundation::IO::Network::HTTP {

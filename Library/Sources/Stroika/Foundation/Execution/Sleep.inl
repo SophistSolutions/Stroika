@@ -106,6 +106,7 @@ namespace Stroika::Foundation::Execution {
             Sleep (waitMoreSeconds);
         }
     }
+
 }
 
 #endif /*_Stroika_Foundation_Execution_Sleep_inl_*/

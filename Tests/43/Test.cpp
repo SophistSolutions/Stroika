@@ -8,6 +8,7 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 
+#include "Stroika/Foundation/IO/Network/HTTP/CacheControl.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Cookies.h"
 
 #include "../TestHarness/SimpleClass.h"
@@ -59,12 +60,37 @@ namespace {
             }
         }
     }
+    namespace CacheControl_Test02_ {
+        void RunAll ()
+        {
+            {
+                CacheControl c{};
+                VerifyTestResult (c.As<String> () == L"");
+                VerifyTestResult (c == CacheControl::Parse (L""));
+            }
+            {
+                CacheControl c{CacheControl::eNoStore};
+                VerifyTestResult (c.As<String> () == L"no-store");
+                VerifyTestResult (c == CacheControl::Parse (L"no-store"));
+            }
+            {
+#if __cpp_designated_initializers
+                CacheControl c{.fStoreRestriction = CacheControl::eNoStore, .fMaxAge = 0};
+#else
+                CacheControl c{CacheControl::eNoStore, nullopt, false, nullopt, 0};
+#endif
+                VerifyTestResult (c.As<String> () == L"no-store, max-age=0");
+                VerifyTestResult (c == CacheControl::Parse (L"no-store, max-age=0"));
+            }
+        }
+    }
 }
 
 namespace {
     void DoRegressionTests_ ()
     {
         Cookies_Test01_::RunAll ();
+        CacheControl_Test02_::RunAll ();
     }
 }
 

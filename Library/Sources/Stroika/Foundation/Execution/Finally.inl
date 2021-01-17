@@ -21,7 +21,7 @@ namespace Stroika::Foundation::Execution {
      */
     template <typename FUNCTION>
     inline FinallySentry<FUNCTION>::FinallySentry (FUNCTION f)
-        : fCleanupCodeBlock_ (move (f))
+        : fCleanupCodeBlock_{move (f)}
     {
     }
     template <typename FUNCTION>

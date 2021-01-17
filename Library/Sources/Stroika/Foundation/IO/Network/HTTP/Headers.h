@@ -11,42 +11,41 @@
 
 #include "../../../Configuration/Common.h"
 
-/*
- * TODO:
- *      @todo       When we have a good C++ 'static string' class - maybe use that here.
- *                  Maybe ONLY can do once we have compiler constexpr support?
+/**
  */
 
 namespace Stroika::Foundation::IO::Network::HTTP {
 
-    // standard HTTP headers one might want to access/retrieve
+    /** 
+     * standard HTTP headers one might want to access/retrieve
+     */
     namespace HeaderName {
 
-        constexpr wchar_t kCacheControl[]                  = L"Cache-Control";
-        constexpr wchar_t kContentType[]                   = L"Content-Type";
-        constexpr wchar_t kContentLength[]                 = L"Content-Length";
-        constexpr wchar_t kConnection[]                    = L"Connection";
-        constexpr wchar_t kServer[]                        = L"Server";
-        constexpr wchar_t kDate[]                          = L"Date";
-        constexpr wchar_t kETag[]                          = L"ETag";
-        constexpr wchar_t kLastModified[]                  = L"Last-Modified";
-        constexpr wchar_t kUserAgent[]                     = L"User-Agent";
-        constexpr wchar_t kSOAPAction[]                    = L"SOAPAction";
-        constexpr wchar_t kAcceptEncoding[]                = L"Accept-Encoding";
-        constexpr wchar_t kExpect[]                        = L"Expect";
-        constexpr wchar_t kExpires[]                       = L"Expires";
-        constexpr wchar_t kTransferEncoding[]              = L"Transfer-Encoding";
-        constexpr wchar_t kAccessControlAllowCredentials[] = L"Access-Control-Allow-Credentials";
-        constexpr wchar_t kAccessControlAllowOrigin[]      = L"Access-Control-Allow-Origin";
-        constexpr wchar_t kAccessControlAllowHeaders[]     = L"Access-Control-Allow-Headers";
-        constexpr wchar_t kAccessControlAllowMethods[]     = L"Access-Control-Allow-Methods";
-        constexpr wchar_t kAccessControlMaxAge[]           = L"Access-Control-Max-Age";
-        constexpr wchar_t kAuthorization[]                 = L"Authorization";
-        constexpr wchar_t kAllow[]                         = L"Allow";
-        constexpr wchar_t kKeepAlive[]                     = L"Keep-Alive";
-        constexpr wchar_t kReferrer[]                      = L"Referer"; // intentionally spelled this way - misspelled in the HTTP RFC
-        constexpr wchar_t kIfNoneMatch[]                   = L"If-None-Match";
-        constexpr wchar_t kIfModifiedSince[]               = L"If-Modified-Since";
+        constexpr wstring_view kCacheControl                  = L"Cache-Control"sv;
+        constexpr wstring_view kContentType                   = L"Content-Type"sv;
+        constexpr wstring_view kContentLength                 = L"Content-Length"sv;
+        constexpr wstring_view kConnection                    = L"Connection"sv;
+        constexpr wstring_view kServer                        = L"Server"sv;
+        constexpr wstring_view kDate                          = L"Date"sv;
+        constexpr wstring_view kETag                          = L"ETag"sv;
+        constexpr wstring_view kLastModified                  = L"Last-Modified"sv;
+        constexpr wstring_view kUserAgent                     = L"User-Agent"sv;
+        constexpr wstring_view kSOAPAction                    = L"SOAPAction"sv;
+        constexpr wstring_view kAcceptEncoding                = L"Accept-Encoding"sv;
+        constexpr wstring_view kExpect                        = L"Expect"sv;
+        constexpr wstring_view kExpires                       = L"Expires"sv;
+        constexpr wstring_view kTransferEncoding              = L"Transfer-Encoding"sv;
+        constexpr wstring_view kAccessControlAllowCredentials = L"Access-Control-Allow-Credentials"sv;
+        constexpr wstring_view kAccessControlAllowOrigin      = L"Access-Control-Allow-Origin"sv;
+        constexpr wstring_view kAccessControlAllowHeaders     = L"Access-Control-Allow-Headers"sv;
+        constexpr wstring_view kAccessControlAllowMethods     = L"Access-Control-Allow-Methods"sv;
+        constexpr wstring_view kAccessControlMaxAge           = L"Access-Control-Max-Age"sv;
+        constexpr wstring_view kAuthorization                 = L"Authorization"sv;
+        constexpr wstring_view kAllow                         = L"Allow"sv;
+        constexpr wstring_view kKeepAlive                     = L"Keep-Alive"sv;
+        constexpr wstring_view kReferrer                      = L"Referer"sv; // intentionally spelled this way - misspelled in the HTTP RFC
+        constexpr wstring_view kIfNoneMatch                   = L"If-None-Match"sv;
+        constexpr wstring_view kIfModifiedSince               = L"If-Modified-Since"sv;
 
     }
 

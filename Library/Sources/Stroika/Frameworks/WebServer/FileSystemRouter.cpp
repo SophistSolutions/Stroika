@@ -111,6 +111,6 @@ namespace {
  ********************************************************************************
  */
 FileSystemRouter::FileSystemRouter (const filesystem::path& filesystemRoot, const optional<String>& urlPrefix2Strip, const Sequence<String>& defaultIndexFileNames)
-    : RequestHandler ([rep = make_shared<FSRouterRep_> (filesystemRoot, urlPrefix2Strip, defaultIndexFileNames)] (Message* m) -> void { rep->HandleMessage (m); })
+    : RequestHandler{[rep = make_shared<FSRouterRep_> (filesystemRoot, urlPrefix2Strip, defaultIndexFileNames)] (Message* m) -> void { rep->HandleMessage (m); }}
 {
 }
