@@ -437,11 +437,11 @@ namespace {
             SocketAddress sa{i->ifr_addr};
             if (sa.IsInternetAddress ()) {
 #if qPlatform_Linux || qPlatform_MacOS
-                newInterface.fBoundAddressRanges.Add (CIDR{sa.GetInternetAddress (), getNetMaskAsPrefix (sd, i->ifr_name)});
+                newInterface.fBindings.fAddressRanges.Add (CIDR{sa.GetInternetAddress (), getNetMaskAsPrefix (sd, i->ifr_name)});
 #else
-                newInterface.fBoundAddressRanges.Add (sa.GetInternetAddress ());
+                newInterface.fBindings.fAddressRanges.Add (sa.GetInternetAddress ());
 #endif
-                newInterface.fBoundAddresses.Add (sa.GetInternetAddress ());
+                newInterface.fBindings.fAddresses.Add (sa.GetInternetAddress ());
             }
         }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
