@@ -6,15 +6,24 @@
 
 #include "../../../StroikaPreComp.h"
 
-#include <map>
-#include <string>
-
+#include "../../../Characters/String.h"
 #include "../../../Configuration/Common.h"
+#include "../../../Containers/Collection.h"
+#include "../../../Containers/Mapping.h"
+#include "../../../DataExchange/InternetMediaType.h"
+
+#include "CacheControl.h"
 
 /**
  */
-
 namespace Stroika::Foundation::IO::Network::HTTP {
+
+    using Characters::String;
+    using Common::KeyValuePair;
+    using Containers::Collection;
+    using Containers::Mapping;
+    using DataExchange::InternetMediaType;
+    using Traversal::Iterable;
 
     /** 
      * standard HTTP headers one might want to access/retrieve
@@ -22,8 +31,8 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     namespace HeaderName {
 
         constexpr wstring_view kCacheControl                  = L"Cache-Control"sv;
-        constexpr wstring_view kContentType                   = L"Content-Type"sv;
         constexpr wstring_view kContentLength                 = L"Content-Length"sv;
+        constexpr wstring_view kContentType                   = L"Content-Type"sv;
         constexpr wstring_view kConnection                    = L"Connection"sv;
         constexpr wstring_view kServer                        = L"Server"sv;
         constexpr wstring_view kDate                          = L"Date"sv;
@@ -48,6 +57,82 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         constexpr wstring_view kIfModifiedSince               = L"If-Modified-Since"sv;
 
     }
+
+    /**
+     * SB roughly equiv to Association<String,String> but thats not supported in Stroika yet.
+     * But for now mainly looking like Mapping<String,String> - since works in HF, and ..
+     */
+    class Headers {
+    public:
+        /**
+         */
+        Headers () = default;
+        Headers (const Iterable<KeyValuePair<String, String>>& src);
+
+    public:
+        /**
+         *  Set to any string value, or to nullopt to clear the option.
+         */
+        nonvirtual void SetHeader (const String& name, const optional<String>& value);
+
+    public:
+        /**
+         *  Return the unsigned integer value of the Content-Length header.
+         */
+        nonvirtual optional<CacheControl> GetCacheControl () const;
+
+    public:
+        /**
+         *  @see GetContentLength
+         */
+        nonvirtual void SetCacheControl (const optional<CacheControl>& cacheControl);
+
+    public:
+        /**
+         *  Return the unsigned integer value of the Content-Length header.
+         */
+        nonvirtual optional<uint64_t> GetContentLength () const;
+
+    public:
+        /**
+         *  @see GetContentLength
+         */
+        nonvirtual void SetContentLength (const optional<uint64_t>& contentLength);
+
+    public:
+        /**
+         *  Return the HTTP message body Content-Type, if any given
+         */
+        nonvirtual optional<InternetMediaType> GetContentType () const;
+
+    public:
+        /**
+         *  @see GetContentType
+         */
+        nonvirtual void SetContentType (const optional<InternetMediaType>& contentType);
+
+    public:
+        /**
+         *  Returns the combined set of headers (list Key:Value pairs). Note this may not be returned in
+         *  the same order and exactly losslessly identically to what was passed in.
+         * 
+         *  Supported T types:
+         *      o   Mapping<String,String>
+         *      o   Collection<KeyValuePair<String,String>>
+         */
+        template <typename T>
+        nonvirtual T As () const;
+
+    private:
+        Collection<KeyValuePair<String, String>> fExtraHeaders_;
+        optional<CacheControl>                   fCacheControl_;
+        optional<uint64_t>                       fContentLength_;
+        optional<InternetMediaType>              fContentType_;
+    };
+    template <>
+    nonvirtual Mapping<String, String> Headers::As () const;
+    template <>
+    nonvirtual Collection<KeyValuePair<String, String>> Headers::As () const;
 
 }
 
