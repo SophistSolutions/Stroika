@@ -16,6 +16,11 @@
       <Item Name="c_str">((Stroika::Foundation::Characters::String::_IRep*)_fRep.fSharedImpl_.fEnvelope_.fPtr_)->_fStart</Item>
     </Expand>
   </Type>
+  <Type Name="Stroika::Foundation::Characters::StringBuilder">
+    <DisplayString>
+      {str ()}
+    </DisplayString>
+  </Type>
   <Type Name="Stroika::Foundation::Containers::Sequence&lt;*&gt;">
     <DisplayString>
       Sequence&lt;&gt; size: {size ()}
