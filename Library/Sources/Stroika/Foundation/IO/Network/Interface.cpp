@@ -416,7 +416,7 @@ namespace {
 #if qPlatform_Linux
                 auto checkCarrierKnownSet = [] (const char* id) -> bool {
                     try {
-                        auto         fs = FileInputStream::New (filesystem::path ("/sys/class/net") / id, FileInputStream::eNotSeekable);
+                        auto         fs = FileInputStream::New (filesystem::path{"/sys/class/net"} / id, FileInputStream::eNotSeekable);
                         Memory::BLOB b  = fs.ReadAll ();
                         if (b.size () >= 1 and b[0] == static_cast<byte> ('1')) {
                             return true;
@@ -452,8 +452,7 @@ namespace {
 #if qMacUBSanitizerifreqAlignmentIssue_Buggy
     Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED
 #endif
-        Traversal::Iterable<Interface>
-        GetInterfaces_POSIX_ ()
+    Traversal::Iterable<Interface> GetInterfaces_POSIX_ ()
     {
         // @todo - when we supported KeyedCollection - use KeyedCollection instead of mapping
         //Collection<Interface> result;
@@ -512,7 +511,7 @@ namespace {
      */
     struct WLANAPI_ {
         WLANAPI_ ()
-            : fDLL (::LoadLibrary (_T ("wlanapi.dll")))
+            : fDLL{::LoadLibrary (_T ("wlanapi.dll"))}
         {
             Execution::ThrowIfNull (fDLL);
             fWlanOpenHandle     = (DWORD (WINAPI*) (_In_ DWORD dwClientVersion, _Reserved_ PVOID pReserved, _Out_ PDWORD pdwNegotiatedVersion, _Out_ PHANDLE phClientHandle)) (::GetProcAddress (fDLL, "WlanOpenHandle"));
