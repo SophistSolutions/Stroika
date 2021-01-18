@@ -11,6 +11,7 @@
 #include "../../../Containers/Collection.h"
 #include "../../../Containers/Mapping.h"
 #include "../../../DataExchange/InternetMediaType.h"
+#include "../../../Debug/AssertExternallySynchronizedLock.h"
 
 #include "CacheControl.h"
 #include "ETag.h"
@@ -63,7 +64,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      * SB roughly equiv to Association<String,String> but thats not supported in Stroika yet.
      * But for now mainly looking like Mapping<String,String> - since works in HF, and ..
      */
-    class Headers {
+    class Headers : private Debug::AssertExternallySynchronizedLock {
     public:
         /**
          */

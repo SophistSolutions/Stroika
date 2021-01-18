@@ -37,6 +37,7 @@ Headers::Headers (const Iterable<KeyValuePair<String, String>>& src)
 
 void Headers::SetHeader (const String& name, const optional<String>& value)
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     if (kHeaderNameComparer_ (name, HeaderName::kCacheControl)) {
         fCacheControl_ = value ? CacheControl::Parse (*value) : optional<CacheControl>{};
     }
@@ -68,7 +69,8 @@ Mapping<String, String> Headers::As () const
 template <>
 Collection<KeyValuePair<String, String>> Headers::As () const
 {
-    Collection<KeyValuePair<String, String>> results = fExtraHeaders_;
+    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    Collection<KeyValuePair<String, String>>           results = fExtraHeaders_;
     if (fCacheControl_) {
         results.Add (KeyValuePair<String, String>{HeaderName::kCacheControl, fCacheControl_->As<String> ()});
     }
