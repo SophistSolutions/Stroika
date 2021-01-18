@@ -32,6 +32,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         if (etagWireFormat.StartsWith (L"\\W\"")) {
             return ETag{etagWireFormat.SubString (3, -1), true};
         }
+        return nullopt;
     }
     template <>
     inline Characters::String ETag::As () const
