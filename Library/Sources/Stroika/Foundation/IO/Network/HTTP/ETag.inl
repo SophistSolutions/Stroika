@@ -1,0 +1,44 @@
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ */
+#ifndef _Stroika_Foundation_IO_Network_HTTP_ETag_inl_
+#define _Stroika_Foundation_IO_Network_HTTP_ETag_inl_ 1
+
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+namespace Stroika::Foundation::IO::Network::HTTP {
+
+    /*
+     ********************************************************************************
+     ************************************ HTTP::ETag ********************************
+     ********************************************************************************
+     */
+    inline ETag::ETag (const String& value, bool weak)
+        : fValue{value}
+        , fWeak{weak}
+    {
+    }
+    inline optional<ETag> ETag::Parse (const String& etagWireFormat)
+    {
+        if (not etagWireFormat.EndsWith ('\"')) {
+            return nullopt;
+        }
+        if (etagWireFormat.StartsWith ('\"')) {
+            return ETag{etagWireFormat.SubString (1, -1)};
+        }
+        if (etagWireFormat.StartsWith (L"\\W\"")) {
+            return ETag{etagWireFormat.SubString (3, -1), true};
+        }
+    }
+    template <>
+    inline Characters::String ETag::As () const
+    {
+        return (fWeak ? L"\\W\""sv : L"\"") + fValue + L"\""sv;
+    }
+
+}
+
+#endif /*_Stroika_Foundation_IO_Network_HTTP_ETag_inl_*/

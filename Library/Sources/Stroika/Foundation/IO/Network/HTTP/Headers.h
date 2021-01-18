@@ -13,6 +13,7 @@
 #include "../../../DataExchange/InternetMediaType.h"
 
 #include "CacheControl.h"
+#include "ETag.h"
 
 /**
  */
@@ -113,6 +114,18 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
+         *  Return the HTTP header ETag, if any given
+         */
+        nonvirtual optional<ETag> GetETag () const;
+
+    public:
+        /**
+         *  @see GetETag
+         */
+        nonvirtual void SetETag (const optional<ETag>& etag);
+
+    public:
+        /**
          *  Returns the combined set of headers (list Key:Value pairs). Note this may not be returned in
          *  the same order and exactly losslessly identically to what was passed in.
          * 
@@ -128,6 +141,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         optional<CacheControl>                   fCacheControl_;
         optional<uint64_t>                       fContentLength_;
         optional<InternetMediaType>              fContentType_;
+        optional<ETag>                           fETag_;
     };
     template <>
     Mapping<String, String> Headers::As () const;

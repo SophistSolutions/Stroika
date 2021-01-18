@@ -19,6 +19,10 @@ using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::HTTP;
 using namespace Stroika::Foundation::Streams;
 
+namespace {
+    const auto kHeaderNameComparer_ = String::EqualsComparer{CompareOptions::eCaseInsensitive};
+}
+
 /*
  ********************************************************************************
  ******************************** HTTP::Headers *********************************
@@ -26,7 +30,6 @@ using namespace Stroika::Foundation::Streams;
  */
 Headers::Headers (const Iterable<KeyValuePair<String, String>>& src)
 {
-    auto keyComparer = String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive};
     for (auto kv : src) {
         SetHeader (kv.fKey, kv.fValue);
     }
@@ -34,22 +37,24 @@ Headers::Headers (const Iterable<KeyValuePair<String, String>>& src)
 
 void Headers::SetHeader (const String& name, const optional<String>& value)
 {
-    auto keyComparer = String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive};
-    if (keyComparer (name, HeaderName::kCacheControl)) {
+    if (kHeaderNameComparer_ (name, HeaderName::kCacheControl)) {
         fCacheControl_ = value ? CacheControl::Parse (*value) : optional<CacheControl>{};
     }
-    else if (keyComparer (name, HeaderName::kContentLength)) {
+    else if (kHeaderNameComparer_ (name, HeaderName::kContentLength)) {
         fContentLength_ = value ? String2Int<uint64_t> (*value) : optional<uint64_t>{};
     }
-    else if (keyComparer (name, HeaderName::kContentType)) {
+    else if (kHeaderNameComparer_ (name, HeaderName::kContentType)) {
         fContentType_ = value ? InternetMediaType{*value} : optional<InternetMediaType>{};
+    }
+    else if (kHeaderNameComparer_ (name, HeaderName::kETag)) {
+        fETag_ = value ? ETag::Parse (*value) : optional<ETag>{};
     }
     else {
         if (value) {
             fExtraHeaders_.Add (KeyValuePair<String, String>{name, *value});
         }
         else {
-            fExtraHeaders_.Remove ([=] (const auto& i) { return keyComparer (i.fKey, name); });
+            fExtraHeaders_.Remove ([=] (const auto& i) { return kHeaderNameComparer_ (i.fKey, name); });
         }
     }
 }
@@ -72,6 +77,9 @@ Collection<KeyValuePair<String, String>> Headers::As () const
     }
     if (fContentType_) {
         results.Add (KeyValuePair<String, String>{HeaderName::kContentType, fContentType_->As<String> ()});
+    }
+    if (fETag_) {
+        results.Add (KeyValuePair<String, String>{HeaderName::kETag, fETag_->As<String> ()});
     }
     return results;
 }

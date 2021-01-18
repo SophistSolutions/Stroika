@@ -40,6 +40,14 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     {
         fContentType_ = contentType;
     }
+    inline optional<ETag> Headers::GetETag () const
+    {
+        return fETag_;
+    }
+    inline void Headers::SetETag (const optional<ETag>& etag)
+    {
+        fETag_ = etag;
+    }
 
 }
 

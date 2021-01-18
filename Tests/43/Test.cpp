@@ -91,23 +91,25 @@ namespace {
             {
                 IO::Network::HTTP::Headers h;
                 h.SetContentLength (3);
-                VerifyTestResult ((h.As<Mapping<String, String>> () == initializer_list<KeyValuePair<String, String>>{{L"Content-Length", L"3"}}));
+                const auto kReference_ = initializer_list{KeyValuePair<String, String>{L"Content-Length", L"3"}};
+                VerifyTestResult ((h.As<Mapping<String, String>> () == kReference_));
             }
             {
                 IO::Network::HTTP::Headers h;
                 h.SetContentLength (3);
                 h.SetCacheControl (CacheControl{CacheControl::eNoCache});
-                VerifyTestResult ((h.As<Mapping<String, String>> () == initializer_list<KeyValuePair<String, String>>{{L"Cache-Control", L"no-cache"}, {L"Content-Length", L"3"}}));
+                const auto kReference_ = initializer_list<KeyValuePair<String, String>>{{L"Cache-Control", L"no-cache"}, {L"Content-Length", L"3"}};
+                VerifyTestResult ((h.As<Mapping<String, String>> () == kReference_));
             }
             {
-                IO::Network::HTTP::Headers h{
-                    initializer_list<KeyValuePair<String, String>>{
-                        {L"Cache-Control", L"no-cache"},
-                        {L"blah-blah", L"unknown-header"},
-                        {L"Content-Length", L"3"}}};
+                const auto kReference_ = initializer_list<KeyValuePair<String, String>>{
+                    {L"Cache-Control", L"no-cache"},
+                    {L"blah-blah", L"unknown-header"},
+                    {L"Content-Length", L"3"}};
+                IO::Network::HTTP::Headers h{kReference_};
                 VerifyTestResult (h.GetContentLength () == 3);
                 VerifyTestResult (h.GetCacheControl () == CacheControl{CacheControl::eNoCache});
-                VerifyTestResult ((h.As<Mapping<String, String>> () == initializer_list<KeyValuePair<String, String>>{{L"Cache-Control", L"no-cache"}, {L"Content-Length", L"3"}, {L"blah-blah", L"unknown-header"}}));
+                VerifyTestResult ((h.As<Mapping<String, String>> () == kReference_));
             }
         }
     }

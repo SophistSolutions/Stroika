@@ -2043,6 +2043,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\CacheControl.h">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ETag.h">
+      <Filter>Sources\IO\Network\HTTP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -3325,6 +3328,9 @@
       <Filter>Sources\Common</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\CacheControl.inl">
+      <Filter>Sources\IO\Network\HTTP</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ETag.inl">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </None>
   </ItemGroup>

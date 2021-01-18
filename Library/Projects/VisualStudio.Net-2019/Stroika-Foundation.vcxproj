@@ -568,6 +568,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\CacheControl.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ClientErrorException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Cookies.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ETag.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Headers.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\MessageStartTextInputStreamBinaryAdapter.h" />
@@ -980,6 +981,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\CacheControl.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ClientErrorException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Cookies.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ETag.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Headers.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Makefile" />
