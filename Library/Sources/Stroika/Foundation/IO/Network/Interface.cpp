@@ -452,7 +452,8 @@ namespace {
 #if qMacUBSanitizerifreqAlignmentIssue_Buggy
     Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED
 #endif
-    Traversal::Iterable<Interface> GetInterfaces_POSIX_ ()
+        Traversal::Iterable<Interface>
+        GetInterfaces_POSIX_ ()
     {
         // @todo - when we supported KeyedCollection - use KeyedCollection instead of mapping
         //Collection<Interface> result;
