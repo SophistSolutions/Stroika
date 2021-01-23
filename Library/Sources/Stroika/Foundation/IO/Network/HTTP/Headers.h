@@ -15,6 +15,7 @@
 
 #include "CacheControl.h"
 #include "ETag.h"
+#include "IfNoneMatch.h"
 
 /**
  */
@@ -127,6 +128,18 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
+         *  Get the IF-None-Match header
+         */
+        nonvirtual optional<IfNoneMatch> GetIfNoneMatch () const;
+
+    public:
+        /**
+         *  @see GetIfNoneMatch
+         */
+        nonvirtual void SetIfNoneMatch (const optional<IfNoneMatch>& ifnonematch);
+
+    public:
+        /**
          *  Returns the combined set of headers (list Key:Value pairs). Note this may not be returned in
          *  the same order and exactly losslessly identically to what was passed in.
          * 
@@ -143,6 +156,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         optional<uint64_t>                       fContentLength_;
         optional<InternetMediaType>              fContentType_;
         optional<ETag>                           fETag_;
+        optional<IfNoneMatch>                    fIfNoneMatch_;
     };
     template <>
     Mapping<String, String> Headers::As () const;

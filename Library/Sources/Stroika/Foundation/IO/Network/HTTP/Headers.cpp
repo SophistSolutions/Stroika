@@ -50,6 +50,9 @@ void Headers::SetHeader (const String& name, const optional<String>& value)
     else if (kHeaderNameComparer_ (name, HeaderName::kETag)) {
         fETag_ = value ? ETag::Parse (*value) : optional<ETag>{};
     }
+    else if (kHeaderNameComparer_ (name, HeaderName::kIfNoneMatch)) {
+        fIfNoneMatch_ = value ? IfNoneMatch::Parse (*value) : optional<IfNoneMatch>{};
+    }
     else {
         if (value) {
             fExtraHeaders_.Add (KeyValuePair<String, String>{name, *value});
@@ -82,6 +85,9 @@ Collection<KeyValuePair<String, String>> Headers::As () const
     }
     if (fETag_) {
         results.Add (KeyValuePair<String, String>{HeaderName::kETag, fETag_->As<String> ()});
+    }
+    if (fIfNoneMatch_) {
+        results.Add (KeyValuePair<String, String>{HeaderName::kIfNoneMatch, fIfNoneMatch_->As<String> ()});
     }
     return results;
 }
