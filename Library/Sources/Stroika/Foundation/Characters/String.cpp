@@ -1064,6 +1064,21 @@ String String::StripAll (bool (*removeCharIf) (Character)) const
     return *this; // if we NEVER get removeCharIf return false, just clone this
 }
 
+String String::Join (const Iterable<String>& list, const String& separator)
+{
+    StringBuilder result;
+    for (String i : list) {
+        result += i;
+        result += separator;
+    }
+    if (result.empty ()) {
+        return result.str ();
+    }
+    else {
+        return result.str ().SubString (0, -static_cast<int> (separator.GetLength ()));
+    }
+}
+
 String String::ToLowerCase () const
 {
     StringBuilder        result;

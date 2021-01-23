@@ -1011,6 +1011,13 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  Combine the given array into a single string (typically comma space) separated.
+         *  If given a list of length n, this adds n-1 seperators.
+         */
+        static String Join (const Iterable<String>& list, const String& separator = L", "sv);
+
+    public:
+        /**
          * Return a new string based on this string where each lower case characer is replaced by its
          * upper case equivalent. Note that non-lower-case characters (such as punctuation) un unchanged.
          */
