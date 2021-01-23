@@ -164,6 +164,12 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         optional<InternetMediaType>              fContentType_;
         optional<ETag>                           fETag_;
         optional<IfNoneMatch>                    fIfNoneMatch_;
+
+#if __cpp_impl_three_way_comparison < 201907
+    private:
+        friend bool operator== (const Headers& lhs, const Headers& rhs);
+        friend bool operator!= (const Headers& lhs, const Headers& rhs);
+#endif
     };
     template <>
     Mapping<String, String> Headers::As () const;
