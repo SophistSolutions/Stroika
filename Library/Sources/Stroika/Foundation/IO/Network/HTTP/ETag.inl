@@ -29,7 +29,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         if (wireFormat.StartsWith ('\"')) {
             return ETag{wireFormat.SubString (1, -1)};
         }
-        if (wireFormat.StartsWith (L"\\W\"")) {
+        if (wireFormat.StartsWith (L"\\W\""sv)) {
             return ETag{wireFormat.SubString (3, -1), true};
         }
         return nullopt;
@@ -39,6 +39,16 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     {
         return (fWeak ? L"\\W\""sv : L"\"") + fValue + L"\""sv;
     }
+#if __cpp_impl_three_way_comparison < 201907
+    inline bool operator== (const ETag& lhs, const ETag& rhs)
+    {
+        return lhs.fWeak == rhs.fWeak and lhs.fValue == rhs.fValue;
+    }
+    inline bool operator!= (const ETag& lhs, const ETag& rhs)
+    {
+        return not(lhs == rhs);
+    }
+#endif
 
 }
 
