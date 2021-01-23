@@ -21,16 +21,16 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         , fWeak{weak}
     {
     }
-    inline optional<ETag> ETag::Parse (const String& etagWireFormat)
+    inline optional<ETag> ETag::Parse (const String& wireFormat)
     {
-        if (not etagWireFormat.EndsWith ('\"')) {
+        if (not wireFormat.EndsWith ('\"')) {
             return nullopt;
         }
-        if (etagWireFormat.StartsWith ('\"')) {
-            return ETag{etagWireFormat.SubString (1, -1)};
+        if (wireFormat.StartsWith ('\"')) {
+            return ETag{wireFormat.SubString (1, -1)};
         }
-        if (etagWireFormat.StartsWith (L"\\W\"")) {
-            return ETag{etagWireFormat.SubString (3, -1), true};
+        if (wireFormat.StartsWith (L"\\W\"")) {
+            return ETag{wireFormat.SubString (3, -1), true};
         }
         return nullopt;
     }

@@ -25,7 +25,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 		/**
 		 *	If ill-format or missing, return nullopt, no exception.
 		 */
-        static optional <ETag> Parse (const String& etagWireFormat);
+        static optional <ETag> Parse (const String& wireFormat);
 
         String fValue;
         bool   fWeak{false};
