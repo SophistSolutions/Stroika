@@ -69,7 +69,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 #if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering Headers::operator<=> (const Headers& rhs) const
     {
-        using ExtrasComparer = Collection<KeyValuePair<String, String>>::SequentialThreeWayComparer;
+        using ExtrasComparer = Collection<KeyValuePair<String, String>>::SequentialThreeWayComparer<>;
 #if qCompilerAndStdLib_stdOptionalThreeWayCompare_Buggy
         if (auto cmp = ExtrasComparer{}(fExtraHeaders_, rhs.fExtraHeaders_); cmp != Common::kEqual) {
             return cmp;
@@ -108,7 +108,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     }
     inline bool Headers::operator== (const Headers& rhs) const
     {
-        using ExtrasComparer = Collection<KeyValuePair<String, String>>::SequentialEqualsComparer;
+        using ExtrasComparer = Collection<KeyValuePair<String, String>>::SequentialEqualsComparer<>;
         return ExtrasComparer{}(fExtraHeaders_, rhs.fExtraHeaders_) and fCacheControl_ == rhs.fCacheControl_ and fContentLength_ == rhs.fContentLength_ and fContentType_ == rhs.fContentType_ and fETag_ == rhs.fETag_ and fIfNoneMatch_ == rhs.fIfNoneMatch_;
     }
 #endif
