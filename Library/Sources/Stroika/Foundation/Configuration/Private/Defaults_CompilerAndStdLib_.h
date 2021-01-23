@@ -965,6 +965,20 @@ STILL:
 
 #endif
 
+
+#ifndef qCompilerAndStdLib_stdOptionalThreeWayCompare_Buggy
+
+#if defined(_MSC_VER)
+
+// first found broken in _MSC_VER_2k19_16Pt8_
+#define qCompilerAndStdLib_stdOptionalThreeWayCompare_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt8_)
+#else
+#define qCompilerAndStdLib_stdOptionalThreeWayCompare_Buggy 0
+#endif
+
+#endif
+
+
 /*
  MUST RUN TEST    Foundation::Execution::Other
  and see if it passes/fails - maybe review log text

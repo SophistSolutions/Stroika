@@ -42,7 +42,18 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 		 */
 		template <typename T>
         T As () const;
-	};
+
+#if __cpp_impl_three_way_comparison >= 201907
+        /**
+         */
+        nonvirtual strong_ordering operator<=> (const IfNoneMatch& rhs) const = default;
+#endif
+    };
+
+#if __cpp_impl_three_way_comparison < 201907
+    bool operator== (const IfNoneMatch& lhs, const IfNoneMatch& rhs);
+    bool operator!= (const IfNoneMatch& lhs, const IfNoneMatch& rhs);
+#endif
 
 }
 

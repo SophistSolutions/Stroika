@@ -120,6 +120,15 @@ namespace {
                 VerifyTestResult (h.GetCacheControl () == CacheControl{CacheControl::eNoCache});
                 VerifyTestResult ((h.As<Mapping<String, String>> () == kReference_));
             }
+            {
+                IO::Network::HTTP::Headers h1;
+                ETag                       etag = ETag{L"1-2-3-4"};
+                h1.SetETag (etag);
+                IO::Network::HTTP::Headers h2;
+                h2.SetIfNoneMatch (IfNoneMatch{{etag}});
+                VerifyTestResult (h1 != h2);
+                VerifyTestResult (h2.GetIfNoneMatch ().value ().fETags.Contains (etag));
+            }
         }
     }
 }

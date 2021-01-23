@@ -81,6 +81,16 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         }
         return String::Join (fETags.Select<String> ([] (const ETag& e) { return e.As<String> (); }));
     }
+#if __cpp_impl_three_way_comparison < 201907
+    inline bool operator== (const IfNoneMatch& lhs, const IfNoneMatch& rhs)
+    {
+        return lhs.fETags == rhs.fETags;
+    }
+    inline bool operator!= (const IfNoneMatch& lhs, const IfNoneMatch& rhs)
+    {
+        return not(lhs == rhs);
+    }
+#endif
 
 }
 

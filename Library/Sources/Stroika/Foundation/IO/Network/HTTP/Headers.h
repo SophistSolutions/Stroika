@@ -150,6 +150,13 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         template <typename T>
         nonvirtual T As () const;
 
+#if __cpp_impl_three_way_comparison >= 201907
+        /**
+         */
+        nonvirtual strong_ordering operator<=> (const Headers& rhs) const;
+        nonvirtual bool operator== (const Headers& rhs) const;
+#endif
+
     private:
         Collection<KeyValuePair<String, String>> fExtraHeaders_;
         optional<CacheControl>                   fCacheControl_;
@@ -162,6 +169,11 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     Mapping<String, String> Headers::As () const;
     template <>
     Collection<KeyValuePair<String, String>> Headers::As () const;
+
+#if __cpp_impl_three_way_comparison < 201907
+    bool operator== (const Headers& lhs, const Headers& rhs);
+    bool operator!= (const Headers& lhs, const Headers& rhs);
+#endif
 
 }
 
