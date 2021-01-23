@@ -115,7 +115,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 #if __cpp_impl_three_way_comparison < 201907
     inline bool operator== (const Headers& lhs, const Headers& rhs)
     {
-        using ExtrasComparer = Collection<KeyValuePair<String, String>>::SequentialEqualsComparer;
+        using ExtrasComparer = Collection<KeyValuePair<String, String>>::SequentialEqualsComparer<>;
         return ExtrasComparer{}(lhs.fExtraHeaders_, rhs.fExtraHeaders_) and lhs.fCacheControl_ == rhs.fCacheControl_ and lhs.fContentLength_ == rhs.fContentLength_ and lhs.fContentType_ == rhs.fContentType_ and lhs.fETag_ == rhs.fETag_ and lhs.fIfNoneMatch_ == rhs.fIfNoneMatch_;
     }
     inline bool operator!= (const Headers& lhs, const Headers& rhs)
