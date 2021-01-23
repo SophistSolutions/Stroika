@@ -972,6 +972,9 @@ STILL:
 
 // first found broken in _MSC_VER_2k19_16Pt8_
 #define qCompilerAndStdLib_stdOptionalThreeWayCompare_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt8_)
+#elif defined(_LIBCPP_VERSION)
+// only seen on _LIBCPP_VERSION=11, but thats cuz requires c++20
+#define qCompilerAndStdLib_stdOptionalThreeWayCompare_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 11000)
 #else
 #define qCompilerAndStdLib_stdOptionalThreeWayCompare_Buggy 0
 #endif
