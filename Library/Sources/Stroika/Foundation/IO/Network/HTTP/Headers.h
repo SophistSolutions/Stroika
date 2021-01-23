@@ -70,7 +70,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /**
          */
         Headers () = default;
-        Headers (const Iterable<KeyValuePair<String, String>>& src);
+        explicit Headers (const Iterable<KeyValuePair<String, String>>& src);
 
     public:
         /**
