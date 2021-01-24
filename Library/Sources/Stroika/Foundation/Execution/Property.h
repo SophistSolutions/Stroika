@@ -58,7 +58,11 @@ namespace Stroika::Foundation::Execution {
         /**
          *  A ReadOnlyProperty can be automatically converted to its underlying base type.
          *  Due to how conversion operators work, this won't always be helpful (like with overloading
-         *  or multiple levels of conversions). But when it works (80% of the time) - its helpful.
+         *  or multiple levels of conversions, for example with optional<int> compare with int property).
+         *  But when it works (80% of the time) - its helpful.
+         * 
+         *  When it doesn't work, simply throw in '()' - to use the 'operator()' call, or call Get()
+         *  if you prefer that syntax.
          */
         nonvirtual operator const T () const;
 
@@ -123,6 +127,8 @@ namespace Stroika::Foundation::Execution {
      * 
      *  \note Though this looks syntactically much like using a direct data member, it will likely have some performance overhead
      *        due to forcing the use of a std::function wrapping a lambda for each access to the underlying object of type T.
+     * 
+     *  \note see base class ReadOnlyProperty and WriteOnlyProperty for details on APIs to read/write the underlying data.
      */
     template <typename T>
     class Property : public ReadOnlyProperty<T>, public WriteOnlyProperty<T> {
