@@ -56,10 +56,9 @@ namespace Stroika::Foundation::Execution {
         fSetter_ (value);
     }
     template <typename T>
-    inline T WriteOnlyProperty<T>::operator= (const Configuration::ArgByValueType<T>& value)
+    inline void WriteOnlyProperty<T>::operator= (const Configuration::ArgByValueType<T>& value)
     {
         Set (value);
-        return value;
     }
 
     /*

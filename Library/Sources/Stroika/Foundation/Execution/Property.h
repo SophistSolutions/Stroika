@@ -34,6 +34,8 @@ namespace Stroika::Foundation::Execution {
     /**
      *  Implement C#-like syntax for read-only properties (syntactically like data members but backed by a getter function)
      *      \note   Typically not used - use Property
+     * 
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md">SAME AS T/GETTER - all methods have exactly the thread safety of the underlying GETTER</a>
      */
     template <typename T>
     class ReadOnlyProperty {
@@ -87,6 +89,7 @@ namespace Stroika::Foundation::Execution {
     /**
      *  Implement C#-like syntax for write-only properties (syntactically like data members but backed by a setter function)
      *      \note   Typically not used - use Property
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md">SAME AS T/SETTER - all methods have exactly the thread safety of the underlying SETTER</a>
      */
     template <typename T>
     class WriteOnlyProperty {
@@ -107,7 +110,7 @@ namespace Stroika::Foundation::Execution {
          *  You can assign a value of the underlying type, but we do NOT support operator=(WriteOnlyProperty) because
          *  we cannot generically read from a write-only property to copy its value.
          */
-        nonvirtual T operator= (const Configuration::ArgByValueType<T>& value);
+        nonvirtual void operator= (const Configuration::ArgByValueType<T>& value);
 
     public:
         /**
@@ -129,6 +132,11 @@ namespace Stroika::Foundation::Execution {
      *        due to forcing the use of a std::function wrapping a lambda for each access to the underlying object of type T.
      * 
      *  \note see base class ReadOnlyProperty and WriteOnlyProperty for details on APIs to read/write the underlying data.
+     * 
+     *  \note New SYNTAX CONVENTION intruduced for instance variables of type *Property<...>, which is to prepend a 'p'. This
+     *        convention is to emphasize that these names DONT work QUITE like fields, but only somewhat like fields.
+     * 
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md">SAME AS T/GETTER/SETTER - all methods have exactly the thread safety of the underlying GETTER/SETTER</a>
      */
     template <typename T>
     class Property : public ReadOnlyProperty<T>, public WriteOnlyProperty<T> {

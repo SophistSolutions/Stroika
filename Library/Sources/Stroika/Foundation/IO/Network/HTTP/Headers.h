@@ -83,7 +83,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /**
          *  Property with the optional<CacheControl> value of the Cache-Control header.
          */
-        Execution::Property<optional<CacheControl>> fCacheControl{
+        Execution::Property<optional<CacheControl>> pCacheControl{
             [=] () {
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                 return fCacheControl_;
@@ -97,7 +97,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /**
          *  Property with the optional<uint64_t> value of the Content-Length header.
          */
-        Execution::Property<optional<uint64_t>> fContentLength{
+        Execution::Property<optional<uint64_t>> pContentLength{
             [=] () {
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                 return fContentLength_;
@@ -111,7 +111,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /**
          *  Property with the optional<InternetMediaType> value of the Content-Type header.
          */
-        Execution::Property<optional<InternetMediaType>> fContentType{
+        Execution::Property<optional<InternetMediaType>> pContentType{
             [=] () {
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                 return fContentType_;
@@ -125,7 +125,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /**
          *  Property with the optional<ETag> value of the ETag header.
          */
-        Execution::Property<optional<ETag>> fETag{
+        Execution::Property<optional<ETag>> pETag{
             [=] () {
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                 return fETag_;
@@ -139,7 +139,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /**
          *  Property with the optional<IfNoneMatch> value of the IF-None-Match header.
          */
-        Execution::Property<optional<IfNoneMatch>> fIfNoneMatch{
+        Execution::Property<optional<IfNoneMatch>> pIfNoneMatch{
             [=] () {
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                 return fIfNoneMatch_;
