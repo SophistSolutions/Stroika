@@ -514,6 +514,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Process.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ProcessRunner.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Property.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentMissingException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentVersionMismatchException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Accessor.h" />
@@ -931,6 +932,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Process.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ProcessRunner.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Property.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Accessor.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\CompiledResourceManager.inl" />

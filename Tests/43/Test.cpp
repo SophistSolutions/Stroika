@@ -91,13 +91,13 @@ namespace {
             using KVP = KeyValuePair<String, String>;
             {
                 IO::Network::HTTP::Headers h;
-                h.SetContentLength (3);
+                h.fContentLength       = 3;
                 const auto kReference_ = Mapping<String, String>{{KVP{L"Content-Length", L"3"}}};
                 VerifyTestResult ((h.As<Mapping<String, String>> () == kReference_));
             }
             {
                 IO::Network::HTTP::Headers h;
-                h.SetETag (ETag{L"1-2-3-4"});
+                h.fETag                = ETag{L"1-2-3-4"};
                 const auto kReference_ = Mapping<String, String>{{KVP{L"ETag", L"\"1-2-3-4\""}}};
                 VerifyTestResult ((h.As<Mapping<String, String>> () == kReference_));
                 h = IO::Network::HTTP::Headers{kReference_};
@@ -105,8 +105,8 @@ namespace {
             }
             {
                 IO::Network::HTTP::Headers h;
-                h.SetContentLength (3);
-                h.SetCacheControl (CacheControl{CacheControl::eNoCache});
+                h.fContentLength       = 3;
+                h.fCacheControl        = CacheControl{CacheControl::eNoCache};
                 const auto kReference_ = Mapping<String, String>{{KVP{L"Cache-Control", L"no-cache"},
                                                                   KVP{L"Content-Length", L"3"}}};
                 VerifyTestResult ((h.As<Mapping<String, String>> () == kReference_));
@@ -116,18 +116,18 @@ namespace {
                                                                   KVP{L"blah-blah", L"unknown-header"},
                                                                   KVP{L"Content-Length", L"3"}}};
                 IO::Network::HTTP::Headers h{kReference_};
-                VerifyTestResult (h.GetContentLength () == 3);
-                VerifyTestResult (h.GetCacheControl () == CacheControl{CacheControl::eNoCache});
+                VerifyTestResult (h.fContentLength () == 3);
+                VerifyTestResult (h.fCacheControl () == CacheControl{CacheControl::eNoCache});
                 VerifyTestResult ((h.As<Mapping<String, String>> () == kReference_));
             }
             {
                 IO::Network::HTTP::Headers h1;
                 ETag                       etag = ETag{L"1-2-3-4"};
-                h1.SetETag (etag);
+                h1.fETag                        = etag;
                 IO::Network::HTTP::Headers h2;
-                h2.SetIfNoneMatch (IfNoneMatch{{etag}});
+                h2.fIfNoneMatch = IfNoneMatch{{etag}};
                 VerifyTestResult (h1 != h2);
-                VerifyTestResult (h2.GetIfNoneMatch ().value ().fETags.Contains (etag));
+                VerifyTestResult (h2.fIfNoneMatch ().value ().fETags.Contains (etag));
             }
         }
     }

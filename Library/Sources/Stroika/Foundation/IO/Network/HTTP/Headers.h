@@ -12,6 +12,7 @@
 #include "../../../Containers/Mapping.h"
 #include "../../../DataExchange/InternetMediaType.h"
 #include "../../../Debug/AssertExternallySynchronizedLock.h"
+#include "../../../Execution/Property.h"
 
 #include "CacheControl.h"
 #include "ETag.h"
@@ -27,7 +28,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     using Containers::Mapping;
     using DataExchange::InternetMediaType;
     using Traversal::Iterable;
-
+   
     /** 
      * standard HTTP headers one might want to access/retrieve
      */
@@ -80,63 +81,73 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
-         *  Return the unsigned integer value of the Content-Length header.
+         *  Property with the optional<CacheControl> value of the Cache-Control header.
          */
-        nonvirtual optional<CacheControl> GetCacheControl () const;
+        Execution::Property<optional<CacheControl>> fCacheControl{
+            [=] () {
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                return fCacheControl_;
+            },
+            [=] (const auto& cacheControl) {
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                fCacheControl_ = cacheControl;
+            }};
 
     public:
         /**
-         *  @see GetContentLength
+         *  Property with the optional<uint64_t> value of the Content-Length header.
          */
-        nonvirtual void SetCacheControl (const optional<CacheControl>& cacheControl);
+        Execution::Property<optional<uint64_t>> fContentLength{
+            [=] () {
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                return fContentLength_;
+            },
+            [=] (auto contentLength) {
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                fContentLength_ = contentLength;
+            }};
 
     public:
         /**
-         *  Return the unsigned integer value of the Content-Length header.
+         *  Property with the optional<InternetMediaType> value of the Content-Type header.
          */
-        nonvirtual optional<uint64_t> GetContentLength () const;
+        Execution::Property<optional<InternetMediaType>> fContentType{
+            [=] () {
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                return fContentType_;
+            },
+            [=] (const auto& contentType) {
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                fContentType_ = contentType;
+            }};
 
     public:
         /**
-         *  @see GetContentLength
+         *  Property with the optional<ETag> value of the ETag header.
          */
-        nonvirtual void SetContentLength (const optional<uint64_t>& contentLength);
+        Execution::Property<optional<ETag>> fETag{
+            [=] () {
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                return fETag_;
+            },
+            [=] (const auto& etag) {
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                fETag_ = etag;
+            }};
 
     public:
         /**
-         *  Return the HTTP message body Content-Type, if any given
+         *  Property with the optional<IfNoneMatch> value of the IF-None-Match header.
          */
-        nonvirtual optional<InternetMediaType> GetContentType () const;
-
-    public:
-        /**
-         *  @see GetContentType
-         */
-        nonvirtual void SetContentType (const optional<InternetMediaType>& contentType);
-
-    public:
-        /**
-         *  Return the HTTP header ETag, if any given
-         */
-        nonvirtual optional<ETag> GetETag () const;
-
-    public:
-        /**
-         *  @see GetETag
-         */
-        nonvirtual void SetETag (const optional<ETag>& etag);
-
-    public:
-        /**
-         *  Get the IF-None-Match header
-         */
-        nonvirtual optional<IfNoneMatch> GetIfNoneMatch () const;
-
-    public:
-        /**
-         *  @see GetIfNoneMatch
-         */
-        nonvirtual void SetIfNoneMatch (const optional<IfNoneMatch>& ifnonematch);
+        Execution::Property<optional<IfNoneMatch>> fIfNoneMatch{
+            [=] () {
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                return fIfNoneMatch_;
+            },
+            [=] (const auto& ifNoneMatch) {
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                fIfNoneMatch_ = ifNoneMatch;
+            }};
 
     public:
         /**
@@ -151,10 +162,11 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         nonvirtual T As () const;
 
 #if __cpp_impl_three_way_comparison >= 201907
+    public:
         /**
          */
         nonvirtual strong_ordering operator<=> (const Headers& rhs) const;
-        nonvirtual bool operator== (const Headers& rhs) const;
+        nonvirtual bool            operator== (const Headers& rhs) const;
 #endif
 
     private:

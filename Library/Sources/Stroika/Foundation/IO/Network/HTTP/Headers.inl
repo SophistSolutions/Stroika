@@ -16,56 +16,6 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      ********************************* HTTP::Headers ********************************
      ********************************************************************************
      */
-    inline optional<CacheControl> Headers::GetCacheControl () const
-    {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        return fCacheControl_;
-    }
-    inline void Headers::SetCacheControl (const optional<CacheControl>& cacheControl)
-    {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        fCacheControl_ = cacheControl;
-    }
-    inline optional<uint64_t> Headers::GetContentLength () const
-    {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        return fContentLength_;
-    }
-    inline void Headers::SetContentLength (const optional<uint64_t>& contentLength)
-    {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        fContentLength_ = contentLength;
-    }
-    inline optional<InternetMediaType> Headers::GetContentType () const
-    {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        return fContentType_;
-    }
-    inline void Headers::SetContentType (const optional<InternetMediaType>& contentType)
-    {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        fContentType_ = contentType;
-    }
-    inline optional<ETag> Headers::GetETag () const
-    {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        return fETag_;
-    }
-    inline void Headers::SetETag (const optional<ETag>& etag)
-    {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        fETag_ = etag;
-    }
-    inline optional<IfNoneMatch> Headers::GetIfNoneMatch () const
-    {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        return fIfNoneMatch_;
-    }
-    inline void Headers::SetIfNoneMatch (const optional<IfNoneMatch>& ifnonematch)
-    {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        fIfNoneMatch_ = ifnonematch;
-    }
 #if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering Headers::operator<=> (const Headers& rhs) const
     {
