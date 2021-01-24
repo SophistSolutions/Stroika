@@ -23,6 +23,7 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ] ; then
     EXE=${EXE-"Builds/g++-optimized/Tests/Test51"}
 	if [ ! -e "$EXE" ] ; then EXE="Builds/Release/Tests/Test51"; fi
 	if [ ! -e "$EXE" ] ; then EXE="Builds/g++-8-release-c++17/Tests/Test51"; fi
+	if [ ! -e "$EXE" ] ; then EXE="Builds/g++-10-release-c++17/Tests/Test51"; fi
 	if [ "$USE_TEST_BASENAME" == "UNKNOWN" ] ; then USE_TEST_BASENAME="linux-g++-7.3-x64"; fi
     CMDRUN_PREFIX="nice -10 taskset -c 0 "
 elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ] ; then

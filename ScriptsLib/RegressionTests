@@ -503,7 +503,7 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 		echo -n "ScriptsLib/RunPerformanceRegressionTests ..."
 		echo -n "$PREFIX_OUT_LABEL" "ScriptsLib/RunPerformanceRegressionTests ..." >>$TEST_OUT_FILE 2>&1
 		STAGE_STARTAT_INT=$(date +%s)
-		ScriptsLib/RunPerformanceRegressionTests
+		ScriptsLib/RunPerformanceRegressionTests>>$TEST_OUT_FILE 2>&1
 		STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
 		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
 		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
