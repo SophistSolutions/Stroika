@@ -44,22 +44,19 @@ namespace Stroika::Foundation::Execution {
      ****************************** WriteOnlyProperty<T> *****************************
      ********************************************************************************
      */
-
     template <typename T>
     template <typename S>
     constexpr WriteOnlyProperty<T>::WriteOnlyProperty (S setter)
         : fSetter_ (setter)
     {
     }
-
     template <typename T>
-    void WriteOnlyProperty<T>::Set (T const& value)
+    inline void WriteOnlyProperty<T>::Set (const Configuration::ArgByValueType<T>& value)
     {
         fSetter_ (value);
     }
-
     template <typename T>
-    T WriteOnlyProperty<T>::operator= (T const& value)
+    inline T WriteOnlyProperty<T>::operator= (const Configuration::ArgByValueType<T>& value)
     {
         Set (value);
         return value;
@@ -67,38 +64,29 @@ namespace Stroika::Foundation::Execution {
 
     /*
      ********************************************************************************
-     ****************************** Property<T> *****************************
+     ********************************** Property<T> *********************************
      ********************************************************************************
      */
     template <typename T>
     template <typename G, typename S>
-    Property<T>::Property (G getter, S setter)
+    inline Property<T>::Property (G getter, S setter)
         : ReadOnlyProperty<T> (getter)
         , WriteOnlyProperty<T> (setter)
     {
     }
     template <typename T>
-    T Property<T>::operator= (const T& value)
+    inline T Property<T>::operator= (const Configuration::ArgByValueType<T>& value)
     {
         WriteOnlyProperty<T>::operator= (value);
         return value;
     }
     template <typename T>
-    auto Property<T>::operator= (const Property& value) -> Property&
+    inline auto Property<T>::operator= (const Property& value) -> Property&
     {
         Set (value.Get ());
         return *this;
     }
-    template <typename T>
-    T Property<T>::Get () const
-    {
-        return ReadOnlyProperty<T>::Get ();
-    }
-    template <typename T>
-    void Property<T>::Set (const T& value)
-    {
-        WriteOnlyProperty<T>::Set (value);
-    }
+
 }
 
 #endif /*_Stroika_Foundation_Execution_Property_inl_*/
