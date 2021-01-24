@@ -74,7 +74,7 @@ namespace Stroika::Frameworks::UPnP::SSDP {
             return not(*this == rhs);
         }
 #else
-        auto operator== (const Advertisement&) const = default;
+        bool operator== (const Advertisement&) const = default;
 #endif
 
         /**
