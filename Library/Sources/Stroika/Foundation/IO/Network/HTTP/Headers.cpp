@@ -26,9 +26,89 @@ namespace {
  ******************************** HTTP::Headers *********************************
  ********************************************************************************
  */
-Headers::Headers (const Headers& src)
-    : fExtraHeaders_{src.fExtraHeaders_}
+Headers::Headers ()
+    : pCacheControl{
+          [=] () {
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+              return fCacheControl_;
+          },
+          [=] (const auto& cacheControl) {
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+              fCacheControl_ = cacheControl;
+          }}
+    , pContentLength{
+          [=] () {
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+              return fContentLength_;
+          },
+          [=] (auto contentLength) {
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+              fContentLength_ = contentLength;
+          }}
+    , pContentType{
+          [=] () {
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+              return fContentType_;
+          },
+          [=] (const auto& contentType) {
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+              fContentType_ = contentType;
+          }}
+    , pETag{
+          [=] () {
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+              return fETag_;
+          },
+          [=] (const auto& etag) {
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+              fETag_ = etag;
+          }}
+    , pIfNoneMatch{
+          [=] () {
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+              return fIfNoneMatch_;
+          },
+          [=] (const auto& ifNoneMatch) {
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+              fIfNoneMatch_ = ifNoneMatch;
+          }}
+    , pConnection{
+          [=] () -> optional<ConnectionValue> {
+              using CompareOptions = Characters::CompareOptions;
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+              if (auto connectionHdr = As<Mapping<String, String>> ().Lookup (HeaderName::kConnection)) {
+                  if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(*connectionHdr, L"Keep-Alive"sv)) {
+                      return eKeepAlive;
+                  }
+                  else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(*connectionHdr, L"close"sv)) {
+                      return eClose;
+                  }
+              }
+              return optional<ConnectionValue>{};
+          },
+          [=] (const auto& connectionValue) {
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+              optional<String>                                   v;
+              if (connectionValue) {
+                  switch (*connectionValue) {
+                      case ConnectionValue::eKeepAlive:
+                          v = L"Keep-Alive"sv;
+                          break;
+                      case ConnectionValue::eClose:
+                          v = L"close"sv;
+                          break;
+                  }
+              }
+              SetHeader (HeaderName::kConnection, v);
+          }}
 {
+}
+
+Headers::Headers (const Headers& src)
+    : Headers ()
+{
+    fExtraHeaders_ = src.fExtraHeaders_;
+
     // NOTE - cannot INITIALIZE properties with src.Properties values since they are not copy constructible
     // but they are assignable, so do that
     pCacheControl  = src.pCacheControl;
@@ -39,8 +119,9 @@ Headers::Headers (const Headers& src)
 }
 
 Headers::Headers (Headers&& src)
-    : fExtraHeaders_{move (src.fExtraHeaders_)}
+    : Headers ()
 {
+    fExtraHeaders_ = move (src.fExtraHeaders_);
     // NOTE - cannot INITIALIZE properties with src.Properties values since they are not copy constructible
     // but they are assignable, so do that
     pCacheControl  = src.pCacheControl;
@@ -51,6 +132,7 @@ Headers::Headers (Headers&& src)
 }
 
 Headers::Headers (const Iterable<KeyValuePair<String, String>>& src)
+    : Headers ()
 {
     for (auto kv : src) {
         SetHeader (kv.fKey, kv.fValue);
@@ -155,36 +237,4 @@ Collection<KeyValuePair<String, String>> Headers::As () const
 String Headers::ToString () const
 {
     return Characters::ToString (As<Mapping<String, String>> ());
-}
-
-auto Headers::GetHeader_Connection_ () const -> optional<ConnectionValue>
-{
-    using CompareOptions = Characters::CompareOptions;
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    if (auto connectionHdr = As<Mapping<String, String>> ().Lookup (HeaderName::kConnection)) {
-        if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(*connectionHdr, L"Keep-Alive"sv)) {
-            return eKeepAlive;
-        }
-        else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(*connectionHdr, L"close"sv)) {
-            return eClose;
-        }
-    }
-    return optional<ConnectionValue>{};
-}
-
-void Headers::SetHeader_Connection_ (const optional<ConnectionValue>& connectionValue)
-{
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    optional<String>                                   v;
-    if (connectionValue) {
-        switch (*connectionValue) {
-            case ConnectionValue::eKeepAlive:
-                v = L"Keep-Alive"sv;
-                break;
-            case ConnectionValue::eClose:
-                v = L"close"sv;
-                break;
-        }
-    }
-    SetHeader (HeaderName::kConnection, v);
 }

@@ -70,7 +70,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     public:
         /**
          */
-        Headers () = default;
+        Headers ();
         Headers (const Headers& src);
         Headers (Headers&& src);
         explicit Headers (const Iterable<KeyValuePair<String, String>>& src);
@@ -96,84 +96,59 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /**
          *  Property with the optional<CacheControl> value of the Cache-Control header.
          */
-        Execution::Property<optional<CacheControl>> pCacheControl{
-            [=] () {
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-                return fCacheControl_;
-            },
-            [=] (const auto& cacheControl) {
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-                fCacheControl_ = cacheControl;
-            }};
+        Execution::Property<optional<CacheControl>> pCacheControl;
 
     public:
         /**
          *  Property with the optional<uint64_t> value of the Content-Length header.
+         *
+         *  \par Example Usage
+         *      \code
+         *          optional<uint64_t> contentLenghth = fHeaders_.pContentLength;
+         *      \endcode         
          */
-        Execution::Property<optional<uint64_t>> pContentLength{
-            [=] () {
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-                return fContentLength_;
-            },
-            [=] (auto contentLength) {
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-                fContentLength_ = contentLength;
-            }};
+        Execution::Property<optional<uint64_t>> pContentLength;
 
     public:
         /**
          *  Property with the optional<InternetMediaType> value of the Content-Type header.
+         *
+         *  \par Example Usage
+         *      \code
+         *          optional<InternetMediaType> contentType = fHeaders_.pContentType;
+         *          fHeaders_.pContentType = nullopt; // remove the content-type header
+         *      \endcode         
          */
-        Execution::Property<optional<InternetMediaType>> pContentType{
-            [=] () {
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-                return fContentType_;
-            },
-            [=] (const auto& contentType) {
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-                fContentType_ = contentType;
-            }};
+        Execution::Property<optional<InternetMediaType>> pContentType;
 
     public:
         /**
          *  Property with the optional<ETag> value of the ETag header.
          */
-        Execution::Property<optional<ETag>> pETag{
-            [=] () {
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-                return fETag_;
-            },
-            [=] (const auto& etag) {
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-                fETag_ = etag;
-            }};
+        Execution::Property<optional<ETag>> pETag;
 
     public:
         /**
          *  Property with the optional<IfNoneMatch> value of the IF-None-Match header.
          */
-        Execution::Property<optional<IfNoneMatch>> pIfNoneMatch{
-            [=] () {
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-                return fIfNoneMatch_;
-            },
-            [=] (const auto& ifNoneMatch) {
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-                fIfNoneMatch_ = ifNoneMatch;
-            }};
+        Execution::Property<optional<IfNoneMatch>> pIfNoneMatch;
 
     public:
+        /**
+         *  Value of the HTTP 1.1 and earlier Connection header (pConnection property).
+         */
         enum ConnectionValue {
             eKeepAlive,
             eClose,
         };
-        Execution::Property<optional<ConnectionValue>> pConnection{
-            [=] () -> optional<ConnectionValue> {
-                return GetHeader_Connection_ ();
-            },
-            [=] (const auto& connectionValue) {
-                SetHeader_Connection_ (connectionValue);
-            }};
+
+    public:
+        /**
+         *  Property with the optional<ConnectionValue> value of the Connection header.
+         *
+         *  Header mostly just used for HTTP 1.1 and earlier.
+         */
+        Execution::Property<optional<ConnectionValue>> pConnection;
 
     public:
         /**
@@ -200,10 +175,6 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         nonvirtual strong_ordering operator<=> (const Headers& rhs) const;
         nonvirtual bool            operator== (const Headers& rhs) const;
 #endif
-
-    private:
-        nonvirtual optional<ConnectionValue> GetHeader_Connection_ () const;
-        nonvirtual void                      SetHeader_Connection_ (const optional<ConnectionValue>& connectionValue);
 
     private:
         // Could have properties lookup once when loading and store here. Or could have
