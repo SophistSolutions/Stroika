@@ -69,11 +69,14 @@ void Request::SetHTTPVersion (const String& versionOrVersionLabel)
 
 bool Request::GetKeepAliveRequested () const
 {
-    if (auto connectionHdr = fHeaders_.LookupOne (IO::Network::HTTP::HeaderName::kConnection)) {
-        return String::EqualsComparer{CompareOptions::eCaseInsensitive}(*connectionHdr, L"Keep-Alive"sv);
+    using ConnectionValue = IO::Network::HTTP::Headers::ConnectionValue;
+    if (fHTTPVersion_ == IO::Network::HTTP::Versions::kOnePointZero) {
+        return fHeaders_.pConnection ().value_or (ConnectionValue::eClose) == ConnectionValue::eKeepAlive;
     }
-    // @todo convert version to number and compare that way
-    return fHTTPVersion_ == IO::Network::HTTP::Versions::kOnePointOne;
+    if (fHTTPVersion_ == IO::Network::HTTP::Versions::kOnePointOne) {
+        return fHeaders_.pConnection ().value_or (ConnectionValue::eKeepAlive) == ConnectionValue::eKeepAlive;
+    }
+    return true; // for HTTP 2.0 and later, keep alive is always assumed (double check/reference?)
 }
 
 Memory::BLOB Request::GetBody ()

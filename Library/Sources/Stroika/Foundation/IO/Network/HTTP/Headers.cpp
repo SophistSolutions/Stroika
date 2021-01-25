@@ -156,3 +156,35 @@ String Headers::ToString () const
 {
     return Characters::ToString (As<Mapping<String, String>> ());
 }
+
+auto Headers::GetHeader_Connection_ () const -> optional<ConnectionValue>
+{
+    using CompareOptions = Characters::CompareOptions;
+    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    if (auto connectionHdr = As<Mapping<String, String>> ().Lookup (HeaderName::kConnection)) {
+        if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(*connectionHdr, L"Keep-Alive"sv)) {
+            return eKeepAlive;
+        }
+        else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(*connectionHdr, L"close"sv)) {
+            return eClose;
+        }
+    }
+    return optional<ConnectionValue>{};
+}
+
+void Headers::SetHeader_Connection_ (const optional<ConnectionValue>& connectionValue)
+{
+    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    optional<String>                                   v;
+    if (connectionValue) {
+        switch (*connectionValue) {
+            case ConnectionValue::eKeepAlive:
+                v = L"Keep-Alive"sv;
+                break;
+            case ConnectionValue::eClose:
+                v = L"close"sv;
+                break;
+        }
+    }
+    SetHeader (HeaderName::kConnection, v);
+}

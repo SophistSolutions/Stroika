@@ -163,6 +163,19 @@ namespace Stroika::Foundation::IO::Network::HTTP {
             }};
 
     public:
+        enum ConnectionValue {
+            eKeepAlive,
+            eClose,
+        };
+        Execution::Property<optional<ConnectionValue>> pConnection{
+            [=] () -> optional<ConnectionValue> {
+                return GetHeader_Connection_ ();
+            },
+            [=] (const auto& connectionValue) {
+                SetHeader_Connection_ (connectionValue);
+            }};
+
+    public:
         /**
          *  Returns the combined set of headers (list Key:Value pairs). Note this may not be returned in
          *  the same order and exactly losslessly identically to what was passed in.
@@ -187,6 +200,10 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         nonvirtual strong_ordering operator<=> (const Headers& rhs) const;
         nonvirtual bool            operator== (const Headers& rhs) const;
 #endif
+
+    private:
+        nonvirtual optional<ConnectionValue> GetHeader_Connection_ () const;
+        nonvirtual void                      SetHeader_Connection_ (const optional<ConnectionValue>& connectionValue);
 
     private:
         // Could have properties lookup once when loading and store here. Or could have
