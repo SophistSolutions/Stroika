@@ -23,10 +23,15 @@
  *          *   https://www.reddit.com/r/cpp/comments/61m9r1/what_do_you_think_about_properties_in_the_c/
  *
  *  TODO:
- *      o   @todo Consider redoing so type of Getter/Setter embedded into the class, so it can 
- *          be saved RAW, and not converted to a function pointer. Trickier to do construction,
- *          but probably possible with template guides. But only bother if there is a clear
- *          performance betenfit, because this is simpler.
+ *      @todo   Consider redoing so type of Getter/Setter embedded into the class, so it can 
+ *              be saved RAW, and not converted to a function pointer. Trickier to do construction,
+ *              but probably possible with template guides. But only bother if there is a clear
+ *              performance betenfit, because this is simpler.
+ * 
+ *      @todo   Maybe a design flaw to ENCOURAGE use of lambdas, which only work conveniently with
+ *              capture of this in the parent class. Maybe REDO so function<> object always
+ *              expects this ptr as argument! THen really its a hybrid with ptr to emmeber (except
+ *              more generic). THEN we can SAFELY enable move / copy!!!
  */
 
 namespace Stroika::Foundation::Execution {
@@ -46,8 +51,16 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
+         *  Note that a property cannot be copied or moved, because the underlying function closure 
+         *  would need to get moved, and that's not generally safe. IF that closure was made with a 
+         *  smart pointer, maybe it would be possible, but its not guaranteed to be. Frequently
+         *  the lambda used to construct a ReadOnlyProperty will bind a bare [this]. So safest to prevent move
+         *  copy and simply require the constructor of the properties to handle/manage move/copy (by
+         *  creating the appropriate new properties).
          */
-        ReadOnlyProperty () = delete;
+        ReadOnlyProperty ()                          = delete;
+        ReadOnlyProperty (const ReadOnlyProperty&) = delete;
+        ReadOnlyProperty (ReadOnlyProperty&&)        = delete;
         template <typename G>
         constexpr ReadOnlyProperty (G getter);
 
@@ -100,8 +113,16 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
+         *  Note that a property cannot be copied or moved, because the underlying function closure 
+         *  would need to get moved, and that's not generally safe. IF that closure was made with a 
+         *  smart pointer, maybe it would be possible, but its not guaranteed to be. Frequently
+         *  the lambda used to construct a WriteOnlyProperty will bind a bare [this]. So safest to prevent move
+         *  copy and simply require the constructor of the properties to handle/manage move/copy (by
+         *  creating the appropriate new properties).
          */
-        WriteOnlyProperty () = delete;
+        WriteOnlyProperty ()       = delete;
+        WriteOnlyProperty (const WriteOnlyProperty&) = delete;
+        WriteOnlyProperty (WriteOnlyProperty&&)      = delete;
         template <typename S>
         constexpr WriteOnlyProperty (S setter);
 
@@ -147,8 +168,16 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
+         *  Note that a property cannot be copied or moved, because the underlying function closure 
+         *  would need to get moved, and that's not generally safe. IF that closure was made with a 
+         *  smart pointer, maybe it would be possible, but its not guaranteed to be. Frequently
+         *  the lambda used to construct a Property will bind a bare [this]. So safest to prevent move
+         *  copy and simply require the constructor of the properties to handle/manage move/copy (by
+         *  creating the appropriate new properties).
          */
         Property () = delete;
+        Property (const Property&) = delete;
+        Property (Property&&) = delete;
         template <typename G, typename S>
         Property (G getter, S setter);
 

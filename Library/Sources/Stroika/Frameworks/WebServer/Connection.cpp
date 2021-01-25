@@ -162,7 +162,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
  */
 Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain)
     : fInterceptorChain_{interceptorChain}
-    , fSocket_ (s)
+    , fSocket_{s}
 {
     Require (s != nullptr);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -240,18 +240,18 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
         // Check for keepalive headers, and handle them appropriately
         {
             // @see https://tools.ietf.org/html/rfc2068#page-43 19.7.1.1 The Keep-Alive Header
-            if (auto aliveHeaderValue = fMessage_->PeekRequest ()->GetHeaders ().Lookup (IO::Network::HTTP::HeaderName::kKeepAlive)) {
+            if (auto aliveHeaderValue = fMessage_->PeekRequest ()->GetHeaders ().LookupOne (IO::Network::HTTP::HeaderName::kKeepAlive)) {
                 for (String token : aliveHeaderValue->Tokenize (Set<Character>{' ', ','})) {
                     Containers::Sequence<String> kvp = token.Tokenize (Set<Character>{'='});
                     if (kvp.length () == 2) {
                         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Keep-Alive
-                        if (kvp[0] == L"timeout") {
+                        if (kvp[0] == L"timeout"sv) {
                             Time::DurationSecondsType toAt = Characters::String2Float<> (kvp[1]);
                             Remaining                 r    = ValueOrDefault (GetRemainingConnectionLimits ());
                             r.fTimeoutAt                   = Time::GetTickCount () + toAt;
                             this->SetRemainingConnectionMessages (r);
                         }
-                        else if (kvp[0] == L"max") {
+                        else if (kvp[0] == L"max"sv) {
                             unsigned int maxMsg = Characters::String2Int<unsigned int> (kvp[1]);
                             Remaining    r      = ValueOrDefault (GetRemainingConnectionLimits ());
                             r.fMessages         = maxMsg;

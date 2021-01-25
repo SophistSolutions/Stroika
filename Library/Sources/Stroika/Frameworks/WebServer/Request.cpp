@@ -69,7 +69,7 @@ void Request::SetHTTPVersion (const String& versionOrVersionLabel)
 
 bool Request::GetKeepAliveRequested () const
 {
-    if (auto connectionHdr = this->fHeaders_.Lookup (IO::Network::HTTP::HeaderName::kConnection)) {
+    if (auto connectionHdr = fHeaders_.LookupOne (IO::Network::HTTP::HeaderName::kConnection)) {
         return String::EqualsComparer{CompareOptions::eCaseInsensitive}(*connectionHdr, L"Keep-Alive"sv);
     }
     // @todo convert version to number and compare that way
@@ -91,23 +91,13 @@ Memory::BLOB Request::GetBody ()
 optional<uint64_t> Request::GetContentLength () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    if (auto ci = fHeaders_.Lookup (IO::Network::HTTP::HeaderName::kContentLength)) {
-        return Characters::String2Int<uint64_t> (*ci);
-    }
-    else {
-        return nullopt;
-    }
+    return fHeaders_.pContentLength;
 }
 
 optional<InternetMediaType> Request::GetContentType () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    if (auto ci = fHeaders_.Lookup (IO::Network::HTTP::HeaderName::kContentType)) {
-        return InternetMediaType{*ci};
-    }
-    else {
-        return nullopt;
-    }
+    return fHeaders_.pContentType;
 }
 
 Streams::InputStream<byte>::Ptr Request::GetBodyStream ()

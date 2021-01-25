@@ -42,12 +42,12 @@ namespace Stroika::Frameworks::WebServer {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         fURL_ = url;
     }
-    inline Mapping<String, String> Request::GetHeaders () const
+    inline IO::Network::HTTP::Headers Request::GetHeaders () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         return fHeaders_;
     }
-    inline void Request::SetHeaders (const Mapping<String, String>& headers)
+    inline void Request::SetHeaders (const IO::Network::HTTP::Headers& headers)
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         fHeaders_ = headers;
@@ -55,7 +55,7 @@ namespace Stroika::Frameworks::WebServer {
     inline void Request::AddHeader (const String& headerName, const String& value)
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        fHeaders_.Add (headerName, value);
+        fHeaders_.SetHeader (headerName, value);
     }
     inline Streams::InputStream<byte>::Ptr Request::GetInputStream ()
     {

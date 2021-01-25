@@ -15,6 +15,7 @@
 #include "../../Foundation/Debug/AssertExternallySynchronizedLock.h"
 #include "../../Foundation/IO/Network/SocketAddress.h"
 #include "../../Foundation/IO/Network/URI.h"
+#include "../../Foundation/IO/Network/HTTP/Headers.h"
 #include "../../Foundation/Streams/InputStream.h"
 
 /*
@@ -90,7 +91,7 @@ namespace Stroika::Frameworks::WebServer {
     public:
         /**
          */
-        nonvirtual Mapping<String, String> GetHeaders () const;
+        nonvirtual IO::Network::HTTP::Headers GetHeaders () const;
 
     public:
         /**
@@ -115,7 +116,7 @@ namespace Stroika::Frameworks::WebServer {
     public:
         /**
          */
-        nonvirtual void SetHeaders (const Mapping<String, String>& headers);
+        nonvirtual void SetHeaders (const IO::Network::HTTP::Headers& headers);
 
     public:
         /**
@@ -148,10 +149,10 @@ namespace Stroika::Frameworks::WebServer {
         Streams::InputStream<byte>::Ptr fInputStream_;
 
     private:
-        String                  fHTTPVersion_;
-        String                  fMethod_;
-        IO::Network::URI        fURL_;
-        Mapping<String, String> fHeaders_;
+        String                      fHTTPVersion_;
+        String                      fMethod_;
+        IO::Network::URI            fURL_;
+        IO::Network::HTTP::Headers  fHeaders_;
 
     private:
         Streams::InputStream<byte>::Ptr fBodyInputStream_;

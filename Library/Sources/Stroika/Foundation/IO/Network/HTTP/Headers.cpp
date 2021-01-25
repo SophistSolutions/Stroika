@@ -5,9 +5,7 @@
 
 #include "../../../Characters/Format.h"
 #include "../../../Characters/String2Int.h"
-#include "../../../Characters/StringBuilder.h"
-#include "../../../Containers/Set.h"
-#include "../../../Streams/TextReader.h"
+#include "../../../Characters/ToString.h"
 
 #include "Headers.h"
 
@@ -28,10 +26,72 @@ namespace {
  ******************************** HTTP::Headers *********************************
  ********************************************************************************
  */
+Headers::Headers (const Headers& src)
+    : fExtraHeaders_{src.fExtraHeaders_}
+{
+    // NOTE - cannot INITIALIZE properties with src.Properties values since they are not copy constructible
+    // but they are assignable, so do that
+    pCacheControl  = src.pCacheControl;
+    pContentLength = src.pContentLength;
+    pContentType   = src.pContentType;
+    pETag          = src.pETag;
+    pIfNoneMatch   = src.pIfNoneMatch;
+}
+
+Headers::Headers (Headers&& src)
+    : fExtraHeaders_{move (src.fExtraHeaders_)}
+{
+    // NOTE - cannot INITIALIZE properties with src.Properties values since they are not copy constructible
+    // but they are assignable, so do that
+    pCacheControl  = src.pCacheControl;
+    pContentLength = src.pContentLength;
+    pContentType   = src.pContentType;
+    pETag          = src.pETag;
+    pIfNoneMatch   = src.pIfNoneMatch;
+}
+
 Headers::Headers (const Iterable<KeyValuePair<String, String>>& src)
 {
     for (auto kv : src) {
         SetHeader (kv.fKey, kv.fValue);
+    }
+}
+
+Headers& Headers::operator= (Headers&& rhs)
+{
+    fExtraHeaders_ = move (rhs.fExtraHeaders_);
+    pCacheControl  = rhs.pCacheControl;
+    pContentLength = rhs.pContentLength;
+    pContentType   = rhs.pContentType;
+    pETag          = rhs.pETag;
+    pIfNoneMatch   = rhs.pIfNoneMatch;
+    return *this;
+}
+
+optional<String> Headers::LookupOne (const String& name) const
+{
+    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    if (kHeaderNameComparer_ (name, HeaderName::kCacheControl)) {
+        return fCacheControl_ ? fCacheControl_->As<String> () : optional<String>{};
+    }
+    else if (kHeaderNameComparer_ (name, HeaderName::kContentLength)) {
+        return fContentLength_ ? Characters::Format (L"%ld", *fContentLength_) : optional<String>{};
+    }
+    else if (kHeaderNameComparer_ (name, HeaderName::kContentType)) {
+        return fContentType_ ? fContentType_->As<String> () : optional<String>{};
+    }
+    else if (kHeaderNameComparer_ (name, HeaderName::kETag)) {
+        return fETag_ ? fETag_->As<String> () : optional<String>{};
+    }
+    else if (kHeaderNameComparer_ (name, HeaderName::kIfNoneMatch)) {
+        return fIfNoneMatch_ ? fIfNoneMatch_->As<String> () : optional<String>{};
+    }
+    else {
+        // should switch to new non-existent class Assocation here - and use that...more efficeint -
+        if (auto ri = fExtraHeaders_.FindFirstThat ([&] (const auto& i) { return kHeaderNameComparer_ (name, i.fKey); })) {
+            return ri->fValue;
+        }
+        return nullopt;
     }
 }
 
@@ -90,4 +150,9 @@ Collection<KeyValuePair<String, String>> Headers::As () const
         results.Add (KeyValuePair<String, String>{HeaderName::kIfNoneMatch, fIfNoneMatch_->As<String> ()});
     }
     return results;
+}
+
+String Headers::ToString () const
+{
+    return Characters::ToString (As<Mapping<String, String>> ());
 }

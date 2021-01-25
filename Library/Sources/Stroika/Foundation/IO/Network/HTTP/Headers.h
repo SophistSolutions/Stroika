@@ -71,7 +71,20 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /**
          */
         Headers () = default;
+        Headers (const Headers& src);
+        Headers (Headers&& src);
         explicit Headers (const Iterable<KeyValuePair<String, String>>& src);
+
+    public:
+        nonvirtual Headers& operator= (const Headers& rhs) = default;
+        nonvirtual Headers& operator= (Headers&& rhs);
+
+    public:
+        /**
+         *  For now - this returns 0 or one value.
+         *  @todo - this should return ALL matching if there are multiple.
+         */
+        nonvirtual optional<String> LookupOne (const String& name) const;
 
     public:
         /**
@@ -161,6 +174,12 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         template <typename T>
         nonvirtual T As () const;
 
+    public:
+        /**
+         *  @see Characters::ToString ();
+         */
+        nonvirtual String ToString () const;
+
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
@@ -170,6 +189,9 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 #endif
 
     private:
+        // Could have properties lookup once when loading and store here. Or could have
+        // them dynamically lookup in fExtraHeaders_. Just put the ones here in special variables
+        // that are very commonly checked for, so their check/update will be a bit quicker.
         Collection<KeyValuePair<String, String>> fExtraHeaders_;
         optional<CacheControl>                   fCacheControl_;
         optional<uint64_t>                       fContentLength_;
