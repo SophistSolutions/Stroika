@@ -679,11 +679,41 @@ namespace Stroika::Foundation::Characters {
         }
         return Cmp_ (lhs, rhs);
     }
+    inline bool String::EqualsComparer::operator() (const String& lhs, const wstring_view& rhs) const
+    {
+        if (lhs.size () != rhs.size ()) {
+            return false; // performance tweak
+        }
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool String::EqualsComparer::operator() (const String& lhs, const Character* rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool String::EqualsComparer::operator() (const String& lhs, const wchar_t* rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool String::EqualsComparer::operator() (const wstring_view& lhs, const String& rhs) const
+    {
+        if (lhs.size () != rhs.size ()) {
+            return false; // performance tweak
+        }
+        return Cmp_ (lhs, rhs);
+    }
     inline bool String::EqualsComparer::operator() (const wstring_view& lhs, const wstring_view& rhs) const
     {
         if (lhs.size () != rhs.size ()) {
             return false; // performance tweak
         }
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool String::EqualsComparer::operator() (const wstring_view& lhs, const Character* rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool String::EqualsComparer::operator() (const wstring_view& lhs, const wchar_t* rhs) const
+    {
         return Cmp_ (lhs, rhs);
     }
     inline bool String::EqualsComparer::operator() (const Character* lhs, const String& rhs) const
@@ -694,15 +724,11 @@ namespace Stroika::Foundation::Characters {
     {
         return Cmp_ (lhs, rhs);
     }
-    inline bool String::EqualsComparer::operator() (const String& lhs, const Character* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const wstring_view& lhs, const Character* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
     inline bool String::EqualsComparer::operator() (const Character* lhs, const Character* rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool String::EqualsComparer::operator() (const Character* lhs, const wchar_t* rhs) const
     {
         return Cmp_ (lhs, rhs);
     }
@@ -714,11 +740,7 @@ namespace Stroika::Foundation::Characters {
     {
         return Cmp_ (lhs, rhs);
     }
-    inline bool String::EqualsComparer::operator() (const String& lhs, const wchar_t* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const wstring_view& lhs, const wchar_t* rhs) const
+    inline bool String::EqualsComparer::operator() (const wchar_t* lhs, const Character* rhs) const
     {
         return Cmp_ (lhs, rhs);
     }

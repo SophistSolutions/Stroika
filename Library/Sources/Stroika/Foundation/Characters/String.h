@@ -1455,16 +1455,20 @@ namespace Stroika::Foundation::Characters {
          * Extra overloads a slight performance improvement
          */
         nonvirtual bool operator() (const String& lhs, const String& rhs) const;
+        nonvirtual bool operator() (const String& lhs, const wstring_view& rhs) const;
+        nonvirtual bool operator() (const String& lhs, const Character* rhs) const;
+        nonvirtual bool operator() (const String& lhs, const wchar_t* rhs) const;
+        nonvirtual bool operator() (const wstring_view& lhs, const String& rhs) const;
         nonvirtual bool operator() (const wstring_view& lhs, const wstring_view& rhs) const;
+        nonvirtual bool operator() (const wstring_view& lhs, const Character* rhs) const;
+        nonvirtual bool operator() (const wstring_view& lhs, const wchar_t* rhs) const;
         nonvirtual bool operator() (const Character* lhs, const String& rhs) const;
         nonvirtual bool operator() (const Character* lhs, const wstring_view& rhs) const;
-        nonvirtual bool operator() (const String& lhs, const Character* rhs) const;
-        nonvirtual bool operator() (const wstring_view& lhs, const Character* rhs) const;
         nonvirtual bool operator() (const Character* lhs, const Character* rhs) const;
+        nonvirtual bool operator() (const Character* lhs, const wchar_t* rhs) const;
         nonvirtual bool operator() (const wchar_t* lhs, const String& rhs) const;
         nonvirtual bool operator() (const wchar_t* lhs, const wstring_view& rhs) const;
-        nonvirtual bool operator() (const String& lhs, const wchar_t* rhs) const;
-        nonvirtual bool operator() (const wstring_view& lhs, const wchar_t* rhs) const;
+        nonvirtual bool operator() (const wchar_t* lhs, const Character* rhs) const;
         nonvirtual bool operator() (const wchar_t* lhs, const wchar_t* rhs) const;
 
         CompareOptions fCompareOptions;
