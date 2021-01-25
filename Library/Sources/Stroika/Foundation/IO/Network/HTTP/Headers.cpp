@@ -28,52 +28,52 @@ namespace {
  */
 Headers::Headers ()
     : pCacheControl{
-          [=] () {
+          [this] () {
               lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
               return fCacheControl_;
           },
-          [=] (const auto& cacheControl) {
+          [this] (const auto& cacheControl) {
               lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
               fCacheControl_ = cacheControl;
           }}
     , pContentLength{
-          [=] () {
+          [this] () {
               lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
               return fContentLength_;
           },
-          [=] (auto contentLength) {
+          [this] (auto contentLength) {
               lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
               fContentLength_ = contentLength;
           }}
     , pContentType{
-          [=] () {
+          [this] () {
               lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
               return fContentType_;
           },
-          [=] (const auto& contentType) {
+          [this] (const auto& contentType) {
               lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
               fContentType_ = contentType;
           }}
     , pETag{
-          [=] () {
+          [this] () {
               lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
               return fETag_;
           },
-          [=] (const auto& etag) {
+          [this] (const auto& etag) {
               lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
               fETag_ = etag;
           }}
     , pIfNoneMatch{
-          [=] () {
+          [this] () {
               lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
               return fIfNoneMatch_;
           },
-          [=] (const auto& ifNoneMatch) {
+          [this] (const auto& ifNoneMatch) {
               lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
               fIfNoneMatch_ = ifNoneMatch;
           }}
     , pConnection{
-          [=] () -> optional<ConnectionValue> {
+          [this] () -> optional<ConnectionValue> {
               using CompareOptions = Characters::CompareOptions;
               lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
               if (auto connectionHdr = As<Mapping<String, String>> ().Lookup (HeaderName::kConnection)) {
@@ -86,7 +86,7 @@ Headers::Headers ()
               }
               return optional<ConnectionValue>{};
           },
-          [=] (const auto& connectionValue) {
+          [this] (const auto& connectionValue) {
               lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
               optional<String>                                   v;
               if (connectionValue) {
