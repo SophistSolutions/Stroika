@@ -21,7 +21,7 @@ vpath %cpp $(SrcDir)
 Objs	=	\
 	$(ObjDir)ClientErrorException${OBJ_SUFFIX}\
 	$(ObjDir)CacheControl${OBJ_SUFFIX}\
-	$(ObjDir)Cookies${OBJ_SUFFIX}\
+	$(ObjDir)Cookie${OBJ_SUFFIX}\
 	$(ObjDir)Exception${OBJ_SUFFIX}\
 	$(ObjDir)Headers${OBJ_SUFFIX}\
 	$(ObjDir)MessageStartTextInputStreamBinaryAdapter${OBJ_SUFFIX}\

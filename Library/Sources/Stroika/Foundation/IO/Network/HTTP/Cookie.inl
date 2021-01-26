@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
  */
-#ifndef _Stroika_Foundation_IO_Network_HTTP_Cookies_inl_
-#define _Stroika_Foundation_IO_Network_HTTP_Cookies_inl_ 1
+#ifndef _Stroika_Foundation_IO_Network_HTTP_Cookie_inl_
+#define _Stroika_Foundation_IO_Network_HTTP_Cookie_inl_ 1
 
 /*
  ********************************************************************************
@@ -27,4 +27,4 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
 }
 
-#endif /*_Stroika_Foundation_IO_Network_HTTP_Cookies_inl_*/
+#endif /*_Stroika_Foundation_IO_Network_HTTP_Cookie_inl_*/

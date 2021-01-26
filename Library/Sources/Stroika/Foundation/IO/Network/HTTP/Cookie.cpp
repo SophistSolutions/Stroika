@@ -8,7 +8,7 @@
 #include "../../../Containers/Set.h"
 #include "../../../Streams/TextReader.h"
 
-#include "Cookies.h"
+#include "Cookie.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;

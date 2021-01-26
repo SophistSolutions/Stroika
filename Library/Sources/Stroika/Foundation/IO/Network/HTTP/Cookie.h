@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
  */
-#ifndef _Stroika_Foundation_IO_Network_HTTP_Cookies_h_
-#define _Stroika_Foundation_IO_Network_HTTP_Cookies_h_ 1
+#ifndef _Stroika_Foundation_IO_Network_HTTP_Cookie_h_
+#define _Stroika_Foundation_IO_Network_HTTP_Cookie_h_ 1
 
 #include "../../../StroikaPreComp.h"
 
@@ -36,25 +36,25 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /*
          * https://tools.ietf.org/html/rfc6265#section-4.1.2.1
          */
-        static constexpr wchar_t kExpiresAttributeLabel[] = L"Expires";
+        static constexpr wstring_view kExpiresAttributeLabel = L"Expires"sv;
         optional<Time::DateTime> fExpires;
 
         /*
          * https://tools.ietf.org/html/rfc6265#section-4.1.2.2
          */
-        static constexpr wchar_t kMaxAgeAttributeLabel[] = L"Max-Age";
+        static constexpr wstring_view kMaxAgeAttributeLabel = L"Max-Age"sv;
         optional<int>            fMaxAge;
 
         /*
          * https://tools.ietf.org/html/rfc6265#section-4.1.2.3
          */
-        static constexpr wchar_t kDomainAttributeLabel[] = L"Domain";
+        static constexpr wstring_view kDomainAttributeLabel = L"Domain"sv;
         optional<String>         fDomain;
 
         /*
          * https://tools.ietf.org/html/rfc6265#section-4.1.2.4
          */
-        static constexpr wchar_t kPathAttributeLabel[] = L"Path";
+        static constexpr wstring_view kPathAttributeLabel = L"Path"sv;
         optional<String>         fPath;
 
         /*
@@ -62,7 +62,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *
          *  valueless attribute- just presence/absense of this attribute counts
          */
-        static constexpr wchar_t kSecureAttributeLabel[] = L"Secure";
+        static constexpr wstring_view kSecureAttributeLabel = L"Secure"sv;
         bool                     fSecure{false};
 
         /*
@@ -70,7 +70,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *
          *  valueless attribute- just presence/absense of this attribute counts
          */
-        static constexpr wchar_t kHttpOnlyAttributeLabel[] = L"HttpOnly";
+        static constexpr wstring_view kHttpOnlyAttributeLabel = L"HttpOnly"sv;
         bool                     fHttpOnly{false};
 
         /*
@@ -116,6 +116,6 @@ namespace Stroika::Foundation::IO::Network::HTTP {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "Cookies.inl"
+#include "Cookie.inl"
 
-#endif /*_Stroika_Foundation_IO_Network_HTTP_Cookies_h_*/
+#endif /*_Stroika_Foundation_IO_Network_HTTP_Cookie_h_*/
