@@ -3,12 +3,12 @@
  */
 #include "../StroikaPreComp.h"
 
-#include "../Characters/CString/Utilities.h"
 #include "../Characters/Format.h"
 
 #include "RequiredComponentMissingException.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Execution;
 
 /*
@@ -17,20 +17,19 @@ using namespace Stroika::Foundation::Execution;
  ********************************************************************************
  */
 namespace {
-    wstring mkMsg_ (const wstring& component)
+    String mkMsg_ (const String& component)
     {
-        wstring cName = component;
+        String cName = component;
         if (cName == RequiredComponentMissingException::kPDFViewer) {
-            cName = L"PDF Viewer";
+            cName = L"PDF Viewer"sv;
         }
         else if (cName == RequiredComponentMissingException::kPDFOCXViewer) {
-            cName = L"PDF Viewer (OCX)";
+            cName = L"PDF Viewer (OCX)"sv;
         }
-        wstring x = Characters::CString::Format (L"A required component - %s - is missing, or is out of date", component.c_str ());
-        return x;
+        return Characters::Format (L"A required component - %s - is missing, or is out of date", component.c_str ());
     }
 }
-RequiredComponentMissingException::RequiredComponentMissingException (const wstring& component)
+RequiredComponentMissingException::RequiredComponentMissingException (const String& component)
     : Execution::RuntimeErrorException<>{mkMsg_ (component)}
     , fComponent{component}
 {

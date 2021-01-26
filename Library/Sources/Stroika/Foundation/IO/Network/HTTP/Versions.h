@@ -22,9 +22,9 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     // standard HTTP Versions one might want to access/retrieve
     namespace Versions {
 
-        constexpr wchar_t kOnePointZero[] = L"1.0";
-        constexpr wchar_t kOnePointOne[]  = L"1.1";
-        constexpr wchar_t kTwoPointZero[] = L"2.0";
+        constexpr wstring_view kOnePointZero = L"1.0"sv;
+        constexpr wstring_view kOnePointOne  = L"1.1"sv;
+        constexpr wstring_view kTwoPointZero = L"2.0"sv;
     }
 
 }

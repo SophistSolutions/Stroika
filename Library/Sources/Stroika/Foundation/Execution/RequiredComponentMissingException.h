@@ -16,18 +16,18 @@ namespace Stroika::Foundation::Execution {
 
     class RequiredComponentMissingException : public Execution::RuntimeErrorException<> {
     public:
-        static constexpr wchar_t kJava[]                   = L"Java";
-        static constexpr wchar_t kPDFViewer[]              = L"PDFViewer";
-        static constexpr wchar_t kPDFOCXViewer[]           = L"PDFOCXViewer";
-        static constexpr wchar_t kSAXFactory[]             = L"SAXFactory";
-        static constexpr wchar_t kIONetworkClientFactory[] = L"IO-Network-Transer-Client-Factory";
-        static constexpr wchar_t kOpenSSL[]                = L"OpenSSL";
+        static constexpr wstring_view kJava                   = L"Java"sv;
+        static constexpr wstring_view kPDFViewer              = L"PDFViewer"sv;
+        static constexpr wstring_view kPDFOCXViewer           = L"PDFOCXViewer"sv;
+        static constexpr wstring_view kSAXFactory             = L"SAXFactory"sv;
+        static constexpr wstring_view kIONetworkClientFactory = L"IO-Network-Transer-Client-Factory"sv;
+        static constexpr wstring_view kOpenSSL               = L"OpenSSL"sv;
 
     public:
-        RequiredComponentMissingException (const wstring& component);
+        RequiredComponentMissingException (const String& component);
 
     public:
-        wstring fComponent;
+        String fComponent;
     };
 
 }

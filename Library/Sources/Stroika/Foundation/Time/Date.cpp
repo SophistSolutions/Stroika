@@ -126,11 +126,10 @@ Date::FormatException::FormatException ()
 //x parses the locale's standard date representation
 // all Ex parses the locale's alternative date representation, e.g. expecting 平成23年 (year Heisei 23) instead of 2011年 (year 2011) in ja_JP localeconst Traversal::Iterable<String> Date::kDefaultParseFormats{
 const Traversal::Iterable<String> Date::kDefaultParseFormats{
-    // _AsArray versions used cuz else undefined order of CTOR initialization (not sure why not fixed by using inline static? - but fails on MSVC - 2020-11-14)
-    String_Constant{kLocaleStandardFormat_AsArray},
-    String_Constant{kLocaleStandardAlternateFormat_AsArray},
+    kLocaleStandardFormat,
+    kLocaleStandardAlternateFormat,
     L"%D"sv,
-    String_Constant{kISO8601Format_AsArray},
+    kISO8601Format,
 };
 
 Date Date::Parse (const String& rep, ParseFormat pf)
@@ -286,7 +285,7 @@ String Date::Format (PrintFormat pf) const
             Year        y = Year::eEmptyYear;
             mdy (&m, &d, &y);
             Verify (::swprintf (buf, NEltsOf (buf), L"%04d-%02d-%02d", y, m, d) == 10);
-            Ensure (buf == Format (locale::classic (), String_Constant{kISO8601Format_AsArray})); // cannot use kISO8601Format directly as of 2020-11-14 in debug builds due to call from this before main (and static inline init doesnt appear to resolve this)
+            Ensure (buf == Format (locale::classic (), kISO8601Format));
             return buf;
         } break;
         case PrintFormat::eJavascript: {
