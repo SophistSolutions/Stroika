@@ -44,7 +44,7 @@ Headers::Headers ()
               return headerObj->fContentLength_;
           },
           [] (Execution::WriteOnlyProperty<optional<uint64_t>>* property, auto contentLength) {
-              Headers*                                           headerObj = Memory::GetObjectOwningField (static_cast<Execution::Property<optional<uint64_t>>*> (property), &Headers::pContentLength);
+              Headers*                                           headerObj = Memory::GetObjectOwningField (property, &Headers::pContentLength);
               lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
               headerObj->fContentLength_ = contentLength;
           }}

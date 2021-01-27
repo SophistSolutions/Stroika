@@ -28,8 +28,8 @@ namespace Stroika::Foundation::Memory {
      *  not allowed on non-standard-layout objects, this probably fails there as well (undefined behavior).
      *  Not sure what todo about that.
      */
-    template <typename OUTER_OBJECT, typename PROPERTY_TYPE>
-    size_t ConvertPointerToDataMemberToOffset (PROPERTY_TYPE (OUTER_OBJECT::*dataMember));
+    template <typename OUTER_OBJECT, typename DATA_MEMBER_TYPE>
+    size_t ConvertPointerToDataMemberToOffset (DATA_MEMBER_TYPE (OUTER_OBJECT::*dataMember));
 
     /**
      *  Given an objects field (given by pointer to member) and that owned object, run 'offsetof' backwards
@@ -49,10 +49,10 @@ namespace Stroika::Foundation::Memory {
      * 
      *  @todo void* aggregatedMember sb AGGREGATED_OBJECT_TYPE* aggregatedMember, but caused some trouble - debug...LGP 2021-01-26
      */
-    template <typename OUTER_OBJECT, typename AGGREGATED_OBJECT_TYPE>
-    OUTER_OBJECT* GetObjectOwningField (void* aggregatedMember, AGGREGATED_OBJECT_TYPE (OUTER_OBJECT::*aggregatedPtrToMember));
-    template <typename OUTER_OBJECT, typename AGGREGATED_OBJECT_TYPE>
-    const OUTER_OBJECT* GetObjectOwningField (const void* aggregatedMember, AGGREGATED_OBJECT_TYPE (OUTER_OBJECT::*aggregatedPtrToMember));
+    template <typename APPARENT_MEMBER_TYPE, typename OUTER_OBJECT, typename AGGREGATED_OBJECT_TYPE>
+    OUTER_OBJECT* GetObjectOwningField (APPARENT_MEMBER_TYPE* aggregatedMember, AGGREGATED_OBJECT_TYPE (OUTER_OBJECT::*aggregatedPtrToMember));
+    template <typename APPARENT_MEMBER_TYPE, typename OUTER_OBJECT, typename AGGREGATED_OBJECT_TYPE>
+    const OUTER_OBJECT* GetObjectOwningField (const APPARENT_MEMBER_TYPE* aggregatedMember, AGGREGATED_OBJECT_TYPE (OUTER_OBJECT::*aggregatedPtrToMember));
 
 }
 
