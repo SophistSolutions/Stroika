@@ -2052,6 +2052,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Cookie.h">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\ObjectFieldUtilities.h">
+      <Filter>Sources\Memory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -3344,6 +3347,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Cookie.inl">
       <Filter>Sources\IO\Network\HTTP</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\ObjectFieldUtilities.inl">
+      <Filter>Sources\Memory</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

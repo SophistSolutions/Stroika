@@ -619,6 +619,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\ObjectFieldUtilities.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Optional.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.h" />
@@ -1048,6 +1049,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Common.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\ObjectFieldUtilities.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Optional.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\ReadMe.md" />
