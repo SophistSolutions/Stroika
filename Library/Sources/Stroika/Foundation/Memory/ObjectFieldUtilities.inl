@@ -21,7 +21,7 @@ namespace Stroika::Foundation::Memory {
     inline size_t ConvertPointerToDataMemberToOffset (PROPERTY_TYPE (OUTER_OBJECT::*dataMember))
     {
         //https://stackoverflow.com/questions/12141446/offset-from-member-pointer-without-temporary-instance
-        return reinterpret_cast<char*> (&(((OUTER_OBJECT*)nullptr)->*dataMember)) - reinterpret_cast<char*> (nullptr);
+        return reinterpret_cast<char*> (&(((OUTER_OBJECT*)0)->*dataMember)) - reinterpret_cast<char*> (0);
     }
 
     /*
@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
     template <typename OUTER_OBJECT, typename AGGREGATED_OBJECT_TYPE>
-    inline OUTER_OBJECT* GetObjectOwningField (void* aggregatedMember, typename AGGREGATED_OBJECT_TYPE (OUTER_OBJECT::*aggregatedPtrToMember))
+    inline OUTER_OBJECT* GetObjectOwningField (void* aggregatedMember, AGGREGATED_OBJECT_TYPE (OUTER_OBJECT::*aggregatedPtrToMember))
     {
         RequireNotNull (aggregatedMember);
         RequireNotNull (aggregatedPtrToMember);
@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Memory {
             reinterpret_cast<std::byte*> (aggregatedMember) - static_cast<ptrdiff_t> (ConvertPointerToDataMemberToOffset (aggregatedPtrToMember)));
     }
     template <typename OUTER_OBJECT, typename AGGREGATED_OBJECT_TYPE>
-    inline const OUTER_OBJECT* GetObjectOwningField (const void* aggregatedMember, typename AGGREGATED_OBJECT_TYPE (OUTER_OBJECT::*aggregatedPtrToMember))
+    inline const OUTER_OBJECT* GetObjectOwningField (const void* aggregatedMember, AGGREGATED_OBJECT_TYPE (OUTER_OBJECT::*aggregatedPtrToMember))
     {
         RequireNotNull (aggregatedMember);
         RequireNotNull (aggregatedPtrToMember);

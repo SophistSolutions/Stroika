@@ -50,9 +50,9 @@ namespace Stroika::Foundation::Memory {
      *  @todo void* aggregatedMember sb AGGREGATED_OBJECT_TYPE* aggregatedMember, but caused some trouble - debug...LGP 2021-01-26
      */
     template <typename OUTER_OBJECT, typename AGGREGATED_OBJECT_TYPE>
-    OUTER_OBJECT* GetObjectOwningField (void* aggregatedMember, typename AGGREGATED_OBJECT_TYPE (OUTER_OBJECT::*aggregatedPtrToMember));
+    OUTER_OBJECT* GetObjectOwningField (void* aggregatedMember, AGGREGATED_OBJECT_TYPE (OUTER_OBJECT::*aggregatedPtrToMember));
     template <typename OUTER_OBJECT, typename AGGREGATED_OBJECT_TYPE>
-    const OUTER_OBJECT* GetObjectOwningField (const void* aggregatedMember, typename AGGREGATED_OBJECT_TYPE (OUTER_OBJECT::*aggregatedPtrToMember));
+    const OUTER_OBJECT* GetObjectOwningField (const void* aggregatedMember, AGGREGATED_OBJECT_TYPE (OUTER_OBJECT::*aggregatedPtrToMember));
 
 }
 
