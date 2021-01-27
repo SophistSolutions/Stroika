@@ -58,9 +58,9 @@ namespace Stroika::Foundation::Execution {
          *  copy and simply require the constructor of the properties to handle/manage move/copy (by
          *  creating the appropriate new properties).
          */
-        ReadOnlyProperty ()                          = delete;
+        ReadOnlyProperty ()                        = delete;
         ReadOnlyProperty (const ReadOnlyProperty&) = delete;
-        ReadOnlyProperty (ReadOnlyProperty&&)        = delete;
+        ReadOnlyProperty (ReadOnlyProperty&&)      = delete;
         template <typename G>
         constexpr ReadOnlyProperty (G getter);
 
@@ -96,7 +96,7 @@ namespace Stroika::Foundation::Execution {
         nonvirtual const T operator() () const;
 
     private:
-        const function<T ()> fGetter_;
+        const function<T (const ReadOnlyProperty*)> fGetter_;
     };
 
     /**
@@ -120,7 +120,7 @@ namespace Stroika::Foundation::Execution {
          *  copy and simply require the constructor of the properties to handle/manage move/copy (by
          *  creating the appropriate new properties).
          */
-        WriteOnlyProperty ()       = delete;
+        WriteOnlyProperty ()                         = delete;
         WriteOnlyProperty (const WriteOnlyProperty&) = delete;
         WriteOnlyProperty (WriteOnlyProperty&&)      = delete;
         template <typename S>
@@ -139,7 +139,7 @@ namespace Stroika::Foundation::Execution {
         nonvirtual void Set (const Configuration::ArgByValueType<T>& value);
 
     private:
-        const function<void (const Configuration::ArgByValueType<T>&)> fSetter_;
+        const function<void (WriteOnlyProperty*, const Configuration::ArgByValueType<T>&)> fSetter_;
     };
 
     /**
@@ -175,9 +175,9 @@ namespace Stroika::Foundation::Execution {
          *  copy and simply require the constructor of the properties to handle/manage move/copy (by
          *  creating the appropriate new properties).
          */
-        Property () = delete;
+        Property ()                = delete;
         Property (const Property&) = delete;
-        Property (Property&&) = delete;
+        Property (Property&&)      = delete;
         template <typename G, typename S>
         Property (G getter, S setter);
 

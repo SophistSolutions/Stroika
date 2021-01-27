@@ -385,7 +385,6 @@ namespace {
     }
 }
 
-
 namespace {
     namespace Test11_ObjectFieldUtilities_ {
         void DoTest ();
@@ -397,8 +396,10 @@ namespace {
             struct X2 {
             public:
                 int a;
+
             private:
                 int b;
+
             private:
                 friend void Test11_ObjectFieldUtilities_::DoTest ();
             };
@@ -414,8 +415,8 @@ namespace {
             {
                 Private_::X1 t;
                 static_assert (is_standard_layout_v<Private_::X1>);
-                void*        aAddr = &t.a;
-                void*        bAddr = &t.b;
+                void* aAddr = &t.a;
+                void* bAddr = &t.b;
                 VerifyTestResult (GetObjectOwningField (aAddr, &Private_::X1::a) == &t);
                 VerifyTestResult (GetObjectOwningField (bAddr, &Private_::X1::b) == &t);
             }
@@ -424,7 +425,7 @@ namespace {
                 Private_::X2 t;
                 static_assert (not is_standard_layout_v<Private_::X2>);
                 void* aAddr = &t.a;
-                void*        bAddr = &t.b;
+                void* bAddr = &t.b;
                 VerifyTestResultWarning (GetObjectOwningField (aAddr, &Private_::X2::a) == &t);
                 VerifyTestResultWarning (GetObjectOwningField (bAddr, &Private_::X2::b) == &t);
             }

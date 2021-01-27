@@ -26,17 +26,17 @@ namespace Stroika::Foundation::Execution {
     template <typename T>
     inline T ReadOnlyProperty<T>::Get () const
     {
-        return fGetter_ ();
+        return fGetter_ (this);
     }
     template <typename T>
     inline ReadOnlyProperty<T>::operator const T () const
     {
-        return fGetter_ ();
+        return fGetter_ (this);
     }
     template <typename T>
     inline const T ReadOnlyProperty<T>::operator() () const
     {
-        return fGetter_ ();
+        return fGetter_ (this);
     }
 
     /*
@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T>
     inline void WriteOnlyProperty<T>::Set (const Configuration::ArgByValueType<T>& value)
     {
-        fSetter_ (value);
+        fSetter_ (this, value);
     }
     template <typename T>
     inline void WriteOnlyProperty<T>::operator= (const Configuration::ArgByValueType<T>& value)

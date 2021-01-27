@@ -6,6 +6,7 @@
 #include "../../../Characters/Format.h"
 #include "../../../Characters/String2Int.h"
 #include "../../../Characters/ToString.h"
+#include "../../../Memory/ObjectFieldUtilities.h"
 
 #include "Headers.h"
 
@@ -18,7 +19,7 @@ using namespace Stroika::Foundation::IO::Network::HTTP;
 using namespace Stroika::Foundation::Streams;
 
 namespace {
-    const auto kHeaderNameComparer_ = String::EqualsComparer{CompareOptions::eCaseInsensitive};
+    constexpr auto kHeaderNameComparer_ = String::EqualsComparer{CompareOptions::eCaseInsensitive};
 }
 
 /*
@@ -28,52 +29,54 @@ namespace {
  */
 Headers::Headers ()
     : pCacheControl{
-          [this] () {
+          [this] ([[maybe_unused]] const auto* property) {
               lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
               return fCacheControl_;
           },
-          [this] (const auto& cacheControl) {
+          [this] ([[maybe_unused]] auto* property, const auto& cacheControl) {
               lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
               fCacheControl_ = cacheControl;
           }}
     , pContentLength{
-          [this] () {
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-              return fContentLength_;
+          [] (const auto* property) {
+              const Headers*                                     headerObj = Memory::GetObjectOwningField (property, &Headers::pContentLength);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
+              return headerObj->fContentLength_;
           },
-          [this] (auto contentLength) {
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-              fContentLength_ = contentLength;
+          [] (Execution::WriteOnlyProperty<optional<uint64_t>>* property, auto contentLength) {
+              Headers*                                           headerObj = Memory::GetObjectOwningField (static_cast<Execution::Property<optional<uint64_t>>*> (property), &Headers::pContentLength);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
+              headerObj->fContentLength_ = contentLength;
           }}
     , pContentType{
-          [this] () {
+          [this] ([[maybe_unused]] const auto* property) {
               lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
               return fContentType_;
           },
-          [this] (const auto& contentType) {
+          [this] ([[maybe_unused]] auto* property, const auto& contentType) {
               lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
               fContentType_ = contentType;
           }}
     , pETag{
-          [this] () {
+          [this] ([[maybe_unused]] const auto* property) {
               lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
               return fETag_;
           },
-          [this] (const auto& etag) {
+          [this] ([[maybe_unused]] auto* property, const auto& etag) {
               lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
               fETag_ = etag;
           }}
     , pIfNoneMatch{
-          [this] () {
+          [this] ([[maybe_unused]] const auto* property) {
               lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
               return fIfNoneMatch_;
           },
-          [this] (const auto& ifNoneMatch) {
+          [this] ([[maybe_unused]] auto* property, const auto& ifNoneMatch) {
               lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
               fIfNoneMatch_ = ifNoneMatch;
           }}
     , pConnection{
-          [this] () -> optional<ConnectionValue> {
+          [this] ([[maybe_unused]] const auto* property) -> optional<ConnectionValue> {
               using CompareOptions = Characters::CompareOptions;
               lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
               if (auto connectionHdr = As<Mapping<String, String>> ().Lookup (HeaderName::kConnection)) {
@@ -86,7 +89,7 @@ Headers::Headers ()
               }
               return optional<ConnectionValue>{};
           },
-          [this] (const auto& connectionValue) {
+          [this] ([[maybe_unused]] auto* property, const auto& connectionValue) {
               lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
               optional<String>                                   v;
               if (connectionValue) {
