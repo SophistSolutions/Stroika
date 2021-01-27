@@ -12,6 +12,7 @@
 
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Memory/Bits.h"
+#include "Stroika/Foundation/Memory/ObjectFieldUtilities.h"
 #include "Stroika/Foundation/Memory/Optional.h"
 #include "Stroika/Foundation/Memory/SharedByValue.h"
 #include "Stroika/Foundation/Memory/SharedPtr.h"
@@ -384,6 +385,53 @@ namespace {
     }
 }
 
+
+namespace {
+    namespace Test11_ObjectFieldUtilities_ {
+        void DoTest ();
+        namespace Private_ {
+            struct X1 {
+                int a;
+                int b;
+            };
+            struct X2 {
+            public:
+                int a;
+            private:
+                int b;
+            private:
+                friend void Test11_ObjectFieldUtilities_::DoTest ();
+            };
+        }
+        void DoTest ()
+        {
+            {
+                VerifyTestResult (
+                    ConvertPointerToDataMemberToOffset (&Private_::X1::a) == 0 or ConvertPointerToDataMemberToOffset (&Private_::X1::b) == 0);
+                VerifyTestResult (
+                    ConvertPointerToDataMemberToOffset (&Private_::X1::a) != 0 or ConvertPointerToDataMemberToOffset (&Private_::X1::b) != 0);
+            }
+            {
+                Private_::X1 t;
+                static_assert (is_standard_layout_v<Private_::X1>);
+                void*        aAddr = &t.a;
+                void*        bAddr = &t.b;
+                VerifyTestResult (GetObjectOwningField (aAddr, &Private_::X1::a) == &t);
+                VerifyTestResult (GetObjectOwningField (bAddr, &Private_::X1::b) == &t);
+            }
+            {
+                // Check and warning but since X2 is not standard layout, this isn't guaranteed to work
+                Private_::X2 t;
+                static_assert (not is_standard_layout_v<Private_::X2>);
+                void* aAddr = &t.a;
+                void*        bAddr = &t.b;
+                VerifyTestResultWarning (GetObjectOwningField (aAddr, &Private_::X2::a) == &t);
+                VerifyTestResultWarning (GetObjectOwningField (bAddr, &Private_::X2::b) == &t);
+            }
+        }
+    }
+}
+
 namespace {
 
     void DoRegressionTests_ ()
@@ -396,6 +444,7 @@ namespace {
         Test_7_BLOB_ ();
         Test9_SmallStackBuffer_::DoTest ();
         Test10_OptionalSelfAssign_::DoTest ();
+        Test11_ObjectFieldUtilities_::DoTest ();
     }
 }
 
