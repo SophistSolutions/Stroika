@@ -27,11 +27,6 @@
  *              be saved RAW, and not converted to a function pointer. Trickier to do construction,
  *              but probably possible with template guides. But only bother if there is a clear
  *              performance betenfit, because this is simpler.
- * 
- *      @todo   Maybe a design flaw to ENCOURAGE use of lambdas, which only work conveniently with
- *              capture of this in the parent class. Maybe REDO so function<> object always
- *              expects this ptr as argument! THen really its a hybrid with ptr to emmeber (except
- *              more generic). THEN we can SAFELY enable move / copy!!!
  */
 
 namespace Stroika::Foundation::Common {
@@ -39,6 +34,7 @@ namespace Stroika::Foundation::Common {
     /**
      *  Implement C#-like syntax for read-only properties (syntactically like data members but backed by a getter function)
      *      \note   Typically not used - use Property
+     *      \note   ANYHOW - see @Property for design overview
      * 
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md">SAME AS T/GETTER - all methods have exactly the thread safety of the underlying GETTER</a>
      */
@@ -63,6 +59,10 @@ namespace Stroika::Foundation::Common {
         ReadOnlyProperty (ReadOnlyProperty&&)      = delete;
         template <typename G>
         constexpr ReadOnlyProperty (G getter);
+
+    public:
+        nonvirtual void operator= (const ReadOnlyProperty&) = delete;
+        nonvirtual void operator= (const ReadOnlyProperty&&) = delete;
 
     public:
         /**
@@ -102,6 +102,8 @@ namespace Stroika::Foundation::Common {
     /**
      *  Implement C#-like syntax for write-only properties (syntactically like data members but backed by a setter function)
      *      \note   Typically not used - use Property
+     *      \note   ANYHOW - see @Property for design overview
+     *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md">SAME AS T/SETTER - all methods have exactly the thread safety of the underlying SETTER</a>
      */
     template <typename T>
@@ -132,6 +134,8 @@ namespace Stroika::Foundation::Common {
          *  we cannot generically read from a write-only property to copy its value.
          */
         nonvirtual void operator= (const Configuration::ArgByValueType<T>& value);
+        nonvirtual void operator= (const WriteOnlyProperty& ) = delete;
+        nonvirtual void operator= (const WriteOnlyProperty&& ) = delete;
 
     public:
         /**
@@ -148,14 +152,97 @@ namespace Stroika::Foundation::Common {
      *  But the are ASSIGNABLE TO, because here we retain our getter/setter, and just treat assignment as copying the value.
      * 
      *  \note This has implications for classes that use Property objects: they will not be able to use X(const X&) = default;
+     *        nor X(X&&) = default; Classes with properties can be copy constructed/move constructed, but just not automatically
+     *        (memberwise). It wouldn't make sense to do memberwise because typically the property just 'knows how to find the data'
+     *        stored elsewhere in the owning object.
      * 
      *  \note Though this looks syntactically much like using a direct data member, it will likely have some performance overhead
      *        due to forcing the use of a std::function wrapping a lambda for each access to the underlying object of type T.
      * 
      *  \note see base class ReadOnlyProperty and WriteOnlyProperty for details on APIs to read/write the underlying data.
      * 
-     *  \note New SYNTAX CONVENTION intruduced for instance variables of type *Property<...>, which is to prepend a 'p'. This
+     *  \note New Stroika NAMING CONVENTION intruduced for instance variables of type Property<...>, which is to prepend a 'p'. This
      *        convention is to emphasize that these names DONT work QUITE like fields, but only somewhat like fields.
+     * 
+     *  \par Example Usage
+     *      \code
+     *          struct Headers {
+     *          public:
+     *              Headers ();
+     *              Headers (const Headers& src);
+     *              Headers (Headers&& src);
+     *              nonvirtual Headers& operator= (const Headers& rhs) = default; // properties are assignable, so this is OK
+     *              nonvirtual Headers& operator                       = (Headers&& rhs);
+     *
+     *              Property<unsigned int> pContentLength1; // both refer to the private fContentLength_ field
+     *              Property<unsigned int> pContentLength2;
+     *
+     *          private:
+     *              unsigned int fContentLength_{0};
+     *          };
+     *          Headers::Headers ()
+     *              // Can implement getter/setters with this capture (wastes a bit of space)
+     *              : pContentLength1{
+     *                    [this] ([[maybe_unused]] const auto* property) {
+     *                        return fContentLength_;
+     *                    },
+     *                    [this] ([[maybe_unused]] auto* property, const auto& contentLength) {
+     *                        fContentLength_ = contentLength;
+     *                    }}
+     *              // Can implement getter/setters with Memory::GetObjectOwningField - to save space, but counts on exact
+     *              // storage layout and not totally legal with non- is_standard_layout<> - see Memory::GetObjectOwningField 
+     *              , pContentLength2{
+     *                    [] (const auto* property) {
+     *                        const Headers* headerObj = Memory::GetObjectOwningField (property, &Headers::pContentLength2);
+     *                        return headerObj->fContentLength_;
+     *                    },
+     *                    [] (auto* property, auto contentLength) {
+     *                        Headers* headerObj         = Memory::GetObjectOwningField (property, &Headers::pContentLength2);
+     *                        headerObj->fContentLength_ = contentLength;
+     *                    }}
+     *          {
+     *          }
+     *          Headers::Headers (const Headers& src)
+     *              : Headers () // do default initialization of properties
+     *          {
+     *              // NOTE - cannot INITIALIZE properties with src.Properties values since they are not copy constructible
+     *              // but they are assignable, so do that
+     *              pContentLength1 = src.pContentLength1;
+     *              pContentLength2 = src.pContentLength2;
+     *              // COULD EITHER initialize fContentLength_ or pContentLength1/pContentLength2 - but no need to do both
+     *          }
+     *          Headers::Headers (Headers&& src)
+     *              : Headers () // do default initialization of properties
+     *          {
+     *              // NOTE - cannot MOVE properties with src.Properties values since they are not copy constructible
+     *              // but they are assignable, so do that
+     *              pContentLength1 = src.pContentLength1;
+     *              pContentLength2 = src.pContentLength2;
+     *              // COULD EITHER initialize fContentLength_ or pContentLength1/pContentLength2 - but no need to do both
+     *          }
+     *          Headers& Headers::operator= (Headers&& rhs)
+     *          {
+     *              // Could copy either properties or underlying field - no matter which
+     *              fContentLength_ = rhs.fContentLength_;
+     *              return *this;
+     *          }
+     * 
+     * 
+     *          //....
+     * 
+     *          Headers h;
+     *          Assert (h.pContentLength1 == 0);
+     *          h.pContentLength1 = 2;
+     *          Assert (h.pContentLength2 == 2);
+     *          h.pContentLength2 = 4;
+     *          Assert (h.pContentLength1 == 4);
+     *          Headers h2 = h;
+     *          Assert (h2.pContentLength1 == 4);
+     *          h.pContentLength2 = 5;
+     *          Assert (h.pContentLength1 == 5);
+     *          Assert (h2.pContentLength1 == 4);
+     *
+     *      \endcode
      * 
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md">SAME AS T/GETTER/SETTER - all methods have exactly the thread safety of the underlying GETTER/SETTER</a>
      */
@@ -186,6 +273,7 @@ namespace Stroika::Foundation::Common {
          */
         nonvirtual T operator        = (const Configuration::ArgByValueType<T>& value);
         nonvirtual Property& operator= (const Property& value);
+        nonvirtual Property& operator= (const Property&&) = delete;
 
     public:
         using ReadOnlyProperty<T>::Get;

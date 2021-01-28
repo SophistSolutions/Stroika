@@ -12,8 +12,10 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Common/GUID.h"
+#include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/Common/TemplateUtilities.h"
 #include "Stroika/Foundation/Configuration/Endian.h"
+#include "Stroika/Foundation/Memory/ObjectFieldUtilities.h"
 
 #include "../TestHarness/TestHarness.h"
 
@@ -48,10 +50,93 @@ namespace {
 }
 
 namespace {
+    namespace Test02_Properties_ {
+        namespace Private_ {
+
+            struct Headers {
+            public:
+                Headers ();
+                Headers (const Headers& src);
+                Headers (Headers&& src);
+                nonvirtual Headers& operator= (const Headers& rhs) = default; // properties are assignable, so this is OK
+                nonvirtual Headers& operator                       = (Headers&& rhs);
+
+                Property<unsigned int> pContentLength1; // both refer to the private fContentLength_ field
+                Property<unsigned int> pContentLength2;
+
+            private:
+                unsigned int fContentLength_{0};
+            };
+            Headers::Headers ()
+                // Can implement getter/setters with this capture (wastes a bit of space)
+                : pContentLength1{
+                      [this] ([[maybe_unused]] const auto* property) {
+                          return fContentLength_;
+                      },
+                      [this] ([[maybe_unused]] auto* property, const auto& contentLength) {
+                          fContentLength_ = contentLength;
+                      }}
+                // Can implement getter/setters with Memory::GetObjectOwningField - to save space, but counts on exact
+                // storage layout and not totally legal with non- is_standard_layout<> - see Memory::GetObjectOwningField
+                , pContentLength2{
+                      [] (const auto* property) {
+                          const Headers* headerObj = Memory::GetObjectOwningField (property, &Headers::pContentLength2);
+                          return headerObj->fContentLength_;
+                      },
+                      [] (auto* property, auto contentLength) {
+                          Headers* headerObj         = Memory::GetObjectOwningField (property, &Headers::pContentLength2);
+                          headerObj->fContentLength_ = contentLength;
+                      }}
+            {
+            }
+            Headers::Headers (const Headers& src)
+                : Headers () // do default initialization of properties
+            {
+                // NOTE - cannot INITIALIZE properties with src.Properties values since they are not copy constructible
+                // but they are assignable, so do that
+                pContentLength1 = src.pContentLength1;
+                pContentLength2 = src.pContentLength2;
+                // COULD EITHER initialize fContentLength_ or pContentLength1/pContentLength2 - but no need to do both
+            }
+            Headers::Headers (Headers&& src)
+                : Headers () // do default initialization of properties
+            {
+                // NOTE - cannot MOVE properties with src.Properties values since they are not copy constructible
+                // but they are assignable, so do that
+                pContentLength1 = src.pContentLength1;
+                pContentLength2 = src.pContentLength2;
+                // COULD EITHER initialize fContentLength_ or pContentLength1/pContentLength2 - but no need to do both
+            }
+            Headers& Headers::operator= (Headers&& rhs)
+            {
+                // Could copy either properties or underlying field - no matter which
+                fContentLength_ = rhs.fContentLength_;
+                return *this;
+            }
+        }
+        void Run ()
+        {
+            Private_::Headers h;
+            VerifyTestResult (h.pContentLength1 == 0);
+            h.pContentLength1 = 2;
+            VerifyTestResult (h.pContentLength2 == 2);
+            h.pContentLength2 = 4;
+            VerifyTestResult (h.pContentLength1 == 4);
+            Private_::Headers h2 = h;
+            VerifyTestResult (h2.pContentLength1 == 4);
+            h.pContentLength2 = 5;
+            VerifyTestResult (h.pContentLength1 == 5);
+            VerifyTestResult (h2.pContentLength1 == 4);
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_"};
         Test_1_SpaceshipAutoGenForOpEqualsForCommonGUIDBug_ ();
+        Test02_Properties_::Run ();
     }
 }
 
