@@ -29,13 +29,15 @@ namespace {
  */
 Headers::Headers ()
     : pCacheControl{
-          [this] ([[maybe_unused]] const auto* property) {
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-              return fCacheControl_;
+          [] (const auto* property) {
+              const Headers*                                     headerObj = Memory::GetObjectOwningField (property, &Headers::pCacheControl);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
+              return headerObj->fCacheControl_;
           },
-          [this] ([[maybe_unused]] auto* property, const auto& cacheControl) {
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-              fCacheControl_ = cacheControl;
+          [] (auto* property, const auto& cacheControl) {
+              Headers*                                           headerObj = Memory::GetObjectOwningField (property, &Headers::pCacheControl);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
+              headerObj->fCacheControl_ = cacheControl;
           }}
     , pContentLength{
           [] (const auto* property) {
@@ -49,48 +51,56 @@ Headers::Headers ()
               headerObj->fContentLength_ = contentLength;
           }}
     , pContentType{
-          [this] ([[maybe_unused]] const auto* property) {
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-              return fContentType_;
+          [] (const auto* property) {
+              const Headers*                                     headerObj = Memory::GetObjectOwningField (property, &Headers::pContentType);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
+              return headerObj->fContentType_;
           },
-          [this] ([[maybe_unused]] auto* property, const auto& contentType) {
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-              fContentType_ = contentType;
+          [] (auto* property, const auto& contentType) {
+              Headers*                                           headerObj = Memory::GetObjectOwningField (property, &Headers::pContentType);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
+              headerObj->fContentType_ = contentType;
           }}
     , pETag{
-          [this] ([[maybe_unused]] const auto* property) {
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-              return fETag_;
+          [] (const auto* property) {
+              const Headers*                                     headerObj = Memory::GetObjectOwningField (property, &Headers::pETag);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
+              return headerObj->fETag_;
           },
-          [this] ([[maybe_unused]] auto* property, const auto& etag) {
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-              fETag_ = etag;
+          [] (auto* property, const auto& etag) {
+              Headers*                                           headerObj = Memory::GetObjectOwningField (property, &Headers::pETag);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
+              headerObj->fETag_ = etag;
           }}
     , pIfNoneMatch{
-          [this] ([[maybe_unused]] const auto* property) {
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-              return fIfNoneMatch_;
+          [] (const auto* property) {
+              const Headers*                                     headerObj = Memory::GetObjectOwningField (property, &Headers::pIfNoneMatch);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
+              return headerObj->fIfNoneMatch_;
           },
-          [this] ([[maybe_unused]] auto* property, const auto& ifNoneMatch) {
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-              fIfNoneMatch_ = ifNoneMatch;
+          [] (auto* property, const auto& ifNoneMatch) {
+              Headers*                                           headerObj = Memory::GetObjectOwningField (property, &Headers::pIfNoneMatch);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
+              headerObj->fIfNoneMatch_ = ifNoneMatch;
           }}
     , pConnection{
-          [this] ([[maybe_unused]] const auto* property) -> optional<ConnectionValue> {
-              using CompareOptions = Characters::CompareOptions;
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-              if (auto connectionHdr = As<Mapping<String, String>> ().Lookup (HeaderName::kConnection)) {
-                  if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(*connectionHdr, L"Keep-Alive"sv)) {
+          [] (const auto* property) -> optional<ConnectionValue> {
+              const Headers* headerObj = Memory::GetObjectOwningField (property, &Headers::pConnection);
+              using CompareOptions     = Characters::CompareOptions;
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
+              if (auto connectionHdr = headerObj->As<Mapping<String, String>> ().Lookup (HeaderName::kConnection)) {
+                  if (kHeaderNameComparer_ (*connectionHdr, L"Keep-Alive"sv)) {
                       return eKeepAlive;
                   }
-                  else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(*connectionHdr, L"close"sv)) {
+                  else if (kHeaderNameComparer_ (*connectionHdr, L"close"sv)) {
                       return eClose;
                   }
               }
-              return optional<ConnectionValue>{};
+              return nullopt;
           },
-          [this] ([[maybe_unused]] auto* property, const auto& connectionValue) {
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+          [] (auto* property, const auto& connectionValue) {
+              Headers*                                           headerObj = Memory::GetObjectOwningField (property, &Headers::pConnection);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
               optional<String>                                   v;
               if (connectionValue) {
                   switch (*connectionValue) {
@@ -102,7 +112,7 @@ Headers::Headers ()
                           break;
                   }
               }
-              SetHeader (HeaderName::kConnection, v);
+              headerObj->SetHeader (HeaderName::kConnection, v);
           }}
 {
 }
@@ -110,28 +120,27 @@ Headers::Headers ()
 Headers::Headers (const Headers& src)
     : Headers ()
 {
-    fExtraHeaders_ = src.fExtraHeaders_;
-
-    // NOTE - cannot INITIALIZE properties with src.Properties values since they are not copy constructible
-    // but they are assignable, so do that
-    pCacheControl  = src.pCacheControl;
-    pContentLength = src.pContentLength;
-    pContentType   = src.pContentType;
-    pETag          = src.pETag;
-    pIfNoneMatch   = src.pIfNoneMatch;
+    // NOTE properties and fields refer to the same thing. COULD copy properties, but cheaper to just 'initialize' the fields
+    // However, cannot mix initialize with calling delegated CTOR, so do the slightly more inefficent way to avoid duplicative code
+    fExtraHeaders_  = src.fExtraHeaders_;
+    fCacheControl_  = src.fCacheControl_;
+    fContentLength_ = src.fContentLength_;
+    fContentType_   = src.fContentType_;
+    fETag_          = src.fETag_;
+    fIfNoneMatch_   = src.fIfNoneMatch_;
 }
 
 Headers::Headers (Headers&& src)
     : Headers ()
 {
-    fExtraHeaders_ = move (src.fExtraHeaders_);
-    // NOTE - cannot INITIALIZE properties with src.Properties values since they are not copy constructible
-    // but they are assignable, so do that
-    pCacheControl  = src.pCacheControl;
-    pContentLength = src.pContentLength;
-    pContentType   = src.pContentType;
-    pETag          = src.pETag;
-    pIfNoneMatch   = src.pIfNoneMatch;
+    // NOTE properties and fields refer to the same thing. COULD copy properties, but cheaper to just 'initialize' the fields
+    // However, cannot mix initialize with calling delegated CTOR, so do the slightly more inefficent way to avoid duplicative code
+    fExtraHeaders_  = move (src.fExtraHeaders_);
+    fCacheControl_  = move (src.fCacheControl_);
+    fContentLength_ = move (src.fContentLength_);
+    fContentType_   = move (src.fContentType_);
+    fETag_          = move (src.fETag_);
+    fIfNoneMatch_   = move (src.fIfNoneMatch_);
 }
 
 Headers::Headers (const Iterable<KeyValuePair<String, String>>& src)
@@ -144,12 +153,12 @@ Headers::Headers (const Iterable<KeyValuePair<String, String>>& src)
 
 Headers& Headers::operator= (Headers&& rhs)
 {
-    fExtraHeaders_ = move (rhs.fExtraHeaders_);
-    pCacheControl  = rhs.pCacheControl;
-    pContentLength = rhs.pContentLength;
-    pContentType   = rhs.pContentType;
-    pETag          = rhs.pETag;
-    pIfNoneMatch   = rhs.pIfNoneMatch;
+    fExtraHeaders_  = move (rhs.fExtraHeaders_);
+    fCacheControl_  = move (rhs.fCacheControl_);
+    fContentLength_ = move (rhs.fContentLength_);
+    fContentType_   = move (rhs.fContentType_);
+    fETag_          = move (rhs.fETag_);
+    fIfNoneMatch_   = move (rhs.fIfNoneMatch_);
     return *this;
 }
 
