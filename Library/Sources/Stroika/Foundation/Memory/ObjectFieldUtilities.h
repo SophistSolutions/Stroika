@@ -37,6 +37,47 @@ namespace Stroika::Foundation::Memory {
      * 
      *  \par Example Usage
      *      \code
+     *          void test ();
+     *          struct X1 {
+     *              int a;
+     *              int b;
+     *          };
+     *          struct X2 {
+     *          public:
+     *              int a;
+     *          private:
+     *              int b;
+     *          private:
+     *              friend void test();
+     *          };
+     *          void DoTest ()
+     *          {
+     *              {
+     *                  assert (ConvertPointerToDataMemberToOffset (&X1::a) == 0 or ConvertPointerToDataMemberToOffset (&X1::b) == 0);
+     *                  assert (ConvertPointerToDataMemberToOffset (&X1::a) != 0 or ConvertPointerToDataMemberToOffset (&X1::b) != 0);
+     *              }
+     *              {
+     *                  X1 t;
+     *                  static_assert (is_standard_layout_v<X1>);
+     *                  void* aAddr = &t.a;
+     *                  void* bAddr = &t.b;
+     *                  assert (GetObjectOwningField (aAddr, &X1::a) == &t);
+     *                  assert (GetObjectOwningField (bAddr, &X1::b) == &t);
+     *              }
+     *              {
+     *                  // Check and warning but since X2 is not standard layout, this isn't guaranteed to work
+     *                  X2 t;
+     *                  static_assert (not is_standard_layout_v<X2>);
+     *                  void* aAddr = &t.a;
+     *                  void* bAddr = &t.b;
+     *                  assert (GetObjectOwningField (aAddr, &X2::a) == &t);
+     *                  assert (GetObjectOwningField (bAddr, &X2::b) == &t);
+     *              }
+     *          }
+     *      \endcode
+     *
+     *  \par Example Usage
+     *      \code
      *          struct Header {
      *              ReadOnlyProperty<int> p {[] (const auto* property) {
      *                  const Header* h = GetObjectOwningField(property, &Header::p);
@@ -46,8 +87,7 @@ namespace Stroika::Foundation::Memory {
      * 
      *  \note - for this to work - OUTER_OBJECT (in the above example: Header) must be of stanard_layout type according
      *        to c++ standard, but I'm not sure what todo otherwise, it it seems to work otherwise.
-     * 
-     *  @todo void* aggregatedMember sb AGGREGATED_OBJECT_TYPE* aggregatedMember, but caused some trouble - debug...LGP 2021-01-26
+     *        Posted to stackoverflow to find a better, more portable way: https://stackoverflow.com/questions/65940393/c-why-the-restriction-on-offsetof-for-non-standard-layout-objects-or-how-t
      */
     template <typename APPARENT_MEMBER_TYPE, typename OUTER_OBJECT, typename AGGREGATED_OBJECT_TYPE>
     OUTER_OBJECT* GetObjectOwningField (APPARENT_MEMBER_TYPE* aggregatedMember, AGGREGATED_OBJECT_TYPE (OUTER_OBJECT::*aggregatedPtrToMember));
