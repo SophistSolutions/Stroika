@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Execution_Property_inl_
-#define _Stroika_Foundation_Execution_Property_inl_ 1
+#ifndef _Stroika_Foundation_Common_Property_inl_
+#define _Stroika_Foundation_Common_Property_inl_ 1
 
 /*
  ********************************************************************************
@@ -10,7 +10,7 @@
  ********************************************************************************
  */
 
-namespace Stroika::Foundation::Execution {
+namespace Stroika::Foundation::Common {
 
     /*
      ********************************************************************************
@@ -88,4 +88,4 @@ namespace Stroika::Foundation::Execution {
 
 }
 
-#endif /*_Stroika_Foundation_Execution_Property_inl_*/
+#endif /*_Stroika_Foundation_Common_Property_inl_*/

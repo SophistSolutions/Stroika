@@ -2046,14 +2046,14 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\IfNoneMatch.h">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Property.h">
-      <Filter>Sources\Execution</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Cookie.h">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\ObjectFieldUtilities.h">
       <Filter>Sources\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Property.h">
+      <Filter>Sources\Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3342,14 +3342,14 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\IfNoneMatch.inl">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\Property.inl">
-      <Filter>Sources\Execution</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Cookie.inl">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\ObjectFieldUtilities.inl">
       <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Common\Property.inl">
+      <Filter>Sources\Common</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -291,6 +291,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\GUID.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Immortalize.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Property.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\TemplateUtilities.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Concepts.h" />
@@ -514,7 +515,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Process.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ProcessRunner.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Property.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentMissingException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentVersionMismatchException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Accessor.h" />
@@ -719,6 +719,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Common\GUID.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Common\Makefile" />
+    <None Include="..\..\Sources\Stroika\Foundation\Common\Property.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Common\TemplateUtilities.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\.gitignore" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Common.inl" />
@@ -933,7 +934,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Process.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ProcessRunner.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\Property.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Accessor.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\CompiledResourceManager.inl" />

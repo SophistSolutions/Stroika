@@ -7,12 +7,12 @@
 #include "../../../StroikaPreComp.h"
 
 #include "../../../Characters/String.h"
+#include "../../../Common/Property.h"
 #include "../../../Configuration/Common.h"
 #include "../../../Containers/Collection.h"
 #include "../../../Containers/Mapping.h"
 #include "../../../DataExchange/InternetMediaType.h"
 #include "../../../Debug/AssertExternallySynchronizedLock.h"
-#include "../../../Execution/Property.h"
 
 #include "CacheControl.h"
 #include "ETag.h"
@@ -96,7 +96,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /**
          *  Property with the optional<CacheControl> value of the Cache-Control header.
          */
-        Execution::Property<optional<CacheControl>> pCacheControl;
+        Common::Property<optional<CacheControl>> pCacheControl;
 
     public:
         /**
@@ -107,7 +107,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *          optional<uint64_t> contentLenghth = fHeaders_.pContentLength;
          *      \endcode         
          */
-        Execution::Property<optional<uint64_t>> pContentLength;
+        Common::Property<optional<uint64_t>> pContentLength;
 
     public:
         /**
@@ -119,19 +119,19 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *          fHeaders_.pContentType = nullopt; // remove the content-type header
          *      \endcode         
          */
-        Execution::Property<optional<InternetMediaType>> pContentType;
+        Common::Property<optional<InternetMediaType>> pContentType;
 
     public:
         /**
          *  Property with the optional<ETag> value of the ETag header.
          */
-        Execution::Property<optional<ETag>> pETag;
+        Common::Property<optional<ETag>> pETag;
 
     public:
         /**
          *  Property with the optional<IfNoneMatch> value of the IF-None-Match header.
          */
-        Execution::Property<optional<IfNoneMatch>> pIfNoneMatch;
+        Common::Property<optional<IfNoneMatch>> pIfNoneMatch;
 
     public:
         /**
@@ -148,7 +148,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *
          *  Header mostly just used for HTTP 1.1 and earlier.
          */
-        Execution::Property<optional<ConnectionValue>> pConnection;
+        Common::Property<optional<ConnectionValue>> pConnection;
 
     public:
         /**

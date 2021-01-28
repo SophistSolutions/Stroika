@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Execution_Property_h_
-#define _Stroika_Foundation_Execution_Property_h_ 1
+#ifndef _Stroika_Foundation_Common_Property_h_
+#define _Stroika_Foundation_Common_Property_h_ 1
 
 #include "../StroikaPreComp.h"
 
@@ -34,7 +34,7 @@
  *              more generic). THEN we can SAFELY enable move / copy!!!
  */
 
-namespace Stroika::Foundation::Execution {
+namespace Stroika::Foundation::Common {
 
     /**
      *  Implement C#-like syntax for read-only properties (syntactically like data members but backed by a getter function)
@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \par Example Usage
          *      \code
-         *          namespace PredefinedInternetMediaType {  const inline Execution::VirtualConstant<InternetMediaType> kPNG...
+         *          namespace PredefinedInternetMediaType {  const inline Common::VirtualConstant<InternetMediaType> kPNG...
          *
          *          bool checkIsImage1 = PredefinedInternetMediaType::kPNG().IsImageFormat ();
          *      \endcode
@@ -203,4 +203,4 @@ namespace Stroika::Foundation::Execution {
  */
 #include "Property.inl"
 
-#endif /*_Stroika_Foundation_Execution_Property_h_*/
+#endif /*_Stroika_Foundation_Common_Property_h_*/
