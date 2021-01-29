@@ -19,9 +19,9 @@ using namespace Stroika::Foundation::IO::Network::HTTP;
 using namespace Stroika::Foundation::Streams;
 
 namespace {
-    constexpr auto kHeaderNameComparer_ = String::EqualsComparer{CompareOptions::eCaseInsensitive};
-    constexpr wstring_view kKeepAlive_      = L"Keep-Alive"sv;
-    constexpr wstring_view kClose_          = L"close"sv;
+    constexpr auto         kHeaderNameComparer_ = String::EqualsComparer{CompareOptions::eCaseInsensitive};
+    constexpr wstring_view kKeepAlive_          = L"Keep-Alive"sv;
+    constexpr wstring_view kClose_              = L"close"sv;
 }
 
 /*
@@ -43,7 +43,7 @@ Headers::Headers ()
           }}
     , pConnection{
           [] (const auto* property) -> optional<ConnectionValue> {
-              const Headers* headerObj = Memory::GetObjectOwningField (property, &Headers::pConnection);
+              const Headers*                                     headerObj = Memory::GetObjectOwningField (property, &Headers::pConnection);
               lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
               if (auto connectionHdr = headerObj->As<Mapping<String, String>> ().Lookup (HeaderName::kConnection)) {
                   if (kHeaderNameComparer_ (*connectionHdr, kKeepAlive_)) {
