@@ -39,6 +39,37 @@ Headers::Headers ()
               lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
               headerObj->fCacheControl_ = cacheControl;
           }}
+    , pConnection{
+          [] (const auto* property) -> optional<ConnectionValue> {
+              const Headers* headerObj = Memory::GetObjectOwningField (property, &Headers::pConnection);
+              using CompareOptions     = Characters::CompareOptions;
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
+              if (auto connectionHdr = headerObj->As<Mapping<String, String>> ().Lookup (HeaderName::kConnection)) {
+                  if (kHeaderNameComparer_ (*connectionHdr, L"Keep-Alive"sv)) {
+                      return eKeepAlive;
+                  }
+                  else if (kHeaderNameComparer_ (*connectionHdr, L"close"sv)) {
+                      return eClose;
+                  }
+              }
+              return nullopt;
+          },
+          [] (auto* property, const auto& connectionValue) {
+              Headers*                                           headerObj = Memory::GetObjectOwningField (property, &Headers::pConnection);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
+              optional<String>                                   v;
+              if (connectionValue) {
+                  switch (*connectionValue) {
+                      case ConnectionValue::eKeepAlive:
+                          v = L"Keep-Alive"sv;
+                          break;
+                      case ConnectionValue::eClose:
+                          v = L"close"sv;
+                          break;
+                  }
+              }
+              headerObj->Set (HeaderName::kConnection, v);
+          }}
     , pContentLength{
           [] (const auto* property) {
               const Headers*                                     headerObj = Memory::GetObjectOwningField (property, &Headers::pContentLength);
@@ -82,37 +113,6 @@ Headers::Headers ()
               Headers*                                           headerObj = Memory::GetObjectOwningField (property, &Headers::pIfNoneMatch);
               lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
               headerObj->fIfNoneMatch_ = ifNoneMatch;
-          }}
-    , pConnection{
-          [] (const auto* property) -> optional<ConnectionValue> {
-              const Headers* headerObj = Memory::GetObjectOwningField (property, &Headers::pConnection);
-              using CompareOptions     = Characters::CompareOptions;
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
-              if (auto connectionHdr = headerObj->As<Mapping<String, String>> ().Lookup (HeaderName::kConnection)) {
-                  if (kHeaderNameComparer_ (*connectionHdr, L"Keep-Alive"sv)) {
-                      return eKeepAlive;
-                  }
-                  else if (kHeaderNameComparer_ (*connectionHdr, L"close"sv)) {
-                      return eClose;
-                  }
-              }
-              return nullopt;
-          },
-          [] (auto* property, const auto& connectionValue) {
-              Headers*                                           headerObj = Memory::GetObjectOwningField (property, &Headers::pConnection);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
-              optional<String>                                   v;
-              if (connectionValue) {
-                  switch (*connectionValue) {
-                      case ConnectionValue::eKeepAlive:
-                          v = L"Keep-Alive"sv;
-                          break;
-                      case ConnectionValue::eClose:
-                          v = L"close"sv;
-                          break;
-                  }
-              }
-              headerObj->Set (HeaderName::kConnection, v);
           }}
 {
 }
@@ -191,41 +191,56 @@ optional<String> Headers::LookupOne (const String& name) const
 
 void Headers::Remove (const String& headerName)
 {
-    // @todo - remove all
-    Set (headerName, nullopt);
+    if (SetBuiltin_ (headerName, nullopt)) {
+        return;
+    }
+    // currently removes all, but later add variant that removes one/all (in fact rename this)
+    fExtraHeaders_.Remove ([=] (const auto& i) { return kHeaderNameComparer_ (i.fKey, headerName); });
 }
 
 void Headers::Add (const String& headerName, const String& value)
 {
-    // @todo - allow dups
-    Set (headerName, value);
+    if (SetBuiltin_ (headerName, value)) {
+        return;
+    }
+    fExtraHeaders_.Add (KeyValuePair<String, String>{headerName, value});
 }
 
-void Headers::Set (const String& headerName, const optional<String>& value)
+bool Headers::SetBuiltin_ (const String& headerName, const optional<String>& value)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     if (kHeaderNameComparer_ (headerName, HeaderName::kCacheControl)) {
         fCacheControl_ = value ? CacheControl::Parse (*value) : optional<CacheControl>{};
+        return true;
     }
     else if (kHeaderNameComparer_ (headerName, HeaderName::kContentLength)) {
         fContentLength_ = value ? String2Int<uint64_t> (*value) : optional<uint64_t>{};
+        return true;
     }
     else if (kHeaderNameComparer_ (headerName, HeaderName::kContentType)) {
         fContentType_ = value ? InternetMediaType{*value} : optional<InternetMediaType>{};
+        return true;
     }
     else if (kHeaderNameComparer_ (headerName, HeaderName::kETag)) {
         fETag_ = value ? ETag::Parse (*value) : optional<ETag>{};
+        return true;
     }
     else if (kHeaderNameComparer_ (headerName, HeaderName::kIfNoneMatch)) {
         fIfNoneMatch_ = value ? IfNoneMatch::Parse (*value) : optional<IfNoneMatch>{};
+        return true;
     }
-    else {
-        if (value) {
-            fExtraHeaders_.Add (KeyValuePair<String, String>{headerName, *value});
-        }
-        else {
-            fExtraHeaders_.Remove ([=] (const auto& i) { return kHeaderNameComparer_ (i.fKey, headerName); });
-        }
+    return false;
+}
+
+void Headers::Set (const String& headerName, const optional<String>& value)
+{
+    if (SetBuiltin_ (headerName, value)) {
+        return;
+    }
+    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    fExtraHeaders_.Remove ([=] (const auto& i) { return kHeaderNameComparer_ (i.fKey, headerName); });
+    if (value) {
+        fExtraHeaders_.Add (KeyValuePair<String, String>{headerName, *value});
     }
 }
 

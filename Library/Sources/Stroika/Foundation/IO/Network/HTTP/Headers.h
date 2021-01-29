@@ -113,6 +113,23 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
+         *  Value of the HTTP 1.1 and earlier Connection header (pConnection property).
+         */
+        enum ConnectionValue {
+            eKeepAlive,
+            eClose,
+        };
+
+    public:
+        /**
+         *  Property with the optional<ConnectionValue> value of the Connection header.
+         *
+         *  Header mostly just used for HTTP 1.1 and earlier.
+         */
+        Common::Property<optional<ConnectionValue>> pConnection;
+
+    public:
+        /**
          *  Property with the optional<uint64_t> value of the Content-Length header.
          *
          *  \par Example Usage
@@ -148,31 +165,15 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
-         *  Value of the HTTP 1.1 and earlier Connection header (pConnection property).
-         */
-        enum ConnectionValue {
-            eKeepAlive,
-            eClose,
-        };
-
-    public:
-        /**
-         *  Property with the optional<ConnectionValue> value of the Connection header.
-         *
-         *  Header mostly just used for HTTP 1.1 and earlier.
-         */
-        Common::Property<optional<ConnectionValue>> pConnection;
-
-    public:
-        /**
          *  Returns the combined set of headers (list Key:Value pairs). Note this may not be returned in
          *  the same order and exactly losslessly identically to what was passed in.
          * 
          *  Supported T types:
          *      o   Mapping<String,String>
          *      o   Collection<KeyValuePair<String,String>>
+         *      o   Iterable<KeyValuePair<String,String>>
          */
-        template <typename T>
+        template <typename T = Iterable<KeyValuePair<String, String>>>
         nonvirtual T As () const;
 
     public:
@@ -188,6 +189,9 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         nonvirtual strong_ordering operator<=> (const Headers& rhs) const;
         nonvirtual bool            operator== (const Headers& rhs) const;
 #endif
+
+    private:
+        nonvirtual bool SetBuiltin_ (const String& headerName, const optional<String>& value);
 
     private:
         // Could have properties lookup once when loading and store here. Or could have

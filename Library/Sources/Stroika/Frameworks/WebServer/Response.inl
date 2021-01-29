@@ -17,6 +17,19 @@ namespace Stroika::Frameworks::WebServer {
      ********************* Framework::WebServer::Response ***************************
      ********************************************************************************
      */
+    template <typename FUNCTION>
+    inline auto Response::UpdateHeader (FUNCTION&& f)
+    {
+        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        Require (fState_ == State::eInProgress);
+        return std::forward<FUNCTION> (f) (&this->fHeaders_);
+    }
+    template <typename FUNCTION>
+    inline auto Response::ReadHeader (FUNCTION&& f) const
+    {
+        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        return std::forward<FUNCTION> (f) (this->fHeaders_);
+    }
     inline Response::State Response::GetState () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
@@ -26,11 +39,6 @@ namespace Stroika::Frameworks::WebServer {
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         return fStatus_;
-    }
-    inline InternetMediaType Response::GetContentType () const
-    {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        return fContentType_;
     }
     inline Characters::CodePage Response::GetCodePage () const
     {

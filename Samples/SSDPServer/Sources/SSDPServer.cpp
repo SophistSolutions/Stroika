@@ -36,7 +36,6 @@ namespace {
     struct WebServerForDeviceDescription_ {
 
         WebServerForDeviceDescription_ (uint16_t webServerPortNumber, const DeviceDescription& dd)
-            : fListener ()
         {
             // @todo Consider simplifying this using WebServer Framework more fully - Router or Interceptor
             auto onConnect = [dd] (const ConnectionOrientedStreamSocket::Ptr& acceptedSocketConnection) {
@@ -47,8 +46,9 @@ namespace {
                                     Sequence<Interceptor>{
                                         Interceptor (
                                             [=] (Message* m) {
+                                                RequireNotNull (m);
                                                 Response* response = m->PeekResponse ();
-                                                response->AddHeader (IO::Network::HTTP::HeaderName::kServer, L"stroika-ssdp-server-demo"sv);
+                                                response->UpdateHeader ([] (auto* header) { RequireNotNull (header); header->Set (IO::Network::HTTP::HeaderName::kServer, L"stroika-ssdp-server-demo"sv); });
                                                 response->write (Stroika::Frameworks::UPnP::Serialize (dd));
                                                 response->SetContentType (DataExchange::InternetMediaTypes::kXML);
                                             })}};
@@ -58,7 +58,7 @@ namespace {
                 runConnectionOnAnotherThread.SetThreadName (L"SSDP Servcie Connection Thread");
                 runConnectionOnAnotherThread.Start ();
             };
-            fListener = Listener (SocketAddresses (InternetAddresses_Any (), webServerPortNumber), onConnect);
+            fListener = Listener{SocketAddresses (InternetAddresses_Any (), webServerPortNumber), onConnect};
         }
 
         optional<Listener> fListener;

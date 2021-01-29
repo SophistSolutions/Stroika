@@ -57,7 +57,7 @@ struct Router::Rep_ : Interceptor::_IRep {
                 Assert (not o->empty ());
                 StringBuilder res;
                 o->Apply ([&res] (const String& i) { if (not res.empty ()) { res += L", "; } res += i; });
-                m->PeekResponse ()->AddHeader (HTTP::HeaderName::kAllow, res.str ());
+                m->PeekResponse ()->UpdateHeader ([&] (auto* header) { RequireNotNull (header); header->Set (HTTP::HeaderName::kAllow, res.str ()); });
                 Execution::Throw (ClientErrorException (HTTP::StatusCodes::kMethodNotAllowed));
             }
             else {

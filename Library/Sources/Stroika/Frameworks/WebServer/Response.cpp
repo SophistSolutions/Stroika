@@ -39,11 +39,6 @@ using IO::Network::HTTP::ClientErrorException;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-namespace {
-    const set<String> kDisallowedOtherHeaders_ = set<String> ({IO::Network::HTTP::HeaderName::kContentLength,
-                                                               IO::Network::HTTP::HeaderName::kContentType});
-}
-
 /*
  ********************************************************************************
  **************************** WebServer::Response *******************************
@@ -69,13 +64,26 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
     , fUnderlyingOutStream_{outStream}
     , fUseOutStream_{Streams::BufferedOutputStream<byte>::New (outStream)}
     , fHeaders_{}
-    , fContentType_{ct}
     , fCodePage_{Characters::kCodePage_UTF8}
     , fBytes_{}
     , fContentSizePolicy_{ContentSizePolicy::eAutoCompute}
-    , fContentSize_{0}
 {
-    AddHeader (IO::Network::HTTP::HeaderName::kServer, L"Stroka-Based-Web-Server"sv);
+    fHeaders_.Set (IO::Network::HTTP::HeaderName::kServer, L"Stroka-Based-Web-Server"sv);
+    if (not ct.empty ()) {
+        fHeaders_.pContentType = ct;
+    }
+}
+
+InternetMediaType Response::GetContentType () const
+{
+    // DEPRECATED
+    return ReadHeader ([] (const auto& h) { return h.pContentType ().value_or (InternetMediaType{}); });
+}
+
+void Response::AddHeader (const String& headerName, const String& value)
+{
+    // DEPRECATED
+    UpdateHeader ([&] (IO::Network::HTTP::Headers* headers) { headers->Set (headerName, value); });
 }
 
 void Response::SetContentSizePolicy (ContentSizePolicy csp)
@@ -90,8 +98,8 @@ void Response::SetContentSizePolicy (ContentSizePolicy csp, uint64_t size)
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     Require (csp == ContentSizePolicy::eExact);
     Require (fState_ == State::eInProgress);
-    fContentSizePolicy_ = csp;
-    fContentSize_       = size;
+    fContentSizePolicy_      = csp;
+    fHeaders_.pContentLength = size;
 }
 
 bool Response::IsContentLengthKnown () const
@@ -101,9 +109,11 @@ bool Response::IsContentLengthKnown () const
 
 void Response::SetContentType (const InternetMediaType& contentType)
 {
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    Require (fState_ == State::eInProgress);
-    fContentType_ = contentType;
+    UpdateHeader ([=, this] (auto* header) {
+        if (auto ct = header->pContentType ()) {
+            header->pContentType = AdjustContentTypeForCodePageIfNeeded_ (contentType);
+        }
+    });
 }
 
 void Response::SetCodePage (Characters::CodePage codePage)
@@ -111,7 +121,13 @@ void Response::SetCodePage (Characters::CodePage codePage)
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     Require (fState_ == State::eInProgress);
     Require (fBytes_.empty ());
+    bool diff  = fCodePage_ != codePage;
     fCodePage_ = codePage;
+    if (diff) {
+        if (auto ct = fHeaders_.pContentType ()) {
+            fHeaders_.pContentType = AdjustContentTypeForCodePageIfNeeded_ (*ct);
+        }
+    }
 }
 
 void Response::SetStatus (Status newStatus, const String& overrideReason)
@@ -122,44 +138,39 @@ void Response::SetStatus (Status newStatus, const String& overrideReason)
     fStatusOverrideReason_ = overrideReason;
 }
 
-void Response::AddHeader (const String& headerName, const String& value)
-{
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    Require (fState_ == State::eInProgress);
-    Require (kDisallowedOtherHeaders_.find (headerName) == kDisallowedOtherHeaders_.end ());
-    fHeaders_.Add (headerName, value);
-}
-
 void Response::AppendToCommaSeperatedHeader (const String& headerName, const String& value)
 {
     Require (not value.empty ());
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    if (auto o = fHeaders_.LookupOne (headerName)) {
-        if (o->empty ()) {
-            AddHeader (headerName, value);
+    UpdateHeader ([&] (IO::Network::HTTP::Headers* headers) {
+        RequireNotNull (headers);
+        if (auto o = headers->LookupOne (headerName)) {
+            if (o->empty ()) {
+                headers->Add (headerName, value);
+            }
+            else {
+                headers->Add (headerName, *o + L", "sv + value);
+            }
         }
         else {
-            AddHeader (headerName, *o + L", "sv + value);
+            headers->Add (headerName, value);
         }
-    }
-    else {
-        AddHeader (headerName, value);
-    }
+    });
 }
 
 void Response::ClearHeaders ()
 {
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    Require (fState_ == State::eInProgress);
-    fHeaders_ = IO::Network::HTTP::Headers{};
+    UpdateHeader ([&] (IO::Network::HTTP::Headers* headers) {
+        RequireNotNull (headers);
+        *headers = IO::Network::HTTP::Headers{};
+    });
 }
 
 void Response::ClearHeader (const String& headerName)
 {
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    Require (fState_ == State::eInProgress);
-    Require (kDisallowedOtherHeaders_.find (headerName) == kDisallowedOtherHeaders_.end ());
-    fHeaders_.Remove (headerName);
+    UpdateHeader ([&] (IO::Network::HTTP::Headers* headers) {
+        RequireNotNull (headers);
+        headers->Remove (headerName);
+    });
 }
 
 IO::Network::HTTP::Headers Response::GetHeaders () const
@@ -168,30 +179,16 @@ IO::Network::HTTP::Headers Response::GetHeaders () const
     return fHeaders_;
 }
 
-IO::Network::HTTP::Headers Response::GetEffectiveHeaders () const
+InternetMediaType Response::AdjustContentTypeForCodePageIfNeeded_ (const InternetMediaType& ct) const
 {
-    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    IO::Network::HTTP::Headers                          tmp = GetHeaders ();
-    switch (GetContentSizePolicy ()) {
-        case ContentSizePolicy::eAutoCompute:
-        case ContentSizePolicy::eExact: {
-            wostringstream buf;
-            buf << fContentSize_;
-            tmp.Set (IO::Network::HTTP::HeaderName::kContentLength, buf.str ());
-        } break;
+    if (DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (ct)) {
+        using AtomType = InternetMediaType::AtomType;
+        // Don't override already specifed characterset
+        Containers::Mapping<String, String> params = ct.GetParameters ();
+        params.Add (L"charset"sv, Characters::GetCharsetString (fCodePage_), AddReplaceMode::eAddIfMissing);
+        return InternetMediaType{ct.GetType<AtomType> (), ct.GetSubType<AtomType> (), ct.GetSuffix (), params};
     }
-    if (not fContentType_.empty ()) {
-        using AtomType                   = InternetMediaType::AtomType;
-        InternetMediaType useContentType = fContentType_;
-        if (DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (fContentType_)) {
-            // Don't override already specifed characterset
-            Containers::Mapping<String, String> params = useContentType.GetParameters ();
-            params.Add (L"charset"sv, Characters::GetCharsetString (fCodePage_), AddReplaceMode::eAddIfMissing);
-            useContentType = InternetMediaType{useContentType.GetType<AtomType> (), useContentType.GetSubType<AtomType> (), useContentType.GetSuffix (), params};
-        }
-        tmp.Set (IO::Network::HTTP::HeaderName::kContentType, useContentType.As<wstring> ());
-    }
-    return tmp;
+    return ct;
 }
 
 void Response::Flush ()
@@ -211,8 +208,7 @@ void Response::Flush ()
         }
 
         {
-            Mapping<String, String> headers2Write = GetEffectiveHeaders ().As<Mapping<String, String>> ();
-            for (const auto& i : headers2Write) {
+            for (const auto& i : GetHeaders ().As<> ()) {
                 string utf8 = Characters::Format (L"%s: %s\r\n", i.fKey.c_str (), i.fValue.c_str ()).AsUTF8 ();
                 fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (utf8)), reinterpret_cast<const byte*> (Containers::End (utf8)));
             }
@@ -270,8 +266,8 @@ void Response::Redirect (const String& url)
     fBytes_.clear ();
 
     // PERHAPS should clear some header values???
-    AddHeader (L"Connection"sv, L"close"sv); // needed for redirect
-    AddHeader (L"Location"sv, url);          // needed for redirect
+    fHeaders_.pConnection = IO::Network::HTTP::Headers::eClose;
+    fHeaders_.Set (L"Location"sv, url);
     SetStatus (StatusCodes::kMovedPermanently);
     Flush ();
     fState_ = State::eCompleted;
@@ -288,7 +284,7 @@ void Response::write (const byte* s, const byte* e)
         fBytes_.insert (fBytes_.end (), s, e);
         if (GetContentSizePolicy () == ContentSizePolicy::eAutoCompute) {
             // Because for autocompute - illegal to call flush and then write
-            fContentSize_ = fBytes_.size ();
+            fHeaders_.pContentLength = fBytes_.size ();
         }
     }
 }
@@ -306,7 +302,7 @@ void Response::write (const wchar_t* s, const wchar_t* e)
             fBytes_.insert (fBytes_.end (), reinterpret_cast<const byte*> (cpStr.c_str ()), reinterpret_cast<const byte*> (cpStr.c_str () + cpStr.length ()));
             if (GetContentSizePolicy () == ContentSizePolicy::eAutoCompute) {
                 // Because for autocompute - illegal to call flush and then write
-                fContentSize_ = fBytes_.size ();
+                fHeaders_.pContentLength = fBytes_.size ();
             }
         }
     }
@@ -330,7 +326,7 @@ String Response::ToString () const
     sb += L"Socket: " + Characters::ToString (fSocket_) + L", ";
     sb += L"State_: " + Characters::ToString (fState_) + L", ";
     sb += L"StatusOverrideReason_: '" + Characters::ToString (fStatusOverrideReason_) + L"', ";
-    sb += L"Headers: " + Characters::ToString (GetEffectiveHeaders ()) + L", ";
+    sb += L"Headers: " + Characters::ToString (GetHeaders ()) + L", ";
     sb += L"}";
     return sb.str ();
 }

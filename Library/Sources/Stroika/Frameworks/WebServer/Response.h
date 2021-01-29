@@ -68,14 +68,47 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual Response& operator= (const Response&) = delete;
 
     public:
+        /**
+         *  Allow reference to the headers (modify access) - but do so in the context where we assure single threading
+         *  and that this is only done while the transaction is in progress.
+         * 
+         *  Add the given header to the list of headers to be associated with this reponse.
+         *
+         * It is legal to call anytime before Flush. Illegal to call after flush. 
+         * It is legal to call to replace existing headers values.
+         */
+        template <typename FUNCTION>
+        nonvirtual auto UpdateHeader (FUNCTION&& f);
+
+    public:
+        /**
+         *  Allow readonly access to the Headers object. This is just checked (assertions) for re-entrancy.
+         *  It can be called in any state (during transaction or after).
+         */
+        template <typename FUNCTION>
+        nonvirtual auto ReadHeader (FUNCTION&& f) const;
+
+
+    /// <summary>
+    /// /*&******&&&&&&&&&&&&&&&&&& BEOFRE COMMITING THIS - RE DO GET/SET CONTENTTYPE AND LENGTH USING THE HEADER OBJECT
+    /// </summary>
+    public:
         /*
          * Note - this refers to an HTTP "Content-Type" - which is really potentially more than just a InternetMediaType, often
          * with the characterset appended.
          *
          * SetContentType () requires GetState () == eInProgress
+         * 
+         *  NOTE - if DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (fContentType_), then
+         *  the characterset will be automatically folded into the used contentType. To avoid this, 
+         *  Use UpdateHeader() to mdofiy teh contenttype field directly.
+         * 
+         *  
          */
-        nonvirtual InternetMediaType GetContentType () const;
         nonvirtual void              SetContentType (const InternetMediaType& contentType);
+
+
+        [[deprecated ("Since Stroika 2.1b10 - use UpdateHeader()")]] InternetMediaType GetContentType () const;
 
     public:
         /*
@@ -90,6 +123,12 @@ namespace Stroika::Frameworks::WebServer {
          *      REQUIRES:
          *          GetState () == eInProgress
          *          TotalBytesWritten == 0
+         * 
+         * 
+         *          *  NOTE - if DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (fContentType_), then
+         *  the characterset will be automatically folded into the used contentType. To avoid this, 
+         *  Use UpdateHeader() to mdofiy teh contenttype field directly.
+         * 
          */
         nonvirtual Characters::CodePage GetCodePage () const;
         nonvirtual void                 SetCodePage (Characters::CodePage codePage);
@@ -221,10 +260,10 @@ namespace Stroika::Frameworks::WebServer {
          *      o   IO::Network::HTTP::HeaderName::kContentLength
          *      o   IO::Network::HTTP::HeaderName::kContentType
          *
-         * It is legal to call anytime before FLush. Illegal to call after flush. 
+         * It is legal to call anytime before Flush. Illegal to call after flush. 
          * It is legal to call to replace existing headers values.
          */
-        nonvirtual void AddHeader (const String& headerName, const String& value);
+        [[deprecated ("Since Stroika 2.1b10 - use UpdateHeader")]] void AddHeader (const String& headerName, const String& value);
 
     public:
         /*
@@ -258,13 +297,20 @@ namespace Stroika::Frameworks::WebServer {
          * This includes the user-set headers (AddHeader) and any special infered headers from other options, like
          * Connection: close, Content-Type, etc.
          */
-        nonvirtual IO::Network::HTTP::Headers GetEffectiveHeaders () const;
+        [[deprecated ("Since 2.1b10, use GetHeaders() directly")]] IO::Network::HTTP::Headers GetEffectiveHeaders () const
+        {
+            return GetHeaders ();
+        }
 
     public:
         /**
          *  @see Characters::ToString ();
          */
         nonvirtual String ToString () const;
+
+
+    private:
+        InternetMediaType AdjustContentTypeForCodePageIfNeeded_ (const InternetMediaType& ct) const;
 
     private:
         IO::Network::Socket::Ptr                 fSocket_;
@@ -274,7 +320,6 @@ namespace Stroika::Frameworks::WebServer {
         Streams::OutputStream<byte>::Ptr         fUnderlyingOutStream_;
         Streams::BufferedOutputStream<byte>::Ptr fUseOutStream_;
         IO::Network::HTTP::Headers               fHeaders_;
-        InternetMediaType                        fContentType_;
         Characters::CodePage                     fCodePage_;
         vector<byte>                             fBytes_;
         ContentSizePolicy                        fContentSizePolicy_;

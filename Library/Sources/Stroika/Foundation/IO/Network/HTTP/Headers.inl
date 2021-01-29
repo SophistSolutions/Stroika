@@ -16,6 +16,11 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      ********************************* HTTP::Headers ********************************
      ********************************************************************************
      */
+    template <>
+    inline Iterable<KeyValuePair<String, String>> Headers::As () const
+    {
+        return As<Collection<KeyValuePair<String, String>>> ();
+    }
 #if __cpp_impl_three_way_comparison >= 201907
     inline strong_ordering Headers::operator<=> (const Headers& rhs) const
     {

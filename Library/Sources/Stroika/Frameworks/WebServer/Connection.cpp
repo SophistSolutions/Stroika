@@ -347,9 +347,11 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 
         // From https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
         //      HTTP/1.1 applications that do not support persistent connections MUST include the "close" connection option in every message.
-        GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kConnection,
-                                  thisMessageKeepAlive ? L"Keep-Alive"sv : L"close"sv);
-
+        GetResponse ().UpdateHeader ([thisMessageKeepAlive] (auto* header) {
+            using IO::Network::HTTP::Headers;
+            RequireNotNull (header);
+            header->pConnection = thisMessageKeepAlive ? Headers::eKeepAlive : Headers::eClose;
+        });
         GetResponse ().End ();
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
         WriteLogConnectionMsg_ (L"Did GetResponse ().End ()");
