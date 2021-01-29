@@ -20,6 +20,8 @@ using namespace Stroika::Foundation::Streams;
 
 namespace {
     constexpr auto kHeaderNameComparer_ = String::EqualsComparer{CompareOptions::eCaseInsensitive};
+    constexpr wstring_view kKeepAlive_      = L"Keep-Alive"sv;
+    constexpr wstring_view kClose_          = L"close"sv;
 }
 
 /*
@@ -42,13 +44,12 @@ Headers::Headers ()
     , pConnection{
           [] (const auto* property) -> optional<ConnectionValue> {
               const Headers* headerObj = Memory::GetObjectOwningField (property, &Headers::pConnection);
-              using CompareOptions     = Characters::CompareOptions;
               lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
               if (auto connectionHdr = headerObj->As<Mapping<String, String>> ().Lookup (HeaderName::kConnection)) {
-                  if (kHeaderNameComparer_ (*connectionHdr, L"Keep-Alive"sv)) {
+                  if (kHeaderNameComparer_ (*connectionHdr, kKeepAlive_)) {
                       return eKeepAlive;
                   }
-                  else if (kHeaderNameComparer_ (*connectionHdr, L"close"sv)) {
+                  else if (kHeaderNameComparer_ (*connectionHdr, kClose_)) {
                       return eClose;
                   }
               }
@@ -61,10 +62,10 @@ Headers::Headers ()
               if (connectionValue) {
                   switch (*connectionValue) {
                       case ConnectionValue::eKeepAlive:
-                          v = L"Keep-Alive"sv;
+                          v = kKeepAlive_;
                           break;
                       case ConnectionValue::eClose:
-                          v = L"close"sv;
+                          v = kClose_;
                           break;
                   }
               }
