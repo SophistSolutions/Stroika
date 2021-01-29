@@ -112,7 +112,7 @@ Headers::Headers ()
                           break;
                   }
               }
-              headerObj->SetHeader (HeaderName::kConnection, v);
+              headerObj->Set (HeaderName::kConnection, v);
           }}
 {
 }
@@ -147,7 +147,7 @@ Headers::Headers (const Iterable<KeyValuePair<String, String>>& src)
     : Headers ()
 {
     for (auto kv : src) {
-        SetHeader (kv.fKey, kv.fValue);
+        Set (kv.fKey, kv.fValue);
     }
 }
 
@@ -189,30 +189,42 @@ optional<String> Headers::LookupOne (const String& name) const
     }
 }
 
-void Headers::SetHeader (const String& name, const optional<String>& value)
+void Headers::Remove (const String& headerName)
+{
+    // @todo - remove all
+    Set (headerName, nullopt);
+}
+
+void Headers::Add (const String& headerName, const String& value)
+{
+    // @todo - allow dups
+    Set (headerName, value);
+}
+
+void Headers::Set (const String& headerName, const optional<String>& value)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    if (kHeaderNameComparer_ (name, HeaderName::kCacheControl)) {
+    if (kHeaderNameComparer_ (headerName, HeaderName::kCacheControl)) {
         fCacheControl_ = value ? CacheControl::Parse (*value) : optional<CacheControl>{};
     }
-    else if (kHeaderNameComparer_ (name, HeaderName::kContentLength)) {
+    else if (kHeaderNameComparer_ (headerName, HeaderName::kContentLength)) {
         fContentLength_ = value ? String2Int<uint64_t> (*value) : optional<uint64_t>{};
     }
-    else if (kHeaderNameComparer_ (name, HeaderName::kContentType)) {
+    else if (kHeaderNameComparer_ (headerName, HeaderName::kContentType)) {
         fContentType_ = value ? InternetMediaType{*value} : optional<InternetMediaType>{};
     }
-    else if (kHeaderNameComparer_ (name, HeaderName::kETag)) {
+    else if (kHeaderNameComparer_ (headerName, HeaderName::kETag)) {
         fETag_ = value ? ETag::Parse (*value) : optional<ETag>{};
     }
-    else if (kHeaderNameComparer_ (name, HeaderName::kIfNoneMatch)) {
+    else if (kHeaderNameComparer_ (headerName, HeaderName::kIfNoneMatch)) {
         fIfNoneMatch_ = value ? IfNoneMatch::Parse (*value) : optional<IfNoneMatch>{};
     }
     else {
         if (value) {
-            fExtraHeaders_.Add (KeyValuePair<String, String>{name, *value});
+            fExtraHeaders_.Add (KeyValuePair<String, String>{headerName, *value});
         }
         else {
-            fExtraHeaders_.Remove ([=] (const auto& i) { return kHeaderNameComparer_ (i.fKey, name); });
+            fExtraHeaders_.Remove ([=] (const auto& i) { return kHeaderNameComparer_ (i.fKey, headerName); });
         }
     }
 }

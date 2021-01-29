@@ -28,7 +28,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     using Containers::Mapping;
     using DataExchange::InternetMediaType;
     using Traversal::Iterable;
-   
+
     /** 
      * standard HTTP headers one might want to access/retrieve
      */
@@ -88,9 +88,22 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
+         *  @todo support case where name appears more than once - NYI
+         */
+        nonvirtual void Add (const String& headerName, const String& value);
+
+    public:
+        /**
+         *  Remove ALL occurrances of the given header name.
+         *  (@todo overload that take headerName and value)
+         */
+        nonvirtual void Remove (const String& headerName);
+
+    public:
+        /**
          *  Set to any string value, or to nullopt to clear the option.
          */
-        nonvirtual void SetHeader (const String& name, const optional<String>& value);
+        nonvirtual void Set (const String& headerName, const optional<String>& value);
 
     public:
         /**
