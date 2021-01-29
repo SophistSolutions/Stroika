@@ -16,6 +16,7 @@
 #include "../../Foundation/Containers/Mapping.h"
 #include "../../Foundation/DataExchange/InternetMediaType.h"
 #include "../../Foundation/Debug/AssertExternallySynchronizedLock.h"
+#include "../../Foundation/IO/Network/HTTP/Headers.h"
 #include "../../Foundation/IO/Network/HTTP/Status.h"
 #include "../../Foundation/IO/Network/Socket.h"
 #include "../../Foundation/Memory/BLOB.h"
@@ -24,10 +25,6 @@
 
 /*
  * TODO:
- *      @todo   Redo using Association, and maybe BLOB - anyhow - use Stroika types...
- *              (not sure but I think some headers can appear more than once, so Association not Mapping for
- *              headers).
- *
  *      @todo   REDO THE HTTPRESPONSE USING A BINARY OUTPUT STREAM.
  *              INTERNALLY - based on code page - construct a TEXTOUTPUTSTREAM wrapping that binary output stream!!!
  *
@@ -254,14 +251,14 @@ namespace Stroika::Frameworks::WebServer {
          *
          *  @see GetEffectiveHeaders ()
          */
-        nonvirtual Mapping<String, String> GetHeaders () const;
+        nonvirtual IO::Network::HTTP::Headers GetHeaders () const;
 
     public:
         /**
          * This includes the user-set headers (AddHeader) and any special infered headers from other options, like
          * Connection: close, Content-Type, etc.
          */
-        nonvirtual Mapping<String, String> GetEffectiveHeaders () const;
+        nonvirtual IO::Network::HTTP::Headers GetEffectiveHeaders () const;
 
     public:
         /**
@@ -276,7 +273,7 @@ namespace Stroika::Frameworks::WebServer {
         String                                   fStatusOverrideReason_;
         Streams::OutputStream<byte>::Ptr         fUnderlyingOutStream_;
         Streams::BufferedOutputStream<byte>::Ptr fUseOutStream_;
-        Mapping<String, String>                  fHeaders_;
+        IO::Network::HTTP::Headers               fHeaders_;
         InternetMediaType                        fContentType_;
         Characters::CodePage                     fCodePage_;
         vector<byte>                             fBytes_;

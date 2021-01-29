@@ -134,7 +134,7 @@ void Response::AppendToCommaSeperatedHeader (const String& headerName, const Str
 {
     Require (not value.empty ());
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    if (auto o = fHeaders_.Lookup (headerName)) {
+    if (auto o = fHeaders_.LookupOne (headerName)) {
         if (o->empty ()) {
             AddHeader (headerName, value);
         }
@@ -151,7 +151,7 @@ void Response::ClearHeaders ()
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     Require (fState_ == State::eInProgress);
-    fHeaders_.clear ();
+    fHeaders_ = IO::Network::HTTP::Headers{};
 }
 
 void Response::ClearHeader (const String& headerName)
@@ -162,22 +162,22 @@ void Response::ClearHeader (const String& headerName)
     fHeaders_.Remove (headerName);
 }
 
-Mapping<String, String> Response::GetHeaders () const
+IO::Network::HTTP::Headers Response::GetHeaders () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     return fHeaders_;
 }
 
-Mapping<String, String> Response::GetEffectiveHeaders () const
+IO::Network::HTTP::Headers Response::GetEffectiveHeaders () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    Mapping<String, String>                             tmp = GetHeaders ();
+    IO::Network::HTTP::Headers                          tmp = GetHeaders ();
     switch (GetContentSizePolicy ()) {
         case ContentSizePolicy::eAutoCompute:
         case ContentSizePolicy::eExact: {
             wostringstream buf;
             buf << fContentSize_;
-            tmp.Add (IO::Network::HTTP::HeaderName::kContentLength, buf.str ());
+            tmp.Set (IO::Network::HTTP::HeaderName::kContentLength, buf.str ());
         } break;
     }
     if (not fContentType_.empty ()) {
@@ -189,7 +189,7 @@ Mapping<String, String> Response::GetEffectiveHeaders () const
             params.Add (L"charset"sv, Characters::GetCharsetString (fCodePage_), AddReplaceMode::eAddIfMissing);
             useContentType = InternetMediaType{useContentType.GetType<AtomType> (), useContentType.GetSubType<AtomType> (), useContentType.GetSuffix (), params};
         }
-        tmp.Add (IO::Network::HTTP::HeaderName::kContentType, useContentType.As<wstring> ());
+        tmp.Set (IO::Network::HTTP::HeaderName::kContentType, useContentType.As<wstring> ());
     }
     return tmp;
 }
@@ -211,7 +211,7 @@ void Response::Flush ()
         }
 
         {
-            Mapping<String, String> headers2Write = GetEffectiveHeaders ();
+            Mapping<String, String> headers2Write = GetEffectiveHeaders ().As<Mapping<String, String>> ();
             for (const auto& i : headers2Write) {
                 string utf8 = Characters::Format (L"%s: %s\r\n", i.fKey.c_str (), i.fValue.c_str ()).AsUTF8 ();
                 fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (utf8)), reinterpret_cast<const byte*> (Containers::End (utf8)));
