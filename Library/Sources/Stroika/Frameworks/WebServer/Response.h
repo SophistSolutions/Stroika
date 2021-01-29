@@ -57,7 +57,7 @@ namespace Stroika::Frameworks::WebServer {
     public:
         Response ()                    = delete;
         Response (const Response&)     = delete;
-        Response (Response&&) noexcept = default;
+        Response (Response&&)  = default;
         Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream<byte>::Ptr& outStream, const InternetMediaType& ct);
 
     public:
