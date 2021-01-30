@@ -88,10 +88,6 @@ namespace Stroika::Frameworks::WebServer {
         template <typename FUNCTION>
         nonvirtual auto ReadHeader (FUNCTION&& f) const;
 
-
-    /// <summary>
-    /// /*&******&&&&&&&&&&&&&&&&&& BEOFRE COMMITING THIS - RE DO GET/SET CONTENTTYPE AND LENGTH USING THE HEADER OBJECT
-    /// </summary>
     public:
         /*
          * Note - this refers to an HTTP "Content-Type" - which is really potentially more than just a InternetMediaType, often
@@ -102,12 +98,10 @@ namespace Stroika::Frameworks::WebServer {
          *  NOTE - if DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (fContentType_), then
          *  the characterset will be automatically folded into the used contentType. To avoid this, 
          *  Use UpdateHeader() to mdofiy teh contenttype field directly.
-         * 
-         *  
          */
-        nonvirtual void              SetContentType (const InternetMediaType& contentType);
+        nonvirtual void    SetContentType (const InternetMediaType& contentType);
 
-
+    public:
         [[deprecated ("Since Stroika 2.1b10 - use UpdateHeader()")]] InternetMediaType GetContentType () const;
 
     public:
@@ -124,10 +118,9 @@ namespace Stroika::Frameworks::WebServer {
          *          GetState () == eInProgress
          *          TotalBytesWritten == 0
          * 
-         * 
-         *          *  NOTE - if DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (fContentType_), then
-         *  the characterset will be automatically folded into the used contentType. To avoid this, 
-         *  Use UpdateHeader() to mdofiy teh contenttype field directly.
+         * \note - if DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (fContentType_), then
+         *         the characterset will be automatically folded into the used contentType. To avoid this, 
+         *         Use UpdateHeader() to mdofiy teh contenttype field directly.
          * 
          */
         nonvirtual Characters::CodePage GetCodePage () const;
@@ -253,16 +246,6 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual void SetStatus (Status newStatus, const String& overrideReason = wstring{});
 
     public:
-        /*
-         *  Add the given 'non-special' header to the list of headers to be associated with this reponse.
-         *  Certain SPECIAL headers are handled differently, via other attributes of the request. The special headers
-         *  that cannot be specified here include:
-         *      o   IO::Network::HTTP::HeaderName::kContentLength
-         *      o   IO::Network::HTTP::HeaderName::kContentType
-         *
-         * It is legal to call anytime before Flush. Illegal to call after flush. 
-         * It is legal to call to replace existing headers values.
-         */
         [[deprecated ("Since Stroika 2.1b10 - use UpdateHeader")]] void AddHeader (const String& headerName, const String& value);
 
     public:
@@ -293,10 +276,6 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual IO::Network::HTTP::Headers GetHeaders () const;
 
     public:
-        /**
-         * This includes the user-set headers (AddHeader) and any special infered headers from other options, like
-         * Connection: close, Content-Type, etc.
-         */
         [[deprecated ("Since 2.1b10, use GetHeaders() directly")]] IO::Network::HTTP::Headers GetEffectiveHeaders () const
         {
             return GetHeaders ();
@@ -307,7 +286,6 @@ namespace Stroika::Frameworks::WebServer {
          *  @see Characters::ToString ();
          */
         nonvirtual String ToString () const;
-
 
     private:
         InternetMediaType AdjustContentTypeForCodePageIfNeeded_ (const InternetMediaType& ct) const;
