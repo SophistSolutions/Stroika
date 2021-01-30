@@ -82,13 +82,12 @@ struct Router::Rep_ : Interceptor::_IRep {
             if (r.fVerbMatch_ and not method.Match (*r.fVerbMatch_)) {
                 continue;
             }
-            if (matches == nullptr) {
-                if (r.fPathMatch_ and not hostRelPath.Match (*r.fPathMatch_)) {
-                    continue;
-                }
-            }
-            else {
-                if (r.fPathMatch_ and not hostRelPath.Match (*r.fPathMatch_, matches)) {
+            if (r.fPathMatch_) {
+                bool matchesPath = (matches == nullptr) 
+                    ? hostRelPath.Match (*r.fPathMatch_) 
+                    : hostRelPath.Match (*r.fPathMatch_, matches)
+                    ;
+                if (not matchesPath) {
                     continue;
                 }
             }

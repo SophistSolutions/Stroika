@@ -99,12 +99,10 @@ namespace Stroika::Frameworks::WebServer {
         Router (const Sequence<Route>& routes);
 
     public:
-        // typically just examine host-relative part of URL
+        /**
+         * typically just examine host-relative part of URL, routes CAN examine any part of the request
+         */
         nonvirtual optional<RequestHandler> Lookup (const Request& request) const;
-
-        //public:
-        // typically just examine host-relative part of URL
-        //    nonvirtual  optional<Handler>   Lookup (const String& method, const URI& url) const;
 
     private:
         struct Rep_;

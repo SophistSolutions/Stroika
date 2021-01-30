@@ -18,19 +18,19 @@ namespace Stroika::Frameworks::WebServer {
      ********************************************************************************
      */
     inline Route::Route (const RegularExpression& verbMatch, const RegularExpression& pathMatch, const RequestHandler& handler)
-        : fVerbMatch_ (verbMatch)
-        , fPathMatch_ (pathMatch)
-        , fHandler_ (handler)
+        : fVerbMatch_{verbMatch}
+        , fPathMatch_{pathMatch}
+        , fHandler_{handler}
     {
     }
     inline Route::Route (const RegularExpression& pathMatch, const RequestHandler& handler)
-        : fPathMatch_ (pathMatch)
-        , fHandler_ (handler)
+        : fPathMatch_{pathMatch}
+        , fHandler_{handler}
     {
     }
     inline Route::Route (const function<bool (const Request&)>& requestMatcher, const RequestHandler& handler)
-        : fRequestMatch_ (requestMatcher)
-        , fHandler_ (handler)
+        : fRequestMatch_{requestMatcher}
+        , fHandler_{handler}
     {
     }
 
