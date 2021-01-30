@@ -11,6 +11,7 @@
 #include "../../../Configuration/Common.h"
 #include "../../../Containers/Collection.h"
 #include "../../../Containers/Mapping.h"
+#include "../../../Containers/Set.h"
 #include "../../../DataExchange/InternetMediaType.h"
 #include "../../../Debug/AssertExternallySynchronizedLock.h"
 
@@ -34,31 +35,31 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      */
     namespace HeaderName {
 
-        constexpr wstring_view kCacheControl                  = L"Cache-Control"sv;
-        constexpr wstring_view kContentLength                 = L"Content-Length"sv;
-        constexpr wstring_view kContentType                   = L"Content-Type"sv;
-        constexpr wstring_view kConnection                    = L"Connection"sv;
-        constexpr wstring_view kServer                        = L"Server"sv;
-        constexpr wstring_view kDate                          = L"Date"sv;
-        constexpr wstring_view kETag                          = L"ETag"sv;
-        constexpr wstring_view kLastModified                  = L"Last-Modified"sv;
-        constexpr wstring_view kUserAgent                     = L"User-Agent"sv;
-        constexpr wstring_view kSOAPAction                    = L"SOAPAction"sv;
         constexpr wstring_view kAcceptEncoding                = L"Accept-Encoding"sv;
-        constexpr wstring_view kExpect                        = L"Expect"sv;
-        constexpr wstring_view kExpires                       = L"Expires"sv;
-        constexpr wstring_view kTransferEncoding              = L"Transfer-Encoding"sv;
+        constexpr wstring_view kAllow                         = L"Allow"sv;
         constexpr wstring_view kAccessControlAllowCredentials = L"Access-Control-Allow-Credentials"sv;
         constexpr wstring_view kAccessControlAllowOrigin      = L"Access-Control-Allow-Origin"sv;
         constexpr wstring_view kAccessControlAllowHeaders     = L"Access-Control-Allow-Headers"sv;
         constexpr wstring_view kAccessControlAllowMethods     = L"Access-Control-Allow-Methods"sv;
         constexpr wstring_view kAccessControlMaxAge           = L"Access-Control-Max-Age"sv;
         constexpr wstring_view kAuthorization                 = L"Authorization"sv;
-        constexpr wstring_view kAllow                         = L"Allow"sv;
-        constexpr wstring_view kKeepAlive                     = L"Keep-Alive"sv;
-        constexpr wstring_view kReferrer                      = L"Referer"sv; // intentionally spelled this way - misspelled in the HTTP RFC
+        constexpr wstring_view kCacheControl                  = L"Cache-Control"sv;
+        constexpr wstring_view kContentLength                 = L"Content-Length"sv;
+        constexpr wstring_view kContentType                   = L"Content-Type"sv;
+        constexpr wstring_view kConnection                    = L"Connection"sv;
+        constexpr wstring_view kDate                          = L"Date"sv;
+        constexpr wstring_view kETag                          = L"ETag"sv;
+        constexpr wstring_view kExpect                        = L"Expect"sv;
+        constexpr wstring_view kExpires                       = L"Expires"sv;
         constexpr wstring_view kIfNoneMatch                   = L"If-None-Match"sv;
         constexpr wstring_view kIfModifiedSince               = L"If-Modified-Since"sv;
+        constexpr wstring_view kKeepAlive                     = L"Keep-Alive"sv;
+        constexpr wstring_view kLastModified                  = L"Last-Modified"sv;
+        constexpr wstring_view kReferrer                      = L"Referer"sv; // intentionally spelled this way - misspelled in the HTTP RFC
+        constexpr wstring_view kServer                        = L"Server"sv;
+        constexpr wstring_view kSOAPAction                    = L"SOAPAction"sv;
+        constexpr wstring_view kTransferEncoding              = L"Transfer-Encoding"sv;
+        constexpr wstring_view kUserAgent                     = L"User-Agent"sv;
 
     }
 
@@ -104,6 +105,15 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  Set to any string value, or to nullopt to clear the option.
          */
         nonvirtual void Set (const String& headerName, const optional<String>& value);
+
+    public:
+        /**
+         *  Property with the optional<CacheControl> value of the Allow header.
+         *  \see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Allow
+         *
+         *  This property automatically parses the header into an set of strings (because order here doesn't matter) 
+         */
+        Common::Property<optional<Containers::Set<String>>> pAllow;
 
     public:
         /**

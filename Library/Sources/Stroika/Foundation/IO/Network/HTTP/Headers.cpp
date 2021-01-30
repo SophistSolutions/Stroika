@@ -6,6 +6,7 @@
 #include "../../../Characters/Format.h"
 #include "../../../Characters/String2Int.h"
 #include "../../../Characters/ToString.h"
+#include "../../../Containers/Set.h"
 #include "../../../Memory/ObjectFieldUtilities.h"
 
 #include "Headers.h"
@@ -30,7 +31,24 @@ namespace {
  ********************************************************************************
  */
 Headers::Headers ()
-    : pCacheControl{
+    : pAllow{[] (const auto* property) -> optional<Containers::Set<String>> {
+                 const Headers*                                     headerObj = Memory::GetObjectOwningField (property, &Headers::pAllow);
+                 lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
+                 if (auto hdr = headerObj->As<Mapping<String, String>> ().Lookup (HeaderName::kAllow)) {
+                     return Containers::Set<String>{hdr->Tokenize ({','})};
+                 }
+                 return nullopt;
+             },
+             [] (auto* property, const auto& allowed) {
+                 Headers*                                           headerObj = Memory::GetObjectOwningField (property, &Headers::pAllow);
+                 lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
+                 optional<String>                                   v;
+                 if (allowed) {
+                     v = String::Join (*allowed);
+                 }
+                 headerObj->Set (HeaderName::kAllow, v);
+             }}
+    , pCacheControl{
           [] (const auto* property) {
               const Headers*                                     headerObj = Memory::GetObjectOwningField (property, &Headers::pCacheControl);
               lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};

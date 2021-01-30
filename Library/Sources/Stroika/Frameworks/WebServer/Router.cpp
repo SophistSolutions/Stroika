@@ -55,14 +55,12 @@ struct Router::Rep_ : Interceptor::_IRep {
                 //      The method specified in the Request-Line is not allowed for the resource identified by the Request-URI.
                 //      The response MUST include an Allow header containing a list of valid methods for the requested resource.
                 Assert (not o->empty ());
-                StringBuilder res;
-                o->Apply ([&res] (const String& i) { if (not res.empty ()) { res += L", "; } res += i; });
-                m->PeekResponse ()->UpdateHeader ([&] (auto* header) { RequireNotNull (header); header->Set (HTTP::HeaderName::kAllow, res.str ()); });
-                Execution::Throw (ClientErrorException (HTTP::StatusCodes::kMethodNotAllowed));
+                m->PeekResponse ()->UpdateHeader ([&] (auto* header) { RequireNotNull (header); header->pAllow = o; });
+                Execution::Throw (ClientErrorException{HTTP::StatusCodes::kMethodNotAllowed});
             }
             else {
                 DbgTrace (L"Router 404: (...url=%s)", Characters::ToString (m->GetRequestURL ()).c_str ());
-                Execution::Throw (ClientErrorException (HTTP::StatusCodes::kNotFound));
+                Execution::Throw (ClientErrorException{HTTP::StatusCodes::kNotFound});
             }
         }
     }
@@ -76,7 +74,7 @@ struct Router::Rep_ : Interceptor::_IRep {
             hostRelPath = url.GetAbsPath<String> ().SubString (1); // According to https://tools.ietf.org/html/rfc2616#section-5.1.2 - the URI must be abs_path
         }
         catch (...) {
-            Execution::Throw (ClientErrorException (HTTP::StatusCodes::kBadRequest, L"request URI requires an absolute path"sv));
+            Execution::Throw (ClientErrorException{HTTP::StatusCodes::kBadRequest, L"request URI requires an absolute path"sv});
         }
 
         // We interpret routes as matching against a relative path from the root
