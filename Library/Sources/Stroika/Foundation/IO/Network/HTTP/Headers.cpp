@@ -142,7 +142,7 @@ Headers::Headers ()
            }
            return nullopt;
        },
-       [] (auto* property, const auto& location) {
+       [] (auto* property, const optional<URI>& location) {
            Headers*                                           headerObj = Memory::GetObjectOwningField (property, &Headers::pLocation);
            lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
             headerObj->Set (HeaderName::kLocation, location ? location->As<String> () : optional<String>{});
