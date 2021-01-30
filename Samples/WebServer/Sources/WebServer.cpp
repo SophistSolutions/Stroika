@@ -15,6 +15,7 @@
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
+#include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
 #include "Stroika/Foundation/Streams/TextReader.h"
 
 #include "Stroika/Frameworks/WebServer/ConnectionManager.h"
@@ -28,6 +29,7 @@ using namespace std;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::IO::Network;
+using namespace Stroika::Foundation::IO::Network::HTTP;
 using namespace Stroika::Frameworks::WebServer;
 
 using Characters::String;
@@ -49,16 +51,18 @@ namespace {
         {
             Sequence<Route>
             {
-                Route{L""_RegEx, DefaultPage_},
-                    Route{L"POST"_RegEx, L"SetAppState"_RegEx, SetAppState_},
-                    Route{L"GET"_RegEx, L"FRED"_RegEx, [] (Request*, Response* response) {
+                Route{MethodsRegEx::kGet, L""_RegEx, DefaultPage_},
+                    Route{MethodsRegEx::kPost, L"SetAppState"_RegEx, SetAppState_},
+                    Route{MethodsRegEx::kGet, L"FRED"_RegEx, [] (Request*, Response* response) {
                               response->write (L"FRED");
                               response->SetContentType (DataExchange::InternetMediaTypes::kText_PLAIN);
                           }},
-                    Route{
+                    Route
+                {
+                    MethodsRegEx::kGet,
                         L"Files/.*"_RegEx,
                         FileSystemRouter{Execution::GetEXEDir () / L"html", L"Files"_k, Sequence<String>{L"index.html"_k}},
-                    },
+                }
             }
         }
 #if __cpp_designated_initializers

@@ -25,7 +25,6 @@ Objs	=	\
 	$(ObjDir)Exception${OBJ_SUFFIX}\
 	$(ObjDir)Headers${OBJ_SUFFIX}\
 	$(ObjDir)MessageStartTextInputStreamBinaryAdapter${OBJ_SUFFIX}\
-	$(ObjDir)Methods${OBJ_SUFFIX}\
 
 
 all:	$(Objs)

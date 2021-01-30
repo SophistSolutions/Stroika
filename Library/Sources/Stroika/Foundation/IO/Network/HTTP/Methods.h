@@ -32,14 +32,16 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         constexpr wstring_view kOptions = L"OPTIONS"sv;
     }
 
-    namespace MethodsRegularExpressions {
-        extern const Characters::RegularExpression kGet;
-        extern const Characters::RegularExpression kPatch;
-        extern const Characters::RegularExpression kPut;
-        extern const Characters::RegularExpression kPost;
-        extern const Characters::RegularExpression kPostOrPut;
-        extern const Characters::RegularExpression kDelete;
-        extern const Characters::RegularExpression kOptions;
+    namespace MethodsRegEx {
+        using namespace Characters;
+        inline const RegularExpression kANY       = L".*"_RegEx; /*RegularExpression::kAny*/
+        inline const RegularExpression kGet       = L"GET"_RegEx;
+        inline const RegularExpression kPut       = L"PUT"_RegEx;
+        inline const RegularExpression kPatch     = L"PATCH"_RegEx;
+        inline const RegularExpression kPost      = L"POST"_RegEx;
+        inline const RegularExpression kPostOrPut = L"PUT|POST"_RegEx;
+        inline const RegularExpression kDelete    = L"DELETE"_RegEx;
+        inline const RegularExpression kOptions   = L"OPTIONS"_RegEx;
     }
 
 }

@@ -83,10 +83,9 @@ struct Router::Rep_ : Interceptor::_IRep {
                 continue;
             }
             if (r.fPathMatch_) {
-                bool matchesPath = (matches == nullptr) 
-                    ? hostRelPath.Match (*r.fPathMatch_) 
-                    : hostRelPath.Match (*r.fPathMatch_, matches)
-                    ;
+                bool matchesPath = (matches == nullptr)
+                                       ? hostRelPath.Match (*r.fPathMatch_)
+                                       : hostRelPath.Match (*r.fPathMatch_, matches);
                 if (not matchesPath) {
                     continue;
                 }
