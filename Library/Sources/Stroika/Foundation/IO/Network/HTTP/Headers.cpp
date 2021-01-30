@@ -133,11 +133,25 @@ Headers::Headers ()
               lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
               headerObj->fIfNoneMatch_ = ifNoneMatch;
           }}
+    , pLocation{
+        [] (const auto* property) -> optional<URI> {
+           const Headers*                                     headerObj = Memory::GetObjectOwningField (property, &Headers::pLocation);
+           lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
+           if (auto hdr = headerObj->As<Mapping<String, String>> ().Lookup (HeaderName::kLocation)) {
+               return URI::Parse (*hdr);
+           }
+           return nullopt;
+       },
+       [] (auto* property, const auto& location) {
+           Headers*                                           headerObj = Memory::GetObjectOwningField (property, &Headers::pLocation);
+           lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
+            headerObj->Set (HeaderName::kLocation, location ? location->As<String> () : optional<String>{});
+       }}
 {
 }
 
 Headers::Headers (const Headers& src)
-    : Headers ()
+    : Headers{}
 {
     // NOTE properties and fields refer to the same thing. COULD copy properties, but cheaper to just 'initialize' the fields
     // However, cannot mix initialize with calling delegated CTOR, so do the slightly more inefficent way to avoid duplicative code

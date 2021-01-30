@@ -259,7 +259,7 @@ void Response::Abort ()
     Ensure (fBytes_.empty ());
 }
 
-void Response::Redirect (const String& url)
+void Response::Redirect (const URI& url)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     Require (fState_ == State::eInProgress);
@@ -267,7 +267,7 @@ void Response::Redirect (const String& url)
 
     // PERHAPS should clear some header values???
     fHeaders_.pConnection = IO::Network::HTTP::Headers::eClose;
-    fHeaders_.Set (L"Location"sv, url);
+    fHeaders_.pLocation   = url;
     SetStatus (StatusCodes::kMovedPermanently);
     Flush ();
     fState_ = State::eCompleted;

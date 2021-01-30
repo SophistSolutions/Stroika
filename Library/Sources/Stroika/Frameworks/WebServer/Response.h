@@ -19,6 +19,7 @@
 #include "../../Foundation/IO/Network/HTTP/Headers.h"
 #include "../../Foundation/IO/Network/HTTP/Status.h"
 #include "../../Foundation/IO/Network/Socket.h"
+#include "../../Foundation/IO/Network/URI.h"
 #include "../../Foundation/Memory/BLOB.h"
 #include "../../Foundation/Streams/BufferedOutputStream.h"
 #include "../../Foundation/Streams/OutputStream.h"
@@ -43,6 +44,7 @@ namespace Stroika::Frameworks::WebServer {
     using std::byte;
 
     using namespace Stroika::Foundation;
+    using namespace Stroika::Foundation::IO::Network;
     using namespace Stroika::Foundation::IO::Network::HTTP;
 
     using Characters::String;
@@ -191,7 +193,7 @@ namespace Stroika::Frameworks::WebServer {
         /**
          * Only legal to call if state is eInProgress. It sets the state to eCompleted.
          */
-        nonvirtual void Redirect (const String& url);
+        nonvirtual void Redirect (const URI& url);
 
     public:
         /**

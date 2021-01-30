@@ -15,6 +15,8 @@
 #include "../../../DataExchange/InternetMediaType.h"
 #include "../../../Debug/AssertExternallySynchronizedLock.h"
 
+#include "../URI.h"
+
 #include "CacheControl.h"
 #include "ETag.h"
 #include "IfNoneMatch.h"
@@ -55,6 +57,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         constexpr wstring_view kIfModifiedSince               = L"If-Modified-Since"sv;
         constexpr wstring_view kKeepAlive                     = L"Keep-Alive"sv;
         constexpr wstring_view kLastModified                  = L"Last-Modified"sv;
+        constexpr wstring_view kLocation                  = L"Location"sv;
         constexpr wstring_view kReferrer                      = L"Referer"sv; // intentionally spelled this way - misspelled in the HTTP RFC
         constexpr wstring_view kServer                        = L"Server"sv;
         constexpr wstring_view kSOAPAction                    = L"SOAPAction"sv;
@@ -172,6 +175,13 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  Property with the optional<IfNoneMatch> value of the IF-None-Match header.
          */
         Common::Property<optional<IfNoneMatch>> pIfNoneMatch;
+
+    public:
+        /**
+         *  Property with the optional<URI> value of the Location header.
+         *  https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Location
+         */
+        Common::Property<optional<URI>> pLocation;
 
     public:
         /**
