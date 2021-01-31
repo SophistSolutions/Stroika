@@ -23,37 +23,43 @@ namespace {
         if (effectiveReason.empty ()) {
             switch (status) {
                 case StatusCodes::kOK:
-                    effectiveReason = L"OK";
+                    effectiveReason = L"OK"sv;
+                    break;
+                case StatusCodes::kCreated:
+                    effectiveReason = L"Created"sv;
+                    break;
+                case StatusCodes::kNoContent:
+                    effectiveReason = L"No Content"sv;
                     break;
                 case StatusCodes::kMovedPermanently:
-                    effectiveReason = L"Moved Permanently";
+                    effectiveReason = L"Moved Permanently"sv;
                     break;
                 case StatusCodes::kUnauthorized:
-                    effectiveReason = L"Unauthorized access";
+                    effectiveReason = L"Unauthorized access"sv;
                     break;
                 case 402:
-                    effectiveReason = L"Payment required";
+                    effectiveReason = L"Payment required"sv;
                     break;
                 case 403:
-                    effectiveReason = L"Forbidden";
+                    effectiveReason = L"Forbidden"sv;
                     break;
                 case StatusCodes::kNotFound:
-                    effectiveReason = L"URL not found";
+                    effectiveReason = L"URL not found"sv;
                     break;
                 case StatusCodes::kMethodNotAllowed:
-                    effectiveReason = L"Method Not allowed";
+                    effectiveReason = L"Method Not allowed"sv;
                     break;
                 case 410:
-                    effectiveReason = L"Gone (service has been discontinued)";
+                    effectiveReason = L"Gone (service has been discontinued)"sv;
                     break;
                 case 413:
-                    effectiveReason = L"Request entity too large";
+                    effectiveReason = L"Request entity too large"sv;
                     break;
                 case 415:
-                    effectiveReason = L"Unsupported media type";
+                    effectiveReason = L"Unsupported media type"sv;
                     break;
                 case StatusCodes::kServiceUnavailable:
-                    effectiveReason = L"Service temporarily unavailable: try again later";
+                    effectiveReason = L"Service temporarily unavailable: try again later"sv;
                     break;
             }
         }
@@ -87,9 +93,9 @@ namespace {
  ********************************************************************************
  */
 Exception::Exception (Status status, const String& reason)
-    : Execution::RuntimeErrorException<> (mkExceptionMessage_ (status, reason))
-    , fStatus_ (status)
-    , fReason_ (reason)
+    : Execution::RuntimeErrorException<>{mkExceptionMessage_ (status, reason)}
+    , fStatus_{status}
+    , fReason_{reason}
 {
 }
 

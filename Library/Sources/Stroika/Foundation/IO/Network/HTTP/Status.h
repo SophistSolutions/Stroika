@@ -19,6 +19,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     namespace StatusCodes {
         constexpr Status kOK      = 200;
         constexpr Status kCreated = 201;
+         constexpr Status kNoContent = 204;
 
         constexpr Status kMovedPermanently = 301;
         constexpr Status kNotModified      = 304;
