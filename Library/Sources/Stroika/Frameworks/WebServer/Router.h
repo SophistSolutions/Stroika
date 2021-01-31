@@ -10,7 +10,6 @@
 #include "../../Foundation/Characters/String.h"
 #include "../../Foundation/Containers/Sequence.h"
 #include "../../Foundation/Execution/Synchronized.h"
-#include "../../Foundation/IO/Network/URI.h"
 
 #include "Interceptor.h"
 #include "Request.h"
@@ -46,7 +45,6 @@ namespace Stroika::Frameworks::WebServer {
     using Characters::RegularExpression;
     using Characters::String;
     using Containers::Sequence;
-    using IO::Network::URI;
 
     class Router;
 
@@ -73,14 +71,25 @@ namespace Stroika::Frameworks::WebServer {
     public:
         /**
          *  Any route to apply the handler, must match ALL argument constraints.
+         *  If verbMatch is omitted, it it assumed to be 
          */
         Route (const RegularExpression& verbMatch, const RegularExpression& pathMatch, const RequestHandler& handler);
         Route (const RegularExpression& pathMatch, const RequestHandler& handler);
         Route (const function<bool (const String& method, const String& hostRelPath, const Request& request)>& requestMatcher, const RequestHandler& handler);
 
+    public:
+        /**
+         * Check if the given request matches this Route.
+         * Overload taking method/hostRelPath can be derived from request, but can be substituted with different values.
+         * Overload with optional matcehs returns variable matches in the regexp for the path
+         * 
+         * We interpret routes as matching against a relative path from the root
+         */
+        nonvirtual bool Matches (const Request& request, Sequence<String>* pathRegExpMatches = nullptr) const;
+        nonvirtual bool Matches (const String& method, const String& hostRelPath, const Request& request, Sequence<String>* pathRegExpMatches = nullptr) const;
+
     private:
-        optional<RegularExpression>               fVerbMatch_;
-        optional<RegularExpression>               fPathMatch_;
+        optional<pair<RegularExpression,RegularExpression>>               fVerbAndPathMatch_;
         optional<function<bool (const String& method, const String& hostRelPath, const Request& request)>> fRequestMatch_;
         RequestHandler                            fHandler_;
 

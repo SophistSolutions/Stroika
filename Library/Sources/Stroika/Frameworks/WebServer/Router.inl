@@ -9,6 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "../../Foundation/IO/Network/HTTP/Methods.h"
 
 namespace Stroika::Frameworks::WebServer {
 
@@ -18,14 +19,12 @@ namespace Stroika::Frameworks::WebServer {
      ********************************************************************************
      */
     inline Route::Route (const RegularExpression& verbMatch, const RegularExpression& pathMatch, const RequestHandler& handler)
-        : fVerbMatch_{verbMatch}
-        , fPathMatch_{pathMatch}
+        : fVerbAndPathMatch_{make_pair (verbMatch, pathMatch)}
         , fHandler_{handler}
     {
     }
     inline Route::Route (const RegularExpression& pathMatch, const RequestHandler& handler)
-        : fPathMatch_{pathMatch}
-        , fHandler_{handler}
+        : Route{IO::Network::HTTP::MethodsRegEx::kGet, pathMatch, handler}
     {
     }
     inline Route::Route (const function<bool (const String& method, const String& hostRelPath, const Request& request)>& requestMatcher, const RequestHandler& handler)

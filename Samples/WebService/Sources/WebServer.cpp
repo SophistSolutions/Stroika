@@ -71,7 +71,7 @@ public:
 
                   Route{MethodsRegEx::kPost, L"SetAppState"_RegEx, SetAppState_},
 
-                  Route{MethodsRegEx::kGet, L"FRED"_RegEx, [] (Request*, Response* response) {
+                  Route{L"FRED"_RegEx, [] (Request*, Response* response) {
                             response->write (L"FRED");
                             response->SetContentType (DataExchange::InternetMediaTypes::kText_PLAIN);
                         }},
@@ -80,10 +80,10 @@ public:
                    * the 'variable' API demonstrates a typical REST style CRUD usage - where the 'arguments' mainly come from 
                    * the URL itself.
                    */
-                  Route{MethodsRegEx::kGet, L"variables(/?)"_RegEx, [this] (Message* m) {
+                  Route{L"variables(/?)"_RegEx, [this] (Message* m) {
                             WriteResponse (m->PeekResponse (), kVariables_, kMapper.FromObject (fWSImpl_->Variables_GET ()));
                         }},
-                  Route{MethodsRegEx::kGet, L"variables/(.+)"_RegEx, [this] (Message* m, const String& varName) {
+                  Route{L"variables/(.+)"_RegEx, [this] (Message* m, const String& varName) {
                             WriteResponse (m->PeekResponse (), kVariables_, kMapper.FromObject (fWSImpl_->Variables_GET (varName)));
                         }},
                   Route{MethodsRegEx::kPostOrPut, L"variables/(.+)"_RegEx, [this] (Message* m, const String& varName) {

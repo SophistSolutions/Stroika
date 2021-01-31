@@ -25,6 +25,46 @@ using HTTP::ClientErrorException;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
+namespace {
+    String ExtractHostRelPath_ (const URI& url)
+    {
+        try {
+            return url.GetAbsPath<String> ().SubString (1); // According to https://tools.ietf.org/html/rfc2616#section-5.1.2 - the URI must be abs_path
+        }
+        catch (...) {
+            Execution::Throw (ClientErrorException{HTTP::StatusCodes::kBadRequest, L"request URI requires an absolute path"sv});
+        }
+    }
+}
+
+/*
+ ********************************************************************************
+ ******************************* Route::Matches *********************************
+ ********************************************************************************
+ */
+bool Route::Matches (const Request& request, Sequence<String>* pathRegExpMatches) const
+{
+    return Matches (request.GetHTTPMethod (), ExtractHostRelPath_ (request.GetURL ()), request, pathRegExpMatches);
+}
+bool Route::Matches (const String& method, const String& hostRelPath, const Request& request, Sequence<String>* pathRegExpMatches) const
+{
+    if (fVerbAndPathMatch_) {
+        if (not method.Match (fVerbAndPathMatch_->first)) {
+            return false;
+        }
+        return (pathRegExpMatches == nullptr)
+                   ? hostRelPath.Match (fVerbAndPathMatch_->second)
+                   : hostRelPath.Match (fVerbAndPathMatch_->second, pathRegExpMatches);
+    }
+    else if (fRequestMatch_) {
+        return (*fRequestMatch_) (method, hostRelPath, request);
+    }
+    else {
+        AssertNotReached ();
+        return false;
+    }
+}
+
 /*
  ********************************************************************************
  ************************* WebServer::Router::Rep_ ******************************
@@ -66,63 +106,27 @@ struct Router::Rep_ : Interceptor::_IRep {
     }
     nonvirtual optional<RequestHandler> Lookup_ (const String& method, const String& hostRelPath, const Request& request, Sequence<String>* matches) const
     {
-        // We interpret routes as matching against a relative path from the root
         for (Route r : fRoutes_) {
-            if (r.fVerbMatch_ and not method.Match (*r.fVerbMatch_)) {
-                continue;
+            if (r.Matches (method, hostRelPath, request, matches)) {
+                return r.fHandler_;
             }
-            if (r.fPathMatch_) {
-                bool matchesPath = (matches == nullptr)
-                                       ? hostRelPath.Match (*r.fPathMatch_)
-                                       : hostRelPath.Match (*r.fPathMatch_, matches);
-                if (not matchesPath) {
-                    continue;
-                }
-            }
-            if (r.fRequestMatch_ and not (*r.fRequestMatch_) (method, hostRelPath, request)) {
-                continue;
-            }
-            return r.fHandler_;
         }
         return nullopt;
     }
     nonvirtual optional<RequestHandler> Lookup_ (const Request& request, Sequence<String>* matches) const
     {
-        String method = request.GetHTTPMethod ();
-        URI    url    = request.GetURL ();
-        String hostRelPath;
-        try {
-            hostRelPath = url.GetAbsPath<String> ().SubString (1); // According to https://tools.ietf.org/html/rfc2616#section-5.1.2 - the URI must be abs_path
-        }
-        catch (...) {
-            Execution::Throw (ClientErrorException{HTTP::StatusCodes::kBadRequest, L"request URI requires an absolute path"sv});
-        }
-        return Lookup_ (method, hostRelPath, request, matches);
+        return Lookup_ (request.GetHTTPMethod (), ExtractHostRelPath_ (request.GetURL ()), request, matches);
     }
     nonvirtual optional<Set<String>> GetAllowedMethodsForRequest_ (const Request& request) const
     {
-        URI    url = request.GetURL ();
-        String hostRelPath;
-        try {
-            hostRelPath = url.GetAbsPath<String> ().SubString (1); // According to https://tools.ietf.org/html/rfc2616#section-5.1.2 - the URI must be abs_path
-        }
-        catch (...) {
-            return nullopt;
-        }
+        String                   hostRelPath = ExtractHostRelPath_ (request.GetURL ());
         static const Set<String> kMethods2Try_{HTTP::Methods::kGet, HTTP::Methods::kPut, HTTP::Methods::kOptions, HTTP::Methods::kDelete, HTTP::Methods::kPost};
         Set<String>              methods;
         for (String method : kMethods2Try_) {
             for (Route r : fRoutes_) {
-                if (r.fVerbMatch_ and not method.Match (*r.fVerbMatch_)) {
-                    continue;
+                if (r.Matches (method, hostRelPath, request)) {
+                    methods.Add (method);
                 }
-                if (r.fPathMatch_ and not hostRelPath.Match (*r.fPathMatch_)) {
-                    continue;
-                }
-                if (r.fRequestMatch_ and not(*r.fRequestMatch_) (method, hostRelPath, request)) {
-                    continue;
-                }
-                methods.Add (method);
             }
         }
         return methods.empty () ? nullopt : optional<Set<String>>{methods};
