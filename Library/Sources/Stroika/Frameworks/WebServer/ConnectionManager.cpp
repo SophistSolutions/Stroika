@@ -60,7 +60,7 @@ namespace {
                      *  From what I gather from https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS - the Allow-Origin is needed
                      *  on all responses, but these others just when you do a preflight - using OPTIONS.
                      */
-                    response.UpdateHeader ([this] (auto* header) { RequireNotNull (header); header->Set (IO::Network::HTTP::HeaderName::kAccessControlAllowOrigin, L"*"sv); });
+                    response.UpdateHeader ([this] (auto* header) { RequireNotNull (header); header->pAccessControlAllowOrigin = L"*"sv; });
                 }
             }
             const optional<String>                   fServerHeader_; // no need for synchronization cuz constant - just set on construction

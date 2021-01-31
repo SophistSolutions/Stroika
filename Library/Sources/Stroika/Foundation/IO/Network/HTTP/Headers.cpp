@@ -31,7 +31,18 @@ namespace {
  ********************************************************************************
  */
 Headers::Headers ()
-    : pAllow{[] (const auto* property) -> optional<Containers::Set<String>> {
+    : pAccessControlAllowOrigin{
+            [] (const auto* property) -> optional<String> {
+                 const Headers*                                     headerObj = Memory::GetObjectOwningField (property, &Headers::pAccessControlAllowOrigin);
+                 lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
+                 return headerObj->As<Mapping<String, String>> ().Lookup (HeaderName::kAccessControlAllowOrigin);
+             },
+             [] (auto* property, const auto& accessControlAllowOrigin) {
+                 Headers* headerObj = Memory::GetObjectOwningField (property, &Headers::pAccessControlAllowOrigin);
+                 headerObj->SetExtras_ (HeaderName::kAccessControlAllowOrigin, accessControlAllowOrigin);
+             }}
+    , pAllow{
+             [] (const auto* property) -> optional<Containers::Set<String>> {
                  const Headers*                                     headerObj = Memory::GetObjectOwningField (property, &Headers::pAllow);
                  lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
                  if (auto hdr = headerObj->As<Mapping<String, String>> ().Lookup (HeaderName::kAllow)) {
@@ -150,6 +161,19 @@ Headers::Headers ()
           [] (auto* property, const optional<URI>& location) {
               Headers* headerObj = Memory::GetObjectOwningField (property, &Headers::pLocation);
               headerObj->SetExtras_ (HeaderName::kLocation, location ? location->As<String> () : optional<String>{});
+          }}
+    , pOrigin{
+          [] (const auto* property) -> optional<URI> {
+              const Headers*                                     headerObj = Memory::GetObjectOwningField (property, &Headers::pOrigin);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
+              if (auto hdr = headerObj->As<Mapping<String, String>> ().Lookup (HeaderName::kOrigin)) {
+                  return URI::Parse (*hdr);
+              }
+              return nullopt;
+          },
+          [] (auto* property, const optional<URI>& origin) {
+              Headers* headerObj = Memory::GetObjectOwningField (property, &Headers::pOrigin);
+              headerObj->SetExtras_ (HeaderName::kOrigin, origin ? origin->As<String> () : optional<String>{});
           }}
     , pServer{
           [] (const auto* property) -> optional<String> {

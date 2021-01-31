@@ -59,6 +59,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         constexpr wstring_view kKeepAlive                     = L"Keep-Alive"sv;
         constexpr wstring_view kLastModified                  = L"Last-Modified"sv;
         constexpr wstring_view kLocation                      = L"Location"sv;
+        constexpr wstring_view kOrigin                        = L"Origin"sv;
         constexpr wstring_view kReferrer                      = L"Referer"sv; // intentionally spelled this way - misspelled in the HTTP RFC
         constexpr wstring_view kServer                        = L"Server"sv;
         constexpr wstring_view kSOAPAction                    = L"SOAPAction"sv;
@@ -109,6 +110,15 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  Set to any string value, or to nullopt to clear the option.
          */
         nonvirtual void Set (const String& headerName, const optional<String>& value);
+        
+    public:
+        /**
+         *  Property with the optional<String> value of the Access-Control-Allow-Origin header.
+         *  \see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
+         *
+         *  This can be nullopt (meaning not present), "*", or a hostname[:port] 
+         */
+        Common::Property<optional<String>> pAccessControlAllowOrigin;
 
     public:
         /**
@@ -191,6 +201,14 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Location
          */
         Common::Property<optional<URI>> pLocation;
+
+    public:
+        /**
+         *  Property with the optional<URI> value of the Origin header.
+         *  @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin
+         *  This is a request-only Header sent with CORS requests, as well as with POST requests
+         */
+        Common::Property<optional<URI>> pOrigin;
 
     public:
         /**
