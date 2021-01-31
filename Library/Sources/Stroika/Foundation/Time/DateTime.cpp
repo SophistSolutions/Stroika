@@ -476,7 +476,7 @@ DateTime DateTime::Parse (const String& rep, const locale& l, const Traversal::I
 DateTime DateTime::AsLocalTime () const
 {
     if (GetTimezone () == Timezone::kUTC) {
-        DateTime tmp = AddSeconds (Timezone::kLocalTime.GetBiasFromUTC (fDate_, Memory::ValueOrDefault (fTimeOfDay_, TimeOfDay{0})));
+        DateTime tmp = AddSeconds (Timezone::kLocalTime.GetBiasFromUTC (fDate_, Memory::NullCoalesce (fTimeOfDay_, TimeOfDay{0})));
         return DateTime{tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::kLocalTime};
     }
     else if (GetTimezone () == Timezone::kLocalTime) {
@@ -498,7 +498,7 @@ DateTime DateTime::AsUTC () const
             return *this;
         }
         else {
-            DateTime tmp = fTimezone_.has_value () ? AddSeconds (-fTimezone_->GetBiasFromUTC (fDate_, Memory::ValueOrDefault (fTimeOfDay_, TimeOfDay{0}))) : *this;
+            DateTime tmp = fTimezone_.has_value () ? AddSeconds (-fTimezone_->GetBiasFromUTC (fDate_, Memory::NullCoalesce (fTimeOfDay_, TimeOfDay{0}))) : *this;
             return DateTime{tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::kUTC};
         }
     };
@@ -512,7 +512,7 @@ DateTime DateTime::AsTimezone (Timezone tz) const
         return *this;
     }
     else {
-        DateTime tmp = fTimezone_.has_value () ? AddSeconds (-fTimezone_->GetBiasFromUTC (fDate_, Memory::ValueOrDefault (fTimeOfDay_, TimeOfDay{0}))) : *this;
+        DateTime tmp = fTimezone_.has_value () ? AddSeconds (-fTimezone_->GetBiasFromUTC (fDate_, Memory::NullCoalesce (fTimeOfDay_, TimeOfDay{0}))) : *this;
         return DateTime{tmp.GetDate (), tmp.GetTimeOfDay (), tz};
     }
 }
@@ -609,7 +609,7 @@ String DateTime::Format (PrintFormat pf) const
                         r += kZ_;
                     }
                     else {
-                        auto tzBias     = fTimezone_->GetBiasFromUTC (fDate_, Memory::ValueOrDefault (fTimeOfDay_, TimeOfDay{0}));
+                        auto tzBias     = fTimezone_->GetBiasFromUTC (fDate_, Memory::NullCoalesce (fTimeOfDay_, TimeOfDay{0}));
                         int  minuteBias = abs (static_cast<int> (tzBias)) / 60;
                         int  hrs        = minuteBias / 60;
                         int  mins       = minuteBias - hrs * 60;
@@ -627,7 +627,7 @@ String DateTime::Format (PrintFormat pf) const
                 return result;
             }
             else {
-                return result + L" " + tz->AsRFC1123 (fDate_, Memory::ValueOrDefault (fTimeOfDay_, TimeOfDay{0}));
+                return result + L" " + tz->AsRFC1123 (fDate_, Memory::NullCoalesce (fTimeOfDay_, TimeOfDay{0}));
             }
         } break;
     }
@@ -770,7 +770,7 @@ template <>
 {
     // CAN GET RID OF toSYSTEM_/toSysTime_ and just inline logic here...
     ::SYSTEMTIME d  = toSYSTEM_ (fDate_);
-    ::SYSTEMTIME t  = toSysTime_ (Memory::ValueOrDefault (fTimeOfDay_, TimeOfDay{0}));
+    ::SYSTEMTIME t  = toSysTime_ (Memory::NullCoalesce (fTimeOfDay_, TimeOfDay{0}));
     ::SYSTEMTIME r  = d;
     r.wHour         = t.wHour;
     r.wMinute       = t.wMinute;

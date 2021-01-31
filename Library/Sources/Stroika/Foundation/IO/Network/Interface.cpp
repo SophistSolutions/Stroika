@@ -405,7 +405,7 @@ namespace {
 #endif
 
         {
-            Containers::Set<Interface::Status> status = Memory::ValueOrDefault (newInterface.fStatus);
+            Containers::Set<Interface::Status> status = Memory::NullCoalesce (newInterface.fStatus);
             if (flags & IFF_RUNNING) {
                 // see https://stackoverflow.com/questions/11679514/what-is-the-difference-between-iff-up-and-iff-running for difference between IFF_UP and IFF_RUNNING
                 status.Add (Interface::Status::eConnected);
@@ -821,15 +821,15 @@ namespace {
                 }
                 switch (currAddresses->OperStatus) {
                     case IfOperStatusUp:
-                        newInterface.fStatus = Memory::ValueOrDefault (newInterface.fStatus) + Set<Interface::Status> ({Interface::Status::eConnected, Interface::Status::eRunning});
+                        newInterface.fStatus = Memory::NullCoalesce (newInterface.fStatus) + Set<Interface::Status> ({Interface::Status::eConnected, Interface::Status::eRunning});
                         break;
                     case IfOperStatusDown:
-                        newInterface.fStatus = Memory::ValueOrDefault (newInterface.fStatus); // keep any existing status values, but don't leave unknown
+                        newInterface.fStatus = Memory::NullCoalesce (newInterface.fStatus); // keep any existing status values, but don't leave unknown
                         break;
                     case IfOperStatusDormant:
                     case IfOperStatusLowerLayerDown:
                         // Not sure about either of these - based on docs in https://msdn.microsoft.com/en-us/library/windows/hardware/ff553790(v=vs.85).aspx - not super clear
-                        newInterface.fStatus = Memory::ValueOrDefault (newInterface.fStatus) + Set<Interface::Status> ({Interface::Status::eConnected});
+                        newInterface.fStatus = Memory::NullCoalesce (newInterface.fStatus) + Set<Interface::Status> ({Interface::Status::eConnected});
                         break;
                     default:
                         // Don't know how to interpret the other status states

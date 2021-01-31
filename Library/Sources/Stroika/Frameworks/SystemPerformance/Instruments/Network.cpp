@@ -460,7 +460,7 @@ namespace {
              *          a research question.
              *          --LGP 2015-04-16
              */
-            String wmiInstanceName = ValueOrDefault (iFace.fDescription).ReplaceAll (L"(", L"[").ReplaceAll (L")", L"]").ReplaceAll (L"#", L"_");
+            String wmiInstanceName = NullCoalesce (iFace.fDescription).ReplaceAll (L"(", L"[").ReplaceAll (L")", L"]").ReplaceAll (L"#", L"_");
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"iFace.fDescription='%s'", iFace.fDescription.Value ().c_str ());

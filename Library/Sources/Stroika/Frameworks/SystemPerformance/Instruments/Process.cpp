@@ -1641,7 +1641,7 @@ namespace {
                 }
             }
             if (cmdLine != nullptr) {
-                if (fOptions_.fCaptureCommandLine == nullptr or not fOptions_.fCaptureCommandLine (pid, ValueOrDefault (*processEXEPath))) {
+                if (fOptions_.fCaptureCommandLine == nullptr or not fOptions_.fCaptureCommandLine (pid, NullCoalesce (*processEXEPath))) {
                     cmdLine = nullptr;
                 }
             }

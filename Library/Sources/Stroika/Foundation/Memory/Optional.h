@@ -123,24 +123,23 @@ namespace Stroika::Foundation::Memory {
     void CopyToIf (const optional<T>& copyFromIfHasValue, optional<CONVERTABLE_TO_OPTIONAL_OF_TYPE>* to);
 
     /**
-     *  Always safe to call. If has_value returns it, else returns argument 'default'. Like value_or () but has default value for default value.
+     * \brief return one of l, or r, with first preference for which is engaged, and second preference for left-to-right.
      *
-     *  \note This is handy because there is no default argument for std::optional<>::value_or () - there should be (like this).
-     */
-    template <typename T>
-    T ValueOrDefault (const optional<T>& o, T defaultValue = T{});
-
-    /**
-     * \brief return one of *this, or o, with first preference for which is engaged, and second preference for left-to-right.
-     *
-     *  So Equivilent to this->has_value ()? *this : o;
+     *  So Equivilent to l.has_value ()? l : r;
+     * 
+     *  This is equivilent to C# ?? operator  (https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/null-coalescing-operator)
      *
      *  This is VERY similar to ValueOrDefault () - except that the default maybe optional, and this therefore returns an Optional<T>
      *
+     *  \note This is handy because there is no default argument for std::optional<>::value_or () - there should be (like this).
+     *  \note a bit like value_or, but RHS arg can be optional or T, and depending returns optional or T and this takes default value
      *  @see Value ()
      */
     template <typename T>
-    optional<T> OptionalValue (const optional<T>& l, const optional<T>& r);
+    optional<T> NullCoalesce (const optional<T>& l, const optional<T>& r);
+    template <typename T>
+    T NullCoalesce (const optional<T>& l, const T& r = T{});
+
 
     /**
      *  'Constructor' taking const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* is to allow easier interoperability

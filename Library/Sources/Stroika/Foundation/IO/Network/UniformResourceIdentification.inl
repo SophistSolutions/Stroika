@@ -354,7 +354,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     }
     inline String Query::operator() (const String& idx) const
     {
-        return Memory::ValueOrDefault (fMap_.Lookup (idx));
+        return Memory::NullCoalesce (fMap_.Lookup (idx));
     }
     inline String Query::operator() (const string& idx) const
     {

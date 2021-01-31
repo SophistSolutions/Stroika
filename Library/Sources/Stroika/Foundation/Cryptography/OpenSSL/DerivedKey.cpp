@@ -251,7 +251,7 @@ namespace {
         int i = ::EVP_BytesToKey (
             FakeCryptoAlgo_ (keyLen, ivLen),
             Convert2OpenSSL (digestAlgorithm),
-            reinterpret_cast<const unsigned char*> (salt ? ValueOrDefault (salt).begin () : nullptr),
+            reinterpret_cast<const unsigned char*> (salt ? NullCoalesce (salt).begin () : nullptr),
             reinterpret_cast<const unsigned char*> (passwd.begin ()),
             static_cast<int> (passwd.size ()),
             nRounds,

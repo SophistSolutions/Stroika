@@ -247,13 +247,13 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
                         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Keep-Alive
                         if (kvp[0] == L"timeout"sv) {
                             Time::DurationSecondsType toAt = Characters::String2Float<> (kvp[1]);
-                            Remaining                 r    = ValueOrDefault (GetRemainingConnectionLimits ());
+                            Remaining                 r    = NullCoalesce (GetRemainingConnectionLimits ());
                             r.fTimeoutAt                   = Time::GetTickCount () + toAt;
                             this->SetRemainingConnectionMessages (r);
                         }
                         else if (kvp[0] == L"max"sv) {
                             unsigned int maxMsg = Characters::String2Int<unsigned int> (kvp[1]);
-                            Remaining    r      = ValueOrDefault (GetRemainingConnectionLimits ());
+                            Remaining    r      = NullCoalesce (GetRemainingConnectionLimits ());
                             r.fMessages         = maxMsg;
                             this->SetRemainingConnectionMessages (r);
                         }

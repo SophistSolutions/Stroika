@@ -914,9 +914,9 @@ namespace {
         using WeightingStat2UseType = double;
         Mapping<DynamicDiskIDType, WeightingStat2UseType> totalWeights;
         for (KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType> i : fileSystems) {
-            Set<DynamicDiskIDType> disksForFS = ValueOrDefault (i.fValue.fOnPhysicalDrive);
+            Set<DynamicDiskIDType> disksForFS = NullCoalesce (i.fValue.fOnPhysicalDrive);
             if (disksForFS.size () > 0) {
-                WeightingStat2UseType weightForFS = ValueOrDefault (ValueOrDefault (i.fValue.fCombinedIOStats).fBytesTransfered);
+                WeightingStat2UseType weightForFS = NullCoalesce (NullCoalesce (i.fValue.fCombinedIOStats).fBytesTransfered);
                 weightForFS /= disksForFS.size ();
                 for (DynamicDiskIDType di : disksForFS) {
                     totalWeights.Add (di, totalWeights.LookupValue (di) + weightForFS); // accumulate relative application to each disk
@@ -945,17 +945,17 @@ namespace {
         if (totalWeights.size () >= 1) {
             for (KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType> i : fileSystems) {
                 MountedFilesystemInfoType mfi        = i.fValue;
-                Set<DynamicDiskIDType>    disksForFS = ValueOrDefault (mfi.fOnPhysicalDrive);
+                Set<DynamicDiskIDType>    disksForFS = NullCoalesce (mfi.fOnPhysicalDrive);
                 if (disksForFS.size () > 0) {
-                    WeightingStat2UseType weightForFS = ValueOrDefault (ValueOrDefault (i.fValue.fCombinedIOStats).fBytesTransfered);
+                    WeightingStat2UseType weightForFS = NullCoalesce (NullCoalesce (i.fValue.fCombinedIOStats).fBytesTransfered);
                     weightForFS /= disksForFS.size ();
-                    IOStatsType cumStats          = ValueOrDefault (mfi.fCombinedIOStats);
+                    IOStatsType cumStats          = NullCoalesce (mfi.fCombinedIOStats);
                     bool        computeInuse      = not cumStats.fInUsePercent.has_value ();
                     bool        computeQLen       = not cumStats.fQLength.has_value ();
                     bool        computeTotalXFers = not cumStats.fTotalTransfers.has_value ();
 
                     for (DynamicDiskIDType di : disksForFS) {
-                        IOStatsType diskIOStats = ValueOrDefault (disks.LookupValue (di).fCombinedIOStats);
+                        IOStatsType diskIOStats = NullCoalesce (disks.LookupValue (di).fCombinedIOStats);
                         if (weightForFS > 0) {
                             double scaleFactor = weightForFS / totalWeights.LookupValue (di);
                             //Assert (0.0 <= scaleFactor and scaleFactor <= 1.0);

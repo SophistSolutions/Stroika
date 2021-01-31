@@ -50,10 +50,10 @@ Socket::PlatformNativeHandle Socket::mkLowLevelSocket_ (SocketAddress::FamilyTyp
 #endif
     Socket::PlatformNativeHandle sfd;
 #if qPlatform_POSIX
-    sfd = Handle_ErrNoResultInterruption ([=] () -> int { return socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (ValueOrDefault (protocol))); });
+    sfd = Handle_ErrNoResultInterruption ([=] () -> int { return socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (NullCoalesce (protocol))); });
 #elif qPlatform_Windows
     DISABLE_COMPILER_MSC_WARNING_START (28193) // dump warning about examining sfd
-    ThrowWSASystemErrorIfSOCKET_ERROR (sfd = ::socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (ValueOrDefault (protocol))));
+    ThrowWSASystemErrorIfSOCKET_ERROR (sfd = ::socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (NullCoalesce (protocol))));
     DISABLE_COMPILER_MSC_WARNING_END (28193)
 #else
     AssertNotImplemented ();

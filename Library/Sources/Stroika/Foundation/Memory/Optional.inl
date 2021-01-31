@@ -99,24 +99,18 @@ namespace Stroika::Foundation::Memory {
 
     /*
      ********************************************************************************
-     ******************************* ValueOrDefault *********************************
+     ******************************** NullCoalescing ********************************
      ********************************************************************************
      */
     template <typename T>
-    inline T ValueOrDefault (const optional<T>& o, T defaultValue)
-    {
-        return o.has_value () ? *o : defaultValue;
-    }
-
-    /*
-     ********************************************************************************
-     ******************************** OptionalValue *********************************
-     ********************************************************************************
-     */
-    template <typename T>
-    inline optional<T> OptionalValue (const optional<T>& l, const optional<T>& r)
+    inline optional<T> NullCoalesce (const optional<T>& l, const optional<T>& r)
     {
         return l.has_value () ? l : r;
+    }
+    template <typename T>
+    inline T NullCoalesce (const optional<T>& l, const T& r)
+    {
+        return l.has_value () ? *l : r;
     }
 
     /*
@@ -169,6 +163,17 @@ namespace Stroika::Foundation::Memory {
         optional<T> result{lhs};
         AccumulateIf (&result, rhs, divides{});
         return result;
+    }
+
+    template <typename T>
+    [[deprecated ("Since Stroika 2.1b10 use NullCoalesce")]] T ValueOrDefault (const optional<T>& o, T defaultValue = T{})
+    {
+        return NullCoalesce (o, defaultValue);
+    }
+    template <typename T>
+    [[deprecated ("Since Stroika 2.1b10 use NullCoalesce")]] inline optional<T> OptionalValue (const optional<T>& l, const optional<T>& r)
+    {
+        return NullCoalesce (l, r);
     }
 
 }

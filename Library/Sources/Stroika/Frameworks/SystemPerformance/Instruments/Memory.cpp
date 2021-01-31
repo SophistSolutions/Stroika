@@ -430,9 +430,9 @@ namespace {
 #else
             Info result;
 #endif
-            Ensure (ValueOrDefault (result.fPhysicalMemory.fActive) + ValueOrDefault (result.fPhysicalMemory.fInactive) + ValueOrDefault (result.fPhysicalMemory.fFree) + ValueOrDefault (result.fPhysicalMemory.fOSReserved) <= GetSystemConfiguration_Memory ().fTotalPhysicalRAM);
+            Ensure (NullCoalesce (result.fPhysicalMemory.fActive) + NullCoalesce (result.fPhysicalMemory.fInactive) + NullCoalesce (result.fPhysicalMemory.fFree) + NullCoalesce (result.fPhysicalMemory.fOSReserved) <= GetSystemConfiguration_Memory ().fTotalPhysicalRAM);
             if (result.fPhysicalMemory.fActive and result.fPhysicalMemory.fInactive and result.fPhysicalMemory.fFree and result.fPhysicalMemory.fOSReserved) {
-                Ensure (ValueOrDefault (result.fPhysicalMemory.fActive) + ValueOrDefault (result.fPhysicalMemory.fInactive) + ValueOrDefault (result.fPhysicalMemory.fFree) + ValueOrDefault (result.fPhysicalMemory.fOSReserved) == GetSystemConfiguration_Memory ().fTotalPhysicalRAM);
+                Ensure (NullCoalesce (result.fPhysicalMemory.fActive) + NullCoalesce (result.fPhysicalMemory.fInactive) + NullCoalesce (result.fPhysicalMemory.fFree) + NullCoalesce (result.fPhysicalMemory.fOSReserved) == GetSystemConfiguration_Memory ().fTotalPhysicalRAM);
             }
             return result;
         }
