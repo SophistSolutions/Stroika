@@ -32,28 +32,28 @@ namespace {
  */
 Headers::Headers ()
     : pAccessControlAllowOrigin{
-            [] (const auto* property) -> optional<String> {
-                 const Headers*                                     headerObj = Memory::GetObjectOwningField (property, &Headers::pAccessControlAllowOrigin);
-                 lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
-                 return headerObj->As<Mapping<String, String>> ().Lookup (HeaderName::kAccessControlAllowOrigin);
-             },
-             [] (auto* property, const auto& accessControlAllowOrigin) {
-                 Headers* headerObj = Memory::GetObjectOwningField (property, &Headers::pAccessControlAllowOrigin);
-                 headerObj->SetExtras_ (HeaderName::kAccessControlAllowOrigin, accessControlAllowOrigin);
-             }}
+          [] (const auto* property) -> optional<String> {
+              const Headers*                                     headerObj = Memory::GetObjectOwningField (property, &Headers::pAccessControlAllowOrigin);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
+              return headerObj->As<Mapping<String, String>> ().Lookup (HeaderName::kAccessControlAllowOrigin);
+          },
+          [] (auto* property, const auto& accessControlAllowOrigin) {
+              Headers* headerObj = Memory::GetObjectOwningField (property, &Headers::pAccessControlAllowOrigin);
+              headerObj->SetExtras_ (HeaderName::kAccessControlAllowOrigin, accessControlAllowOrigin);
+          }}
     , pAllow{
-             [] (const auto* property) -> optional<Containers::Set<String>> {
-                 const Headers*                                     headerObj = Memory::GetObjectOwningField (property, &Headers::pAllow);
-                 lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
-                 if (auto hdr = headerObj->As<Mapping<String, String>> ().Lookup (HeaderName::kAllow)) {
-                     return Containers::Set<String>{hdr->Tokenize ({','})};
-                 }
-                 return nullopt;
-             },
-             [] (auto* property, const auto& allowed) {
-                 Headers* headerObj = Memory::GetObjectOwningField (property, &Headers::pAllow);
-                 headerObj->SetExtras_ (HeaderName::kAllow, allowed ? String::Join (*allowed) : optional<String>{});
-             }}
+          [] (const auto* property) -> optional<Containers::Set<String>> {
+              const Headers*                                     headerObj = Memory::GetObjectOwningField (property, &Headers::pAllow);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
+              if (auto hdr = headerObj->As<Mapping<String, String>> ().Lookup (HeaderName::kAllow)) {
+                  return Containers::Set<String>{hdr->Tokenize ({','})};
+              }
+              return nullopt;
+          },
+          [] (auto* property, const auto& allowed) {
+              Headers* headerObj = Memory::GetObjectOwningField (property, &Headers::pAllow);
+              headerObj->SetExtras_ (HeaderName::kAllow, allowed ? String::Join (*allowed) : optional<String>{});
+          }}
     , pCacheControl{
           [] (const auto* property) {
               const Headers*                                     headerObj = Memory::GetObjectOwningField (property, &Headers::pCacheControl);
