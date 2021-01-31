@@ -76,12 +76,12 @@ namespace Stroika::Frameworks::WebServer {
          */
         Route (const RegularExpression& verbMatch, const RegularExpression& pathMatch, const RequestHandler& handler);
         Route (const RegularExpression& pathMatch, const RequestHandler& handler);
-        Route (const function<bool (const Request&)>& requestMatcher, const RequestHandler& handler);
+        Route (const function<bool (const String& method, const String& hostRelPath, const Request& request)>& requestMatcher, const RequestHandler& handler);
 
     private:
         optional<RegularExpression>               fVerbMatch_;
         optional<RegularExpression>               fPathMatch_;
-        optional<function<bool (const Request&)>> fRequestMatch_;
+        optional<function<bool (const String& method, const String& hostRelPath, const Request& request)>> fRequestMatch_;
         RequestHandler                            fHandler_;
 
     private:

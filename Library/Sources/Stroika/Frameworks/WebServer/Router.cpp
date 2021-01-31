@@ -64,19 +64,8 @@ struct Router::Rep_ : Interceptor::_IRep {
             }
         }
     }
-    nonvirtual optional<RequestHandler> Lookup_ (const Request& request, Sequence<String>* matches) const
+    nonvirtual optional<RequestHandler> Lookup_ (const String& method, const String& hostRelPath, const Request& request, Sequence<String>* matches) const
     {
-        String method = request.GetHTTPMethod ();
-        URI    url    = request.GetURL ();
-
-        String hostRelPath;
-        try {
-            hostRelPath = url.GetAbsPath<String> ().SubString (1); // According to https://tools.ietf.org/html/rfc2616#section-5.1.2 - the URI must be abs_path
-        }
-        catch (...) {
-            Execution::Throw (ClientErrorException{HTTP::StatusCodes::kBadRequest, L"request URI requires an absolute path"sv});
-        }
-
         // We interpret routes as matching against a relative path from the root
         for (Route r : fRoutes_) {
             if (r.fVerbMatch_ and not method.Match (*r.fVerbMatch_)) {
@@ -90,12 +79,25 @@ struct Router::Rep_ : Interceptor::_IRep {
                     continue;
                 }
             }
-            if (r.fRequestMatch_ and not(*r.fRequestMatch_) (request)) {
+            if (r.fRequestMatch_ and not (*r.fRequestMatch_) (method, hostRelPath, request)) {
                 continue;
             }
             return r.fHandler_;
         }
         return nullopt;
+    }
+    nonvirtual optional<RequestHandler> Lookup_ (const Request& request, Sequence<String>* matches) const
+    {
+        String method = request.GetHTTPMethod ();
+        URI    url    = request.GetURL ();
+        String hostRelPath;
+        try {
+            hostRelPath = url.GetAbsPath<String> ().SubString (1); // According to https://tools.ietf.org/html/rfc2616#section-5.1.2 - the URI must be abs_path
+        }
+        catch (...) {
+            Execution::Throw (ClientErrorException{HTTP::StatusCodes::kBadRequest, L"request URI requires an absolute path"sv});
+        }
+        return Lookup_ (method, hostRelPath, request, matches);
     }
     nonvirtual optional<Set<String>> GetAllowedMethodsForRequest_ (const Request& request) const
     {
@@ -117,7 +119,7 @@ struct Router::Rep_ : Interceptor::_IRep {
                 if (r.fPathMatch_ and not hostRelPath.Match (*r.fPathMatch_)) {
                     continue;
                 }
-                if (r.fRequestMatch_ and not(*r.fRequestMatch_) (request)) {
+                if (r.fRequestMatch_ and not(*r.fRequestMatch_) (method, hostRelPath, request)) {
                     continue;
                 }
                 methods.Add (method);
