@@ -53,11 +53,12 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         constexpr wstring_view kETag                          = L"ETag"sv;
         constexpr wstring_view kExpect                        = L"Expect"sv;
         constexpr wstring_view kExpires                       = L"Expires"sv;
+        constexpr wstring_view kHost                          = L"Host"sv;
         constexpr wstring_view kIfNoneMatch                   = L"If-None-Match"sv;
         constexpr wstring_view kIfModifiedSince               = L"If-Modified-Since"sv;
         constexpr wstring_view kKeepAlive                     = L"Keep-Alive"sv;
         constexpr wstring_view kLastModified                  = L"Last-Modified"sv;
-        constexpr wstring_view kLocation                  = L"Location"sv;
+        constexpr wstring_view kLocation                      = L"Location"sv;
         constexpr wstring_view kReferrer                      = L"Referer"sv; // intentionally spelled this way - misspelled in the HTTP RFC
         constexpr wstring_view kServer                        = L"Server"sv;
         constexpr wstring_view kSOAPAction                    = L"SOAPAction"sv;
@@ -172,6 +173,14 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
+         *  Property with the optional<String> value of the Host header.
+         *  @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Host
+         *  This is a request-only Header.
+         */
+        Common::Property<optional<String>> pHost;
+
+    public:
+        /**
          *  Property with the optional<IfNoneMatch> value of the IF-None-Match header.
          */
         Common::Property<optional<IfNoneMatch>> pIfNoneMatch;
@@ -230,6 +239,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         optional<uint64_t>                       fContentLength_;
         optional<InternetMediaType>              fContentType_;
         optional<ETag>                           fETag_;
+        optional<String>                         fHost_;
         optional<IfNoneMatch>                    fIfNoneMatch_;
 
 #if __cpp_impl_three_way_comparison < 201907

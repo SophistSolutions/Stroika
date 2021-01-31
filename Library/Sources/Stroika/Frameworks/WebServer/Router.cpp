@@ -136,20 +136,19 @@ struct Router::Rep_ : Interceptor::_IRep {
     }
     nonvirtual void Handle_OPTIONS_ (Message* message)
     {
-        Request*  request  = message->PeekRequest ();
-        Response* response = message->PeekResponse ();
-        auto      o        = GetAllowedMethodsForRequest_ (*request);
+        Request&  request  = *message->PeekRequest ();
+        Response& response = *message->PeekResponse ();
+        auto      o        = GetAllowedMethodsForRequest_ (request);
         if (o) {
-            response->UpdateHeader ([this, &o] (auto* header) {
+            response.UpdateHeader ([this, &o] (auto* header) {
                 RequireNotNull (header);
                 using namespace IO::Network::HTTP::HeaderName;
                 header->Set (kAccessControlAllowCredentials, L"true"sv);
                 header->Set (kAccessControlAllowHeaders, L"Accept, Access-Control-Allow-Origin, Authorization, Cache-Control, Content-Type, Connection, Pragma, X-Requested-With"sv);
-                //header->Set (kAccessControlAllowMethods, L"DELETE, GET, OPTIONS, POST, PUT, TRACE, UPDATE"sv);
                 header->Set (kAccessControlAllowMethods, String::Join (*o));
                 header->Set (kAccessControlMaxAge, L"86400"sv);
             });
-            response->SetStatus (IO::Network::HTTP::StatusCodes::kNoContent);
+            response.SetStatus (IO::Network::HTTP::StatusCodes::kNoContent);
         }
         else {
             DbgTrace (L"Router 404: (...url=%s)", Characters::ToString (message->GetRequestURL ()).c_str ());

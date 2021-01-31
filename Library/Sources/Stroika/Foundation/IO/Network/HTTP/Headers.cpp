@@ -116,6 +116,17 @@ Headers::Headers ()
               lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
               headerObj->fETag_ = etag;
           }}
+    , pHost{
+          [] (const auto* property) {
+              const Headers*                                     headerObj = Memory::GetObjectOwningField (property, &Headers::pHost);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
+              return headerObj->fHost_;
+          },
+          [] (auto* property, const auto& host) {
+              Headers*                                           headerObj = Memory::GetObjectOwningField (property, &Headers::pHost);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
+              headerObj->fHost_ = host;
+          }}
     , pIfNoneMatch{
           [] (const auto* property) {
               const Headers*                                     headerObj = Memory::GetObjectOwningField (property, &Headers::pIfNoneMatch);
@@ -163,6 +174,7 @@ Headers::Headers (const Headers& src)
     fContentLength_ = src.fContentLength_;
     fContentType_   = src.fContentType_;
     fETag_          = src.fETag_;
+    fHost_          = src.fHost_;
     fIfNoneMatch_   = src.fIfNoneMatch_;
 }
 
@@ -176,6 +188,7 @@ Headers::Headers (Headers&& src)
     fContentLength_ = move (src.fContentLength_);
     fContentType_   = move (src.fContentType_);
     fETag_          = move (src.fETag_);
+    fHost_          = move (src.fHost_);
     fIfNoneMatch_   = move (src.fIfNoneMatch_);
 }
 
@@ -194,6 +207,7 @@ Headers& Headers::operator= (Headers&& rhs)
     fContentLength_ = move (rhs.fContentLength_);
     fContentType_   = move (rhs.fContentType_);
     fETag_          = move (rhs.fETag_);
+    fHost_          = move (rhs.fHost_);
     fIfNoneMatch_   = move (rhs.fIfNoneMatch_);
     return *this;
 }
@@ -212,6 +226,9 @@ optional<String> Headers::LookupOne (const String& name) const
     }
     else if (kHeaderNameComparer_ (name, HeaderName::kETag)) {
         return fETag_ ? fETag_->As<String> () : optional<String>{};
+    }
+    else if (kHeaderNameComparer_ (name, HeaderName::kHost)) {
+        return fHost_;
     }
     else if (kHeaderNameComparer_ (name, HeaderName::kIfNoneMatch)) {
         return fIfNoneMatch_ ? fIfNoneMatch_->As<String> () : optional<String>{};
@@ -259,6 +276,10 @@ bool Headers::SetBuiltin_ (const String& headerName, const optional<String>& val
     }
     else if (kHeaderNameComparer_ (headerName, HeaderName::kETag)) {
         fETag_ = value ? ETag::Parse (*value) : optional<ETag>{};
+        return true;
+    }
+    else if (kHeaderNameComparer_ (headerName, HeaderName::kHost)) {
+        fHost_ = value;
         return true;
     }
     else if (kHeaderNameComparer_ (headerName, HeaderName::kIfNoneMatch)) {
