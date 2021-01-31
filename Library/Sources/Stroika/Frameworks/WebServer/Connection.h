@@ -52,10 +52,10 @@ namespace Stroika::Frameworks::WebServer {
      *                       Sequence<Interceptor>{
      *                          Interceptor{
      *                              [=](Message* m) {
-     *                                  Response* response = m->PeekResponse ();
+     *                                  Response& response = *m->PeekResponse ();
                                         response.UpdateHeader ([this] (auto* header) { header->pServer = L"stroika-ssdp-server-demo"; });
-     *                                  response->write (Stroika::Frameworks::UPnP::Serialize (d, dd));
-     *                                  response->SetContentType (DataExchange::InternetMediaTypes::kXML);
+     *                                  response.write (Stroika::Frameworks::UPnP::Serialize (d, dd));
+     *                                  response.SetContentType (DataExchange::InternetMediaTypes::kXML);
      *                               }}}};
      *          conn.SetRemainingConnectionMessages (Connection::Remaining{0, 0}); // disable keep-alives
      *          conn.ReadAndProcessMessage ();
