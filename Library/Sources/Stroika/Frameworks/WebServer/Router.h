@@ -99,6 +99,9 @@ namespace Stroika::Frameworks::WebServer {
 
     /**
      *  THREAD: must be externally synchronized, but all const methods are safe from any thread.
+     * 
+     *  If there is not an EXPLICIT route matched for OPTIONS, the OPTIONS header will be managed
+     *  internally by the Router automatically.
      */
     class Router : public Interceptor {
     private:

@@ -53,22 +53,14 @@ namespace {
                 if (fServerHeader_) {
                     response.UpdateHeader ([this] (auto* header) { RequireNotNull (header); header->pServer = *fServerHeader_; });
                 }
+
+                // @todo soon remove/redo this
                 if (fCORSModeSupport == ConnectionManager::CORSModeSupport::eSuppress) {
                     /*
                      *  From what I gather from https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS - the Allow-Origin is needed
                      *  on all responses, but these others just when you do a preflight - using OPTIONS.
                      */
                     response.UpdateHeader ([this] (auto* header) { RequireNotNull (header); header->Set (IO::Network::HTTP::HeaderName::kAccessControlAllowOrigin, L"*"sv); });
-                    if (m->PeekRequest ()->GetHTTPMethod () == IO::Network::HTTP::Methods::kOptions) {
-                        response.UpdateHeader ([this] (auto* header) {
-                            RequireNotNull (header);
-                            using namespace IO::Network::HTTP::HeaderName;
-                            header->Set (kAccessControlAllowCredentials, L"true"sv);
-                            header->Set (kAccessControlAllowHeaders, L"Accept, Access-Control-Allow-Origin, Authorization, Cache-Control, Content-Type, Connection, Pragma, X-Requested-With"sv);
-                            header->Set (kAccessControlAllowMethods, L"DELETE, GET, OPTIONS, POST, PUT, TRACE, UPDATE"sv);
-                            header->Set (kAccessControlMaxAge, L"86400"sv);
-                        });
-                    }
                 }
             }
             const optional<String>                   fServerHeader_; // no need for synchronization cuz constant - just set on construction
