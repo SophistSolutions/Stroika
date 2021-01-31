@@ -40,13 +40,8 @@ Headers::Headers ()
                  return nullopt;
              },
              [] (auto* property, const auto& allowed) {
-                 Headers*                                           headerObj = Memory::GetObjectOwningField (property, &Headers::pAllow);
-                 lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
-                 optional<String>                                   v;
-                 if (allowed) {
-                     v = String::Join (*allowed);
-                 }
-                 headerObj->Set (HeaderName::kAllow, v);
+                 Headers* headerObj = Memory::GetObjectOwningField (property, &Headers::pAllow);
+                 headerObj->SetExtras_ (HeaderName::kAllow, allowed ? String::Join (*allowed) : optional<String>{});
              }}
     , pCacheControl{
           [] (const auto* property) {
@@ -74,9 +69,8 @@ Headers::Headers ()
               return nullopt;
           },
           [] (auto* property, const auto& connectionValue) {
-              Headers*                                           headerObj = Memory::GetObjectOwningField (property, &Headers::pConnection);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
-              optional<String>                                   v;
+              Headers*         headerObj = Memory::GetObjectOwningField (property, &Headers::pConnection);
+              optional<String> v;
               if (connectionValue) {
                   switch (*connectionValue) {
                       case ConnectionValue::eKeepAlive:
@@ -87,7 +81,7 @@ Headers::Headers ()
                           break;
                   }
               }
-              headerObj->Set (HeaderName::kConnection, v);
+              headerObj->SetExtras_ (HeaderName::kConnection, v);
           }}
     , pContentLength{
           [] (const auto* property) {
@@ -134,19 +128,28 @@ Headers::Headers ()
               headerObj->fIfNoneMatch_ = ifNoneMatch;
           }}
     , pLocation{
-        [] (const auto* property) -> optional<URI> {
-           const Headers*                                     headerObj = Memory::GetObjectOwningField (property, &Headers::pLocation);
-           lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
-           if (auto hdr = headerObj->As<Mapping<String, String>> ().Lookup (HeaderName::kLocation)) {
-               return URI::Parse (*hdr);
-           }
-           return nullopt;
-       },
-       [] (auto* property, const optional<URI>& location) {
-           Headers*                                           headerObj = Memory::GetObjectOwningField (property, &Headers::pLocation);
-           lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
-            headerObj->Set (HeaderName::kLocation, location ? location->As<String> () : optional<String>{});
-       }}
+          [] (const auto* property) -> optional<URI> {
+              const Headers*                                     headerObj = Memory::GetObjectOwningField (property, &Headers::pLocation);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
+              if (auto hdr = headerObj->As<Mapping<String, String>> ().Lookup (HeaderName::kLocation)) {
+                  return URI::Parse (*hdr);
+              }
+              return nullopt;
+          },
+          [] (auto* property, const optional<URI>& location) {
+              Headers* headerObj = Memory::GetObjectOwningField (property, &Headers::pLocation);
+              headerObj->SetExtras_ (HeaderName::kLocation, location ? location->As<String> () : optional<String>{});
+          }}
+    , pServer{
+          [] (const auto* property) -> optional<String> {
+              const Headers*                                     headerObj = Memory::GetObjectOwningField (property, &Headers::pServer);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
+              return headerObj->As<Mapping<String, String>> ().Lookup (HeaderName::kServer);
+          },
+          [] (auto* property, const optional<String>& server) {
+              Headers* headerObj = Memory::GetObjectOwningField (property, &Headers::pServer);
+              headerObj->SetExtras_ (HeaderName::kServer, server);
+          }}
 {
 }
 
@@ -164,7 +167,7 @@ Headers::Headers (const Headers& src)
 }
 
 Headers::Headers (Headers&& src)
-    : Headers ()
+    : Headers{}
 {
     // NOTE properties and fields refer to the same thing. COULD copy properties, but cheaper to just 'initialize' the fields
     // However, cannot mix initialize with calling delegated CTOR, so do the slightly more inefficent way to avoid duplicative code
@@ -177,7 +180,7 @@ Headers::Headers (Headers&& src)
 }
 
 Headers::Headers (const Iterable<KeyValuePair<String, String>>& src)
-    : Headers ()
+    : Headers{}
 {
     for (auto kv : src) {
         Set (kv.fKey, kv.fValue);
@@ -265,16 +268,21 @@ bool Headers::SetBuiltin_ (const String& headerName, const optional<String>& val
     return false;
 }
 
-void Headers::Set (const String& headerName, const optional<String>& value)
+void Headers::SetExtras_ (const String& headerName, const optional<String>& value)
 {
-    if (SetBuiltin_ (headerName, value)) {
-        return;
-    }
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     fExtraHeaders_.Remove ([=] (const auto& i) { return kHeaderNameComparer_ (i.fKey, headerName); });
     if (value) {
         fExtraHeaders_.Add (KeyValuePair<String, String>{headerName, *value});
     }
+}
+
+void Headers::Set (const String& headerName, const optional<String>& value)
+{
+    if (SetBuiltin_ (headerName, value)) {
+        return;
+    }
+    SetExtras_ (headerName, value);
 }
 
 template <>

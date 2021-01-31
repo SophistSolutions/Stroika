@@ -185,6 +185,13 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
+         *  Property with the optional<String> value of the Server header.
+         *  https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Server
+         */
+        Common::Property<optional<String>> pServer;
+
+    public:
+        /**
          *  Returns the combined set of headers (list Key:Value pairs). Note this may not be returned in
          *  the same order and exactly losslessly identically to what was passed in.
          * 
@@ -212,6 +219,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     private:
         nonvirtual bool SetBuiltin_ (const String& headerName, const optional<String>& value);
+        nonvirtual void SetExtras_ (const String& headerName, const optional<String>& value);
 
     private:
         // Could have properties lookup once when loading and store here. Or could have

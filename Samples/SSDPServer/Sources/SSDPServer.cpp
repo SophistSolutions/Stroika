@@ -48,7 +48,7 @@ namespace {
                                             [=] (Message* m) {
                                                 RequireNotNull (m);
                                                 Response* response = m->PeekResponse ();
-                                                response->UpdateHeader ([] (auto* header) { RequireNotNull (header); header->Set (IO::Network::HTTP::HeaderName::kServer, L"stroika-ssdp-server-demo"sv); });
+                                                response->UpdateHeader ([] (auto* header) { RequireNotNull (header); header->pServer = L"stroika-ssdp-server-demo"sv; });
                                                 response->write (Stroika::Frameworks::UPnP::Serialize (dd));
                                                 response->SetContentType (DataExchange::InternetMediaTypes::kXML);
                                             })}};

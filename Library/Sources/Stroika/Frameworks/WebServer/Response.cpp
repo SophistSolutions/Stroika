@@ -68,7 +68,7 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
     , fBytes_{}
     , fContentSizePolicy_{ContentSizePolicy::eAutoCompute}
 {
-    fHeaders_.Set (IO::Network::HTTP::HeaderName::kServer, L"Stroka-Based-Web-Server"sv);
+    fHeaders_.pServer = L"Stroka-Based-Web-Server"sv;
     if (not ct.empty ()) {
         fHeaders_.pContentType = ct;
     }

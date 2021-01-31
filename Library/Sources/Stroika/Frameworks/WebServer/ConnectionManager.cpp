@@ -51,7 +51,7 @@ namespace {
             {
                 Response& response = *m->PeekResponse ();
                 if (fServerHeader_) {
-                    response.UpdateHeader ([this] (auto* header) { RequireNotNull (header); header->Set (IO::Network::HTTP::HeaderName::kServer, *fServerHeader_); });
+                    response.UpdateHeader ([this] (auto* header) { RequireNotNull (header); header->pServer = *fServerHeader_; });
                 }
                 if (fCORSModeSupport == ConnectionManager::CORSModeSupport::eSuppress) {
                     /*
