@@ -17,6 +17,8 @@
 #include "../../Foundation/IO/Network/HTTP/Exception.h"
 #include "../../Foundation/IO/Network/HTTP/Headers.h"
 #include "../../Foundation/IO/Network/HTTP/Methods.h"
+#include "../../Foundation/Memory/Optional.h"
+#include "../../Foundation/Memory/ObjectFieldUtilities.h"
 #include "../../Foundation/Memory/SmallStackBuffer.h"
 
 #include "DefaultFaultInterceptor.h"
@@ -39,9 +41,9 @@ using namespace Stroika::Frameworks::WebServer;
 namespace {
     struct ServerHeadersInterceptor_ : public Interceptor {
         struct Rep_ : Interceptor::_IRep {
-            Rep_ (const optional<String>& serverHeader, ConnectionManager::CORSModeSupport corsSupportMode)
+            Rep_ (const optional<String>& serverHeader, const ConnectionManager::Options::CORS& corsOptions)
                 : fServerHeader_{serverHeader}
-                , fCORSModeSupport{corsSupportMode}
+                , fAllowedOrigins_{corsOptions.fAllowedOrigins}
             {
             }
             virtual void HandleFault ([[maybe_unused]] Message* m, [[maybe_unused]] const exception_ptr& e) noexcept override
@@ -49,25 +51,47 @@ namespace {
             }
             virtual void HandleMessage (Message* m) override
             {
-                Response& response = *m->PeekResponse ();
+                const Request& request  = *m->PeekRequest ();
+                Response&      response = *m->PeekResponse ();
                 if (fServerHeader_) {
                     response.UpdateHeader ([this] (auto* header) { RequireNotNull (header); header->pServer = *fServerHeader_; });
                 }
 
-                // @todo soon remove/redo this
-                if (fCORSModeSupport == ConnectionManager::CORSModeSupport::eSuppress) {
-                    /*
-                     *  From what I gather from https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS - the Allow-Origin is needed
-                     *  on all responses, but these others just when you do a preflight - using OPTIONS.
-                     */
-                    response.UpdateHeader ([this] (auto* header) { RequireNotNull (header); header->pAccessControlAllowOrigin = L"*"sv; });
+                optional<String> allowedOrigin;
+                if (fAllowedOrigins_.has_value ()) {
+                    if (auto origin = request.GetHeaders ().pOrigin ()) {
+                        // may need to be more flexible about how we compare, but for now a good approximation...
+                        String originStr = origin->ToString ();
+                        if (fAllowedOrigins_->Contains (originStr)) {
+                            allowedOrigin = originStr;
+                        }
+                    }
+                }
+                else {
+                    allowedOrigin = L"*"sv;
+                }
+
+                /*
+                 *  From what I gather from https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS - the Allow-Origin is needed
+                 *  on all responses.
+                 */
+                if (allowedOrigin) {
+                    response.UpdateHeader ([&] (auto* header) {
+                        RequireNotNull (header);
+                        // check Origin and either throw, or set appropirate header response
+                        // accoridng to https://fetch.spec.whatwg.org/#cors-protocol-examples
+                        // it appears we can OMIT access control origin header (set to null) if it doens match and set
+                        // to matching string or * if it does
+                        header->pAccessControlAllowOrigin = allowedOrigin;
+                        /// NOTE TODO IF SETTING TO A VALID ORIGIN, THEN MUST ADD "Origin" to Vary response header
+                    });
                 }
             }
-            const optional<String>                   fServerHeader_; // no need for synchronization cuz constant - just set on construction
-            const ConnectionManager::CORSModeSupport fCORSModeSupport;
+            const optional<String>      fServerHeader_;   // no need for synchronization cuz constant - just set on construction
+            const optional<Set<String>> fAllowedOrigins_; // missing <==> '*'
         };
-        ServerHeadersInterceptor_ (const optional<String>& serverHeader, ConnectionManager::CORSModeSupport corsSupportMode)
-            : Interceptor{make_shared<Rep_> (serverHeader, corsSupportMode)}
+        ServerHeadersInterceptor_ (const optional<String>& serverHeader, ConnectionManager::Options::CORS CORSOptions)
+            : Interceptor{make_shared<Rep_> (serverHeader, CORSOptions)}
         {
         }
     };
@@ -96,18 +120,6 @@ namespace {
 
 /*
  ********************************************************************************
- ***************** WebServer::ConnectionManager::Options ************************
- ********************************************************************************
- */
-constexpr unsigned int                       ConnectionManager::Options::kDefault_MaxConnections;
-constexpr Socket::BindFlags                  ConnectionManager::Options::kDefault_BindFlags;
-const optional<String>                       ConnectionManager::Options::kDefault_ServerHeader = L"Stroika/2.1"sv;
-constexpr ConnectionManager::CORSModeSupport ConnectionManager::Options::kDefault_CORSModeSupport;
-constexpr Time::DurationSecondsType          ConnectionManager::Options::kDefault_AutomaticTCPDisconnectOnClose;
-constexpr optional<int>                      ConnectionManager::Options::kDefault_Linger;
-
-/*
- ********************************************************************************
  ************************* WebServer::ConnectionManager *************************
  ********************************************************************************
  */
@@ -129,25 +141,69 @@ namespace {
         constexpr unsigned int kMinDefaultTCPBacklog_{3u};
         return options.fTCPBacklog.value_or (Math::AtLeast (kMinDefaultTCPBacklog_, options.fMaxConnections.value_or (Options::kDefault_MaxConnections) * 3 / 4));
     }
+    ConnectionManager::Options FillInDefaults_ (const ConnectionManager::Options& o)
+    {
+        using Options = ConnectionManager::Options;
+        Options result{o};
+        result.fCORS                              = Memory::NullCoalesce (result.fCORS, Options::kDefault_CORS);
+        result.fMaxConnections                    = Memory::NullCoalesce (result.fMaxConnections, Options::kDefault_MaxConnections);
+        result.fMaxConcurrentlyHandledConnections = Memory::NullCoalesce (result.fMaxConcurrentlyHandledConnections, ComputeThreadPoolSize_ (result));
+        result.fBindFlags                         = Memory::NullCoalesce (result.fBindFlags, Options::kDefault_BindFlags);
+        result.fServerHeader                      = Memory::NullCoalesce (result.fServerHeader, Options::kDefault_ServerHeader);
+        result.fAutomaticTCPDisconnectOnClose     = Memory::NullCoalesce (result.fAutomaticTCPDisconnectOnClose, Options::kDefault_AutomaticTCPDisconnectOnClose);
+        result.fLinger                            = Memory::NullCoalesce (result.fLinger, Options::kDefault_Linger); // for now this is special and can be null/optional
+        // result.fThreadPoolName; can remain nullopt
+        result.fTCPBacklog = Memory::NullCoalesce (result.fTCPBacklog, ComputeConnectionBacklog_ (result));
+        return result;
+    }
 }
 
 ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Router& router, const Options& options)
-    : fServerHeader_{Memory::OptionalValue (options.fServerHeader, Options::kDefault_ServerHeader)}
-    , fCORSModeSupport_{options.fCORSModeSupport.value_or (Options::kDefault_CORSModeSupport)}
-    , fServerAndCORSEtcInterceptor_{ServerHeadersInterceptor_{fServerHeader_, fCORSModeSupport_}}
+    : pDefaultErrorHandler{
+          [] (const auto* property) -> optional<Interceptor> {
+              const ConnectionManager* cmObj = Memory::GetObjectOwningField (property, &ConnectionManager::pDefaultErrorHandler);
+              return cmObj->fDefaultErrorHandler_;
+          },
+          [] (auto* property, const auto& defaultErrorHandler) {
+              ConnectionManager* cmObj = Memory::GetObjectOwningField (property, &ConnectionManager::pDefaultErrorHandler);
+              if (cmObj->fDefaultErrorHandler_ != defaultErrorHandler) {
+                  cmObj->ReplaceInEarlyInterceptor_ (cmObj->fDefaultErrorHandler_.load (), defaultErrorHandler);
+                  cmObj->fDefaultErrorHandler_ = defaultErrorHandler;
+              }
+          }}
+    , pEarlyInterceptors{
+          [] (const auto* property) -> Sequence<Interceptor> {
+              const ConnectionManager* cmObj = Memory::GetObjectOwningField (property, &ConnectionManager::pEarlyInterceptors);
+              return cmObj->fEarlyInterceptors_;
+          },
+          [] (auto* property, const auto& earlyInterceptors) {
+              ConnectionManager* cmObj   = Memory::GetObjectOwningField (property, &ConnectionManager::pEarlyInterceptors);
+              cmObj->fEarlyInterceptors_ = earlyInterceptors;
+              cmObj->FixupInterceptorChain_ ();
+        }}
+    , pBeforeInterceptors{
+          [] (const auto* property) -> Sequence<Interceptor> {
+              const ConnectionManager* cmObj = Memory::GetObjectOwningField (property, &ConnectionManager::pBeforeInterceptors);
+              return cmObj->fBeforeInterceptors_;
+          },
+          [] (auto* property, const auto& beforeInterceptors_) {
+              ConnectionManager* cmObj   = Memory::GetObjectOwningField (property, &ConnectionManager::pBeforeInterceptors);
+              cmObj->fBeforeInterceptors_ = beforeInterceptors_;
+              cmObj->FixupInterceptorChain_ ();
+          }}
+    , fEffectiveOptions_{FillInDefaults_ (options)}
+    , fServerAndCORSEtcInterceptor_{ServerHeadersInterceptor_{*fEffectiveOptions_.fServerHeader, options.fCORS.value_or (ConnectionManager::Options::kDefault_CORS)}}
     , fDefaultErrorHandler_{DefaultFaultInterceptor{}}
     , fEarlyInterceptors_{mkEarlyInterceptors_ (fDefaultErrorHandler_, fServerAndCORSEtcInterceptor_)}
     , fBeforeInterceptors_{}
     , fAfterInterceptors_{}
-    , fLinger_{Memory::OptionalValue (options.fLinger, Options::kDefault_Linger)}
-    , fAutomaticTCPDisconnectOnClose_{options.fAutomaticTCPDisconnectOnClose.value_or (Options::kDefault_AutomaticTCPDisconnectOnClose)}
     , fRouter_{router}
     , fInterceptorChain_{mkInterceptorChain_ (fRouter_, fEarlyInterceptors_, fBeforeInterceptors_, fAfterInterceptors_)}
-    , fActiveConnectionThreads_{ComputeThreadPoolSize_ (options), options.fThreadPoolName}
+    , fActiveConnectionThreads_{*fEffectiveOptions_.fMaxConcurrentlyHandledConnections, fEffectiveOptions_.fThreadPoolName}
     , fListener_{bindAddresses,
-                 options.fBindFlags.value_or (Options::kDefault_BindFlags),
+                 *fEffectiveOptions_.fBindFlags,
                  [this] (const ConnectionOrientedStreamSocket::Ptr& s) { onConnect_ (s); },
-                 ComputeConnectionBacklog_ (options)}
+                 *fEffectiveOptions_.fTCPBacklog}
     , fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([this] () { WaitForReadyConnectionLoop_ (); }, L"WebServer-ConnectionMgr-Wait4IOReady"_k)}
 {
     DbgTrace (L"Constructing WebServer::ConnectionManager (%p), with threadpoolSize=%d, backlog=%d", this, fActiveConnectionThreads_.GetPoolSize (), ComputeConnectionBacklog_ (options));
@@ -157,10 +213,10 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
 void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::onConnect_", L"s=%s", Characters::ToString (s).c_str ()));
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::onConnect_", L"s=%s", Characters::ToString (s).c_str ())};
 #endif
-    s.SetAutomaticTCPDisconnectOnClose (GetAutomaticTCPDisconnectOnClose ());
-    s.SetLinger (GetLinger ()); // 'missing' has meaning (feature disabled) for socket, so allow setting that too - doesn't mean don't pass on/use-default
+    s.SetAutomaticTCPDisconnectOnClose (*fEffectiveOptions_.fAutomaticTCPDisconnectOnClose);
+    s.SetLinger (fEffectiveOptions_.fLinger); // 'missing' has meaning (feature disabled) for socket, so allow setting that too - doesn't mean don't pass on/use-default
     shared_ptr<Connection> conn = make_shared<Connection> (s, fInterceptorChain_);
     fInactiveSockSetPoller_.Add (conn);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -294,45 +350,33 @@ Collection<shared_ptr<Connection>> ConnectionManager::GetConnections () const
     return GetInactiveConnections_ () + fActiveConnections_.load ();
 }
 
-void ConnectionManager::SetServerHeader (optional<String> server)
+#if 0
+void ConnectionManager::AdjustOptions (const Options& options)
 {
-    if (fServerHeader_ != server) {
-        Interceptor old               = fServerAndCORSEtcInterceptor_;
-        fServerAndCORSEtcInterceptor_ = ServerHeadersInterceptor_{server, fCORSModeSupport_};
-        fServerHeader_                = server;
-        ReplaceInEarlyInterceptor_ (old, fServerAndCORSEtcInterceptor_);
-    }
+    Options result                            = fEffectiveOptions_;
+    result.fCORS                              = Memory::NullCoalesce (options.fCORS, *result.fCORS);
+    result.fMaxConnections                    = Memory::NullCoalesce (options.fMaxConnections, *result.fMaxConnections);
+    result.fMaxConcurrentlyHandledConnections = Memory::NullCoalesce (options.fMaxConcurrentlyHandledConnections, *result.fMaxConcurrentlyHandledConnections);
+    result.fBindFlags                         = Memory::NullCoalesce (options.fBindFlags, *result.fBindFlags);
+    result.fServerHeader                      = Memory::NullCoalesce (options.fServerHeader, *result.fServerHeader);
+    result.fAutomaticTCPDisconnectOnClose     = Memory::NullCoalesce (options.fAutomaticTCPDisconnectOnClose, *result.fAutomaticTCPDisconnectOnClose);
+    result.fLinger                            = Memory::NullCoalesce (options.fLinger, result.fLinger); // for now this is special and can be null/optional
+    result.fThreadPoolName                    = Memory::NullCoalesce (options.fThreadPoolName, *result.fThreadPoolName);
+    result.fTCPBacklog                        = Memory::NullCoalesce (options.fTCPBacklog, *result.fTCPBacklog);
+    SetOptions (options);
 }
 
-void ConnectionManager::SetCORSModeSupport (CORSModeSupport support)
+void ConnectionManager::SetOptions (const Options& options)
 {
-    if (fCORSModeSupport_ != support) {
-        Interceptor old               = fServerAndCORSEtcInterceptor_;
-        fServerAndCORSEtcInterceptor_ = ServerHeadersInterceptor_{fServerHeader_, fCORSModeSupport_};
-        fCORSModeSupport_             = support;
-        ReplaceInEarlyInterceptor_ (old, fServerAndCORSEtcInterceptor_);
-    }
-}
+    fEffectiveOptions_ = FillInDefaults_ (options);
 
-void ConnectionManager::SetDefaultErrorHandler (const optional<Interceptor>& defaultErrorHandler)
-{
-    if (fDefaultErrorHandler_ != defaultErrorHandler) {
-        ReplaceInEarlyInterceptor_ (fDefaultErrorHandler_.load (), defaultErrorHandler);
-        fDefaultErrorHandler_ = defaultErrorHandler;
-    }
-}
+    Interceptor old               = fServerAndCORSEtcInterceptor_;
+    fServerAndCORSEtcInterceptor_ = ServerHeadersInterceptor_{*fEffectiveOptions_.fServerHeader, *fEffectiveOptions_.fCORS};
+    ReplaceInEarlyInterceptor_ (old, fServerAndCORSEtcInterceptor_);
 
-void ConnectionManager::SetEarlyInterceptors (const Sequence<Interceptor>& earlyInterceptors)
-{
-    fEarlyInterceptors_ = earlyInterceptors;
-    FixupInterceptorChain_ ();
+    // @todo update SEE CTOR
 }
-
-void ConnectionManager::SetBeforeInterceptors (const Sequence<Interceptor>& beforeInterceptors)
-{
-    fBeforeInterceptors_ = beforeInterceptors;
-    FixupInterceptorChain_ ();
-}
+#endif
 
 void ConnectionManager::SetAfterInterceptors (const Sequence<Interceptor>& afterInterceptors)
 {

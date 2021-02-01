@@ -16,41 +16,9 @@ namespace Stroika::Frameworks::WebServer {
      ******************************** ConnectionManager *****************************
      ********************************************************************************
      */
-    inline optional<String> ConnectionManager::GetServerHeader () const
+    inline ConnectionManager::Options ConnectionManager::GetOptions () const
     {
-        return fServerHeader_;
-    }
-    inline auto ConnectionManager::GetCORSModeSupport () const -> CORSModeSupport
-    {
-        return fCORSModeSupport_;
-    }
-    inline optional<int> ConnectionManager::GetLinger () const
-    {
-        return fLinger_;
-    }
-    inline void ConnectionManager::SetLinger (const optional<int>& linger)
-    {
-        fLinger_ = linger;
-    }
-    inline optional<Time::DurationSecondsType> ConnectionManager::GetAutomaticTCPDisconnectOnClose ()
-    {
-        return fAutomaticTCPDisconnectOnClose_;
-    }
-    inline void ConnectionManager::SetAutomaticTCPDisconnectOnClose (const optional<Time::DurationSecondsType>& waitFor)
-    {
-        fAutomaticTCPDisconnectOnClose_ = waitFor;
-    }
-    inline optional<Interceptor> ConnectionManager::GetDefaultErrorHandler () const
-    {
-        return fDefaultErrorHandler_;
-    }
-    inline Sequence<Interceptor> ConnectionManager::GetEarlyInterceptors () const
-    {
-        return fEarlyInterceptors_;
-    }
-    inline Sequence<Interceptor> ConnectionManager::GetBeforeInterceptors () const
-    {
-        return fBeforeInterceptors_;
+        return fEffectiveOptions_;
     }
     inline Sequence<Interceptor> ConnectionManager::GetAfterInterceptors () const
     {

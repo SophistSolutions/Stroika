@@ -9,7 +9,9 @@
 #include <list>
 #include <memory>
 
+#include "../../Foundation/Common/Property.h"
 #include "../../Foundation/Containers/Collection.h"
+#include "../../Foundation/Containers/Set.h"
 #include "../../Foundation/Execution/Synchronized.h"
 #include "../../Foundation/Execution/ThreadPool.h"
 #include "../../Foundation/Execution/UpdatableWaitForIOReady.h"
@@ -22,7 +24,7 @@
 #include "Router.h"
 
 /**
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
+ *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
  */
 
 namespace Stroika::Frameworks::WebServer {
@@ -30,6 +32,7 @@ namespace Stroika::Frameworks::WebServer {
     using namespace Stroika::Foundation;
     using Characters::String;
     using Containers::Collection;
+    using Containers::Set;
     using IO::Network::ConnectionOrientedStreamSocket;
     using IO::Network::Socket;
     using IO::Network::SocketAddress;
@@ -50,7 +53,86 @@ namespace Stroika::Frameworks::WebServer {
      */
     class ConnectionManager {
     public:
-        struct Options;
+        /**
+         */
+        struct Options {
+
+            /**
+             *  Options for how the HTTP Server handles CORS (mostly HTTP OPTIONS requests)
+             */
+            struct CORS {
+                /**
+                 *  This can be {L"*"} meaning any origin (default). Or it can be a list of values present in HTTP Origin Headers (typically just hostname but can be Host:port)
+                 */
+                optional<Set<String>> fAllowedOrigins;
+
+                /**
+                 *  The webserver automatically adds appropirate HTTP headers for standard HTTP communicaiton, but use this to
+                 *  add in extra, perhaps custom HTTP Headers to be allowed via CORS.
+                 */
+                optional<Set<String>> fAllowedExtraHTTPHeaders;
+            };
+            optional<CORS>      fCORS;
+
+            /**
+             *  This is the max number of TCP connections the webserver will allow to keep around, before starting
+             *  to reject new connections.
+             * 
+             *  \note NYI tracking and rejecting extra connections - just used as a hint for other values
+             */
+            optional<unsigned int>      fMaxConnections;
+
+            /**
+             *  This is basically the number of threads to use. It can be automatically inferred from fMaxConnections
+             *  but can be specified explicitly.
+             */
+            optional<unsigned int> fMaxConcurrentlyHandledConnections;
+
+            optional<Socket::BindFlags> fBindFlags;
+            optional<String>            fServerHeader;
+
+            /**
+             *  This feature causes sockets to automatically flush their data - and avoid connection reset - when possible.
+             *  This makes the closing socket process more costly and slow, so is optional, but is on by default because it makes
+             *  commmunications more releable.
+             *
+             *  Turn this on - especially - if you see connection reset when clients talk to the Stroika web-server (TCP RST sent).
+             *
+             *  \note - this defaults to 2 seconds (kDefault_AutomaticTCPDisconnectOnClose)
+             */
+            optional<Time::DurationSecondsType> fAutomaticTCPDisconnectOnClose;
+
+            /**
+             * @see Socket::SetLinger () - SO_LINGER
+             */
+            optional<int> fLinger;
+
+            /**
+             * mostly for debugging - so easier to segrate names of threads if you have 
+             * multiple thread pools/connection managers
+             */
+            optional<String> fThreadPoolName;
+
+            /**
+             *  The number of new TCP connections the kernel will buffer before the application has a chance to accept.
+             *
+             *  This can typically be left unset, and defaults to be based on fMaxConnections.
+             *
+             *  The default for tcp backlog is a little less than max # of connections. What makes
+             *  sense depends on ratio of incoming connections to the lifetime of those calls. If high, make this more than
+             *  number of connections. If low, then can be less than max# of connections.
+             *
+             *  @see http://man7.org/linux/man-pages/man2/listen.2.html
+             */
+            optional<unsigned int> fTCPBacklog;
+
+            static constexpr unsigned int               kDefault_MaxConnections{25};
+            static constexpr Socket::BindFlags          kDefault_BindFlags{};
+            static inline const String                  kDefault_ServerHeader { L"Stroika/2.1"sv};
+            static inline const CORS                    kDefault_CORS{ Set<String> {L"*"}, Set<String>{}};
+            static constexpr Time::DurationSecondsType  kDefault_AutomaticTCPDisconnectOnClose{2.0};
+            static constexpr optional<int>              kDefault_Linger{nullopt};  // intentionally optional-valued
+        };
         static const Options kDefaultOptions;
 
     public:
@@ -66,74 +148,27 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
+         *  Returns the 'effective' options after applying defaults, not necessarily the original options.
          */
-        nonvirtual optional<String> GetServerHeader () const;
+        nonvirtual Options GetOptions () const;
+
+#if 0
+    public:
+        /**
+        * 
+        * 
+        * &&& PROBABLY GET RID OF THIS (recent addtion this release)- instead
+         *  Options specified here need not be completely specified, and defaults automatically applied.
+         */
+        nonvirtual void SetOptions (const Options& options);
 
     public:
         /**
+         *  This modifies ONLY the non-missing (engaged) fields of options.
+        * &&& PROBABLY GET RID OF THIS (recent addtion this release)
          */
-        nonvirtual void SetServerHeader (optional<String> server);
-
-    public:
-        /**
-         *  CORSMode
-         *
-         *  \brief  If eNone this does nothing, and if CORSModeSupport == eSuppress, CORS Headers are emitted which suppress the CORS features.
-         *
-         *  @see GetCORSModeSupport (), SetCORSModeSupport ()
-         */
-        enum class CORSModeSupport {
-            eNone,
-            eSuppress,
-
-            eDEFAULT = eSuppress,
-
-            Stroika_Define_Enum_Bounds (eNone, eSuppress)
-        };
-
-    public:
-        /**
-         *  @see CORSModeSupport
-         */
-        nonvirtual CORSModeSupport GetCORSModeSupport () const;
-
-    public:
-        /**
-         *  @see CORSModeSupport
-         */
-        nonvirtual void SetCORSModeSupport (CORSModeSupport support);
-
-    public:
-        /**
-         * @see Socket::GetLinger
-         */
-        nonvirtual optional<int> GetLinger () const;
-
-    public:
-        /**
-         *  @see GetLinger
-         */
-        nonvirtual void SetLinger (const optional<int>& linger);
-
-    public:
-        /**
-         *  This feature causes sockets to automatically flush their data - and avoid connection reset - when possible.
-         *  This makes the closing socket process more costly and slow, so is optional, but is on by default because it makes
-         *  commmunications more releable.
-         *
-         *  Turn this on - especially - if you see connection reset when clients talk to the Stroika web-server (TCP RST sent).
-         *
-         *  \note - this defaults to 2 seconds (kDefault_AutomaticTCPDisconnectOnClose)
-         *
-         * @see Socket::GetAutomaticTCPDisconnectOnClose
-         */
-        nonvirtual optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose ();
-
-    public:
-        /**
-         *  @see GetAutomaticTCPDisconnectOnClose ()
-         */
-        nonvirtual void SetAutomaticTCPDisconnectOnClose (const optional<Time::DurationSecondsType>& waitFor);
+        nonvirtual void AdjustOptions (const Options& options);
+#endif
 
     public:
         /**
@@ -141,13 +176,7 @@ namespace Stroika::Frameworks::WebServer {
          *  all interceptors can engage in fault handling. This is just meant to provide a simple one-stop-shop for how to
          *  handle faults in one place.
          */
-        nonvirtual optional<Interceptor> GetDefaultErrorHandler () const;
-
-    public:
-        /**
-         *  @see GetDefaultErrorHandler
-         */
-        nonvirtual void SetDefaultErrorHandler (const optional<Interceptor>& defaultErrorHandler);
+        Common::Property<optional<Interceptor>> pDefaultErrorHandler;
 
     public:
         /**
@@ -157,25 +186,13 @@ namespace Stroika::Frameworks::WebServer {
          *          earltInterceptors += *defaultFaultHandler;
          *        }
          */
-        nonvirtual Sequence<Interceptor> GetEarlyInterceptors () const;
-
-    public:
-        /**
-         * @see GetEarlyInterceptors
-         */
-        nonvirtual void SetEarlyInterceptors (const Sequence<Interceptor>& earlyInterceptors);
+        Common::Property<Sequence<Interceptor>> pEarlyInterceptors;
 
     public:
         /**
          *  Get the list of interceptors before the private ConnectionManager interceptors (e.g. router).
          */
-        nonvirtual Sequence<Interceptor> GetBeforeInterceptors () const;
-
-    public:
-        /**
-         * @see GetBeforeInterceptors
-         */
-        nonvirtual void SetBeforeInterceptors (const Sequence<Interceptor>& beforeInterceptors);
+        Common::Property<Sequence<Interceptor>> pBeforeInterceptors;
 
     public:
         /**
@@ -216,6 +233,8 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual void RemoveInterceptor (const Interceptor& i);
 
     public:
+        /**
+         */
         nonvirtual void AbortConnection (const shared_ptr<Connection>& conn);
 
     public:
@@ -243,14 +262,12 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual void ReplaceInEarlyInterceptor_ (const optional<Interceptor>& oldValue, const optional<Interceptor>& newValue);
 
     private:
-        Execution::Synchronized<optional<String>>                    fServerHeader_;
-        CORSModeSupport                                              fCORSModeSupport_{CORSModeSupport::eDEFAULT};
+        Options                                                      fEffectiveOptions_;
         Execution::Synchronized<Interceptor>                         fServerAndCORSEtcInterceptor_;
         Execution::Synchronized<optional<Interceptor>>               fDefaultErrorHandler_;
         Execution::Synchronized<Sequence<Interceptor>>               fEarlyInterceptors_;
         Execution::Synchronized<Sequence<Interceptor>>               fBeforeInterceptors_;
         Execution::Synchronized<Sequence<Interceptor>>               fAfterInterceptors_;
-        Execution::Synchronized<optional<int>>                       fLinger_;
         Execution::Synchronized<optional<Time::DurationSecondsType>> fAutomaticTCPDisconnectOnClose_;
         Router                                                       fRouter_;
         InterceptorChain                                             fInterceptorChain_; // no need to synchonize cuz internally synchronized
@@ -282,61 +299,6 @@ namespace Stroika::Frameworks::WebServer {
         Execution::Thread::CleanupPtr fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
     };
 
-    struct ConnectionManager::Options {
-        /**
-         *  This is the max number of TCP connections the webserver will allow to keep around, before starting
-         *  to reject new connections.
-         * 
-         *  \note NYI tracking and rejecting extra connections - just used as a hint for other values
-         */
-        optional<unsigned int>      fMaxConnections;
-
-        /**
-         *  This is basically the number of threads to use. It can be automatically inferred from fMaxConnections
-         *  but can be specified explicitly.
-         */
-        optional<unsigned int> fMaxConcurrentlyHandledConnections;
-
-        optional<Socket::BindFlags> fBindFlags;
-        optional<String>            fServerHeader;
-        optional<CORSModeSupport>   fCORSModeSupport;
-
-        /**
-         * @see Socket::SetAutomaticTCPDisconnectOnClose ()
-         */
-        optional<Time::DurationSecondsType> fAutomaticTCPDisconnectOnClose;
-
-        /**
-         * @see Socket::SetLinger () - SO_LINGER
-         */
-        optional<int> fLinger;
-
-        /**
-         * mostly for debugging - so easier to segrate names of threads if you have 
-         * multiple thread pools/connection managers
-         */
-        optional<String> fThreadPoolName;
-
-        /**
-         *  The number of new TCP connections the kernel will buffer before the application has a chance to accept.
-         *
-         *  This can typically be left unset, and defaults to be based on fMaxConnections.
-         *
-         *  The default for tcp backlog is a little less than max # of connections. What makes
-         *  sense depends on ratio of incoming connections to the lifetime of those calls. If high, make this more than
-         *  number of connections. If low, then can be less than max# of connections.
-         *
-         *  @see http://man7.org/linux/man-pages/man2/listen.2.html
-         */
-        optional<unsigned int> fTCPBacklog;
-
-        static constexpr unsigned int              kDefault_MaxConnections{25};
-        static constexpr Socket::BindFlags         kDefault_BindFlags{};
-        static const optional<String>              kDefault_ServerHeader;
-        static constexpr CORSModeSupport           kDefault_CORSModeSupport{CORSModeSupport::eDEFAULT};
-        static constexpr Time::DurationSecondsType kDefault_AutomaticTCPDisconnectOnClose{2.0};
-        static constexpr optional<int>             kDefault_Linger{};
-    };
 
      inline const ConnectionManager::Options ConnectionManager::kDefaultOptions;
 
