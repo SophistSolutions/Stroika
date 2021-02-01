@@ -891,8 +891,8 @@ namespace {
                         newInterface.fWirelessInfo = *owinfo;
                         WeakAssert (not newInterface.fTransmitSpeedBaud.has_value () or newInterface.fTransmitSpeedBaud == owinfo->fTransmitSpeedBaud);
                         WeakAssert (not newInterface.fReceiveLinkSpeedBaud.has_value () or newInterface.fReceiveLinkSpeedBaud == owinfo->fReceiveLinkSpeedBaud);
-                        newInterface.fTransmitSpeedBaud    = Memory::OptionalValue (newInterface.fTransmitSpeedBaud, owinfo->fTransmitSpeedBaud);
-                        newInterface.fReceiveLinkSpeedBaud = Memory::OptionalValue (newInterface.fReceiveLinkSpeedBaud, owinfo->fReceiveLinkSpeedBaud);
+                        newInterface.fTransmitSpeedBaud    = Memory::NullCoalesce (newInterface.fTransmitSpeedBaud, owinfo->fTransmitSpeedBaud);
+                        newInterface.fReceiveLinkSpeedBaud = Memory::NullCoalesce (newInterface.fReceiveLinkSpeedBaud, owinfo->fReceiveLinkSpeedBaud);
                     }
                     else {
                         // This happens for down/wifi-direct interfaces
