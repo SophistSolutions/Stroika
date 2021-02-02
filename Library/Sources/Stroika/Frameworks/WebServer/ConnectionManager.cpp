@@ -17,8 +17,8 @@
 #include "../../Foundation/IO/Network/HTTP/Exception.h"
 #include "../../Foundation/IO/Network/HTTP/Headers.h"
 #include "../../Foundation/IO/Network/HTTP/Methods.h"
-#include "../../Foundation/Memory/Optional.h"
 #include "../../Foundation/Memory/ObjectFieldUtilities.h"
+#include "../../Foundation/Memory/Optional.h"
 #include "../../Foundation/Memory/SmallStackBuffer.h"
 
 #include "DefaultFaultInterceptor.h"
@@ -52,7 +52,7 @@ namespace {
             }
             Rep_ (const optional<String>& serverHeader, const ConnectionManager::Options::CORS& corsOptions)
                 : fServerHeader_{serverHeader}
-                , fAllowedOrigins_{MapStartToNullOpt_(corsOptions.fAllowedOrigins)}
+                , fAllowedOrigins_{MapStartToNullOpt_ (corsOptions.fAllowedOrigins)}
             {
             }
             virtual void HandleFault ([[maybe_unused]] Message* m, [[maybe_unused]] const exception_ptr& e) noexcept override
@@ -189,14 +189,14 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
               ConnectionManager* cmObj   = Memory::GetObjectOwningField (property, &ConnectionManager::pEarlyInterceptors);
               cmObj->fEarlyInterceptors_ = earlyInterceptors;
               cmObj->FixupInterceptorChain_ ();
-        }}
+          }}
     , pBeforeInterceptors{
           [] (const auto* property) -> Sequence<Interceptor> {
               const ConnectionManager* cmObj = Memory::GetObjectOwningField (property, &ConnectionManager::pBeforeInterceptors);
               return cmObj->fBeforeInterceptors_;
           },
           [] (auto* property, const auto& beforeInterceptors_) {
-              ConnectionManager* cmObj   = Memory::GetObjectOwningField (property, &ConnectionManager::pBeforeInterceptors);
+              ConnectionManager* cmObj    = Memory::GetObjectOwningField (property, &ConnectionManager::pBeforeInterceptors);
               cmObj->fBeforeInterceptors_ = beforeInterceptors_;
               cmObj->FixupInterceptorChain_ ();
           }}

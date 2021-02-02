@@ -148,7 +148,7 @@ public:
 #else
     , fConnectionMgr_
     {
-        SocketAddresses (InternetAddresses_Any (), portNumber), kRouter_, ConnectionManager::Options { {}, {}, Socket::BindFlags{}, L"Stroika-Sample-WebServices/"_k + AppVersion::kVersion.AsMajorMinorString () }
+        SocketAddresses (InternetAddresses_Any (), portNumber), kRouter_, ConnectionManager::Options { nullopt, nullopt, nullopt, Socket::BindFlags{}, L"Stroika-Sample-WebServices/"_k + AppVersion::kVersion.AsMajorMinorString () }
     }
 #endif
     {
