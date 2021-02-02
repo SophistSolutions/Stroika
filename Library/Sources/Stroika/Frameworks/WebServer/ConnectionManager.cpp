@@ -41,9 +41,18 @@ using namespace Stroika::Frameworks::WebServer;
 namespace {
     struct ServerHeadersInterceptor_ : public Interceptor {
         struct Rep_ : Interceptor::_IRep {
+            static const optional<Set<String>> MapStartToNullOpt_ (const optional<Set<String>>& o)
+            {
+                // internally we treat missing as wildcard but caller may not, so map
+                optional<Set<String>> m = o;
+                if (m and m->Contains (L"*"_k)) {
+                    m = nullopt;
+                }
+                return m;
+            }
             Rep_ (const optional<String>& serverHeader, const ConnectionManager::Options::CORS& corsOptions)
                 : fServerHeader_{serverHeader}
-                , fAllowedOrigins_{corsOptions.fAllowedOrigins}
+                , fAllowedOrigins_{MapStartToNullOpt_(corsOptions.fAllowedOrigins)}
             {
             }
             virtual void HandleFault ([[maybe_unused]] Message* m, [[maybe_unused]] const exception_ptr& e) noexcept override
