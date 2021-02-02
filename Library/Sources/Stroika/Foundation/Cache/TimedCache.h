@@ -163,7 +163,7 @@ namespace Stroika::Foundation::Cache {
      *          void DoIt ()
      *          {
      *              // example usage
-     *              VerifyTestResult (Memory::ValueOrDefault (LookupDiskStats_Try1 (L"xx")).size == 33);
+     *              VerifyTestResult (Memory::NullCoalesce (LookupDiskStats_Try1 (L"xx")).size == 33);
      *              VerifyTestResult (LookupDiskStats_Try2 (L"xx").size == 33);
      *              VerifyTestResult (LookupDiskStats_Try3 (L"xx").size == 33);
      *          }

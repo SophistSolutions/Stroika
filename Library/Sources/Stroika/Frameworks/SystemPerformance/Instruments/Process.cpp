@@ -511,7 +511,7 @@ namespace {
                          */
                         processDetails.fKernelProcess = not processDetails.fEXEPath.has_value ();
                         // Note - many kernel processes have commandline, so don't filter here based on that
-                        if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, ValueOrDefault (processDetails.fEXEPath))) {
+                        if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, NullCoalesce (processDetails.fEXEPath))) {
                             processDetails.fCommandLine = ReadCmdLineString_ (dir / kCmdLineFilename_);
                         }
                         // kernel process cannot chroot (as far as I know) --LGP 2015-05-21
@@ -1227,7 +1227,7 @@ namespace {
                         processDetails.fEXEPath = IO::FileSystem::ToPath (t[0]);
                     }
                 }
-                if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, ValueOrDefault (processDetails.fEXEPath))) {
+                if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, NullCoalesce (processDetails.fEXEPath))) {
                     processDetails.fCommandLine = cmdLine;
                 }
                 result.Add (pid, processDetails);

@@ -641,7 +641,7 @@ namespace {
                         PerfStats_{
                             String2Float (sectorsRead), String2Float (timeSpentReadingMS) / 1000, String2Float (readsCompleted),
                             String2Float (sectorsWritten), String2Float (timeSpentWritingMS) / 1000, String2Float (writesCompleted),
-                            ValueOrDefault (weightedTimeInQSeconds)});
+                            NullCoalesce (weightedTimeInQSeconds)});
                 }
             }
             return result;
@@ -973,10 +973,10 @@ namespace {
                     }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     if (computeInuse) {
-                        DbgTrace (L"Adjusted fInUsePCT for filesystem '%s' is %f", i.fKey.c_str (), ValueOrDefault (cumStats.fInUsePercent));
+                        DbgTrace (L"Adjusted fInUsePCT for filesystem '%s' is %f", i.fKey.c_str (), NullCoalesce (cumStats.fInUsePercent));
                     }
                     if (computeQLen) {
-                        DbgTrace (L"Adjusted fQLength for filesystem '%s' is %f", i.fKey.c_str (), ValueOrDefault (cumStats.fQLength));
+                        DbgTrace (L"Adjusted fQLength for filesystem '%s' is %f", i.fKey.c_str (), NullCoalesce (cumStats.fQLength));
                     }
 #endif
                     mfi.fCombinedIOStats = cumStats;

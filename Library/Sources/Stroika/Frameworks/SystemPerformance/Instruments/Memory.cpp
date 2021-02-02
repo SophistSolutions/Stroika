@@ -231,9 +231,9 @@ namespace {
             if (not updateResult->fPhysicalMemory.fAvailable.has_value () and updateResult->fPhysicalMemory.fFree and updateResult->fPhysicalMemory.fInactive) {
                 if (not slabReclaimable.has_value ()) {
                     // wag
-                    slabReclaimable = ValueOrDefault (slab) / 2;
+                    slabReclaimable = NullCoalesce (slab) / 2;
                 }
-                updateResult->fPhysicalMemory.fAvailable = *updateResult->fPhysicalMemory.fFree + *updateResult->fPhysicalMemory.fInactive + ValueOrDefault (slabReclaimable);
+                updateResult->fPhysicalMemory.fAvailable = *updateResult->fPhysicalMemory.fFree + *updateResult->fPhysicalMemory.fInactive + NullCoalesce (slabReclaimable);
             }
         }
         void Read_ProcVMStat_ (Instruments::Memory::Info* updateResult)

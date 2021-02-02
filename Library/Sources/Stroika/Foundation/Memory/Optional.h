@@ -129,8 +129,6 @@ namespace Stroika::Foundation::Memory {
      * 
      *  This is equivilent to C# ?? operator  (https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/null-coalescing-operator)
      *
-     *  This is VERY similar to ValueOrDefault () - except that the default maybe optional, and this therefore returns an Optional<T>
-     *
      *  \note This is handy because there is no default argument for std::optional<>::value_or () - there should be (like this).
      *  \note a bit like value_or, but RHS arg can be optional or T, and depending returns optional or T and this takes default value
      *  @see Value ()
