@@ -508,7 +508,7 @@ namespace {
             }
             {
                 optional<String> aaa = DNS::Default ().ReverseLookup (InternetAddress (23, 56, 90, 167));
-                DbgTrace (L"reverselookup %s", Memory::ValueOrDefault (aaa).c_str ());
+                DbgTrace (L"reverselookup %s", Memory::NullCoalesce (aaa).c_str ());
             }
         }
     }

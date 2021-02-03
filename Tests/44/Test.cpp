@@ -218,7 +218,7 @@ namespace {
                     for (auto i : vv) {
                         DbgTrace (L"%s : %s", i.fKey.c_str (), i.fValue.As<String> ().c_str ());
                     }
-                    String dataValueString = Memory::ValueOrDefault (vv.Lookup (L"data")).As<String> ();
+                    String dataValueString = Memory::NullCoalesce (vv.Lookup (L"data")).As<String> ();
                     {
                         size_t i = dataValueString.Find (',').value_or (String::npos);
                         if (i != -1) {
@@ -254,7 +254,7 @@ namespace {
                     for (auto i : vv) {
                         DbgTrace (L"%s : %s", i.fKey.c_str (), i.fValue.As<String> ().c_str ());
                     }
-                    String dataValueString = Memory::ValueOrDefault (vv.Lookup (L"data")).As<String> ();
+                    String dataValueString = Memory::NullCoalesce (vv.Lookup (L"data")).As<String> ();
                     {
                         size_t i = dataValueString.Find (',').value_or (String::npos);
                         if (i != -1) {
