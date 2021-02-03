@@ -20,10 +20,6 @@ namespace Stroika::Frameworks::WebServer {
     {
         return fEffectiveOptions_;
     }
-    inline Sequence<Interceptor> ConnectionManager::GetAfterInterceptors () const
-    {
-        return fAfterInterceptors_;
-    }
 
 }
 

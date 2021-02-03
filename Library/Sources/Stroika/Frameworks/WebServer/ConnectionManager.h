@@ -50,12 +50,40 @@ namespace Stroika::Frameworks::WebServer {
      *        interceptors += beforeInterceptors;
      *        interceptors += router;
      *        interceptors += afterInterceptors;
+     * 
+     *  TODO:
+     *      @todo We could allow updating most of these parameters. Some easily (like ServerHeader). Some would require stopping the
+     *            connections, and rebuilding the list of threads etc (cuz must redo bindings). For now, KISS,
+     *            and only allow modifications as needed.
      */
     class ConnectionManager {
     public:
         /**
          */
         struct Options {
+
+            /**
+             *  This is the max number of TCP connections the webserver will allow to keep around, before starting
+             *  to reject new connections.
+             * 
+             *  \note NYI tracking and rejecting extra connections - just used as a hint for other values
+             */
+            optional<unsigned int>      fMaxConnections;
+
+            /**
+             *  This is basically the number of threads to use. It can be automatically inferred from fMaxConnections
+             *  but can be specified explicitly.
+             */
+            optional<unsigned int> fMaxConcurrentlyHandledConnections;
+
+            /**
+             *  If bindFlags omitted, it defaults to kDefault_BindFlags
+             */
+            optional<Socket::BindFlags> fBindFlags;
+
+            /**
+             */
+            optional<String>            fServerHeader;
 
             /**
              *  Options for how the HTTP Server handles CORS (mostly HTTP OPTIONS requests)
@@ -72,24 +100,11 @@ namespace Stroika::Frameworks::WebServer {
                  */
                 optional<Set<String>> fAllowedExtraHTTPHeaders;
             };
-            optional<CORS>      fCORS;
 
             /**
-             *  This is the max number of TCP connections the webserver will allow to keep around, before starting
-             *  to reject new connections.
-             * 
-             *  \note NYI tracking and rejecting extra connections - just used as a hint for other values
+             *  Options for how the HTTP Server handles CORS (mostly HTTP OPTIONS requests)
              */
-            optional<unsigned int>      fMaxConnections;
-
-            /**
-             *  This is basically the number of threads to use. It can be automatically inferred from fMaxConnections
-             *  but can be specified explicitly.
-             */
-            optional<unsigned int> fMaxConcurrentlyHandledConnections;
-
-            optional<Socket::BindFlags> fBindFlags;
-            optional<String>            fServerHeader;
+            optional<CORS> fCORS;
 
             /**
              *  This feature causes sockets to automatically flush their data - and avoid connection reset - when possible.
@@ -148,27 +163,9 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         *  Returns the 'effective' options after applying defaults, not necessarily the original options.
+         *  Returns the 'effective' options after applying defaults, not (generally) the original options.
          */
         nonvirtual Options GetOptions () const;
-
-#if 0
-    public:
-        /**
-        * 
-        * 
-        * &&& PROBABLY GET RID OF THIS (recent addtion this release)- instead
-         *  Options specified here need not be completely specified, and defaults automatically applied.
-         */
-        nonvirtual void SetOptions (const Options& options);
-
-    public:
-        /**
-         *  This modifies ONLY the non-missing (engaged) fields of options.
-        * &&& PROBABLY GET RID OF THIS (recent addtion this release)
-         */
-        nonvirtual void AdjustOptions (const Options& options);
-#endif
 
     public:
         /**
@@ -185,27 +182,27 @@ namespace Stroika::Frameworks::WebServer {
          *        if (defaultFaultHandler) {
          *          earltInterceptors += *defaultFaultHandler;
          *        }
+         * 
+         *  @see pBeforeInterceptors, pAfterInterceptors, AddInterceptor, RemoveInterceptor to maintain the list of interceptors
          */
         Common::Property<Sequence<Interceptor>> pEarlyInterceptors;
 
     public:
         /**
          *  Get the list of interceptors before the private ConnectionManager interceptors (e.g. router).
+         * 
+         *  @see pEarlyInterceptors, pAfterInterceptors, AddInterceptor, RemoveInterceptor to maintain the list of interceptors
          */
         Common::Property<Sequence<Interceptor>> pBeforeInterceptors;
 
     public:
         /**
          *  Get the list of interceptors after the private ConnectionManager interceptors (e.g. router).
-         * @see GetBeforeInterceptors
+         * @see pBeforeInterceptors
+         * 
+         *  @see pEarlyInterceptors, pBeforeInterceptors, AddInterceptor, RemoveInterceptor to maintain the list of interceptors
          */
-        nonvirtual Sequence<Interceptor> GetAfterInterceptors () const;
-
-    public:
-        /**
-         * @see GetAfterInterceptors
-         */
-        nonvirtual void SetAfterInterceptors (const Sequence<Interceptor>& afterInterceptors);
+        Common::Property<Sequence<Interceptor>> pAfterInterceptors;
 
     public:
         /**

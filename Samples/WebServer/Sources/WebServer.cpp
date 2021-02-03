@@ -73,7 +73,7 @@ namespace {
 #else
         , fConnectionMgr_
         {
-            SocketAddresses (InternetAddresses_Any (), portNumber), kRouter_, ConnectionManager::Options { nullopt, nullopt, nullopt, Socket::BindFlags{}, L"Stroika-Sample-WebServer/"_k + AppVersion::kVersion.AsMajorMinorString () }
+            SocketAddresses (InternetAddresses_Any (), portNumber), kRouter_, ConnectionManager::Options { nullopt, nullopt, Socket::BindFlags{}, L"Stroika-Sample-WebServer/"_k + AppVersion::kVersion.AsMajorMinorString () }
         }
 #endif
         {

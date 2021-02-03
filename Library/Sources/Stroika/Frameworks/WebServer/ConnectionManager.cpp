@@ -195,13 +195,23 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
               const ConnectionManager* cmObj = Memory::GetObjectOwningField (property, &ConnectionManager::pBeforeInterceptors);
               return cmObj->fBeforeInterceptors_;
           },
-          [] (auto* property, const auto& beforeInterceptors_) {
+          [] (auto* property, const auto& beforeInterceptors) {
               ConnectionManager* cmObj    = Memory::GetObjectOwningField (property, &ConnectionManager::pBeforeInterceptors);
-              cmObj->fBeforeInterceptors_ = beforeInterceptors_;
+              cmObj->fBeforeInterceptors_ = beforeInterceptors;
+              cmObj->FixupInterceptorChain_ ();
+          }}
+    , pAfterInterceptors{
+          [] (const auto* property) -> Sequence<Interceptor> {
+              const ConnectionManager* cmObj = Memory::GetObjectOwningField (property, &ConnectionManager::pAfterInterceptors);
+              return cmObj->fAfterInterceptors_;
+          },
+          [] (auto* property, const auto& afterInterceptors_) {
+              ConnectionManager* cmObj   = Memory::GetObjectOwningField (property, &ConnectionManager::pAfterInterceptors);
+              cmObj->fAfterInterceptors_ = afterInterceptors_;
               cmObj->FixupInterceptorChain_ ();
           }}
     , fEffectiveOptions_{FillInDefaults_ (options)}
-    , fServerAndCORSEtcInterceptor_{ServerHeadersInterceptor_{*fEffectiveOptions_.fServerHeader, options.fCORS.value_or (ConnectionManager::Options::kDefault_CORS)}}
+    , fServerAndCORSEtcInterceptor_{ServerHeadersInterceptor_{*fEffectiveOptions_.fServerHeader, *options.fCORS}}
     , fDefaultErrorHandler_{DefaultFaultInterceptor{}}
     , fEarlyInterceptors_{mkEarlyInterceptors_ (fDefaultErrorHandler_, fServerAndCORSEtcInterceptor_)}
     , fBeforeInterceptors_{}
@@ -357,40 +367,6 @@ Collection<shared_ptr<Connection>> ConnectionManager::GetConnections () const
     scoped_lock critSec{fActiveConnections_}; // Any place SWAPPING between active and inactive, hold this lock so both lists reamain consistent
     Ensure (Set<shared_ptr<Connection>>{fActiveConnections_.load ()}.Intersection (GetInactiveConnections_ ()).empty ());
     return GetInactiveConnections_ () + fActiveConnections_.load ();
-}
-
-#if 0
-void ConnectionManager::AdjustOptions (const Options& options)
-{
-    Options result                            = fEffectiveOptions_;
-    result.fCORS                              = Memory::NullCoalesce (options.fCORS, *result.fCORS);
-    result.fMaxConnections                    = Memory::NullCoalesce (options.fMaxConnections, *result.fMaxConnections);
-    result.fMaxConcurrentlyHandledConnections = Memory::NullCoalesce (options.fMaxConcurrentlyHandledConnections, *result.fMaxConcurrentlyHandledConnections);
-    result.fBindFlags                         = Memory::NullCoalesce (options.fBindFlags, *result.fBindFlags);
-    result.fServerHeader                      = Memory::NullCoalesce (options.fServerHeader, *result.fServerHeader);
-    result.fAutomaticTCPDisconnectOnClose     = Memory::NullCoalesce (options.fAutomaticTCPDisconnectOnClose, *result.fAutomaticTCPDisconnectOnClose);
-    result.fLinger                            = Memory::NullCoalesce (options.fLinger, result.fLinger); // for now this is special and can be null/optional
-    result.fThreadPoolName                    = Memory::NullCoalesce (options.fThreadPoolName, *result.fThreadPoolName);
-    result.fTCPBacklog                        = Memory::NullCoalesce (options.fTCPBacklog, *result.fTCPBacklog);
-    SetOptions (options);
-}
-
-void ConnectionManager::SetOptions (const Options& options)
-{
-    fEffectiveOptions_ = FillInDefaults_ (options);
-
-    Interceptor old               = fServerAndCORSEtcInterceptor_;
-    fServerAndCORSEtcInterceptor_ = ServerHeadersInterceptor_{*fEffectiveOptions_.fServerHeader, *fEffectiveOptions_.fCORS};
-    ReplaceInEarlyInterceptor_ (old, fServerAndCORSEtcInterceptor_);
-
-    // @todo update SEE CTOR
-}
-#endif
-
-void ConnectionManager::SetAfterInterceptors (const Sequence<Interceptor>& afterInterceptors)
-{
-    fAfterInterceptors_ = afterInterceptors;
-    FixupInterceptorChain_ ();
 }
 
 void ConnectionManager::AddInterceptor (const Interceptor& i, InterceptorAddRelativeTo relativeTo)
