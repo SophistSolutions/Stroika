@@ -211,7 +211,7 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
               cmObj->FixupInterceptorChain_ ();
           }}
     , fEffectiveOptions_{FillInDefaults_ (options)}
-    , fServerAndCORSEtcInterceptor_{ServerHeadersInterceptor_{*fEffectiveOptions_.fServerHeader, *options.fCORS}}
+    , fServerAndCORSEtcInterceptor_{ServerHeadersInterceptor_{*fEffectiveOptions_.fServerHeader, *fEffectiveOptions_.fCORS}}
     , fDefaultErrorHandler_{DefaultFaultInterceptor{}}
     , fEarlyInterceptors_{mkEarlyInterceptors_ (fDefaultErrorHandler_, fServerAndCORSEtcInterceptor_)}
     , fBeforeInterceptors_{}
