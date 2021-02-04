@@ -17,7 +17,6 @@
 #include "../../Foundation/IO/Network/HTTP/Exception.h"
 #include "../../Foundation/IO/Network/HTTP/Headers.h"
 #include "../../Foundation/IO/Network/HTTP/Methods.h"
-#include "../../Foundation/Memory/ObjectFieldUtilities.h"
 #include "../../Foundation/Memory/Optional.h"
 #include "../../Foundation/Memory/SmallStackBuffer.h"
 
@@ -169,44 +168,44 @@ namespace {
 
 ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Router& router, const Options& options)
     : pDefaultErrorHandler{
-          [] (const auto* property) -> optional<Interceptor> {
-              const ConnectionManager* cmObj = Memory::GetObjectOwningField (property, &ConnectionManager::pDefaultErrorHandler);
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<Interceptor> {
+              const ConnectionManager* cmObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::pDefaultErrorHandler);
               return cmObj->fDefaultErrorHandler_;
           },
-          [] (auto* property, const auto& defaultErrorHandler) {
-              ConnectionManager* cmObj = Memory::GetObjectOwningField (property, &ConnectionManager::pDefaultErrorHandler);
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& defaultErrorHandler) {
+              ConnectionManager* cmObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::pDefaultErrorHandler);
               if (cmObj->fDefaultErrorHandler_ != defaultErrorHandler) {
                   cmObj->ReplaceInEarlyInterceptor_ (cmObj->fDefaultErrorHandler_.load (), defaultErrorHandler);
                   cmObj->fDefaultErrorHandler_ = defaultErrorHandler;
               }
           }}
     , pEarlyInterceptors{
-          [] (const auto* property) -> Sequence<Interceptor> {
-              const ConnectionManager* cmObj = Memory::GetObjectOwningField (property, &ConnectionManager::pEarlyInterceptors);
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Sequence<Interceptor> {
+              const ConnectionManager* cmObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::pEarlyInterceptors);
               return cmObj->fEarlyInterceptors_;
           },
-          [] (auto* property, const auto& earlyInterceptors) {
-              ConnectionManager* cmObj   = Memory::GetObjectOwningField (property, &ConnectionManager::pEarlyInterceptors);
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& earlyInterceptors) {
+              ConnectionManager* cmObj   = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::pEarlyInterceptors);
               cmObj->fEarlyInterceptors_ = earlyInterceptors;
               cmObj->FixupInterceptorChain_ ();
           }}
     , pBeforeInterceptors{
-          [] (const auto* property) -> Sequence<Interceptor> {
-              const ConnectionManager* cmObj = Memory::GetObjectOwningField (property, &ConnectionManager::pBeforeInterceptors);
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Sequence<Interceptor> {
+              const ConnectionManager* cmObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::pBeforeInterceptors);
               return cmObj->fBeforeInterceptors_;
           },
-          [] (auto* property, const auto& beforeInterceptors) {
-              ConnectionManager* cmObj    = Memory::GetObjectOwningField (property, &ConnectionManager::pBeforeInterceptors);
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& beforeInterceptors) {
+              ConnectionManager* cmObj    = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::pBeforeInterceptors);
               cmObj->fBeforeInterceptors_ = beforeInterceptors;
               cmObj->FixupInterceptorChain_ ();
           }}
     , pAfterInterceptors{
-          [] (const auto* property) -> Sequence<Interceptor> {
-              const ConnectionManager* cmObj = Memory::GetObjectOwningField (property, &ConnectionManager::pAfterInterceptors);
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Sequence<Interceptor> {
+              const ConnectionManager* cmObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::pAfterInterceptors);
               return cmObj->fAfterInterceptors_;
           },
-          [] (auto* property, const auto& afterInterceptors_) {
-              ConnectionManager* cmObj   = Memory::GetObjectOwningField (property, &ConnectionManager::pAfterInterceptors);
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& afterInterceptors_) {
+              ConnectionManager* cmObj   = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::pAfterInterceptors);
               cmObj->fAfterInterceptors_ = afterInterceptors_;
               cmObj->FixupInterceptorChain_ ();
           }}

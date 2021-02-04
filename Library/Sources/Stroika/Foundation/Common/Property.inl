@@ -10,6 +10,10 @@
  ********************************************************************************
  */
 
+#if !qStroika_Foundation_Common_Property_EmbedThisInProperties
+#include "../Memory/ObjectFieldUtilities.h"
+#endif
+
 namespace Stroika::Foundation::Common {
 
     /*
