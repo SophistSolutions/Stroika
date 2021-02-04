@@ -109,7 +109,7 @@ checkin from one spot.
   (remote execute on machine hercules (and then that will test on raspberrypi) - using docker and copy back results; takes about 3 HRs) - note - many of these tests fail as of 2019-04-22, because its hard to get the latest version of libc on a raspberrypi. Ignore those failures.
 
   ```bash
-  sleep 12000 && RUN_IN_DOCKER=1 \
+  RUN_IN_DOCKER=1 \
       USE_TEST_BASENAME=Ubuntu2004-Cross-Compile2RaspberryPi \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=raspberrypi-cross-compile-test-configurations \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests \
@@ -122,7 +122,7 @@ checkin from one spot.
   (remote execute on machine hercules (and then that will test on raspberrypi) - using docker and copy back results; takes about 3 HRs) - note - many of these tests fail as of 2019-04-22, because its hard to get the latest version of libc on a raspberrypi. Ignore those failures.
 
   ```bash
-  sleep 24000 && RUN_IN_DOCKER=1 \
+  RUN_IN_DOCKER=1 \
       USE_TEST_BASENAME=Ubuntu2010-Cross-Compile2RaspberryPi \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=raspberrypi-cross-compile-test-configurations \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2010-regression-tests \
