@@ -19,8 +19,8 @@
 #include "../../Foundation/IO/Network/Listener.h"
 #include "../../Foundation/IO/Network/SocketAddress.h"
 
-#include "Connection.h"
 #include "CORS.h"
+#include "Connection.h"
 #include "Request.h"
 #include "Response.h"
 #include "Router.h"
@@ -70,7 +70,7 @@ namespace Stroika::Frameworks::WebServer {
              * 
              *  \note NYI tracking and rejecting extra connections - just used as a hint for other values
              */
-            optional<unsigned int>      fMaxConnections;
+            optional<unsigned int> fMaxConnections;
 
             /**
              *  This is basically the number of threads to use. It can be automatically inferred from fMaxConnections
@@ -85,8 +85,7 @@ namespace Stroika::Frameworks::WebServer {
 
             /**
              */
-            optional<String>            fServerHeader;
-
+            optional<String> fServerHeader;
 
             /**
              *  Options for how the HTTP Server handles CORS (mostly HTTP OPTIONS requests)
@@ -128,12 +127,12 @@ namespace Stroika::Frameworks::WebServer {
              */
             optional<unsigned int> fTCPBacklog;
 
-            static constexpr unsigned int               kDefault_MaxConnections{25};
-            static constexpr Socket::BindFlags          kDefault_BindFlags{};
-            static inline const String                  kDefault_ServerHeader { L"Stroika/2.1"sv};
+            static constexpr unsigned int                               kDefault_MaxConnections{25};
+            static constexpr Socket::BindFlags                          kDefault_BindFlags{};
+            static inline const String                                  kDefault_ServerHeader{L"Stroika/2.1"sv};
             static inline const Execution::VirtualConstant<CORSOptions> kDefault_CORS{[] () { return kDefault_CORSOptions; }};
-            static constexpr Time::DurationSecondsType  kDefault_AutomaticTCPDisconnectOnClose{2.0};
-            static constexpr optional<int>              kDefault_Linger{nullopt};  // intentionally optional-valued
+            static constexpr Time::DurationSecondsType                  kDefault_AutomaticTCPDisconnectOnClose{2.0};
+            static constexpr optional<int>                              kDefault_Linger{nullopt}; // intentionally optional-valued
         };
         static const Options kDefaultOptions;
 
@@ -143,7 +142,11 @@ namespace Stroika::Frameworks::WebServer {
         ConnectionManager (const SocketAddress& bindAddress, const Sequence<Route>& routes, const Options& options = kDefaultOptions);
         ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Sequence<Route>& routes, const Options& options = kDefaultOptions);
         ConnectionManager (const ConnectionManager&) = delete;
-        ~ConnectionManager ()                        = default;
+#if qDefaultTracingOn
+        ~ConnectionManager ();
+#else
+        ~ConnectionManager () = default;
+#endif
 
     public:
         nonvirtual const ConnectionManager& operator= (const ConnectionManager&) = delete;
@@ -256,17 +259,6 @@ namespace Stroika::Frameworks::WebServer {
         Router                                                       fRouter_;
         InterceptorChain                                             fInterceptorChain_; // no need to synchonize cuz internally synchronized
 
-        // we may eventually want two thread pools - one for managing bookkeeping/monitoring harvests, and one for actually handling
-        // connections. Or maybe a single thread for the bookkeeping, and the pool for handling ongoing connections?
-        //
-        // But for now - KISS
-        //
-        // Note - for now - we don't even handle 'accepting' connections in the threadpool!!! - just one thread
-        Execution::ThreadPool fActiveConnectionThreads_;
-
-        // Note: this must be declared after the threadpool so its shutdown on destruction before the thread pool, and doesn't try to launch
-        // new tasks into an already destroyed threadpool.
-        IO::Network::Listener fListener_;
         // Active connections are those actively in the readheaders/readbody, dispatch/handle code
         Execution::Synchronized<Collection<shared_ptr<Connection>>> fActiveConnections_;
 
@@ -280,11 +272,31 @@ namespace Stroika::Frameworks::WebServer {
         // No need to lock fInactiveSockSetPoller_ since its internally synchronized;
         Execution::UpdatableWaitForIOReady<shared_ptr<Connection>, MyWaitForIOReady_Traits_> fInactiveSockSetPoller_{};
 
+        /*
+         *  SUBTLE DATA MEMBER ORDERING NOTE!
+         *      We count on the THREADS that run and manipulate all the above data members are all listed AFTER those data
+         *      members in this object. This is just for the covenient ordering that imposes on construction and destruction:
+         *      the threads (declared below) are automatically shutdown on destruction before the data they reference (above)
+         * 
+         *      Same with the listener, as this is basically a thread invoking calls on the above data members.
+         */
+
+        // we may eventually want two thread pools - one for managing bookkeeping/monitoring harvests, and one for actually handling
+        // connections. Or maybe a single thread for the bookkeeping, and the pool for handling ongoing connections?
+        //
+        // But for now - KISS
+        //
+        // Note - for now - we don't even handle 'accepting' connections in the threadpool!!! - just one thread
+        Execution::ThreadPool fActiveConnectionThreads_;
+
         Execution::Thread::CleanupPtr fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
+
+        // Note: this must be declared after the threadpool so its shutdown on destruction before the thread pool, and doesn't try to launch
+        // new tasks into an already destroyed threadpool.
+        IO::Network::Listener     fListener_;
     };
 
-
-     inline const ConnectionManager::Options ConnectionManager::kDefaultOptions;
+    inline const ConnectionManager::Options ConnectionManager::kDefaultOptions;
 
 }
 

@@ -230,6 +230,13 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
     fWaitForReadyConnectionThread_.Start (); // start here instead of autostart so a guaranteed initialized before thead main starts - see https://stroika.atlassian.net/browse/STK-706
 }
 
+#if qDefaultTracingOn
+ConnectionManager::~ConnectionManager ()
+{
+    DbgTrace (L"Starting destructor for WebServer::ConnectionManager (%p)");
+}
+#endif
+
 void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
