@@ -28,8 +28,19 @@ namespace Stroika::Frameworks::WebServer {
     struct CORSOptions {
 
         /**
-        */
-        static constexpr wstring_view kAccessControlAllowOriginWildcard = L"*";
+         */
+        optional<bool> fAllowCredentials;
+
+        static constexpr bool kAllowCredentials_Default{true};
+
+        /**
+         *  `Access-Control-Max-Age` header. How long the `Access-Control-Allow-Methods` and `Access-Control-Allow-Headers` headers can be cached.
+         *  (rarely set - default good)
+         */
+        optional<unsigned int> fAccessControlMaxAge;
+
+        static constexpr unsigned int kAccessControlMaxAge_Default{24*60*60};
+        static constexpr optional<unsigned int> kAccessControlMaxAge_ProtocolDefault{5};    // if header omitted, thats what recipients will assume
 
         /**
          *  This can be {L"*"} meaning any origin (default). 
@@ -38,12 +49,16 @@ namespace Stroika::Frameworks::WebServer {
         optional<Set<String>> fAllowedOrigins;
 
         /**
+         */
+        static constexpr wstring_view kAccessControlAllowOriginWildcard = L"*";
+
+        /**
          *  The webserver automatically adds appropirate HTTP headers for standard HTTP communicaiton, but use this to
          *  add in extra, perhaps custom HTTP Headers to be allowed via CORS.
          */
         optional<Set<String>> fAllowedExtraHTTPHeaders;
     };
-    inline const CORSOptions kDefault_CORSOptions{Set<String>{CORSOptions::kAccessControlAllowOriginWildcard}, Set<String>{}};
+    inline const CORSOptions kDefault_CORSOptions{CORSOptions::kAllowCredentials_Default, CORSOptions::kAccessControlMaxAge_Default, Set<String>{CORSOptions::kAccessControlAllowOriginWildcard}, Set<String>{}};
 
 }
 

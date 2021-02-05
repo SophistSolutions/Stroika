@@ -109,7 +109,7 @@ bool Response::IsContentLengthKnown () const
 
 void Response::SetContentType (const InternetMediaType& contentType)
 {
-    UpdateHeader ([=, this] (auto* header) {
+    UpdateHeader ([&contentType, this] (auto* header) {
         if (auto ct = header->pContentType ()) {
             header->pContentType = AdjustContentTypeForCodePageIfNeeded_ (contentType);
         }

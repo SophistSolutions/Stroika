@@ -3,6 +3,7 @@
  */
 #include "../StroikaPreComp.h"
 
+#include "../../Foundation/Characters/Format.h"
 #include "../../Foundation/Characters/ToString.h"
 #include "../../Foundation/Execution/Exceptions.h"
 #include "../../Foundation/IO/Network/HTTP/ClientErrorException.h"
@@ -72,9 +73,14 @@ bool Route::Matches (const String& method, const String& hostRelPath, const Requ
  */
 
 struct Router::Rep_ : Interceptor::_IRep {
-    Rep_ (const Sequence<Route>& routes, const CORSOptions& corsOptions)
+    static const inline Set<String> kBasicHeadersAlwaysAllowed_{L"Allow", L"Authorization", IO::Network::HTTP::HeaderName::kContentType}; // fogire out
+    // requires all optional values filled in on corsOptions
+    Rep_ (const Sequence<Route>& routes, const CORSOptions& filledInCORSOptions)
         : fRoutes_{routes}
-        , fAccessControlAllowCredentials_str_{true ? L"true"sv : L"false"sv} // get from options
+        , fAccessControlAllowCredentialsValue_{*filledInCORSOptions.fAllowCredentials ? L"true"sv : L"false"sv}
+        //, fAccessControlAllowHeadersValue_{L"Accept, Access-Control-Allow-Origin, Authorization, Cache-Control, Content-Type, Connection, Pragma, X-Requested-With"sv}
+        , fAccessControlAllowHeadersValue_{String::Join (kBasicHeadersAlwaysAllowed_ + *filledInCORSOptions.fAllowedExtraHTTPHeaders)}
+        , fAccessControlMaxAgeValue_{Characters::Format (L"%d", *filledInCORSOptions.fAccessControlMaxAge)}
     {
     }
     virtual void HandleFault ([[maybe_unused]] Message* m, [[maybe_unused]] const exception_ptr& e) noexcept override
@@ -143,12 +149,11 @@ struct Router::Rep_ : Interceptor::_IRep {
         if (o) {
             response.UpdateHeader ([this, &o] (auto* header) {
                 RequireNotNull (header);
-                // @todo working on enhacing this based on configured data
                 using namespace IO::Network::HTTP::HeaderName;
-                header->Set (kAccessControlAllowCredentials, fAccessControlAllowCredentials_str_);
-                header->Set (kAccessControlAllowHeaders, fAccessControlAllowHeaders_str_);
+                header->Set (kAccessControlAllowCredentials, fAccessControlAllowCredentialsValue_);
+                header->Set (kAccessControlAllowHeaders, fAccessControlAllowHeadersValue_);
                 header->Set (kAccessControlAllowMethods, String::Join (*o));
-                header->Set (kAccessControlMaxAge, L"86400"sv);
+                header->Set (kAccessControlMaxAge, fAccessControlMaxAgeValue_);
             });
             response.SetStatus (IO::Network::HTTP::StatusCodes::kNoContent);
         }
@@ -158,8 +163,9 @@ struct Router::Rep_ : Interceptor::_IRep {
         }
     }
 
-    const String          fAccessControlAllowCredentials_str_;
-    const String          fAccessControlAllowHeaders_str_ = L"Accept, Access-Control-Allow-Origin, Authorization, Cache-Control, Content-Type, Connection, Pragma, X-Requested-With"sv;
+    const String          fAccessControlAllowCredentialsValue_;
+    const String          fAccessControlAllowHeadersValue_;
+    const String          fAccessControlMaxAgeValue_;
     const Sequence<Route> fRoutes_; // no need for synchronization cuz constant - just set on construction
 };
 
@@ -168,8 +174,18 @@ struct Router::Rep_ : Interceptor::_IRep {
  *************************** WebServer::Router **********************************
  ********************************************************************************
  */
+namespace {
+    CORSOptions FillIn_ (CORSOptions corsOptions)
+    {
+        corsOptions.fAllowCredentials        = Memory::NullCoalesce (corsOptions.fAllowCredentials, kDefault_CORSOptions.fAllowCredentials);
+        corsOptions.fAccessControlMaxAge     = Memory::NullCoalesce (corsOptions.fAccessControlMaxAge, kDefault_CORSOptions.fAccessControlMaxAge);
+        corsOptions.fAllowedExtraHTTPHeaders = Memory::NullCoalesce (corsOptions.fAllowedExtraHTTPHeaders, kDefault_CORSOptions.fAllowedExtraHTTPHeaders);
+        corsOptions.fAllowedOrigins          = Memory::NullCoalesce (corsOptions.fAllowedOrigins, kDefault_CORSOptions.fAllowedOrigins);
+        return corsOptions;
+    }
+}
 Router::Router (const Sequence<Route>& routes, const CORSOptions& corsOptions)
-    : inherited{make_shared<Rep_> (routes, corsOptions)}
+    : inherited{make_shared<Rep_> (routes, FillIn_ (corsOptions))}
 {
 }
 
