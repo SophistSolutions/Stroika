@@ -77,8 +77,7 @@ void AssertExternallySynchronizedLock::lock_shared_ () const noexcept
         if (fLocks_ != 0) {
             // If first already locks - OK - so long as same thread
 #if qDebug
-            if (fCurLockThread_ != this_thread::get_id ())
-            {
+            if (fCurLockThread_ != this_thread::get_id ()) {
                 // Duplicate the  Require() below, but with more debug information, because this is a COMMON and IMPORANT case;
                 // If this happens, this means one thread has (the object containing this) is using this object (fake locked)
                 // while we are trying to use it (again doing fake write lock) - so we want to PRINT INFO about that thread!!!
