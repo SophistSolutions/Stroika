@@ -111,7 +111,7 @@ namespace Stroika::Frameworks::WebServer {
          *
          *  This function should NOT throw an exception - just do what it can to cleanup.
          */
-        virtual void HandleFault (Message* m, const exception_ptr& e) noexcept = 0;
+        virtual void HandleFault ([[maybe_unused]] Message* m, [[maybe_unused]] const exception_ptr& e) noexcept;
 
         /**
          *  Intercepts and handles a message. Typically this will read stuff from the Request and

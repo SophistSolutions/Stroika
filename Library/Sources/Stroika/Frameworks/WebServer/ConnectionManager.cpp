@@ -42,66 +42,19 @@ using Options = ConnectionManager::Options;
 namespace {
     struct ServerHeadersInterceptor_ : public Interceptor {
         struct Rep_ : Interceptor::_IRep {
-            static const optional<Set<String>> MapStartToNullOpt_ (const optional<Set<String>>& o)
-            {
-                // internally we treat missing as wildcard but caller may not, so map
-                optional<Set<String>> m = o;
-                if (m and m->Contains (CORSOptions::kAccessControlAllowOriginWildcard)) {
-                    m = nullopt;
-                }
-                return m;
-            }
-            Rep_ (const optional<String>& serverHeader, const CORSOptions& corsOptions)
+            Rep_ (const String& serverHeader)
                 : fServerHeader_{serverHeader}
-                , fAllowedOrigins_{MapStartToNullOpt_ (corsOptions.fAllowedOrigins)}
-            {
-            }
-            virtual void HandleFault ([[maybe_unused]] Message* m, [[maybe_unused]] const exception_ptr& e) noexcept override
             {
             }
             virtual void HandleMessage (Message* m) override
             {
-                const Request& request  = *m->PeekRequest ();
-                Response&      response = *m->PeekResponse ();
-                if (fServerHeader_) {
-                    response.UpdateHeader ([this] (auto* header) { RequireNotNull (header); header->pServer = *fServerHeader_; });
-                }
-
-                /*
-                 *  Origin and Access-Control-Allow-Origin
-                 *      documented here:    http://www.w3.org/TR/cors/#http-responses
-                 * 
-                 *  IF CORS is being used, the request will contain an Origin header, and will expect a
-                 *  corresponding Access-Control-Allow-Origin response header. If the response header is missing
-                 *  that implies a CORS failure (but if we have no header in the request - presumably no matter)
-                 */
-                optional<String> allowedOrigin;
-                if (auto origin = request.GetHeaders ().pOrigin ()) {
-                    if (fAllowedOrigins_.has_value ()) {
-                        // see https://fetch.spec.whatwg.org/#http-origin for hints about how to compare - not sure
-                        // may need to be more flexible about how we compare, but for now a good approximation... &&& @todo docs above link say how to compar
-                        String originStr = origin->ToString ();
-                        if (fAllowedOrigins_->Contains (originStr)) {
-                            allowedOrigin = originStr;
-                        }
-                    }
-                    else {
-                        allowedOrigin = CORSOptions::kAccessControlAllowOriginWildcard;
-                    }
-                }
-                if (allowedOrigin) {
-                    response.UpdateHeader ([&] (auto* header) {
-                        RequireNotNull (header);
-                        header->pAccessControlAllowOrigin = allowedOrigin;
-                        // @todo see https://fetch.spec.whatwg.org/#cors-protocol-and-http-caches to see if we need to add Vary response
-                    });
-                }
+                Response& response = *m->PeekResponse ();
+                response.UpdateHeader ([this] (auto* header) { RequireNotNull (header); header->pServer = fServerHeader_; });
             }
-            const optional<String>      fServerHeader_;   // no need for synchronization cuz constant - just set on construction
-            const optional<Set<String>> fAllowedOrigins_; // missing <==> '*'
+            const String fServerHeader_; // no need for synchronization cuz constant - just set on construction
         };
-        ServerHeadersInterceptor_ (const optional<String>& serverHeader, const CORSOptions& CORSOptions)
-            : Interceptor{make_shared<Rep_> (serverHeader, CORSOptions)}
+        ServerHeadersInterceptor_ (const String& serverHeader)
+            : Interceptor{make_shared<Rep_> (serverHeader)}
         {
         }
     };
@@ -212,7 +165,7 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
               cmObj->FixupInterceptorChain_ ();
           }}
     , fEffectiveOptions_{FillInDefaults_ (options)}
-    , fServerAndCORSEtcInterceptor_{ServerHeadersInterceptor_{*fEffectiveOptions_.fServerHeader, *fEffectiveOptions_.fCORS}}
+    , fServerAndCORSEtcInterceptor_{ServerHeadersInterceptor_{*fEffectiveOptions_.fServerHeader}}
     , fDefaultErrorHandler_{DefaultFaultInterceptor{}}
     , fEarlyInterceptors_{mkEarlyInterceptors_ (fDefaultErrorHandler_, fServerAndCORSEtcInterceptor_)}
     , fBeforeInterceptors_{}

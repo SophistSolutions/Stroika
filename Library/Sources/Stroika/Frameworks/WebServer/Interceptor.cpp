@@ -50,6 +50,10 @@ Interceptor::Interceptor (const function<void (Message*)>& handleMessage, const 
  *********************** WebServer::Interceptor::_IRep **************************
  ********************************************************************************
  */
-void Interceptor::_IRep::CompleteNormally (Message* /*m*/)
+void Interceptor::_IRep::HandleFault ([[maybe_unused]] Message* m, [[maybe_unused]] const exception_ptr& e) noexcept
+{
+}
+
+void Interceptor::_IRep::CompleteNormally ([[maybe_unused]] Message* m)
 {
 }
