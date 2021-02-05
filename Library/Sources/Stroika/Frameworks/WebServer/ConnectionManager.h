@@ -15,10 +15,12 @@
 #include "../../Foundation/Execution/Synchronized.h"
 #include "../../Foundation/Execution/ThreadPool.h"
 #include "../../Foundation/Execution/UpdatableWaitForIOReady.h"
+#include "../../Foundation/Execution/VirtualConstant.h"
 #include "../../Foundation/IO/Network/Listener.h"
 #include "../../Foundation/IO/Network/SocketAddress.h"
 
 #include "Connection.h"
+#include "CORS.h"
 #include "Request.h"
 #include "Response.h"
 #include "Router.h"
@@ -85,31 +87,11 @@ namespace Stroika::Frameworks::WebServer {
              */
             optional<String>            fServerHeader;
 
-            /**
-             *  Options for how the HTTP Server handles CORS (mostly HTTP OPTIONS requests)
-             */
-            struct CORS {
-
-                /**
-                 */
-                static constexpr wstring_view kAccessControlAllowOriginWildcard = L"*";
-
-                /**
-                 *  This can be {L"*"} meaning any origin (default). Or it can be a list of values present in HTTP Origin Headers (typically just hostname but can be Host:port)
-                 */
-                optional<Set<String>> fAllowedOrigins;
-
-                /**
-                 *  The webserver automatically adds appropirate HTTP headers for standard HTTP communicaiton, but use this to
-                 *  add in extra, perhaps custom HTTP Headers to be allowed via CORS.
-                 */
-                optional<Set<String>> fAllowedExtraHTTPHeaders;
-            };
 
             /**
              *  Options for how the HTTP Server handles CORS (mostly HTTP OPTIONS requests)
              */
-            optional<CORS> fCORS;
+            optional<CORSOptions> fCORS;
 
             /**
              *  This feature causes sockets to automatically flush their data - and avoid connection reset - when possible.
@@ -149,7 +131,7 @@ namespace Stroika::Frameworks::WebServer {
             static constexpr unsigned int               kDefault_MaxConnections{25};
             static constexpr Socket::BindFlags          kDefault_BindFlags{};
             static inline const String                  kDefault_ServerHeader { L"Stroika/2.1"sv};
-            static inline const CORS                    kDefault_CORS{ Set<String> {L"*"}, Set<String>{}};
+            static inline const Execution::VirtualConstant<CORSOptions> kDefault_CORS{[] () { return kDefault_CORSOptions; }};
             static constexpr Time::DurationSecondsType  kDefault_AutomaticTCPDisconnectOnClose{2.0};
             static constexpr optional<int>              kDefault_Linger{nullopt};  // intentionally optional-valued
         };
@@ -158,8 +140,8 @@ namespace Stroika::Frameworks::WebServer {
     public:
         /**
          */
-        ConnectionManager (const SocketAddress& bindAddress, const Router& router, const Options& options = kDefaultOptions);
-        ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Router& router, const Options& options = kDefaultOptions);
+        ConnectionManager (const SocketAddress& bindAddress, const Sequence<Route>& routes, const Options& options = kDefaultOptions);
+        ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Sequence<Route>& routes, const Options& options = kDefaultOptions);
         ConnectionManager (const ConnectionManager&) = delete;
         ~ConnectionManager ()                        = default;
 

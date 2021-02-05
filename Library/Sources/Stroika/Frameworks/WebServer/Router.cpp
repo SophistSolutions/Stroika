@@ -72,8 +72,9 @@ bool Route::Matches (const String& method, const String& hostRelPath, const Requ
  */
 
 struct Router::Rep_ : Interceptor::_IRep {
-    Rep_ (const Sequence<Route>& routes)
+    Rep_ (const Sequence<Route>& routes, const CORSOptions& corsOptions)
         : fRoutes_{routes}
+        , fAccessControlAllowCredentials_str_{true ? L"true"sv : L"false"sv} // get from options
     {
     }
     virtual void HandleFault ([[maybe_unused]] Message* m, [[maybe_unused]] const exception_ptr& e) noexcept override
@@ -142,9 +143,10 @@ struct Router::Rep_ : Interceptor::_IRep {
         if (o) {
             response.UpdateHeader ([this, &o] (auto* header) {
                 RequireNotNull (header);
+                // @todo working on enhacing this based on configured data
                 using namespace IO::Network::HTTP::HeaderName;
-                header->Set (kAccessControlAllowCredentials, L"true"sv);
-                header->Set (kAccessControlAllowHeaders, L"Accept, Access-Control-Allow-Origin, Authorization, Cache-Control, Content-Type, Connection, Pragma, X-Requested-With"sv);
+                header->Set (kAccessControlAllowCredentials, fAccessControlAllowCredentials_str_);
+                header->Set (kAccessControlAllowHeaders, fAccessControlAllowHeaders_str_);
                 header->Set (kAccessControlAllowMethods, String::Join (*o));
                 header->Set (kAccessControlMaxAge, L"86400"sv);
             });
@@ -156,6 +158,8 @@ struct Router::Rep_ : Interceptor::_IRep {
         }
     }
 
+    const String          fAccessControlAllowCredentials_str_;
+    const String          fAccessControlAllowHeaders_str_ = L"Accept, Access-Control-Allow-Origin, Authorization, Cache-Control, Content-Type, Connection, Pragma, X-Requested-With"sv;
     const Sequence<Route> fRoutes_; // no need for synchronization cuz constant - just set on construction
 };
 
@@ -164,8 +168,8 @@ struct Router::Rep_ : Interceptor::_IRep {
  *************************** WebServer::Router **********************************
  ********************************************************************************
  */
-Router::Router (const Sequence<Route>& routes)
-    : inherited{make_shared<Rep_> (routes)}
+Router::Router (const Sequence<Route>& routes, const CORSOptions& corsOptions)
+    : inherited{make_shared<Rep_> (routes, corsOptions)}
 {
 }
 

@@ -46,12 +46,12 @@ namespace {
             {
                 // internally we treat missing as wildcard but caller may not, so map
                 optional<Set<String>> m = o;
-                if (m and m->Contains (Options::CORS::kAccessControlAllowOriginWildcard)) {
+                if (m and m->Contains (CORSOptions::kAccessControlAllowOriginWildcard)) {
                     m = nullopt;
                 }
                 return m;
             }
-            Rep_ (const optional<String>& serverHeader, const ConnectionManager::Options::CORS& corsOptions)
+            Rep_ (const optional<String>& serverHeader, const CORSOptions& corsOptions)
                 : fServerHeader_{serverHeader}
                 , fAllowedOrigins_{MapStartToNullOpt_ (corsOptions.fAllowedOrigins)}
             {
@@ -86,7 +86,7 @@ namespace {
                         }
                     }
                     else {
-                        allowedOrigin = Options::CORS::kAccessControlAllowOriginWildcard;
+                        allowedOrigin = CORSOptions::kAccessControlAllowOriginWildcard;
                     }
                 }
                 if (allowedOrigin) {
@@ -100,7 +100,7 @@ namespace {
             const optional<String>      fServerHeader_;   // no need for synchronization cuz constant - just set on construction
             const optional<Set<String>> fAllowedOrigins_; // missing <==> '*'
         };
-        ServerHeadersInterceptor_ (const optional<String>& serverHeader, ConnectionManager::Options::CORS CORSOptions)
+        ServerHeadersInterceptor_ (const optional<String>& serverHeader, const CORSOptions& CORSOptions)
             : Interceptor{make_shared<Rep_> (serverHeader, CORSOptions)}
         {
         }
@@ -133,8 +133,8 @@ namespace {
  ************************* WebServer::ConnectionManager *************************
  ********************************************************************************
  */
-ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Router& router, const Options& options)
-    : ConnectionManager{Sequence<SocketAddress>{bindAddress}, router, options}
+ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Sequence<Route>& routes, const Options& options)
+    : ConnectionManager{Sequence<SocketAddress>{bindAddress}, routes, options}
 {
 }
 
@@ -155,7 +155,7 @@ namespace {
     {
         using Options = ConnectionManager::Options;
         Options result{o};
-        result.fCORS                              = Memory::NullCoalesce (result.fCORS, Options::kDefault_CORS);
+        result.fCORS                              = Memory::NullCoalesce (result.fCORS, Options::kDefault_CORS ());
         result.fMaxConnections                    = Memory::NullCoalesce (result.fMaxConnections, Options::kDefault_MaxConnections);
         result.fMaxConcurrentlyHandledConnections = Memory::NullCoalesce (result.fMaxConcurrentlyHandledConnections, ComputeThreadPoolSize_ (result));
         result.fBindFlags                         = Memory::NullCoalesce (result.fBindFlags, Options::kDefault_BindFlags);
@@ -168,7 +168,7 @@ namespace {
     }
 }
 
-ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Router& router, const Options& options)
+ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Sequence<Route>& routes, const Options& options)
     : pDefaultErrorHandler{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<Interceptor> {
               const ConnectionManager* cmObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::pDefaultErrorHandler);
@@ -217,7 +217,7 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
     , fEarlyInterceptors_{mkEarlyInterceptors_ (fDefaultErrorHandler_, fServerAndCORSEtcInterceptor_)}
     , fBeforeInterceptors_{}
     , fAfterInterceptors_{}
-    , fRouter_{router}
+    , fRouter_{routes, *fEffectiveOptions_.fCORS}
     , fInterceptorChain_{mkInterceptorChain_ (fRouter_, fEarlyInterceptors_, fBeforeInterceptors_, fAfterInterceptors_)}
     , fActiveConnectionThreads_{*fEffectiveOptions_.fMaxConcurrentlyHandledConnections, fEffectiveOptions_.fThreadPoolName}
     , fListener_{bindAddresses,

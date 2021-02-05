@@ -19,7 +19,7 @@ namespace Stroika::Frameworks::WebServer {
      ********************************************************************************
      */
     inline Interceptor::Interceptor (const shared_ptr<_IRep>& rep)
-        : fRep_ (rep)
+        : fRep_{rep}
     {
         RequireNotNull (rep);
     }

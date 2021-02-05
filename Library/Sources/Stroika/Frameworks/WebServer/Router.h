@@ -11,6 +11,7 @@
 #include "../../Foundation/Containers/Sequence.h"
 #include "../../Foundation/Execution/Synchronized.h"
 
+#include "CORS.h"
 #include "Interceptor.h"
 #include "Request.h"
 #include "RequestHandler.h"
@@ -108,7 +109,9 @@ namespace Stroika::Frameworks::WebServer {
         using inherited = Interceptor;
 
     public:
-        Router (const Sequence<Route>& routes);
+        /**
+         */
+        Router (const Sequence<Route>& routes, const CORSOptions& corsOptions);
 
     public:
         /**

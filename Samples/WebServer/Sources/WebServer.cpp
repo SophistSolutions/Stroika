@@ -44,37 +44,30 @@ namespace {
      *  and accesss them from the Route handler functions.
      */
     struct MyWebServer_ {
-        const Router      kRouter_;
-        ConnectionManager fConnectionMgr_;
+        const Sequence<Route> kRoutes_;
+        ConnectionManager     fConnectionMgr_;
         MyWebServer_ (uint16_t portNumber)
-            : kRouter_
-        {
-            Sequence<Route>
-            {
+            : kRoutes_{
                 Route{MethodsRegEx::kGet, L""_RegEx, DefaultPage_},
-                    Route{MethodsRegEx::kPost, L"SetAppState"_RegEx, SetAppState_},
-                    Route{MethodsRegEx::kGet, L"FRED"_RegEx, [] (Request*, Response* response) {
-                              response->write (L"FRED");
-                              response->SetContentType (DataExchange::InternetMediaTypes::kText_PLAIN);
-                          }},
-                    Route
-                {
+                Route{MethodsRegEx::kPost, L"SetAppState"_RegEx, SetAppState_},
+                Route{MethodsRegEx::kGet, L"FRED"_RegEx, [] (Request*, Response* response) {
+                    response->write (L"FRED");
+                    response->SetContentType (DataExchange::InternetMediaTypes::kText_PLAIN);
+                }},
+                Route{
                     MethodsRegEx::kGet,
-                        L"Files/.*"_RegEx,
-                        FileSystemRouter{Execution::GetEXEDir () / L"html", L"Files"_k, Sequence<String>{L"index.html"_k}},
+                    L"Files/.*"_RegEx,
+                    FileSystemRouter{Execution::GetEXEDir () / L"html", L"Files"_k, Sequence<String>{L"index.html"_k}},
                 }
             }
-        }
 #if __cpp_designated_initializers
-        , fConnectionMgr_
-        {
-            SocketAddresses (InternetAddresses_Any (), portNumber), kRouter_, ConnectionManager::Options { .fBindFlags = Socket::BindFlags{}, .fServerHeader = L"Stroika-Sample-WebServer/"_k + AppVersion::kVersion.AsMajorMinorString () }
-        }
+            , fConnectionMgr_{
+                SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_, ConnectionManager::Options { .fBindFlags = Socket::BindFlags{}, .fServerHeader = L"Stroika-Sample-WebServer/"_k + AppVersion::kVersion.AsMajorMinorString () }
+            }
 #else
-        , fConnectionMgr_
-        {
-            SocketAddresses (InternetAddresses_Any (), portNumber), kRouter_, ConnectionManager::Options { nullopt, nullopt, Socket::BindFlags{}, L"Stroika-Sample-WebServer/"_k + AppVersion::kVersion.AsMajorMinorString () }
-        }
+            , fConnectionMgr_{
+                SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_, ConnectionManager::Options { nullopt, nullopt, Socket::BindFlags{}, L"Stroika-Sample-WebServer/"_k + AppVersion::kVersion.AsMajorMinorString () }
+            }
 #endif
         {
         }

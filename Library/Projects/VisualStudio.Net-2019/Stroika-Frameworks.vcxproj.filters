@@ -235,6 +235,9 @@
     <None Include="..\..\Sources\Stroika\Frameworks\Led\WordWrappedTextInteractor.inl">
       <Filter>Led</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\CORS.inl">
+      <Filter>WebServer</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Modbus\IModbusService.h">
@@ -419,6 +422,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\WordWrappedTextInteractor.h">
       <Filter>Led</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\CORS.h">
+      <Filter>WebServer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
