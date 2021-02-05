@@ -12,6 +12,7 @@
 #include <tchar.h>
 #endif
 #include <array>
+#include <thread>
 
 #include "../Characters/SDKChar.h"
 #include "../Characters/SDKString.h"
@@ -145,6 +146,11 @@ namespace Stroika::Foundation::Debug {
     };
 
     /**
+     *  Just for debugging purposes, get the name displayed in the trace log for the given thread-id.
+     */
+    string GetDbgTraceThreadName_A (thread::id threadID);
+
+    /**
      *  Define a new start/end context (with optional label) for trace messages emitted with DbgTrace (), and indent future
      *  DbgTrace () messages (from this thread) during the lifetime of TraceContextBumper.
      *
@@ -178,6 +184,19 @@ namespace Stroika::Foundation::Debug {
      *            x
      *          </OptionsFile::ReadRaw>
      *
+     *  \par Example Usage
+     *      \code
+     *          struct X {
+     *              // ... lots of data members - and you get a crash between constructor or destruction of some of them
+     *              // ... use this trick to see dbgmessages BETWEEN construction and destruction of each member
+     *              ComplexObject fComplexObjec1;
+     *              TraceContextBumper tmpNoteAfterComplexObj1 {"after fComplexObjec1"};
+     *              ComplexObject fComplexObjec2;
+     *              TraceContextBumper tmpNoteAfterComplexObj2 {"after fComplexObjec2"};
+     *          };
+     *      \endcode
+     *
+
      *  \note ***Not Cancelation Point*** - and uses  noexcept
      */
     class TraceContextBumper {
