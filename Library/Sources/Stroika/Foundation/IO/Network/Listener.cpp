@@ -65,6 +65,12 @@ struct Listener::Rep_ {
             Thread::eAutoStart,
             L"Socket Listener: " + Characters::ToString (addrs));
     }
+#if qDefaultTracingOn
+    ~Rep_ ()
+    {
+        DbgTrace (L"Starting destructor for Listener::Rep_ (%p)", this);
+    }
+#endif
 
     Execution::Thread::CleanupPtr fListenThread{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
 };
