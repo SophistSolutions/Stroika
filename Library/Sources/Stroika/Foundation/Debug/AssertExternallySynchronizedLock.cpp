@@ -3,7 +3,10 @@
  */
 #include "../StroikaPreComp.h"
 
+#include "../Execution/Thread.h"
+
 #include "Sanitizer.h"
+#include "Trace.h"
 
 #include "AssertExternallySynchronizedLock.h"
 
@@ -42,6 +45,15 @@ void AssertExternallySynchronizedLock::lock_ () const noexcept
         }
         else {
             // If first already locked - OK - so long as same thread
+#if qDebug
+            if (fCurLockThread_ != this_thread::get_id ()) {
+                // Duplicate the  Require() below, but with more debug information, because this is a COMMON and IMPORANT case;
+                // If this happens, this means one thread has (the object containing this) is using this object (fake locked)
+                // while we are trying to use it (again doing fake write lock) - so we want to PRINT INFO about that thread!!!
+                DbgTrace (L"ATTEMPT TO modify (lock for write) an object which is already in use (debuglocked) in another thread");
+                DbgTrace ("Original thread holding lock: threadID=%s, and DbgTraceThreadName=%s", Execution::Thread::FormatThreadID_A (fCurLockThread_).c_str (), Debug::GetDbgTraceThreadName_A (fCurLockThread_).c_str ());
+            }
+#endif
             Require (fCurLockThread_ == this_thread::get_id ());
         }
     }
@@ -64,6 +76,16 @@ void AssertExternallySynchronizedLock::lock_shared_ () const noexcept
         // But if already locked, NOT OK (would have blocked in real impl) - if you try to shared lock from another thread while locked
         if (fLocks_ != 0) {
             // If first already locks - OK - so long as same thread
+#if qDebug
+            if (fCurLockThread_ != this_thread::get_id ())
+            {
+                // Duplicate the  Require() below, but with more debug information, because this is a COMMON and IMPORANT case;
+                // If this happens, this means one thread has (the object containing this) is using this object (fake locked)
+                // while we are trying to use it (again doing fake write lock) - so we want to PRINT INFO about that thread!!!
+                DbgTrace (L"ATTEMPT TO sharked_lock (lock for READ) an object which is already in use (debuglocked for WRITE) in another thread");
+                DbgTrace ("Original thread holding (write) lock: threadID=%s, and DbgTraceThreadName=%s", Execution::Thread::FormatThreadID_A (fCurLockThread_).c_str (), Debug::GetDbgTraceThreadName_A (fCurLockThread_).c_str ());
+            }
+#endif
             Require (fCurLockThread_ == this_thread::get_id ());
         }
         lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
