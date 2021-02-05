@@ -89,6 +89,11 @@ namespace Stroika::Frameworks::WebServer {
              *  Options for how the HTTP Server handles CORS (mostly HTTP OPTIONS requests)
              */
             struct CORS {
+
+                /**
+                 */
+                static constexpr wstring_view kAccessControlAllowOriginWildcard = L"*";
+
                 /**
                  *  This can be {L"*"} meaning any origin (default). Or it can be a list of values present in HTTP Origin Headers (typically just hostname but can be Host:port)
                  */

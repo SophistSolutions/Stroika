@@ -37,6 +37,8 @@ using namespace Stroika::Frameworks::WebServer;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
+using Options = ConnectionManager::Options;
+
 namespace {
     struct ServerHeadersInterceptor_ : public Interceptor {
         struct Rep_ : Interceptor::_IRep {
@@ -44,7 +46,7 @@ namespace {
             {
                 // internally we treat missing as wildcard but caller may not, so map
                 optional<Set<String>> m = o;
-                if (m and m->Contains (L"*"_k)) {
+                if (m and m->Contains (Options::CORS::kAccessControlAllowOriginWildcard)) {
                     m = nullopt;
                 }
                 return m;
@@ -65,33 +67,33 @@ namespace {
                     response.UpdateHeader ([this] (auto* header) { RequireNotNull (header); header->pServer = *fServerHeader_; });
                 }
 
+                /*
+                 *  Origin and Access-Control-Allow-Origin
+                 *      documented here:    http://www.w3.org/TR/cors/#http-responses
+                 * 
+                 *  IF CORS is being used, the request will contain an Origin header, and will expect a
+                 *  corresponding Access-Control-Allow-Origin response header. If the response header is missing
+                 *  that implies a CORS failure (but if we have no header in the request - presumably no matter)
+                 */
                 optional<String> allowedOrigin;
-                if (fAllowedOrigins_.has_value ()) {
-                    if (auto origin = request.GetHeaders ().pOrigin ()) {
-                        // may need to be more flexible about how we compare, but for now a good approximation...
+                if (auto origin = request.GetHeaders ().pOrigin ()) {
+                    if (fAllowedOrigins_.has_value ()) {
+                        // see https://fetch.spec.whatwg.org/#http-origin for hints about how to compare - not sure
+                        // may need to be more flexible about how we compare, but for now a good approximation... &&& @todo docs above link say how to compar
                         String originStr = origin->ToString ();
                         if (fAllowedOrigins_->Contains (originStr)) {
                             allowedOrigin = originStr;
                         }
                     }
+                    else {
+                        allowedOrigin = Options::CORS::kAccessControlAllowOriginWildcard;
+                    }
                 }
-                else {
-                    allowedOrigin = L"*"sv;
-                }
-
-                /*
-                 *  From what I gather from https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS - the Allow-Origin is needed
-                 *  on all responses.
-                 */
                 if (allowedOrigin) {
                     response.UpdateHeader ([&] (auto* header) {
                         RequireNotNull (header);
-                        // check Origin and either throw, or set appropirate header response
-                        // accoridng to https://fetch.spec.whatwg.org/#cors-protocol-examples
-                        // it appears we can OMIT access control origin header (set to null) if it doens match and set
-                        // to matching string or * if it does
                         header->pAccessControlAllowOrigin = allowedOrigin;
-                        /// NOTE TODO IF SETTING TO A VALID ORIGIN, THEN MUST ADD "Origin" to Vary response header
+                        // @todo see https://fetch.spec.whatwg.org/#cors-protocol-and-http-caches to see if we need to add Vary response
                     });
                 }
             }
