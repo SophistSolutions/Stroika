@@ -112,7 +112,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
          */
-        using ArchetypeContainerType = Set<T>;
+        using ArchetypeContainerType = Set;
 
     public:
         /**
@@ -215,7 +215,7 @@ namespace Stroika::Foundation::Containers {
          *  Checks if each element of this set is contained in the argument set. This is NOT proper subset, but
          *  allows for equality.
          */
-        nonvirtual bool IsSubsetOf (const Set<T>& superset) const;
+        nonvirtual bool IsSubsetOf (const Set& superset) const;
 
     public:
         /**
@@ -325,7 +325,7 @@ namespace Stroika::Foundation::Containers {
          *          VerifyTestResult ((s.Where ([](int i) {return Math::IsPrime (i); }) == Set<int>{ 2, 3, 5 }));
          *      \endcode
          */
-        nonvirtual Set<T> Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const;
+        nonvirtual Set Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const;
 
     public:
         struct EqualsComparer;
@@ -347,19 +347,19 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        nonvirtual Set<T> Intersection (const Iterable<T>& rhs) const;
+        nonvirtual Set Intersection (const Iterable<T>& rhs) const;
 
     public:
         /**
          */
-        nonvirtual Set<T> Union (const Iterable<T>& rhs) const;
-        nonvirtual Set<T> Union (ArgByValueType<T> rhs) const;
+        nonvirtual Set Union (const Iterable<T>& rhs) const;
+        nonvirtual Set Union (ArgByValueType<T> rhs) const;
 
     public:
         /**
          */
-        nonvirtual Set<T> Difference (const Set<T>& rhs) const;
-        nonvirtual Set<T> Difference (ArgByValueType<T> rhs) const;
+        nonvirtual Set Difference (const Set& rhs) const;
+        nonvirtual Set Difference (ArgByValueType<T> rhs) const;
 
     public:
         /**
@@ -369,8 +369,8 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual Set<T>& operator+= (ArgByValueType<T> item);
-        nonvirtual Set<T>& operator+= (const Iterable<T>& items);
+        nonvirtual Set& operator+= (ArgByValueType<T> item);
+        nonvirtual Set& operator+= (const Iterable<T>& items);
 
     public:
         /**
@@ -380,8 +380,8 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual Set<T>& operator-= (ArgByValueType<T> item);
-        nonvirtual Set<T>& operator-= (const Iterable<T>& items);
+        nonvirtual Set& operator-= (ArgByValueType<T> item);
+        nonvirtual Set& operator-= (const Iterable<T>& items);
 
     public:
         /**
@@ -389,7 +389,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        nonvirtual Set<T>& operator^= (const Iterable<T>& items);
+        nonvirtual Set& operator^= (const Iterable<T>& items);
 
     public:
         /**

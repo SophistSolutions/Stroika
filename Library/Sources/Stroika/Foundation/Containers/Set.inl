@@ -109,7 +109,7 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Contains (item);
     }
     template <typename T>
-    bool Set<T>::IsSubsetOf (const Set<T>& superset) const
+    bool Set<T>::IsSubsetOf (const Set& superset) const
     {
         for (auto i : *this) {
             if (not superset.Contains (i)) {
@@ -241,22 +241,22 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline Set<T> Set<T>::Union (const Iterable<T>& rhs) const
     {
-        Set<T> r = *this;
+        Set r = *this;
         r.AddAll (rhs);
         return r;
     }
     template <typename T>
     inline Set<T> Set<T>::Union (ArgByValueType<T> rhs) const
     {
-        Set<T> r = *this;
+        Set r = *this;
         r.Add (rhs);
         return r;
     }
     template <typename T>
-    Set<T> Set<T>::Difference (const Set<T>& rhs) const
+    Set<T> Set<T>::Difference (const Set& rhs) const
     {
         using namespace Stroika::Foundation::Common;
-        Set<T> result{this->GetElementEqualsComparer ()};
+        Set result{this->GetElementEqualsComparer ()};
         for (T i : *this) {
             if (not rhs.Contains (i)) {
                 result.Add (i);
@@ -267,7 +267,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     Set<T> Set<T>::Difference (ArgByValueType<T> rhs) const
     {
-        return Difference (Set<T>{rhs});
+        return Difference (Set{rhs});
     }
     template <typename T>
     inline Set<T>& Set<T>::operator+= (ArgByValueType<T> item)
