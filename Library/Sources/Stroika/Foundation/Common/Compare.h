@@ -157,8 +157,6 @@ namespace Stroika::Foundation::Common {
      */
     template <typename FUNCTOR_ARG, typename FUNCTOR>
     constexpr bool IsPotentiallyComparerRelation ();
-    template <typename FUNCTOR_ARG, typename FUNCTOR>
-    constexpr bool IsPotentiallyComparerRelation (const FUNCTOR&);
 
     /**
      *

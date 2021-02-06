@@ -75,9 +75,12 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename FUNCTOR_ARG, typename FUNCTOR>
-    constexpr bool IsPotentiallyComparerRelation (const FUNCTOR&)
+    constexpr bool IsPotentiallyComparerRelation ()
     {
-        return std::is_convertible_v<std::invoke_result_t<FUNCTOR, FUNCTOR_ARG, FUNCTOR_ARG>, bool>;
+        if constexpr (is_invocable_v<FUNCTOR, FUNCTOR_ARG, FUNCTOR_ARG>) {
+            return std::is_convertible_v<std::invoke_result_t<FUNCTOR, FUNCTOR_ARG, FUNCTOR_ARG>, bool>;
+        }
+        return false;
     }
 
     /*
