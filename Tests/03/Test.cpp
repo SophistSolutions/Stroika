@@ -81,12 +81,12 @@ namespace {
                 // storage layout and not totally legal with non- is_standard_layout<> - see Memory::GetObjectOwningField
                 , contentLength2{
                       [] (const auto* property) {
-                          const Headers* headerObj = Memory::GetObjectOwningField (property, &Headers::contentLength2);
-                          return headerObj->fContentLength_;
+                          const Headers* thisObj = Memory::GetObjectOwningField (property, &Headers::contentLength2);
+                          return thisObj->fContentLength_;
                       },
                       [] (auto* property, auto contentLength) {
-                          Headers* headerObj         = Memory::GetObjectOwningField (property, &Headers::contentLength2);
-                          headerObj->fContentLength_ = contentLength;
+                          Headers* thisObj           = Memory::GetObjectOwningField (property, &Headers::contentLength2);
+                          thisObj->fContentLength_ = contentLength;
                       }}
                 , contentLength3{
                       [qStroika_Foundation_Common_Property_ExtraCaptureStuff] (const auto* property) {
@@ -94,8 +94,8 @@ namespace {
                           return headerObj->fContentLength_;
                       },
                       [qStroika_Foundation_Common_Property_ExtraCaptureStuff] (auto* property, auto contentLength) {
-                          Headers* headerObj         = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentLength3);
-                          headerObj->fContentLength_ = contentLength;
+                          Headers* thisObj         = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentLength3);
+                          thisObj->fContentLength_ = contentLength;
                       }}
             {
             }

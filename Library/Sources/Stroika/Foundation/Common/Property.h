@@ -251,12 +251,12 @@ namespace Stroika::Foundation::Common {
      *              // Use stroika #define to decide which strategy to use 
      *              , contentLength3{
      *                    [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]]const auto* property) {
-     *                        const Headers* headerObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentLength3);
-     *                        return headerObj->fContentLength_;
+     *                        const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentLength3);
+     *                        return thisObj->fContentLength_;
      *                    },
      *                    [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]]auto* property, auto contentLength) {
-     *                        Headers* headerObj         = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentLength3);
-     *                        headerObj->fContentLength_ = contentLength;
+     *                        Headers* thisObj         = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentLength3);
+     *                        thisObj->fContentLength_ = contentLength;
      *                    }}
      *          {
      *          }

@@ -166,11 +166,10 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Inte
               const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::request);
               return *thisObj->fMessage_->PeekRequest ();
           }}
-    , response{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Response& {
-              const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::response);
-              return *thisObj->fMessage_->PeekResponse ();
-          }}
+    , response{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Response& {
+        const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::response);
+        return *thisObj->fMessage_->PeekResponse ();
+    }}
     , fInterceptorChain_{interceptorChain}
     , fSocket_{s}
 {
