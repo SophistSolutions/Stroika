@@ -95,11 +95,11 @@ struct Router::Rep_ : Interceptor::_IRep {
     }
     // requires all optional values filled in on corsOptions
     Rep_ (const Sequence<Route>& routes, const CORSOptions& filledInCORSOptions)
-        : fRoutes_{routes}
-        , fAllowedOrigins_{MapStartToNullOpt_ (filledInCORSOptions.fAllowedOrigins)}
+        : fAllowedOrigins_{MapStartToNullOpt_ (filledInCORSOptions.fAllowedOrigins)}
         , fAllowedHeaders_{MapStartToNullOpt_ (filledInCORSOptions.fAllowedHeaders)}
         , fAccessControlAllowCredentialsValue_{*filledInCORSOptions.fAllowCredentials ? L"true"sv : L"false"sv}
         , fAccessControlMaxAgeValue_{Characters::Format (L"%d", *filledInCORSOptions.fAccessControlMaxAge)}
+        , fRoutes_{routes}
     {
     }
     virtual void HandleMessage (Message* m) override

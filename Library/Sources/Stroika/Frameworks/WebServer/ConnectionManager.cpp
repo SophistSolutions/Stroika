@@ -173,11 +173,11 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
     , fRouter_{routes, *fEffectiveOptions_.fCORS}
     , fInterceptorChain_{mkInterceptorChain_ (fRouter_, fEarlyInterceptors_, fBeforeInterceptors_, fAfterInterceptors_)}
     , fActiveConnectionThreads_{*fEffectiveOptions_.fMaxConcurrentlyHandledConnections, fEffectiveOptions_.fThreadPoolName}
+    , fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([this] () { WaitForReadyConnectionLoop_ (); }, L"WebServer-ConnectionMgr-Wait4IOReady"_k)}
     , fListener_{bindAddresses,
                  *fEffectiveOptions_.fBindFlags,
                  [this] (const ConnectionOrientedStreamSocket::Ptr& s) { onConnect_ (s); },
                  *fEffectiveOptions_.fTCPBacklog}
-    , fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([this] () { WaitForReadyConnectionLoop_ (); }, L"WebServer-ConnectionMgr-Wait4IOReady"_k)}
 {
     DbgTrace (L"Constructing WebServer::ConnectionManager (%p), with threadpoolSize=%d, backlog=%d", this, fActiveConnectionThreads_.GetPoolSize (), ComputeConnectionBacklog_ (options));
     fWaitForReadyConnectionThread_.Start (); // start here instead of autostart so a guaranteed initialized before thead main starts - see https://stroika.atlassian.net/browse/STK-706

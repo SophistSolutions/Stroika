@@ -163,7 +163,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
 Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain)
     : pRequest{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const Request& {
-              const Connection*  connObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::pRequest);
+              const Connection* connObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::pRequest);
               return *connObj->fMessage_->PeekRequest ();
           }}
     , fInterceptorChain_{interceptorChain}
