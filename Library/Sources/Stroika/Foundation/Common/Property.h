@@ -72,7 +72,12 @@ namespace Stroika::Foundation::Common {
      *  Implement C#-like syntax for read-only properties (syntactically like data members but backed by a getter function)
      *      \note   Typically not used - use Property
      *      \note   ANYHOW - see @Property for design overview
+     *
+     *  \note   We allow T to be of REFERENCE type for ReadOnlyProperties. Not sure its a good idea to be
+     *          returning a const T& from a property, but it works/is allowed (for now).
      * 
+     *          Note - unlike with functions - you cannot overload properties, making one return const T& and one return T&
+     *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md">SAME AS T/GETTER - all methods have exactly the thread safety of the underlying GETTER</a>
      */
     template <typename T>

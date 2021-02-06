@@ -12,6 +12,7 @@
 #include "../../Foundation/Configuration/Common.h"
 #include "../../Foundation/IO/Network/HTTP/MessageStartTextInputStreamBinaryAdapter.h"
 #include "../../Foundation/IO/Network/SocketStream.h"
+#include "../../Foundation/Common/Property.h"
 #include "../../Foundation/Streams/TextWriter.h"
 
 #include "InterceptorChain.h"
@@ -85,6 +86,9 @@ namespace Stroika::Frameworks::WebServer {
          */
         nonvirtual Request& GetRequest ();
         nonvirtual const Request& GetRequest () const;
+
+    public:
+        Common::ReadOnlyProperty<const Request&> pRequest;
 
     public:
         /**
