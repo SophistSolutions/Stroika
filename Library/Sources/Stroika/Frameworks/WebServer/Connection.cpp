@@ -161,9 +161,9 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
  ********************************************************************************
  */
 Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain)
-    : pRequest{
+    : request{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const Request& {
-              const Connection* connObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::pRequest);
+              const Connection* connObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::request);
               return *connObj->fMessage_->PeekRequest ();
           }}
     , fInterceptorChain_{interceptorChain}
@@ -355,7 +355,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
         GetResponse ().UpdateHeader ([thisMessageKeepAlive] (auto* header) {
             using IO::Network::HTTP::Headers;
             RequireNotNull (header);
-            header->pConnection = thisMessageKeepAlive ? Headers::eKeepAlive : Headers::eClose;
+            header->connection = thisMessageKeepAlive ? Headers::eKeepAlive : Headers::eClose;
         });
         GetResponse ().End ();
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog

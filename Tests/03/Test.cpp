@@ -61,15 +61,16 @@ namespace {
                 nonvirtual Headers& operator= (const Headers& rhs) = default; // properties are assignable, so this is OK
                 nonvirtual Headers& operator                       = (Headers&& rhs);
 
-                Property<unsigned int> pContentLength1; // both refer to the private fContentLength_ field
-                Property<unsigned int> pContentLength2;
+                Property<unsigned int> contentLength1; // both refer to the private fContentLength_ field
+                Property<unsigned int> contentLength2;
+                Property<unsigned int> contentLength3;
 
             private:
                 unsigned int fContentLength_{0};
             };
             Headers::Headers ()
                 // Can implement getter/setters with this capture (wastes a bit of space)
-                : pContentLength1{
+                : contentLength1{
                       [this] ([[maybe_unused]] const auto* property) {
                           return fContentLength_;
                       },
@@ -78,13 +79,22 @@ namespace {
                       }}
                 // Can implement getter/setters with Memory::GetObjectOwningField - to save space, but counts on exact
                 // storage layout and not totally legal with non- is_standard_layout<> - see Memory::GetObjectOwningField
-                , pContentLength2{
+                , contentLength2{
                       [] (const auto* property) {
-                          const Headers* headerObj = Memory::GetObjectOwningField (property, &Headers::pContentLength2);
+                          const Headers* headerObj = Memory::GetObjectOwningField (property, &Headers::contentLength2);
                           return headerObj->fContentLength_;
                       },
                       [] (auto* property, auto contentLength) {
-                          Headers* headerObj         = Memory::GetObjectOwningField (property, &Headers::pContentLength2);
+                          Headers* headerObj         = Memory::GetObjectOwningField (property, &Headers::contentLength2);
+                          headerObj->fContentLength_ = contentLength;
+                      }}
+                , contentLength3{
+                      [qStroika_Foundation_Common_Property_ExtraCaptureStuff] (const auto* property) {
+                          const Headers* headerObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentLength3);
+                          return headerObj->fContentLength_;
+                      },
+                      [qStroika_Foundation_Common_Property_ExtraCaptureStuff] (auto* property, auto contentLength) {
+                          Headers* headerObj         = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentLength3);
                           headerObj->fContentLength_ = contentLength;
                       }}
             {
@@ -94,8 +104,8 @@ namespace {
             {
                 // NOTE - cannot INITIALIZE properties with src.Properties values since they are not copy constructible
                 // but they are assignable, so do that
-                pContentLength1 = src.pContentLength1;
-                pContentLength2 = src.pContentLength2;
+                contentLength1 = src.contentLength1;
+                contentLength2 = src.contentLength2;
                 // COULD EITHER initialize fContentLength_ or pContentLength1/pContentLength2 - but no need to do both
             }
             Headers::Headers (Headers&& src)
@@ -103,8 +113,8 @@ namespace {
             {
                 // NOTE - cannot MOVE properties with src.Properties values since they are not copy constructible
                 // but they are assignable, so do that
-                pContentLength1 = src.pContentLength1;
-                pContentLength2 = src.pContentLength2;
+                contentLength1 = src.contentLength1;
+                contentLength2 = src.contentLength2;
                 // COULD EITHER initialize fContentLength_ or pContentLength1/pContentLength2 - but no need to do both
             }
             Headers& Headers::operator= (Headers&& rhs)
@@ -117,16 +127,16 @@ namespace {
         void Run ()
         {
             Private_::Headers h;
-            VerifyTestResult (h.pContentLength1 == 0);
+            VerifyTestResult (h.contentLength1 == 0);
             h.pContentLength1 = 2;
-            VerifyTestResult (h.pContentLength2 == 2);
+            VerifyTestResult (h.contentLength2 == 2);
             h.pContentLength2 = 4;
-            VerifyTestResult (h.pContentLength1 == 4);
+            VerifyTestResult (h.contentLength1 == 4);
             Private_::Headers h2 = h;
-            VerifyTestResult (h2.pContentLength1 == 4);
+            VerifyTestResult (h2.contentLength1 == 4);
             h.pContentLength2 = 5;
-            VerifyTestResult (h.pContentLength1 == 5);
-            VerifyTestResult (h2.pContentLength1 == 4);
+            VerifyTestResult (h.contentLength1 == 5);
+            VerifyTestResult (h2.contentLength1 == 4);
         }
     }
 }

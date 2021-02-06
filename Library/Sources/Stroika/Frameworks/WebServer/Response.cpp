@@ -68,16 +68,16 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
     , fBytes_{}
     , fContentSizePolicy_{ContentSizePolicy::eAutoCompute}
 {
-    fHeaders_.pServer = L"Stroka-Based-Web-Server"sv;
+    fHeaders_.server = L"Stroka-Based-Web-Server"_k;
     if (not ct.empty ()) {
-        fHeaders_.pContentType = ct;
+        fHeaders_.contentType = ct;
     }
 }
 
 InternetMediaType Response::GetContentType () const
 {
     // DEPRECATED
-    return ReadHeader ([] (const auto& h) { return h.pContentType ().value_or (InternetMediaType{}); });
+    return ReadHeader ([] (const auto& h) { return h.contentType ().value_or (InternetMediaType{}); });
 }
 
 void Response::AddHeader (const String& headerName, const String& value)
@@ -98,8 +98,8 @@ void Response::SetContentSizePolicy (ContentSizePolicy csp, uint64_t size)
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     Require (csp == ContentSizePolicy::eExact);
     Require (fState_ == State::eInProgress);
-    fContentSizePolicy_      = csp;
-    fHeaders_.pContentLength = size;
+    fContentSizePolicy_     = csp;
+    fHeaders_.contentLength = size;
 }
 
 bool Response::IsContentLengthKnown () const
@@ -110,8 +110,8 @@ bool Response::IsContentLengthKnown () const
 void Response::SetContentType (const InternetMediaType& contentType)
 {
     UpdateHeader ([&contentType, this] (auto* header) {
-        if (auto ct = header->pContentType ()) {
-            header->pContentType = AdjustContentTypeForCodePageIfNeeded_ (contentType);
+        if (auto ct = header->contentType ()) {
+            header->contentType = AdjustContentTypeForCodePageIfNeeded_ (contentType);
         }
     });
 }
@@ -124,8 +124,8 @@ void Response::SetCodePage (Characters::CodePage codePage)
     bool diff  = fCodePage_ != codePage;
     fCodePage_ = codePage;
     if (diff) {
-        if (auto ct = fHeaders_.pContentType ()) {
-            fHeaders_.pContentType = AdjustContentTypeForCodePageIfNeeded_ (*ct);
+        if (auto ct = fHeaders_.contentType ()) {
+            fHeaders_.contentType = AdjustContentTypeForCodePageIfNeeded_ (*ct);
         }
     }
 }
@@ -266,8 +266,8 @@ void Response::Redirect (const URI& url)
     fBytes_.clear ();
 
     // PERHAPS should clear some header values???
-    fHeaders_.pConnection = IO::Network::HTTP::Headers::eClose;
-    fHeaders_.pLocation   = url;
+    fHeaders_.connection = IO::Network::HTTP::Headers::eClose;
+    fHeaders_.location   = url;
     SetStatus (StatusCodes::kMovedPermanently);
     Flush ();
     fState_ = State::eCompleted;
@@ -284,7 +284,7 @@ void Response::write (const byte* s, const byte* e)
         fBytes_.insert (fBytes_.end (), s, e);
         if (GetContentSizePolicy () == ContentSizePolicy::eAutoCompute) {
             // Because for autocompute - illegal to call flush and then write
-            fHeaders_.pContentLength = fBytes_.size ();
+            fHeaders_.contentLength = fBytes_.size ();
         }
     }
 }
@@ -302,7 +302,7 @@ void Response::write (const wchar_t* s, const wchar_t* e)
             fBytes_.insert (fBytes_.end (), reinterpret_cast<const byte*> (cpStr.c_str ()), reinterpret_cast<const byte*> (cpStr.c_str () + cpStr.length ()));
             if (GetContentSizePolicy () == ContentSizePolicy::eAutoCompute) {
                 // Because for autocompute - illegal to call flush and then write
-                fHeaders_.pContentLength = fBytes_.size ();
+                fHeaders_.contentLength = fBytes_.size ();
             }
         }
     }

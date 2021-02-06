@@ -122,7 +122,7 @@ struct Router::Rep_ : Interceptor::_IRep {
                 //      The method specified in the Request-Line is not allowed for the resource identified by the Request-URI.
                 //      The response MUST include an Allow header containing a list of valid methods for the requested resource.
                 Assert (not o->empty ());
-                m->PeekResponse ()->UpdateHeader ([&] (auto* header) { RequireNotNull (header); header->pAllow = o; });
+                m->PeekResponse ()->UpdateHeader ([&] (auto* header) { RequireNotNull (header); header->allow = o; });
                 Execution::Throw (ClientErrorException{HTTP::StatusCodes::kMethodNotAllowed});
             }
             else {
@@ -142,7 +142,7 @@ struct Router::Rep_ : Interceptor::_IRep {
          *  that implies a CORS failure (but if we have no header in the request - presumably no matter)
          */
         optional<String> allowedOrigin;
-        if (auto origin = request.GetHeaders ().pOrigin ()) {
+        if (auto origin = request.GetHeaders ().origin ()) {
             if (fAllowedOrigins_.has_value ()) {
                 // see https://fetch.spec.whatwg.org/#http-origin for hints about how to compare - not sure
                 // may need to be more flexible about how we compare, but for now a good approximation... &&& @todo docs above link say how to compar
@@ -158,7 +158,7 @@ struct Router::Rep_ : Interceptor::_IRep {
         if (allowedOrigin) {
             response.UpdateHeader ([&] (auto* header) {
                 RequireNotNull (header);
-                header->pAccessControlAllowOrigin = allowedOrigin;
+                header->accessControlAllowOrigin = allowedOrigin;
                 // @todo see https://fetch.spec.whatwg.org/#cors-protocol-and-http-caches to see if we need to add Vary response
             });
         }

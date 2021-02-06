@@ -54,7 +54,7 @@ namespace Stroika::Frameworks::WebServer {
      *                          Interceptor{
      *                              [=](Message* m) {
      *                                  Response& response = *m->PeekResponse ();
-     *                                  response.UpdateHeader ([] (auto* header) { header->pServer = L"stroika-ssdp-server-demo"; });
+     *                                  response.UpdateHeader ([] (auto* header) { header->server = L"stroika-ssdp-server-demo"; });
      *                                  response.write (Stroika::Frameworks::UPnP::Serialize (d, dd));
      *                                  response.SetContentType (DataExchange::InternetMediaTypes::kXML);
      *                               }}}};
@@ -88,7 +88,7 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual const Request& GetRequest () const;
 
     public:
-        Common::ReadOnlyProperty<const Request&> pRequest;
+        Common::ReadOnlyProperty<const Request&> request;
 
     public:
         /**

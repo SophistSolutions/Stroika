@@ -163,7 +163,7 @@ namespace Stroika::Frameworks::WebServer {
          *  all interceptors can engage in fault handling. This is just meant to provide a simple one-stop-shop for how to
          *  handle faults in one place.
          */
-        Common::Property<optional<Interceptor>> pDefaultErrorHandler;
+        Common::Property<optional<Interceptor>> defaultErrorHandler;
 
     public:
         /**
@@ -173,26 +173,26 @@ namespace Stroika::Frameworks::WebServer {
          *          earltInterceptors += *defaultFaultHandler;
          *        }
          * 
-         *  @see pBeforeInterceptors, pAfterInterceptors, AddInterceptor, RemoveInterceptor to maintain the list of interceptors
+         *  @see beforeInterceptors, afterInterceptors, AddInterceptor, RemoveInterceptor to maintain the list of interceptors
          */
-        Common::Property<Sequence<Interceptor>> pEarlyInterceptors;
+        Common::Property<Sequence<Interceptor>> earlyInterceptors;
 
     public:
         /**
          *  Get the list of interceptors before the private ConnectionManager interceptors (e.g. router).
          * 
-         *  @see pEarlyInterceptors, pAfterInterceptors, AddInterceptor, RemoveInterceptor to maintain the list of interceptors
+         *  @see earlyInterceptors, afterInterceptors, AddInterceptor, RemoveInterceptor to maintain the list of interceptors
          */
-        Common::Property<Sequence<Interceptor>> pBeforeInterceptors;
+        Common::Property<Sequence<Interceptor>> beforeInterceptors;
 
     public:
         /**
          *  Get the list of interceptors after the private ConnectionManager interceptors (e.g. router).
-         * @see pBeforeInterceptors
+         * @see beforeInterceptors
          * 
-         *  @see pEarlyInterceptors, pBeforeInterceptors, AddInterceptor, RemoveInterceptor to maintain the list of interceptors
+         *  @see earlyInterceptors, beforeInterceptors, AddInterceptor, RemoveInterceptor to maintain the list of interceptors
          */
-        Common::Property<Sequence<Interceptor>> pAfterInterceptors;
+        Common::Property<Sequence<Interceptor>> afterInterceptors;
 
     public:
         /**

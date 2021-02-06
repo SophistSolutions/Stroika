@@ -46,7 +46,7 @@ Examples of common STL methods which appear in Stroika code (with STL semantics)
 
 ### Prefixes
 
-- the &#39;f&#39; prefix for data members
+- the &#39;f&#39; prefix for data members (fields)
 - &#39;k&#39; prefix for constants
 - We use the &#39;e&#39; prefix for enumerators
 - &#39;t&#39; prefix for thread_local variables
@@ -56,6 +56,12 @@ Examples of common STL methods which appear in Stroika code (with STL semantics)
 ### Suffix
 
 - &#39;\_&#39; suffix for PRIVATE instance variables or functions
+
+### Case
+
+- functions start with upper case (camelcase)
+- local variables start with lower case (camelcase)
+- properties start with lower case (camelcase) - because they are a hybrid between field and function, but syntactically you must treat them sometimes slightly differently than either, so this makes more clear what is going on. 'f' for plain field, and just starting with lower case to indicate a property.
 
 ---
 

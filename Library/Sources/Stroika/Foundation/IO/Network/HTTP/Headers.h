@@ -123,7 +123,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *
          *  This can be nullopt (meaning not present), "*", or a hostname[:port] 
          */
-        Common::Property<optional<String>> pAccessControlAllowOrigin;
+        Common::Property<optional<String>> accessControlAllowOrigin;
 
     public:
         /**
@@ -132,17 +132,17 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *
          *  This property automatically parses the header into an set of strings (because order here doesn't matter) 
          */
-        Common::Property<optional<Containers::Set<String>>> pAllow;
+        Common::Property<optional<Containers::Set<String>>> allow;
 
     public:
         /**
          *  Property with the optional<CacheControl> value of the Cache-Control header.
          */
-        Common::Property<optional<CacheControl>> pCacheControl;
+        Common::Property<optional<CacheControl>> cacheControl;
 
     public:
         /**
-         *  Value of the HTTP 1.1 and earlier Connection header (pConnection property).
+         *  Value of the HTTP 1.1 and earlier Connection header (connection property).
          */
         enum ConnectionValue {
             eKeepAlive,
@@ -155,7 +155,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *
          *  Header mostly just used for HTTP 1.1 and earlier.
          */
-        Common::Property<optional<ConnectionValue>> pConnection;
+        Common::Property<optional<ConnectionValue>> connection;
 
     public:
         /**
@@ -163,10 +163,10 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *
          *  \par Example Usage
          *      \code
-         *          optional<uint64_t> contentLenghth = fHeaders_.pContentLength;
+         *          optional<uint64_t> contentLenghth = fHeaders_.contentLength;
          *      \endcode         
          */
-        Common::Property<optional<uint64_t>> pContentLength;
+        Common::Property<optional<uint64_t>> contentLength;
 
     public:
         /**
@@ -174,17 +174,17 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *
          *  \par Example Usage
          *      \code
-         *          optional<InternetMediaType> contentType = fHeaders_.pContentType;
-         *          fHeaders_.pContentType = nullopt; // remove the content-type header
+         *          optional<InternetMediaType> contentType = fHeaders_.contentType;
+         *          fHeaders_.contentType = nullopt; // remove the content-type header
          *      \endcode         
          */
-        Common::Property<optional<InternetMediaType>> pContentType;
+        Common::Property<optional<InternetMediaType>> contentType;
 
     public:
         /**
          *  Property with the optional<ETag> value of the ETag header.
          */
-        Common::Property<optional<ETag>> pETag;
+        Common::Property<optional<HTTP::ETag>> ETag;
 
     public:
         /**
@@ -192,20 +192,20 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Host
          *  This is a request-only Header.
          */
-        Common::Property<optional<String>> pHost;
+        Common::Property<optional<String>> host;
 
     public:
         /**
          *  Property with the optional<IfNoneMatch> value of the IF-None-Match header.
          */
-        Common::Property<optional<IfNoneMatch>> pIfNoneMatch;
+        Common::Property<optional<IfNoneMatch>> ifNoneMatch;
 
     public:
         /**
          *  Property with the optional<URI> value of the Location header.
          *  https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Location
          */
-        Common::Property<optional<URI>> pLocation;
+        Common::Property<optional<URI>> location;
 
     public:
         /**
@@ -213,14 +213,14 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin
          *  This is a request-only Header sent with CORS requests, as well as with POST requests
          */
-        Common::Property<optional<URI>> pOrigin;
+        Common::Property<optional<URI>> origin;
 
     public:
         /**
          *  Property with the optional<String> value of the Server header.
          *  https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Server
          */
-        Common::Property<optional<String>> pServer;
+        Common::Property<optional<String>> server;
 
     public:
         /**
@@ -261,7 +261,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         optional<CacheControl>                   fCacheControl_;
         optional<uint64_t>                       fContentLength_;
         optional<InternetMediaType>              fContentType_;
-        optional<ETag>                           fETag_;
+        optional<HTTP::ETag>                     fETag_;
         optional<String>                         fHost_;
         optional<IfNoneMatch>                    fIfNoneMatch_;
 

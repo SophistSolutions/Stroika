@@ -71,10 +71,10 @@ bool Request::GetKeepAliveRequested () const
 {
     using ConnectionValue = IO::Network::HTTP::Headers::ConnectionValue;
     if (fHTTPVersion_ == IO::Network::HTTP::Versions::kOnePointZero) {
-        return fHeaders_.pConnection ().value_or (ConnectionValue::eClose) == ConnectionValue::eKeepAlive;
+        return fHeaders_.connection ().value_or (ConnectionValue::eClose) == ConnectionValue::eKeepAlive;
     }
     if (fHTTPVersion_ == IO::Network::HTTP::Versions::kOnePointOne) {
-        return fHeaders_.pConnection ().value_or (ConnectionValue::eKeepAlive) == ConnectionValue::eKeepAlive;
+        return fHeaders_.connection ().value_or (ConnectionValue::eKeepAlive) == ConnectionValue::eKeepAlive;
     }
     return true; // for HTTP 2.0 and later, keep alive is always assumed (double check/reference?)
 }
@@ -82,7 +82,7 @@ bool Request::GetKeepAliveRequested () const
 Memory::BLOB Request::GetBody ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (L"Request::GetBody");
+    Debug::TraceContextBumper ctx{L"Request::GetBody"};
 #endif
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     if (not fBody_.has_value ()) {
@@ -94,13 +94,13 @@ Memory::BLOB Request::GetBody ()
 optional<uint64_t> Request::GetContentLength () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    return fHeaders_.pContentLength;
+    return fHeaders_.contentLength;
 }
 
 optional<InternetMediaType> Request::GetContentType () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    return fHeaders_.pContentType;
+    return fHeaders_.contentType;
 }
 
 Streams::InputStream<byte>::Ptr Request::GetBodyStream ()
