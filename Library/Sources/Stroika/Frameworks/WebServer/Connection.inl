@@ -21,14 +21,7 @@ namespace Stroika::Frameworks::WebServer {
     {
         return fSocket_;
     }
-    inline const Request& Connection::GetRequest () const
-    {
-        return *fMessage_->PeekRequest ();
-    }
-    inline Request& Connection::GetRequest ()
-    {
-        return *fMessage_->PeekRequest ();
-    }
+    #if 0
     inline Response& Connection::GetResponse ()
     {
         return *fMessage_->PeekResponse ();
@@ -37,6 +30,7 @@ namespace Stroika::Frameworks::WebServer {
     {
         return *fMessage_->PeekResponse ();
     }
+    #endif
     inline optional<Connection::Remaining> Connection::GetRemainingConnectionLimits () const
     {
         return fRemaining_;

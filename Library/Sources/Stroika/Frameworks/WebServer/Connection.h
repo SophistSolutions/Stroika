@@ -61,6 +61,11 @@ namespace Stroika::Frameworks::WebServer {
      *          conn.SetRemainingConnectionMessages (Connection::Remaining{0, 0}); // disable keep-alives
      *          conn.ReadAndProcessMessage ();
      *      \endcode
+     * 
+     * 
+     *  TODO:
+     *      @todo   DOCUMENT and enforce with Debug::AssertExternallySynrhoized or other... the intended thread safety
+     *              rules for htis object.
      */
     class Connection {
     public:
@@ -83,18 +88,15 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
+         *  Access a (read-only) reference of the underlying connection request
          */
-        nonvirtual Request& GetRequest ();
-        nonvirtual const Request& GetRequest () const;
-
-    public:
         Common::ReadOnlyProperty<const Request&> request;
 
     public:
         /**
+         *  Access a (read-only) reference to the underlying (modifyable) connection response (meaning you cannot assign to the response itself, but you can modify the response object)
          */
-        nonvirtual Response& GetResponse ();
-        nonvirtual const Response& GetResponse () const;
+        Common::ReadOnlyProperty<Response&> response;
 
     public:
         /**

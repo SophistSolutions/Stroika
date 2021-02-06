@@ -248,8 +248,8 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
                     }
 
                     if (not keepAlive) {
-                        if (readyConnection->GetResponse ().GetState () != Response::State::eCompleted) {
-                            IgnoreExceptionsForCall (readyConnection->GetResponse ().End ());
+                        if (readyConnection->response ().GetState () != Response::State::eCompleted) {
+                            IgnoreExceptionsForCall (readyConnection->response ().End ());
                         }
                     }
 

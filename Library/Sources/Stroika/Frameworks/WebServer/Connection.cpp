@@ -99,7 +99,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
     /*
      * At this stage, blocking calls are fully safe - because we've assured above we've seeked to the start of a CRLFCRLF terminated region (or premature EOF)
      */
-    Request* request = PeekRequest ();
+    Request* updatableRequest = PeekRequest ();
     {
         // Read METHOD URL line
         String line = fMsgHeaderInTextStream.ReadLine ();
@@ -115,16 +115,16 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
             DbgTrace (L"tokens=%s, line='%s', fMsgHeaderInTextStream=%s", Characters::ToString (tokens).c_str (), line.c_str (), fMsgHeaderInTextStream.ToString ().c_str ());
             Execution::Throw (ClientErrorException (Characters::Format (L"Bad METHOD Request HTTP line (%s)", line.c_str ())));
         }
-        request->SetHTTPMethod (tokens[0]);
-        request->SetHTTPVersion (tokens[2]);
+        updatableRequest->SetHTTPMethod (tokens[0]);
+        updatableRequest->SetHTTPVersion (tokens[2]);
         if (tokens[1].empty ()) {
             // should check if GET/PUT/DELETE etc...
             DbgTrace (L"tokens=%s, line='%s'", Characters::ToString (tokens).c_str (), line.c_str ());
             Execution::Throw (ClientErrorException{L"Bad HTTP Request line - missing host-relative URL"sv});
         }
         using IO::Network::URL;
-        request->SetURL (URI{tokens[1]});
-        if (request->GetHTTPMethod ().empty ()) {
+        updatableRequest->SetURL (URI{tokens[1]});
+        if (updatableRequest->GetHTTPMethod ().empty ()) {
             // should check if GET/PUT/DELETE etc...
             DbgTrace (L"tokens=%s, line='%s'", Characters::ToString (tokens).c_str (), line.c_str ());
             Execution::Throw (ClientErrorException{L"Bad METHOD in Request HTTP line"sv});
@@ -146,7 +146,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
         else {
             String hdr   = line.SubString (0, i).Trim ();
             String value = line.SubString (i + 1).Trim ();
-            request->AddHeader (hdr, value);
+            updatableRequest->AddHeader (hdr, value);
         }
     }
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
@@ -163,8 +163,13 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
 Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain)
     : request{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const Request& {
-              const Connection* connObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::request);
-              return *connObj->fMessage_->PeekRequest ();
+              const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::request);
+              return *thisObj->fMessage_->PeekRequest ();
+          }}
+    , response{
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Response& {
+              const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::response);
+              return *thisObj->fMessage_->PeekResponse ();
           }}
     , fInterceptorChain_{interceptorChain}
     , fSocket_{s}
@@ -303,7 +308,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
          */
         bool thisMessageKeepAlive = fMessage_->PeekRequest ()->GetKeepAliveRequested ();
         if (thisMessageKeepAlive) {
-            if (not GetResponse ().IsContentLengthKnown ()) {
+            if (not response ().IsContentLengthKnown ()) {
                 thisMessageKeepAlive = false;
             }
         }
@@ -338,7 +343,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
              *      The presence of a message-body in a request is signaled by the inclusion of a Content-Length 
              *      or Transfer-Encoding header field in the request's message-headers/
              */
-            if (GetRequest ().GetContentLength ()) {
+            if (request ().GetContentLength ()) {
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
                 WriteLogConnectionMsg_ (L"msg is keepalive, and have content length, so making sure we read all of request body");
 #endif
@@ -352,12 +357,12 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 
         // From https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
         //      HTTP/1.1 applications that do not support persistent connections MUST include the "close" connection option in every message.
-        GetResponse ().UpdateHeader ([thisMessageKeepAlive] (auto* header) {
+        response ().UpdateHeader ([thisMessageKeepAlive] (auto* header) {
             using IO::Network::HTTP::Headers;
             RequireNotNull (header);
             header->connection = thisMessageKeepAlive ? Headers::eKeepAlive : Headers::eClose;
         });
-        GetResponse ().End ();
+        response ().End ();
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
         WriteLogConnectionMsg_ (L"Did GetResponse ().End ()");
 #endif
