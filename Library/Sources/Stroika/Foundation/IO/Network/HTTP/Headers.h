@@ -43,6 +43,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         constexpr wstring_view kAccessControlAllowOrigin      = L"Access-Control-Allow-Origin"sv;
         constexpr wstring_view kAccessControlAllowHeaders     = L"Access-Control-Allow-Headers"sv;
         constexpr wstring_view kAccessControlAllowMethods     = L"Access-Control-Allow-Methods"sv;
+        constexpr wstring_view kAccessControlRequestHeaders   = L"Access-Control-Request-Headers"sv;
         constexpr wstring_view kAccessControlMaxAge           = L"Access-Control-Max-Age"sv;
         constexpr wstring_view kAuthorization                 = L"Authorization"sv;
         constexpr wstring_view kCacheControl                  = L"Cache-Control"sv;
