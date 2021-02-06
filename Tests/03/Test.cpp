@@ -128,13 +128,13 @@ namespace {
         {
             Private_::Headers h;
             VerifyTestResult (h.contentLength1 == 0);
-            h.pContentLength1 = 2;
+            h.contentLength1 = 2;
             VerifyTestResult (h.contentLength2 == 2);
-            h.pContentLength2 = 4;
+            h.contentLength2 = 4;
             VerifyTestResult (h.contentLength1 == 4);
             Private_::Headers h2 = h;
             VerifyTestResult (h2.contentLength1 == 4);
-            h.pContentLength2 = 5;
+            h.contentLength2 = 5;
             VerifyTestResult (h.contentLength1 == 5);
             VerifyTestResult (h2.contentLength1 == 4);
         }
