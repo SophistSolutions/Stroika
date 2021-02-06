@@ -14,6 +14,8 @@ ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-ArchiveUtil
 TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-ArchiveUtility/
 TARGETEXE				=	$(TARGETDIR)ArchiveUtility${EXE_SUFFIX}
 
+# ONLY depend on foundation library, not frameworks library
+StroikaLibs					=	$(StroikaFoundationLib)
 
 VPATH	=			$(SrcDir)/Sources/
 
@@ -36,7 +38,6 @@ check:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking Samples/ArchiveUtility...           "
 	@$(StroikaRoot)ScriptsLib/CheckFileExists $(TARGETEXE)
 	@$(ECHO) "[SUCCEEDED]";
-
 
 $(TARGETEXE):	 $(ObjDir) $(Objs) $(StroikaLibs)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@`" "... "

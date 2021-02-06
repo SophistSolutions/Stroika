@@ -13,6 +13,8 @@ ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-AppSettings
 TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-AppSettings/
 TARGETEXE				=	$(TARGETDIR)AppSettings${EXE_SUFFIX}
 
+# ONLY depend on foundation library, not frameworks library
+StroikaLibs					=	$(StroikaFoundationLib)
 
 VPATH	=			$(SrcDir)/Sources/
 
