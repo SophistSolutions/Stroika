@@ -70,6 +70,10 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     }
 
     /**
+     */
+    constexpr auto kHeaderNameEqualsComparer = String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive};
+
+    /**
      * SB roughly equiv to Association<String,String> but thats not supported in Stroika yet.
      * But for now mainly looking like Mapping<String,String> - since works in HF, and ..
      */

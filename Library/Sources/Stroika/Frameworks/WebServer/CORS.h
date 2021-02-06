@@ -28,9 +28,13 @@ namespace Stroika::Frameworks::WebServer {
     struct CORSOptions {
 
         /**
+         *   true or false if credentials allowed on CORS request
+         *      \see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials
          */
         optional<bool> fAllowCredentials;
 
+        /**
+         */
         static constexpr bool kAllowCredentials_Default{true};
 
         /**
@@ -40,7 +44,6 @@ namespace Stroika::Frameworks::WebServer {
         optional<unsigned int> fAccessControlMaxAge;
 
         static constexpr unsigned int kAccessControlMaxAge_Default{24*60*60};
-        static constexpr optional<unsigned int> kAccessControlMaxAge_ProtocolDefault{5};    // if header omitted, thats what recipients will assume
 
         /**
          *  This can be {L"*"} meaning any origin (default). 
@@ -50,15 +53,15 @@ namespace Stroika::Frameworks::WebServer {
 
         /**
          */
-        static constexpr wstring_view kAccessControlAllowOriginWildcard = L"*";
+        static constexpr wstring_view kAccessControlWildcard = L"*";
 
         /**
-         *  The webserver automatically adds appropirate HTTP headers for standard HTTP communicaiton, but use this to
-         *  add in extra, perhaps custom HTTP Headers to be allowed via CORS.
+         *  This is the set of headers which will be allowed by Access-Control-Request-Headers OPTIONS requests.
+         *  The default - * - kAccessControlWildcard - any - is typically just fine.
          */
-        optional<Set<String>> fAllowedExtraHTTPHeaders;
+        optional<Set<String>> fAllowedHeaders;
     };
-    inline const CORSOptions kDefault_CORSOptions{CORSOptions::kAllowCredentials_Default, CORSOptions::kAccessControlMaxAge_Default, Set<String>{CORSOptions::kAccessControlAllowOriginWildcard}, Set<String>{}};
+    inline const CORSOptions kDefault_CORSOptions{CORSOptions::kAllowCredentials_Default, CORSOptions::kAccessControlMaxAge_Default, Set<String>{CORSOptions::kAccessControlWildcard}, Set<String>{CORSOptions::kAccessControlWildcard}};
 
 }
 

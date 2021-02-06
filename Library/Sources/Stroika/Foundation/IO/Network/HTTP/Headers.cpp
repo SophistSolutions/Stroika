@@ -19,9 +19,8 @@ using namespace Stroika::Foundation::IO::Network::HTTP;
 using namespace Stroika::Foundation::Streams;
 
 namespace {
-    constexpr auto         kHeaderNameComparer_ = String::EqualsComparer{CompareOptions::eCaseInsensitive};
-    constexpr wstring_view kKeepAlive_          = L"Keep-Alive"sv;
-    constexpr wstring_view kClose_              = L"close"sv;
+    constexpr wstring_view kKeepAlive_ = L"Keep-Alive"sv;
+    constexpr wstring_view kClose_     = L"close"sv;
 }
 
 /*
@@ -69,10 +68,10 @@ Headers::Headers ()
               const Headers*                                     headerObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::pConnection);
               lock_guard<const AssertExternallySynchronizedLock> critSec{*headerObj};
               if (auto connectionHdr = headerObj->As<Mapping<String, String>> ().Lookup (HeaderName::kConnection)) {
-                  if (kHeaderNameComparer_ (*connectionHdr, kKeepAlive_)) {
+                  if (kHeaderNameEqualsComparer (*connectionHdr, kKeepAlive_)) {
                       return eKeepAlive;
                   }
-                  else if (kHeaderNameComparer_ (*connectionHdr, kClose_)) {
+                  else if (kHeaderNameEqualsComparer (*connectionHdr, kClose_)) {
                       return eClose;
                   }
               }
@@ -238,27 +237,27 @@ Headers& Headers::operator= (Headers&& rhs)
 optional<String> Headers::LookupOne (const String& name) const
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    if (kHeaderNameComparer_ (name, HeaderName::kCacheControl)) {
+    if (kHeaderNameEqualsComparer (name, HeaderName::kCacheControl)) {
         return fCacheControl_ ? fCacheControl_->As<String> () : optional<String>{};
     }
-    else if (kHeaderNameComparer_ (name, HeaderName::kContentLength)) {
+    else if (kHeaderNameEqualsComparer (name, HeaderName::kContentLength)) {
         return fContentLength_ ? Characters::Format (L"%ld", *fContentLength_) : optional<String>{};
     }
-    else if (kHeaderNameComparer_ (name, HeaderName::kContentType)) {
+    else if (kHeaderNameEqualsComparer (name, HeaderName::kContentType)) {
         return fContentType_ ? fContentType_->As<String> () : optional<String>{};
     }
-    else if (kHeaderNameComparer_ (name, HeaderName::kETag)) {
+    else if (kHeaderNameEqualsComparer (name, HeaderName::kETag)) {
         return fETag_ ? fETag_->As<String> () : optional<String>{};
     }
-    else if (kHeaderNameComparer_ (name, HeaderName::kHost)) {
+    else if (kHeaderNameEqualsComparer (name, HeaderName::kHost)) {
         return fHost_;
     }
-    else if (kHeaderNameComparer_ (name, HeaderName::kIfNoneMatch)) {
+    else if (kHeaderNameEqualsComparer (name, HeaderName::kIfNoneMatch)) {
         return fIfNoneMatch_ ? fIfNoneMatch_->As<String> () : optional<String>{};
     }
     else {
         // should switch to new non-existent class Assocation here - and use that...more efficeint -
-        if (auto ri = fExtraHeaders_.FindFirstThat ([&] (const auto& i) { return kHeaderNameComparer_ (name, i.fKey); })) {
+        if (auto ri = fExtraHeaders_.FindFirstThat ([&] (const auto& i) { return kHeaderNameEqualsComparer (name, i.fKey); })) {
             return ri->fValue;
         }
         return nullopt;
@@ -271,7 +270,7 @@ void Headers::Remove (const String& headerName)
         return;
     }
     // currently removes all, but later add variant that removes one/all (in fact rename this)
-    fExtraHeaders_.Remove ([=] (const auto& i) { return kHeaderNameComparer_ (i.fKey, headerName); });
+    fExtraHeaders_.Remove ([=] (const auto& i) { return kHeaderNameEqualsComparer (i.fKey, headerName); });
 }
 
 void Headers::Add (const String& headerName, const String& value)
@@ -285,27 +284,27 @@ void Headers::Add (const String& headerName, const String& value)
 bool Headers::SetBuiltin_ (const String& headerName, const optional<String>& value)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    if (kHeaderNameComparer_ (headerName, HeaderName::kCacheControl)) {
+    if (kHeaderNameEqualsComparer (headerName, HeaderName::kCacheControl)) {
         fCacheControl_ = value ? CacheControl::Parse (*value) : optional<CacheControl>{};
         return true;
     }
-    else if (kHeaderNameComparer_ (headerName, HeaderName::kContentLength)) {
+    else if (kHeaderNameEqualsComparer (headerName, HeaderName::kContentLength)) {
         fContentLength_ = value ? String2Int<uint64_t> (*value) : optional<uint64_t>{};
         return true;
     }
-    else if (kHeaderNameComparer_ (headerName, HeaderName::kContentType)) {
+    else if (kHeaderNameEqualsComparer (headerName, HeaderName::kContentType)) {
         fContentType_ = value ? InternetMediaType{*value} : optional<InternetMediaType>{};
         return true;
     }
-    else if (kHeaderNameComparer_ (headerName, HeaderName::kETag)) {
+    else if (kHeaderNameEqualsComparer (headerName, HeaderName::kETag)) {
         fETag_ = value ? ETag::Parse (*value) : optional<ETag>{};
         return true;
     }
-    else if (kHeaderNameComparer_ (headerName, HeaderName::kHost)) {
+    else if (kHeaderNameEqualsComparer (headerName, HeaderName::kHost)) {
         fHost_ = value;
         return true;
     }
-    else if (kHeaderNameComparer_ (headerName, HeaderName::kIfNoneMatch)) {
+    else if (kHeaderNameEqualsComparer (headerName, HeaderName::kIfNoneMatch)) {
         fIfNoneMatch_ = value ? IfNoneMatch::Parse (*value) : optional<IfNoneMatch>{};
         return true;
     }
@@ -315,7 +314,7 @@ bool Headers::SetBuiltin_ (const String& headerName, const optional<String>& val
 void Headers::SetExtras_ (const String& headerName, const optional<String>& value)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    fExtraHeaders_.Remove ([=] (const auto& i) { return kHeaderNameComparer_ (i.fKey, headerName); });
+    fExtraHeaders_.Remove ([=] (const auto& i) { return kHeaderNameEqualsComparer (i.fKey, headerName); });
     if (value) {
         fExtraHeaders_.Add (KeyValuePair<String, String>{headerName, *value});
     }

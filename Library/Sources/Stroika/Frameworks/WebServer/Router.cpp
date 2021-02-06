@@ -26,6 +26,12 @@ using HTTP::ClientErrorException;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
+/*
+ *  IMPLEMENTATION HINTS:
+ *      A good place to look for a mature implementation of similar logic would be
+ *          https://github.com/apache/cxf/blob/master/rt/rs/security/cors/src/main/java/org/apache/cxf/rs/security/cors/CrossOriginResourceSharingFilter.java
+ */
+
 namespace {
     String ExtractHostRelPath_ (const URI& url)
     {
@@ -77,20 +83,22 @@ struct Router::Rep_ : Interceptor::_IRep {
     {
         // internally we treat missing as wildcard but caller may not, so map
         optional<Set<String>> m = o;
-        if (m and m->Contains (CORSOptions::kAccessControlAllowOriginWildcard)) {
+        if (m and m->Contains (CORSOptions::kAccessControlWildcard)) {
             m = nullopt;
+        }
+        if (m) {
+            // @todo understand why CTOR directly doesnt work - but using temporary DOES WORK
+            //m = Set<String>{kHeaderNameEqualsComparer, *m};
+            m = Set<String>{decltype (kHeaderNameEqualsComparer) (kHeaderNameEqualsComparer), *m};
         }
         return m;
     }
-    // OLD LISTS: fAccessControlAllowHeadersValue_{L"Accept, Access-Control-Allow-Origin, Authorization, Cache-Control, Content-Type, Connection, Pragma, X-Requested-With"sv}
-    //  OLD LISTS: static const inline Set<String> kBasicHeadersAlwaysAllowed_{L"Allow", L"Authorization", IO::Network::HTTP::HeaderName::kContentType}; // fogire out
-    static const inline Set<String> kBasicHeadersAlwaysAllowed_{IO::Network::HTTP::HeaderName::kContentType}; // @todo figure out what logically goes here?
     // requires all optional values filled in on corsOptions
     Rep_ (const Sequence<Route>& routes, const CORSOptions& filledInCORSOptions)
         : fRoutes_{routes}
         , fAllowedOrigins_{MapStartToNullOpt_ (filledInCORSOptions.fAllowedOrigins)}
+        , fAllowedHeaders_{MapStartToNullOpt_ (filledInCORSOptions.fAllowedHeaders)}
         , fAccessControlAllowCredentialsValue_{*filledInCORSOptions.fAllowCredentials ? L"true"sv : L"false"sv}
-        , fAccessControlAllowHeadersValue_{String::Join (kBasicHeadersAlwaysAllowed_ + *filledInCORSOptions.fAllowedExtraHTTPHeaders)}
         , fAccessControlMaxAgeValue_{Characters::Format (L"%d", *filledInCORSOptions.fAccessControlMaxAge)}
     {
     }
@@ -144,7 +152,7 @@ struct Router::Rep_ : Interceptor::_IRep {
                 }
             }
             else {
-                allowedOrigin = CORSOptions::kAccessControlAllowOriginWildcard;
+                allowedOrigin = CORSOptions::kAccessControlWildcard;
             }
         }
         if (allowedOrigin) {
@@ -186,16 +194,30 @@ struct Router::Rep_ : Interceptor::_IRep {
     {
         Request&  request  = *message->PeekRequest ();
         Response& response = *message->PeekResponse ();
-        auto      o        = GetAllowedMethodsForRequest_ (request);
+        // @todo note - This ignores - Access-Control-Request-Method - not sure how we are expected to use it?
+        auto o = GetAllowedMethodsForRequest_ (request);
         if (o) {
-            response.UpdateHeader ([this, &o] (auto* header) {
+            auto accessControlRequestHeaders = request.GetHeaders ().LookupOne (HeaderName::kAccessControlRequestHeaders);
+            response.UpdateHeader ([this, &o, &accessControlRequestHeaders] (auto* header) {
                 RequireNotNull (header);
                 header->Set (HeaderName::kAccessControlAllowCredentials, fAccessControlAllowCredentialsValue_);
-                header->Set (HeaderName::kAccessControlAllowHeaders, fAccessControlAllowHeadersValue_);
+                if (accessControlRequestHeaders) {
+                    if (fAllowedHeaders_) {
+                        // intersect requested headers with those configured to permit
+                        Iterable<String> requestAccessHeaders = accessControlRequestHeaders->Tokenize ({','});
+                        auto             r                    = fAllowedHeaders_->Intersection (requestAccessHeaders);
+                        if (r.empty ()) {
+                            header->Set (HeaderName::kAccessControlAllowHeaders, String::Join (r));
+                        }
+                    }
+                    else {
+                        header->Set (HeaderName::kAccessControlAllowHeaders, *accessControlRequestHeaders);
+                    }
+                }
                 header->Set (HeaderName::kAccessControlAllowMethods, String::Join (*o));
                 header->Set (HeaderName::kAccessControlMaxAge, fAccessControlMaxAgeValue_);
             });
-            HandleCORSInNormallyHandledMessage_ (request, response);    // include access-origin-header
+            HandleCORSInNormallyHandledMessage_ (request, response); // include access-origin-header
             response.SetStatus (IO::Network::HTTP::StatusCodes::kNoContent);
         }
         else {
@@ -205,8 +227,8 @@ struct Router::Rep_ : Interceptor::_IRep {
     }
 
     const optional<Set<String>> fAllowedOrigins_; // missing <==> '*'
+    const optional<Set<String>> fAllowedHeaders_; // missing <==> '*'
     const String                fAccessControlAllowCredentialsValue_;
-    const String                fAccessControlAllowHeadersValue_;
     const String                fAccessControlMaxAgeValue_;
     const Sequence<Route>       fRoutes_; // no need for synchronization cuz constant - just set on construction
 };
@@ -219,10 +241,10 @@ struct Router::Rep_ : Interceptor::_IRep {
 namespace {
     CORSOptions FillIn_ (CORSOptions corsOptions)
     {
-        corsOptions.fAllowCredentials        = Memory::NullCoalesce (corsOptions.fAllowCredentials, kDefault_CORSOptions.fAllowCredentials);
-        corsOptions.fAccessControlMaxAge     = Memory::NullCoalesce (corsOptions.fAccessControlMaxAge, kDefault_CORSOptions.fAccessControlMaxAge);
-        corsOptions.fAllowedExtraHTTPHeaders = Memory::NullCoalesce (corsOptions.fAllowedExtraHTTPHeaders, kDefault_CORSOptions.fAllowedExtraHTTPHeaders);
-        corsOptions.fAllowedOrigins          = Memory::NullCoalesce (corsOptions.fAllowedOrigins, kDefault_CORSOptions.fAllowedOrigins);
+        corsOptions.fAllowCredentials    = Memory::NullCoalesce (corsOptions.fAllowCredentials, kDefault_CORSOptions.fAllowCredentials);
+        corsOptions.fAccessControlMaxAge = Memory::NullCoalesce (corsOptions.fAccessControlMaxAge, kDefault_CORSOptions.fAccessControlMaxAge);
+        corsOptions.fAllowedHeaders      = Memory::NullCoalesce (corsOptions.fAllowedHeaders, kDefault_CORSOptions.fAllowedHeaders);
+        corsOptions.fAllowedOrigins      = Memory::NullCoalesce (corsOptions.fAllowedOrigins, kDefault_CORSOptions.fAllowedOrigins);
         return corsOptions;
     }
 }
