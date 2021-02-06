@@ -85,7 +85,7 @@ namespace {
                           return thisObj->fContentLength_;
                       },
                       [] (auto* property, auto contentLength) {
-                          Headers* thisObj           = Memory::GetObjectOwningField (property, &Headers::contentLength2);
+                          Headers* thisObj         = Memory::GetObjectOwningField (property, &Headers::contentLength2);
                           thisObj->fContentLength_ = contentLength;
                       }}
                 , contentLength3{

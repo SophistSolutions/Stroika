@@ -68,11 +68,11 @@ String Connection::Remaining::ToString () const
  ********************************************************************************
  */
 Connection::MyMessage_::MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& socket, const Streams::InputOutputStream<byte>::Ptr& socketStream)
-    : Message (
-          Request (socketStream),
-          Response (socket, socketStream, DataExchange::InternetMediaTypes::kOctetStream),
-          socket.GetPeerAddress ())
-    , fMsgHeaderInTextStream (MessageStartTextInputStreamBinaryAdapter::New (PeekRequest ()->GetInputStream ()))
+    : Message{
+          Request{socketStream},
+          Response{socket, socketStream, DataExchange::InternetMediaTypes::kOctetStream},
+          socket.GetPeerAddress ()}
+    , fMsgHeaderInTextStream{MessageStartTextInputStreamBinaryAdapter::New (PeekRequest ()->GetInputStream ())}
 {
 }
 
@@ -113,7 +113,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
         Sequence<String>      tokens{line.Tokenize (kTokenSeparatorSet_)};
         if (tokens.size () < 3) {
             DbgTrace (L"tokens=%s, line='%s', fMsgHeaderInTextStream=%s", Characters::ToString (tokens).c_str (), line.c_str (), fMsgHeaderInTextStream.ToString ().c_str ());
-            Execution::Throw (ClientErrorException (Characters::Format (L"Bad METHOD Request HTTP line (%s)", line.c_str ())));
+            Execution::Throw (ClientErrorException{Characters::Format (L"Bad METHOD Request HTTP line (%s)", line.c_str ())});
         }
         updatableRequest->SetHTTPMethod (tokens[0]);
         updatableRequest->SetHTTPVersion (tokens[2]);
@@ -161,15 +161,27 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
  ********************************************************************************
  */
 Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain)
-    : request{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const Request& {
-              const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::request);
-              return *thisObj->fMessage_->PeekRequest ();
+    : socket{
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> ConnectionOrientedStreamSocket::Ptr {
+              const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::socket);
+              return thisObj->fSocket_;
           }}
+    , request{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const Request& {
+        const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::request);
+        return *thisObj->fMessage_->PeekRequest ();
+    }}
     , response{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Response& {
         const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::response);
         return *thisObj->fMessage_->PeekResponse ();
     }}
+    , remainingConnectionLimits{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<Remaining> {
+                                    const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::remainingConnectionLimits);
+                                    return thisObj->fRemaining_;
+                                },
+                                [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& remainingConnectionLimits) {
+                                    Connection* thisObj  = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::remainingConnectionLimits);
+                                    thisObj->fRemaining_ = remainingConnectionLimits;
+                                }}
     , fInterceptorChain_{interceptorChain}
     , fSocket_{s}
 {
@@ -255,16 +267,16 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
                     if (kvp.length () == 2) {
                         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Keep-Alive
                         if (kvp[0] == L"timeout"sv) {
-                            Time::DurationSecondsType toAt = Characters::String2Float<> (kvp[1]);
-                            Remaining                 r    = NullCoalesce (GetRemainingConnectionLimits ());
-                            r.fTimeoutAt                   = Time::GetTickCount () + toAt;
-                            this->SetRemainingConnectionMessages (r);
+                            Time::DurationSecondsType toAt  = Characters::String2Float<> (kvp[1]);
+                            Remaining                 r     = NullCoalesce (remainingConnectionLimits ());
+                            r.fTimeoutAt                    = Time::GetTickCount () + toAt;
+                            this->remainingConnectionLimits = r;
                         }
                         else if (kvp[0] == L"max"sv) {
-                            unsigned int maxMsg = Characters::String2Int<unsigned int> (kvp[1]);
-                            Remaining    r      = NullCoalesce (GetRemainingConnectionLimits ());
-                            r.fMessages         = maxMsg;
-                            this->SetRemainingConnectionMessages (r);
+                            unsigned int maxMsg             = Characters::String2Int<unsigned int> (kvp[1]);
+                            Remaining    r                  = NullCoalesce (remainingConnectionLimits ());
+                            r.fMessages                     = maxMsg;
+                            this->remainingConnectionLimits = r;
                         }
                         else {
                             DbgTrace (L"Keep-Alive header bad: %s", aliveHeaderValue->c_str ());
@@ -313,7 +325,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
         }
         if (thisMessageKeepAlive) {
             // if missing, no limits
-            if (auto oRemaining = GetRemainingConnectionLimits ()) {
+            if (auto oRemaining = remainingConnectionLimits ()) {
                 if (oRemaining->fMessages) {
                     if (oRemaining->fMessages == 0u) {
                         thisMessageKeepAlive = false;

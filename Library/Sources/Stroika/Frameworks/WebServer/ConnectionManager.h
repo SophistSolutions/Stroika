@@ -266,7 +266,7 @@ namespace Stroika::Frameworks::WebServer {
             using HighLevelType = shared_ptr<Connection>;
             static inline auto GetSDKPollable (const HighLevelType& t)
             {
-                return t->GetSocket ().GetNativeSocket ();
+                return t->socket ().GetNativeSocket ();
             }
         };
         // No need to lock fInactiveSockSetPoller_ since its internally synchronized;

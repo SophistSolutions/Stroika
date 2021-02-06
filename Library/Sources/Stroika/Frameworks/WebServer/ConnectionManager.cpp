@@ -140,7 +140,7 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
               return thisObj->fEarlyInterceptors_;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& earlyInterceptors) {
-              ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::earlyInterceptors);
+              ConnectionManager* thisObj   = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::earlyInterceptors);
               thisObj->fEarlyInterceptors_ = earlyInterceptors;
               thisObj->FixupInterceptorChain_ ();
           }}
@@ -150,7 +150,7 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
               return thisObj->fBeforeInterceptors_;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& beforeInterceptors) {
-              ConnectionManager* thisObj  = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::beforeInterceptors);
+              ConnectionManager* thisObj    = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::beforeInterceptors);
               thisObj->fBeforeInterceptors_ = beforeInterceptors;
               thisObj->FixupInterceptorChain_ ();
           }}
@@ -160,7 +160,7 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
               return thisObj->fAfterInterceptors_;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& afterInterceptors_) {
-              ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::afterInterceptors);
+              ConnectionManager* thisObj   = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::afterInterceptors);
               thisObj->fAfterInterceptors_ = afterInterceptors_;
               thisObj->FixupInterceptorChain_ ();
           }}

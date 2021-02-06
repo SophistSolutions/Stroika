@@ -62,7 +62,6 @@ namespace Stroika::Frameworks::WebServer {
      *          conn.ReadAndProcessMessage ();
      *      \endcode
      * 
-     * 
      *  TODO:
      *      @todo   DOCUMENT and enforce with Debug::AssertExternallySynrhoized or other... the intended thread safety
      *              rules for htis object.
@@ -83,8 +82,9 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
+         *  This returns the (two way) connection oriented stream socket (ptr) used by this connection.
          */
-        nonvirtual ConnectionOrientedStreamSocket::Ptr GetSocket () const;
+        Common::ReadOnlyProperty<ConnectionOrientedStreamSocket::Ptr> socket;
 
     public:
         /**
@@ -128,19 +128,14 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         */
-        nonvirtual optional<Remaining> GetRemainingConnectionLimits () const;
-
-    public:
-        /**
          *  \note set Remaining::fMessages := 0 to prevent keep-alives.
          *
          *  \par Example Usage
          *      \code
-         *          conn.SetRemainingConnectionMessages (Connection::Remaining{0, 0}); // disable keep-alives
+         *          conn.remainingConnectionLimits = Connection::Remaining{0, 0}; // disable keep-alives
          *      \endcode
          */
-        nonvirtual void SetRemainingConnectionMessages (const optional<Remaining>& remainingConnectionLimits);
+        Common::Property<optional<Remaining>> remainingConnectionLimits;
 
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
     private:
