@@ -52,8 +52,23 @@ struct InterceptorChain::Rep_ : InterceptorChain::_IRep {
  *********************** WebServer::InterceptorChain ****************************
  ********************************************************************************
  */
-InterceptorChain::InterceptorChain (const Sequence<Interceptor>& interceptors)
-    : fRep_{make_shared<Rep_> (interceptors)}
+inline InterceptorChain::InterceptorChain (const Sequence<Interceptor>& interceptors)
+    : InterceptorChain{make_shared<Rep_> (interceptors)}
+{
+}
+
+InterceptorChain::InterceptorChain (const shared_ptr<_IRep>& rep)
+    : interceptors{
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Sequence<Interceptor> {
+              const InterceptorChain* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::location);
+              return thisObj->fRep_.cget ().load ()->GetInterceptors ();
+          },
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const Sequence<Interceptor>& interceptors) {
+              InterceptorChain* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::location);
+              auto              rwLock  = thisObj->fRep_.rwget ();
+              rwLock.store (rwLock->get ()->SetInterceptors (interceptors));
+          }}
+    , fRep_{rep}
 {
 }
 

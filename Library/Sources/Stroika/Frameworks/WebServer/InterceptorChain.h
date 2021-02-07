@@ -6,6 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
+#include "../../Foundation/Common/Property.h"
 #include "../../Foundation/Containers/Sequence.h"
 #include "../../Foundation/Execution/Synchronized.h"
 
@@ -43,7 +44,6 @@ namespace Stroika::Frameworks::WebServer {
      *  other connections (update the one in the ConnectionManager for use in future connections).
      *
      *  \note   Use the ConnectionManager to more easily manage the Interceptors list
-     *
      *
      *  \note   Inspired by, but quite different from
      *          @see https://cxf.apache.org/javadoc/latest/org/apache/cxf/phase/PhaseInterceptorChain.html
@@ -92,6 +92,8 @@ namespace Stroika::Frameworks::WebServer {
     public:
         nonvirtual InterceptorChain& operator= (const InterceptorChain&) = default;
 
+    public:
+        Common::Property<Sequence<Interceptor>> interceptors;
     public:
         /**
          */
