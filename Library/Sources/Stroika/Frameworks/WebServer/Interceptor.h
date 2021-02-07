@@ -25,11 +25,12 @@ namespace Stroika::Frameworks::WebServer {
     using namespace Stroika::Foundation;
 
     /**
-     *  Each Interceptor envelope must be externally synchronized, but can be read from any thread, and
-     *  the way these are used, they are only ever read, except on construction.
-     *
      *  \note   Inspired by, but fairly different from
      *          @see https://cxf.apache.org/javadoc/latest/org/apache/cxf/interceptor/Interceptor.html
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-Letter-Internally-Synchronized</a>
+     *              But note that HandleMessage() is a const method, so it can safely be called from any number of threads
+     *              simultaneously.
      */
     class Interceptor : private Debug::AssertExternallySynchronizedLock {
     protected:
@@ -57,19 +58,19 @@ namespace Stroika::Frameworks::WebServer {
          *
          *  This function should NOT throw an exception - just do what it can to cleanup.
          */
-        nonvirtual void HandleFault (Message* m, const exception_ptr& e) noexcept;
+        nonvirtual void HandleFault (Message* m, const exception_ptr& e) const noexcept;
 
     public:
         /**
          *  Intercepts and handles a message. Typically this will read stuff from the Request and
          *  add stuff to the Response.
          */
-        nonvirtual void HandleMessage (Message* m);
+        nonvirtual void HandleMessage (Message* m) const;
 
     public:
         /**
          */
-        nonvirtual void CompleteNormally (Message* m);
+        nonvirtual void CompleteNormally (Message* m) const;
 
 #if __cpp_impl_three_way_comparison >= 201907
     public:
@@ -111,13 +112,13 @@ namespace Stroika::Frameworks::WebServer {
          *
          *  This function should NOT throw an exception - just do what it can to cleanup.
          */
-        virtual void HandleFault ([[maybe_unused]] Message* m, [[maybe_unused]] const exception_ptr& e) noexcept;
+        virtual void HandleFault ([[maybe_unused]] Message* m, [[maybe_unused]] const exception_ptr& e) const noexcept;
 
         /**
          *  Intercepts and handles a message. Typically this will read stuff from the Request and
          *  add write to the Response.
          */
-        virtual void HandleMessage (Message* m) = 0;
+        virtual void HandleMessage (Message* m) const = 0;
 
         /**
          * Rarely overriden, but can be to get a notification
@@ -126,7 +127,7 @@ namespace Stroika::Frameworks::WebServer {
          *
          * EG. for logging.
          */
-        virtual void CompleteNormally (Message* m);
+        virtual void CompleteNormally (Message* m) const;
     };
 
 #if __cpp_impl_three_way_comparison < 201907

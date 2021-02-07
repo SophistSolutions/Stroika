@@ -67,13 +67,11 @@ namespace Stroika::Frameworks::WebServer {
      *       @todo NEED to support NESTED Routes (or aggregated).
      *               Key is need stuff like 'default error handling' - and just to somehow inherit/copy that.
      *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-Letter-Internally-Synchronized</a>
+     *              But note that Matches() is a const method, so it can safely be called from any number of threads
+     *              simultaneously.
      * 
-     * 
-     *  &&& TODO DESCRIBE THREADSAFTY BETTER BUT I THINK THIS OBJECT IS IMMUTABLE (EXCEPT FOR CASE OF COPY/OVERWRITE)
-     * 
-     * \note - this must be EXTERNALLY synchronized - except that all read only methods are safe from any thread,
-     *         because these are usually stored in a strucutre where they wont be updated.
-     *         Just be sure the HANLDER argument is safe when called from multiple threads at the same time!
+     *  \req it is expected aggregated handlers provided MUST be <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-Letter-Internally-Synchronized</a> as well.
      */
     class Route {
     public:
@@ -106,11 +104,12 @@ namespace Stroika::Frameworks::WebServer {
     };
 
     /**
-    * &&& @TODO REVISIT - I THINK STANDARDC++ THREAD SUPP BUT IMMUTABLE (except for assign/copy)
-     *  THREAD: must be externally synchronized, but all const methods are safe from any thread.
-     * 
      *  If there is not an EXPLICIT route matched for HEAD, or OPTIONS, the those methods will be implemented
      *  automatically by the Router.
+     * 
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-Letter-Internally-Synchronized</a>
+     *              But note that HandleMessage() is a const method, so it can safely be called from any number of threads
+     *              simultaneously.
      */
     class Router : public Interceptor {
     private:

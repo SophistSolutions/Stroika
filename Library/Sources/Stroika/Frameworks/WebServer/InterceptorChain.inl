@@ -32,7 +32,7 @@ namespace Stroika::Frameworks::WebServer {
         auto rwLock = fRep_.rwget ();
         rwLock.store (rwLock->get ()->SetInterceptors (interceptors));
     }
-    inline void InterceptorChain::HandleMessage (Message* m)
+    inline void InterceptorChain::HandleMessage (Message* m) const
     {
         fRep_.cget ().load ()->HandleMessage (m);
     }

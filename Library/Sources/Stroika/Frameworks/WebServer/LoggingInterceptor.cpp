@@ -35,7 +35,7 @@ struct LoggingInterceptor::Rep_ : Interceptor::_IRep {
         : fLogger_{logger}
     {
     }
-    virtual void HandleFault (Message* m, [[maybe_unused]] const exception_ptr& e) noexcept override
+    virtual void HandleFault (Message* m, [[maybe_unused]] const exception_ptr& e) const noexcept override
     {
         RequireNotNull (m);
         shared_ptr<ILogHandler::MessageInstance> logID;
@@ -47,13 +47,13 @@ struct LoggingInterceptor::Rep_ : Interceptor::_IRep {
         }
         fLogger_->Completed (logID);
     }
-    virtual void HandleMessage (Message* m) override
+    virtual void HandleMessage (Message* m) const override
     {
         shared_ptr<ILogHandler::MessageInstance> logID = fLogger_->Started (m);
         Assert (not fOngoingMessages_->Lookup (m).has_value ());
         fOngoingMessages_.rwget ().rwref ().Add (m, logID);
     }
-    virtual void CompleteNormally (Message* m) override
+    virtual void CompleteNormally (Message* m) const override
     {
         shared_ptr<ILogHandler::MessageInstance> logID;
         {
@@ -64,8 +64,8 @@ struct LoggingInterceptor::Rep_ : Interceptor::_IRep {
         }
         fLogger_->Completed (logID);
     }
-    shared_ptr<ILogHandler>                                                              fLogger_;
-    Execution::Synchronized<Mapping<Message*, shared_ptr<ILogHandler::MessageInstance>>> fOngoingMessages_;
+    shared_ptr<ILogHandler>                                                                      fLogger_;
+    mutable Execution::Synchronized<Mapping<Message*, shared_ptr<ILogHandler::MessageInstance>>> fOngoingMessages_;
 };
 
 LoggingInterceptor::LoggingInterceptor (const shared_ptr<ILogHandler>& logger)

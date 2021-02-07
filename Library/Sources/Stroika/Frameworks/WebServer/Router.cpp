@@ -100,7 +100,7 @@ struct Router::Rep_ : Interceptor::_IRep {
         , fRoutes_{routes}
     {
     }
-    virtual void HandleMessage (Message* m) override
+    virtual void HandleMessage (Message* m) const override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"Router::Rep_::HandleMessage", L"(...method=%s,url=%s)", m->GetRequestHTTPMethod ().c_str (), Characters::ToString (m->GetRequestURL ()).c_str ()};
@@ -129,7 +129,7 @@ struct Router::Rep_ : Interceptor::_IRep {
             }
         }
     }
-    nonvirtual void HandleCORSInNormallyHandledMessage_ (const Request& request, Response& response)
+    nonvirtual void HandleCORSInNormallyHandledMessage_ (const Request& request, Response& response) const
     {
         /*
          *  Origin and Access-Control-Allow-Origin
@@ -188,10 +188,10 @@ struct Router::Rep_ : Interceptor::_IRep {
         }
         return methods.empty () ? nullopt : optional<Set<String>>{methods};
     }
-    nonvirtual void Handle_OPTIONS_ (Message* message)
+    nonvirtual void Handle_OPTIONS_ (Message* message) const
     {
-        Request&  request  = *message->PeekRequest ();
-        Response& response = *message->PeekResponse ();
+        const Request& request  = *message->PeekRequest ();
+        Response&      response = *message->PeekResponse ();
         // @todo note - This ignores - Access-Control-Request-Method - not sure how we are expected to use it?
         auto o = GetAllowedMethodsForRequest_ (request);
         if (o) {

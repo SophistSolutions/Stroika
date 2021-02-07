@@ -46,7 +46,7 @@ namespace {
                 : fServerHeader_{serverHeader}
             {
             }
-            virtual void HandleMessage (Message* m) override
+            virtual void HandleMessage (Message* m) const override
             {
                 Response& response = *m->PeekResponse ();
                 response.UpdateHeader ([this] (auto* header) { RequireNotNull (header); header->server = fServerHeader_; });

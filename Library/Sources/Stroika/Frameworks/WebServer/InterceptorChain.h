@@ -70,6 +70,10 @@ namespace Stroika::Frameworks::WebServer {
      *              }
      *          }
      *      \endcode
+     * 
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-Letter-Internally-Synchronized</a>
+     *              But note that HandleMessage() is a const method, so it can safely be called from any number of threads
+     *              simultaneously.
      */
     class InterceptorChain {
     protected:
@@ -112,14 +116,22 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
+         *  
+         *  HandleMessage() sends a HandleMessage() call to each interceptor in turn.
+         *  For each interceptor in the chain, if it succeeds (doesn't throw) - it will THEN get a CompleteNormally () message.
+         *  If it faulted (or a fault occurred later in the chain) - then it will INSTEAD get a HandleFault () message.
+         *  BUT - no matter what - each intercetor called with HandleMessage () with EITHER:
+         *      o   Get its HandleFault() called
+         *      o OR get its HandleComplete() called
+         *     but not both and not neither.
+         *
          *  Send the given message to each interceptor in the chain. Each interceptor from start to end of the sequence
-         *  is sent the HandleMessage () call. If any throws an exception, all the HandleMessage () methods so far called
-         *  are called in reverse order.
+         *  is sent the HandleMessage () call.
          *
          *  Interceptors must not throw during the HandleFault. InterceptorChain::HandleMessage() simply rethrows the original
          *  fault (exception) that triggered the unwind of the message.
          */
-        nonvirtual void HandleMessage (Message* m);
+        nonvirtual void HandleMessage (Message* m) const;
 
     private:
         Execution::RWSynchronized<shared_ptr<_IRep>> fRep_;
@@ -140,7 +152,7 @@ namespace Stroika::Frameworks::WebServer {
         virtual shared_ptr<_IRep> SetInterceptors (const Sequence<Interceptor>& interceptors) const = 0;
 
         // Intercepts a message, and handles exception logic - distributing to interceptors already called
-        virtual void HandleMessage (Message* m) = 0;
+        virtual void HandleMessage (Message* m) const = 0;
     };
 
 }

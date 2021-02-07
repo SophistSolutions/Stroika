@@ -24,7 +24,7 @@ struct InterceptorChain::Rep_ : InterceptorChain::_IRep {
     {
         return make_shared<Rep_> (interceptors);
     }
-    virtual void HandleMessage (Message* m) override
+    virtual void HandleMessage (Message* m) const override
     {
         size_t sz = fInterceptors_.size ();
         size_t i  = 0;

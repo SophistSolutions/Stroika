@@ -23,7 +23,7 @@ using namespace Stroika::Frameworks::WebServer;
  */
 struct DefaultFaultInterceptor::Rep_ : Interceptor::_IRep {
     Rep_ () = default;
-    virtual void HandleFault (Message* m, const exception_ptr& e) noexcept override
+    virtual void HandleFault (Message* m, const exception_ptr& e) const noexcept override
     {
         RequireNotNull (m);
         Response* response = m->PeekResponse ();
@@ -46,7 +46,7 @@ struct DefaultFaultInterceptor::Rep_ : Interceptor::_IRep {
             DbgTrace (L"Oops! - not good, but nothing todo but burry it."); // not assert failure cuz could be out of memory
         }
     }
-    virtual void HandleMessage ([[maybe_unused]] Message* m) override
+    virtual void HandleMessage ([[maybe_unused]] Message* m) const override
     {
     }
 };
@@ -57,12 +57,12 @@ struct DefaultFaultInterceptor::Rep_Explicit_ : Interceptor::_IRep {
         : fHandleFault_{handleFault}
     {
     }
-    virtual void HandleFault (Message* m, const exception_ptr& e) noexcept override
+    virtual void HandleFault (Message* m, const exception_ptr& e) const noexcept override
     {
         RequireNotNull (m);
         fHandleFault_ (m, e);
     }
-    virtual void HandleMessage ([[maybe_unused]] Message* m) override
+    virtual void HandleMessage ([[maybe_unused]] Message* m) const override
     {
     }
 };

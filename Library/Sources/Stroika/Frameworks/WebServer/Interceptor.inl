@@ -23,17 +23,17 @@ namespace Stroika::Frameworks::WebServer {
     {
         RequireNotNull (rep);
     }
-    inline void Interceptor::HandleFault (Message* m, const exception_ptr& e) noexcept
+    inline void Interceptor::HandleFault (Message* m, const exception_ptr& e) const noexcept
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         fRep_->HandleFault (m, e);
     }
-    inline void Interceptor::HandleMessage (Message* m)
+    inline void Interceptor::HandleMessage (Message* m) const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         fRep_->HandleMessage (m);
     }
-    inline void Interceptor::CompleteNormally (Message* m)
+    inline void Interceptor::CompleteNormally (Message* m) const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         fRep_->CompleteNormally (m);
