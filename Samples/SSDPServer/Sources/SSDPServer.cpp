@@ -52,10 +52,10 @@ namespace {
                                                 response->write (Stroika::Frameworks::UPnP::Serialize (dd));
                                                 response->SetContentType (DataExchange::InternetMediaTypes::kXML);
                                             })}};
-                    conn.remainingConnectionLimits = Connection::Remaining{0, 0}; // disable keep-alives
+                    conn.remainingConnectionLimits = HTTP::KeepAlive{0, 0}; // disable keep-alives
                     conn.ReadAndProcessMessage ();
                 });
-                runConnectionOnAnotherThread.SetThreadName (L"SSDP Servcie Connection Thread");
+                runConnectionOnAnotherThread.SetThreadName (L"SSDP Servcie Connection Thread"sv);
                 runConnectionOnAnotherThread.Start ();
             };
             fListener = Listener{SocketAddresses (InternetAddresses_Any (), webServerPortNumber), onConnect};
