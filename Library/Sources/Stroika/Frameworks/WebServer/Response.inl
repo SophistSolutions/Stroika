@@ -82,17 +82,17 @@ namespace Stroika::Frameworks::WebServer {
     inline void Response::clear ()
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        fBytes_.clear ();
+        fBodyBytes_.clear ();
     }
     inline bool Response::empty () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        return fBytes_.empty ();
+        return fBodyBytes_.empty ();
     }
     inline const vector<byte>& Response::GetBytes () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        return fBytes_;
+        return fBodyBytes_;
     }
     inline Response::ContentSizePolicy Response::GetContentSizePolicy () const
     {

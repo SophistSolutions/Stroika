@@ -309,7 +309,7 @@ namespace Stroika::Frameworks::WebServer {
         Streams::BufferedOutputStream<byte>::Ptr fUseOutStream_;
         IO::Network::HTTP::Headers               fHeaders_;
         Characters::CodePage                     fCodePage_;
-        vector<byte>                             fBytes_;
+        vector<byte>                             fBodyBytes_;
         ContentSizePolicy                        fContentSizePolicy_;
         uint64_t                                 fContentSize_; // only  maintained for some fContentSizePolicy_ values
     };

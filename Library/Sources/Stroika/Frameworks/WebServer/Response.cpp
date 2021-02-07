@@ -65,7 +65,7 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
     , fUseOutStream_{Streams::BufferedOutputStream<byte>::New (outStream)}
     , fHeaders_{}
     , fCodePage_{Characters::kCodePage_UTF8}
-    , fBytes_{}
+    , fBodyBytes_{}
     , fContentSizePolicy_{ContentSizePolicy::eAutoCompute}
 {
     fHeaders_.server = L"Stroka-Based-Web-Server"_k;
@@ -120,7 +120,7 @@ void Response::SetCodePage (Characters::CodePage codePage)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     Require (fState_ == State::eInProgress);
-    Require (fBytes_.empty ());
+    Require (fBodyBytes_.empty ());
     bool diff  = fCodePage_ != codePage;
     fCodePage_ = codePage;
     if (diff) {
@@ -222,18 +222,18 @@ void Response::Flush ()
         fState_ = State::eInProgressHeaderSentState;
     }
     // write BYTES to fOutStream
-    if (not fBytes_.empty ()) {
+    if (not fBodyBytes_.empty ()) {
         Assert (fState_ != State::eCompleted); // We PREVENT any writes when completed
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"bytes.size: %lld", static_cast<long long> (fBytes_.size ()));
+        DbgTrace (L"bytes.size: %lld", static_cast<long long> (fBodyBytes_.size ()));
 #endif
-        fUseOutStream_.Write (Containers::Start (fBytes_), Containers::End (fBytes_));
-        fBytes_.clear ();
+        fUseOutStream_.Write (Containers::Start (fBodyBytes_), Containers::End (fBodyBytes_));
+        fBodyBytes_.clear ();
     }
     if (fState_ != State::eCompleted) {
         fUseOutStream_.Flush ();
     }
-    Ensure (fBytes_.empty ());
+    Ensure (fBodyBytes_.empty ());
 }
 
 void Response::End ()
@@ -243,7 +243,7 @@ void Response::End ()
     Flush ();
     fState_ = State::eCompleted;
     Ensure (fState_ == State::eCompleted);
-    Ensure (fBytes_.empty ());
+    Ensure (fBodyBytes_.empty ());
 }
 
 void Response::Abort ()
@@ -253,17 +253,17 @@ void Response::Abort ()
         fState_ = State::eCompleted;
         fUseOutStream_.Abort ();
         fSocket_.Close ();
-        fBytes_.clear ();
+        fBodyBytes_.clear ();
     }
     Ensure (fState_ == State::eCompleted);
-    Ensure (fBytes_.empty ());
+    Ensure (fBodyBytes_.empty ());
 }
 
 void Response::Redirect (const URI& url)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     Require (fState_ == State::eInProgress);
-    fBytes_.clear ();
+    fBodyBytes_.clear ();
 
     // PERHAPS should clear some header values???
     fHeaders_.connection = IO::Network::HTTP::Headers::eClose;
@@ -280,11 +280,11 @@ void Response::write (const byte* s, const byte* e)
     Require ((fState_ == State::eInProgress) or (GetContentSizePolicy () != ContentSizePolicy::eAutoCompute));
     Require (s <= e);
     if (s < e) {
-        Containers::ReserveSpeedTweekAddN (fBytes_, (e - s), kResponseBufferReallocChunkSizeReserve_);
-        fBytes_.insert (fBytes_.end (), s, e);
+        Containers::ReserveSpeedTweekAddN (fBodyBytes_, (e - s), kResponseBufferReallocChunkSizeReserve_);
+        fBodyBytes_.insert (fBodyBytes_.end (), s, e);
         if (GetContentSizePolicy () == ContentSizePolicy::eAutoCompute) {
             // Because for autocompute - illegal to call flush and then write
-            fHeaders_.contentLength = fBytes_.size ();
+            fHeaders_.contentLength = fBodyBytes_.size ();
         }
     }
 }
@@ -299,10 +299,10 @@ void Response::write (const wchar_t* s, const wchar_t* e)
         wstring tmp   = wstring (s, e);
         string  cpStr = Characters::WideStringToNarrow (tmp, fCodePage_);
         if (not cpStr.empty ()) {
-            fBytes_.insert (fBytes_.end (), reinterpret_cast<const byte*> (cpStr.c_str ()), reinterpret_cast<const byte*> (cpStr.c_str () + cpStr.length ()));
+            fBodyBytes_.insert (fBodyBytes_.end (), reinterpret_cast<const byte*> (cpStr.c_str ()), reinterpret_cast<const byte*> (cpStr.c_str () + cpStr.length ()));
             if (GetContentSizePolicy () == ContentSizePolicy::eAutoCompute) {
                 // Because for autocompute - illegal to call flush and then write
-                fHeaders_.contentLength = fBytes_.size ();
+                fHeaders_.contentLength = fBodyBytes_.size ();
             }
         }
     }

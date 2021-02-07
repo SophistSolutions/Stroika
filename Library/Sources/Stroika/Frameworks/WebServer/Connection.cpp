@@ -239,7 +239,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
             } break;
         }
 
-            // Handle using interceptor chain - this is the guts of the high level handling
+        // Handle using interceptor chain - this is the guts of the high level handling
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"Handing request %s to interceptor chain", Characters::ToString (GetRequest ()).c_str ());
 #endif
