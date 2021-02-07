@@ -10,6 +10,7 @@
 
 #include "../../Foundation/Characters/String.h"
 #include "../../Foundation/Configuration/Common.h"
+#include "../../Foundation/IO/Network/HTTP/KeepAlive.h"
 #include "../../Foundation/IO/Network/HTTP/MessageStartTextInputStreamBinaryAdapter.h"
 #include "../../Foundation/IO/Network/SocketStream.h"
 #include "../../Foundation/Common/Property.h"
@@ -114,20 +115,6 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         */
-        struct Remaining {
-            optional<unsigned int>              fMessages;
-            optional<Time::DurationSecondsType> fTimeoutAt;
-
-        public:
-            /**
-             *  @see Characters::ToString ();
-             */
-            nonvirtual String ToString () const;
-        };
-
-    public:
-        /**
          *  \note set Remaining::fMessages := 0 to prevent keep-alives.
          *
          *  \par Example Usage
@@ -135,7 +122,7 @@ namespace Stroika::Frameworks::WebServer {
          *          conn.remainingConnectionLimits = Connection::Remaining{0, 0}; // disable keep-alives
          *      \endcode
          */
-        Common::Property<optional<Remaining>> remainingConnectionLimits;
+        Common::Property<optional<KeepAlive>> remainingConnectionLimits;
 
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
     private:
@@ -171,7 +158,7 @@ namespace Stroika::Frameworks::WebServer {
         ConnectionOrientedStreamSocket::Ptr   fSocket_;
         Streams::InputOutputStream<byte>::Ptr fSocketStream_;
         shared_ptr<MyMessage_>                fMessage_; // always there, but ptr so it can be replaced
-        optional<Remaining>                   fRemaining_;
+        optional<KeepAlive>                   fRemaining_;
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
         Streams::TextWriter::Ptr fLogConnectionState_;
 #endif

@@ -45,25 +45,6 @@ using IO::Network::HTTP::ClientErrorException;
 
 /*
  ********************************************************************************
- ******************** WebServer::Connection::Remaining **************************
- ********************************************************************************
- */
-String Connection::Remaining::ToString () const
-{
-    StringBuilder sb;
-    sb += L"{";
-    if (fMessages) {
-        sb += L"Messages: " + Characters::ToString (*fMessages) + L", ";
-    }
-    if (fTimeoutAt) {
-        sb += L"Timeout-At: " + Characters::ToString (*fTimeoutAt) + L", ";
-    }
-    sb += L"}";
-    return sb.str ();
-}
-
-/*
- ********************************************************************************
  ******************** WebServer::Connection::MyMessage_ *************************
  ********************************************************************************
  */
@@ -174,7 +155,7 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Inte
         const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::response);
         return *thisObj->fMessage_->PeekResponse ();
     }}
-    , remainingConnectionLimits{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<Remaining> {
+    , remainingConnectionLimits{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<KeepAlive> {
                                     const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::remainingConnectionLimits);
                                     return thisObj->fRemaining_;
                                 },
@@ -258,44 +239,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
             } break;
         }
 
-        // Check for keepalive headers, and handle them appropriately
-        {
-            // @see https://tools.ietf.org/html/rfc2068#page-43 19.7.1.1 The Keep-Alive Header
-            if (auto aliveHeaderValue = fMessage_->PeekRequest ()->GetHeaders ().LookupOne (IO::Network::HTTP::HeaderName::kKeepAlive)) {
-                for (String token : aliveHeaderValue->Tokenize (Set<Character>{' ', ','})) {
-                    Containers::Sequence<String> kvp = token.Tokenize (Set<Character>{'='});
-                    if (kvp.length () == 2) {
-                        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Keep-Alive
-                        if (kvp[0] == L"timeout"sv) {
-                            Time::DurationSecondsType toAt  = Characters::String2Float<> (kvp[1]);
-                            Remaining                 r     = NullCoalesce (remainingConnectionLimits ());
-                            r.fTimeoutAt                    = Time::GetTickCount () + toAt;
-                            this->remainingConnectionLimits = r;
-                        }
-                        else if (kvp[0] == L"max"sv) {
-                            unsigned int maxMsg             = Characters::String2Int<unsigned int> (kvp[1]);
-                            Remaining    r                  = NullCoalesce (remainingConnectionLimits ());
-                            r.fMessages                     = maxMsg;
-                            this->remainingConnectionLimits = r;
-                        }
-                        else {
-                            DbgTrace (L"Keep-Alive header bad: %s", aliveHeaderValue->c_str ());
-#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-                            WriteLogConnectionMsg_ (L"Keep-Alive header bad1");
-#endif
-                        }
-                    }
-                    else {
-                        DbgTrace (L"Keep-Alive header bad: %s", aliveHeaderValue->c_str ());
-#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-                        WriteLogConnectionMsg_ (L"Keep-Alive header bad2");
-#endif
-                    }
-                }
-            }
-        }
-
-        // Handle using interceptor chain - this is the guts of the high level handling
+            // Handle using interceptor chain - this is the guts of the high level handling
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"Handing request %s to interceptor chain", Characters::ToString (GetRequest ()).c_str ());
 #endif
@@ -324,6 +268,13 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
             }
         }
         if (thisMessageKeepAlive) {
+            // Check for keepalive headers, and handle them appropriately
+            // only meaningful HTTP 1.1 and earlier and only if Connection: keep-alive
+            {
+                if (auto keepAliveValue = fMessage_->PeekRequest ()->GetHeaders ().keepAlive ()) {
+                    this->remainingConnectionLimits = KeepAlive::Merge (this->remainingConnectionLimits (), *keepAliveValue);
+                }
+            }
             // if missing, no limits
             if (auto oRemaining = remainingConnectionLimits ()) {
                 if (oRemaining->fMessages) {

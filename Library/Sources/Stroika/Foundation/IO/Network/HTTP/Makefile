@@ -24,6 +24,7 @@ Objs	=	\
 	$(ObjDir)Cookie${OBJ_SUFFIX}\
 	$(ObjDir)Exception${OBJ_SUFFIX}\
 	$(ObjDir)Headers${OBJ_SUFFIX}\
+	$(ObjDir)KeepAlive${OBJ_SUFFIX}\
 	$(ObjDir)MessageStartTextInputStreamBinaryAdapter${OBJ_SUFFIX}\
 
 

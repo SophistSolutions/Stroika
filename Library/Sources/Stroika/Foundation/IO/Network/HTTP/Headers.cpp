@@ -147,6 +147,23 @@ Headers::Headers ()
               lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
               thisObj->fIfNoneMatch_ = ifNoneMatch;
           }}
+    , keepAlive{
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<HTTP::KeepAlive> {
+              const Headers*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::keepAlive);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              if (auto hdrValue = thisObj->As<Mapping<String, String>> ().Lookup (HeaderName::kKeepAlive)) {
+                  return HTTP::KeepAlive::Parse (*hdrValue);
+              }
+              return nullopt;
+          },
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& keepAliveValue) {
+              Headers*         thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::keepAlive);
+              optional<String> v;
+              if (keepAliveValue) {
+                  v = keepAliveValue->AsValue ();
+              }
+              thisObj->SetExtras_ (HeaderName::kKeepAlive, v);
+          }}
     , location{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<URI> {
               const Headers*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::location);

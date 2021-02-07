@@ -20,6 +20,7 @@
 #include "CacheControl.h"
 #include "ETag.h"
 #include "IfNoneMatch.h"
+#include "KeepAlive.h"
 
 /**
  */
@@ -199,6 +200,13 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  Property with the optional<IfNoneMatch> value of the IF-None-Match header.
          */
         Common::Property<optional<IfNoneMatch>> ifNoneMatch;
+
+    public:
+        /**
+         *  https://tools.ietf.org/html/rfc2068#section-19.7.1.1
+         *  https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Keep-Alive
+         */
+        Common::Property<optional<HTTP::KeepAlive>> keepAlive;
 
     public:
         /**

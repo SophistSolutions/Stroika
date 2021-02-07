@@ -203,6 +203,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Cookie.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Headers.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\KeepAlive.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\MessageStartTextInputStreamBinaryAdapter.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.cpp" />
@@ -572,6 +573,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Headers.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\IfNoneMatch.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\KeepAlive.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\MessageStartTextInputStreamBinaryAdapter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Methods.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Status.h" />
@@ -988,6 +990,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Headers.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\IfNoneMatch.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\KeepAlive.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Methods.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Versions.inl" />
