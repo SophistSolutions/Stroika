@@ -64,7 +64,7 @@ namespace {
             VerifyTestResult (s9.size () == 3);
             Set<int> s10{Common::DeclareEqualsComparer ([] (int l, int r) { return l == r; }), c};
         }
-        void TEstCTORFromOtherContainer_ ()
+        void TestCTORFromOtherContainer_ ()
         {
             using Characters::Character;
             using Characters::String;
@@ -74,7 +74,7 @@ namespace {
         void DoTest ()
         {
             DoTest_examples_from_docs_ ();
-            TEstCTORFromOtherContainer_ ();
+            TestCTORFromOtherContainer_ ();
         }
     }
 }
@@ -85,6 +85,20 @@ namespace {
         {
             Set<int> s{1, 2, 3, 4, 5};
             VerifyTestResult ((s.Where ([] (int i) { return Math::IsPrime (i); }) == Set<int>{2, 3, 5}));
+        }
+    }
+}
+
+namespace {
+    namespace EqualsTests_Test_4_ {
+        void DoAll ()
+        {
+            using Characters::String;
+            constexpr auto kHeaderNameEqualsComparer = String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive};
+            Set<String>    m;
+            auto           m1 = Set<String>{decltype (kHeaderNameEqualsComparer) (kHeaderNameEqualsComparer), m};
+            // https://stroika.atlassian.net/browse/STK-720
+            //auto m2 = Set<String>{kHeaderNameEqualsComparer, m};
         }
     }
 }
@@ -122,6 +136,7 @@ namespace {
         ExampleCTORS_Test_2_::DoTest ();
 
         Where_Test_3_::DoAll ();
+        EqualsTests_Test_4_::DoAll ();
     }
 }
 
