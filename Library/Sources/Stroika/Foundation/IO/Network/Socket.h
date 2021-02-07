@@ -113,8 +113,18 @@ namespace Stroika::Foundation::IO::Network {
         /**
          */
         struct BindFlags {
-            bool fReUseAddr : 1; // SO_REUSEADDR
-            constexpr BindFlags (bool reUseAddr = false);
+            /**
+             *  SO_REUSEADDR:
+             * 
+             *      From https://man7.org/linux/man-pages/man7/socket.7.html
+             * 
+             *      Indicates that the rules used in validating addresses
+             *      supplied in a bind(2) call should allow reuse of local
+             *      addresses.  For AF_INET sockets this means that a socket
+             *      may bind, except when there is an active listening socket
+             *      bound to the address.
+             */
+            bool fSO_REUSEADDR{false};
         };
 
     public:

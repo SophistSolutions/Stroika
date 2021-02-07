@@ -104,7 +104,7 @@ Socket::Type Socket::Ptr::GetType () const
 
 void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
 {
-    Debug::TraceContextBumper                          ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::Bind", L"sockAddr=%s bindFlags.fReUseAddr=%s", Characters::ToString (sockAddr).c_str (), Characters::ToString (bindFlags.fReUseAddr).c_str ())};
+    Debug::TraceContextBumper                          ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::Bind", L"sockAddr=%s bindFlags.fReUseAddr=%s", Characters::ToString (sockAddr).c_str (), Characters::ToString (bindFlags.fSO_REUSEADDR).c_str ())};
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     RequireNotNull (fRep_); // Construct with Socket::Kind::SOCKET_STREAM?
 
@@ -115,7 +115,7 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
     // reuse of local addresses. For AF_INET sockets this means that a socket may bind, except when
     // there is an active listening socket bound to the address. When the listening socket is bound
     // to INADDR_ANY with a specific port then it is not possible to bind to this port for any local address.
-    setsockopt<int> (SOL_SOCKET, SO_REUSEADDR, bindFlags.fReUseAddr ? 1 : 0);
+    setsockopt<int> (SOL_SOCKET, SO_REUSEADDR, bindFlags.fSO_REUSEADDR ? 1 : 0);
 
     sockaddr_storage     useSockAddr = sockAddr.As<sockaddr_storage> ();
     PlatformNativeHandle sfd         = fRep_->GetNativeSocket ();
