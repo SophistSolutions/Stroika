@@ -108,8 +108,10 @@ struct Router::Rep_ : Interceptor::_IRep {
         Sequence<String>         matches;
         optional<RequestHandler> handler = Lookup_ (*m->PeekRequest (), &matches);
         if (handler) {
-            (*handler) (m, matches);
-            HandleCORSInNormallyHandledMessage_ (*m->PeekRequest (), *m->PeekResponse ());
+            Handle_GET_ (m, matches , *handler);
+        }
+        else if (m->PeekRequest ()->GetHTTPMethod () == HTTP::Methods::kHead and Handle_HEAD_ (m)) {
+            // handled
         }
         else if (m->PeekRequest ()->GetHTTPMethod () == HTTP::Methods::kOptions) {
             Handle_OPTIONS_ (m);
@@ -187,6 +189,27 @@ struct Router::Rep_ : Interceptor::_IRep {
             }
         }
         return methods.empty () ? nullopt : optional<Set<String>>{methods};
+    }
+    nonvirtual void Handle_GET_ (Message* message, const Sequence<String>& matches, const RequestHandler& handler) const
+    {
+        const Request& request  = *message->PeekRequest ();
+        Response&      response = *message->PeekResponse ();
+        (handler) (message, matches);
+        HandleCORSInNormallyHandledMessage_ (request, response);
+    }
+    nonvirtual bool Handle_HEAD_ (Message* message) const
+    {
+        const Request&           request  = *message->PeekRequest ();
+        Response&                response = *message->PeekResponse ();
+        Sequence<String>         matches;
+        if (optional<RequestHandler> handler = Lookup_ (Methods::kGet, ExtractHostRelPath_ (request.GetURL ()), request, &matches)) {
+            // do someting to response so 'in HEAD mode' and won't write
+            response.EnterHeadMode ();
+            (*handler) (message, matches);
+            HandleCORSInNormallyHandledMessage_ (request, response);
+            return true;
+        }
+        return false;
     }
     nonvirtual void Handle_OPTIONS_ (Message* message) const
     {

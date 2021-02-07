@@ -227,7 +227,9 @@ void Response::Flush ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"bytes.size: %lld", static_cast<long long> (fBodyBytes_.size ()));
 #endif
-        fUseOutStream_.Write (Containers::Start (fBodyBytes_), Containers::End (fBodyBytes_));
+        if (not fHeadMode_) {
+            fUseOutStream_.Write (Containers::Start (fBodyBytes_), Containers::End (fBodyBytes_));
+        }
         fBodyBytes_.clear ();
     }
     if (fState_ != State::eCompleted) {

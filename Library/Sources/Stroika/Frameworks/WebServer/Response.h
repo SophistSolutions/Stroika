@@ -174,6 +174,14 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
+         */
+        nonvirtual void EnterHeadMode ()
+        {
+            fHeadMode_ = true;
+        }
+
+    public:
+        /**
          * This begins sending the parts of the message which have already been accumulated to the client.
          * Its illegal to modify anything in the headers etc - after this - but additional writes can happen
          * if we are NOT in automatic-include-Content-Length mode (NYI).
@@ -298,7 +306,7 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual String ToString () const;
 
     private:
-        InternetMediaType AdjustContentTypeForCodePageIfNeeded_ (const InternetMediaType& ct) const;
+        nonvirtual InternetMediaType AdjustContentTypeForCodePageIfNeeded_ (const InternetMediaType& ct) const;
 
     private:
         IO::Network::Socket::Ptr                 fSocket_;
@@ -312,6 +320,7 @@ namespace Stroika::Frameworks::WebServer {
         vector<byte>                             fBodyBytes_;
         ContentSizePolicy                        fContentSizePolicy_;
         uint64_t                                 fContentSize_; // only  maintained for some fContentSizePolicy_ values
+        bool                                     fHeadMode_{false};
     };
 
 }
