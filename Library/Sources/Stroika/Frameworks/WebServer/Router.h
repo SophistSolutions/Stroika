@@ -50,6 +50,9 @@ namespace Stroika::Frameworks::WebServer {
     class Router;
 
     /**
+     * 
+     * &&& HEAD and OPTIONS can have routes to be overridden. But by default they are handled automatically by the router.
+     * 
      *      @todo - we probably want to add ability to generically parse out arguments from url, and include them to handler (as rails does - handy for ID in REST)
      *
      *      @todo need more generic matchign to fit in (maybe optional matcher that takes URL?, or even full Request).
@@ -64,6 +67,10 @@ namespace Stroika::Frameworks::WebServer {
      *       @todo NEED to support NESTED Routes (or aggregated).
      *               Key is need stuff like 'default error handling' - and just to somehow inherit/copy that.
      *
+     * 
+     * 
+     *  &&& TODO DESCRIBE THREADSAFTY BETTER BUT I THINK THIS OBJECT IS IMMUTABLE (EXCEPT FOR CASE OF COPY/OVERWRITE)
+     * 
      * \note - this must be EXTERNALLY synchronized - except that all read only methods are safe from any thread,
      *         because these are usually stored in a strucutre where they wont be updated.
      *         Just be sure the HANLDER argument is safe when called from multiple threads at the same time!
@@ -90,19 +97,20 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual bool Matches (const String& method, const String& hostRelPath, const Request& request, Sequence<String>* pathRegExpMatches = nullptr) const;
 
     private:
-        optional<pair<RegularExpression,RegularExpression>>               fVerbAndPathMatch_;
+        optional<pair<RegularExpression, RegularExpression>>                                               fVerbAndPathMatch_;
         optional<function<bool (const String& method, const String& hostRelPath, const Request& request)>> fRequestMatch_;
-        RequestHandler                            fHandler_;
+        RequestHandler                                                                                     fHandler_;
 
     private:
         friend class Router;
     };
 
     /**
+    * &&& @TODO REVISIT - I THINK STANDARDC++ THREAD SUPP BUT IMMUTABLE (except for assign/copy)
      *  THREAD: must be externally synchronized, but all const methods are safe from any thread.
      * 
-     *  If there is not an EXPLICIT route matched for OPTIONS, the OPTIONS header will be managed
-     *  internally by the Router automatically.
+     *  If there is not an EXPLICIT route matched for HEAD, or OPTIONS, the those methods will be implemented
+     *  automatically by the Router.
      */
     class Router : public Interceptor {
     private:
@@ -111,7 +119,13 @@ namespace Stroika::Frameworks::WebServer {
     public:
         /**
          */
+        Router ()              = delete;
+        Router (const Router&) = default;
+        Router (Router&&)      = default;
         Router (const Sequence<Route>& routes, const CORSOptions& corsOptions);
+
+    public:
+        nonvirtual Router& operator=(Router&) = default;
 
     public:
         /**
