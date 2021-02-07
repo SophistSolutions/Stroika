@@ -91,12 +91,12 @@ namespace Stroika::Foundation::Common {
     template <typename COMPARER>
     constexpr bool IsEqualsComparer ()
     {
-        return ExtractComparisonTraits<COMPARER>::kComparisonRelationKind == ComparisonRelationType::eEquals;
+        return ExtractComparisonTraits<std::decay_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eEquals;
     }
     template <typename COMPARER>
     constexpr bool IsEqualsComparer (const COMPARER&)
     {
-        return ExtractComparisonTraits<COMPARER>::kComparisonRelationKind == ComparisonRelationType::eEquals;
+        return IsEqualsComparer<COMPARER> ();
     }
 
     /*
@@ -107,12 +107,12 @@ namespace Stroika::Foundation::Common {
     template <typename COMPARER>
     constexpr bool IsStrictInOrderComparer ()
     {
-        return ExtractComparisonTraits<COMPARER>::kComparisonRelationKind == ComparisonRelationType::eStrictInOrder;
+        return ExtractComparisonTraits<std::decay_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eStrictInOrder;
     }
     template <typename COMPARER>
     constexpr bool IsStrictInOrderComparer (const COMPARER&)
     {
-        return ExtractComparisonTraits<COMPARER>::kComparisonRelationKind == ComparisonRelationType::eStrictInOrder;
+        return IsStrictInOrderComparer<COMPARER> ();
     }
 
     /*

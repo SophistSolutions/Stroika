@@ -87,10 +87,7 @@ struct Router::Rep_ : Interceptor::_IRep {
             m = nullopt;
         }
         if (m) {
-            // @todo understand why CTOR directly doesnt work - but using temporary DOES WORK
-            // SEE https://stroika.atlassian.net/browse/STK-720 for FIX
-            //m = Set<String>{kHeaderNameEqualsComparer, *m};
-            m = Set<String>{decltype (kHeaderNameEqualsComparer) (kHeaderNameEqualsComparer), *m};
+            m = Set<String>{kHeaderNameEqualsComparer, *m};
         }
         return m;
     }
