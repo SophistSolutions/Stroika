@@ -30,18 +30,20 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         constexpr wstring_view kPost    = L"POST"sv;
         constexpr wstring_view kDelete  = L"DELETE"sv;
         constexpr wstring_view kOptions = L"OPTIONS"sv;
+        constexpr wstring_view kHead    = L"HEAD"sv;
     }
 
     namespace MethodsRegEx {
         using namespace Characters;
-        inline const RegularExpression kANY       = L".*"_RegEx; /*RegularExpression::kAny*/
+        // DIDNT DEFINE kANY nor kOptions because typically a mistake for users to be using them... Better to allow the system to handle autoamtically
+        //inline const RegularExpression kANY       = L".*"_RegEx; /*RegularExpression::kAny*/
         inline const RegularExpression kGet       = L"GET"_RegEx;
         inline const RegularExpression kPut       = L"PUT"_RegEx;
         inline const RegularExpression kPatch     = L"PATCH"_RegEx;
         inline const RegularExpression kPost      = L"POST"_RegEx;
         inline const RegularExpression kPostOrPut = L"PUT|POST"_RegEx;
         inline const RegularExpression kDelete    = L"DELETE"_RegEx;
-        inline const RegularExpression kOptions   = L"OPTIONS"_RegEx;
+        //inline const RegularExpression kOptions   = L"OPTIONS"_RegEx;
     }
 
 }
