@@ -159,7 +159,11 @@ struct Router::Rep_ : Interceptor::_IRep {
             response.UpdateHeader ([&] (auto* header) {
                 RequireNotNull (header);
                 header->accessControlAllowOrigin = allowedOrigin;
-                // @todo see https://fetch.spec.whatwg.org/#cors-protocol-and-http-caches to see if we need to add Vary response
+                if (fAllowedOrigins_) {
+                    // see https://fetch.spec.whatwg.org/#cors-protocol-and-http-caches to see why we need to add Vary response
+                    // if response depends on origin (so not '*')
+                    header->vary = Memory::NullCoalesce (header->vary ()) + String{HTTP::HeaderName::kOrigin};
+                }
             });
         }
     }

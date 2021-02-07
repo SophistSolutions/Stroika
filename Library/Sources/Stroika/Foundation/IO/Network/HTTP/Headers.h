@@ -30,6 +30,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     using Common::KeyValuePair;
     using Containers::Collection;
     using Containers::Mapping;
+    using Containers::Set;
     using DataExchange::InternetMediaType;
     using Traversal::Iterable;
 
@@ -67,6 +68,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         constexpr wstring_view kSOAPAction                    = L"SOAPAction"sv;
         constexpr wstring_view kTransferEncoding              = L"Transfer-Encoding"sv;
         constexpr wstring_view kUserAgent                     = L"User-Agent"sv;
+        constexpr wstring_view kVary                          = L"Vary"sv;
 
     }
 
@@ -232,6 +234,13 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
+         *  @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Vary
+         *  This is a response-only Header.
+         */
+        Common::Property<optional<Containers::Set<String>>> vary;
+
+    public:
+        /**
          *  Returns the combined set of headers (list Key:Value pairs). Note this may not be returned in
          *  the same order and exactly losslessly identically to what was passed in.
          * 
@@ -272,6 +281,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         optional<HTTP::ETag>                     fETag_;
         optional<String>                         fHost_;
         optional<IfNoneMatch>                    fIfNoneMatch_;
+        optional<Containers::Set<String>>        fVary_;
 
 #if __cpp_impl_three_way_comparison < 201907
     private:

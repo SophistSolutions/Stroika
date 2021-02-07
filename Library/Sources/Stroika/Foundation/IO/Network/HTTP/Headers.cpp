@@ -200,6 +200,16 @@ Headers::Headers ()
               Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::server);
               thisObj->SetExtras_ (HeaderName::kServer, server);
           }}
+    , vary{
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional <Containers::Set<String>> {
+              const Headers*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::vary);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              return thisObj->fVary_;
+          },
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const optional<Containers::Set<String>>& vary) {
+              Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::vary);
+              thisObj->fVary_  = vary;
+          }}
 {
 }
 
@@ -215,6 +225,7 @@ Headers::Headers (const Headers& src)
     fETag_          = src.fETag_;
     fHost_          = src.fHost_;
     fIfNoneMatch_   = src.fIfNoneMatch_;
+    fVary_          = src.fVary_;
 }
 
 Headers::Headers (Headers&& src)
@@ -229,6 +240,7 @@ Headers::Headers (Headers&& src)
     fETag_          = move (src.fETag_);
     fHost_          = move (src.fHost_);
     fIfNoneMatch_   = move (src.fIfNoneMatch_);
+    fVary_          = move (src.fVary_);
 }
 
 Headers::Headers (const Iterable<KeyValuePair<String, String>>& src)
@@ -248,6 +260,7 @@ Headers& Headers::operator= (Headers&& rhs)
     fETag_          = move (rhs.fETag_);
     fHost_          = move (rhs.fHost_);
     fIfNoneMatch_   = move (rhs.fIfNoneMatch_);
+    fVary_          = move (rhs.fVary_);
     return *this;
 }
 
@@ -271,6 +284,9 @@ optional<String> Headers::LookupOne (const String& name) const
     }
     else if (kHeaderNameEqualsComparer (name, HeaderName::kIfNoneMatch)) {
         return fIfNoneMatch_ ? fIfNoneMatch_->As<String> () : optional<String>{};
+    }
+    else if (kHeaderNameEqualsComparer (name, HeaderName::kVary)) {
+        return fVary_ ? String::Join (*fVary_) : optional<String>{};
     }
     else {
         // should switch to new non-existent class Assocation here - and use that...more efficeint -
@@ -325,6 +341,10 @@ bool Headers::SetBuiltin_ (const String& headerName, const optional<String>& val
         fIfNoneMatch_ = value ? IfNoneMatch::Parse (*value) : optional<IfNoneMatch>{};
         return true;
     }
+    else if (kHeaderNameEqualsComparer (headerName, HeaderName::kVary)) {
+        fVary_ = value ? Containers::Set<String>{value->Tokenize ({','})} : optional<Containers::Set<String>>{};
+        return true;
+    }
     return false;
 }
 
@@ -370,6 +390,9 @@ Collection<KeyValuePair<String, String>> Headers::As () const
     }
     if (fIfNoneMatch_) {
         results.Add (KeyValuePair<String, String>{HeaderName::kIfNoneMatch, fIfNoneMatch_->As<String> ()});
+    }
+    if (fVary_) {
+        results.Add (KeyValuePair<String, String>{HeaderName::kVary, String::Join (*fVary_)});
     }
     return results;
 }
