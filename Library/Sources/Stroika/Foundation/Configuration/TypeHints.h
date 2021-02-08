@@ -6,6 +6,8 @@
 
 #include <type_traits>
 
+#include "Common.h"
+
 /**
  *  \file
  *
