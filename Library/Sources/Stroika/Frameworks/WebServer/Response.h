@@ -25,15 +25,14 @@
 #include "../../Foundation/Streams/OutputStream.h"
 
 /*
+ *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
+ *
  * TODO:
  *      @todo   REDO THE HTTPRESPONSE USING A BINARY OUTPUT STREAM.
  *              INTERNALLY - based on code page - construct a TEXTOUTPUTSTREAM wrapping that binary output stream!!!
  *
  *      @todo   Have output CODEPAGE param - used for all unincode-string writes. Create Stream wrapper than does the downshuft
  *              to right codepage.
- *
- *      @todo   Need a clear policy about threading / thread safety. PROBABLY just PROTECT all our APIs. But if not - detect unsafe
- *              usage.
  *
  *      @todo   eExact is UNTESTED, and should have CHECKING code - so if a user writes a different amount, we detect and assert out.
  *              But that can be deferered because it probably works fine for the the case where its used properly.
@@ -54,6 +53,8 @@ namespace Stroika::Frameworks::WebServer {
 
     /*
      * As of yet to specify FLUSH semantics - when we flush... Probably need options (ctor/config)
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     class Response : private Debug::AssertExternallySynchronizedLock {
     public:
@@ -110,9 +111,6 @@ namespace Stroika::Frameworks::WebServer {
          *  Use UpdateHeader() to mdofiy teh contenttype field directly.
          */
         nonvirtual void    SetContentType (const InternetMediaType& contentType);
-
-    public:
-        [[deprecated ("Since Stroika 2.1b10 - use UpdateHeader()")]] InternetMediaType GetContentType () const;
 
     public:
         /*
@@ -174,6 +172,7 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
+         *  This cannot be reversed, but puts the response into a mode where it won't emit the body of the response.
          */
         nonvirtual void EnterHeadMode ();
 
@@ -261,28 +260,6 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual void SetStatus (Status newStatus, const String& overrideReason = wstring{});
 
     public:
-        [[deprecated ("Since Stroika 2.1b10 - use UpdateHeader")]] void AddHeader (const String& headerName, const String& value);
-
-    public:
-        /*
-         *  For headers whose value is a comma separated list (e.g. HTTP::HeaderName::kAccessControlAllowHeaders), 
-         *  append the given value, taking care of commas as needed.
-         *
-         *  Get the given header, and if non-empty, append ",". Either way append value, and then set the header named by 'headerName' to the resulting value.
-         */
-        nonvirtual void AppendToCommaSeperatedHeader (const String& headerName, const String& value);
-
-    public:
-        /**
-         */
-        nonvirtual void ClearHeader (const String& headerName);
-
-    public:
-        /**
-         */
-        nonvirtual void ClearHeaders ();
-
-    public:
         /**
          *  \brief return the set of explicitly specified headers.
          *
@@ -291,16 +268,21 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual IO::Network::HTTP::Headers GetHeaders () const;
 
     public:
-        [[deprecated ("Since 2.1b10, use GetHeaders() directly")]] IO::Network::HTTP::Headers GetEffectiveHeaders () const
-        {
-            return GetHeaders ();
-        }
-
-    public:
         /**
          *  @see Characters::ToString ();
          */
         nonvirtual String ToString () const;
+
+    public:
+        [[deprecated ("Since Stroika 2.1b10 - use UpdateHeader()")]] InternetMediaType GetContentType () const;
+        [[deprecated ("Since Stroika 2.1b10 - use UpdateHeader")]] void                       AddHeader (const String& headerName, const String& value);
+        [[deprecated ("Since Stroika 2.1b10 - use UpdateHeaders directly")]] void             AppendToCommaSeperatedHeader (const String& headerName, const String& value);
+        [[deprecated ("Since Stroika 2.1b10 - use UpdateHeaders directly")]] nonvirtual void  ClearHeader (const String& headerName);
+        [[deprecated ("Since Stroika 2.1b10 - use UpdateHeaders directly")]] void             ClearHeaders ();
+        [[deprecated ("Since 2.1b10, use GetHeaders() directly")]] IO::Network::HTTP::Headers GetEffectiveHeaders () const
+        {
+            return GetHeaders ();
+        }
 
     private:
         nonvirtual InternetMediaType AdjustContentTypeForCodePageIfNeeded_ (const InternetMediaType& ct) const;

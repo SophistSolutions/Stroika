@@ -14,7 +14,7 @@
 
 /*
  *
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
  */
@@ -26,7 +26,7 @@ namespace Stroika::Frameworks::WebServer {
     using IO::Network::URI;
 
     /**
-     *  For now assume externally sycnhronized
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     class Message : private Debug::AssertExternallySynchronizedLock {
     public:

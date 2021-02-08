@@ -18,12 +18,8 @@
 #include "../../Foundation/IO/Network/HTTP/Headers.h"
 #include "../../Foundation/Streams/InputStream.h"
 
-/*
- * TODO:
- *      @todo   Redo fHeaders as Stroika Association (not Mapping, cuz things like Set-Cookie headers can appear more than once).
- *
- *      @todo   Think out if these should be Copy By Value or reference, and about thread safety. For now avoid by saying not
- *              copyable, but still mus tthink out thread safety
+/**
+ *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
  */
 
 namespace Stroika::Frameworks::WebServer {
@@ -39,10 +35,12 @@ namespace Stroika::Frameworks::WebServer {
      *  Maybe associated TextStream, and maybe readline method goes here
      *  Quicky impl. Need to improve this significantly. Probably/possibly hide the fInptuStream and other public
      *
-     *  For now assume externally sycnhonized
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     class Request : private Debug::AssertExternallySynchronizedLock {
     public:
+        /**
+         */
         Request ()               = delete;
         Request (const Request&) = delete;
         Request (Request&&)      = default;
@@ -147,14 +145,10 @@ namespace Stroika::Frameworks::WebServer {
 
     private:
         Streams::InputStream<byte>::Ptr fInputStream_;
-
-    private:
         String                      fHTTPVersion_;
         String                      fMethod_;
         IO::Network::URI            fURL_;
         IO::Network::HTTP::Headers  fHeaders_;
-
-    private:
         Streams::InputStream<byte>::Ptr fBodyInputStream_;
         optional<Memory::BLOB>          fBody_;
     };

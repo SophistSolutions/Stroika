@@ -241,10 +241,10 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 
             // Handle using interceptor chain - this is the guts of the high level handling
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"Handing request %s to interceptor chain", Characters::ToString (GetRequest ()).c_str ());
+        DbgTrace (L"Handing request %s to interceptor chain", Characters::ToString (request ()).c_str ());
 #endif
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-        WriteLogConnectionMsg_ (Characters::Format (L"Handing request %s to interceptor chain", Characters::ToString (GetRequest ()).c_str ()));
+        WriteLogConnectionMsg_ (Characters::Format (L"Handing request %s to interceptor chain", Characters::ToString (request ()).c_str ()));
 #endif
         try {
             fInterceptorChain_.HandleMessage (fMessage_.get ());
@@ -310,7 +310,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
                 WriteLogConnectionMsg_ (L"msg is keepalive, and have content length, so making sure we read all of request body");
 #endif
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"Assuring all data read; REQ=%s", Characters::ToString (GetRequest ()).c_str ());
+                DbgTrace (L"Assuring all data read; REQ=%s", Characters::ToString (request ()).c_str ());
 #endif
                 // @todo - this can be more efficient in the rare case we ignore the body - but thats rare enough to not matter mcuh
                 (void)fMessage_->GetRequestBody ();

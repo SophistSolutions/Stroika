@@ -364,7 +364,7 @@ Collection<String> Headers::LookupAll (const String& name) const
     else if (kHeaderNameEqualsComparer (name, HeaderName::kSetCookie)) {
         // we can only return the first setCookie here...
         if (fSetCookieList_.has_value ()) {
-            return fSetCookieList_->cookieDetails ().Select<String> ([] (const auto& i) { return i.Encode ();  });
+            return fSetCookieList_->cookieDetails ().Select<String> ([] (const auto& i) { return i.Encode (); });
         }
         return Collection<String>{};
     }
