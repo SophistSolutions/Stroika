@@ -187,3 +187,60 @@ Cookie Cookie::Decode (const String& src)
 {
     return Decode (TextReader::New (src));
 }
+
+/*
+ ********************************************************************************
+ ***************************** HTTP::CookieList *********************************
+ ********************************************************************************
+ */
+CookieList::CookieList ()
+    : cookies{
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Mapping<String, String> {
+              const CookieList* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &CookieList::cookies);
+              return thisObj->fCookieDetails_.As<Mapping<String, String>> ();
+          },
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const Mapping<String, String>& basicCookies) {
+              CookieList* thisObj      = qStroika_Foundation_Common_Property_OuterObjPtr (property, &CookieList::cookies);
+              thisObj->fCookieDetails_ = basicCookies.Select<Cookie> ([] (auto i) { return Cookie{i.fKey, i.fValue}; });
+          }}
+    , cookieDetails{
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Collection<Cookie> {
+              const CookieList* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &CookieList::cookieDetails);
+              return thisObj->fCookieDetails_;
+          },
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const Collection<Cookie>& cookies) {
+              CookieList* thisObj      = qStroika_Foundation_Common_Property_OuterObjPtr (property, &CookieList::cookieDetails);
+              thisObj->fCookieDetails_ = cookies;
+          }}
+{
+}
+
+CookieList::CookieList (const CookieList& src)
+    : CookieList{}
+{
+    fCookieDetails_ = src.fCookieDetails_;
+}
+
+CookieList::CookieList (CookieList&& src)
+    : CookieList{}
+{
+    fCookieDetails_ = move (src.fCookieDetails_);
+}
+
+CookieList::CookieList (const Mapping<String, String>& basicCookies)
+    : CookieList{}
+{
+    this->cookies = basicCookies;
+}
+
+CookieList::CookieList (const Collection<Cookie>& cookieDetails)
+    : CookieList{}
+{
+    fCookieDetails_ = cookieDetails;
+}
+
+CookieList& CookieList::operator= (const CookieList& rhs)
+{
+    this->fCookieDetails_ = rhs.fCookieDetails_;
+    return *this;
+}

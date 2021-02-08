@@ -9,6 +9,7 @@
 #include "../../../Characters/String.h"
 #include "../../../Characters/ToString.h"
 #include "../../../Common/KeyValuePair.h"
+#include "../../../Common/Property.h"
 #include "../../../Containers/Mapping.h"
 #include "../../../Streams/InputStream.h"
 #include "../../../Time/DateTime.h"
@@ -21,7 +22,9 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     using Characters::Character;
     using Characters::String;
     using Common::KeyValuePair;
+    using Containers::Collection;
     using Containers::Mapping;
+
 
     /**
      *  \brief object representing an HTTP cookie - from https://tools.ietf.org/html/rfc6265
@@ -107,6 +110,37 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  @see Characters::ToString ();
          */
         nonvirtual Characters::String ToString () const;
+    };
+    
+
+    /**
+     *  This corresponds to the value of the Cookie in an HTTP Request header
+     *  @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cookie
+     *  @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
+     */
+    class CookieList {
+    public:
+        CookieList ();
+        CookieList (const CookieList& src);
+        CookieList (CookieList&& src);
+        CookieList (const Mapping<String, String>& basicCookies);
+        CookieList (const Collection<Cookie>& cookieDetails);
+
+    public:
+        nonvirtual CookieList& operator= (const CookieList& rhs);
+
+    public:
+        /**
+         */
+        Common::Property<Mapping<String, String>> cookies;     // key-value-pair, as would appear in HTTP Cookie: header
+
+    public:
+        /**
+         */
+        Common::Property<Collection<Cookie>> cookieDetails; // key-value-pair, as would appear in HTTP Cookie: header
+    
+    private:
+        Collection<Cookie> fCookieDetails_; // redundant representation
     };
 
 }
