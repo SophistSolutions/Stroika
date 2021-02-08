@@ -108,7 +108,7 @@ struct Router::Rep_ : Interceptor::_IRep {
         Sequence<String>         matches;
         optional<RequestHandler> handler = Lookup_ (*m->PeekRequest (), &matches);
         if (handler) {
-            Handle_GET_ (m, matches , *handler);
+            Handle_GET_ (m, matches, *handler);
         }
         else if (m->PeekRequest ()->GetHTTPMethod () == HTTP::Methods::kHead and Handle_HEAD_ (m)) {
             // handled
@@ -203,9 +203,9 @@ struct Router::Rep_ : Interceptor::_IRep {
     }
     nonvirtual bool Handle_HEAD_ (Message* message) const
     {
-        const Request&           request  = *message->PeekRequest ();
-        Response&                response = *message->PeekResponse ();
-        Sequence<String>         matches;
+        const Request&   request  = *message->PeekRequest ();
+        Response&        response = *message->PeekResponse ();
+        Sequence<String> matches;
         if (optional<RequestHandler> handler = Lookup_ (Methods::kGet, ExtractHostRelPath_ (request.GetURL ()), request, &matches)) {
             // do someting to response so 'in HEAD mode' and won't write
             response.EnterHeadMode ();
