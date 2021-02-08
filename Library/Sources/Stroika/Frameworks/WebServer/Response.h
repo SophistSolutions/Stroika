@@ -316,7 +316,6 @@ namespace Stroika::Frameworks::WebServer {
         Characters::CodePage                     fCodePage_;
         vector<byte>                             fBodyBytes_;
         ContentSizePolicy                        fContentSizePolicy_;
-        uint64_t                                 fContentSize_; // only  maintained for some fContentSizePolicy_ values
         bool                                     fHeadMode_{false};
     };
 
