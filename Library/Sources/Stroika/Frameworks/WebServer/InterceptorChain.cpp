@@ -52,7 +52,7 @@ struct InterceptorChain::Rep_ : InterceptorChain::_IRep {
  *********************** WebServer::InterceptorChain ****************************
  ********************************************************************************
  */
-inline InterceptorChain::InterceptorChain (const Sequence<Interceptor>& interceptors)
+InterceptorChain::InterceptorChain (const Sequence<Interceptor>& interceptors)
     : InterceptorChain{make_shared<Rep_> (interceptors)}
 {
 }
@@ -60,11 +60,11 @@ inline InterceptorChain::InterceptorChain (const Sequence<Interceptor>& intercep
 InterceptorChain::InterceptorChain (const shared_ptr<_IRep>& rep)
     : interceptors{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Sequence<Interceptor> {
-              const InterceptorChain* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::location);
+              const InterceptorChain* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &InterceptorChain::interceptors);
               return thisObj->fRep_.cget ().load ()->GetInterceptors ();
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const Sequence<Interceptor>& interceptors) {
-              InterceptorChain* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::location);
+              InterceptorChain* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &InterceptorChain::interceptors);
               auto              rwLock  = thisObj->fRep_.rwget ();
               rwLock.store (rwLock->get ()->SetInterceptors (interceptors));
           }}
@@ -74,19 +74,18 @@ InterceptorChain::InterceptorChain (const shared_ptr<_IRep>& rep)
 
 void InterceptorChain::InterceptorChain::AddBefore (const Interceptor& interceptor2Add, const Interceptor& before)
 {
-    auto rwLock = fRep_.rwget ();
-
+    auto                  rwLock = fRep_.rwget ();
     [[maybe_unused]] bool found{false};
-    Sequence<Interceptor> interceptors = rwLock->get ()->GetInterceptors ();
-    for (size_t i = 0; i < interceptors.size (); ++i) {
-        if (interceptors[i] == before) {
-            interceptors.Insert (i, interceptor2Add);
+    Sequence<Interceptor> newInterceptors = rwLock->get ()->GetInterceptors ();
+    for (size_t i = 0; i < newInterceptors.size (); ++i) {
+        if (newInterceptors[i] == before) {
+            newInterceptors.Insert (i, interceptor2Add);
             found = true;
             break;
         }
     }
     Require (found);
-    rwLock.store (rwLock->get ()->SetInterceptors (interceptors));
+    rwLock.store (rwLock->get ()->SetInterceptors (newInterceptors));
 }
 
 void InterceptorChain::InterceptorChain::AddAfter (const Interceptor& interceptor2Add, const Interceptor& after)
@@ -94,14 +93,14 @@ void InterceptorChain::InterceptorChain::AddAfter (const Interceptor& intercepto
     auto rwLock = fRep_.rwget ();
 
     [[maybe_unused]] bool found{false};
-    Sequence<Interceptor> interceptors = rwLock->get ()->GetInterceptors ();
-    for (size_t i = 0; i < interceptors.size (); ++i) {
-        if (interceptors[i] == after) {
-            interceptors.Insert (i + 1, interceptor2Add);
+    Sequence<Interceptor> newInterceptors = rwLock->get ()->GetInterceptors ();
+    for (size_t i = 0; i < newInterceptors.size (); ++i) {
+        if (newInterceptors[i] == after) {
+            newInterceptors.Insert (i + 1, interceptor2Add);
             found = true;
             break;
         }
     }
     Require (found);
-    rwLock.store (rwLock->get ()->SetInterceptors (interceptors));
+    rwLock.store (rwLock->get ()->SetInterceptors (newInterceptors));
 }

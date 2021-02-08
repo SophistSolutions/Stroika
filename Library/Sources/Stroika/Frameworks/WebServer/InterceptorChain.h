@@ -83,8 +83,8 @@ namespace Stroika::Frameworks::WebServer {
         /**
          */
         InterceptorChain (const Sequence<Interceptor>& interceptors = {});
-        InterceptorChain (const InterceptorChain&) = default;
-        InterceptorChain (InterceptorChain&&)      = default;
+        InterceptorChain (const InterceptorChain& src);
+        InterceptorChain (InterceptorChain&& src);
 
     protected:
         InterceptorChain (const shared_ptr<_IRep>& rep);
@@ -94,15 +94,6 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         Common::Property<Sequence<Interceptor>> interceptors;
-    public:
-        /**
-         */
-        nonvirtual Sequence<Interceptor> GetInterceptors () const;
-
-    public:
-        /**
-         */
-        nonvirtual void SetInterceptors (const Sequence<Interceptor>& interceptors);
 
     public:
         /**
