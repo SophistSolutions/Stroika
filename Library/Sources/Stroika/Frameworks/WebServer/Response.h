@@ -175,10 +175,7 @@ namespace Stroika::Frameworks::WebServer {
     public:
         /**
          */
-        nonvirtual void EnterHeadMode ()
-        {
-            fHeadMode_ = true;
-        }
+        nonvirtual void EnterHeadMode ();
 
     public:
         /**
