@@ -18,6 +18,7 @@
 #include "../URI.h"
 
 #include "CacheControl.h"
+#include "Cookie.h"
 #include "ETag.h"
 #include "IfNoneMatch.h"
 #include "KeepAlive.h"
@@ -52,6 +53,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         constexpr wstring_view kContentLength                 = L"Content-Length"sv;
         constexpr wstring_view kContentType                   = L"Content-Type"sv;
         constexpr wstring_view kConnection                    = L"Connection"sv;
+        constexpr wstring_view kCookie                        = L"Cookie"sv;
         constexpr wstring_view kDate                          = L"Date"sv;
         constexpr wstring_view kETag                          = L"ETag"sv;
         constexpr wstring_view kExpect                        = L"Expect"sv;
@@ -65,6 +67,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         constexpr wstring_view kOrigin                        = L"Origin"sv;
         constexpr wstring_view kReferrer                      = L"Referer"sv; // intentionally spelled this way - misspelled in the HTTP RFC
         constexpr wstring_view kServer                        = L"Server"sv;
+        constexpr wstring_view kSetCookie                     = L"Set-Cookie"sv;
         constexpr wstring_view kSOAPAction                    = L"SOAPAction"sv;
         constexpr wstring_view kTransferEncoding              = L"Transfer-Encoding"sv;
         constexpr wstring_view kUserAgent                     = L"User-Agent"sv;
@@ -185,6 +188,14 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
+         *  @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cookie
+         * 
+         *  if the list is empty, this corresponds to no header presnt
+         */
+        Common::Property<CookieList> cookie;
+
+    public:
+        /**
          *  Property with the optional<ETag> value of the ETag header.
          */
         Common::Property<optional<HTTP::ETag>> ETag;
@@ -234,6 +245,14 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
+         * &&& Encoded in HTTP as a SEQUENCE of separate HTTP Headers;
+         * empty list amounts to no headers present
+         *  @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
+         */
+        Common::Property<CookieList> setCookie;
+
+    public:
+        /**
          *  @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Vary
          *  This is a response-only Header.
          */
@@ -278,9 +297,11 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         optional<CacheControl>                   fCacheControl_;
         optional<uint64_t>                       fContentLength_;
         optional<InternetMediaType>              fContentType_;
+        optional<CookieList>                     fCookieList_;      // store optional cuz often missing, and faster init
         optional<HTTP::ETag>                     fETag_;
         optional<String>                         fHost_;
         optional<IfNoneMatch>                    fIfNoneMatch_;
+        optional<CookieList>                     fSetCookieList_;   // store optional cuz often missing, and faster init
         optional<Containers::Set<String>>        fVary_;
 
 #if __cpp_impl_three_way_comparison < 201907

@@ -139,6 +139,20 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          */
         Common::Property<Collection<Cookie>> cookieDetails; // key-value-pair, as would appear in HTTP Cookie: header
     
+    public:
+        /**
+         *  \brief render as a string suitable for a cookie header
+         *      @see https://tools.ietf.org/html/rfc6265#section-4.2.1
+         */
+        nonvirtual String EncodeForCookieHeader () const;
+
+    public:
+        /**
+         *  Decode the string as a CookieList. The input format can be the value of a Cookie: HTTP header (which can produce multiple cooklies)
+         *  or a Set-Cookie: HTTP header (in which case it produces a single entry cookie list, possibly containing attributes)
+         */
+        static CookieList Decode (const String& cookieValueArg);
+
     private:
         Collection<Cookie> fCookieDetails_; // redundant representation
     };

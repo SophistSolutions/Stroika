@@ -180,7 +180,7 @@ Cookie Cookie::Decode (Streams::InputStream<Character>::Ptr src)
             attributes.Add (k2, val2);
         }
     }
-    return Cookie (key, value, attributes);
+    return Cookie{key, value, attributes};
 }
 
 Cookie Cookie::Decode (const String& src)
@@ -243,4 +243,18 @@ CookieList& CookieList::operator= (const CookieList& rhs)
 {
     this->fCookieDetails_ = rhs.fCookieDetails_;
     return *this;
+}
+
+String CookieList::EncodeForCookieHeader () const
+{
+    return String::Join (fCookieDetails_.Select<String> ([] (const auto& i) { return i.fKey + L"=" + i.fValue; }), L"; "sv);
+}
+
+CookieList CookieList::Decode (const String& cookieValueArg)
+{
+    Collection<Cookie> results;
+    for (auto keyValuePair : cookieValueArg.Tokenize ({';'})) {
+        results += Cookie::Decode (keyValuePair);
+    }
+    return results;
 }

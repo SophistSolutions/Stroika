@@ -114,6 +114,17 @@ Headers::Headers ()
               lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
               thisObj->fContentType_ = contentType;
           }}
+    , cookie{
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+              const Headers*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::cookie);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              return Memory::NullCoalesce (thisObj->fCookieList_);
+          },
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& cookies) {
+              Headers*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::cookie);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              thisObj->fCookieList_ = cookies.cookieDetails ().empty () ? optional<CookieList>{} : cookies;
+          }}
     , ETag{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
               const Headers*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::ETag);
@@ -200,6 +211,17 @@ Headers::Headers ()
               Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::server);
               thisObj->SetExtras_ (HeaderName::kServer, server);
           }}
+    , setCookie{
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+              const Headers*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::setCookie);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              return Memory::NullCoalesce (thisObj->fSetCookieList_);
+          },
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& cookies) {
+              Headers*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::setCookie);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              thisObj->fSetCookieList_ = cookies.cookieDetails ().empty () ? optional<CookieList>{} : cookies;
+          }}
     , vary{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<Containers::Set<String>> {
               const Headers*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::vary);
@@ -222,9 +244,11 @@ Headers::Headers (const Headers& src)
     fCacheControl_  = src.fCacheControl_;
     fContentLength_ = src.fContentLength_;
     fContentType_   = src.fContentType_;
+    fCookieList_    = src.fCookieList_;
     fETag_          = src.fETag_;
     fHost_          = src.fHost_;
     fIfNoneMatch_   = src.fIfNoneMatch_;
+    fSetCookieList_ = src.fSetCookieList_;
     fVary_          = src.fVary_;
 }
 
@@ -237,9 +261,11 @@ Headers::Headers (Headers&& src)
     fCacheControl_  = move (src.fCacheControl_);
     fContentLength_ = move (src.fContentLength_);
     fContentType_   = move (src.fContentType_);
+    fCookieList_    = move (src.fCookieList_);
     fETag_          = move (src.fETag_);
     fHost_          = move (src.fHost_);
     fIfNoneMatch_   = move (src.fIfNoneMatch_);
+    fSetCookieList_ = move (src.fSetCookieList_);
     fVary_          = move (src.fVary_);
 }
 
@@ -257,9 +283,11 @@ Headers& Headers::operator= (Headers&& rhs)
     fCacheControl_  = move (rhs.fCacheControl_);
     fContentLength_ = move (rhs.fContentLength_);
     fContentType_   = move (rhs.fContentType_);
+    fCookieList_    = move (rhs.fCookieList_);
     fETag_          = move (rhs.fETag_);
     fHost_          = move (rhs.fHost_);
     fIfNoneMatch_   = move (rhs.fIfNoneMatch_);
+    fSetCookieList_ = move (rhs.fSetCookieList_);
     fVary_          = move (rhs.fVary_);
     return *this;
 }
@@ -276,6 +304,9 @@ optional<String> Headers::LookupOne (const String& name) const
     else if (kHeaderNameEqualsComparer (name, HeaderName::kContentType)) {
         return fContentType_ ? fContentType_->As<String> () : optional<String>{};
     }
+    else if (kHeaderNameEqualsComparer (name, HeaderName::kCookie)) {
+        return fCookieList_ ? fCookieList_->EncodeForCookieHeader () : optional<String>{};
+    }
     else if (kHeaderNameEqualsComparer (name, HeaderName::kETag)) {
         return fETag_ ? fETag_->As<String> () : optional<String>{};
     }
@@ -284,6 +315,15 @@ optional<String> Headers::LookupOne (const String& name) const
     }
     else if (kHeaderNameEqualsComparer (name, HeaderName::kIfNoneMatch)) {
         return fIfNoneMatch_ ? fIfNoneMatch_->As<String> () : optional<String>{};
+    }
+    else if (kHeaderNameEqualsComparer (name, HeaderName::kSetCookie)) {
+        // we can only return the first setCookie here...
+        if (fSetCookieList_.has_value ()) {
+            if (auto i = fSetCookieList_->cookieDetails ().First ()) {
+                return i->Encode ();
+            }
+        }
+        return optional<String>{};
     }
     else if (kHeaderNameEqualsComparer (name, HeaderName::kVary)) {
         return fVary_ ? String::Join (*fVary_) : optional<String>{};
@@ -329,6 +369,9 @@ bool Headers::SetBuiltin_ (const String& headerName, const optional<String>& val
         fContentType_ = value ? InternetMediaType{*value} : optional<InternetMediaType>{};
         return true;
     }
+    else if (kHeaderNameEqualsComparer (headerName, HeaderName::kCookie)) {
+        fCookieList_ = value ? CookieList::Decode (*value) : optional<CookieList>{};
+    }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kETag)) {
         fETag_ = value ? ETag::Parse (*value) : optional<HTTP::ETag>{};
         return true;
@@ -339,6 +382,10 @@ bool Headers::SetBuiltin_ (const String& headerName, const optional<String>& val
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kIfNoneMatch)) {
         fIfNoneMatch_ = value ? IfNoneMatch::Parse (*value) : optional<IfNoneMatch>{};
+        return true;
+    }
+    else if (kHeaderNameEqualsComparer (headerName, HeaderName::kSetCookie)) {
+        fSetCookieList_ = value ? CookieList::Decode (*value) : optional<CookieList>{};
         return true;
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kVary)) {
@@ -385,11 +432,20 @@ Collection<KeyValuePair<String, String>> Headers::As () const
     if (fContentType_) {
         results.Add (KeyValuePair<String, String>{HeaderName::kContentType, fContentType_->As<String> ()});
     }
+    if (fCookieList_) {
+        results.Add (KeyValuePair<String, String>{HeaderName::kCookie, fCookieList_->EncodeForCookieHeader ()});
+    }
     if (fETag_) {
         results.Add (KeyValuePair<String, String>{HeaderName::kETag, fETag_->As<String> ()});
     }
     if (fIfNoneMatch_) {
         results.Add (KeyValuePair<String, String>{HeaderName::kIfNoneMatch, fIfNoneMatch_->As<String> ()});
+    }
+    if (fSetCookieList_) {
+        // fSetCookieList_ produces multiple set-headers
+        for (auto i : fSetCookieList_->cookieDetails ()) {
+            results.Add (KeyValuePair<String, String>{HeaderName::kSetCookie, i.Encode ()});
+        }
     }
     if (fVary_) {
         results.Add (KeyValuePair<String, String>{HeaderName::kVary, String::Join (*fVary_)});
