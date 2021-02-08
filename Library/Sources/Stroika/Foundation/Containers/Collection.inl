@@ -148,7 +148,7 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    template <typename CONTAINER_OF_ADDABLE, typename EQUALS_COMPARER>
+    template <typename CONTAINER_OF_ADDABLE, typename EQUALS_COMPARER, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
     inline void Collection<T>::RemoveAll (const CONTAINER_OF_ADDABLE& c, const EQUALS_COMPARER& equalsComparer)
     {
         if (static_cast<const void*> (this) == static_cast<const void*> (addressof (c))) {
