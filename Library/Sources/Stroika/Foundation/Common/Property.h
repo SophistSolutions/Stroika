@@ -6,6 +6,9 @@
 
 #include "../StroikaPreComp.h"
 
+#include <functional>
+
+#include "../Configuration/Common.h"
 #include "../Configuration/TypeHints.h"
 
 /**
