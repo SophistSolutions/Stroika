@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Execution {
             ANNOTATE_RWLOCK_CREATE (&fMutex_);
         }
         else {
-            //VALGRIND_HG_MUTEX_INIT_POST (&fMutex_, TRAITS::kIsRecursiveMutex);
+            //VALGRIND_HG_MUTEX_INIT_POST (&fMutex_, TRAITS::kIsRecursiveReadMutex);
         }
 #endif
     }
@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Execution {
             ANNOTATE_RWLOCK_CREATE (&fMutex_);
         }
         else {
-            //VALGRIND_HG_MUTEX_INIT_POST (&fMutex_, TRAITS::kIsRecursiveMutex);
+            //VALGRIND_HG_MUTEX_INIT_POST (&fMutex_, TRAITS::kIsRecursiveReadMutex);
         }
 #endif
     }
@@ -96,20 +96,20 @@ namespace Stroika::Foundation::Execution {
         return *this;
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex>*>
+    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex>*>
     inline Synchronized<T, TRAITS>::operator T () const
     {
         return load ();
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex>*>
+    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex>*>
     inline T Synchronized<T, TRAITS>::load () const
     {
         ReadLockType_ fromCritSec{fMutex_};
         return fProtectedValue_;
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex>*>
+    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex>*>
     inline void Synchronized<T, TRAITS>::store (const T& v)
     {
         [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
@@ -119,7 +119,7 @@ namespace Stroika::Foundation::Execution {
         fProtectedValue_ = v;
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex>*>
+    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex>*>
     inline void Synchronized<T, TRAITS>::store (T&& v)
     {
         [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
@@ -144,7 +144,7 @@ namespace Stroika::Foundation::Execution {
         return ReadableReference (this);
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex and TRAITS::kSupportSharedLocks>*>
+    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex and TRAITS::kSupportSharedLocks>*>
     inline void Synchronized<T, TRAITS>::lock_shared () const
     {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -154,7 +154,7 @@ namespace Stroika::Foundation::Execution {
         NoteLockStateChanged_ (L"Locked Shared");
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex and TRAITS::kSupportSharedLocks>*>
+    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex and TRAITS::kSupportSharedLocks>*>
     inline void Synchronized<T, TRAITS>::unlock_shared () const
     {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -164,7 +164,7 @@ namespace Stroika::Foundation::Execution {
         NoteLockStateChanged_ (L"Unlocked Shared");
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex>*>
+    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex>*>
     inline void Synchronized<T, TRAITS>::lock () const
     {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -175,7 +175,7 @@ namespace Stroika::Foundation::Execution {
         fWriteLockCount_++;
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex>*>
+    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex>*>
     inline bool Synchronized<T, TRAITS>::try_lock () const
     {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -189,7 +189,7 @@ namespace Stroika::Foundation::Execution {
         return result;
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex>*>
+    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex>*>
     inline void Synchronized<T, TRAITS>::unlock () const
     {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -200,27 +200,27 @@ namespace Stroika::Foundation::Execution {
     }
 #if __cpp_impl_three_way_comparison >= 201907
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex>*>
+    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex>*>
     inline bool Synchronized<T, TRAITS>::operator== (const Synchronized& rhs) const
     {
         return load () == rhs.load ();
     }
 #if !qCompilerAndStdLib_TemplateEqualsCompareOverload_Buggy
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex>*>
+    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex>*>
     inline bool Synchronized<T, TRAITS>::operator== (const T& rhs) const
     {
         return load () == rhs;
     }
 #endif
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex>*>
+    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex>*>
     inline auto Synchronized<T, TRAITS>::operator<=> (const Synchronized& rhs) const
     {
         return load () <=> rhs.load ();
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex>*>
+    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex>*>
     inline auto Synchronized<T, TRAITS>::operator<=> (const T& rhs) const
     {
         return load () <=> rhs;

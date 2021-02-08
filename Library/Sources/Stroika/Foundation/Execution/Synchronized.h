@@ -127,7 +127,12 @@ namespace Stroika::Foundation::Execution {
         /**
          *  Used internally for assertions that the synchronized object is used safely. If you mean to use differently, specialize
          */
-        static constexpr bool kIsRecursiveMutex = is_same_v<MUTEX, recursive_mutex> or is_same_v<MUTEX, recursive_timed_mutex>;
+        static constexpr bool kIsRecursiveReadMutex = is_same_v<MUTEX, recursive_mutex> or is_same_v<MUTEX, recursive_timed_mutex> or is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, shared_mutex>;
+
+        /**
+         *  Used internally for assertions that the synchronized object is used safely. If you mean to use differently, specialize
+         */
+        static constexpr bool kIsRecursiveLockMutex = is_same_v<MUTEX, recursive_mutex> or is_same_v<MUTEX, recursive_timed_mutex>;
 
         /**
          *  If enabled, fTraceLocksName field available, and if its set, DbgTrace calls on lock/unlock.
@@ -263,7 +268,7 @@ namespace Stroika::Foundation::Execution {
      *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
-     *          (but these are ONLY defined if TRAITS::kIsRecursiveMutex)
+     *          (but these are ONLY defined if TRAITS::kIsRecursiveReadMutex)
      */
     template <typename T, typename TRAITS = Synchronized_Traits<>>
     class Synchronized
@@ -313,7 +318,7 @@ namespace Stroika::Foundation::Execution {
          *          The reason this is only defined for recursive mutexes is so that it can be used in a context where this thread
          *          already has a lock (e.g. called rwget ()).
          */
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveMutex>* = nullptr>
+        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex>* = nullptr>
         nonvirtual operator T () const;
 
     public:
@@ -336,7 +341,7 @@ namespace Stroika::Foundation::Execution {
          *          The reason this is only defined for recursive mutexes is so that it can be used in a context where this thread
          *          already has a lock (e.g. called rwget ()).
          */
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveMutex>* = nullptr>
+        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex>* = nullptr>
         nonvirtual T load () const;
 
     public:
@@ -350,9 +355,9 @@ namespace Stroika::Foundation::Execution {
          *          The reason this is only defined for recursive mutexes is so that it can be used in a context where this thread
          *          already has a lock (e.g. called rwget ()).
          */
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveMutex>* = nullptr>
+        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex>* = nullptr>
         nonvirtual void store (const T& v);
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveMutex>* = nullptr>
+        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex>* = nullptr>
         nonvirtual void store (T&& v);
 
     public:
@@ -379,7 +384,7 @@ namespace Stroika::Foundation::Execution {
          *  Except that this works whether using a shared_mutex or regular mutex. Also - this provides only read-only access
          *  (use rwget for read-write access).
          *
-         *  \note - this creates a lock, so be sure TRAITS::kIsRecursiveMutex if using this in a place where the same thread may have a lock.
+         *  \note - this creates a lock, so be sure TRAITS::kIsRecursiveReadMutex if using this in a place where the same thread may have a lock.
          */
         nonvirtual ReadableReference cget () const;
 
@@ -388,7 +393,7 @@ namespace Stroika::Foundation::Execution {
          *  \brief  get a read-rwite smart pointer to the underlying Synchronized<> object, holding the full lock the whole
          *          time the (often temporary) WritableReference exists.
          *
-         *  \note - this creates a lock, so be sure TRAITS::kIsRecursiveMutex if using this in a place where the same thread may have a lock.
+         *  \note - this creates a lock, so be sure TRAITS::kIsRecursiveLockMutex if using this in a place where the same thread may have a lock.
          */
         nonvirtual WritableReference rwget ();
 
@@ -413,10 +418,10 @@ namespace Stroika::Foundation::Execution {
          *  \note   lock_shared () only works for 'recursive' mutexes which supported 'shared lock'. To avoid the absence of this
          *          feature (say with RWSynchronized) - use rwget () or cget ();
          *
-         *  \note - This is only usable with TRAITS::kIsRecursiveMutex, because there would be no way to access the underlying value
+         *  \note - This is only usable with TRAITS::kIsRecursiveReadMutex, because there would be no way to access the underlying value
          *          otherwise.
          */
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveMutex and TRAITS::kSupportSharedLocks>* = nullptr>
+        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex and TRAITS::kSupportSharedLocks>* = nullptr>
         nonvirtual void lock_shared () const;
 
     public:
@@ -424,10 +429,10 @@ namespace Stroika::Foundation::Execution {
          *  \note   unlock_shared () only works for 'recursive' mutexes which supported 'shared lock'. To avoid the absence of this
          *          feature (say with RWSynchronized) - use rwget () or cget ();
          *
-         *  \note - This is only usable with TRAITS::kIsRecursiveMutex, because there would be no way to access the underlying value
+         *  \note - This is only usable with TRAITS::kIsRecursiveReadMutex, because there would be no way to access the underlying value
          *          otherwise.
          */
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveMutex and TRAITS::kSupportSharedLocks>* = nullptr>
+        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex and TRAITS::kSupportSharedLocks>* = nullptr>
         nonvirtual void unlock_shared () const;
 
     public:
@@ -435,10 +440,10 @@ namespace Stroika::Foundation::Execution {
          *  \note   This works only for 'recursive' mutexes (the default, except for RWSynchronized). To avoid the absence of this
          *          feature (e.g. with RWSynchronized<T>) - use cget (), or rwget ().
          *
-         *  \note - This is only usable with TRAITS::kIsRecursiveMutex, because there would be no way to access the underlying value
+         *  \note - This is only usable with TRAITS::kIsRecursiveLockMutex, because there would be no way to access the underlying value
          *          otherwise.
          */
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveMutex>* = nullptr>
+        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex>* = nullptr>
         nonvirtual void lock () const;
 
     public:
@@ -446,10 +451,10 @@ namespace Stroika::Foundation::Execution {
          *  \note   This works only for 'recursive' mutexes (the default, except for RWSynchronized). To avoid the absence of this
          *          feature (e.g. with RWSynchronized<T>) - use cget (), or rwget ().
          *
-         *  \note - This is only usable with TRAITS::kIsRecursiveMutex, because there would be no way to access the underlying value
+         *  \note - This is only usable with TRAITS::kIsRecursiveLockMutex, because there would be no way to access the underlying value
          *          otherwise.
          */
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveMutex>* = nullptr>
+        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex>* = nullptr>
         nonvirtual bool try_lock () const;
 
     public:
@@ -457,29 +462,29 @@ namespace Stroika::Foundation::Execution {
          *  \note   This works only for 'recursive' mutexes (the default, except for RWSynchronized). To avoid the absence of this
          *          feature (e.g. with RWSynchronized<T>) - use cget (), or rwget ().
          *
-         *  \note - This is only usable with TRAITS::kIsRecursiveMutex, because there would be no way to access the underlying value
+         *  \note - This is only usable with TRAITS::kIsRecursiveLockMutex, because there would be no way to access the underlying value
          *          otherwise.
          */
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveMutex>* = nullptr>
+        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex>* = nullptr>
         nonvirtual void unlock () const;
 
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
          */
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveMutex>* = nullptr>
+        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex>* = nullptr>
         nonvirtual bool operator== (const Synchronized& rhs) const;
 #if !qCompilerAndStdLib_TemplateEqualsCompareOverload_Buggy
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveMutex>* = nullptr>
+        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex>* = nullptr>
         nonvirtual bool operator== (const T& rhs) const;
 #endif
 
     public:
         /**
          */
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveMutex>* = nullptr>
+        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex>* = nullptr>
         nonvirtual auto operator<=> (const Synchronized& rhs) const;
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveMutex>* = nullptr>
+        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex>* = nullptr>
         nonvirtual auto operator<=> (const T& rhs) const;
 #endif
 
