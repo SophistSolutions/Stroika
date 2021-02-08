@@ -10,6 +10,8 @@
  ********************************************************************************
  */
 
+#include "../Debug/Assertions.h"
+
 namespace Stroika::Foundation::Memory {
 
     /*
