@@ -337,13 +337,66 @@ optional<String> Headers::LookupOne (const String& name) const
     }
 }
 
-void Headers::Remove (const String& headerName)
+Collection<String> Headers::LookupAll (const String& name) const
+{
+    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    if (kHeaderNameEqualsComparer (name, HeaderName::kCacheControl)) {
+        return fCacheControl_ ? Collection<String>{fCacheControl_->As<String> ()} : Collection<String>{};
+    }
+    else if (kHeaderNameEqualsComparer (name, HeaderName::kContentLength)) {
+        return fContentLength_ ? Collection<String>{Characters::Format (L"%ld", *fContentLength_)} : Collection<String>{};
+    }
+    else if (kHeaderNameEqualsComparer (name, HeaderName::kContentType)) {
+        return fContentType_ ? Collection<String>{fContentType_->As<String> ()} : Collection<String>{};
+    }
+    else if (kHeaderNameEqualsComparer (name, HeaderName::kCookie)) {
+        return fCookieList_ ? Collection<String>{fCookieList_->EncodeForCookieHeader ()} : Collection<String>{};
+    }
+    else if (kHeaderNameEqualsComparer (name, HeaderName::kETag)) {
+        return fETag_ ? Collection<String>{fETag_->As<String> ()} : Collection<String>{};
+    }
+    else if (kHeaderNameEqualsComparer (name, HeaderName::kHost)) {
+        return fHost_ ? Collection<String>{*fHost_} : Collection<String>{};
+    }
+    else if (kHeaderNameEqualsComparer (name, HeaderName::kIfNoneMatch)) {
+        return fIfNoneMatch_ ? Collection<String>{fIfNoneMatch_->As<String> ()} : Collection<String>{};
+    }
+    else if (kHeaderNameEqualsComparer (name, HeaderName::kSetCookie)) {
+        // we can only return the first setCookie here...
+        if (fSetCookieList_.has_value ()) {
+            return fSetCookieList_->cookieDetails ().Select<String> ([] (const auto& i) { return i.Encode ();  });
+        }
+        return Collection<String>{};
+    }
+    else if (kHeaderNameEqualsComparer (name, HeaderName::kVary)) {
+        return fVary_ ? Collection<String>{String::Join (*fVary_)} : Collection<String>{};
+    }
+    else {
+        Collection<String> result;
+        // should switch to new non-existent class Assocation here - and use that...more efficeint -
+        if (auto ri = fExtraHeaders_.FindFirstThat ([&] (const auto& i) { return kHeaderNameEqualsComparer (name, i.fKey); })) {
+            result += ri->fValue;
+        }
+        return result;
+    }
+}
+
+size_t Headers::Remove (const String& headerName)
 {
     if (SetBuiltin_ (headerName, nullopt)) {
-        return;
+        return 1;
     }
     // currently removes all, but later add variant that removes one/all (in fact rename this)
-    fExtraHeaders_.Remove ([=] (const auto& i) { return kHeaderNameEqualsComparer (i.fKey, headerName); });
+    return fExtraHeaders_.RemoveAll ([=] (const auto& i) { return kHeaderNameEqualsComparer (i.fKey, headerName); });
+}
+
+size_t Headers::Remove (const String& headerName, const String& value)
+{
+    if (SetBuiltin_ (headerName, nullopt)) {
+        return 1;
+    }
+    // currently removes all, but later add variant that removes one/all (in fact rename this)
+    return fExtraHeaders_.RemoveAll ([=] (const auto& i) { return kHeaderNameEqualsComparer (i.fKey, headerName) and value == i.fValue; });
 }
 
 void Headers::Add (const String& headerName, const String& value)

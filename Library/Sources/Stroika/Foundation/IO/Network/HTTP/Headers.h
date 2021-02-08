@@ -105,16 +105,28 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
-         *  @todo support case where name appears more than once - NYI
+         * Some HTTP headers can appear multiple times (such as Set-Cookie). Return all with the given name.
+         */
+        nonvirtual Collection<String> LookupAll (const String& name) const;
+
+    public:
+        /**
+         *  Add (or sometimes replace) the given header name/value pair. Whether this replaces
+         *  or adds depends on the particular headerName. Some which are recognized to appear just once
+         *  are replaced (such as Cookie); Some are recognied as appearing multiple times (such as Set-Cookie)
+         *  and these are appended. Use Set/Remove to avoid ambiguity.
          */
         nonvirtual void Add (const String& headerName, const String& value);
 
     public:
         /**
          *  Remove ALL occurrances of the given header name.
-         *  (@todo overload that take headerName and value)
+         *  For the two-arg overload, remove the given header with teh given value.
+         * 
+         *  Returns the number of items removed.
          */
-        nonvirtual void Remove (const String& headerName);
+        nonvirtual size_t Remove (const String& headerName);
+        nonvirtual size_t Remove (const String& headerName, const String& value);
 
     public:
         /**
