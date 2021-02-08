@@ -201,7 +201,7 @@ Headers::Headers ()
               thisObj->SetExtras_ (HeaderName::kServer, server);
           }}
     , vary{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional <Containers::Set<String>> {
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<Containers::Set<String>> {
               const Headers*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::vary);
               lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
               return thisObj->fVary_;
