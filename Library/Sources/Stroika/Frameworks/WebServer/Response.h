@@ -101,6 +101,11 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual auto ReadHeader (FUNCTION&& f) const;
 
     public:
+        /**
+         */
+        Common::Property<IO::Network::HTTP::Headers> headers;
+
+    public:
         /*
          * Note - this refers to an HTTP "Content-Type" - which is really potentially more than just a InternetMediaType, often
          * with the characterset appended.
@@ -262,13 +267,6 @@ namespace Stroika::Frameworks::WebServer {
          */
         nonvirtual void SetStatus (Status newStatus, const String& overrideReason = wstring{});
 
-    public:
-        /**
-         *  \brief return the set of explicitly specified headers.
-         *
-         *  @see GetEffectiveHeaders ()
-         */
-        nonvirtual IO::Network::HTTP::Headers GetHeaders () const;
 
     public:
         /**
@@ -277,17 +275,15 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual String ToString () const;
 
     public:
-        [[deprecated ("Since Stroika 2.1b10 - use codePage()")]] Characters::CodePage     GetCodePage () const;
+        [[deprecated ("Since 2.1b10, use headers() directly")]] IO::Network::HTTP::Headers GetHeaders () const;
+        [[deprecated ("Since Stroika 2.1b10 - use codePage()")]] Characters::CodePage         GetCodePage () const;
         [[deprecated ("Since Stroika 2.1b10 - use codePage()")]] void                     SetCodePage (Characters::CodePage codePage);
         [[deprecated ("Since Stroika 2.1b10 - use UpdateHeader()")]] InternetMediaType        GetContentType () const;
         [[deprecated ("Since Stroika 2.1b10 - use UpdateHeader")]] void                       AddHeader (const String& headerName, const String& value);
         [[deprecated ("Since Stroika 2.1b10 - use UpdateHeaders directly")]] void             AppendToCommaSeperatedHeader (const String& headerName, const String& value);
         [[deprecated ("Since Stroika 2.1b10 - use UpdateHeaders directly")]] nonvirtual void  ClearHeader (const String& headerName);
         [[deprecated ("Since Stroika 2.1b10 - use UpdateHeaders directly")]] void             ClearHeaders ();
-        [[deprecated ("Since 2.1b10, use GetHeaders() directly")]] IO::Network::HTTP::Headers GetEffectiveHeaders () const
-        {
-            return GetHeaders ();
-        }
+        [[deprecated ("Since 2.1b10, use headers() directly")]] IO::Network::HTTP::Headers    GetEffectiveHeaders () const;
 
     private:
         nonvirtual InternetMediaType AdjustContentTypeForCodePageIfNeeded_ (const InternetMediaType& ct) const;

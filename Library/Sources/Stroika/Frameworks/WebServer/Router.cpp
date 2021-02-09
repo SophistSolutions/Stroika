@@ -51,7 +51,7 @@ namespace {
  */
 bool Route::Matches (const Request& request, Sequence<String>* pathRegExpMatches) const
 {
-    return Matches (request.GetHTTPMethod (), ExtractHostRelPath_ (request.GetURL ()), request, pathRegExpMatches);
+    return Matches (request.httpMethod (), ExtractHostRelPath_ (request.url ()), request, pathRegExpMatches);
 }
 bool Route::Matches (const String& method, const String& hostRelPath, const Request& request, Sequence<String>* pathRegExpMatches) const
 {
@@ -110,10 +110,10 @@ struct Router::Rep_ : Interceptor::_IRep {
         if (handler) {
             Handle_GET_ (m, matches, *handler);
         }
-        else if (m->request ().GetHTTPMethod () == HTTP::Methods::kHead and Handle_HEAD_ (m)) {
+        else if (m->request ().httpMethod () == HTTP::Methods::kHead and Handle_HEAD_ (m)) {
             // handled
         }
-        else if (m->request ().GetHTTPMethod () == HTTP::Methods::kOptions) {
+        else if (m->request ().httpMethod () == HTTP::Methods::kOptions) {
             Handle_OPTIONS_ (m);
         }
         else {
@@ -126,7 +126,7 @@ struct Router::Rep_ : Interceptor::_IRep {
                 Execution::Throw (ClientErrorException{HTTP::StatusCodes::kMethodNotAllowed});
             }
             else {
-                DbgTrace (L"Router 404: (...url=%s)", Characters::ToString (m->request ().GetURL ()).c_str ());
+                DbgTrace (L"Router 404: (...url=%s)", Characters::ToString (m->request ().url ()).c_str ());
                 Execution::Throw (ClientErrorException{HTTP::StatusCodes::kNotFound});
             }
         }
@@ -142,7 +142,7 @@ struct Router::Rep_ : Interceptor::_IRep {
          *  that implies a CORS failure (but if we have no header in the request - presumably no matter)
          */
         optional<String> allowedOrigin;
-        if (auto origin = request.GetHeaders ().origin ()) {
+        if (auto origin = request.headers ().origin ()) {
             if (fAllowedOrigins_.has_value ()) {
                 // see https://fetch.spec.whatwg.org/#http-origin for hints about how to compare - not sure
                 // may need to be more flexible about how we compare, but for now a good approximation... &&& @todo docs above link say how to compar
@@ -178,7 +178,7 @@ struct Router::Rep_ : Interceptor::_IRep {
     }
     nonvirtual optional<RequestHandler> Lookup_ (const Request& request, Sequence<String>* matches) const
     {
-        return Lookup_ (request.GetHTTPMethod (), ExtractHostRelPath_ (request.GetURL ()), request, matches);
+        return Lookup_ (request.httpMethod (), ExtractHostRelPath_ (request.url ()), request, matches);
     }
     nonvirtual optional<Set<String>> GetAllowedMethodsForRequest_ (const Request& request) const
     {
@@ -206,7 +206,7 @@ struct Router::Rep_ : Interceptor::_IRep {
         const Request&   request  = message->request ();
         Response&        response = message->rwResponse ();
         Sequence<String> matches;
-        if (optional<RequestHandler> handler = Lookup_ (Methods::kGet, ExtractHostRelPath_ (request.GetURL ()), request, &matches)) {
+        if (optional<RequestHandler> handler = Lookup_ (Methods::kGet, ExtractHostRelPath_ (request.url ()), request, &matches)) {
             // do someting to response so 'in HEAD mode' and won't write
             response.EnterHeadMode ();
             (*handler) (message, matches);
@@ -222,7 +222,7 @@ struct Router::Rep_ : Interceptor::_IRep {
         // @todo note - This ignores - Access-Control-Request-Method - not sure how we are expected to use it?
         auto o = GetAllowedMethodsForRequest_ (request);
         if (o) {
-            auto accessControlRequestHeaders = request.GetHeaders ().LookupOne (HeaderName::kAccessControlRequestHeaders);
+            auto accessControlRequestHeaders = request.headers ().LookupOne (HeaderName::kAccessControlRequestHeaders);
             response.UpdateHeader ([this, &o, &accessControlRequestHeaders] (auto* header) {
                 RequireNotNull (header);
                 header->Set (HeaderName::kAccessControlAllowCredentials, fAccessControlAllowCredentialsValue_);
@@ -246,7 +246,7 @@ struct Router::Rep_ : Interceptor::_IRep {
             response.SetStatus (IO::Network::HTTP::StatusCodes::kNoContent);
         }
         else {
-            DbgTrace (L"Router 404: (...url=%s)", Characters::ToString (message->request ().GetURL ()).c_str ());
+            DbgTrace (L"Router 404: (...url=%s)", Characters::ToString (message->request ().url ()).c_str ());
             Execution::Throw (ClientErrorException{HTTP::StatusCodes::kNotFound});
         }
     }

@@ -90,6 +90,17 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
                   }
               }
           }}
+    , headers{
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> IO::Network::HTTP::Headers {
+              const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::headers);
+              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              return thisObj->fHeaders_;
+          },
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newHeaders) {
+              Response*                                          thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::headers);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              thisObj->fHeaders_ = newHeaders;
+          }}
     , fSocket_{s}
     , fState_{State::eInProgress}
     , fStatus_{StatusCodes::kOK}
@@ -210,6 +221,12 @@ IO::Network::HTTP::Headers Response::GetHeaders () const
     return fHeaders_;
 }
 
+IO::Network::HTTP::Headers Response::GetEffectiveHeaders () const
+{
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+    return fHeaders_;
+}
+
 InternetMediaType Response::AdjustContentTypeForCodePageIfNeeded_ (const InternetMediaType& ct) const
 {
     if (DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (ct)) {
@@ -239,7 +256,7 @@ void Response::Flush ()
         }
 
         {
-            for (const auto& i : GetHeaders ().As<> ()) {
+            for (const auto& i : this->headers ().As<> ()) {
                 string utf8 = Characters::Format (L"%s: %s\r\n", i.fKey.c_str (), i.fValue.c_str ()).AsUTF8 ();
                 fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (utf8)), reinterpret_cast<const byte*> (Containers::End (utf8)));
             }
@@ -359,7 +376,7 @@ String Response::ToString () const
     sb += L"Socket: " + Characters::ToString (fSocket_) + L", ";
     sb += L"State_: " + Characters::ToString (fState_) + L", ";
     sb += L"StatusOverrideReason_: '" + Characters::ToString (fStatusOverrideReason_) + L"', ";
-    sb += L"Headers: " + Characters::ToString (GetHeaders ()) + L", ";
+    sb += L"Headers: " + Characters::ToString (this->headers ()) + L", ";
     sb += L"}";
     return sb.str ();
 }
