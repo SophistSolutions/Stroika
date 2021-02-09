@@ -84,7 +84,7 @@ namespace {
         filesystem::path ExtractFileName_ (const Message* m) const
         {
             const Request& request        = m->request ();
-            String         urlHostRelPath = request.GetURL ().GetAbsPath<String> ().SubString (1);
+            String         urlHostRelPath = request.url ().GetAbsPath<String> ().SubString (1);
             if (fURLPrefix2Strip) {
                 if (urlHostRelPath.StartsWith (*fURLPrefix2Strip)) {
                     urlHostRelPath = urlHostRelPath.SubString (fURLPrefix2Strip->length ());

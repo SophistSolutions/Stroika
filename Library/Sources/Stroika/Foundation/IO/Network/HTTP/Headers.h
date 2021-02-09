@@ -178,6 +178,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     public:
         /**
          *  Property with the optional<uint64_t> value of the Content-Length header.
+         *  \note this refers to the (possibly encoded) size in bytes of the HTTP payload body (so if zipped its the size of the zipfile not the size after unzip).
          *
          *  \par Example Usage
          *      \code

@@ -14,6 +14,7 @@
 #include "../../Foundation/Characters/String.h"
 #include "../../Foundation/Configuration/Common.h"
 #include "../../Foundation/Containers/Mapping.h"
+#include "../../Foundation/Common/Property.h"
 #include "../../Foundation/DataExchange/InternetMediaType.h"
 #include "../../Foundation/Debug/AssertExternallySynchronizedLock.h"
 #include "../../Foundation/IO/Network/HTTP/Headers.h"
@@ -60,8 +61,8 @@ namespace Stroika::Frameworks::WebServer {
     public:
         Response ()                    = delete;
         Response (const Response&)     = delete;
-        Response (Response&&)  = default;
-        Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream<byte>::Ptr& outStream, const InternetMediaType& ct);
+        Response (Response&& src);
+        Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream<byte>::Ptr& outStream, const optional < InternetMediaType >& ct = nullopt);
 
     public:
         // Reponse must be completed (OK to Abort ()) before being destroyed
@@ -108,7 +109,7 @@ namespace Stroika::Frameworks::WebServer {
          * 
          *  NOTE - if DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (fContentType_), then
          *  the characterset will be automatically folded into the used contentType. To avoid this, 
-         *  Use UpdateHeader() to mdofiy teh contenttype field directly.
+         *  Use UpdateHeader() to modify the Content-Type field directly.
          */
         nonvirtual void    SetContentType (const InternetMediaType& contentType);
 
@@ -131,8 +132,7 @@ namespace Stroika::Frameworks::WebServer {
          *         Use UpdateHeader() to mdofiy teh contenttype field directly.
          * 
          */
-        nonvirtual Characters::CodePage GetCodePage () const;
-        nonvirtual void                 SetCodePage (Characters::CodePage codePage);
+        Common::Property<Characters::CodePage> codePage;
 
     public:
         enum class State : uint8_t {
@@ -230,11 +230,14 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
+        *  @todo consider if we should lose this? Just clears fBodyBytes..
          */
         nonvirtual void clear ();
 
     public:
         /**
+        *  @todo consider if we should lose this?
+         *  Returns true iff bodyBytes lenght is zero.
          */
         nonvirtual bool empty () const;
 
@@ -274,7 +277,9 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual String ToString () const;
 
     public:
-        [[deprecated ("Since Stroika 2.1b10 - use UpdateHeader()")]] InternetMediaType GetContentType () const;
+        [[deprecated ("Since Stroika 2.1b10 - use codePage()")]] Characters::CodePage     GetCodePage () const;
+        [[deprecated ("Since Stroika 2.1b10 - use codePage()")]] void                     SetCodePage (Characters::CodePage codePage);
+        [[deprecated ("Since Stroika 2.1b10 - use UpdateHeader()")]] InternetMediaType        GetContentType () const;
         [[deprecated ("Since Stroika 2.1b10 - use UpdateHeader")]] void                       AddHeader (const String& headerName, const String& value);
         [[deprecated ("Since Stroika 2.1b10 - use UpdateHeaders directly")]] void             AppendToCommaSeperatedHeader (const String& headerName, const String& value);
         [[deprecated ("Since Stroika 2.1b10 - use UpdateHeaders directly")]] nonvirtual void  ClearHeader (const String& headerName);

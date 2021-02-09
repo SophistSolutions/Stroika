@@ -83,6 +83,13 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
+         *  Return the HTTP message body Content-Type, if any given
+         * A short-hand, equivilent to fetching headers().contentType()
+         */
+        Common::ReadOnlyProperty < optional<InternetMediaType>> contentType;
+
+    public:
+        /**
          *  \brief mostly looks at Connection: ARG header, but if not there takes into account HTTP-version specific defaults.
          */
         nonvirtual bool GetKeepAliveRequested () const;
@@ -94,12 +101,6 @@ namespace Stroika::Frameworks::WebServer {
          *  \note - this does not imply having read the body, and nor is it updated to reflect the body size read after its been read.
          */
         nonvirtual optional<uint64_t> GetContentLength () const;
-
-    public:
-        /**
-         *  Return the HTTP message body Content-Type, if any given
-         */
-        nonvirtual optional<InternetMediaType> GetContentType () const;
 
     public:
         /**
@@ -124,6 +125,7 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual String ToString () const;
 
     public:
+        [[deprecated ("Since Stroika v2.1b10 use contentType property")]] optional<InternetMediaType> GetContentType () const;
         [[deprecated ("Since Stroika v2.1b10 use httpVersion property")]] String                 GetHTTPVersion () const;
         [[deprecated ("Since Stroika v2.1b10 use httpVersion property")]] void                   SetHTTPVersion (const String& versionOrVersionLabel);
         [[deprecated ("Since Stroika v2.1b10 use httpMethod property")]] String                  GetHTTPMethod () const;

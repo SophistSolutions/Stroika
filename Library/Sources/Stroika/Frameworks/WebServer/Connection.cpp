@@ -80,7 +80,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
     /*
      * At this stage, blocking calls are fully safe - because we've assured above we've seeked to the start of a CRLFCRLF terminated region (or premature EOF)
      */
-    Request& updatableRequest = rwRequest ();
+    Request& updatableRequest = this->rwRequest ();
     {
         // Read METHOD URL line
         String line = fMsgHeaderInTextStream.ReadLine ();
@@ -90,22 +90,21 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
 #endif
             return ReadHeadersResult::eIncompleteDeadEnd; // could throw here, but this is common enough we don't want the noise in the logs.
         }
-        static Set<Character> kTokenSeparatorSet_{' '};
-        Sequence<String>      tokens{line.Tokenize (kTokenSeparatorSet_)};
+        Sequence<String> tokens{line.Tokenize ({' '})};
         if (tokens.size () < 3) {
             DbgTrace (L"tokens=%s, line='%s', fMsgHeaderInTextStream=%s", Characters::ToString (tokens).c_str (), line.c_str (), fMsgHeaderInTextStream.ToString ().c_str ());
             Execution::Throw (ClientErrorException{Characters::Format (L"Bad METHOD Request HTTP line (%s)", line.c_str ())});
         }
-        updatableRequest.SetHTTPMethod (tokens[0]);
-        updatableRequest.SetHTTPVersion (tokens[2]);
+        updatableRequest.httpMethod  = tokens[0];
+        updatableRequest.httpVersion = tokens[2];
         if (tokens[1].empty ()) {
             // should check if GET/PUT/DELETE etc...
             DbgTrace (L"tokens=%s, line='%s'", Characters::ToString (tokens).c_str (), line.c_str ());
             Execution::Throw (ClientErrorException{L"Bad HTTP Request line - missing host-relative URL"sv});
         }
         using IO::Network::URL;
-        updatableRequest.SetURL (URI{tokens[1]});
-        if (updatableRequest.GetHTTPMethod ().empty ()) {
+        updatableRequest.url = URI{tokens[1]};
+        if (updatableRequest.httpMethod ().empty ()) {
             // should check if GET/PUT/DELETE etc...
             DbgTrace (L"tokens=%s, line='%s'", Characters::ToString (tokens).c_str (), line.c_str ());
             Execution::Throw (ClientErrorException{L"Bad METHOD in Request HTTP line"sv});
@@ -271,7 +270,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
             // Check for keepalive headers, and handle them appropriately
             // only meaningful HTTP 1.1 and earlier and only if Connection: keep-alive
             {
-                if (auto keepAliveValue = fMessage_->request ().GetHeaders ().keepAlive ()) {
+                if (auto keepAliveValue = fMessage_->request ().headers ().keepAlive ()) {
                     this->remainingConnectionLimits = KeepAlive::Merge (this->remainingConnectionLimits (), *keepAliveValue);
                 }
             }

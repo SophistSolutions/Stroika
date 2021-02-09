@@ -56,8 +56,41 @@ namespace {
     constexpr size_t kResponseBufferReallocChunkSizeReserve_ = 16 * 1024;
 }
 
-Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream<byte>::Ptr& outStream, const InternetMediaType& ct)
-    : fSocket_{s}
+Response::Response (Response&& src)
+    : Response{src.fSocket_, src.fUnderlyingOutStream_}
+{
+    fState_                = src.fState_;
+    fStatus_               = src.fStatus_;
+    fStatusOverrideReason_ = src.fStatusOverrideReason_;
+    fUseOutStream_         = src.fUseOutStream_;
+    fHeaders_              = src.fHeaders_;
+    fCodePage_             = src.fCodePage_;
+    fBodyBytes_            = src.fBodyBytes_;
+    fContentSizePolicy_    = src.fContentSizePolicy_;
+    fHeadMode_             = src.fHeadMode_;
+}
+
+Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream<byte>::Ptr& outStream, const optional<InternetMediaType>& ct)
+    : codePage{
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+              const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::codePage);
+              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              return thisObj->fCodePage_;
+          },
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newCodePage) {
+              Response*                                          thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::codePage);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              Require (thisObj->fState_ == State::eInProgress);
+              Require (thisObj->fBodyBytes_.empty ());
+              bool diff           = thisObj->fCodePage_ != newCodePage;
+              thisObj->fCodePage_ = newCodePage;
+              if (diff) {
+                  if (auto ct = thisObj->fHeaders_.contentType ()) {
+                      thisObj->fHeaders_.contentType = thisObj->AdjustContentTypeForCodePageIfNeeded_ (*ct);
+                  }
+              }
+          }}
+    , fSocket_{s}
     , fState_{State::eInProgress}
     , fStatus_{StatusCodes::kOK}
     , fStatusOverrideReason_{}
@@ -68,10 +101,8 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
     , fBodyBytes_{}
     , fContentSizePolicy_{ContentSizePolicy::eAutoCompute}
 {
-    fHeaders_.server = L"Stroka-Based-Web-Server"_k;
-    if (not ct.empty ()) {
-        fHeaders_.contentType = ct;
-    }
+    fHeaders_.server      = L"Stroka-Based-Web-Server"_k;
+    fHeaders_.contentType = ct;
 }
 
 InternetMediaType Response::GetContentType () const
@@ -116,13 +147,13 @@ void Response::SetContentType (const InternetMediaType& contentType)
     });
 }
 
-void Response::SetCodePage (Characters::CodePage codePage)
+void Response::SetCodePage (Characters::CodePage newCodePage)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     Require (fState_ == State::eInProgress);
     Require (fBodyBytes_.empty ());
-    bool diff  = fCodePage_ != codePage;
-    fCodePage_ = codePage;
+    bool diff  = fCodePage_ != newCodePage;
+    fCodePage_ = newCodePage;
     if (diff) {
         if (auto ct = fHeaders_.contentType ()) {
             fHeaders_.contentType = AdjustContentTypeForCodePageIfNeeded_ (*ct);

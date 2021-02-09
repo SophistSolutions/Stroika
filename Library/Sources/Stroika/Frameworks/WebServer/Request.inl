@@ -47,10 +47,10 @@ namespace Stroika::Frameworks::WebServer {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         return fHeaders_;
     }
-    inline void Request::SetHeaders (const IO::Network::HTTP::Headers& headers)
+    inline void Request::SetHeaders (const IO::Network::HTTP::Headers& newHeaders)
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        fHeaders_ = headers;
+        fHeaders_ = newHeaders;
     }
     inline void Request::AddHeader (const String& headerName, const String& value)
     {
