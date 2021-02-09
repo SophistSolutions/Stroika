@@ -77,7 +77,7 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         *  consider losing and replacing with UpdateHeader() like we have for Response
+         *  @todo consider losing and replacing with UpdateHeader() like we have for Response
          */
         nonvirtual void AddHeader (const String& headerName, const String& value);
 

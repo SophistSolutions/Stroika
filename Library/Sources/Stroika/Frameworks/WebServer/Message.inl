@@ -55,7 +55,7 @@ namespace Stroika::Frameworks::WebServer {
     inline URI Message::GetRequestURL () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        return fRequest_.GetURL ();
+        return fRequest_.url ();
     }
     inline String Message::GetRequestHTTPMethod () const
     {
