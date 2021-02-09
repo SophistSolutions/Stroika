@@ -53,7 +53,7 @@ Connection::MyMessage_::MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& s
           Request{socketStream},
           Response{socket, socketStream, DataExchange::InternetMediaTypes::kOctetStream},
           socket.GetPeerAddress ()}
-    , fMsgHeaderInTextStream{MessageStartTextInputStreamBinaryAdapter::New (PeekRequest ()->GetInputStream ())}
+    , fMsgHeaderInTextStream{MessageStartTextInputStreamBinaryAdapter::New (rwRequest ().GetInputStream ())}
 {
 }
 
@@ -80,7 +80,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
     /*
      * At this stage, blocking calls are fully safe - because we've assured above we've seeked to the start of a CRLFCRLF terminated region (or premature EOF)
      */
-    Request* updatableRequest = PeekRequest ();
+    Request& updatableRequest = rwRequest ();
     {
         // Read METHOD URL line
         String line = fMsgHeaderInTextStream.ReadLine ();
@@ -96,16 +96,16 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
             DbgTrace (L"tokens=%s, line='%s', fMsgHeaderInTextStream=%s", Characters::ToString (tokens).c_str (), line.c_str (), fMsgHeaderInTextStream.ToString ().c_str ());
             Execution::Throw (ClientErrorException{Characters::Format (L"Bad METHOD Request HTTP line (%s)", line.c_str ())});
         }
-        updatableRequest->SetHTTPMethod (tokens[0]);
-        updatableRequest->SetHTTPVersion (tokens[2]);
+        updatableRequest.SetHTTPMethod (tokens[0]);
+        updatableRequest.SetHTTPVersion (tokens[2]);
         if (tokens[1].empty ()) {
             // should check if GET/PUT/DELETE etc...
             DbgTrace (L"tokens=%s, line='%s'", Characters::ToString (tokens).c_str (), line.c_str ());
             Execution::Throw (ClientErrorException{L"Bad HTTP Request line - missing host-relative URL"sv});
         }
         using IO::Network::URL;
-        updatableRequest->SetURL (URI{tokens[1]});
-        if (updatableRequest->GetHTTPMethod ().empty ()) {
+        updatableRequest.SetURL (URI{tokens[1]});
+        if (updatableRequest.GetHTTPMethod ().empty ()) {
             // should check if GET/PUT/DELETE etc...
             DbgTrace (L"tokens=%s, line='%s'", Characters::ToString (tokens).c_str (), line.c_str ());
             Execution::Throw (ClientErrorException{L"Bad METHOD in Request HTTP line"sv});
@@ -127,7 +127,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
         else {
             String hdr   = line.SubString (0, i).Trim ();
             String value = line.SubString (i + 1).Trim ();
-            updatableRequest->AddHeader (hdr, value);
+            updatableRequest.AddHeader (hdr, value);
         }
     }
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
@@ -149,11 +149,11 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Inte
           }}
     , request{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const Request& {
         const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::request);
-        return *thisObj->fMessage_->PeekRequest ();
+        return thisObj->fMessage_->request ();
     }}
     , response{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Response& {
         const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::response);
-        return *thisObj->fMessage_->PeekResponse ();
+        return thisObj->fMessage_->rwResponse ();
     }}
     , remainingConnectionLimits{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<KeepAlive> {
                                     const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::remainingConnectionLimits);
@@ -192,10 +192,10 @@ Connection::~Connection ()
     WriteLogConnectionMsg_ (L"DestroyingConnection");
 #endif
     if (fMessage_ != nullptr) {
-        if (fMessage_->PeekResponse ()->GetState () != Response::State::eCompleted) {
-            IgnoreExceptionsForCall (fMessage_->PeekResponse ()->Abort ());
+        if (fMessage_->response ().GetState () != Response::State::eCompleted) {
+            IgnoreExceptionsForCall (fMessage_->rwResponse ().Abort ());
         }
-        Require (fMessage_->PeekResponse ()->GetState () == Response::State::eCompleted);
+        Require (fMessage_->response ().GetState () == Response::State::eCompleted);
     }
     /*
      *  When the connection is completed, make sure the socket is closed so that the calling client knows
@@ -261,7 +261,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
         /*
          *  Now bookkeeping and handling of keepalive headers
          */
-        bool thisMessageKeepAlive = fMessage_->PeekRequest ()->GetKeepAliveRequested ();
+        bool thisMessageKeepAlive = fMessage_->request ().GetKeepAliveRequested ();
         if (thisMessageKeepAlive) {
             if (not response ().IsContentLengthKnown ()) {
                 thisMessageKeepAlive = false;
@@ -271,7 +271,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
             // Check for keepalive headers, and handle them appropriately
             // only meaningful HTTP 1.1 and earlier and only if Connection: keep-alive
             {
-                if (auto keepAliveValue = fMessage_->PeekRequest ()->GetHeaders ().keepAlive ()) {
+                if (auto keepAliveValue = fMessage_->request ().GetHeaders ().keepAlive ()) {
                     this->remainingConnectionLimits = KeepAlive::Merge (this->remainingConnectionLimits (), *keepAliveValue);
                 }
             }
@@ -313,7 +313,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
                 DbgTrace (L"Assuring all data read; REQ=%s", Characters::ToString (request ()).c_str ());
 #endif
                 // @todo - this can be more efficient in the rare case we ignore the body - but thats rare enough to not matter mcuh
-                (void)fMessage_->GetRequestBody ();
+                (void)fMessage_->rwRequest ().GetBody ();
             }
         }
 

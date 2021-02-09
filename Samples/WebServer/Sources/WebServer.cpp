@@ -94,9 +94,9 @@ namespace {
         // Can declare arguments as Message* message
         static void SetAppState_ (Message* message)
         {
-            String argsAsString = Streams::TextReader::New (message->PeekRequest ()->GetBody ()).ReadAll ();
-            message->PeekResponse ()->writeln (L"<html><body><p>Hi SetAppState (" + argsAsString.As<wstring> () + L")</p></body></html>");
-            message->PeekResponse ()->SetContentType (DataExchange::InternetMediaTypes::kHTML);
+            String argsAsString = Streams::TextReader::New (message->rwRequest ().GetBody ()).ReadAll ();
+            message->rwResponse ().writeln (L"<html><body><p>Hi SetAppState (" + argsAsString.As<wstring> () + L")</p></body></html>");
+            message->rwResponse ().SetContentType (DataExchange::InternetMediaTypes::kHTML);
         }
     };
 }

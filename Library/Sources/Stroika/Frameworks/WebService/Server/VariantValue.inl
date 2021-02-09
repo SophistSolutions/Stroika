@@ -86,7 +86,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      ******** WebService::Server::VariantValue::PickoutParamValuesFromURL ***********
      ********************************************************************************
      */
-    inline Mapping<String, VariantValue> PickoutParamValuesFromURL (Request* request)
+    inline Mapping<String, VariantValue> PickoutParamValuesFromURL (const Request* request)
     {
         RequireNotNull (request);
         return PickoutParamValuesFromURL (request->GetURL ());
@@ -136,15 +136,15 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     {
         Require (paramNames.size () == sizeof...(IN_ARGS));
         return [=] (WebServer::Message* m) {
-            ExpectedMethod (m->GetRequestReference (), webServiceDescription);
-            Sequence<VariantValue> args = OrderParamValues (paramNames, m->PeekRequest ());
+            ExpectedMethod (m->request (), webServiceDescription);
+            Sequence<VariantValue> args = OrderParamValues (paramNames, &m->rwRequest ());
             Assert (args.size () == paramNames.size ());
             if constexpr (is_same_v<RETURN_TYPE, void>) {
                 ApplyArgs (args, objVarMapper, f);
-                WriteResponse (m->PeekResponse (), webServiceDescription);
+                WriteResponse (&m->rwResponse (), webServiceDescription);
             }
             else {
-                WriteResponse (m->PeekResponse (), webServiceDescription, ApplyArgs (args, objVarMapper, f));
+                WriteResponse (&m->rwResponse (), webServiceDescription, ApplyArgs (args, objVarMapper, f));
             }
         };
     }
@@ -152,13 +152,13 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (void)>& f)
     {
         return [=] (WebServer::Message* m) {
-            ExpectedMethod (m->GetRequestReference (), webServiceDescription);
+            ExpectedMethod (m->request (), webServiceDescription);
             if constexpr (is_same_v<RETURN_TYPE, void>) {
                 f ();
-                WriteResponse (m->PeekResponse (), webServiceDescription);
+                WriteResponse (&m->rwResponse (), webServiceDescription);
             }
             else {
-                WriteResponse (m->PeekResponse (), webServiceDescription, objVarMapper.FromObject (f ()));
+                WriteResponse (&m->rwResponse (), webServiceDescription, objVarMapper.FromObject (f ()));
             }
         };
     }

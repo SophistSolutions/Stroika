@@ -47,10 +47,10 @@ namespace {
                                         Interceptor (
                                             [=] (Message* m) {
                                                 RequireNotNull (m);
-                                                Response* response = m->PeekResponse ();
-                                                response->UpdateHeader ([] (auto* header) { RequireNotNull (header); header->server = L"stroika-ssdp-server-demo"sv; });
-                                                response->write (Stroika::Frameworks::UPnP::Serialize (dd));
-                                                response->SetContentType (DataExchange::InternetMediaTypes::kXML);
+                                                Response& response = m->rwResponse ();
+                                                response.UpdateHeader ([] (auto* header) { RequireNotNull (header); header->server = L"stroika-ssdp-server-demo"sv; });
+                                                response.write (Stroika::Frameworks::UPnP::Serialize (dd));
+                                                response.SetContentType (DataExchange::InternetMediaTypes::kXML);
                                             })}};
                     conn.remainingConnectionLimits = HTTP::KeepAlive{0, 0}; // disable keep-alives
                     conn.ReadAndProcessMessage ();

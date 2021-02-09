@@ -59,7 +59,7 @@ namespace {
             Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}...FileSystemRouter...HandleMessage", L"relURL='%s', serving fn='%s'", m->PeekRequest ()->GetURL ().GetAuthorityRelativeResource ().c_str (), fn.c_str ())};
 #endif
             try {
-                Response&              response = *m->PeekResponse ();
+                Response&              response = m->rwResponse ();
                 InputStream<byte>::Ptr in{FileInputStream::New (fn)};
                 response.write (in.ReadAll ());
                 if (optional<InternetMediaType> oMediaType = InternetMediaTypeRegistry::Get ().GetAssociatedContentType (fn.extension ())) {
@@ -83,7 +83,7 @@ namespace {
         }
         filesystem::path ExtractFileName_ (const Message* m) const
         {
-            const Request& request        = *m->PeekRequest ();
+            const Request& request        = m->request ();
             String         urlHostRelPath = request.GetURL ().GetAbsPath<String> ().SubString (1);
             if (fURLPrefix2Strip) {
                 if (urlHostRelPath.StartsWith (*fURLPrefix2Strip)) {

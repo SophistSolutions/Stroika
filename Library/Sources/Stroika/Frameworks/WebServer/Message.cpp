@@ -34,8 +34,8 @@ Message::Message (Request&& request, Response&& response, const optional<IO::Net
         return thisObj->fRequest_;
     }}
     , rwRequest{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Request& {
-        const Message*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::rwRequest);
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+        const Message*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::rwRequest);
+        lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
         return const_cast<Request&> (thisObj->fRequest_);
     }}
     , response{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const Response& {
@@ -44,13 +44,13 @@ Message::Message (Request&& request, Response&& response, const optional<IO::Net
         return thisObj->fResponse_;
     }}
     , rwResponse{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Response& {
-        const Message*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::rwResponse);
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
-        return const_cast<Request&> (thisObj->fResponse_);
+        const Message*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::rwResponse);
+        lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+        return const_cast<Response&> (thisObj->fResponse_);
     }}
     , fPeerAddress_{peerAddress}
     , fRequest_{move (request)}
-    , fResponse_ (move (response))
+    , fResponse_{move (response)}
 {
 }
 

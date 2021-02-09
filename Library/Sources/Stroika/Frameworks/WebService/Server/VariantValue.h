@@ -53,7 +53,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *
      *  \note - PickoutParamValuesFromURL maps exceptions returned to IO::Network::HTTP::ClientErrorException
      */
-    Mapping<String, VariantValue> PickoutParamValuesFromURL (Request* request);
+    Mapping<String, VariantValue> PickoutParamValuesFromURL (const Request* request);
     Mapping<String, VariantValue> PickoutParamValuesFromURL (const URI& url);
 
     /**

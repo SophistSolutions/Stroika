@@ -27,6 +27,8 @@ namespace Stroika::Frameworks::WebServer {
     using IO::Network::URI;
 
     /**
+     *  A message refers to a single back-and-forth request/response pair exchanged over HTTP.
+     *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     class Message : private Debug::AssertExternallySynchronizedLock {

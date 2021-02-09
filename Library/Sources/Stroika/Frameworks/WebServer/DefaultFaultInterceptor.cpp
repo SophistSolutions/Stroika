@@ -26,20 +26,20 @@ struct DefaultFaultInterceptor::Rep_ : Interceptor::_IRep {
     virtual void HandleFault (Message* m, const exception_ptr& e) const noexcept override
     {
         RequireNotNull (m);
-        Response* response = m->PeekResponse ();
+        Response& response = m->rwResponse ();
         try {
             try {
                 rethrow_exception (e);
             }
             catch (const IO::Network::HTTP::Exception& ee) {
-                response->SetStatus (ee.GetStatus (), ee.GetReason ());
-                response->writeln (Characters::ToString (ee).c_str ());
-                response->SetContentType (DataExchange::InternetMediaTypes::kText_PLAIN);
+                response.SetStatus (ee.GetStatus (), ee.GetReason ());
+                response.writeln (Characters::ToString (ee).c_str ());
+                response.SetContentType (DataExchange::InternetMediaTypes::kText_PLAIN);
             }
             catch (...) {
-                response->SetStatus (IO::Network::HTTP::StatusCodes::kInternalError);
-                response->writeln (Characters::ToString (e).c_str ());
-                response->SetContentType (DataExchange::InternetMediaTypes::kText_PLAIN);
+                response.SetStatus (IO::Network::HTTP::StatusCodes::kInternalError);
+                response.writeln (Characters::ToString (e).c_str ());
+                response.SetContentType (DataExchange::InternetMediaTypes::kText_PLAIN);
             }
         }
         catch (...) {

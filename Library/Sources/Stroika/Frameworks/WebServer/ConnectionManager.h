@@ -149,13 +149,13 @@ namespace Stroika::Frameworks::WebServer {
 #endif
 
     public:
-        nonvirtual const ConnectionManager& operator= (const ConnectionManager&) = delete;
+        nonvirtual ConnectionManager& operator= (const ConnectionManager&) = delete;
 
     public:
         /**
          *  Returns the 'effective' options after applying defaults, not (generally) the original options.
          */
-        nonvirtual Options GetOptions () const;
+        Common::ReadOnlyProperty<const Options&> options;
 
     public:
         /**
@@ -230,7 +230,11 @@ namespace Stroika::Frameworks::WebServer {
          *  But this will return just those which are not 'done'. Of course - due to asyncrhony,
          *  by the time one looks at the list, some may already be done.
          */
-        nonvirtual Collection<shared_ptr<Connection>> GetConnections () const;
+        Common::ReadOnlyProperty<Collection<shared_ptr<Connection>>> connections;
+
+    public:
+        [[deprecated ("Since Stroika v2.1b10 use property connections()")]] Collection<shared_ptr<Connection>> GetConnections () const;
+        [[deprecated ("Since Stroika v2.1b10 use property options()")]] Options GetOptions () const;
 
     private:
         nonvirtual void onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s);

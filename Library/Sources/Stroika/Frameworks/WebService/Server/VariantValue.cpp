@@ -166,10 +166,10 @@ WebServer::RequestHandler Server::VariantValue::mkRequestHandler (const WebServi
 {
     return [=] (WebServer::Message* m) {
         RequireNotNull (m);
-        ExpectedMethod (m->GetRequestReference (), webServiceDescription);
+        ExpectedMethod (m->request (), webServiceDescription);
         if (webServiceDescription.fResponseType) {
-            m->PeekResponse ()->SetContentType (*webServiceDescription.fResponseType);
+            m->rwResponse ().SetContentType (*webServiceDescription.fResponseType);
         }
-        m->PeekResponse ()->write (f (m));
+        m->rwResponse ().write (f (m));
     };
 }

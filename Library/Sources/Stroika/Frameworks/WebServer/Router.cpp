@@ -106,27 +106,27 @@ struct Router::Rep_ : Interceptor::_IRep {
         Debug::TraceContextBumper ctx{L"Router::Rep_::HandleMessage", L"(...method=%s,url=%s)", m->GetRequestHTTPMethod ().c_str (), Characters::ToString (m->GetRequestURL ()).c_str ()};
 #endif
         Sequence<String>         matches;
-        optional<RequestHandler> handler = Lookup_ (*m->PeekRequest (), &matches);
+        optional<RequestHandler> handler = Lookup_ (m->request (), &matches);
         if (handler) {
             Handle_GET_ (m, matches, *handler);
         }
-        else if (m->PeekRequest ()->GetHTTPMethod () == HTTP::Methods::kHead and Handle_HEAD_ (m)) {
+        else if (m->request ().GetHTTPMethod () == HTTP::Methods::kHead and Handle_HEAD_ (m)) {
             // handled
         }
-        else if (m->PeekRequest ()->GetHTTPMethod () == HTTP::Methods::kOptions) {
+        else if (m->request ().GetHTTPMethod () == HTTP::Methods::kOptions) {
             Handle_OPTIONS_ (m);
         }
         else {
-            if (optional<Set<String>> o = GetAllowedMethodsForRequest_ (*m->PeekRequest ())) {
+            if (optional<Set<String>> o = GetAllowedMethodsForRequest_ (m->request ())) {
                 // From 10.4.6 405 Method Not Allowed
                 //      The method specified in the Request-Line is not allowed for the resource identified by the Request-URI.
                 //      The response MUST include an Allow header containing a list of valid methods for the requested resource.
                 Assert (not o->empty ());
-                m->PeekResponse ()->UpdateHeader ([&] (auto* header) { RequireNotNull (header); header->allow = o; });
+                m->rwResponse ().UpdateHeader ([&] (auto* header) { RequireNotNull (header); header->allow = o; });
                 Execution::Throw (ClientErrorException{HTTP::StatusCodes::kMethodNotAllowed});
             }
             else {
-                DbgTrace (L"Router 404: (...url=%s)", Characters::ToString (m->GetRequestURL ()).c_str ());
+                DbgTrace (L"Router 404: (...url=%s)", Characters::ToString (m->request ().GetURL ()).c_str ());
                 Execution::Throw (ClientErrorException{HTTP::StatusCodes::kNotFound});
             }
         }
@@ -196,15 +196,15 @@ struct Router::Rep_ : Interceptor::_IRep {
     }
     nonvirtual void Handle_GET_ (Message* message, const Sequence<String>& matches, const RequestHandler& handler) const
     {
-        const Request& request  = *message->PeekRequest ();
-        Response&      response = *message->PeekResponse ();
+        const Request& request  = message->request ();
+        Response&      response = message->rwResponse ();
         (handler) (message, matches);
         HandleCORSInNormallyHandledMessage_ (request, response);
     }
     nonvirtual bool Handle_HEAD_ (Message* message) const
     {
-        const Request&   request  = *message->PeekRequest ();
-        Response&        response = *message->PeekResponse ();
+        const Request&   request  = message->request ();
+        Response&        response = message->rwResponse ();
         Sequence<String> matches;
         if (optional<RequestHandler> handler = Lookup_ (Methods::kGet, ExtractHostRelPath_ (request.GetURL ()), request, &matches)) {
             // do someting to response so 'in HEAD mode' and won't write
@@ -217,8 +217,8 @@ struct Router::Rep_ : Interceptor::_IRep {
     }
     nonvirtual void Handle_OPTIONS_ (Message* message) const
     {
-        const Request& request  = *message->PeekRequest ();
-        Response&      response = *message->PeekResponse ();
+        const Request& request  = message->request ();
+        Response&      response = message->rwResponse ();
         // @todo note - This ignores - Access-Control-Request-Method - not sure how we are expected to use it?
         auto o = GetAllowedMethodsForRequest_ (request);
         if (o) {
@@ -246,7 +246,7 @@ struct Router::Rep_ : Interceptor::_IRep {
             response.SetStatus (IO::Network::HTTP::StatusCodes::kNoContent);
         }
         else {
-            DbgTrace (L"Router 404: (...url=%s)", Characters::ToString (message->GetRequestURL ()).c_str ());
+            DbgTrace (L"Router 404: (...url=%s)", Characters::ToString (message->request ().GetURL ()).c_str ());
             Execution::Throw (ClientErrorException{HTTP::StatusCodes::kNotFound});
         }
     }
