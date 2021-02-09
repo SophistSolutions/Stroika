@@ -7,7 +7,6 @@
 
 #include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/String2Int.h"
-#include "Stroika/Foundation/Characters/String_Constant.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
@@ -194,7 +193,7 @@ const WebServiceMethodDescription WebServer::Rep_::kVariables_{
 
 const WebServiceMethodDescription WebServer::Rep_::kPlus_{
     L"plus"_k,
-    Set<String>{String_Constant{Methods::kPost}},
+    Set<String>{Methods::kPost},
     DataExchange::InternetMediaTypes::kJSON,
     {},
     Sequence<String>{
@@ -204,7 +203,7 @@ const WebServiceMethodDescription WebServer::Rep_::kPlus_{
 };
 const WebServiceMethodDescription WebServer::Rep_::kMinus{
     L"minus"_k,
-    Set<String>{String_Constant{Methods::kPost}},
+    Set<String>{Methods::kPost},
     DataExchange::InternetMediaTypes::kJSON,
     {},
     Sequence<String>{
@@ -214,7 +213,7 @@ const WebServiceMethodDescription WebServer::Rep_::kMinus{
 };
 const WebServiceMethodDescription WebServer::Rep_::kTimes{
     L"times"_k,
-    Set<String>{String_Constant{Methods::kPost}},
+    Set<String>{Methods::kPost},
     DataExchange::InternetMediaTypes::kJSON,
     {},
     Sequence<String>{
@@ -225,7 +224,7 @@ const WebServiceMethodDescription WebServer::Rep_::kTimes{
 };
 const WebServiceMethodDescription WebServer::Rep_::kDivide{
     L"divide"_k,
-    Set<String>{String_Constant{Methods::kPost}},
+    Set<String>{Methods::kPost},
     DataExchange::InternetMediaTypes::kJSON,
     {},
     Sequence<String>{
