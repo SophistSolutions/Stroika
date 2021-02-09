@@ -17,12 +17,6 @@ namespace Stroika::Frameworks::WebServer {
      ******************************** WebServer::Message ****************************
      ********************************************************************************
      */
-    inline Message::Message (Request&& request, Response&& response, const optional<IO::Network::SocketAddress>& peerAddress)
-        : fPeerAddress_{peerAddress}
-        , fRequest_{move (request)}
-        , fResponse_ (move (response))
-    {
-    }
     inline optional<IO::Network::SocketAddress> Message::GetPeerAddress () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};

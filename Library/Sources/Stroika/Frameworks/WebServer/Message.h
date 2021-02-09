@@ -6,6 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
+#include "../../Foundation/Common/Property.h"
 #include "../../Foundation/Debug/AssertExternallySynchronizedLock.h"
 #include "../../Foundation/IO/Network/URI.h"
 
@@ -41,89 +42,63 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
+         *  This is the network address where the message (request) came from and where the message response is
+         *  going to be returned to. This can be sometimes omitted/unknown (HOW UNKNOWN - TBD DOCUMENT)
+         *
          *  @see Socket::GetPeerAddress
          */
-        nonvirtual optional<IO::Network::SocketAddress> GetPeerAddress () const;
+        Common::ReadOnlyProperty<optional<IO::Network::SocketAddress>> peerAddress;
 
     public:
         /**
-         *  \ensure NotNull
+         *  Returns a read-only reference (so not assignable) to a const Request& (so cannot modify the request).
          */
-        nonvirtual const Request* PeekRequest () const;
-        nonvirtual Request* PeekRequest ();
+        Common::ReadOnlyProperty<const Request&> request;
 
     public:
         /**
-         *  The reason for this naming is to emphasize that this returns a reference to an internal object (internal pointer) of the message
+         *  Returns a read-only reference (so not assignable) to a Request& (so CAN modify the request).
+         *  This should very rarely be used (just perhaps when constructing the original message)
          */
-        nonvirtual const Request& GetRequestReference () const;
-        nonvirtual Request& GetRequestReference ();
+        Common::ReadOnlyProperty<Request&> rwRequest;
 
     public:
         /**
-         *  \ensure NotNull
+         *  Returns a read-only reference (so not assignable) to a const Response& (so cannot modify the response).
          */
-        nonvirtual const Response* PeekResponse () const;
-        nonvirtual Response* PeekResponse ();
+        Common::ReadOnlyProperty<const Response&> response;
 
     public:
         /**
-         *  \brief shorthand for "PeekRequest ()->GetURL ()"
-         *
-         *  \note This shorthand is provided here because its very commonly used from RequestHandlers, and because it provides better threadsafty testing
+         *  Returns a read-only reference (so not assignable) to a Response& (so CAN modify the request).
+         *  Typically, users will want to access the 'rwResponse' not the 'response', since the underlying response object is frequently being updated.
          */
-        nonvirtual URI GetRequestURL () const;
-
-    public:
-        /**
-         *  \brief shorthand for "PeekRequest ()->GetHTTPMethod ()"
-         *
-         *  \note This shorthand is provided here because its very commonly used from RequestHandlers, and because it provides better threadsafty testing
-         */
-        nonvirtual String GetRequestHTTPMethod () const;
-
-    public:
-        /**
-         *  \brief shorthand for "PeekRequest ()->GetBody ()"
-         *
-         *  \note This shorthand is provided here because its very commonly used from RequestHandlers, and because it provides better threadsafty testing
-         */
-        nonvirtual Memory::BLOB GetRequestBody ();
-
-    public:
-        /**
-         *  \brief shorthand for "PeekResponse ()->SetContentType ()"
-         *
-         *  \note This shorthand is provided here because its very commonly used from RequestHandlers, and because it provides better threadsafty testing
-         */
-        nonvirtual void SetResponseContentType (const InternetMediaType& contentType);
-
-    public:
-        /**
-         *  \brief alias for PeekResponse ()->write (...args...);
-         */
-        template <typename... ARGS_TYPE>
-        nonvirtual void write (ARGS_TYPE&&... args);
-
-    public:
-        /**
-        *   \brief alias for PeekResponse ()->printf (...args...);
-        */
-        template <typename... ARGS_TYPE>
-        nonvirtual void printf (ARGS_TYPE&&... args);
-
-    public:
-        /**
-         *  \brief alias for PeekResponse ()->writeln (...args...);
-         */
-        template <typename... ARGS_TYPE>
-        nonvirtual void writeln (ARGS_TYPE&&... args);
+        Common::ReadOnlyProperty<Response&> rwResponse;
 
     public:
         /**
          *  @see Characters::ToString ();
          */
         nonvirtual String ToString () const;
+
+    public:
+        [[deprecated ("Since Stroika v2.1b10, just use request().GetBody()")]] Memory::BLOB                   GetRequestBody ();
+        [[deprecated ("Since Stroika v2.1b10, just use response()")]] const Response*                         PeekResponse () const;
+        [[deprecated ("Since Stroika v2.1b10, just use rwResponse()")]] Response*                             PeekResponse ();
+        [[deprecated ("Since Stroika v2.1b10, just use request()")]] const Request*                           PeekRequest () const;
+        [[deprecated ("Since Stroika v2.1b10, just use request()")]] Request*                                 PeekRequest ();
+        [[deprecated ("Since Stroika v2.1b10, just use request()")]] const Request&                           GetRequestReference () const;
+        [[deprecated ("Since Stroika v2.1b10, just use rwRequest()")]] Request&                               GetRequestReference ();
+        [[deprecated ("Since Stroika v2.1b10, just use peerAddress()")]] optional<IO::Network::SocketAddress> GetPeerAddress () const;
+        [[deprecated ("Since Stroika v2.1b10, just use request().GetURL")]] URI                               GetRequestURL () const;
+        [[deprecated ("Since Stroika v2.1b10, just use request().GetHTTPMethod")]] String                     GetRequestHTTPMethod () const;
+        [[deprecated ("Since Stroika v2.1b10, just use response().SetContentType")]] void                     SetResponseContentType (const InternetMediaType& contentType);
+        template <typename... ARGS_TYPE>
+        [[deprecated ("Since Stroika v2.1b10, just use response().write")]] void write (ARGS_TYPE&&... args);
+        template <typename... ARGS_TYPE>
+        [[deprecated ("Since Stroika v2.1b10, just use response().printf")]] void printf (ARGS_TYPE&&... args);
+        template <typename... ARGS_TYPE>
+        [[deprecated ("Since Stroika v2.1b10, just use response().writeln")]] void writeln (ARGS_TYPE&&... args);
 
     private:
         optional<IO::Network::SocketAddress> fPeerAddress_;
