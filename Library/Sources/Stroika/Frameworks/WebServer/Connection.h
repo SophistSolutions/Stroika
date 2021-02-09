@@ -20,7 +20,7 @@
 #include "Message.h"
 
 /*
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  */
 
 namespace Stroika::Frameworks::WebServer {
@@ -63,9 +63,10 @@ namespace Stroika::Frameworks::WebServer {
      *          conn.ReadAndProcessMessage ();
      *      \endcode
      * 
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *
      *  TODO:
-     *      @todo   DOCUMENT and enforce with Debug::AssertExternallySynrhoized or other... the intended thread safety
-     *              rules for htis object.
+     *      @todo   enforce thread policy with Debug::AssertExternallySynrhoized
      */
     class Connection {
     public:
@@ -119,7 +120,7 @@ namespace Stroika::Frameworks::WebServer {
          *
          *  \par Example Usage
          *      \code
-         *          conn.remainingConnectionLimits = Connection::Remaining{0, 0}; // disable keep-alives
+         *          conn.remainingConnectionLimits = KeepAlive{0, 0}; // disable keep-alives
          *      \endcode
          */
         Common::Property<optional<KeepAlive>> remainingConnectionLimits;

@@ -73,7 +73,7 @@ namespace Stroika::Frameworks::WebServer {
     public:
         /**
          */
-        Common::Property<IO::Network::HTTP::Headers> headers;
+        Common::Property<IO::Network::HTTP::Headers, const IO::Network::HTTP::Headers&> headers;
 
     public:
         /**
@@ -84,23 +84,15 @@ namespace Stroika::Frameworks::WebServer {
     public:
         /**
          *  Return the HTTP message body Content-Type, if any given
-         * A short-hand, equivilent to fetching headers().contentType()
+         *  A short-hand, equivilent to fetching headers().contentType()
          */
-        Common::ReadOnlyProperty < optional<InternetMediaType>> contentType;
+        Common::ReadOnlyProperty<optional<InternetMediaType>> contentType;
 
     public:
         /**
          *  \brief mostly looks at Connection: ARG header, but if not there takes into account HTTP-version specific defaults.
          */
-        nonvirtual bool GetKeepAliveRequested () const;
-
-    public:
-        /**
-         *  Return the unsigned integer value of the Content-Length header.
-         *
-         *  \note - this does not imply having read the body, and nor is it updated to reflect the body size read after its been read.
-         */
-        nonvirtual optional<uint64_t> GetContentLength () const;
+        Common::ReadOnlyProperty<bool> keepAliveRequested;
 
     public:
         /**
@@ -125,15 +117,17 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual String ToString () const;
 
     public:
+        [[deprecated ("Since Stroika 2.1b10 use this->keepAliveRequested")]] bool                     GetKeepAliveRequested () const;
+        [[deprecated ("Since Stroika 2.1b10 use this->contentLength")]] optional<uint64_t>            GetContentLength () const;
         [[deprecated ("Since Stroika v2.1b10 use contentType property")]] optional<InternetMediaType> GetContentType () const;
-        [[deprecated ("Since Stroika v2.1b10 use httpVersion property")]] String                 GetHTTPVersion () const;
-        [[deprecated ("Since Stroika v2.1b10 use httpVersion property")]] void                   SetHTTPVersion (const String& versionOrVersionLabel);
-        [[deprecated ("Since Stroika v2.1b10 use httpMethod property")]] String                  GetHTTPMethod () const;
-        [[deprecated ("Since Stroika v2.1b10 use httpMethod property")]] void                    SetHTTPMethod (const String& method);
-        [[deprecated ("Since Stroika v2.1b10 use url property")]] IO::Network::URI               GetURL () const;
-        [[deprecated ("Since Stroika v2.1b10 use url property")]] void                           SetURL (const IO::Network::URI& url);
-        [[deprecated ("Since Stroika v2.1b10 use headers property")]] IO::Network::HTTP::Headers GetHeaders () const;
-        [[deprecated ("Since Stroika v2.1b10 use headers property")]] void                       SetHeaders (const IO::Network::HTTP::Headers& headers);
+        [[deprecated ("Since Stroika v2.1b10 use httpVersion property")]] String                      GetHTTPVersion () const;
+        [[deprecated ("Since Stroika v2.1b10 use httpVersion property")]] void                        SetHTTPVersion (const String& versionOrVersionLabel);
+        [[deprecated ("Since Stroika v2.1b10 use httpMethod property")]] String                       GetHTTPMethod () const;
+        [[deprecated ("Since Stroika v2.1b10 use httpMethod property")]] void                         SetHTTPMethod (const String& method);
+        [[deprecated ("Since Stroika v2.1b10 use url property")]] IO::Network::URI                    GetURL () const;
+        [[deprecated ("Since Stroika v2.1b10 use url property")]] void                                SetURL (const IO::Network::URI& url);
+        [[deprecated ("Since Stroika v2.1b10 use headers property")]] IO::Network::HTTP::Headers      GetHeaders () const;
+        [[deprecated ("Since Stroika v2.1b10 use headers property")]] void                            SetHeaders (const IO::Network::HTTP::Headers& headers);
 
     private:
         Streams::InputStream<byte>::Ptr fInputStream_;

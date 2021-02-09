@@ -52,6 +52,8 @@ namespace Stroika::Frameworks::WebServer {
      *        interceptors += beforeInterceptors;
      *        interceptors += router;
      *        interceptors += afterInterceptors;
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      * 
      *  TODO:
      *      @todo We could allow updating most of these parameters. Some easily (like ServerHeader). Some would require stopping the
@@ -168,10 +170,10 @@ namespace Stroika::Frameworks::WebServer {
     public:
         /**
          *  Get the list of interceptors early interceptors. These default to:
-         *        earltInterceptors += ServerHeadersInterceptor_{serverHeader, corsSupportMode};
-         *        if (defaultFaultHandler) {
+         *      earltInterceptors += ServerHeadersInterceptor_{serverHeader, corsSupportMode};
+         *      if (defaultFaultHandler) {
          *          earltInterceptors += *defaultFaultHandler;
-         *        }
+         *      }
          * 
          *  @see beforeInterceptors, afterInterceptors, AddInterceptor, RemoveInterceptor to maintain the list of interceptors
          */

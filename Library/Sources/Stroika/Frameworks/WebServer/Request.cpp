@@ -39,7 +39,7 @@ using namespace Stroika::Frameworks::WebServer;
 
 /*
  ********************************************************************************
- ************************* WebServer::Request ***********************************
+ *************************** WebServer::Request *********************************
  ********************************************************************************
  */
 Request::Request (Request&& src)
@@ -80,7 +80,7 @@ Request::Request (const Streams::InputStream<byte>::Ptr& inStream)
               }
           }}
     , httpMethod{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> String {
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
               const Request*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::httpMethod);
               shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
               return thisObj->fMethod_;
@@ -91,7 +91,7 @@ Request::Request (const Streams::InputStream<byte>::Ptr& inStream)
               thisObj->fMethod_ = method;
           }}
     , url{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> IO::Network::URI {
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
               const Request*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::url);
               shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
               return thisObj->fURL_;
@@ -102,7 +102,7 @@ Request::Request (const Streams::InputStream<byte>::Ptr& inStream)
               thisObj->fURL_ = url;
           }}
     , headers{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> IO::Network::HTTP::Headers {
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const IO::Network::HTTP::Headers& {
               const Request*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::headers);
               shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
               return thisObj->fHeaders_;
@@ -113,11 +113,23 @@ Request::Request (const Streams::InputStream<byte>::Ptr& inStream)
               thisObj->fHeaders_ = newHeaders;
           }}
     , contentType{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<InternetMediaType> {
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
               const Request*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::contentType);
               shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
-              return thisObj->fHeaders_.contentType;
+              return thisObj->fHeaders_.contentType ();
           }}
+    , keepAliveRequested{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+        const Request*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::keepAliveRequested);
+        shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+        using ConnectionValue = IO::Network::HTTP::Headers::ConnectionValue;
+        if (thisObj->fHTTPVersion_ == IO::Network::HTTP::Versions::kOnePointZero) {
+            return thisObj->fHeaders_.connection ().value_or (ConnectionValue::eClose) == ConnectionValue::eKeepAlive;
+        }
+        if (thisObj->fHTTPVersion_ == IO::Network::HTTP::Versions::kOnePointOne) {
+            return thisObj->fHeaders_.connection ().value_or (ConnectionValue::eKeepAlive) == ConnectionValue::eKeepAlive;
+        }
+        return true; // for HTTP 2.0 and later, keep alive is always assumed (double check/reference?)
+    }}
     , fInputStream_{inStream}
 {
 }
@@ -145,6 +157,7 @@ void Request::SetHTTPVersion (const String& versionOrVersionLabel)
 
 bool Request::GetKeepAliveRequested () const
 {
+    //***DEPRECATED***
     using ConnectionValue = IO::Network::HTTP::Headers::ConnectionValue;
     if (fHTTPVersion_ == IO::Network::HTTP::Versions::kOnePointZero) {
         return fHeaders_.connection ().value_or (ConnectionValue::eClose) == ConnectionValue::eKeepAlive;
@@ -169,12 +182,14 @@ Memory::BLOB Request::GetBody ()
 
 optional<uint64_t> Request::GetContentLength () const
 {
+    //***DEPRECATED***
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     return fHeaders_.contentLength;
 }
 
 optional<InternetMediaType> Request::GetContentType () const
 {
+    //***DEPRECATED***
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     return fHeaders_.contentType;
 }
@@ -182,7 +197,7 @@ optional<InternetMediaType> Request::GetContentType () const
 Streams::InputStream<byte>::Ptr Request::GetBodyStream ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (L"Request::GetBodyStream");
+    Debug::TraceContextBumper ctx{L"Request::GetBodyStream"};
 #endif
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     if (fBodyInputStream_ == nullptr) {
@@ -192,8 +207,8 @@ Streams::InputStream<byte>::Ptr Request::GetBodyStream ()
          *      a Content-Length or Transfer-Encoding header field in the request's message-headers
          */
         // if we have a content-length, read that many bytes.
-        if (optional<uint64_t> contentLength = GetContentLength ()) {
-            fBodyInputStream_ = InputSubStream<byte>::New (fInputStream_, {}, fInputStream_.GetOffset () + static_cast<size_t> (*contentLength));
+        if (optional<uint64_t> cl = fHeaders_.contentLength ()) {
+            fBodyInputStream_ = InputSubStream<byte>::New (fInputStream_, {}, fInputStream_.GetOffset () + static_cast<size_t> (*cl));
         }
         else {
             /*

@@ -260,7 +260,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
         /*
          *  Now bookkeeping and handling of keepalive headers
          */
-        bool thisMessageKeepAlive = fMessage_->request ().GetKeepAliveRequested ();
+        bool thisMessageKeepAlive = fMessage_->request ().keepAliveRequested;
         if (thisMessageKeepAlive) {
             if (not response ().IsContentLengthKnown ()) {
                 thisMessageKeepAlive = false;
@@ -269,10 +269,8 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
         if (thisMessageKeepAlive) {
             // Check for keepalive headers, and handle them appropriately
             // only meaningful HTTP 1.1 and earlier and only if Connection: keep-alive
-            {
-                if (auto keepAliveValue = fMessage_->request ().headers ().keepAlive ()) {
-                    this->remainingConnectionLimits = KeepAlive::Merge (this->remainingConnectionLimits (), *keepAliveValue);
-                }
+            if (auto keepAliveValue = fMessage_->request ().headers ().keepAlive ()) {
+                this->remainingConnectionLimits = KeepAlive::Merge (this->remainingConnectionLimits (), *keepAliveValue);
             }
             // if missing, no limits
             if (auto oRemaining = remainingConnectionLimits ()) {
@@ -291,9 +289,9 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
                 }
             }
         }
-
         if (thisMessageKeepAlive) {
-            // be sure we advance the read pointer over the message body, lest we start reading part of the previous message as the next message
+            // be sure we advance the read pointer over the message body,
+            // lest we start reading part of the previous message as the next message
 
             // @todo must fix this for support of Transfer-Encoding, but from:
             //
@@ -304,7 +302,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
              *      The presence of a message-body in a request is signaled by the inclusion of a Content-Length 
              *      or Transfer-Encoding header field in the request's message-headers/
              */
-            if (request ().GetContentLength ()) {
+            if (request ().headers ().contentLength ()) {
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
                 WriteLogConnectionMsg_ (L"msg is keepalive, and have content length, so making sure we read all of request body");
 #endif
