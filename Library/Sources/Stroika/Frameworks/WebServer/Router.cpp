@@ -51,7 +51,7 @@ namespace {
  */
 bool Route::Matches (const Request& request, Sequence<String>* pathRegExpMatches) const
 {
-    return Matches (request.httpMethod (), ExtractHostRelPath_ (request.url ()), request, pathRegExpMatches);
+    return Matches (request.httpMethod, ExtractHostRelPath_ (request.url ()), request, pathRegExpMatches);
 }
 bool Route::Matches (const String& method, const String& hostRelPath, const Request& request, Sequence<String>* pathRegExpMatches) const
 {
@@ -177,11 +177,11 @@ struct Router::Rep_ : Interceptor::_IRep {
     }
     nonvirtual optional<RequestHandler> Lookup_ (const Request& request, Sequence<String>* matches) const
     {
-        return Lookup_ (request.httpMethod (), ExtractHostRelPath_ (request.url ()), request, matches);
+        return Lookup_ (request.httpMethod, ExtractHostRelPath_ (request.url), request, matches);
     }
     nonvirtual optional<Set<String>> GetAllowedMethodsForRequest_ (const Request& request) const
     {
-        String                   hostRelPath = ExtractHostRelPath_ (request.GetURL ());
+        String                   hostRelPath = ExtractHostRelPath_ (request.url);
         static const Set<String> kMethods2Try_{HTTP::Methods::kGet, HTTP::Methods::kPut, HTTP::Methods::kOptions, HTTP::Methods::kDelete, HTTP::Methods::kPost};
         Set<String>              methods;
         for (String method : kMethods2Try_) {
