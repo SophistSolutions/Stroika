@@ -33,10 +33,6 @@
  * 
  *      @todo   Consider adding propertyChanged events to properties (if was a very cheap way when not used)
  *              Maybe subclass of Property - PropertyWithChangeEvent? then it could add the event list and notification)
- * 
- *      @todo   Consider adding extra (defauleted to T) arguments to Property template so you can have a slightly differnt
- *              'T' value for base class ReadOnlyProperty - so you can have it return const T&, or T&. No point in doing this
- *              for the writeonly property case.
  */
 
 namespace Stroika::Foundation::Common {
@@ -179,17 +175,17 @@ namespace Stroika::Foundation::Common {
          *  You can assign a value of the underlying type, but we do NOT support operator=(WriteOnlyProperty) because
          *  we cannot generically read from a write-only property to copy its value.
          */
-        nonvirtual void operator= (const Configuration::ArgByValueType<T>& value);
+        nonvirtual void operator= (Configuration::ArgByValueType<T> value);
         nonvirtual void operator= (const WriteOnlyProperty&) = delete;
         nonvirtual void operator= (const WriteOnlyProperty&&) = delete;
 
     public:
         /**
          */
-        nonvirtual void Set (const Configuration::ArgByValueType<T>& value);
+        nonvirtual void Set (Configuration::ArgByValueType<T> value);
 
     private:
-        const function<void (WriteOnlyProperty*, const Configuration::ArgByValueType<T>&)> fSetter_;
+        const function<void (WriteOnlyProperty*, Configuration::ArgByValueType<T>)> fSetter_;
     };
 
     /**
@@ -307,8 +303,8 @@ namespace Stroika::Foundation::Common {
      * 
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md">SAME AS T/GETTER/SETTER - all methods have exactly the thread safety of the underlying GETTER/SETTER</a>
      */
-    template <typename T>
-    class Property : public ReadOnlyProperty<T>, public WriteOnlyProperty<T> {
+    template <typename T, typename READ_T = T>
+    class Property : public ReadOnlyProperty<READ_T>, public WriteOnlyProperty<T> {
     public:
         /**
          */
@@ -329,12 +325,12 @@ namespace Stroika::Foundation::Common {
     public:
         /**
          */
-        nonvirtual T operator        = (const Configuration::ArgByValueType<T>& value);
+        nonvirtual T operator        = (Configuration::ArgByValueType<T> value);
         nonvirtual Property& operator= (const Property& value);
         nonvirtual Property& operator= (const Property&&) = delete;
 
     public:
-        using ReadOnlyProperty<T>::Get;
+        using ReadOnlyProperty<READ_T>::Get;
 
     public:
         using WriteOnlyProperty<T>::Set;

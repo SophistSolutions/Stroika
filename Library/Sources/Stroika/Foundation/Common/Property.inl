@@ -55,36 +55,36 @@ namespace Stroika::Foundation::Common {
     {
     }
     template <typename T>
-    inline void WriteOnlyProperty<T>::Set (const Configuration::ArgByValueType<T>& value)
+    inline void WriteOnlyProperty<T>::Set (Configuration::ArgByValueType<T> value)
     {
         fSetter_ (this, value);
     }
     template <typename T>
-    inline void WriteOnlyProperty<T>::operator= (const Configuration::ArgByValueType<T>& value)
+    inline void WriteOnlyProperty<T>::operator= (Configuration::ArgByValueType<T> value)
     {
         Set (value);
     }
 
     /*
      ********************************************************************************
-     ********************************** Property<T> *********************************
+     ***************************** Property<T, READ_T> ******************************
      ********************************************************************************
      */
-    template <typename T>
+    template <typename T, typename READ_T>
     template <typename G, typename S>
-    inline Property<T>::Property (G getter, S setter)
-        : ReadOnlyProperty<T> (getter)
-        , WriteOnlyProperty<T> (setter)
+    inline Property<T, READ_T>::Property (G getter, S setter)
+        : ReadOnlyProperty<READ_T>{getter}
+        , WriteOnlyProperty<T>{setter}
     {
     }
-    template <typename T>
-    inline T Property<T>::operator= (const Configuration::ArgByValueType<T>& value)
+    template <typename T, typename READ_T>
+    inline T Property<T, READ_T>::operator= (Configuration::ArgByValueType<T> value)
     {
         WriteOnlyProperty<T>::operator= (value);
         return value;
     }
-    template <typename T>
-    inline auto Property<T>::operator= (const Property& value) -> Property&
+    template <typename T, typename READ_T>
+    inline auto Property<T, READ_T>::operator= (const Property& value) -> Property&
     {
         Set (value.Get ());
         return *this;
