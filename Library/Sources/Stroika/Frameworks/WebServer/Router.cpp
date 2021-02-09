@@ -77,7 +77,6 @@ bool Route::Matches (const String& method, const String& hostRelPath, const Requ
  ************************* WebServer::Router::Rep_ ******************************
  ********************************************************************************
  */
-
 struct Router::Rep_ : Interceptor::_IRep {
     static const optional<Set<String>> MapStartToNullOpt_ (const optional<Set<String>>& o)
     {
