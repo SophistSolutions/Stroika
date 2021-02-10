@@ -121,13 +121,13 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (ARG_TYPE_COMBINED)>& f)
     {
         return [=] (WebServer::Message* m) {
-            ExpectedMethod (m->GetRequestReference (), webServiceDescription);
+            ExpectedMethod (m->request (), webServiceDescription);
             if constexpr (is_same_v<RETURN_TYPE, void>) {
-                f (objVarMapper.ToObject<ARG_TYPE_COMBINED> (CombineWebServiceArgsAsVariantValue (m->PeekRequest ())));
-                WriteResponse (m->PeekResponse (), webServiceDescription);
+                f (objVarMapper.ToObject<ARG_TYPE_COMBINED> (CombineWebServiceArgsAsVariantValue (&m->rwRequest ())));
+                WriteResponse (&m->rwResponse (), webServiceDescription);
             }
             else {
-                WriteResponse (m->PeekResponse (), webServiceDescription, f (objVarMapper.ToObject<ARG_TYPE_COMBINED> (CombineWebServiceArgsAsVariantValue (m->PeekRequest ()))));
+                WriteResponse (&m->rwResponse (), webServiceDescription, f (objVarMapper.ToObject<ARG_TYPE_COMBINED> (CombineWebServiceArgsAsVariantValue (&m->rwRequest ()))));
             }
         };
     }
