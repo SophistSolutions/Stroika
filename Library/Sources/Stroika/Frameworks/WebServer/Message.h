@@ -72,7 +72,7 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         *  Returns a read-only reference (so not assignable) to a Response& (so CAN modify the request).
+         *  Returns a read-only reference (so not assignable) to a Response& (so CAN modify the response).
          *  Typically, users will want to access the 'rwResponse' not the 'response', since the underlying response object is frequently being updated.
          */
         Common::ReadOnlyProperty<Response&> rwResponse;
