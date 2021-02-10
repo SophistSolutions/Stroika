@@ -71,7 +71,18 @@ Response::Response (Response&& src)
 }
 
 Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream<byte>::Ptr& outStream, const optional<InternetMediaType>& ct)
-    : codePage{
+    : headers{
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> IO::Network::HTTP::Headers {
+              const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::headers);
+              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              return thisObj->fHeaders_;
+          },
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newHeaders) {
+              Response*                                          thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::headers);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              thisObj->fHeaders_ = newHeaders;
+          }}
+    , codePage{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
               const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::codePage);
               shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
@@ -89,17 +100,6 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
                       thisObj->fHeaders_.contentType = thisObj->AdjustContentTypeForCodePageIfNeeded_ (*ct);
                   }
               }
-          }}
-    , headers{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> IO::Network::HTTP::Headers {
-              const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::headers);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
-              return thisObj->fHeaders_;
-          },
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newHeaders) {
-              Response*                                          thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::headers);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
-              thisObj->fHeaders_ = newHeaders;
           }}
     , fSocket_{s}
     , fState_{State::eInProgress}
