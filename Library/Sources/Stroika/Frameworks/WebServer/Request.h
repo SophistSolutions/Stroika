@@ -73,7 +73,7 @@ namespace Stroika::Frameworks::WebServer {
     public:
         /**
          */
-        Common::Property<IO::Network::HTTP::Headers, const IO::Network::HTTP::Headers&> headers;
+        Common::Property<const IO::Network::HTTP::Headers&> headers;
 
     public:
         /**
