@@ -303,12 +303,14 @@ namespace Stroika::Foundation::Common {
      * 
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md">SAME AS T/GETTER/SETTER - all methods have exactly the thread safety of the underlying GETTER/SETTER</a>
      */
-    template <typename T, typename READ_T = T>
-    class Property : public ReadOnlyProperty<READ_T>, public WriteOnlyProperty<T> {
+    template <typename T>
+    class Property : public ReadOnlyProperty<T>, public WriteOnlyProperty<decay_t<T>> {
     public:
         /**
          */
-        using value_type = T;
+        using base_value_type = T;
+        using decayed_value_type = decay_t<T>;
+        using value_type = decayed_value_type;
 
     public:
         /**
@@ -330,10 +332,10 @@ namespace Stroika::Foundation::Common {
         nonvirtual Property& operator= (const Property&&) = delete;
 
     public:
-        using ReadOnlyProperty<READ_T>::Get;
+        using ReadOnlyProperty<T>::Get;
 
     public:
-        using WriteOnlyProperty<T>::Set;
+        using WriteOnlyProperty<decayed_value_type>::Set;
     };
 
 }

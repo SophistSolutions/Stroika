@@ -67,24 +67,24 @@ namespace Stroika::Foundation::Common {
 
     /*
      ********************************************************************************
-     ***************************** Property<T, READ_T> ******************************
+     ******************************** Property<T> ***********************************
      ********************************************************************************
      */
-    template <typename T, typename READ_T>
+    template <typename T>
     template <typename G, typename S>
-    inline Property<T, READ_T>::Property (G getter, S setter)
-        : ReadOnlyProperty<READ_T>{getter}
-        , WriteOnlyProperty<T>{setter}
+    inline Property<T>::Property (G getter, S setter)
+        : ReadOnlyProperty<T>{getter}
+        , WriteOnlyProperty<decayed_value_type>{setter}
     {
     }
-    template <typename T, typename READ_T>
-    inline T Property<T, READ_T>::operator= (Configuration::ArgByValueType<T> value)
+    template <typename T>
+    inline T Property<T>::operator= (Configuration::ArgByValueType<T> value)
     {
-        WriteOnlyProperty<T>::operator= (value);
+        WriteOnlyProperty<decayed_value_type>::operator= (value);
         return value;
     }
-    template <typename T, typename READ_T>
-    inline auto Property<T, READ_T>::operator= (const Property& value) -> Property&
+    template <typename T>
+    inline auto Property<T>::operator= (const Property& value) -> Property&
     {
         Set (value.Get ());
         return *this;
