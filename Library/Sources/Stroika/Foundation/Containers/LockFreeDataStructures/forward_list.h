@@ -17,6 +17,30 @@
  *      https://codereview.stackexchange.com/questions/167252/c11-lock-free-collection-similar-to-stdforward-list-follow-up-2
  *      APPENTLY written by https://codereview.stackexchange.com/users/62314/brent
  *      All said about license we MIT licence, which is what Stroika uses, so I assume will be OK.
+ * 
+ * 
+ * 
+ * 
+NOTES FROM ORIGINAL POST:
+
+This question is a new iteration of this question:
+
+C++11 lock free collection similar to std::forward_list - follow-up
+
+all methods are thread safe, baring the destructor
+push, insert, emplace, pop, erase, and iterator increment/dereference are O(1)
+locks that do occur are per-element spin locks
+push, insert, emplace, clear, and separate operations are lock free.
+pop and erase are not lock free.
+begin, cbegin, and incrementing iterators are not lock free
+dereferencing iterators is lock free
+uses reference counting to preserve iterators (and values) of removed elements
+iterators of removed elements will increment to end()
+insert_after or emplace_after on a removed iterator will return end() to indicate failure.
+In addition to the creative commons license for code on this site, you may also use it under the MIT license.
+
+concurrent_forward_list.hpp
+
  */
 
 namespace Stroika::Foundation::Containers::LockFreeDataStructures {
