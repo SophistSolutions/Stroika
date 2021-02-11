@@ -482,8 +482,8 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
             return true;
         }
 
-        static node* terminal () { return (node*)::details::concurrent_forward_list_details::terminal; }
-        static node* spin () { return (node*)::details::concurrent_forward_list_details::spin; }
+        static node* terminal () { return (node*)details::concurrent_forward_list_details::terminal; }
+        static node* spin () { return (node*)details::concurrent_forward_list_details::spin; }
 
         class node {
         public:
