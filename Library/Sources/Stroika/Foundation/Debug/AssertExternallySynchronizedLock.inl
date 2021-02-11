@@ -9,6 +9,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include <algorithm>
+
 #include "Sanitizer.h"
 
 namespace Stroika::Foundation::Debug {

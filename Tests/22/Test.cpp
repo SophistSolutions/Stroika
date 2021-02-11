@@ -59,7 +59,7 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void SimpleSequenceTest_1_ ()
     {
-        Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_1_ ()");
+        Debug::TraceContextBumper traceCtx{"{}::SimpleSequenceTest_1_ ()"};
         static const size_t       K = Debug::IsRunningUnderValgrind () ? 100 : 1000;
         {
             CONCRETE_SEQUENCE_T s;
