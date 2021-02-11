@@ -37,7 +37,6 @@ void AssertExternallySynchronizedLock::lock_ () const noexcept
         if (sharedContext->fLocks_++ == 0) {
             // If first time in, save thread-id
             sharedContext->fCurLockThread_ = this_thread::get_id ();
-            lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
             if (not sharedContext->GetSharedLockEmpty ()) {
                 // If first already shared locks - OK - so long as same thread
                 Require (sharedContext->CountOfIInSharedLockThreads (sharedContext->fCurLockThread_) == sharedContext->GetSharedLockThreadsCount ());
@@ -85,7 +84,6 @@ void AssertExternallySynchronizedLock::lock_shared_ () const noexcept
             }
             Require (sharedContext->fCurLockThread_ == this_thread::get_id ());
         }
-        lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
         sharedContext->AddSharedLock (this_thread::get_id ());
     }
     catch (...) {
@@ -97,7 +95,6 @@ void AssertExternallySynchronizedLock::unlock_shared_ () const noexcept
 {
     try {
         SharedContext*    sharedContext = _fSharedContext.get ();
-        lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
         sharedContext->RemoveSharedLock (this_thread::get_id ());
     }
     catch (...) {
