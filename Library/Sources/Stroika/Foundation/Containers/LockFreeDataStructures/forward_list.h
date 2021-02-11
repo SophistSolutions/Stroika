@@ -42,6 +42,16 @@ forward_list.hpp
  */
 
 namespace Stroika::Foundation::Containers::LockFreeDataStructures {
+    template <typename T>
+    class forward_list;
+}
+namespace std {
+    template <typename T>
+    void swap (Stroika::Foundation::Containers::LockFreeDataStructures::forward_list<T>& a, Stroika::Foundation::Containers::LockFreeDataStructures::forward_list<T>& b) noexcept;
+}
+
+
+namespace Stroika::Foundation::Containers::LockFreeDataStructures {
 
     namespace Private_ {
         namespace concurrent_forward_list_details {
