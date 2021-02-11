@@ -296,6 +296,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project-Template", "Project
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test51", "..\..\Tests\Projects\VisualStudio.Net-2019\51\Test51.vcxproj", "{35AA9E83-4057-49EB-B522-18FC2FBF29BF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test52", "..\..\Tests\Projects\VisualStudio.Net-2019\52\Test52.vcxproj", "{9AC2A6A5-FC3D-4848-A7CA-67B066BF92E9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug-U-32|Unspecified = Debug-U-32|Unspecified
@@ -1554,6 +1556,24 @@ Global
 		{35AA9E83-4057-49EB-B522-18FC2FBF29BF}.Release-U-64|Unspecified.ActiveCfg = Release-U-64|Win32
 		{35AA9E83-4057-49EB-B522-18FC2FBF29BF}.Release-U-64|x86.ActiveCfg = Release-U-64|Win32
 		{35AA9E83-4057-49EB-B522-18FC2FBF29BF}.Release-U-64|x86.Build.0 = Release-U-64|Win32
+		{9AC2A6A5-FC3D-4848-A7CA-67B066BF92E9}.Debug-U-32|Unspecified.ActiveCfg = Debug-U-32|Win32
+		{9AC2A6A5-FC3D-4848-A7CA-67B066BF92E9}.Debug-U-32|x86.ActiveCfg = Debug-U-32|Win32
+		{9AC2A6A5-FC3D-4848-A7CA-67B066BF92E9}.Debug-U-32|x86.Build.0 = Debug-U-32|Win32
+		{9AC2A6A5-FC3D-4848-A7CA-67B066BF92E9}.Debug-U-64|Unspecified.ActiveCfg = Debug-U-64|Win32
+		{9AC2A6A5-FC3D-4848-A7CA-67B066BF92E9}.Debug-U-64|x86.ActiveCfg = Debug-U-64|Win32
+		{9AC2A6A5-FC3D-4848-A7CA-67B066BF92E9}.Debug-U-64|x86.Build.0 = Debug-U-64|Win32
+		{9AC2A6A5-FC3D-4848-A7CA-67B066BF92E9}.Release-Logging-U-32|Unspecified.ActiveCfg = Release-Logging-U-32|Win32
+		{9AC2A6A5-FC3D-4848-A7CA-67B066BF92E9}.Release-Logging-U-32|x86.ActiveCfg = Release-Logging-U-32|Win32
+		{9AC2A6A5-FC3D-4848-A7CA-67B066BF92E9}.Release-Logging-U-32|x86.Build.0 = Release-Logging-U-32|Win32
+		{9AC2A6A5-FC3D-4848-A7CA-67B066BF92E9}.Release-Logging-U-64|Unspecified.ActiveCfg = Release-Logging-U-64|Win32
+		{9AC2A6A5-FC3D-4848-A7CA-67B066BF92E9}.Release-Logging-U-64|x86.ActiveCfg = Release-Logging-U-64|Win32
+		{9AC2A6A5-FC3D-4848-A7CA-67B066BF92E9}.Release-Logging-U-64|x86.Build.0 = Release-Logging-U-64|Win32
+		{9AC2A6A5-FC3D-4848-A7CA-67B066BF92E9}.Release-U-32|Unspecified.ActiveCfg = Release-U-32|Win32
+		{9AC2A6A5-FC3D-4848-A7CA-67B066BF92E9}.Release-U-32|x86.ActiveCfg = Release-U-32|Win32
+		{9AC2A6A5-FC3D-4848-A7CA-67B066BF92E9}.Release-U-32|x86.Build.0 = Release-U-32|Win32
+		{9AC2A6A5-FC3D-4848-A7CA-67B066BF92E9}.Release-U-64|Unspecified.ActiveCfg = Release-U-64|Win32
+		{9AC2A6A5-FC3D-4848-A7CA-67B066BF92E9}.Release-U-64|x86.ActiveCfg = Release-U-64|Win32
+		{9AC2A6A5-FC3D-4848-A7CA-67B066BF92E9}.Release-U-64|x86.Build.0 = Release-U-64|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
