@@ -6,6 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
+#include <algorithm>
 #include <atomic>
 #include <mutex>
 #include <optional>
