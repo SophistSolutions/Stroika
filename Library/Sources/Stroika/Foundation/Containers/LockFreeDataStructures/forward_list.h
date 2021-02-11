@@ -163,7 +163,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
                 return temp;
             }
 
-            friend void std::swap (ForwardIterator& a, ForwardIterator& b) noexcept
+            friend void swap (ForwardIterator& a, ForwardIterator& b) noexcept
             {
                 using std::swap; // bring in swap for built-in types
                 swap (a.current, b.current);
@@ -197,6 +197,8 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         typedef ForwardIterator<const T> const_iterator;
 
     public:
+        /**
+         */
         forward_list ();
         forward_list (const forward_list& src);
         forward_list (forward_list&& src) noexcept;
@@ -205,7 +207,9 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         ~forward_list ();
 
     public:
+        /**
         // lock free
+         */
         nonvirtual bool empty () const;
 
     public:
