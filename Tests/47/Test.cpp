@@ -1,451 +1,366 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
  */
-//  TEST    Foundation::Memory
+//  TEST    Foundation::Math
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 
-#include "Stroika/Foundation/Memory/BLOB.h"
-#include "Stroika/Foundation/Memory/Bits.h"
-#include "Stroika/Foundation/Memory/ObjectFieldUtilities.h"
-#include "Stroika/Foundation/Memory/Optional.h"
-#include "Stroika/Foundation/Memory/SharedByValue.h"
-#include "Stroika/Foundation/Memory/SharedPtr.h"
+#include "Stroika/Foundation/Math/Angle.h"
+#include "Stroika/Foundation/Math/Common.h"
+#include "Stroika/Foundation/Math/LinearAlgebra/Matrix.h"
+#include "Stroika/Foundation/Math/Optimization/DownhillSimplexMinimization.h"
+#include "Stroika/Foundation/Math/Overlap.h"
+#include "Stroika/Foundation/Math/ReBin.h"
+#include "Stroika/Foundation/Math/Statistics.h"
 
-#include "../TestHarness/NotCopyable.h"
 #include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
 
-using std::byte;
-
 using namespace Stroika;
 using namespace Stroika::Foundation;
-using namespace Stroika::Foundation::Memory;
-
-using namespace TestHarness;
+using namespace Stroika::Foundation::Math;
 
 namespace {
-    void Test1_Optional ()
+    // test helper to assure answer for (A,B) is same as (B,A) - commutative
+    template <typename T>
+    bool VerifyOverlapIsCommutative_ (const pair<T, T>& p1, const pair<T, T>& p2)
     {
-        {
-            using Characters::String;
-            optional<String> x;
-            x = String{L"x"};
-        }
-        {
-            optional<int> x;
-            VerifyTestResult (not x.has_value ());
-            x = 1;
-            VerifyTestResult (x.has_value ());
-            VerifyTestResult (*x == 1);
-        }
-        {
-            // Careful about self-assignment
-            optional<int> x;
-            x = 3;
-            x = max (*x, 1);
-            VerifyTestResult (x == 3);
-        }
-        auto testOptionalOfThingNotCopyable = [] () {
-            {
-                optional<NotCopyable> n1;
-                VerifyTestResult (not n1.has_value ());
-                optional<NotCopyable> n2{NotCopyable ()}; // use r-value reference to move
-                VerifyTestResult (n2.has_value ());
+        bool r = Overlaps<T> (p1, p2);
+        VerifyTestResult (r == Overlaps<T> (p2, p1));
+        return r;
+    }
+}
+
+namespace {
+    void Test1_Overlap_ ()
+    {
+        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 3), pair<int, int> (2, 2)));
+        VerifyTestResult (not VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 3), pair<int, int> (3, 4)));
+        VerifyTestResult (not VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 3), pair<int, int> (0, 1)));
+        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 3), pair<int, int> (1, 1)));
+        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 10), pair<int, int> (3, 4)));
+        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 10), pair<int, int> (3, 3)));
+        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (5, 10), pair<int, int> (3, 7)));
+        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (5, 10), pair<int, int> (5, 5)));
+    }
+    void Test2_Round_ ()
+    {
+        // really could use more cases!!!
+        VerifyTestResult (RoundUpTo (2, 10) == 10);
+        VerifyTestResult (RoundDownTo (2, 10) == 0);
+        VerifyTestResult (RoundUpTo (2, 2) == 2);
+        VerifyTestResult (RoundDownTo (2, 2) == 2);
+        VerifyTestResult (Round<int> (2.2) == 2);
+        VerifyTestResult (Round<int> (numeric_limits<double>::max () * 1000) == numeric_limits<int>::max ());
+        VerifyTestResult (Round<unsigned int> (numeric_limits<double>::max () * 1000) == numeric_limits<unsigned int>::max ());
+    }
+    void Test3_Angle_ ()
+    {
+        // really could use more cases!!!
+        VerifyTestResult (1.1_rad + 1.1_rad < 2.3_rad);
+        VerifyTestResult (1.1_rad + 1.1_rad < 360_deg);
+        VerifyTestResult (1.1_rad + 1.1_rad < 180_deg);
+        VerifyTestResult (1.1_rad + 1.1_rad > 120_deg);
+    }
+    void Test4_OddEvenPrime_ ()
+    {
+        VerifyTestResult (IsPrime (2));
+        VerifyTestResult (IsOdd (3));
+        VerifyTestResult (IsEven (4));
+        VerifyTestResult (IsPrime (5));
+        for (int i = 1; i < 1000; ++i) {
+            VerifyTestResult (IsOdd (i) != IsEven (i));
+            if (IsPrime (i)) {
+                VerifyTestResult (i == 2 or IsOdd (i));
             }
-            {
-                [[maybe_unused]] optional<NotCopyable> a;
-                optional<NotCopyable>                  a1{NotCopyable ()};
-                a1 = NotCopyable ();
+            if (IsEven (i)) {
+                VerifyTestResult (i == 2 or not IsPrime (i));
             }
-        };
-        testOptionalOfThingNotCopyable ();
-        {
-            optional<int> x;
-            if (x) {
-                VerifyTestResult (false);
-            }
-        }
-        {
-            optional<int> x;
-            if (optional<int> y = x) {
-                VerifyTestResult (false);
-            }
-        }
-        {
-            optional<int> x = 3;
-            if (optional<int> y = x) {
-                VerifyTestResult (y == 3);
-            }
-            else {
-                VerifyTestResult (false);
-            }
-        }
-        {
-            float*  d1 = nullptr;
-            double* d2 = nullptr;
-            VerifyTestResult (not OptionalFromNullable (d1).has_value ());
-            VerifyTestResult (not OptionalFromNullable (d2).has_value ());
-        }
-        {
-            constexpr optional<int> x{1};
-            VerifyTestResult (x == 1);
-        }
-        {
-            optional<int>                     d;
-            [[maybe_unused]] optional<double> t1 = d;                    // no warnings - this direction OK
-            [[maybe_unused]] optional<double> t2 = optional<double> (d); // ""
-        }
-        {
-            [[maybe_unused]] optional<double> d;
-            //Optional<uint64_t> t1 = d;                      // should generate warning or error
-            // SKIP SINCE SWITCH TO C++ optional - generates warning - optional<uint64_t> t2 = optional<uint64_t> (d); // should not
-        }
-        {
-            optional<int> x = 1;
-            VerifyTestResult (Characters::ToString (x) == L"1");
-        }
-        {
-            // empty optional < any other value
-            VerifyTestResult (optional<int>{} < -9999);
-            VerifyTestResult (optional<int>{-9999} > optional<int>{});
         }
     }
-    void Test2_SharedByValue ()
+}
+
+namespace {
+    void Test5_ReBin_ ()
     {
-        using Memory::BLOB;
-        // par Example Usage from doc header
-        SharedByValue<vector<byte>> b{BLOB::Hex ("abcd1245").Repeat (100).As<vector<byte>> ()};
-        SharedByValue<vector<byte>> c = b; // copied by reference until 'c' or 'b' changed values
-        VerifyTestResult (c.cget () == b.cget ());
-    }
-    void Test_4_Optional_Of_Mapping_Copy_Problem_ ()
-    {
-        using namespace Stroika::Foundation::Memory;
-        using namespace Stroika::Foundation::Containers;
-        Mapping<int, float> ml1, ml2;
-        ml1 = ml2;
-
-        optional<Mapping<int, float>> ol1, ol2;
-        if (ol2.has_value ()) {
-            ml1 = *ol2;
-        }
-        ol1 = ml1;
-        optional<Mapping<int, float>> xxxx2 (ml1);
-
-        // fails to compile prior to 2013-09-09
-        optional<Mapping<int, float>> xxxx1 (ol1);
-        // fails to compile prior to 2013-09-09
-        ol1 = ol2;
-    }
-
-    // temporarily put this out here to avoid MSVC compiler bug -- LGP 2014-02-26
-    // SB nested inside function where used...
-    //  --LGP 2014-02-26
-    namespace {
-        struct X_ {
-            int a = 0;
-        };
-        struct jimStdSP_ : std::enable_shared_from_this<jimStdSP_> {
-            int                   field = 1;
-            shared_ptr<jimStdSP_> doIt ()
-            {
-                return shared_from_this ();
-            }
-        };
-        struct jimMIXStdSP_ : X_, std::enable_shared_from_this<jimMIXStdSP_> {
-            int                      field = 1;
-            shared_ptr<jimMIXStdSP_> doIt ()
-            {
-                return shared_from_this ();
-            }
-        };
-        struct jimStkSP_ : Memory::enable_shared_from_this<jimStkSP_> {
-            int                  field = 1;
-            SharedPtr<jimStkSP_> doIt ()
-            {
-                return shared_from_this ();
-            }
-        };
-        struct jimMIStkSP_ : X_, Memory::enable_shared_from_this<jimMIStkSP_> {
-            int                    field = 1;
-            SharedPtr<jimMIStkSP_> doIt ()
-            {
-                return shared_from_this ();
-            }
-        };
-    }
-
-    void Test_5_SharedPtr ()
-    {
+        using ReBin::ReBin;
         {
-            SharedPtr<int> p (new int (3));
-            VerifyTestResult (p.use_count () == 1);
-            VerifyTestResult (p.unique ());
-            VerifyTestResult (*p == 3);
+            uint32_t srcBinData[] = {3, 5, 19, 2};
+            double   resultData[4];
+            ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
+            for (size_t i = 0; i < NEltsOf (srcBinData); ++i) {
+                VerifyTestResult (srcBinData[i] == resultData[i]);
+            }
         }
         {
-            static int nCreates  = 0;
-            static int nDestroys = 0;
-            struct COUNTED_OBJ {
-                COUNTED_OBJ ()
-                {
-                    ++nCreates;
-                }
-                COUNTED_OBJ (const COUNTED_OBJ&)
-                {
-                    ++nCreates;
-                }
-                ~COUNTED_OBJ ()
-                {
-                    ++nDestroys;
-                }
-                const COUNTED_OBJ& operator= (const COUNTED_OBJ&) = delete;
+            uint32_t srcBinData[] = {3, 5, 19, 2};
+            double   resultData[2];
+            ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
+            VerifyTestResult (8 == resultData[0]);
+            VerifyTestResult (21 == resultData[1]);
+        }
+        {
+            uint32_t srcBinData[] = {3, 5, 19, 2, 0, 0, 0};
+            double   resultData[4];
+            ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
+            VerifyTestResult (NearlyEquals ((3 + (5 * ((7.0 / 4.0) - 1))), resultData[0]));
+            VerifyTestResult (0 == resultData[3]);
+        }
+        {
+            uint32_t srcBinData[] = {3, 5, 19, 2};
+            double   resultData[8];
+            ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
+            VerifyTestResult (NearlyEquals (1.5, resultData[0]));
+            VerifyTestResult (NearlyEquals (1.5, resultData[1]));
+            VerifyTestResult (NearlyEquals (2.5, resultData[2]));
+            VerifyTestResult (NearlyEquals (2.5, resultData[3]));
+        }
+        {
+            uint32_t srcBinData[] = {3, 5, 19, 2};
+            double   resultData[4];
+            using SRC_DATA_DESCRIPTOR = ReBin::BasicDataDescriptor<double, uint32_t>;
+            using TRG_DATA_DESCRIPTOR = ReBin::UpdatableDataDescriptor<double, double>;
+            SRC_DATA_DESCRIPTOR srcData (begin (srcBinData), end (srcBinData), 0, 10);
+            TRG_DATA_DESCRIPTOR trgData (begin (resultData), end (resultData), 1, 11);
+            trgData.clear ();
+            ReBin (srcData, &trgData);
+            VerifyTestResult (NearlyEquals (3.8, resultData[0]));
+        }
+    }
+}
+
+namespace {
+    void Test6_Statistics_ ()
+    {
+        VerifyTestResult (Math::Mean (vector<int> ({1, 3, 5})) == 3);
+        VerifyTestResult (Math::Mean (vector<int> ({5, 3, 1})) == 3);
+        VerifyTestResult (Math::Median (vector<int> ({1, 3, 5})) == 3);
+        VerifyTestResult (Math::Median (vector<int> ({5, 3, 1})) == 3);
+        VerifyTestResult (Math::Median (vector<int> ({5, 3, 19, 1})) == 4);
+        VerifyTestResult (Math::Mean (vector<double> ({5, 3, 19, 1})) == 7);
+        VerifyTestResult (Math::NearlyEquals (Math::StandardDeviation (vector<double> ({5, 3, 19, 1})), 8.164966, .0001));
+    }
+}
+
+namespace {
+    void Test7_NearlyEquals_ ()
+    {
+        VerifyTestResult (Math::NearlyEquals (1.0, 1.0 + numeric_limits<double>::epsilon ()));
+        VerifyTestResult (not Math::NearlyEquals (1.0, 1.1));
+        if constexpr (numeric_limits<double>::digits10 > 14) {
+            VerifyTestResult (Math::NearlyEquals (1.0e22, 1.000000000000001e22));
+        }
+        VerifyTestResult (not Math::NearlyEquals (1.0e22, 1.1e22));
+    }
+}
+
+namespace {
+    void Test8_LinearAlgebra_Matrix_ ()
+    {
+        using namespace LinearAlgebra;
+        {
+            Matrix<int> m{10, 10};
+            VerifyTestResult (m[3][3] == 0);
+            m.SetAt (3, 3, 5);
+            VerifyTestResult (m[3][3] == 5);
+            // @todo support that sort of assign!!!
+            //m[3][3] = 5;
+        }
+    }
+}
+
+namespace {
+    void Test9_Optimization_DownhillSimplexMinimization_ ()
+    {
+        using namespace Math::Optimization;
+        using Characters::String;
+        using Containers::Sequence;
+
+        {
+            //  COMPARE TEST WITH bash -c "python nelder_mead.py"
+            //              [array([ -1.58089710e+00,  -2.39020317e-03,   1.39669799e-06]), -0.99994473460027922]
+            DownhillSimplexMinimization::TargetFunction<double> f = [] (const Traversal::Iterable<double>& x) {
+                return sin (x.Nth (0)) * cos (x.Nth (1)) * 1 / (abs (x.Nth (2)) + 1);
             };
-            struct CNT2 : COUNTED_OBJ {
+            DownhillSimplexMinimization::Results<double> result = DownhillSimplexMinimization::Run (f, {0, 0, 0});
+            VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters.Nth (0), -1.58089710e+00, 1e-5));
+            VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters.Nth (1), -2.39020317e-03, 1e-5));
+            VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters.Nth (2), 1.39669799e-06, 1e-5));
+            VerifyTestResult (Math::NearlyEquals (result.fScore, -0.99994473460027922, 1e-5));
+        }
+        {
+            DownhillSimplexMinimization::TargetFunction<double> f = [] (const Sequence<double>& x) {
+                double d = x[0];
+                if (d < 0 or d >= Math::kPi) { // avoid falling off ends of ranges - periodic function
+                    return 100.0;
+                }
+                return -cos (d);
             };
-            {
-                SharedPtr<COUNTED_OBJ> p (new COUNTED_OBJ ());
-            }
-            VerifyTestResult (nCreates == nDestroys);
-            {
-                SharedPtr<COUNTED_OBJ> p (SharedPtr<CNT2> (new CNT2 ()));
-                VerifyTestResult (nCreates == nDestroys + 1);
-            }
-            VerifyTestResult (nCreates == nDestroys);
+            DownhillSimplexMinimization::Results<double> result = DownhillSimplexMinimization::Run (f, {.1});
+            VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters[0], 0.0, 1e-10));
         }
         {
-            shared_ptr<jimStdSP_> x (new jimStdSP_ ());
-            shared_ptr<jimStdSP_> y = x->doIt ();
-            VerifyTestResult (x == y);
-        }
-        {
-            shared_ptr<jimMIXStdSP_> x (new jimMIXStdSP_ ());
-            shared_ptr<jimMIXStdSP_> y  = x->doIt ();
-            shared_ptr<X_>           xx = x;
-            VerifyTestResult (x == y);
-        }
-        {
-            SharedPtr<jimStkSP_> x (new jimStkSP_ ());
-            SharedPtr<jimStkSP_> y = x->doIt ();
-            VerifyTestResult (x == y);
-        }
-        {
-            SharedPtr<jimMIStkSP_> x (new jimMIStkSP_ ());
-            SharedPtr<jimMIStkSP_> y  = x->doIt ();
-            SharedPtr<X_>          xx = x;
-            VerifyTestResult (x == y);
-        }
-    }
-}
-
-namespace {
-    void Test_6_Bits_ ()
-    {
-        {
-            VerifyTestResult (BitSubstring (0x3, 0, 1) == 1);
-            VerifyTestResult (BitSubstring (0x3, 1, 2) == 1);
-            VerifyTestResult (BitSubstring (0x3, 2, 3) == 0);
-            VerifyTestResult (BitSubstring (0x3, 0, 3) == 0x3);
-            VerifyTestResult (BitSubstring (0xff, 0, 8) == 0xff);
-            VerifyTestResult (BitSubstring (0xff, 8, 16) == 0x0);
-        }
-        {
-            VerifyTestResult (Bit (0) == 0x1);
-            VerifyTestResult (Bit (1) == 0x2);
-            VerifyTestResult (Bit (3) == 0x8);
-            VerifyTestResult (Bit (15) == 0x8000);
-            VerifyTestResult (Bit<int> (1, 2) == 0x6);
-            VerifyTestResult (Bit<int> (1, 2, 15) == 0x8006);
-        }
-    }
-}
-
-namespace {
-    void Test_7_BLOB_ ()
-    {
-        {
-            vector<uint8_t> b  = {1, 2, 3, 4, 5};
-            Memory::BLOB    bl = b;
-            VerifyTestResult (bl.size () == 5 and b == bl.As<vector<uint8_t>> ());
-            VerifyTestResult (bl.size () == 5 and bl.As<vector<uint8_t>> () == b);
-        }
-        {
-            Memory::BLOB bl{1, 2, 3, 4, 5};
-            VerifyTestResult (bl.size () == 5 and bl.As<vector<uint8_t>> () == (vector<uint8_t>{1, 2, 3, 4, 5}));
-        }
-        {
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-assign-overloaded\"")
+            // Sample from Block tuner calibration code
+            constexpr double NominalPhiNeutralAngle = 0.541052;
+            constexpr double NominalGrooveSpacing   = 1.00E-05;
+            static
+#if qCompilerAndStdLib_constexpr_KeyValuePair_array_stdinitializer_Buggy
+                const
+#else
+                constexpr
 #endif
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-move\"")
-            Memory::BLOB bl{1, 2, 3, 4, 5};
-            bl = bl; // assure self-assign OK
-            bl = move (bl);
-            VerifyTestResult (bl.size () == 5 and bl.As<vector<uint8_t>> () == (vector<uint8_t>{1, 2, 3, 4, 5}));
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-move\"")
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-assign-overloaded\"")
-#endif
-        }
-        {
-            const char kSrc1_[] = "This is a very good test of a very good test";
-            const char kSrc2_[] = "";
-            const char kSrc3_[] = "We eat wiggly worms. That was a very good time to eat the worms. They are awesome!";
-            const char kSrc4_[] = "0123456789";
-
-            VerifyTestResult (Memory::BLOB ((const byte*)kSrc1_, (const byte*)kSrc1_ + ::strlen (kSrc1_)) == Memory::BLOB::Raw (kSrc1_, kSrc1_ + strlen (kSrc1_)));
-            VerifyTestResult (Memory::BLOB ((const byte*)kSrc2_, (const byte*)kSrc2_ + ::strlen (kSrc2_)) == Memory::BLOB::Raw (kSrc2_, kSrc2_ + strlen (kSrc2_)));
-            VerifyTestResult (Memory::BLOB ((const byte*)kSrc3_, (const byte*)kSrc3_ + ::strlen (kSrc3_)) == Memory::BLOB::Raw (kSrc3_, kSrc3_ + strlen (kSrc3_)));
-            VerifyTestResult (Memory::BLOB ((const byte*)kSrc4_, (const byte*)kSrc4_ + ::strlen (kSrc4_)) == Memory::BLOB::Raw (kSrc4_, kSrc4_ + strlen (kSrc4_)));
-
-            VerifyTestResult (Memory::BLOB ((const byte*)kSrc1_, (const byte*)kSrc1_ + ::strlen (kSrc1_)) == Memory::BLOB::Raw (kSrc1_, kSrc1_ + NEltsOf (kSrc1_) - 1));
-            VerifyTestResult (Memory::BLOB ((const byte*)kSrc2_, (const byte*)kSrc2_ + ::strlen (kSrc2_)) == Memory::BLOB::Raw (kSrc2_, kSrc2_ + NEltsOf (kSrc2_) - 1));
-            VerifyTestResult (Memory::BLOB ((const byte*)kSrc3_, (const byte*)kSrc3_ + ::strlen (kSrc3_)) == Memory::BLOB::Raw (kSrc3_, kSrc3_ + NEltsOf (kSrc3_) - 1));
-            VerifyTestResult (Memory::BLOB ((const byte*)kSrc4_, (const byte*)kSrc4_ + ::strlen (kSrc4_)) == Memory::BLOB::Raw (kSrc4_, kSrc4_ + NEltsOf (kSrc4_) - 1));
-        }
-        {
-            using Memory::BLOB;
-            VerifyTestResult ((BLOB::Hex ("61 70 70 6c 65 73 20 61 6e 64 20 70 65 61 72 73 0d 0a") == BLOB{0x61, 0x70, 0x70, 0x6c, 0x65, 0x73, 0x20, 0x61, 0x6e, 0x64, 0x20, 0x70, 0x65, 0x61, 0x72, 0x73, 0x0d, 0x0a}));
-            VerifyTestResult ((BLOB::Hex ("4a 94 99 ac 55 f7 a2 8b 1b ca 75 62 f6 9a cf de 41 9d") == BLOB{0x4a, 0x94, 0x99, 0xac, 0x55, 0xf7, 0xa2, 0x8b, 0x1b, 0xca, 0x75, 0x62, 0xf6, 0x9a, 0xcf, 0xde, 0x41, 0x9d}));
-            VerifyTestResult ((BLOB::Hex ("68 69 20 6d 6f 6d 0d 0a") == BLOB{0x68, 0x69, 0x20, 0x6d, 0x6f, 0x6d, 0x0d, 0x0a}));
-            VerifyTestResult ((BLOB::Hex ("29 14 4a db 4e ce 20 45 09 56 e8 13 65 2f e8 d6") == BLOB{0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6}));
-            VerifyTestResult ((BLOB::Hex ("29144adb4ece20450956e813652fe8d6") == BLOB{0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6}));
-            VerifyTestResult ((BLOB::Hex ("29144adb4ece20450956e813652fe8d6").AsHex () == L"29144adb4ece20450956e813652fe8d6"));
-        }
-    }
-}
-
-namespace {
-    namespace Test9_SmallStackBuffer_ {
-        void DoTest ()
-        {
-            {
-                SmallStackBuffer<int> x0{0};
-                SmallStackBuffer<int> x1{x0};
-                x0 = x1;
-            }
-            {
-                // Test using String elements, since those will test construction/reserve logic
-                using Characters::String;
-                SmallStackBuffer<String> buf1{3};
-                for (int i = 0; i < 1000; i++) {
-                    buf1.push_back (String{L"hi mom"});
-                }
-                SmallStackBuffer<String> buf2{buf1};
-                buf1.resize (0);
-            }
-            {
-                SmallStackBuffer<int> x0{4};
-                SmallStackBuffer<int> assign2;
-                assign2 = x0;
-                VerifyTestResult (x0.size () == assign2.size ()); // test regression fixed 2019-03-20
-                VerifyTestResult (x0.size () == 4);
-            }
-        }
-    }
-}
-
-namespace {
-    namespace Test10_OptionalSelfAssign_ {
-        void DoTest ()
-        {
-            {
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
-                DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-assign-overloaded\""); // explicitly assigning value of variable ... to itself
-#endif
-                // ASSIGN
+                Common::KeyValuePair<double, unsigned int>
+                    kCalData_[] = {
+                        {797.4, 24568},
+                        {800.2, 24714},
+                        {803.1, 24860},
+                        {805.3, 25006},
+                        {808.2, 25152},
+                        {810.5, 25298},
+                        {813, 25444},
+                        {815.5, 25590},
+                        {817.9, 25736},
+                        {820.4, 25882},
+                        {823.1, 26028},
+                        {825.5, 26174},
+                        {828.5, 26320},
+                        {831.2, 26466},
+                        {833.7, 26612},
+                        {836.2, 26758},
+                        {839.1, 26904},
+                        {842.1, 27050},
+                        {844.6, 27196},
+                        {847.2, 27342},
+                        {850.2, 27488},
+                        {853.1, 27634},
+                        {855.6, 27780},
+                        {858.5, 27926},
+                        {861.6, 28072},
+                        {864.2, 28218},
+                        {867.2, 28364},
+                        {870.1, 28510},
+                        {872.9, 28656},
+                        {875.7, 28802},
+                        {878.9, 28948},
+                        {881.6, 29094},
+                        {885, 29240},
+                        {887.7, 29386},
+                        {891, 29532},
+                        {894, 29678},
+                        {897.3, 29824},
+                        {900.3, 29970},
+                        {903.7, 30116},
+                        {906.7, 30262},
+                        {910.1, 30408},
+                        {913.4, 30554},
+                        {916.6, 30700},
+                        {920.2, 30846},
+                        {923.5, 30992},
+                        {926.6, 31138},
+                        {929.9, 31284},
+                        {933.2, 31430},
+                        {936.6, 31576},
+                        {940.3, 31722},
+                        {943.9, 31868},
+                        {947.6, 32014},
+                        {951.1, 32160},
+                        {955, 32306},
+                        {958.6, 32452},
+                        {962.4, 32598},
+                        {966, 32744},
+                        {969.9, 32890},
+                        {973.3, 33036},
+                        {977.2, 33182},
+                        {981.1, 33328},
+                        {984.8, 33474},
+                        {988.5, 33620},
+                        {992.3, 33766},
+                        {996.3, 33912},
+                        {1000.5, 34058},
+                        {1004.5, 34204},
+                        {1008.9, 34350},
+                        {1013, 34496},
+                        {1020.8, 34768},
+                    };
+            struct K_Constants_ {
+                double k1;
+                double k2;
+                double tunerInfoD;
+                double tunerInfoM{1};
+                String ToString () const
                 {
-                    optional<int> x;
-                    x = x;
+                    Characters::StringBuilder sb;
+                    sb += L"{";
+                    sb += L"k1: " + Characters::Format (L"%.10e", k1) + L",";
+                    sb += L"k2: " + Characters::Format (L"%.10e", k2) + L",";
+                    sb += L"tunerInfoD: " + Characters::Format (L"%.10e", tunerInfoD) + L",";
+                    sb += L"tunerInfoM: " + Characters::Format (L"%.10e", tunerInfoM);
+                    sb += L"}";
+                    return sb.str ();
                 }
-                {
-                    optional<Characters::String> x;
-                    x = x;
-                }
-                {
-                    optional<int> x{1};
-                    x = x;
-                }
-                {
-                    optional<Characters::String> x{L"x"};
-                    x = x;
-                }
-            }
-            // note - see https://stroika.atlassian.net/browse/STK-556 - we DON'T support Optional self-move
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-assign-overloaded\"");
-#endif
-        }
-    }
-}
-
-namespace {
-    namespace Test11_ObjectFieldUtilities_ {
-        void DoTest ();
-        namespace Private_ {
-            struct X1 {
-                int a;
-                int b;
             };
-            struct X2 {
-            public:
-                int a;
-
-            private:
-                int b;
-
-            private:
-                friend void Test11_ObjectFieldUtilities_::DoTest ();
+            static constexpr double kDACcountMax_          = 65536;
+            static constexpr double k32K                   = kDACcountMax_ / 2;
+            auto                    WaveNumber2Wavelength_ = [] (double wn) -> double {
+                return 0.01 / wn;
             };
-        }
-        void DoTest ()
-        {
-            {
-                VerifyTestResult (
-                    ConvertPointerToDataMemberToOffset (&Private_::X1::a) == 0 or ConvertPointerToDataMemberToOffset (&Private_::X1::b) == 0);
-                VerifyTestResult (
-                    ConvertPointerToDataMemberToOffset (&Private_::X1::a) != 0 or ConvertPointerToDataMemberToOffset (&Private_::X1::b) != 0);
-            }
-            {
-                Private_::X1 t;
-                static_assert (is_standard_layout_v<Private_::X1>);
-                void* aAddr = &t.a;
-                void* bAddr = &t.b;
-                VerifyTestResult (GetObjectOwningField (aAddr, &Private_::X1::a) == &t);
-                VerifyTestResult (GetObjectOwningField (bAddr, &Private_::X1::b) == &t);
-            }
-            {
-                // Check and warning but since X2 is not standard layout, this isn't guaranteed to work
-                Private_::X2 t;
-                static_assert (not is_standard_layout_v<Private_::X2>);
-                void* aAddr = &t.a;
-                void* bAddr = &t.b;
-                VerifyTestResultWarning (GetObjectOwningField (aAddr, &Private_::X2::a) == &t);
-                VerifyTestResultWarning (GetObjectOwningField (bAddr, &Private_::X2::b) == &t);
-            }
+            auto MDrive2WaveLength = [] (const K_Constants_& constants, double mirrorDriveValue) -> double {
+                double signedMDrive = mirrorDriveValue - k32K;
+                return 2 * constants.tunerInfoD / constants.tunerInfoM * sin (constants.k2 + constants.k1 * signedMDrive / k32K);
+            };
+            auto wavelengthModel = [=] (const K_Constants_& parameters, unsigned int mdrive) {
+                constexpr double kMinWaveLengthAllowed_{1.0e-20};
+                return Math::AtLeast (MDrive2WaveLength (parameters, mdrive), kMinWaveLengthAllowed_);
+            };
+            Sequence<double> initialGuess{-4.5 / 210 * 1000 * Math::kPi / 180, NominalPhiNeutralAngle};
+            K_Constants_     mdKConstants = {};
+            mdKConstants.tunerInfoD       = NominalGrooveSpacing;
+            auto fitFun                   = [=] (const K_Constants_& parameters) {
+                double result{};
+                size_t nEntries{NEltsOf (kCalData_)};
+                for (auto i : kCalData_) {
+                    double computedWavelength = wavelengthModel (parameters, i.fValue);
+                    Assert (computedWavelength > 0);
+                    double calibratedWaveLength = WaveNumber2Wavelength_ (i.fKey);
+                    Assert (pow (calibratedWaveLength - computedWavelength, 2) / computedWavelength >= 0);
+                    result += pow (calibratedWaveLength - computedWavelength, 2) / computedWavelength;
+                }
+                return sqrt (result) / nEntries;
+            };
+            DownhillSimplexMinimization::TargetFunction<double> f = [=] (const Traversal::Iterable<double>& x) -> double {
+                K_Constants_ tmp = mdKConstants;
+                tmp.k1           = x.Nth (0);
+                tmp.k2           = x.Nth (1);
+                return fitFun (tmp);
+            };
+            DownhillSimplexMinimization::Options<double> options;
+            options.fNoImprovementThreshold                     = 1e-12;
+            DownhillSimplexMinimization::Results<double> result = DownhillSimplexMinimization::Run (f, initialGuess, options);
+            VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters[0], -0.52946138144, 1e-5));
+            VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters[1], 0.54376305163, 1e-5));
+            // Silly to use Nth here, but I used to, and it used to trigger an address sanitizer issue (probably a bug with asan). But still - leave test in -- LGP 2018-09-28
+            VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters.Nth (0), -0.52946138144, 1e-5));
+            VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters.Nth (1), 0.54376305163, 1e-5));
         }
     }
 }
 
 namespace {
-
     void DoRegressionTests_ ()
     {
-        Test1_Optional ();
-        Test2_SharedByValue ();
-        Test_4_Optional_Of_Mapping_Copy_Problem_ ();
-        Test_5_SharedPtr ();
-        Test_6_Bits_ ();
-        Test_7_BLOB_ ();
-        Test9_SmallStackBuffer_::DoTest ();
-        Test10_OptionalSelfAssign_::DoTest ();
-        Test11_ObjectFieldUtilities_::DoTest ();
+        Test1_Overlap_ ();
+        Test2_Round_ ();
+        Test3_Angle_ ();
+        Test4_OddEvenPrime_ ();
+        Test5_ReBin_ ();
+        Test6_Statistics_ ();
+        Test7_NearlyEquals_ ();
+        Test8_LinearAlgebra_Matrix_ ();
+        Test9_Optimization_DownhillSimplexMinimization_ ();
     }
 }
 
