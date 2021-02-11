@@ -37,8 +37,7 @@ namespace Stroika::Foundation::Debug {
         : AssertExternallySynchronizedLock{sharedContext}
     {
         try {
-            lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-            Require (src._fSharedContext->fLocks_ == 0 and src._fSharedContext->fSharedLockThreads_.empty ()); // to move, the src can have no locks of any kind (since we change src)
+            Require (src._fSharedContext->fLocks_ == 0 and src._fSharedContext->GetSharedLockEmpty ()); // to move, the src can have no locks of any kind (since we change src)
         }
         catch (...) {
             AssertNotReached ();
@@ -48,8 +47,7 @@ namespace Stroika::Foundation::Debug {
         : AssertExternallySynchronizedLock{}
     {
         try {
-            lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-            Require (src._fSharedContext->fLocks_ == 0 and src._fSharedContext->fSharedLockThreads_.empty ()); // to move, the src can have no locks of any kind (since we change src)
+            Require (src._fSharedContext->fLocks_ == 0 and src._fSharedContext->GetSharedLockEmpty ()); // to move, the src can have no locks of any kind (since we change src)
         }
         catch (...) {
             AssertNotReached ();
@@ -62,12 +60,11 @@ namespace Stroika::Foundation::Debug {
         try {
             DISABLE_COMPILER_MSC_WARNING_START (26110);                        // to copy, the src can have shared_locks, but no (write) locks
             shared_lock<const AssertExternallySynchronizedLock> critSec1{rhs}; // ""
-            lock_guard<mutex>                                   sharedLockProtect{GetSharedLockMutexThreads_ ()};
             if (this == &rhs) {
-                Require (_fSharedContext->fLocks_ == 0 and _fSharedContext->fSharedLockThreads_.size () == 1); // we locked ourselves above
+                Require (_fSharedContext->fLocks_ == 0 and _fSharedContext->GetSharedLockThreadsCount () == 1); // we locked ourselves above
             }
             else {
-                Require (_fSharedContext->fLocks_ == 0 and _fSharedContext->fSharedLockThreads_.empty ()); // We must not have any locks going to replace this
+                Require (_fSharedContext->fLocks_ == 0 and _fSharedContext->GetSharedLockEmpty ()); // We must not have any locks going to replace this
             }
             DISABLE_COMPILER_MSC_WARNING_END (26110);
         }
@@ -81,9 +78,8 @@ namespace Stroika::Foundation::Debug {
     {
 #if qDebug
         try {
-            lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-            Require (rhs._fSharedContext->fLocks_ == 0 and rhs._fSharedContext->fSharedLockThreads_.empty ()); // to move, the rhs can have no locks of any kind (since we change rhs)
-            Require (_fSharedContext->fLocks_ == 0 and _fSharedContext->fSharedLockThreads_.empty ());         // ditto for thing being assigned to
+            Require (rhs._fSharedContext->fLocks_ == 0 and rhs._fSharedContext->GetSharedLockEmpty ()); // to move, the rhs can have no locks of any kind (since we change rhs)
+            Require (_fSharedContext->fLocks_ == 0 and _fSharedContext->GetSharedLockEmpty ());         // ditto for thing being assigned to
         }
         catch (...) {
             AssertNotReached ();

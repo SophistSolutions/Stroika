@@ -9,7 +9,7 @@
 #include <atomic>
 #include <mutex>
 #include <optional>
-#include <set>
+#include <forward_list>
 #include <shared_mutex>
 #include <thread>
 
@@ -113,7 +113,48 @@ namespace Stroika::Foundation::Debug {
         private:
             atomic_uint_fast32_t fLocks_{0}; // refers to FULL locks, not shared locks (use a multiset there to track redundant shared locks)
             thread::id           fCurLockThread_;
-            multiset<thread::id> fSharedLockThreads_; // multiset not threadsafe, and this class intrinsically tracks thread Ids across threads, so use GetSharedLockMutexThreads_ () to make safe
+
+            // most logically a multiset, but std::multiset is not threadsafe and requires external locking.
+            // So does forward_list, but its closer to lock free, so try it for now
+            // GetSharedLockMutexThreads_ () used to access fSharedLockThreads_
+            forward_list<thread::id> fSharedLockThreads_;
+
+            bool GetSharedLockEmpty () const
+            {
+                lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
+                return fSharedLockThreads_.empty ();
+            }
+            size_t GetSharedLockThreadsCount () const
+            {
+                lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
+                size_t            i = 0;
+                for (const auto& x : fSharedLockThreads_) {
+                    (void)x;
+                    i++;
+                }
+                return i;
+            }
+            size_t CountOfIInSharedLockThreads (thread::id i) const
+            {
+                lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
+                return std::count (fSharedLockThreads_.begin (), fSharedLockThreads_.end (), i);
+            }
+            void AddSharedLock (thread::id i)
+            {
+                lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
+                //fSharedLockThreads_.insert (i));
+                fSharedLockThreads_.push_front (i);
+            }
+            void RemoveSharedLock (thread::id i)
+            {
+                lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
+#if 0
+                multiset<thread::id>::iterator tti = sharedContext->fSharedLockThreads_.find (this_thread::get_id ());
+                Require (tti != sharedContext->fSharedLockThreads_.end ()); // else unbalanced
+                sharedContext->fSharedLockThreads_.erase (tti);
+#endif
+                fSharedLockThreads_.remove (i);
+            }
 
         private:
             friend class AssertExternallySynchronizedLock;

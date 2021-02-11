@@ -38,9 +38,9 @@ void AssertExternallySynchronizedLock::lock_ () const noexcept
             // If first time in, save thread-id
             sharedContext->fCurLockThread_ = this_thread::get_id ();
             lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-            if (not sharedContext->fSharedLockThreads_.empty ()) {
+            if (not sharedContext->GetSharedLockEmpty ()) {
                 // If first already shared locks - OK - so long as same thread
-                Require (sharedContext->fSharedLockThreads_.count (sharedContext->fCurLockThread_) == sharedContext->fSharedLockThreads_.size ());
+                Require (sharedContext->CountOfIInSharedLockThreads (sharedContext->fCurLockThread_) == sharedContext->GetSharedLockThreadsCount ());
             }
         }
         else {
@@ -86,7 +86,7 @@ void AssertExternallySynchronizedLock::lock_shared_ () const noexcept
             Require (sharedContext->fCurLockThread_ == this_thread::get_id ());
         }
         lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-        sharedContext->fSharedLockThreads_.insert (this_thread::get_id ());
+        sharedContext->AddSharedLock (this_thread::get_id ());
     }
     catch (...) {
         AssertNotReached ();
@@ -98,11 +98,7 @@ void AssertExternallySynchronizedLock::unlock_shared_ () const noexcept
     try {
         SharedContext*    sharedContext = _fSharedContext.get ();
         lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-#if 1
-        multiset<thread::id>::iterator tti = sharedContext->fSharedLockThreads_.find (this_thread::get_id ());
-        Require (tti != sharedContext->fSharedLockThreads_.end ()); // else unbalanced
-        sharedContext->fSharedLockThreads_.erase (tti);
-#endif
+        sharedContext->RemoveSharedLock (this_thread::get_id ());
     }
     catch (...) {
         AssertNotReached ();
