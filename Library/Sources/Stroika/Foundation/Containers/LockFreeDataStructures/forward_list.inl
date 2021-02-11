@@ -4,6 +4,10 @@
 #ifndef _Stroika_Foundation_Containers_LockFreeDataStructures_forward_list_inl_
 #define _Stroika_Foundation_Containers_LockFreeDataStructures_forward_list_inl_ 1
 
+#include <list>
+#include <memory>
+#include <vector>
+
 #include "../../Debug/Assertions.h"
 
 namespace Stroika::Foundation::Containers::LockFreeDataStructures {
@@ -25,12 +29,12 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     }
 
     /**
-// construction is lock free (though begin() is not)
-// incrementing is NOT lock free
-    */
+     * construction is lock free (though begin() is not)
+     * incrementing is NOT lock free
+     */
     template <typename T>
-    template <class U>
-    class forward_list<T>::ForwardIterator {
+    template <typename U>
+    class forward_list<T>::ForwardIterator_ {
         friend class forward_list;
         node_*                            current;
         typedef std::forward_iterator_tag iterator_category;
@@ -39,31 +43,31 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         typedef U*                        pointer;
 
     public:
-        ForwardIterator ()
-            : current (terminal_ ())
+        ForwardIterator_ ()
+            : current{terminal_ ()}
         {
         }
-        ForwardIterator (node_* n)
-            : current (n != terminal_ () ? increment_reference_count_ (n) : terminal_ ())
+        ForwardIterator_ (node_* n)
+            : current{n != terminal_ () ? increment_reference_count_ (n) : terminal_ ()}
         {
         }
-        ForwardIterator (ForwardIterator const& other)
-            : current (other.current != terminal_ () ? increment_reference_count_ (other.current) : terminal_ ())
+        ForwardIterator_ (ForwardIterator_ const& other)
+            : current{other.current != terminal_ () ? increment_reference_count_ (other.current) : terminal_ ()}
         {
         }
-        ForwardIterator (ForwardIterator&& other) noexcept
-            : current (terminal_ ())
+        ForwardIterator_ (ForwardIterator_&& other) noexcept
+            : current{terminal_ ()}
         {
             std::swap (current, other.current);
         }
-        ~ForwardIterator ()
+        ~ForwardIterator_ ()
         {
             if (current == terminal_ ()) {
                 return;
             }
             decrement_reference_count_ (current);
         }
-        ForwardIterator& operator= (ForwardIterator const& other)
+        ForwardIterator_& operator= (ForwardIterator_ const& other)
         {
             if (current != terminal_ ()) {
                 decrement_reference_count_ (current);
@@ -72,7 +76,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
             return *this;
         }
         template <typename V>
-        ForwardIterator& operator= (V const& other)
+        ForwardIterator_& operator= (V const& other)
         {
             if (current != terminal_ ()) {
                 decrement_reference_count_ (current);
@@ -94,9 +98,9 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
             }
             return &current->value;
         }
-        ForwardIterator& operator++ ()
+        ForwardIterator_& operator++ ()
         {
-            assert (current != terminal_ ()); // this is the end()
+            Assert (current != terminal_ ()); // this is the end()
             node_* temp = new_ownership_ (current->next);
             std::swap (current, temp);
             if (temp != terminal_ ()) {
@@ -104,21 +108,21 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
             }
             return *this;
         }
-        ForwardIterator operator++ (int)
+        ForwardIterator_ operator++ (int)
         {
-            assert (current != terminal_ ()); // this is the end()
-            ForwardIterator temp = *this;
+            Assert (current != terminal_ ()); // this is the end()
+            ForwardIterator_ temp = *this;
             ++*this;
             return temp;
         }
-        friend void swap (ForwardIterator& a, ForwardIterator& b) noexcept
+        friend void swap (ForwardIterator_& a, ForwardIterator_& b) noexcept
         {
             using std::swap; // bring in swap for built-in types
             swap (a.current, b.current);
         }
-        operator ForwardIterator<const T> () const
+        operator ForwardIterator_<const T> () const
         {
-            return ForwardIterator<const T> (current);
+            return ForwardIterator_<const T> (current);
         }
         template <typename V>
         bool operator== (V const& rhs)
@@ -133,6 +137,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         }
 #endif
     };
+
     /*
      ********************************************************************************
      ***************** LockFreeDataStructures::forward_list<T>::node_ ***************
@@ -141,7 +146,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     template <typename T>
     class forward_list<T>::node_ {
     public:
-        friend class ForwardIterator<T>;
+        friend class ForwardIterator_<T>;
         T                   value;
         std::atomic<node_*> next;
         std::atomic<int>    referenceCount; // for keeping a node_ referenced by an iterator alive
@@ -158,7 +163,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
             , referenceCount{1}
         {
         }
-        template <class... U>
+        template <typename... U>
         node_ (U&&... params)
             : value{std::forward<U> (params)...}
             , next{terminal_ ()}
@@ -209,7 +214,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         clear ();
     }
     template <typename T>
-    inline bool forward_list<T>::empty () const
+    inline bool forward_list<T>::empty () const noexcept
     {
         return fFirst_.load () == terminal_ ();
     }
@@ -280,10 +285,16 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         return insert_node_ (fFirst_, new node_ (std::move (value)));
     }
     template <typename T>
-    template <class... U>
+    template <typename... U>
     inline auto forward_list<T>::emplace_front (U&&... params) -> reference
     {
         return *insert_node_ (fFirst_, new node_ (std::forward<U> (params)...));
+    }
+    template <typename T>
+    inline bool forward_list<T>::pop_front ()
+    {
+        T ignored{};
+        return remove_node_ (fFirst_, &ignored);
     }
     template <typename T>
     inline bool forward_list<T>::pop_front (T* value)
@@ -291,7 +302,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         return remove_node_ (fFirst_, value);
     }
     template <typename T>
-    auto forward_list<T>::begin () -> iterator
+    inline auto forward_list<T>::begin () -> iterator
     {
         node_*   n = new_ownership_ (fFirst_); // wait for unlock
         iterator result (n);
@@ -356,7 +367,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         return result;
     }
     template <typename T>
-    template <class InputIt>
+    template <typename InputIt>
     auto forward_list<T>::insert_after (const_iterator pos, InputIt first, InputIt last) -> iterator
     {
         if (first == last)
@@ -375,7 +386,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         return insert_after (pos, ilist.begin (), ilist.end ());
     }
     template <typename T>
-    template <class... U>
+    template <typename... U>
     auto forward_list<T>::emplace_after (const_iterator position, U&&... params) -> iterator
     {
         return insert_node_ (position, new node_ (std::forward (params)...));
@@ -394,6 +405,11 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     inline bool forward_list<T>::erase_after (const_iterator position, T* value)
     {
         return remove_node_ (position.current->next, value);
+    }
+    template <typename T>
+    inline void forward_list<T>::swap (forward_list& other) noexcept
+    {
+        exchange_ (fFirst_, other.fFirst_);
     }
     template <typename T>
     bool forward_list<T>::remove_node_ (std::atomic<node_*>& atomic_ptr, T* value)
@@ -429,12 +445,12 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         return oldNext;
     }
     template <typename T>
-    inline auto forward_list<T>::terminal_ () -> node_*
+    inline auto forward_list<T>::terminal_ () noexcept -> node_*
     {
         return (node_*)Private_::concurrent_forward_list_details::terminal_;
     }
     template <typename T>
-    inline auto forward_list<T>::spin_ () -> node_*
+    inline auto forward_list<T>::spin_ () noexcept -> node_*
     {
         return (node_*)Private_::concurrent_forward_list_details::spin;
     }
@@ -461,15 +477,15 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     template <typename T>
     void forward_list<T>::exchange_ (std::atomic<node_*>& left, node_*& right)
     {
-        assert (right != nullptr);
-        assert (right != spin_ ()); // invalid node_
+        Assert (right != nullptr);
+        Assert (right != spin_ ()); // invalid node_
         node_* n = left.load ();
         do {
             while (n == spin_ ()) {
                 n = left.load (std::memory_order_relaxed); // relaxed because visibility of unlocked state may be at systems leisure
             }
         } while (!left.compare_exchange_weak (n, right));
-        assert (n != nullptr);
+        Assert (n != nullptr);
         right = n;
     }
     template <typename T>
@@ -525,13 +541,12 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
 }
 
 namespace std {
-    // NOT lock free on a, lock free on b
-    template <typename T>
-    void swap (Stroika::Foundation::Containers::LockFreeDataStructures::forward_list<T>& a, Stroika::Foundation::Containers::LockFreeDataStructures::forward_list<T>& b) noexcept
+    template <class T>
+    inline void swap (Stroika::Foundation::Containers::LockFreeDataStructures::forward_list<T>& lhs,
+                      Stroika::Foundation::Containers::LockFreeDataStructures::forward_list<T>& rhs) noexcept
     {
-        exchange_ (a.fFirst_, b.fFirst_);
+        lhs.swap (rhs);
     }
-
 }
 
 #endif /* _Stroika_Foundation_Containers_LockFreeDataStructures_forward_list_inl_ */

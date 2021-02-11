@@ -7,64 +7,53 @@
 #include "../../StroikaPreComp.h"
 
 #include <atomic>
-#include <cassert>
-#include <list>
-#include <memory>
-#include <vector>
 
 /**
  *  Initial implementation copied from (so full credit for algorithms)
  *      https://codereview.stackexchange.com/questions/167252/c11-lock-free-collection-similar-to-stdforward-list-follow-up-2
  *      APPENTLY written by https://codereview.stackexchange.com/users/62314/brent
  *      All said about license we MIT licence, which is what Stroika uses, so I assume will be OK.
- * 
- * 
-NOTES FROM ORIGINAL POST:
-
-This question is a new iteration of this question:
-
-C++11 lock free collection similar to std::forward_list - follow-up
-
-all methods are thread safe, baring the destructor
-push, insert, emplace, pop, erase, and iterator increment/dereference are O(1)
-locks that do occur are per-element spin_ locks
-push, insert, emplace, clear, and separate operations are lock free.
-pop and erase are not lock free.
-begin, cbegin, and incrementing iterators are not lock free
-dereferencing iterators is lock free
-uses reference counting to preserve iterators (and values) of removed elements
-iterators of removed elements will increment to end()
-insert_after or emplace_after on a removed iterator will return end() to indicate failure.
-In addition to the creative commons license for code on this site, you may also use it under the MIT license.
-
-forward_list.hpp
-
  */
-
-namespace Stroika::Foundation::Containers::LockFreeDataStructures {
-    template <typename T>
-    class forward_list;
-}
-namespace std {
-    template <typename T>
-    void swap (Stroika::Foundation::Containers::LockFreeDataStructures::forward_list<T>& a, Stroika::Foundation::Containers::LockFreeDataStructures::forward_list<T>& b) noexcept;
-}
-
 
 namespace Stroika::Foundation::Containers::LockFreeDataStructures {
 
     /**
-     * similar to std::forward_list, but thread safe and partiallt lock free
+     * similar to std::forward_list, but thread safe and (partially) lock free
+     * 
+     *      o   all methods are thread safe, baring the destructor
+     *      o   push, insert, emplace, pop, erase, and iterator increment/dereference are O(1)
+     *      o   locks that do occur are per-element spin_ locks
+     *      o   push, insert, emplace, clear, and separate operations are lock free.
+     *      o   pop and erase are not lock free.
+     *      o   begin, cbegin, and incrementing iterators are not lock free
+     *      o   dereferencing iterators is lock free
+     *      o   uses reference counting to preserve iterators (and values) of removed elements
+     *      o   iterators of removed elements will increment to end()
+     *      o   insert_after or emplace_after on a removed iterator will return end() to indicate failure.
+     * 
+     *  Methods from std::forward_list NYI
+     *      o   get_allocator & allocators in general (probably doesn't make sense here)
+     *      o   https://en.cppreference.com/w/cpp/container/forward_list/before_begin
+     *      o   https://en.cppreference.com/w/cpp/container/forward_list/max_size
+     *      o   https://en.cppreference.com/w/cpp/container/forward_list/resize
+     *      o   https://en.cppreference.com/w/cpp/container/forward_list/merge
+     *      o   https://en.cppreference.com/w/cpp/container/forward_list/splice_after
+     *      o   https://en.cppreference.com/w/cpp/container/forward_list/remove
+     *      o   https://en.cppreference.com/w/cpp/container/forward_list/reverse
+     *      o   https://en.cppreference.com/w/cpp/container/forward_list/unique
+     *      o   https://en.cppreference.com/w/cpp/container/forward_list/sort
+     *      o   https://en.cppreference.com/w/cpp/container/forward_list/operator_cmp
+     *      o   https://en.cppreference.com/w/cpp/container/forward_list/erase2
+     * 
+     *  Methods from std::forward_list materially wrongly, incompletely implemented
+     *      o   erase_after incomplete/wrong API
      */
     template <typename T>
     class forward_list {
     private:
         class node_;
-
-    public:
-    private:
-        template <class U>
-        class ForwardIterator;
+        template <typename U>
+        class ForwardIterator_;
 
     public:
         typedef T                        value_type;
@@ -72,8 +61,8 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         typedef const value_type&        const_reference;
         typedef value_type*              pointer;
         typedef value_type const*        const_pointer;
-        typedef ForwardIterator<T>       iterator;
-        typedef ForwardIterator<const T> const_iterator;
+        typedef ForwardIterator_<T>       iterator;
+        typedef ForwardIterator_<const T> const_iterator;
 
     public:
         /**
@@ -87,10 +76,18 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
 
     public:
         /**
+         *  NYI
+         */
+        forward_list& operator= (const forward_list& rhs) = delete;
+
+
+    public:
+        /**
+         *  @see https://en.cppreference.com/w/cpp/container/forward_list/empty
          *
          * lock free
          */
-        nonvirtual bool empty () const;
+        nonvirtual bool empty () const noexcept;
 
     public:
         /**
@@ -107,16 +104,16 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     public:
         /**
          *   **NOT A METHOD OF std::forward_list<>
-        // NOT lock free
-        // All nodes are locked before removing the first element.
-        // Incrementing an iterator will block, and then result in the end() iterator
+         * NOT lock free
+         * All nodes are locked before removing the first element.
+         * Incrementing an iterator will block, and then result in the end() iterator
          */
         nonvirtual int locked_clear ();
 
     public:
         /**
          * @see https://en.cppreference.com/w/cpp/container/forward_list/front
-        // <ORIGINAL DOCS SAID 'lock free' - but it calls begin () which orignal docs say NOT lock-free, so unclear but probably NOT lockfree>
+         * <ORIGINAL DOCS SAID 'lock free' - but it calls begin () which orignal docs say NOT lock-free, so unclear but probably NOT lockfree>
          */
         nonvirtual reference       front ();
         nonvirtual const_reference front () const;
@@ -134,21 +131,24 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     public:
         /**
          * https://en.cppreference.com/w/cpp/container/forward_list/emplace_front
-        // lock free
+         * lock free
          */
-        template <class... U>
+        template <typename... U>
         nonvirtual reference emplace_front (U&&... params);
 
     public:
         /**
-         @ see https://en.cppreference.com/w/cpp/container/forward_list/pop_front
-         UNLIKE std version, this returns true iff it removed something 
+         * @ see https://en.cppreference.com/w/cpp/container/forward_list/pop_front
+         * UNLIKE std version, this returns true iff it removed something, and has overload returning value popped as argument 
          * **not** lock free
          */
+        nonvirtual bool pop_front ();
         nonvirtual bool pop_front (T* value);
 
     public:
         /**
+         * @see https://en.cppreference.com/w/cpp/container/forward_list/begin
+         *
          * **not** lock free
          */
         iterator begin ();
@@ -156,12 +156,16 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
 
     public:
         /**
+         * @see https://en.cppreference.com/w/cpp/container/forward_list/begin
+         *
          * **not** lock free
          */
         nonvirtual const_iterator cbegin () const;
 
     public:
         /**
+         * @see https://en.cppreference.com/w/cpp/container/forward_list/end
+         *
          * lock free
          */
         iterator       end ();
@@ -169,6 +173,8 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
 
     public:
         /**
+         * @see https://en.cppreference.com/w/cpp/container/forward_list/end
+         *
          * lock free
          */
         nonvirtual const_iterator cend () const;
@@ -176,40 +182,53 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     public:
         /**
          *  @see https://en.cppreference.com/w/cpp/container/forward_list/insert_after
+         * 
          *  All overloads lock_free
          *      << was comented only on first overload but appears to apply to all) returns a default constructed iterator if position is no longer valid
          */
         nonvirtual iterator insert_after (const_iterator position, T const& value);
         nonvirtual iterator  insert_after (const_iterator position, T&& value);
         nonvirtual iterator insert_after (const_iterator pos, int count, const T& value);
-        template <class InputIt>
+        template <typename InputIt>
         nonvirtual iterator insert_after (const_iterator pos, InputIt first, InputIt last);
         nonvirtual iterator insert_after (const_iterator pos, std::initializer_list<T> ilist);
 
     public:
         /**
          * @see https://en.cppreference.com/w/cpp/container/forward_list/emplace_after
-        // lock free
+         * 
+         * lock free
          */
-        template <class... U>
+        template <typename... U>
         nonvirtual iterator emplace_after (const_iterator position, U&&... params);
 
     public:
         /**
          *  NOT standard forward_list<> funciton but something the original author found useful.
-        // lock free
-        // all the elements after position are moved to a new forward_list
-        // IMPORTANT: existing iterators will still traverse the separated portion if already within the separated portion
+         * lock free
+         * 
+         * all the elements after position are moved to a new forward_list
+         * IMPORTANT: existing iterators will still traverse the separated portion if already within the separated portion
          */
         nonvirtual bool separate_after (const_iterator position, forward_list<T>*& result);
 
     public:
-        // NOT lock free
+        /**
+         *  @see https://en.cppreference.com/w/cpp/container/forward_list/erase_after
+         * 
+         *  <<@todo fix - wrong API - sb two overloads and this is neither)
+         *
+         * NOT lock free
+         */
         nonvirtual bool erase_after (const_iterator position, T* value);
 
     public:
-        // NOT lock free on a, lock free on b
-        friend void std::swap<> (forward_list& a, forward_list& b) noexcept;
+        /**
+         *  @see https://en.cppreference.com/w/cpp/container/forward_list/swap
+         * 
+         * NOT lock free on this, lock free on other
+         */
+        nonvirtual void swap (forward_list& other) noexcept;
 
     private:
         std::atomic<node_*> fFirst_;
@@ -225,8 +244,8 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         // returns true iff it removed something
         static bool remove_node_ (std::atomic<node_*>& atomic_ptr, T* value);
 
-        static node_* terminal_ ();
-        static node_* spin_ ();
+        static node_* terminal_ () noexcept;
+        static node_* spin_ () noexcept;
 
         // lock free, increment node_::referenceCount, used for iterator and for prior-node_'s link
         static void decrement_reference_count_ (node_*& n);
@@ -254,12 +273,11 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     };
 
 }
+
 namespace std {
-    /**
-     * NOT lock free on a, lock free on b
-     */
-    template <typename T>
-    void swap (Stroika::Foundation::Containers::LockFreeDataStructures::forward_list<T>& a, Stroika::Foundation::Containers::LockFreeDataStructures::forward_list<T>& b) noexcept;
+    template <class T>
+    void swap (Stroika::Foundation::Containers::LockFreeDataStructures::forward_list<T>& lhs,
+               Stroika::Foundation::Containers::LockFreeDataStructures::forward_list<T>& rhs) noexcept;
 }
 
 /*
