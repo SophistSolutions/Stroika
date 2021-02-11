@@ -13,12 +13,10 @@
 #include <vector>
 
 /**
- *  Initial implementation copied from 
+ *  Initial implementation copied from (so full credit for algorithms)
  *      https://codereview.stackexchange.com/questions/167252/c11-lock-free-collection-similar-to-stdforward-list-follow-up-2
  *      APPENTLY written by https://codereview.stackexchange.com/users/62314/brent
  *      All said about license we MIT licence, which is what Stroika uses, so I assume will be OK.
- * 
- * 
  * 
  * 
 NOTES FROM ORIGINAL POST:
@@ -39,21 +37,21 @@ iterators of removed elements will increment to end()
 insert_after or emplace_after on a removed iterator will return end() to indicate failure.
 In addition to the creative commons license for code on this site, you may also use it under the MIT license.
 
-concurrent_forward_list.hpp
+forward_list.hpp
 
  */
 
 namespace Stroika::Foundation::Containers::LockFreeDataStructures {
 
-    namespace details {
+    namespace Private_ {
         namespace concurrent_forward_list_details {
 
-            // provides a globally unique pointer used for the terminal node
+            // provides a globally unique pointer used for the terminal node_
             constexpr struct {
             } terminal_v;
             constexpr void* terminal = (void*)&terminal_v;
 
-            // provides a globally unique pointer for the lock node
+            // provides a globally unique pointer for the lock node_
             constexpr struct {
             } spin_v;
             constexpr void* spin = (void*)&spin_v;
@@ -63,17 +61,18 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
 
     // similar to std::forward_list, but thread safe and partiallt lock free
     template <class T>
-    class concurrent_forward_list {
+    class forward_list {
 
-        class node;
+    private:
+        class node_;
 
     public:
         template <class U>
         // construction is lock free (though begin() is not)
         // incrementing is NOT lock free
         class ForwardIterator {
-            friend class concurrent_forward_list;
-            node*                             current;
+            friend class forward_list;
+            node_*                            current;
             typedef std::forward_iterator_tag iterator_category;
             typedef U                         value_type;
             typedef U&                        reference;
@@ -85,7 +84,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
             {
             }
 
-            ForwardIterator (node* n)
+            ForwardIterator (node_* n)
                 : current (n != terminal () ? increment_reference_count (n) : terminal ())
             {
             }
@@ -147,7 +146,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
             ForwardIterator& operator++ ()
             {
                 assert (current != terminal ()); // this is the end()
-                node* temp = new_ownership (current->next);
+                node_* temp = new_ownership (current->next);
                 std::swap (current, temp);
                 if (temp != terminal ()) {
                     decrement_reference_count (temp); // discard newly created ownership
@@ -195,37 +194,18 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         typedef ForwardIterator<T>       iterator;
         typedef ForwardIterator<const T> const_iterator;
 
-        concurrent_forward_list ()
-            : first (terminal ())
-        {
-        }
+    public:
+        forward_list ();
+        forward_list (forward_list const& copy);
+        forward_list (forward_list&& move) noexcept;
 
-        concurrent_forward_list (concurrent_forward_list const& copy)
-            : first (terminal ())
-        {
-            if (first == terminal ()) {
-                return;
-            }
-            std::atomic<node*>* nextPtr = &first;
-            for (auto const& v : copy) {
-                std::atomic<node*>& next    = *nextPtr;
-                node*               newNode = new node (v);
-                next.store (newNode);
-                nextPtr = &newNode->next;
-            }
-        }
-
-        concurrent_forward_list (concurrent_forward_list&& move) noexcept
-            : first (terminal ())
-        {
-            exchange (move.first, first);
-        }
-
-        ~concurrent_forward_list ()
+    public:
+        ~forward_list ()
         {
             clear ();
         }
 
+    public:
         // lock free
         bool empty () const
         {
@@ -233,7 +213,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         }
 
         // lock free
-        // The first node is removed before locking the other nodes.
+        // The first node_ is removed before locking the other nodes.
         // Push will not block.
         // An iterator incremented externally may move to a value no longer in the list
         int clear ()
@@ -244,14 +224,14 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
             if (current == terminal ()) {
                 return 0;
             }
-            // if we just delete the first node, it may cascade down all the
+            // if we just delete the first node_, it may cascade down all the
             // subsequent nodes. This would be fine, if not for the possibility
             // of blowing the stack. Instead we delete them in reverse.
             std::vector<node*> nodes;
             while (current != terminal ()) {
                 nodes.push_back (current);
                 node* temp = terminal ();
-                // take ownership of the next node
+                // take ownership of the next node_
                 exchange (current->next, temp);
                 current = temp;
             }
@@ -351,7 +331,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         const_iterator cbegin () const
         {
             // add const using const_cast to invoke the const version of begin
-            return const_cast<concurrent_forward_list const*> (this)->begin ();
+            return const_cast<forward_list const*> (this)->begin ();
         }
 
         // lock free
@@ -419,14 +399,14 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         }
 
         // lock free
-        // all the elements after position are moved to a new concurrent_forward_list
+        // all the elements after position are moved to a new forward_list
         // IMPORTANT: existing iterators will still traverse the separated portion if already within the separated portion
-        bool separate_after (const_iterator position, concurrent_forward_list<T>*& result)
+        bool separate_after (const_iterator position, forward_list<T>*& result)
         {
             node* n = seperate (position.current->next);
             if (!n)
                 return false;
-            result        = new concurrent_forward_list<T> ();
+            result        = new forward_list<T> ();
             result->first = n;
             return true;
         }
@@ -438,7 +418,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         }
 
         // NOT lock free on a, lock free on b
-        friend void swap (concurrent_forward_list& a, concurrent_forward_list& b) noexcept
+        friend void swap (forward_list& a, forward_list& b) noexcept
         {
             exchange (a.first, b.first);
         }
@@ -449,13 +429,13 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         // lock free
         static iterator insert_node (std::atomic<node*>& atomic_ptr, node* n)
         {
-            iterator result (n); // it's possible that the node is removed before we return, so do this early
+            iterator result (n); // it's possible that the node_ is removed before we return, so do this early
             n->next.store (n);
             exchange (n->next, atomic_ptr);
             return result;
         }
 
-        // lock free, removes all the nodes from *atomic_ptr forward, and returns that node with links still intact
+        // lock free, removes all the nodes from *atomic_ptr forward, and returns that node_ with links still intact
         static node* seperate (std::atomic<node*>& atomic_ptr)
         {
             node* oldNext = terminal ();
@@ -482,24 +462,24 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
             return true;
         }
 
-        static node* terminal () { return (node*)details::concurrent_forward_list_details::terminal; }
-        static node* spin () { return (node*)details::concurrent_forward_list_details::spin; }
+        static node* terminal () { return (node*)Private_::concurrent_forward_list_details::terminal; }
+        static node* spin () { return (node*)Private_::concurrent_forward_list_details::spin; }
 
-        class node {
+        class node_ {
         public:
             friend class ForwardIterator<T>;
-            T                  value;
-            std::atomic<node*> next;
-            std::atomic<int>   referenceCount; // for keeping a node referenced by an iterator alive
+            T                   value;
+            std::atomic<node_*> next;
+            std::atomic<int>    referenceCount; // for keeping a node_ referenced by an iterator alive
 
-            node (T const& value)
+            node_ (T const& value)
                 : value (value)
                 , next (terminal ())
                 , referenceCount (1)
             {
             }
 
-            node (T&& value)
+            node_ (T&& value)
                 : value (std::move (value))
                 , next (terminal ())
                 , referenceCount (1)
@@ -507,16 +487,16 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
             }
 
             template <class... U>
-            node (U&&... params)
+            node_ (U&&... params)
                 : value (std::forward<U> (params)...)
                 , next (terminal ())
                 , referenceCount (1)
             {
             }
 
-            ~node ()
+            ~node_ ()
             {
-                node* n = owner_lock (next); // change next to spin
+                node_* n = owner_lock (next); // change next to spin
                 if (n != terminal ()) {
                     decrement_reference_count (n);                       // release ownership of next
                     next.store (terminal (), std::memory_order_relaxed); // relaxed because observers will see spin
@@ -524,37 +504,34 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
             }
         };
 
-        // lock free, increment node::referenceCount, used for iterator and for prior-node's link
+        // lock free, increment node_::referenceCount, used for iterator and for prior-node_'s link
         static void decrement_reference_count (node*& n)
         {
             assert (n != nullptr);
-            if (n == terminal ()) {
-                int i = 0;
-            }
-            assert (n != terminal ()); // not a valid node
-            assert (n != spin ());     // not a valid node
+            assert (n != terminal ()); // not a valid node_
+            assert (n != spin ());     // not a valid node_
             if (n->referenceCount.fetch_sub (1) == 1) {
                 delete n;
             }
             n = nullptr;
         }
 
-        // lock free, used for iterators and for for prior-node's link
+        // lock free, used for iterators and for for prior-node_'s link
         // return a new "ownership"
         static node* increment_reference_count (node* n)
         {
-            assert (n != nullptr); //must be a valid node because ownership is a precondition
+            assert (n != nullptr); //must be a valid node_ because ownership is a precondition
             assert (n != terminal ());
             assert (n != spin ());
             n->referenceCount.fetch_add (1);
             return n;
         }
 
-        // lock free, swap the node *s in left and right,
+        // lock free, swap the node_ *s in left and right,
         static void exchange (std::atomic<node*>& left, node*& right)
         {
             assert (right != nullptr);
-            assert (right != spin ()); // invalid node
+            assert (right != spin ()); // invalid node_
             node* n = left.load ();
             do {
                 while (n == spin ()) {
@@ -578,7 +555,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
             }
         }
 
-        // NOT lock free, set atomic_ptr to spin and return the node * leaving the node locked, unless atomic_ptr is already terminal then return terminal
+        // NOT lock free, set atomic_ptr to spin and return the node_ * leaving the node_ locked, unless atomic_ptr is already terminal then return terminal
         // "ownership" is transferred from atomic_ptr to the return value
         static node* owner_lock (std::atomic<node*>& atomic_ptr)
         {
@@ -589,7 +566,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
                 }
             } while (!atomic_ptr.compare_exchange_weak (n, spin ()));
 
-            if (n == terminal ()) {                                        // the node has been deleted already
+            if (n == terminal ()) {                                        // the node_ has been deleted already
                                                                            // put terminal back in to owner_unlock
                 atomic_ptr.store (terminal (), std::memory_order_relaxed); // relaxed because observers will see spin
                 return terminal ();
