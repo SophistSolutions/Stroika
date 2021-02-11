@@ -24,7 +24,7 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
- *      @todo   Redo multiset impl so can be used LOCK-FREE - at least 99% of the time.... Locks affect timing, and can hide thread
+ *      @todo   see if fSharedLockThreads_ can be replaced wtih LOCK-FREE - at least 99% of the time.... Locks affect timing, and can hide thread
  *              bugs.
  *
  *      @todo   Reconsider if AssertExternallySynchronizedLock::operator= should allow for this to be locked
@@ -128,8 +128,7 @@ namespace Stroika::Foundation::Debug {
             {
                 lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
                 size_t            i = 0;
-                for (const auto& x : fSharedLockThreads_) {
-                    (void)x;
+                for ([[maybe_unused]]const auto& x : fSharedLockThreads_) {
                     i++;
                 }
                 return i;
@@ -142,17 +141,11 @@ namespace Stroika::Foundation::Debug {
             void AddSharedLock (thread::id i)
             {
                 lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-                //fSharedLockThreads_.insert (i));
                 fSharedLockThreads_.push_front (i);
             }
             void RemoveSharedLock (thread::id i)
             {
                 lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-#if 0
-                multiset<thread::id>::iterator tti = sharedContext->fSharedLockThreads_.find (this_thread::get_id ());
-                Require (tti != sharedContext->fSharedLockThreads_.end ()); // else unbalanced
-                sharedContext->fSharedLockThreads_.erase (tti);
-#endif
                 fSharedLockThreads_.remove (i);
             }
 
