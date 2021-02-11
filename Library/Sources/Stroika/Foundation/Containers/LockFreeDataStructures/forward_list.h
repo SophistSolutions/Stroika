@@ -209,7 +209,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
 
     public:
         // NOT lock free on a, lock free on b
-        friend void std::swap (forward_list& a, forward_list& b) noexcept;
+        friend void std::swap<> (forward_list& a, forward_list& b) noexcept;
 
     private:
         std::atomic<node_*> fFirst_;
