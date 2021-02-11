@@ -2058,6 +2058,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\KeepAlive.h">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\LockFreeDataStructures\forward_list.h">
+      <Filter>Sources\Containers\LockFreeDataStructures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -3356,6 +3359,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\KeepAlive.inl">
       <Filter>Sources\IO\Network\HTTP</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\LockFreeDataStructures\forward_list.inl">
+      <Filter>Sources\Containers\LockFreeDataStructures</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
