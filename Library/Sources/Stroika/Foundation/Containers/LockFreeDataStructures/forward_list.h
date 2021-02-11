@@ -53,33 +53,18 @@ namespace std {
 
 namespace Stroika::Foundation::Containers::LockFreeDataStructures {
 
-    namespace Private_ {
-        namespace concurrent_forward_list_details {
-
-            // provides a globally unique pointer used for the terminal_ node_
-            constexpr struct {
-            } terminal_v;
-            constexpr void* terminal_ = (void*)&terminal_v;
-
-            // provides a globally unique pointer for the lock node_
-            constexpr struct {
-            } spin_v;
-            constexpr void* spin = (void*)&spin_v;
-
-        }
-    }
-
-    // similar to std::forward_list, but thread safe and partiallt lock free
+    /**
+     * similar to std::forward_list, but thread safe and partiallt lock free
+     */
     template <typename T>
     class forward_list {
     private:
         class node_;
 
     public:
+    private:
         template <class U>
         class ForwardIterator;
-
-
 
     public:
         typedef T                        value_type;
@@ -102,18 +87,20 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
 
     public:
         /**
-        // lock free
+         *
+         * lock free
          */
         nonvirtual bool empty () const;
 
     public:
         /**
-        // lock free
-        // The first node_ is removed before locking the other nodes.
-        // Push will not block.
-        // An iterator incremented externally may move to a value no longer in the list
-
+         * The first node_ is removed before locking the other nodes.
+         *  Push will not block.
+         *  An iterator incremented externally may move to a value no longer in the list
+         *
          *  \note UNLIKE https://en.cppreference.com/w/cpp/container/forward_list/clear, this method returns the number of elements deleted
+         *
+         * lock free
          */
         nonvirtual int clear ();
 
@@ -138,6 +125,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         /**
          *  @see https://en.cppreference.com/w/cpp/container/forward_list/push_front
          *  but returns iterator pointing to element just added
+         *
          * lock free
          */
         nonvirtual iterator push_front (const T& value);
@@ -181,7 +169,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
 
     public:
         /**
-        // lock free
+         * lock free
          */
         nonvirtual const_iterator cend () const;
 
@@ -259,7 +247,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
 
         // lock free, but requires a preceding call to lock, changes atomic_ptr from spin_ to n, sets n to nullptr
         // "ownership" is transfered from n to atomic_ptr
-        static void owner_unlock (std::atomic<node_*>& atomic_ptr, node_*& n);
+        static void owner_unlock_ (std::atomic<node_*>& atomic_ptr, node_*& n);
 
         // NOT lock free
         static node_* new_ownership_ (std::atomic<node_*>& atomic_ptr);
@@ -268,7 +256,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
 }
 namespace std {
     /**
-    // NOT lock free on a, lock free on b
+     * NOT lock free on a, lock free on b
      */
     template <typename T>
     void swap (Stroika::Foundation::Containers::LockFreeDataStructures::forward_list<T>& a, Stroika::Foundation::Containers::LockFreeDataStructures::forward_list<T>& b) noexcept;
