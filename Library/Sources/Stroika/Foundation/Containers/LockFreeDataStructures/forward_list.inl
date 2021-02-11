@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         {
             node_* n = owner_lock_ (next); // change next to spin_
             if (n != terminal_ ()) {
-                decrement_reference_count_ (n);                      // release ownership of next
+                decrement_reference_count_ (n);                       // release ownership of next
                 next.store (terminal_ (), std::memory_order_relaxed); // relaxed because observers will see spin_
             }
         }
@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
             }
         }
         for (auto const& i = nodes.begin (); i != nodes.end (); ++i) {
-            decrement_reference_count_ (*i);                        // remove prior nodes reference
+            decrement_reference_count_ (*i);                         // remove prior nodes reference
             i->next.store (terminal_ (), std::memory_order_relaxed); // unlink, relaxed because observers will see spin_
         }
         return nodes.size (); // return number of deleted elements
@@ -159,6 +159,120 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     inline auto forward_list<T>::emplace_front (U&&... params) -> reference
     {
         return *insert_node_ (fFirst_, new node_ (std::forward<U> (params)...));
+    }
+
+    template <typename T>
+    inline bool forward_list<T>::pop_front (T* value)
+    {
+        return remove_node_ (fFirst_, value);
+    }
+
+    template <typename T>
+    auto forward_list<T>::begin () -> iterator
+    {
+        node_*   n = new_ownership_ (fFirst_); // wait for unlock
+        iterator result (n);
+        if (n != terminal_ ()) {
+            decrement_reference_count_ (n); // discard newly created ownership
+        }
+        return result;
+    }
+    template <typename T>
+    auto forward_list<T>::begin () const -> const_iterator
+    {
+        // const_cast is needed to lock fFirst_
+        std::atomic<node_*>& nonConstFirst = *const_cast<std::atomic<node_*>*> (&fFirst_);
+        node_*               n             = new_ownership_ (nonConstFirst);
+        if (n == terminal_ ()) {
+            return end ();
+        }
+        const_iterator result (n);
+        decrement_reference_count_ (n);
+        return result;
+    }
+    template <typename T>
+    inline auto forward_list<T>::cbegin () const -> const_iterator
+    {
+        // add const using const_cast to invoke the const version of begin
+        return const_cast<forward_list const*> (this)->begin ();
+    }
+    template <typename T>
+    inline auto forward_list<T>::end () -> iterator
+    {
+        return iterator ();
+    }
+    template <typename T>
+    inline auto forward_list<T>::end () const -> const_iterator
+    {
+        return const_iterator ();
+    }
+    template <typename T>
+    inline auto forward_list<T>::cend () const -> const_iterator
+    {
+        return const_iterator ();
+    }
+    template <typename T>
+    inline auto forward_list<T>::insert_after (const_iterator position, T const& value) -> iterator
+    {
+        return insert_node_ (position.current->next, new node_ (value));
+    }
+    template <typename T>
+    inline auto forward_list<T>::insert_after (const_iterator position, T&& value) -> iterator
+    {
+        return insert_node_ (position.current->next, new node_ (value));
+    }
+    template <typename T>
+    auto forward_list<T>::insert_after (const_iterator pos, int count, const T& value) -> iterator
+    {
+        if (count <= 0)
+            return iterator ();
+        iterator result = pos = insert_after (pos, value);
+        for (int i = 1; i < count; i++) {
+            pos = insert_after (pos, value);
+        }
+        return result;
+    }
+    template <typename T>
+    template <class InputIt>
+    auto forward_list<T>::insert_after (const_iterator pos, InputIt first, InputIt last) -> iterator
+    {
+        if (first == last)
+            return iterator ();
+        iterator result = pos = insert_after (pos, *first);
+        ++first;
+        while (first != last) {
+            pos = insert_after (pos, first);
+            ++first;
+        }
+        return result;
+    }
+    template <typename T>
+    inline auto forward_list<T>::insert_after (const_iterator pos, std::initializer_list<T> ilist) -> iterator
+    {
+        return insert_after (pos, ilist.begin (), ilist.end ());
+    }
+    template <typename T>
+    template <class... U>
+    auto forward_list<T>::emplace_after (const_iterator position, U&&... params) -> iterator
+    {
+        return insert_node_ (position, new node_ (std::forward (params)...));
+    }
+
+    template <typename T>
+    bool forward_list<T>::separate_after (const_iterator position, forward_list<T>*& result)
+    {
+        node_* n = seperate_ (position.current->next);
+        if (!n)
+            return false;
+        result          = new forward_list<T> ();
+        result->fFirst_ = n;
+        return true;
+    }
+
+    template <typename T>
+    inline bool forward_list<T>::erase_after (const_iterator position, T* value)
+    {
+        return remove_node_ (position.current->next, value);
     }
 
     template <typename T>
@@ -256,13 +370,13 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     {
         node_* n = atomic_ptr.load ();
         do {
-            while (n == spin_ ()) {                               // wait for owner_unlock
+            while (n == spin_ ()) {                              // wait for owner_unlock
                 n = atomic_ptr.load (std::memory_order_relaxed); // relaxed because visibility of unlocked state may be at systems leisure
             }
         } while (!atomic_ptr.compare_exchange_weak (n, spin_ ()));
 
         if (n == terminal_ ()) {                                        // the node_ has been deleted already
-                                                                       // put terminal_ back in to owner_unlock
+                                                                        // put terminal_ back in to owner_unlock
             atomic_ptr.store (terminal_ (), std::memory_order_relaxed); // relaxed because observers will see spin_
             return terminal_ ();
         } // else stays locked
@@ -274,8 +388,8 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         Assert (n != nullptr);
         Assert (n != spin_ ());
         Assert (atomic_ptr.load (std::memory_order_relaxed) == spin_ ()); // relaxed because it was set to spin_ by the current thread
-        atomic_ptr.store (n, std::memory_order_relaxed);                 // relaxed because observers will see spin_
-        n = nullptr;                                                     // make sure the caller cant use the pointer anymore
+        atomic_ptr.store (n, std::memory_order_relaxed);                  // relaxed because observers will see spin_
+        n = nullptr;                                                      // make sure the caller cant use the pointer anymore
     }
     template <typename T>
     auto forward_list<T>::new_ownership_ (std::atomic<node_*>& atomic_ptr) -> node_*
