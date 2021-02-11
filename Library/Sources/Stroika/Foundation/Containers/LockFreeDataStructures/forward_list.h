@@ -76,126 +76,10 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         class node_;
 
     public:
-        /**
-        // construction is lock free (though begin() is not)
-        // incrementing is NOT lock free
-         */
         template <class U>
-        class ForwardIterator {
-            friend class forward_list;
-            node_*                            current;
-            typedef std::forward_iterator_tag iterator_category;
-            typedef U                         value_type;
-            typedef U&                        reference;
-            typedef U*                        pointer;
+        class ForwardIterator;
 
-        public:
-            ForwardIterator ()
-                : current (terminal_ ())
-            {
-            }
 
-            ForwardIterator (node_* n)
-                : current (n != terminal_ () ? increment_reference_count_ (n) : terminal_ ())
-            {
-            }
-
-            ForwardIterator (ForwardIterator const& other)
-                : current (other.current != terminal_ () ? increment_reference_count_ (other.current) : terminal_ ())
-            {
-            }
-
-            ForwardIterator (ForwardIterator&& other) noexcept
-                : current (terminal_ ())
-            {
-                std::swap (current, other.current);
-            }
-
-            ~ForwardIterator ()
-            {
-                if (current == terminal_ ()) {
-                    return;
-                }
-                decrement_reference_count_ (current);
-            }
-
-            ForwardIterator& operator= (ForwardIterator const& other)
-            {
-                if (current != terminal_ ()) {
-                    decrement_reference_count_ (current);
-                }
-                current = other.current != terminal_ () ? increment_reference_count_ (other.current) : terminal_ ();
-                return *this;
-            }
-
-            template <typename V>
-            ForwardIterator& operator= (V const& other)
-            {
-                if (current != terminal_ ()) {
-                    decrement_reference_count_ (current);
-                }
-                current = other.current != terminal_ () ? increment_reference_count_ (other.current) : terminal_ ();
-                return *this;
-            }
-
-            T& operator* () const
-            {
-                if (current == terminal_ ()) {
-                    throw std::logic_error{"invalid iterator"};
-                }
-                return current->value;
-            }
-
-            T* operator-> () const
-            {
-                if (current == terminal_ ()) {
-                    throw std::logic_error{"invalid iterator"};
-                }
-                return &current->value;
-            }
-
-            ForwardIterator& operator++ ()
-            {
-                assert (current != terminal_ ()); // this is the end()
-                node_* temp = new_ownership_ (current->next);
-                std::swap (current, temp);
-                if (temp != terminal_ ()) {
-                    decrement_reference_count_ (temp); // discard newly created ownership
-                }
-                return *this;
-            }
-
-            ForwardIterator operator++ (int)
-            {
-                assert (current != terminal_ ()); // this is the end()
-                ForwardIterator temp = *this;
-                ++*this;
-                return temp;
-            }
-
-            friend void swap (ForwardIterator& a, ForwardIterator& b) noexcept
-            {
-                using std::swap; // bring in swap for built-in types
-                swap (a.current, b.current);
-            }
-
-            operator ForwardIterator<const T> () const
-            {
-                return ForwardIterator<const T> (current);
-            }
-
-            template <typename V>
-            bool operator== (V const& rhs)
-            {
-                return current == rhs.current;
-            }
-
-            template <typename V>
-            bool operator!= (V const& rhs)
-            {
-                return !(*this == rhs);
-            }
-        };
 
     public:
         typedef T                        value_type;
@@ -383,13 +267,11 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
 
 }
 namespace std {
+    /**
     // NOT lock free on a, lock free on b
+     */
     template <typename T>
-    void swap (Stroika::Foundation::Containers::LockFreeDataStructures::forward_list<T>& a, Stroika::Foundation::Containers::LockFreeDataStructures::forward_list<T>& b) noexcept
-    {
-        exchange_ (a.fFirst_, b.fFirst_);
-    }
-
+    void swap (Stroika::Foundation::Containers::LockFreeDataStructures::forward_list<T>& a, Stroika::Foundation::Containers::LockFreeDataStructures::forward_list<T>& b) noexcept;
 }
 
 /*
