@@ -94,7 +94,7 @@ void AssertExternallySynchronizedLock::lock_shared_ () const noexcept
 void AssertExternallySynchronizedLock::unlock_shared_ () const noexcept
 {
     try {
-        SharedContext*    sharedContext = _fSharedContext.get ();
+        SharedContext* sharedContext = _fSharedContext.get ();
         sharedContext->RemoveSharedLock (this_thread::get_id ());
     }
     catch (...) {
