@@ -21,20 +21,20 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
  *      @todo   Redo multiset impl so can be used LOCK-FREE - at least 99% of the time.... Locks affect timing, and can hide thread
  *              bugs.
  *
- *      @todo   Reconsider if AssertExternallySynchronizedLock::operator= shoulkd allow for this to be locked
+ *      @todo   Reconsider if AssertExternallySynchronizedLock::operator= should allow for this to be locked
  *              by the current thread. Safe to do later as that would be weakening the current check/requirement.
  */
 
 namespace Stroika::Foundation::Debug {
 
     /**
-     *  \brief      NOT a real lock - just a debugging infrastructure support tool so in debug builds we assure used threadsafe
+     *  \brief      NOT a real lock - just a debugging infrastructure support tool so in debug builds can be assured threadsafe
      *
      *  This class is a 'no op' in production builds, as a 'locker' for a class that needs
      *  no thread locking because its externally synchronized.
@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Debug {
      *  This 'lock tester' is recursive (a recursive-mutex) - or really super-recursive - because it allows
      *  lock/shared_lock to be mixed logically (unlike stdc++ shared_mutex).
      *
-     *  Externally synchronized means that some external application control guarantees the seciton of code (or data)
+     *  Externally synchronized means that some external application control guarantees the section of code (or data)
      *  is only accessed by a single thread.
      *
      *  This can be used to guarantee the same level of thread safety as provided in the std c++ libraries:
@@ -98,6 +98,28 @@ namespace Stroika::Foundation::Debug {
      *          not blocking.
      */
     class AssertExternallySynchronizedLock {
+#if qDebug
+    public:
+        /**
+         *  Explicit shared context object, so we can construct multiple AssertExternallySynchronizedLock which all
+         *  share a common 'sharedContext' - representing that they ALL must be externally syncrhonized across all the cooperating objects
+         * 
+         *  In most cases, just ignore this class.
+         * 
+         *  To have N cooperating classes (e.g. object, and a few direct members) all share the same rules of single-threading (treating them all
+         *  as one object for the purpose of the rules of safe multithread access) - arrange for them to share a common 'sharedContext'
+         */
+        struct SharedContext {
+        private:
+            atomic_uint_fast32_t fLocks_{0}; // refers to FULL locks, not shared locks (use a multiset there to track redundant shared locks)
+            thread::id           fCurLockThread_;
+            multiset<thread::id> fSharedLockThreads_; // multiset not threadsafe, and this class intrinsically tracks thread Ids across threads, so use GetSharedLockMutexThreads_ () to make safe
+
+        private:
+            friend class AssertExternallySynchronizedLock;
+        };
+#endif
+
     public:
         /**
          *  \note   Copy/Move constructor checks for existing locks while copying.
@@ -105,11 +127,16 @@ namespace Stroika::Foundation::Debug {
          */
 #if qDebug
         AssertExternallySynchronizedLock () noexcept;
-#else
-        constexpr AssertExternallySynchronizedLock () noexcept = default;
-#endif
+        AssertExternallySynchronizedLock (const shared_ptr<SharedContext>& sharedContext) noexcept;
+        AssertExternallySynchronizedLock (const shared_ptr<SharedContext>& sharedContext, AssertExternallySynchronizedLock&& src) noexcept;
         AssertExternallySynchronizedLock (AssertExternallySynchronizedLock&& src) noexcept;
         AssertExternallySynchronizedLock (const AssertExternallySynchronizedLock& src) noexcept;
+        AssertExternallySynchronizedLock (const shared_ptr<SharedContext>& sharedContext, const AssertExternallySynchronizedLock& src) noexcept;
+#else
+        constexpr AssertExternallySynchronizedLock () noexcept                                  = default;
+        AssertExternallySynchronizedLock (AssertExternallySynchronizedLock&& src) noexcept      = default;
+        AssertExternallySynchronizedLock (const AssertExternallySynchronizedLock& src) noexcept = default;
+#endif
 
     public:
         /**
@@ -168,12 +195,11 @@ namespace Stroika::Foundation::Debug {
         nonvirtual void lock_shared_ () const noexcept;
         nonvirtual void unlock_shared_ () const noexcept;
 
+    protected:
+        shared_ptr<SharedContext> _fSharedContext;
+
     private:
-        mutable atomic_uint_fast32_t           fLocks_{0};                    // refers to FULL locks, not shared locks (use a multiset there to track redundant shared locks)
-        mutable thread::id                     fCurLockThread_;
-        static mutex&                          GetSharedLockMutexThreads_ (); // MUTEX ONLY FOR fSharedLockThreads_ (could do one mutex per AssertExternallySynchronizedLock but static probably performs better)
-        mutable optional<multiset<thread::id>> fSharedLockThreads_;           // multiset not threadsafe, and this class intrinsically tracks thread Ids across threads, so use GetSharedLockMutexThreads_ () to make safe
-                                                                              // and once constructed always 'has_value' but use optional to allow CTOR to be noexcept()
+        static mutex& GetSharedLockMutexThreads_ (); // MUTEX ONLY FOR fSharedLockThreads_ (could do one mutex per AssertExternallySynchronizedLock but static probably performs better)
 #endif
     };
 }

@@ -18,24 +18,44 @@ namespace Stroika::Foundation::Debug {
      *************** Debug::AssertExternallySynchronizedLock ************************
      ********************************************************************************
      */
+#if qDebug
+    inline AssertExternallySynchronizedLock::AssertExternallySynchronizedLock (const shared_ptr<SharedContext>& sharedContext) noexcept
+        : _fSharedContext{sharedContext}
+    {
+    }
+    inline AssertExternallySynchronizedLock::AssertExternallySynchronizedLock (const shared_ptr<SharedContext>& sharedContext, const AssertExternallySynchronizedLock& src) noexcept
+        : AssertExternallySynchronizedLock{sharedContext}
+    {
+        shared_lock<const AssertExternallySynchronizedLock> critSec1{src}; // to copy, the src can have shared_locks, but no (write) locks
+    }
     inline AssertExternallySynchronizedLock::AssertExternallySynchronizedLock (const AssertExternallySynchronizedLock& src) noexcept
         : AssertExternallySynchronizedLock{}
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec1{src}; // to copy, the src can have shared_locks, but no (write) locks
     }
-    inline AssertExternallySynchronizedLock::AssertExternallySynchronizedLock ([[maybe_unused]] AssertExternallySynchronizedLock&& src) noexcept
-        : AssertExternallySynchronizedLock{}
+    inline AssertExternallySynchronizedLock::AssertExternallySynchronizedLock (const shared_ptr<SharedContext>& sharedContext, [[maybe_unused]] AssertExternallySynchronizedLock&& src) noexcept
+        : AssertExternallySynchronizedLock{sharedContext}
     {
-#if qDebug
         try {
             lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-            Require (src.fLocks_ == 0 and src.fSharedLockThreads_->empty ()); // to move, the src can have no locks of any kind (since we change src)
+            Require (src._fSharedContext->fLocks_ == 0 and src._fSharedContext->fSharedLockThreads_.empty ()); // to move, the src can have no locks of any kind (since we change src)
         }
         catch (...) {
             AssertNotReached ();
         }
-#endif
     }
+    inline AssertExternallySynchronizedLock::AssertExternallySynchronizedLock ([[maybe_unused]] AssertExternallySynchronizedLock&& src) noexcept
+        : AssertExternallySynchronizedLock{}
+    {
+        try {
+            lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
+            Require (src._fSharedContext->fLocks_ == 0 and src._fSharedContext->fSharedLockThreads_.empty ()); // to move, the src can have no locks of any kind (since we change src)
+        }
+        catch (...) {
+            AssertNotReached ();
+        }
+    }
+#endif
     inline AssertExternallySynchronizedLock& AssertExternallySynchronizedLock::operator= ([[maybe_unused]] const AssertExternallySynchronizedLock& rhs) noexcept
     {
 #if qDebug
@@ -44,10 +64,10 @@ namespace Stroika::Foundation::Debug {
             shared_lock<const AssertExternallySynchronizedLock> critSec1{rhs}; // ""
             lock_guard<mutex>                                   sharedLockProtect{GetSharedLockMutexThreads_ ()};
             if (this == &rhs) {
-                Require (fLocks_ == 0 and fSharedLockThreads_->size () == 1); // we locked ourselves above
+                Require (_fSharedContext->fLocks_ == 0 and _fSharedContext->fSharedLockThreads_.size () == 1); // we locked ourselves above
             }
             else {
-                Require (fLocks_ == 0 and fSharedLockThreads_->empty ()); // We must not have any locks going to replace this
+                Require (_fSharedContext->fLocks_ == 0 and _fSharedContext->fSharedLockThreads_.empty ()); // We must not have any locks going to replace this
             }
             DISABLE_COMPILER_MSC_WARNING_END (26110);
         }
@@ -62,8 +82,8 @@ namespace Stroika::Foundation::Debug {
 #if qDebug
         try {
             lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-            Require (rhs.fLocks_ == 0 and rhs.fSharedLockThreads_->empty ()); // to move, the rhs can have no locks of any kind (since we change rhs)
-            Require (fLocks_ == 0 and fSharedLockThreads_->empty ());         // ditto for thing being assigned to
+            Require (rhs._fSharedContext->fLocks_ == 0 and rhs._fSharedContext->fSharedLockThreads_.empty ()); // to move, the rhs can have no locks of any kind (since we change rhs)
+            Require (_fSharedContext->fLocks_ == 0 and _fSharedContext->fSharedLockThreads_.empty ());         // ditto for thing being assigned to
         }
         catch (...) {
             AssertNotReached ();
