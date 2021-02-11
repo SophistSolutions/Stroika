@@ -38,392 +38,354 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Containers::LockFreeDataStructures;
 
-
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 namespace {
-
 
     class concurrent_forward_list_tests {
     public:
         static void test_01 ()
         {
-            {
-                concurrent_forward_list<int> a;
-            }
-          //  DUMP;
+            Debug::TraceContextBumper    ctx{"{}::test_01"};
+            concurrent_forward_list<int> a;
         }
 
         static void test_02 ()
         {
-            {
-                concurrent_forward_list<int> a;
-                a.push_front (2);
-                int v = 0;
-                assert (a.pop_front (&v));
-                assert (v == 2);
-                assert (a.empty ());
-            }
-         //   DUMP;
+            Debug::TraceContextBumper    ctx{"{}::test_02"};
+            concurrent_forward_list<int> a;
+            a.push_front (2);
+            int v = 0;
+            VerifyTestResult (a.pop_front (&v));
+            VerifyTestResult (v == 2);
+            VerifyTestResult (a.empty ());
         }
 
         static void test_03 ()
         {
-            {
-                concurrent_forward_list<int> a;
-                a.push_front (2);
-                a.push_front (5);
-                int v = 0;
-                assert (a.pop_front (&v));
-                assert (v == 5);
-                assert (a.pop_front (&v));
-                assert (v == 2);
-                assert (a.empty ());
-            }
-       //     DUMP;
+            Debug::TraceContextBumper    ctx{"{}::test_03"};
+            concurrent_forward_list<int> a;
+            a.push_front (2);
+            a.push_front (5);
+            int v = 0;
+            VerifyTestResult (a.pop_front (&v));
+            VerifyTestResult (v == 5);
+            VerifyTestResult (a.pop_front (&v));
+            VerifyTestResult (v == 2);
+            VerifyTestResult (a.empty ());
         }
 
         static void test_04 ()
         {
-            {
-                concurrent_forward_list<int> a;
-                std::vector<std::thread>     threads;
-                int                          threadCount           = 5;
-                int                          perThreadElementCount = 1000;
-                for (int i = 0; i < threadCount; i++) {
-                    threads.emplace_back ([&] () {
-                        for (int j = 0; j < perThreadElementCount; j++) {
-                            a.push_front (j);
-                        }
-                    });
-                }
-                for (auto& thread : threads) {
-                    thread.join ();
-                }
-                int totalElementCount = perThreadElementCount * threadCount;
-                for (int k = 0; k < totalElementCount; k++) {
-                    int v = 0;
-                    assert (a.pop_front (&v));
-                    std::cout << v << " ";
-                }
-                assert (a.empty ());
+            Debug::TraceContextBumper    ctx{"{}::test_04"};
+            concurrent_forward_list<int> a;
+            std::vector<std::thread>     threads;
+            int                          threadCount           = 5;
+            int                          perThreadElementCount = 1000;
+            for (int i = 0; i < threadCount; i++) {
+                threads.emplace_back ([&] () {
+                    for (int j = 0; j < perThreadElementCount; j++) {
+                        a.push_front (j);
+                    }
+                });
             }
-         //   DUMP;
+            for (auto& thread : threads) {
+                thread.join ();
+            }
+            int totalElementCount = perThreadElementCount * threadCount;
+            for (int k = 0; k < totalElementCount; k++) {
+                int v = 0;
+                assert (a.pop_front (&v));
+            }
+            VerifyTestResult (a.empty ());
         }
 
         static void test_05 ()
         {
-            {
-                concurrent_forward_list<int> a;
-                std::vector<std::thread>     threads;
-                for (int i = 0; i < 5; i++) {
-                    threads.emplace_back ([&a] () {
-                        for (int j = 0; j < 1000; j++) {
-                            int y = rand ();
-                            a.push_front (y);
-                            std::this_thread::sleep_for (std::chrono::microseconds (rand () % 10));
-                            int x;
-                            a.pop_front (&x);
-                            if (x == y) {
-                                std::cout << "y";
-                            }
-                            else {
-                                std::cout << "n";
-                            }
+            Debug::TraceContextBumper    ctx{"{}::test_05"};
+            concurrent_forward_list<int> a;
+            std::vector<std::thread>     threads;
+            for (int i = 0; i < 5; i++) {
+                threads.emplace_back ([&a] () {
+                    for (int j = 0; j < 1000; j++) {
+                        int y = rand ();
+                        a.push_front (y);
+                        std::this_thread::sleep_for (std::chrono::microseconds (rand () % 10));
+                        int x;
+                        a.pop_front (&x);
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                        if (x == y) {
+                            DbgTrace (L"y");
                         }
-                    });
-                }
-                for (auto& thread : threads) {
-                    thread.join ();
-                }
-                assert (a.empty ());
+                        else {
+                            DbgTrace (L"n");
+                        }
+#endif
+                    }
+                });
             }
-         //   DUMP;
+            for (auto& thread : threads) {
+                thread.join ();
+            }
+            VerifyTestResult (a.empty ());
         }
 
         static void test_06 ()
         {
-            {
-                concurrent_forward_list<int> a;
-                std::vector<std::thread>     threads;
-                int                          threadCount           = 5;
-                int                          perThreadElementCount = 1000;
-                for (int i = 0; i < threadCount; i++) {
-                    threads.emplace_back ([&a, i, perThreadElementCount] () {
-                        for (int j = 0; j < perThreadElementCount; j++) {
-                            a.push_front (j + i * perThreadElementCount);
-                        }
-                    });
-                }
-                for (auto& thread : threads) {
-                    thread.join ();
-                }
-                std::set<int> remainingNumbers;
-                int           totalElementCount = perThreadElementCount * threadCount;
-                for (int k = 0; k < totalElementCount; k++) {
-                    remainingNumbers.insert (k);
-                }
-                for (int k = 0; k < totalElementCount; k++) {
-                    int v;
-                    assert (a.pop_front (&v));
-                    std::cout << v << " ";
-                    assert (remainingNumbers.erase (v));
-                }
-                assert (remainingNumbers.empty ());
-                assert (a.empty ());
+            Debug::TraceContextBumper    ctx{"{}::test_06"};
+            concurrent_forward_list<int> a;
+            std::vector<std::thread>     threads;
+            int                          threadCount           = 5;
+            int                          perThreadElementCount = 1000;
+            for (int i = 0; i < threadCount; i++) {
+                threads.emplace_back ([&a, i, perThreadElementCount] () {
+                    for (int j = 0; j < perThreadElementCount; j++) {
+                        a.push_front (j + i * perThreadElementCount);
+                    }
+                });
             }
-      //      DUMP;
+            for (auto& thread : threads) {
+                thread.join ();
+            }
+            std::set<int> remainingNumbers;
+            int           totalElementCount = perThreadElementCount * threadCount;
+            for (int k = 0; k < totalElementCount; k++) {
+                remainingNumbers.insert (k);
+            }
+            for (int k = 0; k < totalElementCount; k++) {
+                int v;
+                VerifyTestResult (a.pop_front (&v));
+                VerifyTestResult (remainingNumbers.erase (v));
+            }
+            VerifyTestResult (remainingNumbers.empty ());
+            VerifyTestResult (a.empty ());
         }
 
         static void test_07 ()
         {
-            {
-                concurrent_forward_list<int> a;
-                std::vector<std::thread>     threads;
-                int                          threadCount           = 5;
-                int                          perThreadElementCount = 1000;
-                int                          totalElementCount     = perThreadElementCount * threadCount;
-                std::mutex                   mutex;
-                std::cout << "Initializing concurrent_forward_list_tests::test_07\n";
-                std::set<int> remainingNumbers;
-                for (int k = 0; k < totalElementCount; k++) {
-                    remainingNumbers.insert (k);
-                }
-                for (int i = 0; i < threadCount; i++) {
-                    threads.emplace_back ([&, i] () {
-                        for (int j = 0; j < perThreadElementCount; j++) {
-                            int y = j + i * perThreadElementCount;
-                            a.push_front (y);
-                            std::this_thread::sleep_for (std::chrono::microseconds (rand () % 50));
-                            int x;
-                            a.pop_front (&x);
-                            {
-                                std::unique_lock<std::mutex> lock (mutex);
-                                assert (remainingNumbers.erase (x));
-                            }
-                            if (x == y) {
-                                std::cout << "y";
-                            }
-                            else {
-                                std::cout << "n";
-                            }
-                        }
-                    });
-                }
-                for (auto& thread : threads) {
-                    thread.join ();
-                }
-                assert (a.empty ());
-                assert (remainingNumbers.empty ());
+            Debug::TraceContextBumper    ctx{"{}::test_07"};
+            concurrent_forward_list<int> a;
+            std::vector<std::thread>     threads;
+            int                          threadCount           = 5;
+            int                          perThreadElementCount = 1000;
+            int                          totalElementCount     = perThreadElementCount * threadCount;
+            std::mutex                   mutex;
+            std::set<int>                remainingNumbers;
+            for (int k = 0; k < totalElementCount; k++) {
+                remainingNumbers.insert (k);
             }
-       //     DUMP;
+            for (int i = 0; i < threadCount; i++) {
+                threads.emplace_back ([&, i] () {
+                    for (int j = 0; j < perThreadElementCount; j++) {
+                        int y = j + i * perThreadElementCount;
+                        a.push_front (y);
+                        std::this_thread::sleep_for (std::chrono::microseconds (rand () % 50));
+                        int x;
+                        a.pop_front (&x);
+                        {
+                            std::unique_lock<std::mutex> lock (mutex);
+                            VerifyTestResult (remainingNumbers.erase (x));
+                        }
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                        if (x == y) {
+                            DbgTrace (L"y");
+                        }
+                        else {
+                            DbgTrace (L"n");
+                        }
+#endif
+                    }
+                });
+            }
+            for (auto& thread : threads) {
+                thread.join ();
+            }
+            VerifyTestResult (a.empty ());
+            VerifyTestResult (remainingNumbers.empty ());
         }
 
         static void test_08 ()
         {
-            {
-                concurrent_forward_list<int> a;
-                std::vector<std::thread>     threads;
-                int                          threadCount           = 5;
-                int                          perThreadElementCount = 1000;
-                int                          totalElementCount     = perThreadElementCount * threadCount;
-                std::mutex                   mutex;
-                std::set<int>                remainingNumbers;
-                std::cout << "Initializing concurrent_forward_list_tests::test_08\n";
-                for (int k = 0; k < totalElementCount; k++) {
-                    remainingNumbers.insert (k);
-                }
-                for (int i = 0; i < threadCount; i++) {
-                    threads.emplace_back ([&, i] () {
-                        for (int j = 0; j < perThreadElementCount; j++) {
-                            int y = j + i * perThreadElementCount;
-                            a.push_front (y);
-                        }
-                    });
-                }
-                for (int i = 0; i < threadCount; i++) {
-                    threads.emplace_back ([&, i] () {
-                        for (int j = 0; j < perThreadElementCount; j++) {
-                            int x;
-                            a.pop_front (&x);
-                            {
-                                std::unique_lock<std::mutex> lock (mutex);
-                                assert (remainingNumbers.erase (x));
-                            }
-                            std::cout << x << " ";
-                        }
-                    });
-                }
-                for (auto& thread : threads) {
-                    thread.join ();
-                }
-                assert (a.empty ());
-                assert (remainingNumbers.empty ());
+            Debug::TraceContextBumper    ctx{"{}::test_08"};
+            concurrent_forward_list<int> a;
+            std::vector<std::thread>     threads;
+            int                          threadCount           = 5;
+            int                          perThreadElementCount = 1000;
+            int                          totalElementCount     = perThreadElementCount * threadCount;
+            std::mutex                   mutex;
+            std::set<int>                remainingNumbers;
+            for (int k = 0; k < totalElementCount; k++) {
+                remainingNumbers.insert (k);
             }
-       //     DUMP;
+            for (int i = 0; i < threadCount; i++) {
+                threads.emplace_back ([&, i] () {
+                    for (int j = 0; j < perThreadElementCount; j++) {
+                        int y = j + i * perThreadElementCount;
+                        a.push_front (y);
+                    }
+                });
+            }
+            for (int i = 0; i < threadCount; i++) {
+                threads.emplace_back ([&, i] () {
+                    for (int j = 0; j < perThreadElementCount; j++) {
+                        int x;
+                        a.pop_front (&x);
+                        {
+                            std::unique_lock<std::mutex> lock (mutex);
+                            VerifyTestResult (remainingNumbers.erase (x));
+                        }
+                    }
+                });
+            }
+            for (auto& thread : threads) {
+                thread.join ();
+            }
+            VerifyTestResult (a.empty ());
+            VerifyTestResult (remainingNumbers.empty ());
         }
 
         static void test_09 ()
         {
-            {
-                concurrent_forward_list<int> a;
-                a.push_front (2);
-                a.push_front (5);
-                auto i = a.begin ();
-                assert (*i == 5);
-                ++i;
-                assert (*i == 2);
-                ++i;
-                assert (i == a.end ());
-            }
-         //   DUMP;
+            Debug::TraceContextBumper    ctx{"{}::test_09"};
+            concurrent_forward_list<int> a;
+            a.push_front (2);
+            a.push_front (5);
+            auto i = a.begin ();
+            VerifyTestResult (*i == 5);
+            ++i;
+            VerifyTestResult (*i == 2);
+            ++i;
+            VerifyTestResult (i == a.end ());
         }
 
         static void test_10 ()
         {
-            {
-                concurrent_forward_list<int> a;
-                a.push_front (2);
-                auto i = a.begin ();
-                assert (*i == 2);
-                a.push_front (5);
-                ++i;
-                assert (i == a.end ());
-            }
-       //     DUMP;
+            Debug::TraceContextBumper    ctx{"{}::test_10"};
+            concurrent_forward_list<int> a;
+            a.push_front (2);
+            auto i = a.begin ();
+            VerifyTestResult (*i == 2);
+            a.push_front (5);
+            ++i;
+            VerifyTestResult (i == a.end ());
         }
 
         static void test_11 ()
         {
-            {
-                concurrent_forward_list<int> a;
-                a.push_front (2);
-                auto i = a.begin ();
-                int  v;
-                a.pop_front (&v);
-                a.push_front (5);
-                auto j = a.begin ();
-                assert (*i == 2);
-                assert (*j == 5);
-                ++i;
-                assert (i == a.end ());
-                ++j;
-                assert (j == a.end ());
-            }
-     //       DUMP;
+            Debug::TraceContextBumper    ctx{"{}::test_11"};
+            concurrent_forward_list<int> a;
+            a.push_front (2);
+            auto i = a.begin ();
+            int  v;
+            a.pop_front (&v);
+            a.push_front (5);
+            auto j = a.begin ();
+            VerifyTestResult (*i == 2);
+            VerifyTestResult (*j == 5);
+            ++i;
+            VerifyTestResult (i == a.end ());
+            ++j;
+            VerifyTestResult (j == a.end ());
         }
 
         static void test_12 ()
         {
-            {
-                concurrent_forward_list<int> a;
-                a.push_front (2);
-                a.push_front (5);
-                a.insert_after (a.begin (), 3);
-                auto i = a.begin ();
-                assert (*i == 5);
-                ++i;
-                assert (*i == 3);
-                ++i;
-                assert (*i == 2);
-                ++i;
-                assert (i == a.end ());
-            }
-        //    DUMP;
+            Debug::TraceContextBumper    ctx{"{}::test_12"};
+            concurrent_forward_list<int> a;
+            a.push_front (2);
+            a.push_front (5);
+            a.insert_after (a.begin (), 3);
+            auto i = a.begin ();
+            VerifyTestResult (*i == 5);
+            ++i;
+            VerifyTestResult (*i == 3);
+            ++i;
+            VerifyTestResult (*i == 2);
+            ++i;
+            VerifyTestResult (i == a.end ());
         }
 
         static void test_13 ()
         {
-            {
-                concurrent_forward_list<int> a;
-                a.push_front (2);
-                a.push_front (3);
-                a.push_front (5);
-                auto i = a.begin ();
-                assert (*i == 5);
-                ++i;
-                int v;
-                a.erase_after (a.begin (), &v);
-                assert (v == 3);
-                assert (*i == 3);
-                ++i;
-                assert (i == a.end ());
-                assert (*(++a.begin ()) == 2);
-            }
-       //     DUMP;
+            Debug::TraceContextBumper    ctx{"{}::test_13"};
+            concurrent_forward_list<int> a;
+            a.push_front (2);
+            a.push_front (3);
+            a.push_front (5);
+            auto i = a.begin ();
+            VerifyTestResult (*i == 5);
+            ++i;
+            int v;
+            a.erase_after (a.begin (), &v);
+            VerifyTestResult (v == 3);
+            VerifyTestResult (*i == 3);
+            ++i;
+            VerifyTestResult (i == a.end ());
+            VerifyTestResult (*(++a.begin ()) == 2);
         }
 
         static void test_14 ()
         {
-            {
-                std::cout << "\ntest_14\n";
-                concurrent_forward_list<int> a;
-                for (int i = 0; i < 100000; i++) {
-                    a.push_front (i);
-                }
+            Debug::TraceContextBumper    ctx{"{}::test_14"};
+            concurrent_forward_list<int> a;
+            for (int i = 0; i < 100000; i++) {
+                a.push_front (i);
             }
-     //       DUMP;
         }
 
         static void test_15 ()
         {
-            {
-                concurrent_forward_list<int> a;
-                std::vector<std::thread>     threads1;
-                std::vector<std::thread>     threads2;
-                int const                    threadCount      = 5;
-                int const                    perThreadOpCount = 100000;
-                bool                         done             = false;
-                for (int i = 0; i < threadCount; i++) {
-                    threads1.emplace_back ([&, i] () {
-                        for (int j = 0; j < perThreadOpCount; j++) {
-                            int op = rand () % (perThreadOpCount / 100);
-                            if (op == 0) {
-                                std::cout << "\n"
-                                          << a.clear () << "\n";
-                            }
-                            else {
-                                a.push_front (rand () % 20);
-                            }
+            Debug::TraceContextBumper    ctx{"{}::test_15"};
+            concurrent_forward_list<int> a;
+            std::vector<std::thread>     threads1;
+            std::vector<std::thread>     threads2;
+            int const                    threadCount      = 5;
+            int const                    perThreadOpCount = 100000;
+            bool                         done             = false;
+            for (int i = 0; i < threadCount; i++) {
+                threads1.emplace_back ([&, i] () {
+                    for (int j = 0; j < perThreadOpCount; j++) {
+                        int op = rand () % (perThreadOpCount / 100);
+                        if (op == 0) {
+                            auto cleared = a.clear ();
+                            DbgTrace ("cleared=%d", cleared);
                         }
-                    });
-                }
-                for (int i = 0; i < threadCount; i++) {
-                    threads2.emplace_back ([&, i] () {
-                        auto iterator = a.begin ();
-                        while (!done) {
-                            if (iterator != a.end ()) {
-                                std::cout << *iterator << " ";
-                            }
-                            if (iterator == a.end ()) {
-                                iterator = a.begin ();
-                            }
-                            else {
-                                ++iterator;
-                            }
+                        else {
+                            a.push_front (rand () % 20);
                         }
-                    });
-                }
-                for (auto& thread : threads1) {
-                    thread.join ();
-                }
-                done = true;
-                for (auto& thread : threads2) {
-                    thread.join ();
-                }
+                    }
+                });
             }
-        //    DUMP;
+            for (int i = 0; i < threadCount; i++) {
+                threads2.emplace_back ([&, i] () {
+                    auto iterator = a.begin ();
+                    while (!done) {
+                        if (iterator != a.end ()) {
+                            //std::cout << *iterator << " ";
+                        }
+                        if (iterator == a.end ()) {
+                            iterator = a.begin ();
+                        }
+                        else {
+                            ++iterator;
+                        }
+                    }
+                });
+            }
+            for (auto& thread : threads1) {
+                thread.join ();
+            }
+            done = true;
+            for (auto& thread : threads2) {
+                thread.join ();
+            }
         }
-
-        //static void test_() {
-        //  {
-        //      concurrent_forward_list<int> a;
-        //  }
-        //  DUMP;
-        //}
 
         static void test_all ()
         {
-            for (int repeat = 0; repeat < 10; repeat++) {
+            constexpr int kMaxRepeat_{1}; // was 10
+            for (int repeat = 0; repeat < kMaxRepeat_; repeat++) {
                 test_01 ();
                 test_02 ();
                 test_03 ();
