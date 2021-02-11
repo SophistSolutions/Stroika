@@ -78,8 +78,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         /**
          *  NYI
          */
-        forward_list& operator= (const forward_list& rhs) = delete;
-
+        nonvirtual forward_list& operator= (const forward_list& rhs) = delete;
 
     public:
         /**

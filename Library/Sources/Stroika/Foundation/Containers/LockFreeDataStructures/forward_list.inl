@@ -124,8 +124,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         {
             return ForwardIterator_<const T> (current);
         }
-        template <typename V>
-        bool operator== (V const& rhs)
+        bool operator== (const ForwardIterator_& rhs)
         {
             return current == rhs.current;
         }
