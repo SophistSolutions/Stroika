@@ -342,7 +342,7 @@ namespace {
             std::vector<std::thread>  threads2;
             int const                 threadCount      = 5;
             int const                 perThreadOpCount = 100000;
-            bool                      done             = false;
+            atomic<bool>              done             = false;
             for (int i = 0; i < threadCount; i++) {
                 threads1.emplace_back ([&] () {
                     for (int j = 0; j < perThreadOpCount; j++) {
