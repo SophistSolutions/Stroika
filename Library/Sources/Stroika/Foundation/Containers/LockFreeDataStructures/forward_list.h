@@ -56,11 +56,11 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         class ForwardIterator_;
 
     public:
-        typedef T                        value_type;
-        typedef value_type&              reference;
-        typedef const value_type&        const_reference;
-        typedef value_type*              pointer;
-        typedef value_type const*        const_pointer;
+        typedef T                         value_type;
+        typedef value_type&               reference;
+        typedef const value_type&         const_reference;
+        typedef value_type*               pointer;
+        typedef value_type const*         const_pointer;
         typedef ForwardIterator_<T>       iterator;
         typedef ForwardIterator_<const T> const_iterator;
 
@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
          *
          * lock free
          */
-        nonvirtual int clear ();
+        nonvirtual size_t clear ();
 
     public:
         /**
@@ -107,7 +107,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
          * All nodes are locked before removing the first element.
          * Incrementing an iterator will block, and then result in the end() iterator
          */
-        nonvirtual int locked_clear ();
+        nonvirtual size_t locked_clear ();
 
     public:
         /**
@@ -150,7 +150,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
          *
          * **not** lock free
          */
-        iterator begin ();
+        nonvirtual iterator        begin ();
         nonvirtual const_iterator begin () const;
 
     public:
@@ -167,7 +167,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
          *
          * lock free
          */
-        iterator       end ();
+        nonvirtual iterator        end ();
         nonvirtual const_iterator end () const;
 
     public:
@@ -243,8 +243,8 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         // returns true iff it removed something
         static bool remove_node_ (std::atomic<node_*>& atomic_ptr, T* value);
 
-        static node_* terminal_ () noexcept;
-        static node_* spin_ () noexcept;
+        static constexpr node_*  terminal_ () noexcept;
+        static constexpr node_* spin_ () noexcept;
 
         // lock free, decrement node_::referenceCount, used for iterator and for prior-node_'s link
         static void decrement_reference_count_ (node_*& n);
@@ -253,6 +253,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         // return a new "ownership"
         static node_* increment_reference_count_ (node_* n);
 
+        // fetch the data from node 'a' until we get a value which differs from 'spin_'
         static node_* spin_get_ (std::atomic<node_*>& a);
 
         // lock free, swap the node_ *s in left and right,

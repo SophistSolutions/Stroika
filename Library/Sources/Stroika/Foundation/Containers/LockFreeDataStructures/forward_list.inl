@@ -171,7 +171,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         }
         ~node_ ()
         {
-            node_* n = owner_lock_ (next); // change next to spin_
+            node_* n = owner_lock_ (next);                            // change next to spin_
             if (n != terminal_ ()) {
                 decrement_reference_count_ (n);                       // release ownership of next
                 next.store (terminal_ (), std::memory_order_relaxed); // relaxed because observers will see spin_
@@ -218,7 +218,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         return fFirst_.load () == terminal_ ();
     }
     template <typename T>
-    int forward_list<T>::clear ()
+    size_t forward_list<T>::clear ()
     {
         node_* current = terminal_ ();
         // detach the elements fFirst_ so that blocking is minimal
@@ -243,7 +243,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         return nodes.size (); // return number of deleted elements
     }
     template <typename T>
-    int forward_list<T>::locked_clear ()
+    size_t forward_list<T>::locked_clear ()
     {
         std::list<node_*> nodes;
         {
@@ -332,17 +332,17 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     template <typename T>
     inline auto forward_list<T>::end () -> iterator
     {
-        return iterator ();
+        return iterator{};
     }
     template <typename T>
     inline auto forward_list<T>::end () const -> const_iterator
     {
-        return const_iterator ();
+        return const_iterator{};
     }
     template <typename T>
     inline auto forward_list<T>::cend () const -> const_iterator
     {
-        return const_iterator ();
+        return const_iterator{};
     }
     template <typename T>
     inline auto forward_list<T>::insert_after (const_iterator position, T const& value) -> iterator
@@ -358,7 +358,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     auto forward_list<T>::insert_after (const_iterator pos, int count, const T& value) -> iterator
     {
         if (count <= 0)
-            return iterator ();
+            return iterator{};
         iterator result = pos = insert_after (pos, value);
         for (int i = 1; i < count; i++) {
             pos = insert_after (pos, value);
@@ -369,17 +369,10 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     template <typename InputIt>
     auto forward_list<T>::insert_after (const_iterator pos, InputIt first, InputIt last) -> iterator
     {
-#if 0
-        if (first == last)
-            return iterator ();
-        iterator result = pos = insert_after (pos, *first);
-        ++first;
-#endif
         while (first != last) {
             pos = insert_after (pos, first);
             ++first;
         }
-        //return result;
         return pos;
     }
     template <typename T>
@@ -447,12 +440,12 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         return oldNext;
     }
     template <typename T>
-    inline auto forward_list<T>::terminal_ () noexcept -> node_*
+    constexpr auto forward_list<T>::terminal_ () noexcept -> node_*
     {
         return (node_*)Private_::concurrent_forward_list_details::terminal_;
     }
     template <typename T>
-    inline auto forward_list<T>::spin_ () noexcept -> node_*
+    constexpr auto forward_list<T>::spin_ () noexcept -> node_*
     {
         return (node_*)Private_::concurrent_forward_list_details::spin;
     }
@@ -493,13 +486,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         Assert (right != spin_ ()); // invalid node_
         node_* n = left.load ();
         do {
-#if 1
             n = spin_get_ (left);
-#else
-            while (n == spin_ ()) {
-                n = left.load (std::memory_order_relaxed); // relaxed because visibility of unlocked state may be at systems leisure
-            }
-#endif
         } while (!left.compare_exchange_weak (n, right));
         Assert (n != nullptr);
         right = n;
