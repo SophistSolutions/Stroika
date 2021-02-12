@@ -332,7 +332,7 @@ namespace {
                     for (int j = 0; j < perThreadOpCount; j++) {
                         int op = rand () % (perThreadOpCount / 100);
                         if (op == 0) {
-                            auto cleared = a.clear ();
+                            [[maybe_unused]] auto cleared = a.clear ();
                             DbgTrace ("cleared=%d", cleared);
                         }
                         else {
