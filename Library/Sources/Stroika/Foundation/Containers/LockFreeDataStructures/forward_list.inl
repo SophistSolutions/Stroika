@@ -369,15 +369,18 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     template <typename InputIt>
     auto forward_list<T>::insert_after (const_iterator pos, InputIt first, InputIt last) -> iterator
     {
+#if 0
         if (first == last)
             return iterator ();
         iterator result = pos = insert_after (pos, *first);
         ++first;
+#endif
         while (first != last) {
             pos = insert_after (pos, first);
             ++first;
         }
-        return result;
+        //return result;
+        return pos;
     }
     template <typename T>
     inline auto forward_list<T>::insert_after (const_iterator pos, std::initializer_list<T> ilist) -> iterator
@@ -386,14 +389,14 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     }
     template <typename T>
     template <typename... U>
-    auto forward_list<T>::emplace_after (const_iterator position, U&&... params) -> iterator
+    inline auto forward_list<T>::emplace_after (const_iterator position, U&&... params) -> iterator
     {
         return insert_node_ (position, new node_ (std::forward (params)...));
     }
     template <typename T>
     bool forward_list<T>::separate_after (const_iterator position, forward_list<T>*& result)
     {
-        node_* n = seperate_ (position.current->next);
+        node_* n = separate_ (position.current->next);
         if (!n)
             return false;
         result          = new forward_list<T> ();
@@ -437,7 +440,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         return result;
     }
     template <typename T>
-    auto forward_list<T>::seperate_ (std::atomic<node_*>& atomic_ptr) -> node_*
+    auto forward_list<T>::separate_ (std::atomic<node_*>& atomic_ptr) -> node_*
     {
         node_* oldNext = terminal_ ();
         exchange_ (atomic_ptr, oldNext);
@@ -459,7 +462,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         Assert (n != nullptr);
         Assert (n != terminal_ ()); // not a valid node_
         Assert (n != spin_ ());     // not a valid node_
-        if (n->referenceCount.fetch_sub (1) == 1) {
+        if (n->referenceCount-- == 1) {
             delete n;
         }
         n = nullptr;
@@ -470,8 +473,18 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         Assert (n != nullptr); //must be a valid node_ because ownership is a precondition
         Assert (n != terminal_ ());
         Assert (n != spin_ ());
-        n->referenceCount.fetch_add (1);
+        n->referenceCount++;
         return n;
+    }
+    template <typename T>
+    auto forward_list<T>::spin_get_ (std::atomic<node_*>& a) -> node_*
+    {
+        while (true) {
+            auto p = a.load ();
+            if (p != spin_ ()) {
+                return p;
+            }
+        }
     }
     template <typename T>
     void forward_list<T>::exchange_ (std::atomic<node_*>& left, node_*& right)
@@ -480,9 +493,13 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         Assert (right != spin_ ()); // invalid node_
         node_* n = left.load ();
         do {
+#if 1
+            n = spin_get_ (left);
+#else
             while (n == spin_ ()) {
                 n = left.load (std::memory_order_relaxed); // relaxed because visibility of unlocked state may be at systems leisure
             }
+#endif
         } while (!left.compare_exchange_weak (n, right));
         Assert (n != nullptr);
         right = n;
@@ -504,9 +521,13 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     {
         node_* n = atomic_ptr.load ();
         do {
+#if 1
+            n = spin_get_ (atomic_ptr);
+#else
             while (n == spin_ ()) {                              // wait for owner_unlock_
                 n = atomic_ptr.load (std::memory_order_relaxed); // relaxed because visibility of unlocked state may be at systems leisure
             }
+#endif
         } while (!atomic_ptr.compare_exchange_weak (n, spin_ ()));
 
         if (n == terminal_ ()) {                                        // the node_ has been deleted already

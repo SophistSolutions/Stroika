@@ -237,7 +237,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         static iterator insert_node_ (std::atomic<node_*>& atomic_ptr, node_* n);
 
         // lock free, removes all the nodes from *atomic_ptr forward, and returns that node_ with links still intact
-        static node_* seperate_ (std::atomic<node_*>& atomic_ptr);
+        static node_* separate_ (std::atomic<node_*>& atomic_ptr);
 
         // NOT lock free
         // returns true iff it removed something
@@ -246,12 +246,14 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         static node_* terminal_ () noexcept;
         static node_* spin_ () noexcept;
 
-        // lock free, increment node_::referenceCount, used for iterator and for prior-node_'s link
+        // lock free, decrement node_::referenceCount, used for iterator and for prior-node_'s link
         static void decrement_reference_count_ (node_*& n);
 
         // lock free, used for iterators and for for prior-node_'s link
         // return a new "ownership"
         static node_* increment_reference_count_ (node_* n);
+
+        static node_* spin_get_ (std::atomic<node_*>& a);
 
         // lock free, swap the node_ *s in left and right,
         static void exchange_ (std::atomic<node_*>& left, node_*& right);
