@@ -344,7 +344,7 @@ namespace {
             int const                 perThreadOpCount = 100000;
             bool                      done             = false;
             for (int i = 0; i < threadCount; i++) {
-                threads1.emplace_back ([&, i] () {
+                threads1.emplace_back ([&] () {
                     for (int j = 0; j < perThreadOpCount; j++) {
                         int op = rand () % (perThreadOpCount / 100);
                         if (op == 0) {
@@ -358,7 +358,7 @@ namespace {
                 });
             }
             for (int i = 0; i < threadCount; i++) {
-                threads2.emplace_back ([&, i] () {
+                threads2.emplace_back ([&] () {
                     auto iterator = a.begin ();
                     while (!done) {
                         if (iterator != a.end ()) {
