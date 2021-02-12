@@ -52,13 +52,16 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t BUF_SIZE>
     template <typename ITERATOR_OF_T, enable_if_t<Configuration::is_iterator_v<ITERATOR_OF_T>, char>*>
     SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (ITERATOR_OF_T start, ITERATOR_OF_T end)
-        : SmallStackBuffer{static_cast<size_t> (distance (start, end))}
+        : SmallStackBuffer{}
     {
+        auto sz = static_cast<size_t> (distance (start, end));
+        ReserveAtLeast (sz);
 #if qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
         Configuration::uninitialized_copy_MSFT_BWA (start, end, this->begin ());
 #else
         uninitialized_copy (start, end, this->begin ());
 #endif
+        fSize_ = sz;
         Invariant ();
     }
     template <typename T, size_t BUF_SIZE>
