@@ -171,7 +171,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         }
         ~node_ ()
         {
-            node_* n = owner_lock_ (next);                            // change next to spin_
+            node_* n = owner_lock_ (next); // change next to spin_
             if (n != terminal_ ()) {
                 decrement_reference_count_ (n);                       // release ownership of next
                 next.store (terminal_ (), std::memory_order_relaxed); // relaxed because observers will see spin_

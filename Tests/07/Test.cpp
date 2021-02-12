@@ -43,15 +43,15 @@ using namespace Stroika::Foundation::Containers::LockFreeDataStructures;
 
 namespace {
 
-    class concurrent_forward_list_tests {
-    public:
-        static void test_01 ()
+    namespace forward_list_tests_ {
+
+        void test_01 ()
         {
             Debug::TraceContextBumper ctx{"{}::test_01"};
             forward_list<int>         a;
         }
 
-        static void test_02 ()
+        void test_02 ()
         {
             Debug::TraceContextBumper ctx{"{}::test_02"};
             forward_list<int>         a;
@@ -62,7 +62,7 @@ namespace {
             VerifyTestResult (a.empty ());
         }
 
-        static void test_03 ()
+        void test_03 ()
         {
             Debug::TraceContextBumper ctx{"{}::test_03"};
             forward_list<int>         a;
@@ -76,7 +76,7 @@ namespace {
             VerifyTestResult (a.empty ());
         }
 
-        static void test_04 ()
+        void test_04 ()
         {
             Debug::TraceContextBumper ctx{"{}::test_04"};
             forward_list<int>         a;
@@ -101,7 +101,7 @@ namespace {
             VerifyTestResult (a.empty ());
         }
 
-        static void test_05 ()
+        void test_05 ()
         {
             Debug::TraceContextBumper ctx{"{}::test_05"};
             forward_list<int>         a;
@@ -131,7 +131,7 @@ namespace {
             VerifyTestResult (a.empty ());
         }
 
-        static void test_06 ()
+        void test_06 ()
         {
             Debug::TraceContextBumper ctx{"{}::test_06"};
             forward_list<int>         a;
@@ -162,7 +162,7 @@ namespace {
             VerifyTestResult (a.empty ());
         }
 
-        static void test_07 ()
+        void test_07 ()
         {
             Debug::TraceContextBumper ctx{"{}::test_07"};
             forward_list<int>         a;
@@ -205,7 +205,7 @@ namespace {
             VerifyTestResult (remainingNumbers.empty ());
         }
 
-        static void test_08 ()
+        void test_08 ()
         {
             Debug::TraceContextBumper ctx{"{}::test_08"};
             forward_list<int>         a;
@@ -245,7 +245,7 @@ namespace {
             VerifyTestResult (remainingNumbers.empty ());
         }
 
-        static void test_09 ()
+        void test_09 ()
         {
             Debug::TraceContextBumper ctx{"{}::test_09"};
             forward_list<int>         a;
@@ -259,7 +259,7 @@ namespace {
             VerifyTestResult (i == a.end ());
         }
 
-        static void test_10 ()
+        void test_10 ()
         {
             Debug::TraceContextBumper ctx{"{}::test_10"};
             forward_list<int>         a;
@@ -271,7 +271,7 @@ namespace {
             VerifyTestResult (i == a.end ());
         }
 
-        static void test_11 ()
+        void test_11 ()
         {
             Debug::TraceContextBumper ctx{"{}::test_11"};
             forward_list<int>         a;
@@ -289,7 +289,7 @@ namespace {
             VerifyTestResult (j == a.end ());
         }
 
-        static void test_12 ()
+        void test_12 ()
         {
             Debug::TraceContextBumper ctx{"{}::test_12"};
             forward_list<int>         a;
@@ -306,7 +306,7 @@ namespace {
             VerifyTestResult (i == a.end ());
         }
 
-        static void test_13 ()
+        void test_13 ()
         {
             Debug::TraceContextBumper ctx{"{}::test_13"};
             forward_list<int>         a;
@@ -325,7 +325,7 @@ namespace {
             VerifyTestResult (*(++a.begin ()) == 2);
         }
 
-        static void test_14 ()
+        void test_14 ()
         {
             Debug::TraceContextBumper ctx{"{}::test_14"};
             forward_list<int>         a;
@@ -334,7 +334,7 @@ namespace {
             }
         }
 
-        static void test_15 ()
+        void test_15 ()
         {
             Debug::TraceContextBumper ctx{"{}::test_15"};
             forward_list<int>         a;
@@ -382,7 +382,7 @@ namespace {
             }
         }
 
-        static void test_all ()
+        void test_all ()
         {
             constexpr int kMaxRepeat_{1}; // was 10
             for (int repeat = 0; repeat < kMaxRepeat_; repeat++) {
@@ -409,7 +409,7 @@ namespace {
 namespace {
     void DoRegressionTests_ ()
     {
-        concurrent_forward_list_tests::test_all ();
+        forward_list_tests_::test_all ();
     }
 }
 
