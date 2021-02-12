@@ -211,7 +211,7 @@ namespace {
                 });
             }
             for (int i = 0; i < threadCount; i++) {
-                threads.emplace_back ([&, i] () {
+                threads.emplace_back ([&] () {
                     for (int j = 0; j < perThreadElementCount; j++) {
                         int x;
                         a.pop_front (&x);
