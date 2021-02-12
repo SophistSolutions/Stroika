@@ -156,8 +156,13 @@ namespace Stroika::Foundation::Memory {
                  */
                 reserve (max (nElements, capacity () * 2));
             }
-            uninitialized_fill (this->begin () + fSize_, this->begin () + nElements, T{});
+            Assert (this->begin () + fSize_ == this->end ()); // docs/clarity
+            auto newEnd = this->begin () + nElements;
+            Assert (this->end () < newEnd);
+            // uninitialized_fill() guarantees filling all or none - if an exception doing some, it undoes the ones it did (so setting fsize after safe) 
+            uninitialized_fill (this->end (), newEnd, T{});
             fSize_ = nElements;
+            Assert (this->end () == newEnd);
         }
         else if (nElements < fSize_) {
             // Shrinking
