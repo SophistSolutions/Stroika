@@ -202,6 +202,9 @@ namespace {
             for (int k = 0; k < totalElementCount; k++) {
                 remainingNumbers.insert (k);
             }
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace ("remainingNumbers filled with #s %d to %d", 0, totalElementCount);
+#endif
             for (int i = 0; i < threadCount; i++) {
                 threads.emplace_back ([&, i] () {
                     for (int j = 0; j < perThreadElementCount; j++) {
@@ -214,7 +217,11 @@ namespace {
                 threads.emplace_back ([&] () {
                     for (int j = 0; j < perThreadElementCount; j++) {
                         int x;
-                        a.pop_front (&x);
+                        bool r = a.pop_front (&x);
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                        DbgTrace ("popFront returned %d and value %d", r, x);
+#endif
+                        VerifyTestResult (r);
                         {
                             std::unique_lock<std::mutex> lock (mutex);
                             VerifyTestResult (remainingNumbers.erase (x));
