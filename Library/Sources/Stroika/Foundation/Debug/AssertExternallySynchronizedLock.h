@@ -26,7 +26,12 @@
  *
  *  TODO:
  *      @todo   see if fSharedLockThreads_ can be replaced wtih LOCK-FREE - at least 99% of the time.... Locks affect timing, and can hide thread
- *              bugs.
+ *              bugs. Quickie attempt at profiling yeilds that that time is NOT spent with the locks but with the remove()
+ *              code (since I switched from multiset to forward_list, so maybe cuz of that). Or could be bad measurement (I just
+ *              test on DEBUG builds).
+ * 
+ *              Since Stroika 2.1b10 we do have a lock/free forward_list class I could try. But I'm not yet confident
+ *              in its stability, so maybe sometime down the road...
  *
  *      @todo   Reconsider if AssertExternallySynchronizedLock::operator= should allow for this to be locked
  *              by the current thread. Safe to do later as that would be weakening the current check/requirement.
@@ -111,6 +116,16 @@ namespace Stroika::Foundation::Debug {
          *  as one object for the purpose of the rules of safe multithread access) - arrange for them to share a common 'sharedContext'
          */
         struct SharedContext {
+        public:
+            SharedContext () = default;
+            SharedContext (const SharedContext&) = delete;
+            SharedContext& operator= (const SharedContext&) = delete;
+            ~SharedContext ()
+            {
+                Assert (fLocks_ == 0);
+                Assert (fSharedLockThreads_.empty ());
+            }
+
         private:
             atomic_uint_fast32_t fLocks_{0}; // refers to FULL locks, not shared locks (use a multiset there to track redundant shared locks)
             thread::id           fCurLockThread_;
