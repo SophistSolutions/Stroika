@@ -4,22 +4,6 @@
 //  TEST    Foundation::Containers::DataStructures::LockFree
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <iostream>
-#include <sstream>
-
-#if 0
-#ifdef _MSC_VER //for doing leak detection
-#define _CRTDBG_MAP_ALLOC
-#include <crtdbg.h>
-#include <stdlib.h>
-#define DUMP _CrtDumpMemoryLeaks ()
-#else
-#define DUMP
-#endif
-#endif
-
-#include <cassert>
-#include <iostream>
 #include <mutex>
 #include <set>
 #include <thread>
@@ -96,7 +80,7 @@ namespace {
             int totalElementCount = perThreadElementCount * threadCount;
             for (int k = 0; k < totalElementCount; k++) {
                 int v = 0;
-                assert (a.pop_front (&v));
+                VerifyTestResult (a.pop_front (&v));
             }
             VerifyTestResult (a.empty ());
         }
