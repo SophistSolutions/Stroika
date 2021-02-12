@@ -198,7 +198,7 @@ namespace {
             int                       perThreadElementCount = 1000;
             int                       totalElementCount     = perThreadElementCount * threadCount;
             std::mutex                mutex;
-            std::set<int>             remainingNumbers;
+            std::set<int>             remainingNumbers; // essentially 2D array, rows of perThreadElementCount elt, and threadCount rows
             for (int k = 0; k < totalElementCount; k++) {
                 remainingNumbers.insert (k);
             }
