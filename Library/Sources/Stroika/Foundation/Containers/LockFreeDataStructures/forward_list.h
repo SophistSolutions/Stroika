@@ -13,6 +13,18 @@
  *      https://codereview.stackexchange.com/questions/167252/c11-lock-free-collection-similar-to-stdforward-list-follow-up-2
  *      APPENTLY written by https://codereview.stackexchange.com/users/62314/brent
  *      All said about license we MIT licence, which is what Stroika uses, so I assume will be OK.
+ * 
+ *  TODO:
+ *      @todo   Review https://en.wikipedia.org/wiki/Non-blocking_linked_list for more ideas on how to improve/fix
+ *              this code.
+ *      @todo   Review https://www.infoq.com/news/2014/10/cpp-lock-free-programming/ to make sure I've handled the
+ *              parts he covers - at least - correctly.
+ * 
+ *              Sutters approach is fairly different. Worth considering, as much simpler. He probably showed all I really
+ *              need - the definition of reference, and how that fits with push_front, pop_front... Could implement both ways
+ *              with ifdefs?
+ * 
+ *              @see https://stroika.atlassian.net/browse/STK-540 for details on stuff todo above
  */
 
 namespace Stroika::Foundation::Containers::LockFreeDataStructures {
@@ -167,8 +179,8 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
          *
          * lock free
          */
-        nonvirtual iterator        end ();
-        nonvirtual const_iterator end () const;
+        nonvirtual iterator         end ();
+        nonvirtual const_iterator   end () const;
 
     public:
         /**
@@ -185,12 +197,12 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
          *  All overloads lock_free
          *      << was comented only on first overload but appears to apply to all) returns a default constructed iterator if position is no longer valid
          */
-        nonvirtual iterator insert_after (const_iterator position, T const& value);
-        nonvirtual iterator  insert_after (const_iterator position, T&& value);
-        nonvirtual iterator insert_after (const_iterator pos, int count, const T& value);
+        nonvirtual iterator     insert_after (const_iterator position, T const& value);
+        nonvirtual iterator     insert_after (const_iterator position, T&& value);
+        nonvirtual iterator     insert_after (const_iterator pos, int count, const T& value);
         template <typename InputIt>
-        nonvirtual iterator insert_after (const_iterator pos, InputIt first, InputIt last);
-        nonvirtual iterator insert_after (const_iterator pos, std::initializer_list<T> ilist);
+        nonvirtual iterator     insert_after (const_iterator pos, InputIt first, InputIt last);
+        nonvirtual iterator     insert_after (const_iterator pos, std::initializer_list<T> ilist);
 
     public:
         /**

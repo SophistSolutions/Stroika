@@ -31,7 +31,9 @@
  *              test on DEBUG builds).
  * 
  *              Since Stroika 2.1b10 we do have a lock/free forward_list class I could try. But I'm not yet confident
- *              in its stability, so maybe sometime down the road...
+ *              in its stability, so maybe sometime down the road... 
+ *
+ *              @see https://stroika.atlassian.net/browse/STK-540 for details on stuff todo above
  *
  *      @todo   Reconsider if AssertExternallySynchronizedLock::operator= should allow for this to be locked
  *              by the current thread. Safe to do later as that would be weakening the current check/requirement.
