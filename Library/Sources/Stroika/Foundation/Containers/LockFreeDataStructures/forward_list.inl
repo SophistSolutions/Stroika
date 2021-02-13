@@ -227,6 +227,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         return nodes.size (); // return number of deleted elements
     }
     template <typename T>
+    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD
     size_t forward_list<T>::locked_clear ()
     {
         std::list<node_*> nodes;
@@ -391,6 +392,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         exchange_ (fFirst_, other.fFirst_);
     }
     template <typename T>
+    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD
     bool forward_list<T>::remove_node_ (std::atomic<node_*>& atomic_ptr, T* value)
     {
         node_* x = owner_lock_ (atomic_ptr);
@@ -424,7 +426,8 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         return oldNext;
     }
     template <typename T>
-    inline void forward_list<T>::decrement_reference_count_ (node_*& n)
+    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD 
+        inline void forward_list<T>::decrement_reference_count_ (node_*& n)
     {
         Assert (n != nullptr);
         Assert (n != kTerminalSentinal_); // not a valid node_
@@ -435,7 +438,8 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         n = nullptr;
     }
     template <typename T>
-    inline auto forward_list<T>::increment_reference_count_ (node_* n) -> node_*
+    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD
+        inline auto forward_list<T>::increment_reference_count_ (node_* n) -> node_*
     {
         Assert (n != nullptr); //must be a valid node_ because ownership is a precondition
         Assert (n != kTerminalSentinal_);
@@ -444,6 +448,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         return n;
     }
     template <typename T>
+    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD
     inline auto forward_list<T>::spin_get_ (const std::atomic<node_*>& n) -> node_*
     {
         while (true) {
@@ -454,6 +459,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         }
     }
     template <typename T>
+    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD
     void forward_list<T>::exchange_ (std::atomic<node_*>& left, node_*& right)
     {
         Assert (right != nullptr);
@@ -466,7 +472,8 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         right = n;
     }
     template <typename T>
-    void forward_list<T>::exchange_ (std::atomic<node_*>& left, std::atomic<node_*>& right)
+    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD
+        void forward_list<T>::exchange_ (std::atomic<node_*>& left, std::atomic<node_*>& right)
     {
         node_* temp = owner_lock_ (left);
         exchange_ (right, temp);
@@ -478,6 +485,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         }
     }
     template <typename T>
+    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD
     auto forward_list<T>::owner_lock_ (std::atomic<node_*>& atomic_ptr) -> node_*
     {
         node_* n = atomic_ptr.load ();
@@ -493,6 +501,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         return n;
     }
     template <typename T>
+    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD
     inline void forward_list<T>::owner_unlock_ (std::atomic<node_*>& atomic_ptr, node_*& n)
     {
         Assert (n != nullptr);
