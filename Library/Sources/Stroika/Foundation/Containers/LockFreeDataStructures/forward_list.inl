@@ -9,8 +9,15 @@
 #include <vector>
 
 #include "../../Debug/Assertions.h"
+#include "../../Debug/Valgrind.h"
 
 namespace Stroika::Foundation::Containers::LockFreeDataStructures {
+
+    /*
+     *  IMPLEMENTATION NOTE:
+     *      Use of Stroika_Foundation_Debug_ValgrindDisableHelgrind_START() throughout is due to helgrinds
+     *      lack of support for std::atomic (@see https://valgrind-users.narkive.com/hOeg9MXh/helgrind-and-atomic-operations)
+     */
 
     /**
      * construction is lock free (though begin() is not)
@@ -139,12 +146,14 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
             , next{kTerminalSentinal_}
             , referenceCount{1}
         {
+            Stroika_Foundation_Debug_ValgrindDisableHelgrind_START (*this);
         }
         node_ (T&& value)
             : value{std::move (value)}
             , next{kTerminalSentinal_}
             , referenceCount{1}
         {
+            Stroika_Foundation_Debug_ValgrindDisableHelgrind_START (*this);
         }
         template <typename... U>
         node_ (U&&... params)
@@ -152,6 +161,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
             , next{kTerminalSentinal_}
             , referenceCount{1}
         {
+            Stroika_Foundation_Debug_ValgrindDisableHelgrind_START (*this);
         }
         ~node_ ()
         {
@@ -160,6 +170,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
                 decrement_reference_count_ (n);                             // release ownership of next
                 next.store (kTerminalSentinal_, std::memory_order_relaxed); // relaxed because observers will see kSpinSentinal_
             }
+            Stroika_Foundation_Debug_ValgrindDisableHelgrind_END (*this);
         }
     };
 
@@ -172,6 +183,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     inline forward_list<T>::forward_list ()
         : fFirst_{kTerminalSentinal_}
     {
+        Stroika_Foundation_Debug_ValgrindDisableHelgrind_START (fFirst_);
     }
     template <typename T>
     inline forward_list<T>::forward_list (forward_list const& src)
@@ -194,6 +206,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     template <typename T>
     inline forward_list<T>::~forward_list ()
     {
+        Stroika_Foundation_Debug_ValgrindDisableHelgrind_END (fFirst_);
         clear ();
     }
     template <typename T>

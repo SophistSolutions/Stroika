@@ -10,7 +10,9 @@
 #include <vector>
 
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Sanitizer.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Debug/Valgrind.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 
 #include "Stroika/Foundation/Containers/LockFreeDataStructures/forward_list.h"
@@ -25,6 +27,10 @@ using namespace Stroika::Foundation::Containers::LockFreeDataStructures;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
+
+namespace {
+    double sTimeMultiplier_ = (qDebug ? 0.2 : 1) * ((Debug::IsRunningUnderValgrind () or Debug::kBuiltWithAddressSanitizer or Debug::kBuiltWithThreadSanitizer) ? .1 : 1.0);
+}
 
 namespace {
 
@@ -166,7 +172,7 @@ namespace {
                     for (int j = 0; j < perThreadElementCount; j++) {
                         int y = j + i * perThreadElementCount;
                         a.push_front (y);
-                        std::this_thread::sleep_for (std::chrono::microseconds (rand () % 50));
+                        std::this_thread::sleep_for (chrono::microseconds{rand () % 50});
                         int x;
                         a.pop_front (&x);
                         {
@@ -197,7 +203,7 @@ namespace {
             forward_list<int>         a;
             std::vector<std::thread>  threads;
             int                       threadCount           = 5;
-            int                       perThreadElementCount = 1000;
+            int                       perThreadElementCount = int (sTimeMultiplier_ * 1000);
             int                       totalElementCount     = perThreadElementCount * threadCount;
             std::mutex                mutex;
             std::set<int>             remainingNumbers; // essentially 2D array, rows of perThreadElementCount elt, and threadCount rows
@@ -329,7 +335,8 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"{}::test_14"};
             forward_list<int>         a;
-            for (int i = 0; i < 100000; i++) {
+            const int                 loopCount = int (sTimeMultiplier_ * 100000);
+            for (int i = 0; i < loopCount; i++) {
                 a.push_front (i);
             }
         }
@@ -340,9 +347,10 @@ namespace {
             forward_list<int>         a;
             std::vector<std::thread>  threads1;
             std::vector<std::thread>  threads2;
-            int const                 threadCount      = 5;
-            int const                 perThreadOpCount = 100000;
+            const int                 threadCount      = 5;
+            const int                 perThreadOpCount = int (sTimeMultiplier_ * 100000);
             atomic<bool>              done             = false;
+            Stroika_Foundation_Debug_ValgrindDisableHelgrind_START (done);
             for (int i = 0; i < threadCount; i++) {
                 threads1.emplace_back ([&] () {
                     for (int j = 0; j < perThreadOpCount; j++) {
@@ -380,6 +388,7 @@ namespace {
             for (auto& thread : threads2) {
                 thread.join ();
             }
+            Stroika_Foundation_Debug_ValgrindDisableHelgrind_END (done);
         }
 
         void test_all ()
