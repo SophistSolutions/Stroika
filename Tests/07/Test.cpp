@@ -218,7 +218,7 @@ namespace {
             for (int i = 0; i < threadCount; i++) {
                 threads.emplace_back ([&] () {
                     for (int j = 0; j < perThreadElementCount; j++) {
-                        retry:
+                    retry:
                         int  x;
                         bool r = a.pop_front (&x);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
