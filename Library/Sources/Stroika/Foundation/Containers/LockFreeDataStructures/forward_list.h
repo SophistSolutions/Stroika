@@ -243,9 +243,9 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
 
     private:
         // provides a globally unique pointer for the lock/spin sentinals node_
-        static constexpr struct { } kTerminalSentinalValue_;
+        static constexpr struct { } kTerminalSentinalValue_{};
         static inline const auto kTerminalSentinal_ = const_cast<node_*> (reinterpret_cast<const node_*> (&kTerminalSentinalValue_));
-        static constexpr struct {} kSpinSentinalValue_;
+        static constexpr struct {} kSpinSentinalValue_{};
         static inline const auto kSpinSentinal_ = const_cast<node_*> (reinterpret_cast<const node_*> (&kSpinSentinalValue_));
 
         std::atomic<node_*> fFirst_;
