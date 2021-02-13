@@ -242,6 +242,12 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         nonvirtual void swap (forward_list& other) noexcept;
 
     private:
+        // provides a globally unique pointer for the lock/spin sentinals node_
+        static constexpr struct { } kTerminalSentinalValue_;
+        static inline const auto kTerminalSentinal_ = const_cast<node_*> (reinterpret_cast<const node_*> (&kTerminalSentinalValue_));
+        static constexpr struct {} kSpinSentinalValue_;
+        static inline const auto kSpinSentinal_ = const_cast<node_*> (reinterpret_cast<const node_*> (&kSpinSentinalValue_));
+
         std::atomic<node_*> fFirst_;
 
         // (LGP APPEARS TO) return iterator point at element just added
@@ -255,9 +261,6 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         // returns true iff it removed something
         static bool remove_node_ (std::atomic<node_*>& atomic_ptr, T* value);
 
-        static constexpr node_*  terminal_ () noexcept;
-        static constexpr node_* spin_ () noexcept;
-
         // lock free, decrement node_::referenceCount, used for iterator and for prior-node_'s link
         static void decrement_reference_count_ (node_*& n);
 
@@ -265,8 +268,8 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         // return a new "ownership"
         static node_* increment_reference_count_ (node_* n);
 
-        // fetch the data from node 'a' until we get a value which differs from 'spin_'
-        static node_* spin_get_ (std::atomic<node_*>& a);
+        // fetch the data from node 'n' until we get a value which differs from kSpinSentinal_
+        static node_* spin_get_ (const std::atomic<node_*>& n);
 
         // lock free, swap the node_ *s in left and right,
         static void exchange_ (std::atomic<node_*>& left, node_*& right);
