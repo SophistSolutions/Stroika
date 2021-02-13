@@ -11,6 +11,7 @@
 
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/Sleep.h"
 
 #include "Stroika/Foundation/Containers/LockFreeDataStructures/forward_list.h"
 
@@ -28,6 +29,7 @@ using namespace Stroika::Foundation::Containers::LockFreeDataStructures;
 namespace {
 
     namespace forward_list_tests_ {
+        using Containers::LockFreeDataStructures::forward_list;
 
         void test_01 ()
         {
@@ -216,11 +218,18 @@ namespace {
             for (int i = 0; i < threadCount; i++) {
                 threads.emplace_back ([&] () {
                     for (int j = 0; j < perThreadElementCount; j++) {
-                        int x;
+                        retry:
+                        int  x;
                         bool r = a.pop_front (&x);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace ("popFront returned %d and value %d", r, x);
 #endif
+                        if (not r) {
+                            // this loop could have gotten ahead of the other thread/loop and emptied the list, so retry
+                            DbgTrace ("waiting for push_front loop");
+                            Execution::Sleep (5ms);
+                            goto retry;
+                        }
                         VerifyTestResult (r);
                         {
                             std::unique_lock<std::mutex> lock (mutex);
