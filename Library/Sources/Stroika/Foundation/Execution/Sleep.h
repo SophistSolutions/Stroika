@@ -7,6 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include "../Configuration/Common.h"
+#include "../Time/Duration.h"
 #include "../Time/Realtime.h"
 
 /**
@@ -15,14 +16,10 @@
  *  \file
  *
  *
- *      @todo   Should probably AMMEND (though dangerous at this stage) behavior of Sleep and esp SleepUntil - so if interrupted (not throwing)
+ *      @todo   Should probably AMEND (though dangerous at this stage) behavior of Sleep and esp SleepUntil - so if interrupted (not throwing)
  *              with no 'sleep more seconds' arg- we re-sleep the balance. So interupots don't mess up how long we sleep.
  *
  */
-
-namespace Stroika::Foundation::Time {
-    class Duration;
-}
 
 namespace Stroika::Foundation::Execution {
 
