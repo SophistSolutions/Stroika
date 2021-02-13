@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Memory {
         : SmallStackBuffer{}
     {
         auto sz = static_cast<size_t> (distance (start, end));
-        ReserveAtLeast (sz);    // reserve not resize() so we can do uninitialized_copy (avoid constructing empty objects to be assigned over)
+        ReserveAtLeast (sz); // reserve not resize() so we can do uninitialized_copy (avoid constructing empty objects to be assigned over)
 #if qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
         Configuration::uninitialized_copy_MSFT_BWA (start, end, this->begin ());
 #else
