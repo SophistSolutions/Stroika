@@ -159,6 +159,8 @@ namespace Stroika::Frameworks::WebServer {
          * its argument is Exact_CSP.
          *
          * Also - SetContentSizePolicy () requires GetState () == eInProgress
+         * 
+         * \note @see https://stroika.atlassian.net/browse/STK-721
          */
         nonvirtual void SetContentSizePolicy (ContentSizePolicy csp);
         nonvirtual void SetContentSizePolicy (ContentSizePolicy csp, uint64_t size);
