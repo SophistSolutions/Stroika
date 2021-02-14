@@ -77,7 +77,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *  any cache connections you create (typically by assigning it to the Connection creation factory)
          *
          *  NOTE - though the smart ptr Ptr is not fully re-entrant, the letter class created by CreateDefault is fully
-         *  internally synchonized. This means you can re-use it with multiple connections and run those connection requests from as
+         *  internally synchronized. This means you can re-use it with multiple connections and run those connection requests from as
          *  many threads as desired.
          *
          *  @todo - redo with default argument, but messed up on gcc/clang/not sure why -- LGP 2019-06-27
