@@ -71,6 +71,11 @@ namespace Stroika::Frameworks::WebServer {
     public:
         nonvirtual Response& operator= (const Response&) = delete;
 
+#if qDebug
+    public:
+        virtual void SetAssertExternallySynchronizedLockContext (shared_ptr<SharedContext>& sharedContext) override;
+#endif
+
     public:
         /**
          *  Allow reference to the headers (modify access) - but do so in the context where we assure single threading

@@ -52,6 +52,10 @@ Message::Message (Request&& request, Response&& response, const optional<IO::Net
     , fRequest_{move (request)}
     , fResponse_{move (response)}
 {
+#if qDebug
+    fRequest_.SetAssertExternallySynchronizedLockContext (_fSharedContext);
+    fResponse_.SetAssertExternallySynchronizedLockContext (_fSharedContext);
+#endif
 }
 
 String Message::ToString () const

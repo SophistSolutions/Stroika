@@ -96,6 +96,11 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         nonvirtual Headers& operator= (const Headers& rhs) = default;
         nonvirtual Headers& operator= (Headers&& rhs);
 
+#if qDebug
+    public:
+        virtual void SetAssertExternallySynchronizedLockContext (shared_ptr<SharedContext>& sharedContext) override;
+#endif
+
     public:
         /**
          *  For now - this returns 0 or one value.

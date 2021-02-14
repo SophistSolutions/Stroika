@@ -22,7 +22,12 @@ namespace Stroika::Foundation::Debug {
      */
 #if qDebug
     inline AssertExternallySynchronizedLock::AssertExternallySynchronizedLock (const shared_ptr<SharedContext>& sharedContext) noexcept
-        : _fSharedContext{sharedContext}
+        // https://stroika.atlassian.net/browse/STK-500
+        // NOTE - this will generate a throw and std::unexpected violation if there is no memory and multiset CTOR
+        // throws. There is no good answer in this case. We declare the constructors noexcept so the footprint of
+        // AssertExternallySynchronizedLock is as light as possible and the same (API/constraints) between debug and release
+        // builds. And if we run out of memory here, there isn't much we can do to continue -- LGP 2018-10-02
+        : _fSharedContext{sharedContext ? sharedContext : make_shared<SharedContext> ()}
     {
     }
     inline AssertExternallySynchronizedLock::AssertExternallySynchronizedLock (const shared_ptr<SharedContext>& sharedContext, const AssertExternallySynchronizedLock& src) noexcept
@@ -89,6 +94,13 @@ namespace Stroika::Foundation::Debug {
 #endif
         return *this;
     }
+#if qDebug
+    inline void AssertExternallySynchronizedLock::SetAssertExternallySynchronizedLockContext (shared_ptr<SharedContext>& sharedContext)
+    {
+        Require (sharedContext != nullptr);
+        _fSharedContext = sharedContext;
+    }
+#endif
     inline void AssertExternallySynchronizedLock::lock () const noexcept
     {
 #if qDebug

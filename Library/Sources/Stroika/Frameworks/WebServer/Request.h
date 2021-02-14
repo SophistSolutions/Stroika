@@ -47,6 +47,11 @@ namespace Stroika::Frameworks::WebServer {
     public:
         nonvirtual Request& operator= (const Request&) = delete;
 
+#if qDebug
+    public:
+        virtual void SetAssertExternallySynchronizedLockContext (shared_ptr<SharedContext>& sharedContext) override;
+#endif
+
     public:
         // Quicky impl. Need to improve this significantly.
         // Can call multiple times - but first time it blcoks fetching data

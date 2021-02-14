@@ -178,8 +178,7 @@ namespace Stroika::Foundation::Debug {
          *          Must be able to readlock source on copy, and have zero existing locks on src for move.
          */
 #if qDebug
-        AssertExternallySynchronizedLock () noexcept;
-        AssertExternallySynchronizedLock (const shared_ptr<SharedContext>& sharedContext) noexcept;
+        AssertExternallySynchronizedLock (const shared_ptr<SharedContext>& sharedContext = nullptr) noexcept;
         AssertExternallySynchronizedLock (const shared_ptr<SharedContext>& sharedContext, AssertExternallySynchronizedLock&& src) noexcept;
         AssertExternallySynchronizedLock (AssertExternallySynchronizedLock&& src) noexcept;
         AssertExternallySynchronizedLock (const AssertExternallySynchronizedLock& src) noexcept;
@@ -197,6 +196,11 @@ namespace Stroika::Foundation::Debug {
          */
         nonvirtual AssertExternallySynchronizedLock& operator= (AssertExternallySynchronizedLock&& rhs) noexcept;
         nonvirtual AssertExternallySynchronizedLock& operator= (const AssertExternallySynchronizedLock& rhs) noexcept;
+
+#if qDebug
+    public:
+        virtual void SetAssertExternallySynchronizedLockContext (shared_ptr<SharedContext>& sharedContext);
+#endif
 
     public:
         /**

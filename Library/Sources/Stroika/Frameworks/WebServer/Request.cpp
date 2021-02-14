@@ -134,6 +134,14 @@ Request::Request (const Streams::InputStream<byte>::Ptr& inStream)
 {
 }
 
+#if qDebug
+void Request::SetAssertExternallySynchronizedLockContext (shared_ptr<SharedContext>& sharedContext)
+{
+    AssertExternallySynchronizedLock::SetAssertExternallySynchronizedLockContext (sharedContext);
+    fHeaders_.SetAssertExternallySynchronizedLockContext (sharedContext);
+}
+#endif
+
 void Request::SetHTTPVersion (const String& versionOrVersionLabel)
 {
     //***DEPRECATED***

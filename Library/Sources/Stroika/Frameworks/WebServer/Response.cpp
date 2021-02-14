@@ -116,6 +116,14 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
     fHeaders_.contentType = ct;
 }
 
+#if qDebug
+void Response::SetAssertExternallySynchronizedLockContext (shared_ptr<SharedContext>& sharedContext)
+{
+    AssertExternallySynchronizedLock::SetAssertExternallySynchronizedLockContext (sharedContext);
+    fHeaders_.SetAssertExternallySynchronizedLockContext (sharedContext);
+}
+#endif
+
 InternetMediaType Response::GetContentType () const
 {
     // DEPRECATED
