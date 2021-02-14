@@ -37,6 +37,8 @@
  *
  *      @todo   eExact is UNTESTED, and should have CHECKING code - so if a user writes a different amount, we detect and assert out.
  *              But that can be deferered because it probably works fine for the the case where its used properly.
+ * 
+ *      @todo   https://stroika.atlassian.net/browse/STK-725 - Cleanup IO::Network::HTTP::Request/Response (more like Framewors::WebServer..same), and then make Frameworks::WebServer versions inheret from IO::HTTP  versions
  */
 
 namespace Stroika::Frameworks::WebServer {
@@ -62,7 +64,7 @@ namespace Stroika::Frameworks::WebServer {
         Response ()                    = delete;
         Response (const Response&)     = delete;
         Response (Response&& src);
-        Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream<byte>::Ptr& outStream, const optional < InternetMediaType >& ct = nullopt);
+        Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream<byte>::Ptr& outStream, const optional<InternetMediaType>& ct = nullopt);
 
     public:
         // Reponse must be completed (OK to Abort ()) before being destroyed

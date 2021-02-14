@@ -219,8 +219,8 @@ namespace {
                 threads.emplace_back ([&] () {
                     for (int j = 0; j < perThreadElementCount; j++) {
                     retry:
-                        optional<int>  x = a.pop_front ();
-                        bool r = x.has_value ();
+                        optional<int> x = a.pop_front ();
+                        bool          r = x.has_value ();
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace ("popFront returned %d and value %d", r, x);
 #endif
@@ -276,7 +276,7 @@ namespace {
             Debug::TraceContextBumper ctx{"{}::test_11"};
             forward_list<int>         a;
             a.push_front (2);
-            auto i = a.begin ();
+            auto          i = a.begin ();
             optional<int> v = a.pop_front ();
             a.push_front (5);
             auto j = a.begin ();

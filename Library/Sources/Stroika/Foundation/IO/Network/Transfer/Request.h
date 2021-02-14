@@ -39,6 +39,9 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      *      have very different needs about to what to specify/retrieve in one case or the other.
      *
      *      @todo maybe reconsider?
+     * 
+     *  @todo   https://stroika.atlassian.net/browse/STK-724 - IO::Network::Transfer::Request/Response should use IO::Network::HTTP::Headers (not mapping)
+     *  @todo   https://stroika.atlassian.net/browse/STK-725 - Cleanup IO::Network::HTTP::Request/Response (more like Framewors::WebServer..same), and then make Frameworks::WebServer versions inheret from IO::HTTP  versions
      */
     struct Request {
         String fMethod;
