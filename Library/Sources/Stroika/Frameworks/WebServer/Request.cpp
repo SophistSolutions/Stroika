@@ -106,18 +106,22 @@ Request::Request (const Streams::InputStream<byte>::Ptr& inStream)
               const Request*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::headers);
               shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
               return thisObj->fHeaders_;
-          },
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newHeaders) {
-              Request*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::headers);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
-              thisObj->fHeaders_ = newHeaders;
           }}
-    , contentType{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Request*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::contentType);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
-              return thisObj->fHeaders_.contentType ();
-          }}
+    , rwHeaders{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> IO::Network::HTTP::Headers& {
+                    const Request*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::rwHeaders);
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj}; // not shared_lock cuz rw
+                    return const_cast<IO::Network::HTTP::Headers&> (thisObj->fHeaders_);
+                },
+                [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newHeaders) {
+                    Request*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::rwHeaders);
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+                    thisObj->fHeaders_ = newHeaders;
+                }}
+    , contentType{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+        const Request*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::contentType);
+        shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+        return thisObj->fHeaders_.contentType ();
+    }}
     , keepAliveRequested{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
         const Request*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::keepAliveRequested);
         shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};

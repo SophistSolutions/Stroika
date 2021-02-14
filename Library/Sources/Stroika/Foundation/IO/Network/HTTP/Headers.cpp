@@ -292,13 +292,6 @@ Headers& Headers::operator= (Headers&& rhs)
     return *this;
 }
 
-#if qDebug
-void Headers::SetAssertExternallySynchronizedLockContext (shared_ptr<SharedContext>& sharedContext)
-{
-    AssertExternallySynchronizedLock::SetAssertExternallySynchronizedLockContext (sharedContext);
-}
-#endif
-
 optional<String> Headers::LookupOne (const String& name) const
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};

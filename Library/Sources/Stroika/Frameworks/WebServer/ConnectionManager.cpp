@@ -48,7 +48,7 @@ namespace {
             }
             virtual void HandleMessage (Message* m) const override
             {
-                m->rwResponse ().UpdateHeader ([this] (auto* header) { RequireNotNull (header); header->server = fServerHeader_; });
+                m->rwResponse ().rwHeaders ().server = fServerHeader_;
             }
             const String fServerHeader_; // no need for synchronization cuz constant - just set on construction
         };
@@ -252,7 +252,7 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
 
                     if (not keepAlive) {
                         if (readyConnection->response ().GetState () != Response::State::eCompleted) {
-                            IgnoreExceptionsForCall (readyConnection->response ().End ());
+                            IgnoreExceptionsForCall (readyConnection->rwResponse ().End ());
                         }
                     }
 

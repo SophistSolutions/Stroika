@@ -150,8 +150,12 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Inte
         const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::request);
         return thisObj->fMessage_->request ();
     }}
-    , response{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Response& {
+    , response{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const Response& {
         const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::response);
+        return thisObj->fMessage_->response ();
+    }}
+    , rwResponse{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Response& {
+        const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::rwResponse);
         return thisObj->fMessage_->rwResponse ();
     }}
     , remainingConnectionLimits{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<KeepAlive> {
@@ -316,12 +320,9 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 
         // From https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
         //      HTTP/1.1 applications that do not support persistent connections MUST include the "close" connection option in every message.
-        response ().UpdateHeader ([thisMessageKeepAlive] (auto* header) {
-            using IO::Network::HTTP::Headers;
-            RequireNotNull (header);
-            header->connection = thisMessageKeepAlive ? Headers::eKeepAlive : Headers::eClose;
-        });
-        response ().End ();
+
+        this->rwResponse ().rwHeaders ().connection = thisMessageKeepAlive ? Headers::eKeepAlive : Headers::eClose;
+        this->rwResponse ().End ();
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
         WriteLogConnectionMsg_ (L"Did GetResponse ().End ()");
 #endif

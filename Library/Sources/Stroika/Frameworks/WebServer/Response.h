@@ -73,25 +73,11 @@ namespace Stroika::Frameworks::WebServer {
 
 #if qDebug
     public:
-        virtual void SetAssertExternallySynchronizedLockContext (shared_ptr<SharedContext>& sharedContext) override;
-#endif
-
-    public:
         /**
-         *  Allow reference to the headers (modify access) - but do so in the context where we assure single threading
-         *  and that this is only done while the transaction is in progress.
-         * 
-         *  Add the given header to the list of headers to be associated with this reponse.
-         *
-         * It is legal to call anytime before Flush. Illegal to call after flush. 
-         * It is legal to call to replace existing headers values.
-         * 
-         *  \note   The reason to control access to the 'Headers' subobject with ReadHeader/UpdateHeader, is
-         *          to assure access only happens with the response is in the proper state (before having sent headers)
-         *          and to assure threadsafe access (just asserted no locking).
+         *  Allow users of the Headers object to have it share a 'assure externally synchronized' context.
          */
-        template <typename FUNCTION>
-        nonvirtual auto UpdateHeader (FUNCTION&& f);
+        nonvirtual void SetAssertExternallySynchronizedLockContext (shared_ptr<SharedContext>& sharedContext);
+#endif
 
     public:
         /**
@@ -102,13 +88,18 @@ namespace Stroika::Frameworks::WebServer {
          *          to assure access only happens with the response is in the proper state (before having sent headers)
          *          and to assure threadsafe access (just asserted no locking).
          */
-        template <typename FUNCTION>
-        nonvirtual auto ReadHeader (FUNCTION&& f) const;
+        Common::ReadOnlyProperty<const IO::Network::HTTP::Headers&> headers;
 
     public:
         /**
+         *  Allow reference to the headers (modify access) - but do so in the context where we assure single threading
+         *  and that this is only done while the transaction is in progress.
+         * 
+         * It is legal to call anytime before Flush. Illegal to call after flush. 
+         * It is legal to call to replace existing headers values.
+         * 
          */
-        Common::Property<IO::Network::HTTP::Headers> headers;
+        Common::Property<IO::Network::HTTP::Headers&> rwHeaders;
 
     public:
         /*
@@ -240,21 +231,21 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-        *  @todo consider if we should lose this? Just clears fBodyBytes..
+         *  @todo consider if we should lose this? Just clears fBodyBytes..
          */
         nonvirtual void clear ();
 
     public:
         /**
-        *  @todo consider if we should lose this?
+         *  @todo consider if we should lose this?
          *  Returns true iff bodyBytes lenght is zero.
          */
         nonvirtual bool empty () const;
 
     public:
         /**
-        // REDO USING BINARY STREAM (CTOR SHOULD TAKE BINARY STREAM CTOR)
-        */
+         * REDO USING BINARY STREAM (CTOR SHOULD TAKE BINARY STREAM CTOR)
+         */
         nonvirtual const vector<byte>& GetBytes () const;
 
     public:
@@ -272,7 +263,6 @@ namespace Stroika::Frameworks::WebServer {
          */
         nonvirtual void SetStatus (Status newStatus, const String& overrideReason = wstring{});
 
-
     public:
         /**
          *  @see Characters::ToString ();
@@ -289,6 +279,10 @@ namespace Stroika::Frameworks::WebServer {
         [[deprecated ("Since Stroika 2.1b10 - use UpdateHeaders directly")]] nonvirtual void  ClearHeader (const String& headerName);
         [[deprecated ("Since Stroika 2.1b10 - use UpdateHeaders directly")]] void             ClearHeaders ();
         [[deprecated ("Since 2.1b10, use headers() directly")]] IO::Network::HTTP::Headers    GetEffectiveHeaders () const;
+        template <typename FUNCTION>
+        [[deprecated ("Since 2.1b10, use rwHeaders() directly")]] auto UpdateHeader (FUNCTION&& f);
+        template <typename FUNCTION>
+        [[deprecated ("Since 2.1b10, use headers() directly")]] auto ReadHeader (FUNCTION&& f) const;
 
     private:
         nonvirtual InternetMediaType AdjustContentTypeForCodePageIfNeeded_ (const InternetMediaType& ct) const;

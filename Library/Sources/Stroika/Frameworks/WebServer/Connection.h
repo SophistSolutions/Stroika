@@ -96,9 +96,15 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
+         *  Access a (read-only) reference of the underlying connection request
+         */
+        Common::ReadOnlyProperty<const Response&> response;
+
+    public:
+        /**
          *  Access a (read-only) reference to the underlying (modifyable) connection response (meaning you cannot assign to the response itself, but you can modify the response object)
          */
-        Common::ReadOnlyProperty<Response&> response;
+        Common::ReadOnlyProperty<Response&> rwResponse;
 
     public:
         /**

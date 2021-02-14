@@ -72,35 +72,41 @@ Response::Response (Response&& src)
 
 Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream<byte>::Ptr& outStream, const optional<InternetMediaType>& ct)
     : headers{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> IO::Network::HTTP::Headers {
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const IO::Network::HTTP::Headers& {
               const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::headers);
               shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
               return thisObj->fHeaders_;
-          },
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newHeaders) {
-              Response*                                          thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::headers);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
-              thisObj->fHeaders_ = newHeaders;
           }}
-    , codePage{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::codePage);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
-              return thisObj->fCodePage_;
-          },
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newCodePage) {
-              Response*                                          thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::codePage);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
-              Require (thisObj->fState_ == State::eInProgress);
-              Require (thisObj->fBodyBytes_.empty ());
-              bool diff           = thisObj->fCodePage_ != newCodePage;
-              thisObj->fCodePage_ = newCodePage;
-              if (diff) {
-                  if (auto ct = thisObj->fHeaders_.contentType ()) {
-                      thisObj->fHeaders_.contentType = thisObj->AdjustContentTypeForCodePageIfNeeded_ (*ct);
-                  }
-              }
-          }}
+    , rwHeaders{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> IO::Network::HTTP::Headers& {
+                    const Response*                                    thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::rwHeaders);
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj}; // not shared_lock cuz rw
+                    Require (thisObj->fState_ == State::eInProgress);                     // NB: this really applies even LONGER - for as long as the live header exists
+                    return const_cast<IO::Network::HTTP::Headers&> (thisObj->fHeaders_);
+                },
+                [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newHeaders) {
+                    Response*                                          thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::rwHeaders);
+                    lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+                    Require (thisObj->fState_ == State::eInProgress);
+                    thisObj->fHeaders_ = newHeaders;
+                }}
+    , codePage{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+                   const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::codePage);
+                   shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+                   return thisObj->fCodePage_;
+               },
+               [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newCodePage) {
+                   Response*                                          thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::codePage);
+                   lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+                   Require (thisObj->fState_ == State::eInProgress);
+                   Require (thisObj->fBodyBytes_.empty ());
+                   bool diff           = thisObj->fCodePage_ != newCodePage;
+                   thisObj->fCodePage_ = newCodePage;
+                   if (diff) {
+                       if (auto ct = thisObj->fHeaders_.contentType ()) {
+                           thisObj->fHeaders_.contentType = thisObj->AdjustContentTypeForCodePageIfNeeded_ (*ct);
+                       }
+                   }
+               }}
     , fSocket_{s}
     , fState_{State::eInProgress}
     , fStatus_{StatusCodes::kOK}
@@ -127,13 +133,13 @@ void Response::SetAssertExternallySynchronizedLockContext (shared_ptr<SharedCont
 InternetMediaType Response::GetContentType () const
 {
     // DEPRECATED
-    return ReadHeader ([] (const auto& h) { return h.contentType ().value_or (InternetMediaType{}); });
+    return this->headers ().contentType ().value_or (InternetMediaType{});
 }
 
 void Response::AddHeader (const String& headerName, const String& value)
 {
     // DEPRECATED
-    UpdateHeader ([&] (IO::Network::HTTP::Headers* headers) { headers->Set (headerName, value); });
+    this->rwHeaders ().Set (headerName, value);
 }
 
 void Response::SetContentSizePolicy (ContentSizePolicy csp)
@@ -159,11 +165,7 @@ bool Response::IsContentLengthKnown () const
 
 void Response::SetContentType (const InternetMediaType& contentType)
 {
-    UpdateHeader ([&contentType, this] (auto* header) {
-        if (auto ct = header->contentType ()) {
-            header->contentType = AdjustContentTypeForCodePageIfNeeded_ (contentType);
-        }
-    });
+    this->rwHeaders ().contentType = AdjustContentTypeForCodePageIfNeeded_ (contentType);
 }
 
 void Response::SetCodePage (Characters::CodePage newCodePage)
@@ -209,18 +211,12 @@ void Response::AppendToCommaSeperatedHeader (const String& headerName, const Str
 
 void Response::ClearHeaders ()
 {
-    UpdateHeader ([&] (IO::Network::HTTP::Headers* headers) {
-        RequireNotNull (headers);
-        *headers = IO::Network::HTTP::Headers{};
-    });
+    this->rwHeaders () = IO::Network::HTTP::Headers{};
 }
 
 void Response::ClearHeader (const String& headerName)
 {
-    UpdateHeader ([&] (IO::Network::HTTP::Headers* headers) {
-        RequireNotNull (headers);
-        headers->Remove (headerName);
-    });
+    this->rwHeaders ().Remove (headerName);
 }
 
 IO::Network::HTTP::Headers Response::GetHeaders () const

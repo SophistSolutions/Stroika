@@ -198,8 +198,14 @@ namespace Stroika::Foundation::Debug {
         nonvirtual AssertExternallySynchronizedLock& operator= (const AssertExternallySynchronizedLock& rhs) noexcept;
 
 #if qDebug
-    public:
-        virtual void SetAssertExternallySynchronizedLockContext (shared_ptr<SharedContext>& sharedContext);
+    protected:
+        /**
+         *  Make it easy for subclasses to expose SetAssertExternallySynchronizedLockContext () functionality, so those
+         *  subclasses can allow users of those classes to share a sharing context.
+         * 
+         *  \note - this is named without the prefixing '_' (though protected) to make it easier to forward, just using using.
+         */
+        nonvirtual void SetAssertExternallySynchronizedLockContext (shared_ptr<SharedContext>& sharedContext);
 #endif
 
     public:

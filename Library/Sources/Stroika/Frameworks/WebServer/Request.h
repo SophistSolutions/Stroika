@@ -49,7 +49,10 @@ namespace Stroika::Frameworks::WebServer {
 
 #if qDebug
     public:
-        virtual void SetAssertExternallySynchronizedLockContext (shared_ptr<SharedContext>& sharedContext) override;
+        /**
+         *  Allow users of the Headers object to have it share a 'assure externally synchronized' context.
+         */
+        nonvirtual void SetAssertExternallySynchronizedLockContext (shared_ptr<SharedContext>& sharedContext);
 #endif
 
     public:
@@ -77,8 +80,16 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
+         *  Allow readonly access to the HTTP headers embedded in the request object.
          */
-        Common::Property<const IO::Network::HTTP::Headers&> headers;
+        Common::ReadOnlyProperty<const IO::Network::HTTP::Headers&> headers;
+
+    public:
+        /**
+         *  Allow read/write access to the HTTP headers embedded in the request object. This allows assigning to overwrite
+         *  the headers, and it returns a live non-const reference to the Headers object.
+         */
+        Common::Property<IO::Network::HTTP::Headers&> rwHeaders;
 
     public:
         /**

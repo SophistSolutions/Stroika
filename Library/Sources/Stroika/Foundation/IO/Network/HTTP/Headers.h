@@ -98,7 +98,10 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
 #if qDebug
     public:
-        virtual void SetAssertExternallySynchronizedLockContext (shared_ptr<SharedContext>& sharedContext) override;
+        /**
+         *  Allow users of the Headers object to have it share a 'assure externally synchronized' context.
+         */
+        using Debug::AssertExternallySynchronizedLock::SetAssertExternallySynchronizedLockContext;
 #endif
 
     public:

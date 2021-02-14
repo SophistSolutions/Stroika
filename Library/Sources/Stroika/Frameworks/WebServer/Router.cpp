@@ -121,7 +121,7 @@ struct Router::Rep_ : Interceptor::_IRep {
                 //      The method specified in the Request-Line is not allowed for the resource identified by the Request-URI.
                 //      The response MUST include an Allow header containing a list of valid methods for the requested resource.
                 Assert (not o->empty ());
-                m->rwResponse ().UpdateHeader ([&] (auto* header) { RequireNotNull (header); header->allow = o; });
+                m->rwResponse ().rwHeaders ().allow = o;
                 Execution::Throw (ClientErrorException{HTTP::StatusCodes::kMethodNotAllowed});
             }
             else {
@@ -155,15 +155,12 @@ struct Router::Rep_ : Interceptor::_IRep {
             }
         }
         if (allowedOrigin) {
-            response.UpdateHeader ([&] (auto* header) {
-                RequireNotNull (header);
-                header->accessControlAllowOrigin = allowedOrigin;
-                if (fAllowedOrigins_) {
-                    // see https://fetch.spec.whatwg.org/#cors-protocol-and-http-caches to see why we need to add Vary response
-                    // if response depends on origin (so not '*')
-                    header->vary = Memory::NullCoalesce (header->vary ()) + String{HTTP::HeaderName::kOrigin};
-                }
-            });
+            response.rwHeaders ().accessControlAllowOrigin = allowedOrigin;
+            if (fAllowedOrigins_) {
+                // see https://fetch.spec.whatwg.org/#cors-protocol-and-http-caches to see why we need to add Vary response
+                // if response depends on origin (so not '*')
+                response.rwHeaders ().vary = Memory::NullCoalesce (response.headers ().vary ()) + String{HTTP::HeaderName::kOrigin};
+            }
         }
     }
     nonvirtual optional<RequestHandler> Lookup_ (const String& method, const String& hostRelPath, const Request& request, Sequence<String>* matches) const
@@ -221,26 +218,25 @@ struct Router::Rep_ : Interceptor::_IRep {
         // @todo note - This ignores - Access-Control-Request-Method - not sure how we are expected to use it?
         auto o = GetAllowedMethodsForRequest_ (request);
         if (o) {
-            auto accessControlRequestHeaders = request.headers ().LookupOne (HeaderName::kAccessControlRequestHeaders);
-            response.UpdateHeader ([this, &o, &accessControlRequestHeaders] (auto* header) {
-                RequireNotNull (header);
-                header->Set (HeaderName::kAccessControlAllowCredentials, fAccessControlAllowCredentialsValue_);
-                if (accessControlRequestHeaders) {
+            {
+                auto& responseHeaders = response.rwHeaders ();
+                responseHeaders.Set (HeaderName::kAccessControlAllowCredentials, fAccessControlAllowCredentialsValue_);
+                if (auto accessControlRequestHeaders = request.headers ().LookupOne (HeaderName::kAccessControlRequestHeaders)) {
                     if (fAllowedHeaders_) {
                         // intersect requested headers with those configured to permit
                         Iterable<String> requestAccessHeaders = accessControlRequestHeaders->Tokenize ({','});
                         auto             r                    = fAllowedHeaders_->Intersection (requestAccessHeaders);
                         if (r.empty ()) {
-                            header->Set (HeaderName::kAccessControlAllowHeaders, String::Join (r));
+                            responseHeaders.Set (HeaderName::kAccessControlAllowHeaders, String::Join (r));
                         }
                     }
                     else {
-                        header->Set (HeaderName::kAccessControlAllowHeaders, *accessControlRequestHeaders);
+                        responseHeaders.Set (HeaderName::kAccessControlAllowHeaders, *accessControlRequestHeaders);
                     }
                 }
-                header->Set (HeaderName::kAccessControlAllowMethods, String::Join (*o));
-                header->Set (HeaderName::kAccessControlMaxAge, fAccessControlMaxAgeValue_);
-            });
+                responseHeaders.Set (HeaderName::kAccessControlAllowMethods, String::Join (*o));
+                responseHeaders.Set (HeaderName::kAccessControlMaxAge, fAccessControlMaxAgeValue_);
+            }
             HandleCORSInNormallyHandledMessage_ (request, response); // include access-origin-header
             response.SetStatus (IO::Network::HTTP::StatusCodes::kNoContent);
         }
