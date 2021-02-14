@@ -76,7 +76,7 @@ namespace Stroika::Frameworks::WebServer {
         /**
          *  Allow users of the Headers object to have it share a 'assure externally synchronized' context.
          */
-        nonvirtual void SetAssertExternallySynchronizedLockContext (shared_ptr<SharedContext>& sharedContext);
+        nonvirtual void SetAssertExternallySynchronizedLockContext (const shared_ptr<SharedContext>& sharedContext);
 #endif
 
     public:

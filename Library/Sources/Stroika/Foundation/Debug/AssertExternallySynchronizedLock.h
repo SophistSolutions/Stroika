@@ -205,7 +205,7 @@ namespace Stroika::Foundation::Debug {
          * 
          *  \note - this is named without the prefixing '_' (though protected) to make it easier to forward, just using using.
          */
-        nonvirtual void SetAssertExternallySynchronizedLockContext (shared_ptr<SharedContext>& sharedContext);
+        nonvirtual void SetAssertExternallySynchronizedLockContext (const shared_ptr<SharedContext>& sharedContext);
 #endif
 
     public:

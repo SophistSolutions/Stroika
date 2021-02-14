@@ -95,7 +95,7 @@ namespace Stroika::Foundation::Debug {
         return *this;
     }
 #if qDebug
-    inline void AssertExternallySynchronizedLock::SetAssertExternallySynchronizedLockContext (shared_ptr<SharedContext>& sharedContext)
+    inline void AssertExternallySynchronizedLock::SetAssertExternallySynchronizedLockContext (const shared_ptr<SharedContext>& sharedContext)
     {
         Require (sharedContext != nullptr);
         _fSharedContext = sharedContext;

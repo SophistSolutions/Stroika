@@ -139,7 +139,7 @@ Request::Request (const Streams::InputStream<byte>::Ptr& inStream)
 }
 
 #if qDebug
-void Request::SetAssertExternallySynchronizedLockContext (shared_ptr<SharedContext>& sharedContext)
+void Request::SetAssertExternallySynchronizedLockContext (const shared_ptr<SharedContext>& sharedContext)
 {
     AssertExternallySynchronizedLock::SetAssertExternallySynchronizedLockContext (sharedContext);
     fHeaders_.SetAssertExternallySynchronizedLockContext (sharedContext);

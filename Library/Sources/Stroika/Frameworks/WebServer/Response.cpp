@@ -123,7 +123,7 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
 }
 
 #if qDebug
-void Response::SetAssertExternallySynchronizedLockContext (shared_ptr<SharedContext>& sharedContext)
+void Response::SetAssertExternallySynchronizedLockContext (const shared_ptr<SharedContext>& sharedContext)
 {
     AssertExternallySynchronizedLock::SetAssertExternallySynchronizedLockContext (sharedContext);
     fHeaders_.SetAssertExternallySynchronizedLockContext (sharedContext);
