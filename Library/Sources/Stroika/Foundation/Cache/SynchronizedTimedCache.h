@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Cache {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      *
-     *  @see TimedCache<> - for unsynchonized implementation
+     *  @see TimedCache<> - for unsynchronized implementation
      *
      */
     template <typename KEY, typename VALUE, typename TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>

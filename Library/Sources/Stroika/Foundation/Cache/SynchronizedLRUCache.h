@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Cache {
      *  \brief simple wrapper on LRUCache (with the same API) - but internally synchronized in a way that is
      *         more performant than using RWSyncrhonzied<LRUCache<...>>
      *
-     *  @see LRUCache<> - for unsynchonized base version
+     *  @see LRUCache<> - for unsynchronized base version
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      */
