@@ -48,9 +48,7 @@ namespace {
             Debug::TraceContextBumper ctx{"{}::test_02"};
             forward_list<int>         a;
             a.push_front (2);
-            int v = 0;
-            VerifyTestResult (a.pop_front (&v));
-            VerifyTestResult (v == 2);
+            VerifyTestResult (a.pop_front () == 2);
             VerifyTestResult (a.empty ());
         }
 
@@ -61,10 +59,8 @@ namespace {
             a.push_front (2);
             a.push_front (5);
             int v = 0;
-            VerifyTestResult (a.pop_front (&v));
-            VerifyTestResult (v == 5);
-            VerifyTestResult (a.pop_front (&v));
-            VerifyTestResult (v == 2);
+            VerifyTestResult (a.pop_front () == 5);
+            VerifyTestResult (a.pop_front () == 2);
             VerifyTestResult (a.empty ());
         }
 
@@ -87,8 +83,7 @@ namespace {
             }
             int totalElementCount = perThreadElementCount * threadCount;
             for (int k = 0; k < totalElementCount; k++) {
-                int v = 0;
-                VerifyTestResult (a.pop_front (&v));
+                VerifyTestResult (a.pop_front ().has_value ());
             }
             VerifyTestResult (a.empty ());
         }
@@ -104,8 +99,7 @@ namespace {
                         int y = rand ();
                         a.push_front (y);
                         std::this_thread::sleep_for (std::chrono::microseconds (rand () % 10));
-                        int x;
-                        a.pop_front (&x);
+                        optional<int> x = a.pop_front ();
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         if (x == y) {
                             DbgTrace (L"y");
@@ -146,9 +140,9 @@ namespace {
                 remainingNumbers.insert (k);
             }
             for (int k = 0; k < totalElementCount; k++) {
-                int v;
-                VerifyTestResult (a.pop_front (&v));
-                VerifyTestResult (remainingNumbers.erase (v));
+                optional<int> v = a.pop_front ();
+                VerifyTestResult (v.has_value ());
+                VerifyTestResult (remainingNumbers.erase (*v));
             }
             VerifyTestResult (remainingNumbers.empty ());
             VerifyTestResult (a.empty ());
@@ -173,11 +167,11 @@ namespace {
                         int y = j + i * perThreadElementCount;
                         a.push_front (y);
                         std::this_thread::sleep_for (chrono::microseconds{rand () % 50});
-                        int x;
-                        a.pop_front (&x);
+                        optional<int> x = a.pop_front ();
                         {
+                            VerifyTestResult (x.has_value ());
                             std::unique_lock<std::mutex> lock (mutex);
-                            VerifyTestResult (remainingNumbers.erase (x));
+                            VerifyTestResult (remainingNumbers.erase (*x));
                         }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         if (x == y) {
@@ -225,8 +219,8 @@ namespace {
                 threads.emplace_back ([&] () {
                     for (int j = 0; j < perThreadElementCount; j++) {
                     retry:
-                        int  x;
-                        bool r = a.pop_front (&x);
+                        optional<int>  x = a.pop_front ();
+                        bool r = x.has_value ();
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace ("popFront returned %d and value %d", r, x);
 #endif
@@ -239,7 +233,7 @@ namespace {
                         VerifyTestResult (r);
                         {
                             std::unique_lock<std::mutex> lock (mutex);
-                            VerifyTestResult (remainingNumbers.erase (x));
+                            VerifyTestResult (remainingNumbers.erase (*x));
                         }
                     }
                 });
@@ -283,8 +277,7 @@ namespace {
             forward_list<int>         a;
             a.push_front (2);
             auto i = a.begin ();
-            int  v;
-            a.pop_front (&v);
+            optional<int> v = a.pop_front ();
             a.push_front (5);
             auto j = a.begin ();
             VerifyTestResult (*i == 2);

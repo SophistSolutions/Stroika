@@ -7,6 +7,7 @@
 #include "../../StroikaPreComp.h"
 
 #include <atomic>
+#include <optional>
 
 /**
  *  Initial implementation copied from (so full credit for algorithms)
@@ -157,11 +158,11 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     public:
         /**
          * @ see https://en.cppreference.com/w/cpp/container/forward_list/pop_front
-         * UNLIKE std version, this returns true iff it removed something, and has overload returning value popped as argument 
+         * UNLIKE std version, this returns the value popped as argument, and nullopt if the list was empty.
+         * 
          * **not** lock free
          */
-        nonvirtual bool pop_front ();
-        nonvirtual bool pop_front (T* value);
+        nonvirtual std::optional<T> pop_front ();
 
     public:
         /**

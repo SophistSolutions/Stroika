@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
             : current{n != kTerminalSentinal_ ? increment_reference_count_ (n) : kTerminalSentinal_}
         {
         }
-        ForwardIterator_ (ForwardIterator_ const& other)
+        ForwardIterator_ (const ForwardIterator_& other)
             : current{other.current != kTerminalSentinal_ ? increment_reference_count_ (other.current) : kTerminalSentinal_}
         {
         }
@@ -192,7 +192,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         std::atomic<node_*>* nextPtr = &fFirst_;
         for (auto const& v : src) {
             std::atomic<node_*>& next    = *nextPtr;
-            node_*               newNode = new node_ (v);
+            node_*               newNode = new node_{v};
             next.store (newNode);
             nextPtr = &newNode->next;
         }
@@ -278,30 +278,25 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     template <typename T>
     inline auto forward_list<T>::push_front (T&& value) -> iterator
     {
-        return insert_node_ (fFirst_, new node_ (std::move (value)));
+        return insert_node_ (fFirst_, new node_{std::move (value)});
     }
     template <typename T>
     template <typename... U>
     inline auto forward_list<T>::emplace_front (U&&... params) -> reference
     {
-        return *insert_node_ (fFirst_, new node_ (std::forward<U> (params)...));
+        return *insert_node_ (fFirst_, new node_{std::forward<U> (params)...});
     }
     template <typename T>
-    inline bool forward_list<T>::pop_front ()
+    inline std::optional<T> forward_list<T>::pop_front ()
     {
-        T ignored{};
-        return remove_node_ (fFirst_, &ignored);
-    }
-    template <typename T>
-    inline bool forward_list<T>::pop_front (T* value)
-    {
-        return remove_node_ (fFirst_, value);
+        T r{};
+        return remove_node_ (fFirst_, &r) ? r : std::optional<T>{};
     }
     template <typename T>
     inline auto forward_list<T>::begin () -> iterator
     {
         node_*   n = new_ownership_ (fFirst_); // wait for unlock
-        iterator result (n);
+        iterator result{n};
         if (n != kTerminalSentinal_) {
             decrement_reference_count_ (n); // discard newly created ownership
         }
@@ -316,7 +311,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         if (n == kTerminalSentinal_) {
             return end ();
         }
-        const_iterator result (n);
+        const_iterator result{n};
         decrement_reference_count_ (n);
         return result;
     }
@@ -344,12 +339,12 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     template <typename T>
     inline auto forward_list<T>::insert_after (const_iterator position, T const& value) -> iterator
     {
-        return insert_node_ (position.current->next, new node_ (value));
+        return insert_node_ (position.current->next, new node_{value});
     }
     template <typename T>
     inline auto forward_list<T>::insert_after (const_iterator position, T&& value) -> iterator
     {
-        return insert_node_ (position.current->next, new node_ (value));
+        return insert_node_ (position.current->next, new node_{value});
     }
     template <typename T>
     auto forward_list<T>::insert_after (const_iterator pos, int count, const T& value) -> iterator
@@ -381,7 +376,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     template <typename... U>
     inline auto forward_list<T>::emplace_after (const_iterator position, U&&... params) -> iterator
     {
-        return insert_node_ (position, new node_ (std::forward (params)...));
+        return insert_node_ (position, new node_{std::forward (params)...});
     }
     template <typename T>
     bool forward_list<T>::separate_after (const_iterator position, forward_list<T>*& result)
@@ -424,7 +419,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     template <typename T>
     inline auto forward_list<T>::insert_node_ (std::atomic<node_*>& atomic_ptr, node_* n) -> iterator
     {
-        iterator result (n); // it's possible that the node_ is removed before we return, so do this early
+        iterator result{n}; // it's possible that the node_ is removed before we return, so do this early
         n->next.store (n);
         exchange_ (n->next, atomic_ptr);
         return result;
