@@ -24,12 +24,14 @@
  *              need - the definition of reference, and how that fits with push_front, pop_front... Could implement both ways
  *              with ifdefs?
  * 
- *              @see https://stroika.atlassian.net/browse/STK-540 for details on stuff todo above
+ *              @see https://stroika.atlassian.net/browse/STK-723 for details on stuff todo above
  */
 
 namespace Stroika::Foundation::Containers::LockFreeDataStructures {
 
     /**
+     *  \breif lock-free, threadsafe singly linked list implementation (patterned after std::forward_list) - INTERNALLY SYNCRHONIZED
+     * 
      * similar to std::forward_list, but thread safe and (partially) lock free
      * 
      *      o   all methods are thread safe, baring the destructor
@@ -59,6 +61,11 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
      * 
      *  Methods from std::forward_list materially wrongly, incompletely implemented
      *      o   erase_after incomplete/wrong API
+     * 
+     *  See ALso:
+     *      @see https://en.wikipedia.org/wiki/Non-blocking_linked_list
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      */
     template <typename T>
     class forward_list {
@@ -162,8 +169,8 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
          *
          * **not** lock free
          */
-        nonvirtual iterator        begin ();
-        nonvirtual const_iterator begin () const;
+        nonvirtual iterator         begin ();
+        nonvirtual const_iterator   begin () const;
 
     public:
         /**
@@ -171,7 +178,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
          *
          * **not** lock free
          */
-        nonvirtual const_iterator cbegin () const;
+        nonvirtual const_iterator   cbegin () const;
 
     public:
         /**

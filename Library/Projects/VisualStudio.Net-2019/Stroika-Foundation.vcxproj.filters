@@ -1695,9 +1695,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\STLContainerWrapper.h">
       <Filter>Sources\Containers\DataStructures</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\LockFreeDataStructures\LinkedList.h">
-      <Filter>Sources\Containers\LockFreeDataStructures</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Request.h">
       <Filter>Sources\IO\Network\Transfer</Filter>
     </ClInclude>
@@ -2876,9 +2873,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\TODO.md">
       <Filter>Sources\Containers\DataStructures</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\LockFreeDataStructures\LinkedList.inl">
-      <Filter>Sources\Containers\LockFreeDataStructures</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Time\Timezone.inl">
       <Filter>Sources\Time</Filter>

@@ -391,7 +391,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Stack_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\KeyedCollection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\LockFreeDataStructures\forward_list.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\LockFreeDataStructures\LinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Mapping.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\MultiSet.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\PriorityQueue.h" />
@@ -804,7 +803,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Stack_Factory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\KeyedCollection.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\LockFreeDataStructures\forward_list.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\LockFreeDataStructures\LinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Mapping.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\MultiSet.inl" />
