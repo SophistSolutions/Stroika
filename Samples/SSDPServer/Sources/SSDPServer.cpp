@@ -48,7 +48,7 @@ namespace {
                                             [=] (Message* m) {
                                                 RequireNotNull (m);
                                                 Response& response = m->rwResponse ();
-                                                response.UpdateHeader ([] (auto* header) { RequireNotNull (header); header->server = L"stroika-ssdp-server-demo"sv; });
+                                                response.rwHeaders ().server = L"stroika-ssdp-server-demo"sv;
                                                 response.write (Stroika::Frameworks::UPnP::Serialize (dd));
                                                 response.SetContentType (DataExchange::InternetMediaTypes::kXML);
                                             })}};

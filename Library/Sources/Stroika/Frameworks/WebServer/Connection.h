@@ -55,7 +55,7 @@ namespace Stroika::Frameworks::WebServer {
      *                          Interceptor{
      *                              [=](Message* m) {
      *                                  Response& response = m->rwResponse ();
-     *                                  response.UpdateHeader ([] (auto* header) { header->server = L"stroika-ssdp-server-demo"; });
+     *                                  response.rwHeaders().server = L"stroika-ssdp-server-demo";;
      *                                  response.write (Stroika::Frameworks::UPnP::Serialize (d, dd));
      *                                  response.SetContentType (DataExchange::InternetMediaTypes::kXML);
      *                               }}}};
