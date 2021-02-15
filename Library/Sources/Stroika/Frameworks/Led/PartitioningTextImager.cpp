@@ -210,7 +210,7 @@ void Partition::Split (PartitionMarker* pm, size_t at)
         else {
             pm->fNext = newPM->fNext;
         }
-        // Now patch pm's old and new successor (before and after newPM breifly was it)
+        // Now patch pm's old and new successor (before and after newPM briefly was it)
         if (newPM->fNext != nullptr) {
             Assert (newPM->fNext->fPrevious == newPM); // but thats getting deleted...
             newPM->fNext->fPrevious = pm;

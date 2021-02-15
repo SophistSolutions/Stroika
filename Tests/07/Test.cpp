@@ -275,7 +275,7 @@ namespace {
             Debug::TraceContextBumper ctx{"{}::test_11"};
             forward_list<int>         a;
             a.push_front (2);
-            auto          i = a.begin ();
+            auto                           i = a.begin ();
             [[maybe_unused]] optional<int> v = a.pop_front ();
             a.push_front (5);
             auto j = a.begin ();

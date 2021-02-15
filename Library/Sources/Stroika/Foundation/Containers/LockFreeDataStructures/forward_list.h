@@ -31,7 +31,7 @@
 namespace Stroika::Foundation::Containers::LockFreeDataStructures {
 
     /**
-     *  \breif lock-free, threadsafe singly linked list implementation (patterned after std::forward_list) - INTERNALLY SYNCRHONIZED
+     *  \brief lock-free, threadsafe singly linked list implementation (patterned after std::forward_list) - INTERNALLY SYNCRHONIZED
      * 
      * similar to std::forward_list, but thread safe and (partially) lock free
      * 

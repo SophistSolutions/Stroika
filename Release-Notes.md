@@ -5739,7 +5739,7 @@ especially those they need to be aware of when upgrading.
             qCompilerAndStdLib_deprecated_attribute_Buggy
             qCompilerAndStdLib_shared_mutex_module_Buggy
     and prepare to lose #define _Deprecated_(MESSAGE) and use [[deprecated]] directly (but leave
-    macro around breifly, in case still used elsewhere.</li>
+    macro around briefly, in case still used elsewhere.</li>
             </ul>
         </li>
         <li>Major structural changes - docs, threadsafety notes etc, for Ptr objects
@@ -8680,7 +8680,7 @@ with:
         <li>thread code - fAccessSTDThreadMutex_ to protect access to fThread_ - handles a rare race detected by Helgrind on UNIX</li>
         <li>https://stroika.atlassian.net/browse/STK-477 - experimental rework of thread interuption TLS variable(s) - instead of two - down to 1 (two bools replaced with one enum) - must test more to see works, and Thread::Rep_::NotifyOfInteruptionFromAnyThread_ use of compare_exchange_strong to be simpler/faster/clearer</li>
         <li>docs and support FullVersionString opt for ScriptsLib/ExtractVersionInformation.sh, and whitespace fix</li>
-        <li>{NOT BACKWARD COMPAT}:renamed BitSubstring_NEW to BitSubstring, and BitSubstring_NEW still around breifly deprecated</li>
+        <li>{NOT BACKWARD COMPAT}:renamed BitSubstring_NEW to BitSubstring, and BitSubstring_NEW still around briefly deprecated</li>
         <li>Assertions/Tweaks/Cleanups in SystemPerformance/Instruments/Process</li>
         <li>lose obsolete qSupportValgrindQuirks - from a much earlier attempt at valgrind supprot - these hacks no longer needed</li>
         <li>Synchnonized
