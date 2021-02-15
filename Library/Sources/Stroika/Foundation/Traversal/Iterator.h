@@ -117,7 +117,10 @@ namespace Stroika::Foundation::Traversal {
     struct IteratorBase {
     public:
         /**
-         *  Historically, PtrImplementationTemplate has used a variety of different packaging types, like SharedByValue, or shared_ptr, or SharedPtr.
+         *  Historically, PtrImplementationTemplate has used a variety of different packaging types, 
+         *  like SharedByValue, or shared_ptr, or SharedPtr.
+         * 
+         *  But for quite some time before Stroika v2.1b10, we've been using unique_ptr<> for the iterator rep.
          */
         template <typename SHARED_T>
         using PtrImplementationTemplate = unique_ptr<SHARED_T>;
