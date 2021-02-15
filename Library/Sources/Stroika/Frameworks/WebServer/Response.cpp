@@ -193,20 +193,18 @@ void Response::SetStatus (Status newStatus, const String& overrideReason)
 void Response::AppendToCommaSeperatedHeader (const String& headerName, const String& value)
 {
     Require (not value.empty ());
-    UpdateHeader ([&] (IO::Network::HTTP::Headers* headers) {
-        RequireNotNull (headers);
-        if (auto o = headers->LookupOne (headerName)) {
-            if (o->empty ()) {
-                headers->Add (headerName, value);
-            }
-            else {
-                headers->Add (headerName, *o + L", "sv + value);
-            }
+    auto& headers = this->rwHeaders ();
+    if (auto o = headers.LookupOne (headerName)) {
+        if (o->empty ()) {
+            headers.Add (headerName, value);
         }
         else {
-            headers->Add (headerName, value);
+            headers.Add (headerName, *o + L", "sv + value);
         }
-    });
+    }
+    else {
+        headers.Add (headerName, value);
+    }
 }
 
 void Response::ClearHeaders ()
