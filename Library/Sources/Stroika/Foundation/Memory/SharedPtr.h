@@ -385,6 +385,9 @@ namespace Stroika::Foundation::Memory {
      *
      *  \note   As of 2017-10-13 - Stroika v2.0a217, and Visual Studio.Net 2017 (15.4.0) - SharedPtr<> remains about 15% faster than shared_ptr<> 
      *          on windows.
+     * 
+     *  \note   As of 2021-02-14 - Stroika v2.1b10 and Visual Studio.Net 2019 (16.8.5) - SharedPtr<> remains about 18% faster than shared_ptr<>
+     *          and UNIX / g++ still too close to call - so stick with shared_ptr<>
      */
 #if defined(_MSC_VER)
     constexpr bool kSharedPtr_IsFasterThan_shared_ptr = true;
