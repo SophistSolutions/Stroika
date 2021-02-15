@@ -251,8 +251,8 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
 
     private:
         // provides a globally unique pointer for the lock/spin sentinals node_
-        static constexpr node_*  kTerminalSentinal_ = nullptr;
-        static inline const auto kSpinSentinal_ = const_cast<node_*> (reinterpret_cast<const node_*> (1));
+        static constexpr node_*  kTerminalSentinal_ = reinterpret_cast<node_*> (1);
+        static constexpr node_*  kSpinSentinal_     = reinterpret_cast<node_*> (2);
 
         std::atomic<node_*> fFirst_;
 
