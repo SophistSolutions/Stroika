@@ -562,8 +562,7 @@ namespace Stroika::Foundation::Containers {
     class Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep
         : public Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IRep
 #if !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-        ,
-          public Traversal::IterableBase::enable_shared_from_this_PtrImplementationTemplate<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep>
+        , public Traversal::IterableBase::enable_shared_from_this_PtrImplementationTemplate<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep>
 #endif
     {
     private:

@@ -143,7 +143,7 @@ namespace {
     class AutoHANDLE_ {
     public:
         AutoHANDLE_ (HANDLE h = INVALID_HANDLE_VALUE)
-            : fHandle (h)
+            : fHandle{h}
         {
         }
         AutoHANDLE_ (const AutoHANDLE_&) = delete;
@@ -233,20 +233,20 @@ namespace {
  */
 #if qPlatform_POSIX
 ProcessRunner::Exception::Exception (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset, const optional<uint8_t>& wExitStatus, const optional<uint8_t>& wTermSig, const optional<uint8_t>& wStopSig)
-    : inherited (mkMsg_ (cmdLine, errorMessage, stderrSubset, wExitStatus, wTermSig, wStopSig))
-    , fCmdLine_ (cmdLine)
-    , fErrorMessage_ (errorMessage)
-    , fWExitStatus_ (wExitStatus)
-    , fWTermSig_ (wTermSig)
-    , fWStopSig_ (wStopSig)
+    : inherited{mkMsg_ (cmdLine, errorMessage, stderrSubset, wExitStatus, wTermSig, wStopSig)}
+    , fCmdLine_{cmdLine}
+    , fErrorMessage_{errorMessage}
+    , fWExitStatus_{wExitStatus}
+    , fWTermSig_{wTermSig}
+    , fWStopSig_{wStopSig}
 {
 }
 #elif qPlatform_Windows
 ProcessRunner::Exception::Exception (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset, const optional<DWORD>& err)
-    : inherited (mkMsg_ (cmdLine, errorMessage, stderrSubset, err))
-    , fCmdLine_ (cmdLine)
-    , fErrorMessage_ (errorMessage)
-    , fErr_ (err)
+    : inherited{mkMsg_ (cmdLine, errorMessage, stderrSubset, err)}
+    , fCmdLine_{cmdLine}
+    , fErrorMessage_{errorMessage}
+    , fErr_{err}
 {
 }
 #endif
@@ -310,7 +310,7 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
  ********************************************************************************
  */
 ProcessRunner::BackgroundProcess::BackgroundProcess ()
-    : fRep_ (make_shared<Rep_> ())
+    : fRep_{make_shared<Rep_> ()}
 {
 }
 
