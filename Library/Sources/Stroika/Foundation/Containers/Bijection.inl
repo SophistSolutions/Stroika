@@ -418,7 +418,6 @@ namespace Stroika::Foundation::Containers {
         struct MyIterable_ : Iterable<DOMAIN_TYPE> {
             using MyBijection_ = Bijection<DOMAIN_TYPE, RANGE_TYPE>;
             struct MyIterableRep_ : Traversal::IterableFromIterator<DOMAIN_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
-                using inherited             = typename Traversal::IterableFromIterator<DOMAIN_TYPE>::_Rep;
                 using _IterableRepSharedPtr = typename Iterable<DOMAIN_TYPE>::_IterableRepSharedPtr;
                 Bijection fBijection_;
                 MyIterableRep_ (const Bijection& b)
@@ -467,7 +466,6 @@ namespace Stroika::Foundation::Containers {
         struct MyIterable_ : Iterable<RANGE_TYPE> {
             using MyBijection_ = Bijection<DOMAIN_TYPE, RANGE_TYPE>;
             struct MyIterableRep_ : Traversal::IterableFromIterator<RANGE_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
-                using inherited             = typename Traversal::IterableFromIterator<RANGE_TYPE>::_Rep;
                 using _IterableRepSharedPtr = typename Iterable<RANGE_TYPE>::_IterableRepSharedPtr;
                 MyBijection_ fBijection_;
                 MyIterableRep_ (const MyBijection_& b)
@@ -499,7 +497,7 @@ namespace Stroika::Foundation::Containers {
                 }
             };
             MyIterable_ (const MyBijection_& b)
-                : Iterable<RANGE_TYPE> (Iterable<RANGE_TYPE>::template MakeSmartPtr<MyIterableRep_> (b))
+                : Iterable<RANGE_TYPE>{Iterable<RANGE_TYPE>::template MakeSmartPtr<MyIterableRep_> (b)}
             {
             }
         };
@@ -508,7 +506,7 @@ namespace Stroika::Foundation::Containers {
 #else
         auto rep = const_cast<typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep*> (this)->shared_from_this ();
 #endif
-        return MyIterable_ (Bijection<DOMAIN_TYPE, RANGE_TYPE> (rep));
+        return MyIterable_{Bijection<DOMAIN_TYPE, RANGE_TYPE>{rep}};
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     bool Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep::_Equals_Reference_Implementation (const _IRep& rhs) const
