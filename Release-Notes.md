@@ -7,6 +7,8 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
++++ went through jira db and cleaned up what is reported there. https://stroika-bugs.sophists.com
+
 ### 2.1b9 {2021-01-17}
 
 #### TLDR
