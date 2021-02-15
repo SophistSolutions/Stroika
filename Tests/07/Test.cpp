@@ -58,7 +58,6 @@ namespace {
             forward_list<int>         a;
             a.push_front (2);
             a.push_front (5);
-            int v = 0;
             VerifyTestResult (a.pop_front () == 5);
             VerifyTestResult (a.pop_front () == 2);
             VerifyTestResult (a.empty ());
@@ -170,7 +169,7 @@ namespace {
                         optional<int> x = a.pop_front ();
                         {
                             VerifyTestResult (x.has_value ());
-                            std::unique_lock<std::mutex> lock (mutex);
+                            std::unique_lock<std::mutex> lock{mutex};
                             VerifyTestResult (remainingNumbers.erase (*x));
                         }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
