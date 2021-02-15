@@ -98,7 +98,7 @@ namespace {
                         int y = rand ();
                         a.push_front (y);
                         std::this_thread::sleep_for (std::chrono::microseconds (rand () % 10));
-                        optional<int> x = a.pop_front ();
+                        [[maybe_unused]] optional<int> x = a.pop_front ();
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         if (x == y) {
                             DbgTrace (L"y");
@@ -276,7 +276,7 @@ namespace {
             forward_list<int>         a;
             a.push_front (2);
             auto          i = a.begin ();
-            optional<int> v = a.pop_front ();
+            [[maybe_unused]] optional<int> v = a.pop_front ();
             a.push_front (5);
             auto j = a.begin ();
             VerifyTestResult (*i == 2);
