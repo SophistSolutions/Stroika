@@ -507,7 +507,12 @@ namespace Stroika::Foundation::Containers {
      *  the Bijection<T> container API.
      */
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    class Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep : public Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_IRep {
+    class Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep
+       : public Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_IRep
+#if !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
+        , public Traversal::IterableBase::enable_shared_from_this_PtrImplementationTemplate<typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep>
+#endif
+    {
     private:
         using inherited = typename Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_IRep;
 

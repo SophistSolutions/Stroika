@@ -422,8 +422,7 @@ namespace Stroika::Foundation::Containers {
                 using _IterableRepSharedPtr = typename Iterable<DOMAIN_TYPE>::_IterableRepSharedPtr;
                 Bijection fBijection_;
                 MyIterableRep_ (const Bijection& b)
-                    : inherited ()
-                    , fBijection_ (b)
+                    : fBijection_{b}
                 {
                 }
                 virtual Iterator<DOMAIN_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
@@ -451,7 +450,7 @@ namespace Stroika::Foundation::Containers {
                 }
             };
             MyIterable_ (const MyBijection_& b)
-                : Iterable<DOMAIN_TYPE> (Iterable<DOMAIN_TYPE>::template MakeSmartPtr<MyIterableRep_> (b))
+                : Iterable<DOMAIN_TYPE>{Iterable<DOMAIN_TYPE>::template MakeSmartPtr<MyIterableRep_> (b)}
             {
             }
         };
@@ -460,7 +459,7 @@ namespace Stroika::Foundation::Containers {
 #else
         auto rep = const_cast<typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep*> (this)->shared_from_this ();
 #endif
-        return MyIterable_ (Bijection<DOMAIN_TYPE, RANGE_TYPE> (rep));
+        return MyIterable_ (Bijection<DOMAIN_TYPE, RANGE_TYPE>{rep});
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     Iterable<RANGE_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep::_Image_Reference_Implementation () const
@@ -472,8 +471,7 @@ namespace Stroika::Foundation::Containers {
                 using _IterableRepSharedPtr = typename Iterable<RANGE_TYPE>::_IterableRepSharedPtr;
                 MyBijection_ fBijection_;
                 MyIterableRep_ (const MyBijection_& b)
-                    : inherited ()
-                    , fBijection_ (b)
+                    : fBijection_{b}
                 {
                 }
                 virtual Iterator<RANGE_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
