@@ -133,8 +133,8 @@ Traversal::Iterator<Character> String::_IRep::MakeIterator ([[maybe_unused]] Ite
         _SharedPtrIRep fStr; // effectively RO, since if anyone modifies, our copy will remain unchanged
         size_t         fCurIdx;
         MyIterRep_ (const _SharedPtrIRep& r, size_t idx = 0)
-            : fStr (r)
-            , fCurIdx (idx)
+            : fStr{r}
+            , fCurIdx{idx}
         {
             Require (fCurIdx <= fStr->_GetLength ());
         }
@@ -173,13 +173,14 @@ Traversal::Iterator<Character> String::_IRep::MakeIterator ([[maybe_unused]] Ite
             return fCurIdx == rrhs->fCurIdx;
         }
     };
-// Because of 'Design Choice - Iterable<T> / Iterator<T> behavior' in String class docs - we
-// ignore suggested IteratorOwnerID - which explains the arg to Clone () below
 #if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-    return Iterator<Character> (Iterator<Character>::MakeSmartPtr<MyIterRep_> (dynamic_pointer_cast<_SharedPtrIRep::element_type> (const_cast<String::_IRep*> (this)->shared_from_this ())));
+    _SharedPtrIRep sharedContainerRep = dynamic_pointer_cast<_SharedPtrIRep::element_type> (const_cast<String::_IRep*> (this)->shared_from_this ());
 #else
-    return Iterator<Character> (Iterator<Character>::MakeSmartPtr<MyIterRep_> (const_cast<String::_IRep*> (this)->shared_from_this ()));
+    _SharedPtrIRep sharedContainerRep = const_cast<String::_IRep*> (this)->shared_from_this ();
 #endif
+    // Because of 'Design Choice - Iterable<T> / Iterator<T> behavior' in String class docs - we
+    // ignore suggested IteratorOwnerID - which explains the arg to Clone () below
+    return Iterator<Character> (Iterator<Character>::MakeSmartPtr<MyIterRep_> (sharedContainerRep));
 }
 
 size_t String::_IRep::GetLength () const

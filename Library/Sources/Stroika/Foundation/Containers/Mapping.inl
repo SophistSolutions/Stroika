@@ -510,7 +510,7 @@ namespace Stroika::Foundation::Containers {
 #else
         auto rep = const_cast<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep*> (this)->shared_from_this ();
 #endif
-        return MyIterable_ (Mapping<KEY_TYPE, MAPPED_VALUE_TYPE> (rep));
+        return MyIterable_{Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>{rep}};
     }
 
     /*
