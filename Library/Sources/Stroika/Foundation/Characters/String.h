@@ -1182,12 +1182,14 @@ namespace Stroika::Foundation::Characters {
          */
         nonvirtual strong_ordering operator<=> (const String& rhs) const;
         nonvirtual strong_ordering operator<=> (const wchar_t* rhs) const;
+        nonvirtual strong_ordering operator<=> (const wstring_view& rhs) const;
 
     public:
         /**
          */
         nonvirtual bool operator== (const String& rhs) const;
         nonvirtual bool operator== (const wchar_t* rhs) const;
+        nonvirtual bool operator== (const wstring_view& rhs) const;
 #endif
 
     public:

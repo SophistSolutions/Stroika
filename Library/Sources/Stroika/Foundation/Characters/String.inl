@@ -621,11 +621,19 @@ namespace Stroika::Foundation::Characters {
     {
         return ThreeWayComparer{}(*this, rhs);
     }
+    inline strong_ordering String::operator<=> (const wstring_view& rhs) const
+    {
+        return ThreeWayComparer{}(*this, rhs);
+    }
     inline bool String::operator== (const String& rhs) const
     {
         return EqualsComparer{}(*this, rhs);
     }
     inline bool String::operator== (const wchar_t* rhs) const
+    {
+        return EqualsComparer{}(*this, rhs);
+    }
+    inline bool String::operator== (const wstring_view& rhs) const
     {
         return EqualsComparer{}(*this, rhs);
     }
