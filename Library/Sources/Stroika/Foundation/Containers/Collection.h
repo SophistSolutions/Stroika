@@ -227,12 +227,13 @@ namespace Stroika::Foundation::Containers {
          * The value pointed to by 'i' is removed.
          *
          * The overload Remove(PREDICATE) applies the function p(T) -> bool and deletes the first entry (if any) that return true for the predicate.
-         * Returns true iff an entry was removed.
+         * 
+         * The first and third overloads return true iff an entry was removed.
          *
          *  \note mutates container
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual void Remove (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {});
+        nonvirtual bool Remove (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {});
         nonvirtual void Remove (const Iterator<T>& i);
         template <typename PREDICATE>
         nonvirtual bool Remove (const PREDICATE& p);

@@ -122,14 +122,15 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename EQUALS_COMPARER>
-    inline void Collection<T>::Remove (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer)
+    inline bool Collection<T>::Remove (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer)
     {
         for (Iterator<T> i = this->begin (); i != this->end (); ++i) {
             if (equalsComparer (*i, item)) {
                 _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i);
-                return;
+                return true;
             }
         }
+        return false;
     }
     template <typename T>
     inline void Collection<T>::RemoveAll ()
