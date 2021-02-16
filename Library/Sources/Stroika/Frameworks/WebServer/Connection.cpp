@@ -126,7 +126,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
         else {
             String hdr   = line.SubString (0, i).Trim ();
             String value = line.SubString (i + 1).Trim ();
-            updatableRequest.rwHeaders().Add (hdr, value);
+            updatableRequest.rwHeaders ().Add (hdr, value);
         }
     }
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
