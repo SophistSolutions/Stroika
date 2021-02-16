@@ -409,7 +409,7 @@ void Headers::Add (const String& headerName, const String& value)
     fExtraHeaders_.Add (KeyValuePair<String, String>{headerName, value});
 }
 
-bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const optional<String>& value, unsigned int* nRemoveals)
+bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const optional<String>& value, size_t* nRemoveals)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
 #if qDebug
