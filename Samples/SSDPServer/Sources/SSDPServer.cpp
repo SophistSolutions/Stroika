@@ -47,7 +47,7 @@ namespace {
                                         Interceptor (
                                             [=] (Message* m) {
                                                 RequireNotNull (m);
-                                                Response& response = m->rwResponse ();
+                                                Response& response           = m->rwResponse ();
                                                 response.rwHeaders ().server = L"stroika-ssdp-server-demo"sv;
                                                 response.write (Stroika::Frameworks::UPnP::Serialize (dd));
                                                 response.SetContentType (DataExchange::InternetMediaTypes::kXML);
