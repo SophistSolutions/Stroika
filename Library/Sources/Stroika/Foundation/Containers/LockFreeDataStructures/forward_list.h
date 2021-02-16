@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
      *  Methods from std::forward_list materially wrongly, incompletely implemented
      *      o   erase_after incomplete/wrong API
      * 
-     *  See ALso:
+     *  See Also:
      *      @see https://en.wikipedia.org/wiki/Non-blocking_linked_list
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
