@@ -485,8 +485,10 @@ bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const opt
                         // then remove a specific one
                         Collection<Cookie> cookieDetails = fSetCookieList_->cookieDetails ();
                         auto               removeMe      = Cookie::Decode (*value);
-                        cookieDetails.Remove (removeMe);
-                        // @todo update nremoveals...
+                        auto r = cookieDetails.Remove (removeMe);
+                        if (nRemoveals != nullptr) {
+                            *nRemoveals = r ? 1 : 0;
+                        }
                     }
                     else {
                         fSetCookieList_ = nullopt; // then remove all
