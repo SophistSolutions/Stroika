@@ -83,6 +83,9 @@ namespace Stroika::Frameworks::WebServer {
     public:
         /**
          *  Allow readonly access to the HTTP headers embedded in the request object.
+         * 
+         * \note - this returns an INTERNAL POINTER to the Request, so be SURE to remember this with respect to
+         *         thread safety, and lifetime (thread safety checked/enforced in debug builds with SetAssertExternallySynchronizedLockContext);
          */
         Common::ReadOnlyProperty<const IO::Network::HTTP::Headers&> headers;
 
@@ -90,14 +93,11 @@ namespace Stroika::Frameworks::WebServer {
         /**
          *  Allow read/write access to the HTTP headers embedded in the request object. This allows assigning to overwrite
          *  the headers, and it returns a live non-const reference to the Headers object.
+         * 
+         * \note - this returns an INTERNAL POINTER to the Request, so be SURE to remember this with respect to
+         *         thread safety, and lifetime (thread safety checked/enforced in debug builds with SetAssertExternallySynchronizedLockContext);
          */
         Common::Property<IO::Network::HTTP::Headers&> rwHeaders;
-
-    public:
-        /**
-         *  @todo consider losing and replacing with UpdateHeader() like we have for Response
-         */
-        nonvirtual void AddHeader (const String& headerName, const String& value);
 
     public:
         /**
@@ -135,6 +135,7 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual String ToString () const;
 
     public:
+        [[deprecated ("Since Stroika 2.1b10, use rwHeaders().Set or Add or other")]] void             AddHeader (const String& headerName, const String& value);
         [[deprecated ("Since Stroika 2.1b10 use this->keepAliveRequested")]] bool                     GetKeepAliveRequested () const;
         [[deprecated ("Since Stroika 2.1b10 use this->contentLength")]] optional<uint64_t>            GetContentLength () const;
         [[deprecated ("Since Stroika v2.1b10 use contentType property")]] optional<InternetMediaType> GetContentType () const;

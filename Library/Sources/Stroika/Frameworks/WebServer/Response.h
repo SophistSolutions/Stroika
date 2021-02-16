@@ -86,9 +86,8 @@ namespace Stroika::Frameworks::WebServer {
          *  Allow readonly access to the Headers object. This is just checked (assertions) for re-entrancy.
          *  It can be called in any state (during transaction or after).
          * 
-         *  \note   The reason to control access to the 'Headers' subobject with ReadHeader/UpdateHeader, is
-         *          to assure access only happens with the response is in the proper state (before having sent headers)
-         *          and to assure threadsafe access (just asserted no locking).
+         * \note - this returns an INTERNAL POINTER to the Response, so be SURE to remember this with respect to
+         *         thread safety, and lifetime (thread safety checked/enforced in debug builds with SetAssertExternallySynchronizedLockContext);
          */
         Common::ReadOnlyProperty<const IO::Network::HTTP::Headers&> headers;
 
@@ -100,6 +99,8 @@ namespace Stroika::Frameworks::WebServer {
          * It is legal to call anytime before Flush. Illegal to call after flush. 
          * It is legal to call to replace existing headers values.
          * 
+         * \note - this returns an INTERNAL POINTER to the Response, so be SURE to remember this with respect to
+         *         thread safety, and lifetime (thread safety checked/enforced in debug builds with SetAssertExternallySynchronizedLockContext);
          */
         Common::Property<IO::Network::HTTP::Headers&> rwHeaders;
 
