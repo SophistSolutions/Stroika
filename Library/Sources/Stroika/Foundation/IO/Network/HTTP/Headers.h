@@ -266,7 +266,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
-         * &&& Encoded in HTTP as a SEQUENCE of separate HTTP Headers;
+         * Encoded in HTTP as a SEQUENCE of separate HTTP Headers;
          * empty list amounts to no headers present
          *  @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
          */
@@ -307,7 +307,9 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 #endif
 
     private:
-        nonvirtual bool SetBuiltin_ (const String& headerName, const optional<String>& value);
+        enum class AddOrSet { eAdd, eSet, eRemove };
+        // UpdateBuiltin_ returns true iff headerName was a parsed/builtin type, and false for 'extra' headers: to find out # elts changed, use nChanges optional parameter
+        nonvirtual bool UpdateBuiltin_ (AddOrSet flag, const String& headerName, const optional<String>& value, size_t* nRemoveals = nullptr);
         nonvirtual void SetExtras_ (const String& headerName, const optional<String>& value);
 
     private:

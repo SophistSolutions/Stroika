@@ -317,7 +317,7 @@ optional<String> Headers::LookupOne (const String& name) const
         return fIfNoneMatch_ ? fIfNoneMatch_->As<String> () : optional<String>{};
     }
     else if (kHeaderNameEqualsComparer (name, HeaderName::kSetCookie)) {
-        // we can only return the first setCookie here...
+        // we can only return the first setCookie here... (see LookupAll)
         if (fSetCookieList_.has_value ()) {
             if (auto i = fSetCookieList_->cookieDetails ().First ()) {
                 return i->Encode ();
@@ -362,7 +362,7 @@ Collection<String> Headers::LookupAll (const String& name) const
         return fIfNoneMatch_ ? Collection<String>{fIfNoneMatch_->As<String> ()} : Collection<String>{};
     }
     else if (kHeaderNameEqualsComparer (name, HeaderName::kSetCookie)) {
-        // we can only return the first setCookie here...
+        // return each 'set' cookie as a separate header value
         if (fSetCookieList_.has_value ()) {
             return fSetCookieList_->cookieDetails ().Select<String> ([] (const auto& i) { return i.Encode (); });
         }
@@ -383,8 +383,9 @@ Collection<String> Headers::LookupAll (const String& name) const
 
 size_t Headers::Remove (const String& headerName)
 {
-    if (SetBuiltin_ (headerName, nullopt)) {
-        return 1;
+    size_t nRemoveals{};
+    if (UpdateBuiltin_ (AddOrSet::eRemove, headerName, nullopt, &nRemoveals)) {
+        return nRemoveals; // could be zero if its builtin, but this doesn't change anything
     }
     // currently removes all, but later add variant that removes one/all (in fact rename this)
     return fExtraHeaders_.RemoveAll ([=] (const auto& i) { return kHeaderNameEqualsComparer (i.fKey, headerName); });
@@ -392,8 +393,9 @@ size_t Headers::Remove (const String& headerName)
 
 size_t Headers::Remove (const String& headerName, const String& value)
 {
-    if (SetBuiltin_ (headerName, nullopt)) {
-        return 1;
+    size_t nRemoveals{};
+    if (UpdateBuiltin_ (AddOrSet::eRemove, headerName, value, &nRemoveals)) {
+        return nRemoveals;
     }
     // currently removes all, but later add variant that removes one/all (in fact rename this)
     return fExtraHeaders_.RemoveAll ([=] (const auto& i) { return kHeaderNameEqualsComparer (i.fKey, headerName) and value == i.fValue; });
@@ -401,47 +403,111 @@ size_t Headers::Remove (const String& headerName, const String& value)
 
 void Headers::Add (const String& headerName, const String& value)
 {
-    if (SetBuiltin_ (headerName, value)) {
+    if (UpdateBuiltin_ (AddOrSet::eAdd, headerName, value)) {
         return;
     }
     fExtraHeaders_.Add (KeyValuePair<String, String>{headerName, value});
 }
 
-bool Headers::SetBuiltin_ (const String& headerName, const optional<String>& value)
+bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const optional<String>& value, unsigned int* nRemoveals)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+#if qDebug
+    if (value == nullopt) {
+        Require (flag == AddOrSet::eRemove or flag == AddOrSet::eSet);
+    }
+    if (flag == AddOrSet::eRemove) {
+        // GENERALLY value will be none, but for some cases (like Set-Cookie) with multiple values, it can be the value you want removed
+    }
+    if (flag == AddOrSet::eAdd) {
+        Require (value.has_value ());
+    }
+    if (flag == AddOrSet::eSet) {
+        // nullopt means remove, and value is what we replace with
+    }
+#endif
     if (kHeaderNameEqualsComparer (headerName, HeaderName::kCacheControl)) {
+        if (nRemoveals != nullptr) {
+            *nRemoveals = (value == nullopt and fCacheControl_ != nullopt) ? 1 : 0;
+        }
         fCacheControl_ = value ? CacheControl::Parse (*value) : optional<CacheControl>{};
         return true;
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kContentLength)) {
+        if (nRemoveals != nullptr) {
+            *nRemoveals = (value == nullopt and fContentLength_ != nullopt) ? 1 : 0;
+        }
         fContentLength_ = value ? String2Int<uint64_t> (*value) : optional<uint64_t>{};
         return true;
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kContentType)) {
+        if (nRemoveals != nullptr) {
+            *nRemoveals = (value == nullopt and fContentType_ != nullopt) ? 1 : 0;
+        }
         fContentType_ = value ? InternetMediaType{*value} : optional<InternetMediaType>{};
         return true;
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kCookie)) {
+        if (nRemoveals != nullptr) {
+            *nRemoveals = (value == nullopt and fCookieList_ != nullopt) ? 1 : 0;
+        }
         fCookieList_ = value ? CookieList::Decode (*value) : optional<CookieList>{};
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kETag)) {
+        if (nRemoveals != nullptr) {
+            *nRemoveals = (value == nullopt and fETag_ != nullopt) ? 1 : 0;
+        }
         fETag_ = value ? ETag::Parse (*value) : optional<HTTP::ETag>{};
         return true;
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kHost)) {
+        if (nRemoveals != nullptr) {
+            *nRemoveals = (value == nullopt and fHost_ != nullopt) ? 1 : 0;
+        }
         fHost_ = value;
         return true;
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kIfNoneMatch)) {
+        if (nRemoveals != nullptr) {
+            *nRemoveals = (value == nullopt and fIfNoneMatch_ != nullopt) ? 1 : 0;
+        }
         fIfNoneMatch_ = value ? IfNoneMatch::Parse (*value) : optional<IfNoneMatch>{};
         return true;
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kSetCookie)) {
-        fSetCookieList_ = value ? CookieList::Decode (*value) : optional<CookieList>{};
+        if (nRemoveals != nullptr) {
+            *nRemoveals = (value == nullopt and fSetCookieList_ != nullopt) ? 1 : 0;
+        }
+        switch (flag) {
+            case AddOrSet::eRemove: {
+                if (fSetCookieList_ != nullopt) {
+                    if (value) {
+                        // then remove a specific one
+                        Collection<Cookie> cookieDetails = fSetCookieList_->cookieDetails ();
+                        auto               removeMe      = Cookie::Decode (*value);
+                        cookieDetails.Remove (removeMe);
+                        // @todo update nremoveals...
+                    }
+                    else {
+                        fSetCookieList_ = nullopt; // then remove all
+                    }
+                }
+            } break;
+            case AddOrSet::eAdd: {
+                Collection<Cookie> cookieDetails = fSetCookieList_ ? fSetCookieList_->cookieDetails () : Collection<Cookie>{};
+                cookieDetails += Cookie::Decode (*value);
+                fSetCookieList_ = cookieDetails;
+            } break;
+            case AddOrSet::eSet: {
+                fSetCookieList_ = value ? CookieList::Decode (*value) : optional<CookieList>{};
+            } break;
+        }
         return true;
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kVary)) {
+        if (nRemoveals != nullptr) {
+            *nRemoveals = (value == nullopt and fVary_ != nullopt) ? 1 : 0;
+        }
         fVary_ = value ? Containers::Set<String>{value->Tokenize ({','})} : optional<Containers::Set<String>>{};
         return true;
     }
@@ -459,7 +525,7 @@ void Headers::SetExtras_ (const String& headerName, const optional<String>& valu
 
 void Headers::Set (const String& headerName, const optional<String>& value)
 {
-    if (SetBuiltin_ (headerName, value)) {
+    if (UpdateBuiltin_ (AddOrSet::eSet, headerName, value)) {
         return;
     }
     SetExtras_ (headerName, value);
