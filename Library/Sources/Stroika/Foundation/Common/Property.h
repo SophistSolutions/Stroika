@@ -211,20 +211,6 @@ namespace Stroika::Foundation::Common {
         ;
 #endif
 
-#if 0
-        public:
-        template <typename CHECK = T, enable_if_t<not  kIsMutatableType<CHECK>>* = nullptr>
-        nonvirtual const T XXX () const
-        {
-            return Get ();
-        }
-        template <typename CHECK = T, enable_if_t< kIsMutatableType<CHECK>>* = nullptr>
-        nonvirtual  T XXX () 
-        {
-            return Get ();
-        }
-
-#endif
     private:
         const function<T (const ReadOnlyProperty*)> fGetter_;
     };
