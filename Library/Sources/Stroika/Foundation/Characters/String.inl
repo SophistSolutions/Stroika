@@ -621,6 +621,10 @@ namespace Stroika::Foundation::Characters {
     {
         return ThreeWayComparer{}(*this, rhs);
     }
+    inline strong_ordering String::operator<=> (const wstring& rhs) const
+    {
+        return ThreeWayComparer{}(*this, rhs);
+    }
     inline strong_ordering String::operator<=> (const wstring_view& rhs) const
     {
         return ThreeWayComparer{}(*this, rhs);
@@ -630,6 +634,10 @@ namespace Stroika::Foundation::Characters {
         return EqualsComparer{}(*this, rhs);
     }
     inline bool String::operator== (const wchar_t* rhs) const
+    {
+        return EqualsComparer{}(*this, rhs);
+    }
+    inline bool String::operator== (const wstring& rhs) const
     {
         return EqualsComparer{}(*this, rhs);
     }
@@ -647,6 +655,11 @@ namespace Stroika::Foundation::Characters {
     constexpr String::EqualsComparer::EqualsComparer (CompareOptions co)
         : fCompareOptions{co}
     {
+    }
+    inline pair<const Character*, const Character*> String::EqualsComparer::Access_ (const wstring& s)
+    {
+        using namespace Stroika::Foundation::Traversal;
+        return s.empty () ? make_pair<const Character*, const Character*> (nullptr, nullptr) : make_pair (reinterpret_cast<const Character*> (Iterator2Pointer (s.begin ())), reinterpret_cast<const Character*> (Iterator2Pointer (s.begin ()) + s.size ()));
     }
     inline pair<const Character*, const Character*> String::EqualsComparer::Access_ (const wstring_view& s)
     {
@@ -687,6 +700,13 @@ namespace Stroika::Foundation::Characters {
         }
         return Cmp_ (lhs, rhs);
     }
+    inline bool String::EqualsComparer::operator() (const String& lhs, const wstring& rhs) const
+    {
+        if (lhs.size () != rhs.size ()) {
+            return false; // performance tweak
+        }
+        return Cmp_ (lhs, rhs);
+    }
     inline bool String::EqualsComparer::operator() (const String& lhs, const wstring_view& rhs) const
     {
         if (lhs.size () != rhs.size ()) {
@@ -702,7 +722,21 @@ namespace Stroika::Foundation::Characters {
     {
         return Cmp_ (lhs, rhs);
     }
+    inline bool String::EqualsComparer::operator() (const wstring& lhs, const String& rhs) const
+    {
+        if (lhs.size () != rhs.size ()) {
+            return false; // performance tweak
+        }
+        return Cmp_ (lhs, rhs);
+    }
     inline bool String::EqualsComparer::operator() (const wstring_view& lhs, const String& rhs) const
+    {
+        if (lhs.size () != rhs.size ()) {
+            return false; // performance tweak
+        }
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool String::EqualsComparer::operator() (const wstring& lhs, const wstring_view& rhs) const
     {
         if (lhs.size () != rhs.size ()) {
             return false; // performance tweak
@@ -716,7 +750,15 @@ namespace Stroika::Foundation::Characters {
         }
         return Cmp_ (lhs, rhs);
     }
+    inline bool String::EqualsComparer::operator() (const wstring& lhs, const Character* rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
     inline bool String::EqualsComparer::operator() (const wstring_view& lhs, const Character* rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool String::EqualsComparer::operator() (const wstring& lhs, const wchar_t* rhs) const
     {
         return Cmp_ (lhs, rhs);
     }
@@ -725,6 +767,10 @@ namespace Stroika::Foundation::Characters {
         return Cmp_ (lhs, rhs);
     }
     inline bool String::EqualsComparer::operator() (const Character* lhs, const String& rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool String::EqualsComparer::operator() (const Character* lhs, const wstring& rhs) const
     {
         return Cmp_ (lhs, rhs);
     }
@@ -741,6 +787,10 @@ namespace Stroika::Foundation::Characters {
         return Cmp_ (lhs, rhs);
     }
     inline bool String::EqualsComparer::operator() (const wchar_t* lhs, const String& rhs) const
+    {
+        return Cmp_ (lhs, rhs);
+    }
+    inline bool String::EqualsComparer::operator() (const wchar_t* lhs, const wstring& rhs) const
     {
         return Cmp_ (lhs, rhs);
     }

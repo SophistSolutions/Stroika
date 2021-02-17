@@ -1182,6 +1182,7 @@ namespace Stroika::Foundation::Characters {
          */
         nonvirtual strong_ordering operator<=> (const String& rhs) const;
         nonvirtual strong_ordering operator<=> (const wchar_t* rhs) const;
+        nonvirtual strong_ordering operator<=> (const wstring& rhs) const;
         nonvirtual strong_ordering operator<=> (const wstring_view& rhs) const;
 
     public:
@@ -1189,6 +1190,7 @@ namespace Stroika::Foundation::Characters {
          */
         nonvirtual bool operator== (const String& rhs) const;
         nonvirtual bool operator== (const wchar_t* rhs) const;
+        nonvirtual bool operator== (const wstring& rhs) const;
         nonvirtual bool operator== (const wstring_view& rhs) const;
 #endif
 
@@ -1456,18 +1458,25 @@ namespace Stroika::Foundation::Characters {
          * Extra overloads a slight performance improvement
          */
         nonvirtual bool operator() (const String& lhs, const String& rhs) const;
+        nonvirtual bool operator() (const String& lhs, const wstring& rhs) const;
         nonvirtual bool operator() (const String& lhs, const wstring_view& rhs) const;
         nonvirtual bool operator() (const String& lhs, const Character* rhs) const;
         nonvirtual bool operator() (const String& lhs, const wchar_t* rhs) const;
+        nonvirtual bool operator() (const wstring& lhs, const String& rhs) const;
+        nonvirtual bool operator() (const wstring& lhs, const wstring_view& rhs) const;
+        nonvirtual bool operator() (const wstring& lhs, const Character* rhs) const;
+        nonvirtual bool operator() (const wstring& lhs, const wchar_t* rhs) const;
         nonvirtual bool operator() (const wstring_view& lhs, const String& rhs) const;
         nonvirtual bool operator() (const wstring_view& lhs, const wstring_view& rhs) const;
         nonvirtual bool operator() (const wstring_view& lhs, const Character* rhs) const;
         nonvirtual bool operator() (const wstring_view& lhs, const wchar_t* rhs) const;
         nonvirtual bool operator() (const Character* lhs, const String& rhs) const;
+        nonvirtual bool operator() (const Character* lhs, const wstring& rhs) const;
         nonvirtual bool operator() (const Character* lhs, const wstring_view& rhs) const;
         nonvirtual bool operator() (const Character* lhs, const Character* rhs) const;
         nonvirtual bool operator() (const Character* lhs, const wchar_t* rhs) const;
         nonvirtual bool operator() (const wchar_t* lhs, const String& rhs) const;
+        nonvirtual bool operator() (const wchar_t* lhs, const wstring& rhs) const;
         nonvirtual bool operator() (const wchar_t* lhs, const wstring_view& rhs) const;
         nonvirtual bool operator() (const wchar_t* lhs, const Character* rhs) const;
         nonvirtual bool operator() (const wchar_t* lhs, const wchar_t* rhs) const;
@@ -1478,6 +1487,7 @@ namespace Stroika::Foundation::Characters {
         template <typename LT, typename RT>
         bool                                            Cmp_ (LT lhs, RT rhs) const;
         static pair<const Character*, const Character*> Access_ (const String& s);
+        static pair<const Character*, const Character*> Access_ (const wstring& s);
         static pair<const Character*, const Character*> Access_ (const wstring_view& s);
         static pair<const Character*, const Character*> Access_ (const Character* lhs);
         static pair<const Character*, const Character*> Access_ (const wchar_t* lhs);
