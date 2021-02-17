@@ -283,8 +283,6 @@ namespace Stroika::Foundation::Common {
      *              fContentLength_ = rhs.fContentLength_;
      *              return *this;
      *          }
-     * 
-     * 
      *          //....
      * 
      *          Headers h;
@@ -301,6 +299,45 @@ namespace Stroika::Foundation::Common {
      *
      *      \endcode
      * 
+     *  Another important scenario, is where you have a complex, and want to update it. Properties only allow for
+     *  getters and setters, not updaters. The simple solution to this is to have the Property return a REFERENCE to the
+     *  object in question.
+     * 
+     *  \par Example Usage (EXTENDING the Header example above)
+     *      \code
+     *          // HTTP 'Response' object
+     *          class Response  {
+     *          public:
+     *              Response ()                    = delete;
+     *              Response (const Response&)     = delete;
+     *              Response (Response&& src);
+     *              Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream<byte>::Ptr& outStream, const optional<InternetMediaType>& ct = nullopt);
+     *              ~Response () = default;
+     *              nonvirtual Response& operator= (const Response&) = delete;
+     *          public:
+     *              Common::ReadOnlyProperty<const IO::Network::HTTP::Headers&> headers;
+     *          public:
+     *              Common::Property<IO::Network::HTTP::Headers&> rwHeaders;
+     *      ...
+     *          // then the ABOVE checks/assignments become
+     *          Response& r = get_from_somewhere();
+     *          Assert (r.headers().contentLength1 == 0);
+     *          r.rwHeaders().contentLength1 = 2;
+     *          Assert (r.headers().contentLength2 == 2);
+     *          h.contentLength2 = 4;
+     *          Assert (r.headers().contentLength1 == 4);
+     *          Headers h2 = r.headers;
+     *          Assert (h2.contentLength1 == 4);
+     *          r.rwHeaders().contentLength2 = 5;
+     *          Assert (r.headers().contentLength1 == 5);
+     *          Assert (h2.contentLength1 == 4);
+     *      \endcode
+     *
+     *      \note when using Properties, its often helpful to combine (for threadsafety checking) with 
+     *            Debug::AssertExternallySynchronizedLock and SetAssertExternallySynchronizedLockContext ()
+     * 
+     *      \see See the example usage (above outlined) in Frameworks/WebServer/Request.h, Message.h, Response.h, and Foundation/IO/Network/HTTP/Headers
+     *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md">SAME AS T/GETTER/SETTER - all methods have exactly the thread safety of the underlying GETTER/SETTER</a>
      */
     template <typename T>
@@ -308,9 +345,9 @@ namespace Stroika::Foundation::Common {
     public:
         /**
          */
-        using base_value_type = T;
+        using base_value_type    = T;
         using decayed_value_type = decay_t<T>;
-        using value_type = decayed_value_type;
+        using value_type         = decayed_value_type;
 
     public:
         /**
