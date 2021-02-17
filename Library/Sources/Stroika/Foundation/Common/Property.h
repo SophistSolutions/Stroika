@@ -181,8 +181,15 @@ namespace Stroika::Foundation::Common {
 
     public:
         /**
+         *  Alternate syntax for setting the value.
          */
         nonvirtual void Set (Configuration::ArgByValueType<T> value);
+
+    public:
+        /**
+         *  Alternate syntax for setting the value.
+         */
+        nonvirtual void operator () (Configuration::ArgByValueType<T> value);
 
     private:
         const function<void (WriteOnlyProperty*, Configuration::ArgByValueType<T>)> fSetter_;
@@ -369,10 +376,12 @@ namespace Stroika::Foundation::Common {
         nonvirtual Property& operator= (const Property&&) = delete;
 
     public:
+        using ReadOnlyProperty<T>::operator();
         using ReadOnlyProperty<T>::Get;
 
     public:
         using WriteOnlyProperty<decayed_value_type>::Set;
+        using WriteOnlyProperty<decayed_value_type>::operator();
     };
 
 }

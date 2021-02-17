@@ -60,6 +60,11 @@ namespace Stroika::Foundation::Common {
         fSetter_ (this, value);
     }
     template <typename T>
+    inline void WriteOnlyProperty<T>::operator() (Configuration::ArgByValueType<T> value)
+    {
+        Set (value);
+    }
+    template <typename T>
     inline void WriteOnlyProperty<T>::operator= (Configuration::ArgByValueType<T> value)
     {
         Set (value);
