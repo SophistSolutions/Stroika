@@ -141,7 +141,8 @@ namespace Stroika::Foundation::Common {
         }
 #else
             ;
-#endif template < typename CHECK = T, enable_if_t < ReadOnlyProperty < T> ::template kIsMutatableType < CHECK>>* = nullptr>
+#endif
+        template < typename CHECK = T, enable_if_t < ReadOnlyProperty < T> ::template kIsMutatableType < CHECK>>* = nullptr>
         nonvirtual T Get ()
 #if qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy
         {
