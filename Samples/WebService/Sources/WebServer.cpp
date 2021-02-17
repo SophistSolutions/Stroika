@@ -66,7 +66,7 @@ public:
 
               Route{L"FRED"_RegEx, [] (Request*, Response* response) {
                         response->write (L"FRED");
-                        response->SetContentType (DataExchange::InternetMediaTypes::kText_PLAIN);
+                        response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
                     }},
 
               /*
@@ -170,7 +170,7 @@ public:
     {
         String argsAsString = Streams::TextReader::New (message->rwRequest ().GetBody ()).ReadAll ();
         message->rwResponse ().writeln (L"<html><body><p>Hi SetAppState (" + argsAsString.As<wstring> () + L")</p></body></html>");
-        message->rwResponse ().SetContentType (DataExchange::InternetMediaTypes::kHTML);
+        message->rwResponse ().contentType = DataExchange::InternetMediaTypes::kHTML;
     }
 };
 

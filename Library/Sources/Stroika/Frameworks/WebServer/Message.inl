@@ -70,25 +70,25 @@ namespace Stroika::Frameworks::WebServer {
     inline void Message::SetResponseContentType (const InternetMediaType& contentType)
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        return fResponse_.SetContentType (contentType);
+        fResponse_.contentType = contentType;
     }
     template <typename... ARGS_TYPE>
     inline void Message::write (ARGS_TYPE&&... args)
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        return fResponse_.write (forward<ARGS_TYPE> (args)...);
+        fResponse_.write (forward<ARGS_TYPE> (args)...);
     }
     template <typename... ARGS_TYPE>
     inline void Message::printf (ARGS_TYPE&&... args)
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        return fResponse_.write (forward<ARGS_TYPE> (args)...);
+        fResponse_.write (forward<ARGS_TYPE> (args)...);
     }
     template <typename... ARGS_TYPE>
     inline void Message::writeln (ARGS_TYPE&&... args)
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        return fResponse_.write (forward<ARGS_TYPE> (args)...);
+        fResponse_.write (forward<ARGS_TYPE> (args)...);
     }
 
 }

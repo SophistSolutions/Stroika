@@ -129,7 +129,7 @@ void Server::VariantValue::WriteResponse (Response* response, const WebServiceMe
 {
     if (webServiceDescription.fResponseType) {
         response->write (responseValue);
-        response->SetContentType (*webServiceDescription.fResponseType);
+        response->contentType = *webServiceDescription.fResponseType;
     }
     else {
         WeakAssert (responseValue.empty ()); // if you returned a value you probably meant to have it written!
@@ -142,11 +142,11 @@ void Server::VariantValue::WriteResponse (Response* response, const WebServiceMe
     if (webServiceDescription.fResponseType) {
         if (webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kJSON) {
             response->write (Variant::JSON::Writer{}.WriteAsBLOB (responseValue));
-            response->SetContentType (*webServiceDescription.fResponseType);
+            response->contentType = *webServiceDescription.fResponseType;
         }
         else if (webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kText_PLAIN) {
             response->write (Variant::JSON::Writer{}.WriteAsBLOB (responseValue));
-            response->SetContentType (*webServiceDescription.fResponseType);
+            response->contentType = *webServiceDescription.fResponseType;
         }
         else {
             RequireNotReached ();
@@ -168,7 +168,7 @@ WebServer::RequestHandler Server::VariantValue::mkRequestHandler (const WebServi
         RequireNotNull (m);
         ExpectedMethod (m->request (), webServiceDescription);
         if (webServiceDescription.fResponseType) {
-            m->rwResponse ().SetContentType (*webServiceDescription.fResponseType);
+            m->rwResponse ().contentType = *webServiceDescription.fResponseType;
         }
         m->rwResponse ().write (f (m));
     };

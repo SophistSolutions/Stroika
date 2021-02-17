@@ -53,7 +53,7 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         *  Returns a read-only reference (so not assignable) to a const Request& (so cannot modify the request).
+         *  Returns a read-only reference (so not assignable to) to a const Request& (so cannot modify the request).
          */
         Common::ReadOnlyProperty<const Request&> request;
 

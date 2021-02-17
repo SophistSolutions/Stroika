@@ -50,7 +50,7 @@ namespace {
                                                 Response& response           = m->rwResponse ();
                                                 response.rwHeaders ().server = L"stroika-ssdp-server-demo"sv;
                                                 response.write (Stroika::Frameworks::UPnP::Serialize (dd));
-                                                response.SetContentType (DataExchange::InternetMediaTypes::kXML);
+                                                response.contentType = DataExchange::InternetMediaTypes::kXML;
                                             })}};
                     conn.remainingConnectionLimits = HTTP::KeepAlive{0, 0}; // disable keep-alives
                     conn.ReadAndProcessMessage ();

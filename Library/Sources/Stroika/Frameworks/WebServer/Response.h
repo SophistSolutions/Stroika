@@ -106,19 +106,6 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /*
-         * Note - this refers to an HTTP "Content-Type" - which is really potentially more than just a InternetMediaType, often
-         * with the characterset appended.
-         *
-         * SetContentType () requires GetState () == eInProgress
-         * 
-         *  NOTE - if DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (fContentType_), then
-         *  the characterset will be automatically folded into the used contentType. To avoid this, 
-         *  Use UpdateHeader() to modify the Content-Type field directly.
-         */
-        nonvirtual void    SetContentType (const InternetMediaType& contentType);
-
-    public:
-        /*
          * Note - the code page is only applied to string/text conversions and content-types which are know text-based content types.
          * For ContentTypes
          *      o   text / * {avoid comment-character}
@@ -137,6 +124,18 @@ namespace Stroika::Frameworks::WebServer {
          * 
          */
         Common::Property<Characters::CodePage> codePage;
+
+        /*
+         * Note - this refers to an HTTP "Content-Type" - which is really potentially more than just a InternetMediaType, often
+         * with the characterset appended.
+         *
+         *  \req GetState () == eInProgress     // since this calls rwHeaders()
+         * 
+         *  NOTE - if DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (contentType), then
+         *  the characterset will be automatically folded into the used contentType (on WRITES to the property - not reads). To avoid this, 
+         *  use rwHeader().contentType directly.
+         */
+        Common::Property < optional<InternetMediaType>> contentType;
 
     public:
         enum class State : uint8_t {
@@ -275,7 +274,8 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual String ToString () const;
 
     public:
-        [[deprecated ("Since 2.1b10, use headers() directly")]] IO::Network::HTTP::Headers GetHeaders () const;
+        [[deprecated ("Since Stroika 2.1b10, use contentType() property directly")]] void     SetContentType (const InternetMediaType& contentType);
+        [[deprecated ("Since 2.1b10, use headers() directly")]] IO::Network::HTTP::Headers    GetHeaders () const;
         [[deprecated ("Since Stroika 2.1b10 - use codePage()")]] Characters::CodePage         GetCodePage () const;
         [[deprecated ("Since Stroika 2.1b10 - use codePage()")]] void                     SetCodePage (Characters::CodePage codePage);
         [[deprecated ("Since Stroika 2.1b10 - use UpdateHeader()")]] InternetMediaType        GetContentType () const;

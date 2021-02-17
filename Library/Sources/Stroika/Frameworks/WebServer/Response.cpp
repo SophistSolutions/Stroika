@@ -107,6 +107,16 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
                        }
                    }
                }}
+    , contentType{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+                      const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::contentType);
+                      shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+                      return thisObj->headers ().contentType ();
+                  },
+                  [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newContentType) {
+                      Response*                                          thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::contentType);
+                      lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+                      thisObj->rwHeaders ().contentType = newContentType ? thisObj->AdjustContentTypeForCodePageIfNeeded_ (*newContentType) : optional<InternetMediaType>{};
+                  }}
     , fSocket_{s}
     , fState_{State::eInProgress}
     , fStatus_{StatusCodes::kOK}
@@ -163,9 +173,9 @@ bool Response::IsContentLengthKnown () const
     return fContentSizePolicy_ != ContentSizePolicy::eNone;
 }
 
-void Response::SetContentType (const InternetMediaType& contentType)
+void Response::SetContentType (const InternetMediaType& newCT)
 {
-    this->rwHeaders ().contentType = AdjustContentTypeForCodePageIfNeeded_ (contentType);
+    this->rwHeaders ().contentType = AdjustContentTypeForCodePageIfNeeded_ (newCT);
 }
 
 void Response::SetCodePage (Characters::CodePage newCodePage)
@@ -193,17 +203,17 @@ void Response::SetStatus (Status newStatus, const String& overrideReason)
 void Response::AppendToCommaSeperatedHeader (const String& headerName, const String& value)
 {
     Require (not value.empty ());
-    auto& headers = this->rwHeaders ();
-    if (auto o = headers.LookupOne (headerName)) {
+    auto& updateHeaders = this->rwHeaders ();
+    if (auto o = updateHeaders.LookupOne (headerName)) {
         if (o->empty ()) {
-            headers.Add (headerName, value);
+            updateHeaders.Add (headerName, value);
         }
         else {
-            headers.Add (headerName, *o + L", "sv + value);
+            updateHeaders.Add (headerName, *o + L", "sv + value);
         }
     }
     else {
-        headers.Add (headerName, value);
+        updateHeaders.Add (headerName, value);
     }
 }
 

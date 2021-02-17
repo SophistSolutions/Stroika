@@ -53,7 +53,7 @@ namespace {
                 Route{MethodsRegEx::kPost, L"SetAppState"_RegEx, SetAppState_},
                 Route{MethodsRegEx::kGet, L"FRED"_RegEx, [] (Request*, Response* response) {
                           response->write (L"FRED");
-                          response->SetContentType (DataExchange::InternetMediaTypes::kText_PLAIN);
+                          response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
                       }},
                 Route
             {
@@ -89,14 +89,14 @@ namespace {
             response->writeln (L"</ul>");
             response->writeln (L"</body></html>");
 
-            response->SetContentType (DataExchange::InternetMediaTypes::kHTML);
+            response->contentType = DataExchange::InternetMediaTypes::kHTML;
         }
         // Can declare arguments as Message* message
         static void SetAppState_ (Message* message)
         {
             String argsAsString = Streams::TextReader::New (message->rwRequest ().GetBody ()).ReadAll ();
             message->rwResponse ().writeln (L"<html><body><p>Hi SetAppState (" + argsAsString.As<wstring> () + L")</p></body></html>");
-            message->rwResponse ().SetContentType (DataExchange::InternetMediaTypes::kHTML);
+            message->rwResponse ().contentType = DataExchange::InternetMediaTypes::kHTML;
         }
     };
 }

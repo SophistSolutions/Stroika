@@ -211,7 +211,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /**
          *  @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cookie
          * 
-         *  if the list is empty, this corresponds to no header presnt
+         *  if the list is empty, this corresponds to no header present
          */
         Common::Property<CookieList> cookie;
 
