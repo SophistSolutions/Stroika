@@ -734,6 +734,10 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 #if defined(_MSC_VER)
 // First noticed broken _MSC_VER_2k19_16Pt8_
 #define qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt8_)
+#elif defined(__clang__) && defined(__APPLE__)
+#define qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
+#elif defined(__clang__) && !defined(__APPLE__)
+#define qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 11))
 #else
 #define qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy 0
 #endif
