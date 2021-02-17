@@ -705,6 +705,45 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 
 #endif
 
+
+
+
+/*
+ * UNSURE of the nature of this bug.
+ * But this code looks right, and works OK on gcc
+ * 
+ * 
+2>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Common\Property.inl(43): error C2244: 'Stroika::Foundation::Common::ReadOnlyProperty<T>::operator ()': unable to match function definition to an existing declaration
+2>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Common\Property.inl(42): note: see declaration of 'Stroika::Foundation::Common::ReadOnlyProperty<T>::operator ()'
+2>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Common\Property.inl(43): note: definition
+2>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Common\Property.inl(43): note: 'const T Stroika::Foundation::Common::ReadOnlyProperty<T>::operator ()(void) const'
+2>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Common\Property.inl(43): note: existing declarations
+2>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Common\Property.inl(43): note: 'T Stroika::Foundation::Common::ReadOnlyProperty<T>::operator ()(void)'
+2>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Common\Property.inl(43): note: 'const T Stroika::Foundation::Common::ReadOnlyProperty<T>::operator ()(void) const'
+2>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Common\Property.inl(49): error C2244: 'Stroika::Foundation::Common::ReadOnlyProperty<T>::operator ()': unable to match function definition to an existing declaration
+2>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Common\Property.inl(48): note: see declaration of 'Stroika::Foundation::Common::ReadOnlyProperty<T>::operator ()'
+2>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Common\Property.inl(49): note: definition
+2>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Common\Property.inl(49): note: 'T Stroika::Foundation::Common::ReadOnlyProperty<T>::operator ()(void)'
+2>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Common\Property.inl(49): note: existing declarations
+2>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Common\Property.inl(49): note: 'T Stroika::Foundation::Common::ReadOnlyProperty<T>::operator ()(void)'
+2>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Common\Property.inl(49): note: 'const T Stroika::Foundation::Common::ReadOnlyProperty<T>::operator ()(void) const'
+2>C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.MakeFile.Targets(46,5): error MSB3073: The command "make --directory C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2019\\..\..\..\Library\Sources\Stroika\Frameworks\ CONFIGURATION=Debug-U-32 all -j8 --silent" exited with code -1.
+*/
+#ifndef qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy
+
+#if defined(_MSC_VER)
+// First noticed broken _MSC_VER_2k19_16Pt8_
+#define qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt8_)
+#else
+#define qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy 0
+#endif
+
+#endif
+
+
+
+
+
 /**
  * According to https://en.cppreference.com/w/cpp/error/error_category/error_category ctor is constexpr since c++14
  */

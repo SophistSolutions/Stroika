@@ -24,24 +24,51 @@ namespace Stroika::Foundation::Common {
     template <typename T>
     template <typename G>
     constexpr ReadOnlyProperty<T>::ReadOnlyProperty (G getter)
-        : fGetter_ (getter)
+        : fGetter_ (getter) // no uniform initialization because this may involve conersions
     {
     }
+#if !qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy
     template <typename T>
+    template <typename CHECK, enable_if_t<not ReadOnlyProperty<T>::template kIsMutatableType<CHECK>>*>
     inline T ReadOnlyProperty<T>::Get () const
     {
         return fGetter_ (this);
     }
     template <typename T>
+    template <typename CHECK, enable_if_t<ReadOnlyProperty<T>::template kIsMutatableType<CHECK>>*>
+    inline T ReadOnlyProperty<T>::Get ()
+    {
+        return Get ();
+    }
+#endif
+#if !qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy
+    template <typename T>
+    template <typename CHECK, enable_if_t<not ReadOnlyProperty<T>::template kIsMutatableType<CHECK>>*>
     inline ReadOnlyProperty<T>::operator const T () const
     {
-        return fGetter_ (this);
+        return Get ();
     }
     template <typename T>
+    template <typename CHECK, enable_if_t<ReadOnlyProperty<T>::template kIsMutatableType<CHECK>>*>
+    inline ReadOnlyProperty<T>::operator T ()
+    {
+        return Get ();
+    }
+#endif
+#if !qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy
+    template <typename T>
+    template <typename CHECK, enable_if_t<not ReadOnlyProperty<T>::template kIsMutatableType<CHECK>>*>
     inline const T ReadOnlyProperty<T>::operator() () const
     {
-        return fGetter_ (this);
+        return Get ();
     }
+    template <typename T>
+    template <typename CHECK, enable_if_t<ReadOnlyProperty<T>::template kIsMutatableType<CHECK>>*>
+    inline T ReadOnlyProperty<T>::operator() ()
+    {
+        return Get ();
+    }
+#endif
 
     /*
      ********************************************************************************
@@ -51,7 +78,7 @@ namespace Stroika::Foundation::Common {
     template <typename T>
     template <typename S>
     constexpr WriteOnlyProperty<T>::WriteOnlyProperty (S setter)
-        : fSetter_ (setter)
+        : fSetter_ (setter) // no uniform initialization because this may involve conersions
     {
     }
     template <typename T>
