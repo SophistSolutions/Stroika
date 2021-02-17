@@ -17,9 +17,9 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      * See http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html for details on these status codes.
      */
     namespace StatusCodes {
-        constexpr Status kOK      = 200;
-        constexpr Status kCreated = 201;
-         constexpr Status kNoContent = 204;
+        constexpr Status kOK        = 200;
+        constexpr Status kCreated   = 201;
+        constexpr Status kNoContent = 204;
 
         constexpr Status kMovedPermanently = 301;
         constexpr Status kNotModified      = 304;
@@ -53,6 +53,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          */
         constexpr Status kGatewayTimeout = 504;
     }
+
 }
 
 #endif /*_Stroika_Foundation_IO_Network_HTTP_Status_h_*/
