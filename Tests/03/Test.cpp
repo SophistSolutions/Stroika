@@ -153,17 +153,23 @@ namespace {
                 VerifyTestResult (h2.contentLength4 == 4);
                 h2.contentLength4 = 5;
                 VerifyTestResult (h2.contentLength4 == 5);
-                h2.contentLength4.rwHandlers ().push_front ([] ([[maybe_unused]] const auto& changes) {
+                bool firstEventHanlderCalled{false};
+                h2.contentLength4.rwHandlers ().push_front ([&] ([[maybe_unused]] const auto& changes) {
                     DbgTrace ("first event handler called");
+                    firstEventHanlderCalled = true;
                     return true;
                 });
                 h2.contentLength4 = 6;
                 VerifyTestResult (h2.contentLength4 == 6);
-                h2.contentLength4.rwHandlers ().push_front ([] ([[maybe_unused]] const auto& changes) {
+                bool secondEventHanlderCalled{false};
+                VerifyTestResult (firstEventHanlderCalled);
+                h2.contentLength4.rwHandlers ().push_front ([&] ([[maybe_unused]] const auto& changes) {
                     DbgTrace ("second event handler called");
+                    secondEventHanlderCalled = true;
                     return false;
                 });
                 h2.contentLength4 = 7;
+                VerifyTestResult (secondEventHanlderCalled);
                 VerifyTestResult (h2.contentLength4 == 6); // because event handler returned false, this time NO
             }
         }
