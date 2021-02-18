@@ -507,8 +507,8 @@ namespace Stroika::Foundation::Common {
 
     public:
         struct PropertyChangedEvent {
-            T fPreviousValue;
-            T fNewValue;
+            typename Property<T>::decayed_value_type fPreviousValue;
+            typename Property<T>::decayed_value_type fNewValue;
         };
 
     public:
@@ -516,22 +516,35 @@ namespace Stroika::Foundation::Common {
          * if return result is false, this silently cuts-off processing. EventHandlers can also 
          * throw also can be used to prevent further processing, but then calling code will see that as an error.
          * So event handler ordering matters.
-         * If any event handlers present, they are handled in-order, with the underlying SETTER being the final 'eventhandler'
+         * If any event propertyChangedHandlers present, they are handled in-order, with the underlying SETTER being the final 'eventhandler'
          *
          *  TODO
-         *      @todo be CAREFUL about copying these handlers (what they reference) - maybe they should take parent obj ptr param*? or propery*?
+         *      @todo be CAREFUL about copying these propertyChangedHandlers (what they reference) - maybe they should take parent obj ptr param*? or propery*?
          */
-        using EventHandler = std::function<bool (const PropertyChangedEvent&)>;
+        using PropertyChangedEventHandler = std::function<bool (const PropertyChangedEvent&)>;
+
+    public:
+        /**
+         */
+        using PropertyReadEventHandler = std::function<void()>;
 
     public:
         /**
          * Use forward_list instead of Sequence<> to avoid a dependency on Stroika containers in a potentially low level component
          */
-        ReadOnlyProperty<const std::forward_list<EventHandler>&> handlers;
-        Property<std::forward_list<EventHandler>&>               rwHandlers;
+        ReadOnlyProperty<const std::forward_list<PropertyReadEventHandler>&> propertyReadHandlers;
+        Property<std::forward_list<PropertyReadEventHandler>&>               rwPropertyReadHandlers;
+
+    public:
+        /**
+         * Use forward_list instead of Sequence<> to avoid a dependency on Stroika containers in a potentially low level component
+         */
+        ReadOnlyProperty<const std::forward_list<PropertyChangedEventHandler>&> propertyChangedHandlers;
+        Property<std::forward_list<PropertyChangedEventHandler>&>               rwPropertyChangedHandlers;
 
     private:
-        std::forward_list<EventHandler> fHandlers_;
+        std::forward_list<PropertyReadEventHandler>    fPropertyReadHandlers_;
+        std::forward_list<PropertyChangedEventHandler> fPropertyChangedHandlers_;
     };
 
 }

@@ -154,7 +154,7 @@ namespace {
                 h2.contentLength4 = 5;
                 VerifyTestResult (h2.contentLength4 == 5);
                 bool firstEventHanlderCalled{false};
-                h2.contentLength4.rwHandlers ().push_front ([&] ([[maybe_unused]] const auto& changes) {
+                h2.contentLength4.rwPropertyChangedHandlers ().push_front ([&] ([[maybe_unused]] const auto& changes) {
                     DbgTrace ("first event handler called");
                     firstEventHanlderCalled = true;
                     return true;
@@ -163,7 +163,7 @@ namespace {
                 VerifyTestResult (h2.contentLength4 == 6);
                 bool secondEventHanlderCalled{false};
                 VerifyTestResult (firstEventHanlderCalled);
-                h2.contentLength4.rwHandlers ().push_front ([&] ([[maybe_unused]] const auto& changes) {
+                h2.contentLength4.rwPropertyChangedHandlers ().push_front ([&] ([[maybe_unused]] const auto& changes) {
                     DbgTrace ("second event handler called");
                     secondEventHanlderCalled = true;
                     return false;
