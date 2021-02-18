@@ -121,6 +121,12 @@ namespace Stroika::Foundation::Common {
         Set (value.Get ());
         return *this;
     }
+    template <typename T>
+    template <typename TT>
+    inline bool Property<T>::operator== (const TT& rhs) const
+    {
+        return Get () == rhs;
+    }
 
 }
 
