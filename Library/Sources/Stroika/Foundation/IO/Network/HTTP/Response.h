@@ -71,7 +71,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          * \note - this returns an INTERNAL POINTER to the Response, so be SURE to remember this with respect to
          *         thread safety, and lifetime (thread safety checked/enforced in debug builds with SetAssertExternallySynchronizedLockContext);
          */
-        Common::ExtendableProperty<IO::Network::HTTP::Headers&> rwHeaders;
+        Common::Property<IO::Network::HTTP::Headers&> rwHeaders;
 
     public:
         /*
