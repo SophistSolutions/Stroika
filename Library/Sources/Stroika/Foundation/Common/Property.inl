@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Common {
     template <typename CHECK, enable_if_t<ReadOnlyProperty<T>::template kIsMutatableType<CHECK>>*>
     inline T ReadOnlyProperty<T>::Get ()
     {
-        return Get ();
+        return fGetter_ (this);
     }
 #endif
 #if !qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy
