@@ -446,19 +446,6 @@ namespace Stroika::Foundation::Common {
         nonvirtual Property& operator= (const Property& value);
         nonvirtual Property& operator= (const Property&&) = delete;
 
-#if qCompilerAndStdLib_template_enable_if_operator_conversion_notUsedInOverloadsforOpEquals_Buggy
-    public:
-        // cannot workaround with enable_if cuz thats the bug - (or issue  - not sure its a bug)
-        operator const T () const
-        {
-            return Get ();
-        }
-        operator T ()
-        {
-            return Get ();
-        }
-#endif
-
     public:
         template <typename TT>
         nonvirtual bool operator== (const TT& rhs) const;

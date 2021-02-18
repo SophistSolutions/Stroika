@@ -705,9 +705,6 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 
 #endif
 
-
-
-
 /*
  * UNSURE of the nature of this bug.
  * But this code looks right, and works OK on gcc
@@ -743,37 +740,6 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 #endif
 
 #endif
-
-
-/*
-* && NOTE - this maybe a bug in STROIKA and in MSVC that it works at all - testing more..
-* 
-     Compiling Tests/03/Test.cpp ...
-In file included from Test.cpp:20:
-Test.cpp: In function ‘void {anonymous}::Test02_Properties_::Run()’:
-Test.cpp:130:48: error: no match for ‘operator==’ (operand types are ‘Stroika::Foundation::Common::Property<unsigned int>’ and ‘int’)
-  130 |             VerifyTestResult (h.contentLength1 == 0);
-      |                               ~~~~~~~~~~~~~~~~ ^~ ~
-      |                                 |                 |
-      |                                 |                 int
-      |                                 Stroika::Foundation::Common::Property<unsigned int>
-../TestHarness/TestHarness.h:21:61: note: in definition of macro ‘VerifyTestResult’
-   21 | #define VerifyTestResult(c) Stroika::TestHarness::Test_ (!!(c), true, #c, __FILE__, __LINE__)
-*/
-#ifndef qCompilerAndStdLib_template_enable_if_operator_conversion_notUsedInOverloadsforOpEquals_Buggy
-
-#if defined(__GNUC__) && !defined(__clang__)
-// Broken in GCC 9.3
-// Broken in GCC 10.2
-#define qCompilerAndStdLib_template_enable_if_operator_conversion_notUsedInOverloadsforOpEquals_Buggy ((__GNUC__ <= 10))
-#else
-#define qCompilerAndStdLib_template_enable_if_operator_conversion_notUsedInOverloadsforOpEquals_Buggy 0
-#endif
-
-#endif
-
-
-
 
 /**
  * According to https://en.cppreference.com/w/cpp/error/error_category/error_category ctor is constexpr since c++14
