@@ -6,14 +6,15 @@
 
 #include "../StroikaPreComp.h"
 
+#include <forward_list>
 #include <functional>
+#include <optional>
 
 #include "../Configuration/Common.h"
 #include "../Configuration/TypeHints.h"
 
 /**
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- * 
  * 
  *  Notes:
  *      I've long thought about doing something like this, but only recently got frustrated with
@@ -31,8 +32,6 @@
  *              but probably possible with template guides. But only bother if there is a clear
  *              performance betenfit, because this is simpler.
  * 
- *      @todo   Consider adding propertyChanged events to properties (if was a very cheap way when not used)
- *              Maybe subclass of Property - PropertyWithChangeEvent? then it could add the event list and notification)
  */
 
 namespace Stroika::Foundation::Common {
@@ -127,8 +126,8 @@ namespace Stroika::Foundation::Common {
         constexpr ReadOnlyProperty (G getter);
 
     public:
-        nonvirtual void operator= (const ReadOnlyProperty&) = delete;
-        nonvirtual void operator= (const ReadOnlyProperty&&) = delete;
+        nonvirtual ReadOnlyProperty& operator= (const ReadOnlyProperty&) = delete;
+        nonvirtual ReadOnlyProperty&  operator= (const ReadOnlyProperty&&) = delete;
 
     public:
         /**
@@ -246,9 +245,9 @@ namespace Stroika::Foundation::Common {
          *  You can assign a value of the underlying type, but we do NOT support operator=(WriteOnlyProperty) because
          *  we cannot generically read from a write-only property to copy its value.
          */
-        nonvirtual void operator= (Configuration::ArgByValueType<T> value);
-        nonvirtual void operator= (const WriteOnlyProperty&) = delete;
-        nonvirtual void operator= (const WriteOnlyProperty&&) = delete;
+        nonvirtual WriteOnlyProperty& operator= (Configuration::ArgByValueType<T> value);
+        nonvirtual WriteOnlyProperty& operator= (const WriteOnlyProperty&) = delete;
+        nonvirtual WriteOnlyProperty& operator= (const WriteOnlyProperty&&) = delete;
 
     public:
         /**
@@ -442,7 +441,7 @@ namespace Stroika::Foundation::Common {
     public:
         /**
          */
-        nonvirtual T operator        = (Configuration::ArgByValueType<T> value);
+        nonvirtual Property& operator= (Configuration::ArgByValueType<T> value);
         nonvirtual Property& operator= (const Property& value);
         nonvirtual Property& operator= (const Property&&) = delete;
 
@@ -457,6 +456,73 @@ namespace Stroika::Foundation::Common {
     public:
         using WriteOnlyProperty<decayed_value_type>::Set;
         using WriteOnlyProperty<decayed_value_type>::operator();
+    };
+
+    /**
+     *      @todo   Consider adding propertyChanged events to properties (if was a very cheap way when not used)
+     *              Maybe subclass of Property - PropertyWithChangeEvent? then it could add the event list and notification)
+     * 
+     *      @todo   Figure out how to support subclassing of properties.
+     *              USE CASE:
+     *                  >   IO::Network::HTTP::Response base class
+     *                  >   Frameworks::WebServer::Response subclass
+     *                      in Response::rwHeader() property, I want to (in subclass) ASSERT that state is in-progress (or some such)
+     *
+     *              VIABLE APPROACHES:
+     *                  >   Implement 'events' so when a property changes a hook gets called (possibly even before/after hooks, with before hooks
+     *                      possibly aborting change)
+     *                  >   Provide some method for REPLACING the GETTER/SETTER hooks
+     *                  >   Simple 'hide' the member in the subclass (so 2 properties with the same name)
+     * 
+     *                  The third approach sucks cuz waste of space, and inconsistent behavior if you access property through ptr
+     *                  to base class.
+     * 
+     *                  'Events' approach nice in that it is more generally useful (listeners could be largely unrelated - external - like vtable methods
+     *                  vs 'function' ptr objects). But its COSTLY when not used (must maintain a list of callbacks, or worse two). Can mittigate cost
+     *                  as mentioned above, by only having subclass of Property (PropertyWithEvents) that supports events.
+     * 
+     *                  REPLACING the GETTER/SETTER seems quite viable, except that it appears to really kill modularity. No way (I can think of) within
+     *                  c++ to capture any kind of public/private thing. Anybody would be replacing GETTERS or SETTERS (if anybody can) (cannot use
+     *                  protected cuz not subclassing, and forcing extra subclassing would be awkward).
+     */
+    template <typename T>
+    class ExtendableProperty : public Property<T> {
+    public:
+        /**
+         */
+        ExtendableProperty ()      = delete;
+        ExtendableProperty (const ExtendableProperty&) = delete;
+        ExtendableProperty (ExtendableProperty&&)      = delete;
+        template <typename G, typename S>
+        ExtendableProperty (G getter, S setter);
+
+    public:
+        /**
+         */
+        nonvirtual ExtendableProperty& operator= (Configuration::ArgByValueType<T> value);
+        nonvirtual ExtendableProperty& operator= (const ExtendableProperty& value);
+        nonvirtual ExtendableProperty& operator= (const ExtendableProperty&&) = delete;
+
+    public:
+        struct PropertyChangedEvent {
+            std::optional<T> fPreviousValue;
+            std::optional<T> fNewValue;
+        };
+        // if return result is false, this silently cuts-off processing. EventHandlers can also 
+        // throw to prevent further processing
+        // So event handler ordering matters.
+        // If any event handlers present, they are handled in-order, with the underlying SETTER being the final 'eventhandler'
+        // @todo be CAREFUL about copying these handlers (what they reference) - maybe they should take parent obj ptr param*? or propery*?
+        using EventHandler = std::function<bool (const PropertyChangedEvent&)>;
+
+    public:
+        /**
+         * Use forward_list instead of Sequence<> to avoid a dependency on Stroika containers in a potentially low level component
+         */
+        Property <std::forward_list<EventHandler>&> rwHandlers;
+
+    private:
+        std::forward_list<EventHandler> fHandlers_;
     };
 
 }

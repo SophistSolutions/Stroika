@@ -92,9 +92,10 @@ namespace Stroika::Foundation::Common {
         Set (value);
     }
     template <typename T>
-    inline void WriteOnlyProperty<T>::operator= (Configuration::ArgByValueType<T> value)
+    inline auto WriteOnlyProperty<T>::operator= (Configuration::ArgByValueType<T> value) -> WriteOnlyProperty&
     {
         Set (value);
+        return *this;
     }
 
     /*
@@ -110,10 +111,10 @@ namespace Stroika::Foundation::Common {
     {
     }
     template <typename T>
-    inline T Property<T>::operator= (Configuration::ArgByValueType<T> value)
+    inline auto Property<T>::operator= (Configuration::ArgByValueType<T> value) -> Property&
     {
         WriteOnlyProperty<decayed_value_type>::operator= (value);
-        return value;
+        return *this;
     }
     template <typename T>
     inline auto Property<T>::operator= (const Property& value) -> Property&
@@ -126,6 +127,43 @@ namespace Stroika::Foundation::Common {
     inline bool Property<T>::operator== (const TT& rhs) const
     {
         return Get () == rhs;
+    }
+
+    /*
+     ********************************************************************************
+     ************************** ExtendableProperty<T> *******************************
+     ********************************************************************************
+     */
+    template <typename T>
+    template <typename G, typename S>
+    inline ExtendableProperty<T>::ExtendableProperty (G getter, S setter)
+        : Property<T>{
+              [=, getter, this] ([[maybe_unused]] const auto* property) { return getter (property); },
+              [=, setter, this] (auto* property, const auto& newValue) {
+                  // @todo handlers
+                  // for now bind this to avoid #include of Memory::ObhUtils...
+                  setter (property, newValue);
+              }}
+        , rwHandlers{
+              [this] (const auto* property) {
+                  return fHandlers_;
+              },
+              [this] (auto* property, const auto& handlerList) {
+                  fHandlers_ = handlerList;
+              }}
+    {
+    }
+    template <typename T>
+    inline auto ExtendableProperty<T>::operator= (Configuration::ArgByValueType<T> value) -> ExtendableProperty&
+    {
+        Property<T>::operator= (value);
+        return *this;
+    }
+    template <typename T>
+    inline auto ExtendableProperty<T>::operator= (const ExtendableProperty& value) -> ExtendableProperty&
+    {
+        Property<T>::operator= (value);
+        return *this;
     }
 
 }
