@@ -486,6 +486,14 @@ namespace Stroika::Foundation::Common {
      *                  REPLACING the GETTER/SETTER seems quite viable, except that it appears to really kill modularity. No way (I can think of) within
      *                  c++ to capture any kind of public/private thing. Anybody would be replacing GETTERS or SETTERS (if anybody can) (cannot use
      *                  protected cuz not subclassing, and forcing extra subclassing would be awkward).
+     * 
+     *  \note since properties and therefore ExtendableProperty cannot be copied, its natural to note that their 'eventhandlers' also
+     *        are not generally copied.
+     * 
+     *        Though its up to any object which uses properties, its generally presumed and recommended that of you copy objects
+     *        O1 (of type O, with EvtendedableProperty P) to object O2, then the event hanlders watcing properties P (from O1)
+     *        will NOT be copied to object O2 (to its property P).
+     *     
      */
     template <typename T>
     class ExtendableProperty : public Property<T> {
