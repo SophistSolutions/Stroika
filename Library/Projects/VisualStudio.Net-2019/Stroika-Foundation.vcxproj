@@ -205,6 +205,8 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Headers.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\KeepAlive.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\MessageStartTextInputStreamBinaryAdapter.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Request.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Response.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\ICMP.cpp" />
@@ -576,6 +578,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\KeepAlive.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\MessageStartTextInputStreamBinaryAdapter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Methods.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Request.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Response.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Status.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Versions.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.h" />
@@ -993,6 +997,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\KeepAlive.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Methods.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Request.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Response.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Versions.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.inl" />

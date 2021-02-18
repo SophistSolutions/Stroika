@@ -804,6 +804,12 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\KeepAlive.cpp">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Request.cpp">
+      <Filter>Sources\IO\Network\HTTP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Response.cpp">
+      <Filter>Sources\IO\Network\HTTP</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2057,6 +2063,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\LockFreeDataStructures\forward_list.h">
       <Filter>Sources\Containers\LockFreeDataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Request.h">
+      <Filter>Sources\IO\Network\HTTP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Response.h">
+      <Filter>Sources\IO\Network\HTTP</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3356,6 +3368,12 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\LockFreeDataStructures\forward_list.inl">
       <Filter>Sources\Containers\LockFreeDataStructures</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Request.inl">
+      <Filter>Sources\IO\Network\HTTP</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Response.inl">
+      <Filter>Sources\IO\Network\HTTP</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

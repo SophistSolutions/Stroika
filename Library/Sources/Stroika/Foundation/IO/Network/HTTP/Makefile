@@ -26,6 +26,8 @@ Objs	=	\
 	$(ObjDir)Headers${OBJ_SUFFIX}\
 	$(ObjDir)KeepAlive${OBJ_SUFFIX}\
 	$(ObjDir)MessageStartTextInputStreamBinaryAdapter${OBJ_SUFFIX}\
+	$(ObjDir)Request${OBJ_SUFFIX}\
+	$(ObjDir)Response${OBJ_SUFFIX}\
 
 
 all:	$(Objs)
