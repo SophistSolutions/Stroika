@@ -164,11 +164,11 @@ namespace Stroika::Foundation::Common {
                   setter (property, newValue);
               }}
         , propertyReadHandlers{
-              [qStroika_Foundation_Common_Property_ExtraCaptureStuff] (const auto* property) -> const std::forward_list<PropertyChangedEventHandler>& {
+              [qStroika_Foundation_Common_Property_ExtraCaptureStuff] (const auto* property) -> const std::forward_list<PropertyReadEventHandler>& {
                   const ExtendableProperty* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ExtendableProperty::propertyReadHandlers);
                   return thisObj->fPropertyReadHandlers_;
               }}
-        , rwPropertyReadHandlers{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] (const auto* property) -> std::forward_list<PropertyChangedEventHandler>& {
+        , rwPropertyReadHandlers{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] (const auto* property) -> std::forward_list<PropertyReadEventHandler>& {
                                      ExtendableProperty* thisObj = const_cast<ExtendableProperty*> (qStroika_Foundation_Common_Property_OuterObjPtr (property, &ExtendableProperty::rwPropertyReadHandlers));
                                      return thisObj->fPropertyReadHandlers_;
                                  },
