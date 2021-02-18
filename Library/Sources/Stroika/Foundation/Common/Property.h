@@ -57,6 +57,7 @@ namespace Stroika::Foundation::Common {
      * @see qStroika_Foundation_Common_Property_EmbedThisInProperties
      */
 #define qStroika_Foundation_Common_Property_ExtraCaptureStuff this
+#define qStroika_Foundation_Common_Property_ExtraCaptureStuff1 , this
     /**
      * @see qStroika_Foundation_Common_Property_EmbedThisInProperties
      */
@@ -66,6 +67,7 @@ namespace Stroika::Foundation::Common {
      * @see qStroika_Foundation_Common_Property_EmbedThisInProperties
      */
 #define qStroika_Foundation_Common_Property_ExtraCaptureStuff
+#define qStroika_Foundation_Common_Property_ExtraCaptureStuff1
     /**
      * @see qStroika_Foundation_Common_Property_EmbedThisInProperties
      */
@@ -127,7 +129,7 @@ namespace Stroika::Foundation::Common {
 
     public:
         nonvirtual ReadOnlyProperty& operator= (const ReadOnlyProperty&) = delete;
-        nonvirtual ReadOnlyProperty&  operator= (const ReadOnlyProperty&&) = delete;
+        nonvirtual ReadOnlyProperty& operator= (const ReadOnlyProperty&&) = delete;
 
     public:
         /**
@@ -490,7 +492,7 @@ namespace Stroika::Foundation::Common {
     public:
         /**
          */
-        ExtendableProperty ()      = delete;
+        ExtendableProperty ()                          = delete;
         ExtendableProperty (const ExtendableProperty&) = delete;
         ExtendableProperty (ExtendableProperty&&)      = delete;
         template <typename G, typename S>
@@ -505,21 +507,28 @@ namespace Stroika::Foundation::Common {
 
     public:
         struct PropertyChangedEvent {
-            std::optional<T> fPreviousValue;
-            std::optional<T> fNewValue;
+            T fPreviousValue;
+            T fNewValue;
         };
-        // if return result is false, this silently cuts-off processing. EventHandlers can also 
-        // throw to prevent further processing
-        // So event handler ordering matters.
-        // If any event handlers present, they are handled in-order, with the underlying SETTER being the final 'eventhandler'
-        // @todo be CAREFUL about copying these handlers (what they reference) - maybe they should take parent obj ptr param*? or propery*?
+
+    public:
+        /**
+         * if return result is false, this silently cuts-off processing. EventHandlers can also 
+         * throw also can be used to prevent further processing, but then calling code will see that as an error.
+         * So event handler ordering matters.
+         * If any event handlers present, they are handled in-order, with the underlying SETTER being the final 'eventhandler'
+         *
+         *  TODO
+         *      @todo be CAREFUL about copying these handlers (what they reference) - maybe they should take parent obj ptr param*? or propery*?
+         */
         using EventHandler = std::function<bool (const PropertyChangedEvent&)>;
 
     public:
         /**
          * Use forward_list instead of Sequence<> to avoid a dependency on Stroika containers in a potentially low level component
          */
-        Property <std::forward_list<EventHandler>&> rwHandlers;
+        ReadOnlyProperty<const std::forward_list<EventHandler>&> handlers;
+        Property<std::forward_list<EventHandler>&>               rwHandlers;
 
     private:
         std::forward_list<EventHandler> fHandlers_;

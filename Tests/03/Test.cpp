@@ -61,9 +61,10 @@ namespace {
                 nonvirtual Headers& operator= (const Headers& rhs) = default; // properties are assignable, so this is OK
                 nonvirtual Headers& operator                       = (Headers&& rhs);
 
-                Property<unsigned int> contentLength1; // both refer to the private fContentLength_ field
-                Property<unsigned int> contentLength2;
-                Property<unsigned int> contentLength3;
+                Property<unsigned int>           contentLength1; // both refer to the private fContentLength_ field
+                Property<unsigned int>           contentLength2;
+                Property<unsigned int>           contentLength3;
+                ExtendableProperty<unsigned int> contentLength4;
 
             private:
                 unsigned int fContentLength_{0};
@@ -97,10 +98,19 @@ namespace {
                           Headers* thisObj         = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentLength3);
                           thisObj->fContentLength_ = contentLength;
                       }}
+                , contentLength4{
+                      [qStroika_Foundation_Common_Property_ExtraCaptureStuff] (const auto* property) {
+                          const Headers* headerObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentLength4);
+                          return headerObj->fContentLength_;
+                      },
+                      [qStroika_Foundation_Common_Property_ExtraCaptureStuff] (auto* property, auto contentLength) {
+                          Headers* thisObj         = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentLength4);
+                          thisObj->fContentLength_ = contentLength;
+                      }}
             {
             }
             Headers::Headers (const Headers& src)
-                : Headers () // do default initialization of properties
+                : Headers{} // do default initialization of properties
             {
                 // NOTE - cannot INITIALIZE properties with src.Properties values since they are not copy constructible
                 // but they are assignable, so do that
@@ -109,7 +119,7 @@ namespace {
                 // COULD EITHER initialize fContentLength_ or pContentLength1/pContentLength2 - but no need to do both
             }
             Headers::Headers (Headers&& src)
-                : Headers () // do default initialization of properties
+                : Headers{} // do default initialization of properties
             {
                 // NOTE - cannot MOVE properties with src.Properties values since they are not copy constructible
                 // but they are assignable, so do that
@@ -137,6 +147,25 @@ namespace {
             h.contentLength2 = 5;
             VerifyTestResult (h.contentLength1 == 5);
             VerifyTestResult (h2.contentLength1 == 4);
+
+            {
+                // event handlers
+                VerifyTestResult (h2.contentLength4 == 4);
+                h2.contentLength4 = 5;
+                VerifyTestResult (h2.contentLength4 == 5);
+                h2.contentLength4.rwHandlers ().push_front ([] ([[maybe_unused]] const auto& changes) {
+                    DbgTrace ("first event handler called");
+                    return true;
+                });
+                h2.contentLength4 = 6;
+                VerifyTestResult (h2.contentLength4 == 6);
+                h2.contentLength4.rwHandlers ().push_front ([] ([[maybe_unused]] const auto& changes) {
+                    DbgTrace ("second event handler called");
+                    return false;
+                });
+                h2.contentLength4 = 7;
+                VerifyTestResult (h2.contentLength4 == 6); // because event handler returned false, this time NO
+            }
         }
     }
 }

@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Common {
     template <typename TT>
     inline bool Property<T>::operator== (const TT& rhs) const
     {
-        return Get () == rhs;
+        return Get () == static_cast<T> (rhs);
     }
 
     /*
@@ -136,21 +136,37 @@ namespace Stroika::Foundation::Common {
      */
     template <typename T>
     template <typename G, typename S>
-    inline ExtendableProperty<T>::ExtendableProperty (G getter, S setter)
+    ExtendableProperty<T>::ExtendableProperty (G getter, S setter)
         : Property<T>{
-              [=, getter, this] ([[maybe_unused]] const auto* property) { return getter (property); },
-              [=, setter, this] (auto* property, const auto& newValue) {
-                  // @todo handlers
-                  // for now bind this to avoid #include of Memory::ObhUtils...
+              [getter qStroika_Foundation_Common_Property_ExtraCaptureStuff1] ([[maybe_unused]] const auto* property) { return getter (property); },
+              [getter, setter qStroika_Foundation_Common_Property_ExtraCaptureStuff1] (auto* property, const auto& newValue) {
+                  // Subtle - but the 'property' here refers to 'this' (ExtendableProperty). The getter itself will want to extract the parent object, but
+                  // unlike other getter/setters, here the auto property is already for this object.
+                  ExtendableProperty* thisObj = static_cast<ExtendableProperty*> (property); // cannot use dynamic_cast without adding needless vtable to Property objects; static_cast needed (over reintepret_cast) to adjust sub-object pointer for multiple inheritance
+                  AssertNotNull (thisObj);
+                  if (not thisObj->fHandlers_.empty ()) {
+                      T prevValue = getter (property);
+                      for (const auto& handler : thisObj->fHandlers_) {
+                          if (not handler (PropertyChangedEvent{prevValue, newValue})) {
+                              return;
+                          }
+                      }
+                  }
                   setter (property, newValue);
               }}
-        , rwHandlers{
-              [this] (const auto* property) {
-                  return fHandlers_;
-              },
-              [this] (auto* property, const auto& handlerList) {
-                  fHandlers_ = handlerList;
+        , handlers{
+              [qStroika_Foundation_Common_Property_ExtraCaptureStuff] (const auto* property) -> const std::forward_list<EventHandler>& {
+                  const ExtendableProperty* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ExtendableProperty::handlers);
+                  return thisObj->fHandlers_;
               }}
+        , rwHandlers{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] (const auto* property) -> std::forward_list<EventHandler>& {
+                         ExtendableProperty* thisObj = const_cast<ExtendableProperty*> (qStroika_Foundation_Common_Property_OuterObjPtr (property, &ExtendableProperty::rwHandlers));
+                         return thisObj->fHandlers_;
+                     },
+                     [qStroika_Foundation_Common_Property_ExtraCaptureStuff] (auto* property, const auto& handlerList) {
+                         ExtendableProperty* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ExtendableProperty::rwHandlers);
+                         thisObj->fHandlers_         = handlerList;
+                     }}
     {
     }
     template <typename T>
