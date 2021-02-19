@@ -75,6 +75,28 @@ namespace Stroika::Foundation::Common {
     Memory::GetObjectOwningField (property, propertyPtrToMember)
 #endif
 
+    struct PropertyCommon {
+        /**
+         *  read-only Properties (or the read method of a normal Property) can be used to 'simulate' read-write access (by having it return a mutable reference)
+         *  This flag tells is that is going on, so we can make our accessor methods non-const in that case.
+         * 
+         *  \note This is SUBTLE but important for 'constness' to work properly.
+         *        if we use
+         *           struct OwningObject {
+         *              ReadOnlyProperty<FOO&> p;
+         *        then we want code:
+         *              OwningObject& o = ...;
+         *              const OwningObject& co = o;
+         *              o.p().constOrNonConstMethod();  // OK
+         *              co.p().constMethod (); // OK
+         *              co.p().nonConstMethod ();    // should fail to compile
+         * 
+         *      kIsMutatableType, plus appropriate enable_if_t's on the various accessor methods are designed to accomplish that.
+         */
+        template <typename TT>
+        static constexpr bool kIsMutatableType = not is_const_v<remove_reference_t<TT>> and is_reference_v<TT>;
+    };
+
     /**
      *  Implement C#-like syntax for read-only properties (syntactically like data members but backed by a getter function)
      *      \note   Typically not used - use Property
@@ -96,27 +118,6 @@ namespace Stroika::Foundation::Common {
 
     public:
         /**
-         *  ReadOnlyProperty can be used to 'simulate' read-write access (by having it return a mutable reference)
-         *  This flag tells is that is going on, so we can make our accessor methods non-const in that case.
-         * 
-         *  \note This is SUBTLE but important for 'constness' to work properly.
-         *        if we use
-         *           struct OwningObject {
-         *              ReadOnlyProperty<FOO&> p;
-         *        then we want code:
-         *              OwningObject& o = ...;
-         *              const OwningObject& co = o;
-         *              o.p().constOrNonConstMethod();  // OK
-         *              co.p().constMethod (); // OK
-         *              co.p().nonConstMethod ();    // should fail to compile
-         * 
-         *      kIsMutatableType, plus appropriate enable_if_t's on the various accessor methods are designed to accomplish that.
-         */
-        template <typename TT = T>
-        static constexpr bool kIsMutatableType = not is_const_v<remove_reference_t<TT>> and is_reference_v<TT>;
-
-    public:
-        /**
          *  ReadOnlyProperty are NOT movable, nor copy constructible: the data doesn't logically exist in the property itself,
          *  but in its relationship to some parent object; if it were copied, it might be copied TO some place that didn't
          *  have an appropriate enclosing object.
@@ -134,24 +135,10 @@ namespace Stroika::Foundation::Common {
     public:
         /**
          */
-        template <typename CHECK = T, enable_if_t<not ReadOnlyProperty<T>::template kIsMutatableType<CHECK>>* = nullptr>
-        nonvirtual T Get () const
-#if qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy
-        {
-            return fGetter_ (this);
-        }
-#else
-            ;
-#endif
-        template <typename CHECK = T, enable_if_t<ReadOnlyProperty<T>::template kIsMutatableType<CHECK>>* = nullptr>
-        nonvirtual T Get ()
-#if qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy
-        {
-            return fGetter_ (this);
-        }
-#else
-            ;
-#endif
+        template <typename CHECK = T, enable_if_t<not PropertyCommon::kIsMutatableType<CHECK>>* = nullptr>
+        nonvirtual T Get () const;
+        template <typename CHECK = T, enable_if_t<PropertyCommon::kIsMutatableType<CHECK>>* = nullptr>
+        nonvirtual T Get ();
 
     public:
         /**
@@ -163,24 +150,11 @@ namespace Stroika::Foundation::Common {
          *  When it doesn't work, simply throw in '()' - to use the 'operator()' call, or call Get()
          *  if you prefer that syntax.
          */
-        template <typename CHECK = T, enable_if_t<not ReadOnlyProperty<T>::template kIsMutatableType<CHECK>>* = nullptr>
-        nonvirtual operator const T () const
-#if qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy
-        {
-            return Get ();
-        }
-#else
-            ;
-#endif
-        template <typename CHECK = T, enable_if_t<ReadOnlyProperty<T>::template kIsMutatableType<CHECK>>* = nullptr>
-        nonvirtual operator T ()
-#if qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy
-        {
-            return Get ();
-        }
-#else
-            ;
-#endif
+        template <typename CHECK = T, enable_if_t<not PropertyCommon::kIsMutatableType<CHECK>>* = nullptr>
+        nonvirtual operator const T () const;
+        template <typename CHECK = T, enable_if_t<PropertyCommon::kIsMutatableType<CHECK>>* = nullptr>
+        nonvirtual operator T ();
+
     public:
         /**
          *  This works 100% of the time. Just use the function syntax, and you get back a copy of the desired
@@ -193,24 +167,10 @@ namespace Stroika::Foundation::Common {
          *          bool checkIsImage1 = PredefinedInternetMediaType::kPNG().IsImageFormat ();
          *      \endcode
          */
-        template <typename CHECK = T, enable_if_t<not ReadOnlyProperty<T>::template kIsMutatableType<CHECK>>* = nullptr>
-        nonvirtual const T operator() () const
-#if qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy
-        {
-            return Get ();
-        }
-#else
-            ;
-#endif
-        template <typename CHECK = T, enable_if_t<ReadOnlyProperty<T>::template kIsMutatableType<CHECK>>* = nullptr>
-        nonvirtual T operator() ()
-#if qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy
-        {
-            return Get ();
-        }
-#else
-            ;
-#endif
+        template <typename CHECK = T, enable_if_t<not PropertyCommon::kIsMutatableType<CHECK>>* = nullptr>
+        nonvirtual const T operator() () const;
+        template <typename CHECK = T, enable_if_t<PropertyCommon::kIsMutatableType<CHECK>>* = nullptr>
+        nonvirtual T operator() ();
 
     private:
         const function<T (const ReadOnlyProperty*)> fGetter_;

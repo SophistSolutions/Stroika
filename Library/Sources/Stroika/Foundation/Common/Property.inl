@@ -27,48 +27,42 @@ namespace Stroika::Foundation::Common {
         : fGetter_ (getter) // no uniform initialization because this may involve conersions
     {
     }
-#if !qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy
     template <typename T>
-    template <typename CHECK, enable_if_t<not ReadOnlyProperty<T>::template kIsMutatableType<CHECK>>*>
+    template <typename CHECK, enable_if_t<not PropertyCommon::kIsMutatableType<CHECK>>*>
     inline T ReadOnlyProperty<T>::Get () const
     {
         return fGetter_ (this);
     }
     template <typename T>
-    template <typename CHECK, enable_if_t<ReadOnlyProperty<T>::template kIsMutatableType<CHECK>>*>
+    template <typename CHECK, enable_if_t<PropertyCommon::kIsMutatableType<CHECK>>*>
     inline T ReadOnlyProperty<T>::Get ()
     {
         return fGetter_ (this);
     }
-#endif
-#if !qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy
     template <typename T>
-    template <typename CHECK, enable_if_t<not ReadOnlyProperty<T>::template kIsMutatableType<CHECK>>*>
+    template <typename CHECK, enable_if_t<not PropertyCommon::kIsMutatableType<CHECK>>*>
     inline ReadOnlyProperty<T>::operator const T () const
     {
         return Get ();
     }
     template <typename T>
-    template <typename CHECK, enable_if_t<ReadOnlyProperty<T>::template kIsMutatableType<CHECK>>*>
+    template <typename CHECK, enable_if_t<PropertyCommon::kIsMutatableType<CHECK>>*>
     inline ReadOnlyProperty<T>::operator T ()
     {
         return Get ();
     }
-#endif
-#if !qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy
     template <typename T>
-    template <typename CHECK, enable_if_t<not ReadOnlyProperty<T>::template kIsMutatableType<CHECK>>*>
+    template <typename CHECK, enable_if_t<not PropertyCommon kIsMutatableType<CHECK>>*>
     inline const T ReadOnlyProperty<T>::operator() () const
     {
         return Get ();
     }
     template <typename T>
-    template <typename CHECK, enable_if_t<ReadOnlyProperty<T>::template kIsMutatableType<CHECK>>*>
+    template <typename CHECK, enable_if_t<PropertyCommon kIsMutatableType<CHECK>>*>
     inline T ReadOnlyProperty<T>::operator() ()
     {
         return Get ();
     }
-#endif
 
     /*
      ********************************************************************************
