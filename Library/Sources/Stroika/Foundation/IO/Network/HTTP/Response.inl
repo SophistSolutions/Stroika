@@ -14,14 +14,9 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     /*
      ********************************************************************************
-     ********************* Framework::WebServer::Response ***************************
+     ************************ IO::Network::HTTP::Response ***************************
      ********************************************************************************
      */
-    inline IO::Network::HTTP::Status Response::GetStatus () const
-    {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        return fStatus_;
-    }
 
 }
 

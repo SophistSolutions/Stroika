@@ -31,16 +31,15 @@ using namespace Stroika::Foundation::IO::Network::HTTP;
 
 /*
  ********************************************************************************
- **************************** WebServer::Response *******************************
+ ********************** IO::Network::HTTP::Response *****************************
  ********************************************************************************
  */
 Response::Response (Response&& src)
     : Response{}
 {
-    fStatus_               = src.fStatus_;
-    fStatusOverrideReason_ = src.fStatusOverrideReason_;
-    fHeaders_              = src.fHeaders_;
-    fCodePage_             = src.fCodePage_;
+    fStatusAndOverrideReason_ = src.fStatusAndOverrideReason_;
+    fHeaders_                 = src.fHeaders_;
+    fCodePage_                = src.fCodePage_;
 }
 
 Response::Response ()
@@ -60,9 +59,27 @@ Response::Response ()
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
                     thisObj->fHeaders_ = newHeaders;
                 }}
-
-    , fStatus_{StatusCodes::kOK}
-    , fStatusOverrideReason_{}
+    , status{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+                 const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::status);
+                 shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+                 return get<0> (thisObj->fStatusAndOverrideReason_);
+             },
+             [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, auto newStatus) {
+                 Response*                                          thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::status);
+                 lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+                 thisObj->fStatusAndOverrideReason_ = make_tuple (newStatus, optional<String>{}); // if setting status, clear override string
+             }}
+    , statusAndOverrideReason{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+                                  const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::statusAndOverrideReason);
+                                  shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+                                  return thisObj->fStatusAndOverrideReason_;
+                              },
+                              [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newStatusAndOverride) {
+                                  Response*                                          thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::statusAndOverrideReason);
+                                  lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+                                  thisObj->fStatusAndOverrideReason_ = newStatusAndOverride;
+                              }}
+    , fStatusAndOverrideReason_{make_tuple (StatusCodes::kOK, optional<String>{})}
     , fHeaders_{}
     , fCodePage_{Characters::kCodePage_UTF8}
 {
@@ -75,20 +92,12 @@ void Response::SetAssertExternallySynchronizedLockContext (const shared_ptr<Shar
     fHeaders_.SetAssertExternallySynchronizedLockContext (sharedContext);
 }
 #endif
-
-void Response::SetStatus (Status newStatus, const String& overrideReason)
-{
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    fStatus_               = newStatus;
-    fStatusOverrideReason_ = overrideReason;
-}
-
 String Response::ToString () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     StringBuilder                                       sb;
     sb += L"{";
-    sb += L"StatusOverrideReason_: '" + Characters::ToString (fStatusOverrideReason_) + L"', ";
+    sb += L"StatusOverrideReason_: " + Characters::ToString (fStatusAndOverrideReason_) + L", ";
     sb += L"Headers: " + Characters::ToString (this->headers ()) + L", ";
     sb += L"}";
     return sb.str ();

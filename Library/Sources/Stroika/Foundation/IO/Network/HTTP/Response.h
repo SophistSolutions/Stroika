@@ -8,8 +8,8 @@
 
 #include "../../../Characters/CodePage.h"
 #include "../../../Characters/String.h"
-#include "../../../Configuration/Common.h"
 #include "../../../Common/Property.h"
+#include "../../../Configuration/Common.h"
 #include "../../../DataExchange/InternetMediaType.h"
 #include "../../../Debug/AssertExternallySynchronizedLock.h"
 #include "../../../IO/Network/HTTP/Headers.h"
@@ -32,7 +32,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      */
     class Response : private Debug::AssertExternallySynchronizedLock {
     public:
-        Response (const Response&)     = delete;
+        Response (const Response&) = delete;
         Response (Response&& src);
         Response ();
 
@@ -74,19 +74,25 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         Common::ExtendableProperty<IO::Network::HTTP::Headers&> rwHeaders;
 
     public:
-        /*
+        /**
+         *  \brief set the status. use statusAndOverride to also specify a non-default status reason
+         * 
          * The Default Status is 200 IO::Network::HTTP::StatusCodes::kOK.
+         *
+         * @see statusAndOverrideReason
          */
-        nonvirtual Status GetStatus () const;
+        Common::ExtendableProperty<Status> status;
 
     public:
-        /*
-         * It is only legal to call SetStatus with state == eInProgress.
+        /**
+         *  \brief Status value (OK), and status.item2 is an optional string override reason
+         * 
+         * The Default Status is 200 IO::Network::HTTP::StatusCodes::kOK.
          *
          * The overrideReason - if specified (not empty) will be used associated with the given status in the HTTP response, and otherwise one will
          * be automatically generated based on the status.
          */
-        nonvirtual void SetStatus (Status newStatus, const String& overrideReason = String{});
+        Common::ExtendableProperty<tuple<Status, optional<String>>> statusAndOverrideReason;
 
     public:
         /**
@@ -95,10 +101,9 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         nonvirtual String ToString () const;
 
     private:
-        Status                                   fStatus_;
-        String                                   fStatusOverrideReason_;
-        IO::Network::HTTP::Headers               fHeaders_;
-        Characters::CodePage                     fCodePage_;
+        tuple<Status, optional<String>> fStatusAndOverrideReason_;
+        IO::Network::HTTP::Headers      fHeaders_;
+        Characters::CodePage            fCodePage_;
     };
 
 }

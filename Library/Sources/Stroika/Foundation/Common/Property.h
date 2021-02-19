@@ -102,7 +102,7 @@ namespace Stroika::Foundation::Common {
          *  \note This is SUBTLE but important for 'constness' to work properly.
          *        if we use
          *           struct OwningObject {
-                        ReadOnlyProperty<FOO&> p;
+         *              ReadOnlyProperty<FOO&> p;
          *        then we want code:
          *              OwningObject& o = ...;
          *              const OwningObject& co = o;
