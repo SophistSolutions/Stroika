@@ -461,6 +461,13 @@ namespace Stroika::Foundation::Common {
     };
 
     /**
+     *  \brief ExtendableProperty is a Property which has callbacks associated with it, to be notified when it is accessed or updated
+     * 
+     *  These callbacks which you can attach to an ExtendableProperty effectively allow OVERRIDING the property
+     *  because you can suppress update or handle it differently yourself.
+     * 
+     * @todo - fix READ eent guys to return optional<> which is the value and if its provided return that instead of getter.&&&
+     * 
      *      @todo   Consider adding propertyChanged events to properties (if was a very cheap way when not used)
      *              Maybe subclass of Property - PropertyWithChangeEvent? then it could add the event list and notification)
      * 

@@ -138,7 +138,7 @@ namespace Stroika::Foundation::Common {
     template <typename G, typename S>
     ExtendableProperty<T>::ExtendableProperty (G getter, S setter)
         : Property<T>{
-              [getter qStroika_Foundation_Common_Property_ExtraCaptureStuff1] ([[maybe_unused]] const auto* property) {
+              [getter qStroika_Foundation_Common_Property_ExtraCaptureStuff1] ([[maybe_unused]] const auto* property) -> typename Property<T>::base_value_type {
                   // Subtle - but the 'property' here refers to 'this' (ExtendableProperty). The getter itself will want to extract the parent object, but
                   // unlike other getter/setters, here the auto property is already for this object.
                   const ExtendableProperty* thisObj = static_cast<const ExtendableProperty*> (property); // cannot use dynamic_cast without adding needless vtable to Property objects; static_cast needed (over reintepret_cast) to adjust sub-object pointer for multiple inheritance
