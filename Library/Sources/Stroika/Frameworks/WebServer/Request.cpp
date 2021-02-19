@@ -45,92 +45,20 @@ using namespace Stroika::Frameworks::WebServer;
 Request::Request (Request&& src)
     : Request{src.fInputStream_}
 {
-    fHTTPVersion_     = src.fHTTPVersion_;
-    fMethod_          = src.fMethod_;
-    fURL_             = src.fURL_;
-    fHeaders_         = src.fHeaders_;
     fBodyInputStream_ = src.fBodyInputStream_;
     fBody_            = src.fBody_;
 }
 
 Request::Request (const Streams::InputStream<byte>::Ptr& inStream)
-    : httpVersion{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> String {
-              const Request*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::httpVersion);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
-              return thisObj->fHTTPVersion_;
-          },
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& versionOrVersionLabel) {
-              Request*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::httpVersion);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
-              static const String                                kLabeled_10_{L"HTTP/1.0"sv};
-              static const String                                kLabeled_11_{L"HTTP/1.1"sv};
-              auto                                               versionStringComparer = String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive};
-              if (versionOrVersionLabel == kLabeled_11_ or versionOrVersionLabel == IO::Network::HTTP::Versions::kOnePointOne or versionStringComparer (versionOrVersionLabel, kLabeled_11_)) {
-                  thisObj->fHTTPVersion_ = IO::Network::HTTP::Versions::kOnePointOne;
-              }
-              else if (versionOrVersionLabel == kLabeled_10_ or versionOrVersionLabel == IO::Network::HTTP::Versions::kOnePointZero or versionStringComparer (versionOrVersionLabel, kLabeled_10_)) {
-                  thisObj->fHTTPVersion_ = IO::Network::HTTP::Versions::kOnePointZero;
-              }
-              else if (versionOrVersionLabel.StartsWith (L"HTTP/", Characters::CompareOptions::eCaseInsensitive)) {
-                  thisObj->fHTTPVersion_ = versionOrVersionLabel.SubString (5);
-              }
-              else {
-                  thisObj->fHTTPVersion_ = versionOrVersionLabel;
-              }
-          }}
-    , httpMethod{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Request*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::httpMethod);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
-              return thisObj->fMethod_;
-          },
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& method) {
-              Request*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::httpMethod);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
-              thisObj->fMethod_ = method;
-          }}
-    , url{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Request*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::url);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
-              return thisObj->fURL_;
-          },
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& url) {
-              Request*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::url);
-              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
-              thisObj->fURL_ = url;
-          }}
-    , headers{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const IO::Network::HTTP::Headers& {
-              const Request*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::headers);
-              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
-              return thisObj->fHeaders_;
-          }}
-    , rwHeaders{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> IO::Network::HTTP::Headers& {
-                    const Request*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::rwHeaders);
-                    lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj}; // not shared_lock cuz rw
-                    return const_cast<IO::Network::HTTP::Headers&> (thisObj->fHeaders_);
-                },
-                [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newHeaders) {
-                    Request*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::rwHeaders);
-                    lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
-                    thisObj->fHeaders_ = newHeaders;
-                }}
-    , contentType{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-        const Request*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::contentType);
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
-        return thisObj->fHeaders_.contentType ();
-    }}
-    , keepAliveRequested{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+    : keepAliveRequested{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
         const Request*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::keepAliveRequested);
         shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
         using ConnectionValue = IO::Network::HTTP::Headers::ConnectionValue;
-        if (thisObj->fHTTPVersion_ == IO::Network::HTTP::Versions::kOnePointZero) {
-            return thisObj->fHeaders_.connection ().value_or (ConnectionValue::eClose) == ConnectionValue::eKeepAlive;
+        if (thisObj->httpVersion == IO::Network::HTTP::Versions::kOnePointZero) {
+            return thisObj->headers ().connection ().value_or (ConnectionValue::eClose) == ConnectionValue::eKeepAlive;
         }
-        if (thisObj->fHTTPVersion_ == IO::Network::HTTP::Versions::kOnePointOne) {
-            return thisObj->fHeaders_.connection ().value_or (ConnectionValue::eKeepAlive) == ConnectionValue::eKeepAlive;
+        if (thisObj->httpVersion == IO::Network::HTTP::Versions::kOnePointOne) {
+            return thisObj->headers ().connection ().value_or (ConnectionValue::eKeepAlive) == ConnectionValue::eKeepAlive;
         }
         return true; // for HTTP 2.0 and later, keep alive is always assumed (double check/reference?)
     }}
@@ -138,44 +66,21 @@ Request::Request (const Streams::InputStream<byte>::Ptr& inStream)
 {
 }
 
-#if qDebug
-void Request::SetAssertExternallySynchronizedLockContext (const shared_ptr<SharedContext>& sharedContext)
-{
-    AssertExternallySynchronizedLock::SetAssertExternallySynchronizedLockContext (sharedContext);
-    fHeaders_.SetAssertExternallySynchronizedLockContext (sharedContext);
-}
-#endif
-
 void Request::SetHTTPVersion (const String& versionOrVersionLabel)
 {
     //***DEPRECATED***
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    static const String                                kLabeled_10_{L"HTTP/1.0"sv};
-    static const String                                kLabeled_11_{L"HTTP/1.1"sv};
-    auto                                               versionStringComparer = String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive};
-    if (versionOrVersionLabel == kLabeled_11_ or versionOrVersionLabel == IO::Network::HTTP::Versions::kOnePointOne or versionStringComparer (versionOrVersionLabel, kLabeled_11_)) {
-        fHTTPVersion_ = IO::Network::HTTP::Versions::kOnePointOne;
-    }
-    else if (versionOrVersionLabel == kLabeled_10_ or versionOrVersionLabel == IO::Network::HTTP::Versions::kOnePointZero or versionStringComparer (versionOrVersionLabel, kLabeled_10_)) {
-        fHTTPVersion_ = IO::Network::HTTP::Versions::kOnePointZero;
-    }
-    else if (versionOrVersionLabel.StartsWith (L"HTTP/", Characters::CompareOptions::eCaseInsensitive)) {
-        fHTTPVersion_ = versionOrVersionLabel.SubString (5);
-    }
-    else {
-        fHTTPVersion_ = versionOrVersionLabel;
-    }
+    this->httpVersion = versionOrVersionLabel;
 }
 
 bool Request::GetKeepAliveRequested () const
 {
     //***DEPRECATED***
     using ConnectionValue = IO::Network::HTTP::Headers::ConnectionValue;
-    if (fHTTPVersion_ == IO::Network::HTTP::Versions::kOnePointZero) {
-        return fHeaders_.connection ().value_or (ConnectionValue::eClose) == ConnectionValue::eKeepAlive;
+    if (this->httpVersion == IO::Network::HTTP::Versions::kOnePointZero) {
+        return headers ().connection ().value_or (ConnectionValue::eClose) == ConnectionValue::eKeepAlive;
     }
-    if (fHTTPVersion_ == IO::Network::HTTP::Versions::kOnePointOne) {
-        return fHeaders_.connection ().value_or (ConnectionValue::eKeepAlive) == ConnectionValue::eKeepAlive;
+    if (this->httpVersion == IO::Network::HTTP::Versions::kOnePointOne) {
+        return headers ().connection ().value_or (ConnectionValue::eKeepAlive) == ConnectionValue::eKeepAlive;
     }
     return true; // for HTTP 2.0 and later, keep alive is always assumed (double check/reference?)
 }
@@ -196,14 +101,14 @@ optional<uint64_t> Request::GetContentLength () const
 {
     //***DEPRECATED***
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    return fHeaders_.contentLength;
+    return headers ().contentLength;
 }
 
 optional<InternetMediaType> Request::GetContentType () const
 {
     //***DEPRECATED***
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    return fHeaders_.contentType;
+    return headers ().contentType;
 }
 
 Streams::InputStream<byte>::Ptr Request::GetBodyStream ()
@@ -219,7 +124,7 @@ Streams::InputStream<byte>::Ptr Request::GetBodyStream ()
          *      a Content-Length or Transfer-Encoding header field in the request's message-headers
          */
         // if we have a content-length, read that many bytes.
-        if (optional<uint64_t> cl = fHeaders_.contentLength ()) {
+        if (optional<uint64_t> cl = headers ().contentLength ()) {
             fBodyInputStream_ = InputSubStream<byte>::New (fInputStream_, {}, fInputStream_.GetOffset () + static_cast<size_t> (*cl));
         }
         else {
@@ -243,12 +148,8 @@ Streams::InputStream<byte>::Ptr Request::GetBodyStream ()
 String Request::ToString () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    StringBuilder                                       sb;
-    sb += L"{";
-    sb += L"HTTPVersion: " + fHTTPVersion_ + L", ";
-    sb += L"Method: " + fMethod_ + L", ";
-    sb += L"URL: '" + Characters::ToString (fURL_) + L"', ";
-    sb += L"Headers: " + Characters::ToString (fHeaders_) + L", ";
+    StringBuilder                                       sb = inherited::ToString ().SubString (0, -1); // strip trialing '{'
+    // @todo add stuff about body
     sb += L"}";
     return sb.str ();
 }

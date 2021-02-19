@@ -6,7 +6,6 @@
 
 #include "../../../StroikaPreComp.h"
 
-#include "../../../Characters/CodePage.h"
 #include "../../../Characters/String.h"
 #include "../../../Common/Property.h"
 #include "../../../Configuration/Common.h"
@@ -96,6 +95,13 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
+         *  Access the HTTP request body Content-Type, if any given
+         *  A short-hand, equivilent to fetching headers().contentType(), provided because this is such a commonly accessed part of Request.
+         */
+        Common::ExtendableProperty<optional<InternetMediaType>> contentType;
+
+    public:
+        /**
          *  @see Characters::ToString ();
          */
         nonvirtual String ToString () const;
@@ -103,7 +109,6 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     private:
         tuple<Status, optional<String>> fStatusAndOverrideReason_;
         IO::Network::HTTP::Headers      fHeaders_;
-        Characters::CodePage            fCodePage_;
     };
 
 }

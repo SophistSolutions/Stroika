@@ -129,7 +129,7 @@ namespace Stroika::Frameworks::WebServer {
          *          conn.remainingConnectionLimits = KeepAlive{0, 0}; // disable keep-alives
          *      \endcode
          */
-        Common::Property<optional<KeepAlive>> remainingConnectionLimits;
+        Common::Property<optional<HTTP::KeepAlive>> remainingConnectionLimits;
 
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
     private:
@@ -147,7 +147,7 @@ namespace Stroika::Frameworks::WebServer {
             MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& socket, const Streams::InputOutputStream<byte>::Ptr& socketStream);
 
             // Only valid until the end of a successful ReadHeaders
-            MessageStartTextInputStreamBinaryAdapter::Ptr fMsgHeaderInTextStream;
+            HTTP::MessageStartTextInputStreamBinaryAdapter::Ptr fMsgHeaderInTextStream;
 
             // If result bad, throw exception
             enum ReadHeadersResult { eIncompleteButMoreMayBeAvailable,
@@ -165,7 +165,7 @@ namespace Stroika::Frameworks::WebServer {
         ConnectionOrientedStreamSocket::Ptr   fSocket_;
         Streams::InputOutputStream<byte>::Ptr fSocketStream_;
         shared_ptr<MyMessage_>                fMessage_; // always there, but ptr so it can be replaced
-        optional<KeepAlive>                   fRemaining_;
+        optional<HTTP::KeepAlive>             fRemaining_;
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
         Streams::TextWriter::Ptr fLogConnectionState_;
 #endif

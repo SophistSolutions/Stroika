@@ -19,6 +19,7 @@
 #include "../../Foundation/Debug/AssertExternallySynchronizedLock.h"
 #include "../../Foundation/IO/Network/HTTP/Headers.h"
 #include "../../Foundation/IO/Network/HTTP/Status.h"
+#include "../../Foundation/IO/Network/HTTP/Response.h"
 #include "../../Foundation/IO/Network/Socket.h"
 #include "../../Foundation/IO/Network/URI.h"
 #include "../../Foundation/Memory/BLOB.h"
@@ -47,19 +48,22 @@ namespace Stroika::Frameworks::WebServer {
 
     using namespace Stroika::Foundation;
     using namespace Stroika::Foundation::IO::Network;
-    using namespace Stroika::Foundation::IO::Network::HTTP;
 
     using Characters::String;
     using Containers::Mapping;
     using DataExchange::InternetMediaType;
     using Memory::BLOB;
+    using HTTP::Status;
 
     /*
      * As of yet to specify FLUSH semantics - when we flush... Probably need options (ctor/config)
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
-    class Response : private Debug::AssertExternallySynchronizedLock {
+    class Response : public IO::Network::HTTP::Response {
+    private:
+        using inherited = IO::Network::HTTP::Response;
+
     public:
         Response ()                    = delete;
         Response (const Response&)     = delete;
@@ -72,37 +76,6 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         nonvirtual Response& operator= (const Response&) = delete;
-
-#if qDebug
-    public:
-        /**
-         *  Allow users of the Headers object to have it share a 'assure externally synchronized' context.
-         */
-        nonvirtual void SetAssertExternallySynchronizedLockContext (const shared_ptr<SharedContext>& sharedContext);
-#endif
-
-    public:
-        /**
-         *  Allow readonly access to the Headers object. This is just checked (assertions) for re-entrancy.
-         *  It can be called in any state (during transaction or after).
-         * 
-         * \note - this returns an INTERNAL POINTER to the Response, so be SURE to remember this with respect to
-         *         thread safety, and lifetime (thread safety checked/enforced in debug builds with SetAssertExternallySynchronizedLockContext);
-         */
-        Common::ReadOnlyProperty<const IO::Network::HTTP::Headers&> headers;
-
-    public:
-        /**
-         *  Allow reference to the headers (modify access) - but do so in the context where we assure single threading
-         *  and that this is only done while the transaction is in progress.
-         * 
-         * It is legal to call anytime before Flush. Illegal to call after flush. 
-         * It is legal to call to replace existing headers values.
-         * 
-         * \note - this returns an INTERNAL POINTER to the Response, so be SURE to remember this with respect to
-         *         thread safety, and lifetime (thread safety checked/enforced in debug builds with SetAssertExternallySynchronizedLockContext);
-         */
-        Common::Property<IO::Network::HTTP::Headers&> rwHeaders;
 
     public:
         /*
@@ -125,6 +98,7 @@ namespace Stroika::Frameworks::WebServer {
          */
         Common::Property<Characters::CodePage> codePage;
 
+    public:
         /*
          * Note - this refers to an HTTP "Content-Type" - which is really potentially more than just a InternetMediaType, often
          * with the characterset appended.
@@ -134,10 +108,17 @@ namespace Stroika::Frameworks::WebServer {
          *  NOTE - if DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (contentType), then
          *  the characterset will be automatically folded into the used contentType (on WRITES to the property - not reads). To avoid this, 
          *  use rwHeader().contentType directly.
+         * 
+         *  && OVERRIDES set of contentType property
+         *  @todo DOC / NOTE THIS CLASS OVERRIDES the assignment of contentType to do above logic...
          */
-        Common::Property < optional<InternetMediaType>> contentType;
+        //Common::Property <optional<InternetMediaType>> contentType;
 
     public:
+        /**
+         *  \note about states - certain properties (declared here and inherited) - like rwHeaders, and writes to properites like (XXX) cannot be done
+         *        unless the current state is eInProgress; and these are generally checked with assertions.
+         */
         enum class State : uint8_t {
             eInProgress,                // A newly constructed Response starts out InProgress
             eInProgressHeaderSentState, // It then transitions to 'header sent' state
@@ -145,6 +126,10 @@ namespace Stroika::Frameworks::WebServer {
 
             Stroika_Define_Enum_Bounds (eInProgress, eCompleted)
         };
+
+    public:
+        /**
+         */
         nonvirtual State GetState () const;
 
     public:
@@ -253,27 +238,20 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual const vector<byte>& GetBytes () const;
 
     public:
-        /*
-         * The Default Status is 200 IO::Network::HTTP::StatusCodes::kOK.
-         */
-        nonvirtual Status GetStatus () const;
-
-    public:
-        /*
-         * It is only legal to call SetStatus with state == eInProgress.
-         *
-         * The overrideReason - if specified (not empty) will be used associated with the given status in the HTTP response, and otherwise one will
-         * be automatically generated based on the status.
-         */
-        nonvirtual void SetStatus (Status newStatus, const String& overrideReason = wstring{});
-
-    public:
         /**
          *  @see Characters::ToString ();
          */
         nonvirtual String ToString () const;
 
     public:
+        [[deprecated ("Since Stroika v2.1b10 use this->status property")]] Status GetStatus () const
+        {
+            return this->status ();
+        }
+        [[deprecated ("Since Stroika v2.1b10 use this->statusAndOverrideREason property")]] void SetStatus (Status newStatus, const String& overrideReason = wstring{})
+        {
+            this->statusAndOverrideReason = make_tuple (newStatus, overrideReason);
+        }
         [[deprecated ("Since Stroika 2.1b10, use contentType() property directly")]] void     SetContentType (const InternetMediaType& contentType);
         [[deprecated ("Since 2.1b10, use headers() directly")]] IO::Network::HTTP::Headers    GetHeaders () const;
         [[deprecated ("Since Stroika 2.1b10 - use codePage()")]] Characters::CodePage         GetCodePage () const;
@@ -281,9 +259,16 @@ namespace Stroika::Frameworks::WebServer {
         [[deprecated ("Since Stroika 2.1b10 - use UpdateHeader()")]] InternetMediaType        GetContentType () const;
         [[deprecated ("Since Stroika 2.1b10 - use UpdateHeader")]] void                       AddHeader (const String& headerName, const String& value);
         [[deprecated ("Since Stroika 2.1b10 - use UpdateHeaders directly")]] void             AppendToCommaSeperatedHeader (const String& headerName, const String& value);
-        [[deprecated ("Since Stroika 2.1b10 - use UpdateHeaders directly")]] nonvirtual void  ClearHeader (const String& headerName);
-        [[deprecated ("Since Stroika 2.1b10 - use UpdateHeaders directly")]] void             ClearHeaders ();
-        [[deprecated ("Since 2.1b10, use headers() directly")]] IO::Network::HTTP::Headers    GetEffectiveHeaders () const;
+        [[deprecated ("Since Stroika 2.1b10 - use UpdateHeaders directly")]] nonvirtual void  ClearHeader (const String& headerName)
+        {
+            // DEPRECATED
+            this->rwHeaders ().Remove (headerName);
+        }
+        [[deprecated ("Since Stroika 2.1b10 - use UpdateHeaders directly")]] void ClearHeaders ()
+        {
+            this->rwHeaders () = IO::Network::HTTP::Headers{};
+        }
+        [[deprecated ("Since 2.1b10, use headers() directly")]] IO::Network::HTTP::Headers GetEffectiveHeaders () const;
         template <typename FUNCTION>
         [[deprecated ("Since 2.1b10, use rwHeaders() directly")]] auto UpdateHeader (FUNCTION&& f);
         template <typename FUNCTION>
@@ -295,11 +280,8 @@ namespace Stroika::Frameworks::WebServer {
     private:
         IO::Network::Socket::Ptr                 fSocket_;
         State                                    fState_;
-        Status                                   fStatus_;
-        String                                   fStatusOverrideReason_;
         Streams::OutputStream<byte>::Ptr         fUnderlyingOutStream_;
         Streams::BufferedOutputStream<byte>::Ptr fUseOutStream_;
-        IO::Network::HTTP::Headers               fHeaders_;
         Characters::CodePage                     fCodePage_;
         vector<byte>                             fBodyBytes_;
         ContentSizePolicy                        fContentSizePolicy_;

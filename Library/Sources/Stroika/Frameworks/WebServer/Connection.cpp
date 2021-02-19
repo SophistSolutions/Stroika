@@ -39,6 +39,8 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
 
 using IO::Network::HTTP::ClientErrorException;
+using IO::Network::HTTP::Headers;
+using IO::Network::HTTP::KeepAlive;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
@@ -53,7 +55,7 @@ Connection::MyMessage_::MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& s
           Request{socketStream},
           Response{socket, socketStream, DataExchange::InternetMediaTypes::kOctetStream},
           socket.GetPeerAddress ()}
-    , fMsgHeaderInTextStream{MessageStartTextInputStreamBinaryAdapter::New (rwRequest ().GetInputStream ())}
+    , fMsgHeaderInTextStream{HTTP::MessageStartTextInputStreamBinaryAdapter::New (rwRequest ().GetInputStream ())}
 {
 }
 
@@ -158,7 +160,7 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Inte
         const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::rwResponse);
         return thisObj->fMessage_->rwResponse ();
     }}
-    , remainingConnectionLimits{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<KeepAlive> {
+    , remainingConnectionLimits{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<HTTP::KeepAlive> {
                                     const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::remainingConnectionLimits);
                                     return thisObj->fRemaining_;
                                 },

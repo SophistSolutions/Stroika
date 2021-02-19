@@ -19,43 +19,36 @@ namespace Stroika::Frameworks::WebServer {
      */
     inline String Request::GetHTTPVersion () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        return fHTTPVersion_;
+        return this->httpVersion (); // DEPRECATED
     }
     inline String Request::GetHTTPMethod () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        return fMethod_;
+        return this->httpMethod (); // DEPRECATED
     }
     inline void Request::SetHTTPMethod (const String& method)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        fMethod_ = method;
+        this->httpMethod = method; // deprecated
     }
     inline IO::Network::URI Request::GetURL () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        return fURL_;
+        return this->url (); // DEPRECATED
     }
     inline void Request::SetURL (const IO::Network::URI& newUrl)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        fURL_ = newUrl;
+        this->url = newUrl; // DEPRECATED
     }
     inline IO::Network::HTTP::Headers Request::GetHeaders () const
     {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        return fHeaders_;
+        return this->headers (); // DEPRECATED
     }
     inline void Request::SetHeaders (const IO::Network::HTTP::Headers& newHeaders)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        fHeaders_ = newHeaders;
+        this->rwHeaders = newHeaders; // DEPRECATED
     }
     inline void Request::AddHeader (const String& headerName, const String& value)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        fHeaders_.Set (headerName, value);
+        // DEPRECATED
+        this->rwHeaders ().Set (headerName, value);
     }
     inline Streams::InputStream<byte>::Ptr Request::GetInputStream ()
     {

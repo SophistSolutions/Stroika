@@ -86,7 +86,7 @@ struct Router::Rep_ : Interceptor::_IRep {
             m = nullopt;
         }
         if (m) {
-            m = Set<String>{kHeaderNameEqualsComparer, *m};
+            m = Set<String>{HTTP::kHeaderNameEqualsComparer, *m};
         }
         return m;
     }
@@ -202,7 +202,7 @@ struct Router::Rep_ : Interceptor::_IRep {
         const Request&   request  = message->request ();
         Response&        response = message->rwResponse ();
         Sequence<String> matches;
-        if (optional<RequestHandler> handler = Lookup_ (Methods::kGet, ExtractHostRelPath_ (request.url ()), request, &matches)) {
+        if (optional<RequestHandler> handler = Lookup_ (HTTP::Methods::kGet, ExtractHostRelPath_ (request.url ()), request, &matches)) {
             // do someting to response so 'in HEAD mode' and won't write
             response.EnterHeadMode ();
             (*handler) (message, matches);
@@ -220,25 +220,25 @@ struct Router::Rep_ : Interceptor::_IRep {
         if (o) {
             {
                 auto& responseHeaders = response.rwHeaders ();
-                responseHeaders.Set (HeaderName::kAccessControlAllowCredentials, fAccessControlAllowCredentialsValue_);
-                if (auto accessControlRequestHeaders = request.headers ().LookupOne (HeaderName::kAccessControlRequestHeaders)) {
+                responseHeaders.Set (HTTP::HeaderName::kAccessControlAllowCredentials, fAccessControlAllowCredentialsValue_);
+                if (auto accessControlRequestHeaders = request.headers ().LookupOne (HTTP::HeaderName::kAccessControlRequestHeaders)) {
                     if (fAllowedHeaders_) {
                         // intersect requested headers with those configured to permit
                         Iterable<String> requestAccessHeaders = accessControlRequestHeaders->Tokenize ({','});
                         auto             r                    = fAllowedHeaders_->Intersection (requestAccessHeaders);
                         if (r.empty ()) {
-                            responseHeaders.Set (HeaderName::kAccessControlAllowHeaders, String::Join (r));
+                            responseHeaders.Set (HTTP::HeaderName::kAccessControlAllowHeaders, String::Join (r));
                         }
                     }
                     else {
-                        responseHeaders.Set (HeaderName::kAccessControlAllowHeaders, *accessControlRequestHeaders);
+                        responseHeaders.Set (HTTP::HeaderName::kAccessControlAllowHeaders, *accessControlRequestHeaders);
                     }
                 }
-                responseHeaders.Set (HeaderName::kAccessControlAllowMethods, String::Join (*o));
-                responseHeaders.Set (HeaderName::kAccessControlMaxAge, fAccessControlMaxAgeValue_);
+                responseHeaders.Set (HTTP::HeaderName::kAccessControlAllowMethods, String::Join (*o));
+                responseHeaders.Set (HTTP::HeaderName::kAccessControlMaxAge, fAccessControlMaxAgeValue_);
             }
             HandleCORSInNormallyHandledMessage_ (request, response); // include access-origin-header
-            response.SetStatus (IO::Network::HTTP::StatusCodes::kNoContent);
+            response.status = HTTP::StatusCodes::kNoContent;
         }
         else {
             DbgTrace (L"Router 404: (...url=%s)", Characters::ToString (message->request ().url ()).c_str ());

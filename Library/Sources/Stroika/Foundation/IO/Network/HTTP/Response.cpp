@@ -39,7 +39,6 @@ Response::Response (Response&& src)
 {
     fStatusAndOverrideReason_ = src.fStatusAndOverrideReason_;
     fHeaders_                 = src.fHeaders_;
-    fCodePage_                = src.fCodePage_;
 }
 
 Response::Response ()
@@ -79,9 +78,18 @@ Response::Response ()
                                   lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
                                   thisObj->fStatusAndOverrideReason_ = newStatusAndOverride;
                               }}
+    , contentType{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+                      const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::contentType);
+                      shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+                      return thisObj->headers ().contentType ();
+                  },
+                  [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newCT) {
+                      Response*                                          thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::contentType);
+                      lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+                      thisObj->rwHeaders ().contentType = newCT;
+                  }}
     , fStatusAndOverrideReason_{make_tuple (StatusCodes::kOK, optional<String>{})}
     , fHeaders_{}
-    , fCodePage_{Characters::kCodePage_UTF8}
 {
 }
 

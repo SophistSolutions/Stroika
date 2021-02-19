@@ -29,11 +29,12 @@ using namespace std;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::IO::Network;
-using namespace Stroika::Foundation::IO::Network::HTTP;
 using namespace Stroika::Frameworks::WebServer;
 
 using Characters::String;
 using Memory::BLOB;
+using Stroika::Frameworks::WebServer::Request;
+using Stroika::Frameworks::WebServer::Response;
 
 namespace {
     /*
@@ -49,15 +50,15 @@ namespace {
         MyWebServer_ (uint16_t portNumber)
             : kRoutes_
         {
-            Route{MethodsRegEx::kGet, L""_RegEx, DefaultPage_},
-                Route{MethodsRegEx::kPost, L"SetAppState"_RegEx, SetAppState_},
-                Route{MethodsRegEx::kGet, L"FRED"_RegEx, [] (Request*, Response* response) {
+            Route{HTTP::MethodsRegEx::kGet, L""_RegEx, DefaultPage_},
+                Route{HTTP::MethodsRegEx::kPost, L"SetAppState"_RegEx, SetAppState_},
+                Route{HTTP::MethodsRegEx::kGet, L"FRED"_RegEx, [] (Request*, Response* response) {
                           response->write (L"FRED");
                           response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
                       }},
                 Route
             {
-                MethodsRegEx::kGet,
+                HTTP::MethodsRegEx::kGet,
                     L"Files/.*"_RegEx,
                     FileSystemRouter{Execution::GetEXEDir () / L"html", L"Files"_k, Sequence<String>{L"index.html"_k}},
             }

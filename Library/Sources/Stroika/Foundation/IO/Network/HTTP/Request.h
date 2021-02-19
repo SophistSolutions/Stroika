@@ -27,7 +27,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     /**
      *  First Draft of Request object that could be shared by FETCH and WEBSERVER APIs.
-     *  \note - KEY MISSING FEATURE is BODY and STREAM - which are just in the Frameworks/WebServer version
+     *  \note - @todo - KEY MISSING FEATURE is BODY and STREAM - which are just in the Frameworks/WebServer subclass
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
@@ -89,15 +89,15 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
-         *  Return the HTTP request body Content-Type, if any given
-         *  A short-hand, equivilent to fetching headers().contentType()
+         *  Access the HTTP request body Content-Type, if any given
+         *  A short-hand, equivilent to fetching headers().contentType(), provided because this is such a commonly accessed part of Request.
          */
         Common::ReadOnlyProperty<optional<InternetMediaType>> contentType;
 
     public:
         /**
-        *  @see Characters::ToString ()
-        */
+         *  @see Characters::ToString ()
+         */
         nonvirtual String ToString () const;
 
     private:

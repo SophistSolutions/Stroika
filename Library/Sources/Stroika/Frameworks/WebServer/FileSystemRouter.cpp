@@ -74,7 +74,7 @@ namespace {
                 // not sure how to workaround this, but fixed in the latest gcc (GLIBCXX 9)
 #endif
                 if (e.code () == errc::no_such_file_or_directory) {
-                    Execution::Throw (ClientErrorException{StatusCodes::kNotFound});
+                    Execution::Throw (ClientErrorException{HTTP::StatusCodes::kNotFound});
                 }
                 else {
                     Execution::ReThrow ();
@@ -93,7 +93,7 @@ namespace {
                     }
                 }
                 else {
-                    Execution::Throw (ClientErrorException{StatusCodes::kNotFound});
+                    Execution::Throw (ClientErrorException{HTTP::StatusCodes::kNotFound});
                 }
             }
             if ((urlHostRelPath.empty () or urlHostRelPath.EndsWith ('/')) and not fDefaultIndexFileNames.empty ()) {

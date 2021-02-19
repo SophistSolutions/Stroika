@@ -35,11 +35,6 @@ namespace Stroika::Frameworks::WebServer {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         return fState_;
     }
-    inline IO::Network::HTTP::Status Response::GetStatus () const
-    {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        return fStatus_;
-    }
     inline Characters::CodePage Response::GetCodePage () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};

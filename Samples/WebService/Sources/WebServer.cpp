@@ -27,14 +27,17 @@ using namespace std;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::IO::Network;
-using namespace Stroika::Foundation::IO::Network::HTTP;
+
 using namespace Stroika::Frameworks::WebServer;
 using namespace Stroika::Frameworks::WebService;
 using namespace Stroika::Frameworks::WebService::Server;
 using namespace Stroika::Frameworks::WebService::Server::VariantValue;
 
 using Memory::BLOB;
+using Stroika::Frameworks::WebServer::Request;
+using Stroika::Frameworks::WebServer::Response;
 
 using namespace StroikaSample::WebServices;
 
@@ -62,11 +65,11 @@ public:
         : kRoutes_{
               Route{L""_RegEx, DefaultPage_},
 
-              Route{MethodsRegEx::kPost, L"SetAppState"_RegEx, SetAppState_},
+              Route{HTTP::MethodsRegEx::kPost, L"SetAppState"_RegEx, SetAppState_},
 
               Route{L"FRED"_RegEx, [] (Request*, Response* response) {
                         response->write (L"FRED");
-                        response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
+                        response->contentType = InternetMediaTypes::kText_PLAIN;
                     }},
 
               /*
@@ -79,14 +82,14 @@ public:
               Route{L"variables/(.+)"_RegEx, [this] (Message* m, const String& varName) {
                         WriteResponse (&m->rwResponse (), kVariables_, kMapper.FromObject (fWSImpl_->Variables_GET (varName)));
                     }},
-              Route{MethodsRegEx::kPostOrPut, L"variables/(.+)"_RegEx, [this] (Message* m, const String& varName) {
+              Route{HTTP::MethodsRegEx::kPostOrPut, L"variables/(.+)"_RegEx, [this] (Message* m, const String& varName) {
                         optional<Number> number;
                         // demo getting argument from the body
                         if (not number) {
                             // read if content-type is text (not json)
-                            if (m->request ().contentType () and DataExchange::InternetMediaTypeRegistry::Get ().IsA (DataExchange::InternetMediaTypes::kText_PLAIN, *m->request ().contentType ())) {
+                            if (m->request ().contentType () and InternetMediaTypeRegistry::Get ().IsA (InternetMediaTypes::kText_PLAIN, *m->request ().contentType ())) {
                                 String argsAsString = Streams::TextReader::New (m->rwRequest ().GetBody ()).ReadAll ();
-                                number              = kMapper.ToObject<Number> (DataExchange::VariantValue (argsAsString));
+                                number              = kMapper.ToObject<Number> (DataExchange::VariantValue{argsAsString});
                             }
                         }
                         // demo getting argument from the query argument
@@ -106,12 +109,12 @@ public:
                             number                                           = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));
                         }
                         if (not number) {
-                            Execution::Throw (ClientErrorException{L"Expected argument to PUT/POST variable"sv});
+                            Execution::Throw (HTTP::ClientErrorException{L"Expected argument to PUT/POST variable"sv});
                         }
                         fWSImpl_->Variables_SET (varName, *number);
                         WriteResponse (&m->rwResponse (), kVariables_);
                     }},
-              Route{MethodsRegEx::kDelete, L"variables/(.+)"_RegEx, [this] (Message* m, const String& varName) {
+              Route{HTTP::MethodsRegEx::kDelete, L"variables/(.+)"_RegEx, [this] (Message* m, const String& varName) {
                         fWSImpl_->Variables_DELETE (varName);
                         WriteResponse (&m->rwResponse (), kVariables_);
                     }},
@@ -170,7 +173,7 @@ public:
     {
         String argsAsString = Streams::TextReader::New (message->rwRequest ().GetBody ()).ReadAll ();
         message->rwResponse ().writeln (L"<html><body><p>Hi SetAppState (" + argsAsString.As<wstring> () + L")</p></body></html>");
-        message->rwResponse ().contentType = DataExchange::InternetMediaTypes::kHTML;
+        message->rwResponse ().contentType = InternetMediaTypes::kHTML;
     }
 };
 
@@ -179,8 +182,8 @@ public:
  */
 const WebServiceMethodDescription WebServer::Rep_::kVariables_{
     L"variables"_k,
-    Set<String>{Methods::kGet, Methods::kPost, Methods::kDelete},
-    DataExchange::InternetMediaTypes::kJSON,
+    Set<String>{HTTP::Methods::kGet, HTTP::Methods::kPost, HTTP::Methods::kDelete},
+    InternetMediaTypes::kJSON,
     {},
     Sequence<String>{
         L"curl http://localhost:8080/variables -v --output -",
@@ -193,8 +196,8 @@ const WebServiceMethodDescription WebServer::Rep_::kVariables_{
 
 const WebServiceMethodDescription WebServer::Rep_::kPlus_{
     L"plus"_k,
-    Set<String>{Methods::kPost},
-    DataExchange::InternetMediaTypes::kJSON,
+    Set<String>{HTTP::Methods::kPost},
+    InternetMediaTypes::kJSON,
     {},
     Sequence<String>{
         L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\": 3, \"arg2\": 5 }' http://localhost:8080/plus --output -",
@@ -203,8 +206,8 @@ const WebServiceMethodDescription WebServer::Rep_::kPlus_{
 };
 const WebServiceMethodDescription WebServer::Rep_::kMinus{
     L"minus"_k,
-    Set<String>{Methods::kPost},
-    DataExchange::InternetMediaTypes::kJSON,
+    Set<String>{HTTP::Methods::kPost},
+    InternetMediaTypes::kJSON,
     {},
     Sequence<String>{
         L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\": 4.5, \"arg2\": -3.23 }' http://localhost:8080/minus --output -",
@@ -213,8 +216,8 @@ const WebServiceMethodDescription WebServer::Rep_::kMinus{
 };
 const WebServiceMethodDescription WebServer::Rep_::kTimes{
     L"times"_k,
-    Set<String>{Methods::kPost},
-    DataExchange::InternetMediaTypes::kJSON,
+    Set<String>{HTTP::Methods::kPost},
+    InternetMediaTypes::kJSON,
     {},
     Sequence<String>{
         L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + 4i\", \"arg2\": 3.2 }' http://localhost:8080/times --output -",
@@ -224,8 +227,8 @@ const WebServiceMethodDescription WebServer::Rep_::kTimes{
 };
 const WebServiceMethodDescription WebServer::Rep_::kDivide{
     L"divide"_k,
-    Set<String>{Methods::kPost},
-    DataExchange::InternetMediaTypes::kJSON,
+    Set<String>{HTTP::Methods::kPost},
+    InternetMediaTypes::kJSON,
     {},
     Sequence<String>{
         L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + i\", \"arg2\": 0 }' http://localhost:8080/divide --output -",
@@ -234,6 +237,6 @@ const WebServiceMethodDescription WebServer::Rep_::kDivide{
 };
 
 WebServer::WebServer (uint16_t portNumber, const shared_ptr<IWSAPI>& wsImpl)
-    : fRep_ (make_shared<Rep_> (portNumber, wsImpl))
+    : fRep_{make_shared<Rep_> (portNumber, wsImpl)}
 {
 }
