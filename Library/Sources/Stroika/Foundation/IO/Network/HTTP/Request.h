@@ -31,7 +31,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
-    class Request : private Debug::AssertExternallySynchronizedLock {
+    class Request : protected Debug::AssertExternallySynchronizedLock {
     public:
         /**
          */
