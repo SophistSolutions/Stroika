@@ -19,16 +19,14 @@ namespace Stroika::Frameworks::WebServer {
      */
     template <typename FUNCTION>
     inline auto Response::UpdateHeader (FUNCTION&& f)
-    {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    {// DEPRECATED
         Require (fState_ == State::eInProgress);
-        return std::forward<FUNCTION> (f) (&this->fHeaders_);
+        return std::forward<FUNCTION> (f) (&this->rwHeaders ());
     }
     template <typename FUNCTION>
     inline auto Response::ReadHeader (FUNCTION&& f) const
-    {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        return std::forward<FUNCTION> (f) (this->fHeaders_);
+    {// DEPRECATED
+        return std::forward<FUNCTION> (f) (this->headers());
     }
     inline Response::State Response::GetState () const
     {
