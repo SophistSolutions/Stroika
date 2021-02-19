@@ -443,7 +443,7 @@ namespace Stroika::Foundation::Common {
     public:
         /**
          */
-        nonvirtual Property& operator= (Configuration::ArgByValueType<T> value);
+        nonvirtual Property& operator= (Configuration::ArgByValueType<decayed_value_type> value);
         nonvirtual Property& operator= (const Property& value);
         nonvirtual Property& operator= (const Property&&) = delete;
 

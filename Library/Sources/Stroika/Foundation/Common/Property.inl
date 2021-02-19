@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Common {
     {
     }
     template <typename T>
-    inline auto Property<T>::operator= (Configuration::ArgByValueType<T> value) -> Property&
+    inline auto Property<T>::operator= (Configuration::ArgByValueType<decayed_value_type> value) -> Property&
     {
         WriteOnlyProperty<decayed_value_type>::operator= (value);
         return *this;
