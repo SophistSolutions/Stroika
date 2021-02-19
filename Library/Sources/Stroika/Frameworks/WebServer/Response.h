@@ -65,6 +65,8 @@ namespace Stroika::Frameworks::WebServer {
         using inherited = IO::Network::HTTP::Response;
 
     public:
+        /**
+         */
         Response ()                    = delete;
         Response (const Response&)     = delete;
         Response (Response&& src);
@@ -86,7 +88,7 @@ namespace Stroika::Frameworks::WebServer {
          *  and any other content type that returns true to InternetMediaType::IsTextFormat () the codepage is added to the content-type as in:
          *          "text/html; charset=UTF-8"
          *
-         * SetCodePage ()
+         * codePage.Set ()
          *      REQUIRES:
          *          GetState () == eInProgress
          *          TotalBytesWritten == 0
@@ -111,8 +113,9 @@ namespace Stroika::Frameworks::WebServer {
          * 
          *  && OVERRIDES set of contentType property
          *  @todo DOC / NOTE THIS CLASS OVERRIDES the assignment of contentType to do above logic...
+         * 
+         *      Common::Property <optional<InternetMediaType>> contentType;
          */
-        //Common::Property <optional<InternetMediaType>> contentType;
 
     public:
         /**
@@ -130,7 +133,9 @@ namespace Stroika::Frameworks::WebServer {
     public:
         /**
          */
-        nonvirtual State GetState () const;
+
+                Common::ReadOnlyProperty<State> state;
+
 
     public:
         enum class ContentSizePolicy : uint8_t {
@@ -244,6 +249,10 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual String ToString () const;
 
     public:
+        [[deprecated ("Since Stroika v2.1b10 use this->state property")]] inline State GetState () const
+        {
+            return this->state ();
+        }
         [[deprecated ("Since Stroika v2.1b10 use this->status property")]] Status GetStatus () const
         {
             return this->status ();
@@ -252,14 +261,57 @@ namespace Stroika::Frameworks::WebServer {
         {
             this->statusAndOverrideReason = make_tuple (newStatus, overrideReason);
         }
-        [[deprecated ("Since Stroika 2.1b10, use contentType() property directly")]] void     SetContentType (const InternetMediaType& contentType);
-        [[deprecated ("Since 2.1b10, use headers() directly")]] IO::Network::HTTP::Headers    GetHeaders () const;
-        [[deprecated ("Since Stroika 2.1b10 - use codePage()")]] Characters::CodePage         GetCodePage () const;
-        [[deprecated ("Since Stroika 2.1b10 - use codePage()")]] void                     SetCodePage (Characters::CodePage codePage);
-        [[deprecated ("Since Stroika 2.1b10 - use UpdateHeader()")]] InternetMediaType        GetContentType () const;
-        [[deprecated ("Since Stroika 2.1b10 - use UpdateHeader")]] void                       AddHeader (const String& headerName, const String& value);
-        [[deprecated ("Since Stroika 2.1b10 - use UpdateHeaders directly")]] void             AppendToCommaSeperatedHeader (const String& headerName, const String& value);
-        [[deprecated ("Since Stroika 2.1b10 - use UpdateHeaders directly")]] nonvirtual void  ClearHeader (const String& headerName)
+        [[deprecated ("Since Stroika 2.1b10, use contentType() property directly")]] void SetContentType (const InternetMediaType& newCT)
+        {
+            this->rwHeaders ().contentType = AdjustContentTypeForCodePageIfNeeded_ (newCT);
+        }
+        [[deprecated ("Since 2.1b10, use headers() directly")]] IO::Network::HTTP::Headers    GetHeaders () const
+        {
+            return this->headers ();
+        }
+        [[deprecated ("Since Stroika 2.1b10 - use codePage()")]] Characters::CodePage         GetCodePage () const
+        {
+            shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+            return fCodePage_;
+        }
+        [[deprecated ("Since Stroika 2.1b10 - use codePage()")]] void SetCodePage (Characters::CodePage newCodePage)
+        {
+            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+            Require (fState_ == State::eInProgress);
+            Require (fBodyBytes_.empty ());
+            bool diff  = fCodePage_ != newCodePage;
+            fCodePage_ = newCodePage;
+            if (diff) {
+                if (auto ct = this->rwHeaders ().contentType ()) {
+                    this->rwHeaders ().contentType = AdjustContentTypeForCodePageIfNeeded_ (*ct);
+                }
+            }
+        }
+        [[deprecated ("Since Stroika 2.1b10 - use UpdateHeader()")]] InternetMediaType GetContentType () const
+        {
+            return this->headers ().contentType ().value_or (InternetMediaType{});
+        }
+        [[deprecated ("Since Stroika 2.1b10 - use UpdateHeader")]] void                       AddHeader (const String& headerName, const String& value)
+        {
+            this->rwHeaders ().Set (headerName, value);
+        }
+        [[deprecated ("Since Stroika 2.1b10 - use UpdateHeaders directly")]] void            AppendToCommaSeperatedHeader (const String& headerName, const String& value)
+        {
+            Require (not value.empty ());
+            auto& updateHeaders = this->rwHeaders ();
+            if (auto o = updateHeaders.LookupOne (headerName)) {
+                if (o->empty ()) {
+                    updateHeaders.Add (headerName, value);
+                }
+                else {
+                    updateHeaders.Add (headerName, *o + L", "sv + value);
+                }
+            }
+            else {
+                updateHeaders.Add (headerName, value);
+            }
+        }
+        [[deprecated ("Since Stroika 2.1b10 - use UpdateHeaders directly")]] nonvirtual void ClearHeader (const String& headerName)
         {
             // DEPRECATED
             this->rwHeaders ().Remove (headerName);
@@ -268,11 +320,21 @@ namespace Stroika::Frameworks::WebServer {
         {
             this->rwHeaders () = IO::Network::HTTP::Headers{};
         }
-        [[deprecated ("Since 2.1b10, use headers() directly")]] IO::Network::HTTP::Headers GetEffectiveHeaders () const;
+        [[deprecated ("Since 2.1b10, use headers() directly")]] IO::Network::HTTP::Headers GetEffectiveHeaders () const
+        {
+            return this->headers ();
+        }
         template <typename FUNCTION>
-        [[deprecated ("Since 2.1b10, use rwHeaders() directly")]] auto UpdateHeader (FUNCTION&& f);
+        [[deprecated ("Since 2.1b10, use rwHeaders() directly")]] inline auto UpdateHeader (FUNCTION&& f)
+        {
+            Require (fState_ == State::eInProgress);
+            return std::forward<FUNCTION> (f) (&this->rwHeaders ());
+        }
         template <typename FUNCTION>
-        [[deprecated ("Since 2.1b10, use headers() directly")]] auto ReadHeader (FUNCTION&& f) const;
+        [[deprecated ("Since 2.1b10, use headers() directly")]] inline  auto ReadHeader (FUNCTION&& f) const
+        {
+            return std::forward<FUNCTION> (f) (this->headers ());
+        }
 
     private:
         nonvirtual InternetMediaType AdjustContentTypeForCodePageIfNeeded_ (const InternetMediaType& ct) const;

@@ -86,6 +86,12 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
                   }
               }
           }}
+    , state{
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+              const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::state);
+              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              return thisObj->fState_;
+          }}
     , fSocket_{s}
     , fState_{State::eInProgress}
     , fUnderlyingOutStream_{outStream}
@@ -108,18 +114,6 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
     rwHeaders ().contentType = ct;
 }
 
-InternetMediaType Response::GetContentType () const
-{
-    // DEPRECATED
-    return this->headers ().contentType ().value_or (InternetMediaType{});
-}
-
-void Response::AddHeader (const String& headerName, const String& value)
-{
-    // DEPRECATED
-    this->rwHeaders ().Set (headerName, value);
-}
-
 void Response::SetContentSizePolicy (ContentSizePolicy csp)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
@@ -139,57 +133,6 @@ void Response::SetContentSizePolicy (ContentSizePolicy csp, uint64_t size)
 bool Response::IsContentLengthKnown () const
 {
     return fContentSizePolicy_ != ContentSizePolicy::eNone;
-}
-
-void Response::SetContentType (const InternetMediaType& newCT)
-{
-    this->rwHeaders ().contentType = AdjustContentTypeForCodePageIfNeeded_ (newCT); // deprecated
-}
-
-void Response::SetCodePage (Characters::CodePage newCodePage)
-{
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    Require (fState_ == State::eInProgress);
-    Require (fBodyBytes_.empty ());
-    bool diff  = fCodePage_ != newCodePage;
-    fCodePage_ = newCodePage;
-    if (diff) {
-        if (auto ct = this->rwHeaders ().contentType ()) {
-            this->rwHeaders ().contentType = AdjustContentTypeForCodePageIfNeeded_ (*ct);
-        }
-    }
-}
-
-void Response::AppendToCommaSeperatedHeader (const String& headerName, const String& value)
-{
-    // DEPRECATED
-    Require (not value.empty ());
-    auto& updateHeaders = this->rwHeaders ();
-    if (auto o = updateHeaders.LookupOne (headerName)) {
-        if (o->empty ()) {
-            updateHeaders.Add (headerName, value);
-        }
-        else {
-            updateHeaders.Add (headerName, *o + L", "sv + value);
-        }
-    }
-    else {
-        updateHeaders.Add (headerName, value);
-    }
-}
-
-IO::Network::HTTP::Headers Response::GetHeaders () const
-{
-    // DEPRECATED
-    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    return this->headers ();
-}
-
-IO::Network::HTTP::Headers Response::GetEffectiveHeaders () const
-{
-    // DEPRECATED
-    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    return this->headers ();
 }
 
 InternetMediaType Response::AdjustContentTypeForCodePageIfNeeded_ (const InternetMediaType& ct) const

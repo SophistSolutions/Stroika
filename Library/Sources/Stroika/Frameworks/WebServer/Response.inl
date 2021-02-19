@@ -17,27 +17,6 @@ namespace Stroika::Frameworks::WebServer {
      ********************* Framework::WebServer::Response ***************************
      ********************************************************************************
      */
-    template <typename FUNCTION>
-    inline auto Response::UpdateHeader (FUNCTION&& f)
-    {// DEPRECATED
-        Require (fState_ == State::eInProgress);
-        return std::forward<FUNCTION> (f) (&this->rwHeaders ());
-    }
-    template <typename FUNCTION>
-    inline auto Response::ReadHeader (FUNCTION&& f) const
-    {// DEPRECATED
-        return std::forward<FUNCTION> (f) (this->headers());
-    }
-    inline Response::State Response::GetState () const
-    {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        return fState_;
-    }
-    inline Characters::CodePage Response::GetCodePage () const
-    {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        return fCodePage_;
-    }
     inline void Response::write (const BLOB& b)
     {
         write (b.begin (), b.end ());

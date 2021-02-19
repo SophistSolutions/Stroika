@@ -66,25 +66,6 @@ Request::Request (const Streams::InputStream<byte>::Ptr& inStream)
 {
 }
 
-void Request::SetHTTPVersion (const String& versionOrVersionLabel)
-{
-    //***DEPRECATED***
-    this->httpVersion = versionOrVersionLabel;
-}
-
-bool Request::GetKeepAliveRequested () const
-{
-    //***DEPRECATED***
-    using ConnectionValue = IO::Network::HTTP::Headers::ConnectionValue;
-    if (this->httpVersion == IO::Network::HTTP::Versions::kOnePointZero) {
-        return headers ().connection ().value_or (ConnectionValue::eClose) == ConnectionValue::eKeepAlive;
-    }
-    if (this->httpVersion == IO::Network::HTTP::Versions::kOnePointOne) {
-        return headers ().connection ().value_or (ConnectionValue::eKeepAlive) == ConnectionValue::eKeepAlive;
-    }
-    return true; // for HTTP 2.0 and later, keep alive is always assumed (double check/reference?)
-}
-
 Memory::BLOB Request::GetBody ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -95,20 +76,6 @@ Memory::BLOB Request::GetBody ()
         fBody_ = GetBodyStream ().ReadAll ();
     }
     return *fBody_;
-}
-
-optional<uint64_t> Request::GetContentLength () const
-{
-    //***DEPRECATED***
-    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    return headers ().contentLength;
-}
-
-optional<InternetMediaType> Request::GetContentType () const
-{
-    //***DEPRECATED***
-    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    return headers ().contentType;
 }
 
 Streams::InputStream<byte>::Ptr Request::GetBodyStream ()
