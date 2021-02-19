@@ -466,33 +466,28 @@ namespace Stroika::Foundation::Common {
      *  These callbacks which you can attach to an ExtendableProperty effectively allow OVERRIDING the property
      *  because you can suppress update or handle it differently yourself.
      * 
-     * @todo - fix READ eent guys to return optional<> which is the value and if its provided return that instead of getter.&&&
-     * 
-     *      @todo   Consider adding propertyChanged events to properties (if was a very cheap way when not used)
-     *              Maybe subclass of Property - PropertyWithChangeEvent? then it could add the event list and notification)
-     * 
-     *      @todo   Figure out how to support subclassing of properties.
-     *              USE CASE:
-     *                  >   IO::Network::HTTP::Response base class
-     *                  >   Frameworks::WebServer::Response subclass
-     *                      in Response::rwHeader() property, I want to (in subclass) ASSERT that state is in-progress (or some such)
+     *  Use Cases:
+     *    -  HTTP Response
+     *       - IO::Network::HTTP::Response base class
+     *       - Frameworks::WebServer::Response subclass
+     *         in Response::rwHeader() property, I want to (in subclass) ASSERT that state is in-progress (or some such)
      *
-     *              VIABLE APPROACHES:
-     *                  >   Implement 'events' so when a property changes a hook gets called (possibly even before/after hooks, with before hooks
-     *                      possibly aborting change)
-     *                  >   Provide some method for REPLACING the GETTER/SETTER hooks
-     *                  >   Simple 'hide' the member in the subclass (so 2 properties with the same name)
+     *   VIABLE APPROACHES:
+     *     - Implement 'events' so when a property changes a hook gets called (possibly even before/after hooks, with before hooks
+     *       possibly aborting change)
+     *     - Provide some method for REPLACING the GETTER/SETTER hooks
+     *     - Simply 'hide' the member in the subclass (so 2 properties with the same name)
      * 
-     *                  The third approach sucks cuz waste of space, and inconsistent behavior if you access property through ptr
-     *                  to base class.
+     *     The third approach sucks cuz waste of space, and inconsistent behavior if you access property through ptr
+     *     to base class.
      * 
-     *                  'Events' approach nice in that it is more generally useful (listeners could be largely unrelated - external - like vtable methods
-     *                  vs 'function' ptr objects). But its COSTLY when not used (must maintain a list of callbacks, or worse two). Can mittigate cost
-     *                  as mentioned above, by only having subclass of Property (PropertyWithEvents) that supports events.
+     *     'Events' approach nice in that it is more generally useful (listeners could be largely unrelated - external - like vtable methods
+     *     vs 'function' ptr objects). But its COSTLY when not used (must maintain a list of callbacks, or worse two). Can mittigate cost
+     *     as mentioned above, by only having subclass of Property (PropertyWithEvents) that supports events.
      * 
-     *                  REPLACING the GETTER/SETTER seems quite viable, except that it appears to really kill modularity. No way (I can think of) within
-     *                  c++ to capture any kind of public/private thing. Anybody would be replacing GETTERS or SETTERS (if anybody can) (cannot use
-     *                  protected cuz not subclassing, and forcing extra subclassing would be awkward).
+     *     REPLACING the GETTER/SETTER seems quite viable, except that it appears to really kill modularity. No way (I can think of) within
+     *     c++ to capture any kind of public/private thing. Anybody would be replacing GETTERS or SETTERS (if anybody can) (cannot use
+     *     protected cuz not subclassing, and forcing extra subclassing would be awkward).
      * 
      *  \note since properties and therefore ExtendableProperty cannot be copied, its natural to note that their 'eventhandlers' also
      *        are not generally copied.
@@ -504,6 +499,9 @@ namespace Stroika::Foundation::Common {
      */
     template <typename T>
     class ExtendableProperty : public Property<T> {
+    public:
+        using typename Property<T>::decayed_value_type;
+
     public:
         /**
          */
@@ -522,8 +520,8 @@ namespace Stroika::Foundation::Common {
 
     public:
         struct PropertyChangedEvent {
-            typename Property<T>::decayed_value_type fPreviousValue;
-            typename Property<T>::decayed_value_type fNewValue;
+            decayed_value_type fPreviousValue;
+            decayed_value_type fNewValue;
         };
 
     public:
@@ -541,7 +539,7 @@ namespace Stroika::Foundation::Common {
     public:
         /**
          */
-        using PropertyReadEventHandler = std::function<void()>;
+        using PropertyReadEventHandler = std::function<optional<decayed_value_type>()>;
 
     public:
         /**

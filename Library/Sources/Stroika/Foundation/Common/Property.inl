@@ -144,7 +144,9 @@ namespace Stroika::Foundation::Common {
                   const ExtendableProperty* thisObj = static_cast<const ExtendableProperty*> (property); // cannot use dynamic_cast without adding needless vtable to Property objects; static_cast needed (over reintepret_cast) to adjust sub-object pointer for multiple inheritance
                   AssertNotNull (thisObj);
                   for (const auto& handler : thisObj->fPropertyReadHandlers_) {
-                      handler ();
+                      if (auto o = handler ()) {
+                          return *o;
+                      }
                   }
                   return getter (property);
               },
