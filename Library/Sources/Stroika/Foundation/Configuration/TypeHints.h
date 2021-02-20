@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Configuration {
      *          access once, thats a second copy. So may as well copy 2 directly (very loosy goosy, as depends on
      *          releative cost of main memory access versus stack).
      */
-    template <typename T, typename CHECK_T = T>
+    template <typename T, typename CHECK_T = decay_t<T>>
     using ArgByValueType = conditional_t<(sizeof (CHECK_T) <= 2 * sizeof (void*)) and is_trivially_copyable_v<CHECK_T>, CHECK_T, const CHECK_T&>;
 
 }
