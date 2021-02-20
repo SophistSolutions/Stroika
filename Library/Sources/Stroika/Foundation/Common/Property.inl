@@ -52,13 +52,13 @@ namespace Stroika::Foundation::Common {
         return Get ();
     }
     template <typename T>
-    template <typename CHECK, enable_if_t<not PropertyCommon kIsMutatableType<CHECK>>*>
+    template <typename CHECK, enable_if_t<not PropertyCommon::kIsMutatableType<CHECK>>*>
     inline const T ReadOnlyProperty<T>::operator() () const
     {
         return Get ();
     }
     template <typename T>
-    template <typename CHECK, enable_if_t<PropertyCommon kIsMutatableType<CHECK>>*>
+    template <typename CHECK, enable_if_t<PropertyCommon::kIsMutatableType<CHECK>>*>
     inline T ReadOnlyProperty<T>::operator() ()
     {
         return Get ();

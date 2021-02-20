@@ -134,6 +134,8 @@ namespace Stroika::Foundation::Common {
 
     public:
         /**
+         *  Returns the value of the given property T (by calling the underlying 'getter' for the property.
+         *  This is a non-const method if PropertyCommon::kIsMutatableType<T>, and otherwise a const method.
          */
         template <typename CHECK = T, enable_if_t<not PropertyCommon::kIsMutatableType<CHECK>>* = nullptr>
         nonvirtual T Get () const;
@@ -149,6 +151,8 @@ namespace Stroika::Foundation::Common {
          * 
          *  When it doesn't work, simply throw in '()' - to use the 'operator()' call, or call Get()
          *  if you prefer that syntax.
+         * 
+         *  This is a non-const method if PropertyCommon::kIsMutatableType<T>, and otherwise a const method.
          */
         template <typename CHECK = T, enable_if_t<not PropertyCommon::kIsMutatableType<CHECK>>* = nullptr>
         nonvirtual operator const T () const;
@@ -166,6 +170,8 @@ namespace Stroika::Foundation::Common {
          *
          *          bool checkIsImage1 = PredefinedInternetMediaType::kPNG().IsImageFormat ();
          *      \endcode
+         * 
+         *  This is a non-const method if PropertyCommon::kIsMutatableType<T>, and otherwise a const method.
          */
         template <typename CHECK = T, enable_if_t<not PropertyCommon::kIsMutatableType<CHECK>>* = nullptr>
         nonvirtual const T operator() () const;
