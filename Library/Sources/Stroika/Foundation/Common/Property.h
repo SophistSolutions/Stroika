@@ -418,7 +418,7 @@ namespace Stroika::Foundation::Common {
         nonvirtual bool operator== (const TT& rhs) const;
 #if __cpp_impl_three_way_comparison < 201907
         template <typename TT>
-        bool operator!= (TT rhs)
+        bool operator!= (const TT& rhs) const
         {
             return not (*this == rhs);
         }
