@@ -222,6 +222,17 @@ Headers::Headers ()
               lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
               thisObj->fSetCookieList_ = cookies.cookieDetails ().empty () ? optional<CookieList>{} : cookies;
           }}
+    , transferEncoding{
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+              const Headers*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::transferEncoding);
+              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              return thisObj->fTransferEncoding_;
+          },
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newTransferEncodings) {
+              Headers*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::transferEncoding);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              thisObj->fTransferEncoding_ = newTransferEncodings;
+          }}
     , vary{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<Containers::Set<String>> {
               const Headers*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::vary);
@@ -240,16 +251,17 @@ Headers::Headers (const Headers& src)
 {
     // NOTE properties and fields refer to the same thing. COULD copy properties, but cheaper to just 'initialize' the fields
     // However, cannot mix initialize with calling delegated CTOR, so do the slightly more inefficent way to avoid duplicative code
-    fExtraHeaders_  = src.fExtraHeaders_;
-    fCacheControl_  = src.fCacheControl_;
-    fContentLength_ = src.fContentLength_;
-    fContentType_   = src.fContentType_;
-    fCookieList_    = src.fCookieList_;
-    fETag_          = src.fETag_;
-    fHost_          = src.fHost_;
-    fIfNoneMatch_   = src.fIfNoneMatch_;
-    fSetCookieList_ = src.fSetCookieList_;
-    fVary_          = src.fVary_;
+    fExtraHeaders_     = src.fExtraHeaders_;
+    fCacheControl_     = src.fCacheControl_;
+    fContentLength_    = src.fContentLength_;
+    fContentType_      = src.fContentType_;
+    fCookieList_       = src.fCookieList_;
+    fETag_             = src.fETag_;
+    fHost_             = src.fHost_;
+    fIfNoneMatch_      = src.fIfNoneMatch_;
+    fSetCookieList_    = src.fSetCookieList_;
+    fTransferEncoding_ = src.fTransferEncoding_;
+    fVary_             = src.fVary_;
 }
 
 Headers::Headers (Headers&& src)
@@ -257,16 +269,17 @@ Headers::Headers (Headers&& src)
 {
     // NOTE properties and fields refer to the same thing. COULD copy properties, but cheaper to just 'initialize' the fields
     // However, cannot mix initialize with calling delegated CTOR, so do the slightly more inefficent way to avoid duplicative code
-    fExtraHeaders_  = move (src.fExtraHeaders_);
-    fCacheControl_  = move (src.fCacheControl_);
-    fContentLength_ = move (src.fContentLength_);
-    fContentType_   = move (src.fContentType_);
-    fCookieList_    = move (src.fCookieList_);
-    fETag_          = move (src.fETag_);
-    fHost_          = move (src.fHost_);
-    fIfNoneMatch_   = move (src.fIfNoneMatch_);
-    fSetCookieList_ = move (src.fSetCookieList_);
-    fVary_          = move (src.fVary_);
+    fExtraHeaders_     = move (src.fExtraHeaders_);
+    fCacheControl_     = move (src.fCacheControl_);
+    fContentLength_    = move (src.fContentLength_);
+    fContentType_      = move (src.fContentType_);
+    fCookieList_       = move (src.fCookieList_);
+    fETag_             = move (src.fETag_);
+    fHost_             = move (src.fHost_);
+    fIfNoneMatch_      = move (src.fIfNoneMatch_);
+    fSetCookieList_    = move (src.fSetCookieList_);
+    fTransferEncoding_ = move (src.fTransferEncoding_);
+    fVary_             = move (src.fVary_);
 }
 
 Headers::Headers (const Iterable<KeyValuePair<String, String>>& src)
@@ -279,16 +292,17 @@ Headers::Headers (const Iterable<KeyValuePair<String, String>>& src)
 
 Headers& Headers::operator= (Headers&& rhs)
 {
-    fExtraHeaders_  = move (rhs.fExtraHeaders_);
-    fCacheControl_  = move (rhs.fCacheControl_);
-    fContentLength_ = move (rhs.fContentLength_);
-    fContentType_   = move (rhs.fContentType_);
-    fCookieList_    = move (rhs.fCookieList_);
-    fETag_          = move (rhs.fETag_);
-    fHost_          = move (rhs.fHost_);
-    fIfNoneMatch_   = move (rhs.fIfNoneMatch_);
-    fSetCookieList_ = move (rhs.fSetCookieList_);
-    fVary_          = move (rhs.fVary_);
+    fExtraHeaders_     = move (rhs.fExtraHeaders_);
+    fCacheControl_     = move (rhs.fCacheControl_);
+    fContentLength_    = move (rhs.fContentLength_);
+    fContentType_      = move (rhs.fContentType_);
+    fCookieList_       = move (rhs.fCookieList_);
+    fETag_             = move (rhs.fETag_);
+    fHost_             = move (rhs.fHost_);
+    fIfNoneMatch_      = move (rhs.fIfNoneMatch_);
+    fSetCookieList_    = move (rhs.fSetCookieList_);
+    fTransferEncoding_ = move (rhs.fTransferEncoding_);
+    fVary_             = move (rhs.fVary_);
     return *this;
 }
 
@@ -325,6 +339,11 @@ optional<String> Headers::LookupOne (const String& name) const
         }
         return optional<String>{};
     }
+    else if (kHeaderNameEqualsComparer (name, HeaderName::kTransferEncoding)) {
+        return fTransferEncoding_
+                   ? String::Join (fTransferEncoding_->Select<String> ([] (auto i) { return Configuration::DefaultNames<TransferEncoding>{}.GetName (i); }))
+                   : optional<String>{};
+    }
     else if (kHeaderNameEqualsComparer (name, HeaderName::kVary)) {
         return fVary_ ? String::Join (*fVary_) : optional<String>{};
     }
@@ -340,26 +359,9 @@ optional<String> Headers::LookupOne (const String& name) const
 Collection<String> Headers::LookupAll (const String& name) const
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    if (kHeaderNameEqualsComparer (name, HeaderName::kCacheControl)) {
-        return fCacheControl_ ? Collection<String>{fCacheControl_->As<String> ()} : Collection<String>{};
-    }
-    else if (kHeaderNameEqualsComparer (name, HeaderName::kContentLength)) {
-        return fContentLength_ ? Collection<String>{Characters::Format (L"%ld", *fContentLength_)} : Collection<String>{};
-    }
-    else if (kHeaderNameEqualsComparer (name, HeaderName::kContentType)) {
-        return fContentType_ ? Collection<String>{fContentType_->As<String> ()} : Collection<String>{};
-    }
-    else if (kHeaderNameEqualsComparer (name, HeaderName::kCookie)) {
-        return fCookieList_ ? Collection<String>{fCookieList_->EncodeForCookieHeader ()} : Collection<String>{};
-    }
-    else if (kHeaderNameEqualsComparer (name, HeaderName::kETag)) {
-        return fETag_ ? Collection<String>{fETag_->As<String> ()} : Collection<String>{};
-    }
-    else if (kHeaderNameEqualsComparer (name, HeaderName::kHost)) {
-        return fHost_ ? Collection<String>{*fHost_} : Collection<String>{};
-    }
-    else if (kHeaderNameEqualsComparer (name, HeaderName::kIfNoneMatch)) {
-        return fIfNoneMatch_ ? Collection<String>{fIfNoneMatch_->As<String> ()} : Collection<String>{};
+    if (kHeaderNameEqualsComparer (name, HeaderName::kCacheControl) or kHeaderNameEqualsComparer (name, HeaderName::kContentLength) or kHeaderNameEqualsComparer (name, HeaderName::kContentType) or kHeaderNameEqualsComparer (name, HeaderName::kCookie) or kHeaderNameEqualsComparer (name, HeaderName::kETag) or kHeaderNameEqualsComparer (name, HeaderName::kHost) or kHeaderNameEqualsComparer (name, HeaderName::kIfNoneMatch) or kHeaderNameEqualsComparer (name, HeaderName::kTransferEncoding) or kHeaderNameEqualsComparer (name, HeaderName::kVary)) {
+        auto o = this->LookupOne (name);
+        return o ? Collection<String>{*o} : Collection<String>{};
     }
     else if (kHeaderNameEqualsComparer (name, HeaderName::kSetCookie)) {
         // return each 'set' cookie as a separate header value
@@ -367,9 +369,6 @@ Collection<String> Headers::LookupAll (const String& name) const
             return fSetCookieList_->cookieDetails ().Select<String> ([] (const auto& i) { return i.Encode (); });
         }
         return Collection<String>{};
-    }
-    else if (kHeaderNameEqualsComparer (name, HeaderName::kVary)) {
-        return fVary_ ? Collection<String>{String::Join (*fVary_)} : Collection<String>{};
     }
     else {
         Collection<String> result;
@@ -506,6 +505,15 @@ bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const opt
         }
         return true;
     }
+    else if (kHeaderNameEqualsComparer (headerName, HeaderName::kTransferEncoding)) {
+        if (nRemoveals != nullptr) {
+            *nRemoveals = (value == nullopt and fTransferEncoding_ != nullopt) ? 1 : 0;
+        }
+        fTransferEncoding_ = value
+                                 ? Containers::Set<TransferEncoding>{value->Tokenize ({','}).Select<TransferEncoding> ([] (const String& i) { return Configuration::DefaultNames<TransferEncoding>{}.PeekValue (i.c_str ()); })}
+                                 : optional<Containers::Set<TransferEncoding>>{};
+        return true;
+    }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kVary)) {
         if (nRemoveals != nullptr) {
             *nRemoveals = (value == nullopt and fVary_ != nullopt) ? 1 : 0;
@@ -567,6 +575,9 @@ Collection<KeyValuePair<String, String>> Headers::As () const
         for (auto i : fSetCookieList_->cookieDetails ()) {
             results.Add (KeyValuePair<String, String>{HeaderName::kSetCookie, i.Encode ()});
         }
+    }
+    if (fTransferEncoding_) {
+        results.Add (KeyValuePair<String, String>{HeaderName::kTransferEncoding, String::Join (fTransferEncoding_->Select<String> ([] (auto i) { return Configuration::DefaultNames<TransferEncoding>{}.GetName (i); }))});
     }
     if (fVary_) {
         results.Add (KeyValuePair<String, String>{HeaderName::kVary, String::Join (*fVary_)});

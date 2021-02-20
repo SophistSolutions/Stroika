@@ -22,6 +22,7 @@
 #include "ETag.h"
 #include "IfNoneMatch.h"
 #include "KeepAlive.h"
+#include "TransferEncoding.h"
 
 /**
  */
@@ -94,7 +95,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         nonvirtual Headers& operator= (const Headers& rhs) = default;
-        nonvirtual Headers& operator= (Headers&& rhs);
+        nonvirtual Headers& operator                       = (Headers&& rhs);
 
 #if qDebug
     public:
@@ -141,7 +142,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  Set to any string value, or to nullopt to clear the option.
          */
         nonvirtual void Set (const String& headerName, const optional<String>& value);
-        
+
     public:
         /**
          *  Property with the optional<String> value of the Access-Control-Allow-Origin header.
@@ -274,6 +275,17 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
+         *  Property with the optional<Set<TransferEncoding>> value of the Transfer-Encoding header.
+         *
+         *  This is very typically OMITTED, and when present in a Response Header, its typically value will just be TransferEncoding::eChunked
+         *  because the default - TransferEncoding::eIdentity is undertood when the header is missing.
+         * 
+         *  \note - this is generally NOT to be used for compression (though it can be).
+         */
+        Common::Property<optional<Containers::Set<TransferEncoding>>> transferEncoding;
+
+    public:
+        /**
          *  @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Vary
          *  This is a response-only Header.
          */
@@ -307,7 +319,9 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 #endif
 
     private:
-        enum class AddOrSet { eAdd, eSet, eRemove };
+        enum class AddOrSet { eAdd,
+                              eSet,
+                              eRemove };
         // UpdateBuiltin_ returns true iff headerName was a parsed/builtin type, and false for 'extra' headers: to find out # elts changed, use nChanges optional parameter
         nonvirtual bool UpdateBuiltin_ (AddOrSet flag, const String& headerName, const optional<String>& value, size_t* nRemoveals = nullptr);
         nonvirtual void SetExtras_ (const String& headerName, const optional<String>& value);
@@ -316,16 +330,17 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         // Could have properties lookup once when loading and store here. Or could have
         // them dynamically lookup in fExtraHeaders_. Just put the ones here in special variables
         // that are very commonly checked for, so their check/update will be a bit quicker.
-        Collection<KeyValuePair<String, String>> fExtraHeaders_;
-        optional<CacheControl>                   fCacheControl_;
-        optional<uint64_t>                       fContentLength_;
-        optional<InternetMediaType>              fContentType_;
-        optional<CookieList>                     fCookieList_;      // store optional cuz often missing, and faster init
-        optional<HTTP::ETag>                     fETag_;
-        optional<String>                         fHost_;
-        optional<IfNoneMatch>                    fIfNoneMatch_;
-        optional<CookieList>                     fSetCookieList_;   // store optional cuz often missing, and faster init
-        optional<Containers::Set<String>>        fVary_;
+        Collection<KeyValuePair<String, String>>    fExtraHeaders_;
+        optional<CacheControl>                      fCacheControl_;
+        optional<uint64_t>                          fContentLength_;
+        optional<InternetMediaType>                 fContentType_;
+        optional<CookieList>                        fCookieList_; // store optional cuz often missing, and faster init
+        optional<HTTP::ETag>                        fETag_;
+        optional<String>                            fHost_;
+        optional<IfNoneMatch>                       fIfNoneMatch_;
+        optional<CookieList>                        fSetCookieList_; // store optional cuz often missing, and faster init
+        optional<Containers::Set<TransferEncoding>> fTransferEncoding_;
+        optional<Containers::Set<String>>           fVary_;
 
 #if __cpp_impl_three_way_comparison < 201907
     private:

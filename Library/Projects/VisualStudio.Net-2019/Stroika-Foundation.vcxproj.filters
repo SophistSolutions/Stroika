@@ -2070,6 +2070,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Response.h">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\TransferEncoding.h">
+      <Filter>Sources\IO\Network\HTTP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -3373,6 +3376,9 @@
       <Filter>Sources\IO\Network\HTTP</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Response.inl">
+      <Filter>Sources\IO\Network\HTTP</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\TransferEncoding.inl">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </None>
   </ItemGroup>
