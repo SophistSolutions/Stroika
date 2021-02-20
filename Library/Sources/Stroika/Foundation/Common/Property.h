@@ -467,6 +467,8 @@ namespace Stroika::Foundation::Common {
     class ExtendableProperty : public Property<T> {
     public:
         using typename Property<T>::decayed_value_type;
+        using typename Property<T>::value_type;
+        using typename Property<T>::base_value_type;
 
     public:
         /**
@@ -504,8 +506,9 @@ namespace Stroika::Foundation::Common {
 
     public:
         /**
+         *  This must return optional<base_value_type> because base_value_type is what is returned by the Get() function.
          */
-        using PropertyReadEventHandler = std::function<optional<decayed_value_type>()>;
+        using PropertyReadEventHandler = std::function<optional<base_value_type>()>;
 
     public:
         /**
