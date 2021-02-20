@@ -7,6 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include <array>
+#include <optional>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -229,9 +230,9 @@ namespace Stroika::Foundation::Configuration {
 
     public:
         /**
-         *  Returns nullptr if not found.
+         *  Returns nullopt if not found.
          */
-        nonvirtual const ENUM_TYPE* PeekValue (const wchar_t* name) const;
+        nonvirtual optional<ENUM_TYPE> PeekValue (const wchar_t* name) const;
 
     public:
         /**

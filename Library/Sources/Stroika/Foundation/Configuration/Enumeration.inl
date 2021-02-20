@@ -167,7 +167,7 @@ namespace Stroika::Foundation::Configuration {
         return tmp;
     }
     template <typename ENUM_TYPE>
-    const ENUM_TYPE* EnumNames<ENUM_TYPE>::PeekValue (const wchar_t* name) const
+    optional<ENUM_TYPE> EnumNames<ENUM_TYPE>::PeekValue (const wchar_t* name) const
     {
         /*
          *  NB: this is only safe returning an internal pointer, because the pointer is internal to
@@ -179,13 +179,13 @@ namespace Stroika::Foundation::Configuration {
                 return &i->first;
             }
         }
-        return nullptr;
+        return nullopt;
     }
     template <typename ENUM_TYPE>
     inline ENUM_TYPE EnumNames<ENUM_TYPE>::GetValue (const wchar_t* name) const
     {
-        const ENUM_TYPE* tmp = PeekValue (name);
-        RequireNotNull (tmp);
+        optional<ENUM_TYPE> tmp = PeekValue (name);
+        Require (tmp.has_value ());
         return *tmp;
     }
     template <typename ENUM_TYPE>
@@ -193,9 +193,8 @@ namespace Stroika::Foundation::Configuration {
     inline ENUM_TYPE EnumNames<ENUM_TYPE>::GetValue (const wchar_t* name, const NOT_FOUND_EXCEPTION& notFoundException) const
     {
         RequireNotNull (name);
-        const ENUM_TYPE* tmp = PeekValue (name);
-        if (tmp == nullptr)
-            [[UNLIKELY_ATTR]] {
+        optional<ENUM_TYPE> tmp = PeekValue (name);
+        if (!tmp) [[UNLIKELY_ATTR]] {
             //Execution::Throw (notFoundException);
             throw (notFoundException);
         }
