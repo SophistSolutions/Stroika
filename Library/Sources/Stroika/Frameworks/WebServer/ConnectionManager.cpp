@@ -251,7 +251,7 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
                     }
 
                     if (not keepAlive) {
-                        if (readyConnection->response ().GetState () != Response::State::eCompleted) {
+                        if (readyConnection->response ().state != Response::State::eCompleted) {
                             IgnoreExceptionsForCall (readyConnection->rwResponse ().End ());
                         }
                     }
