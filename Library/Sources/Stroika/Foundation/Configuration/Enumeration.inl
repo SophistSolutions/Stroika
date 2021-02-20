@@ -176,7 +176,7 @@ namespace Stroika::Foundation::Configuration {
         RequireNotNull (name);
         for (const_iterator i = fEnumNames_.begin (); i != fEnumNames_.end (); ++i) {
             if (::wcscmp (i->second, name) == 0) {
-                return &i->first;
+                return i->first;
             }
         }
         return nullopt;
@@ -217,7 +217,7 @@ namespace Stroika::Foundation::Configuration {
      */
     template <typename ENUM_TYPE>
     constexpr DefaultNames<ENUM_TYPE>::DefaultNames ()
-        : EnumNames<ENUM_TYPE> (k)
+        : EnumNames<ENUM_TYPE>{k}
     {
     }
 
