@@ -416,6 +416,13 @@ namespace Stroika::Foundation::Common {
     public:
         template <typename TT>
         nonvirtual bool operator== (const TT& rhs) const;
+#if __cpp_impl_three_way_comparison < 201907
+        template <typename TT>
+        bool operator!= (TT rhs)
+        {
+            return not (*this == rhs);
+        }
+#endif
 
     public:
         using ReadOnlyProperty<T>::operator();

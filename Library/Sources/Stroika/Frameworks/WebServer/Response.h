@@ -133,9 +133,7 @@ namespace Stroika::Frameworks::WebServer {
     public:
         /**
          */
-
-                Common::ReadOnlyProperty<State> state;
-
+        Common::ReadOnlyProperty<State> state;
 
     public:
         enum class ContentSizePolicy : uint8_t {
