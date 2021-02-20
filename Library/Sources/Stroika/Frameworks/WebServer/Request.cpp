@@ -6,18 +6,14 @@
 #include <algorithm>
 #include <cstdlib>
 
-#include "../../Foundation/Characters/Format.h"
-#include "../../Foundation/Characters/String2Int.h"
 #include "../../Foundation/Characters/StringBuilder.h"
 #include "../../Foundation/Characters/ToString.h"
 #include "../../Foundation/Containers/Common.h"
-#include "../../Foundation/DataExchange/BadFormatException.h"
 #include "../../Foundation/Debug/Assertions.h"
 #include "../../Foundation/Debug/Trace.h"
 #include "../../Foundation/Execution/Throw.h"
 #include "../../Foundation/IO/Network/HTTP/Headers.h"
 #include "../../Foundation/IO/Network/HTTP/Versions.h"
-#include "../../Foundation/Memory/SmallStackBuffer.h"
 #include "../../Foundation/Streams/InputSubStream.h"
 #include "../../Foundation/Streams/MemoryStream.h"
 

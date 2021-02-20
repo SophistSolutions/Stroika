@@ -29,8 +29,11 @@ namespace Stroika::Frameworks::WebServer {
     using DataExchange::InternetMediaType;
 
     /**
-     *  Maybe associated TextStream, and maybe readline method goes here
-     *  Quicky impl. Need to improve this significantly. Probably/possibly hide the fInptuStream and other public
+     *  \brief this represents a HTTP request object for the WebServer module
+     * 
+     *  TODO:
+     *      @todo Probably/possibly hide the fInptuStream and other public
+     *      @todo Maybe associated TextStream, and maybe readline method goes here
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
@@ -72,7 +75,7 @@ namespace Stroika::Frameworks::WebServer {
          *  In most cases, this stream will be artificially narrowed to just the body part of the request.
          *  When a Content-Length is known, that is used to limit the stream. When a Transfer-Coding is used, that will return the apparent (decoded) bytes (NYI).
          *
-         *  This may ONLY be called after the headers have been set.
+         *  \req This may ONLY be called after the headers have been set (read) -- TODO DOCUMENT HOW THIS CAN BE CHECKED AND VERIFIED - I THINK ANSWER RESIDES IN CONNECTION OBJECT
          */
         nonvirtual Streams::InputStream<byte>::Ptr GetBodyStream ();
 

@@ -93,12 +93,8 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
               return thisObj->fState_;
           }}
     , fSocket_{s}
-    , fState_{State::eInProgress}
     , fUnderlyingOutStream_{outStream}
     , fUseOutStream_{Streams::BufferedOutputStream<byte>::New (outStream)}
-    , fCodePage_{Characters::kCodePage_UTF8}
-    , fBodyBytes_{}
-    , fContentSizePolicy_{ContentSizePolicy::eAutoCompute}
 {
 #if qDebug
     this->status.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (fState_ == State::eInProgress); return true; });

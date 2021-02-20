@@ -16,7 +16,6 @@
 #include "../../Foundation/Containers/Mapping.h"
 #include "../../Foundation/Common/Property.h"
 #include "../../Foundation/DataExchange/InternetMediaType.h"
-#include "../../Foundation/Debug/AssertExternallySynchronizedLock.h"
 #include "../../Foundation/IO/Network/HTTP/Headers.h"
 #include "../../Foundation/IO/Network/HTTP/Status.h"
 #include "../../Foundation/IO/Network/HTTP/Response.h"
@@ -38,8 +37,6 @@
  *
  *      @todo   eExact is UNTESTED, and should have CHECKING code - so if a user writes a different amount, we detect and assert out.
  *              But that can be deferered because it probably works fine for the the case where its used properly.
- * 
- *      @todo   https://stroika.atlassian.net/browse/STK-725 - Cleanup IO::Network::HTTP::Request/Response (more like Framewors::WebServer..same), and then make Frameworks::WebServer versions inheret from IO::HTTP  versions
  */
 
 namespace Stroika::Frameworks::WebServer {
@@ -132,6 +129,7 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
+         *  The state is changed by calls to Flush (), Abort (), Redirect (), and End ()
          */
         Common::ReadOnlyProperty<State> state;
 
@@ -339,12 +337,12 @@ namespace Stroika::Frameworks::WebServer {
 
     private:
         IO::Network::Socket::Ptr                 fSocket_;
-        State                                    fState_;
+        State                                    fState_{State::eInProgress};
         Streams::OutputStream<byte>::Ptr         fUnderlyingOutStream_;
         Streams::BufferedOutputStream<byte>::Ptr fUseOutStream_;
-        Characters::CodePage                     fCodePage_;
-        vector<byte>                             fBodyBytes_;
-        ContentSizePolicy                        fContentSizePolicy_;
+        Characters::CodePage                     fCodePage_{Characters::kCodePage_UTF8};
+        vector<byte>                             fBodyBytes_{};
+        ContentSizePolicy                        fContentSizePolicy_{ContentSizePolicy::eAutoCompute};
         bool                                     fHeadMode_{false};
     };
 
