@@ -654,8 +654,10 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \brief  Compute a projection of the given type T to some argument set of subtypes, and apply that projection
+         *  \brief  Compute a projection (or transformation) of the given type T to some argument set of subtypes, and apply that projection
          *          to the entire iterable, creating a new iterable.
+         * 
+         *  If the argument function returns optional<THE RETURN TYPE> - then only accomulate those that are returned with has_value () (so also can be used to rollup).
          *
          *  \par Example Usage
          *      \code
@@ -685,7 +687,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          // GetAssociatedContentType -> optional<String> - skip items that are 'missing'
-         *          possibleFileSuffixes.SelectIf<InternetMediaType> ([&] (String suffix) { return r.GetAssociatedContentType (suffix); }).As<Set<InternetMediaType>> ())
+         *          possibleFileSuffixes.Select<InternetMediaType> ([&] (String suffix) { return r.GetAssociatedContentType (suffix); }).As<Set<InternetMediaType>> ())
          *      \endcode
          */
         template <typename RESULT>
