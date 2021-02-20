@@ -139,7 +139,13 @@ namespace Stroika::Foundation::Common {
                   AssertNotNull (thisObj);
                   for (const auto& handler : thisObj->fPropertyReadHandlers_) {
                       if (auto o = handler ()) {
-                          return *o;
+                          if constexpr (is_reference_v<base_value_type>) {
+                              // we force return value of property read handler to be optional<ptr> because optional<refrence> is illegal in c++ (as of 2021-02-19)
+                              return **o;
+                          }
+                          else {
+                              return *o;
+                          }
                       }
                   }
                   return getter (property);

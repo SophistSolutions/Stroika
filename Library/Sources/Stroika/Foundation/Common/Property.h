@@ -507,8 +507,11 @@ namespace Stroika::Foundation::Common {
     public:
         /**
          *  This must return optional<base_value_type> because base_value_type is what is returned by the Get() function.
+         *  But C++ doesn't allow optional<reference type>. So - for reference types, PropertyReadEventHandler returns a pointer.
+         * 
+         *  @todo - must copy constness of that pointer from constness of base_value_type (or address of it... so ignore for now)
          */
-        using PropertyReadEventHandler = std::function<optional<base_value_type>()>;
+        using PropertyReadEventHandler = std::function<optional<conditional_t<is_reference_v<base_value_type>, decayed_value_type*, decayed_value_type>>()>;
 
     public:
         /**
