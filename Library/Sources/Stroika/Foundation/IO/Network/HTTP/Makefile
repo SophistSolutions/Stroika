@@ -28,6 +28,7 @@ Objs	=	\
 	$(ObjDir)MessageStartTextInputStreamBinaryAdapter${OBJ_SUFFIX}\
 	$(ObjDir)Request${OBJ_SUFFIX}\
 	$(ObjDir)Response${OBJ_SUFFIX}\
+	$(ObjDir)TransferEncoding${OBJ_SUFFIX}\
 
 
 all:	$(Objs)

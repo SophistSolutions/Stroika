@@ -207,6 +207,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\MessageStartTextInputStreamBinaryAdapter.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Request.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Response.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\TransferEncoding.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\ICMP.cpp" />

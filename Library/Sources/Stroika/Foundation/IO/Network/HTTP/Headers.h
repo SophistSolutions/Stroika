@@ -282,7 +282,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          * 
          *  \note - this is generally NOT to be used for compression (though it can be).
          */
-        Common::Property<optional<Containers::Set<TransferEncoding>>> transferEncoding;
+        Common::Property<optional<TransferEncodings>> transferEncoding;
 
     public:
         /**
@@ -339,7 +339,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         optional<String>                            fHost_;
         optional<IfNoneMatch>                       fIfNoneMatch_;
         optional<CookieList>                        fSetCookieList_; // store optional cuz often missing, and faster init
-        optional<Containers::Set<TransferEncoding>> fTransferEncoding_;
+        optional<TransferEncodings>                 fTransferEncoding_;
         optional<Containers::Set<String>>           fVary_;
 
 #if __cpp_impl_three_way_comparison < 201907

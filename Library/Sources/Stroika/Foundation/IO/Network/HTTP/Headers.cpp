@@ -249,6 +249,7 @@ Headers::Headers ()
 Headers::Headers (const Headers& src)
     : Headers{}
 {
+    shared_lock<const AssertExternallySynchronizedLock> critSec{src};
     // NOTE properties and fields refer to the same thing. COULD copy properties, but cheaper to just 'initialize' the fields
     // However, cannot mix initialize with calling delegated CTOR, so do the slightly more inefficent way to avoid duplicative code
     fExtraHeaders_     = src.fExtraHeaders_;
@@ -267,6 +268,7 @@ Headers::Headers (const Headers& src)
 Headers::Headers (Headers&& src)
     : Headers{}
 {
+    shared_lock<const AssertExternallySynchronizedLock> critSec{src};
     // NOTE properties and fields refer to the same thing. COULD copy properties, but cheaper to just 'initialize' the fields
     // However, cannot mix initialize with calling delegated CTOR, so do the slightly more inefficent way to avoid duplicative code
     fExtraHeaders_     = move (src.fExtraHeaders_);
@@ -292,6 +294,8 @@ Headers::Headers (const Iterable<KeyValuePair<String, String>>& src)
 
 Headers& Headers::operator= (Headers&& rhs)
 {
+    shared_lock<const AssertExternallySynchronizedLock> critSec1{rhs};
+    lock_guard<const AssertExternallySynchronizedLock>  critSec2{*this};
     fExtraHeaders_     = move (rhs.fExtraHeaders_);
     fCacheControl_     = move (rhs.fCacheControl_);
     fContentLength_    = move (rhs.fContentLength_);
@@ -308,7 +312,7 @@ Headers& Headers::operator= (Headers&& rhs)
 
 optional<String> Headers::LookupOne (const String& name) const
 {
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     if (kHeaderNameEqualsComparer (name, HeaderName::kCacheControl)) {
         return fCacheControl_ ? fCacheControl_->As<String> () : optional<String>{};
     }
@@ -340,9 +344,7 @@ optional<String> Headers::LookupOne (const String& name) const
         return optional<String>{};
     }
     else if (kHeaderNameEqualsComparer (name, HeaderName::kTransferEncoding)) {
-        return fTransferEncoding_
-                   ? String::Join (fTransferEncoding_->Select<String> ([] (auto i) { return Configuration::DefaultNames<TransferEncoding>{}.GetName (i); }))
-                   : optional<String>{};
+        return fTransferEncoding_ ? fTransferEncoding_->Encode () : optional<String>{};
     }
     else if (kHeaderNameEqualsComparer (name, HeaderName::kVary)) {
         return fVary_ ? String::Join (*fVary_) : optional<String>{};
@@ -358,7 +360,7 @@ optional<String> Headers::LookupOne (const String& name) const
 
 Collection<String> Headers::LookupAll (const String& name) const
 {
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     if (kHeaderNameEqualsComparer (name, HeaderName::kCacheControl) or kHeaderNameEqualsComparer (name, HeaderName::kContentLength) or kHeaderNameEqualsComparer (name, HeaderName::kContentType) or kHeaderNameEqualsComparer (name, HeaderName::kCookie) or kHeaderNameEqualsComparer (name, HeaderName::kETag) or kHeaderNameEqualsComparer (name, HeaderName::kHost) or kHeaderNameEqualsComparer (name, HeaderName::kIfNoneMatch) or kHeaderNameEqualsComparer (name, HeaderName::kTransferEncoding) or kHeaderNameEqualsComparer (name, HeaderName::kVary)) {
         auto o = this->LookupOne (name);
         return o ? Collection<String>{*o} : Collection<String>{};
@@ -382,7 +384,8 @@ Collection<String> Headers::LookupAll (const String& name) const
 
 size_t Headers::Remove (const String& headerName)
 {
-    size_t nRemoveals{};
+    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    size_t                                             nRemoveals{};
     if (UpdateBuiltin_ (AddOrSet::eRemove, headerName, nullopt, &nRemoveals)) {
         return nRemoveals; // could be zero if its builtin, but this doesn't change anything
     }
@@ -392,7 +395,8 @@ size_t Headers::Remove (const String& headerName)
 
 size_t Headers::Remove (const String& headerName, const String& value)
 {
-    size_t nRemoveals{};
+    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    size_t                                             nRemoveals{};
     if (UpdateBuiltin_ (AddOrSet::eRemove, headerName, value, &nRemoveals)) {
         return nRemoveals;
     }
@@ -402,6 +406,7 @@ size_t Headers::Remove (const String& headerName, const String& value)
 
 void Headers::Add (const String& headerName, const String& value)
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     if (UpdateBuiltin_ (AddOrSet::eAdd, headerName, value)) {
         return;
     }
@@ -509,9 +514,7 @@ bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const opt
         if (nRemoveals != nullptr) {
             *nRemoveals = (value == nullopt and fTransferEncoding_ != nullopt) ? 1 : 0;
         }
-        fTransferEncoding_ = value
-                                 ? Containers::Set<TransferEncoding>{value->Tokenize ({','}).Select<TransferEncoding> ([] (const String& i) { return Configuration::DefaultNames<TransferEncoding>{}.PeekValue (i.c_str ()); })}
-                                 : optional<Containers::Set<TransferEncoding>>{};
+        fTransferEncoding_ = value ? TransferEncodings::Decode (*value) : optional<TransferEncodings>{};
         return true;
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kVary)) {
@@ -550,8 +553,8 @@ Mapping<String, String> Headers::As () const
 template <>
 Collection<KeyValuePair<String, String>> Headers::As () const
 {
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    Collection<KeyValuePair<String, String>>           results = fExtraHeaders_;
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+    Collection<KeyValuePair<String, String>>            results = fExtraHeaders_;
     if (fCacheControl_) {
         results.Add (KeyValuePair<String, String>{HeaderName::kCacheControl, fCacheControl_->As<String> ()});
     }
@@ -577,7 +580,7 @@ Collection<KeyValuePair<String, String>> Headers::As () const
         }
     }
     if (fTransferEncoding_) {
-        results.Add (KeyValuePair<String, String>{HeaderName::kTransferEncoding, String::Join (fTransferEncoding_->Select<String> ([] (auto i) { return Configuration::DefaultNames<TransferEncoding>{}.GetName (i); }))});
+        results.Add (KeyValuePair<String, String>{HeaderName::kTransferEncoding, fTransferEncoding_->Encode ()});
     }
     if (fVary_) {
         results.Add (KeyValuePair<String, String>{HeaderName::kVary, String::Join (*fVary_)});
