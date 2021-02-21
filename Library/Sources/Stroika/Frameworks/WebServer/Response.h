@@ -34,19 +34,6 @@
  *
  *      @todo   Have output CODEPAGE param - used for all unincode-string writes. Create Stream wrapper than does the downshuft
  *              to right codepage.
- *
- *      @todo   Cleanup interaction between Flush () and write (bytes) so clearer (document) the different cases of when we state
- *              transition and what is legal for case of transfer-encoding: chunked.
- * 
- *              PROBABLE PLAN:
- *                  RENAME eInProgress -> eInProgressPreparingHeaders
- *                  RENAME eInProgressHeaderSentState -> eInProgressPreparingBodyBeforeHeadersSent & eInProgressPreparingBodyAfterHeadersSent
- * 
- *              Once you enter the state eStartedBody (which NO LONGER IMPLES HEADERS SENT but IMPLIES ILLEGAL TO CHANGE HEADERS EXCEPT INTERNALLY)
- *              Then we can allow you to keep doing nothing but writes (and we internally update the content length accorindly)
- * 
- *              This SHOULD work for currnet idneity mode, and chunked encoding (in later case we would really flush headers).
- *              And I THINK it also works for content-endcoding for gzip.
  */
 
 namespace Stroika::Frameworks::WebServer {
@@ -97,13 +84,14 @@ namespace Stroika::Frameworks::WebServer {
          *
          * codePage.Set ()
          *      REQUIRES:
-         *          GetState () == eInProgress
+         *          GetState () == ePreparingHeaders
          *          TotalBytesWritten == 0
          * 
          * \note - if DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (fContentType_), then
          *         the characterset will be automatically folded into the used contentType. To avoid this, 
          *         Use UpdateHeader() to mdofiy teh contenttype field directly.
          * 
+         *  \req this->headersCanBeSet()
          */
         Common::Property<Characters::CodePage> codePage;
 
@@ -112,7 +100,7 @@ namespace Stroika::Frameworks::WebServer {
          * Note - this refers to an HTTP "Content-Type" - which is really potentially more than just a InternetMediaType, often
          * with the characterset appended.
          *
-         *  \req GetState () == eInProgress     // since this calls rwHeaders()
+         *  \req GetState () == ePreparingHeaders     // since this calls rwHeaders()
          * 
          *  NOTE - if DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (contentType), then
          *  the characterset will be automatically folded into the used contentType (on WRITES to the property - not reads). To avoid this, 
@@ -122,30 +110,45 @@ namespace Stroika::Frameworks::WebServer {
          *  @todo DOC / NOTE THIS CLASS OVERRIDES the assignment of contentType to do above logic...
          * 
          *      Common::Property <optional<InternetMediaType>> contentType;
+         * 
+         *  \req this->headersCanBeSet()
          */
 
     public:
         /**
          *  \note about states - certain properties (declared here and inherited) - like rwHeaders, and writes to properites like (XXX) cannot be done
-         *        unless the current state is eInProgress; and these are generally checked with assertions.
+         *        unless the current state is ePreparingHeaders; and these are generally checked with assertions.
          */
         enum class State : uint8_t {
-            eInProgress,                // A newly constructed Response starts out InProgress
-            eInProgressHeaderSentState, // It then transitions to 'header sent' state
-            eCompleted,                 // and finally to Completed
+            ePreparingHeaders,                  // A newly constructed Response starts out ePreparingHeaders state
+            ePreparingBodyBeforeHeadersSent,    // headers can no longer be adjusted, but have not been sent over the wire
+            ePreparingBodyAfterHeadersSent,     // headers have now been sent over the wire
+            eCompleted,                         // and finally to Completed
 
-            Stroika_Define_Enum_Bounds (eInProgress, eCompleted)
+            Stroika_Define_Enum_Bounds (ePreparingHeaders, eCompleted)
         };
 
     public:
         /**
-         *  The state is changed by calls to Flush (), Abort (), Redirect (), and End ()
+         *  The state may be changed by calls to Flush (), Abort (), Redirect (), and End (), and more...
          */
         Common::ReadOnlyProperty<State> state;
 
     public:
         /**
+         *  Check this (readonly) property before updating headers. For now, this is the same as this->state == ePreparingHeaders
+         * 
+         *  \note - even HTTP 1.1 allows for headers to be sent AFTER we've started sending chunks, so this interpretation MAY
+         *        change over time, but the current implementation only allows setting headers while in the preparingHeaders state
+         *        (so in other words, before any calls to Flush or write).
+         */
+        Common::ReadOnlyProperty<bool> headersCanBeSet;
+
+    public:
+        /**
          *  This cannot be reversed, but puts the response into a mode where it won't emit the body of the response.
+         * 
+         *  \req this->state == State::ePreparingHeaders
          */
         nonvirtual void EnterHeadMode ();
 
@@ -163,7 +166,7 @@ namespace Stroika::Frameworks::WebServer {
     public:
         /**
          * This signifies that the given request has been handled. Its illegal to write to this request object again, or modify
-         * any aspect of it. The state must be eInProgress or eInProgressHeaderSentState and it sets the state to eCompleted.
+         * any aspect of it. The state must be ePreparingHeaders or ePreparingBodyAfterHeadersSent and it sets the state to eCompleted.
          */
         nonvirtual void End ();
 
@@ -176,7 +179,7 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         * Only legal to call if state is eInProgress. It sets the state to eCompleted.
+         * Only legal to call if state is ePreparingHeaders. It sets the state to eCompleted.
          */
         nonvirtual void Redirect (const URI& url);
 
@@ -253,7 +256,7 @@ namespace Stroika::Frameworks::WebServer {
         [[deprecated ("Since Stroika 2.1b10 - use codePage()")]] void SetCodePage (Characters::CodePage newCodePage)
         {
             lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-            Require (fState_ == State::eInProgress);
+            Require (fState_ == State::ePreparingHeaders);
             Require (fBodyBytes_.empty ());
             bool diff  = fCodePage_ != newCodePage;
             fCodePage_ = newCodePage;
@@ -303,7 +306,7 @@ namespace Stroika::Frameworks::WebServer {
         template <typename FUNCTION>
         [[deprecated ("Since 2.1b10, use rwHeaders() directly")]] inline auto UpdateHeader (FUNCTION&& f)
         {
-            Require (fState_ == State::eInProgress);
+            Require (fState_ == State::ePreparingHeaders);
             return std::forward<FUNCTION> (f) (&this->rwHeaders ());
         }
         template <typename FUNCTION>
@@ -317,7 +320,7 @@ namespace Stroika::Frameworks::WebServer {
 
     private:
         IO::Network::Socket::Ptr                 fSocket_;
-        State                                    fState_{State::eInProgress};
+        State                                    fState_{State::ePreparingHeaders};
         Streams::OutputStream<byte>::Ptr         fUnderlyingOutStream_;
         Streams::BufferedOutputStream<byte>::Ptr fUseOutStream_;
         Characters::CodePage                     fCodePage_{Characters::kCodePage_UTF8};

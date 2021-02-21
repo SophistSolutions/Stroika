@@ -54,6 +54,7 @@ namespace Stroika::Frameworks::WebServer {
     inline void Response::EnterHeadMode ()
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        Require (fState_ == State::ePreparingHeaders);
         fHeadMode_ = true;
     }
 
@@ -65,8 +66,9 @@ namespace Stroika::Foundation::Configuration {
 #endif
     constexpr EnumNames<Frameworks::WebServer::Response::State> DefaultNames<Frameworks::WebServer::Response::State>::k{
         EnumNames<Frameworks::WebServer::Response::State>::BasicArrayInitializer{{
-            {Frameworks::WebServer::Response::State::eInProgress, L"InProgress"},
-            {Frameworks::WebServer::Response::State::eInProgressHeaderSentState, L"InProgressHeaderSentState"},
+            {Frameworks::WebServer::Response::State::ePreparingHeaders, L"Preparing-Headers"},
+            {Frameworks::WebServer::Response::State::ePreparingBodyBeforeHeadersSent, L"Preparing-Body-Before-Headers-Sent"},
+            {Frameworks::WebServer::Response::State::ePreparingBodyAfterHeadersSent, L"Preparing-Body-After-Headers-Sent"},
             {Frameworks::WebServer::Response::State::eCompleted, L"Completed"},
         }}};
 }

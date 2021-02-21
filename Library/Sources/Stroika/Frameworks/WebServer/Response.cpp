@@ -16,6 +16,7 @@
 #include "../../Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "../../Foundation/Debug/Assertions.h"
 #include "../../Foundation/Debug/Trace.h"
+#include "../../Foundation/Execution/Finally.h"
 #include "../../Foundation/IO/Network/HTTP/ClientErrorException.h"
 #include "../../Foundation/IO/Network/HTTP/Exception.h"
 #include "../../Foundation/IO/Network/HTTP/Headers.h"
@@ -55,6 +56,12 @@ namespace {
     constexpr size_t kResponseBufferReallocChunkSizeReserve_ = 16 * 1024;
 }
 
+#if qDebug
+namespace {
+    thread_local unsigned int tSuppressAssertCanModifyHeaders_ = 0;
+}
+#endif
+
 Response::Response (Response&& src)
     : Response{src.fSocket_, src.fUnderlyingOutStream_}
 {
@@ -75,7 +82,7 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newCodePage) {
               Response*                                          thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::codePage);
               lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
-              Require (thisObj->fState_ == State::eInProgress);
+              Require (thisObj->headersCanBeSet ());
               Require (thisObj->fBodyBytes_.empty ());
               bool diff           = thisObj->fCodePage_ != newCodePage;
               thisObj->fCodePage_ = newCodePage;
@@ -91,19 +98,24 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
               shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
               return thisObj->fState_;
           }}
+    , headersCanBeSet{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+        const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::headersCanBeSet);
+        shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+        return thisObj->fState_ == State::ePreparingHeaders;
+    }}
     , fSocket_{s}
     , fUnderlyingOutStream_{outStream}
     , fUseOutStream_{Streams::BufferedOutputStream<byte>::New (outStream)}
 {
 #if qDebug
-    this->status.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (fState_ == State::eInProgress); return true; });
-    this->statusAndOverrideReason.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (fState_ == State::eInProgress); return true; });
-    this->rwHeaders.rwPropertyReadHandlers ().push_front ([this] () { Require (fState_ == State::eInProgress); return nullopt; });
-    this->rwHeaders.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (fState_ == State::eInProgress); return true; });
-    this->rwHeaders ().transferEncoding.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (fState_ == State::eInProgress); return true; });
+    this->status.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return true; });
+    this->statusAndOverrideReason.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return true; });
+    this->rwHeaders.rwPropertyReadHandlers ().push_front ([this] () { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return nullopt; });
+    this->rwHeaders.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return true; });
+    this->rwHeaders ().transferEncoding.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return true; });
 #endif
     this->contentType.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) {
-        Require (fState_ == State::eInProgress);
+        Require (this->headersCanBeSet ());
         this->rwHeaders ().contentType = propertyChangedEvent.fNewValue ? AdjustContentTypeForCodePageIfNeeded_ (*propertyChangedEvent.fNewValue) : optional<InternetMediaType>{};
         return false; // cut-off - handled
     });
@@ -130,7 +142,7 @@ void Response::Flush ()
     DbgTrace (L"fState_ = %s", Characters::ToString (fState_).c_str ());
 #endif
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    if (fState_ == State::eInProgress) {
+    if (fState_ == State::ePreparingHeaders or fState_ == State::ePreparingBodyBeforeHeadersSent) {
         {
             auto    curStatusInfo = this->statusAndOverrideReason ();
             Status  curStatus     = get<0> (curStatusInfo);
@@ -140,7 +152,6 @@ void Response::Flush ()
             string  utf8          = String{tmp}.AsUTF8 ();
             fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (utf8)), reinterpret_cast<const byte*> (Containers::End (utf8)));
         }
-
         {
             for (const auto& i : this->headers ().As<> ()) {
                 string utf8 = Characters::Format (L"%s: %s\r\n", i.fKey.c_str (), i.fValue.c_str ()).AsUTF8 ();
@@ -150,10 +161,9 @@ void Response::Flush ()
             DbgTrace (L"headers: %s", Characters::ToString (headers2Write).c_str ());
 #endif
         }
-
         const char kCRLF[] = "\r\n";
         fUseOutStream_.Write (reinterpret_cast<const byte*> (kCRLF), reinterpret_cast<const byte*> (kCRLF + 2));
-        fState_ = State::eInProgressHeaderSentState;
+        fState_ = State::ePreparingBodyAfterHeadersSent;
     }
     // write BYTES to fOutStream
     if (not fBodyBytes_.empty ()) {
@@ -175,7 +185,7 @@ void Response::Flush ()
 void Response::End ()
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    Require ((fState_ == State::eInProgress) or (fState_ == State::eInProgressHeaderSentState));
+    Require ((fState_ == State::ePreparingHeaders) or (fState_ == State::ePreparingBodyBeforeHeadersSent) or (fState_ == State::ePreparingBodyAfterHeadersSent));
     if (this->headers ().transferEncoding () and this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked)) {
         constexpr string_view kEndChunk_ = "0\r\n\r\n";
         fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (kEndChunk_)), reinterpret_cast<const byte*> (Containers::End (kEndChunk_)));
@@ -202,7 +212,7 @@ void Response::Abort ()
 void Response::Redirect (const URI& url)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    Require (fState_ == State::eInProgress);
+    Require (this->headersCanBeSet ());
     fBodyBytes_.clear ();
 
     // PERHAPS should clear some header values???
@@ -217,15 +227,13 @@ void Response::Redirect (const URI& url)
 void Response::write (const byte* s, const byte* e)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    Require ((fState_ == State::eInProgress) or (fState_ == State::eInProgressHeaderSentState));
-    Require ((fState_ == State::eInProgress) or (this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked)));
+    Require (fState_ != State::eCompleted);
+    Require ((fState_ == State::ePreparingHeaders) or (fState_ == State::ePreparingBodyBeforeHeadersSent) or (this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked)));
     Require (s <= e);
     if (s < e) {
-
-        if (fState_ == State::eInProgress and this->headers ().transferEncoding () and this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked)) {
+        if (fState_ == State::ePreparingHeaders and this->headers ().transferEncoding () and this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked)) {
             Flush ();
         }
-
         if (this->headers ().transferEncoding () and this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked)) {
             // NYI
             if (not fHeadMode_) {
@@ -240,8 +248,16 @@ void Response::write (const byte* s, const byte* e)
             // Because for autocompute - illegal to call flush and then write
             Containers::ReserveSpeedTweekAddN (fBodyBytes_, (e - s), kResponseBufferReallocChunkSizeReserve_);
             fBodyBytes_.insert (fBodyBytes_.end (), s, e);
+
+#if qDebug
+            tSuppressAssertCanModifyHeaders_++;
+            [[maybe_unused]] auto&& cleanup = Execution::Finally ([] () noexcept { tSuppressAssertCanModifyHeaders_--; });
+#endif
             rwHeaders ().contentLength = fBodyBytes_.size ();
         }
+    }
+    if (fState_ == State::ePreparingHeaders) {
+        fState_ = State::ePreparingBodyBeforeHeadersSent; // NO MATTER WHAT - even if we havne't sent headers, mark that we are in a new state, so callers are forced to set headers BEFORE doing their first write
     }
 }
 
@@ -249,9 +265,9 @@ void Response::write (const wchar_t* s, const wchar_t* e)
 {
     Require (s <= e);
     if (s < e) {
-        string cpStr = Characters::WideStringToNarrow (wstring (s, e), fCodePage_);
+        string cpStr = Characters::WideStringToNarrow (wstring{s, e}, fCodePage_);
         if (not cpStr.empty ()) {
-            this->write (reinterpret_cast<const byte*> (cpStr.c_str ()), reinterpret_cast<const byte*> (cpStr.c_str () + cpStr.length ()));
+            write (reinterpret_cast<const byte*> (cpStr.c_str ()), reinterpret_cast<const byte*> (cpStr.c_str () + cpStr.length ()));
         }
     }
 }
