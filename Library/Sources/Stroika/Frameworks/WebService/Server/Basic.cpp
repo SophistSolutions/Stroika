@@ -67,6 +67,7 @@ const String WebService::Server::DocsOptions::kDefaultCSSSection =
 
 void WebService::Server::WriteDocsPage (Response* response, const Sequence<WebServiceMethodDescription>& operations, const DocsOptions& docsOptions)
 {
+    response->contentType = DataExchange::InternetMediaTypes::kHTML;
     response->writeln (L"<html>");
     response->writeln (L"<style type=\"text/css\">");
     response->writeln (docsOptions.fCSSSection);
@@ -103,5 +104,4 @@ void WebService::Server::WriteDocsPage (Response* response, const Sequence<WebSe
     response->writeln (L"</ul>");
     response->writeln (L"</body>");
     response->writeln (L"</html>");
-    response->contentType = DataExchange::InternetMediaTypes::kHTML;
 }

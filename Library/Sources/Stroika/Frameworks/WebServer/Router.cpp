@@ -194,8 +194,8 @@ struct Router::Rep_ : Interceptor::_IRep {
     {
         const Request& request  = message->request ();
         Response&      response = message->rwResponse ();
-        (handler) (message, matches);
         HandleCORSInNormallyHandledMessage_ (request, response);
+        (handler) (message, matches);
     }
     nonvirtual bool Handle_HEAD_ (Message* message) const
     {
@@ -205,8 +205,8 @@ struct Router::Rep_ : Interceptor::_IRep {
         if (optional<RequestHandler> handler = Lookup_ (HTTP::Methods::kGet, ExtractHostRelPath_ (request.url ()), request, &matches)) {
             // do someting to response so 'in HEAD mode' and won't write
             response.EnterHeadMode ();
-            (*handler) (message, matches);
             HandleCORSInNormallyHandledMessage_ (request, response);
+            (*handler) (message, matches);
             return true;
         }
         return false;

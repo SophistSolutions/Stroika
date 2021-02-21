@@ -128,8 +128,8 @@ Sequence<DataExchange::VariantValue> Server::VariantValue::OrderParamValues (con
 void Server::VariantValue::WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const Memory::BLOB& responseValue)
 {
     if (webServiceDescription.fResponseType) {
-        response->write (responseValue);
         response->contentType = *webServiceDescription.fResponseType;
+        response->write (responseValue);
     }
     else {
         WeakAssert (responseValue.empty ()); // if you returned a value you probably meant to have it written!
@@ -141,12 +141,12 @@ void Server::VariantValue::WriteResponse (Response* response, const WebServiceMe
     Require (not webServiceDescription.fResponseType.has_value () or (webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kJSON or webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kText_PLAIN)); // all we support for now
     if (webServiceDescription.fResponseType) {
         if (webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kJSON) {
-            response->write (Variant::JSON::Writer{}.WriteAsBLOB (responseValue));
             response->contentType = *webServiceDescription.fResponseType;
+            response->write (Variant::JSON::Writer{}.WriteAsBLOB (responseValue));
         }
         else if (webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kText_PLAIN) {
-            response->write (Variant::JSON::Writer{}.WriteAsBLOB (responseValue));
             response->contentType = *webServiceDescription.fResponseType;
+            response->write (Variant::JSON::Writer{}.WriteAsBLOB (responseValue));
         }
         else {
             RequireNotReached ();
