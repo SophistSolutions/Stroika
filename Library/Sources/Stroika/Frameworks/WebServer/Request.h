@@ -34,6 +34,7 @@ namespace Stroika::Frameworks::WebServer {
      *  TODO:
      *      @todo Probably/possibly hide the fInptuStream and other public
      *      @todo Maybe associated TextStream, and maybe readline method goes here
+     *      @todo https://stroika.atlassian.net/browse/STK-726 - support Transfer-Encoding: chunked (as we do for response)
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */

@@ -185,7 +185,7 @@ void Response::Flush ()
 void Response::End ()
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    Require ((fState_ == State::ePreparingHeaders) or (fState_ == State::ePreparingBodyBeforeHeadersSent) or (fState_ == State::ePreparingBodyAfterHeadersSent));
+    Require (fState_ != State::eCompleted);
     if (this->headers ().transferEncoding () and this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked)) {
         constexpr string_view kEndChunk_ = "0\r\n\r\n";
         fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (kEndChunk_)), reinterpret_cast<const byte*> (Containers::End (kEndChunk_)));

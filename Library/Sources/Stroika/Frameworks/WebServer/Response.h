@@ -31,9 +31,6 @@
  * TODO:
  *      @todo   REDO THE HTTPRESPONSE USING A BINARY OUTPUT STREAM.
  *              INTERNALLY - based on code page - construct a TEXTOUTPUTSTREAM wrapping that binary output stream!!!
- *
- *      @todo   Have output CODEPAGE param - used for all unincode-string writes. Create Stream wrapper than does the downshuft
- *              to right codepage.
  */
 
 namespace Stroika::Frameworks::WebServer {
@@ -50,7 +47,13 @@ namespace Stroika::Frameworks::WebServer {
     using HTTP::Status;
 
     /*
-     * As of yet to specify FLUSH semantics - when we flush... Probably need options (ctor/config)
+     *  \note Set headers (with this->rwHeaders()...) as early as practical (before calling write or Flush).
+     *  \note To use chunked transfer encoding (NOT THE DEFAULT) - call
+     *      \code
+     *        response->rwHeaders ().transferEncoding = HTTP::TransferEncoding::eChunked;
+     *        ... then do 
+     *        response->write (...);
+     *      \endcode
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
@@ -91,7 +94,7 @@ namespace Stroika::Frameworks::WebServer {
          *         the characterset will be automatically folded into the used contentType. To avoid this, 
          *         Use UpdateHeader() to mdofiy teh contenttype field directly.
          * 
-         *  \req this->headersCanBeSet()
+         *  \req this->headersCanBeSet() to set property
          */
         Common::Property<Characters::CodePage> codePage;
 
@@ -111,7 +114,7 @@ namespace Stroika::Frameworks::WebServer {
          * 
          *      Common::Property <optional<InternetMediaType>> contentType;
          * 
-         *  \req this->headersCanBeSet()
+         *  \req this->headersCanBeSet() to set property
          */
 
     public:
@@ -160,6 +163,8 @@ namespace Stroika::Frameworks::WebServer {
          *
          * This does NOT End the repsonse, and it CAN be called arbitrarily many times (even after the response has completed - though
          * its pointless then).
+         * 
+         *  This can be called in any state.
          */
         nonvirtual void Flush ();
 
@@ -167,6 +172,9 @@ namespace Stroika::Frameworks::WebServer {
         /**
          * This signifies that the given request has been handled. Its illegal to write to this request object again, or modify
          * any aspect of it. The state must be ePreparingHeaders or ePreparingBodyAfterHeadersSent and it sets the state to eCompleted.
+         * 
+         *  \reqquire this->state() != eComplete
+         *  \ensure this->state() == eComplete
          */
         nonvirtual void End ();
 
@@ -174,12 +182,18 @@ namespace Stroika::Frameworks::WebServer {
         /**
          * This can be called anytime, but has no effect if the status = eCompleted. It has the effect of throwing away all
          * unsent data, and closing the associated socket.
+         *
+         *  Can be called in any state
+         *  \ensure this->state() == eComplete
          */
         nonvirtual void Abort ();
 
     public:
         /**
          * Only legal to call if state is ePreparingHeaders. It sets the state to eCompleted.
+         *
+         *  \require this->headersCanBeSet
+         *  \ensure this->state() == eComplete
          */
         nonvirtual void Redirect (const URI& url);
 
@@ -187,6 +201,11 @@ namespace Stroika::Frameworks::WebServer {
         /**
          *  Depending on modes, write MAY or MAY NOT call Flush () sending the headers. So callers
          *  should set any headers before calling write (or printf which calls write).
+         * 
+         *  Note for string and wchar_t* writes, this uses this->codePage to encode the characters.
+         * 
+         *  \require (fState_ != State::eCompleted);
+         *  \require ((fState_ == State::ePreparingHeaders) or (fState_ == State::ePreparingBodyBeforeHeadersSent) or (this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked)));
          */
         nonvirtual void write (const BLOB& b);
         nonvirtual void write (const byte* start, const byte* end);
@@ -196,6 +215,7 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
+         *  Creates a string, and indirects to write ()
          */
         nonvirtual void printf (const wchar_t* format, ...);
 
