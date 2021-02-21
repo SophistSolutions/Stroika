@@ -137,7 +137,7 @@ void Response::Flush ()
             String  statusMsg     = Memory::NullCoalesce (get<1> (curStatusInfo), IO::Network::HTTP::Exception::GetStandardTextForStatus (curStatus, true));
             wstring version       = L"1.1";
             wstring tmp           = Characters::CString::Format (L"HTTP/%s %d %s\r\n", version.c_str (), curStatus, statusMsg.c_str ());
-            string  utf8          = String (tmp).AsUTF8 ();
+            string  utf8          = String{tmp}.AsUTF8 ();
             fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (utf8)), reinterpret_cast<const byte*> (Containers::End (utf8)));
         }
 

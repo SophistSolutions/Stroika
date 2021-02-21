@@ -21,7 +21,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     {
     }
     inline TransferEncodings::TransferEncodings (TransferEncoding tc)
-        : Set<TransferEncoding>{{tc}}
+        : Set<TransferEncoding>{initializer_list<TransferEncoding>{tc}}
     {
     }
 

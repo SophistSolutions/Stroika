@@ -210,9 +210,21 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual String ToString () const;
 
     public:
-        [[deprecated ("Since Stroika 2.1b10")]] void clear ();
-        [[deprecated ("Since Stroika 2.1b10")]] bool empty () const;
-        [[deprecated ("Since Stroika 2.1b10")]] const vector<byte>& GetBytes () const;
+        [[deprecated ("Since Stroika 2.1b10")]] void clear ()
+        {
+            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+            fBodyBytes_.clear ();
+        }
+        [[deprecated ("Since Stroika 2.1b10")]] bool empty () const
+        {
+            shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+            return fBodyBytes_.empty ();
+        }
+        [[deprecated ("Since Stroika 2.1b10")]] const vector<byte>& GetBytes () const
+        {
+            shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+            return fBodyBytes_;
+        }
         [[deprecated ("Since Stroika v2.1b10 use this->state property")]] inline State GetState () const
         {
             return this->state ();

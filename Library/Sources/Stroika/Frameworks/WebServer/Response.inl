@@ -51,23 +51,9 @@ namespace Stroika::Frameworks::WebServer {
         }
         write (std::begin (kEOL), std::end (kEOL));
     }
-    inline void Response::clear ()
-    {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        fBodyBytes_.clear ();
-    }
-    inline bool Response::empty () const
-    {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        return fBodyBytes_.empty ();
-    }
-    inline const vector<byte>& Response::GetBytes () const
-    {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        return fBodyBytes_;
-    }
     inline void Response::EnterHeadMode ()
     {
+        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         fHeadMode_ = true;
     }
 
