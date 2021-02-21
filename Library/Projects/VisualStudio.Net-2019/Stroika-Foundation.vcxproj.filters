@@ -1974,9 +1974,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Activity.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\EmptyObjectForConstructorSideEffect.h">
-      <Filter>Sources\Common</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Linguistics\MessageUtilities.h">
       <Filter>Sources\Linguistics</Filter>
     </ClInclude>
@@ -2075,6 +2072,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\TransferEncoding.h">
       <Filter>Sources\IO\Network\HTTP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\ObjectForSideEffects.h">
+      <Filter>Sources\Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3288,9 +3288,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Activity.inl">
       <Filter>Sources\Execution</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Common\EmptyObjectForConstructorSideEffect.inl">
-      <Filter>Sources\Common</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Linguistics\MessageUtilities.inl">
       <Filter>Sources\Linguistics</Filter>
     </None>
@@ -3383,6 +3380,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\TransferEncoding.inl">
       <Filter>Sources\IO\Network\HTTP</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Common\ObjectForSideEffects.inl">
+      <Filter>Sources\Common</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
