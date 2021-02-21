@@ -192,7 +192,7 @@ void Partition::Split (PartitionMarker* pm, size_t at)
 
     // NB: we set marker range before adding new marker for no good reason, except that
     // for quirky reasons I don't understand, reading in files is MUCH faster that
-    // way - I really don't understand the idiocyncracies of the ChunckedArrayTextStore
+    // way - I really don't understand the idiocyncracies of the ChunkedArrayTextStore
     // performance... but luckily - no real need to...
     // LGP 960515
     fTextStore.SetMarkerEnd (pm, at);

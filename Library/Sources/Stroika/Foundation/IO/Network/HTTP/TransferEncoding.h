@@ -26,19 +26,19 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 	 *	@see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding
 	 */
 	enum class TransferEncoding {
-		eChuncked,
+        eChunked,
 		eCompress,
 		eDeflate,
 		eGZip,
 		eIdentity,
 
-		Stroika_Define_Enum_Bounds (eChuncked, eIdentity)
+		Stroika_Define_Enum_Bounds (eChunked, eIdentity)
 	};
 
 
 	/**
 	 */
-    class TransferEncodings : Set<TransferEncoding> {
+    class TransferEncodings : public Set<TransferEncoding> {
     public:
         TransferEncodings (const Traversal::Iterable<TransferEncoding>& src);
         TransferEncodings (TransferEncoding tc);

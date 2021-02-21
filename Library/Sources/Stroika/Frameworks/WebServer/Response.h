@@ -35,8 +35,18 @@
  *      @todo   Have output CODEPAGE param - used for all unincode-string writes. Create Stream wrapper than does the downshuft
  *              to right codepage.
  *
- *      @todo   eExact is UNTESTED, and should have CHECKING code - so if a user writes a different amount, we detect and assert out.
- *              But that can be deferered because it probably works fine for the the case where its used properly.
+ *      @todo   Cleanup interaction between Flush () and write (bytes) so clearer (document) the different cases of when we state
+ *              transition and what is legal for case of transfer-encoding: chunked.
+ * 
+ *              PROBABLE PLAN:
+ *                  RENAME eInProgress -> eInProgressPreparingHeaders
+ *                  RENAME eInProgressHeaderSentState -> eInProgressPreparingBodyBeforeHeadersSent & eInProgressPreparingBodyAfterHeadersSent
+ * 
+ *              Once you enter the state eStartedBody (which NO LONGER IMPLES HEADERS SENT but IMPLIES ILLEGAL TO CHANGE HEADERS EXCEPT INTERNALLY)
+ *              Then we can allow you to keep doing nothing but writes (and we internally update the content length accorindly)
+ * 
+ *              This SHOULD work for currnet idneity mode, and chunked encoding (in later case we would really flush headers).
+ *              And I THINK it also works for content-endcoding for gzip.
  */
 
 namespace Stroika::Frameworks::WebServer {
@@ -134,34 +144,6 @@ namespace Stroika::Frameworks::WebServer {
         Common::ReadOnlyProperty<State> state;
 
     public:
-        enum class ContentSizePolicy : uint8_t {
-            eAutoCompute,
-            eExact,
-            eNone,
-
-            Stroika_Define_Enum_Bounds (eAutoCompute, eNone)
-        };
-        nonvirtual ContentSizePolicy GetContentSizePolicy () const;
-        /*
-         * The 1 arg overload requires csp == NONE or AutoCompute. The 2-arg variant requires
-         * its argument is Exact_CSP.
-         *
-         * Also - SetContentSizePolicy () requires GetState () == eInProgress
-         * 
-         * \note @see https://stroika.atlassian.net/browse/STK-721
-         */
-        nonvirtual void SetContentSizePolicy (ContentSizePolicy csp);
-        nonvirtual void SetContentSizePolicy (ContentSizePolicy csp, uint64_t size);
-
-    public:
-        /**
-         *  This can be true if:
-         *      GetContentSizePolicy () == eAutoCompute or eExact.
-         *      \note - you cannot call AddHeader (Content-Length)
-         */
-        nonvirtual bool IsContentLengthKnown () const;
-
-    public:
         /**
          *  This cannot be reversed, but puts the response into a mode where it won't emit the body of the response.
          */
@@ -171,7 +153,7 @@ namespace Stroika::Frameworks::WebServer {
         /**
          * This begins sending the parts of the message which have already been accumulated to the client.
          * Its illegal to modify anything in the headers etc - after this - but additional writes can happen
-         * if we are NOT in automatic-include-Content-Length mode (NYI).
+         * IFF you first set the respose.transferEncoding mode to TransferEncoding::eChunked.
          *
          * This does NOT End the repsonse, and it CAN be called arbitrarily many times (even after the response has completed - though
          * its pointless then).
@@ -200,6 +182,8 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
+         *  Depending on modes, write MAY or MAY NOT call Flush () sending the headers. So callers
+         *  should set any headers before calling write (or printf which calls write).
          */
         nonvirtual void write (const BLOB& b);
         nonvirtual void write (const byte* start, const byte* end);
@@ -221,30 +205,14 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         *  @todo consider if we should lose this? Just clears fBodyBytes..
-         */
-        nonvirtual void clear ();
-
-    public:
-        /**
-         *  @todo consider if we should lose this?
-         *  Returns true iff bodyBytes lenght is zero.
-         */
-        nonvirtual bool empty () const;
-
-    public:
-        /**
-         * REDO USING BINARY STREAM (CTOR SHOULD TAKE BINARY STREAM CTOR)
-         */
-        nonvirtual const vector<byte>& GetBytes () const;
-
-    public:
-        /**
          *  @see Characters::ToString ();
          */
         nonvirtual String ToString () const;
 
     public:
+        [[deprecated ("Since Stroika 2.1b10")]] void clear ();
+        [[deprecated ("Since Stroika 2.1b10")]] bool empty () const;
+        [[deprecated ("Since Stroika 2.1b10")]] const vector<byte>& GetBytes () const;
         [[deprecated ("Since Stroika v2.1b10 use this->state property")]] inline State GetState () const
         {
             return this->state ();
@@ -342,7 +310,6 @@ namespace Stroika::Frameworks::WebServer {
         Streams::BufferedOutputStream<byte>::Ptr fUseOutStream_;
         Characters::CodePage                     fCodePage_{Characters::kCodePage_UTF8};
         vector<byte>                             fBodyBytes_{};
-        ContentSizePolicy                        fContentSizePolicy_{ContentSizePolicy::eAutoCompute};
         bool                                     fHeadMode_{false};
     };
 

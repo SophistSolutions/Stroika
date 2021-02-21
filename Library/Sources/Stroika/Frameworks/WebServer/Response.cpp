@@ -58,12 +58,11 @@ namespace {
 Response::Response (Response&& src)
     : Response{src.fSocket_, src.fUnderlyingOutStream_}
 {
-    fState_             = src.fState_;
-    fUseOutStream_      = src.fUseOutStream_;
-    fCodePage_          = src.fCodePage_;
-    fBodyBytes_         = src.fBodyBytes_;
-    fContentSizePolicy_ = src.fContentSizePolicy_;
-    fHeadMode_          = src.fHeadMode_;
+    fState_        = src.fState_;
+    fUseOutStream_ = src.fUseOutStream_;
+    fCodePage_     = src.fCodePage_;
+    fBodyBytes_    = src.fBodyBytes_;
+    fHeadMode_     = src.fHeadMode_;
 }
 
 Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream<byte>::Ptr& outStream, const optional<InternetMediaType>& ct)
@@ -101,34 +100,15 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
     this->statusAndOverrideReason.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (fState_ == State::eInProgress); return true; });
     this->rwHeaders.rwPropertyReadHandlers ().push_front ([this] () { Require (fState_ == State::eInProgress); return nullopt; });
     this->rwHeaders.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (fState_ == State::eInProgress); return true; });
+    this->rwHeaders ().transferEncoding.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (fState_ == State::eInProgress); return true; });
 #endif
     this->contentType.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) {
+        Require (fState_ == State::eInProgress);
         this->rwHeaders ().contentType = propertyChangedEvent.fNewValue ? AdjustContentTypeForCodePageIfNeeded_ (*propertyChangedEvent.fNewValue) : optional<InternetMediaType>{};
         return false; // cut-off - handled
     });
     rwHeaders ().server      = L"Stroka-Based-Web-Server"_k;
     rwHeaders ().contentType = ct;
-}
-
-void Response::SetContentSizePolicy (ContentSizePolicy csp)
-{
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    Require (csp == ContentSizePolicy::eAutoCompute or csp == ContentSizePolicy::eNone);
-    fContentSizePolicy_ = csp;
-}
-
-void Response::SetContentSizePolicy (ContentSizePolicy csp, uint64_t size)
-{
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    Require (csp == ContentSizePolicy::eExact);
-    Require (fState_ == State::eInProgress);
-    fContentSizePolicy_              = csp;
-    this->rwHeaders ().contentLength = size;
-}
-
-bool Response::IsContentLengthKnown () const
-{
-    return fContentSizePolicy_ != ContentSizePolicy::eNone;
 }
 
 InternetMediaType Response::AdjustContentTypeForCodePageIfNeeded_ (const InternetMediaType& ct) const
@@ -196,6 +176,10 @@ void Response::End ()
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     Require ((fState_ == State::eInProgress) or (fState_ == State::eInProgressHeaderSentState));
+    if (this->headers ().transferEncoding () and this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked)) {
+        constexpr string_view kEndChunk_ = "0\r\n\r\n";
+        fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (kEndChunk_)), reinterpret_cast<const byte*> (Containers::End (kEndChunk_)));
+    }
     Flush ();
     fState_ = State::eCompleted;
     Ensure (fState_ == State::eCompleted);
@@ -234,13 +218,28 @@ void Response::write (const byte* s, const byte* e)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     Require ((fState_ == State::eInProgress) or (fState_ == State::eInProgressHeaderSentState));
-    Require ((fState_ == State::eInProgress) or (GetContentSizePolicy () != ContentSizePolicy::eAutoCompute));
+    Require ((fState_ == State::eInProgress) or (this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked)));
     Require (s <= e);
     if (s < e) {
-        Containers::ReserveSpeedTweekAddN (fBodyBytes_, (e - s), kResponseBufferReallocChunkSizeReserve_);
-        fBodyBytes_.insert (fBodyBytes_.end (), s, e);
-        if (GetContentSizePolicy () == ContentSizePolicy::eAutoCompute) {
+
+        if (fState_ == State::eInProgress and this->headers ().transferEncoding () and this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked)) {
+            Flush ();
+        }
+
+        if (this->headers ().transferEncoding () and this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked)) {
+            // NYI
+            if (not fHeadMode_) {
+                string n = CString::Format ("%x\r\n", e - s);
+                fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (n)), reinterpret_cast<const byte*> (Containers::End (n)));
+                fUseOutStream_.Write (s, e);
+                const char kCRLF[] = "\r\n";
+                fUseOutStream_.Write (reinterpret_cast<const byte*> (kCRLF), reinterpret_cast<const byte*> (kCRLF + 2));
+            }
+        }
+        else {
             // Because for autocompute - illegal to call flush and then write
+            Containers::ReserveSpeedTweekAddN (fBodyBytes_, (e - s), kResponseBufferReallocChunkSizeReserve_);
+            fBodyBytes_.insert (fBodyBytes_.end (), s, e);
             rwHeaders ().contentLength = fBodyBytes_.size ();
         }
     }
@@ -248,19 +247,11 @@ void Response::write (const byte* s, const byte* e)
 
 void Response::write (const wchar_t* s, const wchar_t* e)
 {
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    Require ((fState_ == State::eInProgress) or (fState_ == State::eInProgressHeaderSentState));
-    Require ((fState_ == State::eInProgress) or (GetContentSizePolicy () != ContentSizePolicy::eAutoCompute));
     Require (s <= e);
     if (s < e) {
-        wstring tmp   = wstring (s, e);
-        string  cpStr = Characters::WideStringToNarrow (tmp, fCodePage_);
+        string cpStr = Characters::WideStringToNarrow (wstring (s, e), fCodePage_);
         if (not cpStr.empty ()) {
-            fBodyBytes_.insert (fBodyBytes_.end (), reinterpret_cast<const byte*> (cpStr.c_str ()), reinterpret_cast<const byte*> (cpStr.c_str () + cpStr.length ()));
-            if (GetContentSizePolicy () == ContentSizePolicy::eAutoCompute) {
-                // Because for autocompute - illegal to call flush and then write
-                rwHeaders ().contentLength = fBodyBytes_.size ();
-            }
+            this->write (reinterpret_cast<const byte*> (cpStr.c_str ()), reinterpret_cast<const byte*> (cpStr.c_str () + cpStr.length ()));
         }
     }
 }

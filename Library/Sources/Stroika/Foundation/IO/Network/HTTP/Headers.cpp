@@ -231,7 +231,12 @@ Headers::Headers ()
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newTransferEncodings) {
               Headers*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::transferEncoding);
               lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
-              thisObj->fTransferEncoding_ = newTransferEncodings;
+              if (newTransferEncodings && newTransferEncodings->length () == 1 && newTransferEncodings->Contains (TransferEncoding::eIdentity)) {
+                  thisObj->fTransferEncoding_ = nullopt;
+              }
+              else {
+                  thisObj->fTransferEncoding_ = newTransferEncodings;
+              }
           }}
     , vary{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<Containers::Set<String>> {
@@ -514,7 +519,7 @@ bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const opt
         if (nRemoveals != nullptr) {
             *nRemoveals = (value == nullopt and fTransferEncoding_ != nullopt) ? 1 : 0;
         }
-        fTransferEncoding_ = value ? TransferEncodings::Decode (*value) : optional<TransferEncodings>{};
+        this->transferEncoding = value ? TransferEncodings::Decode (*value) : optional<TransferEncodings>{};
         return true;
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kVary)) {

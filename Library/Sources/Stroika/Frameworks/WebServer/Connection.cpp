@@ -244,34 +244,10 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
             } break;
         }
 
-            // Handle using interceptor chain - this is the guts of the high level handling
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"Handing request %s to interceptor chain", Characters::ToString (request ()).c_str ());
-#endif
-#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-        WriteLogConnectionMsg_ (Characters::Format (L"Handing request %s to interceptor chain", Characters::ToString (request ()).c_str ()));
-#endif
-        try {
-            fInterceptorChain_.HandleMessage (fMessage_.get ());
-        }
-        catch (...) {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"Interceptor-Chain caught exception handling message: %s", Characters::ToString (current_exception ()).c_str ());
-#endif
-#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-            WriteLogConnectionMsg_ (Characters::Format (L"Interceptor-Chain caught exception handling message: %s", Characters::ToString (current_exception ()).c_str ()));
-#endif
-        }
-
         /*
          *  Now bookkeeping and handling of keepalive headers
          */
         bool thisMessageKeepAlive = fMessage_->request ().keepAliveRequested;
-        if (thisMessageKeepAlive) {
-            if (not response ().IsContentLengthKnown ()) {
-                thisMessageKeepAlive = false;
-            }
-        }
         if (thisMessageKeepAlive) {
             // Check for keepalive headers, and handle them appropriately
             // only meaningful HTTP 1.1 and earlier and only if Connection: keep-alive
@@ -295,6 +271,29 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
                 }
             }
         }
+        // From https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+        //      HTTP/1.1 applications that do not support persistent connections MUST include the "close" connection option in every message.
+        this->rwResponse ().rwHeaders ().connection = thisMessageKeepAlive ? Headers::eKeepAlive : Headers::eClose;
+
+        // Handle using interceptor chain - this is the guts of the high level handling
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace (L"Handing request %s to interceptor chain", Characters::ToString (request ()).c_str ());
+#endif
+#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+        WriteLogConnectionMsg_ (Characters::Format (L"Handing request %s to interceptor chain", Characters::ToString (request ()).c_str ()));
+#endif
+        try {
+            fInterceptorChain_.HandleMessage (fMessage_.get ());
+        }
+        catch (...) {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"Interceptor-Chain caught exception handling message: %s", Characters::ToString (current_exception ()).c_str ());
+#endif
+#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+            WriteLogConnectionMsg_ (Characters::Format (L"Interceptor-Chain caught exception handling message: %s", Characters::ToString (current_exception ()).c_str ()));
+#endif
+        }
+
         if (thisMessageKeepAlive) {
             // be sure we advance the read pointer over the message body,
             // lest we start reading part of the previous message as the next message
@@ -320,10 +319,6 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
             }
         }
 
-        // From https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
-        //      HTTP/1.1 applications that do not support persistent connections MUST include the "close" connection option in every message.
-
-        this->rwResponse ().rwHeaders ().connection = thisMessageKeepAlive ? Headers::eKeepAlive : Headers::eClose;
         this->rwResponse ().End ();
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
         WriteLogConnectionMsg_ (L"Did GetResponse ().End ()");

@@ -79,6 +79,12 @@ namespace {
         // Can declare arguments as Request*,Response*
         static void DefaultPage_ (Request*, Response* response)
         {
+            //constexpr bool kUseTransferCoding_ = true;
+            constexpr bool kUseTransferCoding_ = false;
+            if (kUseTransferCoding_) {
+                response->rwHeaders ().transferEncoding = HTTP::TransferEncoding::eChunked;
+            }
+            response->contentType = DataExchange::InternetMediaTypes::kHTML;
             response->writeln (L"<html><body>");
             response->writeln (L"<p>Hi Mom</p>");
             response->writeln (L"<ul>");
@@ -89,8 +95,6 @@ namespace {
             response->writeln (L"<li>curl http://localhost:8080/Files/index.html -v</li>");
             response->writeln (L"</ul>");
             response->writeln (L"</body></html>");
-
-            response->contentType = DataExchange::InternetMediaTypes::kHTML;
         }
         // Can declare arguments as Message* message
         static void SetAppState_ (Message* message)

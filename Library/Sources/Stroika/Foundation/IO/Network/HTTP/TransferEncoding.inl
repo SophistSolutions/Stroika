@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Configuration {
     template <>
     constexpr EnumNames<IO::Network::HTTP::TransferEncoding> DefaultNames<IO::Network::HTTP::TransferEncoding>::k{
         EnumNames<IO::Network::HTTP::TransferEncoding>::BasicArrayInitializer{{
-            {IO::Network::HTTP::TransferEncoding::eChuncked, L"chuncked"},
+            {IO::Network::HTTP::TransferEncoding::eChunked, L"chunked"},
             {IO::Network::HTTP::TransferEncoding::eCompress, L"compress"},
             {IO::Network::HTTP::TransferEncoding::eDeflate, L"deflate"},
             {IO::Network::HTTP::TransferEncoding::eGZip, L"gzip"},

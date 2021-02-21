@@ -66,11 +66,6 @@ namespace Stroika::Frameworks::WebServer {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         return fBodyBytes_;
     }
-    inline Response::ContentSizePolicy Response::GetContentSizePolicy () const
-    {
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        return fContentSizePolicy_;
-    }
     inline void Response::EnterHeadMode ()
     {
         fHeadMode_ = true;

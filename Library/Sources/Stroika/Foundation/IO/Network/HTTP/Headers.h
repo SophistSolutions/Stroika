@@ -281,8 +281,10 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  because the default - TransferEncoding::eIdentity is undertood when the header is missing.
          * 
          *  \note - this is generally NOT to be used for compression (though it can be).
+         * 
+         *  \note because a TransferEncodings object with the single entry eIdentity is the default, that state is treated as equivilent to missing (so assign of such an array to this property results in it being missing)
          */
-        Common::Property<optional<TransferEncodings>> transferEncoding;
+        Common::ExtendableProperty<optional<TransferEncodings>> transferEncoding;
 
     public:
         /**
