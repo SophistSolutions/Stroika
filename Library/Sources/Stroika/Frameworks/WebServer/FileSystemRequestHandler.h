@@ -50,10 +50,12 @@ namespace Stroika::Frameworks::WebServer {
 
     struct FileSystemRequestHandler::Options {
         /**
+         *  @todo DOCS
          */
         optional<String> fURLPrefix2Strip;
 
         /**
+         *  @todo DOCS
          */
         optional<Sequence<String>> fDefaultIndexFileNames;
 
@@ -68,6 +70,7 @@ namespace Stroika::Frameworks::WebServer {
  
         /**
          * ReportETags
+         *      @todo NYI
          */
         optional<ETagStrategy> fETagStrategy;
 
@@ -75,24 +78,29 @@ namespace Stroika::Frameworks::WebServer {
          */
         static constexpr ETagStrategy kDefault_ETagStrategy{eDigest};
 
+        // @todo
         // ETagCacheSize (ether digest or datestamp - whether we keep in RAM idea of current value
         // to respond without read (note date check is still a form of read); but this cache is less
         // useful IF using datestamp etag strategy
 
-        // flag todo auto cache control
-        // if true, then ??? maybe have optional
-        // CacheControl object based on regexp on filename?
-        // that may make more sense cz tmpfile names - like ###.css - we want to mark as lasting forver
-        // basically, and we want user to specify what todo for top level HTML file (index.html)
-        // EG
-        // Mapping<> {// WAG AT REGEX
-        //      {RegExp{".*[0-9a-f]+.css"}, CacheControl{CacheControl::ePublic,.fMaxAge=CacheControl::kMaximumAge}},
-        //      {RegExp{".*[0-9a-f]+.js"}, CacheControl{CacheControl::ePublic,.fMaxAge=CacheControl::kMaximumAge}},
-        //      {RegExp{"index.html"}, CacheControl{CacheControl::ePublic,.fMaxAge=Duration{"PT1D"}}},
-        //      
-        //  RegExp applied to the relative path name from filesystemRoot, written using '/' style separators
+        /**
+         *  fCacheControlSettings provides a sequence of RegExp: CacheControl pairs. These are automatically applied
+         *  to the host-relative pathname for the resource (foo/bar/blah.gif forward slash even in windows) - and
+         *  the first matching regexp - if any - we default to using its associated Cache-Control settings.
+         * 
+         *  This makes it easy to setup default/automatic rules for applying cache control settings.
+         * 
+         *  \par Example Usage:
+         *      \code
+         *          Sequence<pair<RegularExpression, CacheControl>> kFSCacheControlSettings_ {
+         *              // webpack generates js/css files with a hex/hash prefix, so those are immutable
+         *              pair<RegularExpression, CacheControl>{RegularExpression{L".*[0-9a-fA-F]+\\.(js|css|js\\.map)", CompareOptions::eCaseInsensitive}, CacheControl::kImmutable},
+         *              // treat everything else as valid to be cached for a day (very arbitrary)
+         *              pair<RegularExpression, CacheControl>{RegularExpression::kAny, CacheControl{.fMaxAge = Duration{24h}.As<int32_t> ()}},
+         *          };
+         *      \endcode      
+         */
         optional<Sequence<pair<RegularExpression, CacheControl>>> fCacheControlSettings;
-
     };
     inline const FileSystemRequestHandler::Options FileSystemRequestHandler::kDefaultOptions;
 
