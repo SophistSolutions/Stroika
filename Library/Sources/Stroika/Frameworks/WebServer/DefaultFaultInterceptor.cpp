@@ -33,13 +33,13 @@ struct DefaultFaultInterceptor::Rep_ : Interceptor::_IRep {
             }
             catch (const IO::Network::HTTP::Exception& ee) {
                 response.statusAndOverrideReason = make_tuple (ee.GetStatus (), ee.GetReason ());
+                response.contentType             = DataExchange::InternetMediaTypes::kText_PLAIN;
                 response.writeln (Characters::ToString (ee).c_str ());
-                response.contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
             }
             catch (...) {
-                response.status = IO::Network::HTTP::StatusCodes::kInternalError;
-                response.writeln (Characters::ToString (e).c_str ());
+                response.status      = IO::Network::HTTP::StatusCodes::kInternalError;
                 response.contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
+                response.writeln (Characters::ToString (e).c_str ());
             }
         }
         catch (...) {
