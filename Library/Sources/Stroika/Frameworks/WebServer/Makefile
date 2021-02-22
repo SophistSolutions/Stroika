@@ -23,7 +23,7 @@ Objs	=	\
 	$(ObjDir)ConnectionManager${OBJ_SUFFIX}\
 	$(ObjDir)Connection${OBJ_SUFFIX}\
 	$(ObjDir)DefaultFaultInterceptor${OBJ_SUFFIX}\
-	$(ObjDir)FileSystemRouter${OBJ_SUFFIX}\
+	$(ObjDir)FileSystemRequestHandler${OBJ_SUFFIX}\
 	$(ObjDir)Interceptor${OBJ_SUFFIX}\
 	$(ObjDir)InterceptorChain${OBJ_SUFFIX}\
 	$(ObjDir)Message${OBJ_SUFFIX}\

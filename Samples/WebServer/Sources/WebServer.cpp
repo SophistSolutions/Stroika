@@ -17,9 +17,10 @@
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
 #include "Stroika/Foundation/Streams/TextReader.h"
+#include "Stroika/Foundation/Time/Duration.h"
 
 #include "Stroika/Frameworks/WebServer/ConnectionManager.h"
-#include "Stroika/Frameworks/WebServer/FileSystemRouter.h"
+#include "Stroika/Frameworks/WebServer/FileSystemRequestHandler.h"
 #include "Stroika/Frameworks/WebServer/Router.h"
 
 #include "AppVersion.h"
@@ -33,10 +34,22 @@ using namespace Stroika::Frameworks::WebServer;
 
 using Characters::String;
 using Memory::BLOB;
+using Stroika::Frameworks::WebServer::FileSystemRequestHandler;
 using Stroika::Frameworks::WebServer::Request;
 using Stroika::Frameworks::WebServer::Response;
+using Time::Duration;
 
 namespace {
+    Sequence<pair<RegularExpression, CacheControl>> kCacheControlSettings_{
+#if __cpp_designated_initializers
+        pair<RegularExpression, CacheControl>{RegularExpression{L".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl{.fMaxAge = Duration{24h}.As<double> ()}}
+#else
+        pair<RegularExpression, CacheControl>{RegularExpression{L".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl{nullopt, nullopt, false, nullopt, Duration{24h}.As<double> ()}}
+#endif
+    };
+
+    FileSystemRequestHandler::Options kFSHandlersOptions_{L"Files"_k, Sequence<String>{L"index.html"_k}, nullopt, kCacheControlSettings_};
+
     /*
      *  It's often helpful to structure together, routes, special interceptors, with your connection manager, to package up
      *  all the logic /options for HTTP interface.
@@ -50,17 +63,15 @@ namespace {
         MyWebServer_ (uint16_t portNumber)
             : kRoutes_
         {
-            Route{HTTP::MethodsRegEx::kGet, L""_RegEx, DefaultPage_},
+            Route{L""_RegEx, DefaultPage_},
                 Route{HTTP::MethodsRegEx::kPost, L"SetAppState"_RegEx, SetAppState_},
-                Route{HTTP::MethodsRegEx::kGet, L"FRED"_RegEx, [] (Request*, Response* response) {
+                Route{L"FRED"_RegEx, [] (Request*, Response* response) {
                           response->write (L"FRED");
                           response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
                       }},
                 Route
             {
-                HTTP::MethodsRegEx::kGet,
-                    L"Files/.*"_RegEx,
-                    FileSystemRouter{Execution::GetEXEDir () / L"html", L"Files"_k, Sequence<String>{L"index.html"_k}},
+                L"Files/.*"_RegEx, FileSystemRequestHandler { Execution::GetEXEDir () / L"html", kFSHandlersOptions_ }
             }
         }
 #if __cpp_designated_initializers

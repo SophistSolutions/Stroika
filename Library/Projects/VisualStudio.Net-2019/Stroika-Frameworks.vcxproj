@@ -309,7 +309,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Connection.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\ConnectionManager.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\DefaultFaultInterceptor.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\FileSystemRouter.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\FileSystemRequestHandler.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Interceptor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\InterceptorChain.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\LoggingInterceptor.cpp" />
@@ -324,6 +324,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\ConnectionManager.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\CORS.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\DefaultFaultInterceptor.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\FileSystemRequestHandler.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\FileSystemRouter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Interceptor.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\InterceptorChain.h" />
@@ -339,7 +340,7 @@
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\ConnectionManager.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\CORS.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\DefaultFaultInterceptor.inl" />
-    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\FileSystemRouter.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\FileSystemRequestHandler.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Interceptor.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\InterceptorChain.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\LoggingInterceptor.inl" />

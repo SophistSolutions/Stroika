@@ -13,7 +13,7 @@
 #include "../../Foundation/IO/Network/HTTP/ClientErrorException.h"
 #include "../../Foundation/Streams/InputStream.h"
 
-#include "FileSystemRouter.h"
+#include "FileSystemRequestHandler.h"
 
 using std::byte;
 
@@ -33,15 +33,25 @@ using IO::Network::HTTP::ClientErrorException;
 
 namespace {
     struct FSRouterRep_ {
-        filesystem::path fFSRoot_;
-        optional<String> fURLPrefix2Strip;
-        Sequence<String> fDefaultIndexFileNames;
+        filesystem::path                              fFSRoot_;
+        optional<String>                              fURLPrefix2Strip;
+        Sequence<String>                              fDefaultIndexFileNames;
+        vector<pair<RegularExpression, CacheControl>> fCacheControlSettings;
 
-        FSRouterRep_ (const filesystem::path& filesystemRoot, const optional<String>& urlPrefix2Strip, const Sequence<String>& defaultIndexFileNames)
+        FSRouterRep_ (
+            const filesystem::path&                                          filesystemRoot,
+            const optional<String>&                                          urlPrefix2Strip,
+            const Sequence<String>&                                          defaultIndexFileNames,
+            const optional<Sequence<pair<RegularExpression, CacheControl>>>& cacheControlSettings)
             : fFSRoot_{filesystem::canonical (filesystemRoot)}
             , fURLPrefix2Strip{urlPrefix2Strip}
             , fDefaultIndexFileNames{defaultIndexFileNames}
         {
+            if (cacheControlSettings) {
+                for (const auto i : *cacheControlSettings) {
+                    fCacheControlSettings.push_back (i);
+                }
+            }
         }
         void HandleMessage (Message* m)
         {
@@ -54,9 +64,10 @@ namespace {
             using DataExchange::InternetMediaTypeRegistry;
             // super primitive draft
             RequireNotNull (m);
-            filesystem::path fn{ExtractFileName_ (m)};
+            String           urlHostRelPath{ExtractURLHostRelPath_ (m)};
+            filesystem::path fn{fFSRoot_ / filesystem::path{urlHostRelPath.As<wstring> ()}};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}...FileSystemRouter...HandleMessage", L"relURL='%s', serving fn='%s'", m->PeekRequest ()->GetURL ().GetAuthorityRelativeResource ().c_str (), fn.c_str ())};
+            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}...FileSystemRequestHandler...HandleMessage", L"relURL='%s', serving fn='%s'", m->PeekRequest ()->GetURL ().GetAuthorityRelativeResource ().c_str (), fn.c_str ())};
 #endif
             try {
                 Response&              response = m->rwResponse ();
@@ -67,6 +78,7 @@ namespace {
                     DbgTrace (L"content-type: %s", oMediaType->ToString ().c_str ());
 #endif
                 }
+                ApplyCacheControl_ (response, urlHostRelPath);
                 response.write (in.ReadAll ());
             }
             catch (const system_error& e) {
@@ -81,7 +93,15 @@ namespace {
                 }
             }
         }
-        filesystem::path ExtractFileName_ (const Message* m) const
+        void ApplyCacheControl_ (Response& r, const String& urlRelPath) const
+        {
+            for (const auto& i : fCacheControlSettings) {
+                if (urlRelPath.Match (i.first)) {
+                    r.rwHeaders ().cacheControl = i.second;
+                }
+            }
+        }
+        String ExtractURLHostRelPath_ (const Message* m) const
         {
             const Request& request        = m->request ();
             String         urlHostRelPath = request.url ().GetAbsPath<String> ().SubString (1);
@@ -100,17 +120,17 @@ namespace {
                 //@todo tmphack - need to try a bunch and look for 'access'
                 urlHostRelPath += fDefaultIndexFileNames[0];
             }
-            return fFSRoot_ / filesystem::path (urlHostRelPath.As<wstring> ());
+            return urlHostRelPath;
         }
     };
 }
 
 /*
  ********************************************************************************
- ************************* WebServer::FileSystemRouter **************************
+ ************************* WebServer::FileSystemRequestHandler ******************
  ********************************************************************************
  */
-FileSystemRouter::FileSystemRouter (const filesystem::path& filesystemRoot, const optional<String>& urlPrefix2Strip, const Sequence<String>& defaultIndexFileNames)
-    : RequestHandler{[rep = make_shared<FSRouterRep_> (filesystemRoot, urlPrefix2Strip, defaultIndexFileNames)] (Message* m) -> void { rep->HandleMessage (m); }}
+FileSystemRequestHandler::FileSystemRequestHandler (const filesystem::path& filesystemRoot, const Options& options)
+    : RequestHandler{[rep = make_shared<FSRouterRep_> (filesystemRoot, options.fURLPrefix2Strip, Memory::NullCoalesce (options.fDefaultIndexFileNames), options.fCacheControlSettings)] (Message* m) -> void { rep->HandleMessage (m); }}
 {
 }

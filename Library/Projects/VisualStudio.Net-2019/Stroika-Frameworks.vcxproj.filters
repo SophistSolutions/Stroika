@@ -76,9 +76,6 @@
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\DefaultFaultInterceptor.inl">
       <Filter>WebServer</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\FileSystemRouter.inl">
-      <Filter>WebServer</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Interceptor.inl">
       <Filter>WebServer</Filter>
     </None>
@@ -236,6 +233,9 @@
       <Filter>Led</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\CORS.inl">
+      <Filter>WebServer</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\FileSystemRequestHandler.inl">
       <Filter>WebServer</Filter>
     </None>
   </ItemGroup>
@@ -426,6 +426,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\CORS.h">
       <Filter>WebServer</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\FileSystemRequestHandler.h">
+      <Filter>WebServer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Led">
@@ -556,9 +559,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\DefaultFaultInterceptor.cpp">
       <Filter>WebServer</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\FileSystemRouter.cpp">
-      <Filter>WebServer</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Interceptor.cpp">
       <Filter>WebServer</Filter>
     </ClCompile>
@@ -681,6 +681,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\WordWrappedTextInteractor.cpp">
       <Filter>Led</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\FileSystemRequestHandler.cpp">
+      <Filter>WebServer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
