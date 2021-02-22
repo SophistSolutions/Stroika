@@ -52,6 +52,9 @@ CacheControl CacheControl::Parse (const String& headerValue)
         if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, L"must-revalidate")) {
             r.fMustRevalidate = true;
         }
+        else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, L"immutable")) {
+            r.fImmutable = true;
+        }
         else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, L"age") && vv.length () >= 2) {
             r.fAge = parseInt (vv[1]);
         }
@@ -95,6 +98,10 @@ String CacheControl::As () const
     if (fMustRevalidate) {
         handleComma ();
         sb += L"must-revalidate"sv;
+    }
+    if (fImmutable) {
+        handleComma ();
+        sb += L"immutable"sv;
     }
     if (fAge) {
         handleComma ();

@@ -28,6 +28,32 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      *          auto cc3 = CacheControl{.fMaxAge=1234};                                         // Cache-Control: max-age=1234
      *          auto cc3 = CacheControl{.fMaxAge=604800};                                       // Cache-Control: public, max-age=604800
      *      \endcode
+     * 
+     *  \par Example Usage (@see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#caching_static_assets)
+     *      \code
+     *          auto cc = CacheControl{.fVisibility=CacheControl::ePublic, .fImmutable=true, .fMaxAge=CacheControl::kMaximumAgeValue}; // Cache-Control: public, max-age=2147483647, immutable
+     *          see kImmutable
+     *      \endcode
+     * 
+     *  \par Example Usage (@see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#preventing_caching)
+     *      \code
+     *          auto cc1 = CacheControl{.fStoreRestriction=CacheControl::StoreRestriction::eNoStore};             // Cache-Control: no-store
+     *          auto cc2 = CacheControl{.fStoreRestriction=CacheControl::StoreRestriction::eNoStore, .fMaxAge=0}; // Cache-Control: no-store max-age=0; like above but forces clear of existing cached item
+     *          see kDisableCaching
+     *      \endcode
+     *
+     *  \par Example Usage (Web-Services) - just a rough example cuz this will depend alot on the web-service
+     *      \code
+     *          auto cc1 = CacheControl{.fVisibility=CacheControl::ePrivate, .fMaxAge=Duration{30s}.As<int> ()}; // Cache-Control: private, max-age=30
+     *          auto cc2 = CacheControl::kDisableCaching;
+     *      \endcode
+     *
+     *  \par Example Usage (static content that could change) - just a rough example cuz this will depend alot on your application
+     *      \code
+     *          auto cc1 = CacheControl{.fVisibility=CacheControl::ePublic, .fMaxAge=Duration{3*24h}.As<int> ()}; // Cache-Control: public, max-age=259200
+     *          auto cc2 = CacheControl::kDisableCaching;
+     *      \endcode
+     * 
      */
     struct CacheControl {
 
@@ -73,6 +99,11 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /**
          */
         bool fMustRevalidate{false};
+
+        /**
+         * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#revalidation_and_reloading
+         */
+        bool fImmutable{false};
 
         /**
          *  Used by servers just in proxying (otherwise no reason to return something with a non-zero age)
@@ -129,9 +160,37 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          */
         nonvirtual strong_ordering operator<=> (const CacheControl&) const = default;
 #endif
+    public:
+        /**
+         *  \par Example Usage (@see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#caching_static_assets)
+         *      \code
+         *          kImmutable = CacheControl{.fVisibility=CacheControl::ePublic, .fMaxAge=CacheControl::kMaximumAgeValue, .fImmutable=true}; // Cache-Control: public, max-age=2147483647, immutable
+         *      \endcode
+         */
+        static const CacheControl kImmutable;
+
+    public:
+        /**
+         *  \par Example Usage (@see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#preventing_caching)
+         *      \code
+         *          auto cc = CacheControl{.fStoreRestriction=CacheControl::StoreRestriction::eNoStore};             // Cache-Control: no-store
+         *      \endcode
+         */
+        static const CacheControl kDisableCaching;
     };
     template <>
     Characters::String CacheControl::As () const;
+
+#if __cpp_designated_initializers
+    constexpr const CacheControl CacheControl::kImmutable{.fVisibility = CacheControl::ePublic, .fImmutable = true, .fMaxAge = CacheControl::kMaximumAgeValue};
+#else
+    constexpr const CacheControl CacheControl::kImmutable{nullopt, CacheControl::ePublic, false, true, CacheControl::kMaximumAgeValue};
+#endif
+#if __cpp_designated_initializers
+    constexpr const CacheControl CacheControl::kDisableCaching{.fStoreRestriction = CacheControl::StoreRestriction::eNoStore};
+#else
+    constexpr const CacheControl CacheControl::kDisableCaching{CacheControl::StoreRestriction::eNoStore};
+#endif
 
 #if __cpp_impl_three_way_comparison < 201907
     bool operator== (const CacheControl& lhs, const CacheControl& rhs);

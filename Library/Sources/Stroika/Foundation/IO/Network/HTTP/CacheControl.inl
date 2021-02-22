@@ -28,7 +28,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     }
     inline bool operator== (const CacheControl& lhs, const CacheControl& rhs)
     {
-        return lhs.fStoreRestriction == rhs.fStoreRestriction and lhs.fVisibility == rhs.fVisibility and lhs.fMustRevalidate == rhs.fMustRevalidate and lhs.fAge == rhs.fAge and lhs.fMaxAge == rhs.fMaxAge and lhs.fSharedMaxAge == rhs.fSharedMaxAge and lhs.fMaxStale == rhs.fMaxStale and lhs.fMinFresh == rhs.fMinFresh;
+        return lhs.fStoreRestriction == rhs.fStoreRestriction and lhs.fVisibility == rhs.fVisibility and lhs.fMustRevalidate == rhs.fMustRevalidate and and lhs.fImmutable == rhs.fImmutable and lhs.fAge == rhs.fAge and lhs.fMaxAge == rhs.fMaxAge and lhs.fSharedMaxAge == rhs.fSharedMaxAge and lhs.fMaxStale == rhs.fMaxStale and lhs.fMinFresh == rhs.fMinFresh;
     }
     inline bool operator!= (const CacheControl& lhs, const CacheControl& rhs)
     {
