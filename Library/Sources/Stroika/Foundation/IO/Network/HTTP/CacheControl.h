@@ -46,14 +46,12 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      *      \code
      *          auto cc1 = CacheControl{.fVisibility=CacheControl::ePrivate, .fMaxAge=Duration{30s}.As<int> ()}; // Cache-Control: private, max-age=30
      *          auto cc2 = CacheControl::kDisableCaching;
+     *          // @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#requiring_revalidation
+     *          auto cc3 = CacheControl{.fStoreRestriction=CacheControl::StoreRestriction::eNoCache};             // Cache-Control: no-cache
+     *          auto cc3 = CacheControl{.fMaxAge=0, .fMustRevalidate=true};                                       // Cache-Control: max-age=0, must-revalidate
+     *          auto cc4 = CacheControl::kMustRevalidate;
+     *          auto cc5 = CacheControl::kPrivateMustRevalidate;        // ** probably best to use for most webservice calls, except those that have side-effects, and those should use kDisableCaching **
      *      \endcode
-     *
-     *  \par Example Usage (static content that could change) - just a rough example cuz this will depend alot on your application
-     *      \code
-     *          auto cc1 = CacheControl{.fVisibility=CacheControl::ePublic, .fMaxAge=Duration{3*24h}.As<int> ()}; // Cache-Control: public, max-age=259200
-     *          auto cc2 = CacheControl::kDisableCaching;
-     *      \endcode
-     * 
      */
     struct CacheControl {
 
@@ -177,6 +175,26 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *      \endcode
          */
         static const CacheControl kDisableCaching;
+
+    public:
+        /**
+         *  \brief this means you CAN cache the value, but should revalidate each time before use (so etags can be used etc)
+         * 
+         *  From https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#requiring_revalidation:
+         *    no-cache and max-age=0, must-revalidate indicates same meaning
+         *
+         *  \par Example Usage (@see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#requiring_revalidation)
+         *      \code
+         *          auto cc = CacheControl{.fStoreRestriction=CacheControl::StoreRestriction::eNoCache};             // Cache-Control: no-cache
+         *      \endcode
+         */
+        static const CacheControl kMustRevalidate;
+
+    public:
+        /**
+         *  \brief this means you CAN cache the value, but should revalidate each time before use (so etags can be used etc) - but it should not be re-used from user to user
+         */
+        static const CacheControl kPrivateMustRevalidate;
     };
     template <>
     Characters::String CacheControl::As () const;
@@ -190,6 +208,16 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     inline constexpr const CacheControl CacheControl::kDisableCaching{.fStoreRestriction = CacheControl::StoreRestriction::eNoStore};
 #else
     inline constexpr const CacheControl CacheControl::kDisableCaching{CacheControl::StoreRestriction::eNoStore};
+#endif
+#if __cpp_designated_initializers
+    inline constexpr const CacheControl CacheControl::kMustRevalidate{.fStoreRestriction = CacheControl::StoreRestriction::eNoCache};
+#else
+    inline constexpr const CacheControl CacheControl::kMustRevalidate{CacheControl::StoreRestriction::eNoCache};
+#endif
+#if __cpp_designated_initializers
+    inline constexpr const CacheControl CacheControl::kPrivateMustRevalidate{.fStoreRestriction = CacheControl::StoreRestriction::eNoCache, .fVisibility = CacheControl::ePrivate};
+#else
+    inline constexpr const CacheControl CacheControl::kPrivateMustRevalidate{CacheControl::StoreRestriction::eNoCache, CacheControl::ePrivate};
 #endif
 
 #if __cpp_impl_three_way_comparison < 201907
