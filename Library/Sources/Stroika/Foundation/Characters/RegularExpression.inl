@@ -29,6 +29,10 @@ namespace Stroika::Foundation::Characters {
         : fCompiledRegExp_{move (regEx)}
     {
     }
+    inline RegularExpression::RegularExpression (const String& re, CompareOptions co)
+        : RegularExpression{re, SyntaxType::eDEFAULT, co}
+    {
+    }
     inline const wregex& RegularExpression::GetCompiled () const
     {
         return fCompiledRegExp_;

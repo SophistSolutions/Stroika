@@ -62,6 +62,7 @@ namespace Stroika::Foundation::Characters {
          */
         explicit RegularExpression ();
         explicit RegularExpression (const String& re, SyntaxType syntaxType = SyntaxType::eDEFAULT, CompareOptions co = CompareOptions::eWithCase);
+        explicit RegularExpression (const String& re, CompareOptions co);
         RegularExpression (const wregex& regEx);
         RegularExpression (wregex&& regEx);
 
