@@ -78,7 +78,7 @@ namespace {
 #if __cpp_designated_initializers
                 CacheControl c{.fStoreRestriction = CacheControl::eNoStore, .fMaxAge = 0};
 #else
-                CacheControl c{CacheControl::eNoStore, nullopt, false, nullopt, 0};
+                CacheControl c{CacheControl::eNoStore, nullopt, false, false, nullopt, 0};
 #endif
                 VerifyTestResult (c.As<String> () == L"no-store, max-age=0");
                 VerifyTestResult (c == CacheControl::Parse (L"no-store, max-age=0"));
