@@ -6,6 +6,11 @@
 
 #include "../StroikaPreComp.h"
 
+#include  <functional>
+
+#include "../Configuration/Common.h"
+
+
 namespace Stroika::Foundation::Common {
 
     /**
