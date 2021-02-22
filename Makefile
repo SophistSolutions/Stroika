@@ -116,8 +116,9 @@ ifeq ($(CONFIGURATION),)
 	@ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika $(call FUNCTION_CAPITALIZE_WORD,$@):"
 ifeq ($(CONFIGURATION_TAGS),)
 	@#for clobber, quickly delete all interesting stuff (if no args so unrestricted) and in third party deletes stuff like 'CURRENT' folders
-	@rm -rf IntermediateFiles/*
 	@if [ "$@" = "clobber" ] ; then \
+		#only delete ALL intermediate files (cuz includes Config.mk etc and forces rebuild all)\
+		rm -rf IntermediateFiles/*;\
 		$(MAKE) --directory ThirdPartyComponents --no-print-directory clobber CONFIGURATION= MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	fi
 endif
@@ -127,8 +128,9 @@ endif
 else
 	@ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)}:"
-	@rm -rf IntermediateFiles/$(CONFIGURATION)
 	@if [ "$@" = "clobber" ] ; then \
+		#only delete ALL intermediate files (cuz includes Config.mk etc and forces rebuild all)\
+		rm -rf IntermediateFiles/$(CONFIGURATION);\
 		rm -rf Builds/$(CONFIGURATION);\
 	fi
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
