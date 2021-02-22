@@ -75,7 +75,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         bool fMustRevalidate{false};
 
         /**
-         *  Used by servers just in proxying (otherwise no reason to return soemthing with a non-zero age)
+         *  Used by servers just in proxying (otherwise no reason to return something with a non-zero age)
          *  \note req fMaxAge <= kMaximumAgeValue
          */
         optional<uint32_t> fAge;
