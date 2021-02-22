@@ -97,8 +97,12 @@ namespace Stroika::Foundation::Characters {
     private:
         wregex fCompiledRegExp_;
     };
+    inline const RegularExpression RegularExpression::kNONE{L"(?!)"sv};
+    inline const RegularExpression RegularExpression::kAny{L".*"sv};
 
-    // @todo DRAFT 2015-02-01
+    /**
+     * @todo DRAFT 2015-02-01
+     */
     class RegularExpressionMatch {
     public:
         RegularExpressionMatch (const String& fullMatch);

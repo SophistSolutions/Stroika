@@ -29,9 +29,6 @@ namespace {
  ********************** Characters::RegularExpression ***************************
  ********************************************************************************
  */
-const RegularExpression RegularExpression::kNONE{L"(?!)"sv};
-const RegularExpression RegularExpression::kAny{L".*"sv};
-
 RegularExpression::RegularExpression (const String& re, SyntaxType syntaxType, CompareOptions co)
     : fCompiledRegExp_{re.As<wstring> (), mkOption_ (syntaxType, co)}
 {

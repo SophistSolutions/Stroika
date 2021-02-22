@@ -45,12 +45,12 @@ namespace {
 #if __cpp_designated_initializers
         pair<RegularExpression, CacheControl>
         {
-            RegularExpression{L".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl { .fMaxAge = Duration{24h}.As<double> () }
+            RegularExpression{L".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl { .fMaxAge = Duration{24h}.As<int32_t> () }
         }
 #else
         pair<RegularExpression, CacheControl>
         {
-            RegularExpression{L".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl { nullopt, nullopt, false, nullopt, Duration{24h}.As<double> () }
+            RegularExpression{L".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl { nullopt, nullopt, false, nullopt, Duration{24h}.As<int32_t> () }
         }
 #endif
     };
