@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Common {
      */
     template <typename CONSTRUCTOR_CALL, typename DESTRUCTOR_CALL>
     inline ObjectForSideEffects::ObjectForSideEffects (CONSTRUCTOR_CALL&& ctorCall, DESTRUCTOR_CALL&& dtorCall)
-        : fDestructor_ (dtorCall)   // no {} to allow converison
+        : fDestructor_ (dtorCall) // no {} to allow converison
     {
         forward<CONSTRUCTOR_CALL> (ctorCall) ();
     }
