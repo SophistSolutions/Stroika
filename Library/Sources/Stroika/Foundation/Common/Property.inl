@@ -171,26 +171,25 @@ namespace Stroika::Foundation::Common {
                   return thisObj->fPropertyReadHandlers_;
               }}
         , rwPropertyReadHandlers{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] (const auto* property) -> std::forward_list<PropertyReadEventHandler>& {
-                ExtendableProperty* thisObj = const_cast<ExtendableProperty*> (qStroika_Foundation_Common_Property_OuterObjPtr (property, &ExtendableProperty::rwPropertyReadHandlers));
-                return thisObj->fPropertyReadHandlers_;
-            },
-            [qStroika_Foundation_Common_Property_ExtraCaptureStuff] (auto* property, const auto& handlerList) {
-                ExtendableProperty* thisObj     = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ExtendableProperty::rwPropertyReadHandlers);
-                thisObj->fPropertyReadHandlers_ = handlerList;
-            }}
+                                     ExtendableProperty* thisObj = const_cast<ExtendableProperty*> (qStroika_Foundation_Common_Property_OuterObjPtr (property, &ExtendableProperty::rwPropertyReadHandlers));
+                                     return thisObj->fPropertyReadHandlers_;
+                                 },
+                                 [qStroika_Foundation_Common_Property_ExtraCaptureStuff] (auto* property, const auto& handlerList) {
+                                     ExtendableProperty* thisObj     = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ExtendableProperty::rwPropertyReadHandlers);
+                                     thisObj->fPropertyReadHandlers_ = handlerList;
+                                 }}
         , propertyChangedHandlers{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] (const auto* property) -> const std::forward_list<PropertyChangedEventHandler>& {
             const ExtendableProperty* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ExtendableProperty::propertyChangedHandlers);
             return thisObj->fPropertyChangedHandlers_;
         }}
-        , rwPropertyChangedHandlers{
-            [qStroika_Foundation_Common_Property_ExtraCaptureStuff] (const auto* property) -> std::forward_list<PropertyChangedEventHandler>& {
-                ExtendableProperty* thisObj = const_cast<ExtendableProperty*> (qStroika_Foundation_Common_Property_OuterObjPtr (property, &ExtendableProperty::rwPropertyChangedHandlers));
-                return thisObj->fPropertyChangedHandlers_;
-            },
-            [qStroika_Foundation_Common_Property_ExtraCaptureStuff] (auto* property, const auto& handlerList) {
-                ExtendableProperty* thisObj        = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ExtendableProperty::rwPropertyChangedHandlers);
-                thisObj->fPropertyChangedHandlers_ = handlerList;
-            }}
+        , rwPropertyChangedHandlers{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] (const auto* property) -> std::forward_list<PropertyChangedEventHandler>& {
+                                        ExtendableProperty* thisObj = const_cast<ExtendableProperty*> (qStroika_Foundation_Common_Property_OuterObjPtr (property, &ExtendableProperty::rwPropertyChangedHandlers));
+                                        return thisObj->fPropertyChangedHandlers_;
+                                    },
+                                    [qStroika_Foundation_Common_Property_ExtraCaptureStuff] (auto* property, const auto& handlerList) {
+                                        ExtendableProperty* thisObj        = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ExtendableProperty::rwPropertyChangedHandlers);
+                                        thisObj->fPropertyChangedHandlers_ = handlerList;
+                                    }}
     {
     }
     template <typename T>

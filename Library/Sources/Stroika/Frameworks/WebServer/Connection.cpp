@@ -168,8 +168,8 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Inte
                                     Connection* thisObj  = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::remainingConnectionLimits);
                                     thisObj->fRemaining_ = remainingConnectionLimits;
                                 }}
-    , fDefaultResponseHeaders_{defaultResponseHeaders}
     , fInterceptorChain_{interceptorChain}
+    , fDefaultResponseHeaders_{defaultResponseHeaders}
     , fSocket_{s}
 {
     Require (s != nullptr);
