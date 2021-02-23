@@ -950,7 +950,7 @@ namespace {
             VerifyTestResult (CString::String2Int<int> ("-3") == -3);
             VerifyTestResult (CString::String2Int<int> ("3") == 3);
             VerifyTestResult (CString::String2Int<int> (wstring (L"3")) == 3);
-            VerifyTestResult (String2Int<int> (String (L"3")) == 3);
+            VerifyTestResult (String2Int<int> (String{L"3"}) == 3);
         }
         {
             VerifyTestResult (CString::String2Int<int> ("") == 0);
@@ -967,12 +967,12 @@ namespace {
             VerifyTestResult (CString::HexString2Int ("     ") == 0);
         }
         {
-            VerifyTestResult (isnan (String2Float<double> (String ())));
-            VerifyTestResult (isnan (CString::String2Float (string ())));
-            VerifyTestResult (isnan (String2Float<double> (wstring ())));
+            VerifyTestResult (isnan (String2Float<double> (String{})));
+            VerifyTestResult (isnan (CString::String2Float (string{})));
+            VerifyTestResult (isnan (String2Float<double> (wstring{})));
             VerifyTestResult (isnan (CString::String2Float ("")));
-            VerifyTestResult (isnan (CString::String2Float (wstring (L""))));
-            VerifyTestResult (isnan (String2Float<double> (String ())));
+            VerifyTestResult (isnan (CString::String2Float (wstring{L""})));
+            VerifyTestResult (isnan (String2Float<double> (String{})));
             VerifyTestResult (isnan (CString::String2Float ("     ")));
             VerifyTestResult (isnan (String2Float<double> (L"-1.#INF000000000000"))); // MSFT sometimes generates these but they arent legal INF values!
             VerifyTestResult (isnan (CString::String2Float ("-1.#INF000000000000")));
@@ -1005,10 +1005,13 @@ namespace {
             Test21_StringToIntEtc_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<long double>::lowest ());
         }
         {
+            VerifyTestResult (Math::NearlyEquals (CString::String2Float ("3"), 3.0));
+            VerifyTestResult (Math::NearlyEquals (CString::String2Float (L"3"), 3.0));
+            VerifyTestResult (Math::NearlyEquals (Characters::String2Float (L"3"), 3.0));
             VerifyTestResult (Math::NearlyEquals (CString::String2Float ("-44.4"), -44.4));
             VerifyTestResult (Math::NearlyEquals (CString::String2Float (L"-44.4"), -44.4));
             VerifyTestResult (Math::NearlyEquals (String2Float<double> (L"-44.4"), -44.4));
-            VerifyTestResult (Math::NearlyEquals (String2Float<double> (String (L"44.4333")), 44.4333));
+            VerifyTestResult (Math::NearlyEquals (String2Float<double> (String{L"44.4333"}), 44.4333));
         }
         [[maybe_unused]] auto runLocaleIndepTest = [] () {
             VerifyTestResult (Float2String (3000.5) == L"3000.5");
@@ -1016,7 +1019,7 @@ namespace {
         };
         {
             // Verify change of locale has no effect on results
-            locale prevLocale = locale::global (locale ("C"));
+            locale prevLocale = locale::global (locale{"C"});
             runLocaleIndepTest ();
             locale::global (prevLocale);
         }
