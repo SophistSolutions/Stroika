@@ -23,6 +23,9 @@ namespace Stroika::Foundation::Execution {
      *  an underlying system where the constant is actually FETECHED from the argument function.
      *
      *  This doesn't work perfectly (e.g. see below about operator.) - but its pretty usable.
+     * 
+     *  \note The basic idea - any time you have a constant whose initializer depends on other constants and get into trouble
+     *        with mutual constructor order issues before main, replace the dependent constant with a VirtualConstant
      *
      *  \par Example Usage
      *      \code
