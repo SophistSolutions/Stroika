@@ -40,18 +40,11 @@ using Stroika::Frameworks::WebServer::Response;
 using Time::Duration;
 
 namespace {
-    Sequence<pair<RegularExpression, CacheControl>> kCacheControlSettings_
-    {
+    Sequence<pair<RegularExpression, CacheControl>> kCacheControlSettings_{
 #if __cpp_designated_initializers
-        pair<RegularExpression, CacheControl>
-        {
-            RegularExpression{L".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl { .fMaxAge = Duration{24h}.As<int32_t> () }
-        }
+        pair<RegularExpression, CacheControl>{RegularExpression{L".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl{.fMaxAge = Duration{24h}.As<int32_t> ()}}
 #else
-        pair<RegularExpression, CacheControl>
-        {
-            RegularExpression{L".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl { nullopt, nullopt, false, nullopt, Duration{24h}.As<int32_t> () }
-        }
+        pair<RegularExpression, CacheControl>{RegularExpression{L".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl{nullopt, Duration{24h}.As<int32_t> ()}}
 #endif
     };
 
