@@ -176,7 +176,7 @@ public:
                 kTimes,
                 kDivide,
             },
-            DocsOptions{L"Stroika Sample WebService - Web Methods"_k});
+            DocsOptions{L"Stroika Sample WebService - Web Methods"_k, L"Note - curl lines all in bash quoting syntax"_k});
     }
     static void SetAppState_ (Message* message)
     {
