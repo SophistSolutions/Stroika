@@ -157,7 +157,7 @@ namespace {
                 h2.contentLength4.rwPropertyChangedHandlers ().push_front ([&] ([[maybe_unused]] const auto& changes) {
                     DbgTrace ("first event handler called");
                     firstEventHanlderCalled = true;
-                    return true;
+                    return PropertyCommon::PropertyChangedEventResultType::eContinueProcessing;
                 });
                 h2.contentLength4 = 6;
                 VerifyTestResult (h2.contentLength4 == 6);
@@ -166,11 +166,11 @@ namespace {
                 h2.contentLength4.rwPropertyChangedHandlers ().push_front ([&] ([[maybe_unused]] const auto& changes) {
                     DbgTrace ("second event handler called");
                     secondEventHanlderCalled = true;
-                    return false;
+                    return PropertyCommon::PropertyChangedEventResultType::eSilentlyCutOffProcessing;
                 });
                 h2.contentLength4 = 7;
                 VerifyTestResult (secondEventHanlderCalled);
-                VerifyTestResult (h2.contentLength4 == 6); // because event handler returned false, this time NO
+                VerifyTestResult (h2.contentLength4 == 6); // because event handler returned PropertyChangedEventResultType::eSilentlyCutOffProcessing, this time NO
             }
         }
     }

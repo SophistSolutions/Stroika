@@ -57,7 +57,6 @@ namespace Stroika::Foundation::Common {
      * @see qStroika_Foundation_Common_Property_EmbedThisInProperties
      */
 #define qStroika_Foundation_Common_Property_ExtraCaptureStuff this
-#define qStroika_Foundation_Common_Property_ExtraCaptureStuff1 , this
     /**
      * @see qStroika_Foundation_Common_Property_EmbedThisInProperties
      */
@@ -67,7 +66,6 @@ namespace Stroika::Foundation::Common {
      * @see qStroika_Foundation_Common_Property_EmbedThisInProperties
      */
 #define qStroika_Foundation_Common_Property_ExtraCaptureStuff
-#define qStroika_Foundation_Common_Property_ExtraCaptureStuff1
     /**
      * @see qStroika_Foundation_Common_Property_EmbedThisInProperties
      */
@@ -96,9 +94,9 @@ namespace Stroika::Foundation::Common {
         template <typename TT>
         static constexpr bool kIsMutatableType = not is_const_v<remove_reference_t<TT>> and is_reference_v<TT>;
 
-        enum PropertyChangedEventResultType {
+        enum class PropertyChangedEventResultType {
             eSilentlyCutOffProcessing,
-            eContinuefProcessing,
+            eContinueProcessing,
         };
     };
 

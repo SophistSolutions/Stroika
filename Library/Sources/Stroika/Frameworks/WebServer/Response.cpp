@@ -111,10 +111,10 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
     , fUseOutStream_{Streams::BufferedOutputStream<byte>::New (outStream)}
 {
 #if qDebug
-    this->status.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return PropertyChangedEventResultType::eContinuefProcessing; });
-    this->statusAndOverrideReason.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return PropertyChangedEventResultType::eContinuefProcessing; });
+    this->status.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return PropertyChangedEventResultType::eContinueProcessing; });
+    this->statusAndOverrideReason.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return PropertyChangedEventResultType::eContinueProcessing; });
     this->rwHeaders.rwPropertyReadHandlers ().push_front ([this] () { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return nullopt; });
-    this->rwHeaders.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return PropertyChangedEventResultType::eContinuefProcessing; });
+    this->rwHeaders.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return PropertyChangedEventResultType::eContinueProcessing; });
 #endif
     this->contentType.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) {
         Require (this->headersCanBeSet ());
@@ -131,11 +131,11 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
                 this->rwHeaders ().contentLength = nullopt;
             }
             else {
-                if (not this->rwHeaders ().contentLength ().has_value ()) {
+                if (not this->headers ().contentLength ().has_value ()) {
                     this->rwHeaders ().contentLength = 0;
                 }
             }
-            return PropertyChangedEventResultType::eContinuefProcessing;
+            return PropertyChangedEventResultType::eContinueProcessing;
         });
     fInChunkedModeCache_ = this->headers ().transferEncoding () and this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked); // can be set by initial headers (in CTOR)
     if (not InChunkedMode_ ()) {
