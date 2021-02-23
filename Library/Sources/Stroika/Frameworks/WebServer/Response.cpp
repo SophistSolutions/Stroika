@@ -123,9 +123,18 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
     });
     this->rwHeaders ().transferEncoding.rwPropertyChangedHandlers ().push_front (
         [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
+            // react to a change in the transferCoding setting by updating our flags (cache) - and updating the contentLength header properly
             Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ());
             // @todo fix - not 100% right cuz another property could cut off? Maybe always call all? - or need better control over ordering
             fInChunkedModeCache_ = propertyChangedEvent.fNewValue and propertyChangedEvent.fNewValue->Contains (HTTP::TransferEncoding::eChunked);
+            if (fInChunkedModeCache_) {
+                this->rwHeaders ().contentLength = nullopt;
+            }
+            else {
+                if (not this->rwHeaders ().contentLength ().has_value ()) {
+                    this->rwHeaders ().contentLength = 0;
+                }
+            }
             return PropertyChangedEventResultType::eContinuefProcessing;
         });
     fInChunkedModeCache_ = this->headers ().transferEncoding () and this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked); // can be set by initial headers (in CTOR)
