@@ -9,6 +9,7 @@
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
+#include "Stroika/Foundation/Execution/VirtualConstant.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
@@ -40,6 +41,14 @@ using Stroika::Frameworks::WebServer::Request;
 using Stroika::Frameworks::WebServer::Response;
 
 using namespace StroikaSample::WebServices;
+
+namespace {
+    const Execution::VirtualConstant<Headers> kDefaultResponseHeaders_{[] () {
+        Headers h;
+        h.server = L"Stroika-Sample-WebServices/"_k + AppVersion::kVersion.AsMajorMinorString ();
+        return h;
+    }};
+}
 
 /*
  *  It's often helpful to structure together, routes, special interceptors, with your connection manager, to package up
@@ -139,12 +148,12 @@ public:
 #if __cpp_designated_initializers
     , fConnectionMgr_
     {
-        SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_, ConnectionManager::Options { .fBindFlags = Socket::BindFlags{}, .fServerHeader = L"Stroika-Sample-WebServices/"_k + AppVersion::kVersion.AsMajorMinorString () }
+        SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_, ConnectionManager::Options { .fBindFlags = Socket::BindFlags{}, .fDefaultResponseHeaders = kDefaultResponseHeaders_ }
     }
 #else
     , fConnectionMgr_
     {
-        SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_, ConnectionManager::Options { nullopt, nullopt, Socket::BindFlags{}, L"Stroika-Sample-WebServices/"_k + AppVersion::kVersion.AsMajorMinorString () }
+        SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_, ConnectionManager::Options { nullopt, nullopt, Socket::BindFlags{}, kDefaultResponseHeaders_ }
     }
 #endif
     {
@@ -190,7 +199,7 @@ const WebServiceMethodDescription WebServer::Rep_::kVariables_{
         L"curl http://localhost:8080/variables/x -v --output -",
         L"curl  -X POST http://localhost:8080/variables/x -v --output -",
         L"curl -H \"Content-Type: application/json\" -X POST -d '{\"value\": 3}' http://localhost:8080/variables/x --output -",
-        L"curl -H \"Content-Type: text/plain\" -X POST -d '3' http://localhost:8080/variables/x --output -"},
+        L"curl -H \"Content-Type: text/plain\" -X POST -d 3 http://localhost:8080/variables/x --output -"},
     Sequence<String>{L"@todo - this is a rough draft (but functional). It could use alot of cleanup and review to see WHICH way I recommend using, and just provide the recommended ways in samples"},
 };
 

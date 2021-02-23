@@ -21,7 +21,7 @@ using namespace Stroika::Frameworks::WebServer;
  ************************* WebServer::Message ***********************************
  ********************************************************************************
  */
-Message::Message (Request&& request, Response&& response, const optional<IO::Network::SocketAddress>& peerAddress)
+Message::Message (Request&& srcRequest, Response&& srcResponse, const optional<IO::Network::SocketAddress>& peerAddress)
     : peerAddress{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<IO::Network::SocketAddress> {
               const Message*                                      thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Message::peerAddress);
@@ -49,8 +49,8 @@ Message::Message (Request&& request, Response&& response, const optional<IO::Net
         return const_cast<Response&> (thisObj->fResponse_);
     }}
     , fPeerAddress_{peerAddress}
-    , fRequest_{move (request)}
-    , fResponse_{move (response)}
+    , fRequest_{move (srcRequest)}
+    , fResponse_{move (srcResponse)}
 {
 #if qDebug
     fRequest_.SetAssertExternallySynchronizedLockContext (_fSharedContext);

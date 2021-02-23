@@ -16,6 +16,7 @@
 #include "../../Foundation/Execution/ThreadPool.h"
 #include "../../Foundation/Execution/UpdatableWaitForIOReady.h"
 #include "../../Foundation/Execution/VirtualConstant.h"
+#include "../../Foundation/IO/Network/HTTP/Headers.h"
 #include "../../Foundation/IO/Network/Listener.h"
 #include "../../Foundation/IO/Network/SocketAddress.h"
 
@@ -26,18 +27,21 @@
 #include "Router.h"
 
 /**
- *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  */
 
 namespace Stroika::Frameworks::WebServer {
 
     using namespace Stroika::Foundation;
     using Characters::String;
+    using Common::KeyValuePair;
     using Containers::Collection;
     using Containers::Set;
     using IO::Network::ConnectionOrientedStreamSocket;
+    using IO::Network::HTTP::Headers;
     using IO::Network::Socket;
-    using IO::Network::SocketAddress;
+    using IO::Network::HTTP::Headers;
+    using Traversal::Iterable;
 
     /**
      *  This class is a useful helper for managing a set of connections. You can start it and stop it
@@ -86,8 +90,19 @@ namespace Stroika::Frameworks::WebServer {
             optional<Socket::BindFlags> fBindFlags;
 
             /**
+             *  fDefaultResponseHeaders may be used to specify initial{default} values for some HTTP headers.
+             *  It can be used for specifying any non-standared HTTP headers to add to all responsed (like X-Foobar: value).
+             *  It can be used to specify a default 'Server' header.
+             *  This is equivilent to adding an interceptor early in the interceptor chain, and calling
+             *      response.rwHeaders = *fDefaultResponseHeaders;
+             * 
+             *  Probably not a good idea to specify things like contentLength, etc here. That may produce bad results.
+             *  @todo consider listing a stronger set of requirements for what headings can and cannot be set?)
+             * 
+             * This is also a good place to add defaults like:
+             *      "Content-Type": DataExchange::InternetMediaTypes::kOctetStream (which was done automatically by Stroika before 2.1b10)
              */
-            optional<String> fServerHeader;
+            optional<Headers> fDefaultResponseHeaders;
 
             /**
              *  Options for how the HTTP Server handles CORS (mostly HTTP OPTIONS requests)
@@ -131,7 +146,7 @@ namespace Stroika::Frameworks::WebServer {
 
             static constexpr unsigned int                               kDefault_MaxConnections{25};
             static constexpr Socket::BindFlags                          kDefault_BindFlags{};
-            static inline const String                                  kDefault_ServerHeader{L"Stroika/2.1"sv};
+            static inline const Headers                                 kDefault_Headers{Iterable<KeyValuePair<String, String>>{{IO::Network::HTTP::HeaderName::kServer, L"Stroika/2.1"sv}}};
             static inline const Execution::VirtualConstant<CORSOptions> kDefault_CORS{[] () { return kDefault_CORSOptions; }};
             static constexpr Time::DurationSecondsType                  kDefault_AutomaticTCPDisconnectOnClose{2.0};
             static constexpr optional<int>                              kDefault_Linger{nullopt}; // intentionally optional-valued
@@ -256,7 +271,6 @@ namespace Stroika::Frameworks::WebServer {
 
     private:
         Options                                                      fEffectiveOptions_;
-        Execution::Synchronized<Interceptor>                         fServerAndCORSEtcInterceptor_;
         Execution::Synchronized<optional<Interceptor>>               fDefaultErrorHandler_;
         Execution::Synchronized<Sequence<Interceptor>>               fEarlyInterceptors_;
         Execution::Synchronized<Sequence<Interceptor>>               fBeforeInterceptors_;

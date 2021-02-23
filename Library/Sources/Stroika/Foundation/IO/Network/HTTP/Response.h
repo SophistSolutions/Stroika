@@ -33,7 +33,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     public:
         Response (const Response&) = delete;
         Response (Response&& src);
-        Response ();
+        Response (const optional<Headers>& initialHeaders = {});
 
     public:
         ~Response () = default;

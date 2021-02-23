@@ -63,7 +63,8 @@ namespace {
 #endif
 
 Response::Response (Response&& src)
-    : Response{src.fSocket_, src.fUnderlyingOutStream_}
+    // Would be nice to use inherited src move, but PITA, becaue then would need to duplicate creating the properties below.
+    : Response{src.fSocket_, src.fUnderlyingOutStream_, src.headers ()}
 {
     fState_        = src.fState_;
     fUseOutStream_ = src.fUseOutStream_;
@@ -72,8 +73,9 @@ Response::Response (Response&& src)
     fHeadMode_     = src.fHeadMode_;
 }
 
-Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream<byte>::Ptr& outStream, const optional<InternetMediaType>& ct)
-    : codePage{
+Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream<byte>::Ptr& outStream, const optional<HTTP::Headers>& initialHeaders)
+    : inherited{initialHeaders}
+    , codePage{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
               const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::codePage);
               shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
@@ -119,8 +121,6 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
         this->rwHeaders ().contentType = propertyChangedEvent.fNewValue ? AdjustContentTypeForCodePageIfNeeded_ (*propertyChangedEvent.fNewValue) : optional<InternetMediaType>{};
         return false; // cut-off - handled
     });
-    rwHeaders ().server      = L"Stroka-Based-Web-Server"_k;
-    rwHeaders ().contentType = ct;
 }
 
 InternetMediaType Response::AdjustContentTypeForCodePageIfNeeded_ (const InternetMediaType& ct) const

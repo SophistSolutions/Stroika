@@ -50,10 +50,10 @@ using IO::Network::HTTP::KeepAlive;
  ******************** WebServer::Connection::MyMessage_ *************************
  ********************************************************************************
  */
-Connection::MyMessage_::MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& socket, const Streams::InputOutputStream<byte>::Ptr& socketStream)
+Connection::MyMessage_::MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& socket, const Streams::InputOutputStream<byte>::Ptr& socketStream, const Headers& defaultResponseHeaders)
     : Message{
           Request{socketStream},
-          Response{socket, socketStream, DataExchange::InternetMediaTypes::kOctetStream},
+          Response{socket, socketStream, defaultResponseHeaders},
           socket.GetPeerAddress ()}
     , fMsgHeaderInTextStream{HTTP::MessageStartTextInputStreamBinaryAdapter::New (rwRequest ().GetInputStream ())}
 {
@@ -142,7 +142,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
  ***************************** WebServer::Connection ****************************
  ********************************************************************************
  */
-Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain)
+Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain, const Headers& defaultResponseHeaders)
     : socket{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> ConnectionOrientedStreamSocket::Ptr {
               const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::socket);
@@ -168,6 +168,7 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Inte
                                     Connection* thisObj  = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::remainingConnectionLimits);
                                     thisObj->fRemaining_ = remainingConnectionLimits;
                                 }}
+    , fDefaultResponseHeaders_{defaultResponseHeaders}
     , fInterceptorChain_{interceptorChain}
     , fSocket_{s}
 {
@@ -223,7 +224,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Connection::ReadAndProcessMessage", L"this->socket=%s", Characters::ToString (fSocket_).c_str ())};
 #endif
-        fMessage_ = make_shared<MyMessage_> (fSocket_, fSocketStream_);
+        fMessage_ = make_shared<MyMessage_> (fSocket_, fSocketStream_, fDefaultResponseHeaders_);
 
         // First read the HTTP request line, and the headers (and abort this attempt if not ready)
         switch (fMessage_->ReadHeaders (
@@ -240,7 +241,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
                 return ReadAndProcessResult::eTryAgainLater;
             } break;
             case MyMessage_::eCompleteGood: {
-                // fall through and actaully process the request
+                // fall through and actually process the request
             } break;
         }
 

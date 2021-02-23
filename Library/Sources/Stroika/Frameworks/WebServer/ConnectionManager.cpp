@@ -40,30 +40,9 @@ using namespace Stroika::Frameworks::WebServer;
 using Options = ConnectionManager::Options;
 
 namespace {
-    struct ServerHeadersInterceptor_ : public Interceptor {
-        struct Rep_ : Interceptor::_IRep {
-            Rep_ (const String& serverHeader)
-                : fServerHeader_{serverHeader}
-            {
-            }
-            virtual void HandleMessage (Message* m) const override
-            {
-                m->rwResponse ().rwHeaders ().server = fServerHeader_;
-            }
-            const String fServerHeader_; // no need for synchronization cuz constant - just set on construction
-        };
-        ServerHeadersInterceptor_ (const String& serverHeader)
-            : Interceptor{make_shared<Rep_> (serverHeader)}
-        {
-        }
-    };
-}
-
-namespace {
-    Sequence<Interceptor> mkEarlyInterceptors_ (const optional<Interceptor>& defaultFaultHandler, const Interceptor& serverEtcInterceptor)
+    Sequence<Interceptor> mkEarlyInterceptors_ (const optional<Interceptor>& defaultFaultHandler)
     {
         Sequence<Interceptor> interceptors;
-        interceptors += serverEtcInterceptor;
         if (defaultFaultHandler) {
             interceptors += *defaultFaultHandler;
         }
@@ -111,7 +90,7 @@ namespace {
         result.fMaxConnections                    = Memory::NullCoalesce (result.fMaxConnections, Options::kDefault_MaxConnections);
         result.fMaxConcurrentlyHandledConnections = Memory::NullCoalesce (result.fMaxConcurrentlyHandledConnections, ComputeThreadPoolSize_ (result));
         result.fBindFlags                         = Memory::NullCoalesce (result.fBindFlags, Options::kDefault_BindFlags);
-        result.fServerHeader                      = Memory::NullCoalesce (result.fServerHeader, Options::kDefault_ServerHeader);
+        result.fDefaultResponseHeaders            = Memory::NullCoalesce (result.fDefaultResponseHeaders, Options::kDefault_Headers);
         result.fAutomaticTCPDisconnectOnClose     = Memory::NullCoalesce (result.fAutomaticTCPDisconnectOnClose, Options::kDefault_AutomaticTCPDisconnectOnClose);
         result.fLinger                            = Memory::NullCoalesce (result.fLinger, Options::kDefault_Linger); // for now this is special and can be null/optional
         // result.fThreadPoolName; can remain nullopt
@@ -171,9 +150,8 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
         return thisObj->GetInactiveConnections_ () + thisObj->fActiveConnections_.load ();
     }}
     , fEffectiveOptions_{FillInDefaults_ (options)}
-    , fServerAndCORSEtcInterceptor_{ServerHeadersInterceptor_{*fEffectiveOptions_.fServerHeader}}
     , fDefaultErrorHandler_{DefaultFaultInterceptor{}}
-    , fEarlyInterceptors_{mkEarlyInterceptors_ (fDefaultErrorHandler_, fServerAndCORSEtcInterceptor_)}
+    , fEarlyInterceptors_{mkEarlyInterceptors_ (fDefaultErrorHandler_)}
     , fBeforeInterceptors_{}
     , fAfterInterceptors_{}
     , fRouter_{routes, *fEffectiveOptions_.fCORS}
@@ -182,6 +160,9 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
     , fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([this] () { WaitForReadyConnectionLoop_ (); }, L"WebServer-ConnectionMgr-Wait4IOReady"_k)}
     , fListener_{bindAddresses, *fEffectiveOptions_.fBindFlags, [this] (const ConnectionOrientedStreamSocket::Ptr& s) { onConnect_ (s); }, *fEffectiveOptions_.fTCPBacklog}
 {
+    // @todo validate fDefaultResponseHeaders contains no bad/inappropriate headers (like Content-Length), probably CORS headers worth a warning as well - maybe just walk
+    // and WEAK-ASSERT
+
     DbgTrace (L"Constructing WebServer::ConnectionManager (%p), with threadpoolSize=%d, backlog=%d", this, fActiveConnectionThreads_.GetPoolSize (), ComputeConnectionBacklog_ (options));
     fWaitForReadyConnectionThread_.Start (); // start here instead of autostart so a guaranteed initialized before thead main starts - see https://stroika.atlassian.net/browse/STK-706
 }
@@ -200,7 +181,7 @@ void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s
 #endif
     s.SetAutomaticTCPDisconnectOnClose (*fEffectiveOptions_.fAutomaticTCPDisconnectOnClose);
     s.SetLinger (fEffectiveOptions_.fLinger); // 'missing' has meaning (feature disabled) for socket, so allow setting that too - doesn't mean don't pass on/use-default
-    shared_ptr<Connection> conn = make_shared<Connection> (s, fInterceptorChain_);
+    shared_ptr<Connection> conn = make_shared<Connection> (s, fInterceptorChain_, *fEffectiveOptions_.fDefaultResponseHeaders);
     fInactiveSockSetPoller_.Add (conn);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     {

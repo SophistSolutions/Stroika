@@ -41,7 +41,7 @@ Response::Response (Response&& src)
     fHeaders_                 = src.fHeaders_;
 }
 
-Response::Response ()
+Response::Response (const optional<Headers>& initialHeaders)
     : headers{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const IO::Network::HTTP::Headers& {
               const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::headers);
@@ -89,7 +89,7 @@ Response::Response ()
                       thisObj->rwHeaders ().contentType = newCT;
                   }}
     , fStatusAndOverrideReason_{make_tuple (StatusCodes::kOK, optional<String>{})}
-    , fHeaders_{}
+    , fHeaders_{Memory::NullCoalesce (initialHeaders)}
 {
 }
 

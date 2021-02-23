@@ -107,7 +107,7 @@ struct Router::Rep_ : Interceptor::_IRep {
         Sequence<String>         matches;
         optional<RequestHandler> handler = Lookup_ (m->request (), &matches);
         if (handler) {
-            Handle_GET_ (m, matches, *handler);
+            Handle_Via_RequestHandler_ (m, matches, *handler);
         }
         else if (m->request ().httpMethod () == HTTP::Methods::kHead and Handle_HEAD_ (m)) {
             // handled
@@ -190,7 +190,7 @@ struct Router::Rep_ : Interceptor::_IRep {
         }
         return methods.empty () ? nullopt : optional<Set<String>>{methods};
     }
-    nonvirtual void Handle_GET_ (Message* message, const Sequence<String>& matches, const RequestHandler& handler) const
+    nonvirtual void Handle_Via_RequestHandler_ (Message* message, const Sequence<String>& matches, const RequestHandler& handler) const
     {
         const Request& request  = message->request ();
         Response&      response = message->rwResponse ();

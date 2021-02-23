@@ -79,7 +79,7 @@ namespace {
                     else if (remainingNumber2Parse.StartsWith (L"-i"_k)) {
                         remainingNumber2Parse = L"-1i" + remainingNumber2Parse.Skip (2);
                     }
-                    Number::value_type d = Characters::String2Float<Number::value_type> (remainingNumber2Parse, &remainingNumber2Parse);
+                    Number::value_type d   = Characters::String2Float<Number::value_type> (remainingNumber2Parse, &remainingNumber2Parse);
                     if (remainingNumber2Parse.StartsWith (L"i"_k)) {
                         accum += Number (0, d);
                         remainingNumber2Parse = remainingNumber2Parse.Skip (1);

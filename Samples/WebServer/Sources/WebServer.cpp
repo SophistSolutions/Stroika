@@ -12,6 +12,7 @@
 #include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/Execution/TimeOutException.h"
+#include "Stroika/Foundation/Execution/VirtualConstant.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
@@ -33,27 +34,37 @@ using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Frameworks::WebServer;
 
 using Characters::String;
+using Execution::VirtualConstant;
 using Memory::BLOB;
+
 using Stroika::Frameworks::WebServer::FileSystemRequestHandler;
 using Stroika::Frameworks::WebServer::Request;
 using Stroika::Frameworks::WebServer::Response;
 using Time::Duration;
 
 namespace {
-    Sequence<pair<RegularExpression, CacheControl>> kCacheControlSettings_
-    {
-#if __cpp_designated_initializers
-        {
-            RegularExpression{L".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl { .fMaxAge = Duration{24h}.As<int32_t> () }
-        }
-#else
-        {
-            RegularExpression{L".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl { nullopt, Duration{24h}.As<int32_t> () }
-        }
-#endif
-    };
 
-    FileSystemRequestHandler::Options kFSHandlersOptions_{L"Files"_k, Sequence<String>{L"index.html"_k}, nullopt, kCacheControlSettings_};
+    const VirtualConstant<FileSystemRequestHandler::Options> kFileSystemRouterOptions_{[] () {
+        Sequence<pair<RegularExpression, CacheControl>> cacheControlSettings_
+        {
+#if __cpp_designated_initializers
+            {
+                RegularExpression{L".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl { .fMaxAge = Duration{24h}.As<int32_t> () }
+            }
+#else
+            {
+                RegularExpression{L".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl { nullopt, Duration{24h}.As<int32_t> () }
+            }
+#endif
+        };
+        return FileSystemRequestHandler::Options{L"Files"_k, Sequence<String>{L"index.html"_k}, nullopt, cacheControlSettings_};
+    }};
+
+    const VirtualConstant<Headers> kDefaultResponseHeaders_{[] () {
+        Headers h;
+        h.server = L"Stroika-Sample-WebServer/"_k + AppVersion::kVersion.AsMajorMinorString ();
+        return h;
+    }};
 
     /*
      *  It's often helpful to structure together, routes, special interceptors, with your connection manager, to package up
@@ -63,29 +74,36 @@ namespace {
      *  and accesss them from the Route handler functions.
      */
     struct MyWebServer_ {
+
         const Sequence<Route> kRoutes_;
         ConnectionManager     fConnectionMgr_;
         MyWebServer_ (uint16_t portNumber)
             : kRoutes_
         {
-            Route{L""_RegEx, DefaultPage_}, Route{HTTP::MethodsRegEx::kPost, L"SetAppState"_RegEx, SetAppState_}, Route{L"FRED"_RegEx, [] (Request*, Response* response) {
-                                                                                                                            response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
-                                                                                                                            response->write (L"FRED");
-                                                                                                                        }},
+            Route{L""_RegEx, DefaultPage_},
+                Route{HTTP::MethodsRegEx::kPost, L"SetAppState"_RegEx, SetAppState_},
+                Route{L"FRED"_RegEx, [] (Request*, Response* response) {
+                          response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
+                          response->write (L"FRED");
+                      }},
                 Route
             {
-                L"Files/.*"_RegEx, FileSystemRequestHandler { Execution::GetEXEDir () / L"html", kFSHandlersOptions_ }
+                L"Files/.*"_RegEx, FileSystemRequestHandler { Execution::GetEXEDir () / L"html", kFileSystemRouterOptions_ }
             }
         }
 #if __cpp_designated_initializers
         , fConnectionMgr_
         {
-            SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_, ConnectionManager::Options { .fBindFlags = Socket::BindFlags{}, .fServerHeader = L"Stroika-Sample-WebServer/"_k + AppVersion::kVersion.AsMajorMinorString () }
+            SocketAddresses (InternetAddresses_Any (), portNumber),
+                kRoutes_,
+                ConnectionManager::Options { .fBindFlags = Socket::BindFlags{}, .fDefaultResponseHeaders = kDefaultResponseHeaders_ }
         }
 #else
         , fConnectionMgr_
         {
-            SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_, ConnectionManager::Options { nullopt, nullopt, Socket::BindFlags{}, L"Stroika-Sample-WebServer/"_k + AppVersion::kVersion.AsMajorMinorString () }
+            SocketAddresses (InternetAddresses_Any (), portNumber),
+                kRoutes_,
+                ConnectionManager::Options { nullopt, nullopt, Socket::BindFlags{}, kDefaultResponseHeaders_ }
         }
 #endif
         {

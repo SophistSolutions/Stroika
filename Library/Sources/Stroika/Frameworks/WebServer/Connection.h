@@ -31,6 +31,7 @@ namespace Stroika::Frameworks::WebServer {
 
     using Stroika::Foundation::IO::Network::ConnectionOrientedStreamSocket;
     using Stroika::Foundation::IO::Network::SocketStream;
+    using Stroika::Foundation::IO::Network::HTTP::Headers;
 
     class ConnectionManager;
 
@@ -74,7 +75,7 @@ namespace Stroika::Frameworks::WebServer {
          */
         Connection ()                  = delete;
         Connection (const Connection&) = delete;
-        explicit Connection (const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain = InterceptorChain{});
+        explicit Connection (const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain = InterceptorChain{}, const Headers& defaultResponseHeaders = {});
 
     public:
         ~Connection ();
@@ -144,7 +145,7 @@ namespace Stroika::Frameworks::WebServer {
 
     private:
         struct MyMessage_ : Message {
-            MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& socket, const Streams::InputOutputStream<byte>::Ptr& socketStream);
+            MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& socket, const Streams::InputOutputStream<byte>::Ptr& socketStream, const Headers& defaultResponseHeaders);
 
             // Only valid until the end of a successful ReadHeaders
             HTTP::MessageStartTextInputStreamBinaryAdapter::Ptr fMsgHeaderInTextStream;
@@ -162,6 +163,7 @@ namespace Stroika::Frameworks::WebServer {
 
     private:
         InterceptorChain                      fInterceptorChain_;
+        Headers                               fDefaultResponseHeaders_;
         ConnectionOrientedStreamSocket::Ptr   fSocket_;
         Streams::InputOutputStream<byte>::Ptr fSocketStream_;
         shared_ptr<MyMessage_>                fMessage_; // always there, but ptr so it can be replaced
