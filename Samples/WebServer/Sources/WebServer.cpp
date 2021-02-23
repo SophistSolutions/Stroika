@@ -40,11 +40,16 @@ using Stroika::Frameworks::WebServer::Response;
 using Time::Duration;
 
 namespace {
-    Sequence<pair<RegularExpression, CacheControl>> kCacheControlSettings_{
+    Sequence<pair<RegularExpression, CacheControl>> kCacheControlSettings_
+    {
 #if __cpp_designated_initializers
-        {RegularExpression{L".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl{.fMaxAge = Duration{24h}.As<int32_t> ()}}
+        {
+            RegularExpression{L".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl { .fMaxAge = Duration{24h}.As<int32_t> () }
+        }
 #else
-        {RegularExpression{L".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl{nullopt, Duration{24h}.As<int32_t> ()}}
+        {
+            RegularExpression{L".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl { nullopt, Duration{24h}.As<int32_t> () }
+        }
 #endif
     };
 
@@ -63,12 +68,10 @@ namespace {
         MyWebServer_ (uint16_t portNumber)
             : kRoutes_
         {
-            Route{L""_RegEx, DefaultPage_},
-                Route{HTTP::MethodsRegEx::kPost, L"SetAppState"_RegEx, SetAppState_},
-                Route{L"FRED"_RegEx, [] (Request*, Response* response) {
-                          response->write (L"FRED");
-                          response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
-                      }},
+            Route{L""_RegEx, DefaultPage_}, Route{HTTP::MethodsRegEx::kPost, L"SetAppState"_RegEx, SetAppState_}, Route{L"FRED"_RegEx, [] (Request*, Response* response) {
+                                                                                                                            response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
+                                                                                                                            response->write (L"FRED");
+                                                                                                                        }},
                 Route
             {
                 L"Files/.*"_RegEx, FileSystemRequestHandler { Execution::GetEXEDir () / L"html", kFSHandlersOptions_ }
@@ -110,9 +113,9 @@ namespace {
         // Can declare arguments as Message* message
         static void SetAppState_ (Message* message)
         {
-            String argsAsString = Streams::TextReader::New (message->rwRequest ().GetBody ()).ReadAll ();
-            message->rwResponse ().writeln (L"<html><body><p>Hi SetAppState (" + argsAsString.As<wstring> () + L")</p></body></html>");
             message->rwResponse ().contentType = DataExchange::InternetMediaTypes::kHTML;
+            String argsAsString                = Streams::TextReader::New (message->rwRequest ().GetBody ()).ReadAll ();
+            message->rwResponse ().writeln (L"<html><body><p>Hi SetAppState (" + argsAsString.As<wstring> () + L")</p></body></html>");
         }
     };
 }
