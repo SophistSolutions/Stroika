@@ -50,8 +50,8 @@
   <PropertyGroup>
     <NMakeBuildCommandLine>make --directory $(ProjectDir)\..\..\ CONFIGURATION=$(CONFIGURATION) $(JOBS_FLAG) --silent all</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>make --directory $(ProjectDir)\..\..\ CONFIGURATION=$(CONFIGURATION) clean --silent</NMakeCleanCommandLine>
-    <OutDir>$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-Serialization\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-Serialization\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-WebService\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-WebService\</IntDir>
   </PropertyGroup>
   <PropertyGroup>
     <NMakeIncludeSearchPath>$(ProjectDir)\..\..\;$(ProjectDir)\..\..\..\..\Library\Sources\</NMakeIncludeSearchPath>
