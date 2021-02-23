@@ -95,6 +95,11 @@ namespace Stroika::Foundation::Common {
          */
         template <typename TT>
         static constexpr bool kIsMutatableType = not is_const_v<remove_reference_t<TT>> and is_reference_v<TT>;
+
+        enum PropertyChangedEventResultType {
+            eSilentlyCutOffProcessing,
+            eContinuefProcessing,
+        };
     };
 
     /**
@@ -509,7 +514,7 @@ namespace Stroika::Foundation::Common {
          *  TODO
          *      @todo be CAREFUL about copying these propertyChangedHandlers (what they reference) - maybe they should take parent obj ptr param*? or propery*?
          */
-        using PropertyChangedEventHandler = std::function<bool (const PropertyChangedEvent&)>;
+        using PropertyChangedEventHandler = std::function<PropertyCommon::PropertyChangedEventResultType (const PropertyChangedEvent&)>;
 
     public:
         /**

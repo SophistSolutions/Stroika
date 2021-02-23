@@ -35,6 +35,7 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
 
 using IO::Network::HTTP::ClientErrorException;
+using PropertyChangedEventResultType = Common::PropertyCommon::PropertyChangedEventResultType;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -110,17 +111,34 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
     , fUseOutStream_{Streams::BufferedOutputStream<byte>::New (outStream)}
 {
 #if qDebug
-    this->status.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return true; });
-    this->statusAndOverrideReason.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return true; });
+    this->status.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return PropertyChangedEventResultType::eContinuefProcessing; });
+    this->statusAndOverrideReason.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return PropertyChangedEventResultType::eContinuefProcessing; });
     this->rwHeaders.rwPropertyReadHandlers ().push_front ([this] () { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return nullopt; });
-    this->rwHeaders.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return true; });
-    this->rwHeaders ().transferEncoding.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return true; });
+    this->rwHeaders.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return PropertyChangedEventResultType::eContinuefProcessing; });
 #endif
     this->contentType.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) {
         Require (this->headersCanBeSet ());
         this->rwHeaders ().contentType = propertyChangedEvent.fNewValue ? AdjustContentTypeForCodePageIfNeeded_ (*propertyChangedEvent.fNewValue) : optional<InternetMediaType>{};
-        return false; // cut-off - handled
+        return PropertyChangedEventResultType::eSilentlyCutOffProcessing;
     });
+    this->rwHeaders ().transferEncoding.rwPropertyChangedHandlers ().push_front (
+        [this] ([[maybe_unused]] const auto& propertyChangedEvent) { 
+            Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ());
+            // @todo fix - not 100% right cuz another property could cut off? Maybe always call all? - or need better control over ordering
+            fInChunkedModeCache_ = propertyChangedEvent.fNewValue and propertyChangedEvent.fNewValue->Contains (HTTP::TransferEncoding::eChunked);
+            return PropertyChangedEventResultType::eContinuefProcessing;
+        }
+    );
+    fInChunkedModeCache_ = this->headers ().transferEncoding () and this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked);  // can be set by initial headers (in CTOR)
+    if (not InChunkedMode_ ()) {
+        this->rwHeaders ().contentLength = 0;
+    }
+}
+
+bool Response::InChunkedMode_ () const
+{
+    Ensure (fInChunkedModeCache_ == (this->headers ().transferEncoding () and this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked)));
+    return fInChunkedModeCache_;
 }
 
 InternetMediaType Response::AdjustContentTypeForCodePageIfNeeded_ (const InternetMediaType& ct) const
@@ -153,6 +171,7 @@ void Response::Flush ()
             fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (utf8)), reinterpret_cast<const byte*> (Containers::End (utf8)));
         }
         {
+            Assert (InChunkedMode_ () or this->headers ().contentLength ().has_value ());   // I think is is always required, but double check...
             for (const auto& i : this->headers ().As<> ()) {
                 string utf8 = Characters::Format (L"%s: %s\r\n", i.fKey.c_str (), i.fValue.c_str ()).AsUTF8 ();
                 fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (utf8)), reinterpret_cast<const byte*> (Containers::End (utf8)));
@@ -186,7 +205,7 @@ void Response::End ()
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     Require (fState_ != State::eCompleted);
-    if (this->headers ().transferEncoding () and this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked)) {
+    if (InChunkedMode_ ()) {
         constexpr string_view kEndChunk_ = "0\r\n\r\n";
         fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (kEndChunk_)), reinterpret_cast<const byte*> (Containers::End (kEndChunk_)));
     }
@@ -228,14 +247,13 @@ void Response::write (const byte* s, const byte* e)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     Require (fState_ != State::eCompleted);
-    Require ((fState_ == State::ePreparingHeaders) or (fState_ == State::ePreparingBodyBeforeHeadersSent) or (this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked)));
+    Require ((fState_ == State::ePreparingHeaders) or (fState_ == State::ePreparingBodyBeforeHeadersSent) or InChunkedMode_ ());
     Require (s <= e);
     if (s < e) {
-        if (fState_ == State::ePreparingHeaders and this->headers ().transferEncoding () and this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked)) {
+        if (fState_ == State::ePreparingHeaders and InChunkedMode_ ()) {
             Flush ();
         }
-        if (this->headers ().transferEncoding () and this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked)) {
-            // NYI
+        if (InChunkedMode_ ()) {
             if (not fHeadMode_) {
                 string n = CString::Format ("%x\r\n", e - s);
                 fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (n)), reinterpret_cast<const byte*> (Containers::End (n)));
@@ -248,7 +266,6 @@ void Response::write (const byte* s, const byte* e)
             // Because for autocompute - illegal to call flush and then write
             Containers::ReserveSpeedTweekAddN (fBodyBytes_, (e - s), kResponseBufferReallocChunkSizeReserve_);
             fBodyBytes_.insert (fBodyBytes_.end (), s, e);
-
 #if qDebug
             tSuppressAssertCanModifyHeaders_++;
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([] () noexcept { tSuppressAssertCanModifyHeaders_--; });

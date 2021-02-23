@@ -336,10 +336,14 @@ namespace Stroika::Frameworks::WebServer {
         }
 
     private:
+        nonvirtual bool InChunkedMode_ () const;
+
+    private:
         nonvirtual InternetMediaType AdjustContentTypeForCodePageIfNeeded_ (const InternetMediaType& ct) const;
 
     private:
         IO::Network::Socket::Ptr                 fSocket_;
+        bool                                     fInChunkedModeCache_{false};
         State                                    fState_{State::ePreparingHeaders};
         Streams::OutputStream<byte>::Ptr         fUnderlyingOutStream_;
         Streams::BufferedOutputStream<byte>::Ptr fUseOutStream_;
