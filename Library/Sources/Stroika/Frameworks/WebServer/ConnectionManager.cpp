@@ -160,8 +160,20 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
     , fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([this] () { WaitForReadyConnectionLoop_ (); }, L"WebServer-ConnectionMgr-Wait4IOReady"_k)}
     , fListener_{bindAddresses, *fEffectiveOptions_.fBindFlags, [this] (const ConnectionOrientedStreamSocket::Ptr& s) { onConnect_ (s); }, *fEffectiveOptions_.fTCPBacklog}
 {
-    // @todo validate fDefaultResponseHeaders contains no bad/inappropriate headers (like Content-Length), probably CORS headers worth a warning as well - maybe just walk
-    // and WEAK-ASSERT
+    // validate fDefaultResponseHeaders contains no bad/inappropriate headers (like Content-Length), probably CORS headers worth a warning as well
+    // just a bunch of sanity checks for things you really DONT want to set here for any reason I can think of
+    if (fEffectiveOptions_.fDefaultResponseHeaders) {
+        WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->allow() == nullopt);  // unsure
+        WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->cookie ().cookieDetails ().empty ());
+        WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->connection () == nullopt);
+        WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->contentLength () == nullopt);
+        WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->ETag () == nullopt);
+        WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->location () == nullopt);
+        WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->origin () == nullopt);   // request only header
+        WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->ifNoneMatch () == nullopt); // request only header
+        WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->setCookie ().cookieDetails ().empty ());
+        WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->vary () == nullopt);
+    }
 
     DbgTrace (L"Constructing WebServer::ConnectionManager (%p), with threadpoolSize=%d, backlog=%d", this, fActiveConnectionThreads_.GetPoolSize (), ComputeConnectionBacklog_ (options));
     fWaitForReadyConnectionThread_.Start (); // start here instead of autostart so a guaranteed initialized before thead main starts - see https://stroika.atlassian.net/browse/STK-706
