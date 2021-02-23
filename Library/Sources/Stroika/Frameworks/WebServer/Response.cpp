@@ -122,14 +122,13 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
         return PropertyChangedEventResultType::eSilentlyCutOffProcessing;
     });
     this->rwHeaders ().transferEncoding.rwPropertyChangedHandlers ().push_front (
-        [this] ([[maybe_unused]] const auto& propertyChangedEvent) { 
+        [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
             Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ());
             // @todo fix - not 100% right cuz another property could cut off? Maybe always call all? - or need better control over ordering
             fInChunkedModeCache_ = propertyChangedEvent.fNewValue and propertyChangedEvent.fNewValue->Contains (HTTP::TransferEncoding::eChunked);
             return PropertyChangedEventResultType::eContinuefProcessing;
-        }
-    );
-    fInChunkedModeCache_ = this->headers ().transferEncoding () and this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked);  // can be set by initial headers (in CTOR)
+        });
+    fInChunkedModeCache_ = this->headers ().transferEncoding () and this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked); // can be set by initial headers (in CTOR)
     if (not InChunkedMode_ ()) {
         this->rwHeaders ().contentLength = 0;
     }
@@ -171,7 +170,7 @@ void Response::Flush ()
             fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (utf8)), reinterpret_cast<const byte*> (Containers::End (utf8)));
         }
         {
-            Assert (InChunkedMode_ () or this->headers ().contentLength ().has_value ());   // I think is is always required, but double check...
+            Assert (InChunkedMode_ () or this->headers ().contentLength ().has_value ()); // I think is is always required, but double check...
             for (const auto& i : this->headers ().As<> ()) {
                 string utf8 = Characters::Format (L"%s: %s\r\n", i.fKey.c_str (), i.fValue.c_str ()).AsUTF8 ();
                 fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (utf8)), reinterpret_cast<const byte*> (Containers::End (utf8)));
