@@ -8,17 +8,14 @@
 
 #include "../../Foundation/Characters/ToString.h"
 #include "../../Foundation/Containers/Common.h"
-#include "../../Foundation/DataExchange/BadFormatException.h"
 #include "../../Foundation/Debug/Assertions.h"
 #include "../../Foundation/Debug/Trace.h"
 #include "../../Foundation/Execution/Sleep.h"
 #include "../../Foundation/Execution/Throw.h"
-#include "../../Foundation/Execution/WaitForIOReady.h"
 #include "../../Foundation/IO/Network/HTTP/Exception.h"
 #include "../../Foundation/IO/Network/HTTP/Headers.h"
 #include "../../Foundation/IO/Network/HTTP/Methods.h"
 #include "../../Foundation/Memory/Optional.h"
-#include "../../Foundation/Memory/SmallStackBuffer.h"
 
 #include "DefaultFaultInterceptor.h"
 
@@ -163,13 +160,13 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
     // validate fDefaultResponseHeaders contains no bad/inappropriate headers (like Content-Length), probably CORS headers worth a warning as well
     // just a bunch of sanity checks for things you really DONT want to set here for any reason I can think of
     if (fEffectiveOptions_.fDefaultResponseHeaders) {
-        WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->allow() == nullopt);  // unsure
+        WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->allow () == nullopt); // unsure
         WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->cookie ().cookieDetails ().empty ());
         WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->connection () == nullopt);
         WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->contentLength () == nullopt);
         WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->ETag () == nullopt);
         WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->location () == nullopt);
-        WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->origin () == nullopt);   // request only header
+        WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->origin () == nullopt);      // request only header
         WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->ifNoneMatch () == nullopt); // request only header
         WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->setCookie ().cookieDetails ().empty ());
         WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->vary () == nullopt);

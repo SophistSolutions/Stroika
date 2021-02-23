@@ -55,6 +55,10 @@ namespace Stroika::Frameworks::WebServer {
      *        response->write (...);
      *      \endcode
      *
+     *  TODO:
+     *      @todo Support https://stroika.atlassian.net/browse/STK-727 - HTTP Chunked Transfer Trailers. We do support
+     *            chunked transfers, but require all the headers set first.
+     *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     class Response : public IO::Network::HTTP::Response {
