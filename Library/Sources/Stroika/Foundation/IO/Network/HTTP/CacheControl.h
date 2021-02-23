@@ -61,38 +61,32 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         static CacheControl Parse (const Characters::String& headerValue);
 
         /**
+         *  @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#cacheability
          */
-        enum class StoreRestriction {
-            eNoStore,
-            eNoCache,
-            eNoTransform,
-            eOnlyIfCached,
+        enum class Cacheability {
+            ePublic,            // The response may be stored by any cache, even if the response is normally non-cacheable
+            ePrivate,           // The response may be stored only by a browser's cache, even if the response is normally non-cacheable
+            eNoCache,           // The response may be stored by any cache, even if the response is normally non-cacheable. However, the stored response MUST always go through validation with the origin server first
+            eNoStore,           // The response may not be stored in any cache (can also set max-age=0 to also clear existing cache responses)
 
-            Stroika_Define_Enum_Bounds (eNoStore, eOnlyIfCached)
+            Stroika_Define_Enum_Bounds (ePublic, eNoStore)
         };
-        static constexpr StoreRestriction eNoStore      = StoreRestriction::eNoStore;
-        static constexpr StoreRestriction eNoCache      = StoreRestriction::eNoCache;
-        static constexpr StoreRestriction eNoTransform  = StoreRestriction::eNoTransform;
-        static constexpr StoreRestriction eOnlyIfCached = StoreRestriction::eOnlyIfCached;
+        static constexpr Cacheability     ePublic       = Cacheability::ePublic;
+        static constexpr Cacheability     ePrivate      = Cacheability::ePrivate;
+        static constexpr Cacheability     eNoStore      = Cacheability::eNoStore;
+        static constexpr Cacheability     eNoCache      = Cacheability::eNoCache;
 
         /**
          */
-        optional<StoreRestriction> fStoreRestriction;
+        optional<Cacheability> fCacheability;
 
         /**
+         *  The number of seconds a resource is considered fresh (**very common**)
+         *  \note req fMaxAge <= kMaximumAgeValue
          */
-        enum class Visibility {
-            ePublic,
-            ePrivate,
+        optional<uint32_t> fMaxAge;
 
-            Stroika_Define_Enum_Bounds (ePublic, ePrivate)
-        };
-        static constexpr Visibility ePublic  = Visibility::ePublic;
-        static constexpr Visibility ePrivate = Visibility::ePrivate;
-
-        /**
-         */
-        optional<Visibility> fVisibility;
+        static constexpr uint32_t kMaximumAgeValue = numeric_limits<int32_t>::max (); // see https://tools.ietf.org/html/rfc7234#section-1.2.1
 
         /**
          */
@@ -104,18 +98,20 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         bool fImmutable{false};
 
         /**
+         * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#other
+         */
+        bool fNoTransform{false};
+
+        /**
+         * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#other
+         */
+        bool fOnlyIfCached{false};
+
+        /**
          *  Used by servers just in proxying (otherwise no reason to return something with a non-zero age)
          *  \note req fMaxAge <= kMaximumAgeValue
          */
         optional<uint32_t> fAge;
-
-        /**
-         *  The number of seconds a resource is considered fresh (**very common**)
-         *  \note req fMaxAge <= kMaximumAgeValue
-         */
-        optional<uint32_t> fMaxAge;
-
-        static constexpr uint32_t kMaximumAgeValue = numeric_limits<int32_t>::max (); // see https://tools.ietf.org/html/rfc7234#section-1.2.1
 
         /**
          *  overrides fMaxAge & Expires, but ONLY for shared caches(e.g. proxies)
@@ -162,7 +158,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /**
          *  \par Example Usage (@see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#caching_static_assets)
          *      \code
-         *          kImmutable = CacheControl{.fVisibility=CacheControl::ePublic, .fMaxAge=CacheControl::kMaximumAgeValue, .fImmutable=true}; // Cache-Control: public, max-age=2147483647, immutable
+         *          kImmutable = CacheControl{.fCacheability=CacheControl::ePublic, .fMaxAge=CacheControl::kMaximumAgeValue, .fImmutable=true}; // Cache-Control: public, max-age=2147483647, immutable
          *      \endcode
          */
         static const CacheControl kImmutable;
@@ -171,7 +167,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /**
          *  \par Example Usage (@see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#preventing_caching)
          *      \code
-         *          auto cc = CacheControl{.fStoreRestriction=CacheControl::StoreRestriction::eNoStore};             // Cache-Control: no-store
+         *          auto cc = CacheControl{.fCacheability=CacheControl::eNoStore};             // Cache-Control: no-store
          *      \endcode
          */
         static const CacheControl kDisableCaching;
@@ -185,39 +181,39 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *
          *  \par Example Usage (@see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#requiring_revalidation)
          *      \code
-         *          auto cc = CacheControl{.fStoreRestriction=CacheControl::StoreRestriction::eNoCache};             // Cache-Control: no-cache
+         *          auto cc = CacheControl{.fCacheability=CacheControl::eNoCache};             // Cache-Control: no-cache
          *      \endcode
          */
-        static const CacheControl kMustRevalidate;
+        static const CacheControl kMustRevalidatePublic;
 
     public:
         /**
          *  \brief this means you CAN cache the value, but should revalidate each time before use (so etags can be used etc) - but it should not be re-used from user to user
          */
-        static const CacheControl kPrivateMustRevalidate;
+        static const CacheControl kMustRevalidatePrivate;
     };
     template <>
     Characters::String CacheControl::As () const;
 
 #if __cpp_designated_initializers
-    inline constexpr const CacheControl CacheControl::kImmutable{.fVisibility = CacheControl::ePublic, .fImmutable = true, .fMaxAge = CacheControl::kMaximumAgeValue};
+    inline constexpr const CacheControl CacheControl::kImmutable{.fCacheability = CacheControl::ePublic, .fMaxAge = CacheControl::kMaximumAgeValue, .fImmutable = true};
 #else
-    inline constexpr const CacheControl CacheControl::kImmutable{nullopt, CacheControl::ePublic, false, true, CacheControl::kMaximumAgeValue};
+    inline constexpr const CacheControl CacheControl::kImmutable{CacheControl::ePublic, CacheControl::kMaximumAgeValue, true};
 #endif
 #if __cpp_designated_initializers
-    inline constexpr const CacheControl CacheControl::kDisableCaching{.fStoreRestriction = CacheControl::StoreRestriction::eNoStore};
+    inline constexpr const CacheControl CacheControl::kDisableCaching{.fCacheability = CacheControl::eNoStore};
 #else
-    inline constexpr const CacheControl CacheControl::kDisableCaching{CacheControl::StoreRestriction::eNoStore};
+    inline constexpr const CacheControl CacheControl::kDisableCaching{CacheControl::eNoStore};
 #endif
 #if __cpp_designated_initializers
-    inline constexpr const CacheControl CacheControl::kMustRevalidate{.fStoreRestriction = CacheControl::StoreRestriction::eNoCache};
+    inline constexpr const CacheControl CacheControl::kMustRevalidatePublic{.fCacheability = CacheControl::eNoCache};
 #else
-    inline constexpr const CacheControl CacheControl::kMustRevalidate{CacheControl::StoreRestriction::eNoCache};
+    inline constexpr const CacheControl CacheControl::kMustRevalidatePublic{CacheControl::eNoCache};
 #endif
 #if __cpp_designated_initializers
-    inline constexpr const CacheControl CacheControl::kPrivateMustRevalidate{.fStoreRestriction = CacheControl::StoreRestriction::eNoCache, .fVisibility = CacheControl::ePrivate};
+    inline constexpr const CacheControl CacheControl::kMustRevalidatePrivate{.fCacheability = CacheControl::ePrivate, .fMustRevalidate = true};
 #else
-    inline constexpr const CacheControl CacheControl::kPrivateMustRevalidate{CacheControl::StoreRestriction::eNoCache, CacheControl::ePrivate};
+    inline constexpr const CacheControl CacheControl::kMustRevalidatePrivate{CacheControl::ePrivate, nullopt, true};
 #endif
 
 #if __cpp_impl_three_way_comparison < 201907

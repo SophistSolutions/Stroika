@@ -37,23 +37,20 @@ CacheControl CacheControl::Parse (const String& headerValue)
         Sequence<String> vv = v.Tokenize ({'='});
         Assert (not vv.empty ()); // cuz the first tokenize will never return an empty item
         String token = vv[0];
-        for (StoreRestriction sr : DiscreteRange<StoreRestriction>::FullRange ()) {
-            if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, DefaultNames<StoreRestriction>{}.GetName (sr))) {
-                r.fStoreRestriction = sr;
-                goto DoneWithV;
-            }
-        }
-        for (Visibility vis : DiscreteRange<Visibility>::FullRange ()) {
-            if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, DefaultNames<Visibility>{}.GetName (vis))) {
-                r.fVisibility = vis;
+        for (Cacheability sr : DiscreteRange<Cacheability>::FullRange ()) {
+            if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, DefaultNames<Cacheability>{}.GetName (sr))) {
+                r.fCacheability = sr;
                 goto DoneWithV;
             }
         }
         if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, L"must-revalidate")) {
             r.fMustRevalidate = true;
         }
-        else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, L"immutable")) {
-            r.fImmutable = true;
+        else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, L"no-transform")) {
+            r.fNoTransform = true;
+        }
+        else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, L"only-if-cached")) {
+            r.fOnlyIfCached = true;
         }
         else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, L"age") && vv.length () >= 2) {
             r.fAge = parseInt (vv[1]);
@@ -88,12 +85,8 @@ String CacheControl::As () const
             sb += L", ";
         }
     };
-    if (fStoreRestriction) {
-        sb += DefaultNames<StoreRestriction>{}.GetName (*fStoreRestriction);
-    }
-    if (fVisibility) {
-        handleComma ();
-        sb += DefaultNames<Visibility>{}.GetName (*fVisibility);
+    if (fCacheability) {
+        sb += DefaultNames<Cacheability>{}.GetName (*fCacheability);
     }
     if (fMustRevalidate) {
         handleComma ();
@@ -102,6 +95,14 @@ String CacheControl::As () const
     if (fImmutable) {
         handleComma ();
         sb += L"immutable"sv;
+    }
+    if (fNoTransform) {
+        handleComma ();
+        sb += L"no-transform"sv;
+    }
+    if (fOnlyIfCached) {
+        handleComma ();
+        sb += L"only-if-cached"sv;
     }
     if (fAge) {
         handleComma ();

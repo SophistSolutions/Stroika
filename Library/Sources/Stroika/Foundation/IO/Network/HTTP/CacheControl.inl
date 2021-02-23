@@ -28,7 +28,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     }
     inline bool operator== (const CacheControl& lhs, const CacheControl& rhs)
     {
-        return lhs.fStoreRestriction == rhs.fStoreRestriction and lhs.fVisibility == rhs.fVisibility and lhs.fMustRevalidate == rhs.fMustRevalidate and lhs.fImmutable == rhs.fImmutable and lhs.fAge == rhs.fAge and lhs.fMaxAge == rhs.fMaxAge and lhs.fSharedMaxAge == rhs.fSharedMaxAge and lhs.fMaxStale == rhs.fMaxStale and lhs.fMinFresh == rhs.fMinFresh;
+        return lhs.fCacheability == rhs.fCacheability and lhs.fMaxAge == rhs.fMaxAge and lhs.fMustRevalidate == rhs.fMustRevalidate and lhs.fImmutable == rhs.fImmutable and lhs.fNoTransform == rhs.fNoTransform and lhs.fOnlyIfCached == rhs.fOnlyIfCached and lhs.fAge == rhs.fAge and lhs.fSharedMaxAge == rhs.fSharedMaxAge and lhs.fMaxStale == rhs.fMaxStale and lhs.fMinFresh == rhs.fMinFresh;
     }
     inline bool operator!= (const CacheControl& lhs, const CacheControl& rhs)
     {
@@ -40,18 +40,12 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
 namespace Stroika::Foundation::Configuration {
     template <>
-    constexpr EnumNames<IO::Network::HTTP::CacheControl::StoreRestriction> DefaultNames<IO::Network::HTTP::CacheControl::StoreRestriction>::k{
-        EnumNames<IO::Network::HTTP::CacheControl::StoreRestriction>::BasicArrayInitializer{{
-            {IO::Network::HTTP::CacheControl::StoreRestriction::eNoStore, L"no-store"},
-            {IO::Network::HTTP::CacheControl::StoreRestriction::eNoCache, L"no-cache"},
-            {IO::Network::HTTP::CacheControl::StoreRestriction::eNoTransform, L"no-transform"},
-            {IO::Network::HTTP::CacheControl::StoreRestriction::eOnlyIfCached, L"only-if-cached"},
-        }}};
-    template <>
-    constexpr EnumNames<IO::Network::HTTP::CacheControl::Visibility> DefaultNames<IO::Network::HTTP::CacheControl::Visibility>::k{
-        EnumNames<IO::Network::HTTP::CacheControl::Visibility>::BasicArrayInitializer{{
-            {IO::Network::HTTP::CacheControl::Visibility::ePublic, L"public"},
-            {IO::Network::HTTP::CacheControl::Visibility::ePrivate, L"private"},
+    constexpr EnumNames<IO::Network::HTTP::CacheControl::Cacheability> DefaultNames<IO::Network::HTTP::CacheControl::Cacheability>::k{
+        EnumNames<IO::Network::HTTP::CacheControl::Cacheability>::BasicArrayInitializer{{
+            {IO::Network::HTTP::CacheControl::Cacheability::ePublic, L"public"},
+            {IO::Network::HTTP::CacheControl::Cacheability::ePrivate, L"private"},
+            {IO::Network::HTTP::CacheControl::Cacheability::eNoCache, L"no-cache"},
+            {IO::Network::HTTP::CacheControl::Cacheability::eNoStore, L"no-store"},
         }}};
 }
 
