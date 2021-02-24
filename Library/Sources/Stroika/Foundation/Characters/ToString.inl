@@ -289,6 +289,12 @@ namespace Stroika::Foundation::Characters {
     }
 
     template <>
+    inline String ToString (const std::byte& t)
+    {
+        return ToString (static_cast<unsigned char> (t), std::ios_base::hex);
+    }
+
+    template <>
     inline String ToString (const std::filesystem::path& t)
     {
         return ToString (t.wstring ()); // wrap in 'ToString' for surrounding quotes
