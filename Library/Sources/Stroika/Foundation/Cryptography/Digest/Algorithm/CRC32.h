@@ -32,6 +32,23 @@ namespace Stroika::Foundation::Cryptography::Digest {
         struct DigesterDefaultTraitsForAlgorithm<CRC32> {
             using ReturnType = uint32_t;
         };
+
+
+        template <>
+        struct DigesterAlgorithm<CRC32> : public IDigestAlgorithm<DigesterDefaultTraitsForAlgorithm<CRC32>::ReturnType> {
+            using ReturnType = DigesterDefaultTraitsForAlgorithm<CRC32>::ReturnType;
+
+        public:
+            DigesterAlgorithm () = default;
+        public:
+            virtual void Write (const std::byte* start, const std::byte* end) override;
+
+        public:
+            virtual ReturnType Complete () override;
+
+        private:
+            uint32_t fData_{0xFFFFFFFF};
+        };
     }
 
     template <>

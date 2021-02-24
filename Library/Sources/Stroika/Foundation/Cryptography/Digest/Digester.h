@@ -26,6 +26,36 @@ namespace Stroika::Foundation::Cryptography::Digest {
          */
         template <typename ALGORITHM>
         struct DigesterDefaultTraitsForAlgorithm;
+
+        class IDigester {
+        public:
+            virtual ~IDigester () = default;
+
+        public:
+            virtual void Write (const std::byte* start, const std::byte* end) = 0;
+        };
+
+        template <typename RESULT_TYPE>
+        class IDigestAlgorithm : public IDigester {
+        public:
+            virtual RESULT_TYPE Complete () = 0;
+        };
+
+        template <typename ALGORITHM, typename RETURN_TYPE = typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>
+            class DigesterAlgorithm : public IDigestAlgorithm < RETURN_TYPE> {
+            using ReturnType = RETURN_TYPE;
+
+       // static_assert (false, "must specialize this ");
+
+        public:
+            DigesterAlgorithm ()                         = default;
+            DigesterAlgorithm (const DigesterAlgorithm& src) = delete;
+        public:
+            virtual void Write (const std::byte* start, const std::byte* end) override;
+
+        public:
+            virtual ReturnType Complete () override;
+        };
     }
 
     /**

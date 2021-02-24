@@ -48,13 +48,6 @@ namespace {
 }
 
 namespace {
-    /*
-     *  Implementation based on text from http://www.azillionmonkeys.com/qed/hash.html on 2014-07-28
-     *
-     *  NOTE - I tried to implement in a way that could be windowed, just reading it bits at a time,
-     *  but the trouble is that the initial value of the hash is the length, and since the BinaryInputStream
-     *  isn't necessarily seekable, we cannot compute its length.
-     */
 }
 
 Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType Digester<Algorithm::SuperFastHash, uint32_t>::operator() (const std::byte* from, const std::byte* to) const
@@ -78,10 +71,10 @@ Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType Digester<Algorithm::Sup
      *  on http://www.azillionmonkeys.com/qed/hash.html
      */
     Require (len < numeric_limits<uint32_t>::max ());
-    uint32_t hash = static_cast<uint32_t> (len);
+    //uint32_t hash = static_cast<uint32_t> (len);
+    uint32_t hash = 0; // Since v2.1b10, use this as the default value so I can make it windowed!
 
-    uint32_t tmp;
-    int      rem;
+    int rem;
 
     rem = len & 3;
     len >>= 2;
@@ -89,12 +82,90 @@ Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType Digester<Algorithm::Sup
     /* Main loop */
     for (; len > 0; len--) {
         hash += get16bits (data);
-        tmp  = (get16bits (data + 2) << 11) ^ hash;
-        hash = (hash << 16) ^ tmp;
+        uint32_t tmp = (get16bits (data + 2) << 11) ^ hash;
+        hash         = (hash << 16) ^ tmp;
         data += 2 * sizeof (uint16_t);
         hash += hash >> 11;
     }
 
+    /* Handle end cases */
+    switch (rem) {
+        case 3:
+            hash += get16bits (data);
+            hash ^= hash << 16;
+            hash ^= ((signed char)data[sizeof (uint16_t)]) << 18;
+            hash += hash >> 11;
+            break;
+        case 2:
+            hash += get16bits (data);
+            hash ^= hash << 11;
+            hash += hash >> 17;
+            break;
+        case 1:
+            hash += (signed char)*data;
+            hash ^= hash << 10;
+            hash += hash >> 1;
+    }
+
+    /* Force "avalanching" of final 127 bits */
+    hash ^= hash << 3;
+    hash += hash >> 5;
+    hash ^= hash << 4;
+    hash += hash >> 17;
+    hash ^= hash << 25;
+    hash += hash >> 6;
+
+#if qDebug
+    {
+        Algorithm::DigesterAlgorithm<Algorithm::SuperFastHash> test;
+        test.Write (from, to);
+        Assert (test.Complete () == hash);
+    }
+#endif
+    return hash;
+}
+
+////////////NEW
+
+void Algorithm::DigesterAlgorithm<Algorithm::SuperFastHash>::Write (const std::byte* start, const std::byte* end)
+{
+    size_t len = static_cast<size_t> (end - start);
+
+    rem += len;
+    rem &= 0x3; // old code just did rem = len & 3, but we now get len in bits and peices
+    Assert (0 <= rem && rem <= 3);
+
+    const byte* data = start;
+
+    /*
+     *  Require() here cuz of following cast.
+     *  NB: apparently broken if large data input! > 4gig on 64bit machine.
+     *  But this still produces a reasonable hashed result, and this misfeature
+     *  of ignoring higher order bits appears implied by the reference algorithm
+     *  on http://www.azillionmonkeys.com/qed/hash.html
+     */
+    Require (len < numeric_limits<uint32_t>::max ());
+
+    len >>= 2;
+
+    auto hash = fHash_;
+    /* Main loop */
+    for (; len > 0; len--) {
+        hash += get16bits (data);
+        uint32_t tmp = (get16bits (data + 2) << 11) ^ hash;
+        hash         = (hash << 16) ^ tmp;
+        data += 2 * sizeof (uint16_t);
+        hash += hash >> 11;
+    }
+    fHash_ = hash;
+    Assert (0 <= rem and rem <= 3);
+    memcpy (&finalBytes, data, rem);
+}
+
+auto Algorithm::DigesterAlgorithm<Algorithm::SuperFastHash>::Complete () -> ReturnType
+{
+    const byte* data = &finalBytes[0];
+    auto        hash = fHash_;
     /* Handle end cases */
     switch (rem) {
         case 3:

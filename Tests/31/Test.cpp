@@ -275,19 +275,19 @@ namespace {
                  *      but otherwise I dont think these values should float/vary (thus the VerifyTestResult tests).
                  */
                 if (sizeof (wchar_t) == 2) {
-                    VerifyTestResult (h1 == 2512011991);
-                    VerifyTestResult (h2 == 215);
-                    VerifyTestResult (h3[0] == std::byte{215} and h3[1] == std::byte{66} and h3[39] == std::byte{0});
+                    VerifyTestResult (h1 == 1969025828);                                                                 // before Stroika 2.1b10 (2512011991)
+                    VerifyTestResult (h2 == 36);                                                                         // before Stroika 2.1b10 (215)
+                    VerifyTestResult (h3[0] == std::byte{0x24} and h3[1] == std::byte{0xf3} and h3[39] == std::byte{0}); // value before Stroika 2.1b10 215, 66,... 0
                     if (Configuration ::GetEndianness () == Configuration::Endian::eX86) {
-                        VerifyTestResult ((Digester<Digest::Algorithm::SuperFastHash, string>{}(value2Hash) == "0x2512011991"));
+                        VerifyTestResult ((Digester<Digest::Algorithm::SuperFastHash, string>{}(value2Hash) == "0x1969025828")); // value before Stroika 2.1b10 ("0x2512011991")
                     }
                 }
                 else if (sizeof (wchar_t) == 4) {
-                    VerifyTestResult (h1 == 3490201358);
-                    VerifyTestResult (h2 == 14);
-                    VerifyTestResult (h3[0] == std::byte{14} and h3[1] == std::byte{63} and h3[39] == std::byte{0});
+                    VerifyTestResult (h1 == 4259971568);                                                              // before Stroika 2.1b10 3490201358
+                    VerifyTestResult (h2 == 240);                                                                     // before Stroika 2.1b10 (14)
+                    VerifyTestResult (h3[0] == std::byte{0xf0} and h3[1] == std::byte{1} and h3[39] == std::byte{0}); // value before Stroika 2.1b10 14, 63,... 0
                     if (Configuration ::GetEndianness () == Configuration::Endian::eX86) {
-                        VerifyTestResult ((Digester<Digest::Algorithm::SuperFastHash, string>{}(value2Hash) == "0x3490201358"));
+                        VerifyTestResult ((Digester<Digest::Algorithm::SuperFastHash, string>{}(value2Hash) == "0x4259971568")); // value before Stroika 2.1b10 ("0x3490201358")
                     }
                 }
             }
@@ -332,14 +332,14 @@ namespace {
                  *      o   default serializer for string depends on sizeof wchar_t
                  */
                 if (sizeof (wchar_t) == 2) {
-                    VerifyTestResult (h1 == 2512011991); // experimentally derived values but they shouldn't float
-                    VerifyTestResult (h2 == 215);
-                    VerifyTestResult (h3[0] == std::byte{215} and h3[1] == std::byte{66} and h3[39] == std::byte{0});
+                    VerifyTestResult (h1 == 1969025828);                                                                 // experimentally derived values but they shouldn't float (before Stroika 2.1b10 was 2512011991)
+                    VerifyTestResult (h2 == 36);                                                                         // before Stroika 2.1b10, value was 215
+                    VerifyTestResult (h3[0] == std::byte{0x24} and h3[1] == std::byte{0xf3} and h3[39] == std::byte{0}); // before Stroika 2.1b10, value was 215, 66, ...0
                 }
                 if (sizeof (wchar_t) == 4) {
-                    VerifyTestResult (h1 == 3490201358); // experimentally derived values but they shouldn't float
-                    VerifyTestResult (h2 == 14);
-                    VerifyTestResult (h3[0] == std::byte{14} and h3[1] == std::byte{63} and h3[39] == std::byte{0});
+                    VerifyTestResult (h1 == 4259971568);                                                              // experimentally derived values but they shouldn't float (before Stroika 2.1b10 was 3490201358)
+                    VerifyTestResult (h2 == 240);                                                                     // before Stroika 2.1b10, value was 14
+                    VerifyTestResult (h3[0] == std::byte{0xf0} and h3[1] == std::byte{1} and h3[39] == std::byte{0}); // before Stroika 2.1b10, value was 14, 63, ...0
                 }
             }
         }
@@ -446,19 +446,19 @@ namespace {
             // @todo -- RETHINK IF RESULTS SB SAME REGARDLESS OF ENDIAN - NOT CONSISTENT!!!! --LGP 2015-08-26 -- AIX
             using USE_DIGESTER_ = Digester<Algorithm::SuperFastHash>;
             {
-                VerifyTestResult ((Cryptography::Digest::Hash<int, USE_DIGESTER_>{}(ToLE_ (1)) == 422304363));
-                VerifyTestResult ((Cryptography::Digest::Hash<int, USE_DIGESTER_>{}(ToLE_ (93993)) == 2489559407));
+                VerifyTestResult ((Cryptography::Digest::Hash<int, USE_DIGESTER_>{}(ToLE_ (1)) == 3282063817u));     // value before 2.1b10 was 422304363
+                VerifyTestResult ((Cryptography::Digest::Hash<int, USE_DIGESTER_>{}(ToLE_ (93993)) == 2783293987u)); // value before 2.1b10 was 2489559407
             }
             {
-                // special case where these collide
+                // special case where these collide (USED TO BUT NO LONGER DO DUE TO CHANGE IN what amounts to SEED in 2.1b10)
                 const char kSrc1[] = "        90010";
-                DoCommonDigesterTest_<USE_DIGESTER_> ((const byte*)kSrc1, (const byte*)kSrc1 + ::strlen (kSrc1), 375771507);
+                DoCommonDigesterTest_<USE_DIGESTER_> ((const byte*)kSrc1, (const byte*)kSrc1 + ::strlen (kSrc1), 4253059698u); // value before 2.1b10 was 375771507
                 const char kSrc2[] = "        10028";
-                DoCommonDigesterTest_<USE_DIGESTER_> ((const byte*)kSrc2, (const byte*)kSrc2 + ::strlen (kSrc2), 375771507);
+                DoCommonDigesterTest_<USE_DIGESTER_> ((const byte*)kSrc2, (const byte*)kSrc2 + ::strlen (kSrc2), 1644096207u); // value before 2.1b10 was 375771507
             }
             {
                 const char kSrc[] = "This is a very good test of a very good test";
-                DoCommonDigesterTest_<USE_DIGESTER_> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc), 1181771593);
+                DoCommonDigesterTest_<USE_DIGESTER_> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc), 1796287867u); // value before 2.1b10 was 1181771593
             }
         }
     }

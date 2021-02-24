@@ -108,5 +108,25 @@ Digester<Algorithm::CRC32, uint32_t>::ReturnType Digester<Algorithm::CRC32, uint
     uint32_t hash = 0xFFFFFFFF;
     DoMore_ (&hash, from, to);
     DoEnd_ (&hash);
+#if qDebug
+    {
+        Algorithm::DigesterAlgorithm<Algorithm::CRC32> test;
+        test.Write (from, to);
+        Assert (test.Complete () == hash);
+    }
+#endif
     return hash;
+}
+
+////////////NEW
+
+void Algorithm::DigesterAlgorithm<Algorithm::CRC32>::Write (const std::byte* start, const std::byte* end)
+{
+    DoMore_ (&fData_, start, end);
+}
+
+auto Algorithm::DigesterAlgorithm<Algorithm::CRC32>::Complete () -> ReturnType
+{
+    DoEnd_ (&fData_);
+    return fData_;
 }

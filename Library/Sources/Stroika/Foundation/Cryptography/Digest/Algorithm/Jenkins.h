@@ -34,6 +34,26 @@ namespace Stroika::Foundation::Cryptography::Digest {
         struct DigesterDefaultTraitsForAlgorithm<Jenkins> {
             using ReturnType = uint32_t;
         };
+
+
+
+        template <>
+        struct DigesterAlgorithm<Jenkins> : public IDigestAlgorithm<DigesterDefaultTraitsForAlgorithm<Jenkins>::ReturnType> {
+            using ReturnType = DigesterDefaultTraitsForAlgorithm<Jenkins>::ReturnType;
+
+        public:
+            DigesterAlgorithm () = default;
+
+        public:
+            virtual void Write (const std::byte* start, const std::byte* end) override;
+
+        public:
+            virtual ReturnType Complete () override;
+
+        private:
+            uint32_t fData_{0};
+        };
+
     }
 
     template <>

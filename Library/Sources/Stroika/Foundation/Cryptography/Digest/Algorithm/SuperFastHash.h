@@ -26,6 +26,17 @@
 namespace Stroika::Foundation::Cryptography::Digest {
 
     namespace Algorithm {
+        /*
+         *  Implementation based on text from http://www.azillionmonkeys.com/qed/hash.html on 2014-07-28
+         *
+         *  NOTE - I tried to implement in a way that could be windowed, just reading it bits at a time,
+         *  but the trouble is that the initial value of the hash is the length, and since the BinaryInputStream
+         *  isn't necessarily seekable, we cannot compute its length.
+         * 
+         *  \note HOWEVER, being Windowed is very important, and being 'result-compatible' with the code in http://www.azillionmonkeys.com/qed/hash.html isn't.
+         *        So instead, I start with a value of 0.
+         * 
+         */
         // Just a name to select template implementation
         struct SuperFastHash {
         };
@@ -33,6 +44,28 @@ namespace Stroika::Foundation::Cryptography::Digest {
         struct DigesterDefaultTraitsForAlgorithm<SuperFastHash> {
             using ReturnType = uint32_t;
         };
+
+
+
+        template <>
+        struct DigesterAlgorithm<SuperFastHash> : public IDigestAlgorithm<DigesterDefaultTraitsForAlgorithm<SuperFastHash>::ReturnType> {
+            using ReturnType = DigesterDefaultTraitsForAlgorithm<SuperFastHash>::ReturnType;
+
+        public:
+            DigesterAlgorithm () = default ;
+
+        public:
+            virtual void Write (const std::byte* start, const std::byte* end) override;
+
+        public:
+            virtual ReturnType Complete () override;
+
+        private:
+            uint32_t fHash_{0}; // original algorithm set this to len, but we cannot and be windowed
+            int      rem{};
+            array<byte, 3> finalBytes{};
+        };
+
     }
 
     template <>
