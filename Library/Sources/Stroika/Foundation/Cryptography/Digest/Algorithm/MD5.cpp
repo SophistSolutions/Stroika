@@ -362,10 +362,7 @@ Digester<Algorithm::MD5, Result128BitType>::ReturnType Digester<Algorithm::MD5, 
     MD5Update_ (&ctx, reinterpret_cast<const unsigned char*> (from), static_cast<unsigned int> (to - from));
     MD5Final_ (&ctx);
 
-    // No idea why array<> type sucks like this...--LGP 2014-07-28
     ReturnType result{};
-    // @todo understand why Traversal::Iterator2Pointer() doesn't work here? fails to compile on msvc--LGP 2014-10-07
-    //(void)::memcpy (Traversal::Iterator2Pointer (result.begin ()), ctx.digest, 16);
     (void)::memcpy (Traversal::Iterator2Pointer (result.begin ()), ctx.digest, 16);
     return result;
 }
