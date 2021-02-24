@@ -24,59 +24,44 @@
  *
  */
 
-namespace Stroika::Foundation::Cryptography::Digest {
+namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
 
-    namespace Algorithm {
-        // Just a name to select template implementation
-        struct Jenkins {
-        };
-        template <>
-        struct DigesterDefaultTraitsForAlgorithm<Jenkins> {
-            using ReturnType = uint32_t;
-        };
-
-
-
-        template <>
-        struct DigesterAlgorithm<Jenkins> : public IDigestAlgorithm<DigesterDefaultTraitsForAlgorithm<Jenkins>::ReturnType> {
-            using ReturnType = DigesterDefaultTraitsForAlgorithm<Jenkins>::ReturnType;
-
-        public:
-            DigesterAlgorithm () = default;
-
-        public:
-            virtual void Write (const std::byte* start, const std::byte* end) override;
-
-        public:
-            virtual ReturnType Complete () override;
-
-        private:
-            uint32_t fData_{0};
-        };
-
-    }
-
-    template <>
-    struct Digester<Algorithm::Jenkins, uint32_t> {
-        using ReturnType = uint32_t;
-
-        ReturnType operator() (const Streams::InputStream<std::byte>::Ptr& from) const;
-        ReturnType operator() (const std::byte* from, const std::byte* to) const;
-        ReturnType operator() (const BLOB& from) const;
-
-        [[deprecated ("Since Stroika 2.1b6 - use instance of Digester and call operator()")]] static ReturnType ComputeDigest (const Streams::InputStream<std::byte>::Ptr& from)
-        {
-            return Digester{}(from);
-        }
-        [[deprecated ("Since Stroika 2.1b6 - use instance of Digester and call operator()")]] static ReturnType ComputeDigest (const std::byte* from, const std::byte* to)
-        {
-            return Digester{}(from, to);
-        }
-        [[deprecated ("Since Stroika 2.1b6 - use instance of Digester and call operator()")]] static ReturnType ComputeDigest (const BLOB& from)
-        {
-            return Digester{}(from);
-        }
+    /**
+     *  Algorithm 'type tag' indicating this particular algorithm.
+     */
+    struct Jenkins {
     };
+
+
+    /**
+     *  Traits for the Jenkins algorithm.
+     */
+    template <>
+    struct DigesterDefaultTraitsForAlgorithm<Jenkins> {
+        using ReturnType = uint32_t;
+    };
+
+
+    /**
+     *  \brief Windowing digester (code to do the digest algorithm) for the Jenkins algorithm.
+     */
+    template <>
+    struct DigesterAlgorithm<Jenkins> : public IDigestAlgorithm<DigesterDefaultTraitsForAlgorithm<Jenkins>::ReturnType> {
+        using ReturnType = DigesterDefaultTraitsForAlgorithm<Jenkins>::ReturnType;
+
+    public:
+        DigesterAlgorithm () = default;
+
+    public:
+        virtual void Write (const std::byte* start, const std::byte* end) override;
+
+    public:
+        virtual ReturnType Complete () override;
+
+    private:
+        uint32_t fData_{0};
+    };
+
 
 }
 

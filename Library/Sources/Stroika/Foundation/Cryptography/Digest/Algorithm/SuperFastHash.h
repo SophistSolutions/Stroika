@@ -23,71 +23,52 @@
  *
  */
 
-namespace Stroika::Foundation::Cryptography::Digest {
+namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
 
-    namespace Algorithm {
-        /*
-         *  Implementation based on text from http://www.azillionmonkeys.com/qed/hash.html on 2014-07-28
-         *
-         *  NOTE - I tried to implement in a way that could be windowed, just reading it bits at a time,
-         *  but the trouble is that the initial value of the hash is the length, and since the BinaryInputStream
-         *  isn't necessarily seekable, we cannot compute its length.
-         * 
-         *  \note HOWEVER, being Windowed is very important, and being 'result-compatible' with the code in http://www.azillionmonkeys.com/qed/hash.html isn't.
-         *        So instead, I start with a value of 0.
-         * 
-         */
-        // Just a name to select template implementation
-        struct SuperFastHash {
-        };
-        template <>
-        struct DigesterDefaultTraitsForAlgorithm<SuperFastHash> {
-            using ReturnType = uint32_t;
-        };
+    /**
+     *  Algorithm 'type tag' indicating this particular algorithm.
+     */
+    struct SuperFastHash {
+    };
 
-
-
-        template <>
-        struct DigesterAlgorithm<SuperFastHash> : public IDigestAlgorithm<DigesterDefaultTraitsForAlgorithm<SuperFastHash>::ReturnType> {
-            using ReturnType = DigesterDefaultTraitsForAlgorithm<SuperFastHash>::ReturnType;
-
-        public:
-            DigesterAlgorithm () = default ;
-
-        public:
-            virtual void Write (const std::byte* start, const std::byte* end) override;
-
-        public:
-            virtual ReturnType Complete () override;
-
-        private:
-            uint32_t fHash_{0}; // original algorithm set this to len, but we cannot and be windowed
-            int      rem{};
-            array<byte, 3> finalBytes{};
-        };
-
-    }
-
+    /**
+     *  Traits for the SuperFastHash algorithm.
+     */
     template <>
-    struct Digester<Algorithm::SuperFastHash, uint32_t> {
+    struct DigesterDefaultTraitsForAlgorithm<SuperFastHash> {
         using ReturnType = uint32_t;
+    };
 
-        ReturnType operator() (const Streams::InputStream<std::byte>::Ptr& from) const;
-        ReturnType operator() (const std::byte* from, const std::byte* to) const;
-        ReturnType operator() (const BLOB& from) const;
+    /*
+     *  \brief Windowing digester (code to do the digest algorithm) for the SuperFastHash algorithm.
+     *
+     *  Implementation based on text from http://www.azillionmonkeys.com/qed/hash.html on 2014-07-28
+     *
+     *  NOTE - I tried to implement in a way that could be windowed, just reading it bits at a time,
+     *  but the trouble is that the initial value of the hash is the length, and since the BinaryInputStream
+     *  isn't necessarily seekable, we cannot compute its length.
+     * 
+     *  \note HOWEVER, being Windowed is very important, and being 'result-compatible' with the code in http://www.azillionmonkeys.com/qed/hash.html isn't.
+     *        So instead, I start with a value of 0.
+     * 
+     */
+    template <>
+    struct DigesterAlgorithm<SuperFastHash> : public IDigestAlgorithm<DigesterDefaultTraitsForAlgorithm<SuperFastHash>::ReturnType> {
+        using ReturnType = DigesterDefaultTraitsForAlgorithm<SuperFastHash>::ReturnType;
 
-        [[deprecated ("Since Stroika 2.1b6 - use instance of Digester and call operator()")]] static ReturnType ComputeDigest (const Streams::InputStream<std::byte>::Ptr& from)
-        {
-            return Digester{}(from);
-        }
-        [[deprecated ("Since Stroika 2.1b6 - use instance of Digester and call operator()")]] static ReturnType ComputeDigest (const std::byte* from, const std::byte* to)
-        {
-            return Digester{}(from, to);
-        }
-        [[deprecated ("Since Stroika 2.1b6 - use instance of Digester and call operator()")]] static ReturnType ComputeDigest (const BLOB& from)
-        {
-            return Digester{}(from);
-        }
+    public:
+        DigesterAlgorithm () = default;
+
+    public:
+        virtual void Write (const std::byte* start, const std::byte* end) override;
+
+    public:
+        virtual ReturnType Complete () override;
+
+    private:
+        uint32_t       fHash_{0}; // original algorithm set this to len, but we cannot and be windowed
+        int            rem{};
+        array<byte, 3> finalBytes{};
     };
 
 }

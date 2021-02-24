@@ -10,16 +10,6 @@
  */
 namespace Stroika::Foundation::Cryptography::Digest {
 
-    /*
-     ********************************************************************************
-     ******************* Digester<Algorithm::CRC32, uint32_t> **********************
-     ********************************************************************************
-     */
-    inline Digester<Algorithm::CRC32, uint32_t>::ReturnType Digester<Algorithm::CRC32, uint32_t>::operator() (const BLOB& from) const
-    {
-        return this->operator() (from.begin (), from.end ());
-    }
-
 }
 
 #endif /*_Stroika_Foundation_Cryptography_Digest_CRC32_inl_*/

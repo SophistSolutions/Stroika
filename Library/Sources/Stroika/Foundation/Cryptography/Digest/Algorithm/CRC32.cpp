@@ -85,41 +85,11 @@ namespace {
     }
 }
 
-Digester<Algorithm::CRC32, uint32_t>::ReturnType Digester<Algorithm::CRC32, uint32_t>::operator() (const Streams::InputStream<std::byte>::Ptr& from) const
-{
-    uint32_t hash = 0xFFFFFFFF;
-    while (true) {
-        byte   buf[32 * 1024];
-        size_t n = from.Read (std::begin (buf), std::end (buf));
-        Assert (n <= sizeof (buf));
-        if (n == 0) {
-            break;
-        }
-        DoMore_ (&hash, std::begin (buf), std::begin (buf) + n);
-    }
-    DoEnd_ (&hash);
-    return hash;
-}
-
-Digester<Algorithm::CRC32, uint32_t>::ReturnType Digester<Algorithm::CRC32, uint32_t>::operator() (const std::byte* from, const std::byte* to) const
-{
-    Require (from == to or from != nullptr);
-    Require (from == to or to != nullptr);
-    uint32_t hash = 0xFFFFFFFF;
-    DoMore_ (&hash, from, to);
-    DoEnd_ (&hash);
-#if qDebug
-    {
-        Algorithm::DigesterAlgorithm<Algorithm::CRC32> test;
-        test.Write (from, to);
-        Assert (test.Complete () == hash);
-    }
-#endif
-    return hash;
-}
-
-////////////NEW
-
+/*
+ ********************************************************************************
+ **************** Algorithm::DigesterAlgorithm<Algorithm::CRC32> ****************
+ ********************************************************************************
+ */
 void Algorithm::DigesterAlgorithm<Algorithm::CRC32>::Write (const std::byte* start, const std::byte* end)
 {
     DoMore_ (&fData_, start, end);

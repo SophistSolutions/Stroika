@@ -21,55 +21,40 @@
  *
  */
 
-namespace Stroika::Foundation::Cryptography::Digest {
+namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
 
-    using std::byte;
+    /**
+     *  Algorithm 'type tag' indicating this particular algorithm.
+     */
+    struct CRC32 {
+    };
 
-    namespace Algorithm {
-        struct CRC32 {
-        };
-        template <>
-        struct DigesterDefaultTraitsForAlgorithm<CRC32> {
-            using ReturnType = uint32_t;
-        };
-
-
-        template <>
-        struct DigesterAlgorithm<CRC32> : public IDigestAlgorithm<DigesterDefaultTraitsForAlgorithm<CRC32>::ReturnType> {
-            using ReturnType = DigesterDefaultTraitsForAlgorithm<CRC32>::ReturnType;
-
-        public:
-            DigesterAlgorithm () = default;
-        public:
-            virtual void Write (const std::byte* start, const std::byte* end) override;
-
-        public:
-            virtual ReturnType Complete () override;
-
-        private:
-            uint32_t fData_{0xFFFFFFFF};
-        };
-    }
-
+    /**
+     *  Traits for the CRC32 algorithm.
+     */
     template <>
-    struct Digester<Algorithm::CRC32, uint32_t> {
+    struct DigesterDefaultTraitsForAlgorithm<CRC32> {
         using ReturnType = uint32_t;
+    };
 
-        ReturnType                                                                                              operator() (const Streams::InputStream<std::byte>::Ptr& from) const;
-        ReturnType                                                                                              operator() (const std::byte* from, const std::byte* to) const;
-        ReturnType                                                                                              operator() (const BLOB& from) const;
-        [[deprecated ("Since Stroika 2.1b6 - use instance of Digester and call operator()")]] static ReturnType ComputeDigest (const Streams::InputStream<std::byte>::Ptr& from)
-        {
-            return Digester{}(from);
-        }
-        [[deprecated ("Since Stroika 2.1b6 - use instance of Digester and call operator()")]] static ReturnType ComputeDigest (const std::byte* from, const std::byte* to)
-        {
-            return Digester{}(from, to);
-        }
-        [[deprecated ("Since Stroika 2.1b6 - use instance of Digester and call operator()")]] static ReturnType ComputeDigest (const BLOB& from)
-        {
-            return Digester{}(from);
-        }
+    /**
+     *  \brief Windowing digester (code to do the digest algorithm) for the CRC32 algorithm.
+     */
+    template <>
+    struct DigesterAlgorithm<CRC32> : public IDigestAlgorithm<DigesterDefaultTraitsForAlgorithm<CRC32>::ReturnType> {
+        using ReturnType = DigesterDefaultTraitsForAlgorithm<CRC32>::ReturnType;
+
+    public:
+        DigesterAlgorithm () = default;
+
+    public:
+        virtual void Write (const std::byte* start, const std::byte* end) override;
+
+    public:
+        virtual ReturnType Complete () override;
+
+    private:
+        uint32_t fData_{0xFFFFFFFF};
     };
 
 }

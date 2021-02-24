@@ -16,8 +16,6 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Cryptography;
 using namespace Stroika::Foundation::Cryptography::Digest;
 
-using ReturnType = array<uint8_t, 16>;
-
 namespace {
     /*
      **********************************************************************
@@ -153,8 +151,7 @@ inline void Algorithm::DigesterAlgorithm<Algorithm::MD5>::MD5Init_ (MD5_CTX* mdC
 {
     mdContext->i[0] = mdContext->i[1] = (UINT4)0;
 
-    /* Load magic initialization constants.
-         */
+    /* Load magic initialization constants. */
     mdContext->buf[0] = (UINT4)0x67452301;
     mdContext->buf[1] = (UINT4)0xefcdab89;
     mdContext->buf[2] = (UINT4)0x98badcfe;
@@ -235,8 +232,7 @@ void Algorithm::DigesterAlgorithm<Algorithm::MD5>::MD5Final_ (MD5_CTX* mdContext
     }
 }
 
-/* Basic MD5 step. Transform buf based on in.
-     */
+/* Basic MD5 step. Transform buf based on in. */
 void Algorithm::DigesterAlgorithm<Algorithm::MD5>::Transform (UINT4* buf, UINT4* in)
 {
     UINT4 a = buf[0], b = buf[1], c = buf[2], d = buf[3];
@@ -336,33 +332,16 @@ void Algorithm::DigesterAlgorithm<Algorithm::MD5>::Transform (UINT4* buf, UINT4*
 }
 
 /*
-     **********************************************************************
-     ** End of md5.c                                                     **
-     ******************************* (cut) ********************************
-     */
+ **********************************************************************
+ ** End of md5.c                                                     **
+ ******************************* (cut) ********************************
+ */
 
-Digester<Algorithm::MD5, Result128BitType>::ReturnType Digester<Algorithm::MD5, Result128BitType>::operator() (const std::byte* from, const std::byte* to) const
-{
-    Require (from == to or from != nullptr);
-    Require (from == to or to != nullptr);
-    Algorithm::DigesterAlgorithm<Algorithm::MD5>::MD5_CTX ctx{};
-    Algorithm::DigesterAlgorithm<Algorithm::MD5>::MD5Init_ (&ctx);
-    Algorithm::DigesterAlgorithm<Algorithm::MD5>::MD5Update_ (&ctx, reinterpret_cast<const unsigned char*> (from), static_cast<unsigned int> (to - from));
-    Algorithm::DigesterAlgorithm<Algorithm::MD5>::MD5Final_ (&ctx);
-
-    ReturnType result{};
-    (void)::memcpy (Traversal::Iterator2Pointer (result.begin ()), ctx.digest, 16);
-#if qDebug
-    {
-        Algorithm::DigesterAlgorithm<Algorithm::MD5> test;
-        test.Write (from, to);
-        Assert (test.Complete () == result);
-    }
-#endif
-    return result;
-}
-
-////////////NEW
+/*
+ ********************************************************************************
+ **************** Algorithm::DigesterAlgorithm<Algorithm::MD5> ******************
+ ********************************************************************************
+ */
 Algorithm::DigesterAlgorithm<Algorithm::MD5>::DigesterAlgorithm ()
 {
     MD5Init_ (&fCtx_);
