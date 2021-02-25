@@ -128,7 +128,7 @@ endif
 else
 	@ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)}:"
-	#only delete ALL intermediate files (cuz includes Config.mk etc and forces rebuild all)
+	@#only delete ALL intermediate files (cuz includes Config.mk etc and forces rebuild all)
 	@if [ "$@" = "clobber" ] ; then \
 		rm -rf IntermediateFiles/$(CONFIGURATION);\
 		rm -rf Builds/$(CONFIGURATION);\

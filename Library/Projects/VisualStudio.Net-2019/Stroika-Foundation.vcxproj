@@ -417,6 +417,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Stack.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\Compare.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\Utilities.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\Algorithm.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\CRC32.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\Jenkins.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\MD5.h" />

@@ -8,7 +8,7 @@
 
 #include <cstdint>
 
-#include "../Digester.h"
+#include "Algorithm.h"
 
 /**
  *  \file

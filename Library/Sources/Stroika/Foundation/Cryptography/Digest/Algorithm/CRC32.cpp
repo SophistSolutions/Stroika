@@ -5,6 +5,9 @@
 
 #include "CRC32.h"
 
+#include "../../../Debug/Assertions.h"
+#include "../../../Memory/Common.h"
+
 using std::byte;
 
 using namespace Stroika::Foundation;
@@ -69,7 +72,7 @@ namespace {
         Assert (NEltsOf (kcrc_32_tab_) == 256); // byte index always safe/cool
         return kcrc_32_tab_[(crc ^ to_integer<uint32_t> (octet)) & 0xff] ^ (crc >> 8);
     }
-    void DoMore_ (uint32_t* hash2Update, const byte* from, const byte* to)
+    inline void DoMore_ (uint32_t* hash2Update, const byte* from, const byte* to)
     {
         RequireNotNull (hash2Update);
         uint32_t hash = (*hash2Update);
@@ -78,7 +81,7 @@ namespace {
         }
         (*hash2Update) = hash;
     }
-    void DoEnd_ (uint32_t* hash2Update)
+    inline void DoEnd_ (uint32_t* hash2Update)
     {
         RequireNotNull (hash2Update);
         (*hash2Update) = ~(*hash2Update);

@@ -195,11 +195,11 @@ namespace {
             {
                 const char kSrc[]        = "This is a very good test of a very good test";
                 const char kEncodedVal[] = "08c8888b86d6300ade93a10095a9083a";
-                VerifyTestResult (Format<string> (DIGESTER_{}((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc))) == kEncodedVal);
+                VerifyTestResult (Format<string> (Digest::ComputeDigest<Digest::Algorithm::MD5> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc))) == kEncodedVal);
             }
             {
                 int    tmp       = 3;
-                string digestStr = Format<string> (DIGESTER_{}(Streams::iostream::SerializeItemToBLOB (tmp)));
+                string digestStr = Format<string> (Digest::ComputeDigest<Digest::Algorithm::MD5> (Streams::iostream::SerializeItemToBLOB (tmp)));
                 VerifyTestResult (digestStr == "eccbc87e4b5ce2fe28308fd9f2a7baf3");
             }
             {
@@ -265,8 +265,7 @@ namespace {
                 Memory::BLOB         value2Hash                 = DefaultSerializer<InternetAddress>{}(InternetAddress{L"192.168.244.33"});
                 auto                 h1                         = digesterWithDefaultResult (value2Hash);
                 uint8_t              h2                         = digesterWithResult_uint8_t (value2Hash);
-                auto                 digesterWithResult_array40 = Digester<Digest::Algorithm::SuperFastHash, std::array<byte, 40>>{};
-                std::array<byte, 40> h3                         = digesterWithResult_array40 (value2Hash);
+                std::array<byte, 40> h3                         = ComputeDigest<Digest::Algorithm::SuperFastHash, std::array<byte, 40>> (value2Hash);
 
                 /*
                  *  NOTE - basically ALL these tests vary on a number of parameters.

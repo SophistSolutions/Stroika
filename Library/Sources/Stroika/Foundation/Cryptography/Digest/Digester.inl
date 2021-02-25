@@ -15,13 +15,22 @@ namespace Stroika::Foundation::Cryptography::Digest {
 
     /*
      ********************************************************************************
-     *********************** Digester<ALGORITHM, RETURN_TYPE> ***********************
+     ******************* IncrementalDigester<ALGORITHM, RETURN_TYPE> ****************
      ********************************************************************************
      */
     template <typename ALGORITHM, typename RETURN_TYPE>
-    auto Digester<ALGORITHM, RETURN_TYPE>::operator() (const Streams::InputStream<std::byte>::Ptr& from) const -> ReturnType
+    inline void IncrementalDigester<ALGORITHM, RETURN_TYPE>::Write (const std::byte* start, const std::byte* end)
     {
-        Algorithm::DigesterAlgorithm<ALGORITHM> ctx;
+        fDigesterAlgorithm_.Write (start, end);
+    }
+    template <typename ALGORITHM, typename RETURN_TYPE>
+    inline void IncrementalDigester<ALGORITHM, RETURN_TYPE>::Write (const BLOB& from)
+    {
+        this->Write (from.begin (), from.end ());
+    }
+    template <typename ALGORITHM, typename RETURN_TYPE>
+    inline void IncrementalDigester<ALGORITHM, RETURN_TYPE>::Write (const Streams::InputStream<std::byte>::Ptr& from)
+    {
         while (true) {
             byte   buf[32 * 1024];
             size_t n = from.Read (std::begin (buf), std::end (buf));
@@ -29,19 +38,50 @@ namespace Stroika::Foundation::Cryptography::Digest {
             if (n == 0) {
                 break;
             }
-            ctx.Write (std::begin (buf), std::begin (buf) + n);
-        }
-        if constexpr (is_same_v<RETURN_TYPE, typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>) {
-            return ctx.Complete ();
-        }
-        else {
-            return ConvertResult<RETURN_TYPE> (ctx.Complete ());
+            this->Write (std::begin (buf), std::begin (buf) + n);
         }
     }
     template <typename ALGORITHM, typename RETURN_TYPE>
-    auto Digester<ALGORITHM, RETURN_TYPE>::operator() (const std::byte* from, const std::byte* to) const -> ReturnType
+    inline auto IncrementalDigester<ALGORITHM, RETURN_TYPE>::Complete () -> ReturnType
     {
-        Algorithm::DigesterAlgorithm<ALGORITHM> ctx;
+        if constexpr (is_same_v<RETURN_TYPE, typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>) {
+            return fDigesterAlgorithm_.Complete ();
+        }
+        else {
+            return ConvertResult<RETURN_TYPE> (fDigesterAlgorithm_.Complete ());
+        }
+    }
+
+    /*
+     ********************************************************************************
+     *********************** Digester<ALGORITHM, RETURN_TYPE> ***********************
+     ********************************************************************************
+     */
+    template <typename ALGORITHM, typename RETURN_TYPE>
+    inline auto Digester<ALGORITHM, RETURN_TYPE>::operator() (const Streams::InputStream<std::byte>::Ptr& from) const -> ReturnType
+    {
+        return Digest::ComputeDigest<ALGORITHM, RETURN_TYPE> (from);
+    }
+    template <typename ALGORITHM, typename RETURN_TYPE>
+    inline auto Digester<ALGORITHM, RETURN_TYPE>::operator() (const std::byte* from, const std::byte* to) const -> ReturnType
+    {
+        return Digest::ComputeDigest<ALGORITHM, RETURN_TYPE> (from, to);
+    }
+    template <typename ALGORITHM, typename RETURN_TYPE>
+    inline auto Digester<ALGORITHM, RETURN_TYPE>::operator() (const BLOB& from) const -> ReturnType
+    {
+        return Digest::ComputeDigest<ALGORITHM, RETURN_TYPE> (from);
+    }
+
+    /*
+     ********************************************************************************
+     ****************** ComputeDigest<ALGORITHM, RETURN_TYPE> ***********************
+     ********************************************************************************
+     */
+    template <typename ALGORITHM, typename RETURN_TYPE>
+    RETURN_TYPE ComputeDigest (const std::byte* from, const std::byte* to)
+    {
+        IncrementalDigester<ALGORITHM> ctx;
         ctx.Write (from, to);
         if constexpr (is_same_v<RETURN_TYPE, typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>) {
             return ctx.Complete ();
@@ -51,9 +91,21 @@ namespace Stroika::Foundation::Cryptography::Digest {
         }
     }
     template <typename ALGORITHM, typename RETURN_TYPE>
-    auto Digester<ALGORITHM, RETURN_TYPE>::operator() (const BLOB& from) const -> ReturnType
+    RETURN_TYPE ComputeDigest (const Streams::InputStream<std::byte>::Ptr& from)
     {
-        return this->operator() (from.begin (), from.end ());
+        IncrementalDigester<ALGORITHM> ctx;
+        ctx.Write (from);
+        if constexpr (is_same_v<RETURN_TYPE, typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>) {
+            return ctx.Complete ();
+        }
+        else {
+            return ConvertResult<RETURN_TYPE> (ctx.Complete ());
+        }
+    }
+    template <typename ALGORITHM, typename RETURN_TYPE>
+    inline RETURN_TYPE ComputeDigest (const BLOB& from)
+    {
+        return ComputeDigest<ALGORITHM, RETURN_TYPE> (from.begin (), from.end ());
     }
 
 }

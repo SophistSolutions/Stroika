@@ -8,7 +8,6 @@
 #include "../../../StroikaPreComp.h"
 
 #include "../../../Configuration/Endian.h"
-#include "../../../Memory/BLOB.h"
 
 #include "SuperFastHash.h"
 
@@ -52,17 +51,8 @@ namespace {
  ************ Algorithm::DigesterAlgorithm<Algorithm::SuperFastHash> ************
  ********************************************************************************
  */
-
 void Algorithm::DigesterAlgorithm<Algorithm::SuperFastHash>::Write (const std::byte* start, const std::byte* end)
 {
-    size_t len = static_cast<size_t> (end - start);
-
-    rem += len;
-    rem &= 0x3; // old code just did rem = len & 3, but we now get len in bits and peices
-    Assert (0 <= rem && rem <= 3);
-
-    const byte* data = start;
-
     /*
      *  Require() here cuz of following cast.
      *  NB: apparently broken if large data input! > 4gig on 64bit machine.
@@ -70,7 +60,14 @@ void Algorithm::DigesterAlgorithm<Algorithm::SuperFastHash>::Write (const std::b
      *  of ignoring higher order bits appears implied by the reference algorithm
      *  on http://www.azillionmonkeys.com/qed/hash.html
      */
+    size_t len = static_cast<size_t> (end - start);
     Require (len < numeric_limits<uint32_t>::max ());
+
+    rem += len;
+    rem &= 0x3; // old code just did rem = len & 3, but we now get len in bits and peices
+    Assert (0 <= rem && rem <= 3);
+
+    const byte* data = start;
 
     len >>= 2;
 

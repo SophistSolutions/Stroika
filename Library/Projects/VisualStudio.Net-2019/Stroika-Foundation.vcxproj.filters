@@ -2076,6 +2076,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\ObjectForSideEffects.h">
       <Filter>Sources\Common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\Algorithm.h">
+      <Filter>Sources\Cryptography\Digest\Algorithm</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
