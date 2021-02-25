@@ -12,6 +12,10 @@
 
 /*
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ * 
+ *  TODO:
+ *      @todo   Consider losing IDigester, and IDigestAlgorithm - not REALLY used. We just want to have something like
+ *              concepts here - to validate that the algorithms comply to this pattern.
  */
 
 namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
@@ -43,7 +47,9 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
     };
 
     /**
-     *  No definition provided. It must be specialized for each algorithm.
+     *  \brief DigesterAlgorithm is specialized for each algorithm; generally don't use this directly, but use the wrapper Digest::IncrementalDigester<> (or Digest::Digester or Digest::ComputeDigest)
+     *
+     *      No definition provided. It must be specialized for each algorithm.
      */
     template <typename ALGORITHM, typename RETURN_TYPE = typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>
     class DigesterAlgorithm;
