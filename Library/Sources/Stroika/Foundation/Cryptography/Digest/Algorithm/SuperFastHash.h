@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
      * 
      */
     template <>
-    struct DigesterAlgorithm<SuperFastHash> : public IDigestAlgorithm<DigesterDefaultTraitsForAlgorithm<SuperFastHash>::ReturnType> {
+    class DigesterAlgorithm<SuperFastHash> : public IDigestAlgorithm<DigesterDefaultTraitsForAlgorithm<SuperFastHash>::ReturnType> {
         using ReturnType = DigesterDefaultTraitsForAlgorithm<SuperFastHash>::ReturnType;
 
     public:
@@ -67,8 +67,8 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
 
     private:
         uint32_t       fHash_{0}; // original algorithm set this to len, but we cannot and be windowed
-        int            rem{};
-        array<byte, 3> finalBytes{};
+        int            fRemainder_{};
+        array<byte, 3> fFinalBytes_{};
     };
 
 }

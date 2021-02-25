@@ -63,9 +63,9 @@ void Algorithm::DigesterAlgorithm<Algorithm::SuperFastHash>::Write (const std::b
     size_t len = static_cast<size_t> (end - start);
     Require (len < numeric_limits<uint32_t>::max ());
 
-    rem += len;
-    rem &= 0x3; // old code just did rem = len & 3, but we now get len in bits and peices
-    Assert (0 <= rem && rem <= 3);
+    fRemainder_ += len;
+    fRemainder_ &= 0x3; // old code just did fRemainder_ = len & 3, but we now get len in bits and peices
+    Assert (0 <= fRemainder_ && fRemainder_ <= 3);
 
     const byte* data = start;
 
@@ -81,16 +81,16 @@ void Algorithm::DigesterAlgorithm<Algorithm::SuperFastHash>::Write (const std::b
         hash += hash >> 11;
     }
     fHash_ = hash;
-    Assert (0 <= rem and rem <= 3);
-    memcpy (&finalBytes, data, rem);
+    Assert (0 <= fRemainder_ and fRemainder_ <= 3);
+    memcpy (&fFinalBytes_, data, fRemainder_);
 }
 
 auto Algorithm::DigesterAlgorithm<Algorithm::SuperFastHash>::Complete () -> ReturnType
 {
-    const byte* data = &finalBytes[0];
+    const byte* data = &fFinalBytes_[0];
     auto        hash = fHash_;
     /* Handle end cases */
-    switch (rem) {
+    switch (fRemainder_) {
         case 3:
             hash += get16bits_ (data);
             hash ^= hash << 16;

@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
      *  \brief Windowing digester (code to do the digest algorithm) for the Jenkins algorithm.
      */
     template <>
-    struct DigesterAlgorithm<Jenkins> : public IDigestAlgorithm<DigesterDefaultTraitsForAlgorithm<Jenkins>::ReturnType> {
+    class DigesterAlgorithm<Jenkins> : public IDigestAlgorithm<DigesterDefaultTraitsForAlgorithm<Jenkins>::ReturnType> {
         using ReturnType = DigesterDefaultTraitsForAlgorithm<Jenkins>::ReturnType;
 
     public:

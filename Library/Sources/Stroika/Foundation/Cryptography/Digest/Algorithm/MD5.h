@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
      *  \brief Windowing digester (code to do the digest algorithm) for the MD5 algorithm.
      */
     template <>
-    struct DigesterAlgorithm<MD5> : public IDigestAlgorithm<DigesterDefaultTraitsForAlgorithm<MD5>::ReturnType> {
+    class DigesterAlgorithm<MD5> : public IDigestAlgorithm<DigesterDefaultTraitsForAlgorithm<MD5>::ReturnType> {
         using ReturnType = DigesterDefaultTraitsForAlgorithm<MD5>::ReturnType;
 
     public:

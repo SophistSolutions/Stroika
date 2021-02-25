@@ -41,7 +41,7 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
      *  \brief Windowing digester (code to do the digest algorithm) for the CRC32 algorithm.
      */
     template <>
-    struct DigesterAlgorithm<CRC32> : public IDigestAlgorithm<DigesterDefaultTraitsForAlgorithm<CRC32>::ReturnType> {
+    class DigesterAlgorithm<CRC32> : public IDigestAlgorithm<DigesterDefaultTraitsForAlgorithm<CRC32>::ReturnType> {
         using ReturnType = DigesterDefaultTraitsForAlgorithm<CRC32>::ReturnType;
 
     public:
