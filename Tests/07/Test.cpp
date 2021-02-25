@@ -342,6 +342,10 @@ namespace {
             const int                 threadCount      = 5;
             const int                 perThreadOpCount = int (sTimeMultiplier_ * 100000);
             atomic<bool>              done             = false;
+            if (Debug::IsRunningUnderValgrind ()) {
+                // workaround hang using MEMCHECK (not HELGRIND surprisingly) -- https://stroika.atlassian.net/browse/STK-728
+                return;
+            }
             Stroika_Foundation_Debug_ValgrindDisableHelgrind_START (done);
             for (int i = 0; i < threadCount; i++) {
                 threads1.emplace_back ([&] () {
