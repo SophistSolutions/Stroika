@@ -418,6 +418,42 @@ void Headers::Add (const String& headerName, const String& value)
     fExtraHeaders_.Add (KeyValuePair<String, String>{headerName, value});
 }
 
+void Headers::AddAll (const Headers& headers)
+{
+    // more efficient to add each fields than converting arg to collection and then applying each mappnig back
+    fExtraHeaders_ += headers.fExtraHeaders_;
+    if (headers.fCacheControl_) {
+        fCacheControl_ = *headers.fCacheControl_;
+    }
+    if (headers.fContentLength_) {
+        fContentLength_ = *headers.fContentLength_;
+    }
+    if (headers.fContentType_) {
+        fContentType_ = *headers.fContentType_;
+    }
+    if (headers.fCookieList_) {
+        fCookieList_ = *headers.fCookieList_;
+    }
+    if (headers.fETag_) {
+        fETag_ = *headers.fETag_;
+    }
+    if (headers.fHost_) {
+        fHost_ = *headers.fHost_;
+    }
+    if (headers.fIfNoneMatch_) {
+        fIfNoneMatch_ = *headers.fIfNoneMatch_;
+    }
+    if (headers.fSetCookieList_) {
+        fSetCookieList_ = *headers.fSetCookieList_;
+    }
+    if (headers.fTransferEncoding_) {
+        fTransferEncoding_ = *headers.fTransferEncoding_;
+    }
+    if (headers.fVary_) {
+        fVary_ = *headers.fVary_;
+    }
+}
+
 bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const optional<String>& value, size_t* nRemoveals)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};

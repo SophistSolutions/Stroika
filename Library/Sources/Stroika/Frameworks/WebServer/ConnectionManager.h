@@ -89,7 +89,7 @@ namespace Stroika::Frameworks::WebServer {
             optional<Socket::BindFlags> fBindFlags;
 
             /**
-             *  fDefaultResponseHeaders may be used to specify initial{default} values for some HTTP headers.
+             *  fDefaultResponseHeaders may be used to specify initial{default} values for some HTTP Response headers.
              *  It can be used for specifying any non-standared HTTP headers to add to all responsed (like X-Foobar: value).
              *  It can be used to specify a default 'Server' header.
              *  This is equivilent to adding an interceptor early in the interceptor chain, and calling
@@ -102,6 +102,15 @@ namespace Stroika::Frameworks::WebServer {
              *      "Content-Type": DataExchange::InternetMediaTypes::kOctetStream (which was done automatically by Stroika before 2.1b10)
              */
             optional<Headers> fDefaultResponseHeaders;
+
+            /**
+             *  fDefaultGETResponseHeaders - like fDefaultResponseHeaders - may be used to specify initial{default} values for some HTTP headers,
+             *  but it is only applied to GET requests (in addition to those applied from fDefaultResponseHeaders which applied to all responses).
+             * 
+             *  An example of something that makes sense to apply here would be Cache-Control settings (since these are unneeded on other HTTP methods
+             *  typically).
+             */
+            optional<Headers> fDefaultGETResponseHeaders;
 
             /**
              *  Options for how the HTTP Server handles CORS (mostly HTTP OPTIONS requests)

@@ -75,7 +75,7 @@ namespace Stroika::Frameworks::WebServer {
          */
         Connection ()                  = delete;
         Connection (const Connection&) = delete;
-        explicit Connection (const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain = InterceptorChain{}, const Headers& defaultResponseHeaders = {});
+        explicit Connection (const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain = InterceptorChain{}, const Headers& defaultResponseHeaders = {}, const optional<Headers>& defaultGETResponseHeaders = nullopt);
 
     public:
         ~Connection ();
@@ -164,6 +164,7 @@ namespace Stroika::Frameworks::WebServer {
     private:
         InterceptorChain                      fInterceptorChain_;
         Headers                               fDefaultResponseHeaders_;
+        optional < Headers>                   fDefaultGETResponseHeaders_;
         ConnectionOrientedStreamSocket::Ptr   fSocket_;
         Streams::InputOutputStream<byte>::Ptr fSocketStream_;
         shared_ptr<MyMessage_>                fMessage_; // always there, but ptr so it can be replaced

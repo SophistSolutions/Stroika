@@ -126,6 +126,19 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  and these are appended. Use Set/Remove to avoid ambiguity.
          */
         nonvirtual void Add (const String& headerName, const String& value);
+        nonvirtual void Add (const pair<String, String>& hrdAndValue);
+
+    public:
+        /**
+         *  \brief not the same as assignment - only for headers set in argument, replace those in this header object.
+         */
+        nonvirtual void AddAll (const Headers& headers);
+
+    public:
+        /**
+         */
+        nonvirtual void operator+= (const pair<String, String>& hrdAndValue);
+        nonvirtual void operator+= (const Headers& headers);
 
     public:
         /**
@@ -163,7 +176,42 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
+         *  \brief HTTP Response header controlling how clients will cache this response.
+         * 
          *  Property with the optional<CacheControl> value of the Cache-Control header.
+         * 
+         *   From https://tools.ietf.org/html/rfc7234#page-5
+         * 
+         *      Although caching is an entirely OPTIONAL feature
+         *      of HTTP, it can be assumed that reusing a cached response is
+         *      desirable and that such reuse is the default behavior when no
+         *      requirement or local configuration prevents it.  Therefore, HTTP
+         *      cache requirements are focused on preventing a cache from either
+         *      storing a non-reusable response or reusing a stored response
+         *      inappropriately, rather than mandating that caches always store and
+         *      reuse particular responses.
+         * 
+         *  https://tools.ietf.org/html/rfc2616#section-13.4
+         * 
+         *      Unless specifically constrained by a cache-control (section 14.9)
+         *      directive, a caching system MAY always store a successful response
+         *      (see section 13.8) as a cache entry, MAY return it without validation
+         *      if it is fresh, and MAY return it after successful validation. If
+         *      there is neither a cache validator nor an explicit expiration time
+         *      associated with a response, we do not expect it to be cached, but
+         *      certain caches MAY violate this expectation (for example, when little
+         *      or no network connectivity is available).
+         * 
+         * But then contradicting the above
+         * https://tools.ietf.org/html/rfc2616#section-9.5
+         *      (about POST)
+         *      Responses to this method are not cacheable, unless the response
+         *      includes appropriate Cache-Control or Expires header fields
+         * 
+         *  similarly for PUT/POST/DELETE (from same document) - those appear to not be cacheable.
+         * 
+         *  so DONT fill this in with generic default headers, but have &&& todo add - in server- 
+         *  default-GET-only Response headers.&&& TODO
          */
         Common::Property<optional<CacheControl>> cacheControl;
 

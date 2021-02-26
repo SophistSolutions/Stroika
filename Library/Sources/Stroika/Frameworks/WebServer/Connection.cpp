@@ -142,7 +142,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
  ***************************** WebServer::Connection ****************************
  ********************************************************************************
  */
-Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain, const Headers& defaultResponseHeaders)
+Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain, const Headers& defaultResponseHeaders, const optional<Headers>& defaultGETResponseHeaders)
     : socket{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> ConnectionOrientedStreamSocket::Ptr {
               const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::socket);
@@ -170,6 +170,7 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Inte
                                 }}
     , fInterceptorChain_{interceptorChain}
     , fDefaultResponseHeaders_{defaultResponseHeaders}
+    , fDefaultGETResponseHeaders_{defaultGETResponseHeaders}
     , fSocket_{s}
 {
     Require (s != nullptr);
@@ -243,6 +244,10 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
             case MyMessage_::eCompleteGood: {
                 // fall through and actually process the request
             } break;
+        }
+
+        if (fDefaultGETResponseHeaders_ and fMessage_->request ().httpMethod () == HTTP::Methods::kGet) {
+            fMessage_->rwResponse ().rwHeaders () += *fDefaultGETResponseHeaders_;
         }
 
         /*

@@ -16,6 +16,18 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      ********************************* HTTP::Headers ********************************
      ********************************************************************************
      */
+    inline void Headers::Add (const pair<String, String>& hrdAndValue)
+    {
+        Add (hrdAndValue.first, hrdAndValue.second);
+    }
+    inline void Headers::operator+= (const pair<String, String>& hrdAndValue)
+    {
+        Add (hrdAndValue);
+    }
+    inline void Headers::operator+= (const Headers& headers)
+    {
+        AddAll (headers);
+    }
     template <>
     inline Iterable<KeyValuePair<String, String>> Headers::As () const
     {
