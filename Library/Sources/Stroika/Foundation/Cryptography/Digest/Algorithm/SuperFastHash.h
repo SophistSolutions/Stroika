@@ -67,7 +67,7 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
 
     private:
         uint32_t       fHash_{0}; // original algorithm set this to len, but we cannot and be windowed
-        int            fRemainder_{};
+        size_t         fRemainder_{};
         array<byte, 3> fFinalBytes_{};
     };
 
