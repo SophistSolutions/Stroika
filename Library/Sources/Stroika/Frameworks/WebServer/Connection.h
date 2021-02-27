@@ -56,9 +56,9 @@ namespace Stroika::Frameworks::WebServer {
      *                          Interceptor{
      *                              [=](Message* m) {
      *                                  Response& response = m->rwResponse ();
-     *                                  response.rwHeaders().server = L"stroika-ssdp-server-demo";;
+     *                                  response.rwHeaders().server = L"stroika-ssdp-server-demo";
      *                                  response.write (Stroika::Frameworks::UPnP::Serialize (d, dd));
-     *                                  response.SetContentType (DataExchange::InternetMediaTypes::kXML);
+     *                                  response.contentType = DataExchange::InternetMediaTypes::kXML;
      *                               }}}};
      *          conn.SetRemainingConnectionMessages (Connection::Remaining{0, 0}); // disable keep-alives
      *          conn.ReadAndProcessMessage ();
