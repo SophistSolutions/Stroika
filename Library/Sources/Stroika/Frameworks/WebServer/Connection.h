@@ -167,7 +167,7 @@ namespace Stroika::Frameworks::WebServer {
         optional < Headers>                   fDefaultGETResponseHeaders_;
         ConnectionOrientedStreamSocket::Ptr   fSocket_;
         Streams::InputOutputStream<byte>::Ptr fSocketStream_;
-        shared_ptr<MyMessage_>                fMessage_; // always there, but ptr so it can be replaced
+        unique_ptr<MyMessage_>                fMessage_; // always there, but ptr so it can be replaced
         optional<HTTP::KeepAlive>             fRemaining_;
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
         Streams::TextWriter::Ptr fLogConnectionState_;

@@ -100,6 +100,7 @@ void Response::SetAssertExternallySynchronizedLockContext (const shared_ptr<Shar
     fHeaders_.SetAssertExternallySynchronizedLockContext (sharedContext);
 }
 #endif
+
 String Response::ToString () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};

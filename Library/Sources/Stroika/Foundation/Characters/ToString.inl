@@ -231,6 +231,11 @@ namespace Stroika::Foundation::Characters {
             return (pt == nullptr) ? L"nullptr"sv : ToString (*pt);
         }
         template <typename T>
+        inline String ToString_ (const unique_ptr<T>& pt)
+        {
+            return (pt == nullptr) ? L"nullptr"sv : ToString (*pt);
+        }
+        template <typename T>
         inline String ToString_ (const optional<T>& o)
         {
             return o.has_value () ? Characters::ToString (*o) : L"[missing]"sv;

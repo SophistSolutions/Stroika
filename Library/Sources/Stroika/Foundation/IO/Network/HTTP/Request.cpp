@@ -133,7 +133,7 @@ String Request::ToString () const
     sb += L"{";
     sb += L"HTTPVersion: " + fHTTPVersion_ + L", ";
     sb += L"Method: " + fMethod_ + L", ";
-    sb += L"URL: '" + Characters::ToString (fURL_) + L"', ";
+    sb += L"URL: " + Characters::ToString (fURL_) + L", ";
     sb += L"Headers: " + Characters::ToString (fHeaders_) + L", ";
     sb += L"}";
     return sb.str ();
