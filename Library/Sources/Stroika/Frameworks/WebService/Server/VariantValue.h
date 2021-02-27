@@ -44,7 +44,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *  \par Example Usage
      *      \code
      *         static const String                         kValueParamName_ = L"value"sv;
-     *         Mapping<String, DataExchange::VariantValue> args             = PickoutParamValuesFromURL (m->PeekRequest ());
+     *         Mapping<String, DataExchange::VariantValue> args             = PickoutParamValuesFromURL (m->request ());
      *         number                                                       = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));
      *      \endcode
      *
@@ -62,7 +62,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *  \par Example Usage
      *      \code
      *         static const String                         kValueParamName_ = L"value"sv;
-     *         Mapping<String, DataExchange::VariantValue> args             = PickoutParamValuesFromBody (m->PeekRequest ());
+     *         Mapping<String, DataExchange::VariantValue> args             = PickoutParamValuesFromBody (m->request ());
      *         number                                                       = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));
      *      \endcode
      *
@@ -88,7 +88,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *  \par Example Usage
      *      \code
      *         static const String                         kValueParamName_ = L"value"sv;
-     *         Mapping<String, DataExchange::VariantValue> args             = PickoutParamValues (m->PeekRequest ());
+     *         Mapping<String, DataExchange::VariantValue> args             = PickoutParamValues (m->rwRequest ());
      *         number                                                       = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));
      *      \endcode
      *
