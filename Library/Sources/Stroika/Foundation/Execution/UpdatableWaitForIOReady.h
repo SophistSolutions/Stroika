@@ -111,12 +111,13 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
+         *  Clear the set of watched file descriptors, and cause any waiters to wake immediately to re-examine the situation.
          */
         nonvirtual void clear ();
 
     public:
         /*
-         *  Waits the given amount of time, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
+         *  Waits the given amount of time, and returns as soon as any one (or more) requires service (see TypeOfMonitor), or possibly zero if pollable2Wakeup Set.
          *
          *  \note   Throws TimeOutException () on timeout.
          *  
@@ -131,7 +132,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /*
-         *  Waits the given amount of time, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
+         *  Waits the given amount of time, and returns as soon as any one (or more) requires service (see TypeOfMonitor), or possibly zero if pollable2Wakeup Set.
          *
          *   Returns set of file descriptors which are ready, or empty set if timeout.
          *
@@ -146,7 +147,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /*
-         *  Waits unil the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
+         *  Waits unil the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor), or possibly zero if pollable2Wakeup Set.
          *
          *  \note   Throws TimeOutException () on timeout.
          *
@@ -160,7 +161,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /*
-         *  Waits unil the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
+         *  Waits unil the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor), or possibly zero if pollable2Wakeup Set.
          *
          *  Returns set of file descriptors which are ready, or an empty set if time expired before any became ready.
          *
@@ -179,6 +180,7 @@ namespace Stroika::Foundation::Execution {
          *  note: lock design - keep short locks on fData_, and make a new 'waiter' with a copy of the FDs list (COW copy)
          *  so don't hold fData synchronized lock during wait on 'select'
          */
+
     private:
         nonvirtual WaitForIOReady<T, TRAITS> mkWaiter_ ();
 

@@ -109,7 +109,9 @@ namespace Stroika::Foundation::Execution {
             using TypeOfMonitorSet = Containers::Set<TypeOfMonitor>;
 
         public:
-            static const TypeOfMonitorSet kDefaultTypeOfMonitor;
+            /**
+             */
+            static inline const TypeOfMonitorSet kDefaultTypeOfMonitor{TypeOfMonitor::eRead};
 
         protected:
             /**
