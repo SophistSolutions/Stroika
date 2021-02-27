@@ -146,7 +146,7 @@ namespace Stroika::Foundation::Execution {
             // return low level FD + set of poll events
             virtual pair<SDKPollableType, WaitForIOReady_Base::TypeOfMonitorSet> GetWaitInfo () = 0;
         };
-        shared_ptr<EventFD> mkEventFD ();
+        unique_ptr<EventFD> mkEventFD ();
 
         template <typename T>
         struct WaitForIOReady_Traits {

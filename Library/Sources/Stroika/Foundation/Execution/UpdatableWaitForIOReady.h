@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Execution {
         nonvirtual void AddAll (const Traversal::Iterable<T>& fds, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor);
 
     public:
-        /*
+        /**
          */
         nonvirtual void Remove (T fd);
 
@@ -183,7 +183,7 @@ namespace Stroika::Foundation::Execution {
         nonvirtual WaitForIOReady<T, TRAITS> mkWaiter_ ();
 
     private:
-        shared_ptr<WaitForIOReady_Support::EventFD>                                fEventFD_;
+        unique_ptr<WaitForIOReady_Support::EventFD>                                fEventFD_;
         pair<SDKPollableType, TypeOfMonitorSet>                                    fPollable2Wakeup_;
         Execution::Synchronized<Containers::Collection<pair<T, TypeOfMonitorSet>>> fData_;
     };
