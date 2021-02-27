@@ -237,7 +237,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /*
-         *  Waits the given amount of time, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
+         *  Waits the given amount of time, and returns as soon as any one (or more) requires service (see TypeOfMonitor), or pollable2Wakeup signaled (in which case may return empty set).
          *
          *  \note   Throws TimeOutException () on timeout.
          *  
@@ -254,7 +254,7 @@ namespace Stroika::Foundation::Execution {
         /*
          *  Waits the given amount of time, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
          *
-         *   Returns set of file descriptors which are ready, or empty set if timeout.
+         *   Returns set of file descriptors which are ready, or empty set if timeout, or if signaled by pollable2Wakeup.
          *
          *  \note   ***Cancelation Point***
          *
@@ -267,7 +267,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /*
-         *  Waits unil the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
+         *  Waits unil the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor), or pollable2Wakeup signaled (in which case may return empty set)..
          *
          *  \note   Throws TimeOutException () on timeout.
          *
@@ -281,7 +281,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /*
-         *  Waits unil the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
+         *  Waits unil the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor), or pollable2Wakeup signaled (in which case may return empty set)..
          *
          *  Returns set of file descriptors which are ready, or an empty set if time expired before any became ready.
          *
