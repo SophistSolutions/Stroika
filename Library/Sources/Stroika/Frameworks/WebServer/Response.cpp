@@ -76,6 +76,24 @@ Response::Response (Response&& src)
 
 Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream<byte>::Ptr& outStream, const optional<HTTP::Headers>& initialHeaders)
     : inherited{initialHeaders}
+    , autoComputeETag{
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+              const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeETag);
+              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              return thisObj->fETagDigester_.has_value ();
+          },
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const bool newAutoComputeETag) {
+              Response*                                          thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeETag);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              Require (thisObj->state () == State::ePreparingHeaders);
+              Assert (thisObj->fBodyBytes_.empty ());
+              if (newAutoComputeETag) {
+                  thisObj->fETagDigester_ = ETagDigester_{};
+              }
+              else {
+                  thisObj->fETagDigester_ = nullopt;
+              }
+          }}
     , codePage{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
               const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::codePage);
@@ -168,7 +186,18 @@ void Response::Flush ()
     DbgTrace (L"fState_ = %s", Characters::ToString (fState_).c_str ());
 #endif
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+
     if (fState_ == State::ePreparingHeaders or fState_ == State::ePreparingBodyBeforeHeadersSent) {
+        if (fETagDigester_) {
+#if qDebug
+            tSuppressAssertCanModifyHeaders_++;
+            [[maybe_unused]] auto&& cleanup = Execution::Finally ([] () noexcept { tSuppressAssertCanModifyHeaders_--; });
+#endif
+            auto& hdrs = this->rwHeaders ();
+            if (not hdrs.ETag ()) {
+                hdrs.ETag = HTTP::ETag{fETagDigester_->Complete ()};
+            }
+        }
         {
             auto    curStatusInfo = this->statusAndOverrideReason ();
             Status  curStatus     = get<0> (curStatusInfo);
@@ -258,6 +287,9 @@ void Response::write (const byte* s, const byte* e)
     Require ((fState_ == State::ePreparingHeaders) or (fState_ == State::ePreparingBodyBeforeHeadersSent) or InChunkedMode_ ());
     Require (s <= e);
     if (s < e) {
+        if (fETagDigester_) {
+            fETagDigester_->Write (s, e);
+        }
         if (fState_ == State::ePreparingHeaders and InChunkedMode_ ()) {
             Flush ();
         }

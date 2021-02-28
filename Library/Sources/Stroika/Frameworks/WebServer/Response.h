@@ -15,6 +15,8 @@
 #include "../../Foundation/Configuration/Common.h"
 #include "../../Foundation/Containers/Mapping.h"
 #include "../../Foundation/Common/Property.h"
+#include "../../Foundation/Cryptography/Digest/Digester.h"
+#include "../../Foundation/Cryptography/Digest/Algorithm/MD5.h"
 #include "../../Foundation/DataExchange/InternetMediaType.h"
 #include "../../Foundation/IO/Network/HTTP/Headers.h"
 #include "../../Foundation/IO/Network/HTTP/Status.h"
@@ -79,6 +81,16 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         nonvirtual Response& operator= (const Response&) = delete;
+
+    public:
+        /**
+         *  If true, and if possible, and not already present, an eTag value will be automatically added to the response headers.
+         * 
+         *  As of Stroika 2.1b10, this is not done for 'chunked' transfer responses, because we don't yet support trailers.
+         * 
+         *  \req this->state == ePreparingHeaders (before first write to body) to set
+         */
+        Common::Property<bool> autoComputeETag;
 
     public:
         /*
@@ -346,6 +358,9 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual InternetMediaType AdjustContentTypeForCodePageIfNeeded_ (const InternetMediaType& ct) const;
 
     private:
+        using ETagDigester_ = Cryptography::Digest::IncrementalDigester<Cryptography::Digest::Algorithm::MD5, String>;
+
+    private:
         IO::Network::Socket::Ptr                 fSocket_;
         bool                                     fInChunkedModeCache_{false};
         State                                    fState_{State::ePreparingHeaders};
@@ -354,6 +369,7 @@ namespace Stroika::Frameworks::WebServer {
         Characters::CodePage                     fCodePage_{Characters::kCodePage_UTF8};
         vector<byte>                             fBodyBytes_{};
         bool                                     fHeadMode_{false};
+        optional<ETagDigester_>                  fETagDigester_;    // dual use - if present, then flag for autoComputeETag mode as well
     };
 
 }
