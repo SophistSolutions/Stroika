@@ -140,7 +140,7 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
             return PropertyChangedEventResultType::eContinueProcessing;
         });
     this->statusAndOverrideReason.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->responseStatusSent ()); return PropertyChangedEventResultType::eContinueProcessing; });
-    this->rwHeaders.rwPropertyReadHandlers ().push_front ([this] (auto) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return nullopt; });
+    this->rwHeaders.rwPropertyReadHandlers ().push_front ([this] (HTTP::Headers* a) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return a; });
     this->rwHeaders.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return PropertyChangedEventResultType::eContinueProcessing; });
 #endif
     this->contentType.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) {
@@ -154,12 +154,14 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
             Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ());
             // @todo fix - not 100% right cuz another property could cut off? Maybe always call all? - or need better control over ordering
             fInChunkedModeCache_ = propertyChangedEvent.fNewValue and propertyChangedEvent.fNewValue->Contains (HTTP::TransferEncoding::eChunked);
-            if (fInChunkedModeCache_) {
-                this->rwHeaders ().contentLength = nullopt;
-            }
-            else {
-                if (not this->headers ().contentLength ().has_value ()) {
-                    this->rwHeaders ().contentLength = 0;
+            if (propertyChangedEvent.fNewValue != propertyChangedEvent.fPreviousValue) {
+                if (fInChunkedModeCache_) {
+                    this->rwHeaders ().contentLength = nullopt;
+                }
+                else {
+                    if (not this->headers ().contentLength ().has_value ()) {
+                        this->rwHeaders ().contentLength = 0;
+                    }
                 }
             }
             return PropertyChangedEventResultType::eContinueProcessing;
@@ -171,9 +173,8 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
                 auto copy = *fETagDigester_; // copy cuz this could get called multiple times and Complete only allowed to be called once
                 return HTTP::ETag{copy.Complete ()};
             }
-            return nullopt;
+            return baseETagValue;
         });
-
     fInChunkedModeCache_ = this->headers ().transferEncoding () and this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked); // can be set by initial headers (in CTOR)
     if (not InChunkedMode_ ()) {
         this->rwHeaders ().contentLength = 0;

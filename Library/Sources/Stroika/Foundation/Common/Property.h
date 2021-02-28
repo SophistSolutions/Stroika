@@ -392,10 +392,10 @@ namespace Stroika::Foundation::Common {
     class Property : public ReadOnlyProperty<T>, public WriteOnlyProperty<decay_t<T>> {
     public:
         /**
+         * \brief base_value_type is T the type declared, and decayed_value_type is similar, but with the references etc removed (so can be set/stored)
          */
         using base_value_type    = T;
         using decayed_value_type = decay_t<T>;
-        using value_type         = decayed_value_type;
 
     public:
         /**
@@ -471,13 +471,15 @@ namespace Stroika::Foundation::Common {
      *        Though its up to any object which uses properties, its generally presumed and recommended that of you copy objects
      *        O1 (of type O, with EvtendedableProperty P) to object O2, then the event hanlders watcing properties P (from O1)
      *        will NOT be copied to object O2 (to its property P).
+     * 
+     *  \note @todo - it we use a std::forward_list in the interest of being very cheap when not used (often), but this class is a PITA, if we need to
+     *        control the order of additions (like append) - which is a PITA with forward_list. Consider alternatives.
      *     
      */
     template <typename T>
     class ExtendableProperty : public Property<T> {
     public:
         using typename Property<T>::decayed_value_type;
-        using typename Property<T>::value_type;
         using typename Property<T>::base_value_type;
 
     public:
@@ -513,17 +515,34 @@ namespace Stroika::Foundation::Common {
          *
          *  TODO
          *      @todo be CAREFUL about copying these propertyChangedHandlers (what they reference) - maybe they should take parent obj ptr param*? or propery*?
+         *  
+         * \note These handlers can get called even when no change has actually occurred (no compare != of new/Prev value) - in order to avoid
+         *       building in a dependency in this code on using types that are comparable.
+         * 
+         *       This means you may find you need to do such comparisons yourself in callbacks before doing much to 'process' the change.
          */
         using PropertyChangedEventHandler = std::function<PropertyCommon::PropertyChangedEventResultType (const PropertyChangedEvent&)>;
 
     public:
         /**
+         *  Note - that assigning/coping reference values and using them with optional works poorly, so when T is a reference type,
+         *  the PropertyReadEventHandler just takes and returns a pointer to T instead to avoid this unpleasantness.
+         * 
+         * #if 0
          *  This must return optional<base_value_type> because base_value_type is what is returned by the Get() function.
-         *  But C++ doesn't allow optional<reference type>. So - for reference types, PropertyReadEventHandler returns a pointer.
+         *  But C++  doesn't allow optional<reference type>. So - for reference types, PropertyReadEventHandler returns a pointer.
          * 
          *  @todo - must copy constness of that pointer from constness of base_value_type (or address of it... so ignore for now)
+         * #endif
          */
-        using PropertyReadEventHandler = std::function<optional<conditional_t<is_reference_v<base_value_type>, decayed_value_type*, decayed_value_type>>(const decayed_value_type&)>;
+        using PropertyReadEventHandlerArgAndReturnValue_ = conditional_t<is_reference_v<base_value_type>, decayed_value_type*, base_value_type>;
+
+    public:
+        /**
+         *  this gets handed the original base value (stored), but then each handler gets a crack at overriding the 
+         *  value.
+         */
+        using PropertyReadEventHandler = std::function<PropertyReadEventHandlerArgAndReturnValue_(const PropertyReadEventHandlerArgAndReturnValue_&)>;
 
     public:
         /**
