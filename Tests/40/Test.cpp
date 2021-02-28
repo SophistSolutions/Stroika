@@ -329,6 +329,8 @@ namespace {
                     //  So upped kMarginOfError_ from 3.5 to 10 seconds.
                     //
                     // Very rare - but saw this again on Raspberrypi - raspberrypi-g++-8-debug-sanitize_undefined- 2.1a2x -- LGP 2019-10-11
+                    //
+                    // Now once saw on (slow windows VM on hercules) system, during builds, so probably nothing -- LGP 2021-02-27
                 }
                 Time::DurationSecondsType doneAt        = Time::GetTickCount ();
                 Time::DurationSecondsType expectedEndAt = startTestAt + kWaitOnAbortFor;
