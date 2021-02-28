@@ -75,7 +75,7 @@ namespace Stroika::Frameworks::WebServer {
          */
         Connection ()                  = delete;
         Connection (const Connection&) = delete;
-        explicit Connection (const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain = InterceptorChain{}, const Headers& defaultResponseHeaders = {}, const optional<Headers>& defaultGETResponseHeaders = nullopt);
+        explicit Connection (const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain = InterceptorChain{}, const Headers& defaultResponseHeaders = {}, const optional<Headers>& defaultGETResponseHeaders = nullopt, const optional<bool> autoComputeETagResponse = nullopt);
 
     public:
         ~Connection ();
@@ -145,7 +145,7 @@ namespace Stroika::Frameworks::WebServer {
 
     private:
         struct MyMessage_ : Message {
-            MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& socket, const Streams::InputOutputStream<byte>::Ptr& socketStream, const Headers& defaultResponseHeaders);
+            MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& socket, const Streams::InputOutputStream<byte>::Ptr& socketStream, const Headers& defaultResponseHeaders, const optional<bool> autoComputeETagResponse);
 
             // Only valid until the end of a successful ReadHeaders
             HTTP::MessageStartTextInputStreamBinaryAdapter::Ptr fMsgHeaderInTextStream;
@@ -164,7 +164,8 @@ namespace Stroika::Frameworks::WebServer {
     private:
         InterceptorChain                      fInterceptorChain_;
         Headers                               fDefaultResponseHeaders_;
-        optional < Headers>                   fDefaultGETResponseHeaders_;
+        optional<Headers>                     fDefaultGETResponseHeaders_;
+        optional<bool>                        fAutoComputeETagResponse_;
         ConnectionOrientedStreamSocket::Ptr   fSocket_;
         Streams::InputOutputStream<byte>::Ptr fSocketStream_;
         unique_ptr<MyMessage_>                fMessage_; // always there, but ptr so it can be replaced

@@ -50,13 +50,16 @@ using IO::Network::HTTP::KeepAlive;
  ******************** WebServer::Connection::MyMessage_ *************************
  ********************************************************************************
  */
-Connection::MyMessage_::MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& socket, const Streams::InputOutputStream<byte>::Ptr& socketStream, const Headers& defaultResponseHeaders)
+Connection::MyMessage_::MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& socket, const Streams::InputOutputStream<byte>::Ptr& socketStream, const Headers& defaultResponseHeaders, const optional<bool> autoComputeETagResponse)
     : Message{
           Request{socketStream},
           Response{socket, socketStream, defaultResponseHeaders},
           socket.GetPeerAddress ()}
     , fMsgHeaderInTextStream{HTTP::MessageStartTextInputStreamBinaryAdapter::New (rwRequest ().GetInputStream ())}
 {
+    if (autoComputeETagResponse) {
+        this->rwResponse ().autoComputeETag = *autoComputeETagResponse;
+    }
 }
 
 Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
@@ -142,7 +145,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
  ***************************** WebServer::Connection ****************************
  ********************************************************************************
  */
-Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain, const Headers& defaultResponseHeaders, const optional<Headers>& defaultGETResponseHeaders)
+Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain, const Headers& defaultResponseHeaders, const optional<Headers>& defaultGETResponseHeaders, const optional<bool> autoComputeETagResponse)
     : socket{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> ConnectionOrientedStreamSocket::Ptr {
               const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::socket);
@@ -171,6 +174,7 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Inte
     , fInterceptorChain_{interceptorChain}
     , fDefaultResponseHeaders_{defaultResponseHeaders}
     , fDefaultGETResponseHeaders_{defaultGETResponseHeaders}
+    , fAutoComputeETagResponse_{autoComputeETagResponse}
     , fSocket_{s}
 {
     Require (s != nullptr);
@@ -225,7 +229,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Connection::ReadAndProcessMessage", L"this->socket=%s", Characters::ToString (fSocket_).c_str ())};
 #endif
-        fMessage_ = make_unique<MyMessage_> (fSocket_, fSocketStream_, fDefaultResponseHeaders_);
+        fMessage_ = make_unique<MyMessage_> (fSocket_, fSocketStream_, fDefaultResponseHeaders_, fAutoComputeETagResponse_);
 
         // First read the HTTP request line, and the headers (and abort this attempt if not ready)
         switch (fMessage_->ReadHeaders (

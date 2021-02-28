@@ -118,6 +118,13 @@ namespace Stroika::Frameworks::WebServer {
             optional<CORSOptions> fCORS;
 
             /**
+             *  \brief sets the initial value for each Response. Harmless except for the slight performance cost (wont always work) - see Response::autoComputeETag
+             *
+             *  defaults to kDefault_AutoComputeETagResponse
+             */
+            optional<bool> fAutoComputeETagResponse;
+
+            /**
              *  This feature causes sockets to automatically flush their data - and avoid connection reset - when possible.
              *  This makes the closing socket process more costly and slow, so is optional, but is on by default because it makes
              *  commmunications more releable.
@@ -156,6 +163,7 @@ namespace Stroika::Frameworks::WebServer {
             static constexpr Socket::BindFlags                          kDefault_BindFlags{};
             static inline const Headers                                 kDefault_Headers{Iterable<KeyValuePair<String, String>>{{IO::Network::HTTP::HeaderName::kServer, L"Stroika/2.1"sv}}};
             static inline const Execution::VirtualConstant<CORSOptions> kDefault_CORS{[] () { return kDefault_CORSOptions; }};
+            static constexpr bool                                       kDefault_AutoComputeETagResponse{true};
             static constexpr Time::DurationSecondsType                  kDefault_AutomaticTCPDisconnectOnClose{2.0};
             static constexpr optional<int>                              kDefault_Linger{nullopt}; // intentionally optional-valued
         };

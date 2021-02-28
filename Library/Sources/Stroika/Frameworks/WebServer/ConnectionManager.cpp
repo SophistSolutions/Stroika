@@ -88,6 +88,7 @@ namespace {
         result.fMaxConcurrentlyHandledConnections = Memory::NullCoalesce (result.fMaxConcurrentlyHandledConnections, ComputeThreadPoolSize_ (result));
         result.fBindFlags                         = Memory::NullCoalesce (result.fBindFlags, Options::kDefault_BindFlags);
         result.fDefaultResponseHeaders            = Memory::NullCoalesce (result.fDefaultResponseHeaders, Options::kDefault_Headers);
+        result.fAutoComputeETagResponse           = Memory::NullCoalesce (result.fAutoComputeETagResponse, Options::kDefault_AutoComputeETagResponse);
         result.fAutomaticTCPDisconnectOnClose     = Memory::NullCoalesce (result.fAutomaticTCPDisconnectOnClose, Options::kDefault_AutomaticTCPDisconnectOnClose);
         result.fLinger                            = Memory::NullCoalesce (result.fLinger, Options::kDefault_Linger); // for now this is special and can be null/optional
         // result.fThreadPoolName; can remain nullopt
@@ -179,7 +180,7 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
 #if qDefaultTracingOn
 ConnectionManager::~ConnectionManager ()
 {
-    DbgTrace (L"Starting destructor for WebServer::ConnectionManager (%p)");
+    DbgTrace (L"Starting destructor for WebServer::ConnectionManager (%p)", this);
 }
 #endif
 
@@ -190,7 +191,7 @@ void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s
 #endif
     s.SetAutomaticTCPDisconnectOnClose (*fEffectiveOptions_.fAutomaticTCPDisconnectOnClose);
     s.SetLinger (fEffectiveOptions_.fLinger); // 'missing' has meaning (feature disabled) for socket, so allow setting that too - doesn't mean don't pass on/use-default
-    shared_ptr<Connection> conn = make_shared<Connection> (s, fInterceptorChain_, *fEffectiveOptions_.fDefaultResponseHeaders);
+    shared_ptr<Connection> conn = make_shared<Connection> (s, fInterceptorChain_, *fEffectiveOptions_.fDefaultResponseHeaders, fEffectiveOptions_.fDefaultGETResponseHeaders, *fEffectiveOptions_.fAutoComputeETagResponse);
     fInactiveSockSetPoller_.Add (conn);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     {
