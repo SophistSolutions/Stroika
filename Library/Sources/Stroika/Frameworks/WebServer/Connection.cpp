@@ -334,12 +334,12 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 
         /*
          *  By this point, the response has been fully built, and so we can potentially redo the response as a 304-not-modified, by
-         *  comparing the etag with the if-none-changed header.
+         *  comparing the etag with the ifNoneMatch header.
          */
         if (not this->response ().responseStatusSent () and this->response ().status == HTTP::StatusCodes::kOK) {
-            if (auto ifNoneMatch = this->request ().headers ().ifNoneMatch ()) {
+            if (auto requestedINoneMatch = this->request ().headers ().ifNoneMatch ()) {
                 if (auto actualETag = this->response ().headers ().ETag ()) {
-                    if (ifNoneMatch->fETags.Contains (*actualETag)) {
+                    if (requestedINoneMatch->fETags.Contains (*actualETag)) {
                         DbgTrace (L"Updating OK response to NotModified (due to ETag match)");
                         this->rwResponse ().status = HTTP::StatusCodes::kNotModified; // this assignment automatically prevents sending data
                     }

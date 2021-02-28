@@ -165,7 +165,8 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         *  Returns true once the response status code has been sent (so most things cannot be changed after this)
+         *  Returns true once the response status code has been sent (so most things cannot be changed after this); note responseStatus and
+         *  the initial bunch of headers (excluding trailers) all set at the same time (so this also checks for all non-trial headers being sent).
          */
         Common::ReadOnlyProperty<bool> responseStatusSent;
 

@@ -242,7 +242,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *          optional<uint64_t> contentLenghth = fHeaders_.contentLength;
          *      \endcode         
          */
-        Common::Property<optional<uint64_t>> contentLength;
+        Common::ExtendableProperty<optional<uint64_t>> contentLength;
 
     public:
         /**

@@ -57,12 +57,6 @@ namespace {
     constexpr size_t kResponseBufferReallocChunkSizeReserve_ = 16 * 1024;
 }
 
-#if qDebug
-namespace {
-    thread_local unsigned int tSuppressAssertCanModifyHeaders_ = 0;
-}
-#endif
-
 Response::Response (Response&& src)
     // Would be nice to use inherited src move, but PITA, becaue then would need to duplicate creating the properties below.
     : Response{src.fSocket_, src.fUnderlyingOutStream_, src.headers ()}
@@ -136,35 +130,50 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
 #if qDebug
     this->status.rwPropertyChangedHandlers ().push_front (
         [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
-            Require (tSuppressAssertCanModifyHeaders_ > 0 or not this->responseStatusSent ());
+            Require (not this->responseStatusSent ());
             return PropertyChangedEventResultType::eContinueProcessing;
         });
-    this->statusAndOverrideReason.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->responseStatusSent ()); return PropertyChangedEventResultType::eContinueProcessing; });
-    this->rwHeaders.rwPropertyReadHandlers ().push_front ([this] (HTTP::Headers* a) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return a; });
-    this->rwHeaders.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return PropertyChangedEventResultType::eContinueProcessing; });
+    this->statusAndOverrideReason.rwPropertyChangedHandlers ().push_front (
+        [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
+            Require (this->responseStatusSent ());
+            return PropertyChangedEventResultType::eContinueProcessing;
+        });
+    this->rwHeaders.rwPropertyReadHandlers ().push_front (
+        [this] (HTTP::Headers* h) {
+            Require (this->headersCanBeSet ());
+            return h;
+        });
+    this->rwHeaders.rwPropertyChangedHandlers ().push_front (
+        [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
+            Require (this->headersCanBeSet ());
+            return PropertyChangedEventResultType::eContinueProcessing;
+        });
 #endif
-    this->contentType.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) {
-        Require (this->headersCanBeSet ());
-        this->rwHeaders ().contentType = propertyChangedEvent.fNewValue ? AdjustContentTypeForCodePageIfNeeded_ (*propertyChangedEvent.fNewValue) : optional<InternetMediaType>{};
-        return PropertyChangedEventResultType::eSilentlyCutOffProcessing;
-    });
+    this->contentType.rwPropertyChangedHandlers ().push_front (
+        [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
+            Require (this->headersCanBeSet ());
+            this->rwHeaders ().contentType = propertyChangedEvent.fNewValue ? AdjustContentTypeForCodePageIfNeeded_ (*propertyChangedEvent.fNewValue) : optional<InternetMediaType>{};
+            return PropertyChangedEventResultType::eSilentlyCutOffProcessing;
+        });
     this->rwHeaders ().transferEncoding.rwPropertyChangedHandlers ().push_front (
         [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
             // react to a change in the transferCoding setting by updating our flags (cache) - and updating the contentLength header properly
-            Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ());
+            Require (this->headersCanBeSet ());
             // @todo fix - not 100% right cuz another property could cut off? Maybe always call all? - or need better control over ordering
             fInChunkedModeCache_ = propertyChangedEvent.fNewValue and propertyChangedEvent.fNewValue->Contains (HTTP::TransferEncoding::eChunked);
             if (propertyChangedEvent.fNewValue != propertyChangedEvent.fPreviousValue) {
                 if (fInChunkedModeCache_) {
                     this->rwHeaders ().contentLength = nullopt;
                 }
-                else {
-                    if (not this->headers ().contentLength ().has_value ()) {
-                        this->rwHeaders ().contentLength = 0;
-                    }
-                }
             }
             return PropertyChangedEventResultType::eContinueProcessing;
+        });
+    this->rwHeaders ().contentLength.rwPropertyReadHandlers ().push_front (
+        [this] (const auto& baseValue) -> optional<uint64_t> {
+            if (baseValue.has_value ()) {
+                return baseValue;
+            }
+            return this->InChunkedMode_ () ? optional<uint64_t>{} : fBodyBytes_.size ();
         });
     this->rwHeaders ().ETag.rwPropertyReadHandlers ().push_front (
         [this] (const auto& baseETagValue) -> optional<HTTP::ETag> {
@@ -176,9 +185,6 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
             return baseETagValue;
         });
     fInChunkedModeCache_ = this->headers ().transferEncoding () and this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked); // can be set by initial headers (in CTOR)
-    if (not InChunkedMode_ ()) {
-        this->rwHeaders ().contentLength = 0;
-    }
 }
 
 bool Response::InChunkedMode_ () const
@@ -317,11 +323,6 @@ void Response::write (const byte* s, const byte* e)
             // Because for autocompute - illegal to call flush and then write
             Containers::ReserveSpeedTweekAddN (fBodyBytes_, (e - s), kResponseBufferReallocChunkSizeReserve_);
             fBodyBytes_.insert (fBodyBytes_.end (), s, e);
-#if qDebug
-            tSuppressAssertCanModifyHeaders_++;
-            [[maybe_unused]] auto&& cleanup = Execution::Finally ([] () noexcept { tSuppressAssertCanModifyHeaders_--; });
-#endif
-            rwHeaders ().contentLength = fBodyBytes_.size ();
         }
     }
     if (fState_ == State::ePreparingHeaders) {
