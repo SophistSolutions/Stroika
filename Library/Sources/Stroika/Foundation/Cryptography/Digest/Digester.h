@@ -127,8 +127,13 @@ namespace Stroika::Foundation::Cryptography::Digest {
         using ReturnType = RETURN_TYPE;
 
     public:
+        /**
+         */
         IncrementalDigester ()                               = default;
-        IncrementalDigester (const IncrementalDigester& src) = delete;
+        IncrementalDigester (const IncrementalDigester& src) = default;
+
+    public:
+        nonvirtual IncrementalDigester& operator= (const IncrementalDigester& rhs) = default;
 
     public:
         /**

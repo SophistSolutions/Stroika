@@ -64,7 +64,7 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
 
     public:
         DigesterAlgorithm ()                             = default;
-        DigesterAlgorithm (const DigesterAlgorithm& src) = delete;
+        DigesterAlgorithm (const DigesterAlgorithm& src) = default;
 
     public:
         virtual void Write (const std::byte* start, const std::byte* end) override;
