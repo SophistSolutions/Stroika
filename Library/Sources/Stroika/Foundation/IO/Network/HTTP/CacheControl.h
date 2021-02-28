@@ -198,7 +198,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 #if __cpp_designated_initializers
     inline constexpr const CacheControl CacheControl::kImmutable{.fCacheability = CacheControl::ePublic, .fMaxAge = CacheControl::kMaximumAgeValue, .fImmutable = true};
 #else
-    inline constexpr const CacheControl CacheControl::kImmutable{CacheControl::ePublic, CacheControl::kMaximumAgeValue, true};
+    inline constexpr const CacheControl CacheControl::kImmutable{CacheControl::ePublic, CacheControl::kMaximumAgeValue, false, true};
 #endif
 #if __cpp_designated_initializers
     inline constexpr const CacheControl CacheControl::kDisableCaching{.fCacheability = CacheControl::eNoStore};
