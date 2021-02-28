@@ -98,6 +98,7 @@ namespace {
             for (const auto& i : fCacheControlSettings) {
                 if (urlRelPath.Match (i.first)) {
                     r.rwHeaders ().cacheControl = i.second;
+                    break;  // just apply first
                 }
             }
         }
