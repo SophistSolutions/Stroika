@@ -124,13 +124,22 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
         shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
         return thisObj->fState_ == State::ePreparingHeaders;
     }}
+    , responseStatusSent{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+        const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::responseStatusSent);
+        shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+        return thisObj->fState_ != State::ePreparingHeaders and thisObj->fState_ != State::ePreparingBodyBeforeHeadersSent;
+    }}
     , fSocket_{s}
     , fUnderlyingOutStream_{outStream}
     , fUseOutStream_{Streams::BufferedOutputStream<byte>::New (outStream)}
 {
 #if qDebug
-    this->status.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return PropertyChangedEventResultType::eContinueProcessing; });
-    this->statusAndOverrideReason.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return PropertyChangedEventResultType::eContinueProcessing; });
+    this->status.rwPropertyChangedHandlers ().push_front (
+        [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
+            Require (tSuppressAssertCanModifyHeaders_ > 0 or not this->responseStatusSent ());
+            return PropertyChangedEventResultType::eContinueProcessing;
+        });
+    this->statusAndOverrideReason.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->responseStatusSent ()); return PropertyChangedEventResultType::eContinueProcessing; });
     this->rwHeaders.rwPropertyReadHandlers ().push_front ([this] (auto) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return nullopt; });
     this->rwHeaders.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return PropertyChangedEventResultType::eContinueProcessing; });
 #endif
@@ -155,6 +164,16 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
             }
             return PropertyChangedEventResultType::eContinueProcessing;
         });
+    this->rwHeaders ().ETag.rwPropertyReadHandlers ().push_front (
+        [this] (const auto& baseETagValue) -> optional<HTTP::ETag> {
+            // return the current tag 'so far' (if the user has not already explicit set a value)
+            if (fETagDigester_ and not baseETagValue) {
+                auto copy = *fETagDigester_;    // copy cuz this could get called multiple times and Complete only allowed to be called once
+                return HTTP::ETag{copy.Complete ()};
+            }
+            return nullopt;
+        });
+
     fInChunkedModeCache_ = this->headers ().transferEncoding () and this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked); // can be set by initial headers (in CTOR)
     if (not InChunkedMode_ ()) {
         this->rwHeaders ().contentLength = 0;
@@ -188,16 +207,6 @@ void Response::Flush ()
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
 
     if (fState_ == State::ePreparingHeaders or fState_ == State::ePreparingBodyBeforeHeadersSent) {
-        if (fETagDigester_) {
-#if qDebug
-            tSuppressAssertCanModifyHeaders_++;
-            [[maybe_unused]] auto&& cleanup = Execution::Finally ([] () noexcept { tSuppressAssertCanModifyHeaders_--; });
-#endif
-            auto& hdrs = this->rwHeaders ();
-            if (not hdrs.ETag ()) {
-                hdrs.ETag = HTTP::ETag{fETagDigester_->Complete ()};
-            }
-        }
         {
             auto    curStatusInfo = this->statusAndOverrideReason ();
             Status  curStatus     = get<0> (curStatusInfo);
@@ -227,7 +236,8 @@ void Response::Flush ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"bytes.size: %lld", static_cast<long long> (fBodyBytes_.size ()));
 #endif
-        if (not fHeadMode_) {
+        // See https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html - body must not be sent for not-modified
+        if (not fHeadMode_ and this->status () != HTTP::StatusCodes::kNotModified) {
             fUseOutStream_.Write (Containers::Start (fBodyBytes_), Containers::End (fBodyBytes_));
         }
         fBodyBytes_.clear ();

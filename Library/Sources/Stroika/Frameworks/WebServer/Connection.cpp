@@ -285,7 +285,10 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
         //      HTTP/1.1 applications that do not support persistent connections MUST include the "close" connection option in every message.
         this->rwResponse ().rwHeaders ().connection = thisMessageKeepAlive ? Headers::eKeepAlive : Headers::eClose;
 
-        // Handle using interceptor chain - this is the guts of the high level handling
+        /**
+         *  Delegate to interceptor chain. This is the principle EXTENSION point for the Stroika Framework webserver. This is where you modify
+         *  the response somehow or other (typically through routes).
+         */
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"Handing request %s to interceptor chain", Characters::ToString (request ()).c_str ());
 #endif
@@ -326,6 +329,21 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 #endif
                 // @todo - this can be more efficient in the rare case we ignore the body - but thats rare enough to not matter mcuh
                 (void)fMessage_->rwRequest ().GetBody ();
+            }
+        }
+
+        /*
+         *  By this point, the response has been fully built, and so we can potentially redo the response as a 304-not-modified, by
+         *  comparing the etag with the if-none-changed header.
+         */
+        if (not this->response ().responseStatusSent () and this->response ().status == HTTP::StatusCodes::kOK) {
+            if (auto ifNoneMatch = this->request ().headers ().ifNoneMatch ()) {
+                if (auto actualETag = this->response ().headers ().ETag ()) {
+                    if (ifNoneMatch->fETags.Contains (*actualETag)) {
+                        DbgTrace (L"Updating OK response to NotModified (due to ETag match)");
+                        this->rwResponse ().status = HTTP::StatusCodes::kNotModified; // this assignment automatically prevents sending data
+                    }
+                }
             }
         }
 

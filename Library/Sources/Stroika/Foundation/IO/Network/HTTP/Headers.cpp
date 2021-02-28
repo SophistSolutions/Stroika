@@ -262,7 +262,7 @@ Headers::Headers (const Headers& src)
     fContentLength_    = src.fContentLength_;
     fContentType_      = src.fContentType_;
     fCookieList_       = src.fCookieList_;
-    fETag_             = src.fETag_;
+    fETag_             = src.ETag ();
     fHost_             = src.fHost_;
     fIfNoneMatch_      = src.fIfNoneMatch_;
     fSetCookieList_    = src.fSetCookieList_;
@@ -281,7 +281,7 @@ Headers::Headers (Headers&& src)
     fContentLength_    = move (src.fContentLength_);
     fContentType_      = move (src.fContentType_);
     fCookieList_       = move (src.fCookieList_);
-    fETag_             = move (src.fETag_);
+    fETag_             = src.ETag ();
     fHost_             = move (src.fHost_);
     fIfNoneMatch_      = move (src.fIfNoneMatch_);
     fSetCookieList_    = move (src.fSetCookieList_);
@@ -306,7 +306,7 @@ Headers& Headers::operator= (Headers&& rhs)
     fContentLength_    = move (rhs.fContentLength_);
     fContentType_      = move (rhs.fContentType_);
     fCookieList_       = move (rhs.fCookieList_);
-    fETag_             = move (rhs.fETag_);
+    fETag_             = rhs.ETag ();
     fHost_             = move (rhs.fHost_);
     fIfNoneMatch_      = move (rhs.fIfNoneMatch_);
     fSetCookieList_    = move (rhs.fSetCookieList_);
@@ -331,7 +331,8 @@ optional<String> Headers::LookupOne (const String& name) const
         return fCookieList_ ? fCookieList_->EncodeForCookieHeader () : optional<String>{};
     }
     else if (kHeaderNameEqualsComparer (name, HeaderName::kETag)) {
-        return fETag_ ? fETag_->As<String> () : optional<String>{};
+        auto e = this->ETag ();
+        return e ? e->As<String> () : optional<String>{};
     }
     else if (kHeaderNameEqualsComparer (name, HeaderName::kHost)) {
         return fHost_;
@@ -435,7 +436,7 @@ void Headers::AddAll (const Headers& headers)
         fCookieList_ = *headers.fCookieList_;
     }
     if (headers.fETag_) {
-        fETag_ = *headers.fETag_;
+        fETag_ = headers.ETag (); // must go through property to access extended property handlers
     }
     if (headers.fHost_) {
         fHost_ = *headers.fHost_;
@@ -608,8 +609,8 @@ Collection<KeyValuePair<String, String>> Headers::As () const
     if (fCookieList_) {
         results.Add (KeyValuePair<String, String>{HeaderName::kCookie, fCookieList_->EncodeForCookieHeader ()});
     }
-    if (fETag_) {
-        results.Add (KeyValuePair<String, String>{HeaderName::kETag, fETag_->As<String> ()});
+    if (auto et = ETag ()) {
+        results.Add (KeyValuePair<String, String>{HeaderName::kETag, et->As<String> ()});
     }
     if (fIfNoneMatch_) {
         results.Add (KeyValuePair<String, String>{HeaderName::kIfNoneMatch, fIfNoneMatch_->As<String> ()});

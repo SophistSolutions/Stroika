@@ -165,6 +165,12 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
+         *  Returns true once the response status code has been sent (so most things cannot be changed after this)
+         */
+        Common::ReadOnlyProperty<bool> responseStatusSent;
+
+    public:
+        /**
          *  This cannot be reversed, but puts the response into a mode where it won't emit the body of the response.
          * 
          *  \req this->state == State::ePreparingHeaders

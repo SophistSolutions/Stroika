@@ -268,7 +268,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /**
          *  Property with the optional<ETag> value of the ETag header.
          */
-        Common::Property<optional<HTTP::ETag>> ETag;
+        Common::ExtendableProperty<optional<HTTP::ETag>> ETag;
 
     public:
         /**
