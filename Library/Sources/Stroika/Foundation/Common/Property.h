@@ -497,6 +497,8 @@ namespace Stroika::Foundation::Common {
         nonvirtual ExtendableProperty& operator= (const ExtendableProperty&&) = delete;
 
     public:
+        /**
+         */
         struct PropertyChangedEvent {
             decayed_value_type fPreviousValue;
             decayed_value_type fNewValue;
@@ -521,7 +523,7 @@ namespace Stroika::Foundation::Common {
          * 
          *  @todo - must copy constness of that pointer from constness of base_value_type (or address of it... so ignore for now)
          */
-        using PropertyReadEventHandler = std::function<optional<conditional_t<is_reference_v<base_value_type>, decayed_value_type*, decayed_value_type>>()>;
+        using PropertyReadEventHandler = std::function<optional<conditional_t<is_reference_v<base_value_type>, decayed_value_type*, decayed_value_type>>(const decayed_value_type&)>;
 
     public:
         /**

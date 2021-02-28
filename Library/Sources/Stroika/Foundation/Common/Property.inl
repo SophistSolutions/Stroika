@@ -137,8 +137,9 @@ namespace Stroika::Foundation::Common {
                   // unlike other getter/setters, here the auto property is already for this object.
                   const ExtendableProperty* thisObj = static_cast<const ExtendableProperty*> (property); // cannot use dynamic_cast without adding needless vtable to Property objects; static_cast needed (over reintepret_cast) to adjust sub-object pointer for multiple inheritance
                   AssertNotNull (thisObj);
+                  base_value_type baseValue = getter (property);
                   for (const auto& handler : thisObj->fPropertyReadHandlers_) {
-                      if (auto o = handler ()) {
+                      if (auto o = handler (baseValue)) {
                           if constexpr (is_reference_v<base_value_type>) {
                               // we force return value of property read handler to be optional<ptr> because optional<refrence> is illegal in c++ (as of 2021-02-19)
                               return **o;
@@ -148,7 +149,7 @@ namespace Stroika::Foundation::Common {
                           }
                       }
                   }
-                  return getter (property);
+                  return baseValue;
               },
               [getter, setter] (auto* property, const auto& newValue) {
                   // Subtle - but the 'property' here refers to 'this' (ExtendableProperty). The getter itself will want to extract the parent object, but

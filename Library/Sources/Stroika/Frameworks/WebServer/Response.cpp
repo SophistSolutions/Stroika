@@ -131,7 +131,7 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
 #if qDebug
     this->status.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return PropertyChangedEventResultType::eContinueProcessing; });
     this->statusAndOverrideReason.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return PropertyChangedEventResultType::eContinueProcessing; });
-    this->rwHeaders.rwPropertyReadHandlers ().push_front ([this] () { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return nullopt; });
+    this->rwHeaders.rwPropertyReadHandlers ().push_front ([this] (auto) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return nullopt; });
     this->rwHeaders.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) { Require (tSuppressAssertCanModifyHeaders_ > 0 or this->headersCanBeSet ()); return PropertyChangedEventResultType::eContinueProcessing; });
 #endif
     this->contentType.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) {
