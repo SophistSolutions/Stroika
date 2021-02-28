@@ -168,7 +168,7 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
         [this] (const auto& baseETagValue) -> optional<HTTP::ETag> {
             // return the current tag 'so far' (if the user has not already explicit set a value)
             if (fETagDigester_ and not baseETagValue) {
-                auto copy = *fETagDigester_;    // copy cuz this could get called multiple times and Complete only allowed to be called once
+                auto copy = *fETagDigester_; // copy cuz this could get called multiple times and Complete only allowed to be called once
                 return HTTP::ETag{copy.Complete ()};
             }
             return nullopt;
