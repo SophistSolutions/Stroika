@@ -34,6 +34,12 @@ namespace {
                 case StatusCodes::kMovedPermanently:
                     effectiveReason = L"Moved Permanently"sv;
                     break;
+                case StatusCodes::kNotModified:
+                    effectiveReason = L"Not Modified"sv;
+                    break;
+                case StatusCodes::kBadRequest:
+                    effectiveReason = L"Bad Request"sv;
+                    break;
                 case StatusCodes::kUnauthorized:
                     effectiveReason = L"Unauthorized access"sv;
                     break;
