@@ -86,16 +86,19 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      */
     class Headers : private Debug::AssertExternallySynchronizedLock {
     public:
+        enum class CopyFlags { eOnlyBaseValue, eInheritedValues };
+
+    public:
         /**
          */
         Headers ();
-        Headers (const Headers& src);
-        Headers (Headers&& src);
+        Headers (const Headers& src, CopyFlags flags = CopyFlags::eOnlyBaseValue);
+        Headers (Headers&& src, CopyFlags flags = CopyFlags::eOnlyBaseValue);
         explicit Headers (const Iterable<KeyValuePair<String, String>>& src);
 
     public:
-        nonvirtual Headers& operator= (const Headers& rhs) = default;
-        nonvirtual Headers& operator                       = (Headers&& rhs);
+        nonvirtual Headers& operator= (const Headers& rhs);
+        nonvirtual Headers& operator= (Headers&& rhs);
 
 #if qDebug
     public:
@@ -382,14 +385,14 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         // that are very commonly checked for, so their check/update will be a bit quicker.
         Collection<KeyValuePair<String, String>>    fExtraHeaders_;
         optional<CacheControl>                      fCacheControl_;
-        optional<uint64_t>                          fContentLength_;
+        optional<uint64_t>                          fContentLength_;    // must acccess through property to access extended property handlers (except root getter/setter)
         optional<InternetMediaType>                 fContentType_;
-        optional<CookieList>                        fCookieList_; // store optional cuz often missing, and faster init
-        optional<HTTP::ETag>                        fETag_;
+        optional<CookieList>                        fCookieList_;       // store optional cuz often missing, and faster init
+        optional<HTTP::ETag>                        fETag_;             // must acccess through property to access extended property handlers (except root getter/setter)
         optional<String>                            fHost_;
         optional<IfNoneMatch>                       fIfNoneMatch_;
-        optional<CookieList>                        fSetCookieList_; // store optional cuz often missing, and faster init
-        optional<TransferEncodings>                 fTransferEncoding_;
+        optional<CookieList>                        fSetCookieList_;    // store optional cuz often missing, and faster init
+        optional<TransferEncodings>                 fTransferEncoding_; // must acccess through property to access extended property handlers (except root getter/setter)
         optional<Containers::Set<String>>           fVary_;
 
 #if __cpp_impl_three_way_comparison < 201907

@@ -59,7 +59,7 @@ namespace {
 
 Response::Response (Response&& src)
     // Would be nice to use inherited src move, but PITA, becaue then would need to duplicate creating the properties below.
-    : Response{src.fSocket_, src.fUnderlyingOutStream_, src.headers ()}
+    : Response{src.fSocket_, src.fUnderlyingOutStream_, HTTP::Headers{src.headers (), HTTP::Headers::CopyFlags::eOnlyBaseValue}}
 {
     fState_        = src.fState_;
     fUseOutStream_ = src.fUseOutStream_;
@@ -135,7 +135,7 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
         });
     this->statusAndOverrideReason.rwPropertyChangedHandlers ().push_front (
         [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
-            Require (this->responseStatusSent ());
+            Require (not this->responseStatusSent ());
             return PropertyChangedEventResultType::eContinueProcessing;
         });
     this->rwHeaders.rwPropertyReadHandlers ().push_front (

@@ -251,7 +251,7 @@ Headers::Headers ()
 {
 }
 
-Headers::Headers (const Headers& src)
+Headers::Headers (const Headers& src, CopyFlags flags)
     : Headers{}
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{src};
@@ -259,34 +259,46 @@ Headers::Headers (const Headers& src)
     // However, cannot mix initialize with calling delegated CTOR, so do the slightly more inefficent way to avoid duplicative code
     fExtraHeaders_     = src.fExtraHeaders_;
     fCacheControl_     = src.fCacheControl_;
-    fContentLength_    = src.fContentLength_;
     fContentType_      = src.fContentType_;
     fCookieList_       = src.fCookieList_;
-    fETag_             = src.ETag ();
     fHost_             = src.fHost_;
     fIfNoneMatch_      = src.fIfNoneMatch_;
     fSetCookieList_    = src.fSetCookieList_;
     fTransferEncoding_ = src.fTransferEncoding_;
     fVary_             = src.fVary_;
+    if (flags == CopyFlags::eOnlyBaseValue) {
+        fContentLength_ = src.fContentLength_;
+        fETag_          = src.fETag_;
+    }
+    else {
+        fContentLength_ = src.contentLength ();
+        fETag_          = src.ETag ();
+    }
 }
 
-Headers::Headers (Headers&& src)
+Headers::Headers (Headers&& src, CopyFlags flags)
     : Headers{}
 {
-    shared_lock<const AssertExternallySynchronizedLock> critSec{src};
+    lock_guard<const AssertExternallySynchronizedLock> critSec{src};
     // NOTE properties and fields refer to the same thing. COULD copy properties, but cheaper to just 'initialize' the fields
     // However, cannot mix initialize with calling delegated CTOR, so do the slightly more inefficent way to avoid duplicative code
     fExtraHeaders_     = move (src.fExtraHeaders_);
     fCacheControl_     = move (src.fCacheControl_);
-    fContentLength_    = move (src.fContentLength_);
     fContentType_      = move (src.fContentType_);
     fCookieList_       = move (src.fCookieList_);
-    fETag_             = src.ETag ();
     fHost_             = move (src.fHost_);
     fIfNoneMatch_      = move (src.fIfNoneMatch_);
     fSetCookieList_    = move (src.fSetCookieList_);
     fTransferEncoding_ = move (src.fTransferEncoding_);
     fVary_             = move (src.fVary_);
+    if (flags == CopyFlags::eOnlyBaseValue) {
+        fContentLength_ = src.fContentLength_;
+        fETag_          = src.fETag_;
+    }
+    else {
+        fContentLength_ = src.contentLength ();
+        fETag_          = src.ETag ();
+    }
 }
 
 Headers::Headers (const Iterable<KeyValuePair<String, String>>& src)
@@ -297,21 +309,43 @@ Headers::Headers (const Iterable<KeyValuePair<String, String>>& src)
     }
 }
 
-Headers& Headers::operator= (Headers&& rhs)
+Headers& Headers::operator= (const Headers& rhs)
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec1{rhs};
     lock_guard<const AssertExternallySynchronizedLock>  critSec2{*this};
-    fExtraHeaders_     = move (rhs.fExtraHeaders_);
-    fCacheControl_     = move (rhs.fCacheControl_);
-    fContentLength_    = move (rhs.fContentLength_);
-    fContentType_      = move (rhs.fContentType_);
-    fCookieList_       = move (rhs.fCookieList_);
-    fETag_             = rhs.ETag ();
-    fHost_             = move (rhs.fHost_);
-    fIfNoneMatch_      = move (rhs.fIfNoneMatch_);
-    fSetCookieList_    = move (rhs.fSetCookieList_);
-    fTransferEncoding_ = move (rhs.fTransferEncoding_);
-    fVary_             = move (rhs.fVary_);
+    if (this != &rhs) {
+        fExtraHeaders_     = move (rhs.fExtraHeaders_);
+        fCacheControl_     = move (rhs.fCacheControl_);
+        fContentLength_    = rhs.fContentLength_;
+        fContentType_      = move (rhs.fContentType_);
+        fCookieList_       = move (rhs.fCookieList_);
+        fETag_             = rhs.fETag_;
+        fHost_             = move (rhs.fHost_);
+        fIfNoneMatch_      = move (rhs.fIfNoneMatch_);
+        fSetCookieList_    = move (rhs.fSetCookieList_);
+        fTransferEncoding_ = move (rhs.fTransferEncoding_);
+        fVary_             = move (rhs.fVary_);
+    }
+    return *this;
+}
+
+Headers& Headers::operator= (Headers&& rhs)
+{
+    lock_guard<const AssertExternallySynchronizedLock> critSec1{rhs};
+    lock_guard<const AssertExternallySynchronizedLock> critSec2{*this};
+    if (this != &rhs) {
+        fExtraHeaders_     = move (rhs.fExtraHeaders_);
+        fCacheControl_     = move (rhs.fCacheControl_);
+        fContentLength_    = move (rhs.fContentLength_);
+        fContentType_      = move (rhs.fContentType_);
+        fCookieList_       = move (rhs.fCookieList_);
+        fETag_             = move (rhs.fETag_);
+        fHost_             = move (rhs.fHost_);
+        fIfNoneMatch_      = move (rhs.fIfNoneMatch_);
+        fSetCookieList_    = move (rhs.fSetCookieList_);
+        fTransferEncoding_ = move (rhs.fTransferEncoding_);
+        fVary_             = move (rhs.fVary_);
+    }
     return *this;
 }
 
@@ -322,7 +356,8 @@ optional<String> Headers::LookupOne (const String& name) const
         return fCacheControl_ ? fCacheControl_->As<String> () : optional<String>{};
     }
     else if (kHeaderNameEqualsComparer (name, HeaderName::kContentLength)) {
-        return fContentLength_ ? Characters::Format (L"%ld", *fContentLength_) : optional<String>{};
+        auto cl = this->contentLength ();
+        return cl ? Characters::Format (L"%ld", *cl) : optional<String>{};
     }
     else if (kHeaderNameEqualsComparer (name, HeaderName::kContentType)) {
         return fContentType_ ? fContentType_->As<String> () : optional<String>{};
@@ -350,7 +385,8 @@ optional<String> Headers::LookupOne (const String& name) const
         return optional<String>{};
     }
     else if (kHeaderNameEqualsComparer (name, HeaderName::kTransferEncoding)) {
-        return fTransferEncoding_ ? fTransferEncoding_->Encode () : optional<String>{};
+        auto tc = this->transferEncoding ();
+        return tc ? tc->Encode () : optional<String>{};
     }
     else if (kHeaderNameEqualsComparer (name, HeaderName::kVary)) {
         return fVary_ ? String::Join (*fVary_) : optional<String>{};
@@ -426,8 +462,8 @@ void Headers::AddAll (const Headers& headers)
     if (headers.fCacheControl_) {
         fCacheControl_ = *headers.fCacheControl_;
     }
-    if (headers.fContentLength_) {
-        fContentLength_ = *headers.fContentLength_;
+    if (auto cl = headers.contentLength ()) {
+        this->contentLength = *cl;
     }
     if (headers.fContentType_) {
         fContentType_ = *headers.fContentType_;
@@ -435,8 +471,8 @@ void Headers::AddAll (const Headers& headers)
     if (headers.fCookieList_) {
         fCookieList_ = *headers.fCookieList_;
     }
-    if (headers.fETag_) {
-        fETag_ = headers.ETag (); // must go through property to access extended property handlers
+    if (auto et = headers.ETag ()) {
+        fETag_ = *et;
     }
     if (headers.fHost_) {
         fHost_ = *headers.fHost_;
@@ -447,8 +483,8 @@ void Headers::AddAll (const Headers& headers)
     if (headers.fSetCookieList_) {
         fSetCookieList_ = *headers.fSetCookieList_;
     }
-    if (headers.fTransferEncoding_) {
-        fTransferEncoding_ = *headers.fTransferEncoding_;
+    if (auto tc = headers.transferEncoding ()) {
+        fTransferEncoding_ = *tc;
     }
     if (headers.fVary_) {
         fVary_ = *headers.fVary_;
@@ -483,7 +519,7 @@ bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const opt
         if (nRemoveals != nullptr) {
             *nRemoveals = (value == nullopt and fContentLength_ != nullopt) ? 1 : 0;
         }
-        fContentLength_ = value ? String2Int<uint64_t> (*value) : optional<uint64_t>{};
+        this->contentLength = value ? String2Int<uint64_t> (*value) : optional<uint64_t>{};
         return true;
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kContentType)) {
@@ -600,8 +636,8 @@ Collection<KeyValuePair<String, String>> Headers::As () const
     if (fCacheControl_) {
         results.Add (KeyValuePair<String, String>{HeaderName::kCacheControl, fCacheControl_->As<String> ()});
     }
-    if (fContentLength_) {
-        results.Add (KeyValuePair<String, String>{HeaderName::kContentLength, Characters::Format (L"%lld", static_cast<long long> (*fContentLength_))});
+    if (auto cl = this->contentLength ()) {
+        results.Add (KeyValuePair<String, String>{HeaderName::kContentLength, Characters::Format (L"%lld", static_cast<long long> (*cl))});
     }
     if (fContentType_) {
         results.Add (KeyValuePair<String, String>{HeaderName::kContentType, fContentType_->As<String> ()});
@@ -621,8 +657,8 @@ Collection<KeyValuePair<String, String>> Headers::As () const
             results.Add (KeyValuePair<String, String>{HeaderName::kSetCookie, i.Encode ()});
         }
     }
-    if (fTransferEncoding_) {
-        results.Add (KeyValuePair<String, String>{HeaderName::kTransferEncoding, fTransferEncoding_->Encode ()});
+    if (auto tc = this->transferEncoding ()) {
+        results.Add (KeyValuePair<String, String>{HeaderName::kTransferEncoding, tc->Encode ()});
     }
     if (fVary_) {
         results.Add (KeyValuePair<String, String>{HeaderName::kVary, String::Join (*fVary_)});
