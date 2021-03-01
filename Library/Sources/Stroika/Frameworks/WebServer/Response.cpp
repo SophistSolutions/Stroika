@@ -124,7 +124,12 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
         shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
         return thisObj->fState_ != State::ePreparingHeaders and thisObj->fState_ != State::ePreparingBodyBeforeHeadersSent;
     }}
-    , fSocket_{s}
+    , responseCompleted{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+        const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::responseStatusSent);
+        shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+        return thisObj->fState_ == State::eCompleted;
+    }}
+    , fSocket_{s} 
     , fUnderlyingOutStream_{outStream}
     , fUseOutStream_{Streams::BufferedOutputStream<byte>::New (outStream)}
 {
@@ -357,7 +362,12 @@ String Response::ToString () const
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     StringBuilder                                       sb = inherited::ToString ().SubString (0, -1); // strip trailing '}'
     sb += L"Socket: " + Characters::ToString (fSocket_) + L", ";
-    sb += L"State_: " + Characters::ToString (fState_) + L", ";
+    sb += L"InChunkedMode: " + Characters::ToString (fInChunkedModeCache_) + L", ";
+    sb += L"State: " + Characters::ToString (fState_) + L", ";
+    sb += L"CodePage: " + Characters::ToString (fCodePage_) + L", ";
+    sb += L"BodyBytes: " + Characters::ToString (fBodyBytes_) + L", ";
+    sb += L"HeadMode: " + Characters::ToString (fHeadMode_) + L", ";
+    sb += L"ETagDigester: " + String{fETagDigester_ ? L"true" : L"false"} + L", ";
     sb += L"}";
     return sb.str ();
 }

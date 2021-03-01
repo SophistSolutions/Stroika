@@ -203,10 +203,10 @@ Connection::~Connection ()
     WriteLogConnectionMsg_ (L"DestroyingConnection");
 #endif
     if (fMessage_ != nullptr) {
-        if (fMessage_->response ().state () != Response::State::eCompleted) {
+        if (not fMessage_->response ().responseCompleted ()) {
             IgnoreExceptionsForCall (fMessage_->rwResponse ().Abort ());
         }
-        Require (fMessage_->response ().state () == Response::State::eCompleted);
+        Require (fMessage_->response ().responseCompleted ());
     }
     /*
      *  When the connection is completed, make sure the socket is closed so that the calling client knows

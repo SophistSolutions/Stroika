@@ -150,6 +150,9 @@ namespace Stroika::Frameworks::WebServer {
     public:
         /**
          *  The state may be changed by calls to Flush (), Abort (), Redirect (), and End (), and more...
+         *  
+         *  \note as the design of the HTTP server changes, the list of States may change, so better to check properties
+         *        like headersCanBeSet, or responseStatusSent, rathern than checking the state explicitly.
          */
         Common::ReadOnlyProperty<State> state;
 
@@ -169,6 +172,12 @@ namespace Stroika::Frameworks::WebServer {
          *  the initial bunch of headers (excluding trailers) all set at the same time (so this also checks for all non-trial headers being sent).
          */
         Common::ReadOnlyProperty<bool> responseStatusSent;
+
+    public:
+        /**
+         *  Returns true once the response has been completed and fully flushed. No further calls to write() are allowed at that point.
+         */
+        Common::ReadOnlyProperty<bool> responseCompleted;
 
     public:
         /**
@@ -196,8 +205,8 @@ namespace Stroika::Frameworks::WebServer {
          * This signifies that the given request has been handled. Its illegal to write to this request object again, or modify
          * any aspect of it. The state must be ePreparingHeaders or ePreparingBodyAfterHeadersSent and it sets the state to eCompleted.
          * 
-         *  \reqquire this->state() != eComplete
-         *  \ensure this->state() == eComplete
+         *  \req not this->responseCompleted ()
+         *  \ens this->responseCompleted ()
          */
         nonvirtual void End ();
 
@@ -207,7 +216,7 @@ namespace Stroika::Frameworks::WebServer {
          * unsent data, and closing the associated socket.
          *
          *  Can be called in any state
-         *  \ensure this->state() == eComplete
+         *  \ens this->responseCompleted ()
          */
         nonvirtual void Abort ();
 
