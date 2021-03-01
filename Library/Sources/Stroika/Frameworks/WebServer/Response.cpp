@@ -231,7 +231,7 @@ void Response::Flush ()
                 fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (utf8)), reinterpret_cast<const byte*> (Containers::End (utf8)));
             }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"headers: %s", Characters::ToString (headers2Write).c_str ());
+            DbgTrace (L"headers: %s", Characters::ToString (this->headers ().As<> ()).c_str ());
 #endif
         }
         const char kCRLF[] = "\r\n";
