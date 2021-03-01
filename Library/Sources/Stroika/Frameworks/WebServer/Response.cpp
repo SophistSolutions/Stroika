@@ -61,11 +61,12 @@ Response::Response (Response&& src)
     // Would be nice to use inherited src move, but PITA, becaue then would need to duplicate creating the properties below.
     : Response{src.fSocket_, src.fUnderlyingOutStream_, HTTP::Headers{src.headers (), HTTP::Headers::CopyFlags::eOnlyBaseValue}}
 {
-    fState_        = src.fState_;
-    fUseOutStream_ = src.fUseOutStream_;
-    fCodePage_     = src.fCodePage_;
-    fBodyBytes_    = src.fBodyBytes_;
-    fHeadMode_     = src.fHeadMode_;
+    fState_        = move (src.fState_);
+    fUseOutStream_ = move (src.fUseOutStream_);
+    fCodePage_     = move (src.fCodePage_);
+    fBodyBytes_    = move (src.fBodyBytes_);
+    fHeadMode_     = move (src.fHeadMode_);
+    fETagDigester_ = move (src.fETagDigester_);
 }
 
 Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream<byte>::Ptr& outStream, const optional<HTTP::Headers>& initialHeaders)

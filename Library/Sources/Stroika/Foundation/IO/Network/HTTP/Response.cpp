@@ -37,8 +37,8 @@ using namespace Stroika::Foundation::IO::Network::HTTP;
 Response::Response (Response&& src)
     : Response{}
 {
-    fStatusAndOverrideReason_ = src.fStatusAndOverrideReason_;
-    fHeaders_                 = src.fHeaders_;
+    fStatusAndOverrideReason_ = move (src.fStatusAndOverrideReason_);
+    fHeaders_                 = move (src.fHeaders_);
 }
 
 Response::Response (const optional<Headers>& initialHeaders)
