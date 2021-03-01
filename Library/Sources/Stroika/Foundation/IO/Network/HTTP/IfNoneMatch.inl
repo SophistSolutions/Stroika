@@ -81,6 +81,10 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         }
         return String::Join (fETags.Select<String> ([] (const ETag& e) { return e.As<String> (); }));
     }
+    inline Characters::String IfNoneMatch::ToString () const
+    {
+        return As<String> ();
+    }
 #if __cpp_impl_three_way_comparison < 201907
     inline bool operator== (const IfNoneMatch& lhs, const IfNoneMatch& rhs)
     {

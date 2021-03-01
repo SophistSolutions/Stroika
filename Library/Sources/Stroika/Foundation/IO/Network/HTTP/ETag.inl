@@ -39,6 +39,10 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     {
         return (fWeak ? L"\\W\""sv : L"\"") + fValue + L"\""sv;
     }
+    inline Characters::String ETag::ToString () const
+    {
+        return As<String> ();
+    }
 #if __cpp_impl_three_way_comparison < 201907
     inline bool operator== (const ETag& lhs, const ETag& rhs)
     {

@@ -39,6 +39,11 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 		template <typename T>
         T As () const;
 
+        /**
+         *  @see Characters::ToString ();
+         */
+        nonvirtual String ToString () const;
+
 #if __cpp_impl_three_way_comparison >= 201907
         /**
          */
