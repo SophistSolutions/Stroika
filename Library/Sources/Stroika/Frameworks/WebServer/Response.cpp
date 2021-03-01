@@ -129,7 +129,7 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
         shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
         return thisObj->fState_ == State::eCompleted;
     }}
-    , fSocket_{s} 
+    , fSocket_{s}
     , fUnderlyingOutStream_{outStream}
     , fUseOutStream_{Streams::BufferedOutputStream<byte>::New (outStream)}
 {
