@@ -46,6 +46,8 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     public:
         /**
          *  Allow users of the Headers object to have it share a 'assure externally synchronized' context.
+         * 
+         *  \see AssertExternallySynchronizedLock::SetAssertExternallySynchronizedLockContext
          */
         nonvirtual void SetAssertExternallySynchronizedLockContext (const shared_ptr<SharedContext>& sharedContext);
 #endif
@@ -59,6 +61,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
+         *  \brief typically HTTP::Methods::kGet
          */
         Common::Property<String> httpMethod;
 
@@ -101,10 +104,10 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         nonvirtual String ToString () const;
 
     private:
-        String                          fHTTPVersion_;
-        String                          fMethod_;
-        URI                fURL_;
-        Headers      fHeaders_;
+        String      fHTTPVersion_;
+        String      fMethod_;
+        URI         fURL_;
+        Headers     fHeaders_;
     };
 
 }

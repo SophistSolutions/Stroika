@@ -16,9 +16,7 @@
 #include "../../../IO/Network/URI.h"
 
 /*
- *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
- *
- * TODO:
+ *  \version    <a href="Code-Status.md#Late-Alpha">Late-Alpha</a>
  */
 
 namespace Stroika::Foundation::IO::Network::HTTP {
@@ -45,6 +43,8 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     public:
         /**
          *  Allow users of the Headers object to have it share a 'assure externally synchronized' context.
+         *
+         *  \see AssertExternallySynchronizedLock::SetAssertExternallySynchronizedLockContext
          */
         nonvirtual void SetAssertExternallySynchronizedLockContext (const shared_ptr<SharedContext>& sharedContext);
 #endif

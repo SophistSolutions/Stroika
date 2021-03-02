@@ -106,7 +106,7 @@ String Response::ToString () const
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     StringBuilder                                       sb;
     sb += L"{";
-    sb += L"StatusOverrideReason_: " + Characters::ToString (fStatusAndOverrideReason_) + L", ";
+    sb += L"Status-And-Override-Reason: " + Characters::ToString (fStatusAndOverrideReason_) + L", ";
     sb += L"Headers: " + Characters::ToString (this->headers ()) + L", ";
     sb += L"}";
     return sb.str ();

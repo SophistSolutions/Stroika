@@ -40,10 +40,10 @@ using namespace Stroika::Foundation::IO::Network::HTTP;
 Request::Request (Request&& src)
     : Request{}
 {
-    fHTTPVersion_ = src.fHTTPVersion_;
-    fMethod_      = src.fMethod_;
-    fURL_         = src.fURL_;
-    fHeaders_     = src.fHeaders_;
+    fHTTPVersion_ = move (src.fHTTPVersion_);
+    fMethod_      = move (src.fMethod_);
+    fURL_         = move (src.fURL_);
+    fHeaders_     = move (src.fHeaders_);
 }
 
 Request::Request ()
