@@ -241,6 +241,7 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
                         }
                     }
 
+                    // @todo lose this code after a bit of testing that never triggered - LGP 2021-03-02
                     if (not keepAlive) {
                         Assert (readyConnection->response ().responseCompleted ()); // don't think this test is needed - I think we always assure this in Connection - LGP 2021-03-02
                         if (not readyConnection->response ().responseCompleted ()) {
