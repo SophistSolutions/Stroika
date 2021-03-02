@@ -378,10 +378,17 @@ namespace Stroika::Frameworks::WebServer {
 
     private:
         IO::Network::Socket::Ptr                 fSocket_;
-        bool                                     fInChunkedModeCache_:1{false};
-        State                                    fState_:3{State::ePreparingHeaders};
+#if __cplusplus >= 202002L
+        bool                                     fInChunkedModeCache_ : 1 {false};
+        State                                    fState_ : 3 {State::ePreparingHeaders};
         bool                                     fHeadMode_ : 1 {false};
         bool                                     fAborted_ : 1 {false};
+#else
+        bool                                     fInChunkedModeCache_ {false};
+        State                                    fState_ {State::ePreparingHeaders};
+        bool                                     fHeadMode_  {false};
+        bool                                     fAborted_  {false};
+#endif
         Streams::OutputStream<byte>::Ptr         fUnderlyingOutStream_;
         Streams::BufferedOutputStream<byte>::Ptr fUseOutStream_;
         Characters::CodePage                     fCodePage_{Characters::kCodePage_UTF8};
