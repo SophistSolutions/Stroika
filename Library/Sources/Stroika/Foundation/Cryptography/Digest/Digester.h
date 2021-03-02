@@ -64,22 +64,21 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *  \par Example Usage
      *      \code
      *          using namespace IO::Network;
-     *          auto         digesterWithDefaultResult  = Digester<Digest::Algorithm::SuperFastHash>{};
-     *          auto         digesterWithResult_uint8_t = Digester<Digest::Algorithm::SuperFastHash, uint8_t>{};
-     *          Memory::BLOB value2Hash                 = DefaultSerializer<InternetAddress>{}(InternetAddress{L"192.168.244.33"});
-     *          auto         h1                         = digesterWithDefaultResult (value2Hash);
-     *          uint8_t      h2                         = digesterWithResult_uint8_t (value2Hash);
+     *          Memory::BLOB value2Hash     = DefaultSerializer<InternetAddress>{}(InternetAddress{L"192.168.244.33"});
+     *          auto         h1             = ComputeDigest<Digest::Algorithm::SuperFastHash> (value2Hash);
+     *          uint8_t      h2             = ComputeDigest<Digest::Algorithm::SuperFastHash, uint8_t> (value2Hash);
      *          VerifyTestResult (h1 == 2512011991); // experimentally derived values but they shouldn't float (actually may depend on endiannesss?)
      *          VerifyTestResult (h2 == 215);
-     *          auto                 digesterWithResult_array40 = Digester<Digest::Algorithm::SuperFastHash, std::array<byte, 40>>{};
-     *          std::array<byte, 40> h3                         = digesterWithResult_array40 (value2Hash);
+     *          std::array<byte, 40> h3 = ComputeDigest<Digest::Algorithm::SuperFastHash, std::array<byte, 40>> (value2Hash);
      *          VerifyTestResult (h3[0] == std::byte{215} and h3[1] == std::byte{66} and h3[39] == std::byte{0});
      *          if (Configuration::GetEndianness () == Configuration::Endian::eX86) {
-     *              VerifyTestResult ((Digester<Digest::Algorithm::SuperFastHash, string>{}(value2Hash) == "0x2512011991"));
+     *              VerifyTestResult ((ComputeDigest<Digest::Algorithm::SuperFastHash, string>(value2Hash) == "0x2512011991"));
      *          }
      *      \endcode
      *
      *  @see  Hash ()
+     *  @see  IncrementalDigester ()
+     *  @see  Digester ()
      *    
      */
     template <typename ALGORITHM, typename RETURN_TYPE = typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>
@@ -90,7 +89,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
     RETURN_TYPE ComputeDigest (const BLOB& from);
 
     /**
-     *  \brief IncrementalDigester<ALGORITHM> () is the low level way to call Digest algorithms, appropriate for streamed sources of data
+     *  \brief IncrementalDigester<ALGORITHM> () is the low level way to call Digest algorithms, appropriate for streamed sources of data (because it a stateful object you can call Write on multiple times before extracting the digest)
      * 
      *  A Digest is an algorithm that takes a stream of bytes and computes a series of bits
      *  (can be thought of as a number, or string, or seqeunce of bits) which hopefully as
