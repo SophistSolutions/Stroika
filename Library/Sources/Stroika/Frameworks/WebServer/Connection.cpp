@@ -251,7 +251,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
             } break;
         }
 
-        // if we get this far, we always complete processing the message
+            // if we get this far, we always complete processing the message
 #if qDebug
         [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { Ensure (fMessage_->response ().responseCompleted ()); });
 #endif
@@ -363,6 +363,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
     }
     catch (...) {
         DbgTrace (L"ReadAndProcessMessage Exception caught (%s), so returning ReadAndProcessResult::eClose", Characters::ToString (current_exception ()).c_str ());
+        this->rwResponse ().Abort ();
         return Connection::ReadAndProcessResult::eClose;
     }
 }

@@ -215,7 +215,7 @@ namespace Stroika::Frameworks::WebServer {
          * This can be called anytime, but has no effect if the status = eCompleted. It has the effect of throwing away all
          * unsent data, and closing the associated socket.
          *
-         *  Can be called in any state
+         *  Can be called in any state.
          *  \ens this->responseCompleted ()
          */
         nonvirtual void Abort ();
