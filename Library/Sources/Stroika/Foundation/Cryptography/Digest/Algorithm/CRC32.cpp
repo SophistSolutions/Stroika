@@ -95,11 +95,16 @@ namespace {
  */
 void Algorithm::DigesterAlgorithm<Algorithm::CRC32>::Write (const std::byte* start, const std::byte* end)
 {
+    Require (not fCompleted_);
     DoMore_ (&fData_, start, end);
 }
 
 auto Algorithm::DigesterAlgorithm<Algorithm::CRC32>::Complete () -> ReturnType
 {
+#if qDebug
+    Require (not fCompleted_);
+    fCompleted_ = true;
+#endif
     DoEnd_ (&fData_);
     return fData_;
 }

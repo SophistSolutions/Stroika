@@ -73,6 +73,9 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
         uint32_t       fHash_{0}; // original algorithm set this to len, but we cannot and be windowed
         unsigned int   fRemainder_{};
         array<byte, 3> fFinalBytes_{};
+#if qDebug
+        bool fCompleted_{false};
+#endif
     };
 
 }

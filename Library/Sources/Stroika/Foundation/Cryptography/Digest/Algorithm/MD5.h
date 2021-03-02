@@ -65,6 +65,9 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
             unsigned char digest[16]; /* actual digest after MD5Final call */
         };
         MD5_CTX fCtx_{};
+#if qDebug
+        bool fCompleted_{false};
+#endif
 
     private:
         // public: //tmphack til we get rid of other class

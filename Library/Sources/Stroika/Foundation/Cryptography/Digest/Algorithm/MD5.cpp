@@ -349,6 +349,7 @@ Algorithm::DigesterAlgorithm<Algorithm::MD5>::DigesterAlgorithm ()
 
 void Algorithm::DigesterAlgorithm<Algorithm::MD5>::Write (const std::byte* start, const std::byte* end)
 {
+    Require (not fCompleted_);
     Require (start == end or start != nullptr);
     Require (start == end or end != nullptr);
     MD5Update_ (&fCtx_, reinterpret_cast<const unsigned char*> (start), static_cast<unsigned int> (end - start));
@@ -356,6 +357,10 @@ void Algorithm::DigesterAlgorithm<Algorithm::MD5>::Write (const std::byte* start
 
 auto Algorithm::DigesterAlgorithm<Algorithm::MD5>::Complete () -> ReturnType
 {
+#if qDebug
+    Require (not fCompleted_);
+    fCompleted_ = true;
+#endif
     MD5Final_ (&fCtx_);
     ReturnType result{};
     (void)::memcpy (Traversal::Iterator2Pointer (result.begin ()), fCtx_.digest, 16);

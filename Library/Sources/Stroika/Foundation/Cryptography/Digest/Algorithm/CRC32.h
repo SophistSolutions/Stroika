@@ -59,6 +59,9 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
 
     private:
         uint32_t fData_{0xFFFFFFFF};
+        #if qDebug
+        bool fCompleted_{false};
+        #endif
     };
 
 }

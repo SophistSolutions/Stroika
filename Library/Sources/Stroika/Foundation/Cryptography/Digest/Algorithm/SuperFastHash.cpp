@@ -53,6 +53,7 @@ namespace {
  */
 void Algorithm::DigesterAlgorithm<Algorithm::SuperFastHash>::Write (const std::byte* start, const std::byte* end)
 {
+    Require (not fCompleted_);
     /*
      *  Require() here cuz of following cast.
      *  NB: apparently broken if large data input! > 4gig on 64bit machine.
@@ -87,6 +88,10 @@ void Algorithm::DigesterAlgorithm<Algorithm::SuperFastHash>::Write (const std::b
 
 auto Algorithm::DigesterAlgorithm<Algorithm::SuperFastHash>::Complete () -> ReturnType
 {
+#if qDebug
+    Require (not fCompleted_);
+    fCompleted_ = true;
+#endif
     const byte* data = &fFinalBytes_[0];
     auto        hash = fHash_;
     /* Handle end cases */
