@@ -286,7 +286,7 @@ void Response::Abort ()
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     if (fState_ != State::eCompleted) {
-        fState_ = State::eCompleted;
+        fState_   = State::eCompleted;
         fAborted_ = true;
         fUseOutStream_.Abort ();
         fSocket_.Close ();
