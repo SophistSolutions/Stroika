@@ -176,6 +176,7 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Inte
     , fDefaultGETResponseHeaders_{defaultGETResponseHeaders}
     , fAutoComputeETagResponse_{autoComputeETagResponse}
     , fSocket_{s}
+    , fConnectionStartedAt_{Time::GetTickCount ()}
 {
     Require (s != nullptr);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -259,7 +260,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
          */
         bool thisMessageKeepAlive = fMessage_->request ().keepAliveRequested;
         if (thisMessageKeepAlive) {
-            // Check for keepalive headers, and handle them appropriately
+            // Check for keepalive headers, and handle/merge them appropriately
             // only meaningful HTTP 1.1 and earlier and only if Connection: keep-alive
             if (auto keepAliveValue = fMessage_->request ().headers ().keepAlive ()) {
                 this->remainingConnectionLimits = KeepAlive::Merge (this->remainingConnectionLimits (), *keepAliveValue);
@@ -275,7 +276,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
                     }
                 }
                 if (oRemaining->fTimeoutAt) {
-                    if (*oRemaining->fTimeoutAt < Time::GetTickCount ()) {
+                    if (fConnectionStartedAt_ + *oRemaining->fTimeoutAt < Time::GetTickCount ()) {
                         thisMessageKeepAlive = false;
                     }
                 }
@@ -347,7 +348,9 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
             }
         }
 
-        this->rwResponse ().End ();
+        if (not this->rwResponse ().End ()) {
+            thisMessageKeepAlive = false;
+        }
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
         WriteLogConnectionMsg_ (L"Did GetResponse ().End ()");
 #endif
@@ -376,6 +379,7 @@ String Connection::ToString (bool abbreviatedOutput) const
         sb += L"Message: " + Characters::ToString (fMessage_) + L", ";
         sb += L"Remaining: " + Characters::ToString (fRemaining_) + L", ";
     }
+    sb += L"Connection-Started-At: " + Characters::ToString (fConnectionStartedAt_);
     sb += L"}";
     return sb.str ();
 }

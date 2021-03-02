@@ -32,18 +32,31 @@ struct DefaultFaultInterceptor::Rep_ : Interceptor::_IRep {
                 rethrow_exception (e);
             }
             catch (const IO::Network::HTTP::Exception& ee) {
-                response.statusAndOverrideReason = make_tuple (ee.GetStatus (), ee.GetReason ());
-                response.contentType             = DataExchange::InternetMediaTypes::kText_PLAIN;
-                response.writeln (Characters::ToString (ee).c_str ());
+                if (response.responseStatusSent) {
+                    DbgTrace (L"response failed after sending the status: %s", Characters::ToString (current_exception ()).c_str ()); // else horse has left the barn
+                    response.Abort ();
+                }
+                else {
+                    response.statusAndOverrideReason = make_tuple (ee.GetStatus (), ee.GetReason ());
+                    response.contentType             = DataExchange::InternetMediaTypes::kText_PLAIN;
+                    response.writeln (Characters::ToString (ee).c_str ());
+                }
             }
             catch (...) {
-                response.status      = IO::Network::HTTP::StatusCodes::kInternalError;
-                response.contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
-                response.writeln (Characters::ToString (e).c_str ());
+                if (response.responseStatusSent) {
+                    DbgTrace (L"response failed after sending the status: %s", Characters::ToString (current_exception ()).c_str ()); // else horse has left the barn
+                    response.Abort ();
+                }
+                else {
+                    response.status      = IO::Network::HTTP::StatusCodes::kInternalError;
+                    response.contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
+                    response.writeln (Characters::ToString (e).c_str ());
+                }
             }
         }
         catch (...) {
-            DbgTrace (L"Oops! - not good, but nothing todo but burry it."); // not assert failure cuz could be out of memory
+            DbgTrace (L"Oops! - not good, but nothing todo but burry it: %s", Characters::ToString (current_exception ()).c_str ()); // else horse has left the barn
+            response.Abort ();
         }
     }
     virtual void HandleMessage ([[maybe_unused]] Message* m) const override

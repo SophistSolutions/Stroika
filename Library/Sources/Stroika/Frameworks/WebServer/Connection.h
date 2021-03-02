@@ -168,6 +168,7 @@ namespace Stroika::Frameworks::WebServer {
         optional<bool>                        fAutoComputeETagResponse_;
         ConnectionOrientedStreamSocket::Ptr   fSocket_;
         Streams::InputOutputStream<byte>::Ptr fSocketStream_;
+        Time::DurationSecondsType             fConnectionStartedAt_{};
         unique_ptr<MyMessage_>                fMessage_; // always there, but ptr so it can be replaced
         optional<HTTP::KeepAlive>             fRemaining_;
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog

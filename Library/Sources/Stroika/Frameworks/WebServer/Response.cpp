@@ -125,9 +125,14 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
         return thisObj->fState_ != State::ePreparingHeaders and thisObj->fState_ != State::ePreparingBodyBeforeHeadersSent;
     }}
     , responseCompleted{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-        const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::responseStatusSent);
+        const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::responseCompleted);
         shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
         return thisObj->fState_ == State::eCompleted;
+    }}
+    , responseAborted{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+        const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::responseAborted);
+        shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+        return thisObj->fAborted_;
     }}
     , fSocket_{s}
     , fUnderlyingOutStream_{outStream}
@@ -261,18 +266,20 @@ void Response::Flush ()
     Ensure (fBodyBytes_.empty ());
 }
 
-void Response::End ()
+bool Response::End ()
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    Require (fState_ != State::eCompleted);
-    if (InChunkedMode_ ()) {
-        constexpr string_view kEndChunk_ = "0\r\n\r\n";
-        fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (kEndChunk_)), reinterpret_cast<const byte*> (Containers::End (kEndChunk_)));
+    if (fState_ != State::eCompleted) {
+        if (InChunkedMode_ ()) {
+            constexpr string_view kEndChunk_ = "0\r\n\r\n";
+            fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (kEndChunk_)), reinterpret_cast<const byte*> (Containers::End (kEndChunk_)));
+        }
+        Flush ();
+        fState_ = State::eCompleted;
     }
-    Flush ();
-    fState_ = State::eCompleted;
     Ensure (fState_ == State::eCompleted);
     Ensure (fBodyBytes_.empty ());
+    return not fAborted_;
 }
 
 void Response::Abort ()
@@ -280,6 +287,7 @@ void Response::Abort ()
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     if (fState_ != State::eCompleted) {
         fState_ = State::eCompleted;
+        fAborted_ = true;
         fUseOutStream_.Abort ();
         fSocket_.Close ();
         fBodyBytes_.clear ();

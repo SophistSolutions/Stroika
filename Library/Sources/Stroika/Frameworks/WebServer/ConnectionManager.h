@@ -66,6 +66,7 @@ namespace Stroika::Frameworks::WebServer {
     class ConnectionManager {
     public:
         /**
+         *  \brief ConnectionManager::Options specify things like default headers, caching policies, binding flags (not bindings), thread count
          */
         struct Options {
 

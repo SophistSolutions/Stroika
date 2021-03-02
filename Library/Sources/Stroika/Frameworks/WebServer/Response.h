@@ -171,6 +171,12 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
+         *  Returns true iff the response has been aborted with a call to response.Abort ()
+         */
+        Common::ReadOnlyProperty<bool> responseAborted;
+
+    public:
+        /**
          *  This cannot be reversed, but puts the response into a mode where it won't emit the body of the response.
          * 
          *  \req not this->responseStatusSent()
@@ -195,10 +201,14 @@ namespace Stroika::Frameworks::WebServer {
          * This signifies that the given request has been handled. Its illegal to write to this request object again, or modify
          * any aspect of it. The state must be ePreparingHeaders or ePreparingBodyAfterHeadersSent and it sets the state to eCompleted.
          * 
-         *  \req not this->responseCompleted ()
+         *  This routime does nothing if it was already completed.
+         * 
+         *  This returns true if the response was ended normally (even if ended prior to this call) and false if the response was
+         *  aborted (abort this->Abort() called) - even if the abort was after the response status was sent.
+         *
          *  \ens this->responseCompleted ()
          */
-        nonvirtual void End ();
+        nonvirtual bool End ();
 
     public:
         /**
@@ -368,13 +378,14 @@ namespace Stroika::Frameworks::WebServer {
 
     private:
         IO::Network::Socket::Ptr                 fSocket_;
-        bool                                     fInChunkedModeCache_{false};
-        State                                    fState_{State::ePreparingHeaders};
+        bool                                     fInChunkedModeCache_:1{false};
+        State                                    fState_:3{State::ePreparingHeaders};
+        bool                                     fHeadMode_ : 1 {false};
+        bool                                     fAborted_ : 1 {false};
         Streams::OutputStream<byte>::Ptr         fUnderlyingOutStream_;
         Streams::BufferedOutputStream<byte>::Ptr fUseOutStream_;
         Characters::CodePage                     fCodePage_{Characters::kCodePage_UTF8};
         vector<byte>                             fBodyBytes_{};
-        bool                                     fHeadMode_{false};
         optional<ETagDigester_>                  fETagDigester_;    // dual use - if present, then flag for autoComputeETag mode as well
     };
 
