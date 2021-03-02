@@ -102,9 +102,8 @@ namespace Stroika::Frameworks::WebServer {
          *          "text/html; charset=UTF-8"
          *
          * codePage.Set ()
-         *      REQUIRES:
-         *          GetState () == ePreparingHeaders
-         *          TotalBytesWritten == 0
+         *      \req this->headersCanBeSet()
+         *      \req TotalBytesWritten == 0
          * 
          * \note - if DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (fContentType_), then
          *         the characterset will be automatically folded into the used contentType. To avoid this, 
@@ -116,21 +115,12 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /*
-         * Note - this refers to an HTTP "Content-Type" - which is really potentially more than just a InternetMediaType, often
-         * with the characterset appended.
+         * \brief inherited Common::Property <optional<InternetMediaType>> contentType;
          *
-         *  \req GetState () == ePreparingHeaders     // since this calls rwHeaders()
+         *  \req this->headersCanBeSet() to set property
          * 
          *  NOTE - if DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (contentType), then
-         *  the characterset will be automatically folded into the used contentType (on WRITES to the property - not reads). To avoid this, 
-         *  use rwHeader().contentType directly.
-         * 
-         *  && OVERRIDES set of contentType property
-         *  @todo DOC / NOTE THIS CLASS OVERRIDES the assignment of contentType to do above logic...
-         * 
-         *      Common::Property <optional<InternetMediaType>> contentType;
-         * 
-         *  \req this->headersCanBeSet() to set property
+         *  the characterset will be automatically folded into the used contentType (on WRITES to the property - not reads).
          */
 
     public:
@@ -183,7 +173,7 @@ namespace Stroika::Frameworks::WebServer {
         /**
          *  This cannot be reversed, but puts the response into a mode where it won't emit the body of the response.
          * 
-         *  \req this->state == State::ePreparingHeaders
+         *  \req not this->responseStatusSent()
          */
         nonvirtual void EnterHeadMode ();
 
@@ -224,8 +214,8 @@ namespace Stroika::Frameworks::WebServer {
         /**
          * Only legal to call if state is ePreparingHeaders. It sets the state to eCompleted.
          *
-         *  \require this->headersCanBeSet
-         *  \ensure this->state() == eComplete
+         *  \req this->headersCanBeSet
+         *  \ens this->responseCompleted ()
          */
         nonvirtual void Redirect (const URI& url);
 
@@ -236,8 +226,8 @@ namespace Stroika::Frameworks::WebServer {
          * 
          *  Note for string and wchar_t* writes, this uses this->codePage to encode the characters.
          * 
-         *  \require (fState_ != State::eCompleted);
-         *  \require ((fState_ == State::ePreparingHeaders) or (fState_ == State::ePreparingBodyBeforeHeadersSent) or (this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked)));
+         *  \req not this->responseCompleted ()
+         *  \req not this->responseStatusSent () or (this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked)))
          */
         nonvirtual void write (const BLOB& b);
         nonvirtual void write (const byte* start, const byte* end);

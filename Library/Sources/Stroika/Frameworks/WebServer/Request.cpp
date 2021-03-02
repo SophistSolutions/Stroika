@@ -41,8 +41,8 @@ using namespace Stroika::Frameworks::WebServer;
 Request::Request (Request&& src)
     : Request{src.fInputStream_}
 {
-    fBodyInputStream_ = src.fBodyInputStream_;
-    fBody_            = src.fBody_;
+    fBodyInputStream_ = move (src.fBodyInputStream_);
+    fBody_            = move (src.fBody_);
 }
 
 Request::Request (const Streams::InputStream<byte>::Ptr& inStream)

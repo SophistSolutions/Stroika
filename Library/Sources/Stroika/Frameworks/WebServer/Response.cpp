@@ -306,8 +306,8 @@ void Response::Redirect (const URI& url)
 void Response::write (const byte* s, const byte* e)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    Require (fState_ != State::eCompleted);
-    Require ((fState_ == State::ePreparingHeaders) or (fState_ == State::ePreparingBodyBeforeHeadersSent) or InChunkedMode_ ());
+    Require (not this->responseCompleted ());
+    Require (not this->responseStatusSent () or InChunkedMode_ ());
     Require (s <= e);
     if (s < e) {
         if (fETagDigester_) {
