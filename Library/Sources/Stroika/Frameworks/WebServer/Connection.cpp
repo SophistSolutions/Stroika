@@ -251,6 +251,11 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
             } break;
         }
 
+        // if we get this far, we always complete processing the message
+#if qDebug
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { Ensure (fMessage_->response ().responseCompleted ()); });
+#endif
+
         if (fDefaultGETResponseHeaders_ and fMessage_->request ().httpMethod () == HTTP::Methods::kGet) {
             fMessage_->rwResponse ().rwHeaders () += *fDefaultGETResponseHeaders_;
         }
