@@ -198,15 +198,18 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         * This signifies that the given request has been handled. Its illegal to write to this request object again, or modify
-         * any aspect of it. The state must be ePreparingHeaders or ePreparingBodyAfterHeadersSent and it sets the state to eCompleted.
+         * This method enforces that the given request has been handled. Its illegal to write to this request object again, or modify
+         * any aspect of it (except for calling Abort on it).
          * 
-         *  This routime does nothing if it was already completed.
+         *  End () does nothing if it was already completed.
          * 
          *  This returns true if the response was ended normally (even if ended prior to this call) and false if the response was
          *  aborted (abort this->Abort() called) - even if the abort was after the response status was sent.
+         * 
+         *  \note An internal failure in End (say because the outgoing socket was closed) will internally mark the Response
+         *        as aborted (and completed), as if a call to Abort() had been done
          *
-         *  \ens this->responseCompleted ()
+         *  \ens this->responseCompleted ()      (even if exiting the routine via exception)
          */
         nonvirtual bool End ();
 

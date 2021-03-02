@@ -270,12 +270,21 @@ bool Response::End ()
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     if (fState_ != State::eCompleted) {
-        if (InChunkedMode_ ()) {
-            constexpr string_view kEndChunk_ = "0\r\n\r\n";
-            fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (kEndChunk_)), reinterpret_cast<const byte*> (Containers::End (kEndChunk_)));
+        try {
+            if (InChunkedMode_ ()) {
+                constexpr string_view kEndChunk_ = "0\r\n\r\n";
+                fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (kEndChunk_)), reinterpret_cast<const byte*> (Containers::End (kEndChunk_)));
+            }
+            Flush ();
+            fState_ = State::eCompleted;
         }
-        Flush ();
-        fState_ = State::eCompleted;
+        catch (...) {
+            DbgTrace (L"Exception during Response::End () automaticaly triggers Response::Abort()");
+            this->Abort ();
+            Ensure (this->responseAborted ());
+            Ensure (this->responseCompleted ());
+            Execution::ReThrow (); // but still rethrow so caller can see failure
+        }
     }
     Ensure (fState_ == State::eCompleted);
     Ensure (fBodyBytes_.empty ());
