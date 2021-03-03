@@ -61,7 +61,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         using ExtrasComparer = Collection<KeyValuePair<String, String>>::SequentialEqualsComparer<>;
         // clang-format off
         return 
-            ExtrasComparer{}(fExtraHeaders_, rhs.fExtraHeaders_)
+            ExtrasComparer{}(lhs.fExtraHeaders_, rhs.fExtraHeaders_)
             and lhs.fCacheControl_ == rhs.fCacheControl_ 
             and lhs.fContentLength_ == rhs.fContentLength_ 
             and lhs.fContentType_ == rhs.fContentType_ 
