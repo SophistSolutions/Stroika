@@ -114,6 +114,17 @@ Headers::Headers ()
               lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
               thisObj->fContentType_ = contentType;
           }}
+    , date{
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+              const Headers*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::date);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              return thisObj->fDate_;
+          },
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& d) {
+              Headers*                                           thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::date);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              thisObj->fDate_ = d ? d->AsUTC () : d;
+          }}
     , cookie{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
               const Headers*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::cookie);
@@ -261,6 +272,7 @@ Headers::Headers (const Headers& src, CopyFlags flags)
     fCacheControl_     = src.fCacheControl_;
     fContentType_      = src.fContentType_;
     fCookieList_       = src.fCookieList_;
+    fDate_             = src.fDate_;
     fHost_             = src.fHost_;
     fIfNoneMatch_      = src.fIfNoneMatch_;
     fSetCookieList_    = src.fSetCookieList_;
@@ -286,6 +298,7 @@ Headers::Headers (Headers&& src, CopyFlags flags)
     fCacheControl_     = move (src.fCacheControl_);
     fContentType_      = move (src.fContentType_);
     fCookieList_       = move (src.fCookieList_);
+    fDate_             = move (src.fDate_);
     fHost_             = move (src.fHost_);
     fIfNoneMatch_      = move (src.fIfNoneMatch_);
     fSetCookieList_    = move (src.fSetCookieList_);
@@ -319,6 +332,7 @@ Headers& Headers::operator= (const Headers& rhs)
         fContentLength_    = rhs.fContentLength_;
         fContentType_      = move (rhs.fContentType_);
         fCookieList_       = move (rhs.fCookieList_);
+        fDate_             = move (rhs.fDate_);
         fETag_             = rhs.fETag_;
         fHost_             = move (rhs.fHost_);
         fIfNoneMatch_      = move (rhs.fIfNoneMatch_);
@@ -339,6 +353,7 @@ Headers& Headers::operator= (Headers&& rhs)
         fContentLength_    = move (rhs.fContentLength_);
         fContentType_      = move (rhs.fContentType_);
         fCookieList_       = move (rhs.fCookieList_);
+        fDate_             = move (rhs.fDate_);
         fETag_             = move (rhs.fETag_);
         fHost_             = move (rhs.fHost_);
         fIfNoneMatch_      = move (rhs.fIfNoneMatch_);
@@ -364,6 +379,9 @@ optional<String> Headers::LookupOne (const String& name) const
     }
     else if (kHeaderNameEqualsComparer (name, HeaderName::kCookie)) {
         return fCookieList_ ? fCookieList_->EncodeForCookieHeader () : optional<String>{};
+    }
+    else if (kHeaderNameEqualsComparer (name, HeaderName::kDate)) {
+        return fDate_ ? fDate_->Format (Time::DateTime::PrintFormat::eRFC1123) : optional<String>{};
     }
     else if (kHeaderNameEqualsComparer (name, HeaderName::kETag)) {
         auto e = this->ETag ();
@@ -471,6 +489,9 @@ void Headers::AddAll (const Headers& headers)
     if (headers.fCookieList_) {
         fCookieList_ = *headers.fCookieList_;
     }
+    if (headers.fDate_) {
+        fDate_ = *headers.fDate_;
+    }
     if (auto et = headers.ETag ()) {
         fETag_ = *et;
     }
@@ -534,6 +555,13 @@ bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const opt
             *nRemoveals = (value == nullopt and fCookieList_ != nullopt) ? 1 : 0;
         }
         fCookieList_ = value ? CookieList::Decode (*value) : optional<CookieList>{};
+    }
+    else if (kHeaderNameEqualsComparer (headerName, HeaderName::kDate)) {
+        if (nRemoveals != nullptr) {
+            *nRemoveals = (value == nullopt and fDate_ != nullopt) ? 1 : 0;
+        }
+        fDate_ = value ? Time::DateTime::Parse (*value, Time::DateTime::ParseFormat::eRFC1123).AsUTC () : optional<Time::DateTime>{};
+        return true;
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kETag)) {
         if (nRemoveals != nullptr) {
@@ -644,6 +672,9 @@ Collection<KeyValuePair<String, String>> Headers::As () const
     }
     if (fCookieList_) {
         results.Add (KeyValuePair<String, String>{HeaderName::kCookie, fCookieList_->EncodeForCookieHeader ()});
+    }
+    if (fDate_) {
+        results.Add (KeyValuePair<String, String>{HeaderName::kDate, fDate_->Format (Time::DateTime::PrintFormat::eRFC1123)});
     }
     if (auto et = ETag ()) {
         results.Add (KeyValuePair<String, String>{HeaderName::kETag, et->As<String> ()});

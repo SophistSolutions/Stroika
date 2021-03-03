@@ -260,6 +260,9 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
             fMessage_->rwResponse ().rwHeaders () += *fDefaultGETResponseHeaders_;
         }
 
+        // https://tools.ietf.org/html/rfc7231#section-7.1.1.2  : ...An origin server MUST send a Date header field in all other cases
+        fMessage_->rwResponse ().rwHeaders ().date = Time::DateTime::Now ();
+
         /*
          *  Now bookkeeping and handling of keepalive headers
          */

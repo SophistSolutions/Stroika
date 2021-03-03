@@ -261,6 +261,16 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
+         *  Property with the optional<DateTime> value of the Date header.
+         *
+         *  \par Example Usage
+         *      \code
+         *      \endcode         
+         */
+        Common::Property<optional<Time::DateTime>> date;
+
+    public:
+        /**
          *  @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cookie
          * 
          *  if the list is empty, this corresponds to no header present
@@ -388,7 +398,8 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         optional<uint64_t>                          fContentLength_;    // must acccess through property to access extended property handlers (except root getter/setter)
         optional<InternetMediaType>                 fContentType_;
         optional<CookieList>                        fCookieList_;       // store optional cuz often missing, and faster init
-        optional<HTTP::ETag>                        fETag_;             // must acccess through property to access extended property handlers (except root getter/setter)
+        optional<Time::DateTime>                    fDate_;
+        optional<HTTP::ETag>                        fETag_; // must acccess through property to access extended property handlers (except root getter/setter)
         optional<String>                            fHost_;
         optional<IfNoneMatch>                       fIfNoneMatch_;
         optional<CookieList>                        fSetCookieList_;    // store optional cuz often missing, and faster init
