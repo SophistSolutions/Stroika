@@ -32,6 +32,7 @@ NamespaceIndentation: All
 PointerAlignment: Left
 ReflowComments: false
 SortIncludes: true
+SortUsingDeclarations: true
 SpaceBeforeParens: Always
 SpacesInAngles: false
 SpacesInParentheses: false
