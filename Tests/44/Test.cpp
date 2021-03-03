@@ -121,6 +121,38 @@ namespace {
                 VerifyTestResult ((h.As<Mapping<String, String>> () == kReference_));
             }
             {
+                using namespace Time;
+                IO::Network::HTTP::Headers h1;
+                // Test cases from https://tools.ietf.org/html/rfc2616#section-3.3.1
+                const DateTime kReferenceTest_{Date{Year (1994), MonthOfYear::eNovember, DayOfMonth (6)}, TimeOfDay{8, 49, 37}, Timezone::kUTC};
+                const String   kTest1_ = L"Sun, 06 Nov 1994 08:49:37 GMT";
+                const String   kTest2_ = L"Sunday, 06-Nov-94 08:49:37 GMT";
+                const String   kTest3_ = L"Sun Nov  6 08:49:37 1994";
+                VerifyTestResult (h1.date == nullopt);
+                VerifyTestResult (h1.LookupOne (HTTP::HeaderName::kDate) == nullopt);
+                h1.date = kReferenceTest_;
+                VerifyTestResult (h1.date == kReferenceTest_);
+                VerifyTestResult (h1.LookupOne (HTTP::HeaderName::kDate) == kTest1_);
+                IO::Network::HTTP::Headers h2 = h1;
+                VerifyTestResult (h2.date == kReferenceTest_);
+                VerifyTestResult (h2.LookupOne (HTTP::HeaderName::kDate) == kTest1_);
+                // now check older formats still work
+                h2.date = nullopt;
+                h2.Set (HTTP::HeaderName::kDate, kTest2_);
+#if 0
+                // see https://stroika.atlassian.net/browse/STK-731 - should support parsing (not writing) older formats too
+                VerifyTestResult (h2.date == kReferenceTest_);
+                VerifyTestResult (h2.LookupOne (HTTP::HeaderName::kDate) == kTest1_);
+#endif
+                h2.date = nullopt;
+                h2.Set (HTTP::HeaderName::kDate, kTest3_);
+#if 0
+                // see https://stroika.atlassian.net/browse/STK-731 - should support parsing (not writing) older formats too
+                VerifyTestResult (h2.date == kReferenceTest_);
+                VerifyTestResult (h2.LookupOne (HTTP::HeaderName::kDate) == kTest1_);
+#endif
+            }
+            {
                 IO::Network::HTTP::Headers h1;
                 ETag                       etag = ETag{L"1-2-3-4"};
                 h1.ETag                         = etag;

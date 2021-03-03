@@ -557,10 +557,20 @@ bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const opt
         fCookieList_ = value ? CookieList::Decode (*value) : optional<CookieList>{};
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kDate)) {
-        if (nRemoveals != nullptr) {
-            *nRemoveals = (value == nullopt and fDate_ != nullopt) ? 1 : 0;
+        optional<Time::DateTime> useDT;
+        // see https://stroika.atlassian.net/browse/STK-731 - should support parsing (not writing) older formats too
+        try {
+            if (value) {
+                useDT = Time::DateTime::Parse (*value, Time::DateTime::ParseFormat::eRFC1123).AsUTC ();
+            }
         }
-        fDate_ = value ? Time::DateTime::Parse (*value, Time::DateTime::ParseFormat::eRFC1123).AsUTC () : optional<Time::DateTime>{};
+        catch (...) {
+            DbgTrace (L"Treating ill-formatted date as missing date header");
+        }
+        if (nRemoveals != nullptr) {
+            *nRemoveals = (useDT == nullopt and fDate_ != nullopt) ? 1 : 0;
+        }
+        fDate_ = useDT ? useDT : optional<Time::DateTime>{};
         return true;
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kETag)) {
