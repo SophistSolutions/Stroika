@@ -34,57 +34,6 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         return As<Collection<KeyValuePair<String, String>>> ();
     }
 #if __cpp_impl_three_way_comparison >= 201907
-    inline strong_ordering Headers::operator<=> (const Headers& rhs) const
-    {
-        using ExtrasComparer = Collection<KeyValuePair<String, String>>::SequentialThreeWayComparer<>;
-#if qCompilerAndStdLib_stdOptionalThreeWayCompare_Buggy
-        if (auto cmp = ExtrasComparer{}(fExtraHeaders_, rhs.fExtraHeaders_); cmp != Common::kEqual) {
-            return cmp;
-        }
-        if (auto cmp = Common::ThreeWayCompare (fCacheControl_, rhs.fCacheControl_); cmp != Common::kEqual) {
-            return cmp;
-        }
-        if (auto cmp = Common::ThreeWayCompare (fContentLength_, rhs.fContentLength_); cmp != Common::kEqual) {
-            return cmp;
-        }
-        if (auto cmp = Common::ThreeWayCompare (fContentType_, rhs.fContentType_); cmp != Common::kEqual) {
-            return cmp;
-        }
-        if (auto cmp = Common::ThreeWayCompare (fDate_, rhs.fDate_); cmp != Common::kEqual) {
-            return cmp;
-        }
-        if (auto cmp = Common::ThreeWayCompare (fETag_, rhs.fETag_); cmp != Common::kEqual) {
-            return cmp;
-        }
-        if (auto cmp = Common::ThreeWayCompare (fHost_, rhs.fHost_); cmp != Common::kEqual) {
-            return cmp;
-        }
-        return Common::ThreeWayCompare (fIfNoneMatch_, rhs.fIfNoneMatch_);
-#else
-        if (auto cmp = ExtrasComparer{}(fExtraHeaders_, rhs.fExtraHeaders_); cmp != 0) {
-            return cmp;
-        }
-        if (auto cmp = fCacheControl_ <=> rhs.fCacheControl_; cmp != 0) {
-            return cmp;
-        }
-        if (auto cmp = fContentLength_ <=> rhs.fContentLength_; cmp != 0) {
-            return cmp;
-        }
-        if (auto cmp = fContentType_ <=> rhs.fContentType_; cmp != 0) {
-            return cmp;
-        }
-        if (auto cmp = fDate_ <=> rhs.fDate_; cmp != 0) {
-            return cmp;
-        }
-        if (auto cmp = fETag_ <=> rhs.fETag_; cmp != 0) {
-            return cmp;
-        }
-        if (auto cmp = fHost_ <=> rhs.fHost_; cmp != 0) {
-            return cmp;
-        }
-        return fIfNoneMatch_ <=> rhs.fIfNoneMatch_;
-#endif
-    }
     inline bool Headers::operator== (const Headers& rhs) const
     {
         using ExtrasComparer = Collection<KeyValuePair<String, String>>::SequentialEqualsComparer<>;
@@ -110,6 +59,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     inline bool operator== (const Headers& lhs, const Headers& rhs)
     {
         using ExtrasComparer = Collection<KeyValuePair<String, String>>::SequentialEqualsComparer<>;
+        // clang-format off
         return 
             ExtrasComparer{}(fExtraHeaders_, rhs.fExtraHeaders_)
             and lhs.fCacheControl_ == rhs.fCacheControl_ 
@@ -124,6 +74,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
             and lhs.fTransferEncoding_ == rhs.fTransferEncoding_
             and lhs.fVary_ == rhs.fVary_
             ;
+        // clang-format on
     }
     inline bool operator!= (const Headers& lhs, const Headers& rhs)
     {

@@ -377,7 +377,6 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     public:
         /**
          */
-        nonvirtual strong_ordering operator<=> (const Headers& rhs) const;
         nonvirtual bool            operator== (const Headers& rhs) const;
 #endif
 

@@ -110,16 +110,30 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  @see Characters::ToString ();
          */
         nonvirtual Characters::String ToString () const;
+
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        nonvirtual bool            operator== (const Cookie& rhs) const  = default;
+#endif
     };
-    
+
+#if __cpp_impl_three_way_comparison < 201907
+    bool operator== (const Cookie& lhs, const Cookie& rhs);
+    bool operator!= (const Cookie& lhs, const Cookie& rhs);
+#endif
+
 
     /**
-     *  This corresponds to the value of the Cookie in an HTTP Request header
+     *  This corresponds to the value of the Cookie, or Set-Cookie in an HTTP Request header
      *  @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cookie
      *  @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
      */
     class CookieList {
     public:
+        /**
+         */
         CookieList ();
         CookieList (const CookieList& src);
         CookieList (CookieList&& src);
@@ -131,11 +145,13 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
+         *  This representation omits the cookie attributes.
          */
         Common::Property<Mapping<String, String>> cookies;     // key-value-pair, as would appear in HTTP Cookie: header
 
     public:
         /**
+         *  This representation includes any cookie attributes.
          */
         Common::Property<Collection<Cookie>> cookieDetails; // key-value-pair, as would appear in HTTP Cookie: header
     
@@ -153,9 +169,32 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          */
         static CookieList Decode (const String& cookieValueArg);
 
+    public:
+        /**
+         *  @see Characters::ToString ();
+         */
+        nonvirtual Characters::String ToString () const;
+
+#if __cpp_impl_three_way_comparison >= 201907
+    public:
+        /**
+         */
+        nonvirtual bool            operator== (const CookieList& rhs) const;
+#endif
+
+#if __cpp_impl_three_way_comparison < 201907
+    private:
+        friend bool operator== (const CookieList& lhs, const CookieList& rhs);
+        friend bool operator!= (const CookieList& lhs, const CookieList& rhs);
+#endif
     private:
         Collection<Cookie> fCookieDetails_; // redundant representation
     };
+
+#if __cpp_impl_three_way_comparison < 201907
+    bool operator== (const CookieList& lhs, const CookieList& rhs);
+    bool operator!= (const CookieList& lhs, const CookieList& rhs);
+#endif
 
 }
 

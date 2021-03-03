@@ -258,3 +258,8 @@ CookieList CookieList::Decode (const String& cookieValueArg)
     }
     return results;
 }
+
+String HTTP::CookieList::ToString () const
+{
+    return EncodeForCookieHeader ();
+}
