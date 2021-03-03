@@ -56,13 +56,13 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 #if __cpp_impl_three_way_comparison >= 201907
     inline bool CookieList::operator== (const CookieList& rhs) const
     {
-        return Traversal::Iterable<Cookie>::SequentialEqualsComparer{}(fCookieDetails_, rhs.fCookieDetails_);
+        return Traversal::Iterable<Cookie>::SequentialEqualsComparer<>{}(fCookieDetails_, rhs.fCookieDetails_);
     }
 #endif
 #if __cpp_impl_three_way_comparison < 201907
     inline bool operator== (const CookieList& lhs, const CookieList& rhs)
     {
-        return Traversal::Iterable<Cookie>::SequentialEqualsComparer{}(lhs.fCookieDetails_, rhs.fCookieDetails_);
+        return Traversal::Iterable<Cookie>::SequentialEqualsComparer<>{}(lhs.fCookieDetails_, rhs.fCookieDetails_);
     }
     inline bool operator!= (const CookieList& lhs, const CookieList& rhs)
     {
