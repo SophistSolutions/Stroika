@@ -235,17 +235,17 @@ namespace Stroika::Foundation::Time {
          *
          *  \note   Configuration::DefaultNames<> supported
          */
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
         enum class ParseFormat : uint8_t {
             eCurrentLocale,
             eISO8601,
             eJavascript [[deprecated ("Since Stroika 2.1b10 - use kFormatMonthDayYear")]],
 
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
             Stroika_Define_Enum_Bounds (eCurrentLocale, eJavascript)
-            DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
-            DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
         };
+        DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 
     public:
         /**
