@@ -262,6 +262,8 @@ namespace Stroika::Foundation::Configuration {
             {Stroika::Foundation::Time::MonthOfYear::eNovember, L"November"},
             {Stroika::Foundation::Time::MonthOfYear::eDecember, L"December"},
         }}};
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
 #endif
@@ -271,7 +273,11 @@ namespace Stroika::Foundation::Configuration {
             {Stroika::Foundation::Time::Date::ParseFormat::eISO8601, L"ISO-8601"},
             {Stroika::Foundation::Time::Date::ParseFormat::eJavascript, L"Javascript"},
         }}};
+    DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
 #endif
@@ -282,6 +288,8 @@ namespace Stroika::Foundation::Configuration {
             {Stroika::Foundation::Time::Date::PrintFormat::eJavascript, L"Javascript"},
             {Stroika::Foundation::Time::Date::PrintFormat::eCurrentLocale_WithZerosStripped, L"Current-Locale-With-Zeros-Stripped"},
         }}};
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
 
 }
 

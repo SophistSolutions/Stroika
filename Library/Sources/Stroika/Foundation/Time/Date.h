@@ -238,16 +238,21 @@ namespace Stroika::Foundation::Time {
         enum class ParseFormat : uint8_t {
             eCurrentLocale,
             eISO8601,
-            eJavascript,
+            eJavascript [[deprecated ("Since Stroika 2.1b10 - use kFormatMonthDayYear")]],
 
+            DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
             Stroika_Define_Enum_Bounds (eCurrentLocale, eJavascript)
+                DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
         };
 
     public:
         /**
+         *  \brief Y-M-D format - locale indpenendent, and ISO-8601 date format standard
+         *
          *  \note sometimes represented as %F (see https://en.cppreference.com/w/cpp/chrono/c/wcsftime), but that's not supported in https://en.cppreference.com/w/cpp/locale/time_get/get.
          *        so equivilent to %Y-%m-%d
          *  \note this is LOCALE-INDEPENDENT
+         *  \see kFormatMonthDayYear
          */
         static constexpr wstring_view kISO8601Format         = L"%Y-%m-%d"sv;
 
@@ -262,6 +267,15 @@ namespace Stroika::Foundation::Time {
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get 
          */
         static constexpr wstring_view kLocaleStandardAlternateFormat         = L"%Ex"sv;
+
+    public:
+        /**
+         *  \brief classic (american) month-day-year format, but unlike %D, this uses %Y, so the 4-digit form of year
+         * 
+         *  \note https://en.cppreference.com/w/cpp/locale/time_get/get 
+         *  \see kISO8601Format
+         */
+        static constexpr wstring_view kFormatMonthDayYear = L"%m/%d/%Y"sv;
 
     public:
         /**
@@ -352,7 +366,7 @@ namespace Stroika::Foundation::Time {
         enum class PrintFormat : uint8_t {
             eCurrentLocale,
             eISO8601,
-            eJavascript,
+            eJavascript [[deprecated ("Since Stroika 2.1b10 - use kFormatMonthDayYear")]],
             eCurrentLocale_WithZerosStripped,
 
             eDEFAULT = eCurrentLocale_WithZerosStripped,

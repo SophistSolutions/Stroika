@@ -30,50 +30,47 @@ using namespace Stroika::Foundation::Time;
 using Stroika::Foundation::Debug::TraceContextBumper;
 
 namespace {
-    void TestDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ (int tm_Year, int tm_Mon, int tm_mDay, const locale& l)
+    void Test_0_AssumptionsAboutUnderlyingTimeLocaleLibrary_ ()
     {
-        ::tm origDateTM{};
-        origDateTM.tm_year = tm_Year;
-        origDateTM.tm_mon  = tm_Mon;
-        origDateTM.tm_mday = tm_mDay;
+        TraceContextBumper ctx{"Test_0_AssumptionsAboutUnderlyingTimeLocaleLibrary_"};
+        auto               testDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ = [] (int tm_Year, int tm_Mon, int tm_mDay, const locale& l) {
+            DbgTrace (L"year=%d, tm_Mon=%d, tm_mDay=%d", tm_Year, tm_Mon, tm_mDay);
+            ::tm origDateTM{};
+            origDateTM.tm_year = tm_Year;
+            origDateTM.tm_mon  = tm_Mon;
+            origDateTM.tm_mday = tm_mDay;
 
-        // const wchar_t kPattern[] = L"%x"; // http://www.cplusplus.com/reference/ctime/strftime/ ... (%x is date representation, ...the specifiers marked with an asterisk (*) are locale-dependent)
-        // const wchar_t kPattern[] = L"%c"; // http://www.cplusplus.com/reference/ctime/strftime/ ... (%x is date representation, ...the specifiers marked with an asterisk (*) are locale-dependent)
-        const wchar_t kPattern[] = L"%Y-%m-%d"; // http://www.cplusplus.com/reference/ctime/strftime/ ... (%x is date representation, ...the specifiers marked with an asterisk (*) are locale-dependent)
+            //const wchar_t kPattern[] = L"%x";
+            const wchar_t kPattern[] = L"%Y-%m-%d";
 
-        wstring tmpStringRep;
-        {
-            const time_put<wchar_t>& tmput = use_facet<time_put<wchar_t>> (l);
-            tm                       when  = origDateTM;
-            wostringstream           oss;
-            tmput.put (oss, oss, ' ', &when, begin (kPattern), begin (kPattern) + ::wcslen (kPattern));
-            tmpStringRep = oss.str ();
-        }
-        tm resultTM{};
-        {
-            const time_get<wchar_t>&     tmget = use_facet<time_get<wchar_t>> (l);
-            ios::iostate                 state = ios::goodbit;
-            wistringstream               iss (tmpStringRep);
-            istreambuf_iterator<wchar_t> itbegin (iss); // beginning of iss
-            istreambuf_iterator<wchar_t> itend;         // end-of-stream
-            tmget.get (itbegin, itend, iss, state, &resultTM, std::begin (kPattern), std::begin (kPattern) + ::wcslen (kPattern));
-        }
-        Assert (origDateTM.tm_year == resultTM.tm_year);
-        Assert (origDateTM.tm_mon == resultTM.tm_mon);
-        Assert (origDateTM.tm_mday == resultTM.tm_mday);
-    }
-    void TestDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ (Date d, const locale& l)
-    {
-        struct tm t = d.As<::tm> ();
-        // skip test if year < 0 cuz VS.net 2k13 asserts out - not sure if they are right or not?
-        if (t.tm_year >= 0) {
-            TestDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ (t.tm_year, t.tm_mon, t.tm_mday, l);
-        }
-    }
-    void Test_0_basicTM_ ()
-    {
-        TestDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ (121, 2, 4, locale::classic ());
-        TestDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ (105, 5, 1, locale::classic ());
+            wstring tmpStringRep;
+            {
+                const time_put<wchar_t>& tmput = use_facet<time_put<wchar_t>> (l);
+                tm                       when  = origDateTM;
+                wostringstream           oss;
+                tmput.put (oss, oss, ' ', &when, begin (kPattern), begin (kPattern) + ::wcslen (kPattern));
+                tmpStringRep = oss.str ();
+            }
+            DbgTrace (L"tmpStringRep=%s", tmpStringRep.c_str ());
+            tm resultTM{};
+            {
+                const time_get<wchar_t>&     tmget = use_facet<time_get<wchar_t>> (l);
+                ios::iostate                 state = ios::goodbit;
+                wistringstream               iss (tmpStringRep);
+                istreambuf_iterator<wchar_t> itbegin (iss); // beginning of iss
+                istreambuf_iterator<wchar_t> itend;         // end-of-stream
+                tmget.get (itbegin, itend, iss, state, &resultTM, std::begin (kPattern), std::begin (kPattern) + ::wcslen (kPattern));
+            }
+            DbgTrace (L"resultTM.tm_year=%d", resultTM.tm_year);
+            Assert (origDateTM.tm_year == resultTM.tm_year);
+            Assert (origDateTM.tm_mon == resultTM.tm_mon);
+            Assert (origDateTM.tm_mday == resultTM.tm_mday);
+        };
+        // this test doesnt make much sense - revisit!!! --LGP 2021-03-05
+        testDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ (12, 5, 1, locale::classic ());
+        testDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ (-148, 10, 19, locale::classic ());
+        testDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ (121, 2, 4, locale::classic ());
+        testDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ (105, 5, 1, locale::classic ());
     }
 }
 
@@ -247,7 +244,6 @@ namespace {
         }
         try {
             Date d = Date::Parse (L"09/14/1752", locale::classic ());
-            TestDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ (d, locale::classic ());
             VerifyTestResult (d == Date::kMin);
             VerifyTestResult (d.Format (Date::PrintFormat::eISO8601) == L"1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
@@ -860,7 +856,7 @@ namespace {
     void DoRegressionTests_ ()
     {
         TraceContextBumper ctx{"DoRegressionTests_"};
-        Test_0_basicTM_ ();
+        Test_0_AssumptionsAboutUnderlyingTimeLocaleLibrary_ ();
         Test_1_TestTickCountGrowsMonotonically_ ();
         Test_2_TestTimeOfDay_ ();
         Test_3_TestDate_ ();
