@@ -228,10 +228,10 @@ namespace Stroika::Foundation::Time {
         return Date{UINT_MAX - 1};
     }
 #if !qDebug
-    inline void RequireNotKnownLocaleDependent_ ([[maybe_unused]] const String& formatString)
+    inline void Date::RequireNotKnownLocaleDependent_ ([[maybe_unused]] const String& formatString)
     {
     }
-    inline void RequireNotKnownLocaleDependent_ ([[maybe_unused]] const Traversal::Iterable<String>& formatStrings)
+    inline void Date::RequireNotKnownLocaleDependent_ ([[maybe_unused]] const Traversal::Iterable<String>& formatStrings)
     {
     }
 #endif
