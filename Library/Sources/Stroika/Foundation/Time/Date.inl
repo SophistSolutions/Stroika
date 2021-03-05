@@ -227,7 +227,7 @@ namespace Stroika::Foundation::Time {
     {
         return Date{UINT_MAX - 1};
     }
-#if qDebug
+#if !qDebug
     inline void RequireNotKnownLocaleDependent_ ([[maybe_unused]] const String& formatString)
     {
     }
@@ -235,6 +235,7 @@ namespace Stroika::Foundation::Time {
     {
     }
 #endif
+
 
 #if __cpp_impl_three_way_comparison < 201907
     /*
