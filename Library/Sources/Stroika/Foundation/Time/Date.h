@@ -240,7 +240,7 @@ namespace Stroika::Foundation::Time {
         enum class ParseFormat : uint8_t {
             eCurrentLocale,
             eISO8601,
-            eJavascript [[deprecated ("Since Stroika 2.1b10 - use kFormatMonthDayYear")]],
+            eJavascript [[deprecated ("Since Stroika 2.1b10 - use kMonthDayYearFormat")]],
 
             Stroika_Define_Enum_Bounds (eCurrentLocale, eJavascript)
         };
@@ -254,7 +254,7 @@ namespace Stroika::Foundation::Time {
          *  \note sometimes represented as %F (see https://en.cppreference.com/w/cpp/chrono/c/wcsftime), but that's not supported in https://en.cppreference.com/w/cpp/locale/time_get/get.
          *        so equivilent to %Y-%m-%d
          *  \note this is LOCALE-INDEPENDENT
-         *  \see kFormatMonthDayYear
+         *  \see kMonthDayYearFormat
          */
         static constexpr wstring_view kISO8601Format         = L"%Y-%m-%d"sv;
 
@@ -277,7 +277,7 @@ namespace Stroika::Foundation::Time {
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get 
          *  \see kISO8601Format
          */
-        static constexpr wstring_view kFormatMonthDayYear = L"%m/%d/%Y"sv;
+        static constexpr wstring_view kMonthDayYearFormat = L"%m/%d/%Y"sv;
 
     public:
         /**
@@ -376,7 +376,7 @@ namespace Stroika::Foundation::Time {
         enum class PrintFormat : uint8_t {
             eCurrentLocale,
             eISO8601,
-            eJavascript [[deprecated ("Since Stroika 2.1b10 - use kFormatMonthDayYear")]],
+            eJavascript [[deprecated ("Since Stroika 2.1b10 - use kMonthDayYearFormat")]],
             eCurrentLocale_WithZerosStripped,
 
             eDEFAULT = eCurrentLocale_WithZerosStripped,
@@ -497,7 +497,7 @@ namespace Stroika::Foundation::Time {
     inline const Traversal::Iterable<String> Date::kDefaultParseFormats{
         kLocaleStandardFormat,              // x (kLocaleStandardFormat) parses the locale's standard date representation
         kLocaleStandardAlternateFormat,     // Ex (kLocaleStandardAlternateFormat) parses the locale's alternative date representation, e.g. expecting 平成23年 (year Heisei 23) instead of 2011年 (year 2011) in ja_JP locale
-        L"%D"sv,                            // equivalent to "%m / %d / %y "
+        kMonthDayYearFormat,                // Before Stroika 2.1b10, this was L"%D" (=="%m/%d/%y) which is hte 2-digit year
         kISO8601Format,
     };
 

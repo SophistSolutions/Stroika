@@ -108,7 +108,7 @@ Date Date::Parse (const String& rep, ParseFormat pf)
             };
 #endif
             try {
-                auto r = Parse (rep, kFormatMonthDayYear);
+                auto r = Parse (rep, kMonthDayYearFormat);
                 Assert (legacy () == r);
                 return r;
             }
@@ -257,7 +257,7 @@ String Date::Format (PrintFormat pf) const
                 return buf;
             };
 #endif
-            auto r = Format (Date::kFormatMonthDayYear);
+            auto r = Format (Date::kMonthDayYearFormat);
             Assert (r == legacy ());
             return r;
         } break;
