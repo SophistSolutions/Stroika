@@ -438,6 +438,12 @@ DayOfWeek Date::GetDayOfWeek () const
     return static_cast<DayOfWeek> (R (targetDayOfWeek, 7) + static_cast<unsigned int> (DayOfWeek::eSunday));
 }
 
+template <>
+::tm Date::As () const
+{
+    return Date2TM_ (*this);
+}
+
 /*
  * Convert a Julian day number to its corresponding Gregorian calendar
  * date.  Algorithm 199 from Communications of the ACM, Volume 6, No. 8,

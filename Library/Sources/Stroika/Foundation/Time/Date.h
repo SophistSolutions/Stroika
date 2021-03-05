@@ -430,6 +430,14 @@ namespace Stroika::Foundation::Time {
         constexpr strong_ordering operator<=> (const Date& rhs) const = default;
 #endif
 
+    public:
+        /**
+         * Defined for
+         *      struct tm
+         */
+        template <typename T>
+        nonvirtual T As () const;
+
     private:
         constexpr static JulianRepType jday_ (MonthOfYear month, DayOfMonth day, Year year);
 
@@ -442,6 +450,10 @@ namespace Stroika::Foundation::Time {
     private:
         JulianRepType fJulianDateRep_;
     };
+
+    template <>
+    ::tm Date::As () const;
+
 
     class Date::FormatException : public Execution::RuntimeErrorException<> {
     public:
