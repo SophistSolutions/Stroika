@@ -107,7 +107,7 @@ Date Date::Parse (const String& rep, ParseFormat pf)
             };
 #endif
             try {
-                auto r = Parse (rep, locale::classic (), Traversal::Iterable<String>{kFormatMonthDayYear});
+                auto r = Parse (rep, kFormatMonthDayYear);
                 Assert (legacy () == r);
                 return r;
             }
