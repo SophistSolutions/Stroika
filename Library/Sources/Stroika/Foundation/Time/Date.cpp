@@ -33,10 +33,14 @@ using namespace Stroika::Foundation::Time;
 using namespace Time;
 
 namespace {
-    ::tm Date2TM_ (const Date& d)
+    constexpr int kTM_Year_RelativeToYear_{1900}; // see https://man7.org/linux/man-pages/man3/ctime.3.html
+}
+
+namespace {
+    inline ::tm Date2TM_ (const Date& d)
     {
         ::tm tm{};
-        tm.tm_year = static_cast<int> (d.GetYear ()) - 1900;
+        tm.tm_year = static_cast<int> (d.GetYear ()) - kTM_Year_RelativeToYear_;
         tm.tm_mon  = static_cast<int> (d.GetMonth ()) - 1;
         tm.tm_mday = static_cast<int> (d.GetDayOfMonth ());
         return tm;
@@ -329,7 +333,7 @@ String Date::Format (const locale& l, const String& formatPattern) const
 
 Date Date::AsDate_ (const ::tm& when)
 {
-    return Date{Safe_jday_ (MonthOfYear (when.tm_mon + 1), DayOfMonth (when.tm_mday), Year (when.tm_year + 1900))};
+    return Date{Safe_jday_ (MonthOfYear (when.tm_mon + 1), DayOfMonth (when.tm_mday), Year (when.tm_year + kTM_Year_RelativeToYear_))};
 }
 
 Date Date::AddDays (SignedJulianRepType dayCount) const
