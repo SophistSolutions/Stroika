@@ -122,16 +122,6 @@ Date::FormatException::FormatException ()
  *********************************** Date ***************************************
  ********************************************************************************
  */
-
-//x parses the locale's standard date representation
-// all Ex parses the locale's alternative date representation, e.g. expecting 平成23年 (year Heisei 23) instead of 2011年 (year 2011) in ja_JP localeconst Traversal::Iterable<String> Date::kDefaultParseFormats{
-const Traversal::Iterable<String> Date::kDefaultParseFormats{
-    kLocaleStandardFormat,
-    kLocaleStandardAlternateFormat,
-    L"%D"sv,
-    kISO8601Format,
-};
-
 Date Date::Parse (const String& rep, ParseFormat pf)
 {
     // NB: if rep.empty() this will always throw, but handled in each case below

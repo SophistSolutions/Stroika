@@ -264,8 +264,8 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  Default formats used by Date::Parse () to parse time strings. The first of these - %X, is
-         *  the locale-specific time format.
+         *  Default formats used by Date::Parse () to parse time strings. The first of these - kLocaleStandardFormat, is
+         *  the locale-specific date format.
          */
         static const Traversal::Iterable<String> kDefaultParseFormats;
 
@@ -453,6 +453,13 @@ namespace Stroika::Foundation::Time {
         static const FormatException kThe;
     };
     inline const Date::FormatException Date::FormatException::kThe;
+    inline const Traversal::Iterable<String> Date::kDefaultParseFormats{
+        kLocaleStandardFormat,              // x (kLocaleStandardFormat) parses the locale's standard date representation
+        kLocaleStandardAlternateFormat,     // Ex (kLocaleStandardAlternateFormat) parses the locale's alternative date representation, e.g. expecting 平成23年 (year Heisei 23) instead of 2011年 (year 2011) in ja_JP locale
+        L"%D"sv,                            // equivalent to "%m / %d / %y "
+        kISO8601Format,
+    };
+
 
 #if __cpp_impl_three_way_comparison < 201907
     constexpr bool operator< (const Date& lhs, const Date& rhs);
