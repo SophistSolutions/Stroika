@@ -447,7 +447,7 @@ DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-decla
 void IO::FileSystem::Ptr::RemoveDirectory (const filesystem::path& directory, RemoveDirectoryPolicy policy)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (L"IO::FileSystem::Ptr::RemoveDirectory", L"directory='%s', policy=%s", directory.c_str (), Characters::ToString (policy).c_str ());
+    Debug::TraceContextBumper ctx{L"IO::FileSystem::Ptr::RemoveDirectory", L"directory='%s', policy=%s", directory.c_str (), Characters::ToString (policy).c_str ()};
 #endif
     bool triedRMRF{false};
 Again:
