@@ -265,8 +265,8 @@ namespace {
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
-            VerifyTestResult (Date::Parse (L"11/1/2001", Date::ParseFormat::eJavascript) == Date (Year (2001), Time::MonthOfYear::eNovember, DayOfMonth (1)));
-            VerifyTestResult (Date::Parse (L"11/1/2001", Date::ParseFormat::eJavascript).Format (Date::PrintFormat::eJavascript) == L"11/01/2001");
+            VerifyTestResult (Date::Parse (L"11/1/2001", Date::kFormatMonthDayYear) == Date (Year (2001), Time::MonthOfYear::eNovember, DayOfMonth (1)));
+            VerifyTestResult (Date::Parse (L"11/1/2001", Date::kFormatMonthDayYear).Format (Date::kFormatMonthDayYear) == L"11/01/2001");
         }
         {
             VerifyTestResult (Date::kMin < Date::kMax);
