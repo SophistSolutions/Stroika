@@ -124,47 +124,41 @@ Date Date::Parse_ (const String& rep, const locale& l, const Traversal::Iterable
 
     for (const auto& formatPattern : formatPatterns) {
         errState = ios::goodbit;
-        wistringstream iss (wRep);
+        wistringstream iss{wRep};
         if constexpr (kRequireImbueToUseFacet_) {
             iss.imbue (l);
         }
-        istreambuf_iterator<wchar_t> itbegin (iss); // beginning of iss
-        istreambuf_iterator<wchar_t> itend;         // end-of-stream
+        istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
+        istreambuf_iterator<wchar_t> itend;        // end-of-stream
 
         istreambuf_iterator<wchar_t> i;
         i = tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
 #if qCompilerAndStdLib_std_get_time_pctx_Buggy
-        if ((errState & ios::badbit) or (errState & ios::failbit)) {
-            if (formatPattern == kLocaleStandardFormat) {
-                errState = ios::goodbit;
-                iss      = wistringstream (wRep);
-                itbegin  = istreambuf_iterator<wchar_t> (iss);
-                itend    = istreambuf_iterator<wchar_t> ();
-                if constexpr (kRequireImbueToUseFacet_) {
-                    iss.imbue (l);
-                }
-                i = tmget.get_date (itbegin, itend, iss, errState, &when);
+        // as of VS2k 16.9.0, can no longer check (errState & ios::badbit) or (errState & ios::failbit) - and must always do this
+        if (l == locale::classic () and formatPattern == kLocaleStandardFormat) {
+            errState = ios::goodbit;
+            iss      = wistringstream{wRep};
+            itbegin  = istreambuf_iterator<wchar_t>{iss};
+            itend    = istreambuf_iterator<wchar_t>{};
+            if constexpr (kRequireImbueToUseFacet_) {
+                iss.imbue (l);
             }
+            i = tmget.get_date (itbegin, itend, iss, errState, &when);
         }
 #endif
-        // clang-format off
-        if ((errState & ios::badbit) or (errState & ios::failbit))   [[UNLIKELY_ATTR]] {
+        if ((errState & ios::badbit) or (errState & ios::failbit)) [[UNLIKELY_ATTR]] {
             continue;
-        } 
-        else  {
+        }
+        else {
             if (consumedCharsInStringUpTo != nullptr) {
                 *consumedCharsInStringUpTo = ComputeIdx_ (itbegin, i);
             }
             break;
         }
-        // clang-format on
     }
-    // clang-format off
     if ((errState & ios::badbit) or (errState & ios::failbit)) [[UNLIKELY_ATTR]] {
         Execution::Throw (FormatException::kThe);
     }
-    // clang-format on
-
     return AsDate_ (when);
 }
 
@@ -256,10 +250,6 @@ String Date::Format (const String& formatPattern) const
 
 String Date::Format (const locale& l, const String& formatPattern) const
 {
-#if qDebug && qDo_Aggressive_InternalChekcingOfUnderlyingLibrary_To_Debug_Locale_Date_Issues_
-    TestDateLocaleRoundTripsForDateWithThisLocaleLib_ (AsDate_ (when), l);
-#endif
-
     // http://new.cplusplus.com/reference/std/locale/time_put/put/
     ::tm                     when  = Date2TM_ (*this);
     const time_put<wchar_t>& tmput = use_facet<time_put<wchar_t>> (l);
