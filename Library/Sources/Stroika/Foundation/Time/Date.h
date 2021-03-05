@@ -247,6 +247,7 @@ namespace Stroika::Foundation::Time {
         /**
          *  \note sometimes represented as %F (see https://en.cppreference.com/w/cpp/chrono/c/wcsftime), but that's not supported in https://en.cppreference.com/w/cpp/locale/time_get/get.
          *        so equivilent to %Y-%m-%d
+         *  \note this is LOCALE-INDEPENDENT
          */
         static constexpr wstring_view kISO8601Format         = L"%Y-%m-%d"sv;
 

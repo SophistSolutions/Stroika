@@ -88,6 +88,7 @@ Date Date::Parse (const String& rep, ParseFormat pf)
                 Ensure (result == Parse (rep, locale::classic (), {kISO8601Format}));
                 return result;
             }
+            Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
         } break;
         case ParseFormat::eJavascript: {
             int year  = 0;
@@ -99,6 +100,7 @@ Date Date::Parse (const String& rep, ParseFormat pf)
             if (nItems == 3) {
                 return Date{Safe_jday_ (MonthOfYear (month), DayOfMonth (day), Year (year))};
             }
+            Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
         } break;
     }
     AssertNotReached ();
@@ -107,7 +109,7 @@ Date Date::Parse (const String& rep, ParseFormat pf)
 
 Date Date::Parse_ (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns, size_t* consumedCharsInStringUpTo)
 {
-    auto ComputeIdx_ = [] (const istreambuf_iterator<wchar_t>& s, const istreambuf_iterator<wchar_t>& c) -> size_t {
+    auto computeIdx = [] (const istreambuf_iterator<wchar_t>& s, const istreambuf_iterator<wchar_t>& c) -> size_t {
         size_t result = 0;
         for (auto i = s; i != c; ++i, ++result)
             ;
@@ -151,7 +153,7 @@ Date Date::Parse_ (const String& rep, const locale& l, const Traversal::Iterable
         }
         else {
             if (consumedCharsInStringUpTo != nullptr) {
-                *consumedCharsInStringUpTo = ComputeIdx_ (itbegin, i);
+                *consumedCharsInStringUpTo = computeIdx (itbegin, i);
             }
             break;
         }
