@@ -28,9 +28,9 @@
 #define kStrokia_Foundation_Configuration_cplusplus_17 201703
 
 /**
- *  WAG
+ *  https://github.com/cplusplus/draft/releases/download/n4868/n4868.pdf (search for __cplusplus)
  */
-#define kStrokia_Foundation_Configuration_cplusplus_20 202000
+#define kStrokia_Foundation_Configuration_cplusplus_20 202002L
 
 /*
  *******************************************************************
