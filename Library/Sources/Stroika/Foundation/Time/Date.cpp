@@ -232,9 +232,10 @@ String Date::Format (PrintFormat pf) const
             Ensure (buf == Format (locale::classic (), kISO8601Format));
             return buf;
         } break;
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
         case PrintFormat::eJavascript: {
+#if qDebug
             auto legacy = [&] () -> String {
                 /*
                  *  From
@@ -255,12 +256,13 @@ String Date::Format (PrintFormat pf) const
                 Verify (::swprintf (buf, NEltsOf (buf), L"%02d/%02d/%04d", m, d, y) == 10);
                 return buf;
             };
+#endif
             auto r = Format (Date::kFormatMonthDayYear);
             Assert (r == legacy ());
             return r;
         } break;
-        DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
     }
     AssertNotReached ();
     return String{};
