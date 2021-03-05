@@ -240,9 +240,11 @@ namespace Stroika::Foundation::Time {
             eISO8601,
             eJavascript [[deprecated ("Since Stroika 2.1b10 - use kFormatMonthDayYear")]],
 
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
             DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
             Stroika_Define_Enum_Bounds (eCurrentLocale, eJavascript)
-                DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
+            DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
+            DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
         };
 
     public:
@@ -294,12 +296,20 @@ namespace Stroika::Foundation::Time {
          *  \note an empty string produces BadFormat exception (whereas before 2.1d11 it produced an empty Date object (Date {}).
          *
          *  \see https://en.cppreference.com/w/cpp/locale/time_get/get for allowed formatPatterns
+         * 
+         *  \note when calling Parse with a format string and no locale, it is REQUIRED that the format strings be locale-independent
          */
         static Date Parse (const String& rep, ParseFormat pf);
         static Date Parse (const String& rep, const locale& l);
         static Date Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns);
         static Date Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns, size_t* consumedCharsInStringUpTo);
         static Date Parse (const String& rep, const locale& l, size_t* consumedCharsInStringUpTo);
+        static Date Parse (const String& rep, const locale& l, const String& formatPattern);
+        static Date Parse (const String& rep, const locale& l, const String& formatPattern, size_t* consumedCharsInStringUpTo);
+        static Date Parse (const String& rep, const Traversal::Iterable<String>& formatPatterns);
+        static Date Parse (const String& rep, const Traversal::Iterable<String>& formatPatterns, size_t* consumedCharsInStringUpTo);
+        static Date Parse (const String& rep, const String& formatPattern);
+        static Date Parse (const String& rep, const String& formatPattern, size_t* consumedCharsInStringUpTo);
 
     private:
         static Date Parse_ (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns, size_t* consumedCharsInStringUpTo);
@@ -461,6 +471,10 @@ namespace Stroika::Foundation::Time {
 
     private:
         static Date AsDate_ (const ::tm& when);
+
+    private:
+        nonvirtual static void RequireNotKnownLocaleDependent_ (const String& formatString);
+        nonvirtual static void RequireNotKnownLocaleDependent_ (const Traversal::Iterable < String >& formatStrings);
 
     private:
         JulianRepType fJulianDateRep_;

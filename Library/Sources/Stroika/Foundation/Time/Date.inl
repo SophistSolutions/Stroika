@@ -155,6 +155,37 @@ namespace Stroika::Foundation::Time {
         RequireNotNull (consumedCharsInStringUpTo);
         return Date::Parse_ (rep, l, kDefaultParseFormats, consumedCharsInStringUpTo);
     }
+    inline Date Date::Parse (const String& rep, const locale& l, const String& formatPattern)
+    {
+        return Date::Parse_ (rep, l, Traversal::Iterable<String>{formatPattern}, nullptr);
+    }
+    inline Date Date::Parse (const String& rep, const locale& l, const String& formatPattern, size_t* consumedCharsInStringUpTo)
+    {
+        RequireNotNull (consumedCharsInStringUpTo);
+        return Date::Parse_ (rep, l, Traversal::Iterable<String>{formatPattern}, consumedCharsInStringUpTo);
+    }
+    inline Date Date::Parse (const String& rep, const Traversal::Iterable<String>& formatPatterns)
+    {
+        RequireNotKnownLocaleDependent_ (formatPatterns);
+        return Date::Parse_ (rep, locale::classic (), formatPatterns, nullptr);
+    }
+    inline Date Date::Parse (const String& rep, const Traversal::Iterable<String>& formatPatterns, size_t* consumedCharsInStringUpTo)
+    {
+        RequireNotNull (consumedCharsInStringUpTo);
+        RequireNotKnownLocaleDependent_ (formatPatterns);
+        return Date::Parse_ (rep, locale::classic (), formatPatterns, consumedCharsInStringUpTo);
+    }
+    inline Date Date::Parse (const String& rep, const String& formatPattern)
+    {
+        RequireNotKnownLocaleDependent_ (formatPattern);
+        return Date::Parse_ (rep, locale::classic (), Traversal::Iterable<String>{formatPattern}, nullptr);
+    }
+    inline Date Date::Parse (const String& rep, const String& formatPattern, size_t* consumedCharsInStringUpTo)
+    {
+        RequireNotNull (consumedCharsInStringUpTo);
+        RequireNotKnownLocaleDependent_ (formatPattern);
+        return Date::Parse_ (rep, locale::classic (), Traversal::Iterable<String>{formatPattern}, consumedCharsInStringUpTo);
+    }
     inline String Date::ToString () const
     {
         return Format ();
@@ -196,6 +227,14 @@ namespace Stroika::Foundation::Time {
     {
         return Date{UINT_MAX - 1};
     }
+#if qDebug
+    inline void RequireNotKnownLocaleDependent_ ([[maybe_unused]] const String& formatString)
+    {
+    }
+    inline void RequireNotKnownLocaleDependent_ ([[maybe_unused]] const Traversal::Iterable<String>& formatStrings)
+    {
+    }
+#endif
 
 #if __cpp_impl_three_way_comparison < 201907
     /*

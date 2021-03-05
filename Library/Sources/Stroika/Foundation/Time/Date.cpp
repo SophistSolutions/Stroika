@@ -85,7 +85,7 @@ Date Date::Parse (const String& rep, ParseFormat pf)
             DISABLE_COMPILER_MSC_WARNING_END (4996)
             if (nItems == 3) {
                 Date result = Date{Safe_jday_ (MonthOfYear (month), DayOfMonth (day), Year (year))};
-                Ensure (result == Parse (rep, locale::classic (), {kISO8601Format}));
+                Ensure (result == Parse (rep, kISO8601Format));
                 return result;
             }
             Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
@@ -450,6 +450,34 @@ void Date::mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const
     *day  = static_cast<DayOfMonth> (d);
     *year = static_cast<Year> (y);
 }
+
+#if qDebug
+void Date::RequireNotKnownLocaleDependent_ (const String& formatString)
+{
+    // probably incomplete list from https://en.cppreference.com/w/cpp/locale/time_get/get of things that should require a locale be specified
+    Require (formatString != L"%EY");
+    Require (formatString != L"%oy");
+    Require (formatString != L"%EC");
+    Require (formatString != L"%b");
+    Require (formatString != L"%h");
+    Require (formatString != L"%B");
+    Require (formatString != L"%0m");
+    Require (formatString != L"%U");
+    Require (formatString != L"%W");
+    Require (formatString != L"%0W");
+    Require (formatString != L"%0d");
+    Require (formatString != L"%0e");
+    Require (formatString != L"%0W");
+    Require (formatString != L"%r");
+    Require (formatString != L"%p");
+}
+void Date::RequireNotKnownLocaleDependent_ (const Traversal::Iterable<String>& formatStrings)
+{
+    for (auto i : formatStrings) {
+        RequireNotKnownLocaleDependent_ (i);
+    }
+}
+#endif
 
 /*
  ********************************************************************************
