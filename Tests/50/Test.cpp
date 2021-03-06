@@ -343,8 +343,8 @@ namespace {
         {
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
             Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale (L"en", L"us")};
-            Date                           d = Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5));
-            DateTime                       dt (d, TimeOfDay (101));
+            Date                           d = Date{Year (1903), MonthOfYear::eApril, DayOfMonth (5)};
+            DateTime                       dt{d, TimeOfDay (101)};
 
             {
                 String tmp = dt.Format (DateTime::PrintFormat::eCurrentLocale);
@@ -362,13 +362,13 @@ namespace {
             //TOFIX!VerifyTestResult (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
         }
         {
-            Date d = Date (Year (1903), MonthOfYear::eApril, DayOfMonth (6));
+            Date d = Date{Year (1903), MonthOfYear::eApril, DayOfMonth (6)};
             TestRoundTripFormatThenParseNoChange_ (d);
-            DateTime dt (d, TimeOfDay (101));
+            DateTime dt{d, TimeOfDay (101)};
             TestRoundTripFormatThenParseNoChange_ (dt);
             String tmp = dt.Format (DateTime::PrintFormat::eCurrentLocale);
             VerifyTestResult (tmp == L"Mon Apr  6 00:01:41 1903");
-            DateTime dt2 (d, TimeOfDay (60));
+            DateTime dt2{d, TimeOfDay (60)};
             TestRoundTripFormatThenParseNoChange_ (dt2);
             // want a variant that does this formatting!
             //VerifyTestResult (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
@@ -389,7 +389,7 @@ namespace {
                 if (d.GetYear () != nYear) {
                     VerifyTestResult (((nYear - d.GetYear ()) % 100) == 0);
                     d  = Date (nYear, d.GetMonth (), d.GetDayOfMonth ());
-                    dt = DateTime (dt, d);
+                    dt = DateTime{dt, d};
                 }
                 VerifyTestResult (now == dt); // if this fails, look at qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
             }
