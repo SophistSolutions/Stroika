@@ -317,6 +317,7 @@ namespace Stroika::Foundation::Time {
         static Date Parse (const String& rep, const String& formatPattern, size_t* consumedCharsInStringUpTo);
 
     private:
+        static optional<Date> Parse_ (const wstring& rep, const time_get<wchar_t>& tmget, const String& formatPattern, size_t* consumedCharsInStringUpTo);
         static Date Parse_ (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns, size_t* consumedCharsInStringUpTo);
 
     public:

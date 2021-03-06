@@ -128,44 +128,43 @@ Date Date::Parse (const String& rep, ParseFormat pf)
 
 Date Date::Parse_ (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns, size_t* consumedCharsInStringUpTo)
 {
+    if (rep.empty ()) {
+        Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
+    }
+    wstring wRep = rep.As<wstring> ();
+    const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
+    for (const auto& formatPattern : formatPatterns) {
+        if (auto r = Parse_ (wRep, tmget, formatPattern, consumedCharsInStringUpTo)) {
+            return *r;
+        }
+    }
+    Execution::Throw (FormatException::kThe);
+}
+
+optional<Date> Date::Parse_ (const wstring& rep, const time_get<wchar_t>& tmget, const String& formatPattern, size_t* consumedCharsInStringUpTo)
+{
+    Require (not rep.empty ());
     auto computeIdx = [] (const istreambuf_iterator<wchar_t>& s, const istreambuf_iterator<wchar_t>& c) -> size_t {
         size_t result = 0;
         for (auto i = s; i != c; ++i, ++result)
             ;
         return result;
     };
-    if (rep.empty ()) {
-        Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
-    }
-    wstring wRep = rep.As<wstring> ();
-
-    const time_get<wchar_t>& tmget    = use_facet<time_get<wchar_t>> (l);
     ios::iostate             errState = ios::goodbit;
     tm                       when{};
-
-    for (const auto& formatPattern : formatPatterns) {
-        errState = ios::goodbit;
-        wistringstream iss{wRep};
-        if constexpr (kRequireImbueToUseFacet_) {
-            iss.imbue (l);
-        }
-        istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
-        istreambuf_iterator<wchar_t> itend;        // end-of-stream
-        istreambuf_iterator<wchar_t> i = tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
-        if ((errState & ios::badbit) or (errState & ios::failbit)) [[UNLIKELY_ATTR]] {
-            continue;
-        }
-        else {
-            if (consumedCharsInStringUpTo != nullptr) {
-                *consumedCharsInStringUpTo = computeIdx (itbegin, i);
-            }
-            break;
-        }
-    }
+    wistringstream iss{rep};
+    istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
+    istreambuf_iterator<wchar_t> itend;        // end-of-stream
+    istreambuf_iterator<wchar_t> i = tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
     if ((errState & ios::badbit) or (errState & ios::failbit)) [[UNLIKELY_ATTR]] {
-        Execution::Throw (FormatException::kThe);
+        return nullopt;
     }
-    return AsDate_ (when);
+    else {
+        if (consumedCharsInStringUpTo != nullptr) {
+            *consumedCharsInStringUpTo = computeIdx (itbegin, i);
+        }
+        return AsDate_ (when);
+    }
 }
 
 String Date::Format (PrintFormat pf) const

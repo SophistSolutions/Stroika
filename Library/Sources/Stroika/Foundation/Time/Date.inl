@@ -110,7 +110,6 @@ namespace Stroika::Foundation::Time {
     constexpr inline Date::JulianRepType Date::Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year)
     {
         // 'Safe' version just avoids require that date values are legit for julian date range. If date would be invalid - return kEmptyJulianRep.
-
         if (month == MonthOfYear::eEmptyMonthOfYear or day == DayOfMonth::eEmptyDayOfMonth or year == Year::eEmptyYear) {
             return Date::kEmptyJulianRep;
         }
@@ -157,12 +156,28 @@ namespace Stroika::Foundation::Time {
     }
     inline Date Date::Parse (const String& rep, const locale& l, const String& formatPattern)
     {
-        return Date::Parse_ (rep, l, Traversal::Iterable<String>{formatPattern}, nullptr);
+        if (rep.empty ()) {
+            Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
+        }
+        wstring                  wRep  = rep.As<wstring> ();
+        const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
+        if (auto r = Parse_ (wRep, tmget, formatPattern, nullptr)) {
+            return *r;
+        }
+        Execution::Throw (FormatException::kThe);
     }
     inline Date Date::Parse (const String& rep, const locale& l, const String& formatPattern, size_t* consumedCharsInStringUpTo)
     {
         RequireNotNull (consumedCharsInStringUpTo);
-        return Date::Parse_ (rep, l, Traversal::Iterable<String>{formatPattern}, consumedCharsInStringUpTo);
+        if (rep.empty ()) {
+            Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
+        }
+        wstring                  wRep  = rep.As<wstring> ();
+        const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
+        if (auto r = Parse_ (wRep, tmget, formatPattern, consumedCharsInStringUpTo)) {
+            return *r;
+        }
+        Execution::Throw (FormatException::kThe);
     }
     inline Date Date::Parse (const String& rep, const Traversal::Iterable<String>& formatPatterns)
     {
@@ -175,12 +190,28 @@ namespace Stroika::Foundation::Time {
     }
     inline Date Date::Parse (const String& rep, const String& formatPattern)
     {
-        return Date::Parse_ (rep, locale::classic (), Traversal::Iterable<String>{formatPattern}, nullptr);
+        if (rep.empty ()) {
+            Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
+        }
+        wstring                  wRep  = rep.As<wstring> ();
+        const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (locale::classic ());
+        if (auto r = Parse_ (wRep, tmget, formatPattern, nullptr)) {
+            return *r;
+        }
+        Execution::Throw (FormatException::kThe);
     }
     inline Date Date::Parse (const String& rep, const String& formatPattern, size_t* consumedCharsInStringUpTo)
     {
         RequireNotNull (consumedCharsInStringUpTo);
-        return Date::Parse_ (rep, locale::classic (), Traversal::Iterable<String>{formatPattern}, consumedCharsInStringUpTo);
+        if (rep.empty ()) {
+            Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
+        }
+        wstring                  wRep  = rep.As<wstring> ();
+        const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (locale::classic ());
+        if (auto r = Parse_ (wRep, tmget, formatPattern, consumedCharsInStringUpTo)) {
+            return *r;
+        }
+        Execution::Throw (FormatException::kThe);
     }
     inline String Date::ToString () const
     {
