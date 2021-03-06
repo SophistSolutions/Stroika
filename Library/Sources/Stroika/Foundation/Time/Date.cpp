@@ -149,22 +149,7 @@ Date Date::Parse_ (const String& rep, const locale& l, const Traversal::Iterable
         }
         istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
         istreambuf_iterator<wchar_t> itend;        // end-of-stream
-
-        istreambuf_iterator<wchar_t> i;
-        i = tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
-#if qCompilerAndStdLib_std_get_time_pctx_Buggy
-        // as of VS2k 16.9.0, can no longer check (errState & ios::badbit) or (errState & ios::failbit) - and must always do this
-        if (l == locale::classic () and formatPattern == kLocaleStandardFormat) {
-            errState = ios::goodbit;
-            iss      = wistringstream{wRep};
-            itbegin  = istreambuf_iterator<wchar_t>{iss};
-            itend    = istreambuf_iterator<wchar_t>{};
-            if constexpr (kRequireImbueToUseFacet_) {
-                iss.imbue (l);
-            }
-            i = tmget.get_date (itbegin, itend, iss, errState, &when);
-        }
-#endif
+        istreambuf_iterator<wchar_t> i = tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
         if ((errState & ios::badbit) or (errState & ios::failbit)) [[UNLIKELY_ATTR]] {
             continue;
         }
