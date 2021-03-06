@@ -245,7 +245,7 @@ String Date::Format (PrintFormat pf) const
                 return buf;
             };
 #endif
-            auto r = Format (Date::kMonthDayYearFormat);
+            auto r = Format (kMonthDayYearFormat);
             Assert (r == legacy ());
             return r;
         } break;
