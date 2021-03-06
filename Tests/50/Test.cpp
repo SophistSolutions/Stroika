@@ -674,13 +674,13 @@ namespace {
             VerifyTestResult (d.As<time_t> () == 802234800); // source - http://www.onlineconversion.com/unix_time.htm
             const Duration k30Days = Duration{L"P30D"};
             DateTime       d2      = d + k30Days;
-            VerifyTestResult (d2.GetDate ().GetYear () == Year (1995));
+            VerifyTestResult (d2.GetDate ().GetYear () == Year{1995});
             VerifyTestResult (d2.GetDate ().GetMonth () == MonthOfYear::eJuly);
-            VerifyTestResult (d2.GetDate ().GetDayOfMonth () == DayOfMonth (4));
+            VerifyTestResult (d2.GetDate ().GetDayOfMonth () == DayOfMonth{4});
             VerifyTestResult (d2.GetTimeOfDay () == d.GetTimeOfDay ());
         }
         {
-            DateTime n1 = DateTime{Date{Year{2015}, MonthOfYear::eJune, DayOfMonth{9}}, TimeOfDay {19, 18, 42)} Timezone::kLocalTime};
+            DateTime n1 = DateTime{Date{Year{2015}, MonthOfYear::eJune, DayOfMonth{9}}, TimeOfDay{19, 18, 42}, Timezone::kLocalTime};
             DateTime n2 = n1 - Duration{L"P100Y"};
             VerifyTestResult (n2.GetDate ().GetYear () == Year ((int)n1.GetDate ().GetYear () - 100));
 #if 0
