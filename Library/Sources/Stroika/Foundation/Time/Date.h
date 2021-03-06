@@ -27,6 +27,9 @@
  *  \version    <a href="Code-Status.md">Alpha-Late</a>
  *
  * TODO:
+ *      @todo   Could optimize the Format/Parse calls for case without locale to just hardwire implementaton
+ *              using sprintf/scanf (as we had before 2.1b10); only performance optimization and unclear it would help
+ *
  *      @todo   Complete removal of deprecated 'empty' and no-arg constructor
  *
  *              Consider losing eEmptyDayOfMonth and eEmptyMonthOfYear and using optional instead
@@ -240,7 +243,7 @@ namespace Stroika::Foundation::Time {
         DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
         enum class ParseFormat : uint8_t {
             eCurrentLocale,
-            eISO8601,
+            eISO8601 [[deprecated ("Since Stroika 2.1b10 - use kISO8601Format")]],
             eJavascript [[deprecated ("Since Stroika 2.1b10 - use kMonthDayYearFormat")]],
 
             Stroika_Define_Enum_Bounds (eCurrentLocale, eJavascript)
@@ -377,7 +380,7 @@ namespace Stroika::Foundation::Time {
          */
         enum class PrintFormat : uint8_t {
             eCurrentLocale,
-            eISO8601,
+            eISO8601 [[deprecated ("Since Stroika 2.1b10 - use kISO8601Format")]],
             eJavascript [[deprecated ("Since Stroika 2.1b10 - use kMonthDayYearFormat")]],
             eCurrentLocale_WithZerosStripped,
 

@@ -73,6 +73,9 @@ Date Date::Parse (const String& rep, ParseFormat pf)
         case ParseFormat::eCurrentLocale: {
             return Parse (rep, locale{});
         } break;
+            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
         case ParseFormat::eISO8601: {
             /*
              * We intentionally ignore TZ here - if any - because there is no notion of TZ in Date module - just DateTime...
@@ -90,9 +93,6 @@ Date Date::Parse (const String& rep, ParseFormat pf)
             }
             Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
         } break;
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
         case ParseFormat::eJavascript: {
 #if qDebug
             auto legacy = [&] () -> optional<Date> {
@@ -209,6 +209,9 @@ String Date::Format (PrintFormat pf) const
             }
             return tmp;
         }
+            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
         case PrintFormat::eISO8601: {
             wchar_t     buf[20]; // really only  11 needed (so long as no negatives - which I don't think is allowed)
             MonthOfYear m = MonthOfYear::eEmptyMonthOfYear;
@@ -219,9 +222,6 @@ String Date::Format (PrintFormat pf) const
             Ensure (buf == Format (locale::classic (), kISO8601Format));
             return buf;
         } break;
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
         case PrintFormat::eJavascript: {
 #if qDebug
             auto legacy = [&] () -> String {

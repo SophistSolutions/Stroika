@@ -223,29 +223,29 @@ namespace {
 namespace {
     void VERIFY_ROUNDTRIP_XML_ (const Date& d)
     {
-        VerifyTestResult (Date::Parse (d.Format (Date::PrintFormat::eISO8601), Date::ParseFormat::eISO8601) == d);
+        VerifyTestResult (Date::Parse (d.Format (Date::kISO8601Format), Date::kISO8601Format) == d);
     }
 
     void Test_3_TestDate_ ()
     {
-        TraceContextBumper ctx ("Test_3_TestDate_");
+        TraceContextBumper ctx{"Test_3_TestDate_"};
         {
             Date d (Year (1903), MonthOfYear::eApril, DayOfMonth (4));
             TestRoundTripFormatThenParseNoChange_ (d);
-            VerifyTestResult (d.Format (Date::PrintFormat::eISO8601) == L"1903-04-04");
+            VerifyTestResult (d.Format (Date::kISO8601Format) == L"1903-04-04");
             VERIFY_ROUNDTRIP_XML_ (d);
             d = d.AddDays (4);
             VERIFY_ROUNDTRIP_XML_ (d);
-            VerifyTestResult (d.Format (Date::PrintFormat::eISO8601) == L"1903-04-08");
+            VerifyTestResult (d.Format (Date::kISO8601Format) == L"1903-04-08");
             d = d.AddDays (-4);
             VERIFY_ROUNDTRIP_XML_ (d);
-            VerifyTestResult (d.Format (Date::PrintFormat::eISO8601) == L"1903-04-04");
+            VerifyTestResult (d.Format (Date::kISO8601Format) == L"1903-04-04");
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         try {
             Date d = Date::Parse (L"09/14/1752", Date::kMonthDayYearFormat);
             VerifyTestResult (d == Date::kMin);
-            VerifyTestResult (d.Format (Date::PrintFormat::eISO8601) == L"1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+            VerifyTestResult (d.Format (Date::kISO8601Format) == L"1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         catch (...) {
@@ -261,7 +261,7 @@ namespace {
             Date d = Date::kMin;
             VerifyTestResult (d < DateTime::Now ().GetDate ());
             VerifyTestResult (not(DateTime::Now ().GetDate () < d));
-            VerifyTestResult (d.Format (Date::PrintFormat::eISO8601) == L"1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+            VerifyTestResult (d.Format (Date::kISO8601Format) == L"1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
@@ -289,7 +289,6 @@ namespace {
             VerifyTestResult (d.Format (Date::PrintFormat::eCurrentLocale) == L"4/5/1903" or d.Format (Date::PrintFormat::eCurrentLocale) == L"04/05/1903" or d.Format (Date::PrintFormat::eCurrentLocale) == L"04/05/03");
             VerifyTestResult (d.Format (Date::PrintFormat::eCurrentLocale_WithZerosStripped) == L"4/5/1903" or d.Format (Date::PrintFormat::eCurrentLocale_WithZerosStripped) == L"4/5/03");
         }
-
         {
             Date d = Date{Date::JulianRepType (2455213)};
             VerifyTestResult (d.Format () == L"1/16/10");
