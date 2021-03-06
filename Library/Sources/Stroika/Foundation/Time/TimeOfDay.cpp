@@ -198,8 +198,8 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l, const Traversal:
         if constexpr (kRequireImbueToUseFacet_) {
             iss.imbue (l);
         }
-        istreambuf_iterator<wchar_t> itbegin{iss};  // beginning of iss
-        istreambuf_iterator<wchar_t> itend;         // end-of-stream
+        istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
+        istreambuf_iterator<wchar_t> itend;        // end-of-stream
 
 #if qCompilerAndStdLib_std_get_time_pctx_Buggy
         if (formatPattern == L"%X") {
