@@ -451,7 +451,7 @@ Date VariantValue::As () const
         case Type::eString: {
             auto v = dynamic_cast<const TIRep_<String>*> (fVal_.get ());
             AssertNotNull (v);
-            return Date::Parse (v->fVal, Date::ParseFormat::eISO8601);
+            return Date::Parse (v->fVal, Date::kISO8601Format);
         }
         default: {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -558,7 +558,7 @@ String VariantValue::AsString_ () const
         case Type::eDate: {
             auto v = dynamic_cast<const TIRep_<Date>*> (fVal_.get ());
             AssertNotNull (v);
-            return v->fVal.Format (Date::PrintFormat::eISO8601);
+            return v->fVal.Format (Date::kISO8601Format);
         }
         case Type::eDateTime: {
             auto v = dynamic_cast<const TIRep_<DateTime>*> (fVal_.get ());
