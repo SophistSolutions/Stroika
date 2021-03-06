@@ -292,8 +292,7 @@ Date Date::AddDays (SignedJulianRepType dayCount) const
      */
     Date result = *this;
     result.fJulianDateRep_ += dayCount;
-    if (result.fJulianDateRep_ < Date::kMinJulianRep)
-        [[UNLIKELY_ATTR]] {
+    if (result.fJulianDateRep_ < Date::kMinJulianRep) [[UNLIKELY_ATTR]] {
         static const range_error kRangeErrror_{"Date::AddDays cannot add days to go before the first julian calandar day"};
         Execution::Throw (kRangeErrror_);
     }
