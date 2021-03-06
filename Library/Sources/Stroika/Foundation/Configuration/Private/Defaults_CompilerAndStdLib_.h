@@ -473,6 +473,9 @@ ABORTING...
  As of 
     _STL_VERIFY(_Strbuf != nullptr, "istreambuf_iterator is not dereferencable"); asserts out
 
+
+    https://developercommunity.visualstudio.com/t/qcompilerandstdlib-std-get-time-pctx-buggy/1359575
+
  */
 #ifndef qCompilerAndStdLib_std_get_time_pctx_Buggy
 
