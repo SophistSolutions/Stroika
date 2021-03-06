@@ -243,7 +243,7 @@ namespace {
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         try {
-            Date d = Date::Parse (L"09/14/1752", locale::classic ());
+            Date d = Date::Parse (L"09/14/1752", Date::kMonthDayYearFormat);
             VerifyTestResult (d == Date::kMin);
             VerifyTestResult (d.Format (Date::PrintFormat::eISO8601) == L"1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
