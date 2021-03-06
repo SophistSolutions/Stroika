@@ -131,7 +131,7 @@ Date Date::Parse_ (const String& rep, const locale& l, const Traversal::Iterable
     if (rep.empty ()) {
         Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
     }
-    wstring wRep = rep.As<wstring> ();
+    wstring                  wRep  = rep.As<wstring> ();
     const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
     for (const auto& formatPattern : formatPatterns) {
         if (auto r = Parse_ (wRep, tmget, formatPattern, consumedCharsInStringUpTo)) {
@@ -150,9 +150,9 @@ optional<Date> Date::Parse_ (const wstring& rep, const time_get<wchar_t>& tmget,
             ;
         return result;
     };
-    ios::iostate             errState = ios::goodbit;
-    tm                       when{};
-    wistringstream iss{rep};
+    ios::iostate                 errState = ios::goodbit;
+    tm                           when{};
+    wistringstream               iss{rep};
     istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
     istreambuf_iterator<wchar_t> itend;        // end-of-stream
     istreambuf_iterator<wchar_t> i = tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
