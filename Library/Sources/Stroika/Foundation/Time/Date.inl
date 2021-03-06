@@ -301,6 +301,8 @@ namespace Stroika::Foundation::Configuration {
             {Stroika::Foundation::Time::MonthOfYear::eNovember, L"November"},
             {Stroika::Foundation::Time::MonthOfYear::eDecember, L"December"},
         }}};
+    
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
     DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
@@ -314,7 +316,9 @@ namespace Stroika::Foundation::Configuration {
         }}};
     DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
 
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
     DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
@@ -329,6 +333,7 @@ namespace Stroika::Foundation::Configuration {
         }}};
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
     DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
 
 }
 

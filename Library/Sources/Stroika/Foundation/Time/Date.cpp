@@ -90,6 +90,7 @@ Date Date::Parse (const String& rep, ParseFormat pf)
             }
             Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
         } break;
+            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
             DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
         case ParseFormat::eJavascript: {
@@ -119,6 +120,7 @@ Date Date::Parse (const String& rep, ParseFormat pf)
         } break;
             DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
             DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
     }
     AssertNotReached ();
     Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty Date{}
@@ -217,6 +219,7 @@ String Date::Format (PrintFormat pf) const
             Ensure (buf == Format (locale::classic (), kISO8601Format));
             return buf;
         } break;
+            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
             DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
         case PrintFormat::eJavascript: {
@@ -248,6 +251,7 @@ String Date::Format (PrintFormat pf) const
         } break;
             DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
             DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
     }
     AssertNotReached ();
     return String{};
