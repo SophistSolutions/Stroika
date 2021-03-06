@@ -299,7 +299,7 @@ namespace Stroika::Foundation::Time {
          *
          *  \see https://en.cppreference.com/w/cpp/locale/time_get/get for allowed formatPatterns
          * 
-         *  \note when calling Parse with a format string and no locale, it is REQUIRED that the format strings be locale-independent
+         *  \note when calling Parse with a format string and no locale, the default locale is assumed
          */
         static Date Parse (const String& rep, ParseFormat pf);
         static Date Parse (const String& rep, const locale& l);
@@ -473,10 +473,6 @@ namespace Stroika::Foundation::Time {
 
     private:
         static Date AsDate_ (const ::tm& when);
-
-    private:
-        nonvirtual static void RequireNotKnownLocaleDependent_ (const String& formatString);
-        nonvirtual static void RequireNotKnownLocaleDependent_ (const Traversal::Iterable < String >& formatStrings);
 
     private:
         JulianRepType fJulianDateRep_;

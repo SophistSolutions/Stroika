@@ -166,24 +166,20 @@ namespace Stroika::Foundation::Time {
     }
     inline Date Date::Parse (const String& rep, const Traversal::Iterable<String>& formatPatterns)
     {
-        RequireNotKnownLocaleDependent_ (formatPatterns);
         return Date::Parse_ (rep, locale::classic (), formatPatterns, nullptr);
     }
     inline Date Date::Parse (const String& rep, const Traversal::Iterable<String>& formatPatterns, size_t* consumedCharsInStringUpTo)
     {
         RequireNotNull (consumedCharsInStringUpTo);
-        RequireNotKnownLocaleDependent_ (formatPatterns);
         return Date::Parse_ (rep, locale::classic (), formatPatterns, consumedCharsInStringUpTo);
     }
     inline Date Date::Parse (const String& rep, const String& formatPattern)
     {
-        RequireNotKnownLocaleDependent_ (formatPattern);
         return Date::Parse_ (rep, locale::classic (), Traversal::Iterable<String>{formatPattern}, nullptr);
     }
     inline Date Date::Parse (const String& rep, const String& formatPattern, size_t* consumedCharsInStringUpTo)
     {
         RequireNotNull (consumedCharsInStringUpTo);
-        RequireNotKnownLocaleDependent_ (formatPattern);
         return Date::Parse_ (rep, locale::classic (), Traversal::Iterable<String>{formatPattern}, consumedCharsInStringUpTo);
     }
     inline String Date::ToString () const
@@ -227,14 +223,6 @@ namespace Stroika::Foundation::Time {
     {
         return Date{UINT_MAX - 1};
     }
-#if !qDebug
-    inline void Date::RequireNotKnownLocaleDependent_ ([[maybe_unused]] const String& formatString)
-    {
-    }
-    inline void Date::RequireNotKnownLocaleDependent_ ([[maybe_unused]] const Traversal::Iterable<String>& formatStrings)
-    {
-    }
-#endif
 
 #if __cpp_impl_three_way_comparison < 201907
     /*
@@ -301,7 +289,7 @@ namespace Stroika::Foundation::Configuration {
             {Stroika::Foundation::Time::MonthOfYear::eNovember, L"November"},
             {Stroika::Foundation::Time::MonthOfYear::eDecember, L"December"},
         }}};
-    
+
     DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
     DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
