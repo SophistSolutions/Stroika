@@ -164,13 +164,13 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  \note https://en.cppreference.com/w/cpp/locale/time_get/get
+         *  \note https://en.cppreference.com/w/cpp/locale/time_get/get and https://en.cppreference.com/w/cpp/locale/time_put/put
          */
         static constexpr wstring_view  kLocaleStandardFormat           = L"%c"sv;
 
     public:
         /**
-         *  \note https://en.cppreference.com/w/cpp/locale/time_get/get 
+         *  \note https://en.cppreference.com/w/cpp/locale/time_get/get and https://en.cppreference.com/w/cpp/locale/time_put/put
          */
         static constexpr wstring_view kLocaleStandardAlternateFormat  = L"%Ec"sv;
 

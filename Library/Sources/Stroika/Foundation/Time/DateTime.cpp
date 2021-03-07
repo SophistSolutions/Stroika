@@ -626,7 +626,7 @@ String DateTime::Format (PrintFormat pf) const
         } break;
         case PrintFormat::eRFC1123: {
             optional<Timezone>  tz     = GetTimezone ();
-            static const String kFMT_  = L"%a, %d %b %Y %H:%M:%S";
+            static const String kFMT_  = L"%a, %d %b %Y %H:%M:%S"_k;
             String              result = Format (locale::classic (), {kFMT_});
             if (tz == Timezone::kUnknown) {
                 return result;
@@ -679,7 +679,7 @@ String DateTime::Format (const locale& l, const String& formatPattern) const
     tmput.put (oss, oss, ' ', &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
     // docs aren't clear about expectations, but glibc (gcc8) produces trailing whitespace which
     // is not good. Unsure if thats glibc bug or my correction here makes sense -- LGP 2018-10-16
-    return String (oss.str ()).RTrim ();
+    return String {oss.str ()}.RTrim ();
 }
 
 String DateTime::ToString () const
@@ -709,12 +709,10 @@ time_t DateTime::As () const
     DateTime useDT = this->AsUTC (); // time_t defined in UTC
     Date     d     = useDT.GetDate ();
 
-    // clang-format off
     if (useDT.GetDate ().GetYear () < Year (1970)) [[UNLIKELY_ATTR]] {
         static const range_error kRangeErrror_{"DateTime cannot be convered to time_t - before 1970"};
         Execution::Throw (kRangeErrror_);
     }
-    // clang-format on
 
     ::tm tm{};
     tm.tm_year                         = static_cast<int> (d.GetYear ()) - 1900;
