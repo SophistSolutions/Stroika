@@ -141,9 +141,35 @@ Date Date::Parse_ (const String& rep, const locale& l, const Traversal::Iterable
     Execution::Throw (FormatException::kThe);
 }
 
+namespace {
+    optional<Date> LocaleFreeParseMonthDayYear_ (const wstring& rep, size_t* consumedCharsInStringUpTo)
+    {
+        int year  = 0;
+        int month = 0;
+        int day   = 0;
+        DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
+        int pos;
+        int nItems = ::swscanf (rep.c_str (), L"%d/%d/%d%n", &month, &day, &year, &pos);
+        DISABLE_COMPILER_MSC_WARNING_END (4996)
+        if (nItems == 4) {
+            if (consumedCharsInStringUpTo != nullptr) {
+                Assert (pos < rep.length ());
+                *consumedCharsInStringUpTo = pos;
+            }
+            return Date{Safe_jday_ (MonthOfYear{month}, DayOfMonth{day}, Year{year})};
+        }
+        return nullopt;
+    }
+}
+
 optional<Date> Date::Parse_ (const wstring& rep, const time_get<wchar_t>& tmget, const String& formatPattern, size_t* consumedCharsInStringUpTo)
 {
     Require (not rep.empty ());
+#if qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy
+    if (formatPattern == kMonthDayYearFormat) { // this is locale-independent (I believe)
+        return LocaleFreeParseMonthDayYear_ (rep, consumedCharsInStringUpTo);
+    }
+#endif
     auto computeIdx = [] (const istreambuf_iterator<wchar_t>& s, const istreambuf_iterator<wchar_t>& c) -> size_t {
         size_t result = 0;
         for (auto i = s; i != c; ++i, ++result)

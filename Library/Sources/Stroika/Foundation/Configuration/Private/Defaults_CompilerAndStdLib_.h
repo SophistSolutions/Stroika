@@ -210,6 +210,7 @@ foo.cpp:
 #define GLIBCXX_7x_ 20180720
 #define GLIBCXX_8x_ 20180728
 #define GLIBCXX_9x_ 20191008
+#define GLIBCXX_93x_ 20200408
 
 /*
  *
@@ -745,6 +746,14 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 #endif
 #endif
 
+#ifndef qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy
+#if defined(__GLIBCXX__) && __GLIBCXX__ <= GLIBCXX_93x_
+#define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy 1
+#else
+#define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy 0
+#endif
+#endif
+
 /*
 Builds/g++-8-debug-c++17/Tests/Test41
 =================================================================
@@ -968,7 +977,6 @@ STILL:
 
 #endif
 
-
 #ifndef qCompilerAndStdLib_stdOptionalThreeWayCompare_Buggy
 
 #if defined(_MSC_VER)
@@ -983,7 +991,6 @@ STILL:
 #endif
 
 #endif
-
 
 /*
  MUST RUN TEST    Foundation::Execution::Other
