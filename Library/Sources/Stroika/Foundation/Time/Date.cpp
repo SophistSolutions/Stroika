@@ -155,7 +155,7 @@ optional<Date> Date::LocaleFreeParseMonthDayYear_ (const wstring& rep, size_t* c
             Assert (pos < rep.length ());
             *consumedCharsInStringUpTo = pos;
         }
-        return Date{Safe_jday_ (MonthOfYear (month), DayOfMonth(day), Year(year))};
+        return Date{Safe_jday_ (MonthOfYear (month), DayOfMonth (day), Year (year))};
     }
     return nullopt;
 }
