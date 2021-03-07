@@ -71,6 +71,23 @@ namespace {
         testDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ (-148, 10, 19, locale::classic ());
         testDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ (121, 2, 4, locale::classic ());
         testDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ (105, 5, 1, locale::classic ());
+
+        auto getPCTMRequiresLeadingZeroBug = [] () {
+            std::locale                  l     = locale::classic ();
+            const time_get<wchar_t>&     tmget = use_facet<time_get<wchar_t>> (l);
+            ios::iostate                 state = ios::goodbit;
+            wistringstream               iss (L"11/1/2002");
+            istreambuf_iterator<wchar_t> itbegin (iss); // beginning of iss
+            istreambuf_iterator<wchar_t> itend;         // end-of-stream
+            tm                           resultTM{};
+            auto                         i = tmget.get (itbegin, itend, iss, state, &resultTM, Date::kMonthDayYearFormat.data (), Date::kMonthDayYearFormat.data () + Date::kMonthDayYearFormat.length ());
+#if qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy
+            VerifyTestResult ((state & ios::badbit) or (state & ios::failbit));
+#else
+            VerifyTestResult (not((state & ios::badbit) or (state & ios::failbit)));
+#endif
+        };
+        getPCTMRequiresLeadingZeroBug ();
     }
 }
 
@@ -265,8 +282,8 @@ namespace {
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
-            VerifyTestResult (Date::Parse (L"11/1/2001", Date::kMonthDayYearFormat) == Date (Year (2001), Time::MonthOfYear::eNovember, DayOfMonth (1)));
-            VerifyTestResult (Date::Parse (L"11/1/2001", Date::kMonthDayYearFormat).Format (Date::kMonthDayYearFormat) == L"11/01/2001");
+            VerifyTestResult (Date::Parse (L"11/3/2001", Date::kMonthDayYearFormat) == Date (Year{2001}, Time::MonthOfYear::eNovember, DayOfMonth{3}));
+            VerifyTestResult (Date::Parse (L"11/3/2001", Date::kMonthDayYearFormat).Format (Date::kMonthDayYearFormat) == L"11/03/2001");
         }
         {
             VerifyTestResult (Date::kMin < Date::kMax);
@@ -442,7 +459,7 @@ namespace {
         {
             // difference
             {
-                constexpr Date kDate_{Time::Year {2016}, Time::MonthOfYear (9), Time::DayOfMonth{29}};
+                constexpr Date kDate_{Time::Year {2016}, Time::MonthOfYear{9}, Time::DayOfMonth{29}};
                 constexpr TimeOfDay kTOD_{10, 21, 32};
                 constexpr TimeOfDay kTOD2_{10, 21, 35};
                 VerifyTestResult ((DateTime {kDate_, kTOD_} - DateTime {kDate_, kTOD2_}).As<Time::DurationSecondsType> () == -3);
@@ -682,7 +699,7 @@ namespace {
         {
             DateTime n1 = DateTime{Date{Year{2015}, MonthOfYear::eJune, DayOfMonth{9}}, TimeOfDay{19, 18, 42}, Timezone::kLocalTime};
             DateTime n2 = n1 - Duration{L"P100Y"};
-            VerifyTestResult (n2.GetDate ().GetYear () == Year ((int)n1.GetDate ().GetYear () - 100));
+            VerifyTestResult (n2.GetDate ().GetYear () == Year{(int)n1.GetDate ().GetYear () - 100});
 #if 0
             // @todo - Improve - increment by 100 years not as exact as one might like @todo --LGP 2015-06-09
             VerifyTestResult (n2.GetDate ().GetMonth () == n1.GetDate ().GetMonth ());
