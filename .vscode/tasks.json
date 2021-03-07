@@ -4,13 +4,13 @@
         {
             "label": "Get CURRENT-CONFIGURATION",
             "type": "shell",
-            "command": "cat ${workspaceFolder}/CURRENT-CONFIGURATION",
+            //"command": "cat ${workspaceFolder}/.CURRENT-CONFIGURATION",
+            "command": "echo ${input:CURRENT-CONFIGURATION}",
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
-            "problemMatcher": [
-            ],
+            "problemMatcher": [],
             "presentation": {
                 "clear": true,
                 "panel": "dedicated"
@@ -20,25 +20,23 @@
         {
             "label": "Set CURRENT-CONFIGURATION",
             "type": "shell",
-            "command": "echo ${input:PROMPT-CONFIGURATION} > ${workspaceFolder}/CURRENT-CONFIGURATION",
+            "command": "echo ${input:PROMPT-CONFIGURATION} > ${workspaceFolder}/.CURRENT-CONFIGURATION",
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
-            "problemMatcher": [
-            ],
+            "problemMatcher": [],
             "promptOnClose": false,
         },
         {
             "label": "Get CURRENT-JOBSFLAG",
             "type": "shell",
-            "command": "cat ${workspaceFolder}/CURRENT-JOBSFLAG",
+            "command": "cat ${workspaceFolder}/.CURRENT-JOBSFLAG",
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
-            "problemMatcher": [
-            ],
+            "problemMatcher": [],
             "presentation": {
                 "clear": true,
                 "panel": "dedicated"
@@ -48,20 +46,19 @@
         {
             "label": "Set CURRENT-JOBSFLAG",
             "type": "shell",
-            "command": "echo ${input:PROMT-JOBSFLAG} > ${workspaceFolder}/CURRENT-JOBSFLAG",
+            "command": "echo ${input:PROMT-JOBSFLAG} > ${workspaceFolder}/.CURRENT-JOBSFLAG",
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
-            "problemMatcher": [
-            ]
+            "problemMatcher": []
         },
         {
             "label": "make CURRENT-CONFIGURATION PROMPT-TARGET PROMPT-JOBSFLAGS",
             "type": "shell",
             "command": "make",
             "args": [
-                "CONFIGURATION=`cat ${workspaceFolder}/CURRENT-CONFIGURATION`",
+                "CONFIGURATION=`cat ${workspaceFolder}/.CURRENT-CONFIGURATION`",
                 "${input:PROMPT-TARGET}",
                 "${input:PROMT-JOBSFLAG}"
             ],
@@ -99,9 +96,10 @@
             "type": "shell",
             "command": "make",
             "args": [
-                "CONFIGURATION=${input:PROMPT-CONFIGURATION}",
+                "CONFIGURATION=${input:CURRENT-CONFIGURATION}",
                 "--no-print-directory",
-                "--directory", "${input:PROMT-DIRECTORY}",
+                "--directory",
+                "${input:PROMT-DIRECTORY}",
                 "${input:PROMPT-TARGET}",
                 "${input:PROMT-JOBSFLAG}"
             ],
@@ -142,7 +140,8 @@
             "args": [
                 "CONFIGURATION=${input:PROMPT-CONFIGURATION}",
                 "--no-print-directory",
-                "--directory", "${input:PROMT-DIRECTORY}",
+                "--directory",
+                "${input:PROMT-DIRECTORY}",
                 "clean"
             ],
             "group": {
@@ -161,7 +160,8 @@
             "args": [
                 "CONFIGURATION=${input:PROMPT-CONFIGURATION}",
                 "--no-print-directory",
-                "--directory", "${input:PROMT-DIRECTORY}",
+                "--directory",
+                "${input:PROMT-DIRECTORY}",
                 "clobber"
             ],
             "group": {
@@ -208,7 +208,7 @@
         {
             "id": "CURRENT-CONFIGURATION",
             "type": "command",
-            "command" : "echo WHAT COMMAND READS THAT FILE"
+            "command": "cat ${workspaceFolder}/.CURRENT-CONFIGURATION"
         }
     ]
 }
