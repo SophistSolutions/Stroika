@@ -211,6 +211,7 @@ foo.cpp:
 #define GLIBCXX_8x_ 20180728
 #define GLIBCXX_9x_ 20191008
 #define GLIBCXX_93x_ 20200408
+#define GLIBCXX_10x_ 20200930
 
 /*
  *
@@ -747,7 +748,7 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 #endif
 
 #ifndef qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy
-#if defined(__GLIBCXX__) && __GLIBCXX__ <= GLIBCXX_93x_
+#if defined(__GLIBCXX__) && __GLIBCXX__ <= GLIBCXX_10x_
 #define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy 1
 #else
 #define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy 0
