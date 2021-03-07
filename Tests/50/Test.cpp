@@ -88,6 +88,27 @@ namespace {
 #endif
         };
         getPCTMRequiresLeadingZeroBug ();
+
+        auto getPlocaletimegetlosespartofdateBug = [] () {
+            std::locale                  l{"en-US"}; // originally tested with locale {} - which defaulted to C-locale
+            const time_get<wchar_t>&     tmget = use_facet<time_get<wchar_t>> (l);
+            ios::iostate                 state = ios::goodbit;
+            wistringstream               iss (L"03/07/21 16:18:47");
+            istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
+            istreambuf_iterator<wchar_t> itend;        // end-of-stream
+            tm                           resultTM{};
+            [[maybe_unused]] auto        i = tmget.get (itbegin, itend, iss, state, &resultTM, DateTime::kShortLocaleFormatPattern.data (), DateTime::kShortLocaleFormatPattern.data () + DateTime::kShortLocaleFormatPattern.length ());
+            VerifyTestResult (not((state & ios::badbit) or (state & ios::failbit)));
+#if qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
+            VerifyTestResult (resultTM.tm_mday == 3);
+            VerifyTestResult (resultTM.tm_mon == 6); // zero based
+#else
+            // Correct answers
+            VerifyTestResult (resultTM.tm_mon == 2); // zero based
+            VerifyTestResult (resultTM.tm_mday == 7);
+#endif
+        };
+        getPlocaletimegetlosespartofdateBug ();
     }
 }
 

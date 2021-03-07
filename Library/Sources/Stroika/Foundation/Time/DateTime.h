@@ -172,7 +172,7 @@ namespace Stroika::Foundation::Time {
         /**
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get 
          */
-        static constexpr wstring_view kLocaleStandardAlternateFormat           = L"%Ec"sv;
+        static constexpr wstring_view kLocaleStandardAlternateFormat  = L"%Ec"sv;
 
     public:
         /**
@@ -224,6 +224,19 @@ namespace Stroika::Foundation::Time {
         static DateTime Parse (const String& rep, const locale& l, const String& formatPattern);
         static DateTime Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns);
         static DateTime Parse (const String& rep, const String& formatPattern);
+
+    public:
+        /**
+         *  \brief like Parse(), but returns nullopt on parse error, not throwing exception.
+         * if locale is missing, and formatPattern is not locale independent, the current locale (locale{}) is used.
+         *  if rep is empty, this will return nullopt
+         */
+        static optional<DateTime> QuietParse (const String& rep, const String& formatPattern);
+        static optional<DateTime> QuietParse (const String& rep, const locale& l, const String& formatPattern);
+
+    private:
+        // this rquires rep!= ""
+        static optional<DateTime> QuietParse_ (const wstring& rep, const time_get<wchar_t>& tmget, const String& formatPattern);
 
     public:
         /**
@@ -340,14 +353,14 @@ namespace Stroika::Foundation::Time {
          *      
          */
         enum class PrintFormat : uint8_t {
-            eCurrentLocale,
             eISO8601,
-            eRFC1123,
+            eCurrentLocale [[deprecated ("Since Stroika 2.1b10, use locale{} for eCurrentLocale")]],
             eCurrentLocale_WithZerosStripped,
+            eRFC1123,
 
             eDEFAULT = eCurrentLocale_WithZerosStripped,
 
-            Stroika_Define_Enum_Bounds (eCurrentLocale, eCurrentLocale_WithZerosStripped)
+            Stroika_Define_Enum_Bounds (eISO8601, eRFC1123)
         };
 
     public:
@@ -359,6 +372,8 @@ namespace Stroika::Foundation::Time {
          *        @see https://stackoverflow.com/questions/52839648/does-a-c-locale-have-an-associated-timezone-and-if-yes-how-do-you-access-it
          * 
          *  \note for apis with the locale not specified, its assumed to be the default (locale{}), except (perhaps) where the formatString is locale-independent.
+         * 
+         *  \note the default for Format() with no arguments is to use the default locale, but with the eCurrentLocale_WithZerosStripped flag set.
          *
          *  \note   @todo - https://stroika.atlassian.net/browse/STK-671 - DateTime::Format and Parse () incorrectly handle the format strings %z and %Z (sort of)
          */

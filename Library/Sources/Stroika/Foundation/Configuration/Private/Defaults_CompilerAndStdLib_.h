@@ -1713,7 +1713,9 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
  *        tmget.get_date (itbegin2, itend2, iss, errState, &when);
  *    }
  *#endif
- *
+ * 
+ *  Upon more careful analysis - 2021-03-07 - the bug appears to be that the tmget HAS THE CORRECT mdy dateorder, but in parsing
+ *  it appears to IGNORE this and prase DMY
  */
 #ifndef qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
 

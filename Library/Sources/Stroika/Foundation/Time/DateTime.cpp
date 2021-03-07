@@ -413,67 +413,63 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
 
 DateTime DateTime::Parse (const String& rep, const locale& l, const String& formatPattern)
 {
-    return Parse (rep, l, Traversal::Iterable<String>{formatPattern});
+    if (rep.empty ()) [[UNLIKELY_ATTR]] {
+        Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
+    }
+    if (auto o = QuietParse_ (rep.As<wstring> (), use_facet<time_get<wchar_t>> (l), formatPattern)) {
+        return *o;
+    }
+    Execution::Throw (FormatException::kThe);
 }
 
 DateTime DateTime::Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns)
 {
-    // clang-format off
     if (rep.empty ()) [[UNLIKELY_ATTR]] {
         Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
     }
-    // clang-format on
-
-    wstring wRep = rep.As<wstring> ();
-
-    const time_get<wchar_t>& tmget    = use_facet<time_get<wchar_t>> (l);
-    ios::iostate             errState = ios::goodbit;
-    tm                       when{};
-
+    wstring                  wRep  = rep.As<wstring> ();
+    const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
     for (const auto& formatPattern : formatPatterns) {
-        errState = ios::goodbit;
-        wistringstream iss (wRep);
-        if constexpr (kRequireImbueToUseFacet_) {
-            iss.imbue (l);
+        if (auto o = QuietParse_ (wRep, tmget, formatPattern)) {
+            return *o;
         }
-        istreambuf_iterator<wchar_t> itbegin (iss); // beginning of iss
-        istreambuf_iterator<wchar_t> itend;         // end-of-stream
-
-        istreambuf_iterator<wchar_t> i;
-        i = tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
-#if qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
-        if (formatPattern == L"%x %X") {
-            if ((errState & ios::badbit) or (errState & ios::failbit)) {
-                Execution::Throw (Date::FormatException::kThe);
-            }
-            wistringstream               iss2 (rep.As<wstring> ());
-            istreambuf_iterator<wchar_t> itbegin2 (iss2);
-            istreambuf_iterator<wchar_t> itend2;
-            errState = ios::goodbit;
-            tmget.get_date (itbegin2, itend2, iss, errState, &when);
-        }
-#endif
-        // clang-format off
-        if ((errState & ios::badbit) or (errState & ios::failbit)) [[UNLIKELY_ATTR]] {
-            continue;
-        } 
-        else {
-            break;
-        }
-        // clang-format on
     }
-    // clang-format off
-    if ((errState & ios::badbit) or (errState & ios::failbit)) [[UNLIKELY_ATTR]] {
-        Execution::Throw (FormatException::kThe);
-    }
-    // clang-format on
-
-    return DateTime{when, Timezone::kUnknown};
+    Execution::Throw (FormatException::kThe);
 }
 
 DateTime DateTime::Parse (const String& rep, const String& formatPattern)
 {
     return Parse (rep, locale{}, formatPattern);
+}
+
+optional<DateTime> DateTime::QuietParse_ (const wstring& rep, const time_get<wchar_t>& tmget, const String& formatPattern)
+{
+    Require (not rep.empty ());
+
+    ios::iostate                 errState = ios::goodbit;
+    tm                           when{};
+    wistringstream               iss{rep};
+    istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
+    istreambuf_iterator<wchar_t> itend;        // end-of-stream
+
+    istreambuf_iterator<wchar_t> i = tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
+#if qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
+    // Now that I've understood this bug better, I think I can do a better/wider workaround, not just this specail case...
+    if (formatPattern == L"%x %X") {
+        wistringstream               iss2 (rep);
+        istreambuf_iterator<wchar_t> itbegin2 (iss2);
+        istreambuf_iterator<wchar_t> itend2;
+        errState = ios::goodbit;
+        tmget.get_date (itbegin2, itend2, iss, errState, &when);
+    }
+#endif
+    if ((errState & ios::badbit) or (errState & ios::failbit)) [[UNLIKELY_ATTR]] {
+        return nullopt;
+    }
+    // @todo probably could read TIMEZONE (occasionally) from the when output (maybe look at format string to tell if its being set)
+    // SEE https://stroika.atlassian.net/browse/STK-671
+
+    return DateTime{when, Timezone::kUnknown};
 }
 
 DateTime DateTime::AsLocalTime () const
@@ -570,9 +566,15 @@ optional<bool> DateTime::IsDaylightSavingsTime () const
 String DateTime::Format (PrintFormat pf) const
 {
     switch (pf) {
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
         case PrintFormat::eCurrentLocale: {
             return Format (locale{});
         } break;
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
         case PrintFormat::eCurrentLocale_WithZerosStripped: {
             /*
              *  Use basic current locale formatting, and then use regexp to find special case 0s to strip.
