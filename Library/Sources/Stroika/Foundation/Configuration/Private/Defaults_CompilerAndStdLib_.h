@@ -475,8 +475,9 @@ ABORTING...
  As of 
     _STL_VERIFY(_Strbuf != nullptr, "istreambuf_iterator is not dereferencable"); asserts out
 
-
     https://developercommunity.visualstudio.com/t/qcompilerandstdlib-std-get-time-pctx-buggy/1359575
+
+    REPORTED 2021-03-05 APX
 
  */
 #ifndef qCompilerAndStdLib_std_get_time_pctx_Buggy
@@ -1716,6 +1717,12 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
  * 
  *  Upon more careful analysis - 2021-03-07 - the bug appears to be that the tmget HAS THE CORRECT mdy dateorder, but in parsing
  *  it appears to IGNORE this and prase DMY
+ * 
+ * 
+ *      REPORTED TO MICROSOFT:
+ *              https://rextester.com/IOLX73233
+ *              2021-03-07
+ * 
  */
 #ifndef qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
 

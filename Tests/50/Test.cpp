@@ -89,7 +89,29 @@ namespace {
         };
         getPCTMRequiresLeadingZeroBug ();
 
-        auto getPlocaletimegetlosespartofdateBug = [] () {
+        auto std_get_time_pctxBuggyTest = [] () {
+            //wstring wRep = L"3pm";   // this works
+            wstring                      wRep = L"3:00";
+            locale                       l    = locale::classic ();
+            wistringstream               iss (wRep);
+            const time_get<wchar_t>&     tmget    = use_facet<time_get<wchar_t>> (l);
+            ios::iostate                 errState = ios::goodbit;
+            tm                           when{};
+            wstring                      formatPattern = L"%X"; // or %EX, or %T all fail
+            istreambuf_iterator<wchar_t> itbegin (iss);         // beginning of iss
+            istreambuf_iterator<wchar_t> itend;                 // end-of-stream
+
+            istreambuf_iterator<wchar_t> i;
+            // In Debug build on Windows, this generates Assertion error inside stdc++ runtime library
+            // first noticed broken in vs2k17 (qCompilerAndStdLib_std_get_time_pctx_Buggy)
+            i = tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
+        };
+        // get assertion istreambuf_iterator is not dereferenceable failure if we enable this on VS2k
+#if !qCompilerAndStdLib_std_get_time_pctx_Buggy
+        std_get_time_pctxBuggyTest ();
+#endif
+
+        auto tmget_dot_get_locale_date_order_buggy_test_ = [] () {
             std::locale                  l{"en-US"}; // originally tested with locale {} - which defaulted to C-locale
             const time_get<wchar_t>&     tmget = use_facet<time_get<wchar_t>> (l);
             ios::iostate                 state = ios::goodbit;
@@ -97,7 +119,8 @@ namespace {
             istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
             istreambuf_iterator<wchar_t> itend;        // end-of-stream
             tm                           resultTM{};
-            [[maybe_unused]] auto        i = tmget.get (itbegin, itend, iss, state, &resultTM, DateTime::kShortLocaleFormatPattern.data (), DateTime::kShortLocaleFormatPattern.data () + DateTime::kShortLocaleFormatPattern.length ());
+            VerifyTestResult (tmget.date_order () == time_base::mdy); // correct but still parsed in wrong order
+            [[maybe_unused]] auto i = tmget.get (itbegin, itend, iss, state, &resultTM, DateTime::kShortLocaleFormatPattern.data (), DateTime::kShortLocaleFormatPattern.data () + DateTime::kShortLocaleFormatPattern.length ());
             VerifyTestResult (not((state & ios::badbit) or (state & ios::failbit)));
 #if qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
             VerifyTestResult (resultTM.tm_mday == 3);
@@ -108,7 +131,7 @@ namespace {
             VerifyTestResult (resultTM.tm_mday == 7);
 #endif
         };
-        getPlocaletimegetlosespartofdateBug ();
+        tmget_dot_get_locale_date_order_buggy_test_ ();
     }
 }
 
@@ -385,7 +408,7 @@ namespace {
             DateTime                       dt{d, TimeOfDay{101}};
 
             {
-                String tmp = dt.Format (DateTime::PrintFormat::eCurrentLocale);
+                String tmp = dt.Format (locale{});
 #if qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy
                 VerifyTestResult (tmp == L"4/5/1903 12:01:41 AM" or tmp == L"04/05/1903 12:01:41 AM");
 #else
@@ -404,7 +427,7 @@ namespace {
             TestRoundTripFormatThenParseNoChange_ (d);
             DateTime dt{d, TimeOfDay (101)};
             TestRoundTripFormatThenParseNoChange_ (dt);
-            String tmp = dt.Format (DateTime::PrintFormat::eCurrentLocale);
+            String tmp = dt.Format (locale{});
             VerifyTestResult (tmp == L"Mon Apr  6 00:01:41 1903");
             DateTime dt2{d, TimeOfDay{60}};
             TestRoundTripFormatThenParseNoChange_ (dt2);
