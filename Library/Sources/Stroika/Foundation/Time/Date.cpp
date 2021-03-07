@@ -47,10 +47,6 @@ namespace {
     }
 }
 
-namespace {
-    constexpr bool kRequireImbueToUseFacet_ = false; // example uses it, and code inside windows tmget seems to reference it, but no logic for this, and no clear docs (and works same either way apparently)
-}
-
 /*
  ********************************************************************************
  **************************** Date::FormatException *****************************

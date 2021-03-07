@@ -747,6 +747,20 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 #endif
 #endif
 
+
+/*
+ *      ACCORDING To https://en.cppreference.com/w/cpp/locale/time_get/get
+ * 
+ *              m	parses the month as a decimal number (range [01,12]), leading zeroes permitted but not required
+ * 
+ *      CODE to reprodcue bug online:
+ *              https://onlinegdb.com/Sy1IZ0-md
+ * 
+ *      GCC bug report:
+ *              https://gcc.gnu.org/bugzilla/show_bug.cgi?id=99439
+ * 
+ *      but libstdc++ doesn't appear to support the leading zero.
+ */
 #ifndef qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy
 #if defined(__GLIBCXX__) && __GLIBCXX__ <= GLIBCXX_10x_
 #define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy 1
