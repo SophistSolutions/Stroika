@@ -147,13 +147,13 @@ optional<Date> Date::LocaleFreeParseMonthDayYear_ (const wstring& rep, size_t* c
     int month = 0;
     int day   = 0;
     DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
-    int pos;
-    int nItems = ::swscanf (rep.c_str (), L"%d/%d/%d%n", &month, &day, &year, &pos);
+    unsigned int pos{}; // doesn't count fixed characters, just % characters
+    int          nItems = ::swscanf (rep.c_str (), L"%d/%d/%d%n", &month, &day, &year, &pos);
     DISABLE_COMPILER_MSC_WARNING_END (4996)
-    if (nItems == 4) {
+    if (nItems == 3) {
         if (consumedCharsInStringUpTo != nullptr) {
-            Assert (pos < rep.length ());
-            *consumedCharsInStringUpTo = pos;
+            Assert (pos+2 < rep.length ());
+            *consumedCharsInStringUpTo = pos+2;
         }
         return Date{Safe_jday_ (MonthOfYear (month), DayOfMonth (day), Year (year))};
     }
