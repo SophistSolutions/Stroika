@@ -600,7 +600,7 @@ String DateTime::Format (PrintFormat pf) const
         case PrintFormat::eISO8601: {
             String r = fDate_.Format (Date::kISO8601Format);
             if (fTimeOfDay_.has_value ()) {
-                String timeStr = fTimeOfDay_->Format (TimeOfDay::PrintFormat::eISO8601);
+                String timeStr = fTimeOfDay_->Format (TimeOfDay::kISO8601Format);
                 r += L"T"sv + timeStr;
                 if (fTimezone_) {
                     if (fTimezone_ == Timezone::kUTC) {

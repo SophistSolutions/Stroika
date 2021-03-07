@@ -40,10 +40,6 @@ using namespace Time;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
-namespace {
-    constexpr bool kRequireImbueToUseFacet_ = false; // example uses it, and code inside windows tmget seems to reference it, but no logic for this, and no clear docs (and works same either way apparently)
-}
-
 #if qPlatform_Windows
 namespace {
     TimeOfDay mkTimeOfDay_ (const ::SYSTEMTIME& sysTime)
@@ -58,6 +54,38 @@ namespace {
     }
 }
 #endif
+
+namespace {
+    constexpr bool      kLocaleIndependent_iso8601_PerformanceOptimization_ = true; // TBD if this is actual performance help or not
+    optional<TimeOfDay> LocaleIndependent_Parse_iso8601_ (const String& rep)
+    {
+        int hour   = 0;
+        int minute = 0;
+        int secs   = 0;
+        DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
+        if (::swscanf (rep.c_str (), L"%d:%d:%d", &hour, &minute, &secs) >= 2) {
+            hour   = std::max (hour, 0);
+            hour   = std::min (hour, 23);
+            minute = std::max (minute, 0);
+            minute = std::min (minute, 59);
+            secs   = std::max (secs, 0);
+            secs   = std::min (secs, 59);
+            return TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (secs)};
+        }
+        DISABLE_COMPILER_MSC_WARNING_END (4996)
+        return nullopt;
+    }
+    String LocaleIndependent_Format_iso8601_ (uint32_t timeInSeconds)
+    {
+        uint32_t hour    = timeInSeconds / (60 * 60);
+        uint32_t minutes = (timeInSeconds - hour * 60 * 60) / 60;
+        uint32_t secs    = timeInSeconds - hour * 60 * 60 - minutes * 60;
+        Assert (hour >= 0 and hour < 24);
+        Assert (minutes >= 0 and minutes < 60);
+        Assert (secs >= 0 and secs < 60);
+        return ::Format (L"%02d:%02d:%02d", hour, minutes, secs);
+    }
+}
 
 /*
  ********************************************************************************
@@ -108,31 +136,9 @@ namespace {
 }
 #endif
 
-//%t        Any white space.
-//%T        The time as %H : %M : %S. (iso8601 format)
-//%r        is the time as %I:%M:%S %p
-//%M        The minute [00,59]; leading zeros are permitted but not required.
-//%p        Either 'AM' or 'PM' according to the given time value, or the corresponding strings for the current locale. Noon is treated as 'pm' and midnight as 'am'.
-//%P        Like %p but in lowercase: 'am' or 'pm' or a corresponding string for the current locale. (GNU)
-//%S        The seconds [00,60]; leading zeros are permitted but not required.
-const Traversal::Iterable<String> TimeOfDay::kDefaultParseFormats{
-    kLocaleStandardFormat,
-    kLocaleStandardAlternateFormat,
-    kISO8601Format,
-    L"%r"sv,
-    L"%H:%M"sv,
-    L"%I%p"sv,
-    L"%I%P"sv,
-    L"%I%t%p"sv,
-    L"%I%t%P"sv,
-    L"%I:%M%t%p"sv,
-    L"%I:%M%t%P"sv,
-    L"%I:%M:%S%t%p"sv,
-    L"%I:%M:%S%t%P"sv,
-    L"%I:%M:%S"sv,
-    L"%I:%M"sv,
-};
-
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
 TimeOfDay TimeOfDay::Parse (const String& rep, ParseFormat pf)
 {
     switch (pf) {
@@ -140,20 +146,9 @@ TimeOfDay TimeOfDay::Parse (const String& rep, ParseFormat pf)
             return Parse (rep, locale{});
         }
         case ParseFormat::eISO8601: {
-            int hour   = 0;
-            int minute = 0;
-            int secs   = 0;
-            DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
-            if (::swscanf (rep.c_str (), L"%d:%d:%d", &hour, &minute, &secs) >= 2) {
-                hour   = std::max (hour, 0);
-                hour   = std::min (hour, 23);
-                minute = std::max (minute, 0);
-                minute = std::min (minute, 59);
-                secs   = std::max (secs, 0);
-                secs   = std::min (secs, 59);
-                return TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (secs)};
+            if (auto r = LocaleIndependent_Parse_iso8601_ (rep)) {
+                return *r;
             }
-            DISABLE_COMPILER_MSC_WARNING_END (4996)
         }
         default: {
             AssertNotReached ();
@@ -161,6 +156,9 @@ TimeOfDay TimeOfDay::Parse (const String& rep, ParseFormat pf)
     }
     Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty TimeOfDay{}
 }
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
 
 TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l)
 {
@@ -170,10 +168,9 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l)
     if (rep.empty ()) {
         Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty TimeOfDay{}
     }
-
     auto result = Parse (rep, l, kDefaultParseFormats);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"returning '%s'", Characters::ToString (result).c_str ());
+    DbgTrace (L"returning %s", Characters::ToString (result).c_str ());
 #endif
     return result;
 }
@@ -186,62 +183,112 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l, const Traversal:
     if (rep.empty ()) {
         Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty TimeOfDay{}
     }
-    wstring wRep = rep.As<wstring> ();
-
-    const time_get<wchar_t>& tmget    = use_facet<time_get<wchar_t>> (l);
-    ios::iostate             errState = ios::goodbit;
-    tm                       when{};
-
+    wstring                  wRep  = rep.As<wstring> ();
+    const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
     for (const auto& formatPattern : formatPatterns) {
-        errState = ios::goodbit;
-        wistringstream iss{wRep};
-        if constexpr (kRequireImbueToUseFacet_) {
-            iss.imbue (l);
+        if (auto o = QuietParse_ (wRep, tmget, formatPattern)) {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"returning %s", Characters::ToString (*o).c_str ());
+#endif
+            return *o;
         }
-        istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
-        istreambuf_iterator<wchar_t> itend;        // end-of-stream
+    }
+    Execution::Throw (FormatException::kThe);
+}
 
+TimeOfDay TimeOfDay::Parse (const String& rep, const String& formatPattern)
+{
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"TimeOfDay::Parse", L"rep=%s", rep.c_str ())};
+#endif
+    if (rep.empty ()) {
+        Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty TimeOfDay{}
+    }
+    if (auto o = QuietParse_ (rep.As<wstring> (), formatPattern)) {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace (L"returning %s", Characters::ToString (*o).c_str ());
+#endif
+        return *o;
+    }
+    Execution::Throw (FormatException::kThe);
+}
+
+TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l, const String& formatPattern)
+{
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"TimeOfDay::Parse", L"rep='%s', l='%s'", rep.c_str (), String::FromNarrowSDKString (l.name ()).c_str ())};
+#endif
+    if (rep.empty ()) {
+        Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty TimeOfDay{}
+    }
+    if (auto o = QuietParse_ (rep.As<wstring> (), use_facet<time_get<wchar_t>> (l), formatPattern)) {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace (L"returning %s", Characters::ToString (*o).c_str ());
+#endif
+        return *o;
+    }
+    Execution::Throw (FormatException::kThe);
+}
+
+optional<TimeOfDay> TimeOfDay::QuietParse (const String& rep, const String& formatPattern)
+{
+    if (rep.empty ()) {
+        return nullopt;
+    }
+    return QuietParse_ (rep.As<wstring> (), formatPattern);
+}
+
+optional<TimeOfDay> TimeOfDay::QuietParse (const String& rep, const locale& l, const String& formatPattern)
+{
+    if (rep.empty ()) {
+        return nullopt;
+    }
+    return QuietParse_ (rep.As<wstring> (), use_facet<time_get<wchar_t>> (l), formatPattern);
+}
+
+optional<TimeOfDay> TimeOfDay::QuietParse_ (const wstring& rep, const String& formatPattern)
+{
+    if (kLocaleIndependent_iso8601_PerformanceOptimization_ and formatPattern == kISO8601Format) {
+        return LocaleIndependent_Parse_iso8601_ (rep);
+    }
+    return QuietParse_ (rep, use_facet<time_get<wchar_t>> (locale{}), formatPattern);
+}
+
+optional<TimeOfDay> TimeOfDay::QuietParse_ (const wstring& rep, const time_get<wchar_t>& tmget, const String& formatPattern)
+{
+    ios::iostate                 errState = ios::goodbit;
+    tm                           when{};
+    wistringstream               iss{rep};
+    istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
+    istreambuf_iterator<wchar_t> itend;        // end-of-stream
 #if qCompilerAndStdLib_std_get_time_pctx_Buggy
-        if (formatPattern == L"%X") {
-            tmget.get_time (itbegin, itend, iss, errState, &when);
-        }
-        else {
-            // Best I can see to do to workaround this bug
-            DISABLE_COMPILER_MSC_WARNING_START (4996);
-            return Parse_ (rep, LOCALE_USER_DEFAULT);
-            DISABLE_COMPILER_MSC_WARNING_END (4996);
-        }
+    if (formatPattern == L"%X") {
+        tmget.get_time (itbegin, itend, iss, errState, &when);
+    }
+    else {
+        // Best I can see to do to workaround this bug
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
+        return Parse_ (rep, LOCALE_USER_DEFAULT);
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
+    }
 #else
-        (void)tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
+    (void)tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
 #endif
-        if ((errState & ios::badbit) or (errState & ios::failbit))
-            [[UNLIKELY_ATTR]] {
-#if qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy
-            {
-                errState = (::strptime (rep.AsNarrowSDKString ().c_str (), formatPattern.AsNarrowSDKString ().c_str (), &when) == nullptr) ? ios::failbit : ios::goodbit;
-                if (errState == ios::goodbit) {
-                    break;
-                }
-            }
-#endif
-            continue;
-        }
-        else {
-            break;
-        }
-    }
-    // clang-format off
     if ((errState & ios::badbit) or (errState & ios::failbit)) [[UNLIKELY_ATTR]] {
-        Execution::Throw (FormatException::kThe);
+#if qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy
+        errState = (::strptime (rep.AsNarrowSDKString ().c_str (), formatPattern.AsNarrowSDKString ().c_str (), &when) == nullptr) ? ios::failbit : ios::goodbit;
+#endif
     }
-    // clang-format on
+    if ((errState & ios::badbit) or (errState & ios::failbit)) [[UNLIKELY_ATTR]] {
+        return nullopt;
+    }
 
-    Assert (0 <= when.tm_hour and when.tm_hour <= 23);
-    Assert (0 <= when.tm_min and when.tm_min <= 59);
-    Assert (0 <= when.tm_sec and when.tm_sec <= 59);
+    Ensure (0 <= when.tm_hour and when.tm_hour <= 23);
+    Ensure (0 <= when.tm_min and when.tm_min <= 59);
+    Ensure (0 <= when.tm_sec and when.tm_sec <= 59);
     auto result = TimeOfDay{static_cast<unsigned> (when.tm_hour), static_cast<unsigned> (when.tm_min), static_cast<unsigned> (when.tm_sec)};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"returning '%s'", Characters::ToString (result).c_str ());
+    DbgTrace (L"returning %s", Characters::ToString (result).c_str ());
 #endif
     return result;
 }
@@ -280,15 +327,15 @@ String TimeOfDay::Format (PrintFormat pf) const
             }
             return tmp;
         }
+            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
         case PrintFormat::eISO8601: {
-            uint32_t hour    = fTime_ / (60 * 60);
-            uint32_t minutes = (fTime_ - hour * 60 * 60) / 60;
-            uint32_t secs    = fTime_ - hour * 60 * 60 - minutes * 60;
-            Assert (hour >= 0 and hour < 24);
-            Assert (minutes >= 0 and minutes < 60);
-            Assert (secs >= 0 and secs < 60);
-            return ::Format (L"%02d:%02d:%02d", hour, minutes, secs);
+            return LocaleIndependent_Format_iso8601_ (fTime_);
         }
+            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
         default: {
             AssertNotReached ();
             return String{};
@@ -298,11 +345,14 @@ String TimeOfDay::Format (PrintFormat pf) const
 
 String TimeOfDay::Format (const locale& l) const
 {
-    return Format (l, L"%X"sv); // %X locale dependent
+    return Format (l, kLocaleStandardFormat);
 }
 
 String TimeOfDay::Format (const String& formatPattern) const
 {
+    if (kLocaleIndependent_iso8601_PerformanceOptimization_ and formatPattern == kISO8601Format) {
+        return LocaleIndependent_Format_iso8601_ (fTime_);
+    }
     return Format (locale{}, formatPattern);
 }
 
@@ -316,7 +366,6 @@ String TimeOfDay::Format (const locale& l, const String& formatPattern) const
     when.tm_sec                    = GetSeconds ();
     const time_put<wchar_t>& tmput = use_facet<time_put<wchar_t>> (l);
     wostringstream           oss;
-    //oss.imbue (l);        // not sure if/why needed/not/needed
     tmput.put (oss, oss, ' ', &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
     return oss.str ();
 }

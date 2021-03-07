@@ -197,10 +197,10 @@ namespace {
         {
             // Not sure these should ALWAYS work in any locale. Probably not. But any locale I'd test in??? Maybe... Good for starters anyhow...
             //      -- LGP 2011-10-08
-            VerifyTestResult (TimeOfDay::Parse (L"3pm", TimeOfDay::ParseFormat::eCurrentLocale).GetAsSecondsCount () == 15 * 60 * 60);
-            VerifyTestResult (TimeOfDay::Parse (L"3am", TimeOfDay::ParseFormat::eCurrentLocale).GetAsSecondsCount () == 3 * 60 * 60);
-            VerifyTestResult (TimeOfDay::Parse (L"3:00", TimeOfDay::ParseFormat::eCurrentLocale).GetAsSecondsCount () == 3 * 60 * 60);
-            VerifyTestResult (TimeOfDay::Parse (L"16:00", TimeOfDay::ParseFormat::eCurrentLocale).GetAsSecondsCount () == 16 * 60 * 60);
+            VerifyTestResult (TimeOfDay::Parse (L"3pm").GetAsSecondsCount () == 15 * 60 * 60);
+            VerifyTestResult (TimeOfDay::Parse (L"3am").GetAsSecondsCount () == 3 * 60 * 60);
+            VerifyTestResult (TimeOfDay::Parse (L"3:00").GetAsSecondsCount () == 3 * 60 * 60);
+            VerifyTestResult (TimeOfDay::Parse (L"16:00").GetAsSecondsCount () == 16 * 60 * 60);
         }
         {
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
@@ -513,15 +513,15 @@ namespace {
             VerifyTestResult (d.As<time_t> () == 802278000); // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
-            DateTime d = DateTime{Date{Year{1995}, MonthOfYear::eJune, DayOfMonth{4}}, TimeOfDay::Parse (L"3pm", TimeOfDay::ParseFormat::eCurrentLocale)};
+            DateTime d = DateTime{Date{Year{1995}, MonthOfYear::eJune, DayOfMonth{4}}, TimeOfDay::Parse (L"3pm")};
             VerifyTestResult (d.As<time_t> () == 802278000); // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
-            DateTime d = DateTime{Date{Year{1995}, MonthOfYear::eJune, DayOfMonth{4}}, TimeOfDay::Parse (L"3am", TimeOfDay::ParseFormat::eCurrentLocale)};
+            DateTime d = DateTime{Date{Year{1995}, MonthOfYear::eJune, DayOfMonth{4}}, TimeOfDay::Parse (L"3am")};
             VerifyTestResult (d.As<time_t> () == 802234800); // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
-            DateTime d = DateTime{Date{Year{1995}, MonthOfYear::eJune, DayOfMonth{4}}, TimeOfDay::Parse (L"3:00", TimeOfDay::ParseFormat::eCurrentLocale)};
+            DateTime d = DateTime{Date{Year{1995}, MonthOfYear::eJune, DayOfMonth{4}}, TimeOfDay::Parse (L"3:00")};
             VerifyTestResult (d.As<time_t> () == 802234800); // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
@@ -687,7 +687,7 @@ namespace {
     {
         TraceContextBumper ctx{"Test_8_DateTimeWithDuration_"};
         {
-            DateTime d = DateTime{Date{Year{1995}, MonthOfYear::eJune, DayOfMonth{4}}, TimeOfDay::Parse (L"3:00", TimeOfDay::ParseFormat::eCurrentLocale)};
+            DateTime d = DateTime{Date{Year{1995}, MonthOfYear::eJune, DayOfMonth{4}}, TimeOfDay::Parse (L"3:00")};
             VerifyTestResult (d.As<time_t> () == 802234800); // source - http://www.onlineconversion.com/unix_time.htm
             const Duration k30Days = Duration{L"P30D"};
             DateTime       d2      = d + k30Days;
