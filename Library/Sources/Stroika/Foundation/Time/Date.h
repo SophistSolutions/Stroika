@@ -476,6 +476,9 @@ namespace Stroika::Foundation::Time {
         constexpr static JulianRepType Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year);
 
     private:
+        static optional<Date> LocaleFreeParseMonthDayYear_ (const wstring& rep, size_t* consumedCharsInStringUpTo);
+
+    private:
         static Date AsDate_ (const ::tm& when);
 
     private:
