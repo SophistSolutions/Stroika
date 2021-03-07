@@ -261,8 +261,7 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
             return Parse (rep, locale{});
         } break;
         case ParseFormat::eISO8601: {
-            if (rep.empty ())
-                [[UNLIKELY_ATTR]] {
+            if (rep.empty ()) [[UNLIKELY_ATTR]] {
                 Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
             }
 
