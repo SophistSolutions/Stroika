@@ -572,9 +572,9 @@ String DateTime::Format (PrintFormat pf) const
         case PrintFormat::eCurrentLocale: {
             return Format (locale{});
         } break;
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
+            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
         case PrintFormat::eCurrentLocale_WithZerosStripped: {
             /*
              *  Use basic current locale formatting, and then use regexp to find special case 0s to strip.
@@ -679,7 +679,7 @@ String DateTime::Format (const locale& l, const String& formatPattern) const
     tmput.put (oss, oss, ' ', &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
     // docs aren't clear about expectations, but glibc (gcc8) produces trailing whitespace which
     // is not good. Unsure if thats glibc bug or my correction here makes sense -- LGP 2018-10-16
-    return String {oss.str ()}.RTrim ();
+    return String{oss.str ()}.RTrim ();
 }
 
 String DateTime::ToString () const
