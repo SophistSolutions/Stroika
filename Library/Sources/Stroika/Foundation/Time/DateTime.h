@@ -75,6 +75,13 @@ namespace Stroika::Foundation::Time {
      *          localtime changes, the DateTime then is relative to that new localetime. If the associated timezone is localtime, the
      *          interpretation of that timezone happens at the time a request requires it.
      *
+     *  \note   Why no kISO8601Format string and use of enum eISO8601 instead? https://en.cppreference.com/w/cpp/locale/time_put/put may provide
+     *          enough information (a little unclear on the Z/timezone part) to WRITE an ISO8601 format string for date time, but 
+     *          https://en.cppreference.com/w/cpp/locale/time_get/get doesnt come very close to suporting ISO 8601 format.
+     * 
+     *  \todo   consider if eRFC1123 could be done as kRFC1123Format; see note about about kISO8601Format/eISO8601, but the same issues
+     *          apply (unclear good enuf support for timezones). BUT could reconsider.
+     *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
      *
@@ -148,11 +155,11 @@ namespace Stroika::Foundation::Time {
          *          Tue, 6 Nov 2018 06:25:51 -0800 (PST)
          */
         enum class ParseFormat : uint8_t {
-            eCurrentLocale,
             eISO8601,
+            eCurrentLocale [[deprecated ("Since Stroika 2.1b10, use Parse (rep) or Parse (rep,locale{}) for this behavior")]],
             eRFC1123,
 
-            Stroika_Define_Enum_Bounds (eCurrentLocale, eRFC1123)
+            Stroika_Define_Enum_Bounds (eISO8601, eRFC1123)
         };
 
     public:
@@ -200,6 +207,8 @@ namespace Stroika::Foundation::Time {
          *  Parse will throw if the argument cannot be parsed as a valid DateTime.
          *
          *  \note If the timezone cannot be identified in the source string, it will be returned as 'unknown'.
+         * 
+         *  \note for Parse () overloads which don't specify a locale, the default locale (locale{}) is used (unless the formatPattern is locale independent)
          *
          *  For formatPattern, see https://en.cppreference.com/w/cpp/locale/time_get/get, and defaults to kLocaleStandardFormat
          *
@@ -211,8 +220,10 @@ namespace Stroika::Foundation::Time {
          *  \note   @todo - https://stroika.atlassian.net/browse/STK-671 - DateTime::Format and Parse () incorrectly handle the format strings %z and %Z (sort of)
          */
         static DateTime Parse (const String& rep, ParseFormat pf);
-        static DateTime Parse (const String& rep, const locale& l);
+        static DateTime Parse (const String& rep, const locale& l = locale{});
+        static DateTime Parse (const String& rep, const locale& l, const String& formatPattern);
         static DateTime Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns);
+        static DateTime Parse (const String& rep, const String& formatPattern);
 
     public:
         /**
@@ -237,10 +248,6 @@ namespace Stroika::Foundation::Time {
          * DateTime::kMax is the last date this DateTime class supports representing.
          */
         static const DateTime kMax; // defined constexpr
-
-    public:
-        [[deprecated ("Since Stroika 2.1b4 use kMin")]] static constexpr DateTime min ();
-        [[deprecated ("Since Stroika 2.1b4 use kMax")]] static constexpr DateTime max ();
 
     public:
         /**
@@ -350,6 +357,8 @@ namespace Stroika::Foundation::Time {
          *
          *  \note A locale has no associated timezone (despite somewhat confusing documentation relating to this).
          *        @see https://stackoverflow.com/questions/52839648/does-a-c-locale-have-an-associated-timezone-and-if-yes-how-do-you-access-it
+         * 
+         *  \note for apis with the locale not specified, its assumed to be the default (locale{}), except (perhaps) where the formatString is locale-independent.
          *
          *  \note   @todo - https://stroika.atlassian.net/browse/STK-671 - DateTime::Format and Parse () incorrectly handle the format strings %z and %Z (sort of)
          */
@@ -475,6 +484,10 @@ namespace Stroika::Foundation::Time {
     public:
         struct ThreeWayComparer;
 
+    public:
+        [[deprecated ("Since Stroika 2.1b4 use kMin")]] static constexpr DateTime min ();
+        [[deprecated ("Since Stroika 2.1b4 use kMax")]] static constexpr DateTime max ();
+
     private:
         optional<Timezone>  fTimezone_;
         Date                fDate_;
@@ -514,6 +527,19 @@ namespace Stroika::Foundation::Time {
 #endif
     template <>
     Date DateTime::As () const;
+
+    inline const Traversal::Iterable<String> DateTime::kDefaultParseFormats{
+        kLocaleStandardFormat,
+        kLocaleStandardAlternateFormat,
+        L"%x %X"sv,
+        L"%Ex %EX"sv,
+        L"%Y-%b-%d %H:%M:%S"sv, // no obvious reference for this so maybe not a good idea
+        L"%D%t%T"sv,            // no obvious reference for this so maybe not a good idea
+        L"%D%t%r"sv,            // no obvious reference for this so maybe not a good idea
+        L"%D%t%R"sv,            // no obvious reference for this so maybe not a good idea
+        L"%a %b %e %T %Y"sv,    // no obvious reference for this so maybe not a good idea
+    };
+
 
     /**
      */

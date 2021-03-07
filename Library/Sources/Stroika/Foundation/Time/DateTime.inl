@@ -137,15 +137,21 @@ namespace Stroika::Foundation::Time {
 }
 
 namespace Stroika::Foundation::Configuration {
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
 #endif
     constexpr EnumNames<Stroika::Foundation::Time::DateTime::ParseFormat> DefaultNames<Stroika::Foundation::Time::DateTime::ParseFormat>::k{
         EnumNames<Stroika::Foundation::Time::DateTime::ParseFormat>::BasicArrayInitializer{{
-            {Stroika::Foundation::Time::DateTime::ParseFormat::eCurrentLocale, L"Current-Locale"},
             {Stroika::Foundation::Time::DateTime::ParseFormat::eISO8601, L"ISO-8601"},
+            {Stroika::Foundation::Time::DateTime::ParseFormat::eCurrentLocale, L"Current-Locale"},
             {Stroika::Foundation::Time::DateTime::ParseFormat::eRFC1123, L"RFC-1123"},
         }}};
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
 #endif

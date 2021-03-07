@@ -241,18 +241,6 @@ DateTime::DateTime (const ::FILETIME& fileTime, const optional<Timezone>& tz) no
 }
 #endif
 
-const Traversal::Iterable<String> DateTime::kDefaultParseFormats{
-    kLocaleStandardFormat,
-    kLocaleStandardAlternateFormat,
-    L"%x %X"sv,
-    L"%Ex %EX"sv,
-    L"%Y-%b-%d %H:%M:%S"sv, // no obvious reference for this so maybe not a good idea
-    L"%D%t%T"sv,            // no obvious reference for this so maybe not a good idea
-    L"%D%t%r"sv,            // no obvious reference for this so maybe not a good idea
-    L"%D%t%R"sv,            // no obvious reference for this so maybe not a good idea
-    L"%a %b %e %T %Y"sv,    // no obvious reference for this so maybe not a good idea
-};
-
 DateTime DateTime::Parse (const String& rep, ParseFormat pf)
 {
     // note - incoming rep.empty () now produces a throw, but handled in each case so no need here too
@@ -417,6 +405,11 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
     }
 }
 
+DateTime DateTime::Parse (const String& rep, const locale& l, const String& formatPattern)
+{
+    return Parse (rep, l, Traversal::Iterable<String>{formatPattern));
+}
+
 DateTime DateTime::Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns)
 {
     // clang-format off
@@ -470,6 +463,11 @@ DateTime DateTime::Parse (const String& rep, const locale& l, const Traversal::I
     // clang-format on
 
     return DateTime{when, Timezone::kUnknown};
+}
+
+DateTime DateTime::Parse (const String& rep, const String& formatPattern)
+{
+    return Parse (rep, locale{}, formatPattern);
 }
 
 DateTime DateTime::AsLocalTime () const
