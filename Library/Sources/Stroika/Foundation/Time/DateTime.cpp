@@ -245,9 +245,15 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
 {
     // note - incoming rep.empty () now produces a throw, but handled in each case so no need here too
     switch (pf) {
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
         case ParseFormat::eCurrentLocale: {
             return Parse (rep, locale{});
         } break;
+            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
         case ParseFormat::eISO8601: {
             if (rep.empty ()) [[UNLIKELY_ATTR]] {
                 Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
@@ -407,7 +413,7 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
 
 DateTime DateTime::Parse (const String& rep, const locale& l, const String& formatPattern)
 {
-    return Parse (rep, l, Traversal::Iterable<String>{formatPattern));
+    return Parse (rep, l, Traversal::Iterable<String>{formatPattern});
 }
 
 DateTime DateTime::Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns)
