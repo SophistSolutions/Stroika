@@ -276,7 +276,7 @@ optional<TimeOfDay> TimeOfDay::QuietParse_ (const wstring& rep, const time_get<w
 #endif
     if ((errState & ios::badbit) or (errState & ios::failbit)) [[UNLIKELY_ATTR]] {
 #if qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy
-        errState = (::strptime (rep.AsNarrowSDKString ().c_str (), formatPattern.AsNarrowSDKString ().c_str (), &when) == nullptr) ? ios::failbit : ios::goodbit;
+        errState = (::strptime (String{rep}.AsNarrowSDKString ().c_str (), formatPattern.AsNarrowSDKString ().c_str (), &when) == nullptr) ? ios::failbit : ios::goodbit;
 #endif
     }
     if ((errState & ios::badbit) or (errState & ios::failbit)) [[UNLIKELY_ATTR]] {
