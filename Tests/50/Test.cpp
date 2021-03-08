@@ -113,10 +113,12 @@ namespace {
 
         auto tmget_dot_get_locale_date_order_buggy_test_ = [] () {
             try {
-                std::locale                  l{"en_US"}; // originally tested with locale {} - which defaulted to C-locale
+                std::locale                  l{"en_US.utf8"}; // originally tested with locale {} - which defaulted to C-locale
                 const time_get<wchar_t>&     tmget = use_facet<time_get<wchar_t>> (l);
                 ios::iostate                 state = ios::goodbit;
                 wistringstream               iss (L"03/07/21 16:18:47");
+                const tm                     kTargetTM_MDY_{47, 18, 15, 7, 2, 121};
+                const tm                     kTargetTM_DMY_{47, 18, 15, 3, 6, 121};
                 istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
                 istreambuf_iterator<wchar_t> itend;        // end-of-stream
                 tm                           resultTM{};
@@ -125,12 +127,20 @@ namespace {
                 VerifyTestResult (not((state & ios::badbit) or (state & ios::failbit)));
                 if (tmget.date_order () == time_base::mdy) {
 #if qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
-                    VerifyTestResult (resultTM.tm_mday == 3);
-                    VerifyTestResult (resultTM.tm_mon == 6); // zero based
+                    VerifyTestResult (resultTM.tm_mday == kTargetTM_MDY_.tm_mday);
+                    VerifyTestResult (resultTM.tm_mon == kTargetTM_MDY_.tm_mon);
 #else
-                    // Correct answers
-                    VerifyTestResult (resultTM.tm_mon == 2); // zero based
-                    VerifyTestResult (resultTM.tm_mday == 7);
+                    VerifyTestResult (resultTM.tm_mday == kTargetTM_MDY_.tm_mday);
+                    VerifyTestResult (resultTM.tm_mon == kTargetTM_MDY_.tm_mon);
+#endif
+                }
+                else if (tmget.date_order () == time_base::dmy) {
+#if qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
+                    VerifyTestResult (resultTM.tm_mday == kTargetTM_DMY_.tm_mday);
+                    VerifyTestResult (resultTM.tm_mon == kTargetTM_DMY_.tm_mon);
+#else
+                    VerifyTestResult (resultTM.tm_mday == kTargetTM_DMY_.tm_mday);
+                    VerifyTestResult (resultTM.tm_mon == kTargetTM_DMY_.tm_mon);
 #endif
                 }
             }
