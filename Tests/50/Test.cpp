@@ -123,14 +123,16 @@ namespace {
                 VerifyTestResult (tmget.date_order () == time_base::mdy); // correct but still parsed in wrong order
                 [[maybe_unused]] auto i = tmget.get (itbegin, itend, iss, state, &resultTM, DateTime::kShortLocaleFormatPattern.data (), DateTime::kShortLocaleFormatPattern.data () + DateTime::kShortLocaleFormatPattern.length ());
                 VerifyTestResult (not((state & ios::badbit) or (state & ios::failbit)));
+                if (tmget.date_order () == time_base::mdy) {
 #if qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
-                VerifyTestResult (resultTM.tm_mday == 3);
-                VerifyTestResult (resultTM.tm_mon == 6); // zero based
+                    VerifyTestResult (resultTM.tm_mday == 3);
+                    VerifyTestResult (resultTM.tm_mon == 6); // zero based
 #else
-                // Correct answers
-                VerifyTestResult (resultTM.tm_mon == 2); // zero based
-                VerifyTestResult (resultTM.tm_mday == 7);
+                    // Correct answers
+                    VerifyTestResult (resultTM.tm_mon == 2); // zero based
+                    VerifyTestResult (resultTM.tm_mday == 7);
 #endif
+                }
             }
             catch (...) {
                 Stroika::TestHarness::WarnTestIssue (L"tmget_dot_get_locale_date_order_buggy_test_ skipped - usually because of missing locale");
