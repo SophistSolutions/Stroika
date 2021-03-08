@@ -452,7 +452,7 @@ optional<DateTime> DateTime::ParseQuietly_ (const wstring& rep, const time_get<w
     istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
     istreambuf_iterator<wchar_t> itend;        // end-of-stream
 
-    istreambuf_iterator<wchar_t> i = tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
+    [[maybe_unused]] istreambuf_iterator<wchar_t> i = tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
 #if qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
     // Now that I've understood this bug better, I think I can do a better/wider workaround, not just this specail case...
     if (formatPattern == L"%x %X") {
