@@ -133,7 +133,7 @@ namespace {
 #endif
             }
             catch (...) {
-                DbgTrace (L"tmget_dot_get_locale_date_order_buggy_test_ skipped - usually because of missing locale");
+                Stroika::TestHarness::WarnTestIssue (L"tmget_dot_get_locale_date_order_buggy_test_ skipped - usually because of missing locale");
             }
         };
 
