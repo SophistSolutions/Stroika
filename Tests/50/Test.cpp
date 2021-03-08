@@ -116,20 +116,22 @@ namespace {
                 std::locale                  l{"en_US.utf8"}; // originally tested with locale {} - which defaulted to C-locale
                 const time_get<wchar_t>&     tmget = use_facet<time_get<wchar_t>> (l);
                 ios::iostate                 state = ios::goodbit;
-                wistringstream               iss (L"03/07/21 16:18:47");
+                wistringstream               iss{L"03/07/21 16:18:47"};
                 const tm                     kTargetTM_MDY_{47, 18, 15, 7, 2, 21};
                 const tm                     kTargetTM_DMY_{47, 18, 15, 3, 6, 21};
                 istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
                 istreambuf_iterator<wchar_t> itend;        // end-of-stream
                 tm                           resultTM{};
-                VerifyTestResultWarning (tmget.date_order () == time_base::mdy); // correct but still parsed in wrong order (qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy)
+                // GCC reports no_order (not technically a bug, but wierd) - but appears to parse the dates properly anyhow
+                // Visual Studio gets the date_order() correct but still parsed in wrong order (qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy)
+                VerifyTestResultWarning (tmget.date_order () == time_base::mdy or tmget.date_order () == time_base::no_order);
                 [[maybe_unused]] auto i = tmget.get (itbegin, itend, iss, state, &resultTM, DateTime::kShortLocaleFormatPattern.data (), DateTime::kShortLocaleFormatPattern.data () + DateTime::kShortLocaleFormatPattern.length ());
                 VerifyTestResult (not((state & ios::badbit) or (state & ios::failbit)));
                 VerifyTestResult (resultTM.tm_sec == kTargetTM_MDY_.tm_sec);
                 VerifyTestResult (resultTM.tm_min == kTargetTM_MDY_.tm_min);
                 VerifyTestResult (resultTM.tm_mday == kTargetTM_MDY_.tm_mday);
                 VerifyTestResult (resultTM.tm_year == kTargetTM_MDY_.tm_year);
-                if (tmget.date_order () == time_base::mdy) {
+                if (tmget.date_order () == time_base::mdy or tmget.date_order () == time_base::no_order) {
 #if qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
                     VerifyTestResult (resultTM.tm_mday == kTargetTM_MDY_.tm_mday);
                     VerifyTestResult (resultTM.tm_mon == kTargetTM_MDY_.tm_mon);
