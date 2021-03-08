@@ -120,7 +120,7 @@ namespace {
                 istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
                 istreambuf_iterator<wchar_t> itend;        // end-of-stream
                 tm                           resultTM{};
-                VerifyTestResult (tmget.date_order () == time_base::mdy); // correct but still parsed in wrong order (qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy)
+                VerifyTestResultWarning (tmget.date_order () == time_base::mdy); // correct but still parsed in wrong order (qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy)
                 [[maybe_unused]] auto i = tmget.get (itbegin, itend, iss, state, &resultTM, DateTime::kShortLocaleFormatPattern.data (), DateTime::kShortLocaleFormatPattern.data () + DateTime::kShortLocaleFormatPattern.length ());
                 VerifyTestResult (not((state & ios::badbit) or (state & ios::failbit)));
                 if (tmget.date_order () == time_base::mdy) {
