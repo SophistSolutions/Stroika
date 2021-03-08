@@ -140,7 +140,6 @@ namespace {
         };
 
         tmget_dot_get_locale_date_order_buggy_test_ ();
-);
     }
 }
 
