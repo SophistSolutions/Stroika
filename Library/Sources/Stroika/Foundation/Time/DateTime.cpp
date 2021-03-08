@@ -416,7 +416,7 @@ DateTime DateTime::Parse (const String& rep, const locale& l, const String& form
     if (rep.empty ()) [[UNLIKELY_ATTR]] {
         Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
     }
-    if (auto o = QuietParse_ (rep.As<wstring> (), use_facet<time_get<wchar_t>> (l), formatPattern)) {
+    if (auto o = ParseQuietly_ (rep.As<wstring> (), use_facet<time_get<wchar_t>> (l), formatPattern)) {
         return *o;
     }
     Execution::Throw (FormatException::kThe);
@@ -430,7 +430,7 @@ DateTime DateTime::Parse (const String& rep, const locale& l, const Traversal::I
     wstring                  wRep  = rep.As<wstring> ();
     const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
     for (const auto& formatPattern : formatPatterns) {
-        if (auto o = QuietParse_ (wRep, tmget, formatPattern)) {
+        if (auto o = ParseQuietly_ (wRep, tmget, formatPattern)) {
             return *o;
         }
     }
@@ -442,7 +442,7 @@ DateTime DateTime::Parse (const String& rep, const String& formatPattern)
     return Parse (rep, locale{}, formatPattern);
 }
 
-optional<DateTime> DateTime::QuietParse_ (const wstring& rep, const time_get<wchar_t>& tmget, const String& formatPattern)
+optional<DateTime> DateTime::ParseQuietly_ (const wstring& rep, const time_get<wchar_t>& tmget, const String& formatPattern)
 {
     Require (not rep.empty ());
 

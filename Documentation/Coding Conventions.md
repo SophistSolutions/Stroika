@@ -483,6 +483,10 @@ Reasons:
 - Nullptr value maybe would be clearer with =0, which works, but everywhere else we initialize void\* ptr with nullptr.
 - CAN be repeated (without default value) – in the .inl file (definition).
 
-```
+---
 
-```
+## Quietly
+
+Most Stroika functions raise an exception when they fail. For example, Wait () methods etc, Parse() methods, etc.
+But sometimes you just want the thing to return an optional result (for speed and simplicity - cuz the failure case is common, not
+exceptional). To simplify these situations, many APIs have a 'Quietly' variant, that does what the main function does, but instead of raising an exception when it fails, it returns a nullopt.

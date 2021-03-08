@@ -298,11 +298,11 @@ namespace Stroika::Foundation::Time {
          * if locale is missing, and formatPattern is not locale independent, the current locale (locale{}) is used.
          *  if rep is empty, this will return nullopt
          */
-        static optional<Date>   QuietParse (const String& rep, const String& formatPattern);
-        static optional<Date>   QuietParse (const String& rep, const locale& l, const String& formatPattern);
+        static optional<Date> ParseQuietly (const String& rep, const String& formatPattern);
+        static optional<Date> ParseQuietly (const String& rep, const locale& l, const String& formatPattern);
 
     private:
-        static optional<Date> QuietParse_ (const wstring& rep, const time_get<wchar_t>& tmget, const String& formatPattern, size_t* consumedCharsInStringUpTo);
+        static optional<Date> ParseQuietly_ (const wstring& rep, const time_get<wchar_t>& tmget, const String& formatPattern, size_t* consumedCharsInStringUpTo);
 
     private:
         static Date Parse_ (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns, size_t* consumedCharsInStringUpTo);

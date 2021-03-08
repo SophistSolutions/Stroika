@@ -233,12 +233,12 @@ namespace Stroika::Foundation::Time {
          * if locale is missing, and formatPattern is not locale independent, the current locale (locale{}) is used.
          *  if rep is empty, this will return nullopt
          */
-        static optional<DateTime> QuietParse (const String& rep, const String& formatPattern);
-        static optional<DateTime> QuietParse (const String& rep, const locale& l, const String& formatPattern);
+        static optional<DateTime> ParseQuietly (const String& rep, const String& formatPattern);
+        static optional<DateTime> ParseQuietly (const String& rep, const locale& l, const String& formatPattern);
 
     private:
         // this rquires rep!= ""
-        static optional<DateTime> QuietParse_ (const wstring& rep, const time_get<wchar_t>& tmget, const String& formatPattern);
+        static optional<DateTime> ParseQuietly_ (const wstring& rep, const time_get<wchar_t>& tmget, const String& formatPattern);
 
     public:
         /**

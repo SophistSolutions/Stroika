@@ -68,16 +68,16 @@ namespace Stroika::Foundation::Time {
     {
         return Parse (rep, l, kDefaultParseFormats);
     }
-    inline optional<DateTime> DateTime::QuietParse (const String& rep, const String& formatPattern)
+    inline optional<DateTime> DateTime::ParseQuietly (const String& rep, const String& formatPattern)
     {
-        return QuietParse (rep, locale{}, formatPattern);
+        return ParseQuietly (rep, locale{}, formatPattern);
     }
-    inline optional<DateTime> DateTime::QuietParse (const String& rep, const locale& l, const String& formatPattern)
+    inline optional<DateTime> DateTime::ParseQuietly (const String& rep, const locale& l, const String& formatPattern)
     {
         if (rep.empty ()) [[UNLIKELY_ATTR]] {
             Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
         }
-        return QuietParse_ (rep.As<wstring> (), use_facet<time_get<wchar_t>> (l), formatPattern);
+        return ParseQuietly_ (rep.As<wstring> (), use_facet<time_get<wchar_t>> (l), formatPattern);
     }
     template <>
     inline Date DateTime::As () const

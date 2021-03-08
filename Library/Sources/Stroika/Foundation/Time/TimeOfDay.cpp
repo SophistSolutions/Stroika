@@ -186,7 +186,7 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l, const Traversal:
     wstring                  wRep  = rep.As<wstring> ();
     const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
     for (const auto& formatPattern : formatPatterns) {
-        if (auto o = QuietParse_ (wRep, tmget, formatPattern)) {
+        if (auto o = ParseQuietly_ (wRep, tmget, formatPattern)) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"returning %s", Characters::ToString (*o).c_str ());
 #endif
@@ -204,7 +204,7 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const String& formatPattern)
     if (rep.empty ()) {
         Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty TimeOfDay{}
     }
-    if (auto o = QuietParse_ (rep.As<wstring> (), formatPattern)) {
+    if (auto o = ParseQuietly_ (rep.As<wstring> (), formatPattern)) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"returning %s", Characters::ToString (*o).c_str ());
 #endif
@@ -221,7 +221,7 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l, const String& fo
     if (rep.empty ()) {
         Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty TimeOfDay{}
     }
-    if (auto o = QuietParse_ (rep.As<wstring> (), use_facet<time_get<wchar_t>> (l), formatPattern)) {
+    if (auto o = ParseQuietly_ (rep.As<wstring> (), use_facet<time_get<wchar_t>> (l), formatPattern)) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"returning %s", Characters::ToString (*o).c_str ());
 #endif
@@ -230,31 +230,31 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l, const String& fo
     Execution::Throw (FormatException::kThe);
 }
 
-optional<TimeOfDay> TimeOfDay::QuietParse (const String& rep, const String& formatPattern)
+optional<TimeOfDay> TimeOfDay::ParseQuietly (const String& rep, const String& formatPattern)
 {
     if (rep.empty ()) {
         return nullopt;
     }
-    return QuietParse_ (rep.As<wstring> (), formatPattern);
+    return ParseQuietly_ (rep.As<wstring> (), formatPattern);
 }
 
-optional<TimeOfDay> TimeOfDay::QuietParse (const String& rep, const locale& l, const String& formatPattern)
+optional<TimeOfDay> TimeOfDay::ParseQuietly (const String& rep, const locale& l, const String& formatPattern)
 {
     if (rep.empty ()) {
         return nullopt;
     }
-    return QuietParse_ (rep.As<wstring> (), use_facet<time_get<wchar_t>> (l), formatPattern);
+    return ParseQuietly_ (rep.As<wstring> (), use_facet<time_get<wchar_t>> (l), formatPattern);
 }
 
-optional<TimeOfDay> TimeOfDay::QuietParse_ (const wstring& rep, const String& formatPattern)
+optional<TimeOfDay> TimeOfDay::ParseQuietly_ (const wstring& rep, const String& formatPattern)
 {
     if (kLocaleIndependent_iso8601_PerformanceOptimization_ and formatPattern == kISO8601Format) {
         return LocaleIndependent_Parse_iso8601_ (rep);
     }
-    return QuietParse_ (rep, use_facet<time_get<wchar_t>> (locale{}), formatPattern);
+    return ParseQuietly_ (rep, use_facet<time_get<wchar_t>> (locale{}), formatPattern);
 }
 
-optional<TimeOfDay> TimeOfDay::QuietParse_ (const wstring& rep, const time_get<wchar_t>& tmget, const String& formatPattern)
+optional<TimeOfDay> TimeOfDay::ParseQuietly_ (const wstring& rep, const time_get<wchar_t>& tmget, const String& formatPattern)
 {
     ios::iostate                 errState = ios::goodbit;
     tm                           when{};

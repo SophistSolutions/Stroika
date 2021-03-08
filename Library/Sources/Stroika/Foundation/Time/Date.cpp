@@ -130,7 +130,7 @@ Date Date::Parse_ (const String& rep, const locale& l, const Traversal::Iterable
     wstring                  wRep  = rep.As<wstring> ();
     const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
     for (const auto& formatPattern : formatPatterns) {
-        if (auto r = QuietParse_ (wRep, tmget, formatPattern, consumedCharsInStringUpTo)) {
+        if (auto r = ParseQuietly_ (wRep, tmget, formatPattern, consumedCharsInStringUpTo)) {
             return *r;
         }
     }
@@ -156,7 +156,7 @@ optional<Date> Date::LocaleFreeParseMonthDayYear_ (const wstring& rep, size_t* c
     return nullopt;
 }
 
-optional<Date> Date::QuietParse_ (const wstring& rep, const time_get<wchar_t>& tmget, const String& formatPattern, size_t* consumedCharsInStringUpTo)
+optional<Date> Date::ParseQuietly_ (const wstring& rep, const time_get<wchar_t>& tmget, const String& formatPattern, size_t* consumedCharsInStringUpTo)
 {
     Require (not rep.empty ());
 #if qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy
