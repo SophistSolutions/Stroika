@@ -125,6 +125,9 @@ namespace {
                 VerifyTestResultWarning (tmget.date_order () == time_base::mdy); // correct but still parsed in wrong order (qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy)
                 [[maybe_unused]] auto i = tmget.get (itbegin, itend, iss, state, &resultTM, DateTime::kShortLocaleFormatPattern.data (), DateTime::kShortLocaleFormatPattern.data () + DateTime::kShortLocaleFormatPattern.length ());
                 VerifyTestResult (not((state & ios::badbit) or (state & ios::failbit)));
+                VerifyTestResult (resultTM.tm_sec == kTargetTM_MDY_.tm_sec);
+                VerifyTestResult (resultTM.tm_min == kTargetTM_MDY_.tm_min);
+                VerifyTestResult (resultTM.tm_mday == kTargetTM_MDY_.tm_mday);
                 if (tmget.date_order () == time_base::mdy) {
 #if qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
                     VerifyTestResult (resultTM.tm_mday == kTargetTM_MDY_.tm_mday);
