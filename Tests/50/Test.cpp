@@ -113,7 +113,7 @@ namespace {
 
         auto tmget_dot_get_locale_date_order_buggy_test_ = [] () {
             try {
-                std::locale                  l{"en-US"}; // originally tested with locale {} - which defaulted to C-locale
+                std::locale                  l{"en_US"}; // originally tested with locale {} - which defaulted to C-locale
                 const time_get<wchar_t>&     tmget = use_facet<time_get<wchar_t>> (l);
                 ios::iostate                 state = ios::goodbit;
                 wistringstream               iss (L"03/07/21 16:18:47");
