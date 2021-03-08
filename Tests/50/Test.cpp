@@ -112,26 +112,33 @@ namespace {
 #endif
 
         auto tmget_dot_get_locale_date_order_buggy_test_ = [] () {
-            std::locale                  l{Configuration::FindNamedLocale (L"en", L"us")}; // originally tested with locale {} - which defaulted to C-locale
-            const time_get<wchar_t>&     tmget = use_facet<time_get<wchar_t>> (l);
-            ios::iostate                 state = ios::goodbit;
-            wistringstream               iss (L"03/07/21 16:18:47");
-            istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
-            istreambuf_iterator<wchar_t> itend;        // end-of-stream
-            tm                           resultTM{};
-            VerifyTestResult (tmget.date_order () == time_base::mdy); // correct but still parsed in wrong order
-            [[maybe_unused]] auto i = tmget.get (itbegin, itend, iss, state, &resultTM, DateTime::kShortLocaleFormatPattern.data (), DateTime::kShortLocaleFormatPattern.data () + DateTime::kShortLocaleFormatPattern.length ());
-            VerifyTestResult (not((state & ios::badbit) or (state & ios::failbit)));
+            try {
+                std::locale                  l{"en-US"}; // originally tested with locale {} - which defaulted to C-locale
+                const time_get<wchar_t>&     tmget = use_facet<time_get<wchar_t>> (l);
+                ios::iostate                 state = ios::goodbit;
+                wistringstream               iss (L"03/07/21 16:18:47");
+                istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
+                istreambuf_iterator<wchar_t> itend;        // end-of-stream
+                tm                           resultTM{};
+                VerifyTestResult (tmget.date_order () == time_base::mdy); // correct but still parsed in wrong order
+                [[maybe_unused]] auto i = tmget.get (itbegin, itend, iss, state, &resultTM, DateTime::kShortLocaleFormatPattern.data (), DateTime::kShortLocaleFormatPattern.data () + DateTime::kShortLocaleFormatPattern.length ());
+                VerifyTestResult (not((state & ios::badbit) or (state & ios::failbit)));
 #if qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
-            VerifyTestResult (resultTM.tm_mday == 3);
-            VerifyTestResult (resultTM.tm_mon == 6); // zero based
+                VerifyTestResult (resultTM.tm_mday == 3);
+                VerifyTestResult (resultTM.tm_mon == 6); // zero based
 #else
-            // Correct answers
-            VerifyTestResult (resultTM.tm_mon == 2); // zero based
-            VerifyTestResult (resultTM.tm_mday == 7);
+                // Correct answers
+                VerifyTestResult (resultTM.tm_mon == 2); // zero based
+                VerifyTestResult (resultTM.tm_mday == 7);
 #endif
+            }
+            catch (...) {
+                DbgTrace (L"tmget_dot_get_locale_date_order_buggy_test_ skipped - usually because of missing locale");
+            }
         };
+
         tmget_dot_get_locale_date_order_buggy_test_ ();
+);
     }
 }
 
