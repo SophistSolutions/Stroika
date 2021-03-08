@@ -161,7 +161,7 @@ namespace Stroika::Foundation::Time {
         }
         wstring                  wRep  = rep.As<wstring> ();
         const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
-        if (auto r = Parse_ (wRep, tmget, formatPattern, nullptr)) {
+        if (auto r = QuietParse_ (wRep, tmget, formatPattern, nullptr)) {
             return *r;
         }
         Execution::Throw (FormatException::kThe);
@@ -174,7 +174,7 @@ namespace Stroika::Foundation::Time {
         }
         wstring                  wRep  = rep.As<wstring> ();
         const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
-        if (auto r = Parse_ (wRep, tmget, formatPattern, consumedCharsInStringUpTo)) {
+        if (auto r = QuietParse_ (wRep, tmget, formatPattern, consumedCharsInStringUpTo)) {
             return *r;
         }
         Execution::Throw (FormatException::kThe);
@@ -195,7 +195,7 @@ namespace Stroika::Foundation::Time {
         }
         wstring                  wRep  = rep.As<wstring> ();
         const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (locale::classic ());
-        if (auto r = Parse_ (wRep, tmget, formatPattern, nullptr)) {
+        if (auto r = QuietParse_ (wRep, tmget, formatPattern, nullptr)) {
             return *r;
         }
         Execution::Throw (FormatException::kThe);
@@ -208,10 +208,21 @@ namespace Stroika::Foundation::Time {
         }
         wstring                  wRep  = rep.As<wstring> ();
         const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (locale::classic ());
-        if (auto r = Parse_ (wRep, tmget, formatPattern, consumedCharsInStringUpTo)) {
+        if (auto r = QuietParse_ (wRep, tmget, formatPattern, consumedCharsInStringUpTo)) {
             return *r;
         }
         Execution::Throw (FormatException::kThe);
+    }
+    inline optional<Date> Date::QuietParse (const String& rep, const String& formatPattern)
+    {
+        return QuietParse (rep, locale::classic (), formatPattern);
+    }
+    inline optional<Date> Date::QuietParse (const String& rep, const locale& l, const String& formatPattern)
+    {
+        if (rep.empty ()) {
+            return nullopt;
+        }
+        return QuietParse_ (rep.As<wstring> (), use_facet<time_get<wchar_t>> (l), formatPattern, nullptr);
     }
     inline String Date::ToString () const
     {

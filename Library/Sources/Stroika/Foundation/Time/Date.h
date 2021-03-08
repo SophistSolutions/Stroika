@@ -292,8 +292,19 @@ namespace Stroika::Foundation::Time {
         static Date Parse (const String& rep, const String& formatPattern);
         static Date Parse (const String& rep, const String& formatPattern, size_t* consumedCharsInStringUpTo);
 
+    public:
+        /**
+         *  \brief like Parse(), but returns nullopt on parse error, not throwing exception.
+         * if locale is missing, and formatPattern is not locale independent, the current locale (locale{}) is used.
+         *  if rep is empty, this will return nullopt
+         */
+        static optional<Date>   QuietParse (const String& rep, const String& formatPattern);
+        static optional<Date>   QuietParse (const String& rep, const locale& l, const String& formatPattern);
+
     private:
-        static optional<Date> Parse_ (const wstring& rep, const time_get<wchar_t>& tmget, const String& formatPattern, size_t* consumedCharsInStringUpTo);
+        static optional<Date> QuietParse_ (const wstring& rep, const time_get<wchar_t>& tmget, const String& formatPattern, size_t* consumedCharsInStringUpTo);
+
+    private:
         static Date Parse_ (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns, size_t* consumedCharsInStringUpTo);
 
     public:
