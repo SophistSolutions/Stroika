@@ -66,12 +66,12 @@ Date Date::Parse (const String& rep, ParseFormat pf)
 {
     // NB: if rep.empty() this will always throw, but handled in each case below
     switch (pf) {
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
         case ParseFormat::eCurrentLocale: {
             return Parse (rep, locale{});
         } break;
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
         case ParseFormat::eISO8601: {
             /*
              * We intentionally ignore TZ here - if any - because there is no notion of TZ in Date module - just DateTime...
@@ -190,9 +190,15 @@ optional<Date> Date::Parse_ (const wstring& rep, const time_get<wchar_t>& tmget,
 String Date::Format (PrintFormat pf) const
 {
     switch (pf) {
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
         case PrintFormat::eCurrentLocale: {
             return Format (locale{});
         } break;
+            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
         case PrintFormat::eCurrentLocale_WithZerosStripped: {
             String tmp = Format (locale{});
             /*

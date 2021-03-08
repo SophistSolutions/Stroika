@@ -82,6 +82,8 @@ namespace Stroika::Foundation::Time {
      *  \todo   consider if eRFC1123 could be done as kRFC1123Format; see note about about kISO8601Format/eISO8601, but the same issues
      *          apply (unclear good enuf support for timezones). BUT could reconsider.
      *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
      *

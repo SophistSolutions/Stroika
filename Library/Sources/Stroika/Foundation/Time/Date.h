@@ -186,6 +186,8 @@ namespace Stroika::Foundation::Time {
      *  \note   Would like to make Date inherit from Debug::AssertExternallySynchronizedLock to assure its not accidentially modified, but
      *          thats difficult beacuse its sometimes uses as a constexpr
      *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
@@ -227,53 +229,26 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  \brief  ParseFormat is a representation which a date can be transformed out of
-         *
-         *  eCurrentLocale
-         *      Note this is the current C++ locale, which may not be the same as the platform default locale.
-         *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
-         *
-         *  \note Before Stroika v2.1d11, we supported eXML, but this is defined to be the same as eISO8601, except for supporting
-         *        timezones (which we don't support in this class because it wouldn't make sense).
-         *
-         *  \note   Configuration::DefaultNames<> supported
-         */
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
-        enum class ParseFormat : uint8_t {
-            eCurrentLocale,
-            eISO8601 [[deprecated ("Since Stroika 2.1b10 - use kISO8601Format")]],
-            eJavascript [[deprecated ("Since Stroika 2.1b10 - use kMonthDayYearFormat")]],
-
-            Stroika_Define_Enum_Bounds (eCurrentLocale, eJavascript)
-        };
-        DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-
-    public:
-        /**
-         *  \brief Y-M-D format - locale indpenendent, and ISO-8601 date format standard
+         *  \brief Y-M-D format - locale independant, and ISO-8601 date format standard
          *
          *  \note sometimes represented as %F (see https://en.cppreference.com/w/cpp/chrono/c/wcsftime), but that's not supported in https://en.cppreference.com/w/cpp/locale/time_get/get.
          *        so equivilent to %Y-%m-%d
          *  \note this is LOCALE-INDEPENDENT
          *  \see kMonthDayYearFormat
          */
-        static constexpr wstring_view kISO8601Format         = L"%Y-%m-%d"sv;
+        static constexpr wstring_view kISO8601Format                    = L"%Y-%m-%d"sv;
 
     public:
         /**
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get
          */
-        static constexpr wstring_view kLocaleStandardFormat = L"%x"sv;
+        static constexpr wstring_view kLocaleStandardFormat             = L"%x"sv;
 
     public:
         /**
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get 
          */
-        static constexpr wstring_view kLocaleStandardAlternateFormat         = L"%Ex"sv;
+        static constexpr wstring_view kLocaleStandardAlternateFormat    = L"%Ex"sv;
 
     public:
         /**
@@ -282,7 +257,7 @@ namespace Stroika::Foundation::Time {
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get 
          *  \see kISO8601Format
          */
-        static constexpr wstring_view kMonthDayYearFormat = L"%m/%d/%Y"sv;
+        static constexpr wstring_view kMonthDayYearFormat               = L"%m/%d/%Y"sv;
 
     public:
         /**
@@ -298,14 +273,15 @@ namespace Stroika::Foundation::Time {
          *
          *  \note Parse (... locale) with no formats specified, defaults to parsing with kDefaultParseFormats formats.
          *
+         *  \note if the locale is not specified, its assumed to be the current locale (locale{}))
+         *
          *  \note an empty string produces BadFormat exception (whereas before 2.1d11 it produced an empty Date object (Date {}).
          *
          *  \see https://en.cppreference.com/w/cpp/locale/time_get/get for allowed formatPatterns
          * 
          *  \note when calling Parse with a format string and no locale, the default locale is assumed
          */
-        static Date Parse (const String& rep, ParseFormat pf);
-        static Date Parse (const String& rep, const locale& l);
+        static Date Parse (const String& rep, const locale& l = locale{});
         static Date Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns);
         static Date Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns, size_t* consumedCharsInStringUpTo);
         static Date Parse (const String& rep, const locale& l, size_t* consumedCharsInStringUpTo);
@@ -362,6 +338,9 @@ namespace Stroika::Foundation::Time {
         nonvirtual void mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const;
 
     public:
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
         /**
          *  \brief  DisplayFormat is a representation which a date can be transformed in and out of
          *
@@ -380,7 +359,7 @@ namespace Stroika::Foundation::Time {
          *  \note   Configuration::DefaultNames<> supported
          */
         enum class PrintFormat : uint8_t {
-            eCurrentLocale,
+            eCurrentLocale [[deprecated ("Since Stroika 2.1b10 - use locale{}")]],
             eISO8601 [[deprecated ("Since Stroika 2.1b10 - use kISO8601Format")]],
             eJavascript [[deprecated ("Since Stroika 2.1b10 - use kMonthDayYearFormat")]],
             eCurrentLocale_WithZerosStripped,
@@ -389,6 +368,9 @@ namespace Stroika::Foundation::Time {
 
             Stroika_Define_Enum_Bounds (eCurrentLocale, eCurrentLocale_WithZerosStripped)
         };
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
 
     public:
         /**
@@ -468,6 +450,34 @@ namespace Stroika::Foundation::Time {
          */
         template <typename T>
         nonvirtual T As () const;
+
+    public:
+        /**
+         *  \brief  ParseFormat is a representation which a date can be transformed out of
+         *
+         *  eCurrentLocale
+         *      Note this is the current C++ locale, which may not be the same as the platform default locale.
+         *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
+         *
+         *  \note Before Stroika v2.1d11, we supported eXML, but this is defined to be the same as eISO8601, except for supporting
+         *        timezones (which we don't support in this class because it wouldn't make sense).
+         *
+         *  \note   Configuration::DefaultNames<> supported
+         */
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
+        enum class ParseFormat : uint8_t{
+            eCurrentLocale [[deprecated ("Since Stroika 2.1b10 - use locale{}")]],
+            eISO8601 [[deprecated ("Since Stroika 2.1b10 - use kISO8601Format")]],
+            eJavascript [[deprecated ("Since Stroika 2.1b10 - use kMonthDayYearFormat")]],
+
+            Stroika_Define_Enum_Bounds (eCurrentLocale, eJavascript)};
+
+        [[deprecated ("Since Stroika 2.1b10")]] static Date Parse (const String& rep, ParseFormat pf);
+        DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
 
     private:
         constexpr static JulianRepType jday_ (MonthOfYear month, DayOfMonth day, Year year);

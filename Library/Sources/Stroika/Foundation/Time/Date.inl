@@ -333,13 +333,6 @@ namespace Stroika::Foundation::Configuration {
             {Stroika::Foundation::Time::Date::ParseFormat::eISO8601, L"ISO-8601"},
             {Stroika::Foundation::Time::Date::ParseFormat::eJavascript, L"Javascript"},
         }}};
-    DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
 #endif
