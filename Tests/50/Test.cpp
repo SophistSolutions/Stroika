@@ -127,13 +127,13 @@ namespace {
                 VerifyTestResultWarning (tmget.date_order () == time_base::mdy or tmget.date_order () == time_base::no_order);
                 [[maybe_unused]] auto i = tmget.get (itbegin, itend, iss, state, &resultTM, DateTime::kShortLocaleFormatPattern.data (), DateTime::kShortLocaleFormatPattern.data () + DateTime::kShortLocaleFormatPattern.length ());
                 VerifyTestResult (not((state & ios::badbit) or (state & ios::failbit)));
-                VerifyTestResult (resultTM.tm_sec == kTargetTM_MDY_.tm_sec);   // which == kTargetTM_DMY_
-                VerifyTestResult (resultTM.tm_min == kTargetTM_MDY_.tm_min);   // ..
-                VerifyTestResult (resultTM.tm_hour == kTargetTM_MDY_.tm_hour); // ..
-                VerifyTestResult (resultTM.tm_year == 21 or resultTM.tm_year == 121);   // libstdc++ returns 21, and visual studio 121 - both quite reasonable - but I wish this were standardized -- LGP 2021-03-08
+                VerifyTestResult (resultTM.tm_sec == kTargetTM_MDY_.tm_sec);          // which == kTargetTM_DMY_
+                VerifyTestResult (resultTM.tm_min == kTargetTM_MDY_.tm_min);          // ..
+                VerifyTestResult (resultTM.tm_hour == kTargetTM_MDY_.tm_hour);        // ..
+                VerifyTestResult (resultTM.tm_year == 21 or resultTM.tm_year == 121); // libstdc++ returns 21, and visual studio 121 - both quite reasonable - but I wish this were standardized -- LGP 2021-03-08
                 if (tmget.date_order () == time_base::mdy or tmget.date_order () == time_base::no_order) {
 #if qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
-                    VerifyTestResult (resultTM.tm_mday == kTargetTM_DMY_.tm_mday);  // sadly wrong values
+                    VerifyTestResult (resultTM.tm_mday == kTargetTM_DMY_.tm_mday); // sadly wrong values
                     VerifyTestResult (resultTM.tm_mon == kTargetTM_DMY_.tm_mon);
 #else
                     VerifyTestResult (resultTM.tm_mday == kTargetTM_MDY_.tm_mday);
