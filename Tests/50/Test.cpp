@@ -33,6 +33,35 @@ namespace {
     void Test_0_AssumptionsAboutUnderlyingTimeLocaleLibrary_ ()
     {
         TraceContextBumper ctx{"Test_0_AssumptionsAboutUnderlyingTimeLocaleLibrary_"};
+
+        auto test_locale_time_get_date_order_no_order_Buggy = [] () {
+            try {
+                std::locale              l{"en_US.utf8"};
+                const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
+#if qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy
+                VerifyTestResultWarning (tmget.date_order () == time_base::no_order);
+#else
+                VerifyTestResultWarning (tmget.date_order () == time_base::mdy);
+#endif
+            }
+            catch (...) {
+                Stroika::TestHarness::WarnTestIssue (L"test_locale_time_get_date_order_no_order_Buggy skipped - usually because of missing locale en_US.utf8");
+            }
+            try {
+                std::locale              l{"en_US"};
+                const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
+#if qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy
+                VerifyTestResultWarning (tmget.date_order () == time_base::no_order);
+#else
+                VerifyTestResultWarning (tmget.date_order () == time_base::mdy);
+#endif
+            }
+            catch (...) {
+                Stroika::TestHarness::WarnTestIssue (L"test_locale_time_get_date_order_no_order_Buggy skipped - usually because of missing locale en_US");
+            }
+        };
+        test_locale_time_get_date_order_no_order_Buggy ();
+
         auto               testDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ = [] (int tm_Year, int tm_Mon, int tm_mDay, const locale& l) {
             DbgTrace (L"year=%d, tm_Mon=%d, tm_mDay=%d", tm_Year, tm_Mon, tm_mDay);
             ::tm origDateTM{};
@@ -124,14 +153,20 @@ namespace {
                 tm                           resultTM{};
                 // GCC reports no_order (not technically a bug, but wierd) - but appears to parse the dates properly anyhow
                 // Visual Studio gets the date_order() correct but still parsed in wrong order (qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy)
-                VerifyTestResultWarning (tmget.date_order () == time_base::mdy or tmget.date_order () == time_base::no_order);
+#if qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy
+                VerifyTestResultWarning ( tmget.date_order () == time_base::no_order);
+#else
+                VerifyTestResultWarning (tmget.date_order () == time_base::mdy);
+#endif
                 [[maybe_unused]] auto i = tmget.get (itbegin, itend, iss, state, &resultTM, DateTime::kShortLocaleFormatPattern.data (), DateTime::kShortLocaleFormatPattern.data () + DateTime::kShortLocaleFormatPattern.length ());
                 VerifyTestResult (not((state & ios::badbit) or (state & ios::failbit)));
                 VerifyTestResult (resultTM.tm_sec == kTargetTM_MDY_.tm_sec);          // which == kTargetTM_DMY_
                 VerifyTestResult (resultTM.tm_min == kTargetTM_MDY_.tm_min);          // ..
                 VerifyTestResult (resultTM.tm_hour == kTargetTM_MDY_.tm_hour);        // ..
                 VerifyTestResult (resultTM.tm_year == 21 or resultTM.tm_year == 121); // libstdc++ returns 21, and visual studio 121 - both quite reasonable - but I wish this were standardized -- LGP 2021-03-08
-                if (tmget.date_order () == time_base::mdy or tmget.date_order () == time_base::no_order) {
+                if (tmget.date_order () == time_base::mdy 
+                    or (qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy and tmget.date_order () == time_base::no_order)
+                    ) {
 #if qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
                     VerifyTestResult (resultTM.tm_mday == kTargetTM_DMY_.tm_mday); // sadly wrong values
                     VerifyTestResult (resultTM.tm_mon == kTargetTM_DMY_.tm_mon);

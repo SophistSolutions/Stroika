@@ -770,6 +770,25 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 #endif
 #endif
 
+
+/*
+ * This could be a docker or ubuntu issue, but appears to be an issue with glibc or libstdc++
+ * 
+From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
+    mdy	month, day, year (American locales)
+
+    std::locale                  l{"en_US.utf8"}; // originally tested with locale {} - which defaulted to C-locale
+    const time_get<wchar_t>&     tmget = use_facet<time_get<wchar_t>> (l);
+    VerifyTestResultWarning (tmget.date_order () == time_base::mdy);	// fails – returns no_order
+ */
+#ifndef qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy
+#if defined(__GLIBCXX__) && __GLIBCXX__ <= GLIBCXX_10x_
+#define qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy 1
+#else
+#define qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy 0
+#endif
+#endif
+
 /*
 Builds/g++-8-debug-c++17/Tests/Test41
 =================================================================
