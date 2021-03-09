@@ -34,9 +34,10 @@ namespace {
     {
         TraceContextBumper ctx{"Test_0_AssumptionsAboutUnderlyingTimeLocaleLibrary_"};
 
-        auto test_locale_time_get_date_order_no_order_Buggy = [] () {
+        auto test_locale_time_get_date_order_no_order_Buggy = [] (const String& localeName) {
+            TraceContextBumper ctx{"test_locale_time_get_date_order_no_order_Buggy"};
             try {
-                std::locale              l{"en_US.utf8"};
+                std::locale              l{localeName.AsNarrowSDKString ()};
                 const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
 #if qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy
                 VerifyTestResultWarning (tmget.date_order () == time_base::no_order);
@@ -45,24 +46,14 @@ namespace {
 #endif
             }
             catch (...) {
-                Stroika::TestHarness::WarnTestIssue (L"test_locale_time_get_date_order_no_order_Buggy skipped - usually because of missing locale en_US.utf8");
-            }
-            try {
-                std::locale              l{"en_US"};
-                const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
-#if qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy
-                VerifyTestResultWarning (tmget.date_order () == time_base::no_order);
-#else
-                VerifyTestResultWarning (tmget.date_order () == time_base::mdy);
-#endif
-            }
-            catch (...) {
-                Stroika::TestHarness::WarnTestIssue (L"test_locale_time_get_date_order_no_order_Buggy skipped - usually because of missing locale en_US");
+                Stroika::TestHarness::WarnTestIssue (Characters::Format (L"test_locale_time_get_date_order_no_order_Buggy skipped - usually because of missing locale %s", localeName.c_str ()).c_str ());
             }
         };
-        test_locale_time_get_date_order_no_order_Buggy ();
+        test_locale_time_get_date_order_no_order_Buggy (L"en_US.utf8");
+        test_locale_time_get_date_order_no_order_Buggy (L"en_US");
 
-        auto               testDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ = [] (int tm_Year, int tm_Mon, int tm_mDay, const locale& l) {
+        auto testDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ = [] (int tm_Year, int tm_Mon, int tm_mDay, const locale& l) {
+            TraceContextBumper ctx{"testDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_"};
             DbgTrace (L"year=%d, tm_Mon=%d, tm_mDay=%d", tm_Year, tm_Mon, tm_mDay);
             ::tm origDateTM{};
             origDateTM.tm_year = tm_Year;
@@ -102,6 +93,7 @@ namespace {
         testDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ (105, 5, 1, locale::classic ());
 
         auto getPCTMRequiresLeadingZeroBug = [] () {
+            TraceContextBumper           ctx{"getPCTMRequiresLeadingZeroBug"};
             std::locale                  l     = locale::classic ();
             const time_get<wchar_t>&     tmget = use_facet<time_get<wchar_t>> (l);
             ios::iostate                 state = ios::goodbit;
@@ -119,6 +111,7 @@ namespace {
         getPCTMRequiresLeadingZeroBug ();
 
         auto std_get_time_pctxBuggyTest = [] () {
+            TraceContextBumper ctx{"std_get_time_pctxBuggyTest"};
             //wstring wRep = L"3pm";   // this works
             wstring                      wRep = L"3:00";
             locale                       l    = locale::classic ();
@@ -141,6 +134,7 @@ namespace {
 #endif
 
         auto tmget_dot_get_locale_date_order_buggy_test_ = [] () {
+            TraceContextBumper ctx{"tmget_dot_get_locale_date_order_buggy_test_"};
             try {
                 std::locale                  l{"en_US.utf8"}; // originally tested with locale {} - which defaulted to C-locale
                 const time_get<wchar_t>&     tmget = use_facet<time_get<wchar_t>> (l);
@@ -154,7 +148,7 @@ namespace {
                 // GCC reports no_order (not technically a bug, but wierd) - but appears to parse the dates properly anyhow
                 // Visual Studio gets the date_order() correct but still parsed in wrong order (qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy)
 #if qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy
-                VerifyTestResultWarning ( tmget.date_order () == time_base::no_order);
+                VerifyTestResultWarning (tmget.date_order () == time_base::no_order);
 #else
                 VerifyTestResultWarning (tmget.date_order () == time_base::mdy);
 #endif
@@ -164,9 +158,7 @@ namespace {
                 VerifyTestResult (resultTM.tm_min == kTargetTM_MDY_.tm_min);          // ..
                 VerifyTestResult (resultTM.tm_hour == kTargetTM_MDY_.tm_hour);        // ..
                 VerifyTestResult (resultTM.tm_year == 21 or resultTM.tm_year == 121); // libstdc++ returns 21, and visual studio 121 - both quite reasonable - but I wish this were standardized -- LGP 2021-03-08
-                if (tmget.date_order () == time_base::mdy 
-                    or (qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy and tmget.date_order () == time_base::no_order)
-                    ) {
+                if (tmget.date_order () == time_base::mdy or (qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy and tmget.date_order () == time_base::no_order)) {
 #if qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
                     VerifyTestResult (resultTM.tm_mday == kTargetTM_DMY_.tm_mday); // sadly wrong values
                     VerifyTestResult (resultTM.tm_mon == kTargetTM_DMY_.tm_mon);
@@ -184,7 +176,6 @@ namespace {
                 Stroika::TestHarness::WarnTestIssue (L"tmget_dot_get_locale_date_order_buggy_test_ skipped - usually because of missing locale");
             }
         };
-
         tmget_dot_get_locale_date_order_buggy_test_ ();
     }
 }
