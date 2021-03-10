@@ -187,6 +187,8 @@ namespace Stroika::Foundation::Time {
          *  Note - there were two good choices here (all locale dependent):
          *      o   %c                  - writes standard date and time string
          *      o   %x %X               - writes localized date representation / writes localized time representation
+         * 
+         *  \note   VERY UNRELIABLE for year handling - @see Time::StdCPctxTraits
          */
         static constexpr wstring_view kShortLocaleFormatPattern = L"%x %X"sv;
 

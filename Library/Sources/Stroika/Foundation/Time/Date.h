@@ -162,6 +162,34 @@ namespace Stroika::Foundation::Time {
     bool IsLeapYear (Year y);
     bool IsLeapYear (int y);
 
+
+    /**
+     *  \brief this defines undefined but important properties of the %x (read/write date) format string in stdc++ time_get/time_put
+     * 
+     *  This (rather important detail) appears to be left out of the std c++ specification for date/time formatting, and as a result
+     *  each implementation varies. Attempt to capture the actual choices - so at least I can write regression tests that properly
+     *  reflect expected Stroika behavior. And - perhaps - avoid the %x format string!
+     * 
+     *  @todo see if other format strings similarly unreliable. MAYBE the biggest lesson (obvious) is to not count on reading/writing dates
+     *  in any locale-defined format (but for UIs this is a tricky constraint)?
+     * 
+     *  \note - These values all derived empirically (and checked in Stroika regression tests)
+     */
+    struct StdCPctxTraits {
+        static constexpr bool kLocaleClassic_Write4DigitYear = false;
+        static constexpr bool kLocaleENUS_Write4DigitYear =
+#if defined(_MSC_VER)
+            true
+#elif defined(_GLIBCXX_RELEASE)
+            false
+#elif defined(_LIBCPP_VERSION)
+            true
+#else
+            true
+#endif
+            ;
+    };
+
     /**
      * Description:
      *      The Date class is based on SmallTalk-80, The Language & Its Implementation,

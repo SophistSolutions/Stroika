@@ -29,6 +29,7 @@ using namespace Stroika::Foundation::Time;
 
 using Stroika::Foundation::Debug::TraceContextBumper;
 
+
 namespace {
     void Test_0_AssumptionsAboutUnderlyingTimeLocaleLibrary_ ()
     {
@@ -51,6 +52,40 @@ namespace {
         };
         test_locale_time_get_date_order_no_order_Buggy (L"en_US.utf8");
         test_locale_time_get_date_order_no_order_Buggy (L"en_US");
+
+        auto localetimeputPCTX_CHECK_StdCPctxTraits1 = [] (const locale& l, bool expect4DigitYear) {
+            TraceContextBumper       ctx{"localetimeputPCTX_CHECK_StdCPctxTraits1"};
+            const time_put<wchar_t>& tmput = use_facet<time_put<wchar_t>> (l);
+            constexpr tm             kOrigDate_{47, 18, 16, 3, 6, 101}; // tm_mon=6, so July
+            tm                       when = kOrigDate_;
+            wostringstream           oss;
+            const wchar_t            kPattern[] = L"%x";
+            tmput.put (oss, oss, ' ', &when, begin (kPattern), begin (kPattern) + ::wcslen (kPattern));
+            String tmpStringRep = oss.str ();
+            if (expect4DigitYear) {
+                VerifyTestResult (tmpStringRep == L"7/3/2001" or tmpStringRep == L"07/03/2001");
+            }
+            else {
+                VerifyTestResult (tmpStringRep == L"7/3/01" or tmpStringRep == L"07/03/01");
+            }
+        };
+        auto localetimeputPCTX_CHECK_StdCPctxTraits = [=] () {
+            TraceContextBumper ctx{"localetimeputPCTX_CHECK_StdCPctxTraits"};
+            localetimeputPCTX_CHECK_StdCPctxTraits1 (locale::classic (), StdCPctxTraits::kLocaleClassic_Write4DigitYear);
+            try {
+                localetimeputPCTX_CHECK_StdCPctxTraits1 (locale{"en_US"}, StdCPctxTraits::kLocaleENUS_Write4DigitYear);
+            }
+            catch (...) {
+                Stroika::TestHarness::WarnTestIssue (L"tmget_dot_get_locale_date_order_buggy_test_ skipped - usually because of en_US missing locale");
+            }
+            try {
+                localetimeputPCTX_CHECK_StdCPctxTraits1 (locale{"en_US.utf8"}, StdCPctxTraits::kLocaleENUS_Write4DigitYear);
+            }
+            catch (...) {
+                Stroika::TestHarness::WarnTestIssue (L"tmget_dot_get_locale_date_order_buggy_test_ skipped - usually because of en_US.utf8 missing locale");
+            }
+        };
+        localetimeputPCTX_CHECK_StdCPctxTraits ();
 
         auto testDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ = [] (int tm_Year, int tm_Mon, int tm_mDay, const locale& l) {
             TraceContextBumper ctx{"testDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_"};
@@ -139,7 +174,7 @@ namespace {
                 std::locale                  l{"en_US.utf8"}; // originally tested with locale {} - which defaulted to C-locale
                 const time_get<wchar_t>&     tmget = use_facet<time_get<wchar_t>> (l);
                 ios::iostate                 state = ios::goodbit;
-                wistringstream               iss{L"03/07/21 16:18:47"};     // qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy ONLY triggered if YEAR 2-digits - 4-digit year fine
+                wistringstream               iss{L"03/07/21 16:18:47"}; // qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy ONLY triggered if YEAR 2-digits - 4-digit year fine
                 constexpr tm                 kTargetTM_MDY_{47, 18, 16, 7, 2};
                 constexpr tm                 kTargetTM_DMY_{47, 18, 16, 3, 6};
                 istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
@@ -153,23 +188,30 @@ namespace {
                 VerifyTestResultWarning (tmget.date_order () == time_base::mdy);
 #endif
                 [[maybe_unused]] auto i = tmget.get (itbegin, itend, iss, state, &resultTM, DateTime::kShortLocaleFormatPattern.data (), DateTime::kShortLocaleFormatPattern.data () + DateTime::kShortLocaleFormatPattern.length ());
-                //DONT warn here on failure - since clang/libc++ returns failure here - quite reasonably - LGP 2021-03-10- VerifyTestResult (not((state & ios::badbit) or (state & ios::failbit)));
-                VerifyTestResult (resultTM.tm_sec == kTargetTM_MDY_.tm_sec);          // which == kTargetTM_DMY_
-                VerifyTestResult (resultTM.tm_min == kTargetTM_MDY_.tm_min);          // ..
-                VerifyTestResult (resultTM.tm_hour == kTargetTM_MDY_.tm_hour);        // ..
-                // libstdc++ returns 21, and visual studio 121 - clang libc++ -1879 - all reasonable - DONT CHECK THIS - undefined for 2-digit year -- LGP 2021-03-08
-                if (tmget.date_order () == time_base::mdy or (qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy and tmget.date_order () == time_base::no_order)) {
-#if qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
-                    VerifyTestResult (resultTM.tm_mday == kTargetTM_DMY_.tm_mday); // sadly wrong values
-                    VerifyTestResult (resultTM.tm_mon == kTargetTM_DMY_.tm_mon);
-#else
-                    VerifyTestResult (resultTM.tm_mday == kTargetTM_MDY_.tm_mday);
-                    VerifyTestResult (resultTM.tm_mon == kTargetTM_MDY_.tm_mon);
+                if ((state & ios::badbit) or (state & ios::failbit)) {
+#if !_LIBCPP_VERSION
+                    // Known that _LIBCPP_VERSION (clang libc++) treats this as an error and quite reasonable - so only warn for other cases so I can add exclusions here
+                    Stroika::TestHarness::WarnTestIssue ("Skipping tmget_dot_get_locale_date_order_buggy_test_ cuz parse failure");
 #endif
                 }
-                else if (tmget.date_order () == time_base::dmy) {
-                    VerifyTestResult (resultTM.tm_mday == kTargetTM_DMY_.tm_mday);
-                    VerifyTestResult (resultTM.tm_mon == kTargetTM_DMY_.tm_mon);
+                else {
+                    VerifyTestResult (resultTM.tm_sec == kTargetTM_MDY_.tm_sec);   // which == kTargetTM_DMY_
+                    VerifyTestResult (resultTM.tm_min == kTargetTM_MDY_.tm_min);   // ..
+                    VerifyTestResult (resultTM.tm_hour == kTargetTM_MDY_.tm_hour); // ..
+                    // libstdc++ returns 21, and visual studio 121 - clang libc++ -1879 - all reasonable - DONT CHECK THIS - undefined for 2-digit year -- LGP 2021-03-08
+                    if (tmget.date_order () == time_base::mdy or (qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy and tmget.date_order () == time_base::no_order)) {
+#if qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
+                        VerifyTestResult (resultTM.tm_mday == kTargetTM_DMY_.tm_mday); // sadly wrong values
+                        VerifyTestResult (resultTM.tm_mon == kTargetTM_DMY_.tm_mon);
+#else
+                        VerifyTestResult (resultTM.tm_mday == kTargetTM_MDY_.tm_mday);
+                        VerifyTestResult (resultTM.tm_mon == kTargetTM_MDY_.tm_mon);
+#endif
+                    }
+                    else if (tmget.date_order () == time_base::dmy) {
+                        VerifyTestResult (resultTM.tm_mday == kTargetTM_DMY_.tm_mday);
+                        VerifyTestResult (resultTM.tm_mon == kTargetTM_DMY_.tm_mon);
+                    }
                 }
             }
             catch (...) {
