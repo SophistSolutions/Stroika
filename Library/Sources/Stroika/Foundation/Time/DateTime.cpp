@@ -453,7 +453,7 @@ optional<DateTime> DateTime::ParseQuietly_ (const wstring& rep, const time_get<w
     istreambuf_iterator<wchar_t> itend;        // end-of-stream
 
     [[maybe_unused]] istreambuf_iterator<wchar_t> i = tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
-#if qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
+#if qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy
     // Now that I've understood this bug better, I think I can do a better/wider workaround, not just this specail case...
     if (formatPattern == L"%x %X") {
         // It now appears this MSFT-only issue is that if you have a 2-digit year, their %x-parse code reverses the month and day

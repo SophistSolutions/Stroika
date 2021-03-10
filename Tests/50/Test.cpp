@@ -29,7 +29,6 @@ using namespace Stroika::Foundation::Time;
 
 using Stroika::Foundation::Debug::TraceContextBumper;
 
-
 namespace {
     void Test_0_AssumptionsAboutUnderlyingTimeLocaleLibrary_ ()
     {
@@ -174,19 +173,13 @@ namespace {
                 std::locale                  l{"en_US.utf8"}; // originally tested with locale {} - which defaulted to C-locale
                 const time_get<wchar_t>&     tmget = use_facet<time_get<wchar_t>> (l);
                 ios::iostate                 state = ios::goodbit;
-                wistringstream               iss{L"03/07/21 16:18:47"}; // qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy ONLY triggered if YEAR 2-digits - 4-digit year fine
+                wistringstream               iss{L"03/07/21 16:18:47"}; // qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy ONLY triggered if YEAR 2-digits - 4-digit year fine
                 constexpr tm                 kTargetTM_MDY_{47, 18, 16, 7, 2};
                 constexpr tm                 kTargetTM_DMY_{47, 18, 16, 3, 6};
                 istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
                 istreambuf_iterator<wchar_t> itend;        // end-of-stream
                 tm                           resultTM{};
-                // GCC reports no_order (not technically a bug, but wierd) - but appears to parse the dates properly anyhow
-                // Visual Studio gets the date_order() correct but still parsed in wrong order (qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy)
-#if qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy
-                VerifyTestResultWarning (tmget.date_order () == time_base::no_order);
-#else
-                VerifyTestResultWarning (tmget.date_order () == time_base::mdy);
-#endif
+                VerifyTestResultWarning (tmget.date_order () == time_base::mdy or qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy);
                 [[maybe_unused]] auto i = tmget.get (itbegin, itend, iss, state, &resultTM, DateTime::kShortLocaleFormatPattern.data (), DateTime::kShortLocaleFormatPattern.data () + DateTime::kShortLocaleFormatPattern.length ());
                 if ((state & ios::badbit) or (state & ios::failbit)) {
 #if !_LIBCPP_VERSION
@@ -200,7 +193,7 @@ namespace {
                     VerifyTestResult (resultTM.tm_hour == kTargetTM_MDY_.tm_hour); // ..
                     // libstdc++ returns 21, and visual studio 121 - clang libc++ -1879 - all reasonable - DONT CHECK THIS - undefined for 2-digit year -- LGP 2021-03-08
                     if (tmget.date_order () == time_base::mdy or (qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy and tmget.date_order () == time_base::no_order)) {
-#if qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
+#if qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy
                         VerifyTestResult (resultTM.tm_mday == kTargetTM_DMY_.tm_mday); // sadly wrong values
                         VerifyTestResult (resultTM.tm_mon == kTargetTM_DMY_.tm_mon);
 #else
@@ -526,7 +519,7 @@ namespace {
             DateTime now = DateTime::Now ();
             TestRoundTripFormatThenParseNoChange_ (now);
 
-            constexpr bool kLocaleDateTimeFormatMaybeLossy_{true}; // 2 digit date - 03/04/05 parsed as 2005 on windows, and 1905 of glibc (neither wrong)
+            constexpr bool kLocaleDateTimeFormatMaybeLossy_{true}; // 2 digit date - 03/04/05 parsed as 2005 on windows, and 1905 of glibc (neither wrong) - see StdCPctxTraits, but cannot consult it cuz we could be using any locale
             if (kLocaleDateTimeFormatMaybeLossy_) {
                 String   nowShortLocaleForm = now.Format (locale{}, DateTime::kShortLocaleFormatPattern);
                 DateTime dt                 = DateTime::Parse (nowShortLocaleForm, DateTime::kShortLocaleFormatPattern);
@@ -539,7 +532,7 @@ namespace {
                     d  = Date{nYear, d.GetMonth (), d.GetDayOfMonth ()};
                     dt = DateTime{dt, d};
                 }
-                VerifyTestResult (now == dt); // if this fails, look at qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
+                VerifyTestResult (now == dt); // if this fails, look at qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy
             }
             else {
                 VerifyTestResult (now == DateTime::Parse (now.Format (DateTime::kShortLocaleFormatPattern), DateTime::kShortLocaleFormatPattern));

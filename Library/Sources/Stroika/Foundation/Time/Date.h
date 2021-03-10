@@ -162,7 +162,6 @@ namespace Stroika::Foundation::Time {
     bool IsLeapYear (Year y);
     bool IsLeapYear (int y);
 
-
     /**
      *  \brief this defines undefined but important properties of the %x (read/write date) format string in stdc++ time_get/time_put
      * 

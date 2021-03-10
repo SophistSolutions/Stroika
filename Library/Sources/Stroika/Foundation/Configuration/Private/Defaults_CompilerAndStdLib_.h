@@ -780,6 +780,8 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
     std::locale                  l{"en_US.utf8"}; // originally tested with locale {} - which defaulted to C-locale
     const time_get<wchar_t>&     tmget = use_facet<time_get<wchar_t>> (l);
     VerifyTestResultWarning (tmget.date_order () == time_base::mdy);	// fails – returns no_order
+
+    @todo - though minor, and not clearly a bug, seems likely a flaw, and worth reporting to GCC folks.
  */
 #ifndef qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy
 #if defined(__GLIBCXX__) && __GLIBCXX__ <= GLIBCXX_10x_
@@ -1742,8 +1744,13 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
  *              https://rextester.com/IOLX73233
  *              2021-03-07
  * 
+ * 
+ *  BUG WAS CALLED qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy until 2021-03-10, then renamed to be clearer
+ * 
+ *  NOTE - though not directly related to this bug, this is AGGRAVATED and of extra importance betcause of
+ *          StdCPctxTraits::kLocaleClassic_Write4DigitYear being false
  */
-#ifndef qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
+#ifndef qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy
 
 #if defined(_MSC_VER)
 // first noticed broken in _MSC_VER_2k17_15Pt8_
@@ -1757,9 +1764,9 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
 // verified still broken in _MSC_VER_2k19_16Pt6_
 // verified still broken in _MSC_VER_2k19_16Pt7_
 // verified still broken in _MSC_VER_2k19_16Pt8_
-#define qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt8_)
+#define qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt8_)
 #else
-#define qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy 0
+#define qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy 0
 #endif
 
 #endif
