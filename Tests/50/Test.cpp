@@ -46,7 +46,10 @@ namespace {
 #endif
             }
             catch (...) {
+                // suppress macos warn here - just not such locale installed
+#if !qPlatform_MacOS
                 Stroika::TestHarness::WarnTestIssue (Characters::Format (L"test_locale_time_get_date_order_no_order_Buggy skipped - usually because of missing locale %s", localeName.c_str ()).c_str ());
+#endif
             }
         };
         test_locale_time_get_date_order_no_order_Buggy (L"en_US.utf8");
@@ -75,13 +78,16 @@ namespace {
                 localetimeputPCTX_CHECK_StdCPctxTraits1 (locale{"en_US"}, StdCPctxTraits::kLocaleENUS_Write4DigitYear);
             }
             catch (...) {
-                Stroika::TestHarness::WarnTestIssue (L"tmget_dot_get_locale_date_order_buggy_test_ skipped - usually because of en_US missing locale");
+                Stroika::TestHarness::WarnTestIssue (L"localetimeputPCTX_CHECK_StdCPctxTraits skipped - usually because of en_US missing locale");
             }
             try {
                 localetimeputPCTX_CHECK_StdCPctxTraits1 (locale{"en_US.utf8"}, StdCPctxTraits::kLocaleENUS_Write4DigitYear);
             }
             catch (...) {
-                Stroika::TestHarness::WarnTestIssue (L"tmget_dot_get_locale_date_order_buggy_test_ skipped - usually because of en_US.utf8 missing locale");
+                // suppress macos warn here - just not such locale installed
+#if !qPlatform_MacOS
+                Stroika::TestHarness::WarnTestIssue (L"localetimeputPCTX_CHECK_StdCPctxTraits skipped - usually because of en_US.utf8 missing locale");
+#endif
             }
         };
         localetimeputPCTX_CHECK_StdCPctxTraits ();
@@ -208,7 +214,9 @@ namespace {
                 }
             }
             catch (...) {
+#if !qPlatform_MacOS
                 Stroika::TestHarness::WarnTestIssue (L"tmget_dot_get_locale_date_order_buggy_test_ skipped - usually because of missing locale");
+#endif
             }
         };
         tmget_dot_get_locale_date_order_buggy_test_ ();
