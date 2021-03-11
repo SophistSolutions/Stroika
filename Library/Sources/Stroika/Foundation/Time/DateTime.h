@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Time {
 
     using Characters::String;
 
-    class Duration; // forward declare for Differnce ()
+    class Duration; // forward declare for Difference ()
 
     /*
      *  Description:
@@ -141,14 +141,14 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  \brief  SpecialFormat is a representation which a datetime can be transformed to & from
+         *  \brief  LocaleIndependentFormat is a representation which a datetime can be transformed to & from
          *
          *  eISO8601:
          *      This is the best (IMHO) preferred format for DateTime objects. Its simple, readable, 
          *      sort order works naturally (alphabetical == by time) and its probably the most widely used
          *      portable date format.
          *
-         *  eRFC1123
+         *  eRFC1123:
          *      eRFC1123  is a very old format (same as RFC822 except 4 digit year intead of 2-digit year), but is still used in the 
          *      current HTTP specification (e.g. for cookies).
          *      The spec is originally documented in 
@@ -157,7 +157,7 @@ namespace Stroika::Foundation::Time {
          *      EXAMPLE:  
          *          Tue, 6 Nov 2018 06:25:51 -0800 (PST)
          */
-        enum class SpecialFormat {
+        enum class LocaleIndependentFormat {
             eISO8601,
             eRFC1123,
 
@@ -166,29 +166,23 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
+         *      This is the best (IMHO) preferred format for DateTime objects. Its simple, readable, 
+         *      sort order works naturally (alphabetical == by time) and its probably the most widely used
+         *      portable date format.
          */
-        static constexpr auto kISO8601Format = SpecialFormat::eISO8601;
+        static constexpr auto kISO8601Format = LocaleIndependentFormat::eISO8601;
 
     public:
         /**
+         *      RFC1123  is a very old format (same as RFC822 except 4 digit year intead of 2-digit year), but is still used in the 
+         *      current HTTP specification (e.g. for cookies).
+         *      The spec is originally documented in 
+         *          https://tools.ietf.org/html/rfc1123#5.2.14
+         *          https://tools.ietf.org/html/rfc822#section-5
+         *      EXAMPLE:  
+         *          Tue, 6 Nov 2018 06:25:51 -0800 (PST)
          */
-        static constexpr auto kRFC1123Format = SpecialFormat::eRFC1123;
-
-    public:
-        //DEPRECATED since 2.1b10
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
-        enum class ParseFormat : uint8_t {
-            eISO8601 [[deprecated ("Since Stroika 2.1b10, use kISO8601Format")]],
-            eCurrentLocale [[deprecated ("Since Stroika 2.1b10, use Parse (rep) or Parse (rep,locale{}) for this behavior")]],
-            eRFC1123 [[deprecated ("Since Stroika 2.1b10, use kRFC11123Format")]],
-
-            Stroika_Define_Enum_Bounds (eISO8601, eRFC1123)
-        };
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
+        static constexpr auto kRFC1123Format = LocaleIndependentFormat::eRFC1123;
 
     public:
         /**
@@ -249,8 +243,7 @@ namespace Stroika::Foundation::Time {
          *
          *  \note   @todo - https://stroika.atlassian.net/browse/STK-671 - DateTime::Format and Parse () incorrectly handle the format strings %z and %Z (sort of)
          */
-        [[deprecated("Since Stroika 2.1b10")]]static DateTime Parse (const String& rep, ParseFormat pf);
-        static DateTime Parse (const String& rep, SpecialFormat format);
+        static DateTime Parse (const String& rep, LocaleIndependentFormat format);
         static DateTime Parse (const String& rep, const locale& l = locale{});
         static DateTime Parse (const String& rep, const locale& l, const String& formatPattern);
         static DateTime Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns);
@@ -262,7 +255,7 @@ namespace Stroika::Foundation::Time {
          * if locale is missing, and formatPattern is not locale independent, the current locale (locale{}) is used.
          *  if rep is empty, this will return nullopt
          */
-        static optional<DateTime> ParseQuietly (const String& rep, SpecialFormat format);
+        static optional<DateTime> ParseQuietly (const String& rep, LocaleIndependentFormat format);
         static optional<DateTime> ParseQuietly (const String& rep, const String& formatPattern);
         static optional<DateTime> ParseQuietly (const String& rep, const locale& l, const String& formatPattern);
 
@@ -416,7 +409,7 @@ namespace Stroika::Foundation::Time {
          *  \note   @todo - https://stroika.atlassian.net/browse/STK-671 - DateTime::Format and Parse () incorrectly handle the format strings %z and %Z (sort of)
          */
         nonvirtual String Format (PrintFormat pf = PrintFormat::eDEFAULT) const;
-        nonvirtual String Format (SpecialFormat format) const;
+        nonvirtual String Format (LocaleIndependentFormat format) const;
         nonvirtual String Format (const locale& l) const;
         nonvirtual String Format (const locale& l, const String& formatPattern) const;
         nonvirtual String Format (const String& formatPattern) const;
@@ -539,8 +532,24 @@ namespace Stroika::Foundation::Time {
         struct ThreeWayComparer;
 
     public:
+        //DEPRECATED since 2.1b10
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
+        enum class ParseFormat : uint8_t {
+            eISO8601 [[deprecated ("Since Stroika 2.1b10, use kISO8601Format")]],
+            eCurrentLocale [[deprecated ("Since Stroika 2.1b10, use Parse (rep) or Parse (rep,locale{}) for this behavior")]],
+            eRFC1123 [[deprecated ("Since Stroika 2.1b10, use kRFC11123Format")]],
+
+            Stroika_Define_Enum_Bounds (eISO8601, eRFC1123)
+        };
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
+
         [[deprecated ("Since Stroika 2.1b4 use kMin")]] static constexpr DateTime min ();
         [[deprecated ("Since Stroika 2.1b4 use kMax")]] static constexpr DateTime max ();
+        [[deprecated ("Since Stroika 2.1b10")]] static DateTime                   Parse (const String& rep, ParseFormat pf);
 
     private:
         optional<Timezone>  fTimezone_;

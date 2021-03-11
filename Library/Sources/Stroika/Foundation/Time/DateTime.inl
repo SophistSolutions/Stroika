@@ -151,10 +151,10 @@ namespace Stroika::Foundation::Configuration {
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
 #endif
-    constexpr EnumNames<Stroika::Foundation::Time::DateTime::SpecialFormat> DefaultNames<Stroika::Foundation::Time::DateTime::SpecialFormat>::k{
-        EnumNames<Stroika::Foundation::Time::DateTime::SpecialFormat>::BasicArrayInitializer{{
-            {Stroika::Foundation::Time::DateTime::SpecialFormat::eISO8601, L"ISO-8601"},
-            {Stroika::Foundation::Time::DateTime::SpecialFormat::eRFC1123, L"RFC-1123"},
+    constexpr EnumNames<Stroika::Foundation::Time::DateTime::LocaleIndependentFormat> DefaultNames<Stroika::Foundation::Time::DateTime::LocaleIndependentFormat>::k{
+        EnumNames<Stroika::Foundation::Time::DateTime::LocaleIndependentFormat>::BasicArrayInitializer{{
+            {Stroika::Foundation::Time::DateTime::LocaleIndependentFormat::eISO8601, L"ISO-8601"},
+            {Stroika::Foundation::Time::DateTime::LocaleIndependentFormat::eRFC1123, L"RFC-1123"},
         }}};
     DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")

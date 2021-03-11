@@ -215,17 +215,16 @@ namespace Stroika::Foundation::Time {
         /**
          *  \brief  PrintFormat is a representation which a TimeOfDay can be transformed into
          *
-         *  eCurrentLocale
-         *      Note this is the current C++ locale, which may not be the same as the platform default locale.
-         *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
-         *
          *  eCurrentLocale_WithZerosStripped
          *      eCurrentLocale_WithZerosStripped is eCurrentLocale, but with many cases of trailing zero's,
          *      and sometimes leading zeros, stripped, so for example, 01:03:05 PM will become 1:03:05 PM,
          *      and 04:06:00 PM will become 4:06 PM.
          */
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
         enum class PrintFormat : uint8_t {
-            eCurrentLocale,
+            eCurrentLocale [[deprecated ("Since Stroika 2.1b10 - use locale{}")]],
             eISO8601 [[deprecated ("Since Stroika 2.1b10 - use kISO8601Format")]],
             eCurrentLocale_WithZerosStripped,
 
@@ -233,6 +232,9 @@ namespace Stroika::Foundation::Time {
 
             Stroika_Define_Enum_Bounds (eCurrentLocale, eCurrentLocale_WithZerosStripped)
         };
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+        DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
 
     public:
         /**
@@ -260,13 +262,6 @@ namespace Stroika::Foundation::Time {
         nonvirtual String ToString () const;
 
     public:
-        /**
-         *  \brief  ParseFormat is a representation which a TimeOfDay can be transformed out of
-         *
-         *  eCurrentLocale
-         *      Note this is the current C++ locale, which may not be the same as the platform default locale.
-         *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
-         */
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
         DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it

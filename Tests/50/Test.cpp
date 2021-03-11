@@ -116,9 +116,9 @@ namespace {
             {
                 const time_get<wchar_t>&     tmget = use_facet<time_get<wchar_t>> (l);
                 ios::iostate                 state = ios::goodbit;
-                wistringstream               iss (tmpStringRep);
-                istreambuf_iterator<wchar_t> itbegin (iss); // beginning of iss
-                istreambuf_iterator<wchar_t> itend;         // end-of-stream
+                wistringstream               iss{tmpStringRep};
+                istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
+                istreambuf_iterator<wchar_t> itend;        // end-of-stream
                 tmget.get (itbegin, itend, iss, state, &resultTM, std::begin (kPattern), std::begin (kPattern) + ::wcslen (kPattern));
             }
             //DbgTrace (L"resultTM.tm_year=%d", resultTM.tm_year);
@@ -137,9 +137,9 @@ namespace {
             std::locale                  l     = locale::classic ();
             const time_get<wchar_t>&     tmget = use_facet<time_get<wchar_t>> (l);
             ios::iostate                 state = ios::goodbit;
-            wistringstream               iss (L"11/1/2002");
-            istreambuf_iterator<wchar_t> itbegin (iss); // beginning of iss
-            istreambuf_iterator<wchar_t> itend;         // end-of-stream
+            wistringstream               iss{L"11/1/2002"};
+            istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
+            istreambuf_iterator<wchar_t> itend;        // end-of-stream
             tm                           resultTM{};
             [[maybe_unused]] auto        i = tmget.get (itbegin, itend, iss, state, &resultTM, Date::kMonthDayYearFormat.data (), Date::kMonthDayYearFormat.data () + Date::kMonthDayYearFormat.length ());
 #if qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy
@@ -153,14 +153,15 @@ namespace {
         auto std_get_time_pctxBuggyTest = [] () {
             TraceContextBumper ctx{"std_get_time_pctxBuggyTest"};
             //wstring wRep = L"3pm";   // this works
-            wstring                      wRep = L"3:00";
-            locale                       l    = locale::classic ();
-            wistringstream               iss (wRep);
-            [[maybe_unused]]const time_get<wchar_t>&     tmget    = use_facet<time_get<wchar_t>> (l);
-            tm                           when{};
-            wstring                      formatPattern = L"%X"; // or %EX, or %T all fail
-            istreambuf_iterator<wchar_t> itbegin (iss);         // beginning of iss
-            istreambuf_iterator<wchar_t> itend;                 // end-of-stream
+            wstring                                   wRep = L"3:00";
+            locale                                    l    = locale::classic ();
+            wistringstream                            iss{wRep};
+            [[maybe_unused]] const time_get<wchar_t>& tmget    = use_facet<time_get<wchar_t>> (l);
+            [[maybe_unused]] ios::iostate             errState = ios::goodbit;
+            tm                                        when{};
+            wstring                                   formatPattern = L"%X"; // or %EX, or %T all fail
+            istreambuf_iterator<wchar_t>              itbegin (iss);         // beginning of iss
+            istreambuf_iterator<wchar_t>              itend;                 // end-of-stream
 
             istreambuf_iterator<wchar_t> i;
             // In Debug build on Windows, this generates Assertion error inside stdc++ runtime library
@@ -234,7 +235,7 @@ namespace {
     template <typename DATEORTIME>
     void TestRoundTripFormatThenParseNoChange_ (DATEORTIME startDateOrTime)
     {
-        TestRoundTripFormatThenParseNoChange_ (startDateOrTime, locale ());
+        TestRoundTripFormatThenParseNoChange_ (startDateOrTime, locale{});
         TestRoundTripFormatThenParseNoChange_ (startDateOrTime, locale::classic ());
         TestRoundTripFormatThenParseNoChange_ (startDateOrTime, Configuration::FindNamedLocale (L"en", L"us"));
 
@@ -297,7 +298,7 @@ namespace {
             VerifyTestResult (not t.has_value ());
             TimeOfDay t2{2};
             VerifyTestResult (t < t2);
-            VerifyTestResult (not t2.Format (TimeOfDay::PrintFormat::eCurrentLocale).empty ());
+            VerifyTestResult (not t2.Format (locale{}).empty ());
             VerifyTestResult (t2.GetHours () == 0);
             VerifyTestResult (t2.GetMinutes () == 0);
             VerifyTestResult (t2.GetSeconds () == 2);
@@ -339,26 +340,26 @@ namespace {
 #if qCompilerAndStdLib_locale_pctX_print_time_Buggy
             // NOTE - these values are wrong, but since using locale code, not easy to fix/workaround - but to note XCode locale stuff still
             // somewhat broken...
-            VerifyTestResult (TimeOfDay{101}.Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"00:01:41");
+            VerifyTestResult (TimeOfDay{101}.Format (locale{}) == L"00:01:41");
             VerifyTestResult (TimeOfDay{60}.Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"0:01");
-            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"01:01:41");
+            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (locale{}) == L"01:01:41");
             VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"1:01:41");
             VerifyTestResult (TimeOfDay{60 * 60 + 60}.Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"1:01");
 #else
-            VerifyTestResult (TimeOfDay{101}.Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"12:01:41 AM");
+            VerifyTestResult (TimeOfDay{101}.Format (locale{}) == L"12:01:41 AM");
             VerifyTestResult (TimeOfDay{60}.Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"12:01 AM");
-            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"1:01:41 AM" or TimeOfDay (60 * 60 + 101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"01:01:41 AM");
+            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (locale{}) == L"1:01:41 AM" or TimeOfDay (60 * 60 + 101).Format (locale{}) == L"01:01:41 AM");
             VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"1:01:41 AM");
             VerifyTestResult (TimeOfDay{60 * 60 + 60}.Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"1:01 AM");
 #endif
         }
         {
-            VerifyTestResult (TimeOfDay{101}.Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"00:01:41");
-            VerifyTestResult (TimeOfDay{60}.Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"00:01:00");
+            VerifyTestResult (TimeOfDay{101}.Format (locale{}) == L"00:01:41");
+            VerifyTestResult (TimeOfDay{60}.Format (locale{}) == L"00:01:00");
             VerifyTestResult (TimeOfDay{60}.Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"0:01");
-            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"01:01:41");
+            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (locale{}) == L"01:01:41");
             VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"1:01:41");
-            VerifyTestResult (TimeOfDay{60 * 60 + 60}.Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"01:01:00");
+            VerifyTestResult (TimeOfDay{60 * 60 + 60}.Format (locale{}) == L"01:01:00");
         }
         {
             TimeOfDay threePM = TimeOfDay::Parse (L"3pm", locale::classic ());
@@ -483,7 +484,7 @@ namespace {
             DateTime d = DateTime::kMin;
             VerifyTestResult (d < DateTime::Now ());
             VerifyTestResult (DateTime::Now () > d);
-            d = DateTime{d.GetDate (), d.GetTimeOfDay (), Timezone::kUTC};                            // so that compare works - cuz we don't know timezone we'll run test with...
+            d = DateTime{d.GetDate (), d.GetTimeOfDay (), Timezone::kUTC};                     // so that compare works - cuz we don't know timezone we'll run test with...
             VerifyTestResult (d.Format (DateTime::kISO8601Format) == L"1752-09-14T00:00:00Z"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }

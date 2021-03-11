@@ -84,8 +84,8 @@ namespace {
                         StringBuilder sb;
                         sb += L"insert into Scans (StartAt, EndAt, ScanTypeIDRef, RawScanData, ScanLabel)";
                         sb += L"select ";
-                        sb += L"'" + ScanStart.AsUTC ().Format (DateTime::PrintFormat::eISO8601) + L"',";
-                        sb += L"'" + ScanEnd.AsUTC ().Format (DateTime::PrintFormat::eISO8601) + L"',";
+                        sb += L"'" + ScanStart.AsUTC ().Format (DateTime::kISO8601Format) + L"',";
+                        sb += L"'" + ScanEnd.AsUTC ().Format (DateTime::kISO8601Format) + L"',";
                         sb += Characters::Format (L"%d", scanKind) + L",";
                         if (rawSpectrum) {
                             sb += L"'" + Database::SQLite::QuoteStringForDB (L"SomeLongASCIIStringS\r\r\n\t'omeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString") + L"',";

@@ -347,10 +347,6 @@ namespace Stroika::Foundation::Time {
         static const Date kMax; // defined constexpr
 
     public:
-        [[deprecated ("Since Stroika 2.1b4 use kMax")]] static constexpr Date min ();
-        [[deprecated ("Since Stroika 2.1b4 use kMax")]] static constexpr Date max ();
-
-    public:
         /**
          */
         nonvirtual Year GetYear () const;
@@ -490,18 +486,6 @@ namespace Stroika::Foundation::Time {
         nonvirtual T As () const;
 
     public:
-        /**
-         *  \brief  ParseFormat is a representation which a date can be transformed out of
-         *
-         *  eCurrentLocale
-         *      Note this is the current C++ locale, which may not be the same as the platform default locale.
-         *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
-         *
-         *  \note Before Stroika v2.1d11, we supported eXML, but this is defined to be the same as eISO8601, except for supporting
-         *        timezones (which we don't support in this class because it wouldn't make sense).
-         *
-         *  \note   Configuration::DefaultNames<> supported
-         */
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
         DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
@@ -516,6 +500,8 @@ namespace Stroika::Foundation::Time {
         DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        [[deprecated ("Since Stroika 2.1b4 use kMax")]] static constexpr Date min ();
+        [[deprecated ("Since Stroika 2.1b4 use kMax")]] static constexpr Date max ();
 
     private:
         constexpr static JulianRepType jday_ (MonthOfYear month, DayOfMonth day, Year year);

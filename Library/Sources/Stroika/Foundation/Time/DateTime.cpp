@@ -241,7 +241,7 @@ DateTime::DateTime (const ::FILETIME& fileTime, const optional<Timezone>& tz) no
 }
 #endif
 
-DateTime DateTime::Parse (const String& rep, SpecialFormat format)
+DateTime DateTime::Parse (const String& rep, LocaleIndependentFormat format)
 {
     if (auto o = ParseQuietly (rep, format)) {
         return *o;
@@ -259,10 +259,10 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
             return Parse (rep, locale{});
         } break;
         case ParseFormat::eISO8601: {
-            return Parse (rep, SpecialFormat::eISO8601);
+            return Parse (rep, LocaleIndependentFormat::eISO8601);
         } break;
         case ParseFormat::eRFC1123: {
-            return Parse (rep, SpecialFormat::eRFC1123);
+            return Parse (rep, LocaleIndependentFormat::eRFC1123);
         } break;
         default: {
             AssertNotReached ();
@@ -305,13 +305,13 @@ DateTime DateTime::Parse (const String& rep, const String& formatPattern)
     return Parse (rep, locale{}, formatPattern);
 }
 
-optional<DateTime> DateTime::ParseQuietly (const String& rep, SpecialFormat format)
+optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentFormat format)
 {
     if (rep.empty ()) [[UNLIKELY_ATTR]] {
         return nullopt;
     }
     switch (format) {
-        case SpecialFormat::eISO8601: {
+        case LocaleIndependentFormat::eISO8601: {
             int year   = 0;
             int month  = 0;
             int day    = 0;
@@ -365,7 +365,7 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, SpecialFormat form
             }
             return t.has_value () ? DateTime{d, *t, tz} : d;
         } break;
-        case SpecialFormat::eRFC1123: {
+        case LocaleIndependentFormat::eRFC1123: {
             /*
              *  From https://tools.ietf.org/html/rfc822#section-5
              *    5.1.  SYNTAX
@@ -586,10 +586,10 @@ optional<bool> DateTime::IsDaylightSavingsTime () const
     return {};
 }
 
-String DateTime::Format (SpecialFormat format) const
+String DateTime::Format (LocaleIndependentFormat format) const
 {
     switch (format) {
-        case SpecialFormat::eISO8601: {
+        case LocaleIndependentFormat::eISO8601: {
             String r = fDate_.Format (Date::kISO8601Format);
             if (fTimeOfDay_.has_value ()) {
                 String timeStr = fTimeOfDay_->Format (TimeOfDay::kISO8601Format);
@@ -610,7 +610,7 @@ String DateTime::Format (SpecialFormat format) const
             }
             return r;
         } break;
-        case SpecialFormat::eRFC1123: {
+        case LocaleIndependentFormat::eRFC1123: {
             optional<Timezone>  tz     = GetTimezone ();
             static const String kFMT_  = L"%a, %d %b %Y %H:%M:%S"_k;
             String              result = Format (locale::classic (), {kFMT_});
@@ -666,10 +666,10 @@ String DateTime::Format (PrintFormat pf) const
             return mungedData;
         }
         case PrintFormat::eISO8601: {
-            return Format (SpecialFormat::eISO8601);
+            return Format (LocaleIndependentFormat::eISO8601);
         } break;
         case PrintFormat::eRFC1123: {
-            return Format (SpecialFormat::eRFC1123);
+            return Format (LocaleIndependentFormat::eRFC1123);
         } break;
     }
     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")

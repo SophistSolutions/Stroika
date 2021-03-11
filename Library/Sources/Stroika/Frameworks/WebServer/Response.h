@@ -203,7 +203,7 @@ namespace Stroika::Frameworks::WebServer {
          * 
          *  End () does nothing if it was already completed.
          * 
-         *  This returns true if the response was ended normally (even if ended prior to this call) and false if the response was
+         *  This returns true if the response was ended normally (even if it ended prior to this call) and false if the response was
          *  aborted (abort this->Abort() called) - even if the abort was after the response status was sent.
          * 
          *  \note An internal failure in End (say because the outgoing socket was closed) will internally mark the Response
@@ -225,7 +225,7 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         * Only legal to call if state is ePreparingHeaders. It sets the state to eCompleted.
+         * \brief End processing of this response, and direct the client to retry the request at the given url.
          *
          *  \req this->headersCanBeSet
          *  \ens this->responseCompleted ()
@@ -387,10 +387,10 @@ namespace Stroika::Frameworks::WebServer {
         bool                                     fHeadMode_ : 1 {false};
         bool                                     fAborted_ : 1 {false};
 #else
-        bool                                     fInChunkedModeCache_ {false};
-        State                                    fState_ {State::ePreparingHeaders};
-        bool                                     fHeadMode_  {false};
-        bool                                     fAborted_  {false};
+        bool                                     fInChunkedModeCache_{false};
+        State                                    fState_{State::ePreparingHeaders};
+        bool                                     fHeadMode_{false};
+        bool                                     fAborted_{false};
 #endif
         Streams::OutputStream<byte>::Ptr         fUnderlyingOutStream_;
         Streams::BufferedOutputStream<byte>::Ptr fUseOutStream_;

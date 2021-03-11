@@ -931,8 +931,8 @@ namespace {
                 }
                 DbgTrace (L"AuxData=%s", Characters::ToString (data.AuxData).c_str ());
                 VerifyTestResult (data.ScanID == 8320);
-                VerifyTestResult (data.ScanStart == DateTime::Parse (L"2016-07-28T20:14:30Z", DateTime::ParseFormat::eISO8601));
-                VerifyTestResult (data.ScanEnd == DateTime::Parse (L"2016-07-28T20:14:44Z", DateTime::ParseFormat::eISO8601));
+                VerifyTestResult (data.ScanStart == DateTime::Parse (L"2016-07-28T20:14:30Z", DateTime::kISO8601Format));
+                VerifyTestResult (data.ScanEnd == DateTime::Parse (L"2016-07-28T20:14:44Z", DateTime::kISO8601Format));
                 VerifyTestResult (not data.ScanLabel.has_value ());
                 VerifyTestResult ((data.RawSpectrum == Mapping<WaveNumberType_, IntensityType_>{pair<WaveNumberType_, IntensityType_>{901.5, 0}, pair<WaveNumberType_, IntensityType_>{902.5, 1}}));
                 VerifyTestResult ((data.AuxData == Mapping<String, String>{pair<String, String>{L"Cell-Pressure", L"1000"}, pair<String, String>{L"Cell-Temperature", L"0"}, pair<String, String>{L"EngineId", L"B1E56F82-B217-40D3-A24D-FAC491EDCDE8"}}));
