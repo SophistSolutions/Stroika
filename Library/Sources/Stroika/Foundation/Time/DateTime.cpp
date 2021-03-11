@@ -241,24 +241,77 @@ DateTime::DateTime (const ::FILETIME& fileTime, const optional<Timezone>& tz) no
 }
 #endif
 
+DateTime DateTime::Parse (const String& rep, SpecialFormat format)
+{
+    if (auto o = ParseQuietly (rep, format)) {
+        return *o;
+    }
+    Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
+}
+
 DateTime DateTime::Parse (const String& rep, ParseFormat pf)
 {
-    // note - incoming rep.empty () now produces a throw, but handled in each case so no need here too
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
     switch (pf) {
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
         case ParseFormat::eCurrentLocale: {
             return Parse (rep, locale{});
         } break;
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
         case ParseFormat::eISO8601: {
-            if (rep.empty ()) [[UNLIKELY_ATTR]] {
-                Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
-            }
+            return Parse (rep, SpecialFormat::eISO8601);
+        } break;
+        case ParseFormat::eRFC1123: {
+            return Parse (rep, SpecialFormat::eRFC1123);
+        } break;
+        default: {
+            AssertNotReached ();
+            Execution::Throw (FormatException::kThe);
+        } break;
+    }
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
+}
 
+DateTime DateTime::Parse (const String& rep, const locale& l, const String& formatPattern)
+{
+    if (rep.empty ()) [[UNLIKELY_ATTR]] {
+        Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
+    }
+    if (auto o = ParseQuietly_ (rep.As<wstring> (), use_facet<time_get<wchar_t>> (l), formatPattern)) {
+        return *o;
+    }
+    Execution::Throw (FormatException::kThe);
+}
+
+DateTime DateTime::Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns)
+{
+    if (rep.empty ()) [[UNLIKELY_ATTR]] {
+        Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
+    }
+    wstring                  wRep  = rep.As<wstring> ();
+    const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
+    for (const auto& formatPattern : formatPatterns) {
+        if (auto o = ParseQuietly_ (wRep, tmget, formatPattern)) {
+            return *o;
+        }
+    }
+    Execution::Throw (FormatException::kThe);
+}
+
+DateTime DateTime::Parse (const String& rep, const String& formatPattern)
+{
+    return Parse (rep, locale{}, formatPattern);
+}
+
+optional<DateTime> DateTime::ParseQuietly (const String& rep, SpecialFormat format)
+{
+    if (rep.empty ()) [[UNLIKELY_ATTR]] {
+        return nullopt;
+    }
+    switch (format) {
+        case SpecialFormat::eISO8601: {
             int year   = 0;
             int month  = 0;
             int day    = 0;
@@ -293,7 +346,7 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
             }
             DISABLE_COMPILER_MSC_WARNING_END (4996)
             if (nItems < 3) {
-                Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
+                return nullopt;
             }
             Date                d = Date{Year (year), MonthOfYear (month), DayOfMonth (day)};
             optional<TimeOfDay> t;
@@ -312,7 +365,7 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
             }
             return t.has_value () ? DateTime{d, *t, tz} : d;
         } break;
-        case ParseFormat::eRFC1123: {
+        case SpecialFormat::eRFC1123: {
             /*
              *  From https://tools.ietf.org/html/rfc822#section-5
              *    5.1.  SYNTAX
@@ -372,7 +425,7 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
                 }
             }
             if (nItems < 3) {
-                Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
+                return nullopt;
             }
             Date                d = Date{Year (year), MonthOfYear (month), DayOfMonth (day)};
             optional<TimeOfDay> t;
@@ -406,40 +459,9 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
         } break;
         default: {
             AssertNotReached ();
-            Execution::Throw (FormatException::kThe);
         } break;
     }
-}
-
-DateTime DateTime::Parse (const String& rep, const locale& l, const String& formatPattern)
-{
-    if (rep.empty ()) [[UNLIKELY_ATTR]] {
-        Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
-    }
-    if (auto o = ParseQuietly_ (rep.As<wstring> (), use_facet<time_get<wchar_t>> (l), formatPattern)) {
-        return *o;
-    }
-    Execution::Throw (FormatException::kThe);
-}
-
-DateTime DateTime::Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns)
-{
-    if (rep.empty ()) [[UNLIKELY_ATTR]] {
-        Execution::Throw (FormatException::kThe); // NOTE - CHANGE in STROIKA v2.1d11 - this used to return empty DateTime{}
-    }
-    wstring                  wRep  = rep.As<wstring> ();
-    const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
-    for (const auto& formatPattern : formatPatterns) {
-        if (auto o = ParseQuietly_ (wRep, tmget, formatPattern)) {
-            return *o;
-        }
-    }
-    Execution::Throw (FormatException::kThe);
-}
-
-DateTime DateTime::Parse (const String& rep, const String& formatPattern)
-{
-    return Parse (rep, locale{}, formatPattern);
+    return nullopt;
 }
 
 optional<DateTime> DateTime::ParseQuietly_ (const wstring& rep, const time_get<wchar_t>& tmget, const String& formatPattern)
@@ -564,18 +586,57 @@ optional<bool> DateTime::IsDaylightSavingsTime () const
     return {};
 }
 
+String DateTime::Format (SpecialFormat format) const
+{
+    switch (format) {
+        case SpecialFormat::eISO8601: {
+            String r = fDate_.Format (Date::kISO8601Format);
+            if (fTimeOfDay_.has_value ()) {
+                String timeStr = fTimeOfDay_->Format (TimeOfDay::kISO8601Format);
+                r += L"T"sv + timeStr;
+                if (fTimezone_) {
+                    if (fTimezone_ == Timezone::kUTC) {
+                        static const String kZ_{L"Z"sv};
+                        r += kZ_;
+                    }
+                    else {
+                        auto tzBias     = fTimezone_->GetBiasFromUTC (fDate_, Memory::NullCoalesce (fTimeOfDay_, TimeOfDay{0}));
+                        int  minuteBias = abs (static_cast<int> (tzBias)) / 60;
+                        int  hrs        = minuteBias / 60;
+                        int  mins       = minuteBias - hrs * 60;
+                        r += ::Format (L"%s%.2d:%.2d", (tzBias < 0 ? L"-" : L"+"), hrs, mins);
+                    }
+                }
+            }
+            return r;
+        } break;
+        case SpecialFormat::eRFC1123: {
+            optional<Timezone>  tz     = GetTimezone ();
+            static const String kFMT_  = L"%a, %d %b %Y %H:%M:%S"_k;
+            String              result = Format (locale::classic (), {kFMT_});
+            if (tz == Timezone::kUnknown) {
+                return result;
+            }
+            else {
+                return result + L" " + tz->AsRFC1123 (fDate_, Memory::NullCoalesce (fTimeOfDay_, TimeOfDay{0}));
+            }
+        } break;
+        default: {
+            RequireNotReached ();
+            return String{};
+        }
+    }
+}
+
 String DateTime::Format (PrintFormat pf) const
 {
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
     switch (pf) {
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-        DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
         case PrintFormat::eCurrentLocale: {
             return Format (locale{});
         } break;
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
         case PrintFormat::eCurrentLocale_WithZerosStripped: {
             /*
              *  Use basic current locale formatting, and then use regexp to find special case 0s to strip.
@@ -605,38 +666,15 @@ String DateTime::Format (PrintFormat pf) const
             return mungedData;
         }
         case PrintFormat::eISO8601: {
-            String r = fDate_.Format (Date::kISO8601Format);
-            if (fTimeOfDay_.has_value ()) {
-                String timeStr = fTimeOfDay_->Format (TimeOfDay::kISO8601Format);
-                r += L"T"sv + timeStr;
-                if (fTimezone_) {
-                    if (fTimezone_ == Timezone::kUTC) {
-                        static const String kZ_{L"Z"sv};
-                        r += kZ_;
-                    }
-                    else {
-                        auto tzBias     = fTimezone_->GetBiasFromUTC (fDate_, Memory::NullCoalesce (fTimeOfDay_, TimeOfDay{0}));
-                        int  minuteBias = abs (static_cast<int> (tzBias)) / 60;
-                        int  hrs        = minuteBias / 60;
-                        int  mins       = minuteBias - hrs * 60;
-                        r += ::Format (L"%s%.2d:%.2d", (tzBias < 0 ? L"-" : L"+"), hrs, mins);
-                    }
-                }
-            }
-            return r;
+            return Format (SpecialFormat::eISO8601);
         } break;
         case PrintFormat::eRFC1123: {
-            optional<Timezone>  tz     = GetTimezone ();
-            static const String kFMT_  = L"%a, %d %b %Y %H:%M:%S"_k;
-            String              result = Format (locale::classic (), {kFMT_});
-            if (tz == Timezone::kUnknown) {
-                return result;
-            }
-            else {
-                return result + L" " + tz->AsRFC1123 (fDate_, Memory::NullCoalesce (fTimeOfDay_, TimeOfDay{0}));
-            }
+            return Format (SpecialFormat::eRFC1123);
         } break;
     }
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
     AssertNotReached ();
     return String{};
 }

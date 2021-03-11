@@ -105,7 +105,7 @@ namespace {
                         bool canCheckModifiedSince = o->fLastModified.has_value ();
                         if (canCheckModifiedSince) {
                             context->fCachedElement = *o;
-                            request->fOverrideHeaders.Add (HTTP::HeaderName::kIfModifiedSince, L"\"" + o->fLastModified->Format (DateTime::PrintFormat::eRFC1123) + L"\"");
+                            request->fOverrideHeaders.Add (HTTP::HeaderName::kIfModifiedSince, L"\"" + o->fLastModified->Format (DateTime::kRFC1123Format) + L"\"");
                         }
                     }
                 }
@@ -215,7 +215,7 @@ Transfer::Cache::Element::Element (const Response& response)
         }
         else if (i->fKey == HTTP::HeaderName::kExpires) {
             try {
-                fExpires = DateTime::Parse (i->fValue, DateTime::ParseFormat::eRFC1123);
+                fExpires = DateTime::Parse (i->fValue, DateTime::kRFC1123Format);
             }
             catch (...) {
                 // treat invalid dates as if the resource has already exipred
@@ -227,7 +227,7 @@ Transfer::Cache::Element::Element (const Response& response)
         }
         else if (i->fKey == HTTP::HeaderName::kLastModified) {
             try {
-                fLastModified = DateTime::Parse (i->fValue, DateTime::ParseFormat::eRFC1123);
+                fLastModified = DateTime::Parse (i->fValue, DateTime::kRFC1123Format);
             }
             catch (...) {
                 DbgTrace (L"Malformed last-modfied (%s) treated as ignored", Characters::ToString (i->fValue).c_str ());
@@ -259,10 +259,10 @@ Mapping<String, String> Transfer::Cache::Element::GetCombinedHeaders () const
         result.Add (HTTP::HeaderName::kETag, L"\""sv + *fETag + L"\""sv);
     }
     if (fExpires) {
-        result.Add (HTTP::HeaderName::kExpires, fExpires->Format (DateTime::PrintFormat::eRFC1123));
+        result.Add (HTTP::HeaderName::kExpires, fExpires->Format (DateTime::kRFC1123Format));
     }
     if (fLastModified) {
-        result.Add (HTTP::HeaderName::kLastModified, fLastModified->Format (DateTime::PrintFormat::eRFC1123));
+        result.Add (HTTP::HeaderName::kLastModified, fLastModified->Format (DateTime::kRFC1123Format));
     }
     if (fCacheControl) {
         function<String (const String& lhs, const String& rhs)> a = [] (const String& lhs, const String& rhs) -> String { return lhs.empty () ? rhs : (lhs + L"," + rhs); };

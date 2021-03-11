@@ -156,8 +156,7 @@ namespace {
             wstring                      wRep = L"3:00";
             locale                       l    = locale::classic ();
             wistringstream               iss (wRep);
-            const time_get<wchar_t>&     tmget    = use_facet<time_get<wchar_t>> (l);
-            ios::iostate                 errState = ios::goodbit;
+            [[maybe_unused]]const time_get<wchar_t>&     tmget    = use_facet<time_get<wchar_t>> (l);
             tm                           when{};
             wstring                      formatPattern = L"%X"; // or %EX, or %T all fail
             istreambuf_iterator<wchar_t> itbegin (iss);         // beginning of iss
@@ -452,7 +451,7 @@ namespace {
         TraceContextBumper ctx{"Test_4_TestDateTime_"};
         {
             DateTime d = Date (Year{1903}, MonthOfYear::eApril, DayOfMonth{4});
-            VerifyTestResult (d.Format (DateTime::PrintFormat::eISO8601) == L"1903-04-04");
+            VerifyTestResult (d.Format (DateTime::kISO8601Format) == L"1903-04-04");
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
@@ -485,7 +484,7 @@ namespace {
             VerifyTestResult (d < DateTime::Now ());
             VerifyTestResult (DateTime::Now () > d);
             d = DateTime{d.GetDate (), d.GetTimeOfDay (), Timezone::kUTC};                            // so that compare works - cuz we don't know timezone we'll run test with...
-            VerifyTestResult (d.Format (DateTime::PrintFormat::eISO8601) == L"1752-09-14T00:00:00Z"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+            VerifyTestResult (d.Format (DateTime::kISO8601Format) == L"1752-09-14T00:00:00Z"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         //// TODO - FIX FOR PrintFormat::eCurrentLocale_WITHZEROESTRIPPED!!!!
@@ -522,7 +521,7 @@ namespace {
             // want a variant that does this formatting!
             //VerifyTestResult (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
         }
-        VerifyTestResult (DateTime::Parse (L"2010-01-01", DateTime::ParseFormat::eISO8601).GetDate ().GetYear () == Time::Year{2010});
+        VerifyTestResult (DateTime::Parse (L"2010-01-01", DateTime::kISO8601Format).GetDate ().GetYear () == Time::Year{2010});
         {
             DateTime now = DateTime::Now ();
             TestRoundTripFormatThenParseNoChange_ (now);
@@ -562,23 +561,23 @@ namespace {
         }
         {
             auto roundTripD = [] (DateTime dt) {
-                String   s   = dt.Format (DateTime::PrintFormat::eRFC1123);
-                DateTime dt2 = DateTime::Parse (s, DateTime::ParseFormat::eRFC1123);
+                String   s   = dt.Format (DateTime::kRFC1123Format);
+                DateTime dt2 = DateTime::Parse (s, DateTime::kRFC1123Format);
                 VerifyTestResult (dt == dt2);
             };
             auto roundTripS = [] (String s) {
-                DateTime dt = DateTime::Parse (s, DateTime::ParseFormat::eRFC1123);
-                VerifyTestResult (dt.Format (DateTime::PrintFormat::eRFC1123) == s);
+                DateTime dt = DateTime::Parse (s, DateTime::kRFC1123Format);
+                VerifyTestResult (dt.Format (DateTime::kRFC1123Format) == s);
             };
 
             // Parse eRFC1123
-            VerifyTestResult (DateTime::Parse (L"Wed, 09 Jun 2021 10:18:14 GMT", DateTime::ParseFormat::eRFC1123) == (DateTime{Date{Time::Year{2021}, MonthOfYear::eJune, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::kUTC}));
+            VerifyTestResult (DateTime::Parse (L"Wed, 09 Jun 2021 10:18:14 GMT", DateTime::kRFC1123Format) == (DateTime{Date{Time::Year{2021}, MonthOfYear::eJune, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::kUTC}));
             // from https://www.feedvalidator.org/docs/error/InvalidRFC2822Date.html
-            VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 08:00:00 EST", DateTime::ParseFormat::eRFC1123) == (DateTime{Date{Time::Year{2002}, MonthOfYear::eOctober, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
-            VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 13:00:00 GMT", DateTime::ParseFormat::eRFC1123) == (DateTime{Date{Time::Year{2002}, MonthOfYear::eOctober, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
-            VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 15:00:00 +0200", DateTime::ParseFormat::eRFC1123) == (DateTime{Date{Time::Year{2002}, MonthOfYear::eOctober, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
+            VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 08:00:00 EST", DateTime::kRFC1123Format) == (DateTime{Date{Time::Year{2002}, MonthOfYear::eOctober, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
+            VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 13:00:00 GMT", DateTime::kRFC1123Format) == (DateTime{Date{Time::Year{2002}, MonthOfYear::eOctober, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
+            VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 15:00:00 +0200", DateTime::kRFC1123Format) == (DateTime{Date{Time::Year{2002}, MonthOfYear::eOctober, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
 
-            VerifyTestResult (DateTime::Parse (L"Tue, 6 Nov 2018 06:25:51 -0800 (PST)", DateTime::ParseFormat::eRFC1123) == (DateTime{Date{Time::Year{2018}, MonthOfYear::eNovember, DayOfMonth{6}}, TimeOfDay{6, 25, 51}, Timezone (-8 * 60)}));
+            VerifyTestResult (DateTime::Parse (L"Tue, 6 Nov 2018 06:25:51 -0800 (PST)", DateTime::kRFC1123Format) == (DateTime{Date{Time::Year{2018}, MonthOfYear::eNovember, DayOfMonth{6}}, TimeOfDay{6, 25, 51}, Timezone (-8 * 60)}));
 
             roundTripD (DateTime{Date{Time::Year{2021}, MonthOfYear::eJune, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::kUTC});
 
@@ -608,21 +607,21 @@ namespace {
             {
                 constexpr Date      kDate_{Time::Year{2016}, Time::MonthOfYear {9}, Time::DayOfMonth{29}};
                 constexpr TimeOfDay kTOD_{10, 21, 32};
-                DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-04:00", DateTime::ParseFormat::eISO8601);
+                DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-04:00", DateTime::kISO8601Format);
                 DateTime            tdu = td.AsUTC ();
                 VerifyTestResult ((tdu == DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
             }
             {
                 constexpr Date      kDate_ = Date {Time::Year{2016}, Time::MonthOfYear {9}, Time::DayOfMonth{29}};
                 constexpr TimeOfDay kTOD_{10, 21, 32};
-                DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-0400", DateTime::ParseFormat::eISO8601);
+                DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-0400", DateTime::kISO8601Format);
                 DateTime            tdu = td.AsUTC ();
                 VerifyTestResult ((tdu == DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
             }
             {
                 constexpr Date      kDate_{Time::Year{2016}, Time::MonthOfYear {9}, Time::DayOfMonth {29}};
                 constexpr TimeOfDay kTOD_{10, 21, 32};
-                DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-04", DateTime::ParseFormat::eISO8601);
+                DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-04", DateTime::kISO8601Format);
                 DateTime            tdu = td.AsUTC ();
                 VerifyTestResult ((tdu == DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
             }

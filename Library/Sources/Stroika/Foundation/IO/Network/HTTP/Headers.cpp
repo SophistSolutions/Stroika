@@ -381,7 +381,7 @@ optional<String> Headers::LookupOne (const String& name) const
         return fCookieList_ ? fCookieList_->EncodeForCookieHeader () : optional<String>{};
     }
     else if (kHeaderNameEqualsComparer (name, HeaderName::kDate)) {
-        return fDate_ ? fDate_->Format (Time::DateTime::PrintFormat::eRFC1123) : optional<String>{};
+        return fDate_ ? fDate_->Format (Time::DateTime::kRFC1123Format) : optional<String>{};
     }
     else if (kHeaderNameEqualsComparer (name, HeaderName::kETag)) {
         auto e = this->ETag ();
@@ -561,7 +561,7 @@ bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const opt
         // see https://stroika.atlassian.net/browse/STK-731 - should support parsing (not writing) older formats too
         try {
             if (value) {
-                useDT = Time::DateTime::Parse (*value, Time::DateTime::ParseFormat::eRFC1123).AsUTC ();
+                useDT = Time::DateTime::Parse (*value, Time::DateTime::kRFC1123Format).AsUTC ();
             }
         }
         catch (...) {
@@ -684,7 +684,7 @@ Collection<KeyValuePair<String, String>> Headers::As () const
         results.Add (KeyValuePair<String, String>{HeaderName::kCookie, fCookieList_->EncodeForCookieHeader ()});
     }
     if (fDate_) {
-        results.Add (KeyValuePair<String, String>{HeaderName::kDate, fDate_->Format (Time::DateTime::PrintFormat::eRFC1123)});
+        results.Add (KeyValuePair<String, String>{HeaderName::kDate, fDate_->Format (Time::DateTime::kRFC1123Format)});
     }
     if (auto et = ETag ()) {
         results.Add (KeyValuePair<String, String>{HeaderName::kETag, et->As<String> ()});
