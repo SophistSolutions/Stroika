@@ -24,16 +24,12 @@ ARG VS_Latest=https://aka.ms/vs/16/release/vs_buildtools.exe
 ARG VS_16_5_5=https://download.visualstudio.microsoft.com/download/pr/68d6b204-9df0-4fcc-abcc-08ee0eff9cb2/17af83ed545d1287df7575786c326009e459708b60a6821d2a4f5606ef8efb9e/vs_BuildTools.exe
 ARG VS_16_6_5=https://download.visualstudio.microsoft.com/download/pr/067fd8d0-753e-4161-8780-dfa3e577839e/4776935864d08e66183acd5b3647c9616da989c60afbfe100d4afc459f7e5785/vs_BuildTools.exe
 ARG VS_16_7_7=https://download.visualstudio.microsoft.com/download/pr/a319c7ec-a0bd-4619-b966-4c58a50f7c76/8ba9f0872faf7640709098adbd88f156902529de9032d214844bec363865d99e/vs_BuildTools.exe
-ARG VS_16_8_1=https://download.visualstudio.microsoft.com/download/pr/2f4a234d-6e7c-4049-8248-6d9ac0d05c96/11f7d9f212a5195ed9680cda0baddced4eb99d06762c769163498344fa239d5b/vs_BuildTools.exe
-ARG VS_16_8_2=https://download.visualstudio.microsoft.com/download/pr/9d2147aa-7b01-4336-b665-8fe07735e5ee/61cc248a8f240911db3e7ae5f0d0cd7358211d9a9424202e7a69786bb6d34357/vs_BuildTools.exe
-ARG VS_16_8_3=https://download.visualstudio.microsoft.com/download/pr/9b3476ff-6d0a-4ff8-956d-270147f21cd4/0df5becfebf4ae2418f5fae653feebf3888b0af00d3df0415cb64875147e9be3/vs_BuildTools.exe
-ARG VS_16_8_4=https://download.visualstudio.microsoft.com/download/pr/3a7354bc-d2e4-430f-92d0-9abd031b5ee5/51d0c7235e474051f0605cfe54d28d7e20017d8a97bb3aebd09d573c370b0d14/vs_BuildTools.exe
-ARG VS_16_8_5=https://download.visualstudio.microsoft.com/download/pr/20130c62-1bc8-43d6-b4f0-c20bb7c79113/145a319d79a83376915d8f855605e152ef5f6fa2b2f1d2dca411fb03722eea72/vs_BuildTools.exe
 ARG VS_16_8_6=https://download.visualstudio.microsoft.com/download/pr/8aaeb3c2-46bb-4444-9ca6-0361b60b2d16/1f4552565c70ee4355fcb4bf561b11dc23ae0a20cb6b4bcd0546d6819e545eae/vs_BuildTools.exe
 ARG VS_16_9_0=https://download.visualstudio.microsoft.com/download/pr/5c555b0d-fffd-45a2-9929-4a5bb59479a4/68c048e8c687ed045d1efd3fdc531e5ce95c05dc374b5aaaeec3614ca8ed2044/vs_BuildTools.exe
+ARG VS_16_9_1=https://download.visualstudio.microsoft.com/download/pr/308e891b-f15e-43d8-8cc1-0e41f4962d4b/f3aae428387b490b55a1bb6527b7cb985a7d73eb5bf9e59cb55f01ca8c1cb0b4/vs_BuildTools.exe
 
 SHELL ["powershell"]
-RUN Invoke-WebRequest "$env:VS_16_9_0" `
+RUN Invoke-WebRequest "$env:VS_16_9_1" `
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
 SHELL ["cmd", "/S", "/C"]
 RUN %TEMP%\vs_buildtools.exe `
