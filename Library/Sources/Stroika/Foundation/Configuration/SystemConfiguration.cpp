@@ -71,7 +71,6 @@ using Memory::SmallStackBufferCommon;
  */
 String SystemConfiguration::BootInformation::ToString () const
 {
-
     StringBuilder sb;
     sb += L"{";
     sb += L"Booted-At: " + Characters::ToString (fBootedAt);
