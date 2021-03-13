@@ -557,7 +557,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
 #if qPlatform_POSIX
         tmp.fTokenName = L"Unix"sv;
         try {
-            tmp.fTokenName = Execution::ProcessRunner (L"uname").Run (String{}).Trim ();
+            tmp.fTokenName = Execution::ProcessRunner{L"uname"}.Run (String{}).Trim ();
         }
         catch (...) {
             DbgTrace ("Failure running uname");
@@ -571,7 +571,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
             tmp.fMajorMinorVersionString          = p.fUnnamedSection.fProperties.LookupValue (L"VERSION_ID"sv);
         }
         catch (...) {
-            DbgTrace ("Failure reading /etc/os-release");
+            DbgTrace (L"Failure reading /etc/os-release: %s", Characters::ToString (current_exception ()).c_str ());
         }
         if (tmp.fShortPrettyName.empty ()) {
             try {
@@ -584,7 +584,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
                 }
             }
             catch (...) {
-                DbgTrace ("Failure reading /etc/centos-release");
+                DbgTrace (L"Failure reading /etc/centos-release %s", Characters::ToString (current_exception ()).c_str ());
             }
         }
         if (tmp.fShortPrettyName.empty ()) {
@@ -598,7 +598,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
                 }
             }
             catch (...) {
-                DbgTrace ("Failure reading /etc/redhat-release");
+                DbgTrace (L"Failure reading /etc/redhat-release %s", Characters::ToString (current_exception ()).c_str ());
             }
         }
         if (tmp.fShortPrettyName.empty ()) {
@@ -651,7 +651,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
         // not a great way to test since some systems have both, like ubuntu
         if (not tmp.fPreferedInstallerTechnology.has_value ()) {
             try {
-                Execution::ProcessRunner (L"dpkg --help").Run (String{});
+                Execution::ProcessRunner{L"dpkg --help"}.Run (String{});
                 tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eDPKG;
             }
             catch (...) {
@@ -659,7 +659,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
         }
         if (not tmp.fPreferedInstallerTechnology.has_value ()) {
             try {
-                Execution::ProcessRunner (L"rpm --help").Run (String{});
+                Execution::ProcessRunner{L"rpm --help"}.Run (String{});
                 tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eRPM;
             }
             catch (...) {
