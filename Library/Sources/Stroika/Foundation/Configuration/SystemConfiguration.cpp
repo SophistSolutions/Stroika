@@ -563,9 +563,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
             DbgTrace ("Failure running uname");
         }
         try {
-            ifstream s;
-            Streams::iostream::OpenInputFileStream (&s, L"/etc/os-release");
-            DataExchange::Variant::INI::Profile p = DataExchange::Variant::INI::Reader{}.ReadProfile (s);
+            DataExchange::Variant::INI::Profile p = DataExchange::Variant::INI::Reader{}.ReadProfile (IO::FileSystem::FileInputStream::New ("/etc/os-release"sv));
             tmp.fShortPrettyName                  = p.fUnnamedSection.fProperties.LookupValue (L"NAME"sv);
             tmp.fPrettyNameWithMajorVersion       = p.fUnnamedSection.fProperties.LookupValue (L"PRETTY_NAME"sv);
             tmp.fMajorMinorVersionString          = p.fUnnamedSection.fProperties.LookupValue (L"VERSION_ID"sv);
