@@ -42,7 +42,7 @@ public:
     virtual VariantValue Read (const Streams::InputStream<Character>::Ptr& in) override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx ("DataExchange::INI::Reader::Rep_::Read");
+        Debug::TraceContextBumper ctx{"DataExchange::INI::Reader::Rep_::Read"};
 #endif
         Profile          p;
         optional<String> readingSection;

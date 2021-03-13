@@ -40,12 +40,12 @@ namespace Stroika::Foundation::Streams::iostream {
 
     public:
         Rep_ (IStreamType& originalStream)
-            : Rep_ (originalStream, DefaultSeekable_ (originalStream))
+            : Rep_{originalStream, DefaultSeekable_ (originalStream)}
         {
         }
         Rep_ (IStreamType& originalStream, SeekableFlag seekable)
-            : fOriginalStream_ (originalStream)
-            , fSeekable_ (seekable)
+            : fOriginalStream_{originalStream}
+            , fSeekable_{seekable}
         {
         }
 
