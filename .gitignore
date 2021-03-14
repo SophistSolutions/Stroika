@@ -13,3 +13,5 @@ ConfigurationFiles
 *.user
 .DS_Store
 xcuserdata/
+.CURRENT-CONFIGURATION
+.CURRENT-JOBSFLAG
