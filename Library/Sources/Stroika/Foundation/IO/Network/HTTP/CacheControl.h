@@ -64,17 +64,17 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#cacheability
          */
         enum class Cacheability {
-            ePublic,            // The response may be stored by any cache, even if the response is normally non-cacheable
-            ePrivate,           // The response may be stored only by a browser's cache, even if the response is normally non-cacheable
-            eNoCache,           // The response may be stored by any cache, even if the response is normally non-cacheable. However, the stored response MUST always go through validation with the origin server first
-            eNoStore,           // The response may not be stored in any cache (can also set max-age=0 to also clear existing cache responses)
+            ePublic,  // The response may be stored by any cache, even if the response is normally non-cacheable
+            ePrivate, // The response may be stored only by a browser's cache, even if the response is normally non-cacheable
+            eNoCache, // The response may be stored by any cache, even if the response is normally non-cacheable. However, the stored response MUST always go through validation with the origin server first
+            eNoStore, // The response may not be stored in any cache (can also set max-age=0 to also clear existing cache responses)
 
             Stroika_Define_Enum_Bounds (ePublic, eNoStore)
         };
-        static constexpr Cacheability     ePublic       = Cacheability::ePublic;
-        static constexpr Cacheability     ePrivate      = Cacheability::ePrivate;
-        static constexpr Cacheability     eNoStore      = Cacheability::eNoStore;
-        static constexpr Cacheability     eNoCache      = Cacheability::eNoCache;
+        static constexpr Cacheability ePublic  = Cacheability::ePublic;
+        static constexpr Cacheability ePrivate = Cacheability::ePrivate;
+        static constexpr Cacheability eNoStore = Cacheability::eNoStore;
+        static constexpr Cacheability eNoCache = Cacheability::eNoCache;
 
         /**
          */

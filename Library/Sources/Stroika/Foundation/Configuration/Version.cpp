@@ -45,7 +45,7 @@ Version Version::FromWin32Version4DotString (const Characters::String& win32Vers
         DbgTrace (L"win32Version4DotString=%s", win32Version4DotString.c_str ());
         Execution::Throw (Execution::Exception{L"Invalid Version String"sv});
     }
-    return Version (static_cast<uint8_t> (major), static_cast<uint8_t> (minor), static_cast<VersionStage> (verStage), verSubStage, verFinal);
+    return Version{static_cast<uint8_t> (major), static_cast<uint8_t> (minor), static_cast<VersionStage> (verStage), verSubStage, verFinal};
 }
 
 Version Version::FromPrettyVersionString (const Characters::String& prettyVersionString)
@@ -125,7 +125,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
         finalBuild = false;
     }
     Assert (static_cast<size_t> (i - prettyVersionString.c_str ()) <= prettyVersionString.length ());
-    return Version (major, minor, verStage, verSubStage, finalBuild);
+    return Version{major, minor, verStage, verSubStage, finalBuild};
 }
 
 Characters::String Version::AsWin32Version4DotString () const

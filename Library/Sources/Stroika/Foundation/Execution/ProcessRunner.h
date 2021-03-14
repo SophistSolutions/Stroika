@@ -286,7 +286,7 @@ namespace Stroika::Foundation::Execution {
 #if qPlatform_POSIX
         static String mkMsg_ (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset, const optional<uint8_t>& wExitStatus, const optional<uint8_t>& wTermSig, const optional<uint8_t>& wStopSig);
 #elif qPlatform_Windows
-        static String   mkMsg_ (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset, const optional<DWORD>& err);
+        static String mkMsg_ (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset, const optional<DWORD>& err);
 #endif
     private:
         String fCmdLine_;

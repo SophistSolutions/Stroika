@@ -21,7 +21,7 @@ namespace Stroika::Foundation::Execution {
         static constexpr wstring_view kPDFOCXViewer           = L"PDFOCXViewer"sv;
         static constexpr wstring_view kSAXFactory             = L"SAXFactory"sv;
         static constexpr wstring_view kIONetworkClientFactory = L"IO-Network-Transer-Client-Factory"sv;
-        static constexpr wstring_view kOpenSSL               = L"OpenSSL"sv;
+        static constexpr wstring_view kOpenSSL                = L"OpenSSL"sv;
 
     public:
         RequiredComponentMissingException (const String& component);

@@ -13,13 +13,13 @@
 
 namespace Stroika::Foundation::IO::Network::HTTP {
 
-	using Characters::String;
+    using Characters::String;
 
     /**
      *  https://tools.ietf.org/html/rfc2068#section-19.7.1.1
      *  https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Keep-Alive
      */
-	struct KeepAlive {
+    struct KeepAlive {
         optional<unsigned int>              fMessages;
         optional<Time::DurationSecondsType> fTimeoutAt;
 

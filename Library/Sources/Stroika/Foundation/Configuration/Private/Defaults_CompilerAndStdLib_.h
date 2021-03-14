@@ -748,11 +748,10 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 #endif
 #endif
 
-
 /*
  *      ACCORDING To https://en.cppreference.com/w/cpp/locale/time_get/get
  * 
- *              m	parses the month as a decimal number (range [01,12]), leading zeroes permitted but not required
+ *              m   parses the month as a decimal number (range [01,12]), leading zeroes permitted but not required
  * 
  *      CODE to reprodcue bug online:
  *              https://onlinegdb.com/Sy1IZ0-md
@@ -770,16 +769,15 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 #endif
 #endif
 
-
 /*
  * This could be a docker or ubuntu issue, but appears to be an issue with glibc or libstdc++
  * 
 From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
-    mdy	month, day, year (American locales)
+    mdy month, day, year (American locales)
 
     std::locale                  l{"en_US.utf8"}; // originally tested with locale {} - which defaulted to C-locale
     const time_get<wchar_t>&     tmget = use_facet<time_get<wchar_t>> (l);
-    VerifyTestResultWarning (tmget.date_order () == time_base::mdy);	// fails – returns no_order
+    VerifyTestResultWarning (tmget.date_order () == time_base::mdy);    // fails – returns no_order
 
     REPORTED TO GCC folks as:
          https://gcc.gnu.org/bugzilla/show_bug.cgi?id=99556

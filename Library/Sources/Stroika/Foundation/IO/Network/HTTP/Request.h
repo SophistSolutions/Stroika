@@ -104,10 +104,10 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         nonvirtual String ToString () const;
 
     private:
-        String      fHTTPVersion_;
-        String      fMethod_;
-        URI         fURL_;
-        Headers     fHeaders_;
+        String  fHTTPVersion_;
+        String  fMethod_;
+        URI     fURL_;
+        Headers fHeaders_;
     };
 
 }

@@ -435,7 +435,7 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
         LPFN_GLPI glpi = (LPFN_GLPI)::GetProcAddress (::GetModuleHandle (TEXT ("kernel32")), "GetLogicalProcessorInformation");
         DISABLE_COMPILER_MSC_WARNING_END (6387)
         AssertNotNull (glpi); // assume at least OS WinXP...
-        SmallStackBuffer<byte> buffer (SmallStackBufferCommon::eUninitialized, sizeof (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION));
+        SmallStackBuffer<byte> buffer{SmallStackBufferCommon::eUninitialized, sizeof (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION)};
         DWORD                  returnLength = 0;
         while (true) {
             DWORD rc = glpi (reinterpret_cast<PSYSTEM_LOGICAL_PROCESSOR_INFORMATION> (buffer.begin ()), &returnLength);
@@ -498,7 +498,7 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
 
 #if qDebug
     {
-        SYSTEM_INFO sysInfo{}; // GetNativeSystemInfo cannot fail so no need to initialize data
+        ::SYSTEM_INFO sysInfo{}; // GetNativeSystemInfo cannot fail so no need to initialize data
         ::GetNativeSystemInfo (&sysInfo);
         Assert (sysInfo.dwNumberOfProcessors == logicalProcessorCount);
     }
@@ -530,11 +530,11 @@ SystemConfiguration::Memory Configuration::GetSystemConfiguration_Memory ()
     result.fPageSize         = kPageSize_;
     result.fTotalPhysicalRAM = ::sysconf (_SC_PHYS_PAGES) * kPageSize_;
 #elif qPlatform_Windows
-    SYSTEM_INFO sysInfo;
+    ::SYSTEM_INFO sysInfo{};
     ::GetNativeSystemInfo (&sysInfo);
     result.fPageSize = sysInfo.dwPageSize;
 
-    MEMORYSTATUSEX memStatus;
+    ::MEMORYSTATUSEX memStatus{};
     memStatus.dwLength = sizeof (memStatus);
     Verify (::GlobalMemoryStatusEx (&memStatus));
     result.fTotalPhysicalRAM = memStatus.ullTotalPhys;
@@ -884,7 +884,7 @@ SystemConfiguration::ComputerNames Configuration::GetSystemConfiguration_Compute
     constexpr COMPUTER_NAME_FORMAT kUseNameFormat_ = ComputerNameNetBIOS; // total WAG -- LGP 2014-10-10
     DWORD                          dwSize          = 0;
     (void)::GetComputerNameEx (kUseNameFormat_, nullptr, &dwSize);
-    SmallStackBuffer<SDKChar> buf (SmallStackBufferCommon::eUninitialized, dwSize);
+    SmallStackBuffer<SDKChar> buf{SmallStackBufferCommon::eUninitialized, dwSize};
     Execution::Platform::Windows::ThrowIfZeroGetLastError (::GetComputerNameEx (kUseNameFormat_, buf, &dwSize));
     result.fHostname = String::FromSDKString (buf);
 #else

@@ -54,8 +54,8 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
     template <typename ALGORITHM, typename RETURN_TYPE = typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>
     class DigesterAlgorithm;
 
-    // @todo add concepts or some such to enforce DigesterAlgorithm follows this pattern.
-    #if 0
+// @todo add concepts or some such to enforce DigesterAlgorithm follows this pattern.
+#if 0
     template <typename ALGORITHM, typename RETURN_TYPE = typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>
     class DigesterAlgorithm : public IDigestAlgorithm<RETURN_TYPE> {
         using ReturnType = RETURN_TYPE;
@@ -72,7 +72,7 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
     public:
         virtual ReturnType Complete () override;
     };
-    #endif
+#endif
 
 }
 

@@ -8,9 +8,9 @@
 
 #include <algorithm>
 #include <atomic>
+#include <forward_list>
 #include <mutex>
 #include <optional>
-#include <forward_list>
 #include <shared_mutex>
 #include <thread>
 
@@ -119,7 +119,7 @@ namespace Stroika::Foundation::Debug {
          */
         struct SharedContext {
         public:
-            SharedContext () = default;
+            SharedContext ()                     = default;
             SharedContext (const SharedContext&) = delete;
             SharedContext& operator= (const SharedContext&) = delete;
             ~SharedContext ()
@@ -146,7 +146,7 @@ namespace Stroika::Foundation::Debug {
             {
                 lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
                 size_t            i = 0;
-                for ([[maybe_unused]]const auto& x : fSharedLockThreads_) {
+                for ([[maybe_unused]] const auto& x : fSharedLockThreads_) {
                     i++;
                 }
                 return i;

@@ -226,8 +226,8 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
                 fName[0] = '\0';
             }
             ControlWordAtomName (const char* c);
-            operator char* () { return fName; }
-            operator const char* () const { return fName; }
+                  operator char* () { return fName; }
+                  operator const char* () const { return fName; }
             char& operator[] (size_t i)
             {
                 Require (i <= eMaxControlAtomNameLen);

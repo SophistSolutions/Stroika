@@ -188,13 +188,13 @@ namespace Stroika::Foundation::Time {
         /**
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get and https://en.cppreference.com/w/cpp/locale/time_put/put
          */
-        static constexpr wstring_view  kLocaleStandardFormat           = L"%c"sv;
+        static constexpr wstring_view kLocaleStandardFormat = L"%c"sv;
 
     public:
         /**
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get and https://en.cppreference.com/w/cpp/locale/time_put/put
          */
-        static constexpr wstring_view kLocaleStandardAlternateFormat  = L"%Ec"sv;
+        static constexpr wstring_view kLocaleStandardAlternateFormat = L"%Ec"sv;
 
     public:
         /**
@@ -602,7 +602,6 @@ namespace Stroika::Foundation::Time {
         L"%D%t%R"sv,            // no obvious reference for this so maybe not a good idea
         L"%a %b %e %T %Y"sv,    // no obvious reference for this so maybe not a good idea
     };
-
 
     /**
      */

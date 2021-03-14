@@ -25,7 +25,6 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     using Containers::Collection;
     using Containers::Mapping;
 
-
     /**
      *  \brief object representing an HTTP cookie - from https://tools.ietf.org/html/rfc6265
      */
@@ -40,25 +39,25 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          * https://tools.ietf.org/html/rfc6265#section-4.1.2.1
          */
         static constexpr wstring_view kExpiresAttributeLabel = L"Expires"sv;
-        optional<Time::DateTime> fExpires;
+        optional<Time::DateTime>      fExpires;
 
         /*
          * https://tools.ietf.org/html/rfc6265#section-4.1.2.2
          */
         static constexpr wstring_view kMaxAgeAttributeLabel = L"Max-Age"sv;
-        optional<int>            fMaxAge;
+        optional<int>                 fMaxAge;
 
         /*
          * https://tools.ietf.org/html/rfc6265#section-4.1.2.3
          */
         static constexpr wstring_view kDomainAttributeLabel = L"Domain"sv;
-        optional<String>         fDomain;
+        optional<String>              fDomain;
 
         /*
          * https://tools.ietf.org/html/rfc6265#section-4.1.2.4
          */
         static constexpr wstring_view kPathAttributeLabel = L"Path"sv;
-        optional<String>         fPath;
+        optional<String>              fPath;
 
         /*
          * https://tools.ietf.org/html/rfc6265#section-4.1.2.5
@@ -66,7 +65,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  valueless attribute- just presence/absense of this attribute counts
          */
         static constexpr wstring_view kSecureAttributeLabel = L"Secure"sv;
-        bool                     fSecure{false};
+        bool                          fSecure{false};
 
         /*
          * https://tools.ietf.org/html/rfc6265#section-4.1.2.6
@@ -74,7 +73,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  valueless attribute- just presence/absense of this attribute counts
          */
         static constexpr wstring_view kHttpOnlyAttributeLabel = L"HttpOnly"sv;
-        bool                     fHttpOnly{false};
+        bool                          fHttpOnly{false};
 
         /*
          * https://tools.ietf.org/html/rfc6265#section-4.1.1
@@ -115,7 +114,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     public:
         /**
          */
-        nonvirtual bool            operator== (const Cookie& rhs) const  = default;
+        nonvirtual bool operator== (const Cookie& rhs) const = default;
 #endif
     };
 
@@ -123,7 +122,6 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     bool operator== (const Cookie& lhs, const Cookie& rhs);
     bool operator!= (const Cookie& lhs, const Cookie& rhs);
 #endif
-
 
     /**
      *  This corresponds to the value of the Cookie, or Set-Cookie in an HTTP Request header
@@ -147,14 +145,14 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /**
          *  This representation omits the cookie attributes.
          */
-        Common::Property<Mapping<String, String>> cookies;     // key-value-pair, as would appear in HTTP Cookie: header
+        Common::Property<Mapping<String, String>> cookies; // key-value-pair, as would appear in HTTP Cookie: header
 
     public:
         /**
          *  This representation includes any cookie attributes.
          */
         Common::Property<Collection<Cookie>> cookieDetails; // key-value-pair, as would appear in HTTP Cookie: header
-    
+
     public:
         /**
          *  \brief render as a string suitable for a cookie header
@@ -179,7 +177,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     public:
         /**
          */
-        nonvirtual bool            operator== (const CookieList& rhs) const;
+        nonvirtual bool operator== (const CookieList& rhs) const;
 #endif
 
 #if __cpp_impl_three_way_comparison < 201907

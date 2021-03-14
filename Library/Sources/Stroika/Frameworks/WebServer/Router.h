@@ -124,7 +124,7 @@ namespace Stroika::Frameworks::WebServer {
         Router (const Sequence<Route>& routes, const CORSOptions& corsOptions);
 
     public:
-        nonvirtual Router& operator=(Router&) = default;
+        nonvirtual Router& operator= (Router&) = default;
 
     public:
         /**

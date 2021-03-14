@@ -99,19 +99,19 @@ namespace Stroika::Foundation::Time {
          *  \note leading zeros in hours, minutes, seconds, required, not optional
          *  \note this is locale-independent
          */
-        static constexpr wstring_view kISO8601Format         = L"%T"sv;
+        static constexpr wstring_view kISO8601Format = L"%T"sv;
 
     public:
         /**
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get and https://en.cppreference.com/w/cpp/locale/time_put/put
          */
-        static constexpr wstring_view kLocaleStandardFormat         = L"%X"sv;
+        static constexpr wstring_view kLocaleStandardFormat = L"%X"sv;
 
     public:
         /**
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get and https://en.cppreference.com/w/cpp/locale/time_put/put
          */
-        static constexpr wstring_view kLocaleStandardAlternateFormat      = L"%EX"sv;
+        static constexpr wstring_view kLocaleStandardAlternateFormat = L"%EX"sv;
 
     public:
         /**
@@ -268,8 +268,7 @@ namespace Stroika::Foundation::Time {
         enum class [[deprecated ("Since Stroika 2.1b10 ")]] ParseFormat : uint8_t{
             eCurrentLocale,
             eISO8601 [[deprecated ("Since Stroika 2.1b10 - use kISO8601Format")]],
-            Stroika_Define_Enum_Bounds (eCurrentLocale, eISO8601)
-        };
+            Stroika_Define_Enum_Bounds (eCurrentLocale, eISO8601)};
         [[deprecated ("Since Stroika 2.1b10 *use Parse/1")]] static TimeOfDay Parse (const String& rep, ParseFormat pf);
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")

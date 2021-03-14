@@ -43,7 +43,7 @@ namespace Stroika::Frameworks::WebServer {
          */
         optional<unsigned int> fAccessControlMaxAge;
 
-        static constexpr unsigned int kAccessControlMaxAge_Default{24*60*60};
+        static constexpr unsigned int kAccessControlMaxAge_Default{24 * 60 * 60};
 
         /**
          *  This can be {L"*"} meaning any origin (default). 

@@ -170,8 +170,8 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
          *
          * **not** lock free
          */
-        nonvirtual iterator         begin ();
-        nonvirtual const_iterator   begin () const;
+        nonvirtual iterator       begin ();
+        nonvirtual const_iterator begin () const;
 
     public:
         /**
@@ -179,7 +179,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
          *
          * **not** lock free
          */
-        nonvirtual const_iterator   cbegin () const;
+        nonvirtual const_iterator cbegin () const;
 
     public:
         /**
@@ -187,8 +187,8 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
          *
          * lock free
          */
-        nonvirtual iterator         end ();
-        nonvirtual const_iterator   end () const;
+        nonvirtual iterator       end ();
+        nonvirtual const_iterator end () const;
 
     public:
         /**
@@ -205,12 +205,12 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
          *  All overloads lock_free
          *      << was comented only on first overload but appears to apply to all) returns a default constructed iterator if position is no longer valid
          */
-        nonvirtual iterator     insert_after (const_iterator position, T const& value);
-        nonvirtual iterator     insert_after (const_iterator position, T&& value);
-        nonvirtual iterator     insert_after (const_iterator pos, int count, const T& value);
+        nonvirtual iterator insert_after (const_iterator position, T const& value);
+        nonvirtual iterator insert_after (const_iterator position, T&& value);
+        nonvirtual iterator insert_after (const_iterator pos, int count, const T& value);
         template <typename InputIt>
-        nonvirtual iterator     insert_after (const_iterator pos, InputIt first, InputIt last);
-        nonvirtual iterator     insert_after (const_iterator pos, std::initializer_list<T> ilist);
+        nonvirtual iterator insert_after (const_iterator pos, InputIt first, InputIt last);
+        nonvirtual iterator insert_after (const_iterator pos, std::initializer_list<T> ilist);
 
     public:
         /**

@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
         using ReturnType = DigesterDefaultTraitsForAlgorithm<SuperFastHash>::ReturnType;
 
     public:
-        DigesterAlgorithm () = default;
+        DigesterAlgorithm ()                             = default;
         DigesterAlgorithm (const DigesterAlgorithm& src) = default;
 
     public:

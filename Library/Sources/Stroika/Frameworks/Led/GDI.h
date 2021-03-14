@@ -371,7 +371,7 @@ namespace Stroika::Frameworks::Led {
     @CLASS:         Led_Size
     @DESCRIPTION:   <p>Simple typedef of @'Point_Base<COORD_TYPE>' using @'Led_Distance'.</p>
     */
-    using Led_Size  = Point_Base<Led_Distance>;
+    using Led_Size = Point_Base<Led_Distance>;
 #endif
 
 /*
@@ -852,7 +852,7 @@ namespace Stroika::Frameworks::Led {
             FontNameSpecifier (const Led_SDK_Char* from);
             Led_SDK_Char fName[LF_FACESIZE];
 #if qPlatform_Windows
-            bool         operator== (const Led_FontSpecification::FontNameSpecifier& rhs) const
+            bool operator== (const Led_FontSpecification::FontNameSpecifier& rhs) const
             {
                 return (::_tcscmp (fName, rhs.fName) == 0);
             }
@@ -909,8 +909,8 @@ namespace Stroika::Frameworks::Led {
         nonvirtual bool GetStyle_Extended () const;
         nonvirtual void SetStyle_Extended (bool isExtended);
 #elif qPlatform_Windows
-        nonvirtual bool    GetStyle_Strikeout () const;
-        nonvirtual void    SetStyle_Strikeout (bool isStrikeout);
+        nonvirtual bool GetStyle_Strikeout () const;
+        nonvirtual void SetStyle_Strikeout (bool isStrikeout);
 #endif
 
         using FontSize = uint16_t;
@@ -962,7 +962,7 @@ namespace Stroika::Frameworks::Led {
         short fFontSize;
         Style fFontStyle;
 #elif qPlatform_Windows
-        LOGFONT            fFontInfo; // Could make this MUCH smaller on windows - do for future release!
+        LOGFONT fFontInfo; // Could make this MUCH smaller on windows - do for future release!
 #elif qStroika_FeatureSupported_XWindows
         FontNameSpecifier fFontFamily;
         bool              fBold : 1;
@@ -1073,10 +1073,10 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void InvalidateStyle_Extended ();
         nonvirtual void SetStyle_Extended (bool isExtended);
 #elif qPlatform_Windows
-        nonvirtual bool    GetStyle_Strikeout () const;
-        nonvirtual bool    GetStyle_Strikeout_Valid () const;
-        nonvirtual void    InvalidateStyle_Strikeout ();
-        nonvirtual void    SetStyle_Strikeout (bool isStrikeout);
+        nonvirtual bool GetStyle_Strikeout () const;
+        nonvirtual bool GetStyle_Strikeout_Valid () const;
+        nonvirtual void InvalidateStyle_Strikeout ();
+        nonvirtual void SetStyle_Strikeout (bool isStrikeout);
 #endif
 
         /*
@@ -1362,7 +1362,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         nonvirtual operator GrafPtr () const;
 #elif qPlatform_Windows
-        nonvirtual          operator HDC () const;
+        nonvirtual operator HDC () const;
 #endif
 
     public:
@@ -1405,12 +1405,12 @@ namespace Stroika::Frameworks::Led {
         nonvirtual BOOL    GetTextMetrics (LPTEXTMETRIC lpMetrics) const;
         nonvirtual HBITMAP SelectObject (HBITMAP hBitmap);
 #if defined(STRICT)
-        nonvirtual HFONT   SelectObject (HFONT hFont);
+        nonvirtual HFONT SelectObject (HFONT hFont);
 #endif
-        nonvirtual POINT   SetWindowOrg (int x, int y);
-        nonvirtual int     GetDeviceCaps (int nIndex) const;
-        nonvirtual BOOL    Attach (HDC hDC, OwnDCControl ownsDC = eOwnsDC);
-        nonvirtual HDC     Detach ();
+        nonvirtual POINT SetWindowOrg (int x, int y);
+        nonvirtual int   GetDeviceCaps (int nIndex) const;
+        nonvirtual BOOL  Attach (HDC hDC, OwnDCControl ownsDC = eOwnsDC);
+        nonvirtual HDC   Detach ();
 #elif qStroika_FeatureSupported_XWindows
     public:
         nonvirtual void SetFont (const Led_FontSpecification& fontSpec);

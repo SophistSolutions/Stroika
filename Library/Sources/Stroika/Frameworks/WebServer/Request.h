@@ -87,7 +87,7 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual String ToString () const;
 
     public:
-        [[deprecated ("Since Stroika 2.1b10, use rwHeaders().Set or Add or other")]] inline void             AddHeader (const String& headerName, const String& value)
+        [[deprecated ("Since Stroika 2.1b10, use rwHeaders().Set or Add or other")]] inline void AddHeader (const String& headerName, const String& value)
         {
             this->rwHeaders ().Set (headerName, value);
         }
@@ -111,17 +111,17 @@ namespace Stroika::Frameworks::WebServer {
         {
             this->httpVersion = versionOrVersionLabel;
         }
-        [[deprecated ("Since Stroika v2.1b10 use httpMethod property")]] inline String                       GetHTTPMethod () const
+        [[deprecated ("Since Stroika v2.1b10 use httpMethod property")]] inline String GetHTTPMethod () const
         {
             return this->httpMethod ();
         }
-        [[deprecated ("Since Stroika v2.1b10 use httpMethod property")]] inline void                         SetHTTPMethod (const String& method)
+        [[deprecated ("Since Stroika v2.1b10 use httpMethod property")]] inline void SetHTTPMethod (const String& method)
         {
             this->httpMethod = method;
         }
-        [[deprecated ("Since Stroika v2.1b10 use url property")]] inline  IO::Network::URI                    GetURL () const
+        [[deprecated ("Since Stroika v2.1b10 use url property")]] inline IO::Network::URI GetURL () const
         {
-            return this->url (); 
+            return this->url ();
         }
         [[deprecated ("Since Stroika v2.1b10 use url property")]] inline void SetURL (const IO::Network::URI& newUrl)
         {
@@ -133,7 +133,7 @@ namespace Stroika::Frameworks::WebServer {
         }
         [[deprecated ("Since Stroika v2.1b10 use headers property")]] void SetHeaders (const IO::Network::HTTP::Headers& newHeaders)
         {
-            this->rwHeaders = newHeaders; 
+            this->rwHeaders = newHeaders;
         }
 
     private:

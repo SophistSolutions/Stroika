@@ -164,7 +164,7 @@ namespace Stroika::Frameworks::Led::Platform {
         ~Led_MFC_TabletFromCDC ();
 
     public:
-        operator Led_Tablet ();
+                   operator Led_Tablet ();
         Led_Tablet operator-> ();
 
     private:

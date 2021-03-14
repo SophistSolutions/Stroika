@@ -38,8 +38,8 @@ namespace Stroika::Frameworks::WebServer {
     using Containers::Collection;
     using Containers::Set;
     using IO::Network::ConnectionOrientedStreamSocket;
-    using IO::Network::HTTP::Headers;
     using IO::Network::Socket;
+    using IO::Network::HTTP::Headers;
     using Traversal::Iterable;
 
     /**
@@ -268,7 +268,7 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         [[deprecated ("Since Stroika v2.1b10 use property connections()")]] Collection<shared_ptr<Connection>> GetConnections () const;
-        [[deprecated ("Since Stroika v2.1b10 use property options()")]] Options GetOptions () const;
+        [[deprecated ("Since Stroika v2.1b10 use property options()")]] Options                                GetOptions () const;
 
     private:
         nonvirtual void onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s);
@@ -330,7 +330,7 @@ namespace Stroika::Frameworks::WebServer {
 
         // Note: this must be declared after the threadpool so its shutdown on destruction before the thread pool, and doesn't try to launch
         // new tasks into an already destroyed threadpool.
-        IO::Network::Listener     fListener_;
+        IO::Network::Listener fListener_;
     };
 
     inline const ConnectionManager::Options ConnectionManager::kDefaultOptions;

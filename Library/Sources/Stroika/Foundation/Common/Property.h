@@ -423,7 +423,7 @@ namespace Stroika::Foundation::Common {
         template <typename TT>
         bool operator!= (const TT& rhs) const
         {
-            return not (*this == rhs);
+            return not(*this == rhs);
         }
 #endif
 
@@ -542,7 +542,7 @@ namespace Stroika::Foundation::Common {
          *  this gets handed the original base value (stored), but then each handler gets a crack at overriding the 
          *  value.
          */
-        using PropertyReadEventHandler = std::function<PropertyReadEventHandlerArgAndReturnValue_(const PropertyReadEventHandlerArgAndReturnValue_&)>;
+        using PropertyReadEventHandler = std::function<PropertyReadEventHandlerArgAndReturnValue_ (const PropertyReadEventHandlerArgAndReturnValue_&)>;
 
     public:
         /**

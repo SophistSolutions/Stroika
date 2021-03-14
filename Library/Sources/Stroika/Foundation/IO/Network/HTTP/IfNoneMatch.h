@@ -16,32 +16,32 @@
 
 namespace Stroika::Foundation::IO::Network::HTTP {
 
-	using Characters::String;
+    using Characters::String;
 
-	/**
-	 *	If-None-Match is typically a list of just one ETag (@see https://tools.ietf.org/html/rfc7232#section-3.2)
-	 */
+    /**
+     *  If-None-Match is typically a list of just one ETag (@see https://tools.ietf.org/html/rfc7232#section-3.2)
+     */
     struct IfNoneMatch {
 
-		IfNoneMatch (const Containers::Sequence<ETag>& etags);
+        IfNoneMatch (const Containers::Sequence<ETag>& etags);
 
-		/**
-		 *	If ill-format or missing, return nullopt, no exception.
-		 */
+        /**
+         *  If ill-format or missing, return nullopt, no exception.
+         */
         static optional<IfNoneMatch> Parse (const String& wireFormat);
 
-		Containers::Sequence<ETag> fETags;
-        
-		// true iff fETags is empty
-		bool IsAsterisk () const;
+        Containers::Sequence<ETag> fETags;
 
-		/**
-		 *	This As<> encodes the ETag as specified in HTTP SPEC (URL)
-		 *
-		 *	T can be among these:
-		 *		o	String
-		 */
-		template <typename T>
+        // true iff fETags is empty
+        bool IsAsterisk () const;
+
+        /**
+         *  This As<> encodes the ETag as specified in HTTP SPEC (URL)
+         *
+         *  T can be among these:
+         *      o   String
+         */
+        template <typename T>
         T As () const;
 
         /**

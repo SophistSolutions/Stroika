@@ -263,19 +263,19 @@ namespace Stroika::Foundation::Time {
          *  \note this is LOCALE-INDEPENDENT
          *  \see kMonthDayYearFormat
          */
-        static constexpr wstring_view kISO8601Format                    = L"%Y-%m-%d"sv;
+        static constexpr wstring_view kISO8601Format = L"%Y-%m-%d"sv;
 
     public:
         /**
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get
          */
-        static constexpr wstring_view kLocaleStandardFormat             = L"%x"sv;
+        static constexpr wstring_view kLocaleStandardFormat = L"%x"sv;
 
     public:
         /**
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get 
          */
-        static constexpr wstring_view kLocaleStandardAlternateFormat    = L"%Ex"sv;
+        static constexpr wstring_view kLocaleStandardAlternateFormat = L"%Ex"sv;
 
     public:
         /**
@@ -284,7 +284,7 @@ namespace Stroika::Foundation::Time {
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get 
          *  \see kISO8601Format
          */
-        static constexpr wstring_view kMonthDayYearFormat               = L"%m/%d/%Y"sv;
+        static constexpr wstring_view kMonthDayYearFormat = L"%m/%d/%Y"sv;
 
     public:
         /**
@@ -489,12 +489,13 @@ namespace Stroika::Foundation::Time {
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
         DISABLE_COMPILER_MSC_WARNING_START (4996) // class deprecated but still need to implement it
-        enum class ParseFormat : uint8_t{
+        enum class ParseFormat : uint8_t {
             eCurrentLocale [[deprecated ("Since Stroika 2.1b10 - use locale{}")]],
             eISO8601 [[deprecated ("Since Stroika 2.1b10 - use kISO8601Format")]],
             eJavascript [[deprecated ("Since Stroika 2.1b10 - use kMonthDayYearFormat")]],
 
-            Stroika_Define_Enum_Bounds (eCurrentLocale, eJavascript)};
+            Stroika_Define_Enum_Bounds (eCurrentLocale, eJavascript)
+        };
 
         [[deprecated ("Since Stroika 2.1b10")]] static Date Parse (const String& rep, ParseFormat pf);
         DISABLE_COMPILER_MSC_WARNING_END (4996) // class deprecated but still need to implement it
@@ -522,7 +523,6 @@ namespace Stroika::Foundation::Time {
     template <>
     ::tm Date::As () const;
 
-
     class Date::FormatException : public Execution::RuntimeErrorException<> {
     public:
         FormatException ();
@@ -532,14 +532,13 @@ namespace Stroika::Foundation::Time {
          */
         static const FormatException kThe;
     };
-    inline const Date::FormatException Date::FormatException::kThe;
+    inline const Date::FormatException       Date::FormatException::kThe;
     inline const Traversal::Iterable<String> Date::kDefaultParseFormats{
-        kLocaleStandardFormat,              // x (kLocaleStandardFormat) parses the locale's standard date representation
-        kLocaleStandardAlternateFormat,     // Ex (kLocaleStandardAlternateFormat) parses the locale's alternative date representation, e.g. expecting 平成23年 (year Heisei 23) instead of 2011年 (year 2011) in ja_JP locale
-        kMonthDayYearFormat,                // Before Stroika 2.1b10, this was L"%D" (=="%m/%d/%y) which is hte 2-digit year
+        kLocaleStandardFormat,          // x (kLocaleStandardFormat) parses the locale's standard date representation
+        kLocaleStandardAlternateFormat, // Ex (kLocaleStandardAlternateFormat) parses the locale's alternative date representation, e.g. expecting 平成23年 (year Heisei 23) instead of 2011年 (year 2011) in ja_JP locale
+        kMonthDayYearFormat,            // Before Stroika 2.1b10, this was L"%D" (=="%m/%d/%y) which is hte 2-digit year
         kISO8601Format,
     };
-
 
 #if __cpp_impl_three_way_comparison < 201907
     constexpr bool operator< (const Date& lhs, const Date& rhs);

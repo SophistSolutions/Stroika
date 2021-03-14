@@ -32,7 +32,6 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
     struct Jenkins {
     };
 
-
     /**
      *  Traits for the Jenkins algorithm.
      */
@@ -40,7 +39,6 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
     struct DigesterDefaultTraitsForAlgorithm<Jenkins> {
         using ReturnType = uint32_t;
     };
-
 
     /**
      *  \brief Windowing digester (code to do the digest algorithm) for the Jenkins algorithm.
@@ -50,7 +48,7 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
         using ReturnType = DigesterDefaultTraitsForAlgorithm<Jenkins>::ReturnType;
 
     public:
-        DigesterAlgorithm () = default;
+        DigesterAlgorithm ()                             = default;
         DigesterAlgorithm (const DigesterAlgorithm& src) = default;
 
     public:
@@ -68,7 +66,6 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
         bool fCompleted_{false};
 #endif
     };
-
 
 }
 

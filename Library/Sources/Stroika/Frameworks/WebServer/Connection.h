@@ -9,11 +9,11 @@
 #include <optional>
 
 #include "../../Foundation/Characters/String.h"
+#include "../../Foundation/Common/Property.h"
 #include "../../Foundation/Configuration/Common.h"
 #include "../../Foundation/IO/Network/HTTP/KeepAlive.h"
 #include "../../Foundation/IO/Network/HTTP/MessageStartTextInputStreamBinaryAdapter.h"
 #include "../../Foundation/IO/Network/SocketStream.h"
-#include "../../Foundation/Common/Property.h"
 #include "../../Foundation/Streams/TextWriter.h"
 
 #include "InterceptorChain.h"

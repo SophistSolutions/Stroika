@@ -67,7 +67,7 @@ namespace Stroika::Frameworks::WebServer {
             eDateStamp,
             eDigest,
         };
- 
+
         /**
          * ReportETags
          *      @todo NYI

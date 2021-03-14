@@ -179,7 +179,7 @@ namespace Stroika::Frameworks::Led {
 #if qSDK_UNICODE
     using Led_SDK_Char = wchar_t;
 #else
-    using Led_SDK_Char                   = char;
+    using Led_SDK_Char = char;
 #endif
 
 /*
@@ -192,7 +192,7 @@ namespace Stroika::Frameworks::Led {
 #if qSDK_UNICODE
     using Led_SDK_String = wstring;
 #else
-    using Led_SDK_String                 = string;
+    using Led_SDK_String = string;
 #endif
 
 /*
@@ -565,9 +565,9 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
     using Led_ClipFormat = OSType;
 #elif qPlatform_Windows
-    using Led_ClipFormat                 = CLIPFORMAT;
+    using Led_ClipFormat = CLIPFORMAT;
 #elif qStroika_FeatureSupported_XWindows
-    using Led_ClipFormat                 = long;
+    using Led_ClipFormat = long;
 #endif
 #if qPlatform_MacOS
     const Led_ClipFormat kTEXTClipFormat = 'TEXT';
@@ -604,7 +604,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         Handle fOSClipHandle;
 #elif qPlatform_Windows
-        HANDLE         fOSClipHandle;
+        HANDLE fOSClipHandle;
 #endif
         void* fLockedData;
     };

@@ -86,7 +86,8 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      */
     class Headers : private Debug::AssertExternallySynchronizedLock {
     public:
-        enum class CopyFlags { eOnlyBaseValue, eInheritedValues };
+        enum class CopyFlags { eOnlyBaseValue,
+                               eInheritedValues };
 
     public:
         /**
@@ -377,7 +378,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     public:
         /**
          */
-        nonvirtual bool            operator== (const Headers& rhs) const;
+        nonvirtual bool operator== (const Headers& rhs) const;
 #endif
 
     private:
@@ -392,18 +393,18 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         // Could have properties lookup once when loading and store here. Or could have
         // them dynamically lookup in fExtraHeaders_. Just put the ones here in special variables
         // that are very commonly checked for, so their check/update will be a bit quicker.
-        Collection<KeyValuePair<String, String>>    fExtraHeaders_;
-        optional<CacheControl>                      fCacheControl_;
-        optional<uint64_t>                          fContentLength_;    // must acccess through property to access extended property handlers (except root getter/setter)
-        optional<InternetMediaType>                 fContentType_;
-        optional<CookieList>                        fCookieList_;       // store optional cuz often missing, and faster init
-        optional<Time::DateTime>                    fDate_;
-        optional<HTTP::ETag>                        fETag_; // must acccess through property to access extended property handlers (except root getter/setter)
-        optional<String>                            fHost_;
-        optional<IfNoneMatch>                       fIfNoneMatch_;
-        optional<CookieList>                        fSetCookieList_;    // store optional cuz often missing, and faster init
-        optional<TransferEncodings>                 fTransferEncoding_; // must acccess through property to access extended property handlers (except root getter/setter)
-        optional<Containers::Set<String>>           fVary_;
+        Collection<KeyValuePair<String, String>> fExtraHeaders_;
+        optional<CacheControl>                   fCacheControl_;
+        optional<uint64_t>                       fContentLength_; // must acccess through property to access extended property handlers (except root getter/setter)
+        optional<InternetMediaType>              fContentType_;
+        optional<CookieList>                     fCookieList_; // store optional cuz often missing, and faster init
+        optional<Time::DateTime>                 fDate_;
+        optional<HTTP::ETag>                     fETag_; // must acccess through property to access extended property handlers (except root getter/setter)
+        optional<String>                         fHost_;
+        optional<IfNoneMatch>                    fIfNoneMatch_;
+        optional<CookieList>                     fSetCookieList_;    // store optional cuz often missing, and faster init
+        optional<TransferEncodings>              fTransferEncoding_; // must acccess through property to access extended property handlers (except root getter/setter)
+        optional<Containers::Set<String>>        fVary_;
 
 #if __cpp_impl_three_way_comparison < 201907
     private:

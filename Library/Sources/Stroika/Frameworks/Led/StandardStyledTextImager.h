@@ -74,10 +74,10 @@ namespace Stroika::Frameworks::Led {
 
         nonvirtual Led_FontSpecification GetStyleInfo (size_t charAfterPos) const;
         nonvirtual                       vector<InfoSummaryRecord>
-        GetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing) const;
-        nonvirtual void SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const Led_IncrementalFontSpecification& styleInfo);
-        nonvirtual void SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const vector<InfoSummaryRecord>& styleInfos);
-        nonvirtual void SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, size_t nStyleInfos, const InfoSummaryRecord* styleInfos);
+                                         GetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing) const;
+        nonvirtual void                  SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const Led_IncrementalFontSpecification& styleInfo);
+        nonvirtual void                  SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const vector<InfoSummaryRecord>& styleInfos);
+        nonvirtual void                  SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, size_t nStyleInfos, const InfoSummaryRecord* styleInfos);
 
     public:
         virtual Led_FontMetrics GetFontMetricsAt (size_t charAfterPos) const override;

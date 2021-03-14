@@ -6,7 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
-#include  <functional>
+#include <functional>
 
 #include "../Configuration/Common.h"
 

@@ -117,12 +117,12 @@ Characters::String Configuration::FindLocaleName (const Characters::String& iso2
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace (L"***trying locale (i1 + i2 + i3 + i4).AsUTF8 ().c_str ()=%s", (i1 + i2 + i3 + i4).c_str ());
 #endif
-                    IgnoreExceptionsForCall (return String::FromNarrowSDKString (locale ((i1 + i2 + i3 + i4).AsUTF8 ().c_str ()).name ()));
+                    IgnoreExceptionsForCall (return String::FromNarrowSDKString (locale{(i1 + i2 + i3 + i4).AsUTF8 ().c_str ()}.name ()));
                 }
             }
         }
     }
-    Execution::Throw (Execution::RuntimeErrorException (Characters::Format (L"Locale (%s-%s) not found", iso2LetterLanguageCode.c_str (), iso2LetterTerritoryCode.c_str ())));
+    Execution::Throw (Execution::RuntimeErrorException{Characters::Format (L"Locale (%s-%s) not found", iso2LetterLanguageCode.c_str (), iso2LetterTerritoryCode.c_str ())});
 }
 
 /*
@@ -132,5 +132,5 @@ Characters::String Configuration::FindLocaleName (const Characters::String& iso2
  */
 locale Configuration::FindNamedLocale (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode)
 {
-    return locale (FindLocaleName (iso2LetterLanguageCode, iso2LetterTerritoryCode).AsNarrowSDKString ().c_str ());
+    return locale{FindLocaleName (iso2LetterLanguageCode, iso2LetterTerritoryCode).AsNarrowSDKString ().c_str ()};
 }

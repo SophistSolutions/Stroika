@@ -12,15 +12,15 @@
 
 #include "../../Foundation/Characters/CodePage.h"
 #include "../../Foundation/Characters/String.h"
+#include "../../Foundation/Common/Property.h"
 #include "../../Foundation/Configuration/Common.h"
 #include "../../Foundation/Containers/Mapping.h"
-#include "../../Foundation/Common/Property.h"
-#include "../../Foundation/Cryptography/Digest/Digester.h"
 #include "../../Foundation/Cryptography/Digest/Algorithm/MD5.h"
+#include "../../Foundation/Cryptography/Digest/Digester.h"
 #include "../../Foundation/DataExchange/InternetMediaType.h"
 #include "../../Foundation/IO/Network/HTTP/Headers.h"
-#include "../../Foundation/IO/Network/HTTP/Status.h"
 #include "../../Foundation/IO/Network/HTTP/Response.h"
+#include "../../Foundation/IO/Network/HTTP/Status.h"
 #include "../../Foundation/IO/Network/Socket.h"
 #include "../../Foundation/IO/Network/URI.h"
 #include "../../Foundation/Memory/BLOB.h"
@@ -45,8 +45,8 @@ namespace Stroika::Frameworks::WebServer {
     using Characters::String;
     using Containers::Mapping;
     using DataExchange::InternetMediaType;
-    using Memory::BLOB;
     using HTTP::Status;
+    using Memory::BLOB;
 
     /*
      *  \note Set headers (with this->rwHeaders()...) as early as practical (before calling write or Flush).
@@ -70,8 +70,8 @@ namespace Stroika::Frameworks::WebServer {
     public:
         /**
          */
-        Response ()                    = delete;
-        Response (const Response&)     = delete;
+        Response ()                = delete;
+        Response (const Response&) = delete;
         Response (Response&& src);
         Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream<byte>::Ptr& outStream, const optional<HTTP::Headers>& initialHeaders = nullopt);
 
@@ -129,10 +129,10 @@ namespace Stroika::Frameworks::WebServer {
          *        unless the current state is ePreparingHeaders; and these are generally checked with assertions.
          */
         enum class State : uint8_t {
-            ePreparingHeaders,                  // A newly constructed Response starts out ePreparingHeaders state
-            ePreparingBodyBeforeHeadersSent,    // headers can no longer be adjusted, but have not been sent over the wire
-            ePreparingBodyAfterHeadersSent,     // headers have now been sent over the wire
-            eCompleted,                         // and finally to Completed
+            ePreparingHeaders,               // A newly constructed Response starts out ePreparingHeaders state
+            ePreparingBodyBeforeHeadersSent, // headers can no longer be adjusted, but have not been sent over the wire
+            ePreparingBodyAfterHeadersSent,  // headers have now been sent over the wire
+            eCompleted,                      // and finally to Completed
 
             Stroika_Define_Enum_Bounds (ePreparingHeaders, eCompleted)
         };
@@ -299,11 +299,11 @@ namespace Stroika::Frameworks::WebServer {
         {
             this->rwHeaders ().contentType = AdjustContentTypeForCodePageIfNeeded_ (newCT);
         }
-        [[deprecated ("Since 2.1b10, use headers() directly")]] IO::Network::HTTP::Headers    GetHeaders () const
+        [[deprecated ("Since 2.1b10, use headers() directly")]] IO::Network::HTTP::Headers GetHeaders () const
         {
             return this->headers ();
         }
-        [[deprecated ("Since Stroika 2.1b10 - use codePage()")]] Characters::CodePage         GetCodePage () const
+        [[deprecated ("Since Stroika 2.1b10 - use codePage()")]] Characters::CodePage GetCodePage () const
         {
             shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
             return fCodePage_;
@@ -325,11 +325,11 @@ namespace Stroika::Frameworks::WebServer {
         {
             return this->headers ().contentType ().value_or (InternetMediaType{});
         }
-        [[deprecated ("Since Stroika 2.1b10 - use UpdateHeader")]] void                       AddHeader (const String& headerName, const String& value)
+        [[deprecated ("Since Stroika 2.1b10 - use UpdateHeader")]] void AddHeader (const String& headerName, const String& value)
         {
             this->rwHeaders ().Set (headerName, value);
         }
-        [[deprecated ("Since Stroika 2.1b10 - use UpdateHeaders directly")]] void            AppendToCommaSeperatedHeader (const String& headerName, const String& value)
+        [[deprecated ("Since Stroika 2.1b10 - use UpdateHeaders directly")]] void AppendToCommaSeperatedHeader (const String& headerName, const String& value)
         {
             Require (not value.empty ());
             auto& updateHeaders = this->rwHeaders ();
@@ -365,7 +365,7 @@ namespace Stroika::Frameworks::WebServer {
             return std::forward<FUNCTION> (f) (&this->rwHeaders ());
         }
         template <typename FUNCTION>
-        [[deprecated ("Since 2.1b10, use headers() directly")]] inline  auto ReadHeader (FUNCTION&& f) const
+        [[deprecated ("Since 2.1b10, use headers() directly")]] inline auto ReadHeader (FUNCTION&& f) const
         {
             return std::forward<FUNCTION> (f) (this->headers ());
         }
@@ -380,23 +380,23 @@ namespace Stroika::Frameworks::WebServer {
         using ETagDigester_ = Cryptography::Digest::IncrementalDigester<Cryptography::Digest::Algorithm::MD5, String>;
 
     private:
-        IO::Network::Socket::Ptr                 fSocket_;
+        IO::Network::Socket::Ptr fSocket_;
 #if __cplusplus >= 202002L
-        bool                                     fInChunkedModeCache_ : 1 {false};
-        State                                    fState_ : 3 {State::ePreparingHeaders};
-        bool                                     fHeadMode_ : 1 {false};
-        bool                                     fAborted_ : 1 {false};
+        bool  fInChunkedModeCache_ : 1 {false};
+        State fState_ : 3 {State::ePreparingHeaders};
+        bool  fHeadMode_ : 1 {false};
+        bool  fAborted_ : 1 {false};
 #else
-        bool                                     fInChunkedModeCache_{false};
-        State                                    fState_{State::ePreparingHeaders};
-        bool                                     fHeadMode_{false};
-        bool                                     fAborted_{false};
+        bool  fInChunkedModeCache_{false};
+        State fState_{State::ePreparingHeaders};
+        bool  fHeadMode_{false};
+        bool  fAborted_{false};
 #endif
         Streams::OutputStream<byte>::Ptr         fUnderlyingOutStream_;
         Streams::BufferedOutputStream<byte>::Ptr fUseOutStream_;
         Characters::CodePage                     fCodePage_{Characters::kCodePage_UTF8};
         vector<byte>                             fBodyBytes_{};
-        optional<ETagDigester_>                  fETagDigester_;    // dual use - if present, then flag for autoComputeETag mode as well
+        optional<ETagDigester_>                  fETagDigester_; // dual use - if present, then flag for autoComputeETag mode as well
     };
 
 }

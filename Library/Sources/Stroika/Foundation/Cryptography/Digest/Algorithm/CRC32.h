@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
         using ReturnType = DigesterDefaultTraitsForAlgorithm<CRC32>::ReturnType;
 
     public:
-        DigesterAlgorithm () = default;
+        DigesterAlgorithm ()                             = default;
         DigesterAlgorithm (const DigesterAlgorithm& src) = default;
 
     public:
@@ -59,9 +59,9 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
 
     private:
         uint32_t fData_{0xFFFFFFFF};
-        #if qDebug
+#if qDebug
         bool fCompleted_{false};
-        #endif
+#endif
     };
 
 }
