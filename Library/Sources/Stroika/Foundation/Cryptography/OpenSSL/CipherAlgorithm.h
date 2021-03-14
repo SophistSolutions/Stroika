@@ -29,6 +29,8 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
 #if qHasFeature_OpenSSL
     /**
      *      @see http://linux.die.net/man/3/evp_cipher_ctx_init
+     *
+     *  \note   Configuration::DefaultNames<> supported
      */
     enum class CipherAlgorithm {
         eAES_128_CBC,

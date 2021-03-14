@@ -274,6 +274,8 @@ namespace Stroika::Foundation::Execution {
         };
 
         /**
+         *
+         *  \note   Configuration::DefaultNames<> supported
          */
         enum class Priority {
             eLowest,

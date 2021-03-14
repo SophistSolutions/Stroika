@@ -94,6 +94,11 @@ namespace Stroika::Foundation::IO::Network::Transfer {
             String fSubjectCompanyName;
             String fStyleOfValidation; // a string saying how the cert was valided - for example 'Domain Controll Validated'
             String fIssuer;
+
+            /**
+             *
+             *  \note   Configuration::DefaultNames<> supported
+             */
             enum class ValidationStatus : uint8_t {
                 eNoSSL,
                 eSSLOK,

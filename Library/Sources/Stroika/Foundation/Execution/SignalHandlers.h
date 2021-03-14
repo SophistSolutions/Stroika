@@ -78,6 +78,8 @@ namespace Stroika::Foundation::Execution {
          *  A 'safe' (eSafe) signal handler is run in a separate thread context.
          *
          *  @see SignalHandlerRegistry::SafeSignalsManager.
+         *
+         *  \note   Configuration::DefaultNames<> supported
          */
         enum class Type {
             eDirect,

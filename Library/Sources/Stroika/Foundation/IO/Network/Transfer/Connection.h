@@ -369,6 +369,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
              *      (e.g. if the auth requires server side information).
              *
              *      eRespondToWWWAuthenticate is more secure and widely applicable, but can be slower.
+             *
+             *  \note   Configuration::DefaultNames<> supported
              */
             enum class Options {
                 eProactivelySendAuthentication,

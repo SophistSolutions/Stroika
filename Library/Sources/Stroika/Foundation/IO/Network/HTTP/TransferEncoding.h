@@ -24,6 +24,8 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      *
      *  This is (probably mostly) osboelted in HTTP 2.0(@todo read up); and we dont currently intned to support compress etc here 
      *  @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding
+     * 
+     *  \note   Configuration::DefaultNames<> supported
      */
     enum class TransferEncoding {
         eChunked,

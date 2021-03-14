@@ -156,6 +156,8 @@ namespace Stroika::Foundation::DataExchange {
          *              VariantValue v2 = fromJSON (toJSON (v));
          *              v2 == v1;  // maybe false
          *              T y = v2.As<T> (); // will produce value x == y
+         *
+         *  \note   Configuration::DefaultNames<> supported
          */
         enum class Type : uint8_t {
             eNull,

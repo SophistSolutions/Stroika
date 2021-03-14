@@ -289,7 +289,7 @@ namespace Stroika::Foundation::Traversal {
     constexpr Range<T, TRAITS> Range<T, TRAITS>::Closure () const
     {
         Require (not empty ());
-        return Range (GetLowerBound (), GetUpperBound (), Openness::eClosed, Openness::eClosed);
+        return Range{GetLowerBound (), GetUpperBound (), Openness::eClosed, Openness::eClosed};
     }
 #if 0
     template    <typename T, typename TRAITS>

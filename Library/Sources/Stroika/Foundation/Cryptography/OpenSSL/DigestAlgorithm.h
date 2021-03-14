@@ -30,6 +30,8 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
 #if qHasFeature_OpenSSL
     /**
      *  ROUGH DRAFT
+     *
+     *  \note   Configuration::DefaultNames<> supported
      */
     enum class DigestAlgorithm {
         //eDSS,
