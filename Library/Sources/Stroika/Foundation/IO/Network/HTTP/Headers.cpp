@@ -397,14 +397,14 @@ optional<String> Headers::LookupOne (const String& name) const
         // we can only return the first setCookie here... (see LookupAll)
         if (fSetCookieList_.has_value ()) {
             if (auto i = fSetCookieList_->cookieDetails ().First ()) {
-                return i->Encode ();
+                return i->As<String> ();
             }
         }
         return optional<String>{};
     }
     else if (kHeaderNameEqualsComparer (name, HeaderName::kTransferEncoding)) {
         auto tc = this->transferEncoding ();
-        return tc ? tc->Encode () : optional<String>{};
+        return tc ? tc->As<String> () : optional<String>{};
     }
     else if (kHeaderNameEqualsComparer (name, HeaderName::kVary)) {
         return fVary_ ? String::Join (*fVary_) : optional<String>{};
@@ -428,7 +428,7 @@ Collection<String> Headers::LookupAll (const String& name) const
     else if (kHeaderNameEqualsComparer (name, HeaderName::kSetCookie)) {
         // return each 'set' cookie as a separate header value
         if (fSetCookieList_.has_value ()) {
-            return fSetCookieList_->cookieDetails ().Select<String> ([] (const auto& i) { return i.Encode (); });
+            return fSetCookieList_->cookieDetails ().Select<String> ([] (const auto& i) { return i.As<String> (); });
         }
         return Collection<String>{};
     }
@@ -554,7 +554,7 @@ bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const opt
         if (nRemoveals != nullptr) {
             *nRemoveals = (value == nullopt and fCookieList_ != nullopt) ? 1 : 0;
         }
-        fCookieList_ = value ? CookieList::Decode (*value) : optional<CookieList>{};
+        fCookieList_ = value ? CookieList::Parse (*value) : optional<CookieList>{};
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kDate)) {
         optional<Time::DateTime> useDT;
@@ -604,7 +604,7 @@ bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const opt
                     if (value) {
                         // then remove a specific one
                         Collection<Cookie> cookieDetails = fSetCookieList_->cookieDetails ();
-                        auto               removeMe      = Cookie::Decode (*value);
+                        auto               removeMe      = Cookie::Parse (*value);
                         auto               r             = cookieDetails.Remove (removeMe);
                         if (nRemoveals != nullptr) {
                             *nRemoveals = r ? 1 : 0;
@@ -617,11 +617,11 @@ bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const opt
             } break;
             case AddOrSet::eAdd: {
                 Collection<Cookie> cookieDetails = fSetCookieList_ ? fSetCookieList_->cookieDetails () : Collection<Cookie>{};
-                cookieDetails += Cookie::Decode (*value);
+                cookieDetails += Cookie::Parse (*value);
                 fSetCookieList_ = cookieDetails;
             } break;
             case AddOrSet::eSet: {
-                fSetCookieList_ = value ? CookieList::Decode (*value) : optional<CookieList>{};
+                fSetCookieList_ = value ? CookieList::Parse (*value) : optional<CookieList>{};
             } break;
         }
         return true;
@@ -630,7 +630,7 @@ bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const opt
         if (nRemoveals != nullptr) {
             *nRemoveals = (value == nullopt and fTransferEncoding_ != nullopt) ? 1 : 0;
         }
-        this->transferEncoding = value ? TransferEncodings::Decode (*value) : optional<TransferEncodings>{};
+        this->transferEncoding = value ? TransferEncodings::Parse (*value) : optional<TransferEncodings>{};
         return true;
     }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kVary)) {
@@ -695,11 +695,11 @@ Collection<KeyValuePair<String, String>> Headers::As () const
     if (fSetCookieList_) {
         // fSetCookieList_ produces multiple set-headers
         for (auto i : fSetCookieList_->cookieDetails ()) {
-            results.Add (KeyValuePair<String, String>{HeaderName::kSetCookie, i.Encode ()});
+            results.Add (KeyValuePair<String, String>{HeaderName::kSetCookie, i.As<String> ()});
         }
     }
     if (auto tc = this->transferEncoding ()) {
-        results.Add (KeyValuePair<String, String>{HeaderName::kTransferEncoding, tc->Encode ()});
+        results.Add (KeyValuePair<String, String>{HeaderName::kTransferEncoding, tc->As<String> ()});
     }
     if (fVary_) {
         results.Add (KeyValuePair<String, String>{HeaderName::kVary, String::Join (*fVary_)});

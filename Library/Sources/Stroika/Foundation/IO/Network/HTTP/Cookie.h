@@ -94,16 +94,17 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  \brief render as a string suitable for a cookie header
          *      @see https://tools.ietf.org/html/rfc6265#section-4.2.1
          */
-        nonvirtual String Encode () const;
+        template <typename T = String>
+        nonvirtual String As () const;
 
         /**
-         *  Decode an http cookie into an object.
+         *  Parse (decode) an http cookie into an object.
          *      @see https://tools.ietf.org/html/rfc6265#section-4.2.1
          *
          *  \req src.IsSeekable () for InputStream overload
          */
-        static Cookie Decode (Streams::InputStream<Character>::Ptr src);
-        static Cookie Decode (const String& src);
+        static Cookie Parse (Streams::InputStream<Character>::Ptr src);
+        static Cookie Parse (const String& src);
 
         /**
          *  @see Characters::ToString ();
@@ -117,6 +118,8 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         nonvirtual bool operator== (const Cookie& rhs) const = default;
 #endif
     };
+    template <>
+    String Cookie::As<String> () const;
 
 #if __cpp_impl_three_way_comparison < 201907
     bool operator== (const Cookie& lhs, const Cookie& rhs);
@@ -162,10 +165,10 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
-         *  Decode the string as a CookieList. The input format can be the value of a Cookie: HTTP header (which can produce multiple cooklies)
+         *  Parse (decode) the string as a CookieList. The input format can be the value of a Cookie: HTTP header (which can produce multiple cooklies)
          *  or a Set-Cookie: HTTP header (in which case it produces a single entry cookie list, possibly containing attributes)
          */
-        static CookieList Decode (const String& cookieValueArg);
+        static CookieList Parse (const String& cookieValueArg);
 
     public:
         /**

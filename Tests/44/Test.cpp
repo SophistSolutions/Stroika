@@ -27,12 +27,12 @@ namespace {
         {
             // Examples from https://tools.ietf.org/html/rfc6265#section-3.1
             {
-                Cookie c = Cookie::Decode (L"SID=31d4d96e407aad42");
+                Cookie c = Cookie::Parse (L"SID=31d4d96e407aad42");
                 VerifyTestResult (c.fKey == L"SID" and c.fValue == L"31d4d96e407aad42");
                 VerifyTestResult (c.GetAttributes ().empty ());
             }
             {
-                Cookie c = Cookie::Decode (L"SID=31d4d96e407aad42; Path=/; Secure; HttpOnly");
+                Cookie c = Cookie::Parse (L"SID=31d4d96e407aad42; Path=/; Secure; HttpOnly");
                 VerifyTestResult (c.fKey == L"SID" and c.fValue == L"31d4d96e407aad42");
                 VerifyTestResult (c.fPath == L"/");
                 VerifyTestResult (c.fSecure);
@@ -43,7 +43,7 @@ namespace {
                 VerifyTestResult (c.GetAttributes ().empty ());
             }
             {
-                Cookie c = Cookie::Decode (L"lang=en-US; Path=/; Domain=example.com");
+                Cookie c = Cookie::Parse (L"lang=en-US; Path=/; Domain=example.com");
                 VerifyTestResult (c.fKey == L"lang" and c.fValue == L"en-US");
                 VerifyTestResult (c.fPath == L"/");
                 VerifyTestResult (c.fDomain == L"example.com");
@@ -52,7 +52,7 @@ namespace {
                 VerifyTestResult (c.GetAttributes ().empty ());
             }
             {
-                Cookie c = Cookie::Decode (L"lang=en-US; Expires=Wed, 09 Jun 2021 10:18:14 GMT");
+                Cookie c = Cookie::Parse (L"lang=en-US; Expires=Wed, 09 Jun 2021 10:18:14 GMT");
                 VerifyTestResult (c.fKey == L"lang" and c.fValue == L"en-US");
                 using namespace Time;
                 VerifyTestResult (c.fExpires == (DateTime{Date{Time::Year{2021}, MonthOfYear::eJune, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::kUTC}));

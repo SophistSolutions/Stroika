@@ -100,7 +100,8 @@ void Cookie::AddAttribute (const String& key, const String& value)
     }
 }
 
-String Cookie::Encode () const
+template <>
+String Cookie::As<String> () const
 {
     // @todo re-read spec more carefully about character encoding...
     StringBuilder sb;
@@ -119,7 +120,7 @@ String Cookie::Encode () const
     return String{};
 }
 
-Cookie Cookie::Decode (Streams::InputStream<Character>::Ptr src)
+Cookie Cookie::Parse (Streams::InputStream<Character>::Ptr src)
 {
     Require (src.IsSeekable ());
     auto skipWS = [&] () {
@@ -183,9 +184,9 @@ Cookie Cookie::Decode (Streams::InputStream<Character>::Ptr src)
     return Cookie{key, value, attributes};
 }
 
-Cookie Cookie::Decode (const String& src)
+Cookie Cookie::Parse (const String& src)
 {
-    return Decode (TextReader::New (src));
+    return Parse (TextReader::New (src));
 }
 
 /*
@@ -250,11 +251,11 @@ String CookieList::EncodeForCookieHeader () const
     return String::Join (fCookieDetails_.Select<String> ([] (const auto& i) { return i.fKey + L"=" + i.fValue; }), L"; "sv);
 }
 
-CookieList CookieList::Decode (const String& cookieValueArg)
+CookieList CookieList::Parse (const String& cookieValueArg)
 {
     Collection<Cookie> results;
     for (auto keyValuePair : cookieValueArg.Tokenize ({';'})) {
-        results += Cookie::Decode (keyValuePair);
+        results += Cookie::Parse (keyValuePair);
     }
     return results;
 }

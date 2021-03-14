@@ -22,7 +22,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     }
     inline String HTTP::Cookie::ToString () const
     {
-        return Encode ();
+        return As<String> ();
     }
 #if __cpp_impl_three_way_comparison < 201907
     inline bool operator== (const Cookie& lhs, const Cookie& rhs)

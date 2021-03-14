@@ -21,12 +21,13 @@ using namespace Stroika::Foundation::IO::Network::HTTP;
  ************************* HTTPs::TransferEncoding ******************************
  ********************************************************************************
  */
-String TransferEncodings::Encode () const
+template<>
+String TransferEncodings::As<String> () const
 {
     return String::Join (Select<String> ([] (auto i) { return Configuration::DefaultNames<TransferEncoding>{}.GetName (i); }));
 }
 
-TransferEncodings TransferEncodings::Decode (const String& headerValue)
+TransferEncodings TransferEncodings::Parse (const String& headerValue)
 {
     return TransferEncodings{headerValue.Tokenize ({','}).Select<TransferEncoding> ([] (const String& i) { return Configuration::DefaultNames<TransferEncoding>{}.PeekValue (i.c_str ()); })};
 }

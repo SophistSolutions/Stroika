@@ -50,13 +50,16 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     public:
         /**
          */
-        nonvirtual String Encode () const;
+        template <typename T>
+        nonvirtual String As () const;
 
     public:
         /**
          */
-        static TransferEncodings Decode (const String& headerValue);
+        static TransferEncodings Parse (const String& headerValue);
     };
+    template <>
+    String TransferEncodings::As<String> () const;
 
 }
 
