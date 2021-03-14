@@ -69,7 +69,7 @@ namespace Stroika::Frameworks::WebServer {
      *  TODO:
      *      @todo   enforce thread policy with Debug::AssertExternallySynrhoized
      */
-    class Connection {
+    class Connection : Debug::AssertExternallySynchronizedLock {
     public:
         /**
          */

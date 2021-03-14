@@ -21,7 +21,7 @@ using namespace Stroika::Foundation::IO::Network::HTTP;
  ************************* HTTPs::TransferEncoding ******************************
  ********************************************************************************
  */
-template<>
+template <>
 String TransferEncodings::As<String> () const
 {
     return String::Join (Select<String> ([] (auto i) { return Configuration::DefaultNames<TransferEncoding>{}.GetName (i); }));

@@ -58,6 +58,16 @@ Message::Message (Request&& srcRequest, Response&& srcResponse, const optional<I
 #endif
 }
 
+#if qDebug
+void Message::SetAssertExternallySynchronizedLockContext (const shared_ptr<SharedContext>& sharedContext)
+{
+    AssertExternallySynchronizedLock::SetAssertExternallySynchronizedLockContext (sharedContext);
+    Assert (_fSharedContext == sharedContext);
+    fRequest_.SetAssertExternallySynchronizedLockContext (_fSharedContext);
+    fResponse_.SetAssertExternallySynchronizedLockContext (_fSharedContext);
+}
+#endif
+
 String Message::ToString () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};

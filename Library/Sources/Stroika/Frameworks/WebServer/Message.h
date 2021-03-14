@@ -42,6 +42,16 @@ namespace Stroika::Frameworks::WebServer {
     public:
         nonvirtual Message& operator= (const Message&) = delete;
 
+#if qDebug
+    public:
+        /**
+         *  Allow users of the Connection object to have it share a 'assure externally synchronized' context.
+         *
+         *  \see AssertExternallySynchronizedLock::SetAssertExternallySynchronizedLockContext
+         */
+        nonvirtual void SetAssertExternallySynchronizedLockContext (const shared_ptr<SharedContext>& sharedContext);
+#endif
+
     public:
         /**
          *  This is the network address where the message (request) came from and where the message response is
