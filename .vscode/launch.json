@@ -25,15 +25,20 @@
       "additionalSOLibSearchPath": "/path/to/symbols;/another/path/to/symbols"
     },
     {
-      "name": "(Windows) Launch",
+      "name": "(Windows) VisualStudio Debugger (doesnt work)s",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "enter program name, for example ${workspaceFolder}/Builds/Debug-U-32/Tests/Test01.exe",
+      "program": "${workspaceFolder}/Builds/Debug-U-32/Tests/Test01.exe",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
-      "console": "externalTerminal"
+      "console": "integratedTerminal",
+      "logging": {
+        "moduleLoad": false,
+        "trace": true
+      },
+      "visualizerFile": "${workspaceFolder}/Library/Projects/VisualStudio.Net-2019/VisualStudio-Stroika-Foundation-Debugger-Template.natvis"
     },
     {
       "name": "C++ Launch",
