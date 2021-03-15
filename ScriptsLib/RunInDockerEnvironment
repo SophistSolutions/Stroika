@@ -69,6 +69,7 @@ PERSONAL_FILE_MOUNTS="${PERSONAL_FILE_MOUNTS} \
 	-v $HOME/.bash_aliases:$HOME/.bash_aliases:ro \
 	-v $HOME/.gitconfig:$HOME/.gitconfig \
 	-v $HOME/.npm:$HOME/.npm \
+	-v /Sandbox/Stroika-Dev/.dockerstuff/.vscode-server:$HOME/.vscode-server \
 	"
 fi
 
