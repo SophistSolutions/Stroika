@@ -313,8 +313,7 @@ struct LinkMonitor::Rep_ {
                 ConnectionlessSocket::Ptr sock = ConnectionlessSocket::New (static_cast<SocketAddress::FamilyType> (PF_NETLINK), Socket::RAW, NETLINK_ROUTE);
 
                 {
-                    sockaddr_nl addr;
-                    memset (&addr, 0, sizeof (addr));
+                    sockaddr_nl addr{};
                     addr.nl_family = AF_NETLINK;
                     addr.nl_groups = RTMGRP_IPV4_IFADDR;
                     Execution::ThrowPOSIXErrNoIfNegative (::bind (sock.GetNativeSocket (), (struct sockaddr*)&addr, sizeof (addr)));
@@ -338,10 +337,10 @@ struct LinkMonitor::Rep_ {
                             while (rtl and RTA_OK (rth, rtl)) {
                                 if (rth->rta_type == IFA_LOCAL) {
                                     DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
-                                    uint32_t ipaddr = ::htonl (*((uint32_t*)RTA_DATA (rth)));                           //NB no '::' cuz some systems use macro
+                                    uint32_t ipaddr = htonl (*((uint32_t*)RTA_DATA (rth)));                             //NB no '::' cuz some systems use macro
                                     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated\"");   // macro uses 'register' - htons not deprecated
                                     char name[IFNAMSIZ];
-                                    if_indextoname (ifa->ifa_index, name);
+                                    ::if_indextoname (ifa->ifa_index, name);
                                     {
                                         char ipAddrBuf[1024];
                                         ::snprintf (ipAddrBuf, NEltsOf (ipAddrBuf), "%d.%d.%d.%d", (ipaddr >> 24) & 0xff, (ipaddr >> 16) & 0xff, (ipaddr >> 8) & 0xff, ipaddr & 0xff);
