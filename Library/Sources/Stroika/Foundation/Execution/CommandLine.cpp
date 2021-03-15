@@ -149,8 +149,7 @@ optional<String> Execution::MatchesCommandLineArgumentWithValue (const Iterable<
     auto i = argList.FindFirstThat ([matchesArgPattern] (String i) -> bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); });
     if (i != argList.end ()) {
         ++i;
-        if (i == argList.end ())
-            [[UNLIKELY_ATTR]] {
+        if (i == argList.end ()) [[UNLIKELY_ATTR]] {
             Execution::Throw (InvalidCommandLineArgument{});
         }
         else {

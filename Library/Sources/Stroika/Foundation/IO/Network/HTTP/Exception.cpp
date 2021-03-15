@@ -122,8 +122,7 @@ String Exception::GetStandardTextForStatus (Status s, bool forceAlwaysFound)
 
 void Exception::ThrowIfError (Status status, const String& reason)
 {
-    if (IsHTTPStatusOK (status))
-        [[LIKELY_ATTR]] {
+    if (IsHTTPStatusOK (status)) [[LIKELY_ATTR]] {
         // OK - ignore
     }
     else {

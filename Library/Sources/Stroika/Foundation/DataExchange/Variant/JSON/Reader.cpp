@@ -72,15 +72,13 @@ namespace {
         Require (in != nullptr);
         Require (not in.IsAtEOF ());
         wchar_t c = NextChar_ (in);
-        if (c != '\"')
-            [[UNLIKELY_ATTR]] {
+        if (c != '\"') [[UNLIKELY_ATTR]] {
             Execution::Throw (BadFormatException{L"JSON: Expected quoted string"sv});
         }
         // accumulate chars, and check for close-quote
         StringBuilder result;
         while (true) {
-            if (in.IsAtEOF ())
-                [[UNLIKELY_ATTR]] {
+            if (in.IsAtEOF ()) [[UNLIKELY_ATTR]] {
                 Execution::Throw (BadFormatException{L"JSON: Unexpected EOF reading string (looking for close quote)"sv});
             }
             c = NextChar_ (in);
@@ -89,8 +87,7 @@ namespace {
             }
             else if (c == '\\') {
                 // quoted character read...
-                if (in.IsAtEOF ())
-                    [[UNLIKELY_ATTR]] {
+                if (in.IsAtEOF ()) [[UNLIKELY_ATTR]] {
                     Execution::Throw (BadFormatException{L"JSON: Unexpected EOF reading string (looking for close quote)"sv});
                 }
                 c = NextChar_ (in);
@@ -114,8 +111,7 @@ namespace {
                         // Not sure this is right -- But I hope so ... -- LGP 2012-11-29
                         wchar_t newC = '\0';
                         for (int n = 0; n < 4; ++n) {
-                            if (in.IsAtEOF ())
-                                [[UNLIKELY_ATTR]] {
+                            if (in.IsAtEOF ()) [[UNLIKELY_ATTR]] {
                                 Execution::Throw (BadFormatException{L"JSON: Unexpected EOF reading string (looking for close quote)"sv});
                             }
                             newC += HexChar2Num_ (static_cast<char> (NextChar_ (in)));
@@ -186,8 +182,7 @@ namespace {
         optional<String> curName;
         while (true) {
             optional<Character> oNextChar = in.Read ();
-            if (not oNextChar.has_value ())
-                [[UNLIKELY_ATTR]] {
+            if (not oNextChar.has_value ()) [[UNLIKELY_ATTR]] {
                 in.Seek (Streams::Whence::eFromCurrent, -1);
                 Execution::Throw (BadFormatException{L"JSON: Unexpected EOF reading string (looking for '}')"sv});
             }
@@ -206,8 +201,7 @@ namespace {
                 // skip char
             }
             else if (nextChar == ',') {
-                if (lf == eComma)
-                    [[LIKELY_ATTR]] {
+                if (lf == eComma) [[LIKELY_ATTR]] {
                     // skip char
                     lf = eName; // next elt
                 }
@@ -217,8 +211,7 @@ namespace {
                 }
             }
             else if (nextChar == ':') {
-                if (lf == eColon)
-                    [[LIKELY_ATTR]] {
+                if (lf == eColon) [[LIKELY_ATTR]] {
                     // skip char
                     lf = eValue; // next elt
                 }
@@ -233,8 +226,7 @@ namespace {
                     curName = Reader_String_ (in).As<wstring> ();
                     lf      = eColon;
                 }
-                else if (lf == eValue)
-                    [[LIKELY_ATTR]] {
+                else if (lf == eValue) [[LIKELY_ATTR]] {
                     Assert (curName.has_value ());
                     result.Add (*curName, Reader_value_ (in));
                     curName = nullopt;
@@ -256,8 +248,7 @@ namespace {
         // accumulate elements, and check for close-array
         bool lookingForElt = true;
         while (true) {
-            if (in.IsAtEOF ())
-                [[UNLIKELY_ATTR]] {
+            if (in.IsAtEOF ()) [[UNLIKELY_ATTR]] {
                 Execution::Throw (BadFormatException{L"JSON: Unexpected EOF reading string (looking for ']')"sv});
             }
             if (in.Peek () == ']') {
@@ -268,8 +259,7 @@ namespace {
                 return VariantValue (result);
             }
             else if (in.Peek () == ',') {
-                if (lookingForElt)
-                    [[UNLIKELY_ATTR]] {
+                if (lookingForElt) [[UNLIKELY_ATTR]] {
                     Execution::Throw (BadFormatException{L"JSON: Unexpected second ',' in reading array"sv});
                 }
                 else {
@@ -282,8 +272,7 @@ namespace {
             }
             else {
                 // not looking at whitespace, in midst of array, and array not terminated, so better be looking at a value
-                if (lookingForElt)
-                    [[LIKELY_ATTR]] {
+                if (lookingForElt) [[LIKELY_ATTR]] {
                     Containers::ReserveSpeedTweekAdd1 (result);
                     result.push_back (Reader_value_ (in));
                     lookingForElt = false;
@@ -373,8 +362,7 @@ namespace {
                     return Reader_SpecialToken_ (oc->As<wchar_t> (), in);
 
                 default: {
-                    if (iswspace (oc->As<wchar_t> ()))
-                        [[LIKELY_ATTR]] {
+                    if (iswspace (oc->As<wchar_t> ())) [[LIKELY_ATTR]] {
                         // ignore
                     }
                     else {

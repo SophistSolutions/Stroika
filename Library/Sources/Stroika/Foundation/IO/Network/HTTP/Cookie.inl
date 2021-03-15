@@ -52,7 +52,35 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      ******************************** HTTP::CookieList ******************************
      ********************************************************************************
      */
-
+    inline CookieList::CookieList (const CookieList& src)
+        : CookieList{}
+    {
+        fCookieDetails_ = src.fCookieDetails_;
+    }
+    inline CookieList::CookieList (CookieList&& src)
+        : CookieList{}
+    {
+        fCookieDetails_ = move (src.fCookieDetails_);
+    }
+    inline CookieList::CookieList (const Mapping<String, String>& basicCookies)
+        : CookieList{}
+    {
+        this->cookies = basicCookies;
+    }
+    inline CookieList::CookieList (const Collection<Cookie>& cookieDetails)
+        : CookieList{}
+    {
+        fCookieDetails_ = cookieDetails;
+    }
+    inline CookieList& CookieList::operator= (const CookieList& rhs)
+    {
+        this->fCookieDetails_ = rhs.fCookieDetails_;
+        return *this;
+    }
+    inline String HTTP::CookieList::ToString () const
+    {
+        return EncodeForCookieHeader ();
+    }
 #if __cpp_impl_three_way_comparison >= 201907
     inline bool CookieList::operator== (const CookieList& rhs) const
     {

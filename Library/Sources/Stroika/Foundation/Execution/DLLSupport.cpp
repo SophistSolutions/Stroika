@@ -52,8 +52,7 @@ namespace {
 #if qPlatform_POSIX
         // either main module or not found
         const char* err = dlerror ();
-        if (err != nullptr)
-            [[UNLIKELY_ATTR]] {
+        if (err != nullptr) [[UNLIKELY_ATTR]] {
             Execution::Throw (DLLException{err});
         }
 #endif
@@ -160,8 +159,7 @@ DLLHandle DLLLoader::LoadDLL (const SDKChar* dllName, int flags) /// *** DEPRECA
     if (module == nullptr) {
         // either main module or not found
         const char* err = ::dlerror ();
-        if (err != nullptr)
-            [[UNLIKELY_ATTR]] {
+        if (err != nullptr) [[UNLIKELY_ATTR]] {
             Execution::Throw (DLLException{err});
         }
     }
@@ -180,8 +178,7 @@ DLLLoader::~DLLLoader ()
 #else
     if (::dlclose (fModule_) != 0) {
         const char* err = ::dlerror ();
-        if (err != nullptr)
-            [[UNLIKELY_ATTR]] {
+        if (err != nullptr) [[UNLIKELY_ATTR]] {
             Execution::Throw (DLLException{err});
         }
     }

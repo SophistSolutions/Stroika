@@ -495,8 +495,7 @@ DateTime VariantValue::As () const
 
 String VariantValue::AsString_ () const
 {
-    if (fVal_ == nullptr)
-        [[UNLIKELY_ATTR]] {
+    if (fVal_ == nullptr) [[UNLIKELY_ATTR]] {
         return String{};
     }
     switch (fVal_->GetType ()) {
@@ -609,8 +608,7 @@ template <>
 map<wstring, VariantValue> VariantValue::As () const
 {
     using namespace Characters;
-    if (fVal_ == nullptr)
-        [[UNLIKELY_ATTR]] {
+    if (fVal_ == nullptr) [[UNLIKELY_ATTR]] {
         return map<wstring, VariantValue> ();
     }
     switch (fVal_->GetType ()) {
@@ -636,8 +634,7 @@ template <>
 Mapping<String, VariantValue> VariantValue::As () const
 {
     using namespace Characters;
-    if (fVal_ == nullptr)
-        [[UNLIKELY_ATTR]] {
+    if (fVal_ == nullptr) [[UNLIKELY_ATTR]] {
         return Mapping<String, VariantValue> ();
     }
     switch (fVal_->GetType ()) {
@@ -664,8 +661,7 @@ vector<VariantValue> VariantValue::As () const
 template <>
 Sequence<VariantValue> VariantValue::As () const
 {
-    if (fVal_ == nullptr)
-        [[UNLIKELY_ATTR]] {
+    if (fVal_ == nullptr) [[UNLIKELY_ATTR]] {
         return Sequence<VariantValue> ();
     }
     switch (fVal_->GetType ()) {

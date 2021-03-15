@@ -516,15 +516,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline bool Array<T>::_ArrayIteratorBase::More (T* current, bool advance)
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*_fData};
-        if (advance)
-            [[LIKELY_ATTR]] {
+        if (advance) [[LIKELY_ATTR]] {
             this->_fSuppressMore = false;
         }
         Invariant ();
-        if (not Done ())
-            [[LIKELY_ATTR]] {
-            if (current != nullptr)
-                [[LIKELY_ATTR]] {
+        if (not Done ()) [[LIKELY_ATTR]] {
+            if (current != nullptr) [[LIKELY_ATTR]] {
                 *current = *_fCurrent;
             }
             return true;
@@ -605,10 +602,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this->_fData};
         this->Invariant ();
-        if (advance)
-            [[LIKELY_ATTR]] {
-            if (not this->_fSuppressMore and not this->Done ())
-                [[LIKELY_ATTR]] {
+        if (advance) [[LIKELY_ATTR]] {
+            if (not this->_fSuppressMore and not this->Done ()) [[LIKELY_ATTR]] {
                 Assert (this->_fCurrent < this->_fEnd);
                 this->_fCurrent++;
             }
@@ -620,10 +615,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this->_fData};
         this->Invariant ();
-        if (advance)
-            [[LIKELY_ATTR]] {
-            if (this->_fSuppressMore)
-                [[UNLIKELY_ATTR]] {
+        if (advance) [[LIKELY_ATTR]] {
+            if (this->_fSuppressMore) [[UNLIKELY_ATTR]] {
                 this->_fSuppressMore = false;
             }
             else {
@@ -670,10 +663,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this->_fData};
         this->Invariant ();
-        if (advance)
-            [[LIKELY_ATTR]] {
-            if (not this->_fSuppressMore and not this->Done ())
-                [[LIKELY_ATTR]] {
+        if (advance) [[LIKELY_ATTR]] {
+            if (not this->_fSuppressMore and not this->Done ()) [[LIKELY_ATTR]] {
                 if (this->_fCurrent == this->_fStart) {
                     this->_fCurrent = this->_fEnd; // magic to indicate done
                     Ensure (this->Done ());

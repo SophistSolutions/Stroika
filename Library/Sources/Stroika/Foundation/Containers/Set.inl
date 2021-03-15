@@ -219,8 +219,7 @@ namespace Stroika::Foundation::Containers {
     bool Set<T>::Intersects (const Iterable<T>& rhs) const
     {
         for (T i : rhs) {
-            if (Contains (i))
-                [[UNLIKELY_ATTR]] {
+            if (Contains (i)) [[UNLIKELY_ATTR]] {
                 return true;
             }
         }

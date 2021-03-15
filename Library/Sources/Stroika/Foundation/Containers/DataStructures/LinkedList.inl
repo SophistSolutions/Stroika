@@ -174,8 +174,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     void LinkedList<T>::Append (ArgByValueType<T> item)
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        if (this->_fHead == nullptr)
-            [[UNLIKELY_ATTR]] {
+        if (this->_fHead == nullptr) [[UNLIKELY_ATTR]] {
             Prepend (item);
         }
         else {

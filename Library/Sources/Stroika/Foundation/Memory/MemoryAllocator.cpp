@@ -58,9 +58,8 @@ namespace {
 void* SimpleAllocator_CallLIBCMallocFree::Allocate (size_t size)
 {
     void* p = malloc (size);
-    if (p == nullptr)
-        [[UNLIKELY_ATTR]] {
-        Execution::Throw (bad_alloc ());
+    if (p == nullptr) [[UNLIKELY_ATTR]] {
+        Execution::Throw (bad_alloc{});
     }
     return p;
 }

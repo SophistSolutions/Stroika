@@ -243,8 +243,7 @@ namespace {
         Require (nRounds >= 1);
         SmallStackBuffer<byte> useKey{SmallStackBufferCommon::eUninitialized, keyLen};
         SmallStackBuffer<byte> useIV{SmallStackBufferCommon::eUninitialized, ivLen};
-        if (salt and salt->GetSize () != 8)
-            [[UNLIKELY_ATTR]] {
+        if (salt and salt->GetSize () != 8) [[UNLIKELY_ATTR]] {
             // Could truncate and fill to adapt to different sized salt...
             Execution::Throw (Execution::Exception (L"only 8-byte salt with EVP_BytesToKey"sv));
         }
@@ -289,8 +288,7 @@ namespace {
             Convert2OpenSSL (digestAlgorithm),
             static_cast<int> (keyLen + ivLen),
             reinterpret_cast<unsigned char*> (outBuf.begin ()));
-        if (a == 0)
-            [[UNLIKELY_ATTR]] {
+        if (a == 0) [[UNLIKELY_ATTR]] {
             Execution::Throw (Execution::Exception (L"PKCS5_PBKDF2_HMAC error"sv));
         }
         const byte* p = outBuf.begin ();

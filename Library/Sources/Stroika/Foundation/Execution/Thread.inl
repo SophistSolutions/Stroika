@@ -153,8 +153,7 @@ namespace Stroika::Foundation::Execution {
     inline Thread::IDType Thread::Ptr::GetID () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        if (fRep_ == nullptr)
-            [[UNLIKELY_ATTR]] {
+        if (fRep_ == nullptr) [[UNLIKELY_ATTR]] {
             return IDType{};
         }
         return fRep_->GetID ();
@@ -162,8 +161,7 @@ namespace Stroika::Foundation::Execution {
     inline Thread::NativeHandleType Thread::Ptr::GetNativeHandle () const noexcept
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        if (fRep_ == nullptr)
-            [[UNLIKELY_ATTR]] {
+        if (fRep_ == nullptr) [[UNLIKELY_ATTR]] {
             return NativeHandleType{};
         }
         return fRep_->GetNativeHandle ();
@@ -176,8 +174,7 @@ namespace Stroika::Foundation::Execution {
     inline function<void ()> Thread::Ptr::GetFunction () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        if (fRep_ == nullptr)
-            [[UNLIKELY_ATTR]] {
+        if (fRep_ == nullptr) [[UNLIKELY_ATTR]] {
             return nullptr;
         }
         return fRep_->fRunnable_;
@@ -267,8 +264,7 @@ namespace Stroika::Foundation::Execution {
     inline Thread::Status Thread::Ptr::GetStatus () const noexcept
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        if (fRep_ == nullptr)
-            [[UNLIKELY_ATTR]] {
+        if (fRep_ == nullptr) [[UNLIKELY_ATTR]] {
             return Status::eNull;
         }
         return GetStatus_ ();
@@ -369,8 +365,7 @@ namespace Stroika::Foundation::Execution {
     {
         // note that it is not important that this be protected/thread safe, since the value is just advisory/hint
         static unsigned int n = 0;
-        if (++n % kEveryNTimes == kEveryNTimes - 1)
-            [[UNLIKELY_ATTR]] {
+        if (++n % kEveryNTimes == kEveryNTimes - 1) [[UNLIKELY_ATTR]] {
             CheckForInterruption ();
         }
     }

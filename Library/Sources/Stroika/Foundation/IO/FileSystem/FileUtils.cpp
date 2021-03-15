@@ -124,8 +124,7 @@ void IO::FileSystem::SetFileAccessWideOpened (const filesystem::path& filePathNa
                                                       // ignore error from this routine for now  - probably means either we don't have permissions or OS too old to support...
 #elif qPlatform_POSIX
     ////TODO: Somewhat PRIMITIVE - TMPHACK
-    if (filePathName.empty ())
-        [[UNLIKELY_ATTR]] {
+    if (filePathName.empty ()) [[UNLIKELY_ATTR]] {
         Execution::Throw (Exception{make_error_code (errc::no_such_file_or_directory), L"bad filename"_k});
     }
     struct stat s;
@@ -233,8 +232,7 @@ DISABLE_COMPILER_MSC_WARNING_START (4996) // use deprecated
 DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 void IO::FileSystem::CreateDirectoryForFile (const filesystem::path& filePath)
 {
-    if (filePath.empty ())
-        [[UNLIKELY_ATTR]] {
+    if (filePath.empty ()) [[UNLIKELY_ATTR]] {
         // NOT sure this is the best exception to throw here?
         Execution::Throw (IO::FileSystem::Exception (make_error_code (errc::no_such_file_or_directory), filePath));
     }

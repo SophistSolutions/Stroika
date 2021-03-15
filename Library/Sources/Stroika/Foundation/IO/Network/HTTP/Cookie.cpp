@@ -216,36 +216,6 @@ CookieList::CookieList ()
 {
 }
 
-CookieList::CookieList (const CookieList& src)
-    : CookieList{}
-{
-    fCookieDetails_ = src.fCookieDetails_;
-}
-
-CookieList::CookieList (CookieList&& src)
-    : CookieList{}
-{
-    fCookieDetails_ = move (src.fCookieDetails_);
-}
-
-CookieList::CookieList (const Mapping<String, String>& basicCookies)
-    : CookieList{}
-{
-    this->cookies = basicCookies;
-}
-
-CookieList::CookieList (const Collection<Cookie>& cookieDetails)
-    : CookieList{}
-{
-    fCookieDetails_ = cookieDetails;
-}
-
-CookieList& CookieList::operator= (const CookieList& rhs)
-{
-    this->fCookieDetails_ = rhs.fCookieDetails_;
-    return *this;
-}
-
 String CookieList::EncodeForCookieHeader () const
 {
     return String::Join (fCookieDetails_.Select<String> ([] (const auto& i) { return i.fKey + L"=" + i.fValue; }), L"; "sv);
@@ -258,9 +228,4 @@ CookieList CookieList::Parse (const String& cookieValueArg)
         results += Cookie::Parse (keyValuePair);
     }
     return results;
-}
-
-String HTTP::CookieList::ToString () const
-{
-    return EncodeForCookieHeader ();
 }

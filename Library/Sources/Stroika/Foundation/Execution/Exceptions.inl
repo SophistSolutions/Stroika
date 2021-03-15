@@ -158,8 +158,7 @@ namespace Stroika::Foundation::Execution {
     template <typename INT_TYPE>
     inline INT_TYPE ThrowPOSIXErrNoIfNegative (INT_TYPE returnCode)
     {
-        if (returnCode < 0)
-            [[UNLIKELY_ATTR]] {
+        if (returnCode < 0) [[UNLIKELY_ATTR]] {
             ThrowPOSIXErrNo (errno);
         }
         return returnCode;
@@ -214,8 +213,7 @@ namespace Stroika::Foundation::Execution {
      */
     inline void ThrowPOSIXErrNoIfNull (void* returnValue)
     {
-        if (returnValue == nullptr)
-            [[UNLIKELY_ATTR]] {
+        if (returnValue == nullptr) [[UNLIKELY_ATTR]] {
             ThrowPOSIXErrNo (errno);
         }
     }

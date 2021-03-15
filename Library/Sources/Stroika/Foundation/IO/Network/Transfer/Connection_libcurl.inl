@@ -17,9 +17,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
     inline void ThrowIfError (CURLcode status)
     {
-        if (status != CURLE_OK)
-            [[UNLIKELY_ATTR]] {
-            Execution::Throw (Execution::SystemErrorException<> (status, LibCurl_error_category ()));
+        if (status != CURLE_OK) [[UNLIKELY_ATTR]] {
+            Execution::Throw (Execution::SystemErrorException<>{status, LibCurl_error_category ()});
         }
     }
 #endif

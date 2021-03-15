@@ -67,8 +67,7 @@ namespace {
 #else
                     int nresults = Handle_ErrNoResultInterruption ([&] () { return ::poll (&pollData, 1, timeout_msecs); });
 #endif
-                    if (nresults == 0)
-                        [[UNLIKELY_ATTR]] {
+                    if (nresults == 0) [[UNLIKELY_ATTR]] {
                         Execution::Throw (Execution::TimeOutException::kThe);
                     }
                 }

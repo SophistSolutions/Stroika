@@ -83,8 +83,7 @@ Connection::Statement::Statement (Connection* db, const wchar_t* formatQuery, ..
     DbgTrace (L"(db=%p,query='%s')", db, query.c_str ());
 #endif
     int rc = ::sqlite3_prepare_v2 (db->Peek (), query.AsUTF8 ().c_str (), -1, &fStatementObj_, NULL);
-    if (rc != SQLITE_OK)
-        [[UNLIKELY_ATTR]] {
+    if (rc != SQLITE_OK) [[UNLIKELY_ATTR]] {
         Execution::Throw (Exception (Characters::Format (L"SQLite Error %s:", String::FromUTF8 (::sqlite3_errmsg (db->Peek ())).c_str ())));
     }
     AssertNotNull (fStatementObj_);
@@ -173,8 +172,7 @@ Connection::Connection (const URI& dbURL, const function<void (Connection&)>& db
             }
         }
     }
-    else if (e != SQLITE_OK)
-        [[UNLIKELY_ATTR]] {
+    else if (e != SQLITE_OK) [[UNLIKELY_ATTR]] {
         Assert (fDB_ == nullptr);
         // @todo add error string
         Execution::Throw (Exception (Characters::Format (L"SQLite Error %d:", e)));
@@ -201,8 +199,7 @@ Connection::Connection (const filesystem::path& dbPath, const function<void (Con
             }
         }
     }
-    else if (e != SQLITE_OK)
-        [[UNLIKELY_ATTR]] {
+    else if (e != SQLITE_OK) [[UNLIKELY_ATTR]] {
         Assert (fDB_ == nullptr);
         // @todo add error string
         Execution::Throw (Exception (Characters::Format (L"SQLite Error %d:", e)));
@@ -223,8 +220,7 @@ Connection::Connection (InMemoryDBFlag, const function<void (Connection&)>& dbIn
             Execution::ReThrow ();
         }
     }
-    else if (e != SQLITE_OK)
-        [[UNLIKELY_ATTR]] {
+    else if (e != SQLITE_OK) [[UNLIKELY_ATTR]] {
         Assert (fDB_ == nullptr);
         // @todo add error string
         Execution::Throw (Exception (Characters::Format (L"SQLite Error %d:", e)));
@@ -247,8 +243,7 @@ void Connection::Exec (const wchar_t* formatCmd2Exec, ...)
     va_end (argsList);
     char* db_err{};
     int   e = ::sqlite3_exec (fDB_, cmd2Exec.AsUTF8 ().c_str (), NULL, 0, &db_err);
-    if (e != SQLITE_OK)
-        [[UNLIKELY_ATTR]] {
+    if (e != SQLITE_OK) [[UNLIKELY_ATTR]] {
         if (db_err == nullptr or *db_err == '\0') {
             DbgTrace (L"Failed doing sqllite command: %s", cmd2Exec.c_str ());
             Execution::Throw (Exception (Characters::Format (L"SQLite Error %d", e)));

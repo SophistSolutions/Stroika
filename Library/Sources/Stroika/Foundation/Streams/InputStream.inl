@@ -200,8 +200,7 @@ namespace Stroika::Foundation::Streams {
         static_assert (is_pod_v<POD_TYPE>);
         POD_TYPE tmp; // intentionally don't zero-initialize
         size_t   n{ReadAll (reinterpret_cast<byte*> (&tmp), reinterpret_cast<byte*> (&tmp + 1))};
-        if (n == sizeof (tmp))
-            [[LIKELY_ATTR]] {
+        if (n == sizeof (tmp)) [[LIKELY_ATTR]] {
             return tmp;
         }
         else {

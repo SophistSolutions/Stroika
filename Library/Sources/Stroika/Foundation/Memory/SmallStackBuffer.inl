@@ -80,8 +80,7 @@ namespace Stroika::Foundation::Memory {
     {
         Invariant ();
         DestroyElts_ (this->begin (), this->end ());
-        if (fLiveData_ != BufferAsT_ ())
-            [[UNLIKELY_ATTR]] {
+        if (fLiveData_ != BufferAsT_ ()) [[UNLIKELY_ATTR]] {
             // we must have used the heap...
             Deallocate_ (LiveDataAsAllocatedBytes_ ());
         }
@@ -181,8 +180,7 @@ namespace Stroika::Foundation::Memory {
         static_assert (is_trivially_default_constructible_v<T>);
         if (nElements > fSize_) {
             // Growing
-            if (nElements > capacity ())
-                [[UNLIKELY_ATTR]] {
+            if (nElements > capacity ()) [[UNLIKELY_ATTR]] {
                 /*
                  *   If we REALLY must grow, the double in size so unlikely we'll have to grow/malloc/copy again.
                  */

@@ -348,8 +348,7 @@ RetryWithAuth:
         // Keep reading data til all done
         DWORD dwSize = 0;
         do {
-            if (Time::GetTickCount () > endBy)
-                [[UNLIKELY_ATTR]] {
+            if (Time::GetTickCount () > endBy) [[UNLIKELY_ATTR]] {
                 Execution::Throw (Execution::TimeOutException::kThe);
             }
 

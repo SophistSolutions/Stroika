@@ -195,8 +195,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename TRAITS>
     constexpr typename Range<T, TRAITS>::UnsignedDifferenceType Range<T, TRAITS>::GetDistanceSpanned () const
     {
-        if (empty ())
-            [[UNLIKELY_ATTR]] {
+        if (empty ()) [[UNLIKELY_ATTR]] {
             return static_cast<UnsignedDifferenceType> (0);
         }
         return static_cast<UnsignedDifferenceType> (TraitsType::Difference (fBegin_, fEnd_));
