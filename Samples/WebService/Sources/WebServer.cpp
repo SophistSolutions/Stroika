@@ -148,12 +148,16 @@ public:
 #if __cpp_designated_initializers
     , fConnectionMgr_
     {
-        SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_, ConnectionManager::Options { .fBindFlags = Socket::BindFlags{}, .fDefaultResponseHeaders = kDefaultResponseHeaders_ }
+        SocketAddresses (InternetAddresses_Any (), portNumber),
+            kRoutes_,
+            ConnectionManager::Options { .fBindFlags = Socket::BindFlags{}, .fDefaultResponseHeaders = kDefaultResponseHeaders_ }
     }
 #else
     , fConnectionMgr_
     {
-        SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_, ConnectionManager::Options { nullopt, nullopt, Socket::BindFlags{}, kDefaultResponseHeaders_ }
+        SocketAddresses (InternetAddresses_Any (), portNumber),
+            kRoutes_,
+            ConnectionManager::Options { nullopt, nullopt, Socket::BindFlags{}, kDefaultResponseHeaders_ }
     }
 #endif
     {
