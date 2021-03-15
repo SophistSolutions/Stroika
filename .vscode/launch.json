@@ -8,7 +8,7 @@
       "name": "(gdb) Launch WSL EXE",
       "type": "cppdbg",
       "request": "launch",
-      "program": "/home/lewis/Sandbox/Stroika/DevRoot/Builds/Debug/Tests/Test50",
+      "program": "${workspaceFolder}/Builds/Debug/Tests/Test50",
       "args": [],
       "stopAtEntry": true,
       "cwd": "${workspaceFolder}",
