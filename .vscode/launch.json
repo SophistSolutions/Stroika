@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "(gdb) Launch WSL EXE",
+      "name": "(gdb-UNIX) Launch EXE",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/Builds/Debug/Tests/Test50",
@@ -41,7 +41,7 @@
       "visualizerFile": "${workspaceFolder}/Library/Projects/VisualStudio.Net-2019/VisualStudio-Stroika-Foundation-Debugger-Template.natvis"
     },
     {
-      "name": "gdbserver remote Launch",
+      "name": "gdbserver remote Launch(not sure helpful right now)",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceRoot}/mybinary",
