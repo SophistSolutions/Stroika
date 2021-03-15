@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "(gdb) Launch WSL Test50",
+      "name": "(gdb) Launch WSL EXE",
       "type": "cppdbg",
       "request": "launch",
       "program": "/home/lewis/Sandbox/Stroika/DevRoot/Builds/Debug/Tests/Test50",
@@ -25,12 +25,12 @@
       "additionalSOLibSearchPath": "/path/to/symbols;/another/path/to/symbols"
     },
     {
-      "name": "(Windows) VisualStudio Debugger (doesnt work)s",
+      "name": "(Windows) Launch VisualStudio",
       "type": "cppvsdbg",
       "request": "launch",
       "program": "${workspaceFolder}/Builds/Debug-U-32/Tests/Test01.exe",
       "args": [],
-      "stopAtEntry": false,
+      "stopAtEntry": true,
       "cwd": "${workspaceFolder}",
       "environment": [],
       "console": "integratedTerminal",
@@ -41,7 +41,7 @@
       "visualizerFile": "${workspaceFolder}/Library/Projects/VisualStudio.Net-2019/VisualStudio-Stroika-Foundation-Debugger-Template.natvis"
     },
     {
-      "name": "C++ Launch",
+      "name": "gdbserver remote Launch",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceRoot}/mybinary",
