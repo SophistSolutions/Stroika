@@ -18,7 +18,6 @@ endif
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)Range${OBJ_SUFFIX}\
 
 
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk

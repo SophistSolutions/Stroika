@@ -537,9 +537,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedLock.cpp">
       <Filter>Sources\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Traversal\Range.cpp">
-      <Filter>Sources\Traversal</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SOAP\Fault.cpp">
       <Filter>Sources\IO\Network\SOAP</Filter>
     </ClCompile>

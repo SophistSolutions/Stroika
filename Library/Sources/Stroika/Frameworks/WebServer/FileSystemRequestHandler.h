@@ -14,7 +14,7 @@
 #include "Router.h"
 
 /*
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
  *      @todo   Add optional logger feature, to log requests (possibly in standard https://www.w3.org/TR/WD-logfile)
@@ -60,7 +60,7 @@ namespace Stroika::Frameworks::WebServer {
         optional<Sequence<String>> fDefaultIndexFileNames;
 
         /**
-         *  NYI
+         *  NYI - see https://stroika.atlassian.net/browse/STK-732
          */
         enum ETagStrategy {
             eDont,
@@ -71,6 +71,7 @@ namespace Stroika::Frameworks::WebServer {
         /**
          * ReportETags
          *      @todo NYI
+         *  NYI - see https://stroika.atlassian.net/browse/STK-732
          */
         optional<ETagStrategy> fETagStrategy;
 
@@ -82,6 +83,7 @@ namespace Stroika::Frameworks::WebServer {
         // ETagCacheSize (ether digest or datestamp - whether we keep in RAM idea of current value
         // to respond without read (note date check is still a form of read); but this cache is less
         // useful IF using datestamp etag strategy
+        // @see https://stroika.atlassian.net/browse/STK-732
 
         /**
          *  fCacheControlSettings provides a sequence of RegExp: CacheControl pairs. These are automatically applied

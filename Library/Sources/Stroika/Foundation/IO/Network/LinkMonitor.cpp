@@ -162,7 +162,7 @@ InternetAddress Network::GetPrimaryInternetAddress ()
         return InternetAddress{addr};
     }
 #endif
-    return InternetAddress ();
+    return InternetAddress{};
 #elif qPlatform_POSIX
     auto getFlags = [] (int sd, const char* name) -> int {
         struct ::ifreq ifreq {
@@ -195,7 +195,7 @@ InternetAddress Network::GetPrimaryInternetAddress ()
     for (int i = 0; i < ifconf.ifc_len / sizeof (struct ifreq); ++i) {
         int flags = getFlags (sd, ifreqs[i].ifr_name);
         if ((flags & IFF_UP) and (not(flags & IFF_LOOPBACK)) and (flags & IFF_RUNNING)) {
-            result = InternetAddress (((struct sockaddr_in*)&ifreqs[i].ifr_addr)->sin_addr);
+            result = InternetAddress{((struct sockaddr_in*)&ifreqs[i].ifr_addr)->sin_addr};
             break;
         }
         //printf ("%s: %s\n", ifreqs[i].ifr_name, inet_ntoa (((struct sockaddr_in*)&ifreqs[i].ifr_addr)->sin_addr));
@@ -329,7 +329,7 @@ struct LinkMonitor::Rep_ {
                 char             buffer[4096];
                 struct nlmsghdr* nlh;
                 nlh = (struct nlmsghdr*)buffer;
-                while ((len = recv (sock.GetNativeSocket (), nlh, 4096, 0)) > 0) {
+                while ((len = ::recv (sock.GetNativeSocket (), nlh, 4096, 0)) > 0) {
                     while ((NLMSG_OK (nlh, len)) and (nlh->nlmsg_type != NLMSG_DONE)) {
                         if (nlh->nlmsg_type == RTM_NEWADDR) {
                             struct ifaddrmsg* ifa = (struct ifaddrmsg*)NLMSG_DATA (nlh);
@@ -338,13 +338,13 @@ struct LinkMonitor::Rep_ {
                             while (rtl and RTA_OK (rth, rtl)) {
                                 if (rth->rta_type == IFA_LOCAL) {
                                     DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
-                                    uint32_t ipaddr = htonl (*((uint32_t*)RTA_DATA (rth)));                             //NB no '::' cuz some systems use macro
+                                    uint32_t ipaddr = ::htonl (*((uint32_t*)RTA_DATA (rth)));                             //NB no '::' cuz some systems use macro
                                     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated\"");   // macro uses 'register' - htons not deprecated
                                     char name[IFNAMSIZ];
                                     if_indextoname (ifa->ifa_index, name);
                                     {
                                         char ipAddrBuf[1024];
-                                        snprintf (ipAddrBuf, NEltsOf (ipAddrBuf), "%d.%d.%d.%d", (ipaddr >> 24) & 0xff, (ipaddr >> 16) & 0xff, (ipaddr >> 8) & 0xff, ipaddr & 0xff);
+                                        ::snprintf (ipAddrBuf, NEltsOf (ipAddrBuf), "%d.%d.%d.%d", (ipaddr >> 24) & 0xff, (ipaddr >> 16) & 0xff, (ipaddr >> 8) & 0xff, ipaddr & 0xff);
                                         SendNotifies (LinkChange::eAdded, String::FromNarrowSDKString (name), String::FromASCII (ipAddrBuf));
                                     }
                                 }
@@ -355,7 +355,7 @@ struct LinkMonitor::Rep_ {
                     }
                 }
             });
-            fMonitorThread_.SetThreadName (L"Network LinkMonitor thread");
+            fMonitorThread_.SetThreadName (L"Network LinkMonitor thread"sv);
             fMonitorThread_.Start ();
         }
 #elif qPlatform_Windows
