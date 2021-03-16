@@ -8,4 +8,4 @@ RUN apt-get install -y openssh-server
 RUN apt-get install -y lldb
 
 EXPOSE 22
-CMD /usr/sbin/sshd -D && bash
+CMD /usr/sbin/sshd && bash
