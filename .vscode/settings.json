@@ -1,0 +1,28 @@
+{
+    "files.associations": {
+        "type_traits": "cpp",
+        "compare": "cpp",
+        "xtr1common": "cpp",
+        "xlocale": "cpp",
+        "*.ipp": "cpp",
+        "array": "cpp",
+        "deque": "cpp",
+        "forward_list": "cpp",
+        "list": "cpp",
+        "string": "cpp",
+        "unordered_map": "cpp",
+        "unordered_set": "cpp",
+        "vector": "cpp",
+        "string_view": "cpp",
+        "initializer_list": "cpp",
+        "regex": "cpp"
+    },
+    "files.watcherExclude": {
+        "Archive/**": true,
+        "Builds/**": true,
+        "IntermediateFiles/**": true,
+        "ThirdPartyComponents/*/CURRENT/**": true,
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true,
+      }
+    }
