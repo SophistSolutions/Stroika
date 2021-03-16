@@ -29,6 +29,8 @@ ifeq ($(shell uname),Linux)
 	docker build -f Centos-7-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-centos-7-small .
 	docker build -f Centos-8-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-centos-8-small .
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev .
+	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2004 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests .
+	 
 endif
 ifeq (Windows,$(findstring Windows,$(OS)))
 	# to build this you may need  --storage-opts "size 100GB", but that currently doesn't work with build, so set
