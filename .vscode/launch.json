@@ -4,8 +4,6 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
-
-
     {
       "name": "(gdb-UNIX) Launch EXE",
       "type": "cppdbg",
@@ -31,7 +29,7 @@
       "type": "lldb",
       "request": "launch",
       "program": "${workspaceFolder}/Builds/Debug/Tests/Test50",
-      "args": [],
+      "args": []
     },
     {
       "name": "(Windows) Launch VisualStudio",
