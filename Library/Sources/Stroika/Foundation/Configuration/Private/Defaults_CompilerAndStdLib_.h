@@ -164,6 +164,9 @@
 // _MSC_VER=1928
 #define _MSC_VER_2k19_16Pt8_ 1928
 
+// _MSC_VER=1928 (SADLY - due to https://developercommunity2.visualstudio.com/t/The-169-cc-compiler-still-uses-the-s/1335194)
+#define _MSC_VER_2k19_16Pt9_ 1928
+
 #if _MSC_VER < 1910
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2017 (use Stroika v2.0 or earlier)"
 #elif _MSC_VER <= _MSC_VER_2k17_15Pt7_
@@ -544,6 +547,12 @@ ABORTING...
 #endif
 
 /*
+* 
+* REPORTED IN https://developercommunity.visualstudio.com/t/static_initializer_lambda_funct_init_Bug/1287411
+* 
+*   SUPPOSEDLY FIXED in 16.10 accoridng to above
+* 
+* 
  Compiling Samples/WebService/Sources/Model.cpp ...
 C:\Sandbox\Stroika\DevRoot\Samples\WebService\Sources\Model.cpp(98): fatal error C1001: Internal compiler error.
 (compiler file 'msc1.cpp', line 1584)
@@ -1826,6 +1835,10 @@ namespace {
 
 /*
  * https://developercommunity.visualstudio.com/content/problem/330322/stdlocale-l2-en-usutf-8-broken-crashes-now.html
+ * https://developercommunity.visualstudio.com/t/std::locale-l2-en_USUTF-8;--broke/330322
+ *      SUPPOSEDLY FIXED IN Fixed In: Visual Studio 2019 version 16.9 - but without a differnt compiler ID # than 16.8, so
+ *      wait to test in 16.10
+ *
  *      Take the example code from 
             https://en.cppreference.com/w/cpp/locale/locale/locale
 
