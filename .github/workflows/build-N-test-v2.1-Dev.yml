@@ -137,8 +137,7 @@ jobs:
     #if: github.ref == 'refs/heads/v2.1-Release' || matrix.includeInDevBranchBuilds
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=5 (empirical), and QUICK_BUILD avoids some internal testing
-      # TEST --jobs=2
-      MAKEFLAGS: "--jobs=2 QUICK_BUILD=1"
+      MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
     container: ${{ matrix.container_image }}
     steps:
       - uses: actions/checkout@v2
