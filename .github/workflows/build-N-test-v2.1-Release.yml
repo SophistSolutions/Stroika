@@ -177,9 +177,9 @@ jobs:
       - name: Save space
         run: |
           make --directory Tests clobber
-      - name: Make samples
+      - name: Make tools & samples
         run: |
-          make run-samples
+          make tools samples
       - name: Archive Samples Results
         uses: actions/upload-artifact@v2
         with:
