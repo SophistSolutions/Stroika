@@ -7,7 +7,1241 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-+++ went through jira db and cleaned up what is reported there. https://stroika-bugs.sophists.com
+### 2.1b10 (TBD)
+
+#### TLDR
+
+- New C++ "Property" classes, aping the C# property mechanism
+- New IO::Network::HTTP::Headers class (using properties), like the C#/.net WebServer headers object (colleciton + smart properties)
+- Major improvements to Frameworks::WebServer, including use of above Headers class, thread safety checks, ETag support, CacheControl, Cookies, CORS (properly) and more
+- VSCode settings, so you can now easily remote ssh workspace to docker ssh (or wsl) container, to edit/debug
+
+#### Change Details
+
+- Build System And Tools
+
+  - fixed regression in (so far just ubuntu 1804 regtests) - not printing any performance test results
+  - added g++-10-release-c++17 to list of configs in ScriptsLib/RunPerformanceRegressionTests that can be used to run performance tests, and improed logging if we call ScriptsLib/RunPerformanceRegressionTests without a valid configuraiton built
+  - Debugger
+    - Added StringBuilder to VisualStudio-Stroika-Foundation-Debugger-Template.natvis
+  - .vscode
+    Several cleanups, to build scripts etc, but MOSTLY got working remote connection to ssh unix systems either under WSL, or remote (docker) ssh systems
+
+- Documentation
+
+  - went through jira db and cleaned up what is reported there. https://stroika-bugs.sophists.com
+
+- Library Miscelaneous
+
+  - replaced a bunch of uses of constexpr wchar_t ARRAY with constexpr wstring_view, and used that to lose (simplify) various \_Array classes I had to define for Strings, like static constexpr wstring_view kLocaleStandardAlternateFormat replaces static inline const String kLocaleStandardAlternateFormat AND static constexpr wchar_t kLocaleStandardAlternateFormat_AsArray[]
+
+- Foundation Library
+
+  - Characters:
+
+    - new utility function String::Join
+    - a few more String::EqualsComparer::operator() and String::operator== and String::operator<=> overloads
+
+  - Common
+
+    - new (somewhat experimental) Property implementation (but used heavily in IO::HTTP::Headers, and Framework::WebServer), including regrssion tests
+    - cleanups for bool IsPotentiallyComparerRelation (const FUNCTOR&)
+    - fixed https://stroika.atlassian.net/browse/STK-720: IsEqualsComparer<> fix (using decay) allows Set<String> (EqualsCompare which is constnat)
+    - ArgByValueType does decay_t so doesnt fail if given reference type
+    - renamed Common/EmptyObjectForConstructorSideEffect to Common/ObjectForSideEffects
+
+  - Configuration
+
+    - Compiler Bug Defines
+      - NEW qCompilerAndStdLib_stdOptionalThreeWayCompare_Buggy bug definition workaround
+      - qCompilerAndStdLib*stdOptionalThreeWayCompare_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck* (\_LIBCPP_VERSION <= 11000)
+      - qCompilerAndStdLib_template_enable_if_operator_conversion_notUsedInOverloadsforOpEquals_Buggy also broken in gcc10
+      - qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy also broken for clang
+      - Lose uneeded qCompilerAndStdLib_template_enable_if_operator_conversion_notUsedInOverloadsforOpEquals_Buggy (really was operator== needed)
+      - fixed the bug that was causing crash on property code for unix (!qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy)
+      - support VS_16_8_6
+
+  - Containers
+
+    - new lock-free Containers/LockFreeDataStructures/forward_list (appears to mostly work, but documented things todo), original from internet, and hints from internet, and passing regression tests (but not totally for valgrind, probably OK)
+    - Collection\<T>::Remove (ArgByValueType\<T> item, const EQUALS_COMPARER& equalsComparer) now returns bool instead of void
+
+  - Debug
+
+    - Change to AssertExternallySynchronizedLock: now extension point SharedContext/SetAssertExternallySynchronizedLockContext, to allow a set of objects to share a common 'these all must be accessed together' from within one thread (e.g. HTTP Connection Request/Response/Headers/etc)
+
+  - IO::Network
+
+    - redid IO::Network::Interface::Bindings change from last release - bundled fBoundAddressRanges and fBoundAddresses into new class Bindings with members fAddressRanges/fAddresses
+    - IO::Network::HTTP
+
+      - new IO::Network::HTTP::Headers class - to smartly capture HTTPHeaders, support multipamp functionailty
+        - Use new Properties system
+        - Includes ETag, IfNoneMatch, CacheControl, Cookies,CookieList,Host, Vary, Origin and AccessControlAllowOrigin and tons of others as builtin properties
+      - IO/Network/HTTP/Methods (changed namespace for regexp to MethodsRegEx), and lose kOptions/kANY from MethodsRegEx; added kHead to HTTP::Headers
+      - HTTP::Status support 204/kNoContent and cleanup such usage of HTTP::Exception support for these and other excpetion numbers
+
+  - Foundation::Memory
+
+    - new utility Memory_ObjectFieldUtilities
+    - deprecated Memory::ValueOrDefault, and Memory::OptionalValue, replaced with (basically just new name) overloaded NullCoalesce
+
+  - Foundation::Traversal
+    - changed qStroika*Foundation_Traveral_IterableUsesSharedFromThis* from 1 to zero by default
+
+- Frameworks Library
+
+  - WebServer
+
+    - Major cleanup and many enhancements for HTTP/1.1 compliance
+    - new options object for FileSystemRouter
+    - Much rewritten to use IO::Network::HTTP::{Headers/Request/Response}
+    - factor Frameworks::WebServer::{Message,Connection,Request,Response} to use properties and other cleanups, and many old accessor methods deprecated
+    - HTTP WebServer HEAD Method supported
+    - Response::Redirct (now takes URI class not string); and pLocation header support in IO::Network::HTTP::Headers
+    - Router
+      - now CORS handled internally
+      - incompatible change: function based router matcher takes METHOD/hostRelPath BEFORE request now
+      - INCOMPATIBLE CHANGE - Route{path,handler} now interpretted as GET; and quite a few ohter internal restructing of ROuter code
+    - Interceptors
+      - **notbackwardcompat change** - interceptors methods HandleMessage() etc all now const and better documented the polciies for const/thread safety
+      - InterceptorChain (http webserver) replaced of use Get/SetInterceptors with interceptors property
+    - ConnectionManager
+      - Tons of cleanups/incompatible (though probably not noticable) changes to ConnectionManager (setting options/options handling and started adding properties instead of accesors for configuraiton options
+      - new class CORS (refactoring, little new logic); **not backward compat** - ConnectionMgr now takes sequence\<Route> instead of Router
+
+  - UPnP
+
+    - SSDP::Advertisemnt only defines operator== not operator<=>
+
+- ThirdPartyComponents
+  - openssl
+
+#### Release-Validation
+
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10 }
+  - Clang++ { unix: 7, 8, 9, 10, 11; XCode: 12 }
+  - MSVC: { 15.9.31, 16.9.2 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - version 20H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v1
+  - MacOS
+    - 10.15.5 (Catalina)
+  - Linux: { Ubuntu: [18.04, 20.04, 20.10], Centos: [7, 8], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled)
+- Sanitizers
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+- Build Systems
+  - [CircleCI](https://app.circleci.com/pipelines/github/SophistSolutions/Stroika)
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+
+#if 0
+
+commit 5b4675e95b1ecc3b93690658de028832cd59b800
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Feb 5 15:37:26 2021 -0500
+
+    new utility GetDbgTraceThreadName_A (); and document useful debugging pattern - throwing in TraceContextBumper between data members to get lines written into the trace log between members (just a quick hack util to debug - not a very permanent solution cuz it BUMPS the indent count)
+
+commit 0dd196b84dc4e6bacc1256adc84b578d1793a5a5
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Feb 5 15:45:05 2021 -0500
+
+    Improved docs on AssertExternallySynchronizedLock, and improved DbgTrace messages for when this locker error detector finds a failure: when attempting a lock (or shared_lock) and a clearly bad time, we now report the thread name (in a few differnet ways making easier to find in debugger) which holds the write lock (that constitutes why this is a bug/failure)
+
+commit 1154b3958dabb2f426a9d76e821e44ded2f2f821
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Feb 5 15:47:24 2021 -0500
+
+    fixed a bug in shutdown of Frameworks::WebServer::ConnectionsManager - must put threads at END of member list - so objects threads reference destroyed after the threads, and better documented this dependency
+
+commit 428fbd6c7c083d0bd6c01232a8f9e431b2d0ea02
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Feb 5 17:22:08 2021 -0500
+
+    migrated HandleCORSInNormallyHandledMessage_ from ServerHeader interceptor to Router (interceptor), and Interceptor::_IRep::HandleFault () no longer pure virtual - default just does nothing
+
+commit be0f31b56a4154150a457261d5dccd8fe1e5ad06
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Feb 5 22:22:59 2021 -0500
+
+    several more cleanups to CORS/Framework WebServer code: improved handling of allowed-headersCORSOptions::kAccessControlWildcard; and docs
+
+commit 629f2e440ff8bb43c82acb2b8331f3f42e2f7f02
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Feb 5 22:26:47 2021 -0500
+
+    simplified CTOR for one overload of Set<> template overload CTOR (dont need to avoid Set<T> CTOR arg when its the second arg cuz not confusable with copy CTOR
+
+commit 0bc0d85fcc7091f12c0d3ad62d8093cc41ce0b92
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Feb 6 11:07:13 2021 -0500
+
+    for sample projects that only depend on Foundation library, update Makefile setting of StroikaLibs to only refer to that library so when I do a rebuildall, and frameworks lib not yet built (cuz visaul studio told those apps dont depend on it) - they dont erronously fail to build cuz that dopendency doesnt exist when they are ready to link
+
+commit 28724aac1cde5dfd654f35bca280a580526d8db1
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Feb 6 12:32:47 2021 -0500
+
+    todo docs; and changed naming convention for properties from starting with p to starting with lower case letter and documented why etc in Coding conventions docs
+
+commit 78fc8ff2e4df4844c37995258033a89baabc068c
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Feb 6 22:42:57 2021 -0500
+
+    refactor Framework::WebServer HTTP KeepAlive object into code in IO::Network::HTTP::KeepAlive and Headers and only look at it if Connection: keep-alive
+
+commit 0e5d5fbc2cd7ce5023941ec95862ecb738e0e818
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Feb 7 10:42:58 2021 -0500
+
+    renamed BindFlags::fReUseAddr to fSO_REUSEADDR, added docs, and lose CTOR (so can be used with .fSO_REUSEADDR=)
+
+commit c5274b25e3b283047d61af69011b8b8bdc3ca126
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Feb 7 14:27:06 2021 -0500
+
+commit d835688c87d99100ce67678001ff365cd4c1d24f
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Feb 7 18:22:55 2021 -0500
+
+    InterceptorChain class - use interceptors property in place of Get/SetInterceptors:
+
+commit 3ac9c360fc459863172b72e1b1c5d5ee690ddf6d
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Feb 7 21:35:56 2021 -0500
+
+    Execution/Synchronized:
+            Renamed TRAITS::kIsRecursiveMutex to TRAITS::kIsRecursiveLockMutex, and TRAITS::kIsRecursiveReadMutex
+                    (so broken apart - read case more freqenlty doable cuz use shared_lock)
+
+commit 1c3de5992a9e8fd770ae632b1ac831ea67dc04f0
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Mon Feb 8 10:23:49 2021 -0500
+
+    Fixed overload of Collection::RemoveAll() to add extra enable_if_t restriction to avoid ambiguity
+
+commit 0fe74b7b98de2564960fd4f865c1a4be1aa2284c
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Mon Feb 8 10:27:39 2021 -0500
+
+    IO/Network/HTTP/Headers support LookupAll() and use that to return multiple Set-Cookie headers
+    for example.
+
+commit 3d4a00825ad25f384c059454a323622b3e9202ce
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Feb 9 10:43:01 2021 -0500
+
+    more cleanups (esp to properties) for Request/REsponse objects of Frameowrks::WebServer
+
+commit 92f6576ea0a061b39f3cadb08d8ab280eff32118
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Feb 9 14:19:02 2021 -0500
+
+    Property template now takes second optional param READ_T to allow setting reference result for properties; and fixed use of Configuration::ArgByValueType<T> in Property class
+
+commit 05b2a5f95a506e365a4c9d638cbf5f6cc75ced45
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Feb 9 14:32:06 2021 -0500
+
+    more cleanups to Frameworks/WebServer (esp property usage), for example using const & return for Headers& subobject of Request
+
+commit 9b3c623def054172c761b38398a8036c3ab246bf
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Wed Feb 10 11:38:02 2021 -0500
+
+    simplify Common::Property code back so template just takes one param, but automatically decays as appropriate type for readOnlyProperty base
+
+commit e6a772884f52a34e92c45b7b4b2141c0807b9f8b
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Wed Feb 10 20:09:41 2021 -0500
+
+    Migrate guts of AssertExternallySynchronizedLock into AssertExternallySynchronizedLock::SharedContext, and support
+    externally specifying the sharedcontext, so that multiple objects can share the same 'context' and therefore ALL be treated as one
+    object as far as the AssertExternallySynchronizedLock is concerned.
+
+commit b5e22d108015f111f45c033d06a9d9852189323e
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Wed Feb 10 20:55:04 2021 -0500
+
+    Debug/AssertExternallySynchronizedLock switched to using fowrad_list instead of multiset, as probably faster for common cases and closer to a lock-free implementation I may switch to soon)
+
+commit e333ec2ce37c1fc8e572d80d0c6141acbafe52e3
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Feb 12 14:51:29 2021 -0500
+
+    fixed serious bug in SmallStackBuffer (ITERATOR_OF_T start, ITERATOR_OF_T end) CTOR: was resizing to argument size and then doing uninitialized_copy () - which meant we overwrote 'initialized' objects as if they were uninitialized (caused issue with copying StackedBuffer<String> for example
+
+commit 4a27933cc8b6ecb891f9c838226b2dbd282e9c99
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Feb 13 12:15:24 2021 -0500
+
+    attempted use of Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD for lockfree forward_list code (because helgrind doesnt understand the atomic lock store/load dont need lcoks
+
+commit 12ec4db3cf961cebda2230ae1499510cedb7d398
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Feb 13 12:58:48 2021 -0500
+
+    remove mistaken add of Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD for lockfree forward_lsit(meant to disable helgrind not tsan)
+
+commit 6136cec998adddc345321958b511251cb9869227
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Feb 13 14:28:50 2021 -0500
+
+    workaround / use Stroika_Foundation_Debug_ValgrindDisableHelgrind macros since helgrind doesnt understand std::atomic
+
+commit 0e711b4bf03c63e7c751a2333af0eb80f491594a
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Feb 14 13:08:40 2021 -0500
+
+    deprecated Response::ReadHeader/UpdateHeader methods (now just use rwHeaders () property.
+    Used headers/rwHeaders() in Request/Response objects (properly)
+    Better documented and cleaned up SetAssertExternallySynchronizedLockContext usage.
+
+commit 44b0790fe87d67dbedfb3fa7dce1527d20f4c6b6
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Feb 14 19:56:27 2021 -0500
+
+    fixed bug with Bijection implementation of !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
+
+commit a34f1f487a534137832ff55af4a2759fe3e64357
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Feb 14 22:15:57 2021 -0500
+
+    cleanup cast/qStroika_Foundation_Traveral_IterableUsesSharedFromThis_ uses in a few places
+
+commit 66906a71315f7912954a4b8d911c54a4cfce0881
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Feb 14 23:41:18 2021 -0500
+
+    changed Containers/LockFreeDataStructures/forward_list to use hardwired constant (sb constexpr) addresses as sentianl values (not sure why but fixed bug with release build on windows - testing if it fixes issue on unix
+
+commit d509d60eadd4125f10d16bd2570848d03429c8bb
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Mon Feb 15 08:56:39 2021 -0500
+
+    Cannot set kTerminalSentinal_ = nullptr cuz of other code (debug/assertion) code in forward_list impl - so set to 1/2 and later fix when we redo as shared_ptr
+
+commit 8ddf9edb17c0cf6885b59dc0b92bc250dd8fd649
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Mon Feb 15 19:54:53 2021 -0500
+
+commit 06af539719373318f381220d06db75c2a7ca6e96
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Feb 16 14:37:58 2021 -0500
+
+    docs, and deprecated Frameworks/WebServer/Request/AddHeader - replacine with use rwHeaders()
+
+commit 5ba2172108f5492dcba1602a1539ffadd6c56b8d
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Feb 16 17:01:26 2021 -0500
+
+    IO::Network::HTTP::Headers cleanups to handling of builtin items and multiple valued entries (set-cookie) - still needs a little more cleanup but now should work much better now
+
+commit fc0df04eebb81a63cca3cd372dfc27fbfea0ba5b
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Feb 16 17:15:05 2021 -0500
+
+commit 429c0f45dcbe015903a1585a2a9b5498fb24eaab
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Feb 16 18:21:29 2021 -0500
+
+    use static constexpr wstring_view instead of static inline const String for a few more defines, to avoid order of construction issues between mdoules (maybe for performance should allow both?)
+
+commit 32cf7454259041a879901dc69aba3bef94ddc65b
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Feb 16 21:18:20 2021 -0500
+
+    Support  WriteOnlyProperty<T>::operator() (Configuration::ArgByValueType<T> value) alternate syntax
+
+commit ebca45513b54019a1793f35756d023e0d4ed19c1
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Feb 16 21:19:02 2021 -0500
+
+    Replace Frameworks/WebServer Response.SetContentType with a contentType property (still with the funky semantics of adding in the code page automatically)
+
+commit 00c8d247c26f07c3dbe9f538e4233c15d247607f
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Wed Feb 17 13:28:00 2021 -0500
+
+    Improved Property class support so it better handles T& types (and doesnt allow getting that reference to sneak you non-const reference
+
+commit 666566124935aad1574f8d54415f8b1bc371ba00
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Wed Feb 17 15:21:07 2021 -0500
+
+commit 8ccf2016831132c38df30fef2b6738c1eb5a7e0e
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Thu Feb 18 22:05:35 2021 -0500
+
+    IO::HTTP::Response uses status property instead of get/set status methods
+
+commit 89495fb5b99eb8fe3a8620046b7226a3779fca1d
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Thu Feb 18 22:58:15 2021 -0500
+
+    IO::Network::HTTP::Request/Response protected inheritance from Debug::AssertExternallySynchronizedLock
+
+commit 2231ef2c7e3c1debd3af3089d97bbd0a269bf7e9
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Feb 19 12:00:11 2021 -0500
+
+    Refactor: Frameworks/WebServer/{Request,Response} now use (inherit from) IO::Network::HTTP::{Request,Response} using new extended properties
+
+commit 23e75bdc1486abad163db6e39210de049799eb08
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Feb 19 14:14:19 2021 -0500
+
+    fixed a few dangling referenes to old-style Frameworks/WebServer doe
+
+commit 71ed0f93c81aa3240ac882ffa5b6db91ba07b7bc
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Feb 19 16:39:06 2021 -0500
+
+    completed https://stroika.atlassian.net/browse/STK-725 - webserver request/response objects use IO::Network::HTTP/REquest/Response
+
+commit c74dbed1e73e354a24f5c3d992210e2e350e4ad7
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Feb 19 18:08:42 2021 -0500
+
+    Found a cleaner workaround for qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy, so I can lose the define (never was sure it was a bug anyhow)
+
+commit f0243df89b4766b2ebc0257d60824cf5b8e9dfed
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Feb 20 10:55:22 2021 -0500
+
+    Configuration::EnumNames::PeekValue() now reutrns optioanl<ENUM_NAME> instead of const ENUM_NAME* - fits neater with modern c++ **but not backward compatible change**
+
+commit 73dd68bf8035e4575fa520d4b6356122c0a797a7
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Feb 20 11:13:22 2021 -0500
+
+    Added TransferEncoding support to IO/Network/HTTP/Headers
+
+commit 70ca61619a6191cd95f172a00372c320e6a9ac25
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Feb 20 21:14:19 2021 -0500
+
+    refactoring - introduced HTTP::TransferEncoding module
+
+commit 6727bdb63a869a440840faec404544e1453d37f1
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Feb 21 10:19:40 2021 -0500
+
+    Frameworks::WebServer
+            - Response
+              - ContentSizePolicy REMOVED (replaced with correct support for transfer endcoding on response)
+              - clear/empty/GetBytes deprecated
+              - Support transferEncoding = TransferEncoding::eChunked now works on response
+                a little more care on rules for transitioning states.
+         - Connection
+           - write the Connection: header earlier so its before the interceptor chain runs and
+             (potentially/likely) changes response state so we cannot write to headers anymore.
+
+commit c4f5a68eefdcd8fe1dce2d267047be67e15c82ac
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Feb 21 12:34:10 2021 -0500
+
+    Frameworks/WebServer/HTTP-Response - renamed states (adding one), and added accessor helper property
+    headersCanBeSet; - and added docs, so now a little clearer about sate transitions in HTTP response
+
+commit 51a43e100dbcf08ab31a534bb520753d0f9dd90a
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Feb 21 15:58:08 2021 -0500
+
+    Fixed webservice code to accomodate new stricter rules from WebServer code about updating heads before starting to write to body
+
+commit 588c21e95f5ae6cf01344e2004e67b39fe98f706
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Feb 21 21:37:40 2021 -0500
+
+    fixed recent regression due to new requirement to set headers before response.write
+
+commit 5bbc247f7e5d7b3c1b69b9c99b8a3e3f575036e8
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Feb 21 21:38:44 2021 -0500
+
+    Frameworks/WebServer/FileSystemRouter RENAMED (old name deprecated) to Frameworks/WebServer/FileSystemRequestHandler
+    WebServer/FileSystemRequestHandler improved support for options and deprecated old CTOR API.
+    Supported CacheCOntrol mapping in OPTIONS object, and added test case in sample to show regexp matching and adding cache control headers.
+
+commit 3e460cca056fa1e2bc6835e63d08486f1dda4e56
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Feb 21 22:54:32 2021 -0500
+
+    make RegularExpression::kNONE/RegularExpression::kAny inline; and fixed bad cast warning
+
+commit 5e49efe19464816fa0758354e55a6db11f0bfc25
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Mon Feb 22 09:03:03 2021 -0500
+
+    minor tweaks to make clean so it doesnt' blow awy Configuration.mk Stroika-Current-Version.h files
+
+commit 1a73861350643b65efdbdf7ffd4a02e31c3d1d4e
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Mon Feb 22 11:52:32 2021 -0500
+
+    Cache-Control headers: support immutable, and add static constexpr predefined values for several helpful Cache Control settings, and document exapments (with ptrs to reference websties) for why they make sense in certian situations
+
+commit 8b74e1a5321c545bd16fa5d1ac9d44afd43dafd3
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Mon Feb 22 19:02:00 2021 -0500
+
+    refactor the HTTP::CacheControl class to fit better with the docs on https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
+
+commit 6db3590dc2624de57bd2f29a236017ac57352b69
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Feb 23 14:11:31 2021 -0500
+
+    Frameworks::WebServer
+            replaced option fServerHeader with fDefaultResponseHeaders
+
+    Use Execution::VirtualConstant<> in a few places to workaround startup issues (refernincg constants)
+
+    other related cleanups
+
+commit a2bc37da9203ff1e1c348ddf75a50062da5a0344
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Feb 23 15:00:02 2021 -0500
+
+    added PropertyChangedEventResultType for extendable properties (bool true/false too confusing in use)
+    InChunkedMode_ and fInChunkedModeCache_ in Fraemworks webserver Response code, and used that to fix bug with zero length requests (REGRESSION in this rleease) so we emit content-length: 0 in that case
+
+commit d5c1f06ff3a9bce919dc6f680cced532f7ea4aad
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Feb 23 15:08:22 2021 -0500
+
+    Samples docs
+
+commit 6342ebd20df5fc90324732370e7d05b5ae97d382
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Feb 23 15:30:25 2021 -0500
+
+    on change of trnasfer::chunked mode in webserver, either set or clear the Content-Length header
+
+commit 66367aeaec66f9de147d5fedd2a20448b9855287
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Feb 23 18:07:05 2021 -0500
+
+    Lose unneeded qStroika_Foundation_Common_Property_ExtraCaptureStuff1; use PropertyCommon::PropertyChangedEventResultType in a few more places its needed (replacing bool);
+
+commit e95ce6ae5633a86b83097268d83fa2f7bebbea22
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Wed Feb 24 13:49:33 2021 -0500
+
+    new (refactoring but largely unused) Cryptography/Digest/Algorithm API
+
+    Only CHANGE was changed the definition of SuperFastHash algorithmn so that its windowable.
+    (and changed hardwired examples of results).
+    And added interal asserts that new and old APIS produce the same results.
+
+commit 74b34a24beda124fbe37c87b1de02269a0f578e0
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Wed Feb 24 14:31:28 2021 -0500
+
+    cleanup to Digester<ALGORITHM, RETURN_TYPE> algorithm support. For USERS of these classes, no change, except that you can use the Digester algorithm in a windowed way
+
+commit 2c5ffa8e9d8b22b6127892dc62e5ab5b5ef60b95
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Thu Feb 25 08:21:41 2021 -0500
+
+    More Cryptography/Digest/Algorithm refactoring:
+       new Digest::ComputeDigest() template function overload (preferred way to use
+       when not incormemental
+
+       new IncrementalDigester<ALGORITHM, RETURN_TYPE> wrapper.
+
+       Factored API for algorithjms into Digest/Algorithm/Algorithms.h
+
+       Various cleanups based on this.
+
+commit 16932277a65e27578ac3a9e6de1124570972209c
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Thu Feb 25 13:19:58 2021 -0500
+
+    https://stroika.atlassian.net/browse/STK-728 workaround for memcheck failure
+
+commit c9d03293c464dae45661a59ebca6b48b7b933539
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Thu Feb 25 20:07:23 2021 -0500
+
+commit 255ebe87d0c74a430da4c29a4105371b1d296426
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Thu Feb 25 20:09:21 2021 -0500
+
+    tweak SuperFastHash algorithm to avoid warning
+
+commit 0ae5b773f1c418ef4511c80ee7dea640f1a452e4
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Thu Feb 25 20:11:21 2021 -0500
+
+    tweak SuperFastHash algorithm to avoid warning
+
+commit 1780c7121e4e6543617e9883c37c8d299e443f60
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Feb 26 11:11:05 2021 -0500
+
+    HTTP::Headers:
+      docs, and new Add/AddAll overloads as well as operator+=
+
+    WebServer::Connection/ConnectionManager: added fDefaultGETResponseHeaders (for thigs
+    like CacheControl headers)
+
+commit fc328d13ef908d861aa43eb68935c057dbf8c39c
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Feb 26 20:01:32 2021 -0500
+
+    unique_ptr instead of shared_ptr for MyMessage in WebServer/Connection; Characters::ToString() support for unique_ptr<> and other small ToString cleanups
+
+commit 278bb920d18128c4f29e4fd3d78c9bcffdac60b4
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Feb 26 20:13:04 2021 -0500
+
+    unique_ptr instead of shared_ptr for MyMessage in WebServer/Connection; Characters::ToString() support for unique_ptr<> and other small ToString cleanups
+
+commit 417468ec7ea542af6e60365a151ac59886083d71
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Feb 26 22:30:14 2021 -0500
+
+    use unique_ptr intead of shared_ptr in Execution/WaitForIOReady
+
+commit 5c90d7a0a333336269a50287b36ee9f3e42e3282
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Feb 27 20:43:16 2021 -0500
+
+    Allow DIgestAlgoritjms and IncrementalDigester to e copied
+
+commit b5d35d9066d21a2f5b1808d116effc682055ac7e
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Feb 27 20:43:51 2021 -0500
+
+    note about bug seen (very rare timing issue - not necesarily really a bug)
+
+commit d9529fadcd13a6d33e10454186951aecac9e5a0a
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Feb 27 20:45:01 2021 -0500
+
+    Response::autoComputeETagSupport working
+
+commit 02fbfa2c6190470f285881ad9b2fc26cbcfd6afe
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Feb 27 21:16:51 2021 -0500
+
+    HTTP WebServer ConnectionManager options fAutoComputeETagResponse (default true)
+
+commit 4d1cadbcad4378ae083b5a66e8f2c6f51db4b50f
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Feb 27 22:05:47 2021 -0500
+
+    WebServer/FileSystemRequestHandler only applies first matching cache control setting
+
+commit 0c9753514b82b44437f21755b823a066124e73f8
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Feb 27 22:18:56 2021 -0500
+
+    fixed !__cpp_designated_initializers case for CacheControl::kImmutable
+
+commit 4957f657db893012308c9b47144e624aa5e766f4
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Feb 28 11:06:51 2021 -0500
+
+    new property code - ReadHandler - now takes extra argument (previous value)
+
+commit 5a5dbe537509bbcdc840b3e154e24aaf6755f773
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Feb 28 11:54:49 2021 -0500
+
+    when copying ETag in Headers, be sure to read property not just copy underlying value, since reader override could have differnt value; and in frameworks/webserver response, dont write response body if statue == not-modified; and use all this to implement if-none-changed in Connection code - checking etags and then settings status to not-modified if etags match
+
+commit 29403c4532a7f38c143a8408fa42e2b450ccbd15
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Feb 28 17:02:59 2021 -0500
+
+    redo
+      using PropertyReadEventHandler = std::function<PropertyReadEventHandlerArgAndReturnValue_(const PropertyReadEventHandlerArgAndReturnValue_&)>
+
+commit 61c23464461073b15a317010cbdf3b8c5bc431e9
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Feb 28 17:25:33 2021 -0500
+
+    HTTP WebServer cleanup contentLength code, and docs improvements and lose need for threadlocal tSuppressAssertCanModifyHeaders_
+
+commit 5699c0794d6e182b5d9796d4bbdc12f02984af08
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Feb 28 21:59:14 2021 -0500
+
+    Headers::CopyFlags... and be capable of sometimes copying indirect properites and sometimes not.
+    Fixed assert (abckeards) in response code);
+
+commit 470dd6e9b5688bc0ae9e5a771e6f28def5dac130
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Feb 28 22:39:56 2021 -0500
+
+    tweak move() calls in frameworks webserver
+
+commit 4a854ef9b8b955f86c952e6607fd041e5b156bfb
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Mon Mar 1 08:55:29 2021 -0500
+
+    ToString() impl for ETag/IfNoneMatch objects
+
+commit b37f1ae35ea497fb8b2e7eea3372b6f52e4850ea
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Mon Mar 1 08:57:47 2021 -0500
+
+    Added a few more status code messages, HTTP::Exeption::Status
+
+commit 02b705b7945a02668d86ab0bc2176b7caf423981
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Mon Mar 1 20:43:51 2021 -0500
+
+    assertion testing in algorithm::digesters
+
+commit 914977a9bbda38ded59ff1cb91dde8d373996331
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Mon Mar 1 20:47:31 2021 -0500
+
+    sqlite 3.34.1
+
+commit 0820db22918f02a7bee873f6e1e4f6086d8f1b7c
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Mar 2 09:22:16 2021 -0500
+
+    fixed FETCHURLS for sqlite download
+
+commit 5f6a82db8da281f8b23a9f0bb3fb921263492728
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Mar 2 10:12:03 2021 -0500
+
+    libcurl 7.75.0
+
+commit 2e14233c78c31de9e0e561f1115354397234d597
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Mar 2 11:21:06 2021 -0500
+
+    HTTPServer:
+            >       Response.End () returns bool indicating aborted;
+            >       flag internally to track aborted.
+            >       On faults which occur AFTER the response status sent, we call Abort() on
+                    the response - and this should bubble to the top causing the conneciton to be closed.
+            >       Fixed connection timeout logic (HTTP KeepAlive header) support to track orignal
+                    start of connection
+
+commit 421a346c131e597167043da053d97d08a3ae78d6
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Mar 2 12:21:04 2021 -0500
+
+    bitfield with initializer only allowed if __cplusplus >= 202002L
+
+commit fe2f4eab3ce5fa071c7e50fcdf66ecede25bd4fd
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Mar 2 12:31:07 2021 -0500
+
+    avoid std::move () on bitfields or places where pointless or illegal
+
+commit 5bce07bbb1b40a4dd0a208b62553fef87d445148
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Mar 2 12:51:57 2021 -0500
+
+    frameworks/webserver : assert ReadAndProcessMessage () completes message (except for case of early failure due to not enuf data for headers)
+
+commit d11cdb81a52ba7895496fbc5a9fe4d2e0ce9998e
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Mar 2 12:58:36 2021 -0500
+
+    cleanup webserver aborted connection handling (mostly just for asserts)
+
+commit 98d59d24abfa96e9a6823334234103a0622d07f6
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Mar 2 13:31:23 2021 -0500
+
+    HTTP WebServer Response::End () documents and enforces that it always sets COMPLETED flag - even if it failus internally (e.g. due to fail to write cuz socket closed)
+
+commit 283cdba9dc181abea420dc31a0631e2d4964485e
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Wed Mar 3 09:30:42 2021 -0500
+
+    Support date property in IO::Network::HTTP::Headers, and set the date header in resposne in Frameworks/WebServer/Connection module
+
+commit 4c35923aa15f8549922cdc7e367554d9c1a5ba9c
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Wed Mar 3 10:11:43 2021 -0500
+
+    regtests for recent http header date support, and document/mittigate bug https://stroika.atlassian.net/browse/STK-731
+
+commit e9f3e06d886b29e4a79b950d1a487d1246a9997b
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Wed Mar 3 11:37:23 2021 -0500
+
+    fixed misisng compares in operator== for IO::...HTTP::Headers (still more todo)
+
+commit 0157a65a4074a09339f78a461d7e6ff7cffcc0ab
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Wed Mar 3 13:23:36 2021 -0500
+
+    cookielist and related IO::Network::HTTP::Headers cleanups to oeprator== etc (lose Headers;:operator<=> cuz not super well defined and not sure we want to define it and not used); and added cooklilist::toString() - and other cleanups
+
+commit 20bde964452968b63b5a5b084ed400bdff8f5c0b
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Thu Mar 4 19:52:16 2021 -0500
+
+    #define kStrokia_Foundation_Configuration_cplusplus_20 202002L
+
+commit c5b09f0434e2b02e38383fffa445a4eb0b7ef786
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Thu Mar 4 19:52:54 2021 -0500
+
+    opessl 1.1.1j
+
+commit fc28e7fe0213521373c11a58f802c6bdc2971062
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Thu Mar 4 19:55:41 2021 -0500
+
+    move Date::kDefaultParseFormats to be static inline, and improved comments on it
+
+commit 2f822ce5ff3e30f757da3e26f008925f7606a610
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Thu Mar 4 19:56:52 2021 -0500
+
+    Added ::tm Date::As<T> () const  method
+
+commit 7272243cd110ee654a653a4ef310a33aa8c7b6cb
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Thu Mar 4 19:58:28 2021 -0500
+
+    Date code cleanup - defining private kTM_Year_RelativeToYear_{1900} and using it interanlly for clarity
+
+commit 5ad840980611d2d0c33dabdbac40db313afc2f2a
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Thu Mar 4 20:05:17 2021 -0500
+
+    Migrated some date format tests to regression tests (from Date.cpp)
+
+commit 98c56745019f163f45869ef13a8afa3c6ecbd77a
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Thu Mar 4 20:05:54 2021 -0500
+
+    new workaround for qCompilerAndStdLib_std_get_time_pctx_Buggy which also works with vs2k 16.9.0
+
+commit 8c4180bc98a2958dbd979766e6a82c6808836682
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Mar 5 09:37:47 2021 -0500
+
+    docs on Date locale code
+
+commit abd4773405ff347b2b32d4ff6e59f3f36f04d881
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Mar 5 10:26:09 2021 -0500
+
+    cleanup Date regressiont tests, and deprecated Date::....eJavascript and replaced wtih format string kFormatMonthDayYear
+
+commit 6b852d17c97cdbfe928196cfc2a0222fcb1ea3f8
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Mar 5 11:08:39 2021 -0500
+
+    more overloads for Date::Parse (no locale variants for locale-free format strings) and overloads for just a single format string
+
+commit f7117c4f5b3230552083355f81ef5e2cb51ec7b7
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Mar 5 11:10:44 2021 -0500
+
+    use new Date::Parse overload
+
+commit 0f59ff14091e2209fde69bc43fda5991432313db
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Mar 5 17:47:22 2021 -0500
+
+    fixed small regresion in Date code (RequireNotKnownLocaleDependent_ !qDebug)
+
+commit 5c46b7d89770885e4a0546e6e7bdaed5ace8751f
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Mar 5 17:51:09 2021 -0500
+
+    avoid more deprecated overloads with ewcent Date changes
+
+commit 4fe0fe19fa82d4b818310aa45e88486ed3ff81b8
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Mar 5 18:02:49 2021 -0500
+
+    renamed (recent)Date::kFormatMonthDayYear =>  Date::kMonthDayYearFormat; Date::kDefaultParseFormat now uses Date::kMonthDayYearFormat instead of %d (so 4 digit year)
+
+commit 8d08a8e6747149d0fb5269df941d9ffbd6359210
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Mar 5 19:20:10 2021 -0500
+
+    changed regtest to directly use Date::kMonthDayYearFormat instead of locale::classic
+
+commit dfbbb15a7063b499f67166e5bd4f0d96281ff941
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Mar 5 20:19:03 2021 -0500
+
+    lose qCompilerAndStdLib_std_get_time_pctx_Buggy workaroudn in Dete code - only needed for time code (now)
+
+commit 55291dabd7d3b5bcccd8f76dc0357101ec193a78
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Mar 5 20:42:11 2021 -0500
+
+    docs on qcompilerandstdlib-std-get-time-pctx-buggy
+
+commit 59cedd11fe724ecf2feca5dec44e52df6a8ff3db
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Mar 5 21:11:33 2021 -0500
+
+    DISABLE_COMPILER_CLANG_WARNING_START for recent deprecations
+
+commit e8febf44193c588593b279e594c6ccfc763b403e
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Mar 5 21:36:00 2021 -0500
+
+    Date::Parse with no locale parameter loosened to assume current locale
+
+commit e518eef3d7537735f72f02c6240c0a6244bd0cee
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Mar 5 22:42:18 2021 -0500
+
+    replace Date::PrintFormat::eISO8601 deprecated usage with Date::kISO8601Format
+
+commit 914e29c41565a4563d169f5e7a7f3b94587f71b8
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Mar 5 22:55:24 2021 -0500
+
+    no use of deprecated Date::...eIS08601 - use kFormat instead
+
+commit 814b86ef180c3b55704eca0a79e6467393ab18f1
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Mar 5 23:01:20 2021 -0500
+
+    use Date::kISO8601Format instead of deprecated Date::PrintFormat::eISO8601
+
+commit a1f3c230c137a8a98ce3d5e53737bbc2075ef5f2
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Mar 6 09:14:16 2021 -0500
+
+    Slight refactoring of parse code for Date::Parse_
+
+commit 4c566e0252f2e42ead66c5cfecc7377a1b8137cf
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Mar 6 11:06:26 2021 -0500
+
+    note sure I want to checkin .vscode/launch.json, but try for a little while
+
+commit b8f1d175827da2e6668eda6842027e303f1ac127
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Mar 6 21:40:58 2021 -0500
+
+    qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy and workaround
+
+commit 238aff54f96cea5cb6104d9a220f99973466a9cc
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Mar 6 21:44:25 2021 -0500
+
+    tweak qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy
+
+commit 045efb69f6803ec6161a0d73db2061374b628fa9
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Mar 6 21:54:41 2021 -0500
+
+    tweaked workaround for LocaleFreeParseMonthDayYear_/qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy
+
+commit 6c65025b46341670f2ef68b16f3a52ddf781a65d
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Mar 6 22:22:57 2021 -0500
+
+    fixed buggs in Date::LocaleFreeParseMonthDayYear_
+
+commit acf66a924872ae20bb7a71e77d59922585b0b8b9
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Mar 6 22:47:14 2021 -0500
+
+    getPCTMRequiresLeadingZeroBug () check for propper setting for qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy
+
+commit c2d7bb3dbc2e996017c2cbdff2412214b57917a7
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sat Mar 6 22:50:48 2021 -0500
+
+    fixed small bug with Date::LocaleFreeParseMonthDayYear_()
+
+commit e04123dab17ae5ace39f6d038c6cf4ebbee73108
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Mar 7 13:14:00 2021 -0500
+
+    Tons of cleanups to TimeOfDay class:
+      Clearer more conssitent behavior for Parse/Format ; locale default;
+      DEPRECATED TimeOfDay::ParseFlags;
+      use kISO8601Format
+
+commit 51caac64ea60161db5c47787bf9a49608e99ad1b
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Mar 7 14:20:04 2021 -0500
+
+    DateTime cleanups:
+            Deprecated DateTime::ParseFormat::eCurrentLocale - instead just use {} or omit the locale
+            and it defaults to the current.; and other cleanups to DateTime code.
+
+commit fae0a4c95d6ba48276a18675509f8333cec4be59
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Mar 7 14:29:24 2021 -0500
+
+    fixed typos/minor recent regressions
+
+commit 31f0a16a09094d28308d022fd8a147fbbbc22363
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Mar 7 16:49:37 2021 -0500
+
+    Clear simple debug test case code for bug
+            qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
+    (so I can - but havent yet- report to MSFT)
+    and easily tell when fixed.
+    and this narrowing makes it easier to write a better bug fix since I'm closer to udnersntading
+    the bug.
+
+    Deprecated DateTime::PrintFormat::eCurrentLocale (use locale{})
+    new DateTime::QuietParse() overloads
+    A bit of related DateTime parsing cleanup/factoring
+
+commit f57b7c712ba7a0fa510bda0efcc26b6a1d2b8b19
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Mar 7 17:49:46 2021 -0500
+
+    document reported bug reports to MSFT - https://rextester.com/IOLX73233 qCompilerAndStdLib_std_get_time_pctx_Buggy
+
+commit 2eab70eb813df3b1f47cb5c47abba05a17ebdce0
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Mar 7 20:23:20 2021 -0500
+
+    fixed typo in bug workaround
+
+commit f3e27cecdf6b262479206f17db88937b5cd4a3cb
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Mar 7 20:33:28 2021 -0500
+
+    Date::QuietParse () support
+
+commit 4894a2561393269d749b0f554190c43ed8c770b4
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Mar 7 20:42:09 2021 -0500
+
+    renamed QuietParse -> ParseQuietly (in Date code - never released); and added docs about the 'Quietly' namining convention in Stroika
+
+commit 3bb158b8f173066df474e5cc6c5bce3638842277
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Mar 7 20:45:30 2021 -0500
+
+    avoid deprecated functions in regression tests
+
+commit 9511bb27927377e3072edc71c102ec7a1de4a06b
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Mar 7 21:42:40 2021 -0500
+
+    locale en-US replaced wtih call to Configuration::FindNamedLocale to fix problem with running on github actions
+
+commit d5d9ea48cc0f0bb7d8c305cd8a38c215f1758665
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Mon Mar 8 10:46:01 2021 -0500
+
+    fixed tmget_dot_get_locale_date_order_buggy_test_ to run on systems with en-US locale
+
+commit 4e462ef21ecfdd7a9a4f42a15c20c3a9c958cc56
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Mon Mar 8 10:54:40 2021 -0500
+
+    tweak tmget_dot_get_locale_date_order_buggy_test_ test
+
+commit fe8d1f10b57c45c169f93d3d1833524826ddad36
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Mon Mar 8 11:00:40 2021 -0500
+
+    fixed name of locale to en_US (not en-US)
+
+commit 52ebae36d0119aa0f91c6695f6bf149a901da5fd
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Mon Mar 8 11:04:17 2021 -0500
+
+    Surprised but en_US locale not set to tmget.date_order () == time_base::mdy apparently???
+
+commit 9e79a99fff9db6494eed2a07e1fffa444ac8c231
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date: Mon Mar 8 16:23:48 2021 -0500
+
+    tweak tmget_dot_get_locale_date_order_buggy_test_ regtest
+
+commit da3a2f7942cb22a0941d9420310a95a78b365a8b
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date: Mon Mar 8 16:26:05 2021 -0500
+
+    tweak tmget_dot_get_locale_date_order_buggy_test_ regtest
+
+commit c81b4f2a592e8ca7d06d7dc365c9c2572d2c3fee
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date: Mon Mar 8 16:32:32 2021 -0500
+
+    tweak tmget_dot_get_locale_date_order_buggy_test_ regtest
+
+commit 3e3456ef3df673bb3985fe9b17ad06c16448e92f
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date: Mon Mar 8 16:46:25 2021 -0500
+
+    more tweaks to tmget_dot_get_locale_date_order_buggy_test_ regtest
+
+commit 7132fc390ceb74d664d47afcf84173a08c4f9a91
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Mon Mar 8 20:30:24 2021 -0500
+
+    tmget_dot_get_locale_date_order_buggy_test_ further tweaks
+
+commit df4b6961d302f1f56806613e19a4bb769919ff09
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Mar 9 08:58:08 2021 -0500
+
+    qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy bug define
+
+commit 6b80c70dbdcb9474f39d7464a270ab7050169094
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Mar 9 09:08:14 2021 -0500
+
+    more datetime locale regtest cleanups
+
+commit d672bfb35254c431e819533fe92c85718183df01
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Tue Mar 9 09:17:12 2021 -0500
+
+    more cleanups of time/locale regtests
+
+commit 19ee7613839a7a56fc7812535f2d752803c6c0d9
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Wed Mar 10 07:59:18 2021 -0500
+
+    more tmget_dot_get_locale_date_order_buggy_test_ cleanups
+
+commit 4a12f46449fa8317be612a528ec09c98e152bad6
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Wed Mar 10 09:29:28 2021 -0500
+
+    new StdCPctxTraits, and regression tests to check it, and further cleanup for portability date time checking regression tests
+
+commit ce92229dee7cdd4514401010fc4bb0e01580adf2
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Wed Mar 10 09:57:11 2021 -0500
+
+    renamed bug workaround define qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy -> qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy and other small cleanups
+
+commit f5084115477e2e06c1d7b611f158f22662ac8bdd
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Wed Mar 10 15:08:50 2021 -0500
+
+    silence some regtest warnings that are not helpful
+
+commit a67313187bd3ae1e0bd610fd490c099911a126d6
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Wed Mar 10 22:40:31 2021 -0500
+
+    deprecated DateTime::ParseFormat::eISO8601 and PrintFormat and RFC1123 ... and repalaced with SpecialFormat enum (used for parse and format) and consts DateTime::kISO8601Format and DateTime::kRFC1123Format
+
+commit 45ba6156375ab1a1d2f2c6f06650f65be56df558
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Thu Mar 11 10:49:03 2021 -0500
+
+    updated vs2k19 version (ARG VS_16_9_1)
+
+commit 916a321239daefc4a338fad8087802d3f5d7f98d
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Thu Mar 11 11:08:27 2021 -0500
+
+    misc cleanups to Date time (and other) code - in the spirit of recent documented changes
+
+commit a4efbeedf0951f9e0be0badc5af72e394c020de6
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Thu Mar 11 11:48:47 2021 -0500
+
+    updated docs on qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy (reported to gcc folks)
+
+commit 97d8252e98dadaac073bb35ddcaad2fbdca64c33
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Mar 12 21:27:50 2021 -0500
+
+    read /etc/os-release with IO::FileSystem::FileInputStream::New instead of iostream
+
+commit 08500a84b28915c7157a8d940c6f5dfeec32e60f
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Mar 14 15:46:03 2021 -0400
+
+    renamed Encode => As<String> and Decode() as Parse() in few places I'd used that terminoligy to be more consistent with the rest of stroika
+
+commit d77c8f596fcf940d3a16ee80a32d2c74eb1e8a21
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Mar 14 16:11:02 2021 -0400
+
+    Message::SetAssertExternallySynchronizedLockContext() method, and Frameworks/WebServer/Connection now inherites from AssertExternallySynchronizedLock
+
+commit aa87a5b96b0bbdfc7998119fcbaa97ab973994e5
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Sun Mar 14 22:32:08 2021 -0400
+
+    work on StroikaDev docker container (to allow ssh inside)
+
+commit d7dcd6d8f341fe516f527bd3c280c18f0c8af6c9
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Mon Mar 15 08:50:55 2021 -0400
+
+    Setup Dockerfile for Stroika-Dev to support ssh service
+
+commit 5f5653a971a4a71a1cfbaf380c6b9e9962df32ee
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Mon Mar 15 08:52:13 2021 -0400
+
+    make clobber with no config/tags, then also deelte all under Builds
+
+commit 99157d8e3287dbf1c9fcfde421f4e664368aa795
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date: Mon Mar 15 15:05:14 2021 -0400
+
+    tweak ScriptsLib/RunInDockerEnvironment to better support running remote vscode (maybe should go elsewhere)
+
+commit e589418cd555c96897214a6a52981f0142108ebc
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date: Mon Mar 15 20:53:51 2021 -0400
+
+    lldb support in vscode/launch.json
+
+commit 8fe401eae0cfbfe9691dc9f3b532f2c9cc40072a
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date: Mon Mar 15 20:54:54 2021 -0400
+
+    stroika-dev dockerfile install lldb
+
+commit 37cb37e411933bb923725bc625f5c0dfe6fa1c9e
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date: Mon Mar 15 20:56:58 2021 -0400
+
+    fixed sshd call to not do -D in dockerfile for stroika-dev
+
+commit cd83d45cf94820c47d83c11f011f613ea90b9d2a
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date: Tue Mar 16 10:09:32 2021 -0400
+
+    docs issues in stroika-dev docker containers about autostarting ssh; and document building stroika 2004 and stroika regular dev containers and tested both
+
+commit e28702df3d33adf23308b8442ab08a2f261587d5
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date: Tue Mar 16 10:32:33 2021 -0400
+
+    worksapce vscode/settings.json
+
+commit 1f6c78c069797c82d0eb68b487fd2cdd7beaa3d6
+Author: Lewis Pringle <lewis@sophists.com>
+Date: Fri Mar 19 20:29:32 2021 -0400
+
+    VS_16_9_2
+
+#endif
+
+---
 
 ### 2.1b9 {2021-01-17}
 
