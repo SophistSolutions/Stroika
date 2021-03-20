@@ -168,10 +168,18 @@ jobs:
           make clean
       - name: Make libraries
         run: make libraries
-      - name: Make all
-        run: make all
+      # DISABLED DUE TO SPACE ISSUES
+      # - name: Make all
+      #   run: make all
       - name: Run Tests
-        run: make run-tests
+        run: |
+          make run-tests
+      - name: Save space
+        run: |
+          make --directory Tests clobber
+      - name: Make samples
+        run: |
+          make run-samples
       - name: Archive Samples Results
         uses: actions/upload-artifact@v2
         with:
