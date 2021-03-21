@@ -21,19 +21,24 @@ especially those they need to be aware of when upgrading.
 - Build System And Tools
 
   - fixed regression in (so far just ubuntu 1804 regtests) - not printing any performance test results
+  - minor tweaks to make clean so it doesnt' blow awy Configuration.mk Stroika-Current-Version.h files
   - added g++-10-release-c++17 to list of configs in ScriptsLib/RunPerformanceRegressionTests that can be used to run performance tests, and improed logging if we call ScriptsLib/RunPerformanceRegressionTests without a valid configuraiton built
   - Debugger
     - Added StringBuilder to VisualStudio-Stroika-Foundation-Debugger-Template.natvis
   - .vscode
     Several cleanups, to build scripts etc, but MOSTLY got working remote connection to ssh unix systems either under WSL, or remote (docker) ssh systems
+  - Visual Studio Project files
+    - for sample projects that only depend on Foundation library, update Makefile setting of StroikaLibs to only refer to that library so when I do a rebuildall, and frameworks lib not yet built (cuz visaul studio told those apps dont depend on it) - they dont erronously fail to build cuz that dopendency doesnt exist when they are ready to link
 
 - Documentation
 
   - went through jira db and cleaned up what is reported there. https://stroika-bugs.sophists.com
+  - Improved docs on samples
 
 - Library Miscelaneous
 
   - replaced a bunch of uses of constexpr wchar_t ARRAY with constexpr wstring_view, and used that to lose (simplify) various \_Array classes I had to define for Strings, like static constexpr wstring_view kLocaleStandardAlternateFormat replaces static inline const String kLocaleStandardAlternateFormat AND static constexpr wchar_t kLocaleStandardAlternateFormat_AsArray[]
+  - replaced several out of line static const initializations with inline ones
 
 - Foundation Library
 
@@ -60,15 +65,34 @@ especially those they need to be aware of when upgrading.
       - Lose uneeded qCompilerAndStdLib_template_enable_if_operator_conversion_notUsedInOverloadsforOpEquals_Buggy (really was operator== needed)
       - fixed the bug that was causing crash on property code for unix (!qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy)
       - support VS_16_8_6
+      - Found a cleaner workaround for qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy, so I can lose the define (never was sure it was a bug anyhow)
+      - Configuration::EnumNames::PeekValue() now reutrns optioanl<ENUM_NAME> instead of const ENUM_NAME\* - fits neater with modern c++ **but not backward compatible change**
+      - updated docs on qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy (reported to gcc folks)
+      - qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy and workaround
+      - qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy bug define
 
   - Containers
 
-    - new lock-free Containers/LockFreeDataStructures/forward_list (appears to mostly work, but documented things todo), original from internet, and hints from internet, and passing regression tests (but not totally for valgrind, probably OK)
-    - Collection\<T>::Remove (ArgByValueType\<T> item, const EQUALS_COMPARER& equalsComparer) now returns bool instead of void
+    - LockFree
+      - new lock-free Containers/LockFreeDataStructures/forward_list (appears to mostly work, but documented things todo), original from internet, and hints from internet, and passing regression tests (but not totally for valgrind, probably OK)
+    - Collection
+      - Collection\<T>::Remove (ArgByValueType\<T> item, const EQUALS_COMPARER& equalsComparer) now returns bool instead of void
+      - simplified CTOR for one overload of Set<> template overload CTOR (fixed Set\<T> CTOR arg when its the second arg cuz not confusable with copy CTOR)
+      - Fixed overload of Collection::RemoveAll() to add extra enable_if_t restriction to avoid ambiguity
 
   - Debug
 
     - Change to AssertExternallySynchronizedLock: now extension point SharedContext/SetAssertExternallySynchronizedLockContext, to allow a set of objects to share a common 'these all must be accessed together' from within one thread (e.g. HTTP Connection Request/Response/Headers/etc)
+    - Improved docs on AssertExternallySynchronizedLock, and improved DbgTrace messages for when this locker error detector finds a failure
+    - Debug/AssertExternallySynchronizedLock switched to using fowrad_list instead of multiset, as probably faster for common cases and closer to a lock-free implementation I may switch to soon)
+    - Stroika_Foundation_Debug_ValgrindDisableHelgrind, and various related cleanups to helgrind usage/suppressions
+
+  - Execution
+
+    - Synchronized
+
+      Renamed TRAITS::kIsRecursiveMutex to TRAITS::kIsRecursiveLockMutex, and TRAITS::kIsRecursiveReadMutex
+      (so broken apart - read case more freqenlty doable cuz use shared_lock)
 
   - IO::Network
 
@@ -77,17 +101,21 @@ especially those they need to be aware of when upgrading.
 
       - new IO::Network::HTTP::Headers class - to smartly capture HTTPHeaders, support multipamp functionailty
         - Use new Properties system
-        - Includes ETag, IfNoneMatch, CacheControl, Cookies,CookieList,Host, Vary, Origin and AccessControlAllowOrigin and tons of others as builtin properties
+        - Includes ETag, IfNoneMatch, CacheControl, Cookies,CookieList,Host, TransferEncoding, Vary, Origin and AccessControlAllowOrigin and tons of others as builtin properties
       - IO/Network/HTTP/Methods (changed namespace for regexp to MethodsRegEx), and lose kOptions/kANY from MethodsRegEx; added kHead to HTTP::Headers
       - HTTP::Status support 204/kNoContent and cleanup such usage of HTTP::Exception support for these and other excpetion numbers
 
-  - Foundation::Memory
+    - Socket: renamed BindFlags::fReUseAddr to fSO_REUSEADDR, added docs, and lose CTOR (so can be used with .fSO_REUSEADDR=)
+
+  - Memory
 
     - new utility Memory_ObjectFieldUtilities
     - deprecated Memory::ValueOrDefault, and Memory::OptionalValue, replaced with (basically just new name) overloaded NullCoalesce
+    - fixed serious bug in SmallStackBuffer (ITERATOR_OF_T start, ITERATOR_OF_T end) CTOR: was resizing to argument size and then doing uninitialized_copy () - which meant we overwrote 'initialized' objects as if they were uninitialized (caused issue with copying StackedBuffer\<String> for example
 
   - Foundation::Traversal
     - changed qStroika*Foundation_Traveral_IterableUsesSharedFromThis* from 1 to zero by default
+    - fixed bug with Bijection implementation of !qStroika*Foundation_Traveral_IterableUsesSharedFromThis* and other cleanups to Foundation_Traveral_IterableUsesSharedFromThis
 
 - Frameworks Library
 
@@ -95,20 +123,30 @@ especially those they need to be aware of when upgrading.
 
     - Major cleanup and many enhancements for HTTP/1.1 compliance
     - new options object for FileSystemRouter
-    - Much rewritten to use IO::Network::HTTP::{Headers/Request/Response}
+    - Much rewritten to use IO::Network::HTTP::{Headers/Request/Response}; completed https://stroika.atlassian.net/browse/STK-725
     - factor Frameworks::WebServer::{Message,Connection,Request,Response} to use properties and other cleanups, and many old accessor methods deprecated
     - HTTP WebServer HEAD Method supported
-    - Response::Redirct (now takes URI class not string); and pLocation header support in IO::Network::HTTP::Headers
+    - Much more elaborate and correct CORS support
+    - Connection
+      - write the Connection: header earlier so its before the interceptor chain runs and
+        (potentially/likely) changes response state so we cannot write to headers anymore.
+    - ConnectionManager
+      - Tons of cleanups/incompatible (though probably not noticable) changes to ConnectionManager (setting options/options handling and started adding properties instead of accesors for configuraiton options
+      - new class CORS (refactoring, little new logic); **not backward compat** - ConnectionMgr now takes sequence\<Route> instead of Router
+      - fixed a (subtle) bug in shutdown of Frameworks::WebServer::ConnectionsManager - must put threads at END of member list - so objects threads reference destroyed after the threads, and better documented this dependency
+    - Interceptors
+      - **notbackwardcompat change** - interceptors methods HandleMessage() etc all now const and better documented the polciies for const/thread safety
+      - InterceptorChain (http webserver) replaced of use Get/SetInterceptors with interceptors property
+    - Response
+      - ContentSizePolicy REMOVED (replaced with correct support for transfer endcoding on response)
+      - clear/empty/GetBytes deprecated
+      - Support transferEncoding = TransferEncoding::eChunked now works on response
+        a little more care on rules for transitioning states.
+      - Response::Redirct (now takes URI class not string); and pLocation header support in IO::Network::HTTP::Headers
     - Router
       - now CORS handled internally
       - incompatible change: function based router matcher takes METHOD/hostRelPath BEFORE request now
       - INCOMPATIBLE CHANGE - Route{path,handler} now interpretted as GET; and quite a few ohter internal restructing of ROuter code
-    - Interceptors
-      - **notbackwardcompat change** - interceptors methods HandleMessage() etc all now const and better documented the polciies for const/thread safety
-      - InterceptorChain (http webserver) replaced of use Get/SetInterceptors with interceptors property
-    - ConnectionManager
-      - Tons of cleanups/incompatible (though probably not noticable) changes to ConnectionManager (setting options/options handling and started adding properties instead of accesors for configuraiton options
-      - new class CORS (refactoring, little new logic); **not backward compat** - ConnectionMgr now takes sequence\<Route> instead of Router
 
   - UPnP
 
@@ -116,13 +154,19 @@ especially those they need to be aware of when upgrading.
 
 - ThirdPartyComponents
   - openssl
+    - new version 1.1.1j
+  - sqlite
+    - new version 3.34.1
+    - fixed FETCHURLS for sqlite download
+  - libcurl
+    - new version 7.75.0
 
 #### Release-Validation
 
 - Compilers Tested/Supported
   - g++ { 8, 9, 10 }
   - Clang++ { unix: 7, 8, 9, 10, 11; XCode: 12 }
-  - MSVC: { 15.9.31, 16.9.2 }
+  - MSVC: { 15.9.34, 16.9.2 }
 - OS/Platforms Tested/Supported
   - Windows
     - version 20H2
@@ -142,326 +186,8 @@ especially those they need to be aware of when upgrading.
   - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
 
 #if 0
-
-commit 5b4675e95b1ecc3b93690658de028832cd59b800
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Feb 5 15:37:26 2021 -0500
-
-    new utility GetDbgTraceThreadName_A (); and document useful debugging pattern - throwing in TraceContextBumper between data members to get lines written into the trace log between members (just a quick hack util to debug - not a very permanent solution cuz it BUMPS the indent count)
-
-commit 0dd196b84dc4e6bacc1256adc84b578d1793a5a5
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Feb 5 15:45:05 2021 -0500
-
-    Improved docs on AssertExternallySynchronizedLock, and improved DbgTrace messages for when this locker error detector finds a failure: when attempting a lock (or shared_lock) and a clearly bad time, we now report the thread name (in a few differnet ways making easier to find in debugger) which holds the write lock (that constitutes why this is a bug/failure)
-
-commit 1154b3958dabb2f426a9d76e821e44ded2f2f821
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Feb 5 15:47:24 2021 -0500
-
-    fixed a bug in shutdown of Frameworks::WebServer::ConnectionsManager - must put threads at END of member list - so objects threads reference destroyed after the threads, and better documented this dependency
-
-commit 428fbd6c7c083d0bd6c01232a8f9e431b2d0ea02
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Feb 5 17:22:08 2021 -0500
-
-    migrated HandleCORSInNormallyHandledMessage_ from ServerHeader interceptor to Router (interceptor), and Interceptor::_IRep::HandleFault () no longer pure virtual - default just does nothing
-
-commit be0f31b56a4154150a457261d5dccd8fe1e5ad06
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Feb 5 22:22:59 2021 -0500
-
-    several more cleanups to CORS/Framework WebServer code: improved handling of allowed-headersCORSOptions::kAccessControlWildcard; and docs
-
-commit 629f2e440ff8bb43c82acb2b8331f3f42e2f7f02
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Feb 5 22:26:47 2021 -0500
-
-    simplified CTOR for one overload of Set<> template overload CTOR (dont need to avoid Set<T> CTOR arg when its the second arg cuz not confusable with copy CTOR
-
-commit 0bc0d85fcc7091f12c0d3ad62d8093cc41ce0b92
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 6 11:07:13 2021 -0500
-
-    for sample projects that only depend on Foundation library, update Makefile setting of StroikaLibs to only refer to that library so when I do a rebuildall, and frameworks lib not yet built (cuz visaul studio told those apps dont depend on it) - they dont erronously fail to build cuz that dopendency doesnt exist when they are ready to link
-
-commit 28724aac1cde5dfd654f35bca280a580526d8db1
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 6 12:32:47 2021 -0500
-
-    todo docs; and changed naming convention for properties from starting with p to starting with lower case letter and documented why etc in Coding conventions docs
-
-commit 78fc8ff2e4df4844c37995258033a89baabc068c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 6 22:42:57 2021 -0500
-
-    refactor Framework::WebServer HTTP KeepAlive object into code in IO::Network::HTTP::KeepAlive and Headers and only look at it if Connection: keep-alive
-
-commit 0e5d5fbc2cd7ce5023941ec95862ecb738e0e818
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 7 10:42:58 2021 -0500
-
-    renamed BindFlags::fReUseAddr to fSO_REUSEADDR, added docs, and lose CTOR (so can be used with .fSO_REUSEADDR=)
-
-commit c5274b25e3b283047d61af69011b8b8bdc3ca126
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 7 14:27:06 2021 -0500
-
-commit d835688c87d99100ce67678001ff365cd4c1d24f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 7 18:22:55 2021 -0500
-
-    InterceptorChain class - use interceptors property in place of Get/SetInterceptors:
-
-commit 3ac9c360fc459863172b72e1b1c5d5ee690ddf6d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 7 21:35:56 2021 -0500
-
-    Execution/Synchronized:
-            Renamed TRAITS::kIsRecursiveMutex to TRAITS::kIsRecursiveLockMutex, and TRAITS::kIsRecursiveReadMutex
-                    (so broken apart - read case more freqenlty doable cuz use shared_lock)
-
-commit 1c3de5992a9e8fd770ae632b1ac831ea67dc04f0
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Feb 8 10:23:49 2021 -0500
-
-    Fixed overload of Collection::RemoveAll() to add extra enable_if_t restriction to avoid ambiguity
-
-commit 0fe74b7b98de2564960fd4f865c1a4be1aa2284c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Feb 8 10:27:39 2021 -0500
-
-    IO/Network/HTTP/Headers support LookupAll() and use that to return multiple Set-Cookie headers
-    for example.
-
-commit 3d4a00825ad25f384c059454a323622b3e9202ce
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Feb 9 10:43:01 2021 -0500
-
-    more cleanups (esp to properties) for Request/REsponse objects of Frameowrks::WebServer
-
-commit 92f6576ea0a061b39f3cadb08d8ab280eff32118
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Feb 9 14:19:02 2021 -0500
-
-    Property template now takes second optional param READ_T to allow setting reference result for properties; and fixed use of Configuration::ArgByValueType<T> in Property class
-
-commit 05b2a5f95a506e365a4c9d638cbf5f6cc75ced45
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Feb 9 14:32:06 2021 -0500
-
-    more cleanups to Frameworks/WebServer (esp property usage), for example using const & return for Headers& subobject of Request
-
-commit 9b3c623def054172c761b38398a8036c3ab246bf
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Feb 10 11:38:02 2021 -0500
-
-    simplify Common::Property code back so template just takes one param, but automatically decays as appropriate type for readOnlyProperty base
-
-commit e6a772884f52a34e92c45b7b4b2141c0807b9f8b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Feb 10 20:09:41 2021 -0500
-
-    Migrate guts of AssertExternallySynchronizedLock into AssertExternallySynchronizedLock::SharedContext, and support
-    externally specifying the sharedcontext, so that multiple objects can share the same 'context' and therefore ALL be treated as one
-    object as far as the AssertExternallySynchronizedLock is concerned.
-
-commit b5e22d108015f111f45c033d06a9d9852189323e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Feb 10 20:55:04 2021 -0500
-
-    Debug/AssertExternallySynchronizedLock switched to using fowrad_list instead of multiset, as probably faster for common cases and closer to a lock-free implementation I may switch to soon)
-
-commit e333ec2ce37c1fc8e572d80d0c6141acbafe52e3
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Feb 12 14:51:29 2021 -0500
-
-    fixed serious bug in SmallStackBuffer (ITERATOR_OF_T start, ITERATOR_OF_T end) CTOR: was resizing to argument size and then doing uninitialized_copy () - which meant we overwrote 'initialized' objects as if they were uninitialized (caused issue with copying StackedBuffer<String> for example
-
-commit 4a27933cc8b6ecb891f9c838226b2dbd282e9c99
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 13 12:15:24 2021 -0500
-
-    attempted use of Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD for lockfree forward_list code (because helgrind doesnt understand the atomic lock store/load dont need lcoks
-
-commit 12ec4db3cf961cebda2230ae1499510cedb7d398
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 13 12:58:48 2021 -0500
-
-    remove mistaken add of Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD for lockfree forward_lsit(meant to disable helgrind not tsan)
-
-commit 6136cec998adddc345321958b511251cb9869227
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 13 14:28:50 2021 -0500
-
-    workaround / use Stroika_Foundation_Debug_ValgrindDisableHelgrind macros since helgrind doesnt understand std::atomic
-
-commit 0e711b4bf03c63e7c751a2333af0eb80f491594a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 14 13:08:40 2021 -0500
-
-    deprecated Response::ReadHeader/UpdateHeader methods (now just use rwHeaders () property.
-    Used headers/rwHeaders() in Request/Response objects (properly)
-    Better documented and cleaned up SetAssertExternallySynchronizedLockContext usage.
-
-commit 44b0790fe87d67dbedfb3fa7dce1527d20f4c6b6
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 14 19:56:27 2021 -0500
-
-    fixed bug with Bijection implementation of !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-
-commit a34f1f487a534137832ff55af4a2759fe3e64357
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 14 22:15:57 2021 -0500
-
-    cleanup cast/qStroika_Foundation_Traveral_IterableUsesSharedFromThis_ uses in a few places
-
-commit 66906a71315f7912954a4b8d911c54a4cfce0881
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 14 23:41:18 2021 -0500
-
-    changed Containers/LockFreeDataStructures/forward_list to use hardwired constant (sb constexpr) addresses as sentianl values (not sure why but fixed bug with release build on windows - testing if it fixes issue on unix
-
-commit d509d60eadd4125f10d16bd2570848d03429c8bb
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Feb 15 08:56:39 2021 -0500
-
-    Cannot set kTerminalSentinal_ = nullptr cuz of other code (debug/assertion) code in forward_list impl - so set to 1/2 and later fix when we redo as shared_ptr
-
-commit 8ddf9edb17c0cf6885b59dc0b92bc250dd8fd649
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Feb 15 19:54:53 2021 -0500
-
-commit 06af539719373318f381220d06db75c2a7ca6e96
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Feb 16 14:37:58 2021 -0500
-
-    docs, and deprecated Frameworks/WebServer/Request/AddHeader - replacine with use rwHeaders()
-
-commit 5ba2172108f5492dcba1602a1539ffadd6c56b8d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Feb 16 17:01:26 2021 -0500
-
-    IO::Network::HTTP::Headers cleanups to handling of builtin items and multiple valued entries (set-cookie) - still needs a little more cleanup but now should work much better now
-
-commit fc0df04eebb81a63cca3cd372dfc27fbfea0ba5b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Feb 16 17:15:05 2021 -0500
-
-commit 429c0f45dcbe015903a1585a2a9b5498fb24eaab
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Feb 16 18:21:29 2021 -0500
-
-    use static constexpr wstring_view instead of static inline const String for a few more defines, to avoid order of construction issues between mdoules (maybe for performance should allow both?)
-
-commit 32cf7454259041a879901dc69aba3bef94ddc65b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Feb 16 21:18:20 2021 -0500
-
-    Support  WriteOnlyProperty<T>::operator() (Configuration::ArgByValueType<T> value) alternate syntax
-
-commit ebca45513b54019a1793f35756d023e0d4ed19c1
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Feb 16 21:19:02 2021 -0500
-
-    Replace Frameworks/WebServer Response.SetContentType with a contentType property (still with the funky semantics of adding in the code page automatically)
-
-commit 00c8d247c26f07c3dbe9f538e4233c15d247607f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Feb 17 13:28:00 2021 -0500
-
-    Improved Property class support so it better handles T& types (and doesnt allow getting that reference to sneak you non-const reference
-
-commit 666566124935aad1574f8d54415f8b1bc371ba00
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Feb 17 15:21:07 2021 -0500
-
-commit 8ccf2016831132c38df30fef2b6738c1eb5a7e0e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Feb 18 22:05:35 2021 -0500
-
-    IO::HTTP::Response uses status property instead of get/set status methods
-
-commit 89495fb5b99eb8fe3a8620046b7226a3779fca1d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Feb 18 22:58:15 2021 -0500
-
-    IO::Network::HTTP::Request/Response protected inheritance from Debug::AssertExternallySynchronizedLock
-
-commit 2231ef2c7e3c1debd3af3089d97bbd0a269bf7e9
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Feb 19 12:00:11 2021 -0500
-
-    Refactor: Frameworks/WebServer/{Request,Response} now use (inherit from) IO::Network::HTTP::{Request,Response} using new extended properties
-
-commit 23e75bdc1486abad163db6e39210de049799eb08
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Feb 19 14:14:19 2021 -0500
-
-    fixed a few dangling referenes to old-style Frameworks/WebServer doe
-
-commit 71ed0f93c81aa3240ac882ffa5b6db91ba07b7bc
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Feb 19 16:39:06 2021 -0500
-
-    completed https://stroika.atlassian.net/browse/STK-725 - webserver request/response objects use IO::Network::HTTP/REquest/Response
-
-commit c74dbed1e73e354a24f5c3d992210e2e350e4ad7
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Feb 19 18:08:42 2021 -0500
-
-    Found a cleaner workaround for qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy, so I can lose the define (never was sure it was a bug anyhow)
-
-commit f0243df89b4766b2ebc0257d60824cf5b8e9dfed
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 20 10:55:22 2021 -0500
-
-    Configuration::EnumNames::PeekValue() now reutrns optioanl<ENUM_NAME> instead of const ENUM_NAME* - fits neater with modern c++ **but not backward compatible change**
-
-commit 73dd68bf8035e4575fa520d4b6356122c0a797a7
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 20 11:13:22 2021 -0500
-
-    Added TransferEncoding support to IO/Network/HTTP/Headers
-
-commit 70ca61619a6191cd95f172a00372c320e6a9ac25
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Feb 20 21:14:19 2021 -0500
-
-    refactoring - introduced HTTP::TransferEncoding module
-
-commit 6727bdb63a869a440840faec404544e1453d37f1
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 21 10:19:40 2021 -0500
-
-    Frameworks::WebServer
-            - Response
-              - ContentSizePolicy REMOVED (replaced with correct support for transfer endcoding on response)
-              - clear/empty/GetBytes deprecated
-              - Support transferEncoding = TransferEncoding::eChunked now works on response
-                a little more care on rules for transitioning states.
-         - Connection
-           - write the Connection: header earlier so its before the interceptor chain runs and
-             (potentially/likely) changes response state so we cannot write to headers anymore.
-
-commit c4f5a68eefdcd8fe1dce2d267047be67e15c82ac
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 21 12:34:10 2021 -0500
-
-    Frameworks/WebServer/HTTP-Response - renamed states (adding one), and added accessor helper property
-    headersCanBeSet; - and added docs, so now a little clearer about sate transitions in HTTP response
-
-commit 51a43e100dbcf08ab31a534bb520753d0f9dd90a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 21 15:58:08 2021 -0500
-
-    Fixed webservice code to accomodate new stricter rules from WebServer code about updating heads before starting to write to body
-
-commit 588c21e95f5ae6cf01344e2004e67b39fe98f706
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 21 21:37:40 2021 -0500
-
-    fixed recent regression due to new requirement to set headers before response.write
+Frameworks/WebServer/HTTP-Response - renamed states (adding one), and added accessor helper property
+headersCanBeSet; - and added docs, so now a little clearer about sate transitions in HTTP response
 
 commit 5bbc247f7e5d7b3c1b69b9c99b8a3e3f575036e8
 Author: Lewis Pringle <lewis@sophists.com>
@@ -470,18 +196,6 @@ Date: Sun Feb 21 21:38:44 2021 -0500
     Frameworks/WebServer/FileSystemRouter RENAMED (old name deprecated) to Frameworks/WebServer/FileSystemRequestHandler
     WebServer/FileSystemRequestHandler improved support for options and deprecated old CTOR API.
     Supported CacheCOntrol mapping in OPTIONS object, and added test case in sample to show regexp matching and adding cache control headers.
-
-commit 3e460cca056fa1e2bc6835e63d08486f1dda4e56
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 21 22:54:32 2021 -0500
-
-    make RegularExpression::kNONE/RegularExpression::kAny inline; and fixed bad cast warning
-
-commit 5e49efe19464816fa0758354e55a6db11f0bfc25
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Feb 22 09:03:03 2021 -0500
-
-    minor tweaks to make clean so it doesnt' blow awy Configuration.mk Stroika-Current-Version.h files
 
 commit 1a73861350643b65efdbdf7ffd4a02e31c3d1d4e
 Author: Lewis Pringle <lewis@sophists.com>
@@ -525,12 +239,6 @@ Date: Tue Feb 23 15:30:25 2021 -0500
 
     on change of trnasfer::chunked mode in webserver, either set or clear the Content-Length header
 
-commit 66367aeaec66f9de147d5fedd2a20448b9855287
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Feb 23 18:07:05 2021 -0500
-
-    Lose unneeded qStroika_Foundation_Common_Property_ExtraCaptureStuff1; use PropertyCommon::PropertyChangedEventResultType in a few more places its needed (replacing bool);
-
 commit e95ce6ae5633a86b83097268d83fa2f7bebbea22
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Wed Feb 24 13:49:33 2021 -0500
@@ -566,16 +274,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date: Thu Feb 25 13:19:58 2021 -0500
 
     https://stroika.atlassian.net/browse/STK-728 workaround for memcheck failure
-
-commit c9d03293c464dae45661a59ebca6b48b7b933539
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Feb 25 20:07:23 2021 -0500
-
-commit 255ebe87d0c74a430da4c29a4105371b1d296426
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Feb 25 20:09:21 2021 -0500
-
-    tweak SuperFastHash algorithm to avoid warning
 
 commit 0ae5b773f1c418ef4511c80ee7dea640f1a452e4
 Author: Lewis Pringle <lewis@sophists.com>
@@ -659,13 +357,6 @@ Date: Sun Feb 28 11:54:49 2021 -0500
 
     when copying ETag in Headers, be sure to read property not just copy underlying value, since reader override could have differnt value; and in frameworks/webserver response, dont write response body if statue == not-modified; and use all this to implement if-none-changed in Connection code - checking etags and then settings status to not-modified if etags match
 
-commit 29403c4532a7f38c143a8408fa42e2b450ccbd15
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 28 17:02:59 2021 -0500
-
-    redo
-      using PropertyReadEventHandler = std::function<PropertyReadEventHandlerArgAndReturnValue_(const PropertyReadEventHandlerArgAndReturnValue_&)>
-
 commit 61c23464461073b15a317010cbdf3b8c5bc431e9
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Sun Feb 28 17:25:33 2021 -0500
@@ -679,47 +370,11 @@ Date: Sun Feb 28 21:59:14 2021 -0500
     Headers::CopyFlags... and be capable of sometimes copying indirect properites and sometimes not.
     Fixed assert (abckeards) in response code);
 
-commit 470dd6e9b5688bc0ae9e5a771e6f28def5dac130
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 28 22:39:56 2021 -0500
-
-    tweak move() calls in frameworks webserver
-
-commit 4a854ef9b8b955f86c952e6607fd041e5b156bfb
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Mar 1 08:55:29 2021 -0500
-
-    ToString() impl for ETag/IfNoneMatch objects
-
-commit b37f1ae35ea497fb8b2e7eea3372b6f52e4850ea
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Mar 1 08:57:47 2021 -0500
-
-    Added a few more status code messages, HTTP::Exeption::Status
-
 commit 02b705b7945a02668d86ab0bc2176b7caf423981
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Mon Mar 1 20:43:51 2021 -0500
 
     assertion testing in algorithm::digesters
-
-commit 914977a9bbda38ded59ff1cb91dde8d373996331
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Mar 1 20:47:31 2021 -0500
-
-    sqlite 3.34.1
-
-commit 0820db22918f02a7bee873f6e1e4f6086d8f1b7c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Mar 2 09:22:16 2021 -0500
-
-    fixed FETCHURLS for sqlite download
-
-commit 5f6a82db8da281f8b23a9f0bb3fb921263492728
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Mar 2 10:12:03 2021 -0500
-
-    libcurl 7.75.0
 
 commit 2e14233c78c31de9e0e561f1115354397234d597
 Author: Lewis Pringle <lewis@sophists.com>
@@ -786,24 +441,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date: Wed Mar 3 13:23:36 2021 -0500
 
     cookielist and related IO::Network::HTTP::Headers cleanups to oeprator== etc (lose Headers;:operator<=> cuz not super well defined and not sure we want to define it and not used); and added cooklilist::toString() - and other cleanups
-
-commit 20bde964452968b63b5a5b084ed400bdff8f5c0b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Mar 4 19:52:16 2021 -0500
-
-    #define kStrokia_Foundation_Configuration_cplusplus_20 202002L
-
-commit c5b09f0434e2b02e38383fffa445a4eb0b7ef786
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Mar 4 19:52:54 2021 -0500
-
-    opessl 1.1.1j
-
-commit fc28e7fe0213521373c11a58f802c6bdc2971062
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Mar 4 19:55:41 2021 -0500
-
-    move Date::kDefaultParseFormats to be static inline, and improved comments on it
 
 commit 2f822ce5ff3e30f757da3e26f008925f7606a610
 Author: Lewis Pringle <lewis@sophists.com>
@@ -931,18 +568,6 @@ Date: Sat Mar 6 11:06:26 2021 -0500
 
     note sure I want to checkin .vscode/launch.json, but try for a little while
 
-commit b8f1d175827da2e6668eda6842027e303f1ac127
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Mar 6 21:40:58 2021 -0500
-
-    qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy and workaround
-
-commit 238aff54f96cea5cb6104d9a220f99973466a9cc
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Mar 6 21:44:25 2021 -0500
-
-    tweak qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy
-
 commit 045efb69f6803ec6161a0d73db2061374b628fa9
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Sat Mar 6 21:54:41 2021 -0500
@@ -984,12 +609,6 @@ Date: Sun Mar 7 14:20:04 2021 -0500
             Deprecated DateTime::ParseFormat::eCurrentLocale - instead just use {} or omit the locale
             and it defaults to the current.; and other cleanups to DateTime code.
 
-commit fae0a4c95d6ba48276a18675509f8333cec4be59
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 7 14:29:24 2021 -0500
-
-    fixed typos/minor recent regressions
-
 commit 31f0a16a09094d28308d022fd8a147fbbbc22363
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Sun Mar 7 16:49:37 2021 -0500
@@ -1010,12 +629,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date: Sun Mar 7 17:49:46 2021 -0500
 
     document reported bug reports to MSFT - https://rextester.com/IOLX73233 qCompilerAndStdLib_std_get_time_pctx_Buggy
-
-commit 2eab70eb813df3b1f47cb5c47abba05a17ebdce0
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Mar 7 20:23:20 2021 -0500
-
-    fixed typo in bug workaround
 
 commit f3e27cecdf6b262479206f17db88937b5cd4a3cb
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1095,12 +708,6 @@ Date: Mon Mar 8 20:30:24 2021 -0500
 
     tmget_dot_get_locale_date_order_buggy_test_ further tweaks
 
-commit df4b6961d302f1f56806613e19a4bb769919ff09
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Mar 9 08:58:08 2021 -0500
-
-    qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy bug define
-
 commit 6b80c70dbdcb9474f39d7464a270ab7050169094
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Tue Mar 9 09:08:14 2021 -0500
@@ -1143,23 +750,9 @@ Date: Wed Mar 10 22:40:31 2021 -0500
 
     deprecated DateTime::ParseFormat::eISO8601 and PrintFormat and RFC1123 ... and repalaced with SpecialFormat enum (used for parse and format) and consts DateTime::kISO8601Format and DateTime::kRFC1123Format
 
-commit 45ba6156375ab1a1d2f2c6f06650f65be56df558
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Mar 11 10:49:03 2021 -0500
-
-    updated vs2k19 version (ARG VS_16_9_1)
-
-commit 916a321239daefc4a338fad8087802d3f5d7f98d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Mar 11 11:08:27 2021 -0500
-
-    misc cleanups to Date time (and other) code - in the spirit of recent documented changes
-
 commit a4efbeedf0951f9e0be0badc5af72e394c020de6
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Thu Mar 11 11:48:47 2021 -0500
-
-    updated docs on qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy (reported to gcc folks)
 
 commit 97d8252e98dadaac073bb35ddcaad2fbdca64c33
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1226,18 +819,6 @@ Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date: Tue Mar 16 10:09:32 2021 -0400
 
     docs issues in stroika-dev docker containers about autostarting ssh; and document building stroika 2004 and stroika regular dev containers and tested both
-
-commit e28702df3d33adf23308b8442ab08a2f261587d5
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date: Tue Mar 16 10:32:33 2021 -0400
-
-    worksapce vscode/settings.json
-
-commit 1f6c78c069797c82d0eb68b487fd2cdd7beaa3d6
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Mar 19 20:29:32 2021 -0400
-
-    VS_16_9_2
 
 #endif
 
