@@ -7,7 +7,7 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 2.1b10 {2021-03-21 xxx}
+### 2.1b10 {2021-03-21}
 
 #### TLDR
 
@@ -104,7 +104,7 @@ especially those they need to be aware of when upgrading.
     - Socket: renamed BindFlags::fReUseAddr to fSO_REUSEADDR, added docs, and lose CTOR (so can be used with .fSO_REUSEADDR=)
   - Memory
     - new utility Memory_ObjectFieldUtilities
-    - deprecated Memory::ValueOrDefault, and Memory::OptionalValue, replaced with (basically just new name) overloaded NullCoalesce
+    - **deprecated** Memory::ValueOrDefault, and Memory::OptionalValue, replaced with (basically just new name) overloaded NullCoalesce
     - fixed serious bug in SmallStackBuffer (ITERATOR_OF_T start, ITERATOR_OF_T end) CTOR: was resizing to argument size and then doing uninitialized_copy () - which meant we overwrote 'initialized' objects as if they were uninitialized (caused issue with copying StackedBuffer\<String> for example
   - Time
     - Date/Time/etc internal code cleanups
@@ -113,22 +113,22 @@ especially those they need to be aware of when upgrading.
     - new StdCPctxTraits object, and regression tests to check it, to document certain aspects of undefined behavior in c++ locale date/time formatting code.
     - Date
       - Added ::tm Date::As\<T> () const method
-      - deprecated Date::....eJavascript and replaced wtih format string kFormatMonthDayYear
+      - **deprecated** Date::....eJavascript and replaced wtih format string kFormatMonthDayYear
       - more overloads for Date::Parse (no locale variants for locale-free format strings) and overloads for just a single format string
       - new Date::ParseQuietly () support
       - renamed (recent)Date::kFormatMonthDayYear => Date::kMonthDayYearFormat; Date::kDefaultParseFormat now uses Date::kMonthDayYearFormat instead of %d (so 4 digit year)
       - Date::Parse with no locale parameter loosened to assume current locale
-      - use Date::kISO8601Format instead of deprecated Date::PrintFormat::eISO8601
+      - use Date::kISO8601Format instead of **deprecated** Date::PrintFormat::eISO8601
     - TimeOfDay
       - Tons of cleanups to TimeOfDay class:
       - Clearer more conssitent behavior for Parse/Format ; locale default;
-      - DEPRECATED TimeOfDay::ParseFlags: use kISO8601Format
+      - **deprecated** TimeOfDay::ParseFlags: use kISO8601Format
     - DateTime
-      - Deprecated DateTime::ParseFormat::eCurrentLocale - instead just use {} or omit the locale
+      - **deprecated** DateTime::ParseFormat::eCurrentLocale - instead just use {} or omit the locale
         and it defaults to the current; and other cleanups to DateTime code.
       - new DateTime::QuietParse() overloads
       - related DateTime parsing cleanup/factoring
-      - deprecated DateTime::ParseFormat::eISO8601 and PrintFormat and RFC1123 ... and replaced with SpecialFormat enum (used for parse and format) and consts DateTime::kISO8601Format and DateTime::kRFC1123Format
+      - **deprecated** DateTime::ParseFormat::eISO8601 and PrintFormat and RFC1123 ... and replaced with SpecialFormat enum (used for parse and format) and consts DateTime::kISO8601Format and DateTime::kRFC1123Format
   - Traversal
     - changed qStroika*Foundation_Traveral_IterableUsesSharedFromThis* from 1 to zero by default
     - fixed bug with Bijection implementation of !qStroika*Foundation_Traveral_IterableUsesSharedFromThis* and other cleanups to Foundation_Traveral_IterableUsesSharedFromThis
@@ -136,12 +136,11 @@ especially those they need to be aware of when upgrading.
   - WebServer
     - Major cleanup and many enhancements for HTTP/1.1 compliance
     - FileSystem 'routes'
-      - new options object for FileSystemRouter
-      - Frameworks/WebServer/FileSystemRouter RENAMED (old name deprecated) to Frameworks/WebServer/FileSystemRequestHandler
-      - WebServer/FileSystemRequestHandler improved support for options and deprecated old CTOR API.
-      - Supported CacheCOntrol mapping in OPTIONS object, and added test case in sample to show regexp matching and adding cache control headers.
+      - Frameworks/WebServer/FileSystemRouter RENAMED (old name **deprecated**) to Frameworks/WebServer/FileSystemRequestHandler
+      - WebServer/FileSystemRequestHandler improved support for options and **deprecated** old CTOR API.
+      - Supported CacheControl mapping in OPTIONS object, and added test case in sample to show regexp matching and adding cache control headers.
     - Much rewritten to use IO::Network::HTTP::{Headers/Request/Response}; completed https://stroika.atlassian.net/browse/STK-725
-    - factor Frameworks::WebServer::{Message,Connection,Request,Response} to use properties and other cleanups, and many old accessor methods deprecated
+    - factor Frameworks::WebServer::{Message,Connection,Request,Response} to use properties and other cleanups, and many old accessor methods **deprecated**
     - HTTP WebServer HEAD Method supported
     - Much more elaborate and correct CORS support
     - Support Transfer-Coding: chunked (on response, nyi request)
@@ -161,7 +160,7 @@ especially those they need to be aware of when upgrading.
       - InterceptorChain (http webserver) replaced of use Get/SetInterceptors with interceptors property
     - Response
       - ContentSizePolicy REMOVED (replaced with correct support for transfer endcoding on response)
-      - clear/empty/GetBytes deprecated
+      - clear/empty/GetBytes **deprecated**
       - Support transferEncoding = TransferEncoding::eChunked now works on response
         a little more care on rules for transitioning states.
       - Response::Redirct (now takes URI class not string); and pLocation header support in IO::Network::HTTP::Headers
@@ -236,7 +235,7 @@ especially those they need to be aware of when upgrading.
 - Foundation Library
 
   - Common
-    - docs about GUID CTOR, and deprecated GUID::Zero
+    - docs about GUID CTOR, and **deprecated** GUID::Zero
   - DataExchange
     - VariantValue() now takes optional<> overload CTOR
     - ObjectVariantMapper
@@ -253,7 +252,7 @@ especially those they need to be aware of when upgrading.
     - Added a few 'well known ports' (VNC, etc)
     - Renamed IO::Network::Interface::fBindings -> fBoundAddressRanges (**not backward compatible but rarely used**)
     - Added IO::Network::Interface::fBindings -> fBoundAddresses
-    - Renamed CIDR::GetInternetAddress ()->CIDR::GetBaseInternetAddress () - deprecating old name.
+    - Renamed CIDR::GetInternetAddress ()->CIDR::GetBaseInternetAddress () - **deprecated** old name.
     - Fixed bug in IO::Network::ConnectionOrientedStreamSocket(TIMEOUT) - POSIX only bug - throw Execution::TimeOutException::kThe on timeout, don't mistakenly report success!
 
 - Frameworks Library
