@@ -12,16 +12,16 @@ especially those they need to be aware of when upgrading.
 #### TLDR
 
 - New C++ "Property" classes, aping the C# property mechanism
-- Major improvements to Frameworks::WebServer, including use of above Headers class, thread safety checks, ETag support, CacheControl, Cookies, CORS (properly) and more
-- New IO::Network::HTTP::Headers class (using properties), like the C#/.net WebServer headers object (colleciton + smart properties)
+- New IO::Network::HTTP::Headers class (using properties), like the C#/.net WebServer headers object (collection + smart properties)
+- Major improvements to Frameworks::WebServer, including use of new IO::Netwoks::HTTP::Headers class, thread safety checks, CacheControl, CORS, Cookies, ETag support (properly) and more
 - Date/locale Parse/Format improvements
-- VSCode settings, so you can now easily remote ssh workspace to docker ssh (or wsl) container, to edit/debug
+- VSCode settings, so you can now easily remote ssh workspace to docker ssh (or wsl) container, to edit and remote debug
 
 #### Change Details
 
 - Build System And Tools
   - fixed regression in (so far just ubuntu 1804 regtests) - not printing any performance test results
-  - minor tweaks to make clean so it doesnt' blow awy Configuration.mk Stroika-Current-Version.h files
+  - minor tweaks to make clean so it doesnt' blow away Configuration.mk Stroika-Current-Version.h files
   - added g++-10-release-c++17 to list of configs in ScriptsLib/RunPerformanceRegressionTests that can be used to run performance tests, and improed logging if we call ScriptsLib/RunPerformanceRegressionTests without a valid configuraiton built
   - Debugger
     - Added StringBuilder to VisualStudio-Stroika-Foundation-Debugger-Template.natvis
@@ -33,11 +33,11 @@ especially those they need to be aware of when upgrading.
     - docker stroika-dev and stroika-dev-2004 containers support lldb and ssh, and macro to allow building stroika-dev and stroika-dev-2004
   - make clobber with no config/tags, then also deelte all under Builds
 - Documentation
-  - went through jira db and cleaned up what is reported there. https://stroika-bugs.sophists.com
+  - went through jira db and cleaned up what is reported there. http://stroika-bugs.sophists.com
   - Improved docs on samples
   - document 'Quietly' namining convention in Stroika
 - Library Miscelaneous
-  - replaced a bunch of uses of constexpr wchar_t ARRAY with constexpr wstring_view, and used that to lose (simplify) various \_Array classes I had to define for Strings, like static constexpr wstring_view kLocaleStandardAlternateFormat replaces static inline const String kLocaleStandardAlternateFormat AND static constexpr wchar_t kLocaleStandardAlternateFormat_AsArray[]
+  - replaced a bunch of uses of constexpr wchar_t[] with constexpr wstring_view, and used that to lose (simplify) various \_Array classes I had to define for Strings, like static constexpr wstring_view kLocaleStandardAlternateFormat replaces static inline const String kLocaleStandardAlternateFormat AND static constexpr wchar_t kLocaleStandardAlternateFormat_AsArray[]
   - replaced several out of line static const initializations with inline ones
 - Foundation Library
   - Characters
@@ -58,7 +58,7 @@ especially those they need to be aware of when upgrading.
       - qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy also broken for clang
       - Lose uneeded qCompilerAndStdLib_template_enable_if_operator_conversion_notUsedInOverloadsforOpEquals_Buggy (really was operator== needed)
       - fixed the bug that was causing crash on property code for unix (!qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy)
-      - support VS_16_8_6
+      - support Visual studio.net 16.9.2 (vs2k19 latest), with caveat that cannot tell difference by compiler MSC_VER easily for this release)
       - Found a cleaner workaround for qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy, so I can lose the define (never was sure it was a bug anyhow)
       - Configuration::EnumNames::PeekValue() now reutrns optioanl<ENUM_NAME> instead of const ENUM_NAME\* - fits neater with modern c++ **but not backward compatible change**
       - qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy bug define, workaround and reported to GCC developers
