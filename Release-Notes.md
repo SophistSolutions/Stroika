@@ -7,6 +7,8 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+---
+
 ### 2.1b10 {2021-03-21}
 
 #### TLDR
