@@ -171,7 +171,7 @@ especially those they need to be aware of when upgrading.
       - **incompatible change**: function based router matcher takes METHOD/hostRelPath BEFORE request now
       - **incompatible change** - Route{path,handler} now interpretted as GET; and quite a few ohter internal restructing of ROuter code
   - UPnP
-    - SSDP::Advertisemnt only defines operator== not operator<=>
+    - SSDP::Advertisement only defines operator== not operator<=>
 - ThirdPartyComponents
   - libcurl
     - new version 7.75.0
