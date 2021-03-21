@@ -13,7 +13,7 @@ especially those they need to be aware of when upgrading.
 
 - New C++ "Property" classes, aping the C# property mechanism
 - New IO::Network::HTTP::Headers class (using properties), like the C#/.net WebServer headers object (collection + smart properties)
-- Major improvements to Frameworks::WebServer, including use of new IO::Netwoks::HTTP::Headers class, thread safety checks, CacheControl, CORS, Cookies, ETag support (properly) and more
+- Major improvements to Frameworks::WebServer, including use of new IO::Netwoks::HTTP::Headers class, thread safety checks, CacheControl, CORS (more properly/completely), Cookies, ETag, Transfer-Coding chunked support and more
 - Date/locale Parse/Format improvements
 - VSCode settings, so you can now easily remote ssh workspace to docker ssh (or wsl) container, to edit and remote debug
 
