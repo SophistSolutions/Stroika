@@ -80,6 +80,16 @@ especially those they need to be aware of when upgrading.
       - simplified CTOR for one overload of Set<> template overload CTOR (fixed Set\<T> CTOR arg when its the second arg cuz not confusable with copy CTOR)
       - Fixed overload of Collection::RemoveAll() to add extra enable_if_t restriction to avoid ambiguity
 
+  - Crypography
+    - Digtest
+      - new (refactoring but largely unused) Cryptography/Digest/Algorithm API
+      - Only CHANGE was changed the definition of SuperFastHash algorithmn so that its windowable.
+        (and changed hardwired examples of results).
+      - And added interal asserts that new and old APIS produce the same results.
+      - cleanup to Digester<ALGORITHM, RETURN_TYPE> algorithm support. For USERS of these classes, no change, except that you can use the Digester algorithm in a windowed way
+      - new Digest::ComputeDigest() template function overload (preferred way to use when not incormemental
+      - new IncrementalDigester<ALGORITHM, RETURN_TYPE> wrapper.
+      - Factored API for algorithjms into Digest/Algorithm/Algorithms.h
   - Debug
 
     - Change to AssertExternallySynchronizedLock: now extension point SharedContext/SetAssertExternallySynchronizedLockContext, to allow a set of objects to share a common 'these all must be accessed together' from within one thread (e.g. HTTP Connection Request/Response/Headers/etc)
@@ -122,15 +132,26 @@ especially those they need to be aware of when upgrading.
   - WebServer
 
     - Major cleanup and many enhancements for HTTP/1.1 compliance
-    - new options object for FileSystemRouter
+    - FileSystem 'routes'
+
+      - new options object for FileSystemRouter
+      - Frameworks/WebServer/FileSystemRouter RENAMED (old name deprecated) to Frameworks/WebServer/FileSystemRequestHandler
+      - WebServer/FileSystemRequestHandler improved support for options and deprecated old CTOR API.
+      - Supported CacheCOntrol mapping in OPTIONS object, and added test case in sample to show regexp matching and adding cache control headers.
+
     - Much rewritten to use IO::Network::HTTP::{Headers/Request/Response}; completed https://stroika.atlassian.net/browse/STK-725
     - factor Frameworks::WebServer::{Message,Connection,Request,Response} to use properties and other cleanups, and many old accessor methods deprecated
     - HTTP WebServer HEAD Method supported
     - Much more elaborate and correct CORS support
+    - Support Transfer-Coding: chunked (on response, nyi request)
     - Connection
+
       - write the Connection: header earlier so its before the interceptor chain runs and
         (potentially/likely) changes response state so we cannot write to headers anymore.
+      - unique_ptr instead of shared_ptr for MyMessage in WebServer/Connection; Characters::ToString() support for unique_ptr<> and other small ToString cleanups
+
     - ConnectionManager
+      - Cache-Control headers: support immutable, and add static constexpr predefined values for several helpful Cache Control settings, and document exapments (with ptrs to reference websties) for why they make sense in certian situations
       - Tons of cleanups/incompatible (though probably not noticable) changes to ConnectionManager (setting options/options handling and started adding properties instead of accesors for configuraiton options
       - new class CORS (refactoring, little new logic); **not backward compat** - ConnectionMgr now takes sequence\<Route> instead of Router
       - fixed a (subtle) bug in shutdown of Frameworks::WebServer::ConnectionsManager - must put threads at END of member list - so objects threads reference destroyed after the threads, and better documented this dependency
@@ -149,7 +170,6 @@ especially those they need to be aware of when upgrading.
       - INCOMPATIBLE CHANGE - Route{path,handler} now interpretted as GET; and quite a few ohter internal restructing of ROuter code
 
   - UPnP
-
     - SSDP::Advertisemnt only defines operator== not operator<=>
 
 - ThirdPartyComponents
@@ -186,122 +206,9 @@ especially those they need to be aware of when upgrading.
   - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
 
 #if 0
-Frameworks/WebServer/HTTP-Response - renamed states (adding one), and added accessor helper property
-headersCanBeSet; - and added docs, so now a little clearer about sate transitions in HTTP response
-
-commit 5bbc247f7e5d7b3c1b69b9c99b8a3e3f575036e8
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Feb 21 21:38:44 2021 -0500
-
-    Frameworks/WebServer/FileSystemRouter RENAMED (old name deprecated) to Frameworks/WebServer/FileSystemRequestHandler
-    WebServer/FileSystemRequestHandler improved support for options and deprecated old CTOR API.
-    Supported CacheCOntrol mapping in OPTIONS object, and added test case in sample to show regexp matching and adding cache control headers.
-
-commit 1a73861350643b65efdbdf7ffd4a02e31c3d1d4e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Feb 22 11:52:32 2021 -0500
-
-    Cache-Control headers: support immutable, and add static constexpr predefined values for several helpful Cache Control settings, and document exapments (with ptrs to reference websties) for why they make sense in certian situations
-
-commit 8b74e1a5321c545bd16fa5d1ac9d44afd43dafd3
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Feb 22 19:02:00 2021 -0500
-
-    refactor the HTTP::CacheControl class to fit better with the docs on https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
-
-commit 6db3590dc2624de57bd2f29a236017ac57352b69
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Feb 23 14:11:31 2021 -0500
-
-    Frameworks::WebServer
-            replaced option fServerHeader with fDefaultResponseHeaders
-
-    Use Execution::VirtualConstant<> in a few places to workaround startup issues (refernincg constants)
-
-    other related cleanups
-
-commit a2bc37da9203ff1e1c348ddf75a50062da5a0344
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Feb 23 15:00:02 2021 -0500
-
-    added PropertyChangedEventResultType for extendable properties (bool true/false too confusing in use)
-    InChunkedMode_ and fInChunkedModeCache_ in Fraemworks webserver Response code, and used that to fix bug with zero length requests (REGRESSION in this rleease) so we emit content-length: 0 in that case
-
-commit d5c1f06ff3a9bce919dc6f680cced532f7ea4aad
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Feb 23 15:08:22 2021 -0500
-
-    Samples docs
-
-commit 6342ebd20df5fc90324732370e7d05b5ae97d382
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Feb 23 15:30:25 2021 -0500
-
-    on change of trnasfer::chunked mode in webserver, either set or clear the Content-Length header
-
-commit e95ce6ae5633a86b83097268d83fa2f7bebbea22
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Feb 24 13:49:33 2021 -0500
-
-    new (refactoring but largely unused) Cryptography/Digest/Algorithm API
-
-    Only CHANGE was changed the definition of SuperFastHash algorithmn so that its windowable.
-    (and changed hardwired examples of results).
-    And added interal asserts that new and old APIS produce the same results.
-
-commit 74b34a24beda124fbe37c87b1de02269a0f578e0
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Feb 24 14:31:28 2021 -0500
-
-    cleanup to Digester<ALGORITHM, RETURN_TYPE> algorithm support. For USERS of these classes, no change, except that you can use the Digester algorithm in a windowed way
-
-commit 2c5ffa8e9d8b22b6127892dc62e5ab5b5ef60b95
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Feb 25 08:21:41 2021 -0500
-
-    More Cryptography/Digest/Algorithm refactoring:
-       new Digest::ComputeDigest() template function overload (preferred way to use
-       when not incormemental
-
-       new IncrementalDigester<ALGORITHM, RETURN_TYPE> wrapper.
-
-       Factored API for algorithjms into Digest/Algorithm/Algorithms.h
-
-       Various cleanups based on this.
-
-commit 16932277a65e27578ac3a9e6de1124570972209c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Feb 25 13:19:58 2021 -0500
-
-    https://stroika.atlassian.net/browse/STK-728 workaround for memcheck failure
-
-commit 0ae5b773f1c418ef4511c80ee7dea640f1a452e4
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Feb 25 20:11:21 2021 -0500
-
-    tweak SuperFastHash algorithm to avoid warning
-
-commit 1780c7121e4e6543617e9883c37c8d299e443f60
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Feb 26 11:11:05 2021 -0500
-
-    HTTP::Headers:
-      docs, and new Add/AddAll overloads as well as operator+=
 
     WebServer::Connection/ConnectionManager: added fDefaultGETResponseHeaders (for thigs
     like CacheControl headers)
-
-commit fc328d13ef908d861aa43eb68935c057dbf8c39c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Feb 26 20:01:32 2021 -0500
-
-    unique_ptr instead of shared_ptr for MyMessage in WebServer/Connection; Characters::ToString() support for unique_ptr<> and other small ToString cleanups
-
-commit 278bb920d18128c4f29e4fd3d78c9bcffdac60b4
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Feb 26 20:13:04 2021 -0500
-
-    unique_ptr instead of shared_ptr for MyMessage in WebServer/Connection; Characters::ToString() support for unique_ptr<> and other small ToString cleanups
 
 commit 417468ec7ea542af6e60365a151ac59886083d71
 Author: Lewis Pringle <lewis@sophists.com>
@@ -379,14 +286,6 @@ Date: Mon Mar 1 20:43:51 2021 -0500
 commit 2e14233c78c31de9e0e561f1115354397234d597
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Tue Mar 2 11:21:06 2021 -0500
-
-    HTTPServer:
-            >       Response.End () returns bool indicating aborted;
-            >       flag internally to track aborted.
-            >       On faults which occur AFTER the response status sent, we call Abort() on
-                    the response - and this should bubble to the top causing the conneciton to be closed.
-            >       Fixed connection timeout logic (HTTP KeepAlive header) support to track orignal
-                    start of connection
 
 commit 421a346c131e597167043da053d97d08a3ae78d6
 Author: Lewis Pringle <lewis@sophists.com>
@@ -2731,7 +2630,7 @@ Date: Tue Mar 16 10:09:32 2021 -0400
 
 - Memory support
 
-  - rough draft class OptionalThreeWayCompare<T>
+  - rough draft class OptionalThreeWayCompare\<T>
 
 - Frameworks::WebServer
 
