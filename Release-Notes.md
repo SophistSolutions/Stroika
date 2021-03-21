@@ -60,7 +60,7 @@ especially those they need to be aware of when upgrading.
       - fixed the bug that was causing crash on property code for unix (!qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy)
       - support Visual studio.net 16.9.2 (vs2k19 latest), with caveat that cannot tell difference by compiler MSC_VER easily for this release)
       - Found a cleaner workaround for qCompilerAndStdLib_template_enable_if_const_nonconst_overload_Buggy, so I can lose the define (never was sure it was a bug anyhow)
-      - Configuration::EnumNames::PeekValue() now reutrns optioanl<ENUM_NAME> instead of const ENUM_NAME\* - fits neater with modern c++ **but not backward compatible change**
+      - **not backward compatible change**: Configuration::EnumNames::PeekValue() now returns optional<ENUM_NAME> instead of const ENUM_NAME\* - fits neater with modern c++
       - qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy bug define, workaround and reported to GCC developers
       - qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy bug define, (reported to gcc folks), and regtest created
       - renamed qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy -> qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy, cleaned up regression tests, and reported to microsoft
