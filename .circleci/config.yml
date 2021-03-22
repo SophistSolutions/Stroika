@@ -145,7 +145,8 @@ jobs:
       - run:
           name: Configure
           # Use g++-8 cuz default on ubuntu 1804 is gcc7, which doenst support <filesystem>
-          command: ./configure Debug --config-tag Unix --apply-default-debug-flags --compiler-driver g++-8
+          # --debug-symbols false to avoid running out of space
+          command: ./configure Debug --config-tag Unix --apply-default-debug-flags --compiler-driver g++-8 --debug-symbols false
       - run:
           name: Build
           command: make QUICK_BUILD=1 all -j2
@@ -202,7 +203,8 @@ jobs:
       - checkout
       - run:
           name: Configure
-          command: ./configure Debug --config-tag Unix --apply-default-debug-flags
+          # --debug-symbols false to avoid running out of space
+          command: ./configure Debug --config-tag Unix --apply-default-debug-flags --debug-symbols false
       - run:
           name: Build
           command: make all QUICK_BUILD=1 -j2
@@ -296,13 +298,13 @@ workflows:
           filters:
             branches:
               only:
-                #- v2.1-Dev
+                - v2.1-Dev
                 - v2.1-Release
       - basic-debug-builds-test-ubuntu1910:
           filters:
             branches:
               only:
-                #- v2.1-Dev
+                - v2.1-Dev
                 - v2.1-Release
       - basic-clang-8-builds-test-ubuntu1910:
           filters:
