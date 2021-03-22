@@ -9,6 +9,42 @@ especially those they need to be aware of when upgrading.
 
 ---
 
+### 2.1b11 {2021-03-22 x}
+
+#### TLDR
+
+- Adjusted circleci build file to not emit debug symbols to avoid running out of disk space on circleci builds
+
+#### Change Details
+
+- Adjusted circleci build file to not emit debug symbols to avoid running out of disk space on circleci builds
+
+#### Release-Validation
+
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10 }
+  - Clang++ { unix: 7, 8, 9, 10, 11; XCode: 12 }
+  - MSVC: { 15.9.34, 16.9.2 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - version 20H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v1
+  - MacOS
+    - 10.15.5 (Catalina)
+  - Linux: { Ubuntu: [18.04, 20.04, 20.10], Centos: [7, 8], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled)
+- Sanitizers
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+- Build Systems
+  - [CircleCI](https://app.circleci.com/pipelines/github/SophistSolutions/Stroika)
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+
+---
+
 ### 2.1b10 {2021-03-21}
 
 #### TLDR
