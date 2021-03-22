@@ -298,13 +298,13 @@ workflows:
           filters:
             branches:
               only:
-                - v2.1-Dev
+                #- v2.1-Dev
                 - v2.1-Release
       - basic-debug-builds-test-ubuntu1910:
           filters:
             branches:
               only:
-                - v2.1-Dev
+                #- v2.1-Dev
                 - v2.1-Release
       - basic-clang-8-builds-test-ubuntu1910:
           filters:
