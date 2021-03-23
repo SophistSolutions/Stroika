@@ -42,6 +42,9 @@ especially those they need to be aware of when upgrading.
   - [CircleCI](https://app.circleci.com/pipelines/github/SophistSolutions/Stroika)
   - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
   - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+- Known (minor) issues with regression test output
+  - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+  - badssl.com site failed on raspberripi (havent investigated but seems minor)
 
 ---
 
