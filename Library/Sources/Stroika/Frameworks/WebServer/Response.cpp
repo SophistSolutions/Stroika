@@ -175,6 +175,7 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
     this->rwHeaders ().contentLength.rwPropertyChangedHandlers ().push_front (
         [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
             Require (this->headersCanBeSet ());
+            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
             // if someone explicitly sets the content-Length, then stop auto-computing contentLength
             this->autoComputeContentLength = false;
             return PropertyChangedEventResultType::eContinueProcessing;
@@ -187,15 +188,13 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
         });
     this->rwHeaders ().transferEncoding.rwPropertyChangedHandlers ().push_front (
         [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
+            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
             // react to a change in the transferCoding setting by updating our flags (cache) - and updating the contentLength header properly
             Require (this->headersCanBeSet ());
             // @todo fix - not 100% right cuz another property could cut off? Maybe always call all? - or need better control over ordering
             fInChunkedModeCache_ = propertyChangedEvent.fNewValue and propertyChangedEvent.fNewValue->Contains (HTTP::TransferEncoding::eChunked);
-            if (propertyChangedEvent.fNewValue != propertyChangedEvent.fPreviousValue) {
-                if (fInChunkedModeCache_) {
-                    this->rwHeaders ().contentLength = nullopt;
-                }
-            }
+            // note - no need to reset contentLength header itself, just assure its auto-computed (so it will returned as null)
+            fAutoComputeContentLength_ = true;
             return PropertyChangedEventResultType::eContinueProcessing;
         });
     // auto-compute the content-length if fAutoComputeContentLength_ is true
