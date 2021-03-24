@@ -172,14 +172,6 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
             return PropertyChangedEventResultType::eContinueProcessing;
         });
 #endif
-    this->rwHeaders ().contentLength.rwPropertyChangedHandlers ().push_front (
-        [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
-            Require (this->headersCanBeSet ());
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-            // if someone explicitly sets the content-Length, then stop auto-computing contentLength
-            this->autoComputeContentLength = false;
-            return PropertyChangedEventResultType::eContinueProcessing;
-        });
     this->contentType.rwPropertyChangedHandlers ().push_front (
         [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
             Require (this->headersCanBeSet ());
@@ -205,6 +197,14 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
             }
             return baseValue;
         });
+    this->rwHeaders ().contentLength.rwPropertyChangedHandlers ().push_front (
+        [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
+            Require (this->headersCanBeSet ());
+            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+            // if someone explicitly sets the content-Length, then stop auto-computing contentLength
+            this->autoComputeContentLength = false;
+            return PropertyChangedEventResultType::eContinueProcessing;
+        });
     // auto-compute the etag if autoComputeETag (fETagDigester_.has_value()) is true
     this->rwHeaders ().ETag.rwPropertyReadHandlers ().push_front (
         [this] (const auto& baseETagValue) -> optional<HTTP::ETag> {
@@ -214,6 +214,14 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
                 return HTTP::ETag{copy.Complete ()};
             }
             return baseETagValue; // if we are not auto-computing
+        });
+    this->rwHeaders ().ETag.rwPropertyChangedHandlers ().push_front (
+        [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
+            Require (this->headersCanBeSet ());
+            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+            // if someone explicitly sets the etag, then stop auto-computing it
+            this->autoComputeETag = false;
+            return PropertyChangedEventResultType::eContinueProcessing;
         });
     fInChunkedModeCache_ = this->headers ().transferEncoding () and this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked); // can be set by initial headers (in CTOR)
 }
