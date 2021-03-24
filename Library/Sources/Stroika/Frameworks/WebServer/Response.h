@@ -93,6 +93,15 @@ namespace Stroika::Frameworks::WebServer {
         Common::Property<bool> autoComputeETag;
 
     public:
+        /**
+         *  If true (defaults true), the content-length will be automatically computed.. Assigning to the contentLength
+         *  header will automatically set this to false.
+         * 
+         *  \req this->state == ePreparingHeaders (before first write to body) to set
+         */
+        Common::Property<bool> autoComputeContentLength;
+
+    public:
         /*
          * Note - the code page is only applied to string/text conversions and content-types which are know text-based content types.
          * For ContentTypes
@@ -386,11 +395,13 @@ namespace Stroika::Frameworks::WebServer {
         State fState_ : 3 {State::ePreparingHeaders};
         bool  fHeadMode_ : 1 {false};
         bool  fAborted_ : 1 {false};
+        bool  fAutoComputeContentLength_ : 1 {true};
 #else
         bool  fInChunkedModeCache_{false};
         State fState_{State::ePreparingHeaders};
         bool  fHeadMode_{false};
         bool  fAborted_{false};
+        bool  fAutoComputeContentLength_{true};
 #endif
         Streams::OutputStream<byte>::Ptr         fUnderlyingOutStream_;
         Streams::BufferedOutputStream<byte>::Ptr fUseOutStream_;

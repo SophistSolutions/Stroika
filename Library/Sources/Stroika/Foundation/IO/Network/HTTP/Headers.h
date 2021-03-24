@@ -86,15 +86,14 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      */
     class Headers : private Debug::AssertExternallySynchronizedLock {
     public:
-        enum class CopyFlags { eOnlyBaseValue,
-                               eInheritedValues };
-
-    public:
         /**
+         *  ExtendableProperty allow the value of some headers to be overridden by some containing object.
+         *  When copying a Header, we don't reference that external object any longer. So copying must
+         *  by value, and copy that current value.
          */
         Headers ();
-        Headers (const Headers& src, CopyFlags flags = CopyFlags::eOnlyBaseValue);
-        Headers (Headers&& src, CopyFlags flags = CopyFlags::eOnlyBaseValue);
+        Headers (const Headers& src);
+        Headers (Headers&& src);
         explicit Headers (const Iterable<KeyValuePair<String, String>>& src);
 
     public:

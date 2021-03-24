@@ -59,7 +59,7 @@ namespace {
 
 Response::Response (Response&& src)
     // Would be nice to use inherited src move, but PITA, becaue then would need to duplicate creating the properties below.
-    : Response{src.fSocket_, src.fUnderlyingOutStream_, HTTP::Headers{src.headers (), HTTP::Headers::CopyFlags::eOnlyBaseValue}}
+    : Response{src.fSocket_, src.fUnderlyingOutStream_, src.headers ()}
 {
     fState_        = src.fState_;
     fUseOutStream_ = move (src.fUseOutStream_);
@@ -88,6 +88,18 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
               else {
                   thisObj->fETagDigester_ = nullopt;
               }
+          }}
+    , autoComputeContentLength{
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+              const Response*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeContentLength);
+              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              return thisObj->fAutoComputeContentLength_;
+          },
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const bool newAutoComputeValue) {
+              Response*                                          thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeContentLength);
+              lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              Require (thisObj->state () == State::ePreparingHeaders);
+              thisObj->fAutoComputeContentLength_ = newAutoComputeValue;
           }}
     , codePage{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
@@ -160,6 +172,13 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
             return PropertyChangedEventResultType::eContinueProcessing;
         });
 #endif
+    this->rwHeaders ().contentLength.rwPropertyChangedHandlers ().push_front (
+        [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
+            Require (this->headersCanBeSet ());
+            // if someone explicitly sets the content-Length, then stop auto-computing contentLength
+            this->autoComputeContentLength = false;
+            return PropertyChangedEventResultType::eContinueProcessing;
+        });
     this->contentType.rwPropertyChangedHandlers ().push_front (
         [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
             Require (this->headersCanBeSet ());
@@ -179,21 +198,23 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
             }
             return PropertyChangedEventResultType::eContinueProcessing;
         });
+    // auto-compute the content-length if fAutoComputeContentLength_ is true
     this->rwHeaders ().contentLength.rwPropertyReadHandlers ().push_front (
         [this] (const auto& baseValue) -> optional<uint64_t> {
-            if (baseValue.has_value ()) {
-                return baseValue;
+            if (this->fAutoComputeContentLength_) {
+                return this->InChunkedMode_ () ? optional<uint64_t>{} : fBodyBytes_.size ();
             }
-            return this->InChunkedMode_ () ? optional<uint64_t>{} : fBodyBytes_.size ();
+            return baseValue;
         });
+    // auto-compute the etag if autoComputeETag (fETagDigester_.has_value()) is true
     this->rwHeaders ().ETag.rwPropertyReadHandlers ().push_front (
         [this] (const auto& baseETagValue) -> optional<HTTP::ETag> {
-            // return the current tag 'so far' (if the user has not already explicit set a value)
-            if (fETagDigester_ and not baseETagValue) {
+            // return the current tag 'so far' (if we are auto-computing)
+            if (fETagDigester_) {
                 auto copy = *fETagDigester_; // copy cuz this could get called multiple times and Complete only allowed to be called once
                 return HTTP::ETag{copy.Complete ()};
             }
-            return baseETagValue;
+            return baseETagValue; // if we are not auto-computing
         });
     fInChunkedModeCache_ = this->headers ().transferEncoding () and this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked); // can be set by initial headers (in CTOR)
 }

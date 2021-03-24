@@ -267,7 +267,7 @@ Headers::Headers ()
 {
 }
 
-Headers::Headers (const Headers& src, CopyFlags flags)
+Headers::Headers (const Headers& src)
     : Headers{}
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{src};
@@ -283,17 +283,12 @@ Headers::Headers (const Headers& src, CopyFlags flags)
     fSetCookieList_    = src.fSetCookieList_;
     fTransferEncoding_ = src.fTransferEncoding_;
     fVary_             = src.fVary_;
-    if (flags == CopyFlags::eOnlyBaseValue) {
-        fContentLength_ = src.fContentLength_;
-        fETag_          = src.fETag_;
-    }
-    else {
-        fContentLength_ = src.contentLength ();
-        fETag_          = src.ETag ();
-    }
+    // for extended properties, we must call the property function to get the callbacks called
+    fContentLength_ = src.contentLength ();
+    fETag_          = src.ETag ();
 }
 
-Headers::Headers (Headers&& src, CopyFlags flags)
+Headers::Headers (Headers&& src)
     : Headers{}
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{src};
@@ -309,14 +304,9 @@ Headers::Headers (Headers&& src, CopyFlags flags)
     fSetCookieList_    = move (src.fSetCookieList_);
     fTransferEncoding_ = move (src.fTransferEncoding_);
     fVary_             = move (src.fVary_);
-    if (flags == CopyFlags::eOnlyBaseValue) {
-        fContentLength_ = src.fContentLength_;
-        fETag_          = src.fETag_;
-    }
-    else {
-        fContentLength_ = src.contentLength ();
-        fETag_          = src.ETag ();
-    }
+    // for extended properties, we must call the property function to get the callbacks called
+    fContentLength_ = src.contentLength ();
+    fETag_          = src.ETag ();
 }
 
 Headers::Headers (const Iterable<KeyValuePair<String, String>>& src)
