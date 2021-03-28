@@ -29,7 +29,7 @@ namespace Stroika::Frameworks::SystemPerformance {
      */
     class CaptureSet {
     public:
-        CaptureSet (const Duration& period = Duration (30.0), const Set<Instrument>& instruments = {});
+        CaptureSet (const Duration& period = 30s, const Set<Instrument>& instruments = {});
 
     public:
         /**

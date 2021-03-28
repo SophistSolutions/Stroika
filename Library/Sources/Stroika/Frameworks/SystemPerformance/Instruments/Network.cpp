@@ -640,8 +640,7 @@ Instrument SystemPerformance::Instruments::Network::GetInstrument (Options optio
         make_unique<MyCapturer_> (CapturerWithContext_{options}),
         {kNetworkInterfacesMeasurement_},
         {KeyValuePair<type_index, MeasurementType>{typeid (Info), kNetworkInterfacesMeasurement_}},
-        GetObjectVariantMapper ()
-    };
+        GetObjectVariantMapper ()};
 }
 
 /*
