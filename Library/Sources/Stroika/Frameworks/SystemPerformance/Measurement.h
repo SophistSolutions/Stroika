@@ -33,7 +33,8 @@ namespace Stroika::Frameworks::SystemPerformance {
     using MeasurementType = DataExchange::Atom<>;
 
     /**
-     *
+     *  A measurement refers to a single UNIT of related fields from an Instrument. It often contains tens or hundreds of fields.
+     *  the fType field is an atom, which identifies the object type you can convert the fValue to.
      */
     struct Measurement {
         MeasurementType fType;

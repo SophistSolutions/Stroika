@@ -398,11 +398,14 @@ namespace {
     struct CapturerWithContext_
         : Debug::AssertExternallySynchronizedLock
 #if qPlatform_Linux
-        ,CapturerWithContext_Linux_
+        ,
+          CapturerWithContext_Linux_
 #elif qPlatform_Windows
-        ,CapturerWithContext_Windows_
+        ,
+          CapturerWithContext_Windows_
 #else
-        ,CapturerWithContext_COMMON_
+        ,
+          CapturerWithContext_COMMON_
 #endif
     {
 #if qPlatform_Linux
@@ -522,11 +525,12 @@ namespace {
  */
 Instrument SystemPerformance::Instruments::Memory::GetInstrument (Options options)
 {
-    return Instrument (
+    return Instrument{
         InstrumentNameType{L"Memory"sv},
         Instrument::SharedByValueCaptureRepType (make_unique<MyCapturer_> (CapturerWithContext_{options})),
         {kMemoryUsageMeasurement_},
-        GetObjectVariantMapper ());
+        {KeyValuePair<type_index, MeasurementType>{typeid (Info), kMemoryUsageMeasurement_}},
+        GetObjectVariantMapper ()};
 }
 
 /*

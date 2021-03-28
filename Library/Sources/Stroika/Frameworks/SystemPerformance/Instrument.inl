@@ -42,6 +42,20 @@ namespace Stroika::Frameworks::SystemPerformance {
         // logically correct (just slower).
         return fObjectVariantMapper.ToObject<T> (CaptureOneMeasurement<VariantValue> (measurementTimeOut));
     }
+    template <typename T>
+    inline T Instrument::MeasurementAs (const Measurement& m) const
+    {
+        return fObjectVariantMapper.ToObject<T> (m.fValue);
+    }
+    template <typename T>
+    T Instrument::MeasurementAs (const MeasurementSet& m) const
+    {
+        Require (fType2MeasurementTypes.Contains (type_id (decay_t<T>)));
+        MeasurementType mt = fType2MeasurementTypes[type_id (decay_t<T>)];
+        Require (m.fMeasurements.Any ([=] (const Measurement& m) { return m.fType == mt; }));
+        VariantValue vv = m.fMeasurements.FindFirstThat ([=] (const Measurement& m) { return m.fType == mt; })->fValue;
+        return fObjectVariantMapper.ToObject<T> (vv);
+    }
     inline bool Instrument::operator== (const Instrument& rhs) const
     {
         return fInstrumentName == rhs.fInstrumentName;

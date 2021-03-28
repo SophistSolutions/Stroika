@@ -12,6 +12,7 @@
 
 #include <memory>
 
+#include "../../Foundation/Containers/Mapping.h"
 #include "../../Foundation/Containers/Set.h"
 #include "../../Foundation/DataExchange/Atom.h"
 #include "../../Foundation/DataExchange/ObjectVariantMapper.h"
@@ -22,6 +23,8 @@
 
 /*
  * TODO:
+ *      @todo   Figure out how to get const working for data members (or hide data members and replace with cosnt properties or accssor functions)
+ *
  *      @todo   Code cleanups
  *
  *      @todo   Document and enforce (no) thread safety polciy (assert externally locked?).
@@ -31,6 +34,7 @@ namespace Stroika::Frameworks::SystemPerformance {
 
     using namespace Stroika::Foundation;
     using Characters::String;
+    using Containers::Mapping;
     using Containers::Set;
 
     /**
@@ -49,8 +53,8 @@ namespace Stroika::Frameworks::SystemPerformance {
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
-    struct Instrument {
-
+    class Instrument {
+    public:
         /**
          */
         class ICapturer {
@@ -60,6 +64,7 @@ namespace Stroika::Frameworks::SystemPerformance {
             virtual unique_ptr<ICapturer> Clone () const = 0;
         };
 
+    public:
         /**
          *  @todo CLEANUP NAMES AND IMPL
          */
@@ -88,24 +93,53 @@ namespace Stroika::Frameworks::SystemPerformance {
             }
         };
 
-        InstrumentNameType                fInstrumentName;
-        SharedByValueCaptureRepType       fCapFun_;
-        Set<MeasurementType>              fCapturedMeasurementTypes;
-        DataExchange::ObjectVariantMapper fObjectVariantMapper;
+    public:
+        /*const*/ InstrumentNameType fInstrumentName;
 
+    private:
+        /*const*/ SharedByValueCaptureRepType fCapFun_;
+
+    public:
+        /*const*/ Mapping<type_index, MeasurementType> fType2MeasurementTypes;
+
+    public:
+        /*const*/ Set<MeasurementType> fCapturedMeasurementTypes;
+
+    public:
+        /*const*/ DataExchange::ObjectVariantMapper fObjectVariantMapper;
+
+    public:
         /**
          */
-        Instrument (InstrumentNameType instrumentName, const SharedByValueCaptureRepType& capturer, const Set<MeasurementType>& capturedMeasurements, const DataExchange::ObjectVariantMapper& objectVariantMapper);
+        Instrument ()                  = delete;
+        Instrument (const Instrument&) = default;
+        Instrument (InstrumentNameType instrumentName, const SharedByValueCaptureRepType& capturer, const Set<MeasurementType>& capturedMeasurements, const Mapping<type_index, MeasurementType>& typeToMeasurementTypeMap, const DataExchange::ObjectVariantMapper& objectVariantMapper);
 
+    public:
+        nonvirtual Instrument& operator= (const Instrument& rhs) = default;
+
+    public:
         /**
          */
         nonvirtual MeasurementSet Capture ();
 
+    public:
         /**
          *  Require just one measurmenet
          */
         template <typename T>
         nonvirtual T CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut = nullptr);
+
+    public:
+        /**
+         *  The particular types you can convert a measurement to are defined by each subtype of instrument. Typically they are
+         *  that instruments "Info" field, but sometimes a given Instrument will generate multiple MeasurementTypes, and will allow
+         *  additional conversions.
+         */
+        template <typename T>
+        nonvirtual T MeasurementAs (const Measurement& m) const;
+        template <typename T>
+        nonvirtual T MeasurementAs (const MeasurementSet& m) const;
 
     public:
         /**

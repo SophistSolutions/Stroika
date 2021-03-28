@@ -7,8 +7,6 @@
 #include <cstdlib>
 
 #include "../../Foundation/Containers/Common.h"
-#include "../../Foundation/DataExchange/BadFormatException.h"
-#include "../../Foundation/Debug/Assertions.h"
 #include "../../Foundation/Execution/Throw.h"
 #include "../../Foundation/Memory/SmallStackBuffer.h"
 
@@ -22,9 +20,10 @@ using namespace Stroika::Frameworks::SystemPerformance;
  ******************** SystemPerformance::Instrument *****************************
  ********************************************************************************
  */
-Instrument::Instrument (InstrumentNameType instrumentName, const SharedByValueCaptureRepType& capturer, const Set<MeasurementType>& capturedMeasurements, const DataExchange::ObjectVariantMapper& objectVariantMapper)
+Instrument::Instrument (InstrumentNameType instrumentName, const SharedByValueCaptureRepType& capturer, const Set<MeasurementType>& capturedMeasurements, const Mapping<type_index, MeasurementType>& typeToMeasurementTypeMap, const DataExchange::ObjectVariantMapper& objectVariantMapper)
     : fInstrumentName{instrumentName}
     , fCapFun_{capturer}
+    , fType2MeasurementTypes{typeToMeasurementTypeMap}
     , fCapturedMeasurementTypes{capturedMeasurements}
     , fObjectVariantMapper{objectVariantMapper}
 {

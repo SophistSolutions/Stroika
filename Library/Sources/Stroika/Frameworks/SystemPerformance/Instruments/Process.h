@@ -269,7 +269,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Process {
      *              ...
      *      \endcode
      */
-    extern const MeasurementType kProcessMapMeasurement;
+    const inline MeasurementType kProcessMapMeasurement{L"Process-Details"sv};
 
     /**
      *  For ProcessType and ProcessMapType types.

@@ -1724,11 +1724,14 @@ namespace {
     struct CapturerWithContext_
         : Debug::AssertExternallySynchronizedLock
 #if qPlatform_Linux
-        ,  CapturerWithContext_Linux_
+        ,
+          CapturerWithContext_Linux_
 #elif qPlatform_Windows
-        , CapturerWithContext_Windows_
+        ,
+          CapturerWithContext_Windows_
 #else
-        , CapturerWithContext_COMMON_
+        ,
+          CapturerWithContext_COMMON_
 #endif
     {
 #if qPlatform_Linux
@@ -1757,8 +1760,6 @@ namespace {
         }
     };
 }
-
-const MeasurementType SystemPerformance::Instruments::Process::kProcessMapMeasurement = MeasurementType{L"Process-Details"sv};
 
 namespace {
     class MyCapturer_ : public Instrument::ICapturer {
@@ -1805,6 +1806,7 @@ Instrument SystemPerformance::Instruments::Process::GetInstrument (const Options
         InstrumentNameType{L"Process"sv},
         Instrument::SharedByValueCaptureRepType (make_unique<MyCapturer_> (CapturerWithContext_{options})),
         {kProcessMapMeasurement},
+        {KeyValuePair<type_index, MeasurementType>{typeid (Info), kProcessMapMeasurement}},
         GetObjectVariantMapper ()};
 }
 

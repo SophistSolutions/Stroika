@@ -521,12 +521,12 @@ namespace {
  */
 Instrument SystemPerformance::Instruments::CPU::GetInstrument (Options options)
 {
-    CapturerWithContext_ useCaptureContext{options}; // capture context so copyable in mutable lambda
-    return Instrument (
+    return Instrument{
         InstrumentNameType{L"CPU"sv},
         Instrument::SharedByValueCaptureRepType (make_unique<MyCapturer_> (CapturerWithContext_{options})),
         {kCPUMeasurment_},
-        GetObjectVariantMapper ());
+        {KeyValuePair<type_index, MeasurementType>{typeid (Info), kCPUMeasurment_}},
+        GetObjectVariantMapper ()};
 }
 
 /*
