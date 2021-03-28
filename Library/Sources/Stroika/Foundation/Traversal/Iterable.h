@@ -1102,6 +1102,10 @@ namespace Stroika::Foundation::Traversal {
          * \brief not empty () - synonym for .net Any() Linq method.
          *
          *  Second overload (with filter function) same as .Where(filter).Any ();
+         *
+         *  \note
+         *      BASED ON Microsoft .net Linq. (Last)
+         *      @see https://docs.microsoft.com/en-us/dotnet/api/system.linq.enumerable.any?view=netframework-4.7.2#System_Linq_Enumerable_Any__1_System_Collections_Generic_IEnumerable___0__System_Func___0_System_Boolean__
          */
         nonvirtual bool Any () const;
         nonvirtual bool Any (const function<bool (ArgByValueType<T>)>& includeIfTrue) const;
