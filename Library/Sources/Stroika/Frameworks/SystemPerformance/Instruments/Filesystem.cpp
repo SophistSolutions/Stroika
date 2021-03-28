@@ -1136,7 +1136,7 @@ Instrument SystemPerformance::Instruments::Filesystem::GetInstrument (Options op
 {
     return Instrument (
         InstrumentNameType{L"Filesystem"sv},
-        Instrument::SharedByValueCaptureRepType (make_unique<MyCapturer_> (CapturerWithContext_{options})),
+        make_unique<MyCapturer_> (CapturerWithContext_{options}),
         {kMountedVolumeUsage_},
         {KeyValuePair<type_index, MeasurementType>{typeid (Info), kMountedVolumeUsage_}},
         GetObjectVariantMapper ());

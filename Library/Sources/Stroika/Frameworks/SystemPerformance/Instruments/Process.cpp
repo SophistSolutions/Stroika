@@ -1804,7 +1804,7 @@ Instrument SystemPerformance::Instruments::Process::GetInstrument (const Options
 {
     return Instrument{
         InstrumentNameType{L"Process"sv},
-        Instrument::SharedByValueCaptureRepType (make_unique<MyCapturer_> (CapturerWithContext_{options})),
+        make_unique<MyCapturer_> (CapturerWithContext_{options}),
         {kProcessMapMeasurement},
         {KeyValuePair<type_index, MeasurementType>{typeid (Info), kProcessMapMeasurement}},
         GetObjectVariantMapper ()};

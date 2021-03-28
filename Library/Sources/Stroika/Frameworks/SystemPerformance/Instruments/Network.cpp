@@ -635,12 +635,13 @@ namespace {
  */
 Instrument SystemPerformance::Instruments::Network::GetInstrument (Options options)
 {
-    return Instrument (
+    return Instrument{
         InstrumentNameType{L"Network"sv},
-        Instrument::SharedByValueCaptureRepType (make_unique<MyCapturer_> (CapturerWithContext_{options})),
+        make_unique<MyCapturer_> (CapturerWithContext_{options}),
         {kNetworkInterfacesMeasurement_},
         {KeyValuePair<type_index, MeasurementType>{typeid (Info), kNetworkInterfacesMeasurement_}},
-        GetObjectVariantMapper ());
+        GetObjectVariantMapper ()
+    };
 }
 
 /*

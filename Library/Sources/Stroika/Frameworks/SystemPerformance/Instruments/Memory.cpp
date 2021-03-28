@@ -527,7 +527,7 @@ Instrument SystemPerformance::Instruments::Memory::GetInstrument (Options option
 {
     return Instrument{
         InstrumentNameType{L"Memory"sv},
-        Instrument::SharedByValueCaptureRepType (make_unique<MyCapturer_> (CapturerWithContext_{options})),
+        make_unique<MyCapturer_> (CapturerWithContext_{options}),
         {kMemoryUsageMeasurement_},
         {KeyValuePair<type_index, MeasurementType>{typeid (Info), kMemoryUsageMeasurement_}},
         GetObjectVariantMapper ()};
