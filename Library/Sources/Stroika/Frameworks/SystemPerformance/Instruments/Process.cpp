@@ -1594,6 +1594,7 @@ namespace {
             }
             fLastCapturedAt        = now;
             fPostponeCaptureUntil_ = now + fMinimumAveragingInterval_;
+            fContextStats_         = newContextStats;
             if (fOptions_.fCachePolicy == CachePolicy::eOmitUnchangedValues) {
                 fStaticSuppressedAgain = Set<pid_t> (results.Keys ());
             }
