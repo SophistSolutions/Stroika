@@ -51,8 +51,8 @@ namespace Stroika::Frameworks::SystemPerformance {
     template <typename T>
     T Instrument::MeasurementAs (const MeasurementSet& m) const
     {
-        Require (fType2MeasurementTypes.Contains (type_id (decay_t<T>)));
-        MeasurementType mt = fType2MeasurementTypes[type_id (decay_t<T>)];
+        Require (fType2MeasurementTypes.ContainsKey (typeid (T)));
+        MeasurementType mt = fType2MeasurementTypes[typeid (T)];
         Require (m.fMeasurements.Any ([=] (const Measurement& m) { return m.fType == mt; }));
         VariantValue vv = m.fMeasurements.FindFirstThat ([=] (const Measurement& m) { return m.fType == mt; })->fValue;
         return fObjectVariantMapper.ToObject<T> (vv);
