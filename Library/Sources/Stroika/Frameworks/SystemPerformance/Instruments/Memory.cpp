@@ -239,7 +239,7 @@ namespace {
         void Read_ProcVMStat_ (Instruments::Memory::Info* updateResult)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx ("Read_ProcVMStat_");
+            Debug::TraceContextBumper ctx{"Read_ProcVMStat_"};
 #endif
             auto ReadVMStatLine_ = [] (optional<uint64_t>* result, const String& n, const Sequence<String>& line) -> unsigned int {
                 if (line.size () >= 2 and line[0] == n) {
@@ -398,14 +398,11 @@ namespace {
     struct CapturerWithContext_
         : Debug::AssertExternallySynchronizedLock
 #if qPlatform_Linux
-        ,
-          CapturerWithContext_Linux_
+        ,CapturerWithContext_Linux_
 #elif qPlatform_Windows
-        ,
-          CapturerWithContext_Windows_
+        ,CapturerWithContext_Windows_
 #else
-        ,
-          CapturerWithContext_COMMON_
+        ,CapturerWithContext_COMMON_
 #endif
     {
 #if qPlatform_Linux
@@ -423,7 +420,7 @@ namespace {
         {
             lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx ("Instruments::Memory::Info capture");
+            Debug::TraceContextBumper ctx{"Instruments::Memory::Info capture"};
 #endif
 #if qPlatform_Linux or qPlatform_Windows
             Info result = inherited::capture ();
@@ -482,7 +479,7 @@ ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
 }
 
 namespace {
-    const MeasurementType kMemoryUsageMeasurement_ = MeasurementType (L"Memory-Usage"sv);
+    const MeasurementType kMemoryUsageMeasurement_ = MeasurementType{L"Memory-Usage"sv};
 }
 
 namespace {

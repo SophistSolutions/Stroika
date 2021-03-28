@@ -19,13 +19,13 @@ using namespace Stroika::Frameworks::SystemPerformance;
 
 /*
  ********************************************************************************
- ***************** SystemPerformance::Instrument ********************************
+ ******************** SystemPerformance::Instrument *****************************
  ********************************************************************************
  */
 Instrument::Instrument (InstrumentNameType instrumentName, const SharedByValueCaptureRepType& capturer, const Set<MeasurementType>& capturedMeasurements, const DataExchange::ObjectVariantMapper& objectVariantMapper)
     : fInstrumentName{instrumentName}
     , fCapFun_{capturer}
-    , fCapturedMeasurements{capturedMeasurements}
+    , fCapturedMeasurementTypes{capturedMeasurements}
     , fObjectVariantMapper{objectVariantMapper}
 {
 }

@@ -42,6 +42,10 @@ namespace Stroika::Frameworks::SystemPerformance {
         // logically correct (just slower).
         return fObjectVariantMapper.ToObject<T> (CaptureOneMeasurement<VariantValue> (measurementTimeOut));
     }
+    inline bool Instrument::operator== (const Instrument& rhs) const
+    {
+        return fInstrumentName == rhs.fInstrumentName;
+    }
 
 }
 

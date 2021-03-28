@@ -52,8 +52,8 @@ namespace Stroika::Frameworks::SystemPerformance {
      *  fairly handy default mechanisms to manage (possibly multiple) CaptureSets, and either store the last result
      *  for each, or to run callbacks on those results.
      *
-     *  This also runs its capturing on a (single) background thread. This has implications for how much its able to
-     *  keep up with and maintain all the measurements in question.
+     *  This also runs its capturing on a (single) background thread (so that captures / averages are over a consistent time interval). 
+     *  This has implications for how much its able to keep up with and maintain all the measurements in question.
      *
      *  Note - there is no reason you cannot use the rest of the SystemPerformance framework without this class,
      *  if its pattern doesn't meet your needs.
@@ -74,7 +74,7 @@ namespace Stroika::Frameworks::SystemPerformance {
     public:
         /**
          */
-        using NewMeasurementsCallbackType = Function<void (MeasurementSet)>;
+        using NewMeasurementsCallbackType = Function<void (const MeasurementSet&)>;
 
     public:
         /**

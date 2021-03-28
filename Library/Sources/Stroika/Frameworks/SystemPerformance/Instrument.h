@@ -74,11 +74,11 @@ namespace Stroika::Frameworks::SystemPerformance {
                 return fCap_.get ();
             }
             SharedByValueCaptureRepType (unique_ptr<ICapturer>&& cap)
-                : fCap_ (move (cap))
+                : fCap_{move (cap)}
             {
             }
             SharedByValueCaptureRepType (const SharedByValueCaptureRepType& cap)
-                : fCap_ (cap.get ()->Clone ())
+                : fCap_{cap.get ()->Clone ()}
             {
             }
             SharedByValueCaptureRepType& operator= (const SharedByValueCaptureRepType& cap)
@@ -90,7 +90,7 @@ namespace Stroika::Frameworks::SystemPerformance {
 
         InstrumentNameType                fInstrumentName;
         SharedByValueCaptureRepType       fCapFun_;
-        Set<MeasurementType>              fCapturedMeasurements;
+        Set<MeasurementType>              fCapturedMeasurementTypes;
         DataExchange::ObjectVariantMapper fObjectVariantMapper;
 
         /**
@@ -107,6 +107,11 @@ namespace Stroika::Frameworks::SystemPerformance {
         template <typename T>
         nonvirtual T CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut = nullptr);
 
+    public:
+        /**
+         */
+        nonvirtual bool operator== (const Instrument& rhs) const;
+
 #if __cpp_impl_three_way_comparison >= 201907
     public:
         /**
@@ -116,19 +121,8 @@ namespace Stroika::Frameworks::SystemPerformance {
             return fInstrumentName <=> rhs.fInstrumentName;
         }
 
-    public:
-        /**
-         */
-        nonvirtual bool operator== (const Instrument& rhs) const
-        {
-            return fInstrumentName == rhs.fInstrumentName;
-        }
 #endif
 #if __cpp_impl_three_way_comparison < 201907
-        bool operator== (const Instrument& rhs) const
-        {
-            return fInstrumentName == rhs.fInstrumentName;
-        }
         bool operator< (const Instrument& rhs) const
         {
             return fInstrumentName < rhs.fInstrumentName;

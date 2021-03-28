@@ -1005,7 +1005,7 @@ namespace {
         optional<proc_io_data_> Readproc_io_data_ (const filesystem::path& fullPath)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx (L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::Readproc_io_data_", L"fullPath=%s", Characters::ToString (fullPath).c_str ());
+            Debug::TraceContextBumper ctx{L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::Readproc_io_data_", L"fullPath=%s", Characters::ToString (fullPath).c_str ()};
 #endif
 
             if (not IO::FileSystem::Default ().Access (fullPath)) {
@@ -1042,7 +1042,7 @@ namespace {
              *      1: 00000000:0050 00000000:0000 0A 00000000:00000000 00:00000000 00000000     0        0 6059 1 e466d720 300 0 0 2 -1
              */
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx (L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadTCPStats_", L"fullPath=%s", Characters::ToString (fullPath).c_str ());
+            Debug::TraceContextBumper ctx{L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadTCPStats_", L"fullPath=%s", Characters::ToString (fullPath).c_str ()};
 #endif
 
             if (not IO::FileSystem::Default ().Access (fullPath)) {
@@ -1080,7 +1080,7 @@ namespace {
         optional<MemorySizeType> ReadPrivateBytes_ (const filesystem::path& fullPath)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx (L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadPrivateBytes_", L"fullPath=%s", Characters::ToString (fullPath).c_str ());
+            Debug::TraceContextBumper ctx{L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadPrivateBytes_", L"fullPath=%s", Characters::ToString (fullPath).c_str ()};
 #endif
 
             if (not IO::FileSystem::Default ().Access (fullPath)) {
@@ -1118,7 +1118,7 @@ namespace {
         proc_status_data_ Readproc_proc_status_data_ (const filesystem::path& fullPath)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx (L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::Readproc_proc_status_data_", L"fullPath=%s", Characters::ToString (fullPath).c_str ());
+            Debug::TraceContextBumper ctx{L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::Readproc_proc_status_data_", L"fullPath=%s", Characters::ToString (fullPath).c_str ()};
 #endif
             proc_status_data_ result{};
             ifstream          r;
@@ -1149,7 +1149,7 @@ namespace {
         // consider using this as a backup if /procfs/ not present...
         ProcessMapType capture_using_ps_ ()
         {
-            Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::capture_using_ps_");
+            Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::capture_using_ps_"};
             ProcessMapType            result;
             using Execution::ProcessRunner;
             /*
@@ -1374,8 +1374,7 @@ namespace {
                 {
                 Again:
                     ULONG    returnLength{};
-                    NTSTATUS status = ::NtQuerySystemInformation (m
-                                                                      SystemProcessInformation,
+                    NTSTATUS status = ::NtQuerySystemInformation (mSystemProcessInformation,
                                                                   fBuf_.begin (),
                                                                   static_cast<ULONG> (fBuf_.GetSize ()),
                                                                   &returnLength);
@@ -1417,10 +1416,8 @@ namespace {
                         const SYSTEM_PROCESS_INFORMATION* end   = start + fActualNumElts_;
                         Mapping<pid_t, unsigned int>      tmp;
                         for (const SYSTEM_PROCESS_INFORMATION* i = start; i < end; ++i) {
-
                             pid_t pid = reinterpret_cast<pid_t> (i->UniqueProcessId);
                             if (IsValidPID_ (pid)) {
-
                                 struct PRIVATE_SYSTEM_PROCESS_INFORMATION_ {
                                     ULONG NextEntryOffset;
                                     ULONG NumberOfThreads; // from ProcessHacker include/ntexapi.h
@@ -1727,14 +1724,11 @@ namespace {
     struct CapturerWithContext_
         : Debug::AssertExternallySynchronizedLock
 #if qPlatform_Linux
-        ,
-          CapturerWithContext_Linux_
+        ,  CapturerWithContext_Linux_
 #elif qPlatform_Windows
-        ,
-          CapturerWithContext_Windows_
+        , CapturerWithContext_Windows_
 #else
-        ,
-          CapturerWithContext_COMMON_
+        , CapturerWithContext_COMMON_
 #endif
     {
 #if qPlatform_Linux

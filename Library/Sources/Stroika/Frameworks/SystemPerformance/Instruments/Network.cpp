@@ -375,7 +375,7 @@ namespace {
             fAvailableInstances_ = fNetworkWMICollector_.GetAvailableInstaces ();
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             {
-                Debug::TraceContextBumper ctx ("ALL WMI Network Avialable instances");
+                Debug::TraceContextBumper ctx{"ALL WMI Network Avialable instances"};
                 for (String i : fAvailableInstances_) {
                     DbgTrace (L"wmiInstanceName='%s'", i.c_str ());
                 }
@@ -453,7 +453,7 @@ namespace {
         void Read_WMI_ (const IO::Network::Interface& iFace, Instruments::Network::InterfaceInfo* updateResult)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx ("Instruments::Network::....Read_WMI_");
+            Debug::TraceContextBumper ctx{"Instruments::Network::....Read_WMI_"};
 #endif
             /*
              *  @todo - this mapping of descriptions to WMI instance names is an INCREDIBLE KLUDGE. Not sure how to do this properly.
@@ -522,7 +522,7 @@ namespace {
         {
             lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx ("Instruments::Network::capture_");
+            Debug::TraceContextBumper ctx{"Instruments::Network::capture_"};
 #endif
             return inherited::capture ();
         }
@@ -530,7 +530,7 @@ namespace {
 }
 
 namespace {
-    const MeasurementType kNetworkInterfacesMeasurement_ = MeasurementType (L"Network-Interfaces"sv);
+    const MeasurementType kNetworkInterfacesMeasurement_ = MeasurementType{L"Network-Interfaces"sv};
 }
 
 /*
