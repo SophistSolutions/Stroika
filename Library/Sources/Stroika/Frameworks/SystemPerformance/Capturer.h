@@ -60,6 +60,10 @@ namespace Stroika::Frameworks::SystemPerformance {
      */
     class Capturer {
     public:
+        /**
+         *  Note - if the constructor is called with explicit capture-sets, then these are run once before the constructor returns
+         *  (so the caller can read current value)
+         */
         Capturer () = default;
         Capturer (const CaptureSet& cs);
         Capturer (const Capturer&) = delete;
@@ -117,6 +121,9 @@ namespace Stroika::Frameworks::SystemPerformance {
 
     private:
         nonvirtual void Runner_ ();
+
+    private:
+        nonvirtual void RunnerOnce_ ();
 
     private:
         // FOR NOW - just assign/overwrite the latest measurement set, and call

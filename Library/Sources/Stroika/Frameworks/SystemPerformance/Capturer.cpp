@@ -16,12 +16,14 @@ using namespace Stroika::Frameworks::SystemPerformance;
 
 /*
  ********************************************************************************
- ******************** SystemPerformance::Capturer *******************************
+ ************************* SystemPerformance::Capturer **************************
  ********************************************************************************
  */
 Capturer::Capturer (const CaptureSet& cs)
 {
-    AddCaptureSet (cs);
+    fCaptureSets_.rwget ()->Add (cs);
+    RunnerOnce_ ();
+    ManageRunner_ (true);
 }
 
 Collection<Capturer::NewMeasurementsCallbackType> Capturer::GetMeasurementsCallbacks () const
@@ -82,9 +84,16 @@ void Capturer::ManageRunner_ (bool on)
 
 void Capturer::Runner_ ()
 {
+    while (true) {
+        RunnerOnce_ ();
+    }
+}
+
+void Capturer::RunnerOnce_ ()
+{
     // SUPER MEGA OVERSIMPLIFED.
     // @todo - fix to submit each subtask as its own runnable so it can leverage threadpool
-    // @todo real job waiting for jsut right time before starting next run through apturesets
+    // @todo real job waiting for jsut right time before starting next run through capturesets
     // @todo support more than one capture set.
     while (true) {
         //tmphack a race
