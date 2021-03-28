@@ -60,7 +60,7 @@ namespace Stroika::Frameworks::SystemPerformance {
      */
     class Capturer {
     public:
-        Capturer ()                = default;
+        Capturer () = default;
         Capturer (const CaptureSet& cs);
         Capturer (const Capturer&) = delete;
         Capturer& operator= (const Capturer&) = delete;
