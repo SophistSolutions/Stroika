@@ -1318,8 +1318,8 @@ namespace {
             , fProcessWMICollector_{from.fProcessWMICollector_}
         {
             IgnoreExceptionsForCall (fProcessWMICollector_.Collect ()); // hack cuz no way to copy
-            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
             fLastCapturedAt        = Time::GetTickCount ();
+            fPostponeCaptureUntil_ = fLastCapturedAt + fMinimumAveragingInterval_;
         }
 #else
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from) = default;
@@ -1596,7 +1596,7 @@ namespace {
             fPostponeCaptureUntil_ = now + fMinimumAveragingInterval_;
             fContextStats_         = newContextStats;
             if (fOptions_.fCachePolicy == CachePolicy::eOmitUnchangedValues) {
-                fStaticSuppressedAgain = Set<pid_t> (results.Keys ());
+                fStaticSuppressedAgain = Set<pid_t>{results.Keys ()};
             }
             return results;
         }

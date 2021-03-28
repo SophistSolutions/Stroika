@@ -162,6 +162,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Process {
 
         /**
          *  @todo better document, and only implemented for windows - but need todo for unix
+         *  Linux doesn't track WSS, but does track RSS - 'fResidentMemorySize' - which is nearly the same thing.
          */
         optional<MemorySizeType> fWorkingSetSize;
 
