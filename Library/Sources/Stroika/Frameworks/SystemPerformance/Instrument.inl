@@ -33,7 +33,7 @@ namespace Stroika::Frameworks::SystemPerformance {
             return ii.fValue;
         }
         AssertNotReached (); // only use this on insturments with one result returned
-        return VariantValue ();
+        return VariantValue{};
     }
     template <typename T>
     inline T Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
@@ -46,16 +46,18 @@ namespace Stroika::Frameworks::SystemPerformance {
     inline T Instrument::MeasurementAs (const Measurement& m) const
     {
         Require (fType2MeasurementTypes.Contains (type_id (decay_t<T>)));
+        Require (m.fType == fType2MeasurementTypes[typeid (decay_t<T>)])
         return fObjectVariantMapper.ToObject<T> (m.fValue);
     }
     template <typename T>
-    T Instrument::MeasurementAs (const MeasurementSet& m) const
+    optional<T> Instrument::MeasurementAs (const MeasurementSet& m) const
     {
-        Require (fType2MeasurementTypes.ContainsKey (typeid (T)));
-        MeasurementType mt = fType2MeasurementTypes[typeid (T)];
-        Require (m.fMeasurements.Any ([=] (const Measurement& m) { return m.fType == mt; }));
-        VariantValue vv = m.fMeasurements.FindFirstThat ([=] (const Measurement& m) { return m.fType == mt; })->fValue;
-        return fObjectVariantMapper.ToObject<T> (vv);
+        Require (fType2MeasurementTypes.ContainsKey (typeid (decay_t<T>)));
+        MeasurementType mt = fType2MeasurementTypes[typeid (decay_t<T>)];
+        if (auto i = m.fMeasurements.FindFirstThat ([=] (const Measurement& m) { return m.fType == mt; })) {
+            return fObjectVariantMapper.ToObject<T> (i->fValue);
+        }
+        return nullopt;
     }
     inline bool Instrument::operator== (const Instrument& rhs) const
     {

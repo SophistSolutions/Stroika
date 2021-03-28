@@ -137,11 +137,13 @@ namespace Stroika::Frameworks::SystemPerformance {
          *  The particular types you can convert a measurement to are defined by each subtype of instrument. Typically they are
          *  that instruments "Info" field, but sometimes a given Instrument will generate multiple MeasurementTypes, and will allow
          *  additional conversions.
+         * 
+         *  If the required MeasurementType is missing from m, nullopt is returned.
          */
         template <typename T>
         nonvirtual T MeasurementAs (const Measurement& m) const;
         template <typename T>
-        nonvirtual T MeasurementAs (const MeasurementSet& m) const;
+        nonvirtual optional<T> MeasurementAs (const MeasurementSet& m) const;
 
     public:
         /**
