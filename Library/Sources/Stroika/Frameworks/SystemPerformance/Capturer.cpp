@@ -19,9 +19,9 @@ using namespace Stroika::Frameworks::SystemPerformance;
  ******************** SystemPerformance::Capturer *******************************
  ********************************************************************************
  */
-MeasurementSet Capturer::GetMostRecentMeasurements () const
+Capturer::Capturer (const CaptureSet& cs)
 {
-    return fCurrentMeasurementSet_;
+    AddCaptureSet (cs);
 }
 
 Collection<Capturer::NewMeasurementsCallbackType> Capturer::GetMeasurementsCallbacks () const

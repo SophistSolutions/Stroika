@@ -9,9 +9,19 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../../Foundation/Containers/Common.h"
 
 namespace Stroika::Frameworks::SystemPerformance {
+
+    /*
+     ********************************************************************************
+     *********************************** Capturer ***********************************
+     ********************************************************************************
+     */
+    inline MeasurementSet Capturer::GetMostRecentMeasurements () const
+    {
+        return fCurrentMeasurementSet_;
+    }
+
 }
 
 #endif /*_Stroika_Frameworks_SystemPerformance_Capturer_inl_*/
