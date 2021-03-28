@@ -129,7 +129,7 @@ int main (int argc, const char* argv[])
             Capturer capturer;
             {
                 CaptureSet cs;
-                cs.SetRunPeriod (Duration (15));
+                cs.SetRunPeriod (15s);
                 for (Instrument i : SystemPerformance::GetAllInstruments ()) {
                     if (not run.empty ()) {
                         if (not run.Contains (i.fInstrumentName)) {
