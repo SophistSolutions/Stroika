@@ -64,7 +64,7 @@ namespace Stroika::Frameworks::SystemPerformance {
             virtual unique_ptr<ICapturer> Clone () const = 0;
         };
 
-    public:
+    private:
         /**
          *  @todo CLEANUP NAMES AND IMPL
          */
@@ -120,12 +120,14 @@ namespace Stroika::Frameworks::SystemPerformance {
 
     public:
         /**
+         *  This can return multiple measurements, of different types, but typically will return a single measurement (with multiple name/value pairs).
          */
         nonvirtual MeasurementSet Capture ();
 
     public:
         /**
-         *  Require just one measurmenet
+         *  Require just one measurement? This can be simpler, but generally better to use Capturer class, at least if
+         *  doing a sequence of measurements (so they come in regularly spaced time intervals).
          */
         template <typename T>
         nonvirtual T CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut = nullptr);

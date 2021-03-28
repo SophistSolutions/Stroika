@@ -40,11 +40,12 @@ namespace Stroika::Frameworks::SystemPerformance {
     {
         // This function is typically template specialized by Instruments to avoid the round trip through VariantValues, but this is
         // logically correct (just slower).
-        return fObjectVariantMapper.ToObject<T> (CaptureOneMeasurement<VariantValue> (measurementTimeOut));
+        return MeasurementAs<T> (CaptureOneMeasurement<VariantValue> (measurementTimeOut));
     }
     template <typename T>
     inline T Instrument::MeasurementAs (const Measurement& m) const
     {
+        Require (fType2MeasurementTypes.Contains (type_id (decay_t<T>)));
         return fObjectVariantMapper.ToObject<T> (m.fValue);
     }
     template <typename T>
