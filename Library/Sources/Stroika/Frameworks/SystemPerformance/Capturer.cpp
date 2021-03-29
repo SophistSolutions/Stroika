@@ -98,16 +98,16 @@ void Capturer::RunnerOnce_ ()
     // @todo - fix to submit each subtask as its own runnable so it can leverage threadpool
     // @todo real job waiting for jsut right time before starting next run through capturesets
     // @todo support more than one capture set.
-    //tmphack a race
+
+    MeasurementSet measurements;
     for (CaptureSet cs : fCaptureSets_.load ()) {
         // @todo fix!!!
 
         for (Instrument i : cs.GetInstrumentSet ()) {
             try {
-                MeasurementSet measurements = i.Capture ();
-                // AGAIN - WRONG - we need a way to update - UpdateMeasurementSet_ - where it combines the rihgt
-                // set o fmeasuremts, repalcing the others
-                UpdateMeasurementSet_ (measurements);
+                auto m = i.Capture ();
+                measurements.fMeasurements += m.fMeasurements;
+                measurements.fMeasuredAt = m.fMeasuredAt;       // weak way to merge but hopefully good enuf for now...
             }
             catch (const Execution::Thread::AbortException&) {
                 Execution::ReThrow ();
@@ -117,6 +117,7 @@ void Capturer::RunnerOnce_ ()
             }
         }
     }
+    UpdateMeasurementSet_ (measurements);
 }
 
 void Capturer::UpdateMeasurementSet_ (const MeasurementSet& ms)

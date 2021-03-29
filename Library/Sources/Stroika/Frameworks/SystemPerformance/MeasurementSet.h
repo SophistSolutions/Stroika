@@ -43,14 +43,6 @@ namespace Stroika::Frameworks::SystemPerformance {
         Range<DurationSecondsType> fMeasuredAt;
 
         Collection<Measurement> fMeasurements;
-
-        // NEED PARAMS TO SAY HOW TO COMBINE - MAYBE RENAME THIS TO COMBINE?
-        // WHAT ABOUT ADDING HEIRARCHY??? HOW TO COMBINE MEASUREDAT???
-        // ONE ANSEER IS MERGE AT THIS LEVEN AND EXPAND MEASUREDAT.
-        // ANOTHE aNSER IS CREATE  A NERW "INSTURMENT" that jsut adds HIERARCHY (and a label for sub-measured-at).
-        // NYI
-        //
-        nonvirtual MeasurementSet Merge (const MeasurementSet& rhs) const;
     };
 
 }

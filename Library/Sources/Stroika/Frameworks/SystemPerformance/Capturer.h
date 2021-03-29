@@ -27,8 +27,7 @@
  *      @todo   VERY primitive, but for simple cases functional implementation. FIX IT, so its better, and
  *              more complete (and efficient).
  *
- *      @todo   Current impl only supports one CaptureSet<>. To support more, we need a strategy to merge
- *              or handle composites.
+ *      @todo   Weak support for merging measurementsets; fix!
  *
  *      @todo   make it optional storing the most recent measurement set.
  *
