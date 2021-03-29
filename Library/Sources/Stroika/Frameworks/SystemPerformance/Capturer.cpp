@@ -107,7 +107,7 @@ void Capturer::RunnerOnce_ ()
             try {
                 auto m = i.Capture ();
                 measurements.fMeasurements += m.fMeasurements;
-                measurements.fMeasuredAt = m.fMeasuredAt;       // weak way to merge but hopefully good enuf for now...
+                measurements.fMeasuredAt = m.fMeasuredAt; // weak way to merge but hopefully good enuf for now...
             }
             catch (const Execution::Thread::AbortException&) {
                 Execution::ReThrow ();
