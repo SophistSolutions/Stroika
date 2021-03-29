@@ -3,13 +3,27 @@
  */
 #include "../StroikaPreComp.h"
 
-#include <algorithm>
-#include <cstdlib>
-
-#include "../../Foundation/Containers/Common.h"
-#include "../../Foundation/DataExchange/BadFormatException.h"
-#include "../../Foundation/Debug/Assertions.h"
-#include "../../Foundation/Execution/Throw.h"
-#include "../../Foundation/Memory/SmallStackBuffer.h"
+#include "../../Foundation/Characters/StringBuilder.h"
 
 #include "Measurement.h"
+
+using namespace Stroika::Foundation::Characters;
+
+using namespace Stroika::Frameworks;
+using namespace Stroika::Frameworks::SystemPerformance;
+
+/*
+ ********************************************************************************
+ ******************** SystemPerformance::Instrument *****************************
+ ********************************************************************************
+ */
+
+String Measurement::ToString () const
+{
+    StringBuilder sb;
+    sb += L"{";
+    sb += L"fType: " + Characters::ToString (fType) + L", ";
+    sb += L"fValue: " + Characters::ToString (fValue);
+    sb += L"}";
+    return sb.str ();
+}

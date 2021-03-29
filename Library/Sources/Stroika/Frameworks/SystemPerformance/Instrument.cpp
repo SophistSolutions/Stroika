@@ -3,13 +3,6 @@
  */
 #include "../StroikaPreComp.h"
 
-#include <algorithm>
-#include <cstdlib>
-
-#include "../../Foundation/Containers/Common.h"
-#include "../../Foundation/Execution/Throw.h"
-#include "../../Foundation/Memory/SmallStackBuffer.h"
-
 #include "Instrument.h"
 
 using namespace Stroika::Frameworks;

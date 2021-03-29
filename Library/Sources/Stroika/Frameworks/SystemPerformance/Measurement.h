@@ -39,6 +39,11 @@ namespace Stroika::Frameworks::SystemPerformance {
     struct Measurement {
         MeasurementType fType;
         VariantValue    fValue;
+
+        /**
+         *  @see Characters::ToString ();
+         */
+        nonvirtual String ToString () const;
     };
 
 }
