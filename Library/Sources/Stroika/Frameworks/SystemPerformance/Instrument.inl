@@ -45,7 +45,7 @@ namespace Stroika::Frameworks::SystemPerformance {
     template <typename T>
     inline T Instrument::MeasurementAs (const Measurement& m) const
     {
-        Require (fType2MeasurementTypes.Contains (type_id (decay_t<T>)));
+        Require (fType2MeasurementTypes.ContainsKey (typeid (decay_t<T>)));
         Require (m.fType == fType2MeasurementTypes[typeid (decay_t<T>)]);
         return fObjectVariantMapper.ToObject<T> (m.fValue);
     }
