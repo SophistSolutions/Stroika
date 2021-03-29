@@ -14,10 +14,9 @@ using namespace Stroika::Frameworks::SystemPerformance;
 
 /*
  ********************************************************************************
- ******************** SystemPerformance::Instrument *****************************
+ ****************** SystemPerformance::Instrument::Measurement ******************
  ********************************************************************************
  */
-
 String Measurement::ToString () const
 {
     StringBuilder sb;

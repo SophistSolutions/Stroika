@@ -85,6 +85,9 @@ void Capturer::ManageRunner_ (bool on)
 void Capturer::Runner_ ()
 {
     while (true) {
+        // wrong - period should be from leading edge of last run!!! - and we should probably have ... - probably one task in each threadpool...
+        Duration d = fCaptureSets_.load ().Select<Duration> ([] (auto i) { return i.GetRunPeriod (); }).MinValue (30s);
+        Execution::Sleep (d);
         RunnerOnce_ ();
     }
 }
@@ -95,28 +98,22 @@ void Capturer::RunnerOnce_ ()
     // @todo - fix to submit each subtask as its own runnable so it can leverage threadpool
     // @todo real job waiting for jsut right time before starting next run through capturesets
     // @todo support more than one capture set.
-    while (true) {
-        //tmphack a race
-        if (fCaptureSets_.cget ()->size () >= 1) {
-            CaptureSet cs = *fCaptureSets_.cget ()->FindFirstThat ([] (CaptureSet) { return true; });
+    //tmphack a race
+    for (CaptureSet cs : fCaptureSets_.load ()) {
+        // @todo fix!!!
 
-            // @todo fix!!!
-            // wrong - period should be from leading edge of last run!!!
-            Execution::Sleep (cs.GetRunPeriod ());
-
-            for (Instrument i : cs.GetInstrumentSet ()) {
-                try {
-                    MeasurementSet measurements = i.Capture ();
-                    // AGAIN - WRONG - we need a way to update - UpdateMeasurementSet_ - where it combines the rihgt
-                    // set o fmeasuremts, repalcing the others
-                    UpdateMeasurementSet_ (measurements);
-                }
-                catch (const Execution::Thread::AbortException&) {
-                    Execution::ReThrow ();
-                }
-                catch (...) {
-                    DbgTrace ("Eating exception in Capturer runner");
-                }
+        for (Instrument i : cs.GetInstrumentSet ()) {
+            try {
+                MeasurementSet measurements = i.Capture ();
+                // AGAIN - WRONG - we need a way to update - UpdateMeasurementSet_ - where it combines the rihgt
+                // set o fmeasuremts, repalcing the others
+                UpdateMeasurementSet_ (measurements);
+            }
+            catch (const Execution::Thread::AbortException&) {
+                Execution::ReThrow ();
+            }
+            catch (...) {
+                DbgTrace ("Eating exception in Capturer runner");
             }
         }
     }
