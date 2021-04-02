@@ -182,7 +182,7 @@ namespace {
          *  a variant value.
          */
         using namespace Demo_Using_Capturer_GetMostRecentMeasurements__Private_;
-        auto& capturer = GetCapturer_ ();
+        auto&        capturer = GetCapturer_ ();
         unsigned int pass{};
         cout << "Printing most recent measurements (in loop):" << endl;
         while (true) {
@@ -228,12 +228,12 @@ int main (int argc, const char* argv[])
 #if qPlatform_POSIX
     Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
 #endif
-    bool                      printUsage      = false;
-    bool                      mostRecentCaptureMode      = false;
-    bool                      printNames      = false;
-    bool                      oneLineMode     = false;
-    Time::DurationSecondsType runFor          = 0; // default to runfor 0, so we do each once.
-    Time::DurationSecondsType captureInterval = 1;
+    bool                      printUsage            = false;
+    bool                      mostRecentCaptureMode = false;
+    bool                      printNames            = false;
+    bool                      oneLineMode           = false;
+    Time::DurationSecondsType runFor                = 0; // default to runfor 0, so we do each once.
+    Time::DurationSecondsType captureInterval       = 1;
     Set<InstrumentNameType>   run;
     Sequence<String>          args = Execution::ParseCommandLine (argc, argv);
     for (auto argi = args.begin (); argi != args.end (); ++argi) {

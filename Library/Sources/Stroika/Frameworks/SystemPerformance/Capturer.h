@@ -56,6 +56,81 @@ namespace Stroika::Frameworks::SystemPerformance {
      *
      *  Note - there is no reason you cannot use the rest of the SystemPerformance framework without this class,
      *  if its pattern doesn't meet your needs.
+     *
+     *  \par Example Usage
+     *      This example shows using capturer with callbacks, and raw mode - treating the measurements as 'untyped'
+     *      VariantValue objects.
+     * 
+     *      \code
+     *          Capturer capturer;
+     *          {
+     *              CaptureSet cs;
+     *              cs.SetRunPeriod (15s);
+     *              for (Instrument i : SystemPerformance::GetAllInstruments ()) {
+     *                  cs.AddInstrument (i);
+     *              }
+     *              capturer.AddCaptureSet (cs);
+     *          }
+     *          capturer.AddMeasurementsCallback ([oneLineMode] (MeasurementSet ms) {
+     *              cout << "    Measured-At: " << ms.fMeasuredAt.ToString ().AsNarrowSDKString () << endl;
+     *              for (Measurement mi : ms.fMeasurements) {
+     *                  cout << "    " << mi.fType.GetPrintName ().AsNarrowSDKString () << ": " << Serialize_ (mi.fValue, oneLineMode) << endl;
+     *              }
+     *          });
+     *          // run til timeout and then fall out...
+     *          IgnoreExceptionsForCall (Execution::WaitableEvent{}.Wait (runFor));
+     *      \endcode
+     * 
+     *  \par Example Usage
+     *      This example shows using capturer, running in the background at regular time intervals, and allows callers to capture bits
+     *      of performance status (like to report in web service) - just reporting the latest captured data as of when called.
+     * 
+     *      \code
+     *          struct MyCapturer_ : Capturer {
+     *          public:
+     *              Instrument fCPUInstrument;
+     *              Instrument fProcessInstrument;
+     *
+     *              MyCapturer_ ()
+     *                  : fCPUInstrument{Instruments::CPU::GetInstrument ()}
+     *                  , fProcessInstrument{ Instruments::Process::GetInstrument (Instruments::Process::Options{
+     *                      .fMinimumAveragingInterval = 15,
+     *                      .fRestrictToPIDs           = Set<pid_t>{Execution::GetCurrentProcessID ()},
+     *                  })}
+     *              {
+     *                  AddCaptureSet (CaptureSet{30s, {fCPUInstrument, fProcessInstrument}});
+     *              }
+     *          };
+     *          Synchronized<MyCapturer_>& GetCapturer_ ()
+     *          {
+     *              static Synchronized<MyCapturer_> sCapturer_;
+     *              return sCapturer_;
+     *          }
+     * 
+     *          // Now do from any thread as often as desired, reporting latest data:
+     *          auto     measurements = capturer.cget ()->GetMostRecentMeasurements (); // capture results on a regular cadence with MyCapturer, and just report the latest stats
+     *          DateTime now          = DateTime::Now ();
+     *          optional<double> runQLength;
+     *          optional<double> totalCPUUsage;
+     *          if (auto om = capturer.cget ()->fCPUInstrument.MeasurementAs<Instruments::CPU::Info> (measurements)) {
+     *              runQLength    = om->fRunQLength;
+     *              totalCPUUsage = om->fTotalCPUUsage;
+     *          }
+     *          optional<Duration> processUptime;
+     *          optional<double>   averageCPUTimeUsed;
+     *          optional<uint64_t> workingOrResidentSetSize;
+     *          optional<double>   combinedIORate;
+     *          if (auto om = capturer.cget ()->fProcessInstrument.MeasurementAs<Instruments::Process::Info> (measurements)) {
+     *              Assert (om->GetLength () == 1);
+     *              Instruments::Process::ProcessType thisProcess = (*om)[Execution::GetCurrentProcessID ()];
+     *              if (auto o = thisProcess.fProcessStartedAt) {
+     *                  processUptime = now - *o;
+     *              }
+     *              averageCPUTimeUsed       = thisProcess.fAverageCPUTimeUsed;
+     *              workingOrResidentSetSize = Memory::NullCoalesce (thisProcess.fWorkingSetSize, thisProcess.fResidentMemorySize);
+     *              combinedIORate           = thisProcess.fCombinedIOWriteRate;
+     *          }
+     *      \endcode
      */
     class Capturer {
     public:
