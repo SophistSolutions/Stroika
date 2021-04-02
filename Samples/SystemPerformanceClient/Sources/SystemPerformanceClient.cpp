@@ -124,52 +124,50 @@ namespace {
 namespace {
     namespace Demo_Using_Capturer_GetMostRecentMeasurements__Private_ {
         using namespace Stroika::Frameworks::SystemPerformance;
-        namespace {
 
 #if __cpp_designated_initializers < 201707L
-            Instruments::Process::Options mkProcessInstrumentOptions_ ()
-            {
-                auto o                      = Instruments::Process::Options{};
-                o.fRestrictToPIDs           = Set<pid_t>{Execution::GetCurrentProcessID ()};
-                o.fMinimumAveragingInterval = 15;
-                return o;
-            }
+        Instruments::Process::Options mkProcessInstrumentOptions_ ()
+        {
+            auto o                      = Instruments::Process::Options{};
+            o.fRestrictToPIDs           = Set<pid_t>{Execution::GetCurrentProcessID ()};
+            o.fMinimumAveragingInterval = 15;
+            return o;
+        }
 #endif
 
-            struct MyCapturer_ : Capturer {
-            public:
-                Instrument fCPUInstrument;
-                Instrument fProcessInstrument;
+        struct MyCapturer_ : Capturer {
+        public:
+            Instrument fCPUInstrument;
+            Instrument fProcessInstrument;
 
-                MyCapturer_ ()
-                    : fCPUInstrument
-                {
-                    Instruments::CPU::GetInstrument ()
-                }
+            MyCapturer_ ()
+                : fCPUInstrument
+            {
+                Instruments::CPU::GetInstrument ()
+            }
 #if __cpp_designated_initializers >= 201707L
-                , fProcessInstrument
-                {
-                    Instruments::Process::GetInstrument (Instruments::Process::Options{
-                        .fMinimumAveragingInterval = 15,
-                        .fRestrictToPIDs           = Set<pid_t>{Execution::GetCurrentProcessID ()},
-                    })
-                }
-#else
-                , fProcessInstrument
-                {
-                    mkProcessInstrumentOptions_ ()
-                }
-#endif
-                {
-                    AddCaptureSet (CaptureSet{30s, {fCPUInstrument, fProcessInstrument}});
-                }
-            };
-
-            Synchronized<MyCapturer_>& GetCapturer_ ()
+            , fProcessInstrument
             {
-                static Synchronized<MyCapturer_> sCapturer_;
-                return sCapturer_;
+                Instruments::Process::GetInstrument (Instruments::Process::Options{
+                    .fMinimumAveragingInterval = 15,
+                    .fRestrictToPIDs           = Set<pid_t>{Execution::GetCurrentProcessID ()},
+                })
             }
+#else
+            , fProcessInstrument
+            {
+                Instruments::Process::GetInstrument (mkProcessInstrumentOptions_ ())
+            }
+#endif
+            {
+                AddCaptureSet (CaptureSet{30s, {fCPUInstrument, fProcessInstrument}});
+            }
+        };
+
+        Synchronized<MyCapturer_>& GetCapturer_ ()
+        {
+            static Synchronized<MyCapturer_> sCapturer_;
+            return sCapturer_;
         }
     }
     void Demo_Using_Capturer_GetMostRecentMeasurements_ ()
