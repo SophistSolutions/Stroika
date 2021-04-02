@@ -177,6 +177,7 @@ namespace Stroika::Foundation::Execution {
          *  \note   ***Cancelation Point***
          */
         nonvirtual void Wait (Time::DurationSecondsType timeout = Time::kInfinite);
+        nonvirtual void Wait (Time::Duration timeout);
 
     public:
         /**

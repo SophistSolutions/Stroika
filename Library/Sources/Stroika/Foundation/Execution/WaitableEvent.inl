@@ -77,6 +77,10 @@ namespace Stroika::Foundation::Execution {
     {
         fWE_.WaitUntil (timeout + Time::GetTickCount ());
     }
+    inline void WaitableEvent::Wait (Time::Duration timeout)
+    {
+        Wait (timeout.As<Time::DurationSecondsType> ());
+    }
     inline bool WaitableEvent::WaitQuietly (Time::DurationSecondsType timeout)
     {
         return fWE_.WaitUntilQuietly (timeout + Time::GetTickCount ());
