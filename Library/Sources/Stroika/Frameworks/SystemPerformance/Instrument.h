@@ -64,55 +64,11 @@ namespace Stroika::Frameworks::SystemPerformance {
             virtual unique_ptr<ICapturer> Clone () const = 0;
         };
 
-    private:
-        /**
-         *  @todo CLEANUP NAMES AND IMPL
-         */
-        struct SharedByValueCaptureRepType {
-            unique_ptr<ICapturer> fCap_;
-            ICapturer*            get ()
-            {
-                return fCap_.get ();
-            }
-            const ICapturer* get () const
-            {
-                return fCap_.get ();
-            }
-            SharedByValueCaptureRepType (unique_ptr<ICapturer>&& cap)
-                : fCap_{move (cap)}
-            {
-            }
-            SharedByValueCaptureRepType (const SharedByValueCaptureRepType& cap)
-                : fCap_{cap.get ()->Clone ()}
-            {
-            }
-            SharedByValueCaptureRepType& operator= (const SharedByValueCaptureRepType& cap)
-            {
-                fCap_ = cap.get ()->Clone ();
-                return *this;
-            }
-        };
-
-    public:
-        /*const*/ InstrumentNameType fInstrumentName;
-
-    private:
-        /*const*/ SharedByValueCaptureRepType fCapFun_;
-
-    public:
-        /*const*/ Mapping<type_index, MeasurementType> fType2MeasurementTypes;
-
-    public:
-        /*const*/ Set<MeasurementType> fCapturedMeasurementTypes;
-
-    public:
-        /*const*/ DataExchange::ObjectVariantMapper fObjectVariantMapper;
-
     public:
         /**
          */
-        Instrument ()                  = delete;
-        Instrument (const Instrument&) = default;
+        Instrument ()                      = delete;
+        Instrument (const Instrument& src) = default;
         Instrument (InstrumentNameType instrumentName, unique_ptr<ICapturer>&& capturer, const Set<MeasurementType>& capturedMeasurements, const Mapping<type_index, MeasurementType>& typeToMeasurementTypeMap, const DataExchange::ObjectVariantMapper& objectVariantMapper);
 
     public:
@@ -146,6 +102,18 @@ namespace Stroika::Frameworks::SystemPerformance {
         nonvirtual optional<T> MeasurementAs (const MeasurementSet& m) const;
 
     public:
+        /*const*/ InstrumentNameType fInstrumentName;
+
+    public:
+        /*const*/ Mapping<type_index, MeasurementType> fType2MeasurementTypes;
+
+    public:
+        /*const*/ Set<MeasurementType> fCapturedMeasurementTypes;
+
+    public:
+        /*const*/ DataExchange::ObjectVariantMapper fObjectVariantMapper;
+
+    public:
         /**
          */
         nonvirtual bool operator== (const Instrument& rhs) const;
@@ -161,11 +129,35 @@ namespace Stroika::Frameworks::SystemPerformance {
 
 #endif
 #if __cpp_impl_three_way_comparison < 201907
+    public:
         bool operator< (const Instrument& rhs) const
         {
             return fInstrumentName < rhs.fInstrumentName;
         }
 #endif
+
+    private:
+        struct SharedByValueCaptureRepType_ {
+            unique_ptr<ICapturer> fCap_;
+            ICapturer*            rwget ()
+            {
+                return fCap_.get ();
+            }
+            SharedByValueCaptureRepType_ (unique_ptr<ICapturer>&& cap)
+                : fCap_{move (cap)}
+            {
+            }
+            SharedByValueCaptureRepType_ (const SharedByValueCaptureRepType_& cap)
+                : fCap_{cap.fCap_.get ()->Clone ()}
+            {
+            }
+            SharedByValueCaptureRepType_& operator= (const SharedByValueCaptureRepType_& cap)
+            {
+                fCap_ = cap.fCap_.get ()->Clone ();
+                return *this;
+            }
+        };
+        /*const*/ SharedByValueCaptureRepType_ fCapFun_;
     };
 
 }

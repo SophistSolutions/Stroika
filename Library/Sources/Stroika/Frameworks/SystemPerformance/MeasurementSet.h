@@ -42,6 +42,7 @@ namespace Stroika::Frameworks::SystemPerformance {
     struct MeasurementSet {
         Range<DurationSecondsType> fMeasuredAt;
 
+        // @todo - this should use KeyedCollection, as the Measurement::fType is a KEY to this collection
         Collection<Measurement> fMeasurements;
     };
 

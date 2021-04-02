@@ -19,8 +19,8 @@ namespace Stroika::Frameworks::SystemPerformance {
      */
     inline MeasurementSet Instrument::Capture ()
     {
-        AssertNotNull (fCapFun_.get ());
-        return fCapFun_.get ()->Capture ();
+        AssertNotNull (fCapFun_.rwget ());
+        return fCapFun_.rwget ()->Capture ();
     }
     template <>
     inline VariantValue Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
