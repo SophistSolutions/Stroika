@@ -87,6 +87,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline T Queue<T>::RemoveHead ()
     {
+        Require (not this->empty ());
         return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveHead ();
     }
     template <typename T>
@@ -102,6 +103,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline T Queue<T>::Dequeue ()
     {
+        Require (not this->empty ());
         return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveHead ();
     }
     template <typename T>

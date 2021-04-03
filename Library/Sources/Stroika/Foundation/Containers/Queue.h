@@ -165,6 +165,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  \req not empty ()
          *  \note mutates container
          */
         nonvirtual T RemoveHead ();
@@ -188,6 +189,7 @@ namespace Stroika::Foundation::Containers {
          *  \brief Alias for RemoveHead () - remove item from the head of the Q (line).
          *
          *  \note mutates container
+         *  \req not empty ()
          */
         nonvirtual T Dequeue ();
 
