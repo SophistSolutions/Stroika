@@ -26,10 +26,16 @@ namespace Stroika::Frameworks::SystemPerformance {
     /**
      *  This is a collection of instruments (which are in turn sets of measureables) all collected on a common
      *  time period.
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     class CaptureSet {
     public:
         CaptureSet (const Duration& period = 30s, const Set<Instrument>& instruments = {});
+        CaptureSet (const CaptureSet& src) = default;
+
+    public:
+        nonvirtual CaptureSet& operator= (const CaptureSet& rhs) = default;
 
     public:
         /**

@@ -10,6 +10,22 @@
  ********************************************************************************
  */
 namespace Stroika::Frameworks::SystemPerformance {
+
+    /*
+     ********************************************************************************
+     ********************************* MeasurementSet *******************************
+     ********************************************************************************
+     */
+    inline void MeasurementSet::MergeAdditions (const MeasurementSet& m)
+    {
+        Require (this != &m);
+        fMeasuredAt = m.fMeasuredAt;
+        for (const auto& mi : m.fMeasurements) {
+            fMeasurements.Remove ([=] (const Measurement& mm) { return mm.fType == mi.fType; });
+            fMeasurements.Add (mi);
+        }
+    }
+
 }
 
 #endif /*_Stroika_Frameworks_SystemPerformance_MeasurementSet_inl_*/

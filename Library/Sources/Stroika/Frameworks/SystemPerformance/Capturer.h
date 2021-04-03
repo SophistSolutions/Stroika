@@ -101,18 +101,15 @@ namespace Stroika::Frameworks::SystemPerformance {
      *                  AddCaptureSet (CaptureSet{30s, {fCPUInstrument, fProcessInstrument}});
      *              }
      *          };
-     *          Synchronized<MyCapturer_>& GetCapturer_ ()
-     *          {
-     *              static Synchronized<MyCapturer_> sCapturer_;
-     *              return sCapturer_;
-     *          }
      * 
+     *          static MyCapturer_ sCapturer_;
+     *
      *          // Now do from any thread as often as desired, reporting latest data:
-     *          auto     measurements = capturer.cget ()->GetMostRecentMeasurements (); // capture results on a regular cadence with MyCapturer, and just report the latest stats
+     *          auto     measurements = sCapturer_.GetMostRecentMeasurements (); // capture results on a regular cadence with MyCapturer, and just report the latest stats
      *          DateTime now          = DateTime::Now ();
      *          optional<double> runQLength;
      *          optional<double> totalCPUUsage;
-     *          if (auto om = capturer.cget ()->fCPUInstrument.MeasurementAs<Instruments::CPU::Info> (measurements)) {
+     *          if (auto om = sCapturer_.fCPUInstrument.MeasurementAs<Instruments::CPU::Info> (measurements)) {
      *              runQLength    = om->fRunQLength;
      *              totalCPUUsage = om->fTotalCPUUsage;
      *          }
@@ -120,7 +117,7 @@ namespace Stroika::Frameworks::SystemPerformance {
      *          optional<double>   averageCPUTimeUsed;
      *          optional<uint64_t> workingOrResidentSetSize;
      *          optional<double>   combinedIORate;
-     *          if (auto om = capturer.cget ()->fProcessInstrument.MeasurementAs<Instruments::Process::Info> (measurements)) {
+     *          if (auto om = sCapturer_.fProcessInstrument.MeasurementAs<Instruments::Process::Info> (measurements)) {
      *              Assert (om->GetLength () == 1);
      *              Instruments::Process::ProcessType thisProcess = (*om)[Execution::GetCurrentProcessID ()];
      *              if (auto o = thisProcess.fProcessStartedAt) {
@@ -131,6 +128,8 @@ namespace Stroika::Frameworks::SystemPerformance {
      *              combinedIORate           = thisProcess.fCombinedIOWriteRate;
      *          }
      *      \endcode
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      */
     class Capturer {
     public:
@@ -141,7 +140,9 @@ namespace Stroika::Frameworks::SystemPerformance {
         Capturer () = default;
         Capturer (const CaptureSet& cs);
         Capturer (const Capturer&) = delete;
-        Capturer& operator= (const Capturer&) = delete;
+
+    public:
+        nonvirtual Capturer& operator= (const Capturer&) = delete;
 
     public:
         /**
@@ -197,7 +198,7 @@ namespace Stroika::Frameworks::SystemPerformance {
         nonvirtual void Runner_ ();
 
     private:
-        nonvirtual void RunnerOnce_ ();
+        nonvirtual void RunnerOnce_ (const CaptureSet& cs);
 
     private:
         // FOR NOW - just assign/overwrite the latest measurement set, and call
@@ -206,6 +207,7 @@ namespace Stroika::Frameworks::SystemPerformance {
 
     private:
         Execution::Synchronized<Collection<CaptureSet>>                  fCaptureSets_;
+        uint64_t                                                         fCaptureSetChangeCount_{0}; // doesn't need to be atomic because only updated/checked holdign capturesets lock
         Execution::Synchronized<Collection<NewMeasurementsCallbackType>> fCallbacks_;
         Execution::Synchronized<MeasurementSet>                          fCurrentMeasurementSet_;
         Execution::ThreadPool                                            fThreadPool_; // Subtle - construct last so auto-destructed first (shuts down threads)

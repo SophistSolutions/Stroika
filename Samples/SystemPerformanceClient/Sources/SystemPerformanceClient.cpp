@@ -163,12 +163,6 @@ namespace {
                 AddCaptureSet (CaptureSet{30s, {fCPUInstrument, fProcessInstrument}});
             }
         };
-
-        Synchronized<MyCapturer_>& GetCapturer_ ()
-        {
-            static Synchronized<MyCapturer_> sCapturer_;
-            return sCapturer_;
-        }
     }
     void Demo_Using_Capturer_GetMostRecentMeasurements_ ()
     {
@@ -180,16 +174,18 @@ namespace {
          *  a variant value.
          */
         using namespace Demo_Using_Capturer_GetMostRecentMeasurements__Private_;
-        auto&        capturer = GetCapturer_ ();
+
+        static MyCapturer_ sCapturer_; // initialized threadsafe, but internally syncrhonized class
+
         unsigned int pass{};
         cout << "Printing most recent measurements (in loop):" << endl;
         while (true) {
-            auto     measurements = capturer.cget ()->GetMostRecentMeasurements (); // capture results on a regular cadence with MyCapturer, and just report the latest stats
+            auto     measurements = sCapturer_.GetMostRecentMeasurements (); // capture results on a regular cadence with MyCapturer, and just report the latest stats
             DateTime now          = DateTime::Now ();
 
             optional<double> runQLength;
             optional<double> totalCPUUsage;
-            if (auto om = capturer.cget ()->fCPUInstrument.MeasurementAs<Instruments::CPU::Info> (measurements)) {
+            if (auto om = sCapturer_.fCPUInstrument.MeasurementAs<Instruments::CPU::Info> (measurements)) {
                 runQLength    = om->fRunQLength;
                 totalCPUUsage = om->fTotalCPUUsage;
             }
@@ -197,7 +193,7 @@ namespace {
             optional<double>   averageCPUTimeUsed;
             optional<uint64_t> workingOrResidentSetSize;
             optional<double>   combinedIORate;
-            if (auto om = capturer.cget ()->fProcessInstrument.MeasurementAs<Instruments::Process::Info> (measurements)) {
+            if (auto om = sCapturer_.fProcessInstrument.MeasurementAs<Instruments::Process::Info> (measurements)) {
                 Assert (om->GetLength () == 1);
                 Instruments::Process::ProcessType thisProcess = (*om)[Execution::GetCurrentProcessID ()];
                 if (auto o = thisProcess.fProcessStartedAt) {

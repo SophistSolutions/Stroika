@@ -37,13 +37,18 @@ namespace Stroika::Frameworks::SystemPerformance {
      *  A MeasurementSet is typically produced by a call to Instrument::Capture (). It represents the data
      *  from a single run of that instrument. It can be point in time, or potentially span a range of times.
      *
-     *  MeasurementSets can be combined (@see MeasurementSet::Merge).
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     struct MeasurementSet {
         Range<DurationSecondsType> fMeasuredAt;
 
         // @todo - this should use KeyedCollection, as the Measurement::fType is a KEY to this collection
         Collection<Measurement> fMeasurements;
+
+        /**
+         *  Combine m with this measurement set. any overlapping measurements replace their cooresponding values.
+         */
+        nonvirtual void MergeAdditions (const MeasurementSet& m);
     };
 
 }

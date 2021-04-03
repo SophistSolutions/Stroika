@@ -25,9 +25,7 @@
  * TODO:
  *      @todo   Figure out how to get const working for data members (or hide data members and replace with cosnt properties or accssor functions)
  *
- *      @todo   Code cleanups
- *
- *      @todo   Document and enforce (no) thread safety polciy (assert externally locked?).
+ *      @todo   enforce thread safety polciy (assert externally locked?).
  */
 
 namespace Stroika::Frameworks::SystemPerformance {
@@ -52,6 +50,8 @@ namespace Stroika::Frameworks::SystemPerformance {
      *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     class Instrument {
     public:

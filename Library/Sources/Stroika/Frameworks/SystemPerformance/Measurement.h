@@ -35,6 +35,8 @@ namespace Stroika::Frameworks::SystemPerformance {
     /**
      *  A measurement refers to a single UNIT of related fields from an Instrument. It often contains tens or hundreds of fields.
      *  the fType field is an atom, which identifies the object type you can convert the fValue to.
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     struct Measurement {
         MeasurementType fType;
