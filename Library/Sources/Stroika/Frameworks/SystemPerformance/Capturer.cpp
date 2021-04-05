@@ -20,7 +20,12 @@ using namespace Stroika::Frameworks::SystemPerformance;
  ************************* SystemPerformance::Capturer **************************
  ********************************************************************************
  */
+Capturer::Capturer ()
+{
+}
+
 Capturer::Capturer (const CaptureSet& cs)
+    : Capturer{}
 {
     AddCaptureSet (cs);
 }

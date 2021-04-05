@@ -329,7 +329,7 @@ bool WMICollector::AddInstancesIf (const Iterable<String>& instances)
 double WMICollector::GetCurrentValue (const String& instance, const String& counterName)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::GetCurrentValue");
+    Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Support::WMICollector::GetCurrentValue"};
 #endif
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     Require (fInstanceData_.ContainsKey (instance));
@@ -339,7 +339,7 @@ double WMICollector::GetCurrentValue (const String& instance, const String& coun
 optional<double> WMICollector::PeekCurrentValue (const String& instance, const String& counterName)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::PeekCurrentValue");
+    Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Support::WMICollector::PeekCurrentValue"};
 #endif
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     Require (fInstanceData_.ContainsKey (instance));
@@ -349,7 +349,7 @@ optional<double> WMICollector::PeekCurrentValue (const String& instance, const S
 Mapping<String, double> WMICollector::GetCurrentValues (const String& counterName)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::GetCurrentValues");
+    Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Support::WMICollector::GetCurrentValues"};
 #endif
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     Require (fInstanceData_.ContainsKey (WMICollector::kWildcardInstance));
@@ -359,7 +359,7 @@ Mapping<String, double> WMICollector::GetCurrentValues (const String& counterNam
 void WMICollector::AddCounter_ (const String& counterName)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::AddCounter_");
+    Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Support::WMICollector::AddCounter_"};
 #endif
     //RENEABLKE WHEN WE HAVE RECURSIVE DEBUG LOCK - lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     Require (not fCounterNames_.Contains (counterName));
@@ -372,7 +372,7 @@ void WMICollector::AddCounter_ (const String& counterName)
 void WMICollector::AddInstance_ (const String& instance)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::AddInstance_");
+    Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Support::WMICollector::AddInstance_"};
 #endif
     //RENEABLKE WHEN WE HAVE RECURSIVE DEBUG LOCK - lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     Require (not fInstanceData_.ContainsKey (instance));

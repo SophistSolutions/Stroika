@@ -6,6 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
+#include "../../Foundation/Common/Property.h"
 #include "../../Foundation/Containers/Collection.h"
 #include "../../Foundation/Containers/Set.h"
 #include "../../Foundation/Execution/Function.h"
@@ -94,7 +95,6 @@ namespace Stroika::Frameworks::SystemPerformance {
      *              MyCapturer_ ()
      *                  : fCPUInstrument{Instruments::CPU::GetInstrument ()}
      *                  , fProcessInstrument{ Instruments::Process::GetInstrument (Instruments::Process::Options{
-     *                      .fMinimumAveragingInterval = 15,
      *                      .fRestrictToPIDs           = Set<pid_t>{Execution::GetCurrentProcessID ()},
      *                  })}
      *              {
@@ -137,7 +137,7 @@ namespace Stroika::Frameworks::SystemPerformance {
          *  Note - if the constructor is called with explicit capture-sets, then these are run once before the constructor returns
          *  (so the caller can read current value)
          */
-        Capturer () = default;
+        Capturer ();
         Capturer (const CaptureSet& cs);
         Capturer (const Capturer&) = delete;
 

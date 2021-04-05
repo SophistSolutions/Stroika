@@ -22,12 +22,13 @@
 #include "../../../Foundation/Containers/Mapping.h"
 #include "../../../Foundation/Containers/MultiSet.h"
 #include "../../../Foundation/DataExchange/Variant/JSON/Writer.h"
+#include "../../../Foundation/Debug/AssertExternallySynchronizedLock.h"
 #include "../../../Foundation/Debug/Assertions.h"
 #include "../../../Foundation/Debug/Trace.h"
 #include "../../../Foundation/Execution/Exceptions.h"
 #include "../../../Foundation/Execution/Module.h"
 #include "../../../Foundation/Execution/ProcessRunner.h"
-#include "../../../Foundation/Execution/Sleep.h"
+#include "../../../Foundation/Execution/Synchronized.h"
 #include "../../../Foundation/Execution/Thread.h"
 #if qPlatform_POSIX
 #include "../../../Foundation/Execution/Platform/POSIX/Users.h"
@@ -52,6 +53,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::DataExchange;
+using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
 
 using namespace Stroika::Frameworks;
@@ -335,24 +337,21 @@ ObjectVariantMapper Instruments::Process::GetObjectVariantMapper ()
 }
 
 namespace {
-    struct CapturerWithContext_COMMON_ {
-        Options             fOptions_;
-        DurationSecondsType fMinimumAveragingInterval_;
-        DurationSecondsType fPostponeCaptureUntil_{0};
+    struct CapturerWithContext_COMMON_ : Debug::AssertExternallySynchronizedLock {
+        const Options       fOptions_;
         DurationSecondsType fLastCapturedAt{};
         // skip reporting static (known at process start) data on subsequent reports
         // only used if fCachePolicy == CachePolicy::eOmitUnchangedValues
         Set<pid_t> fStaticSuppressedAgain;
+        CapturerWithContext_COMMON_ (const CapturerWithContext_COMMON_& src) = default;
         CapturerWithContext_COMMON_ (const Options& options)
             : fOptions_{options}
-            , fMinimumAveragingInterval_{options.fMinimumAveragingInterval}
         {
         }
         DurationSecondsType GetLastCaptureAt () const { return fLastCapturedAt; }
         void                NoteCompletedCapture_ ()
         {
-            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
-            fLastCapturedAt        = Time::GetTickCount ();
+            fLastCapturedAt = Time::GetTickCount ();
         }
     };
 }
@@ -373,24 +372,21 @@ namespace {
             optional<double>    fCombinedIOReadBytes;
             optional<double>    fCombinedIOWriteBytes;
         };
-        Mapping<pid_t, PerfStats_> fContextStats_;
+        struct Context_ : Instrument::ICaptureContext {
+            Mapping<pid_t, PerfStats_> fMap;
+        };
+        Synchronized<shared_ptr<Context_>> fContext_;
 
         CapturerWithContext_Linux_ (const Options& options)
             : CapturerWithContext_COMMON_{options}
+            , fContext_{make_shared<Context_> ()}
         {
-            // for side-effect of setting fContextStats_
-            try {
-                capture_ ();
-            }
-            catch (...) {
-                DbgTrace ("bad sign that first pre-catpure failed."); // Don't propagate in case just listing collectors
-            }
             fStaticSuppressedAgain.clear (); // cuz we never returned these
         }
+        CapturerWithContext_Linux_ (const CapturerWithContext_Linux_& src) = default;
 
         ProcessMapType capture ()
         {
-            Execution::SleepUntil (fPostponeCaptureUntil_);
             return capture_ ();
         }
 
@@ -404,8 +400,7 @@ namespace {
             else if (fOptions_.fAllowUse_PS) {
                 result = capture_using_ps_ ();
             }
-            fLastCapturedAt        = Time::GetTickCount ();
-            fPostponeCaptureUntil_ = fLastCapturedAt + fMinimumAveragingInterval_;
+            fLastCapturedAt = Time::GetTickCount ();
             return result;
         }
 
@@ -552,7 +547,7 @@ namespace {
                         }
 
                         processDetails.fTotalCPUTimeEverUsed = (double (stats.utime) + double (stats.stime)) / kClockTick_;
-                        if (optional<PerfStats_> p = fContextStats_.Lookup (pid)) {
+                        if (optional<PerfStats_> p = fContext_.cget ().cref ()->fMap.Lookup (pid)) {
                             if (p->fTotalCPUTimeEverUsed) {
                                 processDetails.fAverageCPUTimeUsed = (*processDetails.fTotalCPUTimeEverUsed - *p->fTotalCPUTimeEverUsed) / (now - p->fCapturedAt);
                             }
@@ -614,7 +609,7 @@ namespace {
                         if (stats.has_value ()) {
                             processDetails.fCombinedIOReadBytes  = (*stats).read_bytes;
                             processDetails.fCombinedIOWriteBytes = (*stats).write_bytes;
-                            if (optional<PerfStats_> p = fContextStats_.Lookup (pid)) {
+                            if (optional<PerfStats_> p = fContext_.cget ().cref ()->fMap.Lookup (pid)) {
                                 if (p->fCombinedIOReadBytes) {
                                     processDetails.fCombinedIOReadRate = (*processDetails.fCombinedIOReadBytes - *p->fCombinedIOReadBytes) / (now - p->fCapturedAt);
                                 }
@@ -633,9 +628,9 @@ namespace {
                     results.Add (pid, processDetails);
                 }
             }
-            fContextStats_ = newContextStats;
+            fContext_.rwget ().rwref ()->fMap = newContextStats;
             if (fOptions_.fCachePolicy == CachePolicy::eOmitUnchangedValues) {
-                fStaticSuppressedAgain = Set<pid_t> (results.Keys ());
+                fStaticSuppressedAgain = Set<pid_t>{results.Keys ()};
             }
             return results;
         }
@@ -1286,48 +1281,28 @@ namespace {
             optional<double>    fCombinedIOReadBytes;
             optional<double>    fCombinedIOWriteBytes;
         };
-        Mapping<pid_t, PerfStats_> fContextStats_;
-
+        struct Context_ : Instrument::ICaptureContext {
 #if qUseWMICollectionSupport_
-        WMICollector fProcessWMICollector_{L"Process"sv, {WMICollector::kWildcardInstance}, { kProcessID_,
-                                                                                              kThreadCount_,
-                                                                                              kIOReadBytesPerSecond_,
-                                                                                              kIOWriteBytesPerSecond_,
-                                                                                              kPercentProcessorTime_,
-                                                                                              kElapsedTime_ }};
+            WMICollector fProcessWMICollector_{L"Process"sv, {WMICollector::kWildcardInstance}, { kProcessID_,
+                                                                                                  kThreadCount_,
+                                                                                                  kIOReadBytesPerSecond_,
+                                                                                                  kIOWriteBytesPerSecond_,
+                                                                                                  kPercentProcessorTime_,
+                                                                                                  kElapsedTime_ }};
 #endif
+            Mapping<pid_t, PerfStats_> fMap;
+        };
+        Synchronized<shared_ptr<Context_>> fContext_;
+
         CapturerWithContext_Windows_ (const Options& options)
             : CapturerWithContext_COMMON_{options}
+            , fContext_{make_shared<Context_> ()}
         {
-#if qUseWMICollectionSupport_ && 0
-            IgnoreExceptionsForCall (fProcessWMICollector_.Collect ()); // prefill with each process capture
-            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
-            fLastCapturedAt        = Time::GetTickCount ();
-#endif
-            // for side-effect of setting fContextStats_
-            try {
-                capture_ ();
-            }
-            catch (...) {
-                DbgTrace ("bad sign that first pre-catpure failed."); // Don't propagate in case just listing collectors
-            }
         }
-#if qUseWMICollectionSupport_
-        CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
-            : CapturerWithContext_COMMON_{from}
-            , fProcessWMICollector_{from.fProcessWMICollector_}
-        {
-            IgnoreExceptionsForCall (fProcessWMICollector_.Collect ()); // hack cuz no way to copy
-            fLastCapturedAt        = Time::GetTickCount ();
-            fPostponeCaptureUntil_ = fLastCapturedAt + fMinimumAveragingInterval_;
-        }
-#else
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from) = default;
-#endif
 
         ProcessMapType capture ()
         {
-            Execution::SleepUntil (fPostponeCaptureUntil_);
             return capture_ ();
         }
 
@@ -1335,32 +1310,33 @@ namespace {
         ProcessMapType capture_ ()
         {
 #if qUseWMICollectionSupport_
-            DurationSecondsType timeOfPrevCollection = fProcessWMICollector_.GetTimeOfLastCollection ();
-            IgnoreExceptionsForCall (fProcessWMICollector_.Collect ()); // hack cuz no way to copy
-            DurationSecondsType timeCollecting{fProcessWMICollector_.GetTimeOfLastCollection () - timeOfPrevCollection};
+            processWMICollectorLock                  = fProcessWMICollector_.rwget ();
+            DurationSecondsType timeOfPrevCollection = processWMICollectorLock.rwref ().GetTimeOfLastCollection ();
+            IgnoreExceptionsForCall (processWMICollectorLock.rwref ().Collect ()); // hack cuz no way to copy
+            DurationSecondsType timeCollecting{processWMICollectorLock.rwref ().GetTimeOfLastCollection () - timeOfPrevCollection};
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            for (String i : fProcessWMICollector_.GetAvailableInstaces ()) {
+            for (String i : processWMICollectorLock.rwref ().GetAvailableInstaces ()) {
                 DbgTrace (L"WMI instance name %s", i.c_str ());
             }
 #endif
 
             // NOTE THIS IS BUGGY - MUST READ BACK AS INT NOT DOUBLE
             Mapping<pid_t, String> pid2InstanceMap;
-            for (KeyValuePair<String, double> i : fProcessWMICollector_.GetCurrentValues (kProcessID_)) {
+            for (KeyValuePair<String, double> i : processWMICollectorLock.rwref ().GetCurrentValues (kProcessID_)) {
                 pid2InstanceMap.Add (static_cast<int> (i.fValue), i.fKey);
             }
 #endif
 
-            SetPrivilegeInContext_ s (SE_DEBUG_NAME, SetPrivilegeInContext_::eIgnoreError);
+            SetPrivilegeInContext_ s{SE_DEBUG_NAME, SetPrivilegeInContext_::eIgnoreError};
             ProcessMapType         results;
 
 #if qUseWMICollectionSupport_
-            Mapping<String, double> threadCounts_ByPID          = fProcessWMICollector_.GetCurrentValues (kThreadCount_);
-            Mapping<String, double> ioReadBytesPerSecond_ByPID  = fProcessWMICollector_.GetCurrentValues (kIOReadBytesPerSecond_);
-            Mapping<String, double> ioWriteBytesPerSecond_ByPID = fProcessWMICollector_.GetCurrentValues (kIOWriteBytesPerSecond_);
-            Mapping<String, double> pctProcessorTime_ByPID      = fProcessWMICollector_.GetCurrentValues (kPercentProcessorTime_);
-            Mapping<String, double> processStartAt_ByPID        = fProcessWMICollector_.GetCurrentValues (kElapsedTime_);
+            Mapping<String, double> threadCounts_ByPID          = processWMICollectorLock.rwref ().GetCurrentValues (kThreadCount_);
+            Mapping<String, double> ioReadBytesPerSecond_ByPID  = processWMICollectorLock.rwref ().GetCurrentValues (kIOReadBytesPerSecond_);
+            Mapping<String, double> ioWriteBytesPerSecond_ByPID = processWMICollectorLock.rwref ().GetCurrentValues (kIOWriteBytesPerSecond_);
+            Mapping<String, double> pctProcessorTime_ByPID      = processWMICollectorLock.rwref ().GetCurrentValues (kPercentProcessorTime_);
+            Mapping<String, double> processStartAt_ByPID        = processWMICollectorLock.rwref ().GetCurrentValues (kElapsedTime_);
 #endif
 
             DurationSecondsType now{Time::GetTickCount ()};
@@ -1560,7 +1536,7 @@ namespace {
                 }
 #endif
                 if (not processInfo.fCombinedIOReadRate.has_value () or not processInfo.fCombinedIOWriteRate.has_value () or not processInfo.fAverageCPUTimeUsed.has_value ()) {
-                    if (optional<PerfStats_> p = fContextStats_.Lookup (pid)) {
+                    if (optional<PerfStats_> p = fContext_.cget ().cref ()->fMap.Lookup (pid)) {
                         if (p->fCombinedIOReadBytes and processInfo.fCombinedIOReadBytes) {
                             processInfo.fCombinedIOReadRate = (*processInfo.fCombinedIOReadBytes - *p->fCombinedIOReadBytes) / (now - p->fCapturedAt);
                         }
@@ -1571,6 +1547,7 @@ namespace {
                             processInfo.fAverageCPUTimeUsed = (*processInfo.fTotalCPUTimeEverUsed - *p->fTotalCPUTimeEverUsed) / (now - p->fCapturedAt);
                         }
                     }
+#if 0
                     else {
                         /*
                          *  Considered something like:
@@ -1582,6 +1559,7 @@ namespace {
                          *  it started SOMETIME during this capture, but we don't know when (so we don't know the divisor).
                          */
                     }
+#endif
                 }
 
                 // So next time we can compute 'diffs'
@@ -1589,9 +1567,8 @@ namespace {
 
                 results.Add (pid, processInfo);
             }
-            fLastCapturedAt        = now;
-            fPostponeCaptureUntil_ = now + fMinimumAveragingInterval_;
-            fContextStats_         = newContextStats;
+            fLastCapturedAt                   = now;
+            fContext_.rwget ().rwref ()->fMap = newContextStats;
             if (fOptions_.fCachePolicy == CachePolicy::eOmitUnchangedValues) {
                 fStaticSuppressedAgain = Set<pid_t>{results.Keys ()};
             }
@@ -1722,16 +1699,12 @@ namespace {
 
 namespace {
     struct CapturerWithContext_
-        : Debug::AssertExternallySynchronizedLock
 #if qPlatform_Linux
-        ,
-          CapturerWithContext_Linux_
+        : CapturerWithContext_Linux_
 #elif qPlatform_Windows
-        ,
-          CapturerWithContext_Windows_
+        : CapturerWithContext_Windows_
 #else
-        ,
-          CapturerWithContext_COMMON_
+        : CapturerWithContext_COMMON_
 #endif
     {
 #if qPlatform_Linux
@@ -1741,6 +1714,7 @@ namespace {
 #else
         using inherited = CapturerWithContext_COMMON_;
 #endif
+        CapturerWithContext_ (const CapturerWithContext_& src) = default;
         CapturerWithContext_ (const Options& options)
             : inherited{options}
         {
@@ -1763,11 +1737,11 @@ namespace {
 
 namespace {
     class MyCapturer_ : public Instrument::ICapturer {
-        CapturerWithContext_ fCaptureContext;
+        CapturerWithContext_ fCapturerWithContext_;
 
     public:
         MyCapturer_ (const CapturerWithContext_& ctx)
-            : fCaptureContext{ctx}
+            : fCapturerWithContext_{ctx}
         {
         }
         virtual MeasurementSet Capture () override
@@ -1780,17 +1754,26 @@ namespace {
         }
         nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
         {
-            DurationSecondsType before         = fCaptureContext.fLastCapturedAt;
-            Info                rawMeasurement = fCaptureContext.capture ();
+            DurationSecondsType before         = fCapturerWithContext_.fLastCapturedAt;
+            Info                rawMeasurement = fCapturerWithContext_.capture ();
             if (outMeasuredAt != nullptr) {
                 using Traversal::Openness;
-                *outMeasuredAt = Range<DurationSecondsType> (before, fCaptureContext.fLastCapturedAt, Openness::eClosed, Openness::eClosed);
+                *outMeasuredAt = Range<DurationSecondsType> (before, fCapturerWithContext_.fLastCapturedAt, Openness::eClosed, Openness::eClosed);
             }
             return rawMeasurement;
         }
         virtual unique_ptr<ICapturer> Clone () const override
         {
-            return make_unique<MyCapturer_> (fCaptureContext);
+            return make_unique<MyCapturer_> (fCapturerWithContext_);
+        }
+        virtual shared_ptr<Instrument::ICaptureContext> GetConext () const override
+        {
+            EnsureNotNull (fCapturerWithContext_.fContext_.cget ().cref ());
+            return fCapturerWithContext_.fContext_.cget ().cref ();
+        }
+        virtual void SetConext (const shared_ptr<Instrument::ICaptureContext>& context)
+        {
+            fCapturerWithContext_.fContext_ = context == nullptr ? make_shared<CapturerWithContext_::Context_> () : dynamic_pointer_cast<CapturerWithContext_::Context_> (context);
         }
     };
 }

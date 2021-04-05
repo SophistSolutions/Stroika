@@ -214,6 +214,10 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Filesystem {
      */
     struct Options {
         /**
+         *  To compute averages, the instrument may keep around some earlier snapshots of data. This time interval is regulated by how often
+         *  the capture is called (typically the Captureset::'run interval'. However, this value can be used to override that partly, and provide
+         *  a minimum time for averaging.
+         *
          *  \req fMinimumAveragingInterval >= 0
          */
         Time::DurationSecondsType fMinimumAveragingInterval{1.0};

@@ -17,6 +17,10 @@ namespace Stroika::Frameworks::SystemPerformance {
      ************************ SystemPerformance::Instrument *************************
      ********************************************************************************
      */
+    inline Instrument::Instrument (const Instrument& src)
+        : Instrument{src.fInstrumentName, move (src.fCapFun_.fCap_->Clone ()), src.fCapturedMeasurementTypes, src.fType2MeasurementTypes, src.fObjectVariantMapper}
+    {
+    }
     inline MeasurementSet Instrument::Capture ()
     {
         AssertNotNull (fCapFun_.rwget ());

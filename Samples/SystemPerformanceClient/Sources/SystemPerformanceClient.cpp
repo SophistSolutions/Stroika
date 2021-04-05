@@ -128,9 +128,8 @@ namespace {
 #if __cpp_designated_initializers < 201707L
         Instruments::Process::Options mkProcessInstrumentOptions_ ()
         {
-            auto o                      = Instruments::Process::Options{};
-            o.fRestrictToPIDs           = Set<pid_t>{Execution::GetCurrentProcessID ()};
-            o.fMinimumAveragingInterval = 15;
+            auto o            = Instruments::Process::Options{};
+            o.fRestrictToPIDs = Set<pid_t>{Execution::GetCurrentProcessID ()};
             return o;
         }
 #endif
@@ -149,8 +148,7 @@ namespace {
             , fProcessInstrument
             {
                 Instruments::Process::GetInstrument (Instruments::Process::Options{
-                    .fMinimumAveragingInterval = 15,
-                    .fRestrictToPIDs           = Set<pid_t>{Execution::GetCurrentProcessID ()},
+                    .fRestrictToPIDs = Set<pid_t>{Execution::GetCurrentProcessID ()},
                 })
             }
 #else

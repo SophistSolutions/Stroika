@@ -16,13 +16,14 @@
 #include "../../../Foundation/Containers/Set.h"
 #include "../../../Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #include "../../../Foundation/DataExchange/Variant/JSON/Writer.h"
+#include "../../../Foundation/Debug/AssertExternallySynchronizedLock.h"
 #include "../../../Foundation/Debug/Assertions.h"
 #include "../../../Foundation/Debug/Trace.h"
 #if qPlatform_Windows
 #include "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 #include "../../../Foundation/Execution/ProcessRunner.h"
-#include "../../../Foundation/Execution/Sleep.h"
+#include "../../../Foundation/Execution/Synchronized.h"
 #include "../../../Foundation/IO/FileSystem/FileInputStream.h"
 #include "../../../Foundation/Streams/InputStream.h"
 #include "../../../Foundation/Streams/MemoryStream.h"
@@ -33,6 +34,7 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::DataExchange;
+using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::Memory;
 
@@ -134,23 +136,18 @@ String Instruments::Network::InterfaceInfo::ToString () const
 }
 
 namespace {
-    struct CapturerWithContext_COMMON_ {
-        Options             fOptions_;
-        DurationSecondsType fMinimumAveragingInterval_{};
-        DurationSecondsType fPostponeCaptureUntil_{0};
+    struct CapturerWithContext_COMMON_ : Debug::AssertExternallySynchronizedLock {
+        const Options       fOptions_;
         DurationSecondsType fLastCapturedAt{};
         CapturerWithContext_COMMON_ () = delete;
         CapturerWithContext_COMMON_ (const Options& options)
             : fOptions_{options}
-            , fMinimumAveragingInterval_{options.fMinimumAveragingInterval}
         {
         }
         DurationSecondsType GetLastCaptureAt () const { return fLastCapturedAt; }
         void                NoteCompletedCapture_ ()
         {
-            auto now               = Time::GetTickCount ();
-            fPostponeCaptureUntil_ = now + fMinimumAveragingInterval_;
-            fLastCapturedAt        = now;
+            fLastCapturedAt = Time::GetTickCount ();
         }
     };
 }
@@ -166,28 +163,27 @@ namespace {
             uint64_t            fTotalPacketsSent;
             DurationSecondsType fAt;
         };
-        Mapping<String, Last> fLast;
         struct LastSum {
             uint64_t            fTotalTCPSegments;
             uint64_t            fTotalTCPRetransmittedSegments;
             DurationSecondsType fAt;
         };
-        optional<LastSum> fLastSum;
+
+        struct Context_ : Instrument::ICaptureContext {
+            Mapping<String, Last> fLast;
+            optional<LastSum>     fLastSum;
+        };
+        Synchronized<shared_ptr<Context_>> fContext_;
+
         CapturerWithContext_POSIX_ (Options options)
             : CapturerWithContext_COMMON_{options}
+            , fContext_{make_shared<Context_> ()}
         {
-            // hack for side-effect of  updating aved_MajorPageFaultsSinc etc
-            try {
-                capture_ ();
-            }
-            catch (...) {
-                DbgTrace ("bad sign that first pre-catpure failed."); // Don't propagate in case just listing collectors
-            }
         }
-        CapturerWithContext_POSIX_ (const CapturerWithContext_POSIX_&) = default; // copy by value fine - no need to re-wait...
+        CapturerWithContext_POSIX_ (const CapturerWithContext_POSIX_&) = default;
+
         Instruments::Network::Info capture ()
         {
-            Execution::SleepUntil (fPostponeCaptureUntil_);
             return capture_ ();
         }
         Instruments::Network::Info capture_ ()
@@ -203,17 +199,18 @@ namespace {
             IgnoreExceptionsExceptThreadAbortForCall (Read_proc_net_snmp_ (&accumSummary));
 #endif
 
-            DurationSecondsType now = Time::GetTickCount ();
-            if (fLastSum and accumSummary.fTotalTCPSegments) {
-                Time::DurationSecondsType timespan{now - fLastSum->fAt};
-                accumSummary.fTCPSegmentsPerSecond = (NullCoalesce (accumSummary.fTotalTCPSegments) - fLastSum->fTotalTCPSegments) / timespan;
+            DurationSecondsType now          = Time::GetTickCount ();
+            auto                contextCLock = fContext_.cget ();
+            if (contextCLock.cref ()->fLastSum and accumSummary.fTotalTCPSegments) {
+                Time::DurationSecondsType timespan{now - contextCLock.cref ()->fLastSum->fAt};
+                accumSummary.fTCPSegmentsPerSecond = (NullCoalesce (accumSummary.fTotalTCPSegments) - contextCLock.cref ()->fLastSum->fTotalTCPSegments) / timespan;
             }
-            if (fLastSum and accumSummary.fTotalTCPRetransmittedSegments) {
-                Time::DurationSecondsType timespan{now - fLastSum->fAt};
-                accumSummary.fTCPRetransmittedSegmentsPerSecond = (NullCoalesce (accumSummary.fTotalTCPRetransmittedSegments) - fLastSum->fTotalTCPRetransmittedSegments) / timespan;
+            if (contextCLock.cref ()->fLastSum and accumSummary.fTotalTCPRetransmittedSegments) {
+                Time::DurationSecondsType timespan{now - contextCLock.cref ()->fLastSum->fAt};
+                accumSummary.fTCPRetransmittedSegmentsPerSecond = (NullCoalesce (accumSummary.fTotalTCPRetransmittedSegments) - contextCLock.cref ()->fLastSum->fTotalTCPRetransmittedSegments) / timespan;
             }
             if (accumSummary.fTotalTCPSegments and accumSummary.fTotalTCPRetransmittedSegments) {
-                fLastSum = LastSum{*accumSummary.fTotalTCPSegments, *accumSummary.fTotalTCPRetransmittedSegments, now};
+                fContext_.rwget ().rwref ()->fLastSum = LastSum{*accumSummary.fTotalTCPSegments, *accumSummary.fTotalTCPRetransmittedSegments, now};
             }
             NoteCompletedCapture_ ();
             return Info{interfaceResults, accumSummary};
@@ -258,7 +255,7 @@ namespace {
                     ii.fIOStatistics.fTotalPacketsDropped  = Characters::String2Int<uint64_t> (line[4]) + Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 4]);
 
                     DurationSecondsType now = Time::GetTickCount ();
-                    if (auto o = fLast.Lookup (ii.fInterface.fInternalInterfaceID)) {
+                    if (auto o = fContext_.cget ().cref ()->fLast.Lookup (ii.fInterface.fInternalInterfaceID)) {
                         double scanTime = now - o->fAt;
                         if (scanTime > 0) {
                             ii.fIOStatistics.fBytesPerSecondReceived   = (*ii.fIOStatistics.fTotalBytesReceived - o->fTotalBytesReceived) / scanTime;
@@ -269,7 +266,7 @@ namespace {
                     }
                     (*accumSummary) += ii.fIOStatistics;
                     interfaceResults->Add (ii);
-                    fLast.Add (ii.fInterface.fInternalInterfaceID, Last{*ii.fIOStatistics.fTotalBytesReceived, *ii.fIOStatistics.fTotalBytesSent, *ii.fIOStatistics.fTotalPacketsReceived, *ii.fIOStatistics.fTotalPacketsSent, now});
+                    fContext_.rwget ().rwref ()->fLast.Add (ii.fInterface.fInternalInterfaceID, Last{*ii.fIOStatistics.fTotalBytesReceived, *ii.fIOStatistics.fTotalBytesSent, *ii.fIOStatistics.fTotalPacketsReceived, *ii.fIOStatistics.fTotalPacketsSent, now});
                 }
                 else {
                     DbgTrace (L"Line %d bad in file %s", nLine, kProcFileName_.c_str ());
@@ -362,17 +359,22 @@ namespace {
 #if qPlatform_Windows
 namespace {
     struct CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
+
+        struct Context_ : Instrument::ICaptureContext {
 #if qUseWMICollectionSupport_
-        WMICollector fNetworkWMICollector_{L"Network Interface"sv, {}, {kBytesReceivedPerSecond_, kBytesSentPerSecond_, kPacketsReceivedPerSecond_, kPacketsSentPerSecond_}};
-        WMICollector fTCPv4WMICollector_{L"TCPv4"sv, {}, {kTCPSegmentsPerSecond_, kSegmentsRetransmittedPerSecond_}};
-        WMICollector fTCPv6WMICollector_{L"TCPv6"sv, {}, {kTCPSegmentsPerSecond_, kSegmentsRetransmittedPerSecond_}};
-        Set<String>  fAvailableInstances_;
+            WMICollector fNetworkWMICollector_{L"Network Interface"sv, {}, {kBytesReceivedPerSecond_, kBytesSentPerSecond_, kPacketsReceivedPerSecond_, kPacketsSentPerSecond_}};
+            WMICollector fTCPv4WMICollector_{L"TCPv4"sv, {}, {kTCPSegmentsPerSecond_, kSegmentsRetransmittedPerSecond_}};
+            WMICollector fTCPv6WMICollector_{L"TCPv6"sv, {}, {kTCPSegmentsPerSecond_, kSegmentsRetransmittedPerSecond_}};
+            Set<String>  fAvailableInstances_{fNetworkWMICollector_.GetAvailableInstaces ()};
 #endif
-        CapturerWithContext_Windows_ (Options options)
+        };
+        Synchronized<shared_ptr<Context_>> fContext_;
+
+        CapturerWithContext_Windows_ (const Options& options)
             : CapturerWithContext_COMMON_{options}
+            , fContext_{make_shared<Context_> ()}
         {
 #if qUseWMICollectionSupport_
-            fAvailableInstances_ = fNetworkWMICollector_.GetAvailableInstaces ();
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             {
                 Debug::TraceContextBumper ctx{"ALL WMI Network Avialable instances"};
@@ -381,28 +383,12 @@ namespace {
                 }
             }
 #endif
-            capture_ (); // for the side-effect of filling in fNetworkWMICollector_ with interfaces and doing initial capture so WMI can compute averages
 #endif
         }
-        CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
-            : CapturerWithContext_COMMON_
-        {
-            from
-        }
-#if qUseWMICollectionSupport_
-        , fNetworkWMICollector_{from.fNetworkWMICollector_}, fTCPv4WMICollector_{from.fTCPv4WMICollector_}, fTCPv6WMICollector_{from.fTCPv6WMICollector_}, fAvailableInstances_
-        {
-            from.fAvailableInstances_
-        }
-#endif
-        {
-#if qUseWMICollectionSupport_
-            capture_ (); // for the side-effect of filling in fNetworkWMICollector_ with interfaces and doing initial capture so WMI can compute averages
-#endif
-        }
+        CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& src) = default;
+
         Instruments::Network::Info capture ()
         {
-            Execution::SleepUntil (fPostponeCaptureUntil_);
             return capture_ ();
         }
         Instruments::Network::Info capture_ ()
@@ -417,9 +403,9 @@ namespace {
             SystemInterfacesMgr       systemInterfacesMgr;
             Iterable<Interface>       networkInterfacs{systemInterfacesMgr.GetAll ()};
 #if qUseWMICollectionSupport_
-            fNetworkWMICollector_.Collect ();
-            fTCPv4WMICollector_.Collect ();
-            fTCPv6WMICollector_.Collect ();
+            fContext_.rwget ().rwref ()->fNetworkWMICollector_.Collect ();
+            fContext_.rwget ().rwref ()->fTCPv4WMICollector_.Collect ();
+            fContext_.rwget ().rwref ()->fTCPv6WMICollector_.Collect ();
 #endif
             {
                 for (IO::Network::Interface networkInterface : networkInterfacs) {
@@ -474,23 +460,25 @@ namespace {
              *          And it might miss if new interfaces are added dynamically.
              *          --LGP 2015-04-16
              */
-            if (fAvailableInstances_.Contains (wmiInstanceName)) {
-                fNetworkWMICollector_.AddInstancesIf (wmiInstanceName);
-                fTCPv4WMICollector_.AddInstancesIf (wmiInstanceName);
-                fTCPv6WMICollector_.AddInstancesIf (wmiInstanceName);
+            if (fContext_.cget ().cref ()->fAvailableInstances_.Contains (wmiInstanceName)) {
+                auto clockContext = fContext_.rwget ();
+                clockContext.rwref ()->fNetworkWMICollector_.AddInstancesIf (wmiInstanceName);
+                clockContext.rwref ()->fTCPv4WMICollector_.AddInstancesIf (wmiInstanceName);
+                clockContext.rwref ()->fTCPv6WMICollector_.AddInstancesIf (wmiInstanceName);
             }
 
-            if (fAvailableInstances_.Contains (wmiInstanceName)) {
-                Memory::CopyToIf (fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesReceivedPerSecond_), &updateResult->fIOStatistics.fBytesPerSecondReceived);
-                Memory::CopyToIf (fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesSentPerSecond_), &updateResult->fIOStatistics.fBytesPerSecondSent);
-                Memory::CopyToIf (fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsReceivedPerSecond_), &updateResult->fIOStatistics.fPacketsPerSecondReceived);
-                Memory::CopyToIf (fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsSentPerSecond_), &updateResult->fIOStatistics.fPacketsPerSecondSent);
+            if (fContext_.cget ().cref ()->fAvailableInstances_.Contains (wmiInstanceName)) {
+                auto clockContext = fContext_.rwget ();
+                Memory::CopyToIf (clockContext.rwref ()->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesReceivedPerSecond_), &updateResult->fIOStatistics.fBytesPerSecondReceived);
+                Memory::CopyToIf (clockContext.rwref ()->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesSentPerSecond_), &updateResult->fIOStatistics.fBytesPerSecondSent);
+                Memory::CopyToIf (clockContext.rwref ()->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsReceivedPerSecond_), &updateResult->fIOStatistics.fPacketsPerSecondReceived);
+                Memory::CopyToIf (clockContext.rwref ()->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsSentPerSecond_), &updateResult->fIOStatistics.fPacketsPerSecondSent);
 
-                Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPSegmentsPerSecond, fTCPv4WMICollector_.PeekCurrentValue (wmiInstanceName, kTCPSegmentsPerSecond_));
-                Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPSegmentsPerSecond, fTCPv6WMICollector_.PeekCurrentValue (wmiInstanceName, kTCPSegmentsPerSecond_));
+                Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPSegmentsPerSecond, clockContext.rwref ()->fTCPv4WMICollector_.PeekCurrentValue (wmiInstanceName, kTCPSegmentsPerSecond_));
+                Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPSegmentsPerSecond, clockContext.rwref ()->fTCPv6WMICollector_.PeekCurrentValue (wmiInstanceName, kTCPSegmentsPerSecond_));
 
-                Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPRetransmittedSegmentsPerSecond, fTCPv4WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_));
-                Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPRetransmittedSegmentsPerSecond, fTCPv6WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_));
+                Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPRetransmittedSegmentsPerSecond, clockContext.rwref ()->fTCPv4WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_));
+                Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPRetransmittedSegmentsPerSecond, clockContext.rwref ()->fTCPv6WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_));
             }
         }
 #endif
@@ -500,13 +488,10 @@ namespace {
 
 namespace {
     struct CapturerWithContext_
-        : Debug::AssertExternallySynchronizedLock
 #if qPlatform_POSIX
-        ,
-          CapturerWithContext_POSIX_
+        : CapturerWithContext_POSIX_
 #elif qPlatform_Windows
-        ,
-          CapturerWithContext_Windows_
+        : CapturerWithContext_Windows_
 #endif
     {
 #if qPlatform_POSIX
@@ -596,11 +581,11 @@ ObjectVariantMapper Instruments::Network::GetObjectVariantMapper ()
 
 namespace {
     class MyCapturer_ : public Instrument::ICapturer {
-        CapturerWithContext_ fCaptureContext;
+        CapturerWithContext_ fCapturerWithContext_;
 
     public:
         MyCapturer_ (const CapturerWithContext_& ctx)
-            : fCaptureContext{ctx}
+            : fCapturerWithContext_{ctx}
         {
         }
         virtual MeasurementSet Capture () override
@@ -613,17 +598,26 @@ namespace {
         }
         nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
         {
-            DurationSecondsType before         = fCaptureContext.fLastCapturedAt;
-            Info                rawMeasurement = fCaptureContext.capture ();
+            DurationSecondsType before         = fCapturerWithContext_.fLastCapturedAt;
+            Info                rawMeasurement = fCapturerWithContext_.capture ();
             if (outMeasuredAt != nullptr) {
                 using Traversal::Openness;
-                *outMeasuredAt = Range<DurationSecondsType> (before, fCaptureContext.fLastCapturedAt, Openness::eClosed, Openness::eClosed);
+                *outMeasuredAt = Range<DurationSecondsType> (before, fCapturerWithContext_.fLastCapturedAt, Openness::eClosed, Openness::eClosed);
             }
             return rawMeasurement;
         }
         virtual unique_ptr<ICapturer> Clone () const override
         {
-            return make_unique<MyCapturer_> (fCaptureContext);
+            return make_unique<MyCapturer_> (fCapturerWithContext_);
+        }
+        virtual shared_ptr<Instrument::ICaptureContext> GetConext () const override
+        {
+            EnsureNotNull (fCapturerWithContext_.fContext_.load ());
+            return fCapturerWithContext_.fContext_.load ();
+        }
+        virtual void SetConext (const shared_ptr<Instrument::ICaptureContext>& context)
+        {
+            fCapturerWithContext_.fContext_ = context == nullptr ? make_shared<CapturerWithContext_::Context_> () : dynamic_pointer_cast<CapturerWithContext_::Context_> (context);
         }
     };
 }

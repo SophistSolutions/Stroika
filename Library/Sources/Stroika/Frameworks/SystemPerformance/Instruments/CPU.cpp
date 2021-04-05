@@ -15,10 +15,11 @@
 #include "../../../Foundation/Configuration/SystemConfiguration.h"
 #include "../../../Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #include "../../../Foundation/DataExchange/Variant/JSON/Writer.h"
+#include "../../../Foundation/Debug/AssertExternallySynchronizedLock.h"
 #include "../../../Foundation/Debug/Assertions.h"
 #include "../../../Foundation/Execution/Exceptions.h"
 #include "../../../Foundation/Execution/ProcessRunner.h"
-#include "../../../Foundation/Execution/Sleep.h"
+#include "../../../Foundation/Execution/Synchronized.h"
 #include "../../../Foundation/IO/FileSystem/FileInputStream.h"
 #include "../../../Foundation/Math/Common.h"
 #include "../../../Foundation/Streams/MemoryStream.h"
@@ -30,6 +31,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::DataExchange;
+using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
 
 using namespace Stroika::Frameworks;
@@ -117,22 +119,17 @@ ObjectVariantMapper Instruments::CPU::GetObjectVariantMapper ()
 }
 
 namespace {
-    struct CapturerWithContext_COMMON_ {
-        Options             fOptions_;
-        DurationSecondsType fPostponeCaptureUntil_{0};
+    struct CapturerWithContext_COMMON_ : Debug::AssertExternallySynchronizedLock {
+        const Options       fOptions_;
         DurationSecondsType fLastCapturedAt{};
-        DurationSecondsType fMinimumAveragingInterval_;
         CapturerWithContext_COMMON_ (const Options& options)
             : fOptions_{options}
-            , fMinimumAveragingInterval_{options.fMinimumAveragingInterval}
         {
         }
         DurationSecondsType GetLastCaptureAt () const { return fLastCapturedAt; }
         void                NoteCompletedCapture_ ()
         {
-            auto now               = Time::GetTickCount ();
-            fPostponeCaptureUntil_ = now + fMinimumAveragingInterval_;
-            fLastCapturedAt        = now;
+            fLastCapturedAt = Time::GetTickCount ();
         }
     };
 }
@@ -180,18 +177,19 @@ namespace {
             double guest;
             double guest_nice;
         };
-        POSIXSysTimeCaptureContext_ fContext_{};
+
+        struct Context_ : Instrument::ICaptureContext {
+            POSIXSysTimeCaptureContext_ fSysTimeInfo{};
+        };
+        Synchronized<shared_ptr<Context_>> fContext_;
+
         CapturerWithContext_Linux_ (const Options& options)
             : CapturerWithContext_COMMON_{options}
+            , fContext_{make_shared<Context_> ()}
         {
-            // Force fill of context - ignore results
-            try {
-                capture_ ();
-            }
-            catch (...) {
-                DbgTrace ("bad sign that first pre-catpure failed."); // Don't propagate in case just listing collectors
-            }
         }
+        CapturerWithContext_Linux_ (const CapturerWithContext_Linux_& src) = default;
+
         /*
          *  /proc/stat
          *      EXAMPLE:
@@ -288,9 +286,9 @@ namespace {
         };
         CPUUsageTimes_ cputime_ ()
         {
-            POSIXSysTimeCaptureContext_ baseline = fContext_;
-            POSIXSysTimeCaptureContext_ newVal   = GetSysTimes_ ();
-            fContext_                            = newVal;
+            POSIXSysTimeCaptureContext_ baseline      = fContext_.cget ().cref ()->fSysTimeInfo;
+            POSIXSysTimeCaptureContext_ newVal        = GetSysTimes_ ();
+            fContext_.rwget ().rwref ()->fSysTimeInfo = newVal;
 
             // from http://stackoverflow.com/questions/23367857/accurate-calculation-of-cpu-usage-given-in-percentage-in-linux
             //      Idle=idle+iowait
@@ -323,7 +321,6 @@ namespace {
         }
         Info capture ()
         {
-            Execution::SleepUntil (fPostponeCaptureUntil_);
             return capture_ ();
         }
         Info capture_ ()
@@ -357,20 +354,26 @@ namespace {
 #if qPlatform_Windows
 namespace {
     struct CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
-#if qUseWMICollectionSupport_
-        WMICollector fSystemWMICollector_{L"System"sv, {kInstanceName_}, {kProcessorQueueLength_}};
-#endif
         struct WinSysTimeCaptureContext_ {
             double IdleTime;
             double KernelTime;
             double UserTime;
         };
-        WinSysTimeCaptureContext_ fContext_;
+        struct Context_ : Instrument::ICaptureContext {
+            WinSysTimeCaptureContext_ fSysTimeInfo{};
+#if qUseWMICollectionSupport_
+            WMICollector fSystemWMICollector_{L"System"sv, {kInstanceName_}, {kProcessorQueueLength_}};
+#endif
+        };
+        Synchronized<shared_ptr<Context_>> fContext_;
+
         CapturerWithContext_Windows_ (const Options& options)
             : CapturerWithContext_COMMON_{options}
+            , fContext_{make_shared<Context_> ()}
         {
-            capture_ (); // Force fill of context
         }
+        CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& src) = default;
+
         static inline double GetAsSeconds_ (FILETIME ft)
         {
             ULARGE_INTEGER ui;
@@ -394,9 +397,9 @@ namespace {
              *      http://en.literateprograms.org/CPU_usage_%28C,_Windows_XP%29
              *      http://www.codeproject.com/Articles/9113/Get-CPU-Usage-with-GetSystemTimes
              */
-            WinSysTimeCaptureContext_ baseline = fContext_;
-            WinSysTimeCaptureContext_ newVal   = GetSysTimes_ ();
-            fContext_                          = newVal;
+            WinSysTimeCaptureContext_ baseline        = fContext_.load ()->fSysTimeInfo;
+            WinSysTimeCaptureContext_ newVal          = GetSysTimes_ ();
+            fContext_.rwget ().rwref ()->fSysTimeInfo = newVal;
 
             double idleTimeOverInterval   = newVal.IdleTime - baseline.IdleTime;
             double kernelTimeOverInterval = newVal.KernelTime - baseline.KernelTime;
@@ -413,9 +416,10 @@ namespace {
             result.fTotalCPUUsage        = cputime_ ();
             result.fTotalProcessCPUUsage = result.fTotalCPUUsage; // @todo fix - remove irq time etc from above? Or add into above if missing
 #if qUseWMICollectionSupport_
-            fSystemWMICollector_.Collect ();
-            Memory::CopyToIf (fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_), &result.fRunQLength);
-            //fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_).CopyToIf (&result.fRunQLength);
+            auto contextLock = fContext_.rwget ();
+            contextLock.rwref ()->fSystemWMICollector_.Collect ();
+            Memory::CopyToIf (contextLock.rwref ()->fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_), &result.fRunQLength);
+            //contextLock.rwref ().fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_).CopyToIf (&result.fRunQLength);
             if (result.fRunQLength) {
                 Memory::AccumulateIf (&result.fRunQLength, result.fTotalProcessCPUUsage); // both normalized so '1' means all logical cores
             }
@@ -426,7 +430,6 @@ namespace {
         Info capture ()
         {
             Info result;
-            Execution::SleepUntil (fPostponeCaptureUntil_);
             return capture_ ();
         }
     };
@@ -435,16 +438,12 @@ namespace {
 
 namespace {
     struct CapturerWithContext_
-        : Debug::AssertExternallySynchronizedLock
 #if qPlatform_Linux
-        ,
-          CapturerWithContext_Linux_
+        : CapturerWithContext_Linux_
 #elif qPlatform_Windows
-        ,
-          CapturerWithContext_Windows_
+        : CapturerWithContext_Windows_
 #else
-        ,
-          CapturerWithContext_COMMON_
+        : CapturerWithContext_COMMON_
 #endif
     {
 #if qPlatform_Linux
@@ -483,11 +482,11 @@ namespace {
 
 namespace {
     class MyCapturer_ : public Instrument::ICapturer {
-        CapturerWithContext_ fCaptureContext;
+        CapturerWithContext_ fCapturerWithContext_;
 
     public:
         MyCapturer_ (const CapturerWithContext_& ctx)
-            : fCaptureContext{ctx}
+            : fCapturerWithContext_{ctx}
         {
         }
         virtual MeasurementSet Capture () override
@@ -499,17 +498,26 @@ namespace {
         }
         nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
         {
-            DurationSecondsType before         = fCaptureContext.GetLastCaptureAt ();
-            Info                rawMeasurement = fCaptureContext.capture ();
+            DurationSecondsType before         = fCapturerWithContext_.GetLastCaptureAt ();
+            Info                rawMeasurement = fCapturerWithContext_.capture ();
             if (outMeasuredAt != nullptr) {
                 using Traversal::Openness;
-                *outMeasuredAt = Range<DurationSecondsType> (before, fCaptureContext.GetLastCaptureAt (), Openness::eClosed, Openness::eClosed);
+                *outMeasuredAt = Range<DurationSecondsType> (before, fCapturerWithContext_.GetLastCaptureAt (), Openness::eClosed, Openness::eClosed);
             }
             return rawMeasurement;
         }
         virtual unique_ptr<ICapturer> Clone () const override
         {
-            return make_unique<MyCapturer_> (fCaptureContext);
+            return make_unique<MyCapturer_> (fCapturerWithContext_);
+        }
+        virtual shared_ptr<Instrument::ICaptureContext> GetConext () const override
+        {
+            EnsureNotNull (fCapturerWithContext_.fContext_.load ());
+            return fCapturerWithContext_.fContext_.load ();
+        }
+        virtual void SetConext (const shared_ptr<Instrument::ICaptureContext>& context)
+        {
+            fCapturerWithContext_.fContext_ = context == nullptr ? make_shared<CapturerWithContext_::Context_> () : dynamic_pointer_cast<CapturerWithContext_::Context_> (context);
         }
     };
 }

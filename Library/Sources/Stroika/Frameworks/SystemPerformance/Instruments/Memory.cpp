@@ -16,7 +16,7 @@
 #include "../../../Foundation/Debug/Trace.h"
 #include "../../../Foundation/Execution/Exceptions.h"
 #include "../../../Foundation/Execution/ProcessRunner.h"
-#include "../../../Foundation/Execution/Sleep.h"
+#include "../../../Foundation/Execution/Synchronized.h"
 #include "../../../Foundation/IO/FileSystem/FileInputStream.h"
 #include "../../../Foundation/Streams/InputStream.h"
 #include "../../../Foundation/Streams/MemoryStream.h"
@@ -27,6 +27,7 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::DataExchange;
+using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
 
 using namespace Stroika::Frameworks;
@@ -111,22 +112,17 @@ String Instruments::Memory::Info::ToString () const
 }
 
 namespace {
-    struct CapturerWithContext_COMMON_ {
-        Options             fOptions_;
-        DurationSecondsType fMinimumAveragingInterval_;
-        DurationSecondsType fPostponeCaptureUntil_{0};
+    struct CapturerWithContext_COMMON_ : Debug::AssertExternallySynchronizedLock {
+        const Options       fOptions_;
         DurationSecondsType fLastCapturedAt_{};
         CapturerWithContext_COMMON_ (const Options& options)
             : fOptions_{options}
-            , fMinimumAveragingInterval_{options.fMinimumAveragingInterval}
         {
         }
         DurationSecondsType GetLastCaptureAt () const { return fLastCapturedAt_; }
         void                NoteCompletedCapture_ ()
         {
-            auto now               = Time::GetTickCount ();
-            fPostponeCaptureUntil_ = now + fMinimumAveragingInterval_;
-            fLastCapturedAt_       = now;
+            fLastCapturedAt_ = Time::GetTickCount ();
         }
     };
 }
@@ -134,27 +130,24 @@ namespace {
 #if qPlatform_Linux
 namespace {
     struct CapturerWithContext_Linux_ : CapturerWithContext_COMMON_ {
-        uint64_t                  fSaved_MajorPageFaultsSinceBoot{};
-        uint64_t                  fSaved_MinorPageFaultsSinceBoot{};
-        uint64_t                  fSaved_PageOutsSinceBoot{};
-        Time::DurationSecondsType fSaved_VMPageStats_At{};
+
+        struct Context_ : Instrument::ICaptureContext {
+            uint64_t                  fSaved_MajorPageFaultsSinceBoot{};
+            uint64_t                  fSaved_MinorPageFaultsSinceBoot{};
+            uint64_t                  fSaved_PageOutsSinceBoot{};
+            Time::DurationSecondsType fSaved_VMPageStats_At{};
+        };
+        Synchronized<shared_ptr<Context_>> fContext_;
 
         CapturerWithContext_Linux_ (Options options)
             : CapturerWithContext_COMMON_{options}
+            , fContext_{make_shared<Context_> ()}
         {
-            // for side-effect of  updating aved_MajorPageFaultsSinc etc
-            try {
-                capture_ ();
-            }
-            catch (...) {
-                DbgTrace ("bad sign that first pre-catpure failed."); // Don't propagate in case just listing collectors
-            }
         }
-        CapturerWithContext_Linux_ (const CapturerWithContext_Linux_&) = default; // copy by value fine - no need to re-wait...
+        CapturerWithContext_Linux_ (const CapturerWithContext_Linux_&) = default;
 
         Instruments::Memory::Info capture ()
         {
-            Execution::SleepUntil (fPostponeCaptureUntil_);
             return capture_ ();
         }
         Instruments::Memory::Info capture_ ()
@@ -289,10 +282,11 @@ namespace {
                         *savedBaseline = *faultsSinceBoot;
                     }
                 };
-                doAve_ (fSaved_VMPageStats_At, now, &fSaved_MinorPageFaultsSinceBoot, updateResult->fPaging.fMinorPageFaultsSinceBoot, &updateResult->fPaging.fMinorPageFaultsPerSecond);
-                doAve_ (fSaved_VMPageStats_At, now, &fSaved_MajorPageFaultsSinceBoot, updateResult->fPaging.fMajorPageFaultsSinceBoot, &updateResult->fPaging.fMajorPageFaultsPerSecond);
-                doAve_ (fSaved_VMPageStats_At, now, &fSaved_PageOutsSinceBoot, updateResult->fPaging.fPageOutsSinceBoot, &updateResult->fPaging.fPageOutsPerSecond);
-                fSaved_VMPageStats_At = now;
+                auto contextLocked = fContext_.rwget ();
+                doAve_ (contextLocked.rwref ()->fSaved_VMPageStats_At, now, &contextLocked.rwref ()->fSaved_MinorPageFaultsSinceBoot, updateResult->fPaging.fMinorPageFaultsSinceBoot, &updateResult->fPaging.fMinorPageFaultsPerSecond);
+                doAve_ (contextLocked.rwref ()->fSaved_VMPageStats_At, now, &contextLocked.rwref ()->fSaved_MajorPageFaultsSinceBoot, updateResult->fPaging.fMajorPageFaultsSinceBoot, &updateResult->fPaging.fMajorPageFaultsPerSecond);
+                doAve_ (contextLocked.rwref ()->fSaved_VMPageStats_At, now, &contextLocked.rwref ()->fSaved_PageOutsSinceBoot, updateResult->fPaging.fPageOutsSinceBoot, &updateResult->fPaging.fPageOutsPerSecond);
+                contextLocked.rwref ()->fSaved_VMPageStats_At = now;
             }
         }
     };
@@ -302,32 +296,24 @@ namespace {
 #if qPlatform_Windows
 namespace {
     struct CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
+        struct Context_ : Instrument::ICaptureContext {
 #if qUseWMICollectionSupport_
-        WMICollector fMemoryWMICollector_{L"Memory"sv, {kInstanceName_}, {kCommittedBytes_, kCommitLimit_, kHardPageFaultsPerSec_, kPagesOutPerSec_, kFreeMem_, kHardwareReserved1_, kHardwareReserved2_}};
+            WMICollector fMemoryWMICollector_{L"Memory"sv, {kInstanceName_}, {kCommittedBytes_, kCommitLimit_, kHardPageFaultsPerSec_, kPagesOutPerSec_, kFreeMem_, kHardwareReserved1_, kHardwareReserved2_}};
 #endif
+        };
+        Synchronized<shared_ptr<Context_>> fContext_;
+
         CapturerWithContext_Windows_ (const Options& options)
             : CapturerWithContext_COMMON_{options}
+            , fContext_{make_shared<Context_> ()}
         {
-            capture_ (); // to pre-seed context
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            for (String i : fMemoryWMICollector_.GetAvailableCounters ()) {
+            for (String i : fContext_->fMemoryWMICollector_.GetAvailableCounters ()) {
                 DbgTrace (L"Memory:Countername: %s", i.c_str ());
             }
 #endif
         }
-        CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
-            : CapturerWithContext_COMMON_
-        {
-            from
-        }
-#if qUseWMICollectionSupport_
-        , fMemoryWMICollector_ (from.fMemoryWMICollector_)
-#endif
-        {
-#if qUseWMICollectionSupport_
-            capture_ (); // to pre-seed context
-#endif
-        }
+        CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& src) = default;
 
         Instruments::Memory::Info capture_ ()
         {
@@ -348,7 +334,6 @@ namespace {
         }
         Instruments::Memory::Info capture ()
         {
-            Execution::SleepUntil (fPostponeCaptureUntil_);
             return capture_ ();
         }
         void Read_GlobalMemoryStatusEx_ (Instruments::Memory::Info* updateResult, uint64_t* totalRAM)
@@ -371,21 +356,22 @@ namespace {
 #if qUseWMICollectionSupport_
         void Read_WMI_ (Instruments::Memory::Info* updateResult, uint64_t totalRAM)
         {
-            fMemoryWMICollector_.Collect ();
-            Memory::CopyToIf (fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommittedBytes_), &updateResult->fVirtualMemory.fCommittedBytes);
-            Memory::CopyToIf (fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommitLimit_), &updateResult->fVirtualMemory.fCommitLimit);
-            Memory::CopyToIf (fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardPageFaultsPerSec_), &updateResult->fPaging.fMajorPageFaultsPerSecond);
-            Memory::CopyToIf (fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kPagesOutPerSec_), &updateResult->fPaging.fPageOutsPerSecond);
-            Memory::CopyToIf (fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_), &updateResult->fPhysicalMemory.fFree);
-            if (optional<double> freeMem = fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_)) {
+            auto contextLock = fContext_.rwget ();
+            contextLock.rwref ()->fMemoryWMICollector_.Collect ();
+            Memory::CopyToIf (contextLock.rwref ()->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommittedBytes_), &updateResult->fVirtualMemory.fCommittedBytes);
+            Memory::CopyToIf (contextLock.rwref ()->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommitLimit_), &updateResult->fVirtualMemory.fCommitLimit);
+            Memory::CopyToIf (contextLock.rwref ()->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardPageFaultsPerSec_), &updateResult->fPaging.fMajorPageFaultsPerSecond);
+            Memory::CopyToIf (contextLock.rwref ()->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kPagesOutPerSec_), &updateResult->fPaging.fPageOutsPerSecond);
+            Memory::CopyToIf (contextLock.rwref ()->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_), &updateResult->fPhysicalMemory.fFree);
+            if (optional<double> freeMem = contextLock.rwref ()->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_)) {
                 if (updateResult->fPhysicalMemory.fActive) {
                     // Active + Inactive + Free == TotalRAM
                     updateResult->fPhysicalMemory.fInactive = totalRAM - *updateResult->fPhysicalMemory.fActive - static_cast<uint64_t> (*freeMem);
                 }
             }
             updateResult->fPhysicalMemory.fOSReserved = nullopt;
-            Memory::AccumulateIf (&updateResult->fPhysicalMemory.fOSReserved, fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved1_));
-            Memory::AccumulateIf (&updateResult->fPhysicalMemory.fOSReserved, fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved2_));
+            Memory::AccumulateIf (&updateResult->fPhysicalMemory.fOSReserved, contextLock.rwref ()->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved1_));
+            Memory::AccumulateIf (&updateResult->fPhysicalMemory.fOSReserved, contextLock.rwref ()->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved2_));
             // fPhysicalMemory.fAvailable WAG TMPHACK - probably should add "hardware in use" memory + private WS of each process + shared memory "WS" - but not easy to compute...
             updateResult->fPhysicalMemory.fAvailable = updateResult->fPhysicalMemory.fFree + updateResult->fPhysicalMemory.fInactive;
         }
@@ -396,16 +382,12 @@ namespace {
 
 namespace {
     struct CapturerWithContext_
-        : Debug::AssertExternallySynchronizedLock
 #if qPlatform_Linux
-        ,
-          CapturerWithContext_Linux_
+        : CapturerWithContext_Linux_
 #elif qPlatform_Windows
-        ,
-          CapturerWithContext_Windows_
+        : CapturerWithContext_Windows_
 #else
-        ,
-          CapturerWithContext_COMMON_
+        : CapturerWithContext_COMMON_
 #endif
     {
 #if qPlatform_Linux
@@ -415,10 +397,12 @@ namespace {
 #else
         using inherited = CapturerWithContext_COMMON_;
 #endif
-        CapturerWithContext_ (Options options)
+        CapturerWithContext_ (const Options& options)
             : inherited{options}
         {
         }
+        CapturerWithContext_ (const CapturerWithContext_& src) = default;
+
         Instruments::Memory::Info capture ()
         {
             lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
@@ -487,11 +471,11 @@ namespace {
 
 namespace {
     class MyCapturer_ : public Instrument::ICapturer {
-        CapturerWithContext_ fCaptureContext;
+        CapturerWithContext_ fCapturerWithContext_;
 
     public:
         MyCapturer_ (const CapturerWithContext_& ctx)
-            : fCaptureContext{ctx}
+            : fCapturerWithContext_{ctx}
         {
         }
         virtual MeasurementSet Capture () override
@@ -503,17 +487,26 @@ namespace {
         }
         nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
         {
-            DurationSecondsType before         = fCaptureContext.GetLastCaptureAt ();
-            Info                rawMeasurement = fCaptureContext.capture ();
+            DurationSecondsType before         = fCapturerWithContext_.GetLastCaptureAt ();
+            Info                rawMeasurement = fCapturerWithContext_.capture ();
             if (outMeasuredAt != nullptr) {
                 using Traversal::Openness;
-                *outMeasuredAt = Range<DurationSecondsType> (before, fCaptureContext.GetLastCaptureAt (), Openness::eClosed, Openness::eClosed);
+                *outMeasuredAt = Range<DurationSecondsType> (before, fCapturerWithContext_.GetLastCaptureAt (), Openness::eClosed, Openness::eClosed);
             }
             return rawMeasurement;
         }
         virtual unique_ptr<ICapturer> Clone () const override
         {
-            return make_unique<MyCapturer_> (fCaptureContext);
+            return make_unique<MyCapturer_> (fCapturerWithContext_);
+        }
+        virtual shared_ptr<Instrument::ICaptureContext> GetConext () const override
+        {
+            EnsureNotNull (fCapturerWithContext_.fContext_.cget ().cref ());
+            return fCapturerWithContext_.fContext_.cget ().cref ();
+        }
+        virtual void SetConext (const shared_ptr<Instrument::ICaptureContext>& context)
+        {
+            fCapturerWithContext_.fContext_ = context == nullptr ? make_shared<CapturerWithContext_::Context_> () : dynamic_pointer_cast<CapturerWithContext_::Context_> (context);
         }
     };
 }

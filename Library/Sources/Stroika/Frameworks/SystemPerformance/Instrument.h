@@ -12,6 +12,7 @@
 
 #include <memory>
 
+#include "../../Foundation/Common/Property.h"
 #include "../../Foundation/Containers/Mapping.h"
 #include "../../Foundation/Containers/Set.h"
 #include "../../Foundation/DataExchange/Atom.h"
@@ -56,23 +57,40 @@ namespace Stroika::Frameworks::SystemPerformance {
     class Instrument {
     public:
         /**
+         *  This is a base type for capture contexts. Actual contexts will contain more information
+         *  relevant to that Instrument (but all private). All users of Instruments can control is, when
+         *  copying an instrument, which ones shared context.
+         *
+         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+         *          More importantly, this is a requirement on all subclasses of the capture context
+         */
+        class ICaptureContext {
+        public:
+            virtual ~ICaptureContext () = default;
+        };
+
+    public:
+        /**
+         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
          */
         class ICapturer {
         public:
-            virtual ~ICapturer ()                        = default;
-            virtual MeasurementSet        Capture ()     = 0;
-            virtual unique_ptr<ICapturer> Clone () const = 0;
+            virtual ~ICapturer ()                                                                      = default;
+            virtual MeasurementSet              Capture ()                                             = 0;
+            virtual unique_ptr<ICapturer>       Clone () const                                         = 0;
+            virtual shared_ptr<ICaptureContext> GetConext () const                                     = 0;
+            virtual void                        SetConext (const shared_ptr<ICaptureContext>& context) = 0;
         };
 
     public:
         /**
          */
-        Instrument ()                      = delete;
-        Instrument (const Instrument& src) = default;
+        Instrument () = delete;
+        Instrument (const Instrument& src);
         Instrument (InstrumentNameType instrumentName, unique_ptr<ICapturer>&& capturer, const Set<MeasurementType>& capturedMeasurements, const Mapping<type_index, MeasurementType>& typeToMeasurementTypeMap, const DataExchange::ObjectVariantMapper& objectVariantMapper);
 
     public:
-        nonvirtual Instrument& operator= (const Instrument& rhs) = default;
+        nonvirtual Instrument& operator= (const Instrument& rhs);
 
     public:
         /**
@@ -100,6 +118,14 @@ namespace Stroika::Frameworks::SystemPerformance {
         nonvirtual T MeasurementAs (const Measurement& m) const;
         template <typename T>
         nonvirtual optional<T> MeasurementAs (const MeasurementSet& m) const;
+
+    public:
+        /**
+         *  When you copy an Instrument, by default it remains linked to its source for some of its shared (averaging) data.
+         *  to break that context link, set this context to nullptr, and it automatically creates a new context.
+         *  Get() here - always returns non-null. But - its an opaque type, so not terribly useful, except to assign nullptr.
+         */
+        Common::Property<shared_ptr<ICaptureContext>> pContext;
 
     public:
         /*const*/ InstrumentNameType fInstrumentName;
