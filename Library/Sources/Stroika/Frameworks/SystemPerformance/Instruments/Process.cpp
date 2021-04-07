@@ -1453,7 +1453,7 @@ namespace {
                             Memory::CopyToIf (userName, &processInfo.fUserName);
                         }
                         {
-                            PROCESS_MEMORY_COUNTERS_EX memInfo;
+                            PROCESS_MEMORY_COUNTERS_EX memInfo{};
                             if (::GetProcessMemoryInfo (hProcess, reinterpret_cast<PROCESS_MEMORY_COUNTERS*> (&memInfo), sizeof (memInfo))) {
                                 processInfo.fWorkingSetSize = memInfo.WorkingSetSize;
                                 processInfo.fPrivateBytes   = memInfo.PrivateUsage;

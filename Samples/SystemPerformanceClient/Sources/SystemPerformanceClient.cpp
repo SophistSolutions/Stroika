@@ -60,7 +60,7 @@ namespace {
     {
         cout << "Instrument:" << endl;
         for (Instrument i : SystemPerformance::GetAllInstruments ()) {
-            cout << "  " << i.fInstrumentName.GetPrintName ().AsNarrowSDKString () << endl;
+            cout << "  " << i.pInstrumentName ().GetPrintName ().AsNarrowSDKString () << endl;
             // print measurements too?
         }
     }
@@ -75,7 +75,7 @@ namespace {
             cs.SetRunPeriod (15s);
             for (Instrument i : SystemPerformance::GetAllInstruments ()) {
                 if (not run.empty ()) {
-                    if (not run.Contains (i.fInstrumentName)) {
+                    if (not run.Contains (i.pInstrumentName)) {
                         continue;
                     }
                 }
@@ -101,11 +101,11 @@ namespace {
         cout << "Results for each instrument:" << endl;
         for (Instrument i : SystemPerformance::GetAllInstruments ()) {
             if (not run.empty ()) {
-                if (not run.Contains (i.fInstrumentName)) {
+                if (not run.Contains (i.pInstrumentName)) {
                     continue;
                 }
             }
-            cout << "  " << i.fInstrumentName.GetPrintName ().AsNarrowSDKString () << endl;
+            cout << "  " << i.pInstrumentName ().GetPrintName ().AsNarrowSDKString () << endl;
             Execution::Sleep (captureInterval);
             MeasurementSet m = i.Capture ();
             if (m.fMeasurements.empty ()) {

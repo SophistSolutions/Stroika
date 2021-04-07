@@ -124,19 +124,46 @@ namespace Stroika::Frameworks::SystemPerformance {
          *  When you copy an Instrument, by default it remains linked to its source for some of its shared (averaging) data.
          *  to break that context link, set this context to nullptr, and it automatically creates a new context.
          *  Get() here - always returns non-null. But - its an opaque type, so not terribly useful, except to assign nullptr.
+         *  It is ILLEGAL (Required) that any arguments ASSIGNED to the pContext be either nullptr or of the exact dynamic
+         *  type used by the given Instrument (so copied from an earlier version of this instrument or something known to be
+         *  of the same type).
          */
         Common::Property<shared_ptr<ICaptureContext>> pContext;
 
     public:
+        /**
+         * @brief  Instruments all have a displayable name which can be used for reference. Each (type) instrument should have a unique.
+         */
+        Common::ReadOnlyProperty<InstrumentNameType> pInstrumentName;
+
+    public:
+        /**
+         */
+        Common::ReadOnlyProperty<Set<MeasurementType>> pCapturedMeasurementTypes;
+
+    public:
+        /**
+         */
+        Common::ReadOnlyProperty<DataExchange::ObjectVariantMapper> pObjectVariantMapper;
+
+    public:
+        /**
+         * @brief Many (all) instruments will have corresponding c++ objects to represent what is captuerd. Typically
+         *        this entry will have only one entry, but multiple types could be supported. This MAY not represent all
+         *        measurement types supported by this instrument (that is some may not have a C++ struct equivilent)
+         */
+        Common::ReadOnlyProperty<Mapping<type_index, MeasurementType>> pType2MeasurementTypes;
+
+    private:
         /*const*/ InstrumentNameType fInstrumentName;
 
-    public:
+    private:
         /*const*/ Mapping<type_index, MeasurementType> fType2MeasurementTypes;
 
-    public:
+    private:
         /*const*/ Set<MeasurementType> fCapturedMeasurementTypes;
 
-    public:
+    private:
         /*const*/ DataExchange::ObjectVariantMapper fObjectVariantMapper;
 
     public:

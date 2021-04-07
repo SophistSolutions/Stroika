@@ -21,6 +21,19 @@ Instrument::Instrument (InstrumentNameType instrumentName, unique_ptr<ICapturer>
           [this] ([[maybe_unused]] auto* property, const auto& context) {
               fCapFun_.fCap_->SetConext (context);
           }}
+    , pInstrumentName{
+          [this] ([[maybe_unused]] const auto* property) {
+              return fInstrumentName;
+          }}
+    , pCapturedMeasurementTypes{[this] ([[maybe_unused]] const auto* property) {
+        return fCapturedMeasurementTypes;
+    }}
+    , pObjectVariantMapper{[this] ([[maybe_unused]] const auto* property) {
+        return fObjectVariantMapper;
+    }}
+    , pType2MeasurementTypes{[this] ([[maybe_unused]] const auto* property) {
+        return fType2MeasurementTypes;
+    }}
     , fInstrumentName{instrumentName}
     , fCapFun_{move (capturer)}
     , fType2MeasurementTypes{typeToMeasurementTypeMap}
