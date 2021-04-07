@@ -1768,12 +1768,18 @@ namespace {
         }
         virtual shared_ptr<Instrument::ICaptureContext> GetConext () const override
         {
+#if qPlatform_Linux or qPlatform_Windows
             EnsureNotNull (fCapturerWithContext_.fContext_.cget ().cref ());
             return fCapturerWithContext_.fContext_.cget ().cref ();
+#else
+            return make_shared<Instrument::ICaptureContext> ();
+#endif
         }
-        virtual void SetConext (const shared_ptr<Instrument::ICaptureContext>& context)
+        virtual void SetConext (const shared_ptr<Instrument::ICaptureContext>& context) override
         {
+#if qPlatform_Linux or qPlatform_Windows
             fCapturerWithContext_.fContext_ = context == nullptr ? make_shared<CapturerWithContext_::Context_> () : dynamic_pointer_cast<CapturerWithContext_::Context_> (context);
+#endif
         }
     };
 }

@@ -18,7 +18,7 @@ namespace Stroika::Frameworks::SystemPerformance {
      ********************************************************************************
      */
     inline Instrument::Instrument (const Instrument& src)
-        : Instrument{src.fInstrumentName, move (src.fCapFun_.fCap_->Clone ()), src.fCapturedMeasurementTypes, src.fType2MeasurementTypes, src.fObjectVariantMapper}
+        : Instrument{src.fInstrumentName, src.fCapFun_.fCap_->Clone (), src.fCapturedMeasurementTypes, src.fType2MeasurementTypes, src.fObjectVariantMapper}
     {
     }
     inline MeasurementSet Instrument::Capture ()

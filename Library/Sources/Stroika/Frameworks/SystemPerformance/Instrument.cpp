@@ -35,10 +35,10 @@ Instrument::Instrument (InstrumentNameType instrumentName, unique_ptr<ICapturer>
         return fType2MeasurementTypes;
     }}
     , fInstrumentName{instrumentName}
-    , fCapFun_{move (capturer)}
     , fType2MeasurementTypes{typeToMeasurementTypeMap}
     , fCapturedMeasurementTypes{capturedMeasurements}
     , fObjectVariantMapper{objectVariantMapper}
+    , fCapFun_{move (capturer)}
 {
 }
 
