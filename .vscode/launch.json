@@ -37,12 +37,13 @@
       "type": "cppvsdbg",
       "request": "launch",
       //"program": "${workspaceFolder}/Builds/${input:CURRENT-CONFIGURATION}/Tests/Test01.exe",
-      "program": "${workspaceFolder}/Builds/Debug-U-32/Samples-WebServer/WebServer.exe",
-      "args": [],
+      //"program": "${workspaceFolder}/Builds/Debug-U-32/Samples-WebServer/WebServer.exe",
+      "program": "${workspaceFolder}/Builds/Debug-U-32/Samples-SystemPerformanceClient/SystemPerformanceClient.exe",
+      "args": ["-m"],
       "stopAtEntry": true,
       "cwd": "${workspaceFolder}",
       "environment": [],
-      "console": "integratedTerminal",
+      "console": "externalTerminal",
       "logging": {
         "moduleLoad": false,
         "trace": true
