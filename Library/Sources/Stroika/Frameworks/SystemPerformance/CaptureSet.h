@@ -6,14 +6,13 @@
 
 #include "../StroikaPreComp.h"
 
+#include "../../Foundation/Common/Property.h"
 #include "../../Foundation/Containers/Set.h"
 #include "../../Foundation/Time/Duration.h"
 
 #include "Instrument.h"
 
-/*
- * TODO:
- *      @todo
+/**
  */
 
 namespace Stroika::Frameworks::SystemPerformance {
@@ -31,34 +30,53 @@ namespace Stroika::Frameworks::SystemPerformance {
      */
     class CaptureSet {
     public:
+        /**
+         */
         CaptureSet (const Duration& period = 30s, const Set<Instrument>& instruments = {});
-        CaptureSet (const CaptureSet& src) = default;
+        CaptureSet (const CaptureSet& src);
 
     public:
-        nonvirtual CaptureSet& operator= (const CaptureSet& rhs) = default;
+        nonvirtual CaptureSet& operator= (const CaptureSet& rhs);
+
+    public:
+        /**
+         * @brief All the Instruments have their data 'captured' automatically every 'run-period' time interval.
+         * 
+         *  So, in particular, any averages captured will generally, by default, be relative to this interval
+         *  (unless the instrument documents a different pattern, such as load-average).
+         */
+        Common::Property<Duration> pRunPeriod;
+
+    public:
+        /**
+         * @brief 
+         */
+        Common::Property<Set<Instrument>> pInstruments;
 
     public:
         /**
          */
-        nonvirtual Duration GetRunPeriod () const;
+        nonvirtual Duration [[deprecated ("Since Stroika 2.1b12 use pRunPeriod")]] GetRunPeriod () const;
 
     public:
         /**
          */
-        nonvirtual void SetRunPeriod (const Duration& p);
+        nonvirtual void [[deprecated ("Since Stroika 2.1b12 use pRunPeriod")]] SetRunPeriod (const Duration& p);
 
     public:
         /**
          */
-        nonvirtual Set<Instrument> GetInstrumentSet () const;
+        nonvirtual Set<Instrument> [[deprecated ("Since Stroika 2.1b12 use pInstruments")]] GetInstrumentSet () const;
 
     public:
         /**
          */
-        nonvirtual void SetInstrumentSet (const Set<Instrument>& i);
+        nonvirtual void [[deprecated ("Since Stroika 2.1b12 use pInstruments")]] SetInstrumentSet (const Set<Instrument>& i);
 
     public:
-        nonvirtual void AddInstrument (const Instrument i);
+        /**
+         */
+        nonvirtual void AddInstrument (const Instrument& i);
 
     private:
         Set<Instrument> fInstruments_;

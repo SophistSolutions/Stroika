@@ -685,6 +685,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\FileSystemRequestHandler.cpp">
       <Filter>WebServer</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CaptureSet.cpp">
+      <Filter>System-Performance</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Platform\Windows.h">

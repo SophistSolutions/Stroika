@@ -241,6 +241,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\AllInstruments.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Capturer.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CaptureSet.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instrument.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\CPU.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Memory.cpp" />

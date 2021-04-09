@@ -91,6 +91,7 @@ void Capturer::ManageRunner_ (bool on)
 
 void Capturer::Runner_ ()
 {
+    //
     // really only need one thread - and just wait right amount of time to wakeup to service next captureset.
     //
     // Compute an list of the 'next runs' (sorted by next first). Then WaitUnil () on that.
@@ -116,7 +117,7 @@ void Capturer::Runner_ ()
         runQueue.clear ();
         SortedMapping<DurationSecondsType, CaptureSet> tmp;
         for (const auto& i : lock.load ()) {
-            runQueue.Add (now + i.GetRunPeriod ().As<DurationSecondsType> (), i);
+            runQueue.Add (now + i.pRunPeriod ().As<DurationSecondsType> (), i);
         }
         changeCountForCaptureSet = fCaptureSetChangeCount_;
     };
@@ -129,7 +130,7 @@ void Capturer::Runner_ ()
 
         Assert (not runQueue.empty ()); // because otherwise the thread would have been aborted, and we wouldn't get this far (race??? - maybe need to do ifcheck)
 
-        // otehrwise pop the first item from the Q, and wait til then. Then process it, and push it back onto the Q with the appropriate
+        // otherwise pop the first item from the Q, and wait til then. Then process it, and push it back onto the Q with the appropriate
         // 'next' time.
         auto iterator = runQueue.begin ();
         Assert (iterator != runQueue.end ());
@@ -137,14 +138,14 @@ void Capturer::Runner_ ()
         Execution::SleepUntil (runNext.fKey);
         RunnerOnce_ (runNext.fValue);
         runQueue.erase (iterator);
-        runQueue.Add (runNext.fKey + runNext.fValue.GetRunPeriod ().As<DurationSecondsType> (), runNext.fValue); // interpret time offset as wrt leading edge
+        runQueue.Add (runNext.fKey + runNext.fValue.pRunPeriod ().As<DurationSecondsType> (), runNext.fValue); // interpret time offset as wrt leading edge
     }
 }
 
 void Capturer::RunnerOnce_ (const CaptureSet& cs)
 {
     MeasurementSet measurements;
-    for (Instrument i : cs.GetInstrumentSet ()) {
+    for (Instrument i : cs.pInstruments ()) {
         try {
             measurements.MergeAdditions (i.Capture ());
         }

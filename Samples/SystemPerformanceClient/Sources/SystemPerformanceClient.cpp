@@ -72,7 +72,7 @@ namespace {
         Capturer capturer;
         {
             CaptureSet cs;
-            cs.SetRunPeriod (15s);
+            cs.pRunPeriod = 15s;
             for (Instrument i : SystemPerformance::GetAllInstruments ()) {
                 if (not run.empty ()) {
                     if (not run.Contains (i.pInstrumentName)) {

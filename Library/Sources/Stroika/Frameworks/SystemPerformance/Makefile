@@ -27,6 +27,7 @@ vpath %cpp $(SrcDir)
 Objs	=	\
 	$(ObjDir)AllInstruments${OBJ_SUFFIX}\
 	$(ObjDir)Capturer${OBJ_SUFFIX}\
+	$(ObjDir)CaptureSet${OBJ_SUFFIX}\
 	$(ObjDir)Instrument${OBJ_SUFFIX}\
 	$(ObjDir)Measurement${OBJ_SUFFIX}\
 

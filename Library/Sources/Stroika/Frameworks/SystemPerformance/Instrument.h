@@ -45,14 +45,24 @@ namespace Stroika::Frameworks::SystemPerformance {
      *  \brief An Instrument is a stateful object from which you can Capture () a series of measurements about a system.
      *
      *  \note   Design Note
-     *          Each instrument instance MAY maintain 'state' - that affects subsequent calls. For example, for instruments
+     *          Each instrument instance MAY maintain 'shared state' - that affects subsequent calls. For example, for instruments
      *          that measure data over a period of time (like average CPU usage over a time interval) - they may maintain
      *          state, and return an average over the time since the last call to this instrument instance.
+     * 
+     *          When copying instruments, this shared state remains shared. To break that share, use this.pContext = nullptr;
+     *
+     *  \note   Design Note
+     *          Averages captured by instruments are generally relative to the capture interval (time between captures)
+     *          among all instruments sharing a shared context.
+     * 
+     *          Though this time can be controlled otherwise, the easiest way is via the CaptureSet 'RunPeriod'
      *
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *          (but note that the shared state is internally synchronized); but you still must externally syncrhonize 
+     *          access to all instrument non-const methods.
      */
     class Instrument {
     public:
