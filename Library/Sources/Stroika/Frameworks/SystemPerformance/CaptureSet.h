@@ -60,9 +60,9 @@ namespace Stroika::Frameworks::SystemPerformance {
 
     public:
         [[deprecated ("Since Stroika 2.1b12 use pRunPeriod")]] nonvirtual Duration GetRunPeriod () const;
-        [[deprecated ("Since Stroika 2.1b12 use pRunPeriod")]] nonvirtual void SetRunPeriod (const Duration& p);
+        [[deprecated ("Since Stroika 2.1b12 use pRunPeriod")]] nonvirtual void     SetRunPeriod (const Duration& p);
         [[deprecated ("Since Stroika 2.1b12 use pInstruments")]] nonvirtual Set<Instrument> GetInstrumentSet () const;
-        [[deprecated ("Since Stroika 2.1b12 use pInstruments")]] nonvirtual void SetInstrumentSet (const Set<Instrument>& i);
+        [[deprecated ("Since Stroika 2.1b12 use pInstruments")]] nonvirtual void            SetInstrumentSet (const Set<Instrument>& i);
 
     private:
         Set<Instrument> fInstruments_;
