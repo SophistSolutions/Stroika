@@ -28,8 +28,6 @@
  *      @todo   VERY primitive, but for simple cases functional implementation. FIX IT, so its better, and
  *              more complete (and efficient).
  *
- *      @todo   Weak support for merging measurementsets; fix!
- *
  *      @todo   make it optional storing the most recent measurement set.
  *
  *      @todo   Use threadpool CORRECTLY!. Maybe push ALL measurements into
@@ -66,7 +64,7 @@ namespace Stroika::Frameworks::SystemPerformance {
      *          Capturer capturer;
      *          {
      *              CaptureSet cs;
-     *              cs.SetRunPeriod (15s);
+     *              cs.pRunPeriod = 15s;
      *              for (Instrument i : SystemPerformance::GetAllInstruments ()) {
      *                  cs.AddInstrument (i);
      *              }
