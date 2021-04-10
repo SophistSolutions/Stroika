@@ -18,13 +18,13 @@ namespace Stroika::Frameworks::SystemPerformance {
      ********************************************************************************
      */
     inline Instrument::Instrument (const Instrument& src)
-        : Instrument{src.fInstrumentName_, src.fCapFun_.fCap_->Clone (), src.fCapturedMeasurementTypes_, src.fType2MeasurementTypes_, src.fObjectVariantMapper_}
+        : Instrument{src.fInstrumentName_, src.fCaptureRep_->Clone (), src.fCapturedMeasurementTypes_, src.fType2MeasurementTypes_, src.fObjectVariantMapper_}
     {
     }
     inline MeasurementSet Instrument::Capture ()
     {
-        AssertNotNull (fCapFun_.rwget ());
-        return fCapFun_.rwget ()->Capture ();
+        AssertNotNull (fCaptureRep_);
+        return fCaptureRep_->Capture ();
     }
     template <>
     inline VariantValue Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)

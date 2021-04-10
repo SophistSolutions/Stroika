@@ -165,10 +165,10 @@ namespace Stroika::Frameworks::SystemPerformance {
         Common::ReadOnlyProperty<Mapping<type_index, MeasurementType>> pType2MeasurementTypes;
 
     private:
-        /*const*/ InstrumentNameType fInstrumentName_;
+        /*const*/ InstrumentNameType                   fInstrumentName_;
         /*const*/ Mapping<type_index, MeasurementType> fType2MeasurementTypes_;
-        /*const*/ Set<MeasurementType> fCapturedMeasurementTypes_;
-        /*const*/ DataExchange::ObjectVariantMapper fObjectVariantMapper_;
+        /*const*/ Set<MeasurementType>                 fCapturedMeasurementTypes_;
+        /*const*/ DataExchange::ObjectVariantMapper    fObjectVariantMapper_;
 
     public:
         /**
@@ -194,27 +194,7 @@ namespace Stroika::Frameworks::SystemPerformance {
 #endif
 
     private:
-        struct SharedByValueCaptureRepType_ {
-            unique_ptr<ICapturer> fCap_;
-            ICapturer*            rwget ()
-            {
-                return fCap_.get ();
-            }
-            SharedByValueCaptureRepType_ (unique_ptr<ICapturer>&& cap)
-                : fCap_{move (cap)}
-            {
-            }
-            SharedByValueCaptureRepType_ (const SharedByValueCaptureRepType_& cap)
-                : fCap_{cap.fCap_.get ()->Clone ()}
-            {
-            }
-            SharedByValueCaptureRepType_& operator= (const SharedByValueCaptureRepType_& cap)
-            {
-                fCap_ = cap.fCap_.get ()->Clone ();
-                return *this;
-            }
-        };
-        /*const*/ SharedByValueCaptureRepType_ fCapFun_;
+        /*const*/ unique_ptr<ICapturer> fCaptureRep_;
     };
 
 }
