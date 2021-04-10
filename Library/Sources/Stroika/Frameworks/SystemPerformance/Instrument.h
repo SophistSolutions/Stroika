@@ -17,14 +17,13 @@
 #include "../../Foundation/Containers/Set.h"
 #include "../../Foundation/DataExchange/Atom.h"
 #include "../../Foundation/DataExchange/ObjectVariantMapper.h"
+#include "../../Foundation/Debug/AssertExternallySynchronizedLock.h"
 #include "../../Foundation/Execution/Function.h"
 
 #include "Measurement.h"
 #include "MeasurementSet.h"
 
-/*
- * TODO:
- *      @todo   enforce thread safety polciy (assert externally locked?).
+/**
  */
 
 namespace Stroika::Frameworks::SystemPerformance {
@@ -59,10 +58,10 @@ namespace Stroika::Frameworks::SystemPerformance {
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-     *          (but note that the shared state is internally synchronized); but you still must externally syncrhonize 
+     *          (but note that the shared state is internally synchronized); but you still must externally synchronize 
      *          access to all instrument non-const methods.
      */
-    class Instrument {
+    class Instrument : private Debug::AssertExternallySynchronizedLock {
     public:
         /**
          *  This is a base type for capture contexts. Actual contexts will contain more information
@@ -154,6 +153,7 @@ namespace Stroika::Frameworks::SystemPerformance {
 
     public:
         /**
+         *  \brief mapper for all the types listed in pType2MeasurementTypes().Values (), as well as any required support types.
          */
         Common::ReadOnlyProperty<DataExchange::ObjectVariantMapper> pObjectVariantMapper;
 
