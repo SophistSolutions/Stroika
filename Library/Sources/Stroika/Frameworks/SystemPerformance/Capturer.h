@@ -25,9 +25,6 @@
  *              Then combine into one massive measuremnets list fMeasurmentsMapping.Values() (once
  *              we have impelemtend values() on mapping).
  *
- *      @todo   VERY primitive, but for simple cases functional implementation. FIX IT, so its better, and
- *              more complete (and efficient).
- *
  *      @todo   make it optional storing the most recent measurement set.
  *
  *      @todo   Use threadpool CORRECTLY!. Maybe push ALL measurements into
@@ -144,10 +141,10 @@ namespace Stroika::Frameworks::SystemPerformance {
 
     public:
         /**
-         *  Call this anytime (for example if you don't want to bother with callbacks or if
+         *  Read this anytime (for example if you don't want to bother with callbacks or if
          *  some other process needs to query the latest values from the instrument measurers.
          */
-        nonvirtual MeasurementSet GetMostRecentMeasurements () const;
+        Common::ReadOnlyProperty<MeasurementSet> pMostRecentMeasurements;
 
     public:
         /**
@@ -157,12 +154,7 @@ namespace Stroika::Frameworks::SystemPerformance {
     public:
         /**
          */
-        nonvirtual Collection<NewMeasurementsCallbackType> GetMeasurementsCallbacks () const;
-
-    public:
-        /**
-         */
-        nonvirtual void SetMeasurementsCallbacks (const Collection<NewMeasurementsCallbackType>& callbacks);
+        Common::Property<Collection<NewMeasurementsCallbackType>> pMeasurementsCallbacks;
 
     public:
         /**
@@ -177,17 +169,19 @@ namespace Stroika::Frameworks::SystemPerformance {
     public:
         /**
          */
-        nonvirtual Collection<CaptureSet> GetCaptureSets () const;
-
-    public:
-        /**
-         */
-        nonvirtual void SetCaptureSets (const Collection<CaptureSet>& captureSets);
+        Common::Property<Collection<CaptureSet>> pCaptureSets;
 
     public:
         /**
          */
         nonvirtual void AddCaptureSet (const CaptureSet& cs);
+
+    public:
+        [[deprecated ("Since Stroika 2.1b12 use pMostRecentMeasurements")]] nonvirtual MeasurementSet GetMostRecentMeasurements () const;
+        [[deprecated ("Since Stroika 2.1b12 use pMeasurementsCallbacks")]] nonvirtual Collection<NewMeasurementsCallbackType> GetMeasurementsCallbacks () const;
+        [[deprecated ("Since Stroika 2.1b12 use pMeasurementsCallbacks")]] nonvirtual void                                    SetMeasurementsCallbacks (const Collection<NewMeasurementsCallbackType>& callbacks);
+        [[deprecated ("Since Stroika 2.1b12 use pCaptureSets")]] nonvirtual Collection<CaptureSet> GetCaptureSets () const;
+        [[deprecated ("Since Stroika 2.1b12 use pCaptureSets")]] nonvirtual void                   SetCaptureSets (const Collection<CaptureSet>& captureSets);
 
     private:
         nonvirtual void ManageRunner_ (bool on);

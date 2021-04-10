@@ -178,7 +178,7 @@ namespace {
         unsigned int pass{};
         cout << "Printing most recent measurements (in loop):" << endl;
         while (true) {
-            auto     measurements = sCapturer_.GetMostRecentMeasurements (); // capture results on a regular cadence with MyCapturer, and just report the latest stats
+            auto     measurements = sCapturer_.pMostRecentMeasurements (); // capture results on a regular cadence with MyCapturer, and just report the latest stats
             DateTime now          = DateTime::Now ();
 
             optional<double> runQLength;
