@@ -27,7 +27,6 @@ namespace Stroika::Frameworks::SystemPerformance {
     using namespace Stroika::Foundation;
     using Characters::String;
     using Containers::Collection;
-    using DataExchange::VariantValue;
     using Time::DurationSecondsType;
     using Traversal::Range;
 

@@ -18,7 +18,7 @@ namespace Stroika::Frameworks::SystemPerformance {
      ********************************************************************************
      */
     inline Instrument::Instrument (const Instrument& src)
-        : Instrument{src.fInstrumentName, src.fCapFun_.fCap_->Clone (), src.fCapturedMeasurementTypes, src.fType2MeasurementTypes, src.fObjectVariantMapper}
+        : Instrument{src.fInstrumentName_, src.fCapFun_.fCap_->Clone (), src.fCapturedMeasurementTypes_, src.fType2MeasurementTypes_, src.fObjectVariantMapper_}
     {
     }
     inline MeasurementSet Instrument::Capture ()
@@ -49,23 +49,23 @@ namespace Stroika::Frameworks::SystemPerformance {
     template <typename T>
     inline T Instrument::MeasurementAs (const Measurement& m) const
     {
-        Require (fType2MeasurementTypes.ContainsKey (typeid (decay_t<T>)));
-        Require (m.fType == fType2MeasurementTypes[typeid (decay_t<T>)]);
-        return fObjectVariantMapper.ToObject<T> (m.fValue);
+        Require (fType2MeasurementTypes_.ContainsKey (typeid (decay_t<T>)));
+        Require (m.fType == fType2MeasurementTypes_[typeid (decay_t<T>)]);
+        return fObjectVariantMapper_.ToObject<T> (m.fValue);
     }
     template <typename T>
     optional<T> Instrument::MeasurementAs (const MeasurementSet& m) const
     {
-        Require (fType2MeasurementTypes.ContainsKey (typeid (decay_t<T>)));
-        MeasurementType mt = fType2MeasurementTypes[typeid (decay_t<T>)];
+        Require (fType2MeasurementTypes_.ContainsKey (typeid (decay_t<T>)));
+        MeasurementType mt = fType2MeasurementTypes_[typeid (decay_t<T>)];
         if (auto i = m.fMeasurements.FindFirstThat ([=] (const Measurement& m) { return m.fType == mt; })) {
-            return fObjectVariantMapper.ToObject<T> (i->fValue);
+            return fObjectVariantMapper_.ToObject<T> (i->fValue);
         }
         return nullopt;
     }
     inline bool Instrument::operator== (const Instrument& rhs) const
     {
-        return fInstrumentName == rhs.fInstrumentName;
+        return fInstrumentName_ == rhs.fInstrumentName_;
     }
 
 }

@@ -165,16 +165,10 @@ namespace Stroika::Frameworks::SystemPerformance {
         Common::ReadOnlyProperty<Mapping<type_index, MeasurementType>> pType2MeasurementTypes;
 
     private:
-        /*const*/ InstrumentNameType fInstrumentName;
-
-    private:
-        /*const*/ Mapping<type_index, MeasurementType> fType2MeasurementTypes;
-
-    private:
-        /*const*/ Set<MeasurementType> fCapturedMeasurementTypes;
-
-    private:
-        /*const*/ DataExchange::ObjectVariantMapper fObjectVariantMapper;
+        /*const*/ InstrumentNameType fInstrumentName_;
+        /*const*/ Mapping<type_index, MeasurementType> fType2MeasurementTypes_;
+        /*const*/ Set<MeasurementType> fCapturedMeasurementTypes_;
+        /*const*/ DataExchange::ObjectVariantMapper fObjectVariantMapper_;
 
     public:
         /**
@@ -187,7 +181,7 @@ namespace Stroika::Frameworks::SystemPerformance {
          */
         nonvirtual strong_ordering operator<=> (const Instrument& rhs) const
         {
-            return fInstrumentName <=> rhs.fInstrumentName;
+            return fInstrumentName_ <=> rhs.fInstrumentName_;
         }
 
 #endif
@@ -195,7 +189,7 @@ namespace Stroika::Frameworks::SystemPerformance {
     public:
         bool operator< (const Instrument& rhs) const
         {
-            return fInstrumentName < rhs.fInstrumentName;
+            return fInstrumentName_ < rhs.fInstrumentName_;
         }
 #endif
 

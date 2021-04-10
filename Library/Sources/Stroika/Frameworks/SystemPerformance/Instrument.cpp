@@ -23,31 +23,31 @@ Instrument::Instrument (InstrumentNameType instrumentName, unique_ptr<ICapturer>
           }}
     , pInstrumentName{
           [this] ([[maybe_unused]] const auto* property) {
-              return fInstrumentName;
+              return fInstrumentName_;
           }}
     , pCapturedMeasurementTypes{[this] ([[maybe_unused]] const auto* property) {
-        return fCapturedMeasurementTypes;
+        return fCapturedMeasurementTypes_;
     }}
     , pObjectVariantMapper{[this] ([[maybe_unused]] const auto* property) {
-        return fObjectVariantMapper;
+        return fObjectVariantMapper_;
     }}
     , pType2MeasurementTypes{[this] ([[maybe_unused]] const auto* property) {
-        return fType2MeasurementTypes;
+        return fType2MeasurementTypes_;
     }}
-    , fInstrumentName{instrumentName}
-    , fType2MeasurementTypes{typeToMeasurementTypeMap}
-    , fCapturedMeasurementTypes{capturedMeasurements}
-    , fObjectVariantMapper{objectVariantMapper}
+    , fInstrumentName_{instrumentName}
+    , fType2MeasurementTypes_{typeToMeasurementTypeMap}
+    , fCapturedMeasurementTypes_{capturedMeasurements}
+    , fObjectVariantMapper_{objectVariantMapper}
     , fCapFun_{move (capturer)}
 {
 }
 
 Instrument& Instrument::operator= (const Instrument& rhs)
 {
-    fInstrumentName           = rhs.fInstrumentName;
+    fInstrumentName_           = rhs.fInstrumentName_;
     fCapFun_                  = rhs.fCapFun_;
-    fType2MeasurementTypes    = rhs.fType2MeasurementTypes;
-    fCapturedMeasurementTypes = rhs.fCapturedMeasurementTypes;
-    fObjectVariantMapper      = rhs.fObjectVariantMapper;
+    fType2MeasurementTypes_    = rhs.fType2MeasurementTypes_;
+    fCapturedMeasurementTypes_ = rhs.fCapturedMeasurementTypes_;
+    fObjectVariantMapper_      = rhs.fObjectVariantMapper_;
     return *this;
 }
