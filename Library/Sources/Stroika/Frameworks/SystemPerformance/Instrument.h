@@ -24,8 +24,6 @@
 
 /*
  * TODO:
- *      @todo   Figure out how to get const working for data members (or hide data members and replace with cosnt properties or accssor functions)
- *
  *      @todo   enforce thread safety polciy (assert externally locked?).
  */
 
@@ -148,6 +146,9 @@ namespace Stroika::Frameworks::SystemPerformance {
 
     public:
         /**
+         *  \brief the set of MeasurementTypes measured by this instrument (often just one)
+         * 
+         * \ens pCapturedMeasurementTypes ().size () >= 1
          */
         Common::ReadOnlyProperty<Set<MeasurementType>> pCapturedMeasurementTypes;
 
@@ -163,12 +164,6 @@ namespace Stroika::Frameworks::SystemPerformance {
          *        measurement types supported by this instrument (that is some may not have a C++ struct equivilent)
          */
         Common::ReadOnlyProperty<Mapping<type_index, MeasurementType>> pType2MeasurementTypes;
-
-    private:
-        /*const*/ InstrumentNameType                   fInstrumentName_;
-        /*const*/ Mapping<type_index, MeasurementType> fType2MeasurementTypes_;
-        /*const*/ Set<MeasurementType>                 fCapturedMeasurementTypes_;
-        /*const*/ DataExchange::ObjectVariantMapper    fObjectVariantMapper_;
 
     public:
         /**
@@ -194,7 +189,11 @@ namespace Stroika::Frameworks::SystemPerformance {
 #endif
 
     private:
-        /*const*/ unique_ptr<ICapturer> fCaptureRep_;
+        InstrumentNameType                   fInstrumentName_;
+        Mapping<type_index, MeasurementType> fType2MeasurementTypes_;
+        Set<MeasurementType>                 fCapturedMeasurementTypes_;
+        DataExchange::ObjectVariantMapper    fObjectVariantMapper_;
+        unique_ptr<ICapturer>                fCaptureRep_;
     };
 
 }
