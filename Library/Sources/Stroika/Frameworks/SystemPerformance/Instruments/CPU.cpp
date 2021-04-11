@@ -334,6 +334,7 @@ namespace {
                     result.fLoadAverage = Info::LoadAverage (loadAve[0], loadAve[1], loadAve[2]);
                     result.fRunQLength  = EstimateRunQFromLoadAveArray_ (Time::GetTickCount () - GetLastCaptureAt (), loadAve);
                     static const unsigned int kCPUCoreCount_{GetSystemConfiguration_CPU ().GetNumberOfLogicalCores ()};
+                    Assert (kCPUCoreCount_ != 0);
                     Memory::AccumulateIf<double> (&result.fRunQLength, kCPUCoreCount_, std::divides{}); // fRunQLength counts length normalized 0..1 with 1 menaing ALL CPU CORES
                 }
                 else {
@@ -419,7 +420,6 @@ namespace {
             auto contextLock = fContext_.rwget ();
             contextLock.rwref ()->fSystemWMICollector_.Collect ();
             Memory::CopyToIf (contextLock.rwref ()->fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_), &result.fRunQLength);
-            //contextLock.rwref ().fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_).CopyToIf (&result.fRunQLength);
             if (result.fRunQLength) {
                 Memory::AccumulateIf (&result.fRunQLength, result.fTotalProcessCPUUsage); // both normalized so '1' means all logical cores
             }
