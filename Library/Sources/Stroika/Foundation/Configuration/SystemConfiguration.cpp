@@ -372,8 +372,8 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
             static const String kProcessorIDLabel_{L"processor"sv};
             static const String kModelNameLabel_{L"model name"sv};
             static const String kSocketIDLabel_{L"physical id"sv}; // a bit of a guess?
-            if (line.Trim ().empty ()) {
-                Sequence<String> lineTokens = line.Tokenize (Set<Character>{':'});
+            if (not line.Trim ().empty ()) {
+                Sequence<String> lineTokens = line.Tokenize ({':'});
                 if (lineTokens.size () >= 2) {
                     String firstTrimedToken = lineTokens[0].Trim ();
                     size_t afterColon       = *line.Find (':') + 1;
