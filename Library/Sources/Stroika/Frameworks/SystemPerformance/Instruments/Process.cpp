@@ -18,6 +18,7 @@
 #include "../../../Foundation/Characters/CString/Utilities.h"
 #include "../../../Foundation/Characters/String2Int.h"
 #include "../../../Foundation/Characters/StringBuilder.h"
+#include "../../../Foundation/Characters/ToString.h"
 #include "../../../Foundation/Configuration/SystemConfiguration.h"
 #include "../../../Foundation/Containers/Mapping.h"
 #include "../../../Foundation/Containers/MultiSet.h"
@@ -620,6 +621,7 @@ namespace {
                         }
                     }
                     catch (...) {
+                        DbgTrace (L"ignored: %s", Characeters::ToString (current_exception ()).c_str ());
                     }
 
                     if (processDetails.fTotalCPUTimeEverUsed or processDetails.fCombinedIOReadBytes or processDetails.fCombinedIOWriteBytes) {
@@ -1002,7 +1004,6 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::Readproc_io_data_", L"fullPath=%s", Characters::ToString (fullPath).c_str ()};
 #endif
-
             if (not IO::FileSystem::Default ().Access (fullPath)) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"Skipping read cuz no access");
@@ -1010,8 +1011,7 @@ namespace {
                 return nullopt;
             }
             proc_io_data_ result{};
-            ifstream      r;
-            Streams::iostream::OpenInputFileStream (&r, fullPath);
+            ifstream      r{fullPath, ios_base::binary | ios_base::in};     // no excption on failed open- just returns false immediately
             while (r) {
                 char buf[1024];
                 buf[0] = '\0';
