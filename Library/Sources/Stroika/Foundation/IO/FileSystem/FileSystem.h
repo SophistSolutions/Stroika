@@ -181,7 +181,8 @@ namespace Stroika::Foundation::IO::FileSystem {
          *
          *  This works with DOS filenames, as well as UNC filenames (and UNCW file names)
          */
-        struct [[deprecated ("Since Stroika 2.1b2 ")]] Components  {
+        struct [[deprecated ("Since Stroika 2.1b2 ")]] Components
+        {
             enum AbsolueteOrRelative { eAbsolutePath,
                                        eRelativePath };
             AbsolueteOrRelative fAbsolutePath;
@@ -206,7 +207,9 @@ namespace Stroika::Foundation::IO::FileSystem {
          *  This works with DOS filenames, as well as UNC filenames (and UNCW file names)
          */
         DISABLE_COMPILER_MSC_WARNING_START (4996) // use deprecated
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
         [[deprecated ("Since Stroika 2.1b2 - use filesystem::path::begin ()")]] nonvirtual Components GetPathComponents (const filesystem::path& fileName);
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
         DISABLE_COMPILER_MSC_WARNING_END (4996) // use deprecated
 
     public:
