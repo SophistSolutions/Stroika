@@ -306,6 +306,7 @@ filesystem::path IO::FileSystem::Ptr::GetFullPathName (const filesystem::path& p
 #endif
 }
 
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 IO::FileSystem::Ptr::Components IO::FileSystem::Ptr::GetPathComponents (const filesystem::path& fileNamex)
 {
     String fileName = FromPath (fileNamex);
@@ -359,6 +360,7 @@ C:
     AssertNotImplemented ();
     return result;
 }
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 
 FileOffset_t IO::FileSystem::Ptr::GetFileSize (const filesystem::path& fileName)
 {
