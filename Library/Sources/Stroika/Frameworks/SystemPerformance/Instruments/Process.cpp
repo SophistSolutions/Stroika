@@ -339,20 +339,29 @@ ObjectVariantMapper Instruments::Process::GetObjectVariantMapper ()
 
 namespace {
     struct CapturerWithContext_COMMON_ : Debug::AssertExternallySynchronizedLock {
-        const Options       fOptions_;
-        DurationSecondsType fLastCapturedAt{};
+        const Options fOptions_;
+        struct _Context : Instrument::ICaptureContext {
+            optional<DurationSecondsType> fCaptureContextAt{};
+        };
+        Synchronized<shared_ptr<_Context>> _fContext;
         // skip reporting static (known at process start) data on subsequent reports
         // only used if fCachePolicy == CachePolicy::eOmitUnchangedValues
         Set<pid_t> fStaticSuppressedAgain;
         CapturerWithContext_COMMON_ (const CapturerWithContext_COMMON_& src) = default;
-        CapturerWithContext_COMMON_ (const Options& options)
+        CapturerWithContext_COMMON_ (const Options& options, const shared_ptr<_Context>& context)
             : fOptions_{options}
+            , _fContext{context}
         {
         }
-        DurationSecondsType GetLastCaptureAt () const { return fLastCapturedAt; }
-        void                NoteCompletedCapture_ ()
+        optional<DurationSecondsType> GetCaptureContextTime () const { return _fContext.cget ().cref ()->fCaptureContextAt; }
+        // return true iff actually capture context
+        bool _NoteCompletedCapture (DurationSecondsType at = Time::GetTickCount ())
         {
-            fLastCapturedAt = Time::GetTickCount ();
+            if (not _fContext.rwget ().rwref ()->fCaptureContextAt.has_value () or (at - *_fContext.rwget ().rwref ()->fCaptureContextAt) >= fOptions_.fMinimumAveragingInterval) {
+                _fContext.rwget ().rwref ()->fCaptureContextAt = at;
+                return true;
+            }
+            return false;
         }
     };
 }
@@ -373,14 +382,12 @@ namespace {
             optional<double>    fCombinedIOReadBytes;
             optional<double>    fCombinedIOWriteBytes;
         };
-        struct Context_ : Instrument::ICaptureContext {
+        struct Context_ : CapturerWithContext_COMMON_::_Context {
             Mapping<pid_t, PerfStats_> fMap;
         };
-        Synchronized<shared_ptr<Context_>> fContext_;
 
         CapturerWithContext_Linux_ (const Options& options)
-            : CapturerWithContext_COMMON_{options}
-            , fContext_{make_shared<Context_> ()}
+            : CapturerWithContext_COMMON_{options, make_shared<Context_> ()}
         {
             fStaticSuppressedAgain.clear (); // cuz we never returned these
         }
@@ -401,7 +408,6 @@ namespace {
             else if (fOptions_.fAllowUse_PS) {
                 result = capture_using_ps_ ();
             }
-            fLastCapturedAt = Time::GetTickCount ();
             return result;
         }
 
@@ -548,7 +554,7 @@ namespace {
                         }
 
                         processDetails.fTotalCPUTimeEverUsed = (double (stats.utime) + double (stats.stime)) / kClockTick_;
-                        if (optional<PerfStats_> p = fContext_.cget ().cref ()->fMap.Lookup (pid)) {
+                        if (optional<PerfStats_> p = dynamic_pointer_cast<Context_> (_fContext.cget ().cref ())->fMap.Lookup (pid)) {
                             if (p->fTotalCPUTimeEverUsed) {
                                 processDetails.fAverageCPUTimeUsed = (*processDetails.fTotalCPUTimeEverUsed - *p->fTotalCPUTimeEverUsed) / (now - p->fCapturedAt);
                             }
@@ -610,7 +616,7 @@ namespace {
                         if (stats.has_value ()) {
                             processDetails.fCombinedIOReadBytes  = (*stats).read_bytes;
                             processDetails.fCombinedIOWriteBytes = (*stats).write_bytes;
-                            if (optional<PerfStats_> p = fContext_.cget ().cref ()->fMap.Lookup (pid)) {
+                            if (optional<PerfStats_> p = dynamic_pointer_cast<Context_> (_fContext.cget ().cref ())->fMap.Lookup (pid)) {
                                 if (p->fCombinedIOReadBytes) {
                                     processDetails.fCombinedIOReadRate = (*processDetails.fCombinedIOReadBytes - *p->fCombinedIOReadBytes) / (now - p->fCapturedAt);
                                 }
@@ -621,7 +627,7 @@ namespace {
                         }
                     }
                     catch (...) {
-                        DbgTrace (L"ignored: %s", Characeters::ToString (current_exception ()).c_str ());
+                        DbgTrace (L"ignored: %s", Characters::ToString (current_exception ()).c_str ());
                     }
 
                     if (processDetails.fTotalCPUTimeEverUsed or processDetails.fCombinedIOReadBytes or processDetails.fCombinedIOWriteBytes) {
@@ -630,7 +636,9 @@ namespace {
                     results.Add (pid, processDetails);
                 }
             }
-            fContext_.rwget ().rwref ()->fMap = newContextStats;
+            if (_NoteCompletedCapture ()) {
+                dynamic_pointer_cast<Context_> (_fContext.rwget ().rwref ())->fMap = newContextStats;
+            }
             if (fOptions_.fCachePolicy == CachePolicy::eOmitUnchangedValues) {
                 fStaticSuppressedAgain = Set<pid_t>{results.Keys ()};
             }
@@ -1011,7 +1019,7 @@ namespace {
                 return nullopt;
             }
             proc_io_data_ result{};
-            ifstream      r{fullPath, ios_base::binary | ios_base::in};     // no excption on failed open- just returns false immediately
+            ifstream      r{fullPath, ios_base::binary | ios_base::in}; // no excption on failed open- just returns false immediately
             while (r) {
                 char buf[1024];
                 buf[0] = '\0';
@@ -1281,7 +1289,7 @@ namespace {
             optional<double>    fCombinedIOReadBytes;
             optional<double>    fCombinedIOWriteBytes;
         };
-        struct Context_ : Instrument::ICaptureContext {
+        struct Context_ : CapturerWithContext_COMMON_::_Context {
 #if qUseWMICollectionSupport_
             WMICollector fProcessWMICollector_{L"Process"sv, {WMICollector::kWildcardInstance}, { kProcessID_,
                                                                                                   kThreadCount_,
@@ -1292,11 +1300,9 @@ namespace {
 #endif
             Mapping<pid_t, PerfStats_> fMap;
         };
-        Synchronized<shared_ptr<Context_>> fContext_;
 
         CapturerWithContext_Windows_ (const Options& options)
-            : CapturerWithContext_COMMON_{options}
-            , fContext_{make_shared<Context_> ()}
+            : CapturerWithContext_COMMON_{options, make_shared<Context_> ()}
         {
         }
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from) = default;
@@ -1536,7 +1542,7 @@ namespace {
                 }
 #endif
                 if (not processInfo.fCombinedIOReadRate.has_value () or not processInfo.fCombinedIOWriteRate.has_value () or not processInfo.fAverageCPUTimeUsed.has_value ()) {
-                    if (optional<PerfStats_> p = fContext_.cget ().cref ()->fMap.Lookup (pid)) {
+                    if (optional<PerfStats_> p = dynamic_pointer_cast<Context_> (_fContext.cget ().cref ())->fMap.Lookup (pid)) {
                         if (p->fCombinedIOReadBytes and processInfo.fCombinedIOReadBytes) {
                             processInfo.fCombinedIOReadRate = (*processInfo.fCombinedIOReadBytes - *p->fCombinedIOReadBytes) / (now - p->fCapturedAt);
                         }
@@ -1552,7 +1558,7 @@ namespace {
                         /*
                          *  Considered something like:
                          *      if (not processInfo.fCombinedIOReadRate.has_value () and processInfo.fCombinedIOReadBytes.has_value ()) {
-                         *          processInfo.fCombinedIOReadRate =  *processInfo.fCombinedIOReadBytes / (now - GetLastCaptureAt ());
+                         *          processInfo.fCombinedIOReadRate =  *processInfo.fCombinedIOReadBytes / (now - GetCaptureContextTime ());
                          *      }
                          *
                          *  But cannot do, because we do capture_() once at CTOR, so if we get here and havent seen this process before
@@ -1567,8 +1573,9 @@ namespace {
 
                 results.Add (pid, processInfo);
             }
-            fLastCapturedAt                   = now;
-            fContext_.rwget ().rwref ()->fMap = newContextStats;
+            if (_NoteCompletedCapture (now)) {
+                dynamic_pointer_cast<Context_> (_fContext.rwget ().rwref ())->fMap = newContextStats;
+            }
             if (fOptions_.fCachePolicy == CachePolicy::eOmitUnchangedValues) {
                 fStaticSuppressedAgain = Set<pid_t>{results.Keys ()};
             }
@@ -1754,11 +1761,11 @@ namespace {
         }
         nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
         {
-            DurationSecondsType before         = fCapturerWithContext_.fLastCapturedAt;
-            Info                rawMeasurement = fCapturerWithContext_.capture ();
+            auto before         = fCapturerWithContext_.GetCaptureContextTime ();
+            Info rawMeasurement = fCapturerWithContext_.capture ();
             if (outMeasuredAt != nullptr) {
                 using Traversal::Openness;
-                *outMeasuredAt = Range<DurationSecondsType> (before, fCapturerWithContext_.fLastCapturedAt, Openness::eClosed, Openness::eClosed);
+                *outMeasuredAt = Range<DurationSecondsType> (before, fCapturerWithContext_.GetCaptureContextTime ().value_or (Time::GetTickCount ()), Openness::eClosed, Openness::eClosed);
             }
             return rawMeasurement;
         }
@@ -1769,8 +1776,8 @@ namespace {
         virtual shared_ptr<Instrument::ICaptureContext> GetConext () const override
         {
 #if qPlatform_Linux or qPlatform_Windows
-            EnsureNotNull (fCapturerWithContext_.fContext_.cget ().cref ());
-            return fCapturerWithContext_.fContext_.cget ().cref ();
+            EnsureNotNull (fCapturerWithContext_._fContext.cget ().cref ());
+            return fCapturerWithContext_._fContext.cget ().cref ();
 #else
             return make_shared<Instrument::ICaptureContext> ();
 #endif
@@ -1778,7 +1785,8 @@ namespace {
         virtual void SetConext (const shared_ptr<Instrument::ICaptureContext>& context) override
         {
 #if qPlatform_Linux or qPlatform_Windows
-            fCapturerWithContext_.fContext_ = context == nullptr ? make_shared<CapturerWithContext_::Context_> () : dynamic_pointer_cast<CapturerWithContext_::Context_> (context);
+            using Context_ = CapturerWithContext_::Context_;
+            fCapturerWithContext_._fContext.store ((context == nullptr) ? make_shared<Context_> () : dynamic_pointer_cast<Context_> (context));
 #endif
         }
     };
