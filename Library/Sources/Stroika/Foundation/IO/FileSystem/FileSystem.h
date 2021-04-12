@@ -181,7 +181,7 @@ namespace Stroika::Foundation::IO::FileSystem {
          *
          *  This works with DOS filenames, as well as UNC filenames (and UNCW file names)
          */
-        struct Components {
+        struct [[deprecated ("Since Stroika 2.1b2 ")]] Components  {
             enum AbsolueteOrRelative { eAbsolutePath,
                                        eRelativePath };
             AbsolueteOrRelative fAbsolutePath;
@@ -205,7 +205,9 @@ namespace Stroika::Foundation::IO::FileSystem {
          *
          *  This works with DOS filenames, as well as UNC filenames (and UNCW file names)
          */
+        DISABLE_COMPILER_MSC_WARNING_START (4996) // use deprecated
         [[deprecated ("Since Stroika 2.1b2 - use filesystem::path::begin ()")]] nonvirtual Components GetPathComponents (const filesystem::path& fileName);
+        DISABLE_COMPILER_MSC_WARNING_END (4996) // use deprecated
 
     public:
         [[deprecated ("Since Stroika v2.1b2 - use filesystem::file_size")]] nonvirtual FileOffset_t GetFileSize (const filesystem::path& fileName);
