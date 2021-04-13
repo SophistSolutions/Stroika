@@ -125,7 +125,7 @@ namespace {
             optional<DurationSecondsType> fCaptureContextAt{};
         };
         Synchronized<shared_ptr<_Context>> _fContext;
-        CapturerWithContext_COMMON_ (const Options& options, const shared_ptr<_Context>& context)
+        CapturerWithContext_COMMON_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
             : fOptions_{options}
             , _fContext{context}
         {
@@ -519,17 +519,15 @@ namespace {
         }
         virtual shared_ptr<Instrument::ICaptureContext> GetConext () const override
         {
-#if qPlatform_Linux or qPlatform_Windows
             EnsureNotNull (fCapturerWithContext_._fContext.load ());
             return fCapturerWithContext_._fContext.load ();
-#else
-            return make_shared<_Context> ();
-#endif
         }
         virtual void SetConext (const shared_ptr<Instrument::ICaptureContext>& context) override
         {
 #if qPlatform_Linux or qPlatform_Windows
             fCapturerWithContext_._fContext.store ((context == nullptr) ? make_shared<CapturerWithContext_::Context_> () : dynamic_pointer_cast<CapturerWithContext_::Context_> (context));
+#else
+            AssertNotImplemented ();
 #endif
         }
     };

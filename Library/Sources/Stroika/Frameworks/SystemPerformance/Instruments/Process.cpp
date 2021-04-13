@@ -348,7 +348,7 @@ namespace {
         // only used if fCachePolicy == CachePolicy::eOmitUnchangedValues
         Set<pid_t> fStaticSuppressedAgain;
         CapturerWithContext_COMMON_ (const CapturerWithContext_COMMON_& src) = default;
-        CapturerWithContext_COMMON_ (const Options& options, const shared_ptr<_Context>& context)
+        CapturerWithContext_COMMON_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
             : fOptions_{options}
             , _fContext{context}
         {
@@ -1775,18 +1775,16 @@ namespace {
         }
         virtual shared_ptr<Instrument::ICaptureContext> GetConext () const override
         {
-#if qPlatform_Linux or qPlatform_Windows
             EnsureNotNull (fCapturerWithContext_._fContext.cget ().cref ());
             return fCapturerWithContext_._fContext.cget ().cref ();
-#else
-            return make_shared<Instrument::ICaptureContext> ();
-#endif
         }
         virtual void SetConext (const shared_ptr<Instrument::ICaptureContext>& context) override
         {
 #if qPlatform_Linux or qPlatform_Windows
             using Context_ = CapturerWithContext_::Context_;
             fCapturerWithContext_._fContext.store ((context == nullptr) ? make_shared<Context_> () : dynamic_pointer_cast<Context_> (context));
+#else
+            AssertNotImplemented ();
 #endif
         }
     };
