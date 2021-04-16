@@ -187,12 +187,12 @@ namespace {
             double guest_nice;
         };
 
-        struct Context_ : CapturerWithContext_COMMON_::_Context {
+        struct _Context : CapturerWithContext_COMMON_::_Context {
             POSIXSysTimeCaptureContext_ fSysTimeInfo{};
         };
 
         CapturerWithContext_Linux_ (const Options& options)
-            : CapturerWithContext_COMMON_{options, make_shared<Context_> ()}
+            : CapturerWithContext_COMMON_{options, make_shared<_Context> ()}
         {
         }
         CapturerWithContext_Linux_ (const CapturerWithContext_Linux_& src) = default;
@@ -293,10 +293,10 @@ namespace {
         };
         CPUUsageTimes_ cputime_ ()
         {
-            POSIXSysTimeCaptureContext_ baseline = dynamic_pointer_cast<Context_> (_fContext.cget ().cref ())->fSysTimeInfo;
+            POSIXSysTimeCaptureContext_ baseline = dynamic_pointer_cast<_Context> (_fContext.cget ().cref ())->fSysTimeInfo;
             POSIXSysTimeCaptureContext_ newVal   = GetSysTimes_ ();
             if (_NoteCompletedCapture ()) {
-                dynamic_pointer_cast<Context_> (_fContext.rwget ().rwref ())->fSysTimeInfo = newVal;
+                dynamic_pointer_cast<_Context> (_fContext.rwget ().rwref ())->fSysTimeInfo = newVal;
             }
 
             // from http://stackoverflow.com/questions/23367857/accurate-calculation-of-cpu-usage-given-in-percentage-in-linux
@@ -368,7 +368,7 @@ namespace {
             double KernelTime;
             double UserTime;
         };
-        struct Context_ : CapturerWithContext_COMMON_::_Context {
+        struct _Context : CapturerWithContext_COMMON_::_Context {
             WinSysTimeCaptureContext_ fSysTimeInfo{};
 #if qUseWMICollectionSupport_
             WMICollector fSystemWMICollector_{L"System"sv, {kInstanceName_}, {kProcessorQueueLength_}};
@@ -376,7 +376,7 @@ namespace {
         };
 
         CapturerWithContext_Windows_ (const Options& options)
-            : CapturerWithContext_COMMON_{options, make_shared<Context_> ()}
+            : CapturerWithContext_COMMON_{options, make_shared<_Context> ()}
         {
         }
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& src) = default;
@@ -404,9 +404,9 @@ namespace {
              *      http://en.literateprograms.org/CPU_usage_%28C,_Windows_XP%29
              *      http://www.codeproject.com/Articles/9113/Get-CPU-Usage-with-GetSystemTimes
              */
-            WinSysTimeCaptureContext_ baseline                                         = dynamic_pointer_cast<Context_> (_fContext.load ())->fSysTimeInfo;
+            WinSysTimeCaptureContext_ baseline                                         = dynamic_pointer_cast<_Context> (_fContext.load ())->fSysTimeInfo;
             WinSysTimeCaptureContext_ newVal                                           = GetSysTimes_ ();
-            dynamic_pointer_cast<Context_> (_fContext.rwget ().rwref ())->fSysTimeInfo = newVal;
+            dynamic_pointer_cast<_Context> (_fContext.rwget ().rwref ())->fSysTimeInfo = newVal;
 
             double idleTimeOverInterval   = newVal.IdleTime - baseline.IdleTime;
             double kernelTimeOverInterval = newVal.KernelTime - baseline.KernelTime;
@@ -425,8 +425,8 @@ namespace {
 #if qUseWMICollectionSupport_
             if (_NoteCompletedCapture ()) {
                 auto contextLock = _fContext.rwget ();
-                dynamic_pointer_cast<Context_> (contextLock.rwref ())->fSystemWMICollector_.Collect ();
-                Memory::CopyToIf (dynamic_pointer_cast<Context_> (contextLock.rwref ())->fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_), &result.fRunQLength);
+                dynamic_pointer_cast<_Context> (contextLock.rwref ())->fSystemWMICollector_.Collect ();
+                Memory::CopyToIf (dynamic_pointer_cast<_Context> (contextLock.rwref ())->fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_), &result.fRunQLength);
                 if (result.fRunQLength) {
                     Memory::AccumulateIf (&result.fRunQLength, result.fTotalProcessCPUUsage); // both normalized so '1' means all logical cores
                 }
@@ -460,7 +460,7 @@ namespace {
 #else
         using inherited = CapturerWithContext_COMMON_;
 #endif
-        CapturerWithContext_ (Options options)
+        CapturerWithContext_ (const Options& options)
             : inherited{options}
         {
         }
@@ -517,18 +517,14 @@ namespace {
         {
             return make_unique<MyCapturer_> (fCapturerWithContext_);
         }
-        virtual shared_ptr<Instrument::ICaptureContext> GetConext () const override
+        virtual shared_ptr<Instrument::ICaptureContext> GetContext () const override
         {
             EnsureNotNull (fCapturerWithContext_._fContext.load ());
             return fCapturerWithContext_._fContext.load ();
         }
-        virtual void SetConext (const shared_ptr<Instrument::ICaptureContext>& context) override
+        virtual void SetContext (const shared_ptr<Instrument::ICaptureContext>& context) override
         {
-#if qPlatform_Linux or qPlatform_Windows
-            fCapturerWithContext_._fContext.store ((context == nullptr) ? make_shared<CapturerWithContext_::Context_> () : dynamic_pointer_cast<CapturerWithContext_::Context_> (context));
-#else
-            AssertNotImplemented ();
-#endif
+            fCapturerWithContext_._fContext.store ((context == nullptr) ? make_shared<CapturerWithContext_::_Context> () : dynamic_pointer_cast<CapturerWithContext_::_Context> (context));
         }
     };
 }

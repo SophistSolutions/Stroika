@@ -18,12 +18,12 @@ Instrument::Instrument (InstrumentNameType instrumentName, unique_ptr<ICapturer>
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
               const Instrument*                                   thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Instrument::pContext);
               shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
-              return thisObj->fCaptureRep_->GetConext ();
+              return thisObj->fCaptureRep_->GetContext ();
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& context) {
               Instrument*                                        thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Instrument::pContext);
               lock_guard<const AssertExternallySynchronizedLock> critSec{*thisObj};
-              thisObj->fCaptureRep_->SetConext (context);
+              thisObj->fCaptureRep_->SetContext (context);
           }}
     , pInstrumentName{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {

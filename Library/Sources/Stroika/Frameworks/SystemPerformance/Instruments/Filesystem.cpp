@@ -266,16 +266,16 @@ namespace {
             double fWritesCompleted;
             double fWeightedTimeInQSeconds; // see https://www.kernel.org/doc/Documentation/block/stat.txt  time_in_queue (product of the number of milliseconds times the number of requests waiting)
         };
-        struct Context_ : Instrument::ICaptureContext {
+        struct _Context : Instrument::ICaptureContext {
             Mapping<String, uint32_t>            fDeviceName2SectorSizeMap_;
             optional<Mapping<dev_t, PerfStats_>> fContextStats_;
         };
-        Synchronized<shared_ptr<Context_>> fContext_;
+        Synchronized<shared_ptr<_Context>> fContext_;
 
     public:
         CapturerWithContext_Linux_ (const Options& options)
             : CapturerWithContext_COMMON_{options}
-            , fContext_{make_shared<Context_> ()}
+            , fContext_{make_shared<_Context> ()}
         {
         }
         CapturerWithContext_Linux_ (const CapturerWithContext_Linux_&) = default;
@@ -643,17 +643,17 @@ namespace {
 namespace {
     struct CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
 
-        struct Context_ : Instrument::ICaptureContext {
+        struct _Context : Instrument::ICaptureContext {
 #if qUseWMICollectionSupport_
             WMICollector fLogicalDiskWMICollector_{
                 L"LogicalDisk"sv, {}, {kDiskReadBytesPerSec_, kDiskWriteBytesPerSec_, kDiskReadsPerSec_, kDiskWritesPerSec_, (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_ ? kPctDiskReadTime_ : kAveDiskReadQLen_), (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_ ? kPctDiskWriteTime_ : kAveDiskWriteQLen_), kPctIdleTime_}};
 #endif
         };
-        Synchronized<shared_ptr<Context_>> fContext_;
+        Synchronized<shared_ptr<_Context>> fContext_;
 
         CapturerWithContext_Windows_ (Options options)
             : CapturerWithContext_COMMON_{options}
-            , fContext_{make_shared<Context_> ()}
+            , fContext_{make_shared<_Context> ()}
         {
         }
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from) = default;
@@ -1077,20 +1077,14 @@ namespace {
         {
             return make_unique<MyCapturer_> (fCapturerWithContext_);
         }
-        virtual shared_ptr<Instrument::ICaptureContext> GetConext () const override
+        virtual shared_ptr<Instrument::ICaptureContext> GetContext () const override
         {
-#if qPlatform_Linux or qPlatform_Windows
             EnsureNotNull (fCapturerWithContext_.fContext_.cget ().cref ());
             return fCapturerWithContext_.fContext_.cget ().cref ();
-#else
-            return make_shared<Instrument::ICaptureContext> ();
-#endif
         }
-        virtual void SetConext (const shared_ptr<Instrument::ICaptureContext>& context) override
+        virtual void SetContext (const shared_ptr<Instrument::ICaptureContext>& context) override
         {
-#if qPlatform_Linux or qPlatform_Windows
-            fCapturerWithContext_.fContext_ = context == nullptr ? make_shared<CapturerWithContext_::Context_> () : dynamic_pointer_cast<CapturerWithContext_::Context_> (context);
-#endif
+            fCapturerWithContext_.fContext_ = context == nullptr ? make_shared<CapturerWithContext_::_Context> () : dynamic_pointer_cast<CapturerWithContext_::_Context> (context);
         }
     };
 }

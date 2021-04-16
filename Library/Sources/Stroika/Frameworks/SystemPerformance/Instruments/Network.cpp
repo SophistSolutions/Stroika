@@ -169,15 +169,15 @@ namespace {
             DurationSecondsType fAt;
         };
 
-        struct Context_ : Instrument::ICaptureContext {
+        struct _Context : Instrument::ICaptureContext {
             Mapping<String, Last> fLast;
             optional<LastSum>     fLastSum;
         };
-        Synchronized<shared_ptr<Context_>> fContext_;
+        Synchronized<shared_ptr<_Context>> fContext_;
 
         CapturerWithContext_POSIX_ (Options options)
             : CapturerWithContext_COMMON_{options}
-            , fContext_{make_shared<Context_> ()}
+            , fContext_{make_shared<_Context> ()}
         {
         }
         CapturerWithContext_POSIX_ (const CapturerWithContext_POSIX_&) = default;
@@ -360,7 +360,7 @@ namespace {
 namespace {
     struct CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
 
-        struct Context_ : Instrument::ICaptureContext {
+        struct _Context : Instrument::ICaptureContext {
 #if qUseWMICollectionSupport_
             WMICollector fNetworkWMICollector_{L"Network Interface"sv, {}, {kBytesReceivedPerSecond_, kBytesSentPerSecond_, kPacketsReceivedPerSecond_, kPacketsSentPerSecond_}};
             WMICollector fTCPv4WMICollector_{L"TCPv4"sv, {}, {kTCPSegmentsPerSecond_, kSegmentsRetransmittedPerSecond_}};
@@ -368,11 +368,11 @@ namespace {
             Set<String>  fAvailableInstances_{fNetworkWMICollector_.GetAvailableInstaces ()};
 #endif
         };
-        Synchronized<shared_ptr<Context_>> fContext_;
+        Synchronized<shared_ptr<_Context>> fContext_;
 
         CapturerWithContext_Windows_ (const Options& options)
             : CapturerWithContext_COMMON_{options}
-            , fContext_{make_shared<Context_> ()}
+            , fContext_{make_shared<_Context> ()}
         {
 #if qUseWMICollectionSupport_
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -610,20 +610,14 @@ namespace {
         {
             return make_unique<MyCapturer_> (fCapturerWithContext_);
         }
-        virtual shared_ptr<Instrument::ICaptureContext> GetConext () const override
+        virtual shared_ptr<Instrument::ICaptureContext> GetContext () const override
         {
-#if qPlatform_Linux or qPlatform_Windows
             EnsureNotNull (fCapturerWithContext_.fContext_.load ());
             return fCapturerWithContext_.fContext_.load ();
-#else
-            return make_shared<Instrument::ICaptureContext> ();
-#endif
         }
-        virtual void SetConext (const shared_ptr<Instrument::ICaptureContext>& context) override
+        virtual void SetContext (const shared_ptr<Instrument::ICaptureContext>& context) override
         {
-#if qPlatform_Linux or qPlatform_Windows
-            fCapturerWithContext_.fContext_ = context == nullptr ? make_shared<CapturerWithContext_::Context_> () : dynamic_pointer_cast<CapturerWithContext_::Context_> (context);
-#endif
+            fCapturerWithContext_.fContext_ = context == nullptr ? make_shared<CapturerWithContext_::_Context> () : dynamic_pointer_cast<CapturerWithContext_::_Context> (context);
         }
     };
 }

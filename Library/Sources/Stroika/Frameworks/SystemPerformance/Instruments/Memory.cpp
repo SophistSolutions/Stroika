@@ -131,17 +131,17 @@ namespace {
 namespace {
     struct CapturerWithContext_Linux_ : CapturerWithContext_COMMON_ {
 
-        struct Context_ : Instrument::ICaptureContext {
+        struct _Context : Instrument::ICaptureContext {
             uint64_t                  fSaved_MajorPageFaultsSinceBoot{};
             uint64_t                  fSaved_MinorPageFaultsSinceBoot{};
             uint64_t                  fSaved_PageOutsSinceBoot{};
             Time::DurationSecondsType fSaved_VMPageStats_At{};
         };
-        Synchronized<shared_ptr<Context_>> fContext_;
+        Synchronized<shared_ptr<_Context>> fContext_;
 
         CapturerWithContext_Linux_ (Options options)
             : CapturerWithContext_COMMON_{options}
-            , fContext_{make_shared<Context_> ()}
+            , fContext_{make_shared<_Context> ()}
         {
         }
         CapturerWithContext_Linux_ (const CapturerWithContext_Linux_&) = default;
@@ -166,7 +166,7 @@ namespace {
         void Read_ProcMemInfo (Instruments::Memory::Info* updateResult)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx ("Read_ProcMemInfo");
+            Debug::TraceContextBumper ctx{"Read_ProcMemInfo"};
 #endif
             auto ReadMemInfoLine_ = [] (optional<uint64_t>* result, const String& n, const Sequence<String>& line) {
                 if (line.size () >= 3 and line[0] == n) {
@@ -296,16 +296,16 @@ namespace {
 #if qPlatform_Windows
 namespace {
     struct CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
-        struct Context_ : Instrument::ICaptureContext {
+        struct _Context : Instrument::ICaptureContext {
 #if qUseWMICollectionSupport_
             WMICollector fMemoryWMICollector_{L"Memory"sv, {kInstanceName_}, {kCommittedBytes_, kCommitLimit_, kHardPageFaultsPerSec_, kPagesOutPerSec_, kFreeMem_, kHardwareReserved1_, kHardwareReserved2_}};
 #endif
         };
-        Synchronized<shared_ptr<Context_>> fContext_;
+        Synchronized<shared_ptr<_Context>> fContext_;
 
         CapturerWithContext_Windows_ (const Options& options)
             : CapturerWithContext_COMMON_{options}
-            , fContext_{make_shared<Context_> ()}
+            , fContext_{make_shared<_Context> ()}
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             for (String i : fContext_->fMemoryWMICollector_.GetAvailableCounters ()) {
@@ -499,20 +499,14 @@ namespace {
         {
             return make_unique<MyCapturer_> (fCapturerWithContext_);
         }
-        virtual shared_ptr<Instrument::ICaptureContext> GetConext () const override
+        virtual shared_ptr<Instrument::ICaptureContext> GetContext () const override
         {
-#if qPlatform_Linux or qPlatform_Windows
             EnsureNotNull (fCapturerWithContext_.fContext_.cget ().cref ());
             return fCapturerWithContext_.fContext_.cget ().cref ();
-#else
-            return make_shared<Instrument::ICaptureContext> ();
-#endif
         }
-        virtual void SetConext (const shared_ptr<Instrument::ICaptureContext>& context) override
+        virtual void SetContext (const shared_ptr<Instrument::ICaptureContext>& context) override
         {
-#if qPlatform_Linux or qPlatform_Windows
-            fCapturerWithContext_.fContext_ = context == nullptr ? make_shared<CapturerWithContext_::Context_> () : dynamic_pointer_cast<CapturerWithContext_::Context_> (context);
-#endif
+            fCapturerWithContext_.fContext_ = context == nullptr ? make_shared<CapturerWithContext_::_Context> () : dynamic_pointer_cast<CapturerWithContext_::_Context> (context);
         }
     };
 }

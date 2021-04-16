@@ -33,6 +33,14 @@ namespace Stroika::Frameworks::SystemPerformance {
     using Containers::Mapping;
     using Containers::Set;
 
+// for MSVC - C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\WDBGEXTS.H
+#ifdef GetContext
+#undef GetContext
+#endif
+#ifdef SetContext
+#undef SetContext
+#endif
+
     /**
      *  @todo - consider using independent atom registry
      */
@@ -82,11 +90,11 @@ namespace Stroika::Frameworks::SystemPerformance {
          */
         class ICapturer {
         public:
-            virtual ~ICapturer ()                                                                      = default;
-            virtual MeasurementSet              Capture ()                                             = 0;
-            virtual unique_ptr<ICapturer>       Clone () const                                         = 0;
-            virtual shared_ptr<ICaptureContext> GetConext () const                                     = 0;
-            virtual void                        SetConext (const shared_ptr<ICaptureContext>& context) = 0;
+            virtual ~ICapturer ()                                                                       = default;
+            virtual MeasurementSet              Capture ()                                              = 0;
+            virtual unique_ptr<ICapturer>       Clone () const                                          = 0;
+            virtual shared_ptr<ICaptureContext> GetContext () const                                     = 0;
+            virtual void                        SetContext (const shared_ptr<ICaptureContext>& context) = 0;
         };
 
     public:
