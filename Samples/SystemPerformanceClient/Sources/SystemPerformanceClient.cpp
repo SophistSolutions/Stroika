@@ -188,14 +188,17 @@ namespace {
             optional<uint64_t> workingOrResidentSetSize;
             optional<double>   combinedIORate;
             if (auto om = sCapturer_.fProcessInstrument.MeasurementAs<Instruments::Process::Info> (measurements)) {
-                Assert (om->GetLength () == 1);
-                Instruments::Process::ProcessType thisProcess = (*om)[Execution::GetCurrentProcessID ()];
-                if (auto o = thisProcess.fProcessStartedAt) {
-                    processUptime = now - *o;
+                // It might not be found for some instruments (not implemented?)
+                Assert (om->GetLength () <= 1);
+                if (om->GetLength () == 1) {
+                    Instruments::Process::ProcessType thisProcess = (*om)[Execution::GetCurrentProcessID ()];
+                    if (auto o = thisProcess.fProcessStartedAt) {
+                        processUptime = now - *o;
+                    }
+                    averageCPUTimeUsed       = thisProcess.fAverageCPUTimeUsed;
+                    workingOrResidentSetSize = Memory::NullCoalesce (thisProcess.fWorkingSetSize, thisProcess.fResidentMemorySize);
+                    combinedIORate           = thisProcess.fCombinedIOWriteRate;
                 }
-                averageCPUTimeUsed       = thisProcess.fAverageCPUTimeUsed;
-                workingOrResidentSetSize = Memory::NullCoalesce (thisProcess.fWorkingSetSize, thisProcess.fResidentMemorySize);
-                combinedIORate           = thisProcess.fCombinedIOWriteRate;
             }
             cout << "\tPass: " << pass << endl;
             cout << "\t\trunQLength:               " << Characters::ToString (runQLength).AsNarrowSDKString () << endl;
