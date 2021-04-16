@@ -205,11 +205,6 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Filesystem {
     };
 
     /**
-     *  For MountedFilesystemInfoType, etc types.
-     */
-    ObjectVariantMapper GetObjectVariantMapper ();
-
-    /**
      *  To control the behavior of the instrument.
      */
     struct Options {
@@ -247,9 +242,29 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Filesystem {
     };
 
     /**
-     *  Instrument returning Info object (cross-platform).
+     *  This class is designed to be object-sliced into just the SystemPerformance::Instrument
+     * 
+     *  \note Constructing the instrument does no capturing (so sb quick/cheap) - capturing starts when you
+     *        first call i.Capture()
      */
-    Instrument GetInstrument (Options options = Options{});
+    struct Instrument : SystemPerformance::Instrument {
+    public:
+        Instrument (const Options& options = Options{});
+
+        /**
+         *  For Instruments::Filesystem::Info, MountedFilesystemInfoType, etc types.
+         */
+        static const ObjectVariantMapper kObjectVariantMapper;
+    };
+
+    [[deprecated ("Since Stroika 2.1b12, use CPU::Instrument instead of Filesystem::GetInstrument()")]] inline SystemPerformance::Instrument GetInstrument (Options options = Options{})
+    {
+        return Instrument{options};
+    }
+    [[deprecated ("Since Stroika 2.1b12, use CPU::Instrument instead of Filesystem::Instrument::kObjectVariantMapper")]] inline ObjectVariantMapper GetObjectVariantMapper ()
+    {
+        return Instrument::kObjectVariantMapper;
+    }
 
 }
 

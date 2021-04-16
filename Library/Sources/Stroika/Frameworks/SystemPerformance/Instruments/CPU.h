@@ -128,12 +128,15 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::CPU {
     public:
         Instrument (const Options& options = Options{});
 
+        /**
+         *  For Instruments::CPU::Info, etc types.
+         */
         static const ObjectVariantMapper kObjectVariantMapper;
     };
 
     [[deprecated ("Since Stroika 2.1b12, use CPU::Instrument instead of CPU::GetInstrument()")]] inline SystemPerformance::Instrument GetInstrument (Options options = Options{})
     {
-        return CPU::Instrument{options};
+        return Instrument{options};
     }
     [[deprecated ("Since Stroika 2.1b12, use CPU::Instrument instead of CPU::Instrument::kObjectVariantMapper")]] inline ObjectVariantMapper GetObjectVariantMapper ()
     {

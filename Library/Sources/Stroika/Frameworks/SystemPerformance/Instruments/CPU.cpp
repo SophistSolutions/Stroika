@@ -36,12 +36,11 @@ using namespace Stroika::Foundation::Memory;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::SystemPerformance;
-//using namespace Stroika::Frameworks::SystemPerformance::Instruments::CPU;
 
 using Time::DurationSecondsType;
 
+using Instruments::CPU::Info;
 using Instruments::CPU::Options;
-using SystemPerformance::Instruments::CPU::Info;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1

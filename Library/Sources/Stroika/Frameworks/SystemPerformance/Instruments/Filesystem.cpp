@@ -52,12 +52,20 @@ using namespace Stroika::Foundation::Memory;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::SystemPerformance;
-using namespace Stroika::Frameworks::SystemPerformance::Instruments::Filesystem;
 
 using Characters::String2Int;
 using IO::FileSystem::FileInputStream;
 using Streams::TextReader;
 using Time::DurationSecondsType;
+
+using Instruments::Filesystem::BlockDeviceKind;
+using Instruments::Filesystem::DiskInfoType;
+using Instruments::Filesystem::DynamicDiskIDType;
+using Instruments::Filesystem::Info;
+using Instruments::Filesystem::IOStatsType;
+using Instruments::Filesystem::MountedFilesystemInfoType;
+using Instruments::Filesystem::MountedFilesystemNameType;
+using Instruments::Filesystem::Options;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -101,7 +109,7 @@ using SystemPerformance::Support::WMICollector;
  */
 String Instruments::Filesystem::MountedFilesystemInfoType::ToString () const
 {
-    return DataExchange::Variant::JSON::Writer{}.WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+    return DataExchange::Variant::JSON::Writer{}.WriteAsString (Instrument::kObjectVariantMapper.FromObject (*this));
 }
 
 /*
@@ -111,7 +119,7 @@ String Instruments::Filesystem::MountedFilesystemInfoType::ToString () const
  */
 String Instruments::Filesystem::IOStatsType::ToString () const
 {
-    return DataExchange::Variant::JSON::Writer{}.WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+    return DataExchange::Variant::JSON::Writer{}.WriteAsString (Instrument::kObjectVariantMapper.FromObject (*this));
 }
 
 /*
@@ -121,7 +129,7 @@ String Instruments::Filesystem::IOStatsType::ToString () const
  */
 String Instruments::Filesystem::DiskInfoType::ToString () const
 {
-    return DataExchange::Variant::JSON::Writer{}.WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+    return DataExchange::Variant::JSON::Writer{}.WriteAsString (Instrument::kObjectVariantMapper.FromObject (*this));
 }
 
 /*
@@ -131,7 +139,7 @@ String Instruments::Filesystem::DiskInfoType::ToString () const
  */
 String Instruments::Filesystem::Info::ToString () const
 {
-    return DataExchange::Variant::JSON::Writer{}.WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+    return DataExchange::Variant::JSON::Writer{}.WriteAsString (Instrument::kObjectVariantMapper.FromObject (*this));
 }
 
 namespace {
@@ -983,69 +991,12 @@ namespace {
     };
 }
 
-/*
- ********************************************************************************
- *************** Instruments::Filesystem::GetObjectVariantMapper ****************
- ********************************************************************************
- */
-ObjectVariantMapper Instruments::Filesystem::GetObjectVariantMapper ()
-{
-    using StructFieldInfo                     = ObjectVariantMapper::StructFieldInfo;
-    static const ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
-        ObjectVariantMapper mapper;
-        mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<BlockDeviceKind> ());
-        mapper.AddCommonType<optional<BlockDeviceKind>> ();
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
-        mapper.AddClass<IOStatsType> (initializer_list<StructFieldInfo>{
-            {L"Bytes", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatsType, fBytesTransfered), StructFieldInfo::eOmitNullFields},
-            {L"Q-Length", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatsType, fQLength), StructFieldInfo::eOmitNullFields},
-            {L"In-Use-%", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatsType, fInUsePercent), StructFieldInfo::eOmitNullFields},
-            {L"Total-Transfers", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatsType, fTotalTransfers), StructFieldInfo::eOmitNullFields},
-        });
-        mapper.AddCommonType<optional<IOStatsType>> ();
-        mapper.AddClass<DiskInfoType> (initializer_list<StructFieldInfo>{
-            {L"Persistence-Volume-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DiskInfoType, fPersistenceVolumeID), StructFieldInfo::eOmitNullFields},
-            {L"Device-Kind", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DiskInfoType, fDeviceKind), StructFieldInfo::eOmitNullFields},
-            {L"Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DiskInfoType, fSizeInBytes), StructFieldInfo::eOmitNullFields},
-            {L"Read-IO-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DiskInfoType, fReadIOStats), StructFieldInfo::eOmitNullFields},
-            {L"Write-IO-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DiskInfoType, fWriteIOStats), StructFieldInfo::eOmitNullFields},
-            {L"Combined-IO-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DiskInfoType, fCombinedIOStats), StructFieldInfo::eOmitNullFields},
-        });
-        mapper.AddCommonType<Set<String>> ();
-        mapper.AddCommonType<optional<Set<String>>> ();
-        mapper.AddCommonType<Set<filesystem::path>> ();
-        mapper.AddCommonType<optional<Set<filesystem::path>>> ();
-        mapper.AddClass<MountedFilesystemInfoType> (initializer_list<StructFieldInfo>{
-            {L"Device-Kind", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fDeviceKind), StructFieldInfo::eOmitNullFields},
-            {L"Filesystem-Type", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fFileSystemType), StructFieldInfo::eOmitNullFields},
-            {L"Device-Name", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fDeviceOrVolumeName), StructFieldInfo::eOmitNullFields},
-            {L"On-Physical-Drives", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fOnPhysicalDrive), StructFieldInfo::eOmitNullFields},
-            {L"Volume-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fVolumeID), StructFieldInfo::eOmitNullFields},
-            {L"Total-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fSizeInBytes), StructFieldInfo::eOmitNullFields},
-            {L"Available-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fAvailableSizeInBytes), StructFieldInfo::eOmitNullFields},
-            {L"Used-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fUsedSizeInBytes), StructFieldInfo::eOmitNullFields},
-            {L"Read-IO-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fReadIOStats), StructFieldInfo::eOmitNullFields},
-            {L"Write-IO-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fWriteIOStats), StructFieldInfo::eOmitNullFields},
-            {L"Combined-IO-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fCombinedIOStats), StructFieldInfo::eOmitNullFields},
-        });
-        mapper.AddCommonType<Mapping<DynamicDiskIDType, DiskInfoType>> ();
-        mapper.AddCommonType<Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>> ();
-        mapper.AddClass<Info> (initializer_list<StructFieldInfo>{
-            {L"Disks", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fDisks)},
-            {L"Mounted-Filesystems", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fMountedFilesystems)},
-        });
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
-        return mapper;
-    }();
-    return sMapper_;
-}
-
 namespace {
     static const MeasurementType kMountedVolumeUsage_ = MeasurementType{L"Mounted-Filesystem-Usage"sv};
 }
 
 namespace {
-    class MyCapturer_ : public Instrument::ICapturer {
+    class MyCapturer_ : public SystemPerformance::Instrument::ICapturer {
         CapturerWithContext_ fCapturerWithContext_;
 
     public:
@@ -1056,7 +1007,7 @@ namespace {
         virtual MeasurementSet Capture () override
         {
             MeasurementSet results;
-            Measurement    m{kMountedVolumeUsage_, GetObjectVariantMapper ().FromObject (Capture_Raw (&results.fMeasuredAt))};
+            Measurement    m{kMountedVolumeUsage_, Instruments::Filesystem::Instrument::kObjectVariantMapper.FromObject (Capture_Raw (&results.fMeasuredAt))};
             results.fMeasurements.Add (m);
             return results;
         }
@@ -1088,17 +1039,65 @@ namespace {
 
 /*
  ********************************************************************************
- ******************** Instruments::Filesystem::GetInstrument ********************
+ ******************** Instruments::Filesystem::Instrument ***********************
  ********************************************************************************
  */
-Instrument SystemPerformance::Instruments::Filesystem::GetInstrument (Options options)
+const ObjectVariantMapper Instruments::Filesystem::Instrument::kObjectVariantMapper = [] () -> ObjectVariantMapper {
+    using StructFieldInfo = ObjectVariantMapper::StructFieldInfo;
+    ObjectVariantMapper mapper;
+    mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<BlockDeviceKind> ());
+    mapper.AddCommonType<optional<BlockDeviceKind>> ();
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
+    mapper.AddClass<IOStatsType> (initializer_list<StructFieldInfo>{
+        {L"Bytes", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatsType, fBytesTransfered), StructFieldInfo::eOmitNullFields},
+        {L"Q-Length", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatsType, fQLength), StructFieldInfo::eOmitNullFields},
+        {L"In-Use-%", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatsType, fInUsePercent), StructFieldInfo::eOmitNullFields},
+        {L"Total-Transfers", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatsType, fTotalTransfers), StructFieldInfo::eOmitNullFields},
+    });
+    mapper.AddCommonType<optional<IOStatsType>> ();
+    mapper.AddClass<DiskInfoType> (initializer_list<StructFieldInfo>{
+        {L"Persistence-Volume-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DiskInfoType, fPersistenceVolumeID), StructFieldInfo::eOmitNullFields},
+        {L"Device-Kind", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DiskInfoType, fDeviceKind), StructFieldInfo::eOmitNullFields},
+        {L"Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DiskInfoType, fSizeInBytes), StructFieldInfo::eOmitNullFields},
+        {L"Read-IO-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DiskInfoType, fReadIOStats), StructFieldInfo::eOmitNullFields},
+        {L"Write-IO-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DiskInfoType, fWriteIOStats), StructFieldInfo::eOmitNullFields},
+        {L"Combined-IO-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DiskInfoType, fCombinedIOStats), StructFieldInfo::eOmitNullFields},
+    });
+    mapper.AddCommonType<Set<String>> ();
+    mapper.AddCommonType<optional<Set<String>>> ();
+    mapper.AddCommonType<Set<filesystem::path>> ();
+    mapper.AddCommonType<optional<Set<filesystem::path>>> ();
+    mapper.AddClass<MountedFilesystemInfoType> (initializer_list<StructFieldInfo>{
+        {L"Device-Kind", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fDeviceKind), StructFieldInfo::eOmitNullFields},
+        {L"Filesystem-Type", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fFileSystemType), StructFieldInfo::eOmitNullFields},
+        {L"Device-Name", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fDeviceOrVolumeName), StructFieldInfo::eOmitNullFields},
+        {L"On-Physical-Drives", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fOnPhysicalDrive), StructFieldInfo::eOmitNullFields},
+        {L"Volume-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fVolumeID), StructFieldInfo::eOmitNullFields},
+        {L"Total-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fSizeInBytes), StructFieldInfo::eOmitNullFields},
+        {L"Available-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fAvailableSizeInBytes), StructFieldInfo::eOmitNullFields},
+        {L"Used-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fUsedSizeInBytes), StructFieldInfo::eOmitNullFields},
+        {L"Read-IO-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fReadIOStats), StructFieldInfo::eOmitNullFields},
+        {L"Write-IO-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fWriteIOStats), StructFieldInfo::eOmitNullFields},
+        {L"Combined-IO-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fCombinedIOStats), StructFieldInfo::eOmitNullFields},
+    });
+    mapper.AddCommonType<Mapping<DynamicDiskIDType, DiskInfoType>> ();
+    mapper.AddCommonType<Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>> ();
+    mapper.AddClass<Info> (initializer_list<StructFieldInfo>{
+        {L"Disks", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fDisks)},
+        {L"Mounted-Filesystems", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fMountedFilesystems)},
+    });
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+    return mapper;
+}();
+
+Instruments::Filesystem::Instrument::Instrument (const Options& options)
+    : SystemPerformance::Instrument{
+          InstrumentNameType{L"Filesystem"sv},
+          make_unique<MyCapturer_> (CapturerWithContext_{options}),
+          {kMountedVolumeUsage_},
+          {KeyValuePair<type_index, MeasurementType>{typeid (Info), kMountedVolumeUsage_}},
+          Instrument::kObjectVariantMapper}
 {
-    return Instrument (
-        InstrumentNameType{L"Filesystem"sv},
-        make_unique<MyCapturer_> (CapturerWithContext_{options}),
-        {kMountedVolumeUsage_},
-        {KeyValuePair<type_index, MeasurementType>{typeid (Info), kMountedVolumeUsage_}},
-        GetObjectVariantMapper ());
 }
 
 /*
