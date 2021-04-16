@@ -127,10 +127,6 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::CPU {
      */
     Instrument GetInstrument (Options options = Options{});
 
-
-    // ... replace GetInstrument
-    struct Instrument : SystemPerformance::Instrument {
-    };
 }
 
 namespace Stroika::Frameworks::SystemPerformance {
