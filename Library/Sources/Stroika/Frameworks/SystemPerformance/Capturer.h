@@ -84,14 +84,12 @@ namespace Stroika::Frameworks::SystemPerformance {
      *      \code
      *          struct MyCapturer_ : Capturer {
      *          public:
-     *              Instrument fCPUInstrument;
-     *              Instrument fProcessInstrument;
-     *
+     *              Instruments::CPU::Instrument     fCPUInstrument;
+     *              Instruments::Process::Instrument fProcessInstrument;
      *              MyCapturer_ ()
-     *                  : fCPUInstrument{Instruments::CPU::GetInstrument ()}
-     *                  , fProcessInstrument{ Instruments::Process::GetInstrument (Instruments::Process::Options{
+     *                  : fProcessInstrument{Instruments::Process::Options{
      *                      .fRestrictToPIDs           = Set<pid_t>{Execution::GetCurrentProcessID ()},
-     *                  })}
+     *                  }}
      *              {
      *                  AddCaptureSet (CaptureSet{30s, {fCPUInstrument, fProcessInstrument}});
      *              }
