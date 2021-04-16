@@ -505,6 +505,7 @@ namespace {
  ********************************************************************************
  */
 const ObjectVariantMapper Instruments::CPU::Instrument::kObjectVariantMapper = [] () -> ObjectVariantMapper {
+    using StructFieldInfo = ObjectVariantMapper::StructFieldInfo;
     ObjectVariantMapper mapper;
     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
 #if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
@@ -515,7 +516,6 @@ const ObjectVariantMapper Instruments::CPU::Instrument::kObjectVariantMapper = [
     });
     mapper.AddCommonType<optional<Info::LoadAverage>> ();
 #endif
-    using StructFieldInfo = ObjectVariantMapper::StructFieldInfo;
     mapper.AddClass<Info> (initializer_list<StructFieldInfo> {
 #if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
         {L"Load-Average", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fLoadAverage), StructFieldInfo::eOmitNullFields},
