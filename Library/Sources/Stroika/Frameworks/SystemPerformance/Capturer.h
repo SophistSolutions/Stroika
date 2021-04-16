@@ -95,7 +95,7 @@ namespace Stroika::Frameworks::SystemPerformance {
      *              }
      *          };
      * 
-     *          static MyCapturer_ sCapturer_;
+     *          static MyCapturer_ sCapturer_;  // capturer internally syncrhonized so no need for extra sync...
      *
      *          // Now do from any thread as often as desired, reporting latest data:
      *          auto     measurements = sCapturer_.GetMostRecentMeasurements (); // capture results on a regular cadence with MyCapturer, and just report the latest stats
