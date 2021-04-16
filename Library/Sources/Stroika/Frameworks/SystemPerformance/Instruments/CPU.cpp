@@ -36,9 +36,12 @@ using namespace Stroika::Foundation::Memory;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::SystemPerformance;
-using namespace Stroika::Frameworks::SystemPerformance::Instruments::CPU;
+//using namespace Stroika::Frameworks::SystemPerformance::Instruments::CPU;
 
 using Time::DurationSecondsType;
+
+using Instruments::CPU::Options;
+using SystemPerformance::Instruments::CPU::Info;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -82,40 +85,7 @@ Instruments::CPU::Info::LoadAverage::LoadAverage (double oneMinuteAve, double fi
  */
 String Instruments::CPU::Info::ToString () const
 {
-    return DataExchange::Variant::JSON::Writer{}.WriteAsString (GetObjectVariantMapper ().FromObject (*this));
-}
-
-/*
- ********************************************************************************
- ***************** Instruments::CPU::GetObjectVariantMapper *********************
- ********************************************************************************
- */
-ObjectVariantMapper Instruments::CPU::GetObjectVariantMapper ()
-{
-    using StructFieldInfo                     = ObjectVariantMapper::StructFieldInfo;
-    static const ObjectVariantMapper kMapper_ = [] () -> ObjectVariantMapper {
-        ObjectVariantMapper mapper;
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
-#if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
-        mapper.AddClass<Info::LoadAverage> (initializer_list<StructFieldInfo>{
-            {L"1-minute", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::LoadAverage, f1MinuteAve)},
-            {L"5-minute", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::LoadAverage, f5MinuteAve)},
-            {L"15-minute", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::LoadAverage, f15MinuteAve)},
-        });
-        mapper.AddCommonType<optional<Info::LoadAverage>> ();
-#endif
-        mapper.AddClass<Info> (initializer_list<StructFieldInfo> {
-#if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
-            {L"Load-Average", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fLoadAverage), StructFieldInfo::eOmitNullFields},
-#endif
-                {L"Total-Process-CPU-Usage", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fTotalProcessCPUUsage)},
-                {L"Total-CPU-Usage", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fTotalCPUUsage)},
-                {L"Run-Q-Length", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fRunQLength), StructFieldInfo::eOmitNullFields},
-        });
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
-        return mapper;
-    }();
-    return kMapper_;
+    return DataExchange::Variant::JSON::Writer{}.WriteAsString (CPU::Instrument::kObjectVariantMapper.FromObject (*this));
 }
 
 namespace {
@@ -500,7 +470,7 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"SystemPerformance::Instrument...CPU...MyCapturer_::Capture ()"};
             MeasurementSet            results;
-            results.fMeasurements.Add (Measurement{kCPUMeasurment_, GetObjectVariantMapper ().FromObject (Capture_Raw (&results.fMeasuredAt))});
+            results.fMeasurements.Add (Measurement{kCPUMeasurment_, Instruments::CPU::Instrument::kObjectVariantMapper.FromObject (Capture_Raw (&results.fMeasuredAt))});
             return results;
         }
         nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
@@ -531,17 +501,41 @@ namespace {
 
 /*
  ********************************************************************************
- ************************ Instruments::CPU::GetInstrument ***********************
+ ************************ Instruments::CPU::Instrument **************************
  ********************************************************************************
  */
-Instrument SystemPerformance::Instruments::CPU::GetInstrument (Options options)
+const ObjectVariantMapper Instruments::CPU::Instrument::kObjectVariantMapper = [] () -> ObjectVariantMapper {
+    ObjectVariantMapper mapper;
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
+#if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
+    mapper.AddClass<Info::LoadAverage> (initializer_list<StructFieldInfo>{
+        {L"1-minute", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::LoadAverage, f1MinuteAve)},
+        {L"5-minute", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::LoadAverage, f5MinuteAve)},
+        {L"15-minute", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::LoadAverage, f15MinuteAve)},
+    });
+    mapper.AddCommonType<optional<Info::LoadAverage>> ();
+#endif
+    using StructFieldInfo = ObjectVariantMapper::StructFieldInfo;
+    mapper.AddClass<Info> (initializer_list<StructFieldInfo> {
+#if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
+        {L"Load-Average", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fLoadAverage), StructFieldInfo::eOmitNullFields},
+#endif
+            {L"Total-Process-CPU-Usage", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fTotalProcessCPUUsage)},
+            {L"Total-CPU-Usage", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fTotalCPUUsage)},
+            {L"Run-Q-Length", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fRunQLength), StructFieldInfo::eOmitNullFields},
+    });
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+    return mapper;
+}();
+
+Instruments::CPU::Instrument::Instrument (const Options& options)
+    : SystemPerformance::Instrument{
+          InstrumentNameType{L"CPU"sv},
+          make_unique<MyCapturer_> (CapturerWithContext_{options}),
+          {kCPUMeasurment_},
+          {KeyValuePair<type_index, MeasurementType>{typeid (Info), kCPUMeasurment_}},
+          kObjectVariantMapper}
 {
-    return Instrument{
-        InstrumentNameType{L"CPU"sv},
-        make_unique<MyCapturer_> (CapturerWithContext_{options}),
-        {kCPUMeasurment_},
-        {KeyValuePair<type_index, MeasurementType>{typeid (Info), kCPUMeasurment_}},
-        GetObjectVariantMapper ()};
 }
 
 /*
