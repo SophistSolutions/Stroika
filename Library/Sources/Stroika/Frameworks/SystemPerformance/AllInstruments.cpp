@@ -33,7 +33,7 @@ Set<Instrument> SystemPerformance::GetAllInstruments ()
     static Set<Instrument> kInstruments_ = SortedSet<Instrument>{
         Instruments::CPU::Instrument{},
         Instruments::Filesystem::Instrument{},
-        Instruments::Memory::GetInstrument (),
+        Instruments::Memory::Instrument{},
         Instruments::Network::GetInstrument (),
         Instruments::Process::GetInstrument (),
     };

@@ -32,7 +32,6 @@ using namespace Stroika::Foundation::Memory;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::SystemPerformance;
-using namespace Stroika::Frameworks::SystemPerformance::Instruments::Memory;
 
 using Characters::Character;
 using Containers::Mapping;
@@ -40,6 +39,11 @@ using Containers::Sequence;
 using Containers::Set;
 using IO::FileSystem::FileInputStream;
 using Time::DurationSecondsType;
+
+
+using Instruments::Memory::Info;
+using Instruments::Memory::Options;
+
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -78,7 +82,7 @@ namespace {
  */
 String Instruments::Memory::Info::PhysicalRAMDetailsType::ToString () const
 {
-    return DataExchange::Variant::JSON::Writer{}.WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+    return DataExchange::Variant::JSON::Writer{}.WriteAsString (Instrument::kObjectVariantMapper.FromObject (*this));
 }
 
 /*
@@ -88,7 +92,7 @@ String Instruments::Memory::Info::PhysicalRAMDetailsType::ToString () const
  */
 String Instruments::Memory::Info::VirtualMemoryDetailsType::ToString () const
 {
-    return DataExchange::Variant::JSON::Writer{}.WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+    return DataExchange::Variant::JSON::Writer{}.WriteAsString (Instrument::kObjectVariantMapper.FromObject (*this));
 }
 
 /*
@@ -98,7 +102,7 @@ String Instruments::Memory::Info::VirtualMemoryDetailsType::ToString () const
  */
 String Instruments::Memory::Info::PagingDetailsType::ToString () const
 {
-    return DataExchange::Variant::JSON::Writer{}.WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+    return DataExchange::Variant::JSON::Writer{}.WriteAsString (Instrument::kObjectVariantMapper.FromObject (*this));
 }
 
 /*
@@ -108,21 +112,30 @@ String Instruments::Memory::Info::PagingDetailsType::ToString () const
  */
 String Instruments::Memory::Info::ToString () const
 {
-    return DataExchange::Variant::JSON::Writer{}.WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+    return DataExchange::Variant::JSON::Writer{}.WriteAsString (Instrument::kObjectVariantMapper.FromObject (*this));
 }
 
 namespace {
     struct CapturerWithContext_COMMON_ : Debug::AssertExternallySynchronizedLock {
-        const Options       fOptions_;
-        DurationSecondsType fLastCapturedAt_{};
-        CapturerWithContext_COMMON_ (const Options& options)
+        const Options fOptions_;
+        struct _Context : Instrument::ICaptureContext {
+            optional<DurationSecondsType> fCaptureContextAt{};
+        };
+        Synchronized<shared_ptr<_Context>> _fContext;
+        CapturerWithContext_COMMON_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
             : fOptions_{options}
+            , _fContext{context}
         {
         }
-        DurationSecondsType GetLastCaptureAt () const { return fLastCapturedAt_; }
-        void                NoteCompletedCapture_ ()
+        optional<DurationSecondsType> GetCaptureContextTime () const { return _fContext.cget ().cref ()->fCaptureContextAt; }
+        // return true iff actually capture context
+        bool _NoteCompletedCapture (DurationSecondsType at = Time::GetTickCount ())
         {
-            fLastCapturedAt_ = Time::GetTickCount ();
+            if (not _fContext.rwget ().rwref ()->fCaptureContextAt.has_value () or (at - *_fContext.rwget ().rwref ()->fCaptureContextAt) >= fOptions_.fMinimumAveragingInterval) {
+                _fContext.rwget ().rwref ()->fCaptureContextAt = at;
+                return true;
+            }
+            return false;
         }
     };
 }
@@ -131,17 +144,15 @@ namespace {
 namespace {
     struct CapturerWithContext_Linux_ : CapturerWithContext_COMMON_ {
 
-        struct _Context : Instrument::ICaptureContext {
+        struct _Context : CapturerWithContext_COMMON_::_Context {
             uint64_t                  fSaved_MajorPageFaultsSinceBoot{};
             uint64_t                  fSaved_MinorPageFaultsSinceBoot{};
             uint64_t                  fSaved_PageOutsSinceBoot{};
             Time::DurationSecondsType fSaved_VMPageStats_At{};
         };
-        Synchronized<shared_ptr<_Context>> fContext_;
 
-        CapturerWithContext_Linux_ (Options options)
-            : CapturerWithContext_COMMON_{options}
-            , fContext_{make_shared<_Context> ()}
+        CapturerWithContext_Linux_ (const Options& options)
+            : CapturerWithContext_COMMON_{options, make_shared<_Context> ()}
         {
         }
         CapturerWithContext_Linux_ (const CapturerWithContext_Linux_&) = default;
@@ -160,7 +171,7 @@ namespace {
             catch (...) {
                 DbgTrace (L"Ignoring error in Read_ProcVMStat_: %s", Characters::ToString (current_exception ()).c_str ());
             }
-            NoteCompletedCapture_ ();
+            _NoteCompletedCapture ();
             return result;
         }
         void Read_ProcMemInfo (Instruments::Memory::Info* updateResult)
@@ -296,19 +307,17 @@ namespace {
 #if qPlatform_Windows
 namespace {
     struct CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
-        struct _Context : Instrument::ICaptureContext {
+        struct _Context : CapturerWithContext_COMMON_::_Context {
 #if qUseWMICollectionSupport_
             WMICollector fMemoryWMICollector_{L"Memory"sv, {kInstanceName_}, {kCommittedBytes_, kCommitLimit_, kHardPageFaultsPerSec_, kPagesOutPerSec_, kFreeMem_, kHardwareReserved1_, kHardwareReserved2_}};
 #endif
         };
-        Synchronized<shared_ptr<_Context>> fContext_;
 
         CapturerWithContext_Windows_ (const Options& options)
-            : CapturerWithContext_COMMON_{options}
-            , fContext_{make_shared<_Context> ()}
+            : CapturerWithContext_COMMON_{options, make_shared<_Context> ()}
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            for (String i : fContext_->fMemoryWMICollector_.GetAvailableCounters ()) {
+            for (String i : dynamic_pointer_cast<_Context> (_fContext)->fMemoryWMICollector_.GetAvailableCounters ()) {
                 DbgTrace (L"Memory:Countername: %s", i.c_str ());
             }
 #endif
@@ -329,7 +338,7 @@ namespace {
             if (result.fPhysicalMemory.fOSReserved) {
                 Memory::AccumulateIf (&result.fPhysicalMemory.fInactive, result.fPhysicalMemory.fOSReserved, std::minus{});
             }
-            NoteCompletedCapture_ ();
+            _NoteCompletedCapture ();
             return result;
         }
         Instruments::Memory::Info capture ()
@@ -356,22 +365,22 @@ namespace {
 #if qUseWMICollectionSupport_
         void Read_WMI_ (Instruments::Memory::Info* updateResult, uint64_t totalRAM)
         {
-            auto contextLock = fContext_.rwget ();
-            contextLock.rwref ()->fMemoryWMICollector_.Collect ();
-            Memory::CopyToIf (contextLock.rwref ()->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommittedBytes_), &updateResult->fVirtualMemory.fCommittedBytes);
-            Memory::CopyToIf (contextLock.rwref ()->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommitLimit_), &updateResult->fVirtualMemory.fCommitLimit);
-            Memory::CopyToIf (contextLock.rwref ()->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardPageFaultsPerSec_), &updateResult->fPaging.fMajorPageFaultsPerSecond);
-            Memory::CopyToIf (contextLock.rwref ()->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kPagesOutPerSec_), &updateResult->fPaging.fPageOutsPerSecond);
-            Memory::CopyToIf (contextLock.rwref ()->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_), &updateResult->fPhysicalMemory.fFree);
-            if (optional<double> freeMem = contextLock.rwref ()->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_)) {
+            auto contextLock = _fContext.rwget ();
+            dynamic_pointer_cast<_Context> (contextLock.rwref ())->fMemoryWMICollector_.Collect ();
+            Memory::CopyToIf (dynamic_pointer_cast<_Context> (contextLock.rwref ())->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommittedBytes_), &updateResult->fVirtualMemory.fCommittedBytes);
+            Memory::CopyToIf (dynamic_pointer_cast<_Context> (contextLock.rwref ())->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommitLimit_), &updateResult->fVirtualMemory.fCommitLimit);
+            Memory::CopyToIf (dynamic_pointer_cast<_Context> (contextLock.rwref ())->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardPageFaultsPerSec_), &updateResult->fPaging.fMajorPageFaultsPerSecond);
+            Memory::CopyToIf (dynamic_pointer_cast<_Context> (contextLock.rwref ())->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kPagesOutPerSec_), &updateResult->fPaging.fPageOutsPerSecond);
+            Memory::CopyToIf (dynamic_pointer_cast<_Context> (contextLock.rwref ())->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_), &updateResult->fPhysicalMemory.fFree);
+            if (optional<double> freeMem = dynamic_pointer_cast<_Context> (contextLock.rwref ())->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_)) {
                 if (updateResult->fPhysicalMemory.fActive) {
                     // Active + Inactive + Free == TotalRAM
                     updateResult->fPhysicalMemory.fInactive = totalRAM - *updateResult->fPhysicalMemory.fActive - static_cast<uint64_t> (*freeMem);
                 }
             }
             updateResult->fPhysicalMemory.fOSReserved = nullopt;
-            Memory::AccumulateIf (&updateResult->fPhysicalMemory.fOSReserved, contextLock.rwref ()->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved1_));
-            Memory::AccumulateIf (&updateResult->fPhysicalMemory.fOSReserved, contextLock.rwref ()->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved2_));
+            Memory::AccumulateIf (&updateResult->fPhysicalMemory.fOSReserved, dynamic_pointer_cast<_Context> (contextLock.rwref ())->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved1_));
+            Memory::AccumulateIf (&updateResult->fPhysicalMemory.fOSReserved, dynamic_pointer_cast<_Context> (contextLock.rwref ())->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved2_));
             // fPhysicalMemory.fAvailable WAG TMPHACK - probably should add "hardware in use" memory + private WS of each process + shared memory "WS" - but not easy to compute...
             updateResult->fPhysicalMemory.fAvailable = updateResult->fPhysicalMemory.fFree + updateResult->fPhysicalMemory.fInactive;
         }
@@ -423,16 +432,61 @@ namespace {
     };
 }
 
+namespace {
+    const MeasurementType kMemoryUsageMeasurement_ = MeasurementType{L"Memory-Usage"sv};
+}
+
+namespace {
+    class MyCapturer_ : public Instrument::ICapturer {
+        CapturerWithContext_ fCapturerWithContext_;
+
+    public:
+        MyCapturer_ (const CapturerWithContext_& ctx)
+            : fCapturerWithContext_{ctx}
+        {
+        }
+        virtual MeasurementSet Capture () override
+        {
+            Debug::TraceContextBumper ctx{"SystemPerformance::Instrument...Memory...MyCapturer_::Capture ()"};
+            MeasurementSet            results;
+            results.fMeasurements.Add (Measurement{kMemoryUsageMeasurement_, Instruments::Memory::Instrument::kObjectVariantMapper.FromObject (Capture_Raw (&results.fMeasuredAt))});
+            return results;
+        }
+        nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
+        {
+            auto before         = fCapturerWithContext_.GetCaptureContextTime ();
+            Info rawMeasurement = fCapturerWithContext_.capture ();
+            if (outMeasuredAt != nullptr) {
+                using Traversal::Openness;
+                *outMeasuredAt = Range<DurationSecondsType> (before, fCapturerWithContext_.GetCaptureContextTime ().value_or (Time::GetTickCount ()), Openness::eClosed, Openness::eClosed);
+            }
+            return rawMeasurement;
+        }
+        virtual unique_ptr<ICapturer> Clone () const override
+        {
+            return make_unique<MyCapturer_> (fCapturerWithContext_);
+        }
+        virtual shared_ptr<Instrument::ICaptureContext> GetContext () const override
+        {
+            EnsureNotNull (fCapturerWithContext_._fContext.load ());
+            return fCapturerWithContext_._fContext.load ();
+        }
+        virtual void SetContext (const shared_ptr<Instrument::ICaptureContext>& context) override
+        {
+            fCapturerWithContext_._fContext.store ((context == nullptr) ? make_shared<CapturerWithContext_::_Context> () : dynamic_pointer_cast<CapturerWithContext_::_Context> (context));
+        }
+    };
+}
+
+
 /*
  ********************************************************************************
- ****************** Instruments::Memory::GetObjectVariantMapper *****************
+ ********************** Instruments::Memory::Instrument *************************
  ********************************************************************************
  */
-ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
-{
-    using StructFieldInfo                     = ObjectVariantMapper::StructFieldInfo;
-    static const ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
-        ObjectVariantMapper mapper;
+const ObjectVariantMapper Instruments::Memory::Instrument::kObjectVariantMapper = [] () -> ObjectVariantMapper {
+    using StructFieldInfo = ObjectVariantMapper::StructFieldInfo;
+    ObjectVariantMapper mapper;
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<Info::PhysicalRAMDetailsType> (initializer_list<StructFieldInfo>{
             {L"Available", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PhysicalRAMDetailsType, fAvailable), StructFieldInfo::eOmitNullFields},
@@ -461,69 +515,16 @@ ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
         });
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         return mapper;
-    }();
-    return sMapper_;
-}
+}();
 
-namespace {
-    const MeasurementType kMemoryUsageMeasurement_ = MeasurementType{L"Memory-Usage"sv};
-}
-
-namespace {
-    class MyCapturer_ : public Instrument::ICapturer {
-        CapturerWithContext_ fCapturerWithContext_;
-
-    public:
-        MyCapturer_ (const CapturerWithContext_& ctx)
-            : fCapturerWithContext_{ctx}
-        {
-        }
-        virtual MeasurementSet Capture () override
-        {
-            Debug::TraceContextBumper ctx{"SystemPerformance::Instrument...Memory...MyCapturer_::Capture ()"};
-            MeasurementSet            results;
-            results.fMeasurements.Add (Measurement{kMemoryUsageMeasurement_, GetObjectVariantMapper ().FromObject (Capture_Raw (&results.fMeasuredAt))});
-            return results;
-        }
-        nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
-        {
-            DurationSecondsType before         = fCapturerWithContext_.GetLastCaptureAt ();
-            Info                rawMeasurement = fCapturerWithContext_.capture ();
-            if (outMeasuredAt != nullptr) {
-                using Traversal::Openness;
-                *outMeasuredAt = Range<DurationSecondsType> (before, fCapturerWithContext_.GetLastCaptureAt (), Openness::eClosed, Openness::eClosed);
-            }
-            return rawMeasurement;
-        }
-        virtual unique_ptr<ICapturer> Clone () const override
-        {
-            return make_unique<MyCapturer_> (fCapturerWithContext_);
-        }
-        virtual shared_ptr<Instrument::ICaptureContext> GetContext () const override
-        {
-            EnsureNotNull (fCapturerWithContext_.fContext_.cget ().cref ());
-            return fCapturerWithContext_.fContext_.cget ().cref ();
-        }
-        virtual void SetContext (const shared_ptr<Instrument::ICaptureContext>& context) override
-        {
-            fCapturerWithContext_.fContext_ = context == nullptr ? make_shared<CapturerWithContext_::_Context> () : dynamic_pointer_cast<CapturerWithContext_::_Context> (context);
-        }
-    };
-}
-
-/*
- ********************************************************************************
- ******************* Instruments::Memory::GetInstrument *************************
- ********************************************************************************
- */
-Instrument SystemPerformance::Instruments::Memory::GetInstrument (Options options)
+Instruments::Memory::Instrument::Instrument (const Options& options)
+    : SystemPerformance::Instrument{
+          InstrumentNameType{L"Memory"sv},
+          make_unique<MyCapturer_> (CapturerWithContext_{options}),
+          {kMemoryUsageMeasurement_},
+          {KeyValuePair<type_index, MeasurementType>{typeid (Info), kMemoryUsageMeasurement_}},
+          kObjectVariantMapper}
 {
-    return Instrument{
-        InstrumentNameType{L"Memory"sv},
-        make_unique<MyCapturer_> (CapturerWithContext_{options}),
-        {kMemoryUsageMeasurement_},
-        {KeyValuePair<type_index, MeasurementType>{typeid (Info), kMemoryUsageMeasurement_}},
-        GetObjectVariantMapper ()};
 }
 
 /*
