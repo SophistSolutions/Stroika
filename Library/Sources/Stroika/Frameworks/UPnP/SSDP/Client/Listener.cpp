@@ -183,18 +183,18 @@ private:
  ********************************************************************************
  */
 Listener::Listener (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
-    : fRep_ (make_shared<Rep_> (ipVersion))
+    : fRep_{make_shared<Rep_> (ipVersion)}
 {
 }
 
 Listener::Listener (const function<void (const SSDP::Advertisement& d)>& callOnFinds, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
-    : Listener (ipVersion)
+    : Listener{ipVersion}
 {
     AddOnFoundCallback (callOnFinds);
 }
 
 Listener::Listener (const function<void (const SSDP::Advertisement& d)>& callOnFinds, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion, AutoStart)
-    : Listener (callOnFinds, ipVersion)
+    : Listener{callOnFinds, ipVersion}
 {
     Start ();
 }

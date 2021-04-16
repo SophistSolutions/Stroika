@@ -213,7 +213,7 @@ DISABLE_COMPILER_MSC_WARNING_START (4996) // use deprecated
 filesystem::path IO::FileSystem::Ptr::CanonicalizeName (const filesystem::path& path2FileOrShortcut, [[maybe_unused]] bool throwIfComponentsNotFound)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (L"IO::FileSystem::Ptr::CanonicalizeName", L"path2FileOrShortcut='%s', throwIfComponentsNotFound=%s", path2FileOrShortcut.c_str (), Characters::ToString (throwIfComponentsNotFound).c_str ());
+    Debug::TraceContextBumper ctx{L"IO::FileSystem::Ptr::CanonicalizeName", L"path2FileOrShortcut='%s', throwIfComponentsNotFound=%s", path2FileOrShortcut.c_str (), Characters::ToString (throwIfComponentsNotFound).c_str ()};
 #endif
 #if qPlatform_POSIX
     //  We used to call canonicalize_file_name() - but this doesn't work with AIX 7.1/g++4.9.2, and
@@ -418,7 +418,7 @@ DateTime IO::FileSystem::Ptr::GetFileLastAccessDate (const filesystem::path& fil
 void IO::FileSystem::Ptr::RemoveFile (const filesystem::path& fileName)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (L"IO::FileSystem::Ptr::RemoveFile", L"fileName='%s'", fileName.c_str ());
+    Debug::TraceContextBumper ctx{L"IO::FileSystem::Ptr::RemoveFile", L"fileName='%s'", fileName.c_str ()};
 #endif
 #if qPlatform_Windows && qTargetPlatformSDKUseswchar_t
     FileSystem::Exception::ThrowPOSIXErrNoIfNegative (::_wunlink (fileName.c_str ()), fileName);
@@ -430,7 +430,7 @@ void IO::FileSystem::Ptr::RemoveFile (const filesystem::path& fileName)
 bool IO::FileSystem::Ptr::RemoveFileIf (const filesystem::path& fileName)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (L"IO::FileSystem::Ptr::RemoveFileIf", L"fileName='%s'", fileName.c_str ());
+    Debug::TraceContextBumper ctx{L"IO::FileSystem::Ptr::RemoveFileIf", L"fileName='%s'", fileName.c_str ()};
 #endif
 #if qPlatform_Windows && qTargetPlatformSDKUseswchar_t
     int r = ::_wunlink (fileName.c_str ());
@@ -485,7 +485,7 @@ DISABLE_COMPILER_MSC_WARNING_START (4996) // use deprecated
 bool IO::FileSystem::Ptr::RemoveDirectoryIf (const filesystem::path& directory, RemoveDirectoryPolicy policy)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (L"IO::FileSystem::Ptr::RemoveDirectoryIf", L"directory='%s', policy=%s", directory.c_str (), Characters::ToString (policy).c_str ());
+    Debug::TraceContextBumper ctx{L"IO::FileSystem::Ptr::RemoveDirectoryIf", L"directory='%s', policy=%s", directory.c_str (), Characters::ToString (policy).c_str ()};
 #endif
     bool triedRMRF{false};
 Again:

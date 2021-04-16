@@ -219,24 +219,24 @@ const String Search::kSSDPAny    = L"ssdp:any"sv;
 const String Search::kRootDevice = L"upnp:rootdevice"sv;
 
 Search::Search (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
-    : fRep_ (make_shared<Rep_> (ipVersion))
+    : fRep_{make_shared<Rep_> (ipVersion)}
 {
 }
 
 Search::Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
-    : Search (ipVersion)
+    : Search{ipVersion}
 {
     AddOnFoundCallback (callOnFinds);
 }
 
 Search::Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds, const String& initialSearch, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
-    : Search (callOnFinds, ipVersion)
+    : Search{callOnFinds, ipVersion}
 {
     Start (initialSearch);
 }
 
 Search::Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds, const String& initialSearch, const optional<Time::Duration>& autoRetryInterval, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
-    : Search (callOnFinds, ipVersion)
+    : Search{callOnFinds, ipVersion}
 {
     Start (initialSearch, autoRetryInterval);
 }

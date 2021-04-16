@@ -59,11 +59,11 @@ void WebService::Server::ExpectedMethod (const Request& request, const WebServic
  ********************************************************************************
  */
 const String WebService::Server::DocsOptions::kDefaultCSSSection =
-    L"div.mainDocs {margin-left: .3in; margin-right: .3in; }"
-    L"div.mainDocs div { padding-top: 6pt; padding-bottom: 6pt; }"
-    L"div.curlExample {margin-left: .3in; margin-top: .1in; margin-bottom:.1in; font-family: \"Courier New\", Courier, \"Lucida Sans Typewriter\", \"Lucida Typewriter\", monospace; font-size: 9pt; font-weight: bold;}"
-    L"div.curlExample div { padding-top: 2pt; padding-bottom: 2pt; }"
-    L"div.introduction div { padding-top: 2pt; padding-bottom: 2pt; }";
+    L"div.mainDocs {margin-left: .3in; margin-right: .3in; }"sv
+    L"div.mainDocs div { padding-top: 6pt; padding-bottom: 6pt; }"sv
+    L"div.curlExample {margin-left: .3in; margin-top: .1in; margin-bottom:.1in; font-family: \"Courier New\", Courier, \"Lucida Sans Typewriter\", \"Lucida Typewriter\", monospace; font-size: 9pt; font-weight: bold;}"sv
+    L"div.curlExample div { padding-top: 2pt; padding-bottom: 2pt; }"sv
+    L"div.introduction div { padding-top: 2pt; padding-bottom: 2pt; }"sv;
 
 void WebService::Server::WriteDocsPage (Response* response, const Sequence<WebServiceMethodDescription>& operations, const DocsOptions& docsOptions)
 {

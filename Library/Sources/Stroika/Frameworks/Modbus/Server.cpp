@@ -145,7 +145,7 @@ namespace Stroika::Foundation::Characters {
 namespace {
     void ConnectionHandler_ (const ConnectionOrientedStreamSocket::Ptr& connectionSocket, shared_ptr<IModbusService> serviceHandler, const ServerOptions& options)
     {
-        TraceContextBumper ctx ("Modbus-Connection");
+        TraceContextBumper ctx{"Modbus-Connection"};
 #if qDefaultTracingOn
         static atomic<uint32_t> sConnectionNumber_;
         uint32_t                thisModbusConnectionNumber = ++sConnectionNumber_;
