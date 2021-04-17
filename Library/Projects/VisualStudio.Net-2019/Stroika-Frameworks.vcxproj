@@ -234,6 +234,7 @@
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\MeasurementSet.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\InstrumentHelpers.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\WMICollector.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\ToDo.md" />
@@ -263,6 +264,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Process.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\MeasurementSet.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\InstrumentHelpers.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\WMICollector.h" />
   </ItemGroup>
   <ItemGroup>

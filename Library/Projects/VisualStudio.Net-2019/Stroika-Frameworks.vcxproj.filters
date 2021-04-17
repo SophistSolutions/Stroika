@@ -238,6 +238,9 @@
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\FileSystemRequestHandler.inl">
       <Filter>WebServer</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\InstrumentHelpers.inl">
+      <Filter>System-Performance\Support</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Modbus\IModbusService.h">
@@ -428,6 +431,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\FileSystemRequestHandler.h">
       <Filter>WebServer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\InstrumentHelpers.h">
+      <Filter>System-Performance\Support</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

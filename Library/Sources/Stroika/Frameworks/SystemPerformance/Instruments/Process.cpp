@@ -45,6 +45,8 @@
 #include "../../../Foundation/Streams/TextReader.h"
 #include "../../../Foundation/Streams/iostream/FStreamSupport.h"
 
+#include "../Support/InstrumentHelpers.h"
+
 #include "Process.h"
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
@@ -285,31 +287,16 @@ String Instruments::Process::ProcessType::ToString () const
 }
 
 namespace {
-    struct CapturerWithContext_COMMON_ : Debug::AssertExternallySynchronizedLock {
-        const Options fOptions_;
-        struct _Context : Instrument::ICaptureContext {
-            optional<DurationSecondsType> fCaptureContextAt{};
-        };
-        Synchronized<shared_ptr<_Context>> _fContext;
+    struct CapturerWithContext_COMMON_ : SystemPerformance::Support::CapturerWithContext_COMMON<Options> {
+        CapturerWithContext_COMMON_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
+            : CapturerWithContext_COMMON<Options>{options, context}
+        {
+        }
+        // maybe this shoudl go in shared contet
+
         // skip reporting static (known at process start) data on subsequent reports
         // only used if fCachePolicy == CachePolicy::eOmitUnchangedValues
         Set<pid_t> fStaticSuppressedAgain;
-        CapturerWithContext_COMMON_ (const CapturerWithContext_COMMON_& src) = default;
-        CapturerWithContext_COMMON_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
-            : fOptions_{options}
-            , _fContext{context}
-        {
-        }
-        optional<DurationSecondsType> GetCaptureContextTime () const { return _fContext.cget ().cref ()->fCaptureContextAt; }
-        // return true iff actually capture context
-        bool _NoteCompletedCapture (DurationSecondsType at = Time::GetTickCount ())
-        {
-            if (not _fContext.rwget ().rwref ()->fCaptureContextAt.has_value () or (at - *_fContext.rwget ().rwref ()->fCaptureContextAt) >= fOptions_.fMinimumAveragingInterval) {
-                _fContext.rwget ().rwref ()->fCaptureContextAt = at;
-                return true;
-            }
-            return false;
-        }
     };
 }
 
@@ -1312,7 +1299,7 @@ namespace {
                         goto Again;
                     }
                     if (status != 0) {
-                        Throw (Execution::Exception (L"Bad result from NtQuerySystemInformation"sv));
+                        Throw (Execution::Exception{L"Bad result from NtQuerySystemInformation"sv});
                     }
                     fActualNumElts_ = returnLength / sizeof (SYSTEM_PROCESS_INFORMATION);
                 }

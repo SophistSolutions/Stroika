@@ -41,6 +41,8 @@
 #include "../../../Foundation/Streams/MemoryStream.h"
 #include "../../../Foundation/Streams/TextReader.h"
 
+#include "../Support/InstrumentHelpers.h"
+
 #include "Filesystem.h"
 
 using namespace Stroika::Foundation;
@@ -165,28 +167,7 @@ namespace {
 }
 
 namespace {
-    struct CapturerWithContext_COMMON_ : Debug::AssertExternallySynchronizedLock {
-        const Options fOptions_;
-        struct _Context : Instrument::ICaptureContext {
-            optional<DurationSecondsType> fCaptureContextAt{};
-        };
-        Synchronized<shared_ptr<_Context>> _fContext;
-        CapturerWithContext_COMMON_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
-            : fOptions_{options}
-            , _fContext{context}
-        {
-        }
-        optional<DurationSecondsType> GetCaptureContextTime () const { return _fContext.cget ().cref ()->fCaptureContextAt; }
-        // return true iff actually capture context
-        bool _NoteCompletedCapture (DurationSecondsType at = Time::GetTickCount ())
-        {
-            if (not _fContext.rwget ().rwref ()->fCaptureContextAt.has_value () or (at - *_fContext.rwget ().rwref ()->fCaptureContextAt) >= fOptions_.fMinimumAveragingInterval) {
-                _fContext.rwget ().rwref ()->fCaptureContextAt = at;
-                return true;
-            }
-            return false;
-        }
-    };
+    using CapturerWithContext_COMMON_ = SystemPerformance::Support::CapturerWithContext_COMMON<Options>;
 }
 
 #if qPlatform_POSIX
