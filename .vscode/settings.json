@@ -17,7 +17,8 @@
     "initializer_list": "cpp",
     "regex": "cpp",
     "typeindex": "cpp",
-    "memory": "cpp"
+    "memory": "cpp",
+    "functional": "cpp"
   },
   "files.watcherExclude": {
     "Archive/**": true,
