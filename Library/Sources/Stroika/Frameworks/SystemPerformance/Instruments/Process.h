@@ -272,11 +272,6 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Process {
     const inline MeasurementType kProcessMapMeasurement{L"Process-Details"sv};
 
     /**
-     *  For ProcessType and ProcessMapType types.
-     */
-    ObjectVariantMapper GetObjectVariantMapper ();
-
-    /**
      */
     enum class CachePolicy {
         eOmitUnchangedValues,
@@ -329,9 +324,30 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Process {
     };
 
     /**
-     *  Instrument returning ProcessMapType measurements.
+     *  This class is designed to be object-sliced into just the SystemPerformance::Instrument
+     * 
+     *  \note Constructing the instrument does no capturing (so sb quick/cheap) - capturing starts when you
+     *        first call i.Capture()
      */
-    Instrument GetInstrument (const Options& options = Options{});
+    struct Instrument : SystemPerformance::Instrument {
+    public:
+        Instrument (const Options& options = Options{});
+
+    public:
+        /**
+         *  For Instruments::Process::Info, ProcessType and ProcessMapType, etc types.
+         */
+        static const ObjectVariantMapper kObjectVariantMapper;
+    };
+
+    [[deprecated ("Since Stroika 2.1b12, use CPU::Instrument instead of Process::GetInstrument()")]] inline SystemPerformance::Instrument GetInstrument (Options options = Options{})
+    {
+        return Instrument{options};
+    }
+    [[deprecated ("Since Stroika 2.1b12, use CPU::Instrument instead of Process::Instrument::kObjectVariantMapper")]] inline ObjectVariantMapper GetObjectVariantMapper ()
+    {
+        return Instrument::kObjectVariantMapper;
+    }
 
 }
 

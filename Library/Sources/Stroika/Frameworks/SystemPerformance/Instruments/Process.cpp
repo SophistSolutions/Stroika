@@ -60,13 +60,18 @@ using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::SystemPerformance;
 using namespace Stroika::Frameworks::SystemPerformance::Instruments;
-using namespace Stroika::Frameworks::SystemPerformance::Instruments::Process;
+
+using std::byte;
 
 using IO::FileSystem::FileInputStream;
 using Streams::TextReader;
 using Time::DurationSecondsType;
 
-using std::byte;
+using Instruments::Process::CachePolicy;
+using Instruments::Process::Info;
+using Instruments::Process::Options;
+using Instruments::Process::ProcessMapType;
+using Instruments::Process::ProcessType;
 
 // --LGP 2016-03-11
 // Sadly - though ALMOST working - not quite.
@@ -275,66 +280,7 @@ namespace {
  */
 String Instruments::Process::ProcessType::ToString () const
 {
-    return DataExchange::Variant::JSON::Writer{}.WriteAsString (GetObjectVariantMapper ().FromObject (*this));
-}
-
-/*
- ********************************************************************************
- ***************** Instruments::Process::GetObjectVariantMapper *****************
- ********************************************************************************
- */
-ObjectVariantMapper Instruments::Process::GetObjectVariantMapper ()
-{
-    using StructFieldInfo                     = ObjectVariantMapper::StructFieldInfo;
-    static const ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
-        ObjectVariantMapper mapper;
-        mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<ProcessType::RunStatus> ());
-        mapper.AddCommonType<optional<ProcessType::RunStatus>> ();
-        mapper.AddCommonType<optional<pid_t>> ();
-        mapper.AddCommonType<optional<MemorySizeType>> ();
-        mapper.AddCommonType<optional<DurationSecondsType>> ();
-        mapper.AddCommonType<optional<Mapping<String, String>>> ();
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
-        mapper.AddClass<ProcessType::TCPStats> (initializer_list<StructFieldInfo>{
-            {L"Established", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType::TCPStats, fEstablished)},
-            {L"Listening", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType::TCPStats, fListening)},
-            {L"Other", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType::TCPStats, fOther)},
-        });
-        mapper.AddCommonType<optional<ProcessType::TCPStats>> ();
-        mapper.AddClass<ProcessType> (initializer_list<StructFieldInfo>{
-            {L"Kernel-Process", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fKernelProcess), StructFieldInfo::eOmitNullFields},
-            {L"Parent-Process-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fParentProcessID), StructFieldInfo::eOmitNullFields},
-            {L"Process-Name", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fProcessName), StructFieldInfo::eOmitNullFields},
-            {L"User-Name", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fUserName), StructFieldInfo::eOmitNullFields},
-            {L"Command-Line", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCommandLine), StructFieldInfo::eOmitNullFields},
-            {L"Current-Working-Directory", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCurrentWorkingDirectory), StructFieldInfo::eOmitNullFields},
-            {L"Environment-Variables", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fEnvironmentVariables), StructFieldInfo::eOmitNullFields},
-            {L"EXE-Path", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fEXEPath), StructFieldInfo::eOmitNullFields},
-            {L"Root", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fRoot), StructFieldInfo::eOmitNullFields},
-            {L"Process-Started-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fProcessStartedAt), StructFieldInfo::eOmitNullFields},
-            {L"Run-Status", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fRunStatus), StructFieldInfo::eOmitNullFields},
-            {L"Private-Virtual-Memory-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fPrivateVirtualMemorySize), StructFieldInfo::eOmitNullFields},
-            {L"Total-Virtual-Memory-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fTotalVirtualMemorySize), StructFieldInfo::eOmitNullFields},
-            {L"Resident-Memory-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fResidentMemorySize), StructFieldInfo::eOmitNullFields},
-            {L"Private-Bytes", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fPrivateBytes), StructFieldInfo::eOmitNullFields},
-            {L"Page-Fault-Count", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fPageFaultCount), StructFieldInfo::eOmitNullFields},
-            {L"Major-Page-Fault-Count", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fMajorPageFaultCount), StructFieldInfo::eOmitNullFields},
-            {L"Working-Set-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fWorkingSetSize), StructFieldInfo::eOmitNullFields},
-            {L"Private-Working-Set-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fPrivateWorkingSetSize), StructFieldInfo::eOmitNullFields},
-            {L"Total-CPUTime-Ever-Used", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fTotalCPUTimeEverUsed), StructFieldInfo::eOmitNullFields},
-            {L"Average-CPUTime-Used", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fAverageCPUTimeUsed), StructFieldInfo::eOmitNullFields},
-            {L"Thread-Count", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fThreadCount), StructFieldInfo::eOmitNullFields},
-            {L"Combined-IO-Read-Rate", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCombinedIOReadRate), StructFieldInfo::eOmitNullFields},
-            {L"Combined-IO-Write-Rate", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCombinedIOWriteRate), StructFieldInfo::eOmitNullFields},
-            {L"Combined-IO-Read-Bytes", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCombinedIOReadBytes), StructFieldInfo::eOmitNullFields},
-            {L"Combined-IO-Write-Bytes", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCombinedIOWriteBytes), StructFieldInfo::eOmitNullFields},
-            {L"TCP-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fTCPStats), StructFieldInfo::eOmitNullFields},
-        });
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
-        mapper.AddCommonType<ProcessMapType> ();
-        return mapper;
-    }();
-    return sMapper_;
+    return DataExchange::Variant::JSON::Writer{}.WriteAsString (Process::Instrument::kObjectVariantMapper.FromObject (*this));
 }
 
 namespace {
@@ -1755,7 +1701,7 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"SystemPerformance::Instrument...Process...MyCapturer_::Capture ()"};
             MeasurementSet            results;
-            Measurement               m{kProcessMapMeasurement, GetObjectVariantMapper ().FromObject (Capture_Raw (&results.fMeasuredAt))};
+            Measurement               m{Instruments::Process::kProcessMapMeasurement, Process::Instrument::kObjectVariantMapper.FromObject (Capture_Raw (&results.fMeasuredAt))};
             results.fMeasurements.Add (m);
             return results;
         }
@@ -1788,17 +1734,67 @@ namespace {
 
 /*
  ********************************************************************************
- ******************* Instruments::Process::GetInstrument ************************
+ ********************** Instruments::Process::Instrument ************************
  ********************************************************************************
  */
-Instrument SystemPerformance::Instruments::Process::GetInstrument (const Options& options)
+const ObjectVariantMapper Instruments::Process::Instrument::kObjectVariantMapper = [] () -> ObjectVariantMapper {
+    using StructFieldInfo = ObjectVariantMapper::StructFieldInfo;
+    ObjectVariantMapper mapper;
+    mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<ProcessType::RunStatus> ());
+    mapper.AddCommonType<optional<ProcessType::RunStatus>> ();
+    mapper.AddCommonType<optional<pid_t>> ();
+    mapper.AddCommonType<optional<MemorySizeType>> ();
+    mapper.AddCommonType<optional<DurationSecondsType>> ();
+    mapper.AddCommonType<optional<Mapping<String, String>>> ();
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
+    mapper.AddClass<ProcessType::TCPStats> (initializer_list<StructFieldInfo>{
+        {L"Established", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType::TCPStats, fEstablished)},
+        {L"Listening", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType::TCPStats, fListening)},
+        {L"Other", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType::TCPStats, fOther)},
+    });
+    mapper.AddCommonType<optional<ProcessType::TCPStats>> ();
+    mapper.AddClass<ProcessType> (initializer_list<StructFieldInfo>{
+        {L"Kernel-Process", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fKernelProcess), StructFieldInfo::eOmitNullFields},
+        {L"Parent-Process-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fParentProcessID), StructFieldInfo::eOmitNullFields},
+        {L"Process-Name", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fProcessName), StructFieldInfo::eOmitNullFields},
+        {L"User-Name", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fUserName), StructFieldInfo::eOmitNullFields},
+        {L"Command-Line", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCommandLine), StructFieldInfo::eOmitNullFields},
+        {L"Current-Working-Directory", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCurrentWorkingDirectory), StructFieldInfo::eOmitNullFields},
+        {L"Environment-Variables", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fEnvironmentVariables), StructFieldInfo::eOmitNullFields},
+        {L"EXE-Path", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fEXEPath), StructFieldInfo::eOmitNullFields},
+        {L"Root", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fRoot), StructFieldInfo::eOmitNullFields},
+        {L"Process-Started-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fProcessStartedAt), StructFieldInfo::eOmitNullFields},
+        {L"Run-Status", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fRunStatus), StructFieldInfo::eOmitNullFields},
+        {L"Private-Virtual-Memory-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fPrivateVirtualMemorySize), StructFieldInfo::eOmitNullFields},
+        {L"Total-Virtual-Memory-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fTotalVirtualMemorySize), StructFieldInfo::eOmitNullFields},
+        {L"Resident-Memory-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fResidentMemorySize), StructFieldInfo::eOmitNullFields},
+        {L"Private-Bytes", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fPrivateBytes), StructFieldInfo::eOmitNullFields},
+        {L"Page-Fault-Count", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fPageFaultCount), StructFieldInfo::eOmitNullFields},
+        {L"Major-Page-Fault-Count", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fMajorPageFaultCount), StructFieldInfo::eOmitNullFields},
+        {L"Working-Set-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fWorkingSetSize), StructFieldInfo::eOmitNullFields},
+        {L"Private-Working-Set-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fPrivateWorkingSetSize), StructFieldInfo::eOmitNullFields},
+        {L"Total-CPUTime-Ever-Used", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fTotalCPUTimeEverUsed), StructFieldInfo::eOmitNullFields},
+        {L"Average-CPUTime-Used", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fAverageCPUTimeUsed), StructFieldInfo::eOmitNullFields},
+        {L"Thread-Count", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fThreadCount), StructFieldInfo::eOmitNullFields},
+        {L"Combined-IO-Read-Rate", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCombinedIOReadRate), StructFieldInfo::eOmitNullFields},
+        {L"Combined-IO-Write-Rate", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCombinedIOWriteRate), StructFieldInfo::eOmitNullFields},
+        {L"Combined-IO-Read-Bytes", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCombinedIOReadBytes), StructFieldInfo::eOmitNullFields},
+        {L"Combined-IO-Write-Bytes", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCombinedIOWriteBytes), StructFieldInfo::eOmitNullFields},
+        {L"TCP-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fTCPStats), StructFieldInfo::eOmitNullFields},
+    });
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+    mapper.AddCommonType<ProcessMapType> ();
+    return mapper;
+}();
+
+Instruments::Process::Instrument::Instrument (const Options& options)
+    : SystemPerformance::Instrument{
+          InstrumentNameType{L"Process"sv},
+          make_unique<MyCapturer_> (CapturerWithContext_{options}),
+          {kProcessMapMeasurement},
+          {KeyValuePair<type_index, MeasurementType>{typeid (Info), kProcessMapMeasurement}},
+          kObjectVariantMapper}
 {
-    return Instrument{
-        InstrumentNameType{L"Process"sv},
-        make_unique<MyCapturer_> (CapturerWithContext_{options}),
-        {kProcessMapMeasurement},
-        {KeyValuePair<type_index, MeasurementType>{typeid (Info), kProcessMapMeasurement}},
-        GetObjectVariantMapper ()};
 }
 
 /*

@@ -136,21 +136,22 @@ namespace {
 
         struct MyCapturer_ : Capturer {
         public:
-            Instruments::CPU::Instrument fCPUInstrument;
-            Instrument                   fProcessInstrument;
+            Instruments::CPU::Instrument     fCPUInstrument;
+            Instruments::Process::Instrument fProcessInstrument;
 
             MyCapturer_ ()
 #if __cpp_designated_initializers >= 201707L
                 : fProcessInstrument
             {
-                Instruments::Process::GetInstrument (Instruments::Process::Options{
-                    .fRestrictToPIDs = Set<pid_t>{Execution::GetCurrentProcessID ()},
-                })
+                Instruments::Process::Options
+                {
+                    .fRestrictToPIDs = Set<pid_t> { Execution::GetCurrentProcessID () }
+                }
             }
 #else
                 : fProcessInstrument
             {
-                Instruments::Process::GetInstrument (mkProcessInstrumentOptions_ ())
+                mkProcessInstrumentOptions_ ()
             }
 #endif
             {
