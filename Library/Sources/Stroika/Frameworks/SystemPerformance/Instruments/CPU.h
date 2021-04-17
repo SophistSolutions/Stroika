@@ -128,6 +128,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::CPU {
     public:
         Instrument (const Options& options = Options{});
 
+    public:
         /**
          *  For Instruments::CPU::Info, etc types.
          */

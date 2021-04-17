@@ -141,11 +141,6 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Network {
     };
 
     /**
-     *  For Info type.
-     */
-    ObjectVariantMapper GetObjectVariantMapper ();
-
-    /**
      *  To control the behavior of the instrument.
      *
      *      @todo add option controlling if we return details and if we return sumamry
@@ -162,9 +157,30 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Network {
     };
 
     /**
-     *  Instrument returning Info measurements.
+     *  This class is designed to be object-sliced into just the SystemPerformance::Instrument
+     * 
+     *  \note Constructing the instrument does no capturing (so sb quick/cheap) - capturing starts when you
+     *        first call i.Capture()
      */
-    Instrument GetInstrument (Options options = Options{});
+    struct Instrument : SystemPerformance::Instrument {
+    public:
+        Instrument (const Options& options = Options{});
+
+    public:
+        /**
+         *  For Instruments::Network::Info, etc types.
+         */
+        static const ObjectVariantMapper kObjectVariantMapper;
+    };
+
+    [[deprecated ("Since Stroika 2.1b12, use CPU::Instrument instead of Network::GetInstrument()")]] inline SystemPerformance::Instrument GetInstrument (Options options = Options{})
+    {
+        return Instrument{options};
+    }
+    [[deprecated ("Since Stroika 2.1b12, use CPU::Instrument instead of Network::Instrument::kObjectVariantMapper")]] inline ObjectVariantMapper GetObjectVariantMapper ()
+    {
+        return Instrument::kObjectVariantMapper;
+    }
 
 }
 

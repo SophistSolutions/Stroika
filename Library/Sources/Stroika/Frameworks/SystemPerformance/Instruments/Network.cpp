@@ -40,7 +40,6 @@ using namespace Stroika::Foundation::Memory;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::SystemPerformance;
-using namespace Stroika::Frameworks::SystemPerformance::Instruments::Network;
 
 using Characters::Character;
 using Containers::Mapping;
@@ -48,6 +47,10 @@ using Containers::Sequence;
 using Containers::Set;
 using IO::FileSystem::FileInputStream;
 using Time::DurationSecondsType;
+
+using Instruments::Network::Info;
+using Instruments::Network::IOStatistics;
+using Instruments::Network::Options;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -112,7 +115,7 @@ IOStatistics& IOStatistics::operator+= (const IOStatistics& rhs)
  */
 String Instruments::Network::IOStatistics::ToString () const
 {
-    return DataExchange::Variant::JSON::Writer{}.WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+    return DataExchange::Variant::JSON::Writer{}.WriteAsString (Network::Instrument::kObjectVariantMapper.FromObject (*this));
 }
 
 /*
@@ -122,7 +125,7 @@ String Instruments::Network::IOStatistics::ToString () const
 */
 String Instruments::Network::Info::ToString () const
 {
-    return DataExchange::Variant::JSON::Writer{}.WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+    return DataExchange::Variant::JSON::Writer{}.WriteAsString (Network::Instrument::kObjectVariantMapper.FromObject (*this));
 }
 
 /*
@@ -132,22 +135,30 @@ String Instruments::Network::Info::ToString () const
 */
 String Instruments::Network::InterfaceInfo::ToString () const
 {
-    return DataExchange::Variant::JSON::Writer{}.WriteAsString (GetObjectVariantMapper ().FromObject (*this));
+    return DataExchange::Variant::JSON::Writer{}.WriteAsString (Network::Instrument::kObjectVariantMapper.FromObject (*this));
 }
 
 namespace {
     struct CapturerWithContext_COMMON_ : Debug::AssertExternallySynchronizedLock {
-        const Options       fOptions_;
-        DurationSecondsType fLastCapturedAt{};
-        CapturerWithContext_COMMON_ () = delete;
-        CapturerWithContext_COMMON_ (const Options& options)
+        const Options fOptions_;
+        struct _Context : Instrument::ICaptureContext {
+            optional<DurationSecondsType> fCaptureContextAt{};
+        };
+        Synchronized<shared_ptr<_Context>> _fContext;
+        CapturerWithContext_COMMON_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
             : fOptions_{options}
+            , _fContext{context}
         {
         }
-        DurationSecondsType GetLastCaptureAt () const { return fLastCapturedAt; }
-        void                NoteCompletedCapture_ ()
+        optional<DurationSecondsType> GetCaptureContextTime () const { return _fContext.cget ().cref ()->fCaptureContextAt; }
+        // return true iff actually capture context
+        bool _NoteCompletedCapture (DurationSecondsType at = Time::GetTickCount ())
         {
-            fLastCapturedAt = Time::GetTickCount ();
+            if (not _fContext.rwget ().rwref ()->fCaptureContextAt.has_value () or (at - *_fContext.rwget ().rwref ()->fCaptureContextAt) >= fOptions_.fMinimumAveragingInterval) {
+                _fContext.rwget ().rwref ()->fCaptureContextAt = at;
+                return true;
+            }
+            return false;
         }
     };
 }
@@ -169,15 +180,13 @@ namespace {
             DurationSecondsType fAt;
         };
 
-        struct _Context : Instrument::ICaptureContext {
+        struct _Context : CapturerWithContext_COMMON_::_Context {
             Mapping<String, Last> fLast;
             optional<LastSum>     fLastSum;
         };
-        Synchronized<shared_ptr<_Context>> fContext_;
 
-        CapturerWithContext_POSIX_ (Options options)
+        CapturerWithContext_POSIX_ (const Options& options, make_shared<_Contex> ())
             : CapturerWithContext_COMMON_{options}
-            , fContext_{make_shared<_Context> ()}
         {
         }
         CapturerWithContext_POSIX_ (const CapturerWithContext_POSIX_&) = default;
@@ -200,10 +209,10 @@ namespace {
 #endif
 
             DurationSecondsType now          = Time::GetTickCount ();
-            auto                contextCLock = fContext_.cget ();
+            auto                contextCLock = _fContext.cget ();
             if (contextCLock.cref ()->fLastSum and accumSummary.fTotalTCPSegments) {
-                Time::DurationSecondsType timespan{now - contextCLock.cref ()->fLastSum->fAt};
-                accumSummary.fTCPSegmentsPerSecond = (NullCoalesce (accumSummary.fTotalTCPSegments) - contextCLock.cref ()->fLastSum->fTotalTCPSegments) / timespan;
+                Time::DurationSecondsType timespan{now - dynamic_pointer_cast<_Context> (contextCLock.cref ())->fLastSum->fAt};
+                accumSummary.fTCPSegmentsPerSecond = (NullCoalesce (accumSummary.fTotalTCPSegments) - dynamic_pointer_cast<_Context> (contextCLock.cref ())->fLastSum->fTotalTCPSegments) / timespan;
             }
             if (contextCLock.cref ()->fLastSum and accumSummary.fTotalTCPRetransmittedSegments) {
                 Time::DurationSecondsType timespan{now - contextCLock.cref ()->fLastSum->fAt};
@@ -212,7 +221,7 @@ namespace {
             if (accumSummary.fTotalTCPSegments and accumSummary.fTotalTCPRetransmittedSegments) {
                 fContext_.rwget ().rwref ()->fLastSum = LastSum{*accumSummary.fTotalTCPSegments, *accumSummary.fTotalTCPRetransmittedSegments, now};
             }
-            NoteCompletedCapture_ ();
+            _NoteCompletedCapture ();
             return Info{interfaceResults, accumSummary};
         }
 #if qSupportProcNet_
@@ -255,7 +264,7 @@ namespace {
                     ii.fIOStatistics.fTotalPacketsDropped  = Characters::String2Int<uint64_t> (line[4]) + Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 4]);
 
                     DurationSecondsType now = Time::GetTickCount ();
-                    if (auto o = fContext_.cget ().cref ()->fLast.Lookup (ii.fInterface.fInternalInterfaceID)) {
+                    if (auto o = _fContext.cget ().cref ()->fLast.Lookup (ii.fInterface.fInternalInterfaceID)) {
                         double scanTime = now - o->fAt;
                         if (scanTime > 0) {
                             ii.fIOStatistics.fBytesPerSecondReceived   = (*ii.fIOStatistics.fTotalBytesReceived - o->fTotalBytesReceived) / scanTime;
@@ -266,7 +275,7 @@ namespace {
                     }
                     (*accumSummary) += ii.fIOStatistics;
                     interfaceResults->Add (ii);
-                    fContext_.rwget ().rwref ()->fLast.Add (ii.fInterface.fInternalInterfaceID, Last{*ii.fIOStatistics.fTotalBytesReceived, *ii.fIOStatistics.fTotalBytesSent, *ii.fIOStatistics.fTotalPacketsReceived, *ii.fIOStatistics.fTotalPacketsSent, now});
+                    _fContext.rwget ().rwref ()->fLast.Add (ii.fInterface.fInternalInterfaceID, Last{*ii.fIOStatistics.fTotalBytesReceived, *ii.fIOStatistics.fTotalBytesSent, *ii.fIOStatistics.fTotalPacketsReceived, *ii.fIOStatistics.fTotalPacketsSent, now});
                 }
                 else {
                     DbgTrace (L"Line %d bad in file %s", nLine, kProcFileName_.c_str ());
@@ -360,7 +369,7 @@ namespace {
 namespace {
     struct CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
 
-        struct _Context : Instrument::ICaptureContext {
+        struct _Context : CapturerWithContext_COMMON_::_Context {
 #if qUseWMICollectionSupport_
             WMICollector fNetworkWMICollector_{L"Network Interface"sv, {}, {kBytesReceivedPerSecond_, kBytesSentPerSecond_, kPacketsReceivedPerSecond_, kPacketsSentPerSecond_}};
             WMICollector fTCPv4WMICollector_{L"TCPv4"sv, {}, {kTCPSegmentsPerSecond_, kSegmentsRetransmittedPerSecond_}};
@@ -368,11 +377,9 @@ namespace {
             Set<String>  fAvailableInstances_{fNetworkWMICollector_.GetAvailableInstaces ()};
 #endif
         };
-        Synchronized<shared_ptr<_Context>> fContext_;
 
         CapturerWithContext_Windows_ (const Options& options)
-            : CapturerWithContext_COMMON_{options}
-            , fContext_{make_shared<_Context> ()}
+            : CapturerWithContext_COMMON_{options, make_shared<_Context> ()}
         {
 #if qUseWMICollectionSupport_
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -403,9 +410,9 @@ namespace {
             SystemInterfacesMgr       systemInterfacesMgr;
             Iterable<Interface>       networkInterfacs{systemInterfacesMgr.GetAll ()};
 #if qUseWMICollectionSupport_
-            fContext_.rwget ().rwref ()->fNetworkWMICollector_.Collect ();
-            fContext_.rwget ().rwref ()->fTCPv4WMICollector_.Collect ();
-            fContext_.rwget ().rwref ()->fTCPv6WMICollector_.Collect ();
+            dynamic_pointer_cast<_Context> (_fContext.rwget ().rwref ())->fNetworkWMICollector_.Collect ();
+            dynamic_pointer_cast<_Context> (_fContext.rwget ().rwref ())->fTCPv4WMICollector_.Collect ();
+            dynamic_pointer_cast<_Context> (_fContext.rwget ().rwref ())->fTCPv6WMICollector_.Collect ();
 #endif
             {
                 for (IO::Network::Interface networkInterface : networkInterfacs) {
@@ -432,7 +439,7 @@ namespace {
                 accumSummary.fTotalPacketsSent     = stats.dwOutRequests;
             }
             result.fSummaryIOStatistics = accumSummary;
-            NoteCompletedCapture_ ();
+            _NoteCompletedCapture ();
             return result;
         }
 #if qUseWMICollectionSupport_
@@ -460,25 +467,25 @@ namespace {
              *          And it might miss if new interfaces are added dynamically.
              *          --LGP 2015-04-16
              */
-            if (fContext_.cget ().cref ()->fAvailableInstances_.Contains (wmiInstanceName)) {
-                auto clockContext = fContext_.rwget ();
-                clockContext.rwref ()->fNetworkWMICollector_.AddInstancesIf (wmiInstanceName);
-                clockContext.rwref ()->fTCPv4WMICollector_.AddInstancesIf (wmiInstanceName);
-                clockContext.rwref ()->fTCPv6WMICollector_.AddInstancesIf (wmiInstanceName);
+            if (dynamic_pointer_cast<_Context> (_fContext.cget ().cref ())->fAvailableInstances_.Contains (wmiInstanceName)) {
+                auto clockContext = _fContext.rwget ();
+                dynamic_pointer_cast<_Context> (clockContext.rwref ())->fNetworkWMICollector_.AddInstancesIf (wmiInstanceName);
+                dynamic_pointer_cast<_Context> (clockContext.rwref ())->fTCPv4WMICollector_.AddInstancesIf (wmiInstanceName);
+                dynamic_pointer_cast<_Context> (clockContext.rwref ())->fTCPv6WMICollector_.AddInstancesIf (wmiInstanceName);
             }
 
-            if (fContext_.cget ().cref ()->fAvailableInstances_.Contains (wmiInstanceName)) {
-                auto clockContext = fContext_.rwget ();
-                Memory::CopyToIf (clockContext.rwref ()->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesReceivedPerSecond_), &updateResult->fIOStatistics.fBytesPerSecondReceived);
-                Memory::CopyToIf (clockContext.rwref ()->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesSentPerSecond_), &updateResult->fIOStatistics.fBytesPerSecondSent);
-                Memory::CopyToIf (clockContext.rwref ()->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsReceivedPerSecond_), &updateResult->fIOStatistics.fPacketsPerSecondReceived);
-                Memory::CopyToIf (clockContext.rwref ()->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsSentPerSecond_), &updateResult->fIOStatistics.fPacketsPerSecondSent);
+            if (dynamic_pointer_cast<_Context> (_fContext.cget ().cref ())->fAvailableInstances_.Contains (wmiInstanceName)) {
+                auto clockContext = _fContext.rwget ();
+                Memory::CopyToIf (dynamic_pointer_cast<_Context> (clockContext.rwref ())->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesReceivedPerSecond_), &updateResult->fIOStatistics.fBytesPerSecondReceived);
+                Memory::CopyToIf (dynamic_pointer_cast<_Context> (clockContext.rwref ())->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesSentPerSecond_), &updateResult->fIOStatistics.fBytesPerSecondSent);
+                Memory::CopyToIf (dynamic_pointer_cast<_Context> (clockContext.rwref ())->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsReceivedPerSecond_), &updateResult->fIOStatistics.fPacketsPerSecondReceived);
+                Memory::CopyToIf (dynamic_pointer_cast<_Context> (clockContext.rwref ())->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsSentPerSecond_), &updateResult->fIOStatistics.fPacketsPerSecondSent);
 
-                Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPSegmentsPerSecond, clockContext.rwref ()->fTCPv4WMICollector_.PeekCurrentValue (wmiInstanceName, kTCPSegmentsPerSecond_));
-                Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPSegmentsPerSecond, clockContext.rwref ()->fTCPv6WMICollector_.PeekCurrentValue (wmiInstanceName, kTCPSegmentsPerSecond_));
+                Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPSegmentsPerSecond, dynamic_pointer_cast<_Context> (clockContext.rwref ())->fTCPv4WMICollector_.PeekCurrentValue (wmiInstanceName, kTCPSegmentsPerSecond_));
+                Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPSegmentsPerSecond, dynamic_pointer_cast<_Context> (clockContext.rwref ())->fTCPv6WMICollector_.PeekCurrentValue (wmiInstanceName, kTCPSegmentsPerSecond_));
 
-                Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPRetransmittedSegmentsPerSecond, clockContext.rwref ()->fTCPv4WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_));
-                Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPRetransmittedSegmentsPerSecond, clockContext.rwref ()->fTCPv6WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_));
+                Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPRetransmittedSegmentsPerSecond, dynamic_pointer_cast<_Context> (clockContext.rwref ())->fTCPv4WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_));
+                Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPRetransmittedSegmentsPerSecond, dynamic_pointer_cast<_Context> (clockContext.rwref ())->fTCPv6WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_));
             }
         }
 #endif
@@ -518,67 +525,6 @@ namespace {
     const MeasurementType kNetworkInterfacesMeasurement_ = MeasurementType{L"Network-Interfaces"sv};
 }
 
-/*
- ********************************************************************************
- ***************** Instruments::Network::GetObjectVariantMapper *****************
- ********************************************************************************
- */
-ObjectVariantMapper Instruments::Network::GetObjectVariantMapper ()
-{
-    using StructFieldInfo                     = ObjectVariantMapper::StructFieldInfo;
-    static const ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
-        ObjectVariantMapper mapper;
-        mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<Interface::Type> ());
-        mapper.AddCommonType<optional<Interface::Type>> ();
-        mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<Interface::Status> ());
-        mapper.AddCommonType<Set<Interface::Status>> ();
-        mapper.AddCommonType<optional<Set<Interface::Status>>> ();
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
-        mapper.AddClass<InterfaceInfo::Interface> (initializer_list<StructFieldInfo>{
-            {L"Interface-Internal-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fInternalInterfaceID)},
-            {L"Friendly-Name", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fFriendlyName)},
-            {L"Description", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fDescription), StructFieldInfo::eOmitNullFields},
-            {L"Interface-Type", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fType), StructFieldInfo::eOmitNullFields},
-            {L"Hardware-Address", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fHardwareAddress), StructFieldInfo::eOmitNullFields},
-            {L"Interface-Status", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fStatus), StructFieldInfo::eOmitNullFields},
-            {L"Transmit-Speed-Baud", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fTransmitSpeedBaud), StructFieldInfo::eOmitNullFields},
-            {L"Receive-Link-Speed-Baud", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fReceiveLinkSpeedBaud), StructFieldInfo::eOmitNullFields},
-            // TODO ADD:
-            //Containers::Set<InternetAddress>            fBindings;
-        });
-        mapper.AddClass<IOStatistics> (initializer_list<StructFieldInfo>{
-            {L"Total-Bytes-Sent", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalBytesSent), StructFieldInfo::eOmitNullFields},
-            {L"Total-Bytes-Received", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalBytesReceived), StructFieldInfo::eOmitNullFields},
-            {L"Bytes-Per-Second-Sent", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fBytesPerSecondSent), StructFieldInfo::eOmitNullFields},
-            {L"Bytes-Per-Second-Received", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fBytesPerSecondReceived), StructFieldInfo::eOmitNullFields},
-            {L"Total-TCP-Segments", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalTCPSegments), StructFieldInfo::eOmitNullFields},
-            {L"TCP-Segments-Per-Second", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTCPSegmentsPerSecond), StructFieldInfo::eOmitNullFields},
-            {L"Total-TCP-Retransmitted-Segments", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalTCPRetransmittedSegments), StructFieldInfo::eOmitNullFields},
-            {L"TCP-Retransmitted-Segments-Per-Second", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTCPRetransmittedSegmentsPerSecond), StructFieldInfo::eOmitNullFields},
-            {L"Total-Packets-Sent", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalPacketsSent), StructFieldInfo::eOmitNullFields},
-            {L"Total-Packets-Received", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalPacketsReceived), StructFieldInfo::eOmitNullFields},
-            {L"Packets-Per-Second-Sent", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fPacketsPerSecondSent), StructFieldInfo::eOmitNullFields},
-            {L"Packets-Per-Second-Received", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fPacketsPerSecondReceived), StructFieldInfo::eOmitNullFields},
-            {L"Total-Errors", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalErrors), StructFieldInfo::eOmitNullFields},
-            {L"Total-Packets-Dropped", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalPacketsDropped), StructFieldInfo::eOmitNullFields},
-        });
-        mapper.AddClass<InterfaceInfo> (initializer_list<StructFieldInfo>{
-            {L"Interface", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo, fInterface)},
-            {L"IO-Statistics", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo, fIOStatistics)},
-        });
-        mapper.AddCommonType<Collection<InterfaceInfo>> ();
-        mapper.AddCommonType<optional<Collection<InterfaceInfo>>> ();
-        mapper.AddCommonType<optional<IOStatistics>> ();
-        mapper.AddClass<Info> (initializer_list<StructFieldInfo>{
-            {L"Interfaces", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fInterfaces), StructFieldInfo::eOmitNullFields},
-            {L"Summary-IO-Statistics", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fSummaryIOStatistics), StructFieldInfo::eOmitNullFields},
-        });
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
-        return mapper;
-    }();
-    return sMapper_;
-}
-
 namespace {
     class MyCapturer_ : public Instrument::ICapturer {
         CapturerWithContext_ fCapturerWithContext_;
@@ -592,17 +538,17 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"SystemPerformance::Instrument...Network...MyCapturer_::Capture ()"};
             MeasurementSet            results;
-            Measurement               m{kNetworkInterfacesMeasurement_, GetObjectVariantMapper ().FromObject (Capture_Raw (&results.fMeasuredAt))};
+            Measurement               m{kNetworkInterfacesMeasurement_, Instruments::Network::Instrument::kObjectVariantMapper.FromObject (Capture_Raw (&results.fMeasuredAt))};
             results.fMeasurements.Add (m);
             return results;
         }
         nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
         {
-            DurationSecondsType before         = fCapturerWithContext_.fLastCapturedAt;
-            Info                rawMeasurement = fCapturerWithContext_.capture ();
+            auto before         = fCapturerWithContext_.GetCaptureContextTime ();
+            Info rawMeasurement = fCapturerWithContext_.capture ();
             if (outMeasuredAt != nullptr) {
                 using Traversal::Openness;
-                *outMeasuredAt = Range<DurationSecondsType> (before, fCapturerWithContext_.fLastCapturedAt, Openness::eClosed, Openness::eClosed);
+                *outMeasuredAt = Range<DurationSecondsType> (before, fCapturerWithContext_.GetCaptureContextTime ().value_or (Time::GetTickCount ()), Openness::eClosed, Openness::eClosed);
             }
             return rawMeasurement;
         }
@@ -612,29 +558,81 @@ namespace {
         }
         virtual shared_ptr<Instrument::ICaptureContext> GetContext () const override
         {
-            EnsureNotNull (fCapturerWithContext_.fContext_.load ());
-            return fCapturerWithContext_.fContext_.load ();
+            EnsureNotNull (fCapturerWithContext_._fContext.load ());
+            return fCapturerWithContext_._fContext.load ();
         }
         virtual void SetContext (const shared_ptr<Instrument::ICaptureContext>& context) override
         {
-            fCapturerWithContext_.fContext_ = context == nullptr ? make_shared<CapturerWithContext_::_Context> () : dynamic_pointer_cast<CapturerWithContext_::_Context> (context);
+            fCapturerWithContext_._fContext.store ((context == nullptr) ? make_shared<CapturerWithContext_::_Context> () : dynamic_pointer_cast<CapturerWithContext_::_Context> (context));
         }
     };
 }
 
 /*
  ********************************************************************************
- ****************** Instruments::Network::GetInstrument *************************
+ ********************** Instruments::Network::Instrument ************************
  ********************************************************************************
  */
-Instrument SystemPerformance::Instruments::Network::GetInstrument (Options options)
+const ObjectVariantMapper Instruments::Network::Instrument::kObjectVariantMapper = [] () -> ObjectVariantMapper {
+    using StructFieldInfo = ObjectVariantMapper::StructFieldInfo;
+    ObjectVariantMapper mapper;
+    mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<Interface::Type> ());
+    mapper.AddCommonType<optional<Interface::Type>> ();
+    mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<Interface::Status> ());
+    mapper.AddCommonType<Set<Interface::Status>> ();
+    mapper.AddCommonType<optional<Set<Interface::Status>>> ();
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
+    mapper.AddClass<InterfaceInfo::Interface> (initializer_list<StructFieldInfo>{
+        {L"Interface-Internal-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fInternalInterfaceID)},
+        {L"Friendly-Name", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fFriendlyName)},
+        {L"Description", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fDescription), StructFieldInfo::eOmitNullFields},
+        {L"Interface-Type", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fType), StructFieldInfo::eOmitNullFields},
+        {L"Hardware-Address", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fHardwareAddress), StructFieldInfo::eOmitNullFields},
+        {L"Interface-Status", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fStatus), StructFieldInfo::eOmitNullFields},
+        {L"Transmit-Speed-Baud", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fTransmitSpeedBaud), StructFieldInfo::eOmitNullFields},
+        {L"Receive-Link-Speed-Baud", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fReceiveLinkSpeedBaud), StructFieldInfo::eOmitNullFields},
+        // TODO ADD:
+        //Containers::Set<InternetAddress>            fBindings;
+    });
+    mapper.AddClass<IOStatistics> (initializer_list<StructFieldInfo>{
+        {L"Total-Bytes-Sent", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalBytesSent), StructFieldInfo::eOmitNullFields},
+        {L"Total-Bytes-Received", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalBytesReceived), StructFieldInfo::eOmitNullFields},
+        {L"Bytes-Per-Second-Sent", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fBytesPerSecondSent), StructFieldInfo::eOmitNullFields},
+        {L"Bytes-Per-Second-Received", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fBytesPerSecondReceived), StructFieldInfo::eOmitNullFields},
+        {L"Total-TCP-Segments", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalTCPSegments), StructFieldInfo::eOmitNullFields},
+        {L"TCP-Segments-Per-Second", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTCPSegmentsPerSecond), StructFieldInfo::eOmitNullFields},
+        {L"Total-TCP-Retransmitted-Segments", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalTCPRetransmittedSegments), StructFieldInfo::eOmitNullFields},
+        {L"TCP-Retransmitted-Segments-Per-Second", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTCPRetransmittedSegmentsPerSecond), StructFieldInfo::eOmitNullFields},
+        {L"Total-Packets-Sent", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalPacketsSent), StructFieldInfo::eOmitNullFields},
+        {L"Total-Packets-Received", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalPacketsReceived), StructFieldInfo::eOmitNullFields},
+        {L"Packets-Per-Second-Sent", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fPacketsPerSecondSent), StructFieldInfo::eOmitNullFields},
+        {L"Packets-Per-Second-Received", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fPacketsPerSecondReceived), StructFieldInfo::eOmitNullFields},
+        {L"Total-Errors", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalErrors), StructFieldInfo::eOmitNullFields},
+        {L"Total-Packets-Dropped", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalPacketsDropped), StructFieldInfo::eOmitNullFields},
+    });
+    mapper.AddClass<InterfaceInfo> (initializer_list<StructFieldInfo>{
+        {L"Interface", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo, fInterface)},
+        {L"IO-Statistics", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo, fIOStatistics)},
+    });
+    mapper.AddCommonType<Collection<InterfaceInfo>> ();
+    mapper.AddCommonType<optional<Collection<InterfaceInfo>>> ();
+    mapper.AddCommonType<optional<IOStatistics>> ();
+    mapper.AddClass<Info> (initializer_list<StructFieldInfo>{
+        {L"Interfaces", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fInterfaces), StructFieldInfo::eOmitNullFields},
+        {L"Summary-IO-Statistics", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fSummaryIOStatistics), StructFieldInfo::eOmitNullFields},
+    });
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+    return mapper;
+}();
+
+Instruments::Network::Instrument::Instrument (const Options& options)
+    : SystemPerformance::Instrument{
+          InstrumentNameType{L"Network"sv},
+          make_unique<MyCapturer_> (CapturerWithContext_{options}),
+          {kNetworkInterfacesMeasurement_},
+          {KeyValuePair<type_index, MeasurementType>{typeid (Info), kNetworkInterfacesMeasurement_}},
+          kObjectVariantMapper}
 {
-    return Instrument{
-        InstrumentNameType{L"Network"sv},
-        make_unique<MyCapturer_> (CapturerWithContext_{options}),
-        {kNetworkInterfacesMeasurement_},
-        {KeyValuePair<type_index, MeasurementType>{typeid (Info), kNetworkInterfacesMeasurement_}},
-        GetObjectVariantMapper ()};
 }
 
 /*

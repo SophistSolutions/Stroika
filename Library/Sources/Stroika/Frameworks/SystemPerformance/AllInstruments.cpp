@@ -34,7 +34,7 @@ Set<Instrument> SystemPerformance::GetAllInstruments ()
         Instruments::CPU::Instrument{},
         Instruments::Filesystem::Instrument{},
         Instruments::Memory::Instrument{},
-        Instruments::Network::GetInstrument (),
+        Instruments::Network::Instrument{},
         Instruments::Process::GetInstrument (),
     };
     return kInstruments_;

@@ -325,6 +325,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Memory {
     public:
         Instrument (const Options& options = Options{});
 
+    public:
         /**
          *  For Instruments::Memory::Info,  etc types.
          */

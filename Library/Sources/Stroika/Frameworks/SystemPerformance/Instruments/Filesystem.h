@@ -251,6 +251,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Filesystem {
     public:
         Instrument (const Options& options = Options{});
 
+    public:
         /**
          *  For Instruments::Filesystem::Info, MountedFilesystemInfoType, etc types.
          */
