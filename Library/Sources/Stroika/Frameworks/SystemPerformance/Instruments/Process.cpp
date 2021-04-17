@@ -69,6 +69,7 @@ using Time::DurationSecondsType;
 
 using Instruments::Process::CachePolicy;
 using Instruments::Process::Info;
+using Instruments::Process::MemorySizeType;
 using Instruments::Process::Options;
 using Instruments::Process::ProcessMapType;
 using Instruments::Process::ProcessType;

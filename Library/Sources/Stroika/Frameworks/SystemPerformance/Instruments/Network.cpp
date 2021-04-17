@@ -185,8 +185,8 @@ namespace {
             optional<LastSum>     fLastSum;
         };
 
-        CapturerWithContext_POSIX_ (const Options& options, make_shared<_Contex> ())
-            : CapturerWithContext_COMMON_{options}
+        CapturerWithContext_POSIX_ (const Options& options)
+            : CapturerWithContext_COMMON_{options, make_shared<_Context> ()}
         {
         }
         CapturerWithContext_POSIX_ (const CapturerWithContext_POSIX_&) = default;
@@ -210,16 +210,16 @@ namespace {
 
             DurationSecondsType now          = Time::GetTickCount ();
             auto                contextCLock = _fContext.cget ();
-            if (contextCLock.cref ()->fLastSum and accumSummary.fTotalTCPSegments) {
+            if (dynamic_pointer_cast<_Context> (contextCLock.cref ())->fLastSum and accumSummary.fTotalTCPSegments) {
                 Time::DurationSecondsType timespan{now - dynamic_pointer_cast<_Context> (contextCLock.cref ())->fLastSum->fAt};
                 accumSummary.fTCPSegmentsPerSecond = (NullCoalesce (accumSummary.fTotalTCPSegments) - dynamic_pointer_cast<_Context> (contextCLock.cref ())->fLastSum->fTotalTCPSegments) / timespan;
             }
-            if (contextCLock.cref ()->fLastSum and accumSummary.fTotalTCPRetransmittedSegments) {
-                Time::DurationSecondsType timespan{now - contextCLock.cref ()->fLastSum->fAt};
-                accumSummary.fTCPRetransmittedSegmentsPerSecond = (NullCoalesce (accumSummary.fTotalTCPRetransmittedSegments) - contextCLock.cref ()->fLastSum->fTotalTCPRetransmittedSegments) / timespan;
+            if (dynamic_pointer_cast<_Context> (contextCLock.cref ())->fLastSum and accumSummary.fTotalTCPRetransmittedSegments) {
+                Time::DurationSecondsType timespan{now - dynamic_pointer_cast<_Context> (contextCLock.cref ())->fLastSum->fAt};
+                accumSummary.fTCPRetransmittedSegmentsPerSecond = (NullCoalesce (accumSummary.fTotalTCPRetransmittedSegments) - dynamic_pointer_cast<_Context> (contextCLock.cref ())->fLastSum->fTotalTCPRetransmittedSegments) / timespan;
             }
             if (accumSummary.fTotalTCPSegments and accumSummary.fTotalTCPRetransmittedSegments) {
-                fContext_.rwget ().rwref ()->fLastSum = LastSum{*accumSummary.fTotalTCPSegments, *accumSummary.fTotalTCPRetransmittedSegments, now};
+                dynamic_pointer_cast<_Context> (_fContext.rwget ().rwref ())->fLastSum = LastSum{*accumSummary.fTotalTCPSegments, *accumSummary.fTotalTCPRetransmittedSegments, now};
             }
             _NoteCompletedCapture ();
             return Info{interfaceResults, accumSummary};
@@ -264,7 +264,7 @@ namespace {
                     ii.fIOStatistics.fTotalPacketsDropped  = Characters::String2Int<uint64_t> (line[4]) + Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 4]);
 
                     DurationSecondsType now = Time::GetTickCount ();
-                    if (auto o = _fContext.cget ().cref ()->fLast.Lookup (ii.fInterface.fInternalInterfaceID)) {
+                    if (auto o = dynamic_pointer_cast<_Context> (_fContext.cget ().cref ())->fLast.Lookup (ii.fInterface.fInternalInterfaceID)) {
                         double scanTime = now - o->fAt;
                         if (scanTime > 0) {
                             ii.fIOStatistics.fBytesPerSecondReceived   = (*ii.fIOStatistics.fTotalBytesReceived - o->fTotalBytesReceived) / scanTime;
@@ -275,7 +275,7 @@ namespace {
                     }
                     (*accumSummary) += ii.fIOStatistics;
                     interfaceResults->Add (ii);
-                    _fContext.rwget ().rwref ()->fLast.Add (ii.fInterface.fInternalInterfaceID, Last{*ii.fIOStatistics.fTotalBytesReceived, *ii.fIOStatistics.fTotalBytesSent, *ii.fIOStatistics.fTotalPacketsReceived, *ii.fIOStatistics.fTotalPacketsSent, now});
+                    dynamic_pointer_cast<_Context> (_fContext.rwget ().rwref ())->fLast.Add (ii.fInterface.fInternalInterfaceID, Last{*ii.fIOStatistics.fTotalBytesReceived, *ii.fIOStatistics.fTotalBytesSent, *ii.fIOStatistics.fTotalPacketsReceived, *ii.fIOStatistics.fTotalPacketsSent, now});
                 }
                 else {
                     DbgTrace (L"Line %d bad in file %s", nLine, kProcFileName_.c_str ());
