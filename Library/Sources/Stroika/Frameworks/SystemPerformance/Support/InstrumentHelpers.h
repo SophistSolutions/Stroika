@@ -39,6 +39,15 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
 
         CapturerWithContext_COMMON (const OPTIONS& options, const shared_ptr<_Context>& context = make_shared<_Context> ());
 
+        /**
+         *  use with scoped_lock<> if you want to hold the shared_ptr for a while.
+         *  Otherwise, for one-liners, scoped_lock not needed (as the lock defined in an expression will exist til then end of the line).
+         */
+        template <typename T_SUBCLASS>
+        static shared_ptr<T_SUBCLASS> cContextPtr (typename Foundation::Execution::Synchronized<shared_ptr<_Context>>::ReadableReference&& r);
+        template <typename T_SUBCLASS>
+        static shared_ptr<T_SUBCLASS> rwContextPtr (typename Foundation::Execution::Synchronized<shared_ptr<_Context>>::WritableReference&& r);
+
         optional<DurationSecondsType> GetCaptureContextTime () const;
 
         // return true iff actually capture context

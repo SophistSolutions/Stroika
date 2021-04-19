@@ -24,7 +24,19 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
     {
     }
     template <typename OPTIONS>
-    optional<DurationSecondsType> CapturerWithContext_COMMON<OPTIONS>::GetCaptureContextTime () const
+    template <typename T_SUBCLASS>
+    inline shared_ptr<T_SUBCLASS> CapturerWithContext_COMMON<OPTIONS>::cContextPtr (typename Foundation::Execution::Synchronized<shared_ptr<_Context>>::ReadableReference&& r)
+    {
+        return dynamic_pointer_cast<T_SUBCLASS> (r.cref ());
+    }
+    template <typename OPTIONS>
+    template <typename T_SUBCLASS>
+    inline shared_ptr<T_SUBCLASS> CapturerWithContext_COMMON<OPTIONS>::rwContextPtr (typename Foundation::Execution::Synchronized<shared_ptr<_Context>>::WritableReference&& r)
+    {
+        return dynamic_pointer_cast<T_SUBCLASS> (r.rwref ());
+    }
+    template <typename OPTIONS>
+    inline optional<DurationSecondsType> CapturerWithContext_COMMON<OPTIONS>::GetCaptureContextTime () const
     {
         return _fContext.cget ().cref ()->fCaptureContextAt;
     }

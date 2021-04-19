@@ -488,7 +488,7 @@ namespace {
                         }
 
                         processDetails.fTotalCPUTimeEverUsed = (double (stats.utime) + double (stats.stime)) / kClockTick_;
-                        if (optional<PerfStats_> p = dynamic_pointer_cast<_Context> (_fContext.cget ().cref ())->fMap.Lookup (pid)) {
+                        if (optional<PerfStats_> p = cContextPtr<_Context> (_fContext_.cget ())->fMap.Lookup (pid)) {
                             if (p->fTotalCPUTimeEverUsed) {
                                 processDetails.fAverageCPUTimeUsed = (*processDetails.fTotalCPUTimeEverUsed - *p->fTotalCPUTimeEverUsed) / (now - p->fCapturedAt);
                             }
@@ -550,7 +550,7 @@ namespace {
                         if (stats.has_value ()) {
                             processDetails.fCombinedIOReadBytes  = (*stats).read_bytes;
                             processDetails.fCombinedIOWriteBytes = (*stats).write_bytes;
-                            if (optional<PerfStats_> p = dynamic_pointer_cast<_Context> (_fContext.cget ().cref ())->fMap.Lookup (pid)) {
+                            if (optional<PerfStats_> p = cContextPtr<_Context> (_fContext_.cget ())->fMap.Lookup (pid)) {
                                 if (p->fCombinedIOReadBytes) {
                                     processDetails.fCombinedIOReadRate = (*processDetails.fCombinedIOReadBytes - *p->fCombinedIOReadBytes) / (now - p->fCapturedAt);
                                 }
@@ -571,7 +571,7 @@ namespace {
                 }
             }
             if (_NoteCompletedCapture ()) {
-                dynamic_pointer_cast<_Context> (_fContext.rwget ().rwref ())->fMap = newContextStats;
+                rwContextPtr<_Context> (_fContext.rwget ())->fMap = newContextStats;
             }
             if (fOptions_.fCachePolicy == CachePolicy::eOmitUnchangedValues) {
                 fStaticSuppressedAgain = Set<pid_t>{results.Keys ()};
@@ -1476,7 +1476,7 @@ namespace {
                 }
 #endif
                 if (not processInfo.fCombinedIOReadRate.has_value () or not processInfo.fCombinedIOWriteRate.has_value () or not processInfo.fAverageCPUTimeUsed.has_value ()) {
-                    if (optional<PerfStats_> p = dynamic_pointer_cast<_Context> (_fContext.cget ().cref ())->fMap.Lookup (pid)) {
+                    if (optional<PerfStats_> p = cContextPtr<_Context> (_fContext.cget ())->fMap.Lookup (pid)) {
                         if (p->fCombinedIOReadBytes and processInfo.fCombinedIOReadBytes) {
                             processInfo.fCombinedIOReadRate = (*processInfo.fCombinedIOReadBytes - *p->fCombinedIOReadBytes) / (now - p->fCapturedAt);
                         }
@@ -1508,7 +1508,7 @@ namespace {
                 results.Add (pid, processInfo);
             }
             if (_NoteCompletedCapture (now)) {
-                dynamic_pointer_cast<_Context> (_fContext.rwget ().rwref ())->fMap = newContextStats;
+                rwContextPtr<_Context> (_fContext.rwget ())->fMap = newContextStats;
             }
             if (fOptions_.fCachePolicy == CachePolicy::eOmitUnchangedValues) {
                 fStaticSuppressedAgain = Set<pid_t>{results.Keys ()};

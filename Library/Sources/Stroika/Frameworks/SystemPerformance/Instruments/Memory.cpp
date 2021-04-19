@@ -273,7 +273,7 @@ namespace {
                     }
                 };
                 auto contextLocked = _fContext.rwget ();
-                auto ctx           = dynamic_pointer_cast<_Context> (contextLocked.rwref ());
+                auto ctx           = rwContextPtr<_Context> (contextLocked);
                 doAve_ (ctx->fSaved_VMPageStats_At, now, &ctx->fSaved_MinorPageFaultsSinceBoot, updateResult->fPaging.fMinorPageFaultsSinceBoot, &updateResult->fPaging.fMinorPageFaultsPerSecond);
                 doAve_ (ctx->fSaved_VMPageStats_At, now, &ctx->fSaved_MajorPageFaultsSinceBoot, updateResult->fPaging.fMajorPageFaultsSinceBoot, &updateResult->fPaging.fMajorPageFaultsPerSecond);
                 doAve_ (ctx->fSaved_VMPageStats_At, now, &ctx->fSaved_PageOutsSinceBoot, updateResult->fPaging.fPageOutsSinceBoot, &updateResult->fPaging.fPageOutsPerSecond);
@@ -297,7 +297,7 @@ namespace {
             : CapturerWithContext_COMMON_{options, make_shared<_Context> ()}
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            for (String i : dynamic_pointer_cast<_Context> (_fContext)->fMemoryWMICollector_.GetAvailableCounters ()) {
+            for (String i : cContextPtr<_Context> (_fContext_.cref ())->fMemoryWMICollector_.GetAvailableCounters ()) {
                 DbgTrace (L"Memory:Countername: %s", i.c_str ());
             }
 #endif
@@ -345,22 +345,23 @@ namespace {
 #if qUseWMICollectionSupport_
         void Read_WMI_ (Instruments::Memory::Info* updateResult, uint64_t totalRAM)
         {
-            auto contextLock = _fContext.rwget ();
-            dynamic_pointer_cast<_Context> (contextLock.rwref ())->fMemoryWMICollector_.Collect ();
-            Memory::CopyToIf (dynamic_pointer_cast<_Context> (contextLock.rwref ())->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommittedBytes_), &updateResult->fVirtualMemory.fCommittedBytes);
-            Memory::CopyToIf (dynamic_pointer_cast<_Context> (contextLock.rwref ())->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommitLimit_), &updateResult->fVirtualMemory.fCommitLimit);
-            Memory::CopyToIf (dynamic_pointer_cast<_Context> (contextLock.rwref ())->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardPageFaultsPerSec_), &updateResult->fPaging.fMajorPageFaultsPerSecond);
-            Memory::CopyToIf (dynamic_pointer_cast<_Context> (contextLock.rwref ())->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kPagesOutPerSec_), &updateResult->fPaging.fPageOutsPerSecond);
-            Memory::CopyToIf (dynamic_pointer_cast<_Context> (contextLock.rwref ())->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_), &updateResult->fPhysicalMemory.fFree);
-            if (optional<double> freeMem = dynamic_pointer_cast<_Context> (contextLock.rwref ())->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_)) {
+            auto                 lock      = scoped_lock{_fContext};
+            shared_ptr<_Context> rwContext = rwContextPtr<_Context> (_fContext.rwget ());
+            rwContext->fMemoryWMICollector_.Collect ();
+            Memory::CopyToIf (rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommittedBytes_), &updateResult->fVirtualMemory.fCommittedBytes);
+            Memory::CopyToIf (rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommitLimit_), &updateResult->fVirtualMemory.fCommitLimit);
+            Memory::CopyToIf (rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardPageFaultsPerSec_), &updateResult->fPaging.fMajorPageFaultsPerSecond);
+            Memory::CopyToIf (rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kPagesOutPerSec_), &updateResult->fPaging.fPageOutsPerSecond);
+            Memory::CopyToIf (rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_), &updateResult->fPhysicalMemory.fFree);
+            if (optional<double> freeMem = rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_)) {
                 if (updateResult->fPhysicalMemory.fActive) {
                     // Active + Inactive + Free == TotalRAM
                     updateResult->fPhysicalMemory.fInactive = totalRAM - *updateResult->fPhysicalMemory.fActive - static_cast<uint64_t> (*freeMem);
                 }
             }
             updateResult->fPhysicalMemory.fOSReserved = nullopt;
-            Memory::AccumulateIf (&updateResult->fPhysicalMemory.fOSReserved, dynamic_pointer_cast<_Context> (contextLock.rwref ())->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved1_));
-            Memory::AccumulateIf (&updateResult->fPhysicalMemory.fOSReserved, dynamic_pointer_cast<_Context> (contextLock.rwref ())->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved2_));
+            Memory::AccumulateIf (&updateResult->fPhysicalMemory.fOSReserved, rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved1_));
+            Memory::AccumulateIf (&updateResult->fPhysicalMemory.fOSReserved, rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved2_));
             // fPhysicalMemory.fAvailable WAG TMPHACK - probably should add "hardware in use" memory + private WS of each process + shared memory "WS" - but not easy to compute...
             updateResult->fPhysicalMemory.fAvailable = updateResult->fPhysicalMemory.fFree + updateResult->fPhysicalMemory.fInactive;
         }

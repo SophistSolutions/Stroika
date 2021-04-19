@@ -243,10 +243,10 @@ namespace {
         };
         CPUUsageTimes_ cputime_ ()
         {
-            POSIXSysTimeCaptureContext_ baseline = dynamic_pointer_cast<_Context> (_fContext.cget ().cref ())->fSysTimeInfo;
+            POSIXSysTimeCaptureContext_ baseline = cContextPtr<_Context> (_fContext.cget ())->fSysTimeInfo;
             POSIXSysTimeCaptureContext_ newVal   = GetSysTimes_ ();
             if (_NoteCompletedCapture ()) {
-                dynamic_pointer_cast<_Context> (_fContext.rwget ().rwref ())->fSysTimeInfo = newVal;
+                rwContextPtr<_Context> (_fContext.rwget ())->fSysTimeInfo = newVal;
             }
 
             // from http://stackoverflow.com/questions/23367857/accurate-calculation-of-cpu-usage-given-in-percentage-in-linux
@@ -354,9 +354,9 @@ namespace {
              *      http://en.literateprograms.org/CPU_usage_%28C,_Windows_XP%29
              *      http://www.codeproject.com/Articles/9113/Get-CPU-Usage-with-GetSystemTimes
              */
-            WinSysTimeCaptureContext_ baseline                                         = dynamic_pointer_cast<_Context> (_fContext.load ())->fSysTimeInfo;
-            WinSysTimeCaptureContext_ newVal                                           = GetSysTimes_ ();
-            dynamic_pointer_cast<_Context> (_fContext.rwget ().rwref ())->fSysTimeInfo = newVal;
+            WinSysTimeCaptureContext_ baseline                        = cContextPtr<_Context> (_fContext.cget ())->fSysTimeInfo;
+            WinSysTimeCaptureContext_ newVal                          = GetSysTimes_ ();
+            rwContextPtr<_Context> (_fContext.rwget ())->fSysTimeInfo = newVal;
 
             double idleTimeOverInterval   = newVal.IdleTime - baseline.IdleTime;
             double kernelTimeOverInterval = newVal.KernelTime - baseline.KernelTime;
@@ -374,9 +374,8 @@ namespace {
             result.fTotalProcessCPUUsage = result.fTotalCPUUsage; // @todo fix - remove irq time etc from above? Or add into above if missing
 #if qUseWMICollectionSupport_
             if (_NoteCompletedCapture ()) {
-                auto contextLock = _fContext.rwget ();
-                dynamic_pointer_cast<_Context> (contextLock.rwref ())->fSystemWMICollector_.Collect ();
-                Memory::CopyToIf (dynamic_pointer_cast<_Context> (contextLock.rwref ())->fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_), &result.fRunQLength);
+                rwContextPtr<_Context> (_fContext.rwget ())->fSystemWMICollector_.Collect ();
+                Memory::CopyToIf (rwContextPtr<_Context> (_fContext.rwget ())->fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_), &result.fRunQLength);
                 if (result.fRunQLength) {
                     Memory::AccumulateIf (&result.fRunQLength, result.fTotalProcessCPUUsage); // both normalized so '1' means all logical cores
                 }

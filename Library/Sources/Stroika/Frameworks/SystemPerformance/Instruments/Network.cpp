@@ -191,16 +191,16 @@ namespace {
 
             DurationSecondsType now          = Time::GetTickCount ();
             auto                contextCLock = _fContext.cget ();
-            if (dynamic_pointer_cast<_Context> (contextCLock.cref ())->fLastSum and accumSummary.fTotalTCPSegments) {
-                Time::DurationSecondsType timespan{now - dynamic_pointer_cast<_Context> (contextCLock.cref ())->fLastSum->fAt};
-                accumSummary.fTCPSegmentsPerSecond = (NullCoalesce (accumSummary.fTotalTCPSegments) - dynamic_pointer_cast<_Context> (contextCLock.cref ())->fLastSum->fTotalTCPSegments) / timespan;
+            if (cContextPtr<_Context> (contextCLock)->fLastSum and accumSummary.fTotalTCPSegments) {
+                Time::DurationSecondsType timespan{now - cContextPtr<_Context> (contextCLock)->fLastSum->fAt};
+                accumSummary.fTCPSegmentsPerSecond = (NullCoalesce (accumSummary.fTotalTCPSegments) - cContextPtr<_Context> (contextCLock)->fLastSum->fTotalTCPSegments) / timespan;
             }
-            if (dynamic_pointer_cast<_Context> (contextCLock.cref ())->fLastSum and accumSummary.fTotalTCPRetransmittedSegments) {
-                Time::DurationSecondsType timespan{now - dynamic_pointer_cast<_Context> (contextCLock.cref ())->fLastSum->fAt};
-                accumSummary.fTCPRetransmittedSegmentsPerSecond = (NullCoalesce (accumSummary.fTotalTCPRetransmittedSegments) - dynamic_pointer_cast<_Context> (contextCLock.cref ())->fLastSum->fTotalTCPRetransmittedSegments) / timespan;
+            if (cContextPtr<_Context> (contextCLock)->fLastSum and accumSummary.fTotalTCPRetransmittedSegments) {
+                Time::DurationSecondsType timespan{now - cContextPtr<_Context> (contextCLock)->fLastSum->fAt};
+                accumSummary.fTCPRetransmittedSegmentsPerSecond = (NullCoalesce (accumSummary.fTotalTCPRetransmittedSegments) - cContextPtr<_Context> (contextCLock)->fLastSum->fTotalTCPRetransmittedSegments) / timespan;
             }
             if (accumSummary.fTotalTCPSegments and accumSummary.fTotalTCPRetransmittedSegments) {
-                dynamic_pointer_cast<_Context> (_fContext.rwget ().rwref ())->fLastSum = LastSum{*accumSummary.fTotalTCPSegments, *accumSummary.fTotalTCPRetransmittedSegments, now};
+                rwContextPtr (_fContext.rwget ())->fLastSum = LastSum{*accumSummary.fTotalTCPSegments, *accumSummary.fTotalTCPRetransmittedSegments, now};
             }
             _NoteCompletedCapture ();
             return Info{interfaceResults, accumSummary};
@@ -245,7 +245,7 @@ namespace {
                     ii.fIOStatistics.fTotalPacketsDropped  = Characters::String2Int<uint64_t> (line[4]) + Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 4]);
 
                     DurationSecondsType now = Time::GetTickCount ();
-                    if (auto o = dynamic_pointer_cast<_Context> (_fContext.cget ().cref ())->fLast.Lookup (ii.fInterface.fInternalInterfaceID)) {
+                    if (auto o = cContextPtr<_Context> (_fContext_.cget ())->fLast.Lookup (ii.fInterface.fInternalInterfaceID)) {
                         double scanTime = now - o->fAt;
                         if (scanTime > 0) {
                             ii.fIOStatistics.fBytesPerSecondReceived   = (*ii.fIOStatistics.fTotalBytesReceived - o->fTotalBytesReceived) / scanTime;
@@ -256,7 +256,7 @@ namespace {
                     }
                     (*accumSummary) += ii.fIOStatistics;
                     interfaceResults->Add (ii);
-                    dynamic_pointer_cast<_Context> (_fContext.rwget ().rwref ())->fLast.Add (ii.fInterface.fInternalInterfaceID, Last{*ii.fIOStatistics.fTotalBytesReceived, *ii.fIOStatistics.fTotalBytesSent, *ii.fIOStatistics.fTotalPacketsReceived, *ii.fIOStatistics.fTotalPacketsSent, now});
+                    rwContextPtr<_Context> (_fContext.rwget ())->fLast.Add (ii.fInterface.fInternalInterfaceID, Last{*ii.fIOStatistics.fTotalBytesReceived, *ii.fIOStatistics.fTotalBytesSent, *ii.fIOStatistics.fTotalPacketsReceived, *ii.fIOStatistics.fTotalPacketsSent, now});
                 }
                 else {
                     DbgTrace (L"Line %d bad in file %s", nLine, kProcFileName_.c_str ());
@@ -391,9 +391,9 @@ namespace {
             SystemInterfacesMgr       systemInterfacesMgr;
             Iterable<Interface>       networkInterfacs{systemInterfacesMgr.GetAll ()};
 #if qUseWMICollectionSupport_
-            dynamic_pointer_cast<_Context> (_fContext.rwget ().rwref ())->fNetworkWMICollector_.Collect ();
-            dynamic_pointer_cast<_Context> (_fContext.rwget ().rwref ())->fTCPv4WMICollector_.Collect ();
-            dynamic_pointer_cast<_Context> (_fContext.rwget ().rwref ())->fTCPv6WMICollector_.Collect ();
+            rwContextPtr<_Context> (_fContext.rwget ())->fNetworkWMICollector_.Collect ();
+            rwContextPtr<_Context> (_fContext.rwget ())->fTCPv4WMICollector_.Collect ();
+            rwContextPtr<_Context> (_fContext.rwget ())->fTCPv6WMICollector_.Collect ();
 #endif
             {
                 for (IO::Network::Interface networkInterface : networkInterfacs) {
@@ -448,25 +448,27 @@ namespace {
              *          And it might miss if new interfaces are added dynamically.
              *          --LGP 2015-04-16
              */
-            if (dynamic_pointer_cast<_Context> (_fContext.cget ().cref ())->fAvailableInstances_.Contains (wmiInstanceName)) {
-                auto clockContext = _fContext.rwget ();
-                dynamic_pointer_cast<_Context> (clockContext.rwref ())->fNetworkWMICollector_.AddInstancesIf (wmiInstanceName);
-                dynamic_pointer_cast<_Context> (clockContext.rwref ())->fTCPv4WMICollector_.AddInstancesIf (wmiInstanceName);
-                dynamic_pointer_cast<_Context> (clockContext.rwref ())->fTCPv6WMICollector_.AddInstancesIf (wmiInstanceName);
+            if (cContextPtr<_Context> (_fContext.cget ())->fAvailableInstances_.Contains (wmiInstanceName)) {
+                auto lock    = scoped_lock{_fContext};
+                auto context = rwContextPtr<_Context> (_fContext.rwget ());
+                context->fNetworkWMICollector_.AddInstancesIf (wmiInstanceName);
+                context->fTCPv4WMICollector_.AddInstancesIf (wmiInstanceName);
+                context->fTCPv6WMICollector_.AddInstancesIf (wmiInstanceName);
             }
 
-            if (dynamic_pointer_cast<_Context> (_fContext.cget ().cref ())->fAvailableInstances_.Contains (wmiInstanceName)) {
-                auto clockContext = _fContext.rwget ();
-                Memory::CopyToIf (dynamic_pointer_cast<_Context> (clockContext.rwref ())->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesReceivedPerSecond_), &updateResult->fIOStatistics.fBytesPerSecondReceived);
-                Memory::CopyToIf (dynamic_pointer_cast<_Context> (clockContext.rwref ())->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesSentPerSecond_), &updateResult->fIOStatistics.fBytesPerSecondSent);
-                Memory::CopyToIf (dynamic_pointer_cast<_Context> (clockContext.rwref ())->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsReceivedPerSecond_), &updateResult->fIOStatistics.fPacketsPerSecondReceived);
-                Memory::CopyToIf (dynamic_pointer_cast<_Context> (clockContext.rwref ())->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsSentPerSecond_), &updateResult->fIOStatistics.fPacketsPerSecondSent);
+            if (cContextPtr<_Context> (_fContext.cget ())->fAvailableInstances_.Contains (wmiInstanceName)) {
+                auto lock    = scoped_lock{_fContext};
+                auto context = rwContextPtr<_Context> (_fContext.rwget ());
+                Memory::CopyToIf (context->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesReceivedPerSecond_), &updateResult->fIOStatistics.fBytesPerSecondReceived);
+                Memory::CopyToIf (context->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesSentPerSecond_), &updateResult->fIOStatistics.fBytesPerSecondSent);
+                Memory::CopyToIf (context->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsReceivedPerSecond_), &updateResult->fIOStatistics.fPacketsPerSecondReceived);
+                Memory::CopyToIf (context->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsSentPerSecond_), &updateResult->fIOStatistics.fPacketsPerSecondSent);
 
-                Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPSegmentsPerSecond, dynamic_pointer_cast<_Context> (clockContext.rwref ())->fTCPv4WMICollector_.PeekCurrentValue (wmiInstanceName, kTCPSegmentsPerSecond_));
-                Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPSegmentsPerSecond, dynamic_pointer_cast<_Context> (clockContext.rwref ())->fTCPv6WMICollector_.PeekCurrentValue (wmiInstanceName, kTCPSegmentsPerSecond_));
+                Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPSegmentsPerSecond, context->fTCPv4WMICollector_.PeekCurrentValue (wmiInstanceName, kTCPSegmentsPerSecond_));
+                Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPSegmentsPerSecond, context->fTCPv6WMICollector_.PeekCurrentValue (wmiInstanceName, kTCPSegmentsPerSecond_));
 
-                Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPRetransmittedSegmentsPerSecond, dynamic_pointer_cast<_Context> (clockContext.rwref ())->fTCPv4WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_));
-                Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPRetransmittedSegmentsPerSecond, dynamic_pointer_cast<_Context> (clockContext.rwref ())->fTCPv6WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_));
+                Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPRetransmittedSegmentsPerSecond, context->fTCPv4WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_));
+                Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPRetransmittedSegmentsPerSecond, context->fTCPv6WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_));
             }
         }
 #endif

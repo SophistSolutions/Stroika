@@ -350,7 +350,7 @@ namespace {
                 for (KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType> i : *volumes) {
                     MountedFilesystemInfoType vi = i.fValue;
                     if (vi.fDeviceOrVolumeName.has_value ()) {
-                        if (dynamic_pointer_cast<_Context> (_fContext.cget ().cref ())->fContextStats_) {
+                        if (cContextPtr<_Context> (_fContext.cget ())->fContextStats_) {
                             String devNameLessSlashes = *vi.fDeviceOrVolumeName;
                             size_t i                  = devNameLessSlashes.rfind ('/');
                             if (i != string::npos) {
@@ -367,7 +367,7 @@ namespace {
                                     continue;
                                 }
                             }
-                            optional<PerfStats_> oOld = dynamic_pointer_cast<_Context> (_fContext.cget ().cref ())->fContextStats_->Lookup (useDevT);
+                            optional<PerfStats_> oOld = cContextPtr<_Context> (_fContext.cget ())->fContextStats_->Lookup (useDevT);
                             optional<PerfStats_> oNew = diskStats.Lookup (useDevT);
                             if (oOld.has_value () and oNew.has_value ()) {
                                 unsigned int sectorSizeTmpHack = GetSectorSize_ (devNameLessSlashes);
@@ -396,7 +396,7 @@ namespace {
                     }
                     volumes->Add (i.fKey, vi);
                 }
-                dynamic_pointer_cast<_Context> (_fContext.rwget ().rwref ())->fContextStats_ = diskStats;
+                rwContextPtr<_Context> (_fContext.rwget ())->fContextStats_ = diskStats;
             }
             catch (...) {
                 DbgTrace ("Exception gathering procfs disk io stats");
@@ -429,13 +429,13 @@ namespace {
     private:
         uint32_t GetSectorSize_ (const String& deviceName)
         {
-            auto o = dynamic_pointer_cast<_Context> (_fContext.cget ().cref ())->fDeviceName2SectorSizeMap_.Lookup (deviceName);
+            auto o = cContextPtr<_Context> (_fContext.cget ())->fDeviceName2SectorSizeMap_.Lookup (deviceName);
             if (not o.has_value ()) {
                 if (optional<filesystem::path> blockDeviceInfoPath = GetSysBlockDirPathForDevice_ (deviceName)) {
                     filesystem::path fn = *blockDeviceInfoPath / "queue/hw_sector_size";
                     try {
                         o = String2Int<uint32_t> (TextReader::New (FileInputStream::New (fn, FileInputStream::eNotSeekable)).ReadAll ().Trim ());
-                        dynamic_pointer_cast<_Context> (_fContext.rwget ().rwref ())->fDeviceName2SectorSizeMap_.Add (deviceName, *o);
+                        rwContextPtr<_Context> (_fContext.rwget ())->fDeviceName2SectorSizeMap_.Add (deviceName, *o);
                     }
                     catch (...) {
                         DbgTrace (L"Unknown error reading %s", fn.c_str ());
@@ -696,11 +696,11 @@ namespace {
             Collection<IO::FileSystem::DiskInfoType> physDrives = IO::FileSystem::GetAvailableDisks ();
 
 #if qUseWMICollectionSupport_
-            Time::DurationSecondsType timeOfPrevCollection = dynamic_pointer_cast<_Context> (_fContext.cget ().cref ())->fLogicalDiskWMICollector_.GetTimeOfLastCollection ();
+            Time::DurationSecondsType timeOfPrevCollection = cContextPtr<_Context> (_fContext.cget ())->fLogicalDiskWMICollector_.GetTimeOfLastCollection ();
             if (fOptions_.fIOStatistics) {
-                dynamic_pointer_cast<_Context> (_fContext.rwget ().rwref ())->fLogicalDiskWMICollector_.Collect ();
+                rwContextPtr<_Context> (_fContext.rwget ())->fLogicalDiskWMICollector_.Collect ();
             }
-            Time::DurationSecondsType timeCollecting{dynamic_pointer_cast<_Context> (_fContext.cget ().cref ())->fLogicalDiskWMICollector_.GetTimeOfLastCollection () - timeOfPrevCollection};
+            Time::DurationSecondsType timeCollecting{cContextPtr<_Context> (_fContext.cget ())->fLogicalDiskWMICollector_.GetTimeOfLastCollection () - timeOfPrevCollection};
 #endif
             Info result;
 
@@ -759,43 +759,43 @@ namespace {
                     };
                     if (fOptions_.fIOStatistics) {
                         String wmiInstanceName = IO::FileSystem::FromPath (mfinfo.fMountedOn).RTrim ([] (Characters::Character c) { return c == '\\'; });
-                        dynamic_pointer_cast<_Context> (_fContext.rwget ().rwref ())->fLogicalDiskWMICollector_.AddInstancesIf (wmiInstanceName);
+                        rwContextPtr<_Context> (_fContext.rwget ())->fLogicalDiskWMICollector_.AddInstancesIf (wmiInstanceName);
 
                         IOStatsType readStats;
-                        if (auto o = dynamic_pointer_cast<_Context> (_fContext.rwget ().rwref ())->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadBytesPerSec_)) {
+                        if (auto o = rwContextPtr<_Context> (_fContext.rwget ())->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadBytesPerSec_)) {
                             readStats.fBytesTransfered = *o * timeCollecting;
                         }
-                        if (auto o = dynamic_pointer_cast<_Context> (_fContext.rwget ().rwref ())->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadsPerSec_)) {
+                        if (auto o = rwContextPtr<_Context> (_fContext.rwget ())->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadsPerSec_)) {
                             readStats.fTotalTransfers = *o * timeCollecting;
                         }
                         if (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_) {
-                            if (auto o = dynamic_pointer_cast<_Context> (_fContext.rwget ().rwref ())->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskReadTime_)) {
+                            if (auto o = rwContextPtr<_Context> (_fContext.rwget ())->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskReadTime_)) {
                                 readStats.fInUsePercent = *o;
                                 readStats.fQLength      = safePctInUse2QL_ (*o);
                             }
                         }
                         else {
-                            if (auto o = dynamic_pointer_cast<_Context> (_fContext.rwget ().rwref ())->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kAveDiskReadQLen_)) {
+                            if (auto o = rwContextPtr<_Context> (_fContext.rwget ())->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kAveDiskReadQLen_)) {
                                 readStats.fInUsePercent = *o;
                                 readStats.fQLength      = *o;
                             }
                         }
 
                         IOStatsType writeStats;
-                        if (auto o = dynamic_pointer_cast<_Context> (_fContext.rwget ().rwref ())->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWriteBytesPerSec_)) {
+                        if (auto o = rwContextPtr<_Context> (_fContext.rwget ())->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWriteBytesPerSec_)) {
                             writeStats.fBytesTransfered = *o * timeCollecting;
                         }
-                        if (auto o = dynamic_pointer_cast<_Context> (_fContext.rwget ().rwref ())->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWritesPerSec_)) {
+                        if (auto o = rwContextPtr<_Context> (_fContext.rwget ())->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWritesPerSec_)) {
                             writeStats.fTotalTransfers = *o * timeCollecting;
                         }
                         if (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_) {
-                            if (auto o = dynamic_pointer_cast<_Context> (_fContext.rwget ().rwref ())->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskWriteTime_)) {
+                            if (auto o = rwContextPtr<_Context> (_fContext.rwget ())->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskWriteTime_)) {
                                 writeStats.fInUsePercent = *o;
                                 writeStats.fQLength      = safePctInUse2QL_ (*o);
                             }
                         }
                         else {
-                            if (auto o = dynamic_pointer_cast<_Context> (_fContext.rwget ().rwref ())->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kAveDiskWriteQLen_)) {
+                            if (auto o = rwContextPtr<_Context> (_fContext.rwget ())->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kAveDiskWriteQLen_)) {
                                 writeStats.fInUsePercent = *o;
                                 writeStats.fQLength      = *o;
                             }
@@ -811,7 +811,7 @@ namespace {
                         }
 
                         if (kUsePctIdleIimeForAveQLen_) {
-                            if (auto o = dynamic_pointer_cast<_Context> (_fContext.rwget ().rwref ())->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctIdleTime_)) {
+                            if (auto o = rwContextPtr<_Context> (_fContext.rwget ())->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctIdleTime_)) {
                                 double aveCombinedQLen = safePctInUse2QL_ (100.0 - *o);
                                 if (readStats.fQLength and writeStats.fQLength and *combinedStats.fQLength > 0) {
                                     // for some reason, the pct-idle-time #s combined are OK, but #s for aveQLen and disk read PCT/Write PCT wrong.
