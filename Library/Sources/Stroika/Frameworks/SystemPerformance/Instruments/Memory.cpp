@@ -272,8 +272,8 @@ namespace {
                         *savedBaseline = *faultsSinceBoot;
                     }
                 };
-                auto contextLocked = _fContext.rwget ();
-                auto ctx           = rwContextPtr<_Context> (contextLocked);
+                auto ctxLock = scoped_lock{_fContext};
+                auto ctx     = rwContextPtr<_Context> (_fContext.rwget ());
                 doAve_ (ctx->fSaved_VMPageStats_At, now, &ctx->fSaved_MinorPageFaultsSinceBoot, updateResult->fPaging.fMinorPageFaultsSinceBoot, &updateResult->fPaging.fMinorPageFaultsPerSecond);
                 doAve_ (ctx->fSaved_VMPageStats_At, now, &ctx->fSaved_MajorPageFaultsSinceBoot, updateResult->fPaging.fMajorPageFaultsSinceBoot, &updateResult->fPaging.fMajorPageFaultsPerSecond);
                 doAve_ (ctx->fSaved_VMPageStats_At, now, &ctx->fSaved_PageOutsSinceBoot, updateResult->fPaging.fPageOutsSinceBoot, &updateResult->fPaging.fPageOutsPerSecond);
