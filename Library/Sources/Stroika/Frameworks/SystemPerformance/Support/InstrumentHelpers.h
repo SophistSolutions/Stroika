@@ -44,7 +44,7 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
          *  Otherwise, for one-liners, scoped_lock not needed (as the lock defined in an expression will exist til then end of the line).
          */
         template <typename T_SUBCLASS>
-        static shared_ptr<T_SUBCLASS> cContextPtr (typename Foundation::Execution::Synchronized<shared_ptr<_Context>>::ReadableReference&& r);
+        static const shared_ptr<T_SUBCLASS> cContextPtr (typename Foundation::Execution::Synchronized<shared_ptr<_Context>>::ReadableReference&& r);
         template <typename T_SUBCLASS>
         static shared_ptr<T_SUBCLASS> rwContextPtr (typename Foundation::Execution::Synchronized<shared_ptr<_Context>>::WritableReference&& r);
 

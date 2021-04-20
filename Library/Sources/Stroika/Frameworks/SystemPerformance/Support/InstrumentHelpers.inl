@@ -25,13 +25,13 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
     }
     template <typename OPTIONS>
     template <typename T_SUBCLASS>
-    inline shared_ptr<T_SUBCLASS> CapturerWithContext_COMMON<OPTIONS>::cContextPtr (typename Foundation::Execution::Synchronized<shared_ptr<_Context>>::ReadableReference&& r)
+    inline const shared_ptr<T_SUBCLASS> CapturerWithContext_COMMON<OPTIONS>::cContextPtr (typename Foundation::Execution::Synchronized<shared_ptr<_Context>>::ReadableReference&& r)
     {
         return dynamic_pointer_cast<T_SUBCLASS> (r.cref ());
     }
     template <typename OPTIONS>
     template <typename T_SUBCLASS>
-    inline shared_ptr<T_SUBCLASS> CapturerWithContext_COMMON<OPTIONS>::rwContextPtr (typename Foundation::Execution::Synchronized<shared_ptr<_Context>>::WritableReference&& r)
+    inline  shared_ptr<T_SUBCLASS> CapturerWithContext_COMMON<OPTIONS>::rwContextPtr (typename Foundation::Execution::Synchronized<shared_ptr<_Context>>::WritableReference&& r)
     {
         return dynamic_pointer_cast<T_SUBCLASS> (r.rwref ());
     }

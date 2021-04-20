@@ -189,18 +189,19 @@ namespace {
             IgnoreExceptionsExceptThreadAbortForCall (Read_proc_net_snmp_ (&accumSummary));
 #endif
 
-            DurationSecondsType now          = Time::GetTickCount ();
-            auto                contextCLock = _fContext.cget ();
-            if (cContextPtr<_Context> (contextCLock)->fLastSum and accumSummary.fTotalTCPSegments) {
-                Time::DurationSecondsType timespan{now - cContextPtr<_Context> (contextCLock)->fLastSum->fAt};
-                accumSummary.fTCPSegmentsPerSecond = (NullCoalesce (accumSummary.fTotalTCPSegments) - cContextPtr<_Context> (contextCLock)->fLastSum->fTotalTCPSegments) / timespan;
+            DurationSecondsType  now         = Time::GetTickCount ();
+            auto                 contextLock = scoped_lock{_fContext};
+            shared_ptr<_Context> context     = rwContextPtr<_Context> (_fContext.rwget ());
+            if (context->fLastSum and accumSummary.fTotalTCPSegments) {
+                Time::DurationSecondsType timespan{now - context->fLastSum->fAt};
+                accumSummary.fTCPSegmentsPerSecond = (NullCoalesce (accumSummary.fTotalTCPSegments) - context->fLastSum->fTotalTCPSegments) / timespan;
             }
-            if (cContextPtr<_Context> (contextCLock)->fLastSum and accumSummary.fTotalTCPRetransmittedSegments) {
-                Time::DurationSecondsType timespan{now - cContextPtr<_Context> (contextCLock)->fLastSum->fAt};
-                accumSummary.fTCPRetransmittedSegmentsPerSecond = (NullCoalesce (accumSummary.fTotalTCPRetransmittedSegments) - cContextPtr<_Context> (contextCLock)->fLastSum->fTotalTCPRetransmittedSegments) / timespan;
+            if (context->fLastSum and accumSummary.fTotalTCPRetransmittedSegments) {
+                Time::DurationSecondsType timespan{now - context->fLastSum->fAt};
+                accumSummary.fTCPRetransmittedSegmentsPerSecond = (NullCoalesce (accumSummary.fTotalTCPRetransmittedSegments) - context->fLastSum->fTotalTCPRetransmittedSegments) / timespan;
             }
             if (accumSummary.fTotalTCPSegments and accumSummary.fTotalTCPRetransmittedSegments) {
-                rwContextPtr (_fContext.rwget ())->fLastSum = LastSum{*accumSummary.fTotalTCPSegments, *accumSummary.fTotalTCPRetransmittedSegments, now};
+                context->fLastSum = LastSum{*accumSummary.fTotalTCPSegments, *accumSummary.fTotalTCPRetransmittedSegments, now};
             }
             _NoteCompletedCapture ();
             return Info{interfaceResults, accumSummary};
@@ -245,7 +246,7 @@ namespace {
                     ii.fIOStatistics.fTotalPacketsDropped  = Characters::String2Int<uint64_t> (line[4]) + Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 4]);
 
                     DurationSecondsType now = Time::GetTickCount ();
-                    if (auto o = cContextPtr<_Context> (_fContext_.cget ())->fLast.Lookup (ii.fInterface.fInternalInterfaceID)) {
+                    if (auto o = cContextPtr<_Context> (_fContext.cget ())->fLast.Lookup (ii.fInterface.fInternalInterfaceID)) {
                         double scanTime = now - o->fAt;
                         if (scanTime > 0) {
                             ii.fIOStatistics.fBytesPerSecondReceived   = (*ii.fIOStatistics.fTotalBytesReceived - o->fTotalBytesReceived) / scanTime;

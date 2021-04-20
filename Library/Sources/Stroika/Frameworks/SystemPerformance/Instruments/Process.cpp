@@ -488,7 +488,7 @@ namespace {
                         }
 
                         processDetails.fTotalCPUTimeEverUsed = (double (stats.utime) + double (stats.stime)) / kClockTick_;
-                        if (optional<PerfStats_> p = cContextPtr<_Context> (_fContext_.cget ())->fMap.Lookup (pid)) {
+                        if (optional<PerfStats_> p = cContextPtr<_Context> (_fContext.cget ())->fMap.Lookup (pid)) {
                             if (p->fTotalCPUTimeEverUsed) {
                                 processDetails.fAverageCPUTimeUsed = (*processDetails.fTotalCPUTimeEverUsed - *p->fTotalCPUTimeEverUsed) / (now - p->fCapturedAt);
                             }
@@ -550,7 +550,7 @@ namespace {
                         if (stats.has_value ()) {
                             processDetails.fCombinedIOReadBytes  = (*stats).read_bytes;
                             processDetails.fCombinedIOWriteBytes = (*stats).write_bytes;
-                            if (optional<PerfStats_> p = cContextPtr<_Context> (_fContext_.cget ())->fMap.Lookup (pid)) {
+                            if (optional<PerfStats_> p = cContextPtr<_Context> (_fContext.cget ())->fMap.Lookup (pid)) {
                                 if (p->fCombinedIOReadBytes) {
                                     processDetails.fCombinedIOReadRate = (*processDetails.fCombinedIOReadBytes - *p->fCombinedIOReadBytes) / (now - p->fCapturedAt);
                                 }
