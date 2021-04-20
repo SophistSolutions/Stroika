@@ -141,11 +141,10 @@ namespace {
             POSIXSysTimeCaptureContext_ fSysTimeInfo{};
         };
 
-        CapturerWithContext_Linux_ (const Options& options)
-            : CapturerWithContext_COMMON_{options, make_shared<_Context> ()}
+        CapturerWithContext_Linux_ (const Options& options, const shared_ptr<_Context>& context)
+            : CapturerWithContext_COMMON_{options, context}
         {
         }
-        CapturerWithContext_Linux_ (const CapturerWithContext_Linux_& src) = default;
 
         /*
          *  /proc/stat
@@ -291,7 +290,7 @@ namespace {
                 int    lr = ::getloadavg (loadAve, NEltsOf (loadAve));
                 if (lr == 3) {
                     result.fLoadAverage = Info::LoadAverage (loadAve[0], loadAve[1], loadAve[2]);
-                    result.fRunQLength  = EstimateRunQFromLoadAveArray_ (Time::GetTickCount () - GetCaptureContextTime ().value_or (0), loadAve);
+                    result.fRunQLength  = EstimateRunQFromLoadAveArray_ (Time::GetTickCount () - _GetCaptureContextTime ().value_or (0), loadAve);
                     static const unsigned int kCPUCoreCount_{GetSystemConfiguration_CPU ().GetNumberOfLogicalCores ()};
                     Assert (kCPUCoreCount_ != 0);
                     Memory::AccumulateIf<double> (&result.fRunQLength, kCPUCoreCount_, std::divides{}); // fRunQLength counts length normalized 0..1 with 1 menaing ALL CPU CORES
@@ -325,11 +324,10 @@ namespace {
 #endif
         };
 
-        CapturerWithContext_Windows_ (const Options& options)
-            : CapturerWithContext_COMMON_{options, make_shared<_Context> ()}
+        CapturerWithContext_Windows_ (const Options& options, const shared_ptr<_Context>& context)
+            : CapturerWithContext_COMMON_{options, context}
         {
         }
-        CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& src) = default;
 
         static inline double GetAsSeconds_ (FILETIME ft)
         {
@@ -409,8 +407,8 @@ namespace {
 #else
         using inherited = CapturerWithContext_COMMON_;
 #endif
-        CapturerWithContext_ (const Options& options)
-            : inherited{options}
+        CapturerWithContext_ (const Options& options, const shared_ptr<_Context>& context)
+            : inherited{options, context}
         {
         }
         Info capture ()
@@ -437,12 +435,10 @@ namespace {
 }
 
 namespace {
-    class MyCapturer_ : public Instrument::ICapturer {
-        CapturerWithContext_ fCapturerWithContext_;
-
+    class MyCapturer_ : public Instrument::ICapturer, CapturerWithContext_ {
     public:
-        MyCapturer_ (const CapturerWithContext_& ctx)
-            : fCapturerWithContext_{ctx}
+        MyCapturer_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
+            : CapturerWithContext_{options, context}
         {
         }
         virtual MeasurementSet Capture () override
@@ -454,26 +450,26 @@ namespace {
         }
         nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
         {
-            auto before         = fCapturerWithContext_.GetCaptureContextTime ();
-            Info rawMeasurement = fCapturerWithContext_.capture ();
+            auto before         = _GetCaptureContextTime ();
+            Info rawMeasurement = capture ();
             if (outMeasuredAt != nullptr) {
                 using Traversal::Openness;
-                *outMeasuredAt = Range<DurationSecondsType> (before, fCapturerWithContext_.GetCaptureContextTime ().value_or (Time::GetTickCount ()), Openness::eClosed, Openness::eClosed);
+                *outMeasuredAt = Range<DurationSecondsType> (before, _GetCaptureContextTime ().value_or (Time::GetTickCount ()), Openness::eClosed, Openness::eClosed);
             }
             return rawMeasurement;
         }
         virtual unique_ptr<ICapturer> Clone () const override
         {
-            return make_unique<MyCapturer_> (fCapturerWithContext_);
+            return make_unique<MyCapturer_> (_fOptions, cContextPtr<_Context> (_fContext.cget ()));
         }
         virtual shared_ptr<Instrument::ICaptureContext> GetContext () const override
         {
-            EnsureNotNull (fCapturerWithContext_._fContext.load ());
-            return fCapturerWithContext_._fContext.load ();
+            EnsureNotNull (_fContext.load ());
+            return _fContext.load ();
         }
         virtual void SetContext (const shared_ptr<Instrument::ICaptureContext>& context) override
         {
-            fCapturerWithContext_._fContext.store ((context == nullptr) ? make_shared<CapturerWithContext_::_Context> () : dynamic_pointer_cast<CapturerWithContext_::_Context> (context));
+            _fContext.store ((context == nullptr) ? make_shared<CapturerWithContext_::_Context> () : dynamic_pointer_cast<CapturerWithContext_::_Context> (context));
         }
     };
 }
@@ -510,7 +506,7 @@ const ObjectVariantMapper Instruments::CPU::Instrument::kObjectVariantMapper = [
 Instruments::CPU::Instrument::Instrument (const Options& options)
     : SystemPerformance::Instrument{
           InstrumentNameType{L"CPU"sv},
-          make_unique<MyCapturer_> (CapturerWithContext_{options}),
+          make_unique<MyCapturer_> (options),
           {kCPUMeasurment_},
           {KeyValuePair<type_index, MeasurementType>{typeid (Info), kCPUMeasurment_}},
           kObjectVariantMapper}

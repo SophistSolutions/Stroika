@@ -263,11 +263,10 @@ namespace {
         };
 
     public:
-        CapturerWithContext_Linux_ (const Options& options)
-            : CapturerWithContext_COMMON_{options, make_shared<_Context> ()}
+        CapturerWithContext_Linux_ (const Options& options, const shared_ptr<_Context>& context)
+            : CapturerWithContext_COMMON_{options, context}
         {
         }
-        CapturerWithContext_Linux_ (const CapturerWithContext_Linux_&) = default;
 
         Info capture ()
         {
@@ -288,17 +287,17 @@ namespace {
                 results.fMountedFilesystems = RunDF_ ();
             }
             ApplyDiskTypes_ (&results.fMountedFilesystems);
-            if (not fOptions_.fIncludeTemporaryDevices or not fOptions_.fIncludeSystemDevices) {
+            if (not _fOptions.fIncludeTemporaryDevices or not _fOptions.fIncludeSystemDevices) {
                 for (KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType> i : results.fMountedFilesystems) {
-                    if (not fOptions_.fIncludeTemporaryDevices and i.fValue.fDeviceKind == BlockDeviceKind::eTemporaryFiles) {
+                    if (not _fOptions.fIncludeTemporaryDevices and i.fValue.fDeviceKind == BlockDeviceKind::eTemporaryFiles) {
                         results.fMountedFilesystems.Remove (i.fKey);
                     }
-                    else if (not not fOptions_.fIncludeSystemDevices and i.fValue.fDeviceKind == BlockDeviceKind::eSystemInformation) {
+                    else if (not not _fOptions.fIncludeSystemDevices and i.fValue.fDeviceKind == BlockDeviceKind::eSystemInformation) {
                         results.fMountedFilesystems.Remove (i.fKey);
                     }
                 }
             }
-            if (fOptions_.fIOStatistics) {
+            if (_fOptions.fIOStatistics) {
                 ReadAndApplyProcFS_diskstats_ (&results.fMountedFilesystems);
             }
             _NoteCompletedCapture ();
@@ -346,7 +345,7 @@ namespace {
         {
             try {
                 Mapping<dev_t, PerfStats_> diskStats            = ReadProcFS_diskstats_ ();
-                DurationSecondsType        timeSinceLastMeasure = Time::GetTickCount () - GetCaptureContextTime ().value_or (0);
+                DurationSecondsType        timeSinceLastMeasure = Time::GetTickCount () - _GetCaptureContextTime ().value_or (0);
                 for (KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType> i : *volumes) {
                     MountedFilesystemInfoType vi = i.fValue;
                     if (vi.fDeviceOrVolumeName.has_value ()) {
@@ -639,11 +638,10 @@ namespace {
 #endif
         };
 
-        CapturerWithContext_Windows_ (const Options& options)
-            : CapturerWithContext_COMMON_{options, make_shared<_Context> ()}
+        CapturerWithContext_Windows_ (const Options& options, const shared_ptr<_Context>& context)
+            : CapturerWithContext_COMMON_{options, context}
         {
         }
-        CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from) = default;
         Info capture ()
         {
             return capture_ ();
@@ -697,7 +695,7 @@ namespace {
 
 #if qUseWMICollectionSupport_
             Time::DurationSecondsType timeOfPrevCollection = cContextPtr<_Context> (_fContext.cget ())->fLogicalDiskWMICollector_.GetTimeOfLastCollection ();
-            if (fOptions_.fIOStatistics) {
+            if (_fOptions.fIOStatistics) {
                 rwContextPtr<_Context> (_fContext.rwget ())->fLogicalDiskWMICollector_.Collect ();
             }
             Time::DurationSecondsType timeCollecting{cContextPtr<_Context> (_fContext.cget ())->fLogicalDiskWMICollector_.GetTimeOfLastCollection () - timeOfPrevCollection};
@@ -757,7 +755,7 @@ namespace {
                         pctInUse = Math::PinInRange<double> (pctInUse, 0, 1);
                         return pctInUse / (1 - pctInUse);
                     };
-                    if (fOptions_.fIOStatistics) {
+                    if (_fOptions.fIOStatistics) {
                         String wmiInstanceName = IO::FileSystem::FromPath (mfinfo.fMountedOn).RTrim ([] (Characters::Character c) { return c == '\\'; });
                         rwContextPtr<_Context> (_fContext.rwget ())->fLogicalDiskWMICollector_.AddInstancesIf (wmiInstanceName);
 
@@ -951,8 +949,8 @@ namespace {
 #else
         using inherited = CapturerWithContext_COMMON_;
 #endif
-        CapturerWithContext_ (Options options)
-            : inherited{options}
+        CapturerWithContext_ (const Options& options, const shared_ptr<_Context>& context)
+            : inherited{options, context}
         {
         }
         Info capture ()
@@ -964,7 +962,7 @@ namespace {
 #else
             Info result;
 #endif
-            if (fOptions_.fEstimateFilesystemStatsFromDiskStatsIfHelpful) {
+            if (_fOptions.fEstimateFilesystemStatsFromDiskStatsIfHelpful) {
                 result.fMountedFilesystems = ApplyDiskStatsToMissingFileSystemStats_ (result.fDisks, result.fMountedFilesystems);
             }
             return result;
@@ -977,12 +975,11 @@ namespace {
 }
 
 namespace {
-    class MyCapturer_ : public SystemPerformance::Instrument::ICapturer {
-        CapturerWithContext_ fCapturerWithContext_;
+    class MyCapturer_ : public SystemPerformance::Instrument::ICapturer, CapturerWithContext_ {
 
     public:
-        MyCapturer_ (const CapturerWithContext_& ctx)
-            : fCapturerWithContext_{ctx}
+        MyCapturer_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
+            : CapturerWithContext_{options, context}
         {
         }
         virtual MeasurementSet Capture () override
@@ -994,26 +991,26 @@ namespace {
         }
         nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
         {
-            auto before         = fCapturerWithContext_.GetCaptureContextTime ();
-            Info rawMeasurement = fCapturerWithContext_.capture ();
+            auto before         = _GetCaptureContextTime ();
+            Info rawMeasurement = capture ();
             if (outMeasuredAt != nullptr) {
                 using Traversal::Openness;
-                *outMeasuredAt = Range<DurationSecondsType> (before, fCapturerWithContext_.GetCaptureContextTime ().value_or (Time::GetTickCount ()), Openness::eClosed, Openness::eClosed);
+                *outMeasuredAt = Range<DurationSecondsType> (before, _GetCaptureContextTime ().value_or (Time::GetTickCount ()), Openness::eClosed, Openness::eClosed);
             }
             return rawMeasurement;
         }
         virtual unique_ptr<ICapturer> Clone () const override
         {
-            return make_unique<MyCapturer_> (fCapturerWithContext_);
+            return make_unique<MyCapturer_> (_fOptions, cContextPtr<_Context> (_fContext.cget ()));
         }
         virtual shared_ptr<Instrument::ICaptureContext> GetContext () const override
         {
-            EnsureNotNull (fCapturerWithContext_._fContext.cget ().cref ());
-            return fCapturerWithContext_._fContext.cget ().cref ();
+            EnsureNotNull (_fContext.load ());
+            return _fContext.load ();
         }
         virtual void SetContext (const shared_ptr<Instrument::ICaptureContext>& context) override
         {
-            fCapturerWithContext_._fContext.store ((context == nullptr) ? make_shared<CapturerWithContext_::_Context> () : dynamic_pointer_cast<CapturerWithContext_::_Context> (context));
+            _fContext.store ((context == nullptr) ? make_shared<CapturerWithContext_::_Context> () : dynamic_pointer_cast<CapturerWithContext_::_Context> (context));
         }
     };
 }
@@ -1074,7 +1071,7 @@ const ObjectVariantMapper Instruments::Filesystem::Instrument::kObjectVariantMap
 Instruments::Filesystem::Instrument::Instrument (const Options& options)
     : SystemPerformance::Instrument{
           InstrumentNameType{L"Filesystem"sv},
-          make_unique<MyCapturer_> (CapturerWithContext_{options}),
+          make_unique<MyCapturer_> (options),
           {kMountedVolumeUsage_},
           {KeyValuePair<type_index, MeasurementType>{typeid (Info), kMountedVolumeUsage_}},
           Instrument::kObjectVariantMapper}

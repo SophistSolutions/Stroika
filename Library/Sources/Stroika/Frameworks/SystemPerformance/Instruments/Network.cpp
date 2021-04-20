@@ -166,11 +166,10 @@ namespace {
             optional<LastSum>     fLastSum;
         };
 
-        CapturerWithContext_POSIX_ (const Options& options)
-            : CapturerWithContext_COMMON_{options, make_shared<_Context> ()}
+        CapturerWithContext_POSIX_ (const Options& options, const shared_ptr<_Context>& context)
+            : CapturerWithContext_COMMON_{options, context}
         {
         }
-        CapturerWithContext_POSIX_ (const CapturerWithContext_POSIX_&) = default;
 
         Instruments::Network::Info capture ()
         {
@@ -360,8 +359,8 @@ namespace {
 #endif
         };
 
-        CapturerWithContext_Windows_ (const Options& options)
-            : CapturerWithContext_COMMON_{options, make_shared<_Context> ()}
+        CapturerWithContext_Windows_ (const Options& options, const shared_ptr<_Context>& context)
+            : CapturerWithContext_COMMON_{options, context}
         {
 #if qUseWMICollectionSupport_
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -374,7 +373,6 @@ namespace {
 #endif
 #endif
         }
-        CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& src) = default;
 
         Instruments::Network::Info capture ()
         {
@@ -490,8 +488,8 @@ namespace {
 #elif qPlatform_Windows
         using inherited = CapturerWithContext_Windows_;
 #endif
-        CapturerWithContext_ (Options options)
-            : inherited{options}
+        CapturerWithContext_ (const Options& options, const shared_ptr<_Context>& context)
+            : inherited{options, context}
         {
         }
         Instruments::Network::Info capture ()
@@ -510,12 +508,10 @@ namespace {
 }
 
 namespace {
-    class MyCapturer_ : public Instrument::ICapturer {
-        CapturerWithContext_ fCapturerWithContext_;
-
+    class MyCapturer_ : public Instrument::ICapturer, CapturerWithContext_ {
     public:
-        MyCapturer_ (const CapturerWithContext_& ctx)
-            : fCapturerWithContext_{ctx}
+        MyCapturer_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
+            : CapturerWithContext_{options, context}
         {
         }
         virtual MeasurementSet Capture () override
@@ -528,26 +524,26 @@ namespace {
         }
         nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
         {
-            auto before         = fCapturerWithContext_.GetCaptureContextTime ();
-            Info rawMeasurement = fCapturerWithContext_.capture ();
+            auto before         = _GetCaptureContextTime ();
+            Info rawMeasurement = capture ();
             if (outMeasuredAt != nullptr) {
                 using Traversal::Openness;
-                *outMeasuredAt = Range<DurationSecondsType> (before, fCapturerWithContext_.GetCaptureContextTime ().value_or (Time::GetTickCount ()), Openness::eClosed, Openness::eClosed);
+                *outMeasuredAt = Range<DurationSecondsType> (before, _GetCaptureContextTime ().value_or (Time::GetTickCount ()), Openness::eClosed, Openness::eClosed);
             }
             return rawMeasurement;
         }
         virtual unique_ptr<ICapturer> Clone () const override
         {
-            return make_unique<MyCapturer_> (fCapturerWithContext_);
+            return make_unique<MyCapturer_> (_fOptions, cContextPtr<_Context> (_fContext.cget ()));
         }
         virtual shared_ptr<Instrument::ICaptureContext> GetContext () const override
         {
-            EnsureNotNull (fCapturerWithContext_._fContext.load ());
-            return fCapturerWithContext_._fContext.load ();
+            EnsureNotNull (_fContext.load ());
+            return _fContext.load ();
         }
         virtual void SetContext (const shared_ptr<Instrument::ICaptureContext>& context) override
         {
-            fCapturerWithContext_._fContext.store ((context == nullptr) ? make_shared<CapturerWithContext_::_Context> () : dynamic_pointer_cast<CapturerWithContext_::_Context> (context));
+            _fContext.store ((context == nullptr) ? make_shared<CapturerWithContext_::_Context> () : dynamic_pointer_cast<CapturerWithContext_::_Context> (context));
         }
     };
 }
@@ -612,7 +608,7 @@ const ObjectVariantMapper Instruments::Network::Instrument::kObjectVariantMapper
 Instruments::Network::Instrument::Instrument (const Options& options)
     : SystemPerformance::Instrument{
           InstrumentNameType{L"Network"sv},
-          make_unique<MyCapturer_> (CapturerWithContext_{options}),
+          make_unique<MyCapturer_> (options),
           {kNetworkInterfacesMeasurement_},
           {KeyValuePair<type_index, MeasurementType>{typeid (Info), kNetworkInterfacesMeasurement_}},
           kObjectVariantMapper}

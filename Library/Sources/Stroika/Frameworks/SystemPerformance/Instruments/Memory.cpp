@@ -130,11 +130,10 @@ namespace {
             Time::DurationSecondsType fSaved_VMPageStats_At{};
         };
 
-        CapturerWithContext_Linux_ (const Options& options)
-            : CapturerWithContext_COMMON_{options, make_shared<_Context> ()}
+        CapturerWithContext_Linux_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
+            : CapturerWithContext_COMMON_{options, context}
         {
         }
-        CapturerWithContext_Linux_ (const CapturerWithContext_Linux_&) = default;
 
         Instruments::Memory::Info capture ()
         {
@@ -293,8 +292,8 @@ namespace {
 #endif
         };
 
-        CapturerWithContext_Windows_ (const Options& options)
-            : CapturerWithContext_COMMON_{options, make_shared<_Context> ()}
+        CapturerWithContext_Windows_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
+            : CapturerWithContext_COMMON_{options, context}
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             for (String i : cContextPtr<_Context> (_fContext_.cref ())->fMemoryWMICollector_.GetAvailableCounters ()) {
@@ -302,7 +301,6 @@ namespace {
             }
 #endif
         }
-        CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& src) = default;
 
         Instruments::Memory::Info capture_ ()
         {
@@ -371,6 +369,7 @@ namespace {
 #endif
 
 namespace {
+
     struct CapturerWithContext_
 #if qPlatform_Linux
         : CapturerWithContext_Linux_
@@ -387,11 +386,10 @@ namespace {
 #else
         using inherited = CapturerWithContext_COMMON_;
 #endif
-        CapturerWithContext_ (const Options& options)
-            : inherited{options}
+        CapturerWithContext_ (const Options& options,  const shared_ptr<_Context>& context)
+            : inherited{options, context}
         {
         }
-        CapturerWithContext_ (const CapturerWithContext_& src) = default;
 
         Instruments::Memory::Info capture ()
         {
@@ -416,45 +414,43 @@ namespace {
 namespace {
     const MeasurementType kMemoryUsageMeasurement_ = MeasurementType{L"Memory-Usage"sv};
 }
-
 namespace {
-    class MyCapturer_ : public Instrument::ICapturer {
-        CapturerWithContext_ fCapturerWithContext_;
+    class MemoryCapturerRep_ : public Instrument::ICapturer, public CapturerWithContext_ {
 
     public:
-        MyCapturer_ (const CapturerWithContext_& ctx)
-            : fCapturerWithContext_{ctx}
+        MemoryCapturerRep_ (const Options& options, const shared_ptr<_Context>& context = make_shared < _Context> ())
+            : CapturerWithContext_{options,  context}
         {
         }
         virtual MeasurementSet Capture () override
         {
-            Debug::TraceContextBumper ctx{"SystemPerformance::Instrument...Memory...MyCapturer_::Capture ()"};
+            Debug::TraceContextBumper ctx{"SystemPerformance::Instrument...Memory...MemoryCapturerRep_::Capture ()"};
             MeasurementSet            results;
             results.fMeasurements.Add (Measurement{kMemoryUsageMeasurement_, Instruments::Memory::Instrument::kObjectVariantMapper.FromObject (Capture_Raw (&results.fMeasuredAt))});
             return results;
         }
         nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
         {
-            auto before         = fCapturerWithContext_.GetCaptureContextTime ();
-            Info rawMeasurement = fCapturerWithContext_.capture ();
+            auto before         = _GetCaptureContextTime ();
+            Info rawMeasurement = capture ();
             if (outMeasuredAt != nullptr) {
                 using Traversal::Openness;
-                *outMeasuredAt = Range<DurationSecondsType> (before, fCapturerWithContext_.GetCaptureContextTime ().value_or (Time::GetTickCount ()), Openness::eClosed, Openness::eClosed);
+                *outMeasuredAt = Range<DurationSecondsType> (before, _GetCaptureContextTime ().value_or (Time::GetTickCount ()), Openness::eClosed, Openness::eClosed);
             }
             return rawMeasurement;
         }
         virtual unique_ptr<ICapturer> Clone () const override
         {
-            return make_unique<MyCapturer_> (fCapturerWithContext_);
+            return make_unique<MemoryCapturerRep_> (_fOptions,  cContextPtr<_Context> (_fContext.cget ()));
         }
         virtual shared_ptr<Instrument::ICaptureContext> GetContext () const override
         {
-            EnsureNotNull (fCapturerWithContext_._fContext.load ());
-            return fCapturerWithContext_._fContext.load ();
+            EnsureNotNull (_fContext.load ());
+            return _fContext.load ();
         }
         virtual void SetContext (const shared_ptr<Instrument::ICaptureContext>& context) override
         {
-            fCapturerWithContext_._fContext.store ((context == nullptr) ? make_shared<CapturerWithContext_::_Context> () : dynamic_pointer_cast<CapturerWithContext_::_Context> (context));
+            _fContext.store ((context == nullptr) ? make_shared<CapturerWithContext_::_Context> () : dynamic_pointer_cast<CapturerWithContext_::_Context> (context));
         }
     };
 }
@@ -500,7 +496,7 @@ const ObjectVariantMapper Instruments::Memory::Instrument::kObjectVariantMapper 
 Instruments::Memory::Instrument::Instrument (const Options& options)
     : SystemPerformance::Instrument{
           InstrumentNameType{L"Memory"sv},
-          make_unique<MyCapturer_> (CapturerWithContext_{options}),
+          make_unique<MemoryCapturerRep_> (options),
           {kMemoryUsageMeasurement_},
           {KeyValuePair<type_index, MeasurementType>{typeid (Info), kMemoryUsageMeasurement_}},
           kObjectVariantMapper}
@@ -516,7 +512,7 @@ template <>
 Instruments::Memory::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
 {
     Debug::TraceContextBumper ctx{"SystemPerformance::Instrument::CaptureOneMeasurement<Memory::Info>"};
-    MyCapturer_*              myCap = dynamic_cast<MyCapturer_*> (fCaptureRep_.get ());
+    MemoryCapturerRep_*       myCap = dynamic_cast<MemoryCapturerRep_*> (fCaptureRep_.get ());
     AssertNotNull (myCap);
     return myCap->Capture_Raw (measurementTimeOut);
 }

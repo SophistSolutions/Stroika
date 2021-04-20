@@ -19,7 +19,7 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
      */
     template <typename OPTIONS>
     inline CapturerWithContext_COMMON<OPTIONS>::CapturerWithContext_COMMON (const OPTIONS& options, const shared_ptr<_Context>& context)
-        : fOptions_{options}
+        : _fOptions{options}
         , _fContext{context}
     {
     }
@@ -36,14 +36,14 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
         return dynamic_pointer_cast<T_SUBCLASS> (r.rwref ());
     }
     template <typename OPTIONS>
-    inline optional<DurationSecondsType> CapturerWithContext_COMMON<OPTIONS>::GetCaptureContextTime () const
+    inline optional<DurationSecondsType> CapturerWithContext_COMMON<OPTIONS>::_GetCaptureContextTime () const
     {
         return _fContext.cget ().cref ()->fCaptureContextAt;
     }
     template <typename OPTIONS>
     bool CapturerWithContext_COMMON<OPTIONS>::_NoteCompletedCapture (DurationSecondsType at)
     {
-        if (not _fContext.rwget ().rwref ()->fCaptureContextAt.has_value () or (at - *_fContext.rwget ().rwref ()->fCaptureContextAt) >= fOptions_.fMinimumAveragingInterval) {
+        if (not _fContext.rwget ().rwref ()->fCaptureContextAt.has_value () or (at - *_fContext.rwget ().rwref ()->fCaptureContextAt) >= _fOptions.fMinimumAveragingInterval) {
             _fContext.rwget ().rwref ()->fCaptureContextAt = at;
             return true;
         }

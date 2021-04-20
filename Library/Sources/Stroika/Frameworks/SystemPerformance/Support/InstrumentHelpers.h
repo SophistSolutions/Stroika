@@ -31,25 +31,37 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
      */
     template <typename OPTIONS>
     struct CapturerWithContext_COMMON : Foundation::Debug::AssertExternallySynchronizedLock {
-        const OPTIONS fOptions_;
+    protected:
+        const OPTIONS _fOptions;
+
+    protected:
         struct _Context : Instrument::ICaptureContext {
             optional<DurationSecondsType> fCaptureContextAt{};
         };
+
+    protected:
         Foundation::Execution::Synchronized<shared_ptr<_Context>> _fContext;
 
+    protected:
         CapturerWithContext_COMMON (const OPTIONS& options, const shared_ptr<_Context>& context = make_shared<_Context> ());
 
+    protected:
         /**
          *  use with scoped_lock<> if you want to hold the shared_ptr for a while.
          *  Otherwise, for one-liners, scoped_lock not needed (as the lock defined in an expression will exist til then end of the line).
          */
         template <typename T_SUBCLASS>
         static const shared_ptr<T_SUBCLASS> cContextPtr (typename Foundation::Execution::Synchronized<shared_ptr<_Context>>::ReadableReference&& r);
+
+    protected:
         template <typename T_SUBCLASS>
         static shared_ptr<T_SUBCLASS> rwContextPtr (typename Foundation::Execution::Synchronized<shared_ptr<_Context>>::WritableReference&& r);
 
-        optional<DurationSecondsType> GetCaptureContextTime () const;
+    protected:
+        optional<DurationSecondsType> _GetCaptureContextTime () const;
 
+    protected:
+    public:
         // return true iff actually capture context
         bool _NoteCompletedCapture (DurationSecondsType at = Time::GetTickCount ());
     };

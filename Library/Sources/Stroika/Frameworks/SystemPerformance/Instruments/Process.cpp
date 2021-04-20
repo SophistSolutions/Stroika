@@ -320,12 +320,11 @@ namespace {
             Mapping<pid_t, PerfStats_> fMap;
         };
 
-        CapturerWithContext_Linux_ (const Options& options)
-            : CapturerWithContext_COMMON_{options, make_shared<_Context> ()}
+        CapturerWithContext_Linux_ (const Options& options, const shared_ptr<_Context>& context)
+            : CapturerWithContext_COMMON_{options, context}
         {
             fStaticSuppressedAgain.clear (); // cuz we never returned these
         }
-        CapturerWithContext_Linux_ (const CapturerWithContext_Linux_& src) = default;
 
         ProcessMapType capture ()
         {
@@ -336,10 +335,10 @@ namespace {
         ProcessMapType capture_ ()
         {
             ProcessMapType result{};
-            if (fOptions_.fAllowUse_ProcFS) {
+            if (_fOptions.fAllowUse_ProcFS) {
                 result = ExtractFromProcFS_ ();
             }
-            else if (fOptions_.fAllowUse_PS) {
+            else if (_fOptions.fAllowUse_PS) {
                 result = capture_using_ps_ ();
             }
             return result;
@@ -412,18 +411,18 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace ("reading for pid = %d", pid);
 #endif
-                    if (fOptions_.fRestrictToPIDs) {
-                        if (not fOptions_.fRestrictToPIDs->Contains (pid)) {
+                    if (_fOptions.fRestrictToPIDs) {
+                        if (not _fOptions.fRestrictToPIDs->Contains (pid)) {
                             continue;
                         }
                     }
-                    if (fOptions_.fOmitPIDs) {
-                        if (fOptions_.fOmitPIDs->Contains (pid)) {
+                    if (_fOptions.fOmitPIDs) {
+                        if (_fOptions.fOmitPIDs->Contains (pid)) {
                             continue;
                         }
                     }
 
-                    bool grabStaticData = fOptions_.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not fStaticSuppressedAgain.Contains (pid);
+                    bool grabStaticData = _fOptions.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not fStaticSuppressedAgain.Contains (pid);
 
                     ProcessType processDetails;
 
@@ -433,7 +432,7 @@ namespace {
                             processDetails.fEXEPath = IO::FileSystem::ToPath (IO::FileSystem::FromPath (*processDetails.fEXEPath).SubString (0, -10));
                         }
 
-                        if (fOptions_.fProcessNameReadPolicy == Options::eAlways or (fOptions_.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and not processDetails.fEXEPath.has_value ())) {
+                        if (_fOptions.fProcessNameReadPolicy == Options::eAlways or (_fOptions.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and not processDetails.fEXEPath.has_value ())) {
                             processDetails.fProcessName = OptionallyReadIfFileExists_<String> (dir / "comm", [] (const Streams::InputStream<byte>::Ptr& in) { return TextReader::New (in).ReadAll ().Trim (); });
                         }
 
@@ -447,21 +446,21 @@ namespace {
                          */
                         processDetails.fKernelProcess = not processDetails.fEXEPath.has_value ();
                         // Note - many kernel processes have commandline, so don't filter here based on that
-                        if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, NullCoalesce (processDetails.fEXEPath))) {
+                        if (_fOptions.fCaptureCommandLine and _fOptions.fCaptureCommandLine (pid, NullCoalesce (processDetails.fEXEPath))) {
                             processDetails.fCommandLine = ReadCmdLineString_ (dir / kCmdLineFilename_);
                         }
                         // kernel process cannot chroot (as far as I know) --LGP 2015-05-21
-                        if (fOptions_.fCaptureRoot and processDetails.fKernelProcess == false) {
+                        if (_fOptions.fCaptureRoot and processDetails.fKernelProcess == false) {
                             processDetails.fRoot = OptionallyResolveShortcut_ (dir / kRootFilename_);
                         }
                         // kernel process cannot have environment variables (as far as I know) --LGP 2015-05-21
-                        if (fOptions_.fCaptureEnvironmentVariables and processDetails.fKernelProcess == false) {
+                        if (_fOptions.fCaptureEnvironmentVariables and processDetails.fKernelProcess == false) {
                             processDetails.fEnvironmentVariables = OptionallyReadFileStringsMap_ (dir / kEnvironFilename_);
                         }
                     }
 
                     // kernel process cannot have current directory (as far as I know) --LGP 2015-05-21
-                    if (fOptions_.fCaptureCurrentWorkingDirectory and processDetails.fKernelProcess == false) {
+                    if (_fOptions.fCaptureCurrentWorkingDirectory and processDetails.fKernelProcess == false) {
                         processDetails.fCurrentWorkingDirectory = OptionallyResolveShortcut_ (dir / kCWDFilename_);
                     }
 
@@ -525,7 +524,7 @@ namespace {
                     catch (...) {
                     }
 
-                    if (fOptions_.fCaptureTCPStatistics) {
+                    if (_fOptions.fCaptureTCPStatistics) {
                         IgnoreExceptionsForCall (processDetails.fTCPStats = ReadTCPStats_ (dir / kNetTCPFilename_));
                     }
 
@@ -573,7 +572,7 @@ namespace {
             if (_NoteCompletedCapture ()) {
                 rwContextPtr<_Context> (_fContext.rwget ())->fMap = newContextStats;
             }
-            if (fOptions_.fCachePolicy == CachePolicy::eOmitUnchangedValues) {
+            if (_fOptions.fCachePolicy == CachePolicy::eOmitUnchangedValues) {
                 fStaticSuppressedAgain = Set<pid_t>{results.Keys ()};
             }
             return results;
@@ -1164,7 +1163,7 @@ namespace {
                         processDetails.fEXEPath = IO::FileSystem::ToPath (t[0]);
                     }
                 }
-                if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, NullCoalesce (processDetails.fEXEPath))) {
+                if (_fOptions.fCaptureCommandLine and _fOptions.fCaptureCommandLine (pid, NullCoalesce (processDetails.fEXEPath))) {
                     processDetails.fCommandLine = cmdLine;
                 }
                 result.Add (pid, processDetails);
@@ -1235,11 +1234,10 @@ namespace {
             Mapping<pid_t, PerfStats_> fMap;
         };
 
-        CapturerWithContext_Windows_ (const Options& options)
-            : CapturerWithContext_COMMON_{options, make_shared<_Context> ()}
+        CapturerWithContext_Windows_ (const Options& options, const shared_ptr<_Context>& context)
+            : CapturerWithContext_COMMON_{options, context}
         {
         }
-        CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from) = default;
 
         ProcessMapType capture ()
         {
@@ -1361,18 +1359,18 @@ namespace {
 #endif
 
             for (pid_t pid : allPids) {
-                if (fOptions_.fRestrictToPIDs) {
-                    if (not fOptions_.fRestrictToPIDs->Contains (pid)) {
+                if (_fOptions.fRestrictToPIDs) {
+                    if (not _fOptions.fRestrictToPIDs->Contains (pid)) {
                         continue;
                     }
                 }
-                if (fOptions_.fOmitPIDs) {
-                    if (fOptions_.fOmitPIDs->Contains (pid)) {
+                if (_fOptions.fOmitPIDs) {
+                    if (_fOptions.fOmitPIDs->Contains (pid)) {
                         continue;
                     }
                 }
                 ProcessType processInfo;
-                bool        grabStaticData = fOptions_.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not fStaticSuppressedAgain.Contains (pid);
+                bool        grabStaticData = _fOptions.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not fStaticSuppressedAgain.Contains (pid);
                 {
                     HANDLE hProcess = ::OpenProcess (PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
                     if (hProcess != nullptr) {
@@ -1383,8 +1381,8 @@ namespace {
                             optional<pid_t>            parentProcessID;
                             optional<String>           cmdLine;
                             optional<String>           userName;
-                            LookupProcessPath_ (pid, hProcess, &processName, &processEXEPath, &parentProcessID, fOptions_.fCaptureCommandLine ? &cmdLine : nullptr, &userName);
-                            if (fOptions_.fProcessNameReadPolicy == Options::eAlways or (fOptions_.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and not processEXEPath.has_value ())) {
+                            LookupProcessPath_ (pid, hProcess, &processName, &processEXEPath, &parentProcessID, _fOptions.fCaptureCommandLine ? &cmdLine : nullptr, &userName);
+                            if (_fOptions.fProcessNameReadPolicy == Options::eAlways or (_fOptions.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and not processEXEPath.has_value ())) {
                                 Memory::CopyToIf (processName, &processInfo.fProcessName);
                             }
                             Memory::CopyToIf (processEXEPath, &processInfo.fEXEPath);
@@ -1492,7 +1490,7 @@ namespace {
                         /*
                          *  Considered something like:
                          *      if (not processInfo.fCombinedIOReadRate.has_value () and processInfo.fCombinedIOReadBytes.has_value ()) {
-                         *          processInfo.fCombinedIOReadRate =  *processInfo.fCombinedIOReadBytes / (now - GetCaptureContextTime ());
+                         *          processInfo.fCombinedIOReadRate =  *processInfo.fCombinedIOReadBytes / (now - _GetCaptureContextTime ());
                          *      }
                          *
                          *  But cannot do, because we do capture_() once at CTOR, so if we get here and havent seen this process before
@@ -1510,7 +1508,7 @@ namespace {
             if (_NoteCompletedCapture (now)) {
                 rwContextPtr<_Context> (_fContext.rwget ())->fMap = newContextStats;
             }
-            if (fOptions_.fCachePolicy == CachePolicy::eOmitUnchangedValues) {
+            if (_fOptions.fCachePolicy == CachePolicy::eOmitUnchangedValues) {
                 fStaticSuppressedAgain = Set<pid_t>{results.Keys ()};
             }
             return results;
@@ -1557,7 +1555,7 @@ namespace {
                 }
             }
             if (cmdLine != nullptr) {
-                if (fOptions_.fCaptureCommandLine == nullptr or not fOptions_.fCaptureCommandLine (pid, NullCoalesce (*processEXEPath))) {
+                if (_fOptions.fCaptureCommandLine == nullptr or not _fOptions.fCaptureCommandLine (pid, NullCoalesce (*processEXEPath))) {
                     cmdLine = nullptr;
                 }
             }
@@ -1655,9 +1653,8 @@ namespace {
 #else
         using inherited = CapturerWithContext_COMMON_;
 #endif
-        CapturerWithContext_ (const CapturerWithContext_& src) = default;
-        CapturerWithContext_ (const Options& options)
-            : inherited{options}
+        CapturerWithContext_ (const Options& options, const shared_ptr<_Context>& context)
+            : inherited{options, context}
         {
         }
 
@@ -1677,12 +1674,10 @@ namespace {
 }
 
 namespace {
-    class MyCapturer_ : public Instrument::ICapturer {
-        CapturerWithContext_ fCapturerWithContext_;
-
+    class MyCapturer_ : public Instrument::ICapturer, CapturerWithContext_ {
     public:
-        MyCapturer_ (const CapturerWithContext_& ctx)
-            : fCapturerWithContext_{ctx}
+        MyCapturer_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
+            : CapturerWithContext_{options, context}
         {
         }
         virtual MeasurementSet Capture () override
@@ -1695,27 +1690,26 @@ namespace {
         }
         nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
         {
-            auto before         = fCapturerWithContext_.GetCaptureContextTime ();
-            Info rawMeasurement = fCapturerWithContext_.capture ();
+            auto before         = _GetCaptureContextTime ();
+            Info rawMeasurement = capture ();
             if (outMeasuredAt != nullptr) {
                 using Traversal::Openness;
-                *outMeasuredAt = Range<DurationSecondsType> (before, fCapturerWithContext_.GetCaptureContextTime ().value_or (Time::GetTickCount ()), Openness::eClosed, Openness::eClosed);
+                *outMeasuredAt = Range<DurationSecondsType> (before, _GetCaptureContextTime ().value_or (Time::GetTickCount ()), Openness::eClosed, Openness::eClosed);
             }
             return rawMeasurement;
         }
         virtual unique_ptr<ICapturer> Clone () const override
         {
-            return make_unique<MyCapturer_> (fCapturerWithContext_);
+            return make_unique<MyCapturer_> (_fOptions, cContextPtr<_Context> (_fContext.cget ()));
         }
         virtual shared_ptr<Instrument::ICaptureContext> GetContext () const override
         {
-            EnsureNotNull (fCapturerWithContext_._fContext.cget ().cref ());
-            return fCapturerWithContext_._fContext.cget ().cref ();
+            EnsureNotNull (_fContext.load ());
+            return _fContext.load ();
         }
         virtual void SetContext (const shared_ptr<Instrument::ICaptureContext>& context) override
         {
-            using _Context = CapturerWithContext_::_Context;
-            fCapturerWithContext_._fContext.store ((context == nullptr) ? make_shared<_Context> () : dynamic_pointer_cast<_Context> (context));
+            _fContext.store ((context == nullptr) ? make_shared<CapturerWithContext_::_Context> () : dynamic_pointer_cast<CapturerWithContext_::_Context> (context));
         }
     };
 }
@@ -1778,7 +1772,7 @@ const ObjectVariantMapper Instruments::Process::Instrument::kObjectVariantMapper
 Instruments::Process::Instrument::Instrument (const Options& options)
     : SystemPerformance::Instrument{
           InstrumentNameType{L"Process"sv},
-          make_unique<MyCapturer_> (CapturerWithContext_{options}),
+          make_unique<MyCapturer_> (options),
           {kProcessMapMeasurement},
           {KeyValuePair<type_index, MeasurementType>{typeid (Info), kProcessMapMeasurement}},
           kObjectVariantMapper}
