@@ -141,33 +141,34 @@ String Instruments::Network::InterfaceInfo::ToString () const
 }
 
 namespace {
-    using CapturerWithContext_COMMON_ = SystemPerformance::Support::CapturerWithContext_COMMON<Options>;
+    template <typename CONTEXT>
+    using InstrumentRepBase_ = SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT>;
 }
 
 #if qPlatform_POSIX
 namespace {
-    struct CapturerWithContext_POSIX_ : CapturerWithContext_COMMON_ {
+    struct Last {
+        uint64_t            fTotalBytesReceived;
+        uint64_t            fTotalBytesSent;
+        uint64_t            fTotalPacketsReceived;
+        uint64_t            fTotalPacketsSent;
+        DurationSecondsType fAt;
+    };
+    struct LastSum {
+        uint64_t            fTotalTCPSegments;
+        uint64_t            fTotalTCPRetransmittedSegments;
+        DurationSecondsType fAt;
+    };
 
-        struct Last {
-            uint64_t            fTotalBytesReceived;
-            uint64_t            fTotalBytesSent;
-            uint64_t            fTotalPacketsReceived;
-            uint64_t            fTotalPacketsSent;
-            DurationSecondsType fAt;
-        };
-        struct LastSum {
-            uint64_t            fTotalTCPSegments;
-            uint64_t            fTotalTCPRetransmittedSegments;
-            DurationSecondsType fAt;
-        };
+    struct _Context : SystemPerformance::Support::Context {
+        Mapping<String, Last> fLast;
+        optional<LastSum>     fLastSum;
+    };
 
-        struct _Context : CapturerWithContext_COMMON_::_Context {
-            Mapping<String, Last> fLast;
-            optional<LastSum>     fLastSum;
-        };
+    struct InstrumentRep_POSIX_ : InstrumentRepBase_<_Context> {
 
-        CapturerWithContext_POSIX_ (const Options& options, const shared_ptr<_Context>& context)
-            : CapturerWithContext_COMMON_{options, context}
+        InstrumentRep_POSIX_ (const Options& options, const shared_ptr<_Context>& context)
+            : InstrumentRepBase_<_Context>{options, context}
         {
         }
 
@@ -190,7 +191,7 @@ namespace {
 
             DurationSecondsType  now         = Time::GetTickCount ();
             auto                 contextLock = scoped_lock{_fContext};
-            shared_ptr<_Context> context     = rwContextPtr<_Context> (_fContext.rwget ());
+            shared_ptr<_Context> context     = _fContext.rwget ().rwref ();
             if (context->fLastSum and accumSummary.fTotalTCPSegments) {
                 Time::DurationSecondsType timespan{now - context->fLastSum->fAt};
                 accumSummary.fTCPSegmentsPerSecond = (NullCoalesce (accumSummary.fTotalTCPSegments) - context->fLastSum->fTotalTCPSegments) / timespan;
@@ -245,7 +246,7 @@ namespace {
                     ii.fIOStatistics.fTotalPacketsDropped  = Characters::String2Int<uint64_t> (line[4]) + Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 4]);
 
                     DurationSecondsType now = Time::GetTickCount ();
-                    if (auto o = cContextPtr<_Context> (_fContext.cget ())->fLast.Lookup (ii.fInterface.fInternalInterfaceID)) {
+                    if (auto o = _fContext.cget ().cref ()->fLast.Lookup (ii.fInterface.fInternalInterfaceID)) {
                         double scanTime = now - o->fAt;
                         if (scanTime > 0) {
                             ii.fIOStatistics.fBytesPerSecondReceived   = (*ii.fIOStatistics.fTotalBytesReceived - o->fTotalBytesReceived) / scanTime;
@@ -256,7 +257,7 @@ namespace {
                     }
                     (*accumSummary) += ii.fIOStatistics;
                     interfaceResults->Add (ii);
-                    rwContextPtr<_Context> (_fContext.rwget ())->fLast.Add (ii.fInterface.fInternalInterfaceID, Last{*ii.fIOStatistics.fTotalBytesReceived, *ii.fIOStatistics.fTotalBytesSent, *ii.fIOStatistics.fTotalPacketsReceived, *ii.fIOStatistics.fTotalPacketsSent, now});
+                    _fContext.rwget ().rwref ()->fLast.Add (ii.fInterface.fInternalInterfaceID, Last{*ii.fIOStatistics.fTotalBytesReceived, *ii.fIOStatistics.fTotalBytesSent, *ii.fIOStatistics.fTotalPacketsReceived, *ii.fIOStatistics.fTotalPacketsSent, now});
                 }
                 else {
                     DbgTrace (L"Line %d bad in file %s", nLine, kProcFileName_.c_str ());
@@ -348,19 +349,19 @@ namespace {
 
 #if qPlatform_Windows
 namespace {
-    struct CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
-
-        struct _Context : CapturerWithContext_COMMON_::_Context {
+    struct _Context : SystemPerformance::Support::Context {
 #if qUseWMICollectionSupport_
-            WMICollector fNetworkWMICollector_{L"Network Interface"sv, {}, {kBytesReceivedPerSecond_, kBytesSentPerSecond_, kPacketsReceivedPerSecond_, kPacketsSentPerSecond_}};
-            WMICollector fTCPv4WMICollector_{L"TCPv4"sv, {}, {kTCPSegmentsPerSecond_, kSegmentsRetransmittedPerSecond_}};
-            WMICollector fTCPv6WMICollector_{L"TCPv6"sv, {}, {kTCPSegmentsPerSecond_, kSegmentsRetransmittedPerSecond_}};
-            Set<String>  fAvailableInstances_{fNetworkWMICollector_.GetAvailableInstaces ()};
+        WMICollector fNetworkWMICollector_{L"Network Interface"sv, {}, {kBytesReceivedPerSecond_, kBytesSentPerSecond_, kPacketsReceivedPerSecond_, kPacketsSentPerSecond_}};
+        WMICollector fTCPv4WMICollector_{L"TCPv4"sv, {}, {kTCPSegmentsPerSecond_, kSegmentsRetransmittedPerSecond_}};
+        WMICollector fTCPv6WMICollector_{L"TCPv6"sv, {}, {kTCPSegmentsPerSecond_, kSegmentsRetransmittedPerSecond_}};
+        Set<String>  fAvailableInstances_{fNetworkWMICollector_.GetAvailableInstaces ()};
 #endif
-        };
+    };
 
-        CapturerWithContext_Windows_ (const Options& options, const shared_ptr<_Context>& context)
-            : CapturerWithContext_COMMON_{options, context}
+    struct InstrumentRep_Windows_ : InstrumentRepBase_<_Context> {
+
+        InstrumentRep_Windows_ (const Options& options, const shared_ptr<_Context>& context)
+            : InstrumentRepBase_<_Context>{options, context}
         {
 #if qUseWMICollectionSupport_
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -390,9 +391,9 @@ namespace {
             SystemInterfacesMgr       systemInterfacesMgr;
             Iterable<Interface>       networkInterfacs{systemInterfacesMgr.GetAll ()};
 #if qUseWMICollectionSupport_
-            rwContextPtr<_Context> (_fContext.rwget ())->fNetworkWMICollector_.Collect ();
-            rwContextPtr<_Context> (_fContext.rwget ())->fTCPv4WMICollector_.Collect ();
-            rwContextPtr<_Context> (_fContext.rwget ())->fTCPv6WMICollector_.Collect ();
+            _fContext.rwget ().rwref ()->fNetworkWMICollector_.Collect ();
+            _fContext.rwget ().rwref ()->fTCPv4WMICollector_.Collect ();
+            _fContext.rwget ().rwref ()->fTCPv6WMICollector_.Collect ();
 #endif
             {
                 for (IO::Network::Interface networkInterface : networkInterfacs) {
@@ -447,17 +448,17 @@ namespace {
              *          And it might miss if new interfaces are added dynamically.
              *          --LGP 2015-04-16
              */
-            if (cContextPtr<_Context> (_fContext.cget ())->fAvailableInstances_.Contains (wmiInstanceName)) {
+            if (_fContext.cget ().cref ()->fAvailableInstances_.Contains (wmiInstanceName)) {
                 auto lock    = scoped_lock{_fContext};
-                auto context = rwContextPtr<_Context> (_fContext.rwget ());
+                auto context = _fContext.cget ().cref ();
                 context->fNetworkWMICollector_.AddInstancesIf (wmiInstanceName);
                 context->fTCPv4WMICollector_.AddInstancesIf (wmiInstanceName);
                 context->fTCPv6WMICollector_.AddInstancesIf (wmiInstanceName);
             }
 
-            if (cContextPtr<_Context> (_fContext.cget ())->fAvailableInstances_.Contains (wmiInstanceName)) {
+            if (_fContext.cget ().cref ()->fAvailableInstances_.Contains (wmiInstanceName)) {
                 auto lock    = scoped_lock{_fContext};
-                auto context = rwContextPtr<_Context> (_fContext.rwget ());
+                auto context = _fContext.rwget ().rwref ();
                 Memory::CopyToIf (context->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesReceivedPerSecond_), &updateResult->fIOStatistics.fBytesPerSecondReceived);
                 Memory::CopyToIf (context->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesSentPerSecond_), &updateResult->fIOStatistics.fBytesPerSecondSent);
                 Memory::CopyToIf (context->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsReceivedPerSecond_), &updateResult->fIOStatistics.fPacketsPerSecondReceived);
@@ -476,47 +477,33 @@ namespace {
 #endif
 
 namespace {
-    struct CapturerWithContext_
-#if qPlatform_POSIX
-        : CapturerWithContext_POSIX_
-#elif qPlatform_Windows
-        : CapturerWithContext_Windows_
-#endif
-    {
-#if qPlatform_POSIX
-        using inherited = CapturerWithContext_POSIX_;
-#elif qPlatform_Windows
-        using inherited = CapturerWithContext_Windows_;
-#endif
-        CapturerWithContext_ (const Options& options, const shared_ptr<_Context>& context)
-            : inherited{options, context}
-        {
-        }
-        Instruments::Network::Info capture ()
-        {
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{"Instruments::Network::capture_"};
-#endif
-            return inherited::capture ();
-        }
-    };
-}
-
-namespace {
     const MeasurementType kNetworkInterfacesMeasurement_ = MeasurementType{L"Network-Interfaces"sv};
 }
 
 namespace {
-    class MyCapturer_ : public Instrument::ICapturer, CapturerWithContext_ {
-    public:
-        MyCapturer_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
-            : CapturerWithContext_{options, context}
+    struct NetworkInstrumentRep_
+#if qPlatform_POSIX
+        : InstrumentRep_POSIX_
+#elif qPlatform_Windows
+        : InstrumentRep_Windows_
+#else
+        : InstrumentRepBase_<SystemPerformance::Support::Context>
+#endif
+    {
+#if qPlatform_POSIX
+        using inherited = InstrumentRep_POSIX_;
+#elif qPlatform_Windows
+        using inherited = InstrumentRep_Windows_;
+#else
+        using inherited = InstrumentRepBase_<SystemPerformance::Support::Context>;
+#endif
+        NetworkInstrumentRep_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
+            : inherited{options, context}
         {
         }
         virtual MeasurementSet Capture () override
         {
-            Debug::TraceContextBumper ctx{"SystemPerformance::Instrument...Network...MyCapturer_::Capture ()"};
+            Debug::TraceContextBumper ctx{"SystemPerformance::Instrument...Network...NetworkInstrumentRep_::Capture ()"};
             MeasurementSet            results;
             Measurement               m{kNetworkInterfacesMeasurement_, Instruments::Network::Instrument::kObjectVariantMapper.FromObject (Capture_Raw (&results.fMeasuredAt))};
             results.fMeasurements.Add (m);
@@ -532,18 +519,17 @@ namespace {
             }
             return rawMeasurement;
         }
-        virtual unique_ptr<ICapturer> Clone () const override
+        virtual unique_ptr<IRep> Clone () const override
         {
-            return make_unique<MyCapturer_> (_fOptions, cContextPtr<_Context> (_fContext.cget ()));
+            return make_unique<NetworkInstrumentRep_> (_fOptions, _fContext.load ());
         }
-        virtual shared_ptr<Instrument::ICaptureContext> GetContext () const override
+        Instruments::Network::Info capture ()
         {
-            EnsureNotNull (_fContext.load ());
-            return _fContext.load ();
-        }
-        virtual void SetContext (const shared_ptr<Instrument::ICaptureContext>& context) override
-        {
-            _fContext.store ((context == nullptr) ? make_shared<CapturerWithContext_::_Context> () : dynamic_pointer_cast<CapturerWithContext_::_Context> (context));
+            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx{"Instruments::Network::capture_"};
+#endif
+            return inherited::capture ();
         }
     };
 }
@@ -608,7 +594,7 @@ const ObjectVariantMapper Instruments::Network::Instrument::kObjectVariantMapper
 Instruments::Network::Instrument::Instrument (const Options& options)
     : SystemPerformance::Instrument{
           InstrumentNameType{L"Network"sv},
-          make_unique<MyCapturer_> (options),
+          make_unique<NetworkInstrumentRep_> (options),
           {kNetworkInterfacesMeasurement_},
           {KeyValuePair<type_index, MeasurementType>{typeid (Info), kNetworkInterfacesMeasurement_}},
           kObjectVariantMapper}
@@ -624,7 +610,7 @@ template <>
 Instruments::Network::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
 {
     Debug::TraceContextBumper ctx{"SystemPerformance::Instrument::CaptureOneMeasurement<Network::Info>"};
-    MyCapturer_*              myCap = dynamic_cast<MyCapturer_*> (fCaptureRep_.get ());
+    NetworkInstrumentRep_*    myCap = dynamic_cast<NetworkInstrumentRep_*> (fCaptureRep_.get ());
     AssertNotNull (myCap);
     return myCap->Capture_Raw (measurementTimeOut);
 }

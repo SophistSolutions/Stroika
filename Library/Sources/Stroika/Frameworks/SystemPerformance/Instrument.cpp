@@ -13,7 +13,7 @@ using namespace Stroika::Frameworks::SystemPerformance;
  ******************** SystemPerformance::Instrument *****************************
  ********************************************************************************
  */
-Instrument::Instrument (InstrumentNameType instrumentName, unique_ptr<ICapturer>&& capturer, const Set<MeasurementType>& capturedMeasurements, const Mapping<type_index, MeasurementType>& typeToMeasurementTypeMap, const DataExchange::ObjectVariantMapper& objectVariantMapper)
+Instrument::Instrument (InstrumentNameType instrumentName, unique_ptr<IRep>&& capturer, const Set<MeasurementType>& capturedMeasurements, const Mapping<type_index, MeasurementType>& typeToMeasurementTypeMap, const DataExchange::ObjectVariantMapper& objectVariantMapper)
     : pContext{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
               const Instrument*                                   thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Instrument::pContext);

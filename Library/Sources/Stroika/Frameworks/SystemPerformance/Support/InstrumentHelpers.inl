@@ -14,35 +14,26 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
 
     /*
      ********************************************************************************
-     ***************** SystemPerformance::Support::InstrumentHelpers ****************
+     ***** SystemPerformance::Support::InstrumentHelpers::InstrumentRep_COMMON ******
      ********************************************************************************
      */
-    template <typename OPTIONS>
-    inline CapturerWithContext_COMMON<OPTIONS>::CapturerWithContext_COMMON (const OPTIONS& options, const shared_ptr<_Context>& context)
+    template <typename OPTIONS, typename CONTEXT>
+    inline InstrumentRep_COMMON<OPTIONS, CONTEXT>::InstrumentRep_COMMON (const OPTIONS& options, const shared_ptr<CONTEXT>& context)
         : _fOptions{options}
         , _fContext{context}
     {
+        RequireNotNull (_fContext.cget ().cref ());
     }
-    template <typename OPTIONS>
-    template <typename T_SUBCLASS>
-    inline const shared_ptr<T_SUBCLASS> CapturerWithContext_COMMON<OPTIONS>::cContextPtr (typename Foundation::Execution::Synchronized<shared_ptr<_Context>>::ReadableReference&& r)
+    template <typename OPTIONS, typename CONTEXT>
+    inline optional<DurationSecondsType> InstrumentRep_COMMON<OPTIONS, CONTEXT>::_GetCaptureContextTime () const
     {
-        return dynamic_pointer_cast<T_SUBCLASS> (r.cref ());
-    }
-    template <typename OPTIONS>
-    template <typename T_SUBCLASS>
-    inline  shared_ptr<T_SUBCLASS> CapturerWithContext_COMMON<OPTIONS>::rwContextPtr (typename Foundation::Execution::Synchronized<shared_ptr<_Context>>::WritableReference&& r)
-    {
-        return dynamic_pointer_cast<T_SUBCLASS> (r.rwref ());
-    }
-    template <typename OPTIONS>
-    inline optional<DurationSecondsType> CapturerWithContext_COMMON<OPTIONS>::_GetCaptureContextTime () const
-    {
+        AssertNotNull (_fContext.cget ().cref ());
         return _fContext.cget ().cref ()->fCaptureContextAt;
     }
-    template <typename OPTIONS>
-    bool CapturerWithContext_COMMON<OPTIONS>::_NoteCompletedCapture (DurationSecondsType at)
+    template <typename OPTIONS, typename CONTEXT>
+    bool InstrumentRep_COMMON<OPTIONS, CONTEXT>::_NoteCompletedCapture (DurationSecondsType at)
     {
+        AssertNotNull (_fContext.cget ().cref ());
         if (not _fContext.rwget ().rwref ()->fCaptureContextAt.has_value () or (at - *_fContext.rwget ().rwref ()->fCaptureContextAt) >= _fOptions.fMinimumAveragingInterval) {
             _fContext.rwget ().rwref ()->fCaptureContextAt = at;
             return true;

@@ -90,7 +90,8 @@ String Instruments::CPU::Info::ToString () const
 }
 
 namespace {
-    using CapturerWithContext_COMMON_ = SystemPerformance::Support::CapturerWithContext_COMMON<Options>;
+    template <typename CONTEXT>
+    using InstrumentRepBase_ = SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT>;
 }
 
 #if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
@@ -123,28 +124,26 @@ namespace {
 
 #if qPlatform_Linux
 namespace {
-    struct CapturerWithContext_Linux_ : CapturerWithContext_COMMON_ {
-        struct POSIXSysTimeCaptureContext_ {
-            double user;
-            double nice;
-            double system;
-            double idle;
-            double iowait;
-            double irq;
-            double softirq;
-            double steal;
-            double guest;
-            double guest_nice;
-        };
+    struct POSIXSysTimeCaptureContext_ {
+        double user;
+        double nice;
+        double system;
+        double idle;
+        double iowait;
+        double irq;
+        double softirq;
+        double steal;
+        double guest;
+        double guest_nice;
+    };
 
-        struct _Context : CapturerWithContext_COMMON_::_Context {
-            POSIXSysTimeCaptureContext_ fSysTimeInfo{};
-        };
+    struct _Context : SystemPerformance::Support::Context {
+        POSIXSysTimeCaptureContext_ fSysTimeInfo{};
+    };
 
-        CapturerWithContext_Linux_ (const Options& options, const shared_ptr<_Context>& context)
-            : CapturerWithContext_COMMON_{options, context}
-        {
-        }
+    struct InstrumentRep_Linux_ : InstrumentRepBase_<_Context> {
+
+        using InstrumentRepBase_<_Context>::InstrumentRepBase_;
 
         /*
          *  /proc/stat
@@ -242,10 +241,10 @@ namespace {
         };
         CPUUsageTimes_ cputime_ ()
         {
-            POSIXSysTimeCaptureContext_ baseline = cContextPtr<_Context> (_fContext.cget ())->fSysTimeInfo;
+            POSIXSysTimeCaptureContext_ baseline = _fContext.load ()->fSysTimeInfo;
             POSIXSysTimeCaptureContext_ newVal   = GetSysTimes_ ();
             if (_NoteCompletedCapture ()) {
-                rwContextPtr<_Context> (_fContext.rwget ())->fSysTimeInfo = newVal;
+                _fContext.rwget ().rwref ()->fSysTimeInfo = newVal;
             }
 
             // from http://stackoverflow.com/questions/23367857/accurate-calculation-of-cpu-usage-given-in-percentage-in-linux
@@ -311,23 +310,21 @@ namespace {
 
 #if qPlatform_Windows
 namespace {
-    struct CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
-        struct WinSysTimeCaptureContext_ {
-            double IdleTime;
-            double KernelTime;
-            double UserTime;
-        };
-        struct _Context : CapturerWithContext_COMMON_::_Context {
-            WinSysTimeCaptureContext_ fSysTimeInfo{};
+    struct WinSysTimeCaptureContext_ {
+        double IdleTime;
+        double KernelTime;
+        double UserTime;
+    };
+    struct _Context : SystemPerformance::Support::Context {
+        WinSysTimeCaptureContext_ fSysTimeInfo{};
 #if qUseWMICollectionSupport_
-            WMICollector fSystemWMICollector_{L"System"sv, {kInstanceName_}, {kProcessorQueueLength_}};
+        WMICollector fSystemWMICollector_{L"System"sv, {kInstanceName_}, {kProcessorQueueLength_}};
 #endif
-        };
+    };
 
-        CapturerWithContext_Windows_ (const Options& options, const shared_ptr<_Context>& context)
-            : CapturerWithContext_COMMON_{options, context}
-        {
-        }
+    struct InstrumentRep_Windows_ : InstrumentRepBase_<_Context> {
+
+        using InstrumentRepBase_<_Context>::InstrumentRepBase_;
 
         static inline double GetAsSeconds_ (FILETIME ft)
         {
@@ -352,9 +349,9 @@ namespace {
              *      http://en.literateprograms.org/CPU_usage_%28C,_Windows_XP%29
              *      http://www.codeproject.com/Articles/9113/Get-CPU-Usage-with-GetSystemTimes
              */
-            WinSysTimeCaptureContext_ baseline                        = cContextPtr<_Context> (_fContext.cget ())->fSysTimeInfo;
-            WinSysTimeCaptureContext_ newVal                          = GetSysTimes_ ();
-            rwContextPtr<_Context> (_fContext.rwget ())->fSysTimeInfo = newVal;
+            WinSysTimeCaptureContext_ baseline        = _fContext.load ()->fSysTimeInfo;
+            WinSysTimeCaptureContext_ newVal          = GetSysTimes_ ();
+            _fContext.rwget ().rwref ()->fSysTimeInfo = newVal;
 
             double idleTimeOverInterval   = newVal.IdleTime - baseline.IdleTime;
             double kernelTimeOverInterval = newVal.KernelTime - baseline.KernelTime;
@@ -372,8 +369,8 @@ namespace {
             result.fTotalProcessCPUUsage = result.fTotalCPUUsage; // @todo fix - remove irq time etc from above? Or add into above if missing
 #if qUseWMICollectionSupport_
             if (_NoteCompletedCapture ()) {
-                rwContextPtr<_Context> (_fContext.rwget ())->fSystemWMICollector_.Collect ();
-                Memory::CopyToIf (rwContextPtr<_Context> (_fContext.rwget ())->fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_), &result.fRunQLength);
+                _fContext.rwget ().rwref ()->fSystemWMICollector_.Collect ();
+                Memory::CopyToIf (_fContext.rwget ().rwref ()->fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_), &result.fRunQLength);
                 if (result.fRunQLength) {
                     Memory::AccumulateIf (&result.fRunQLength, result.fTotalProcessCPUUsage); // both normalized so '1' means all logical cores
                 }
@@ -391,25 +388,50 @@ namespace {
 #endif
 
 namespace {
-    struct CapturerWithContext_
+    const MeasurementType kCPUMeasurment_ = MeasurementType{L"CPU-Usage"sv};
+}
+
+namespace {
+    struct CPUInstrumentRep_
 #if qPlatform_Linux
-        : CapturerWithContext_Linux_
+        : InstrumentRep_Linux_
 #elif qPlatform_Windows
-        : CapturerWithContext_Windows_
+        : InstrumentRep_Windows_
 #else
-        : CapturerWithContext_COMMON_
+        : InstrumentRepBase_<SystemPerformance::Support::Context>
 #endif
     {
 #if qPlatform_Linux
-        using inherited = CapturerWithContext_Linux_;
+        using inherited = InstrumentRep_Linux_;
 #elif qPlatform_Windows
-        using inherited = CapturerWithContext_Windows_;
+        using inherited = InstrumentRep_Windows_;
 #else
-        using inherited = CapturerWithContext_COMMON_;
+        using inherited = InstrumentRepBase_<SystemPerformance::Support::Context>;
 #endif
-        CapturerWithContext_ (const Options& options, const shared_ptr<_Context>& context)
+        CPUInstrumentRep_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
             : inherited{options, context}
         {
+        }
+        virtual MeasurementSet Capture () override
+        {
+            Debug::TraceContextBumper ctx{"SystemPerformance::Instrument...CPU...CPUInstrumentRep_::Capture ()"};
+            MeasurementSet            results;
+            results.fMeasurements.Add (Measurement{kCPUMeasurment_, Instruments::CPU::Instrument::kObjectVariantMapper.FromObject (Capture_Raw (&results.fMeasuredAt))});
+            return results;
+        }
+        nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
+        {
+            auto before         = _GetCaptureContextTime ();
+            Info rawMeasurement = capture ();
+            if (outMeasuredAt != nullptr) {
+                using Traversal::Openness;
+                *outMeasuredAt = Range<DurationSecondsType> (before, _GetCaptureContextTime ().value_or (Time::GetTickCount ()), Openness::eClosed, Openness::eClosed);
+            }
+            return rawMeasurement;
+        }
+        virtual unique_ptr<IRep> Clone () const override
+        {
+            return make_unique<CPUInstrumentRep_> (_fOptions, _fContext.load ());
         }
         Info capture ()
         {
@@ -426,50 +448,6 @@ namespace {
             result.fTotalCPUUsage        = Math::PinInRange<double> (result.fTotalCPUUsage, 0, 1);
             result.fTotalProcessCPUUsage = Math::PinInRange<double> (result.fTotalProcessCPUUsage, 0, result.fTotalCPUUsage); // all process usage is CPU usage (often same but <=)
             return result;
-        }
-    };
-}
-
-namespace {
-    const MeasurementType kCPUMeasurment_ = MeasurementType{L"CPU-Usage"sv};
-}
-
-namespace {
-    class MyCapturer_ : public Instrument::ICapturer, CapturerWithContext_ {
-    public:
-        MyCapturer_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
-            : CapturerWithContext_{options, context}
-        {
-        }
-        virtual MeasurementSet Capture () override
-        {
-            Debug::TraceContextBumper ctx{"SystemPerformance::Instrument...CPU...MyCapturer_::Capture ()"};
-            MeasurementSet            results;
-            results.fMeasurements.Add (Measurement{kCPUMeasurment_, Instruments::CPU::Instrument::kObjectVariantMapper.FromObject (Capture_Raw (&results.fMeasuredAt))});
-            return results;
-        }
-        nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
-        {
-            auto before         = _GetCaptureContextTime ();
-            Info rawMeasurement = capture ();
-            if (outMeasuredAt != nullptr) {
-                using Traversal::Openness;
-                *outMeasuredAt = Range<DurationSecondsType> (before, _GetCaptureContextTime ().value_or (Time::GetTickCount ()), Openness::eClosed, Openness::eClosed);
-            }
-            return rawMeasurement;
-        }
-        virtual unique_ptr<ICapturer> Clone () const override
-        {
-            return make_unique<MyCapturer_> (_fOptions, cContextPtr<_Context> (_fContext.cget ()));
-        }
-        virtual shared_ptr<Instrument::ICaptureContext> GetContext () const override
-        {
-            EnsureNotNull (_fContext.load ());
-            return _fContext.load ();
-        }
-        virtual void SetContext (const shared_ptr<Instrument::ICaptureContext>& context) override
-        {
-            _fContext.store ((context == nullptr) ? make_shared<CapturerWithContext_::_Context> () : dynamic_pointer_cast<CapturerWithContext_::_Context> (context));
         }
     };
 }
@@ -506,7 +484,7 @@ const ObjectVariantMapper Instruments::CPU::Instrument::kObjectVariantMapper = [
 Instruments::CPU::Instrument::Instrument (const Options& options)
     : SystemPerformance::Instrument{
           InstrumentNameType{L"CPU"sv},
-          make_unique<MyCapturer_> (options),
+          make_unique<CPUInstrumentRep_> (options),
           {kCPUMeasurment_},
           {KeyValuePair<type_index, MeasurementType>{typeid (Info), kCPUMeasurment_}},
           kObjectVariantMapper}
@@ -522,7 +500,7 @@ template <>
 Instruments::CPU::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
 {
     Debug::TraceContextBumper ctx{"SystemPerformance::Instrument::CaptureOneMeasurement<CPU::Info>"};
-    MyCapturer_*              myCap = dynamic_cast<MyCapturer_*> (fCaptureRep_.get ());
+    CPUInstrumentRep_*        myCap = dynamic_cast<CPUInstrumentRep_*> (fCaptureRep_.get ());
     AssertNotNull (myCap);
     return myCap->Capture_Raw (measurementTimeOut);
 }

@@ -88,11 +88,11 @@ namespace Stroika::Frameworks::SystemPerformance {
         /**
          *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
          */
-        class ICapturer {
+        class IRep {
         public:
-            virtual ~ICapturer ()                                                                       = default;
+            virtual ~IRep ()                                                                            = default;
             virtual MeasurementSet              Capture ()                                              = 0;
-            virtual unique_ptr<ICapturer>       Clone () const                                          = 0;
+            virtual unique_ptr<IRep>            Clone () const                                          = 0;
             virtual shared_ptr<ICaptureContext> GetContext () const                                     = 0;
             virtual void                        SetContext (const shared_ptr<ICaptureContext>& context) = 0;
         };
@@ -102,7 +102,7 @@ namespace Stroika::Frameworks::SystemPerformance {
          */
         Instrument () = delete;
         Instrument (const Instrument& src);
-        Instrument (InstrumentNameType instrumentName, unique_ptr<ICapturer>&& capturer, const Set<MeasurementType>& capturedMeasurements, const Mapping<type_index, MeasurementType>& typeToMeasurementTypeMap, const DataExchange::ObjectVariantMapper& objectVariantMapper);
+        Instrument (InstrumentNameType instrumentName, unique_ptr<IRep>&& capturer, const Set<MeasurementType>& capturedMeasurements, const Mapping<type_index, MeasurementType>& typeToMeasurementTypeMap, const DataExchange::ObjectVariantMapper& objectVariantMapper);
 
     public:
         nonvirtual Instrument& operator= (const Instrument& rhs);
@@ -201,7 +201,7 @@ namespace Stroika::Frameworks::SystemPerformance {
         Mapping<type_index, MeasurementType> fType2MeasurementTypes_;
         Set<MeasurementType>                 fCapturedMeasurementTypes_;
         DataExchange::ObjectVariantMapper    fObjectVariantMapper_;
-        unique_ptr<ICapturer>                fCaptureRep_;
+        unique_ptr<IRep>                     fCaptureRep_;
     };
 
 }

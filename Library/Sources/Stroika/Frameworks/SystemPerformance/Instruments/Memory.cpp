@@ -116,22 +116,23 @@ String Instruments::Memory::Info::ToString () const
 }
 
 namespace {
-    using CapturerWithContext_COMMON_ = SystemPerformance::Support::CapturerWithContext_COMMON<Options>;
+    template <typename CONTEXT>
+    using InstrumentRepBase_ = SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT>;
 }
 
 #if qPlatform_Linux
 namespace {
-    struct CapturerWithContext_Linux_ : CapturerWithContext_COMMON_ {
+    struct _Context : SystemPerformance::Support::Context {
+        uint64_t                  fSaved_MajorPageFaultsSinceBoot{};
+        uint64_t                  fSaved_MinorPageFaultsSinceBoot{};
+        uint64_t                  fSaved_PageOutsSinceBoot{};
+        Time::DurationSecondsType fSaved_VMPageStats_At{};
+    };
 
-        struct _Context : CapturerWithContext_COMMON_::_Context {
-            uint64_t                  fSaved_MajorPageFaultsSinceBoot{};
-            uint64_t                  fSaved_MinorPageFaultsSinceBoot{};
-            uint64_t                  fSaved_PageOutsSinceBoot{};
-            Time::DurationSecondsType fSaved_VMPageStats_At{};
-        };
+    struct InstrumentRep_Linux_ : InstrumentRepBase_<_Context> {
 
-        CapturerWithContext_Linux_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
-            : CapturerWithContext_COMMON_{options, context}
+        InstrumentRep_Linux_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
+            : InstrumentRepBase_<_Context>{options, context}
         {
         }
 
@@ -272,7 +273,7 @@ namespace {
                     }
                 };
                 auto ctxLock = scoped_lock{_fContext};
-                auto ctx     = rwContextPtr<_Context> (_fContext.rwget ());
+                auto ctx     = _fContext.rwget ().rwref ();
                 doAve_ (ctx->fSaved_VMPageStats_At, now, &ctx->fSaved_MinorPageFaultsSinceBoot, updateResult->fPaging.fMinorPageFaultsSinceBoot, &updateResult->fPaging.fMinorPageFaultsPerSecond);
                 doAve_ (ctx->fSaved_VMPageStats_At, now, &ctx->fSaved_MajorPageFaultsSinceBoot, updateResult->fPaging.fMajorPageFaultsSinceBoot, &updateResult->fPaging.fMajorPageFaultsPerSecond);
                 doAve_ (ctx->fSaved_VMPageStats_At, now, &ctx->fSaved_PageOutsSinceBoot, updateResult->fPaging.fPageOutsSinceBoot, &updateResult->fPaging.fPageOutsPerSecond);
@@ -285,18 +286,18 @@ namespace {
 
 #if qPlatform_Windows
 namespace {
-    struct CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
-        struct _Context : CapturerWithContext_COMMON_::_Context {
+    struct _Context : SystemPerformance::Support::Context {
 #if qUseWMICollectionSupport_
-            WMICollector fMemoryWMICollector_{L"Memory"sv, {kInstanceName_}, {kCommittedBytes_, kCommitLimit_, kHardPageFaultsPerSec_, kPagesOutPerSec_, kFreeMem_, kHardwareReserved1_, kHardwareReserved2_}};
+        WMICollector fMemoryWMICollector_{L"Memory"sv, {kInstanceName_}, {kCommittedBytes_, kCommitLimit_, kHardPageFaultsPerSec_, kPagesOutPerSec_, kFreeMem_, kHardwareReserved1_, kHardwareReserved2_}};
 #endif
-        };
+    };
+    struct InstrumentRep_Windows_ : InstrumentRepBase_<_Context> {
 
-        CapturerWithContext_Windows_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
-            : CapturerWithContext_COMMON_{options, context}
+        InstrumentRep_Windows_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
+            : InstrumentRepBase_<_Context>{options, context}
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            for (String i : cContextPtr<_Context> (_fContext_.cref ())->fMemoryWMICollector_.GetAvailableCounters ()) {
+            for (String i : _fContext.cget ().cref ()->fMemoryWMICollector_.GetAvailableCounters ()) {
                 DbgTrace (L"Memory:Countername: %s", i.c_str ());
             }
 #endif
@@ -344,7 +345,7 @@ namespace {
         void Read_WMI_ (Instruments::Memory::Info* updateResult, uint64_t totalRAM)
         {
             auto                 lock      = scoped_lock{_fContext};
-            shared_ptr<_Context> rwContext = rwContextPtr<_Context> (_fContext.rwget ());
+            shared_ptr<_Context> rwContext = _fContext.rwget ().rwref ();
             rwContext->fMemoryWMICollector_.Collect ();
             Memory::CopyToIf (rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommittedBytes_), &updateResult->fVirtualMemory.fCommittedBytes);
             Memory::CopyToIf (rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommitLimit_), &updateResult->fVirtualMemory.fCommitLimit);
@@ -369,28 +370,51 @@ namespace {
 #endif
 
 namespace {
+    const MeasurementType kMemoryUsageMeasurement_ = MeasurementType{L"Memory-Usage"sv};
+}
 
-    struct CapturerWithContext_
+namespace {
+    struct MemoryInstrumentRep_
 #if qPlatform_Linux
-        : CapturerWithContext_Linux_
+        : InstrumentRep_Linux_
 #elif qPlatform_Windows
-        : CapturerWithContext_Windows_
+        : InstrumentRep_Windows_
 #else
-        : CapturerWithContext_COMMON_
+        : InstrumentRepBase_<SystemPerformance::Support::Context>
 #endif
     {
 #if qPlatform_Linux
-        using inherited = CapturerWithContext_Linux_;
+        using inherited = InstrumentRep_Linux_;
 #elif qPlatform_Windows
-        using inherited = CapturerWithContext_Windows_;
+        using inherited = InstrumentRep_Windows_;
 #else
-        using inherited = CapturerWithContext_COMMON_;
+        using inherited = InstrumentRepBase_<SystemPerformance::Support::Context>;
 #endif
-        CapturerWithContext_ (const Options& options,  const shared_ptr<_Context>& context)
+        MemoryInstrumentRep_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
             : inherited{options, context}
         {
         }
-
+        virtual MeasurementSet Capture () override
+        {
+            Debug::TraceContextBumper ctx{"SystemPerformance::Instrument...Memory...MemoryInstrumentRep_::Capture ()"};
+            MeasurementSet            results;
+            results.fMeasurements.Add (Measurement{kMemoryUsageMeasurement_, Instruments::Memory::Instrument::kObjectVariantMapper.FromObject (Capture_Raw (&results.fMeasuredAt))});
+            return results;
+        }
+        nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
+        {
+            auto before         = _GetCaptureContextTime ();
+            Info rawMeasurement = capture ();
+            if (outMeasuredAt != nullptr) {
+                using Traversal::Openness;
+                *outMeasuredAt = Range<DurationSecondsType> (before, _GetCaptureContextTime ().value_or (Time::GetTickCount ()), Openness::eClosed, Openness::eClosed);
+            }
+            return rawMeasurement;
+        }
+        virtual unique_ptr<IRep> Clone () const override
+        {
+            return make_unique<MemoryInstrumentRep_> (_fOptions, _fContext.load ());
+        }
         Instruments::Memory::Info capture ()
         {
             lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
@@ -407,50 +431,6 @@ namespace {
                 Ensure (NullCoalesce (result.fPhysicalMemory.fActive) + NullCoalesce (result.fPhysicalMemory.fInactive) + NullCoalesce (result.fPhysicalMemory.fFree) + NullCoalesce (result.fPhysicalMemory.fOSReserved) == GetSystemConfiguration_Memory ().fTotalPhysicalRAM);
             }
             return result;
-        }
-    };
-}
-
-namespace {
-    const MeasurementType kMemoryUsageMeasurement_ = MeasurementType{L"Memory-Usage"sv};
-}
-namespace {
-    class MemoryCapturerRep_ : public Instrument::ICapturer, public CapturerWithContext_ {
-
-    public:
-        MemoryCapturerRep_ (const Options& options, const shared_ptr<_Context>& context = make_shared < _Context> ())
-            : CapturerWithContext_{options,  context}
-        {
-        }
-        virtual MeasurementSet Capture () override
-        {
-            Debug::TraceContextBumper ctx{"SystemPerformance::Instrument...Memory...MemoryCapturerRep_::Capture ()"};
-            MeasurementSet            results;
-            results.fMeasurements.Add (Measurement{kMemoryUsageMeasurement_, Instruments::Memory::Instrument::kObjectVariantMapper.FromObject (Capture_Raw (&results.fMeasuredAt))});
-            return results;
-        }
-        nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
-        {
-            auto before         = _GetCaptureContextTime ();
-            Info rawMeasurement = capture ();
-            if (outMeasuredAt != nullptr) {
-                using Traversal::Openness;
-                *outMeasuredAt = Range<DurationSecondsType> (before, _GetCaptureContextTime ().value_or (Time::GetTickCount ()), Openness::eClosed, Openness::eClosed);
-            }
-            return rawMeasurement;
-        }
-        virtual unique_ptr<ICapturer> Clone () const override
-        {
-            return make_unique<MemoryCapturerRep_> (_fOptions,  cContextPtr<_Context> (_fContext.cget ()));
-        }
-        virtual shared_ptr<Instrument::ICaptureContext> GetContext () const override
-        {
-            EnsureNotNull (_fContext.load ());
-            return _fContext.load ();
-        }
-        virtual void SetContext (const shared_ptr<Instrument::ICaptureContext>& context) override
-        {
-            _fContext.store ((context == nullptr) ? make_shared<CapturerWithContext_::_Context> () : dynamic_pointer_cast<CapturerWithContext_::_Context> (context));
         }
     };
 }
@@ -496,7 +476,7 @@ const ObjectVariantMapper Instruments::Memory::Instrument::kObjectVariantMapper 
 Instruments::Memory::Instrument::Instrument (const Options& options)
     : SystemPerformance::Instrument{
           InstrumentNameType{L"Memory"sv},
-          make_unique<MemoryCapturerRep_> (options),
+          make_unique<MemoryInstrumentRep_> (options),
           {kMemoryUsageMeasurement_},
           {KeyValuePair<type_index, MeasurementType>{typeid (Info), kMemoryUsageMeasurement_}},
           kObjectVariantMapper}
@@ -512,7 +492,7 @@ template <>
 Instruments::Memory::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
 {
     Debug::TraceContextBumper ctx{"SystemPerformance::Instrument::CaptureOneMeasurement<Memory::Info>"};
-    MemoryCapturerRep_*       myCap = dynamic_cast<MemoryCapturerRep_*> (fCaptureRep_.get ());
+    MemoryInstrumentRep_*     myCap = dynamic_cast<MemoryInstrumentRep_*> (fCaptureRep_.get ());
     AssertNotNull (myCap);
     return myCap->Capture_Raw (measurementTimeOut);
 }

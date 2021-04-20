@@ -287,9 +287,10 @@ String Instruments::Process::ProcessType::ToString () const
 }
 
 namespace {
-    struct CapturerWithContext_COMMON_ : SystemPerformance::Support::CapturerWithContext_COMMON<Options> {
-        CapturerWithContext_COMMON_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
-            : CapturerWithContext_COMMON<Options>{options, context}
+    template <typename CONTEXT>
+    struct InstrumentRepBase_ : SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT> {
+        InstrumentRepBase_ (const Options& options, const shared_ptr<CONTEXT>& context = make_shared<CONTEXT> ())
+            : SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT>{options, context}
         {
         }
         // maybe this shoudl go in shared contet
@@ -309,19 +310,20 @@ namespace {
      *  Fragile or broken:
      *      >   fPrivateBytes   doesn't work on RedHat5 - must use /proc/PID/map (see http://stackoverflow.com/questions/1401359/understanding-linux-proc-id-maps)
      */
-    struct CapturerWithContext_Linux_ : CapturerWithContext_COMMON_ {
-        struct PerfStats_ {
-            DurationSecondsType fCapturedAt;
-            optional<double>    fTotalCPUTimeEverUsed;
-            optional<double>    fCombinedIOReadBytes;
-            optional<double>    fCombinedIOWriteBytes;
-        };
-        struct _Context : CapturerWithContext_COMMON_::_Context {
-            Mapping<pid_t, PerfStats_> fMap;
-        };
+    struct PerfStats_ {
+        DurationSecondsType fCapturedAt;
+        optional<double>    fTotalCPUTimeEverUsed;
+        optional<double>    fCombinedIOReadBytes;
+        optional<double>    fCombinedIOWriteBytes;
+    };
+    struct _Context : SystemPerformance::Support::Context {
+        Mapping<pid_t, PerfStats_> fMap;
+    };
 
-        CapturerWithContext_Linux_ (const Options& options, const shared_ptr<_Context>& context)
-            : CapturerWithContext_COMMON_{options, context}
+    struct InstrumentRep_Linux_ : InstrumentRepBase_<_Context> {
+
+        InstrumentRep_Linux_ (const Options& options, const shared_ptr<_Context>& context)
+            : InstrumentRepBase_<_Context>{options, context}
         {
             fStaticSuppressedAgain.clear (); // cuz we never returned these
         }
@@ -487,7 +489,7 @@ namespace {
                         }
 
                         processDetails.fTotalCPUTimeEverUsed = (double (stats.utime) + double (stats.stime)) / kClockTick_;
-                        if (optional<PerfStats_> p = cContextPtr<_Context> (_fContext.cget ())->fMap.Lookup (pid)) {
+                        if (optional<PerfStats_> p = _fContext.load ()->fMap.Lookup (pid)) {
                             if (p->fTotalCPUTimeEverUsed) {
                                 processDetails.fAverageCPUTimeUsed = (*processDetails.fTotalCPUTimeEverUsed - *p->fTotalCPUTimeEverUsed) / (now - p->fCapturedAt);
                             }
@@ -549,7 +551,7 @@ namespace {
                         if (stats.has_value ()) {
                             processDetails.fCombinedIOReadBytes  = (*stats).read_bytes;
                             processDetails.fCombinedIOWriteBytes = (*stats).write_bytes;
-                            if (optional<PerfStats_> p = cContextPtr<_Context> (_fContext.cget ())->fMap.Lookup (pid)) {
+                            if (optional<PerfStats_> p = _fContext.load ()->fMap.Lookup (pid)) {
                                 if (p->fCombinedIOReadBytes) {
                                     processDetails.fCombinedIOReadRate = (*processDetails.fCombinedIOReadBytes - *p->fCombinedIOReadBytes) / (now - p->fCapturedAt);
                                 }
@@ -570,7 +572,7 @@ namespace {
                 }
             }
             if (_NoteCompletedCapture ()) {
-                rwContextPtr<_Context> (_fContext.rwget ())->fMap = newContextStats;
+                _fContext.rwget ().rwref ()->fMap = newContextStats;
             }
             if (_fOptions.fCachePolicy == CachePolicy::eOmitUnchangedValues) {
                 fStaticSuppressedAgain = Set<pid_t>{results.Keys ()};
@@ -1215,27 +1217,28 @@ namespace {
 
 #if qPlatform_Windows
 namespace {
-    struct CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
-        struct PerfStats_ {
-            DurationSecondsType fCapturedAt;
-            optional<double>    fTotalCPUTimeEverUsed;
-            optional<double>    fCombinedIOReadBytes;
-            optional<double>    fCombinedIOWriteBytes;
-        };
-        struct _Context : CapturerWithContext_COMMON_::_Context {
+    struct PerfStats_ {
+        DurationSecondsType fCapturedAt;
+        optional<double>    fTotalCPUTimeEverUsed;
+        optional<double>    fCombinedIOReadBytes;
+        optional<double>    fCombinedIOWriteBytes;
+    };
+    struct _Context : SystemPerformance::Support::Context {
 #if qUseWMICollectionSupport_
-            WMICollector fProcessWMICollector_{L"Process"sv, {WMICollector::kWildcardInstance}, { kProcessID_,
-                                                                                                  kThreadCount_,
-                                                                                                  kIOReadBytesPerSecond_,
-                                                                                                  kIOWriteBytesPerSecond_,
-                                                                                                  kPercentProcessorTime_,
-                                                                                                  kElapsedTime_ }};
+        WMICollector fProcessWMICollector_{L"Process"sv, {WMICollector::kWildcardInstance}, { kProcessID_,
+                                                                                              kThreadCount_,
+                                                                                              kIOReadBytesPerSecond_,
+                                                                                              kIOWriteBytesPerSecond_,
+                                                                                              kPercentProcessorTime_,
+                                                                                              kElapsedTime_ }};
 #endif
-            Mapping<pid_t, PerfStats_> fMap;
-        };
+        Mapping<pid_t, PerfStats_> fMap;
+    };
 
-        CapturerWithContext_Windows_ (const Options& options, const shared_ptr<_Context>& context)
-            : CapturerWithContext_COMMON_{options, context}
+    struct InstrumentRep_Windows_ : InstrumentRepBase_<_Context> {
+
+        InstrumentRep_Windows_ (const Options& options, const shared_ptr<_Context>& context)
+            : InstrumentRepBase_<_Context>{options, context}
         {
         }
 
@@ -1474,7 +1477,7 @@ namespace {
                 }
 #endif
                 if (not processInfo.fCombinedIOReadRate.has_value () or not processInfo.fCombinedIOWriteRate.has_value () or not processInfo.fAverageCPUTimeUsed.has_value ()) {
-                    if (optional<PerfStats_> p = cContextPtr<_Context> (_fContext.cget ())->fMap.Lookup (pid)) {
+                    if (optional<PerfStats_> p = _fContext.load ()->fMap.Lookup (pid)) {
                         if (p->fCombinedIOReadBytes and processInfo.fCombinedIOReadBytes) {
                             processInfo.fCombinedIOReadRate = (*processInfo.fCombinedIOReadBytes - *p->fCombinedIOReadBytes) / (now - p->fCapturedAt);
                         }
@@ -1506,7 +1509,7 @@ namespace {
                 results.Add (pid, processInfo);
             }
             if (_NoteCompletedCapture (now)) {
-                rwContextPtr<_Context> (_fContext.rwget ())->fMap = newContextStats;
+                _fContext.rwget ().rwref ()->fMap = newContextStats;
             }
             if (_fOptions.fCachePolicy == CachePolicy::eOmitUnchangedValues) {
                 fStaticSuppressedAgain = Set<pid_t>{results.Keys ()};
@@ -1637,52 +1640,29 @@ namespace {
 #endif
 
 namespace {
-    struct CapturerWithContext_
+    struct ProcessInstrumentRep_
 #if qPlatform_Linux
-        : CapturerWithContext_Linux_
+        : InstrumentRep_Linux_
 #elif qPlatform_Windows
-        : CapturerWithContext_Windows_
+        : InstrumentRep_Windows_
 #else
-        : CapturerWithContext_COMMON_
+        : InstrumentRepBase_<SystemPerformance::Support::Context>
 #endif
     {
 #if qPlatform_Linux
-        using inherited = CapturerWithContext_Linux_;
+        using inherited = InstrumentRep_Linux_;
 #elif qPlatform_Windows
-        using inherited = CapturerWithContext_Windows_;
+        using inherited = InstrumentRep_Windows_;
 #else
-        using inherited = CapturerWithContext_COMMON_;
+        using inherited = InstrumentRepBase_<SystemPerformance::Support::Context>;
 #endif
-        CapturerWithContext_ (const Options& options, const shared_ptr<_Context>& context)
+        ProcessInstrumentRep_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
             : inherited{options, context}
-        {
-        }
-
-        ProcessMapType capture ()
-        {
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{"Instruments::ProcessDetails capture"};
-#endif
-#if qPlatform_Linux or qPlatform_Windows
-            return inherited::capture ();
-#else
-            return ProcessMapType{};
-#endif
-        }
-    };
-}
-
-namespace {
-    class MyCapturer_ : public Instrument::ICapturer, CapturerWithContext_ {
-    public:
-        MyCapturer_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
-            : CapturerWithContext_{options, context}
         {
         }
         virtual MeasurementSet Capture () override
         {
-            Debug::TraceContextBumper ctx{"SystemPerformance::Instrument...Process...MyCapturer_::Capture ()"};
+            Debug::TraceContextBumper ctx{"SystemPerformance::Instrument...Process...ProcessInstrumentRep_::Capture ()"};
             MeasurementSet            results;
             Measurement               m{Instruments::Process::kProcessMapMeasurement, Process::Instrument::kObjectVariantMapper.FromObject (Capture_Raw (&results.fMeasuredAt))};
             results.fMeasurements.Add (m);
@@ -1698,18 +1678,21 @@ namespace {
             }
             return rawMeasurement;
         }
-        virtual unique_ptr<ICapturer> Clone () const override
+        virtual unique_ptr<IRep> Clone () const override
         {
-            return make_unique<MyCapturer_> (_fOptions, cContextPtr<_Context> (_fContext.cget ()));
+            return make_unique<ProcessInstrumentRep_> (_fOptions, _fContext.load ());
         }
-        virtual shared_ptr<Instrument::ICaptureContext> GetContext () const override
+        ProcessMapType capture ()
         {
-            EnsureNotNull (_fContext.load ());
-            return _fContext.load ();
-        }
-        virtual void SetContext (const shared_ptr<Instrument::ICaptureContext>& context) override
-        {
-            _fContext.store ((context == nullptr) ? make_shared<CapturerWithContext_::_Context> () : dynamic_pointer_cast<CapturerWithContext_::_Context> (context));
+            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx{"Instruments::ProcessDetails capture"};
+#endif
+#if qPlatform_Linux or qPlatform_Windows
+            return inherited::capture ();
+#else
+            return ProcessMapType{};
+#endif
         }
     };
 }
@@ -1772,7 +1755,7 @@ const ObjectVariantMapper Instruments::Process::Instrument::kObjectVariantMapper
 Instruments::Process::Instrument::Instrument (const Options& options)
     : SystemPerformance::Instrument{
           InstrumentNameType{L"Process"sv},
-          make_unique<MyCapturer_> (options),
+          make_unique<ProcessInstrumentRep_> (options),
           {kProcessMapMeasurement},
           {KeyValuePair<type_index, MeasurementType>{typeid (Info), kProcessMapMeasurement}},
           kObjectVariantMapper}
@@ -1788,7 +1771,7 @@ template <>
 Instruments::Process::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
 {
     Debug::TraceContextBumper ctx{"SystemPerformance::Instrument::CaptureOneMeasurement<Process::Info>"};
-    MyCapturer_*              myCap = dynamic_cast<MyCapturer_*> (fCaptureRep_.get ());
+    ProcessInstrumentRep_*    myCap = dynamic_cast<ProcessInstrumentRep_*> (fCaptureRep_.get ());
     AssertNotNull (myCap);
     return myCap->Capture_Raw (measurementTimeOut);
 }

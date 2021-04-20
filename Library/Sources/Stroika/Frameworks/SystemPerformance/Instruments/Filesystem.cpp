@@ -167,7 +167,8 @@ namespace {
 }
 
 namespace {
-    using CapturerWithContext_COMMON_ = SystemPerformance::Support::CapturerWithContext_COMMON<Options>;
+    template <typename CONTEXT>
+    using InstrumentRepBase_ = SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT>;
 }
 
 #if qPlatform_POSIX
@@ -246,25 +247,25 @@ namespace {
 
 #if qPlatform_Linux
 namespace {
-    struct CapturerWithContext_Linux_ : CapturerWithContext_COMMON_ {
-    public:
-        struct PerfStats_ {
-            double fSectorsRead;
-            double fTimeSpentReading;
-            double fReadsCompleted;
-            double fSectorsWritten;
-            double fTimeSpentWriting;
-            double fWritesCompleted;
-            double fWeightedTimeInQSeconds; // see https://www.kernel.org/doc/Documentation/block/stat.txt  time_in_queue (product of the number of milliseconds times the number of requests waiting)
-        };
-        struct _Context : CapturerWithContext_COMMON_::_Context {
-            Mapping<String, uint32_t>            fDeviceName2SectorSizeMap_;
-            optional<Mapping<dev_t, PerfStats_>> fContextStats_;
-        };
 
+    struct PerfStats_ {
+        double fSectorsRead;
+        double fTimeSpentReading;
+        double fReadsCompleted;
+        double fSectorsWritten;
+        double fTimeSpentWriting;
+        double fWritesCompleted;
+        double fWeightedTimeInQSeconds; // see https://www.kernel.org/doc/Documentation/block/stat.txt  time_in_queue (product of the number of milliseconds times the number of requests waiting)
+    };
+    struct _Context : SystemPerformance::Support::Context {
+        Mapping<String, uint32_t>            fDeviceName2SectorSizeMap_;
+        optional<Mapping<dev_t, PerfStats_>> fContextStats_;
+    };
+
+    struct InstrumentRep_Linux_ : InstrumentRepBase_<_Context> {
     public:
-        CapturerWithContext_Linux_ (const Options& options, const shared_ptr<_Context>& context)
-            : CapturerWithContext_COMMON_{options, context}
+        InstrumentRep_Linux_ (const Options& options, const shared_ptr<_Context>& context)
+            : InstrumentRepBase_<_Context>{options, context}
         {
         }
 
@@ -275,7 +276,7 @@ namespace {
         Info capture_ ()
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{"Instruments::Filesystem...CapturerWithContext_Linux_::capture_"};
+            Debug::TraceContextBumper ctx{"Instruments::Filesystem...InstrumentRep_Linux_::capture_"};
 #endif
             Info results;
 
@@ -349,7 +350,7 @@ namespace {
                 for (KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType> i : *volumes) {
                     MountedFilesystemInfoType vi = i.fValue;
                     if (vi.fDeviceOrVolumeName.has_value ()) {
-                        if (cContextPtr<_Context> (_fContext.cget ())->fContextStats_) {
+                        if (_fContext.load ()->fContextStats_) {
                             String devNameLessSlashes = *vi.fDeviceOrVolumeName;
                             size_t i                  = devNameLessSlashes.rfind ('/');
                             if (i != string::npos) {
@@ -366,7 +367,7 @@ namespace {
                                     continue;
                                 }
                             }
-                            optional<PerfStats_> oOld = cContextPtr<_Context> (_fContext.cget ())->fContextStats_->Lookup (useDevT);
+                            optional<PerfStats_> oOld = _fContext.load ()->fContextStats_->Lookup (useDevT);
                             optional<PerfStats_> oNew = diskStats.Lookup (useDevT);
                             if (oOld.has_value () and oNew.has_value ()) {
                                 unsigned int sectorSizeTmpHack = GetSectorSize_ (devNameLessSlashes);
@@ -395,7 +396,7 @@ namespace {
                     }
                     volumes->Add (i.fKey, vi);
                 }
-                rwContextPtr<_Context> (_fContext.rwget ())->fContextStats_ = diskStats;
+                _fContext.rwget ().rwref ()->fContextStats_ = diskStats;
             }
             catch (...) {
                 DbgTrace ("Exception gathering procfs disk io stats");
@@ -428,13 +429,13 @@ namespace {
     private:
         uint32_t GetSectorSize_ (const String& deviceName)
         {
-            auto o = cContextPtr<_Context> (_fContext.cget ())->fDeviceName2SectorSizeMap_.Lookup (deviceName);
+            auto o = _fContext.load ()->fDeviceName2SectorSizeMap_.Lookup (deviceName);
             if (not o.has_value ()) {
                 if (optional<filesystem::path> blockDeviceInfoPath = GetSysBlockDirPathForDevice_ (deviceName)) {
                     filesystem::path fn = *blockDeviceInfoPath / "queue/hw_sector_size";
                     try {
                         o = String2Int<uint32_t> (TextReader::New (FileInputStream::New (fn, FileInputStream::eNotSeekable)).ReadAll ().Trim ());
-                        rwContextPtr<_Context> (_fContext.rwget ())->fDeviceName2SectorSizeMap_.Add (deviceName, *o);
+                        _fContext.rwget ().rwref ()->fDeviceName2SectorSizeMap_.Add (deviceName, *o);
                     }
                     catch (...) {
                         DbgTrace (L"Unknown error reading %s", fn.c_str ());
@@ -629,17 +630,16 @@ namespace {
 
 #if qPlatform_Windows
 namespace {
-    struct CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
-
-        struct _Context : CapturerWithContext_COMMON_::_Context {
+    struct _Context : SystemPerformance::Support::Context {
 #if qUseWMICollectionSupport_
-            WMICollector fLogicalDiskWMICollector_{
-                L"LogicalDisk"sv, {}, {kDiskReadBytesPerSec_, kDiskWriteBytesPerSec_, kDiskReadsPerSec_, kDiskWritesPerSec_, (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_ ? kPctDiskReadTime_ : kAveDiskReadQLen_), (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_ ? kPctDiskWriteTime_ : kAveDiskWriteQLen_), kPctIdleTime_}};
+        WMICollector fLogicalDiskWMICollector_{
+            L"LogicalDisk"sv, {}, {kDiskReadBytesPerSec_, kDiskWriteBytesPerSec_, kDiskReadsPerSec_, kDiskWritesPerSec_, (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_ ? kPctDiskReadTime_ : kAveDiskReadQLen_), (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_ ? kPctDiskWriteTime_ : kAveDiskWriteQLen_), kPctIdleTime_}};
 #endif
-        };
+    };
+    struct InstrumentRep_Windows_ : InstrumentRepBase_<_Context> {
 
-        CapturerWithContext_Windows_ (const Options& options, const shared_ptr<_Context>& context)
-            : CapturerWithContext_COMMON_{options, context}
+        InstrumentRep_Windows_ (const Options& options, const shared_ptr<_Context>& context)
+            : InstrumentRepBase_<_Context>{options, context}
         {
         }
         Info capture ()
@@ -649,7 +649,7 @@ namespace {
         Info capture_ ()
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{"Instruments::Filesystem...CapturerWithContext_Windows_::capture_"};
+            Debug::TraceContextBumper ctx{"Instruments::Filesystem...InstrumentRep_Windows_::capture_"};
 #endif
             Info results = capture_Windows_GetVolumeInfo_ ();
             _NoteCompletedCapture ();
@@ -694,11 +694,11 @@ namespace {
             Collection<IO::FileSystem::DiskInfoType> physDrives = IO::FileSystem::GetAvailableDisks ();
 
 #if qUseWMICollectionSupport_
-            Time::DurationSecondsType timeOfPrevCollection = cContextPtr<_Context> (_fContext.cget ())->fLogicalDiskWMICollector_.GetTimeOfLastCollection ();
+            Time::DurationSecondsType timeOfPrevCollection = _fContext.load ()->fLogicalDiskWMICollector_.GetTimeOfLastCollection ();
             if (_fOptions.fIOStatistics) {
-                rwContextPtr<_Context> (_fContext.rwget ())->fLogicalDiskWMICollector_.Collect ();
+                _fContext.rwget ().rwref ()->fLogicalDiskWMICollector_.Collect ();
             }
-            Time::DurationSecondsType timeCollecting{cContextPtr<_Context> (_fContext.cget ())->fLogicalDiskWMICollector_.GetTimeOfLastCollection () - timeOfPrevCollection};
+            Time::DurationSecondsType timeCollecting{_fContext.load ()->fLogicalDiskWMICollector_.GetTimeOfLastCollection () - timeOfPrevCollection};
 #endif
             Info result;
 
@@ -757,43 +757,43 @@ namespace {
                     };
                     if (_fOptions.fIOStatistics) {
                         String wmiInstanceName = IO::FileSystem::FromPath (mfinfo.fMountedOn).RTrim ([] (Characters::Character c) { return c == '\\'; });
-                        rwContextPtr<_Context> (_fContext.rwget ())->fLogicalDiskWMICollector_.AddInstancesIf (wmiInstanceName);
+                        _fContext.rwget ().rwref ()->fLogicalDiskWMICollector_.AddInstancesIf (wmiInstanceName);
 
                         IOStatsType readStats;
-                        if (auto o = rwContextPtr<_Context> (_fContext.rwget ())->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadBytesPerSec_)) {
+                        if (auto o = _fContext.rwget ().rwref ()->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadBytesPerSec_)) {
                             readStats.fBytesTransfered = *o * timeCollecting;
                         }
-                        if (auto o = rwContextPtr<_Context> (_fContext.rwget ())->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadsPerSec_)) {
+                        if (auto o = _fContext.rwget ().rwref ()->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadsPerSec_)) {
                             readStats.fTotalTransfers = *o * timeCollecting;
                         }
                         if (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_) {
-                            if (auto o = rwContextPtr<_Context> (_fContext.rwget ())->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskReadTime_)) {
+                            if (auto o = _fContext.rwget ().rwref ()->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskReadTime_)) {
                                 readStats.fInUsePercent = *o;
                                 readStats.fQLength      = safePctInUse2QL_ (*o);
                             }
                         }
                         else {
-                            if (auto o = rwContextPtr<_Context> (_fContext.rwget ())->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kAveDiskReadQLen_)) {
+                            if (auto o = _fContext.rwget ().rwref ()->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kAveDiskReadQLen_)) {
                                 readStats.fInUsePercent = *o;
                                 readStats.fQLength      = *o;
                             }
                         }
 
                         IOStatsType writeStats;
-                        if (auto o = rwContextPtr<_Context> (_fContext.rwget ())->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWriteBytesPerSec_)) {
+                        if (auto o = _fContext.rwget ().rwref ()->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWriteBytesPerSec_)) {
                             writeStats.fBytesTransfered = *o * timeCollecting;
                         }
-                        if (auto o = rwContextPtr<_Context> (_fContext.rwget ())->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWritesPerSec_)) {
+                        if (auto o = _fContext.rwget ().rwref ()->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWritesPerSec_)) {
                             writeStats.fTotalTransfers = *o * timeCollecting;
                         }
                         if (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_) {
-                            if (auto o = rwContextPtr<_Context> (_fContext.rwget ())->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskWriteTime_)) {
+                            if (auto o = _fContext.rwget ().rwref ()->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskWriteTime_)) {
                                 writeStats.fInUsePercent = *o;
                                 writeStats.fQLength      = safePctInUse2QL_ (*o);
                             }
                         }
                         else {
-                            if (auto o = rwContextPtr<_Context> (_fContext.rwget ())->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kAveDiskWriteQLen_)) {
+                            if (auto o = _fContext.rwget ().rwref ()->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kAveDiskWriteQLen_)) {
                                 writeStats.fInUsePercent = *o;
                                 writeStats.fQLength      = *o;
                             }
@@ -809,7 +809,7 @@ namespace {
                         }
 
                         if (kUsePctIdleIimeForAveQLen_) {
-                            if (auto o = rwContextPtr<_Context> (_fContext.rwget ())->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctIdleTime_)) {
+                            if (auto o = _fContext.rwget ().rwref ()->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctIdleTime_)) {
                                 double aveCombinedQLen = safePctInUse2QL_ (100.0 - *o);
                                 if (readStats.fQLength and writeStats.fQLength and *combinedStats.fQLength > 0) {
                                     // for some reason, the pct-idle-time #s combined are OK, but #s for aveQLen and disk read PCT/Write PCT wrong.
@@ -933,53 +933,28 @@ namespace {
 }
 
 namespace {
-    struct CapturerWithContext_
-#if qPlatform_Linux
-        : CapturerWithContext_Linux_
-#elif qPlatform_Windows
-        : CapturerWithContext_Windows_
-#else
-        : CapturerWithContext_COMMON_
-#endif
-    {
-#if qPlatform_Linux
-        using inherited = CapturerWithContext_Linux_;
-#elif qPlatform_Windows
-        using inherited = CapturerWithContext_Windows_;
-#else
-        using inherited = CapturerWithContext_COMMON_;
-#endif
-        CapturerWithContext_ (const Options& options, const shared_ptr<_Context>& context)
-            : inherited{options, context}
-        {
-        }
-        Info capture ()
-        {
-            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-            Debug::TraceContextBumper                          ctx{"Instruments::Filesystem capture"};
-#if qPlatform_Linux or qPlatform_Windows
-            Info result = inherited::capture ();
-#else
-            Info result;
-#endif
-            if (_fOptions.fEstimateFilesystemStatsFromDiskStatsIfHelpful) {
-                result.fMountedFilesystems = ApplyDiskStatsToMissingFileSystemStats_ (result.fDisks, result.fMountedFilesystems);
-            }
-            return result;
-        }
-    };
-}
-
-namespace {
     static const MeasurementType kMountedVolumeUsage_ = MeasurementType{L"Mounted-Filesystem-Usage"sv};
 }
 
 namespace {
-    class MyCapturer_ : public SystemPerformance::Instrument::ICapturer, CapturerWithContext_ {
-
-    public:
-        MyCapturer_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
-            : CapturerWithContext_{options, context}
+    struct FilesystemInstrumentRep_
+#if qPlatform_Linux
+        : InstrumentRep_Linux_
+#elif qPlatform_Windows
+        : InstrumentRep_Windows_
+#else
+        : InstrumentRepBase_<SystemPerformance::Support::Context>
+#endif
+    {
+#if qPlatform_Linux
+        using inherited = InstrumentRep_Linux_;
+#elif qPlatform_Windows
+        using inherited = InstrumentRep_Windows_;
+#else
+        using inherited = InstrumentRepBase_<SystemPerformance::Support::Context>;
+#endif
+        FilesystemInstrumentRep_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
+            : inherited{options, context}
         {
         }
         virtual MeasurementSet Capture () override
@@ -999,18 +974,23 @@ namespace {
             }
             return rawMeasurement;
         }
-        virtual unique_ptr<ICapturer> Clone () const override
+        virtual unique_ptr<IRep> Clone () const override
         {
-            return make_unique<MyCapturer_> (_fOptions, cContextPtr<_Context> (_fContext.cget ()));
+            return make_unique<FilesystemInstrumentRep_> (_fOptions, _fContext.load ());
         }
-        virtual shared_ptr<Instrument::ICaptureContext> GetContext () const override
+        Info capture ()
         {
-            EnsureNotNull (_fContext.load ());
-            return _fContext.load ();
-        }
-        virtual void SetContext (const shared_ptr<Instrument::ICaptureContext>& context) override
-        {
-            _fContext.store ((context == nullptr) ? make_shared<CapturerWithContext_::_Context> () : dynamic_pointer_cast<CapturerWithContext_::_Context> (context));
+            lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+            Debug::TraceContextBumper                          ctx{"Instruments::Filesystem capture"};
+#if qPlatform_Linux or qPlatform_Windows
+            Info result = inherited::capture ();
+#else
+            Info result;
+#endif
+            if (_fOptions.fEstimateFilesystemStatsFromDiskStatsIfHelpful) {
+                result.fMountedFilesystems = ApplyDiskStatsToMissingFileSystemStats_ (result.fDisks, result.fMountedFilesystems);
+            }
+            return result;
         }
     };
 }
@@ -1071,7 +1051,7 @@ const ObjectVariantMapper Instruments::Filesystem::Instrument::kObjectVariantMap
 Instruments::Filesystem::Instrument::Instrument (const Options& options)
     : SystemPerformance::Instrument{
           InstrumentNameType{L"Filesystem"sv},
-          make_unique<MyCapturer_> (options),
+          make_unique<FilesystemInstrumentRep_> (options),
           {kMountedVolumeUsage_},
           {KeyValuePair<type_index, MeasurementType>{typeid (Info), kMountedVolumeUsage_}},
           Instrument::kObjectVariantMapper}
@@ -1087,7 +1067,7 @@ template <>
 Instruments::Filesystem::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
 {
     Debug::TraceContextBumper ctx{"SystemPerformance::Instrument::CaptureOneMeasurement"};
-    MyCapturer_*              myCap = dynamic_cast<MyCapturer_*> (fCaptureRep_.get ());
+    FilesystemInstrumentRep_* myCap = dynamic_cast<FilesystemInstrumentRep_*> (fCaptureRep_.get ());
     AssertNotNull (myCap);
     return myCap->Capture_Raw (measurementTimeOut);
 }

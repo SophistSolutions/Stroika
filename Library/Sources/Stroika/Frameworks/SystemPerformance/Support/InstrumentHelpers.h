@@ -26,44 +26,41 @@
 
 namespace Stroika::Frameworks::SystemPerformance::Support {
 
+    struct Context : Instrument::ICaptureContext {
+        optional<DurationSecondsType> fCaptureContextAt{};
+    };
+
     /**
      *  Optional utility used internally in building Instruments - no need to use it.
      */
-    template <typename OPTIONS>
-    struct CapturerWithContext_COMMON : Foundation::Debug::AssertExternallySynchronizedLock {
+    template <typename OPTIONS, typename CONTEXT>
+    struct InstrumentRep_COMMON : Instrument::IRep, Foundation::Debug::AssertExternallySynchronizedLock {
     protected:
         const OPTIONS _fOptions;
 
     protected:
-        struct _Context : Instrument::ICaptureContext {
-            optional<DurationSecondsType> fCaptureContextAt{};
-        };
+        Foundation::Execution::Synchronized<shared_ptr<CONTEXT>> _fContext;
 
     protected:
-        Foundation::Execution::Synchronized<shared_ptr<_Context>> _fContext;
-
-    protected:
-        CapturerWithContext_COMMON (const OPTIONS& options, const shared_ptr<_Context>& context = make_shared<_Context> ());
-
-    protected:
-        /**
-         *  use with scoped_lock<> if you want to hold the shared_ptr for a while.
-         *  Otherwise, for one-liners, scoped_lock not needed (as the lock defined in an expression will exist til then end of the line).
-         */
-        template <typename T_SUBCLASS>
-        static const shared_ptr<T_SUBCLASS> cContextPtr (typename Foundation::Execution::Synchronized<shared_ptr<_Context>>::ReadableReference&& r);
-
-    protected:
-        template <typename T_SUBCLASS>
-        static shared_ptr<T_SUBCLASS> rwContextPtr (typename Foundation::Execution::Synchronized<shared_ptr<_Context>>::WritableReference&& r);
+        InstrumentRep_COMMON (const OPTIONS& options, const shared_ptr<CONTEXT>& context = make_shared<CONTEXT> ());
 
     protected:
         optional<DurationSecondsType> _GetCaptureContextTime () const;
 
     protected:
-    public:
         // return true iff actually capture context
         bool _NoteCompletedCapture (DurationSecondsType at = Time::GetTickCount ());
+
+    public:
+        virtual shared_ptr<Instrument::ICaptureContext> GetContext () const override
+        {
+            EnsureNotNull (_fContext.load ());
+            return _fContext.load ();
+        }
+        virtual void SetContext (const shared_ptr<Instrument::ICaptureContext>& context) override
+        {
+            _fContext.store ((context == nullptr) ? make_shared<CONTEXT> () : dynamic_pointer_cast<CONTEXT> (context));
+        }
     };
 
 }
