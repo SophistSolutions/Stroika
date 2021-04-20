@@ -36,6 +36,9 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
     template <typename OPTIONS, typename CONTEXT>
     struct InstrumentRep_COMMON : Instrument::IRep, Foundation::Debug::AssertExternallySynchronizedLock {
     protected:
+        using _Context = CONTEXT;
+
+    protected:
         const OPTIONS _fOptions;
 
     protected:
