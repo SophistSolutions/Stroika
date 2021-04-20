@@ -287,17 +287,17 @@ String Instruments::Process::ProcessType::ToString () const
 }
 
 namespace {
+    struct ModuleCommonContext_ : SystemPerformance::Support::Context {
+        // skip reporting static (known at process start) data on subsequent reports
+        // only used if fCachePolicy == CachePolicy::eOmitUnchangedValues
+        Set<pid_t> fStaticSuppressedAgain;
+    };
     template <typename CONTEXT>
     struct InstrumentRepBase_ : SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT> {
         InstrumentRepBase_ (const Options& options, const shared_ptr<CONTEXT>& context = make_shared<CONTEXT> ())
             : SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT>{options, context}
         {
         }
-        // maybe this shoudl go in shared contet
-
-        // skip reporting static (known at process start) data on subsequent reports
-        // only used if fCachePolicy == CachePolicy::eOmitUnchangedValues
-        Set<pid_t> fStaticSuppressedAgain;
     };
 }
 
@@ -316,17 +316,13 @@ namespace {
         optional<double>    fCombinedIOReadBytes;
         optional<double>    fCombinedIOWriteBytes;
     };
-    struct _Context : SystemPerformance::Support::Context {
+    struct _Context : ModuleCommonContext_ {
         Mapping<pid_t, PerfStats_> fMap;
     };
 
     struct InstrumentRep_Linux_ : InstrumentRepBase_<_Context> {
 
-        InstrumentRep_Linux_ (const Options& options, const shared_ptr<_Context>& context)
-            : InstrumentRepBase_<_Context>{options, context}
-        {
-            fStaticSuppressedAgain.clear (); // cuz we never returned these
-        }
+       using InstrumentRepBase_<_Context>::InstrumentRepBase_;
 
         ProcessMapType capture ()
         {
@@ -424,7 +420,7 @@ namespace {
                         }
                     }
 
-                    bool grabStaticData = _fOptions.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not fStaticSuppressedAgain.Contains (pid);
+                    bool grabStaticData = _fOptions.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not _fContext.cget ().cref ()->fStaticSuppressedAgain.Contains (pid);
 
                     ProcessType processDetails;
 
@@ -575,7 +571,7 @@ namespace {
                 _fContext.rwget ().rwref ()->fMap = newContextStats;
             }
             if (_fOptions.fCachePolicy == CachePolicy::eOmitUnchangedValues) {
-                fStaticSuppressedAgain = Set<pid_t>{results.Keys ()};
+                _fContext.rwget ().rwref ()->fStaticSuppressedAgain = Set<pid_t>{results.Keys ()};
             }
             return results;
         }
@@ -1223,7 +1219,7 @@ namespace {
         optional<double>    fCombinedIOReadBytes;
         optional<double>    fCombinedIOWriteBytes;
     };
-    struct _Context : SystemPerformance::Support::Context {
+    struct _Context : ModuleCommonContext_ {
 #if qUseWMICollectionSupport_
         WMICollector fProcessWMICollector_{L"Process"sv, {WMICollector::kWildcardInstance}, { kProcessID_,
                                                                                               kThreadCount_,
@@ -1237,10 +1233,7 @@ namespace {
 
     struct InstrumentRep_Windows_ : InstrumentRepBase_<_Context> {
 
-        InstrumentRep_Windows_ (const Options& options, const shared_ptr<_Context>& context)
-            : InstrumentRepBase_<_Context>{options, context}
-        {
-        }
+       using InstrumentRepBase_<_Context>::InstrumentRepBase_;
 
         ProcessMapType capture ()
         {
@@ -1373,7 +1366,7 @@ namespace {
                     }
                 }
                 ProcessType processInfo;
-                bool        grabStaticData = _fOptions.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not fStaticSuppressedAgain.Contains (pid);
+                bool        grabStaticData = _fOptions.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not _fContext.cget().cref ()->fStaticSuppressedAgain.Contains (pid);
                 {
                     HANDLE hProcess = ::OpenProcess (PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
                     if (hProcess != nullptr) {
@@ -1512,7 +1505,7 @@ namespace {
                 _fContext.rwget ().rwref ()->fMap = newContextStats;
             }
             if (_fOptions.fCachePolicy == CachePolicy::eOmitUnchangedValues) {
-                fStaticSuppressedAgain = Set<pid_t>{results.Keys ()};
+                _fContext.rwget ().rwref ()->fStaticSuppressedAgain = Set<pid_t>{results.Keys ()};
             }
             return results;
         }
@@ -1646,7 +1639,7 @@ namespace {
 #elif qPlatform_Windows
         : InstrumentRep_Windows_
 #else
-        : InstrumentRepBase_<SystemPerformance::Support::Context>
+        : InstrumentRepBase_<ModuleCommonContext_>
 #endif
     {
 #if qPlatform_Linux
@@ -1654,7 +1647,7 @@ namespace {
 #elif qPlatform_Windows
         using inherited = InstrumentRep_Windows_;
 #else
-        using inherited = InstrumentRepBase_<SystemPerformance::Support::Context>;
+        using inherited = InstrumentRepBase_<ModuleCommonContext_>;
 #endif
         ProcessInstrumentRep_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
             : inherited{options, context}
