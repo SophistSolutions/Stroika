@@ -80,8 +80,8 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
     class WMICollector : private Foundation::Debug::AssertExternallySynchronizedLock {
     public:
         /*
-            *      Special, and cannot be combined with other instances
-            */
+         *      Special, and cannot be combined with other instances
+         */
         static String kWildcardInstance;
 
     public:
@@ -104,7 +104,7 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
         nonvirtual void Collect ();
 
     public:
-        nonvirtual DurationSecondsType GetTimeOfLastCollection () const;
+        nonvirtual optional<DurationSecondsType> GetTimeOfLastCollection () const;
 
     public:
         /**
@@ -169,9 +169,9 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
         nonvirtual optional<double> PeekCurrentValue (const String& instance, const String& counterName);
 
     private:
-        DurationSecondsType fTimeOfLastCollection_{};
-        String              fObjectName_;
-        Set<String>         fCounterNames_;
+        optional<DurationSecondsType> fTimeOfLastCollection_{};
+        String                        fObjectName_;
+        Set<String>                   fCounterNames_;
 
     private:
         struct PerInstanceData_ {

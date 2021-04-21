@@ -151,7 +151,7 @@ Mapping<String, double> WMICollector::PerInstanceData_::GetCurrentValues (const 
 String WMICollector::kWildcardInstance = L"*"sv;
 
 WMICollector::WMICollector (const String& objectName, const Iterable<String>& instances, const Iterable<String>& counterName)
-    : fObjectName_ (objectName)
+    : fObjectName_{objectName}
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::WMICollector");
@@ -161,7 +161,7 @@ WMICollector::WMICollector (const String& objectName, const Iterable<String>& in
 }
 
 WMICollector::WMICollector (const WMICollector& from)
-    : WMICollector (from.fObjectName_, from.fInstanceData_.Keys (), from.fCounterNames_)
+    : WMICollector{from.fObjectName_, from.fInstanceData_.Keys (), from.fCounterNames_}
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::WMICollector");

@@ -17,7 +17,7 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
      ******************** SystemPerformance::Support::WMICollector ******************
      ********************************************************************************
      */
-    inline Foundation::Time::DurationSecondsType WMICollector::GetTimeOfLastCollection () const
+    inline optional<Foundation::Time::DurationSecondsType> WMICollector::GetTimeOfLastCollection () const
     {
         return fTimeOfLastCollection_;
     }
