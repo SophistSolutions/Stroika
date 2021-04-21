@@ -420,7 +420,7 @@ namespace {
         nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
         {
             // Timerange returned is from time of last context capture, til now. NOTE: this COULD produce overlapping measurement intervals.
-            auto before         = _GetCaptureContextTime ();
+            auto before         = _GetCaptureContextTime ().value_or (0);
             Info rawMeasurement = _InternalCapture ();
             if (outMeasuredAt != nullptr) {
                 using Traversal::Openness;
