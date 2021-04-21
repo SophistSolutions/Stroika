@@ -326,12 +326,6 @@ namespace {
 
         ProcessMapType capture ()
         {
-            return capture_ ();
-        }
-
-    private:
-        ProcessMapType capture_ ()
-        {
             ProcessMapType result{};
             if (_fOptions.fAllowUse_ProcFS) {
                 result = ExtractFromProcFS_ ();
@@ -342,10 +336,11 @@ namespace {
             return result;
         }
 
+    private:
         // One character from the string "RSDZTW" where R is running,
         // S is sleeping in an interruptible wait, D is waiting in uninterruptible disk sleep,
         // Z is zombie, T is traced or stopped (on a signal), and W is paging.
-        optional<ProcessType::RunStatus> cvtStatusCharToStatus_ (char state)
+        static optional<ProcessType::RunStatus> cvtStatusCharToStatus_ (char state)
         {
             switch (state) {
                 case 'R':
@@ -371,15 +366,15 @@ namespace {
             ///proc/[pid]/stat
             //  Status information about the process. This is used by ps(1). It is defined in /usr/src/linux/fs/proc/array.c.
             //
-            static const filesystem::path kCWDFilename_{"cwd"};
-            static const filesystem::path kEXEFilename_{"exe"};
-            static const filesystem::path kEnvironFilename_{"environ"};
-            static const filesystem::path kRootFilename_{"root"};
-            static const filesystem::path kCmdLineFilename_{"cmdline"};
-            static const filesystem::path kStatFilename_{"stat"};
-            static const filesystem::path kStatusFilename_{"status"};
-            static const filesystem::path kIOFilename_{"io"};
-            static const filesystem::path kNetTCPFilename_{"net/tcp"};
+            static const filesystem::path kCWDFilename_{"cwd"sv};
+            static const filesystem::path kEXEFilename_{"exe"sv};
+            static const filesystem::path kEnvironFilename_{"environ"sv};
+            static const filesystem::path kRootFilename_{"root"sv};
+            static const filesystem::path kCmdLineFilename_{"cmdline"sv};
+            static const filesystem::path kStatFilename_{"stat"sv};
+            static const filesystem::path kStatusFilename_{"status"sv};
+            static const filesystem::path kIOFilename_{"io"sv};
+            static const filesystem::path kNetTCPFilename_{"net/tcp"sv};
 
             ProcessMapType results;
 
@@ -576,14 +571,14 @@ namespace {
             return results;
         }
         template <typename T>
-        optional<T> OptionallyReadIfFileExists_ (const filesystem::path& fullPath, const function<T (const Streams::InputStream<byte>::Ptr&)>& reader)
+        static optional<T> OptionallyReadIfFileExists_ (const filesystem::path& fullPath, const function<T (const Streams::InputStream<byte>::Ptr&)>& reader)
         {
             if (IO::FileSystem::Default ().Access (fullPath)) {
                 IgnoreExceptionsExceptThreadInterruptForCall (return reader (FileInputStream::New (fullPath, FileInputStream::eNotSeekable)));
             }
             return nullopt;
         }
-        Sequence<String> ReadFileStrings_ (const filesystem::path& fullPath)
+        static Sequence<String> ReadFileStrings_ (const filesystem::path& fullPath)
         {
             Sequence<String>                results;
             Streams::InputStream<byte>::Ptr in = FileInputStream::New (fullPath, FileInputStream::eNotSeekable);
@@ -599,7 +594,7 @@ namespace {
             }
             return results;
         }
-        Mapping<String, String> ReadFileStringsMap_ (const filesystem::path& fullPath)
+        static Mapping<String, String> ReadFileStringsMap_ (const filesystem::path& fullPath)
         {
             Mapping<String, String> results;
             for (String i : ReadFileStrings_ (fullPath)) {
@@ -611,7 +606,7 @@ namespace {
             return results;
         }
         // if fails (cuz not readable) don't throw but return missing, but avoid noisy stroika exception logging
-        optional<String> ReadCmdLineString_ (const filesystem::path& fullPath2CmdLineFile)
+        static optional<String> ReadCmdLineString_ (const filesystem::path& fullPath2CmdLineFile)
         {
             // this reads /proc format files - meaning that a trialing nul-byte is the EOS
             auto ReadFileString_ = [] (const Streams::InputStream<byte>::Ptr& in) -> String {
@@ -644,7 +639,7 @@ namespace {
             return nullopt;
         }
         // if fails (cuz not readable) don't throw but return missing, but avoid noisy stroika exception logging
-        optional<filesystem::path> OptionallyResolveShortcut_ (const filesystem::path& shortcutPath)
+        static optional<filesystem::path> OptionallyResolveShortcut_ (const filesystem::path& shortcutPath)
         {
             std::error_code ec{};
             if (filesystem::exists (shortcutPath, ec) and filesystem::is_symlink (shortcutPath, ec)) {
@@ -655,7 +650,7 @@ namespace {
             }
             return nullopt;
         }
-        optional<Mapping<String, String>> OptionallyReadFileStringsMap_ (const filesystem::path& fullPath)
+        static optional<Mapping<String, String>> OptionallyReadFileStringsMap_ (const filesystem::path& fullPath)
         {
             if (IO::FileSystem::Default ().Access (fullPath)) {
                 IgnoreExceptionsExceptThreadInterruptForCall (return ReadFileStringsMap_ (fullPath));
@@ -814,7 +809,7 @@ namespace {
             unsigned long      minflt;
             unsigned long      majflt;
         };
-        StatFileInfo_ ReadStatFile_ (const filesystem::path& fullPath)
+        static StatFileInfo_ ReadStatFile_ (const filesystem::path& fullPath)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadStatFile_", L"fullPath=%s", Characters::ToString (fullPath).c_str ()};
@@ -938,7 +933,7 @@ namespace {
             uint64_t read_bytes;
             uint64_t write_bytes;
         };
-        optional<proc_io_data_> Readproc_io_data_ (const filesystem::path& fullPath)
+        static optional<proc_io_data_> Readproc_io_data_ (const filesystem::path& fullPath)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::Readproc_io_data_", L"fullPath=%s", Characters::ToString (fullPath).c_str ()};
@@ -967,7 +962,7 @@ namespace {
             }
             return result;
         }
-        optional<ProcessType::TCPStats> ReadTCPStats_ (const filesystem::path& fullPath)
+        static optional<ProcessType::TCPStats> ReadTCPStats_ (const filesystem::path& fullPath)
         {
             /**
              *  root@q7imx6:/opt/BLKQCL# cat /proc/3431/net/tcp
@@ -1011,7 +1006,7 @@ namespace {
             }
             return stats;
         }
-        optional<MemorySizeType> ReadPrivateBytes_ (const filesystem::path& fullPath)
+        static optional<MemorySizeType> ReadPrivateBytes_ (const filesystem::path& fullPath)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadPrivateBytes_", L"fullPath=%s", Characters::ToString (fullPath).c_str ()};
@@ -1049,7 +1044,7 @@ namespace {
         struct proc_status_data_ {
             uid_t ruid;
         };
-        proc_status_data_ Readproc_proc_status_data_ (const filesystem::path& fullPath)
+        static proc_status_data_ Readproc_proc_status_data_ (const filesystem::path& fullPath)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::Readproc_proc_status_data_", L"fullPath=%s", Characters::ToString (fullPath).c_str ()};
@@ -1081,7 +1076,7 @@ namespace {
             return result;
         }
         // consider using this as a backup if /procfs/ not present...
-        ProcessMapType capture_using_ps_ ()
+        nonvirtual ProcessMapType capture_using_ps_ ()
         {
             Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::capture_using_ps_"};
             ProcessMapType            result;
@@ -1236,12 +1231,6 @@ namespace {
         using InstrumentRepBase_<_Context>::InstrumentRepBase_;
 
         ProcessMapType capture ()
-        {
-            return capture_ ();
-        }
-
-    private:
-        ProcessMapType capture_ ()
         {
 #if qUseWMICollectionSupport_
             processWMICollectorLock                  = fProcessWMICollector_.rwget ();
@@ -1509,7 +1498,9 @@ namespace {
             }
             return results;
         }
-        Set<pid_t> GetAllProcessIDs_ ()
+
+    private:
+        static Set<pid_t> GetAllProcessIDs_ ()
         {
             DWORD aProcesses[10 * 1024];
             DWORD cbNeeded;
@@ -1527,7 +1518,7 @@ namespace {
             }
             return result;
         }
-        void LookupProcessPath_ (pid_t pid, HANDLE hProcess, optional<String>* processName, optional<filesystem::path>* processEXEPath, optional<pid_t>* parentProcessID, optional<String>* cmdLine, optional<String>* userName)
+        nonvirtual void LookupProcessPath_ (pid_t pid, HANDLE hProcess, optional<String>* processName, optional<filesystem::path>* processEXEPath, optional<pid_t>* parentProcessID, optional<String>* cmdLine, optional<String>* userName)
         {
             RequireNotNull (hProcess);
             RequireNotNull (processEXEPath);
