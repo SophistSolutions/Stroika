@@ -138,7 +138,7 @@ namespace {
     };
 
     struct _Context : SystemPerformance::Support::Context {
-        POSIXSysTimeCaptureContext_ fSysTimeInfo{};
+        optional<POSIXSysTimeCaptureContext_> fLastSysTimeCapture;
     };
 
     struct InstrumentRep_Linux_ : InstrumentRepBase_<_Context> {
@@ -200,9 +200,9 @@ namespace {
          *                             control of the Linux kernel).
          *
          */
-        static inline POSIXSysTimeCaptureContext_ GetSysTimes_ ()
+        static POSIXSysTimeCaptureContext_ GetSysTimes_ ()
         {
-            POSIXSysTimeCaptureContext_ result;
+            POSIXSysTimeCaptureContext_ result{};
             using Characters::String2Float;
             using IO::FileSystem::FileInputStream;
             DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
@@ -210,7 +210,7 @@ namespace {
             // Note - /procfs files always unseekable
             for (Sequence<String> line : reader.ReadMatrix (FileInputStream::New (kFileName_, FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"***in Instruments::CPU::capture_GetSysTimes_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
+                DbgTrace (L"in Instruments::CPU::capture_GetSysTimes_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
 #endif
                 size_t sz = line.size ();
                 if (sz >= 5 and line[0] == L"cpu") {
@@ -239,48 +239,7 @@ namespace {
             double fProcessCPUUsage;
             double fTotalCPUUsage;
         };
-        CPUUsageTimes_ cputime_ ()
-        {
-            POSIXSysTimeCaptureContext_ baseline = _fContext.load ()->fSysTimeInfo;
-            POSIXSysTimeCaptureContext_ newVal   = GetSysTimes_ ();
-            if (_NoteCompletedCapture ()) {
-                _fContext.rwget ().rwref ()->fSysTimeInfo = newVal;
-            }
-
-            // from http://stackoverflow.com/questions/23367857/accurate-calculation-of-cpu-usage-given-in-percentage-in-linux
-            //      Idle=idle+iowait
-            //      NonIdle=user+nice+system+irq+softirq+steal
-            //      Total=Idle+NonIdle # first line of file for all cpus
-
-            double idleTime = 0;
-            idleTime += (newVal.idle - baseline.idle);
-            idleTime += (newVal.iowait - baseline.iowait);
-
-            double processNonIdleTime = 0;
-            processNonIdleTime += (newVal.user - baseline.user);
-            processNonIdleTime += (newVal.nice - baseline.nice);
-            processNonIdleTime += (newVal.system - baseline.system);
-
-            double nonIdleTime = processNonIdleTime;
-            nonIdleTime += (newVal.irq - baseline.irq);
-            nonIdleTime += (newVal.softirq - baseline.softirq);
-
-            double totalTime = idleTime + nonIdleTime;
-            if (Math::NearlyEquals<double> (totalTime, 0)) {
-                // can happen if called too quickly together. No good answer
-                DbgTrace ("Warning - times too close together for cputime_");
-                return CPUUsageTimes_{};
-            }
-            Assert (totalTime > 0);
-            double totalProcessCPUUsage = processNonIdleTime / totalTime;
-            double totalCPUUsage        = nonIdleTime / totalTime;
-            return CPUUsageTimes_{totalProcessCPUUsage, totalCPUUsage};
-        }
-        Info capture ()
-        {
-            return capture_ ();
-        }
-        Info capture_ ()
+        nonvirtual Info _InternalCapture ()
         {
             Info result;
 #if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
@@ -299,9 +258,48 @@ namespace {
                 }
             }
 #endif
-            auto tmp                     = cputime_ ();
-            result.fTotalProcessCPUUsage = tmp.fProcessCPUUsage;
-            result.fTotalCPUUsage        = tmp.fTotalCPUUsage;
+            auto getCPUTime = [&] (POSIXSysTimeCaptureContext_* referenceValue) -> optional<CPUUsageTimes_> {
+                POSIXSysTimeCaptureContext_ newVal = GetSysTimes_ ();
+                *referenceValue                    = newVal;
+                if (auto baseline = _fContext.load ()->fLastSysTimeCapture) {
+                    // from http://stackoverflow.com/questions/23367857/accurate-calculation-of-cpu-usage-given-in-percentage-in-linux
+                    //      Idle=idle+iowait
+                    //      NonIdle=user+nice+system+irq+softirq+steal
+                    //      Total=Idle+NonIdle # first line of file for all cpus
+                    double idleTime = 0;
+                    idleTime += (newVal.idle - baseline->idle);
+                    idleTime += (newVal.iowait - baseline->iowait);
+
+                    double processNonIdleTime = 0;
+                    processNonIdleTime += (newVal.user - baseline->user);
+                    processNonIdleTime += (newVal.nice - baseline->nice);
+                    processNonIdleTime += (newVal.system - baseline->system);
+
+                    double nonIdleTime = processNonIdleTime;
+                    nonIdleTime += (newVal.irq - baseline->irq);
+                    nonIdleTime += (newVal.softirq - baseline->softirq);
+
+                    double totalTime = idleTime + nonIdleTime;
+                    if (Math::NearlyEquals<double> (totalTime, 0)) {
+                        // can happen if called too quickly together. No good answer
+                        DbgTrace ("Warning - times too close together for cputime_");
+                        return nullopt;
+                    }
+                    Assert (totalTime > 0);
+                    double totalProcessCPUUsage = processNonIdleTime / totalTime;
+                    double totalCPUUsage        = nonIdleTime / totalTime;
+                    return CPUUsageTimes_{totalProcessCPUUsage, totalCPUUsage};
+                }
+                return nullopt;
+            };
+            POSIXSysTimeCaptureContext_ referenceValue{};
+            if (auto tmp = getCPUTime (&referenceValue)) {
+                result.fTotalProcessCPUUsage = tmp->fProcessCPUUsage;
+                result.fTotalCPUUsage        = tmp->fTotalCPUUsage;
+            }
+            if (_NoteCompletedCapture ()) {
+                _fContext.rwget ().rwref ()->fLastSysTimeCapture = referenceValue;
+            }
             return result;
         }
     };
@@ -316,7 +314,7 @@ namespace {
         double UserTime;
     };
     struct _Context : SystemPerformance::Support::Context {
-        WinSysTimeCaptureContext_ fSysTimeInfo{};
+        optional<WinSysTimeCaptureContext_> fLastSysTimeInfoSnapshot{};
 #if qUseWMICollectionSupport_
         WMICollector fSystemWMICollector_{L"System"sv, {kInstanceName_}, {kProcessorQueueLength_}};
 #endif
@@ -326,62 +324,62 @@ namespace {
 
         using InstrumentRepBase_<_Context>::InstrumentRepBase_;
 
-        static inline double GetAsSeconds_ (FILETIME ft)
+        nonvirtual Info _InternalCapture ()
         {
-            ULARGE_INTEGER ui;
-            ui.LowPart  = ft.dwLowDateTime;
-            ui.HighPart = ft.dwHighDateTime;
-            // convert from 100-nanosecond units
-            return static_cast<double> (ui.QuadPart) / 10000000;
-        }
-        static inline WinSysTimeCaptureContext_ GetSysTimes_ ()
-        {
-            FILETIME curIdleTime_{};
-            FILETIME curKernelTime_{};
-            FILETIME curUserTime_{};
-            Verify (::GetSystemTimes (&curIdleTime_, &curKernelTime_, &curUserTime_));
-            return WinSysTimeCaptureContext_{GetAsSeconds_ (curIdleTime_), GetAsSeconds_ (curKernelTime_), GetAsSeconds_ (curUserTime_)};
-        }
-        double cputime_ ()
-        {
-            /*
-             *  This logic seems queer (sys = kern + user, and why isnt numerator userTime?), but is cribbed from
-             *      http://en.literateprograms.org/CPU_usage_%28C,_Windows_XP%29
-             *      http://www.codeproject.com/Articles/9113/Get-CPU-Usage-with-GetSystemTimes
-             */
-            WinSysTimeCaptureContext_ baseline        = _fContext.load ()->fSysTimeInfo;
-            WinSysTimeCaptureContext_ newVal          = GetSysTimes_ ();
-            _fContext.rwget ().rwref ()->fSysTimeInfo = newVal;
+            auto getCPUTime = [=] (WinSysTimeCaptureContext_* newRawValueToStoreAsNextbaseline) -> optional<double> {
+                RequireNotNull (newRawValueToStoreAsNextbaseline);
+                auto getSysTimes = [] () -> WinSysTimeCaptureContext_ {
+                    auto getAsSeconds = [] (const ::FILETIME& ft) {
+                        ::ULARGE_INTEGER ui;
+                        ui.LowPart  = ft.dwLowDateTime;
+                        ui.HighPart = ft.dwHighDateTime;
+                        return static_cast<double> (ui.QuadPart) / 10000000; // convert from 100-nanosecond units
+                    };
+                    ::FILETIME curIdleTime_{};
+                    ::FILETIME curKernelTime_{};
+                    ::FILETIME curUserTime_{};
+                    Verify (::GetSystemTimes (&curIdleTime_, &curKernelTime_, &curUserTime_));
+                    return WinSysTimeCaptureContext_{getAsSeconds (curIdleTime_), getAsSeconds (curKernelTime_), getAsSeconds (curUserTime_)};
+                };
 
-            double idleTimeOverInterval   = newVal.IdleTime - baseline.IdleTime;
-            double kernelTimeOverInterval = newVal.KernelTime - baseline.KernelTime;
-            double userTimeOverInterval   = newVal.UserTime - baseline.UserTime;
+                WinSysTimeCaptureContext_ newVal  = getSysTimes ();
+                *newRawValueToStoreAsNextbaseline = newVal;
+                if (_fContext.load ()->fLastSysTimeInfoSnapshot) {
+                    WinSysTimeCaptureContext_ baseline               = *_fContext.load ()->fLastSysTimeInfoSnapshot;
+                    double                    idleTimeOverInterval   = newVal.IdleTime - baseline.IdleTime;
+                    double                    kernelTimeOverInterval = newVal.KernelTime - baseline.KernelTime;
+                    double                    userTimeOverInterval   = newVal.UserTime - baseline.UserTime;
+                    /*
+                     *  This logic seems queer (sys = kern + user, and why doesnt denominator include idletime?), but is cribbed from
+                     *      http://en.literateprograms.org/CPU_usage_%28C,_Windows_XP%29
+                     *      http://www.codeproject.com/Articles/9113/Get-CPU-Usage-with-GetSystemTimes
+                     *  Must be that idle time is somehow INCLUDED in either kernel or user time.
+                     */
+                    double sys = kernelTimeOverInterval + userTimeOverInterval;
+                    if (sys > 0) {
+                        double cpu = 1 - idleTimeOverInterval / sys;
+                        return cpu;
+                    }
+                }
+                return nullopt;
+            };
 
-            double sys = kernelTimeOverInterval + userTimeOverInterval;
-            Assert (sys > 0);
-            double cpu = (sys - idleTimeOverInterval) / sys;
-            return cpu;
-        }
-        Info capture_ ()
-        {
-            Info result;
-            result.fTotalCPUUsage        = cputime_ ();
+            Info                      result;
+            WinSysTimeCaptureContext_ newRawValueToStoreAsNextbaseline;
+            result.fTotalCPUUsage        = getCPUTime (&newRawValueToStoreAsNextbaseline);
             result.fTotalProcessCPUUsage = result.fTotalCPUUsage; // @todo fix - remove irq time etc from above? Or add into above if missing
 #if qUseWMICollectionSupport_
-            if (_NoteCompletedCapture ()) {
-                _fContext.rwget ().rwref ()->fSystemWMICollector_.Collect ();
-                Memory::CopyToIf (_fContext.rwget ().rwref ()->fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_), &result.fRunQLength);
-                if (result.fRunQLength) {
-                    Memory::AccumulateIf (&result.fRunQLength, result.fTotalProcessCPUUsage); // both normalized so '1' means all logical cores
-                }
-            }
+            _fContext.rwget ().rwref ()->fSystemWMICollector_.Collect ();
+            Memory::CopyToIf (_fContext.rwget ().rwref ()->fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_), &result.fRunQLength);
+            // "if a computer has multiple processors, you need to divide this value by the number of processors servicing the workload"
+            static const double kTotalNumberOfLogicalCores_ = Configuration::GetSystemConfiguration_CPU ().GetNumberOfLogicalCores (); // assume cannot change while running (with virtualization maybe wrong?)
+            Assert (kTotalNumberOfLogicalCores_ != 0);
+            Memory::AccumulateIf (&result.fRunQLength, kTotalNumberOfLogicalCores_, std::divides{}); // both normalized so '1' means all logical cores
 #endif
+            if (_NoteCompletedCapture ()) {
+                _fContext.rwget ().rwref ()->fLastSysTimeInfoSnapshot = newRawValueToStoreAsNextbaseline;
+            }
             return result;
-        }
-        Info capture ()
-        {
-            Info result;
-            return capture_ ();
         }
     };
 }
@@ -421,11 +419,12 @@ namespace {
         }
         nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
         {
+            // Timerange returned is from time of last context capture, til now. NOTE: this COULD produce overlapping measurement intervals.
             auto before         = _GetCaptureContextTime ();
-            Info rawMeasurement = capture ();
+            Info rawMeasurement = _InternalCapture ();
             if (outMeasuredAt != nullptr) {
                 using Traversal::Openness;
-                *outMeasuredAt = Range<DurationSecondsType> (before, _GetCaptureContextTime ().value_or (Time::GetTickCount ()), Openness::eClosed, Openness::eClosed);
+                *outMeasuredAt = Range<DurationSecondsType> (before, Time::GetTickCount (), Openness::eClosed, Openness::eClosed);
             }
             return rawMeasurement;
         }
@@ -433,20 +432,24 @@ namespace {
         {
             return make_unique<CPUInstrumentRep_> (_fOptions, _fContext.load ());
         }
-        Info capture ()
+        nonvirtual Info _InternalCapture ()
         {
             lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{"Instruments::CPU capture"};
+            Debug::TraceContextBumper ctx{"Instruments::CPU::{}CPUInstrumentRep_::_InternalCapture"};
 #endif
 #if qPlatform_Linux or qPlatform_Windows
-            Info result = inherited::capture ();
+            Info result = inherited::_InternalCapture ();
 #else
             Info result;
 #endif
             // Since values externally acquired, force/assure they are all legit, in range
-            result.fTotalCPUUsage        = Math::PinInRange<double> (result.fTotalCPUUsage, 0, 1);
-            result.fTotalProcessCPUUsage = Math::PinInRange<double> (result.fTotalProcessCPUUsage, 0, result.fTotalCPUUsage); // all process usage is CPU usage (often same but <=)
+            if (result.fTotalCPUUsage) {
+                result.fTotalCPUUsage = Math::PinInRange<double> (*result.fTotalCPUUsage, 0, 1);
+                if (result.fTotalProcessCPUUsage) {
+                    result.fTotalProcessCPUUsage = Math::PinInRange<double> (*result.fTotalProcessCPUUsage, 0, *result.fTotalCPUUsage); // all process usage is CPU usage (often same but <=)
+                }
+            }
             return result;
         }
     };
@@ -473,8 +476,8 @@ const ObjectVariantMapper Instruments::CPU::Instrument::kObjectVariantMapper = [
 #if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
         {L"Load-Average", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fLoadAverage), StructFieldInfo::eOmitNullFields},
 #endif
-            {L"Total-Process-CPU-Usage", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fTotalProcessCPUUsage)},
-            {L"Total-CPU-Usage", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fTotalCPUUsage)},
+            {L"Total-Process-CPU-Usage", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fTotalProcessCPUUsage), StructFieldInfo::eOmitNullFields},
+            {L"Total-CPU-Usage", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fTotalCPUUsage), StructFieldInfo::eOmitNullFields},
             {L"Run-Q-Length", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fRunQLength), StructFieldInfo::eOmitNullFields},
     });
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
