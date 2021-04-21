@@ -231,7 +231,7 @@ Collection<DiskInfoType> FileSystem::GetAvailableDisks ()
 #endif
 
     for (int i = 0; i < 64; i++) {
-        HANDLE hHandle = ::CreateFileW (GetPhysNameForDriveNumber_ (i).c_str (), GENERIC_READ, FILE_SHARE_WRITE | FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+        HANDLE hHandle = ::CreateFileW (GetPhysNameForDriveNumber_ (i).c_str (), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
         if (hHandle == INVALID_HANDLE_VALUE) {
             break;
         }
