@@ -70,7 +70,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Filesystem {
     using MountedFilesystemNameType = filesystem::path;
 
     /**
-     *
+     *  \todo This is NYI, for Linux (https://stroika.atlassian.net/browse/STK-733)
      */
     struct DiskInfoType {
         /*
@@ -236,7 +236,8 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Filesystem {
         bool fIncludeSystemDevices{true};
 
         /**
-         *
+         *  On some operating systems, we can gather performance statistics only for raw disks, and not for individual filesystems (I think AIX worked that way).
+         *  Turning this true will apply the disk stats as a GUESS (proportional to size) to filesystem IO stats.
          */
         bool fEstimateFilesystemStatsFromDiskStatsIfHelpful{false};
     };
@@ -246,6 +247,8 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Filesystem {
      * 
      *  \note Constructing the instrument does no capturing (so sb quick/cheap) - capturing starts when you
      *        first call i.Capture()
+     * 
+     *  \note   On Windows, Physical Disk info is only captured if running as administrator (not dug into why, maybe peculiarity of system settings)
      */
     struct Instrument : SystemPerformance::Instrument {
     public:

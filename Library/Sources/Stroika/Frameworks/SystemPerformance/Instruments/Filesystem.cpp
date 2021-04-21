@@ -82,7 +82,7 @@ optional<double> IOStatsType::EstimatedPercentInUse () const
     if (fInUsePercent) {
         return fInUsePercent;
     }
-    // %InUse = QL / (1 + QL).
+    // %InUse = QL / (1 + QL)
     if (fQLength) {
         double QL = *fQLength;
         Require (0 <= QL);
@@ -264,19 +264,12 @@ namespace {
 
     struct InstrumentRep_Linux_ : InstrumentRepBase_<_Context> {
     public:
-        InstrumentRep_Linux_ (const Options& options, const shared_ptr<_Context>& context)
-            : InstrumentRepBase_<_Context>{options, context}
-        {
-        }
+        using InstrumentRepBase_<_Context>::InstrumentRepBase_;
 
-        Info capture ()
-        {
-            return capture_ ();
-        }
-        Info capture_ ()
+        nonvirtual Info _InternalCapture ()
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{"Instruments::Filesystem...InstrumentRep_Linux_::capture_"};
+            Debug::TraceContextBumper ctx{"Instruments::Filesystem...InstrumentRep_Linux_::capture"};
 #endif
             Info results;
 
@@ -306,7 +299,7 @@ namespace {
         }
 
     private:
-        Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> ReadVolumesAndUsageFromProcMountsAndstatvfs_ ()
+        static Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> ReadVolumesAndUsageFromProcMountsAndstatvfs_ ()
         {
             Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> result;
             for (IO::FileSystem::MountedFilesystemType mi : IO::FileSystem::GetMountedFilesystems ()) {
@@ -323,7 +316,7 @@ namespace {
         }
 
     private:
-        void UpdateVolumeInfo_statvfs_ (const filesystem::path& mountedOnName, MountedFilesystemInfoType* v)
+        static void UpdateVolumeInfo_statvfs_ (const filesystem::path& mountedOnName, MountedFilesystemInfoType* v)
         {
             RequireNotNull (v);
             struct statvfs sbuf {
@@ -342,7 +335,7 @@ namespace {
         }
 
     private:
-        void ReadAndApplyProcFS_diskstats_ (Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>* volumes)
+        nonvirtual void ReadAndApplyProcFS_diskstats_ (Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>* volumes)
         {
             try {
                 Mapping<dev_t, PerfStats_> diskStats            = ReadProcFS_diskstats_ ();
@@ -404,7 +397,7 @@ namespace {
         }
 
     private:
-        optional<filesystem::path> GetSysBlockDirPathForDevice_ (const String& deviceName)
+        static optional<filesystem::path> GetSysBlockDirPathForDevice_ (const String& deviceName)
         {
             Require (not deviceName.empty ());
             Require (not deviceName.Contains (L"/"));
@@ -413,7 +406,7 @@ namespace {
             //
             // I don't understand this well yet, but this appears to temporarily allow us to limp along --LGP 2015-07-10
             //tmphack
-            static const filesystem::path kSysBlock_{"/sys/block"};
+            static const filesystem::path kSysBlock_{"/sys/block"sv};
             filesystem::path              tmp{kSysBlock_ / IO::FileSystem::ToPath (deviceName)};
             if (IO::FileSystem::Default ().Access (tmp)) {
                 return tmp;
@@ -427,7 +420,7 @@ namespace {
         }
 
     private:
-        uint32_t GetSectorSize_ (const String& deviceName)
+        nonvirtual uint32_t GetSectorSize_ (const String& deviceName)
         {
             auto o = _fContext.load ()->fDeviceName2SectorSizeMap_.Lookup (deviceName);
             if (not o.has_value ()) {
@@ -447,7 +440,8 @@ namespace {
         }
 
     private:
-        Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> RunDF_POSIX_ ()
+        // CURRENTLY UNUSED, but COULD be used on MacOS to gather some stats... -- LGP 2021-04-21
+        static Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> RunDF_POSIX_ ()
         {
             Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> result;
             ProcessRunner                                                 pr{L"/bin/df -k -P"};
@@ -503,7 +497,7 @@ namespace {
             }
             return result;
         }
-        Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> RunDF_ (bool includeFSTypes)
+        static Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> RunDF_ (bool includeFSTypes)
         {
             Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> result;
             //
@@ -556,7 +550,7 @@ namespace {
             }
             return result;
         }
-        Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> RunDF_ ()
+        static Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> RunDF_ ()
         {
             try {
                 return RunDF_ (true);
@@ -567,12 +561,12 @@ namespace {
         }
 
     private:
-        Mapping<dev_t, PerfStats_> ReadProcFS_diskstats_ ()
+        static Mapping<dev_t, PerfStats_> ReadProcFS_diskstats_ ()
         {
             using Characters::String2Float;
             Mapping<dev_t, PerfStats_>                             result;
             DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
-            static const filesystem::path                          kProcMemInfoFileName_{"/proc/diskstats"};
+            static const filesystem::path                          kProcMemInfoFileName_{"/proc/diskstats"sv};
             // Note - /procfs files always unseekable
             for (Sequence<String> line : reader.ReadMatrix (FileInputStream::New (kProcMemInfoFileName_, FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -630,83 +624,47 @@ namespace {
 
 #if qPlatform_Windows
 namespace {
+
     struct _Context : SystemPerformance::Support::Context {
 #if qUseWMICollectionSupport_
+        // for collecting IO statistics
         WMICollector fLogicalDiskWMICollector_{
             L"LogicalDisk"sv, {}, {kDiskReadBytesPerSec_, kDiskWriteBytesPerSec_, kDiskReadsPerSec_, kDiskWritesPerSec_, (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_ ? kPctDiskReadTime_ : kAveDiskReadQLen_), (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_ ? kPctDiskWriteTime_ : kAveDiskWriteQLen_), kPctIdleTime_}};
 #endif
     };
-    struct InstrumentRep_Windows_ : InstrumentRepBase_<_Context> {
 
-        InstrumentRep_Windows_ (const Options& options, const shared_ptr<_Context>& context)
-            : InstrumentRepBase_<_Context>{options, context}
-        {
-        }
-        Info capture ()
-        {
-            return capture_ ();
-        }
-        Info capture_ ()
+    struct InstrumentRep_Windows_ : InstrumentRepBase_<_Context> {
+        using InstrumentRepBase_<_Context>::InstrumentRepBase_;
+
+        nonvirtual Info _InternalCapture ()
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{"Instruments::Filesystem...InstrumentRep_Windows_::capture_"};
-#endif
-            Info results = capture_Windows_GetVolumeInfo_ ();
-            _NoteCompletedCapture ();
-            return results;
-        }
-
-    private:
-        optional<String> GetDeviceNameForVolumneName_ (const String& volumeName)
-        {
-            //  use
-            //      http://msdn.microsoft.com/en-us/library/windows/desktop/cc542456(v=vs.85).aspx
-            //      CharCount = QueryDosDeviceW(&VolumeName[4], DeviceName, ARRAYSIZE(DeviceName));
-            //      to get DEVICENAME
-            //
-            String tmp = volumeName;
-            //  Skip the \\?\ prefix and remove the trailing backslash.
-            //  QueryDosDeviceW does not allow a trailing backslash,
-            //  so temporarily remove it.
-            if (tmp.length () < 5 or
-                tmp[0] != L'\\' ||
-                tmp[1] != L'\\' ||
-                tmp[2] != L'?' ||
-                tmp[3] != L'\\' ||
-                tmp[tmp.length () - 1] != L'\\') {
-                //Error = ERROR_BAD_PATHNAME;
-                //wprintf(L"FindFirstVolumeW/FindNextVolumeW returned a bad path: %s\n", VolumeName);
-                return nullopt;
-            }
-            tmp = tmp.SubString (4, -1);
-
-            WCHAR deviceName[MAX_PATH] = L"";
-            if (::QueryDosDeviceW (tmp.c_str (), deviceName, ARRAYSIZE (deviceName)) != 0) {
-                return String{deviceName};
-            }
-            return nullopt;
-        }
-
-        Info capture_Windows_GetVolumeInfo_ ()
-        {
-            // Could probably usefully optimize to not capture if no drives because we can only get this when running as
-            // Admin, and for now, we capture little useful information at the drive level. But - we may eventually capture more...
-            Collection<IO::FileSystem::DiskInfoType> physDrives = IO::FileSystem::GetAvailableDisks ();
-
-#if qUseWMICollectionSupport_
-            Time::DurationSecondsType timeOfPrevCollection = _fContext.load ()->fLogicalDiskWMICollector_.GetTimeOfLastCollection ();
-            if (_fOptions.fIOStatistics) {
-                _fContext.rwget ().rwref ()->fLogicalDiskWMICollector_.Collect ();
-            }
-            Time::DurationSecondsType timeCollecting{_fContext.load ()->fLogicalDiskWMICollector_.GetTimeOfLastCollection () - timeOfPrevCollection};
+            Debug::TraceContextBumper ctx{"Instruments::Filesystem...InstrumentRep_Windows_::_InternalCapture"};
 #endif
             Info result;
 
+            // Could probably usefully optimize to not capture if no drives because we can only get this when running as
+            // Admin, and for now, we capture little useful information at the drive level. But - we may eventually capture more...
+            Collection<IO::FileSystem::DiskInfoType> physDrives = IO::FileSystem::GetAvailableDisks ();
             for (IO::FileSystem::DiskInfoType pd : physDrives) {
                 DiskInfoType di{};
                 di.fSizeInBytes = pd.fSizeInBytes;
                 result.fDisks.Add (pd.fDeviceName, di);
             }
+
+#if qUseWMICollectionSupport_
+            optional<Time::DurationSecondsType> timeCollecting;
+            {
+                optional<Time::DurationSecondsType> timeOfPrevCollection = _fContext.load ()->fLogicalDiskWMICollector_.GetTimeOfLastCollection ();
+                if (_fOptions.fIOStatistics) {
+                    _fContext.rwget ().rwref ()->fLogicalDiskWMICollector_.Collect ();
+                }
+                if (timeOfPrevCollection) {
+                    // time of lastCollection - once set, cannot become unset
+                    timeCollecting = *_fContext.load ()->fLogicalDiskWMICollector_.GetTimeOfLastCollection () - *timeOfPrevCollection;
+                }
+            }
+#endif
 
             for (IO::FileSystem::MountedFilesystemType mfinfo : IO::FileSystem::GetMountedFilesystems ()) {
                 MountedFilesystemInfoType v;
@@ -744,13 +702,13 @@ namespace {
                     ULARGE_INTEGER         freeBytesAvailable{};
                     ULARGE_INTEGER         totalNumberOfBytes{};
                     ULARGE_INTEGER         totalNumberOfFreeBytes{};
-                    [[maybe_unused]] DWORD xxx = ::GetDiskFreeSpaceEx (mfinfo.fMountedOn.c_str (), &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes);
-                    v.fSizeInBytes             = totalNumberOfBytes.QuadPart;
-                    v.fUsedSizeInBytes         = *v.fSizeInBytes - freeBytesAvailable.QuadPart;
-                    v.fAvailableSizeInBytes    = *v.fSizeInBytes - *v.fUsedSizeInBytes;
+                    [[maybe_unused]] DWORD ignored = ::GetDiskFreeSpaceEx (mfinfo.fMountedOn.c_str (), &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes);
+                    v.fSizeInBytes                 = totalNumberOfBytes.QuadPart;
+                    v.fUsedSizeInBytes             = *v.fSizeInBytes - freeBytesAvailable.QuadPart;
+                    v.fAvailableSizeInBytes        = *v.fSizeInBytes - *v.fUsedSizeInBytes;
 #if qUseWMICollectionSupport_
                     auto safePctInUse2QL_ = [] (double pctInUse) {
-                        // %InUse = QL / (1 + QL).
+                        // %InUse = QL / (1 + QL)
                         pctInUse /= 100;
                         pctInUse = Math::PinInRange<double> (pctInUse, 0, 1);
                         return pctInUse / (1 - pctInUse);
@@ -760,11 +718,13 @@ namespace {
                         _fContext.rwget ().rwref ()->fLogicalDiskWMICollector_.AddInstancesIf (wmiInstanceName);
 
                         IOStatsType readStats;
-                        if (auto o = _fContext.rwget ().rwref ()->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadBytesPerSec_)) {
-                            readStats.fBytesTransfered = *o * timeCollecting;
-                        }
-                        if (auto o = _fContext.rwget ().rwref ()->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadsPerSec_)) {
-                            readStats.fTotalTransfers = *o * timeCollecting;
+                        if (timeCollecting) {
+                            if (auto o = _fContext.rwget ().rwref ()->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadBytesPerSec_)) {
+                                readStats.fBytesTransfered = *o * *timeCollecting;
+                            }
+                            if (auto o = _fContext.rwget ().rwref ()->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadsPerSec_)) {
+                                readStats.fTotalTransfers = *o * *timeCollecting;
+                            }
                         }
                         if (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_) {
                             if (auto o = _fContext.rwget ().rwref ()->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskReadTime_)) {
@@ -780,11 +740,13 @@ namespace {
                         }
 
                         IOStatsType writeStats;
-                        if (auto o = _fContext.rwget ().rwref ()->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWriteBytesPerSec_)) {
-                            writeStats.fBytesTransfered = *o * timeCollecting;
-                        }
-                        if (auto o = _fContext.rwget ().rwref ()->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWritesPerSec_)) {
-                            writeStats.fTotalTransfers = *o * timeCollecting;
+                        if (timeCollecting) {
+                            if (auto o = _fContext.rwget ().rwref ()->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWriteBytesPerSec_)) {
+                                writeStats.fBytesTransfered = *o * *timeCollecting;
+                            }
+                            if (auto o = _fContext.rwget ().rwref ()->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWritesPerSec_)) {
+                                writeStats.fTotalTransfers = *o * *timeCollecting;
+                            }
                         }
                         if (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_) {
                             if (auto o = _fContext.rwget ().rwref ()->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskWriteTime_)) {
@@ -836,101 +798,46 @@ namespace {
                 }
                 result.fMountedFilesystems.Add (mfinfo.fMountedOn, v);
             }
+            _NoteCompletedCapture ();
             return result;
         }
+
+    private:
+// As of 2021-04-21, this is UNUSED. Not sure what it was for. Leave around for a bit longer, and then delete...
+#if 0
+        static optional<String> GetDeviceNameForVolumneName_ (const String& volumeName)
+        {
+            //  use
+            //      http://msdn.microsoft.com/en-us/library/windows/desktop/cc542456(v=vs.85).aspx
+            //      CharCount = QueryDosDeviceW(&VolumeName[4], DeviceName, ARRAYSIZE(DeviceName));
+            //      to get DEVICENAME
+            //
+            String tmp = volumeName;
+            //  Skip the \\?\ prefix and remove the trailing backslash.
+            //  QueryDosDeviceW does not allow a trailing backslash,
+            //  so temporarily remove it.
+            if (tmp.length () < 5 or
+                tmp[0] != L'\\' ||
+                tmp[1] != L'\\' ||
+                tmp[2] != L'?' ||
+                tmp[3] != L'\\' ||
+                tmp[tmp.length () - 1] != L'\\') {
+                //Error = ERROR_BAD_PATHNAME;
+                //wprintf(L"FindFirstVolumeW/FindNextVolumeW returned a bad path: %s\n", VolumeName);
+                return nullopt;
+            }
+            tmp = tmp.SubString (4, -1);
+
+            WCHAR deviceName[MAX_PATH] = L"";
+            if (::QueryDosDeviceW (tmp.c_str (), deviceName, ARRAYSIZE (deviceName)) != 0) {
+                return String{deviceName};
+            }
+            return nullopt;
+        }
+#endif
     };
 }
 #endif
-
-namespace {
-    Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> ApplyDiskStatsToMissingFileSystemStats_ (const Mapping<DynamicDiskIDType, DiskInfoType>& disks, const Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>& fileSystems)
-    {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{"Instruments::Filesystem ... ApplyDiskStatsToMissingFileSystemStats_"};
-#endif
-        // Each FS will have some stats about disk usage, and we want to use those to relatively weight the stats from the disk usage when
-        // applied back to other FS stats.
-        //
-        // So first compute the total stat per disk
-        using WeightingStat2UseType = double;
-        Mapping<DynamicDiskIDType, WeightingStat2UseType> totalWeights;
-        for (KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType> i : fileSystems) {
-            Set<DynamicDiskIDType> disksForFS = NullCoalesce (i.fValue.fOnPhysicalDrive);
-            if (disksForFS.size () > 0) {
-                WeightingStat2UseType weightForFS = NullCoalesce (NullCoalesce (i.fValue.fCombinedIOStats).fBytesTransfered);
-                weightForFS /= disksForFS.size ();
-                for (DynamicDiskIDType di : disksForFS) {
-                    totalWeights.Add (di, totalWeights.LookupValue (di) + weightForFS); // accumulate relative application to each disk
-                }
-            }
-        }
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-        {
-            Debug::TraceContextBumper ctx1{"Weighted disk stats"};
-            for (const auto& i : totalWeights) {
-                DbgTrace (L"Disk '%s' weight %f", i.fKey.c_str (), i.fValue);
-            }
-        }
-#endif
-
-        // At this point, for all disks with stats we can attribute back to a filesystem - we have the relative total of bytes xfered per disk
-
-        /*
-         *  Now walk the filesystem objects, and their stats, and replace the fInUsePCT and fQLength stats with weighted values from
-         *  the disks, based on their relative number of byte IO.
-         *
-         *  This will not work well, but will work better than anything else I can think of, and have the NICE effect of at least not counting
-         *  filesystems that are not doing any IO.
-         */
-        Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> newFilessytems;
-        if (totalWeights.size () >= 1) {
-            for (KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType> i : fileSystems) {
-                MountedFilesystemInfoType mfi        = i.fValue;
-                Set<DynamicDiskIDType>    disksForFS = NullCoalesce (mfi.fOnPhysicalDrive);
-                if (disksForFS.size () > 0) {
-                    WeightingStat2UseType weightForFS = NullCoalesce (NullCoalesce (i.fValue.fCombinedIOStats).fBytesTransfered);
-                    weightForFS /= disksForFS.size ();
-                    IOStatsType cumStats          = NullCoalesce (mfi.fCombinedIOStats);
-                    bool        computeInuse      = not cumStats.fInUsePercent.has_value ();
-                    bool        computeQLen       = not cumStats.fQLength.has_value ();
-                    bool        computeTotalXFers = not cumStats.fTotalTransfers.has_value ();
-
-                    for (DynamicDiskIDType di : disksForFS) {
-                        IOStatsType diskIOStats = NullCoalesce (disks.LookupValue (di).fCombinedIOStats);
-                        if (weightForFS > 0) {
-                            double scaleFactor = weightForFS / totalWeights.LookupValue (di);
-                            //Assert (0.0 <= scaleFactor and scaleFactor <= 1.0);
-                            scaleFactor = Math::PinInRange (scaleFactor, 0.0, 1.0);
-                            if (computeInuse and diskIOStats.fInUsePercent) {
-                                Memory::AccumulateIf<double> (&cumStats.fInUsePercent, *diskIOStats.fInUsePercent * scaleFactor);
-                            }
-                            if (computeQLen and diskIOStats.fInUsePercent) {
-                                Memory::AccumulateIf<double> (&cumStats.fQLength, *diskIOStats.fQLength * scaleFactor);
-                            }
-                            if (computeTotalXFers and diskIOStats.fTotalTransfers) {
-                                Memory::AccumulateIf<double> (&cumStats.fTotalTransfers, *diskIOStats.fTotalTransfers * scaleFactor);
-                            }
-                        }
-                    }
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    if (computeInuse) {
-                        DbgTrace (L"Adjusted fInUsePCT for filesystem '%s' is %f", i.fKey.c_str (), NullCoalesce (cumStats.fInUsePercent));
-                    }
-                    if (computeQLen) {
-                        DbgTrace (L"Adjusted fQLength for filesystem '%s' is %f", i.fKey.c_str (), NullCoalesce (cumStats.fQLength));
-                    }
-#endif
-                    mfi.fCombinedIOStats = cumStats;
-                }
-                newFilessytems.Add (i.fKey, mfi);
-            }
-            return newFilessytems;
-        }
-        else {
-            return fileSystems;
-        }
-    }
-}
 
 namespace {
     static const MeasurementType kMountedVolumeUsage_ = MeasurementType{L"Mounted-Filesystem-Usage"sv};
@@ -966,11 +873,12 @@ namespace {
         }
         nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
         {
-            auto before         = _GetCaptureContextTime ();
-            Info rawMeasurement = capture ();
+            // Timerange returned is from time of last context capture, til now. NOTE: this COULD produce overlapping measurement intervals.
+            auto before         = _GetCaptureContextTime ().value_or (0);
+            Info rawMeasurement = _InternalCapture ();
             if (outMeasuredAt != nullptr) {
                 using Traversal::Openness;
-                *outMeasuredAt = Range<DurationSecondsType> (before, _GetCaptureContextTime ().value_or (Time::GetTickCount ()), Openness::eClosed, Openness::eClosed);
+                *outMeasuredAt = Range<DurationSecondsType> (before, Time::GetTickCount (), Openness::eClosed, Openness::eClosed);
             }
             return rawMeasurement;
         }
@@ -978,12 +886,12 @@ namespace {
         {
             return make_unique<FilesystemInstrumentRep_> (_fOptions, _fContext.load ());
         }
-        Info capture ()
+        nonvirtual Info _InternalCapture ()
         {
             lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-            Debug::TraceContextBumper                          ctx{"Instruments::Filesystem capture"};
+            Debug::TraceContextBumper                          ctx{"Instruments::Filesystem _InternalCapture"};
 #if qPlatform_Linux or qPlatform_Windows
-            Info result = inherited::capture ();
+            Info result = inherited::_InternalCapture ();
 #else
             Info result;
 #endif
@@ -991,6 +899,94 @@ namespace {
                 result.fMountedFilesystems = ApplyDiskStatsToMissingFileSystemStats_ (result.fDisks, result.fMountedFilesystems);
             }
             return result;
+        }
+        // rarely used - see fEstimateFilesystemStatsFromDiskStatsIfHelpful in filesystem options
+        static Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> ApplyDiskStatsToMissingFileSystemStats_ (const Mapping<DynamicDiskIDType, DiskInfoType>& disks, const Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>& fileSystems)
+        {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx{"Instruments::Filesystem ... ApplyDiskStatsToMissingFileSystemStats_"};
+#endif
+            // Each FS will have some stats about disk usage, and we want to use those to relatively weight the stats from the disk usage when
+            // applied back to other FS stats.
+            //
+            // So first compute the total stat per disk
+            using WeightingStat2UseType = double;
+            Mapping<DynamicDiskIDType, WeightingStat2UseType> totalWeights;
+            for (KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType> i : fileSystems) {
+                Set<DynamicDiskIDType> disksForFS = NullCoalesce (i.fValue.fOnPhysicalDrive);
+                if (disksForFS.size () > 0) {
+                    WeightingStat2UseType weightForFS = NullCoalesce (NullCoalesce (i.fValue.fCombinedIOStats).fBytesTransfered);
+                    weightForFS /= disksForFS.size ();
+                    for (DynamicDiskIDType di : disksForFS) {
+                        totalWeights.Add (di, totalWeights.LookupValue (di) + weightForFS); // accumulate relative application to each disk
+                    }
+                }
+            }
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            {
+                Debug::TraceContextBumper ctx1{"Weighted disk stats"};
+                for (const auto& i : totalWeights) {
+                    DbgTrace (L"Disk '%s' weight %f", i.fKey.c_str (), i.fValue);
+                }
+            }
+#endif
+
+            // At this point, for all disks with stats we can attribute back to a filesystem - we have the relative total of bytes xfered per disk
+
+            /*
+             *  Now walk the filesystem objects, and their stats, and replace the fInUsePCT and fQLength stats with weighted values from
+             *  the disks, based on their relative number of byte IO.
+             *
+             *  This will not work well, but will work better than anything else I can think of, and have the NICE effect of at least not counting
+             *  filesystems that are not doing any IO.
+             */
+            Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> newFilessytems;
+            if (totalWeights.size () >= 1) {
+                for (KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType> i : fileSystems) {
+                    MountedFilesystemInfoType mfi        = i.fValue;
+                    Set<DynamicDiskIDType>    disksForFS = NullCoalesce (mfi.fOnPhysicalDrive);
+                    if (disksForFS.size () > 0) {
+                        WeightingStat2UseType weightForFS = NullCoalesce (NullCoalesce (i.fValue.fCombinedIOStats).fBytesTransfered);
+                        weightForFS /= disksForFS.size ();
+                        IOStatsType cumStats          = NullCoalesce (mfi.fCombinedIOStats);
+                        bool        computeInuse      = not cumStats.fInUsePercent.has_value ();
+                        bool        computeQLen       = not cumStats.fQLength.has_value ();
+                        bool        computeTotalXFers = not cumStats.fTotalTransfers.has_value ();
+
+                        for (DynamicDiskIDType di : disksForFS) {
+                            IOStatsType diskIOStats = NullCoalesce (disks.LookupValue (di).fCombinedIOStats);
+                            if (weightForFS > 0) {
+                                double scaleFactor = weightForFS / totalWeights.LookupValue (di);
+                                //Assert (0.0 <= scaleFactor and scaleFactor <= 1.0);
+                                scaleFactor = Math::PinInRange (scaleFactor, 0.0, 1.0);
+                                if (computeInuse and diskIOStats.fInUsePercent) {
+                                    Memory::AccumulateIf<double> (&cumStats.fInUsePercent, *diskIOStats.fInUsePercent * scaleFactor);
+                                }
+                                if (computeQLen and diskIOStats.fInUsePercent) {
+                                    Memory::AccumulateIf<double> (&cumStats.fQLength, *diskIOStats.fQLength * scaleFactor);
+                                }
+                                if (computeTotalXFers and diskIOStats.fTotalTransfers) {
+                                    Memory::AccumulateIf<double> (&cumStats.fTotalTransfers, *diskIOStats.fTotalTransfers * scaleFactor);
+                                }
+                            }
+                        }
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                        if (computeInuse) {
+                            DbgTrace (L"Adjusted fInUsePCT for filesystem '%s' is %f", i.fKey.c_str (), NullCoalesce (cumStats.fInUsePercent));
+                        }
+                        if (computeQLen) {
+                            DbgTrace (L"Adjusted fQLength for filesystem '%s' is %f", i.fKey.c_str (), NullCoalesce (cumStats.fQLength));
+                        }
+#endif
+                        mfi.fCombinedIOStats = cumStats;
+                    }
+                    newFilessytems.Add (i.fKey, mfi);
+                }
+                return newFilessytems;
+            }
+            else {
+                return fileSystems;
+            }
         }
     };
 }
