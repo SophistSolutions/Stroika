@@ -322,7 +322,7 @@ namespace {
 
     struct InstrumentRep_Linux_ : InstrumentRepBase_<_Context> {
 
-       using InstrumentRepBase_<_Context>::InstrumentRepBase_;
+        using InstrumentRepBase_<_Context>::InstrumentRepBase_;
 
         ProcessMapType capture ()
         {
@@ -1233,7 +1233,7 @@ namespace {
 
     struct InstrumentRep_Windows_ : InstrumentRepBase_<_Context> {
 
-       using InstrumentRepBase_<_Context>::InstrumentRepBase_;
+        using InstrumentRepBase_<_Context>::InstrumentRepBase_;
 
         ProcessMapType capture ()
         {
@@ -1366,7 +1366,7 @@ namespace {
                     }
                 }
                 ProcessType processInfo;
-                bool        grabStaticData = _fOptions.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not _fContext.cget().cref ()->fStaticSuppressedAgain.Contains (pid);
+                bool        grabStaticData = _fOptions.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not _fContext.cget ().cref ()->fStaticSuppressedAgain.Contains (pid);
                 {
                     HANDLE hProcess = ::OpenProcess (PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
                     if (hProcess != nullptr) {
