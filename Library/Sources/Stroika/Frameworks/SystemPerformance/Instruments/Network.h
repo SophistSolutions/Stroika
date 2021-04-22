@@ -143,7 +143,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Network {
     /**
      *  To control the behavior of the instrument.
      *
-     *      @todo add option controlling if we return details and if we return sumamry
+     *      @todo add option controlling if we return details and if we return summary
      */
     struct Options {
         /**

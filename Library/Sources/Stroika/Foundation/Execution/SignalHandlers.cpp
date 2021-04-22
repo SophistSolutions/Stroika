@@ -601,7 +601,7 @@ Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD void SignalHandlerRegistry
      *       BUT - worse than deadlocking this thread (thats bad enuf) - we acquired a lock on AssertExternallySynchronizedLock
      *       which we will never give up, and kill any other thread doing much of anything.
      *
-     *   SUMAMRY:
+     *   SUMMARY:
      *      >   THIS CODE - CAN NEVER SAFELY CALL MALLOC!!!!
      *      >   Be CAREFUL to do as little as possible here.
      */
