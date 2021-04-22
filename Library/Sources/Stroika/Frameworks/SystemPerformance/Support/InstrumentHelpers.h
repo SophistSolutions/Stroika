@@ -60,6 +60,20 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
         // not update the _fContext data used for computing future references / averages)
         bool _NoteCompletedCapture (DurationSecondsType at = Time::GetTickCount ());
 
+    protected:
+        template <typename INFO_TYPE>
+        nonvirtual INFO_TYPE Do_Capture_Raw (function<INFO_TYPE ()> internalCapture, Range<DurationSecondsType>* outMeasuredAt)
+        {
+            // Timerange returned is from time of last context capture, til now. NOTE: this COULD produce overlapping measurement intervals.
+            auto      before         = _GetCaptureContextTime ().value_or (0);
+            INFO_TYPE rawMeasurement = internalCapture ();
+            if (outMeasuredAt != nullptr) {
+                using Traversal::Openness;
+                *outMeasuredAt = Range<DurationSecondsType> (before, _GetCaptureContextTime ().value_or (Time::GetTickCount ()), Openness::eClosed, Openness::eClosed);
+            }
+            return rawMeasurement;
+        }
+
     public:
         virtual shared_ptr<Instrument::ICaptureContext> GetContext () const override
         {
