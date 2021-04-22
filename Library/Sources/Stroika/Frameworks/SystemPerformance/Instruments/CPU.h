@@ -24,6 +24,8 @@
  *      @todo   Consider making fTotalProcessCPUUsage and fTotalCPUUsage from Info struct - 0..N where N is numebr of CPUs.
  *              Reason is just for consistency sake with data returned in Process  module. OR - make the inverse
  *              change there? But it would be better if these were consistent.
+ * 
+ *              <<<maybe make this change AND add number of logical cores - and maybe more info from config>>>
  *
  *      @todo   GetSystemConfiguration_CPU ().GetNumberOfLogicalCores () is cached on Linux, but CAN change while running (crazy - right?)
  *              But so rare and so costly to recompute. Find a way to compromise.

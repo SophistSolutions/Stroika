@@ -62,11 +62,17 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Process {
          *   on windows, this is in the form of username@domain if a domain is present
          */
         optional<String>                  fUserName;
+
         optional<String>                  fCommandLine;
         optional<filesystem::path>        fCurrentWorkingDirectory;
         optional<Mapping<String, String>> fEnvironmentVariables;
         optional<filesystem::path>        fEXEPath;
-        optional<filesystem::path>        fRoot; // chroot
+
+        /**
+         * can be differnt than / if chroot()
+         */
+        optional<filesystem::path>        fRoot;
+
         optional<Time::DateTime>          fProcessStartedAt;
 
         /**
@@ -174,7 +180,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Process {
 
         /**
          *  Average CPU time used / second over this collection interval. This when available - is logically
-         *  fTotalCPUTimeEverUsed-PREV.fTotalCPUTimeEverUsed)/measurement_time;
+         *  (fTotalCPUTimeEverUsed-PREV.fTotalCPUTimeEverUsed)/measurement_time;
          *
          *  So - if you have two cores running constantly, this returns 2.0;
          */

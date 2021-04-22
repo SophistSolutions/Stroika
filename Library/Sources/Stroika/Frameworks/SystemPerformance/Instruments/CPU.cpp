@@ -91,7 +91,7 @@ String Instruments::CPU::Info::ToString () const
 
 namespace {
     template <typename CONTEXT>
-    using  InstrumentRepBase_ = SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT>;
+    using InstrumentRepBase_ = SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT>;
 }
 
 #if qSupport_SystemPerformance_Instruments_CPU_LoadAverage

@@ -293,7 +293,7 @@ namespace {
         Set<pid_t> fStaticSuppressedAgain;
     };
     template <typename CONTEXT>
-    using  InstrumentRepBase_ = SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT>;
+    using InstrumentRepBase_ = SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT>;
 }
 
 #if qPlatform_Linux
