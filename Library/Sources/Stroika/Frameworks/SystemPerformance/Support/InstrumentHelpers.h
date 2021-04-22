@@ -51,14 +51,15 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
         /**
          *  If any stored context information was captured (like for averaging over an interval) - this is the start of that interval.
          */
-        optional<DurationSecondsType> _GetCaptureContextTime () const;
+        nonvirtual optional<DurationSecondsType> _GetCaptureContextTime () const;
 
     protected:
+        // @todo redo docs
         // return true iff actually capture context
         // This looks at the fMinimumAveragingInterval field of fOptions, which obviously must exist for this to be called
         // and if not enuf time has elapsed, just returns false and doesnt update capture time (and caller should then
         // not update the _fContext data used for computing future references / averages)
-        bool _NoteCompletedCapture (DurationSecondsType at = Time::GetTickCount ());
+        nonvirtual void _NoteCompletedCapture (DurationSecondsType at = Time::GetTickCount ());
 
     protected:
         template <typename INFO_TYPE>

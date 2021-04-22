@@ -91,7 +91,22 @@ String Instruments::CPU::Info::ToString () const
 
 namespace {
     template <typename CONTEXT>
-    using InstrumentRepBase_ = SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT>;
+    struct InstrumentRepBase_ : SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT> {
+        using SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT>::InstrumentRep_COMMON;
+        // return true iff actually capture context
+        // This looks at the fMinimumAveragingInterval field of fOptions
+        // and if not enuf time has elapsed, just returns false and doesnt update capture time (and caller should then
+        // not update the _fContext data used for computing future references / averages)
+        bool _NoteCompletedCapture (DurationSecondsType at = Time::GetTickCount ())
+        {
+            AssertNotNull (this->_fContext.cget ().cref ());
+            if (not this->_fContext.rwget ().rwref ()->fCaptureContextAt.has_value () or (at - *this->_fContext.rwget ().rwref ()->fCaptureContextAt) >= this->_fOptions.fMinimumAveragingInterval) {
+                this->_fContext.rwget ().rwref ()->fCaptureContextAt = at;
+                return true;
+            }
+            return false;
+        }
+    };
 }
 
 #if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
@@ -367,7 +382,7 @@ namespace {
             Info                      result;
             WinSysTimeCaptureContext_ newRawValueToStoreAsNextbaseline;
             result.fTotalCPUUsage        = getCPUTime (&newRawValueToStoreAsNextbaseline);
-            result.fTotalProcessCPUUsage = result.fTotalCPUUsage; // @todo fix - remove irq time etc from above? Or add into above if missing
+            result.fTotalProcessCPUUsage = result.fTotalCPUUsage; // @todo fix - WMI - remove irq time etc from above? Or add into above if missing (See counter PRocessor/% Interrupt time) - not from System - but Processor - so new collector object
 #if qUseWMICollectionSupport_
             _fContext.rwget ().rwref ()->fSystemWMICollector_.Collect ();
             Memory::CopyToIf (_fContext.rwget ().rwref ()->fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_), &result.fRunQLength);

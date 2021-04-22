@@ -294,9 +294,19 @@ namespace {
     };
     template <typename CONTEXT>
     struct InstrumentRepBase_ : SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT> {
-        InstrumentRepBase_ (const Options& options, const shared_ptr<CONTEXT>& context = make_shared<CONTEXT> ())
-            : SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT>{options, context}
+        using SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT>::InstrumentRep_COMMON;
+        // return true iff actually capture context
+        // This looks at the fMinimumAveragingInterval field of fOptions
+        // and if not enuf time has elapsed, just returns false and doesnt update capture time (and caller should then
+        // not update the _fContext data used for computing future references / averages)
+        bool _NoteCompletedCapture (DurationSecondsType at = Time::GetTickCount ())
         {
+            AssertNotNull (this->_fContext.cget ().cref ());
+            if (not this->_fContext.rwget ().rwref ()->fCaptureContextAt.has_value () or (at - *this->_fContext.rwget ().rwref ()->fCaptureContextAt) >= this->_fOptions.fMinimumAveragingInterval) {
+                this->_fContext.rwget ().rwref ()->fCaptureContextAt = at;
+                return true;
+            }
+            return false;
         }
     };
 }
@@ -324,7 +334,7 @@ namespace {
 
         using InstrumentRepBase_<_Context>::InstrumentRepBase_;
 
-        ProcessMapType capture ()
+        ProcessMapType _InternalCapture ()
         {
             ProcessMapType result{};
             if (_fOptions.fAllowUse_ProcFS) {
@@ -1230,7 +1240,7 @@ namespace {
 
         using InstrumentRepBase_<_Context>::InstrumentRepBase_;
 
-        ProcessMapType capture ()
+        ProcessMapType _InternalCapture ()
         {
 #if qUseWMICollectionSupport_
             processWMICollectorLock                  = fProcessWMICollector_.rwget ();
@@ -1655,7 +1665,7 @@ namespace {
         nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
         {
             auto before         = _GetCaptureContextTime ();
-            Info rawMeasurement = capture ();
+            Info rawMeasurement = _InternalCapture ();
             if (outMeasuredAt != nullptr) {
                 using Traversal::Openness;
                 *outMeasuredAt = Range<DurationSecondsType> (before, _GetCaptureContextTime ().value_or (Time::GetTickCount ()), Openness::eClosed, Openness::eClosed);
@@ -1666,14 +1676,14 @@ namespace {
         {
             return make_unique<ProcessInstrumentRep_> (_fOptions, _fContext.load ());
         }
-        ProcessMapType capture ()
+        ProcessMapType _InternalCapture ()
         {
             lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{"Instruments::ProcessDetails capture"};
+            Debug::TraceContextBumper ctx{"Instruments::ProcessDetails _InternalCapture"};
 #endif
 #if qPlatform_Linux or qPlatform_Windows
-            return inherited::capture ();
+            return inherited::_InternalCapture ();
 #else
             return ProcessMapType{};
 #endif

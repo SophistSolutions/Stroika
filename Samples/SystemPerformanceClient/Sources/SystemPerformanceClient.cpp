@@ -67,12 +67,12 @@ namespace {
 }
 
 namespace {
-    void Demo_UsingCapturerWithCallbacks_ (Set<InstrumentNameType> run, bool oneLineMode, Duration runFor)
+    void Demo_UsingCapturerWithCallbacks_ (Set<InstrumentNameType> run, bool oneLineMode, Duration captureInterval, Duration runFor)
     {
         Capturer capturer;
         {
             CaptureSet cs;
-            cs.pRunPeriod = 15s;
+            cs.pRunPeriod = captureInterval;
             for (Instrument i : SystemPerformance::GetAllInstruments ()) {
                 if (not run.empty ()) {
                     if (not run.Contains (i.pInstrumentName)) {
@@ -225,7 +225,7 @@ int main (int argc, const char* argv[])
     bool                      printNames            = false;
     bool                      oneLineMode           = false;
     Time::DurationSecondsType runFor                = 0; // default to runfor 0, so we do each once.
-    Time::DurationSecondsType captureInterval       = 1;
+    Time::DurationSecondsType captureInterval       = 15;
     Set<InstrumentNameType>   run;
     Sequence<String>          args = Execution::ParseCommandLine (argc, argv);
     for (auto argi = args.begin (); argi != args.end (); ++argi) {
@@ -293,7 +293,7 @@ int main (int argc, const char* argv[])
             Demo_Using_Capturer_GetMostRecentMeasurements_ ();
         }
         else if (runFor > 0) {
-            Demo_UsingCapturerWithCallbacks_ (run, oneLineMode, Duration{runFor});
+            Demo_UsingCapturerWithCallbacks_ (run, oneLineMode, Duration{captureInterval}, Duration{runFor});
         }
         else {
             Demo_Using_Direct_Capture_On_Instrument_ (run, oneLineMode, Duration{captureInterval});

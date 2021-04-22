@@ -61,17 +61,19 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::CPU {
         /**
          *  This is a number from 0..1, and is the weighted average across all CPU cores (so
          *  even on a 4 core machine, this can never execeed 1).
+         */
+        optional<double> fTotalCPUUsage{};
+
+        /**
+         *  \brief Same as fTotalCPUUsage, except not counting time spent handling interrupts
+         *
+         *  This is a number from 0..1, and is the weighted average across all CPU cores (so
+         *  even on a 4 core machine, this can never execeed 1).
          *
          *  This restricts to process usage identifyable attributed to a process (including system processes).
          *  It does not count time handling interupts.
          */
         optional<double> fTotalProcessCPUUsage{};
-
-        /**
-         *  This is a number from 0..1, and is the weighted average across all CPU cores (so
-         *  even on a 4 core machine, this can never execeed 1).
-         */
-        optional<double> fTotalCPUUsage{};
 
         /**
          *  This is the average number of threads waiting in the run-q (status runnable) / number of logical cores.

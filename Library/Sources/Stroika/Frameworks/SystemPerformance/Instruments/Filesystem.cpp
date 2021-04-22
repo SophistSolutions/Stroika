@@ -168,16 +168,7 @@ namespace {
 
 namespace {
     template <typename CONTEXT>
-    struct InstrumentRepBase_ : SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT> {
-        using SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT>::InstrumentRep_COMMON;
-        // shadow/override to not check fMinimumAveragingInterval
-        bool _NoteCompletedCapture (DurationSecondsType at)
-        {
-            AssertNotNull (this->_fContext.cget ().cref ());
-            this->_fContext.rwget ().rwref ()->fCaptureContextAt = at;
-            return true;
-        }
-    };
+    using InstrumentRepBase_ = SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT>;
 }
 
 #if qPlatform_POSIX

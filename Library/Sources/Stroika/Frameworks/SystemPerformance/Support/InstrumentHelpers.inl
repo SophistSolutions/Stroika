@@ -31,14 +31,17 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
         return _fContext.cget ().cref ()->fCaptureContextAt;
     }
     template <typename OPTIONS, typename CONTEXT>
-    bool InstrumentRep_COMMON<OPTIONS, CONTEXT>::_NoteCompletedCapture (DurationSecondsType at)
+    void InstrumentRep_COMMON<OPTIONS, CONTEXT>::_NoteCompletedCapture (DurationSecondsType at)
     {
         AssertNotNull (_fContext.cget ().cref ());
+        _fContext.rwget ().rwref ()->fCaptureContextAt = at;
+#if 0
         if (not _fContext.rwget ().rwref ()->fCaptureContextAt.has_value () or (at - *_fContext.rwget ().rwref ()->fCaptureContextAt) >= _fOptions.fMinimumAveragingInterval) {
             _fContext.rwget ().rwref ()->fCaptureContextAt = at;
             return true;
         }
         return false;
+#endif
     }
 
 }

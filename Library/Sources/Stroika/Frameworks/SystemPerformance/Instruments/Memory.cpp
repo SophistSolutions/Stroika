@@ -131,19 +131,12 @@ namespace {
 
     struct InstrumentRep_Linux_ : InstrumentRepBase_<_Context> {
 
-        InstrumentRep_Linux_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
-            : InstrumentRepBase_<_Context>{options, context}
-        {
-        }
+        using InstrumentRepBase_<_Context>::InstrumentRepBase_;
 
-        Instruments::Memory::Info capture ()
-        {
-            return capture_ ();
-        }
-        Instruments::Memory::Info capture_ ()
+        Instruments::Memory::Info _InternalCapture ()
         {
             Instruments::Memory::Info result;
-            Read_ProcMemInfo (&result);
+            Read_ProcMemInfo_ (&result);
             try {
                 Read_ProcVMStat_ (&result);
             }
@@ -153,12 +146,14 @@ namespace {
             _NoteCompletedCapture ();
             return result;
         }
-        void Read_ProcMemInfo (Instruments::Memory::Info* updateResult)
+
+    private:
+        static void Read_ProcMemInfo_ (Instruments::Memory::Info* updateResult)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{"Read_ProcMemInfo"};
+            Debug::TraceContextBumper ctx{"Read_ProcMemInfo_"};
 #endif
-            auto ReadMemInfoLine_ = [] (optional<uint64_t>* result, const String& n, const Sequence<String>& line) {
+            auto readMemInfoLine = [] (optional<uint64_t>* result, const String& n, const Sequence<String>& line) {
                 if (line.size () >= 3 and line[0] == n) {
                     String unit   = line[2];
                     double factor = (unit == L"kB") ? 1024 : 1;
@@ -173,7 +168,7 @@ namespace {
              *          We couuld read data and form a map so lookups faster. Or at least keep a list of items alreayd found and not
              *          look for them more, and stop when none left to look for (wont work if some like sreclaimable not found).
              */
-            static const filesystem::path                          kProcMemInfoFileName_{"/proc/meminfo"};
+            static const filesystem::path                          kProcMemInfoFileName_{"/proc/meminfo"sv};
             DataExchange::Variant::CharacterDelimitedLines::Reader reader{{':', ' ', '\t'}};
             // Note - /procfs files always unseekable
             optional<uint64_t> memTotal;
@@ -193,20 +188,20 @@ namespace {
                 static const String kSwapTotalLabel_{L"SwapTotal"sv};
                 static const String kSReclaimableLabel_{L"SReclaimable"sv};
                 static const String kSlabLabel_{L"Slab"sv};
-                ReadMemInfoLine_ (&memTotal, kMemTotalLabel_, line);
-                ReadMemInfoLine_ (&updateResult->fPhysicalMemory.fFree, kMemFreelLabel_, line);
-                ReadMemInfoLine_ (&updateResult->fPhysicalMemory.fAvailable, kMemAvailableLabel_, line);
-                ReadMemInfoLine_ (&updateResult->fPhysicalMemory.fActive, kActiveLabel_, line);
-                ReadMemInfoLine_ (&updateResult->fPhysicalMemory.fInactive, kInactiveLabel_, line);
-                ReadMemInfoLine_ (&updateResult->fVirtualMemory.fCommitLimit, kCommitLimitLabel_, line);
+                readMemInfoLine (&memTotal, kMemTotalLabel_, line);
+                readMemInfoLine (&updateResult->fPhysicalMemory.fFree, kMemFreelLabel_, line);
+                readMemInfoLine (&updateResult->fPhysicalMemory.fAvailable, kMemAvailableLabel_, line);
+                readMemInfoLine (&updateResult->fPhysicalMemory.fActive, kActiveLabel_, line);
+                readMemInfoLine (&updateResult->fPhysicalMemory.fInactive, kInactiveLabel_, line);
+                readMemInfoLine (&updateResult->fVirtualMemory.fCommitLimit, kCommitLimitLabel_, line);
                 /*
                  *  From docs on https://github.com/torvalds/linux/blob/master/Documentation/filesystems/proc.txt about
                  *  Commited_AS - its unclear if this is the best measure of commited bytes.
                  */
-                ReadMemInfoLine_ (&updateResult->fVirtualMemory.fCommittedBytes, kCommitted_ASLabel_, line);
-                ReadMemInfoLine_ (&updateResult->fVirtualMemory.fPagefileTotalSize, kSwapTotalLabel_, line);
-                ReadMemInfoLine_ (&slabReclaimable, kSReclaimableLabel_, line);
-                ReadMemInfoLine_ (&slab, kSlabLabel_, line);
+                readMemInfoLine (&updateResult->fVirtualMemory.fCommittedBytes, kCommitted_ASLabel_, line);
+                readMemInfoLine (&updateResult->fVirtualMemory.fPagefileTotalSize, kSwapTotalLabel_, line);
+                readMemInfoLine (&slabReclaimable, kSReclaimableLabel_, line);
+                readMemInfoLine (&slab, kSlabLabel_, line);
             }
             if (memTotal and updateResult->fPhysicalMemory.fFree and updateResult->fPhysicalMemory.fInactive and updateResult->fPhysicalMemory.fActive) {
                 updateResult->fPhysicalMemory.fOSReserved = *memTotal - *updateResult->fPhysicalMemory.fFree - *updateResult->fPhysicalMemory.fInactive - *updateResult->fPhysicalMemory.fActive;
@@ -219,12 +214,12 @@ namespace {
                 updateResult->fPhysicalMemory.fAvailable = *updateResult->fPhysicalMemory.fFree + *updateResult->fPhysicalMemory.fInactive + NullCoalesce (slabReclaimable);
             }
         }
-        void Read_ProcVMStat_ (Instruments::Memory::Info* updateResult)
+        nonvirtual void Read_ProcVMStat_ (Instruments::Memory::Info* updateResult)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{"Read_ProcVMStat_"};
 #endif
-            auto ReadVMStatLine_ = [] (optional<uint64_t>* result, const String& n, const Sequence<String>& line) -> unsigned int {
+            auto readVMStatLine = [] (optional<uint64_t>* result, const String& n, const Sequence<String>& line) -> unsigned int {
                 if (line.size () >= 2 and line[0] == n) {
                     *result = Characters::String2Int<uint64_t> (line[1]);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -235,7 +230,7 @@ namespace {
                 return 0;
             };
             {
-                static const filesystem::path kProcVMStatFileName_{"/proc/vmstat"};
+                static const filesystem::path kProcVMStatFileName_{"/proc/vmstat"sv};
                 optional<uint64_t>            pgfault;
                 optional<uint64_t>            pgpgout;
                 {
@@ -249,11 +244,11 @@ namespace {
                         static const String kpgfaultLabel_{L"pgfault"sv};
                         static const String kpgpgoutLabel_{L"pgpgout"sv};
                         static const String kpgmajfaultLabel_{L"pgmajfault"sv};
-                        nFound += ReadVMStatLine_ (&pgfault, kpgfaultLabel_, line);
+                        nFound += readVMStatLine (&pgfault, kpgfaultLabel_, line);
                         // Unsure if this should be pgpgout or pgpgout, or none of the above. On a system with no swap, I seem to get both happening,
                         // which makes no sense
-                        nFound += ReadVMStatLine_ (&pgpgout, kpgpgoutLabel_, line); // tried pgpgout but I don't know what it is but doesn't appear to be pages out - noneof this well documented
-                        nFound += ReadVMStatLine_ (&updateResult->fPaging.fMajorPageFaultsSinceBoot, kpgmajfaultLabel_, line);
+                        nFound += readVMStatLine (&pgpgout, kpgpgoutLabel_, line); // tried pgpgout but I don't know what it is but doesn't appear to be pages out - noneof this well documented
+                        nFound += readVMStatLine (&updateResult->fPaging.fMajorPageFaultsSinceBoot, kpgmajfaultLabel_, line);
                         if (nFound >= 3) {
                             break; // avoid reading rest if all found
                         }
@@ -293,7 +288,7 @@ namespace {
     };
     struct InstrumentRep_Windows_ : InstrumentRepBase_<_Context> {
 
-        InstrumentRep_Windows_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
+        InstrumentRep_Windows_ (const Options& options, const shared_ptr<_Context>& context)
             : InstrumentRepBase_<_Context>{options, context}
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -303,7 +298,7 @@ namespace {
 #endif
         }
 
-        Instruments::Memory::Info capture_ ()
+        nonvirtual Instruments::Memory::Info _InternalCapture ()
         {
             Instruments::Memory::Info result;
             uint64_t                  totalRAM{};
@@ -320,11 +315,9 @@ namespace {
             _NoteCompletedCapture ();
             return result;
         }
-        Instruments::Memory::Info capture ()
-        {
-            return capture_ ();
-        }
-        void Read_GlobalMemoryStatusEx_ (Instruments::Memory::Info* updateResult, uint64_t* totalRAM)
+
+    private:
+        static void Read_GlobalMemoryStatusEx_ (Instruments::Memory::Info* updateResult, uint64_t* totalRAM)
         {
             RequireNotNull (totalRAM);
             MEMORYSTATUSEX statex{};
@@ -342,7 +335,7 @@ namespace {
             updateResult->fPhysicalMemory.fActive = statex.ullTotalPhys * statex.dwMemoryLoad / 100;
         }
 #if qUseWMICollectionSupport_
-        void Read_WMI_ (Instruments::Memory::Info* updateResult, uint64_t totalRAM)
+        nonvirtual void Read_WMI_ (Instruments::Memory::Info* updateResult, uint64_t totalRAM)
         {
             auto                 lock      = scoped_lock{_fContext};
             shared_ptr<_Context> rwContext = _fContext.rwget ().rwref ();
@@ -403,26 +396,20 @@ namespace {
         }
         nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
         {
-            auto before         = _GetCaptureContextTime ();
-            Info rawMeasurement = capture ();
-            if (outMeasuredAt != nullptr) {
-                using Traversal::Openness;
-                *outMeasuredAt = Range<DurationSecondsType> (before, _GetCaptureContextTime ().value_or (Time::GetTickCount ()), Openness::eClosed, Openness::eClosed);
-            }
-            return rawMeasurement;
+            return Do_Capture_Raw<Info> ([this] () { return _InternalCapture (); }, outMeasuredAt);
         }
         virtual unique_ptr<IRep> Clone () const override
         {
             return make_unique<MemoryInstrumentRep_> (_fOptions, _fContext.load ());
         }
-        Instruments::Memory::Info capture ()
+        nonvirtual Info _InternalCapture ()
         {
             lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{"Instruments::Memory::Info capture"};
+            Debug::TraceContextBumper ctx{"Instruments::Memory::Info _InternalCapture"};
 #endif
 #if qPlatform_Linux or qPlatform_Windows
-            Info result = inherited::capture ();
+            Info result = inherited::_InternalCapture ();
 #else
             Info result;
 #endif

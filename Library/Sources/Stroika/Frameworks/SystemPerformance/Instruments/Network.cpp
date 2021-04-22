@@ -167,16 +167,9 @@ namespace {
 
     struct InstrumentRep_POSIX_ : InstrumentRepBase_<_Context> {
 
-        InstrumentRep_POSIX_ (const Options& options, const shared_ptr<_Context>& context)
-            : InstrumentRepBase_<_Context>{options, context}
-        {
-        }
+        using InstrumentRepBase_<_Context>::InstrumentRepBase_;
 
-        Instruments::Network::Info capture ()
-        {
-            return capture_ ();
-        }
-        Instruments::Network::Info capture_ ()
+        Instruments::Network::Info _InternalCapture ()
         {
             using Instruments::Network::Info;
             using Instruments::Network::InterfaceInfo;
@@ -375,11 +368,7 @@ namespace {
 #endif
         }
 
-        Instruments::Network::Info capture ()
-        {
-            return capture_ ();
-        }
-        Instruments::Network::Info capture_ ()
+        Instruments::Network::Info _InternalCapture ()
         {
             using Instruments::Network::Info;
             using Instruments::Network::InterfaceInfo;
@@ -512,7 +501,7 @@ namespace {
         nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
         {
             auto before         = _GetCaptureContextTime ();
-            Info rawMeasurement = capture ();
+            Info rawMeasurement = _InternalCapture ();
             if (outMeasuredAt != nullptr) {
                 using Traversal::Openness;
                 *outMeasuredAt = Range<DurationSecondsType> (before, _GetCaptureContextTime ().value_or (Time::GetTickCount ()), Openness::eClosed, Openness::eClosed);
@@ -523,13 +512,13 @@ namespace {
         {
             return make_unique<NetworkInstrumentRep_> (_fOptions, _fContext.load ());
         }
-        Instruments::Network::Info capture ()
+        Instruments::Network::Info _InternalCapture ()
         {
             lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{"Instruments::Network::capture_"};
 #endif
-            return inherited::capture ();
+            return inherited::_InternalCapture ();
         }
     };
 }
