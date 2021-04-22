@@ -151,7 +151,9 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Network {
          *  the capture is called (typically the Captureset::'run interval'. However, this value can be used to override that partly, and provide
          *  a minimum time for averaging.
          *
-         *  \req fMinimumAveragingInterval >= 0
+         *  If you call capture more frequently than this interval, some (averaged) items maybe missing from the result.
+         *
+         *  \req fMinimumAveragingInterval > 0
          */
         Time::DurationSecondsType fMinimumAveragingInterval{1.0};
     };

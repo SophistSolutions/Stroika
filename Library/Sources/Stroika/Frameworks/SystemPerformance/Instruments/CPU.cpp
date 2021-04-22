@@ -91,22 +91,7 @@ String Instruments::CPU::Info::ToString () const
 
 namespace {
     template <typename CONTEXT>
-    struct InstrumentRepBase_ : SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT> {
-        using SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT>::InstrumentRep_COMMON;
-        // return true iff actually capture context
-        // This looks at the fMinimumAveragingInterval field of fOptions
-        // and if not enuf time has elapsed, just returns false and doesnt update capture time (and caller should then
-        // not update the _fContext data used for computing future references / averages)
-        bool _NoteCompletedCapture (DurationSecondsType at = Time::GetTickCount ())
-        {
-            AssertNotNull (this->_fContext.cget ().cref ());
-            if (not this->_fContext.rwget ().rwref ()->fCaptureContextAt.has_value () or (at - *this->_fContext.rwget ().rwref ()->fCaptureContextAt) >= this->_fOptions.fMinimumAveragingInterval) {
-                this->_fContext.rwget ().rwref ()->fCaptureContextAt = at;
-                return true;
-            }
-            return false;
-        }
-    };
+    using  InstrumentRepBase_ = SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT>;
 }
 
 #if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
@@ -221,7 +206,7 @@ namespace {
             using Characters::String2Float;
             using IO::FileSystem::FileInputStream;
             DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
-            static const filesystem::path                          kFileName_{"/proc/stat"};
+            static const filesystem::path                          kFileName_{"/proc/stat"sv};
             // Note - /procfs files always unseekable
             for (Sequence<String> line : reader.ReadMatrix (FileInputStream::New (kFileName_, FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -312,9 +297,8 @@ namespace {
                 result.fTotalProcessCPUUsage = tmp->fProcessCPUUsage;
                 result.fTotalCPUUsage        = tmp->fTotalCPUUsage;
             }
-            if (_NoteCompletedCapture ()) {
-                _fContext.rwget ().rwref ()->fLastSysTimeCapture = referenceValue;
-            }
+            _NoteCompletedCapture ();
+            _fContext.rwget ().rwref ()->fLastSysTimeCapture = referenceValue;
             return result;
         }
     };
@@ -329,7 +313,7 @@ namespace {
         double UserTime;
     };
     struct _Context : SystemPerformance::Support::Context {
-        optional<WinSysTimeCaptureContext_> fLastSysTimeInfoSnapshot{};
+        optional<WinSysTimeCaptureContext_> fLastSysTimeCapture{};
 #if qUseWMICollectionSupport_
         WMICollector fSystemWMICollector_{L"System"sv, {kInstanceName_}, {kProcessorQueueLength_}};
 #endif
@@ -359,8 +343,8 @@ namespace {
 
                 WinSysTimeCaptureContext_ newVal  = getSysTimes ();
                 *newRawValueToStoreAsNextbaseline = newVal;
-                if (_fContext.load ()->fLastSysTimeInfoSnapshot) {
-                    WinSysTimeCaptureContext_ baseline               = *_fContext.load ()->fLastSysTimeInfoSnapshot;
+                if (_fContext.load ()->fLastSysTimeCapture) {
+                    WinSysTimeCaptureContext_ baseline               = *_fContext.load ()->fLastSysTimeCapture;
                     double                    idleTimeOverInterval   = newVal.IdleTime - baseline.IdleTime;
                     double                    kernelTimeOverInterval = newVal.KernelTime - baseline.KernelTime;
                     double                    userTimeOverInterval   = newVal.UserTime - baseline.UserTime;
@@ -371,7 +355,7 @@ namespace {
                      *  Must be that idle time is somehow INCLUDED in either kernel or user time.
                      */
                     double sys = kernelTimeOverInterval + userTimeOverInterval;
-                    if (sys > 0) {
+                    if (sys > _fOptions.fMinimumAveragingInterval) {
                         double cpu = 1 - idleTimeOverInterval / sys;
                         return cpu;
                     }
@@ -391,9 +375,8 @@ namespace {
             Assert (kTotalNumberOfLogicalCores_ != 0);
             Memory::AccumulateIf (&result.fRunQLength, kTotalNumberOfLogicalCores_, std::divides{}); // both normalized so '1' means all logical cores
 #endif
-            if (_NoteCompletedCapture ()) {
-                _fContext.rwget ().rwref ()->fLastSysTimeInfoSnapshot = newRawValueToStoreAsNextbaseline;
-            }
+            _NoteCompletedCapture ();
+            _fContext.rwget ().rwref ()->fLastSysTimeCapture = newRawValueToStoreAsNextbaseline;
             return result;
         }
     };
@@ -424,6 +407,7 @@ namespace {
         CPUInstrumentRep_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
             : inherited{options, context}
         {
+            Require (_fOptions.fMinimumAveragingInterval > 0);
         }
         virtual MeasurementSet Capture () override
         {

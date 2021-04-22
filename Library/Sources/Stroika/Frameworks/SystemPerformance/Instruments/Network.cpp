@@ -187,11 +187,15 @@ namespace {
             shared_ptr<_Context> context     = _fContext.rwget ().rwref ();
             if (context->fLastSum and accumSummary.fTotalTCPSegments) {
                 Time::DurationSecondsType timespan{now - context->fLastSum->fAt};
-                accumSummary.fTCPSegmentsPerSecond = (NullCoalesce (accumSummary.fTotalTCPSegments) - context->fLastSum->fTotalTCPSegments) / timespan;
+                if (timespan >= _fOptions.fMinimumAveragingInterval) {
+                    accumSummary.fTCPSegmentsPerSecond = (NullCoalesce (accumSummary.fTotalTCPSegments) - context->fLastSum->fTotalTCPSegments) / timespan;
+                }
             }
             if (context->fLastSum and accumSummary.fTotalTCPRetransmittedSegments) {
                 Time::DurationSecondsType timespan{now - context->fLastSum->fAt};
-                accumSummary.fTCPRetransmittedSegmentsPerSecond = (NullCoalesce (accumSummary.fTotalTCPRetransmittedSegments) - context->fLastSum->fTotalTCPRetransmittedSegments) / timespan;
+                if (timespan >= _fOptions.fMinimumAveragingInterval) {
+                    accumSummary.fTCPRetransmittedSegmentsPerSecond = (NullCoalesce (accumSummary.fTotalTCPRetransmittedSegments) - context->fLastSum->fTotalTCPRetransmittedSegments) / timespan;
+                }
             }
             if (accumSummary.fTotalTCPSegments and accumSummary.fTotalTCPRetransmittedSegments) {
                 context->fLastSum = LastSum{*accumSummary.fTotalTCPSegments, *accumSummary.fTotalTCPRetransmittedSegments, now};
@@ -241,7 +245,7 @@ namespace {
                     DurationSecondsType now = Time::GetTickCount ();
                     if (auto o = _fContext.cget ().cref ()->fLast.Lookup (ii.fInterface.fInternalInterfaceID)) {
                         double scanTime = now - o->fAt;
-                        if (scanTime > 0) {
+                        if (scanTime > _fOptions.fMinimumAveragingInterval) {
                             ii.fIOStatistics.fBytesPerSecondReceived   = (*ii.fIOStatistics.fTotalBytesReceived - o->fTotalBytesReceived) / scanTime;
                             ii.fIOStatistics.fBytesPerSecondSent       = (*ii.fIOStatistics.fTotalBytesSent - o->fTotalBytesSent) / scanTime;
                             ii.fIOStatistics.fPacketsPerSecondReceived = (*ii.fIOStatistics.fTotalPacketsReceived - o->fTotalPacketsReceived) / scanTime;
@@ -448,6 +452,10 @@ namespace {
             if (_fContext.cget ().cref ()->fAvailableInstances_.Contains (wmiInstanceName)) {
                 auto lock    = scoped_lock{_fContext};
                 auto context = _fContext.rwget ().rwref ();
+                /*
+                 *  Note because WMI maintains these per/second numbers, its not clear there is a need for me to strip them out if
+                 *  lastCapture time since now < = _fOptions.fMinimumAveragingInterval
+                 */
                 Memory::CopyToIf (context->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesReceivedPerSecond_), &updateResult->fIOStatistics.fBytesPerSecondReceived);
                 Memory::CopyToIf (context->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesSentPerSecond_), &updateResult->fIOStatistics.fBytesPerSecondSent);
                 Memory::CopyToIf (context->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsReceivedPerSecond_), &updateResult->fIOStatistics.fPacketsPerSecondReceived);
@@ -489,6 +497,7 @@ namespace {
         NetworkInstrumentRep_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
             : inherited{options, context}
         {
+            Require (_fOptions.fMinimumAveragingInterval > 0);
         }
         virtual MeasurementSet Capture () override
         {

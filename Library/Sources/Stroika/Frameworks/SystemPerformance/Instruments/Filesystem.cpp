@@ -365,12 +365,16 @@ namespace {
                                 IOStatsType  readStats;
                                 readStats.fBytesTransfered = (oNew->fSectorsRead - oOld->fSectorsRead) * sectorSizeTmpHack;
                                 readStats.fTotalTransfers  = oNew->fReadsCompleted - oOld->fReadsCompleted;
-                                readStats.fQLength         = (oNew->fTimeSpentReading - oOld->fTimeSpentReading) / timeSinceLastMeasure;
+                                if (timeSinceLastMeasure > _fOptions.fMinimumAveragingInterval) {
+                                    readStats.fQLength = (oNew->fTimeSpentReading - oOld->fTimeSpentReading) / timeSinceLastMeasure;
+                                }
 
                                 IOStatsType writeStats;
                                 writeStats.fBytesTransfered = (oNew->fSectorsWritten - oOld->fSectorsWritten) * sectorSizeTmpHack;
                                 writeStats.fTotalTransfers  = oNew->fWritesCompleted - oOld->fWritesCompleted;
-                                writeStats.fQLength         = (oNew->fTimeSpentWriting - oOld->fTimeSpentWriting) / timeSinceLastMeasure;
+                                if (timeSinceLastMeasure > _fOptions.fMinimumAveragingInterval) {
+                                    writeStats.fQLength = (oNew->fTimeSpentWriting - oOld->fTimeSpentWriting) / timeSinceLastMeasure;
+                                }
 
                                 IOStatsType combinedStats;
                                 combinedStats.fBytesTransfered = *readStats.fBytesTransfered + *writeStats.fBytesTransfered;
@@ -380,8 +384,10 @@ namespace {
                                 vi.fReadIOStats  = readStats;
                                 vi.fWriteIOStats = writeStats;
                                 // @todo DESCRIBE divide by time between 2 and * 1000 - NYI
-                                combinedStats.fQLength = ((oNew->fWeightedTimeInQSeconds - oOld->fWeightedTimeInQSeconds) / timeSinceLastMeasure);
-                                vi.fCombinedIOStats    = combinedStats;
+                                if (timeSinceLastMeasure > _fOptions.fMinimumAveragingInterval) {
+                                    combinedStats.fQLength = ((oNew->fWeightedTimeInQSeconds - oOld->fWeightedTimeInQSeconds) / timeSinceLastMeasure);
+                                }
+                                vi.fCombinedIOStats = combinedStats;
                             }
                         }
                     }
@@ -873,6 +879,7 @@ namespace {
         FilesystemInstrumentRep_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
             : inherited{options, context}
         {
+            Require (_fOptions.fMinimumAveragingInterval > 0);
         }
         virtual MeasurementSet Capture () override
         {

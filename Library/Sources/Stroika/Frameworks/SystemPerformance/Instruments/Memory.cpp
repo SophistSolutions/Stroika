@@ -261,7 +261,7 @@ namespace {
                 }
                 auto doAve_ = [] (Time::DurationSecondsType savedVMPageStatsAt, Time::DurationSecondsType now, uint64_t* savedBaseline, optional<uint64_t> faultsSinceBoot, optional<double>* faultsPerSecond) {
                     if (faultsSinceBoot) {
-                        if (savedVMPageStatsAt != 0) {
+                        if (savedVMPageStatsAt >= _fOptions.fMinimumAveragingInterval) {
                             *faultsPerSecond = (*faultsSinceBoot - *savedBaseline) / (now - savedVMPageStatsAt);
                         }
                         *savedBaseline = *faultsSinceBoot;
@@ -386,6 +386,7 @@ namespace {
         MemoryInstrumentRep_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
             : inherited{options, context}
         {
+            Require (_fOptions.fMinimumAveragingInterval > 0);
         }
         virtual MeasurementSet Capture () override
         {

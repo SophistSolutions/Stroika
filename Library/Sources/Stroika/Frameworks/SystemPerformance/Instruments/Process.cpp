@@ -293,22 +293,7 @@ namespace {
         Set<pid_t> fStaticSuppressedAgain;
     };
     template <typename CONTEXT>
-    struct InstrumentRepBase_ : SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT> {
-        using SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT>::InstrumentRep_COMMON;
-        // return true iff actually capture context
-        // This looks at the fMinimumAveragingInterval field of fOptions
-        // and if not enuf time has elapsed, just returns false and doesnt update capture time (and caller should then
-        // not update the _fContext data used for computing future references / averages)
-        bool _NoteCompletedCapture (DurationSecondsType at = Time::GetTickCount ())
-        {
-            AssertNotNull (this->_fContext.cget ().cref ());
-            if (not this->_fContext.rwget ().rwref ()->fCaptureContextAt.has_value () or (at - *this->_fContext.rwget ().rwref ()->fCaptureContextAt) >= this->_fOptions.fMinimumAveragingInterval) {
-                this->_fContext.rwget ().rwref ()->fCaptureContextAt = at;
-                return true;
-            }
-            return false;
-        }
-    };
+    using  InstrumentRepBase_ = SystemPerformance::Support::InstrumentRep_COMMON<Options, CONTEXT>;
 }
 
 #if qPlatform_Linux
@@ -491,8 +476,9 @@ namespace {
 
                         processDetails.fTotalCPUTimeEverUsed = (double (stats.utime) + double (stats.stime)) / kClockTick_;
                         if (optional<PerfStats_> p = _fContext.load ()->fMap.Lookup (pid)) {
-                            if (p->fTotalCPUTimeEverUsed) {
-                                processDetails.fAverageCPUTimeUsed = (*processDetails.fTotalCPUTimeEverUsed - *p->fTotalCPUTimeEverUsed) / (now - p->fCapturedAt);
+                            auto diffTime = now - p->fCapturedAt;
+                            if (p->fTotalCPUTimeEverUsed and (diffTime >= _fOptions.fMinimumAveragingInterval)) {
+                                processDetails.fAverageCPUTimeUsed = (*processDetails.fTotalCPUTimeEverUsed - *p->fTotalCPUTimeEverUsed) / diffTime;
                             }
                         }
                         if (stats.nlwp != 0) {
@@ -553,11 +539,14 @@ namespace {
                             processDetails.fCombinedIOReadBytes  = (*stats).read_bytes;
                             processDetails.fCombinedIOWriteBytes = (*stats).write_bytes;
                             if (optional<PerfStats_> p = _fContext.load ()->fMap.Lookup (pid)) {
-                                if (p->fCombinedIOReadBytes) {
-                                    processDetails.fCombinedIOReadRate = (*processDetails.fCombinedIOReadBytes - *p->fCombinedIOReadBytes) / (now - p->fCapturedAt);
-                                }
-                                if (p->fCombinedIOWriteBytes) {
-                                    processDetails.fCombinedIOWriteRate = (*processDetails.fCombinedIOWriteBytes - *p->fCombinedIOWriteBytes) / (now - p->fCapturedAt);
+                                double diffTime = now - p->fCapturedAt;
+                                if (diffTime >= _fOptions.fMinimumAveragingInterval) {
+                                    if (p->fCombinedIOReadBytes) {
+                                        processDetails.fCombinedIOReadRate = (*processDetails.fCombinedIOReadBytes - *p->fCombinedIOReadBytes) / diffTime;
+                                    }
+                                    if (p->fCombinedIOWriteBytes) {
+                                        processDetails.fCombinedIOWriteRate = (*processDetails.fCombinedIOWriteBytes - *p->fCombinedIOWriteBytes) / diffTime;
+                                    }
                                 }
                             }
                         }
@@ -572,9 +561,8 @@ namespace {
                     results.Add (pid, processDetails);
                 }
             }
-            if (_NoteCompletedCapture ()) {
-                _fContext.rwget ().rwref ()->fMap = newContextStats;
-            }
+            _NoteCompletedCapture ();
+            _fContext.rwget ().rwref ()->fMap = newContextStats;
             if (_fOptions.fCachePolicy == CachePolicy::eOmitUnchangedValues) {
                 _fContext.rwget ().rwref ()->fStaticSuppressedAgain = Set<pid_t>{results.Keys ()};
             }
@@ -1470,14 +1458,17 @@ namespace {
 #endif
                 if (not processInfo.fCombinedIOReadRate.has_value () or not processInfo.fCombinedIOWriteRate.has_value () or not processInfo.fAverageCPUTimeUsed.has_value ()) {
                     if (optional<PerfStats_> p = _fContext.load ()->fMap.Lookup (pid)) {
-                        if (p->fCombinedIOReadBytes and processInfo.fCombinedIOReadBytes) {
-                            processInfo.fCombinedIOReadRate = (*processInfo.fCombinedIOReadBytes - *p->fCombinedIOReadBytes) / (now - p->fCapturedAt);
-                        }
-                        if (p->fCombinedIOWriteBytes and processInfo.fCombinedIOWriteBytes) {
-                            processInfo.fCombinedIOWriteRate = (*processInfo.fCombinedIOWriteBytes - *p->fCombinedIOWriteBytes) / (now - p->fCapturedAt);
-                        }
-                        if (p->fTotalCPUTimeEverUsed and processInfo.fTotalCPUTimeEverUsed) {
-                            processInfo.fAverageCPUTimeUsed = (*processInfo.fTotalCPUTimeEverUsed - *p->fTotalCPUTimeEverUsed) / (now - p->fCapturedAt);
+                        auto diffTime = now - p->fCapturedAt;
+                        if (diffTime >= _fOptions.fMinimumAveragingInterval) {
+                            if (p->fCombinedIOReadBytes and processInfo.fCombinedIOReadBytes) {
+                                processInfo.fCombinedIOReadRate = (*processInfo.fCombinedIOReadBytes - *p->fCombinedIOReadBytes) / diffTime;
+                            }
+                            if (p->fCombinedIOWriteBytes and processInfo.fCombinedIOWriteBytes) {
+                                processInfo.fCombinedIOWriteRate = (*processInfo.fCombinedIOWriteBytes - *p->fCombinedIOWriteBytes) / diffTime;
+                            }
+                            if (p->fTotalCPUTimeEverUsed and processInfo.fTotalCPUTimeEverUsed) {
+                                processInfo.fAverageCPUTimeUsed = (*processInfo.fTotalCPUTimeEverUsed - *p->fTotalCPUTimeEverUsed) / diffTime;
+                            }
                         }
                     }
 #if 0
@@ -1500,9 +1491,8 @@ namespace {
 
                 results.Add (pid, processInfo);
             }
-            if (_NoteCompletedCapture (now)) {
-                _fContext.rwget ().rwref ()->fMap = newContextStats;
-            }
+            _NoteCompletedCapture (now);
+            _fContext.rwget ().rwref ()->fMap = newContextStats;
             if (_fOptions.fCachePolicy == CachePolicy::eOmitUnchangedValues) {
                 _fContext.rwget ().rwref ()->fStaticSuppressedAgain = Set<pid_t>{results.Keys ()};
             }
@@ -1653,6 +1643,7 @@ namespace {
         ProcessInstrumentRep_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
             : inherited{options, context}
         {
+            Require (_fOptions.fMinimumAveragingInterval > 0);
         }
         virtual MeasurementSet Capture () override
         {
