@@ -419,14 +419,7 @@ namespace {
         }
         nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
         {
-            // Timerange returned is from time of last context capture, til now. NOTE: this COULD produce overlapping measurement intervals.
-            auto before         = _GetCaptureContextTime ().value_or (0);
-            Info rawMeasurement = _InternalCapture ();
-            if (outMeasuredAt != nullptr) {
-                using Traversal::Openness;
-                *outMeasuredAt = Range<DurationSecondsType> (before, Time::GetTickCount (), Openness::eClosed, Openness::eClosed);
-            }
-            return rawMeasurement;
+            return Do_Capture_Raw<Info> ([this] () { return _InternalCapture (); }, outMeasuredAt);
         }
         virtual unique_ptr<IRep> Clone () const override
         {
