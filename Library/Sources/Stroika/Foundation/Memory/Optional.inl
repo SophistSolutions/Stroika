@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Memory {
             *lhsOptionalValue = rhsValue;
         }
     }
-    template <typename T, template <typename> typename CONTAINER, enable_if_t<is_convertible_v<typename Containers::Adapters::Adder<CONTAINER<T>>::value_type, T>>*>
+    template <typename T, template <typename> typename CONTAINER, typename OP, enable_if_t<is_convertible_v<typename Containers::Adapters::Adder<CONTAINER<T>>::value_type, T>>*>
     void AccumulateIf (optional<CONTAINER<T>>* lhsOptionalValue, const optional<T>& rhsOptionalValue)
     {
         if (rhsOptionalValue.has_value ()) {
@@ -71,6 +71,34 @@ namespace Stroika::Foundation::Memory {
             *lhsOptionalValue = CONTAINER<T>{};
         }
         Containers::Adapters::Adder<CONTAINER<T>>::Add (&**lhsOptionalValue, rhsValue);
+    }
+    template <typename T, typename CONVERTIBLE_TO_T, typename OP, enable_if_t<is_convertible_v<CONVERTIBLE_TO_T, T> and is_convertible_v<OP, function<T (T, T)>>>*>
+    inline optional<T> AccumulateIf (const optional<T>& lhsOptionalValue, const optional<CONVERTIBLE_TO_T>& rhsOptionalValue, const OP& op)
+    {
+        optional<T> result{lhsOptionalValue};
+        AccumulateIf (&result, rhsOptionalValue, op);
+        return result;
+    }
+    template <typename T, typename OP, enable_if_t<is_convertible_v<OP, function<T (T, T)>>>*>
+    inline optional<T> AccumulateIf (const optional<T>& lhsOptionalValue, const T& rhsValue, const OP& op)
+    {
+        optional<T> result{lhsOptionalValue};
+        AccumulateIf (&result, rhsValue, op);
+        return result;
+    }
+    template <typename T, template <typename> typename CONTAINER, enable_if_t<is_convertible_v<typename Containers::Adapters::Adder<CONTAINER<T>>::value_type, T>>*>
+    optional<CONTAINER<T>> AccumulateIf (const optional<CONTAINER<T>>& lhsOptionalValue, const optional<T>& rhsOptionalValue)
+    {
+        optional<T> result{lhsOptionalValue};
+        AccumulateIf (&result, rhsOptionalValue);
+        return result;
+    }
+    template <typename T, template <typename> typename CONTAINER, enable_if_t<is_convertible_v<typename Containers::Adapters::Adder<CONTAINER<T>>::value_type, T>>*>
+    optional<CONTAINER<T>> AccumulateIf (const optional<CONTAINER<T>>& lhsOptionalValue, const T& rhsValue)
+    {
+        optional<T> result{lhsOptionalValue};
+        AccumulateIf (&result, rhsValue);
+        return result;
     }
 
     /*
@@ -119,11 +147,28 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
     template <typename T>
-    optional<T> operator+ (const optional<T>& lhs, const optional<T>& rhs)
+    inline optional<T> operator+ (const optional<T>& lhs, const optional<T>& rhs)
     {
-        optional<T> result{lhs};
-        AccumulateIf (&result, rhs);
-        return result;
+        if (lhs and rhs) {
+            return *lhs + *rhs;
+        }
+        return nullopt;
+    }
+    template <typename T>
+    inline optional<T> operator+ (const optional<T>& lhs, const T& rhs)
+    {
+        if (lhs) {
+            return (*lhs) + rhs;
+        }
+        return nullopt;
+    }
+    template <typename T>
+    inline optional<T> operator+ (const T& lhs, const optional<T>& rhs)
+    {
+        if (rhs) {
+            return lhs + (*rhs);
+        }
+        return nullopt;
     }
 
     /*
@@ -132,11 +177,28 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
     template <typename T>
-    optional<T> operator- (const optional<T>& lhs, const optional<T>& rhs)
+    inline optional<T> operator- (const optional<T>& lhs, const optional<T>& rhs)
     {
-        optional<T> result{lhs};
-        AccumulateIf (&result, rhs, minus{});
-        return result;
+        if (lhs and rhs) {
+            return *lhs - *rhs;
+        }
+        return nullopt;
+    }
+    template <typename T>
+    inline optional<T> operator- (const optional<T>& lhs, const T& rhs)
+    {
+        if (lhs) {
+            return (*lhs) - rhs;
+        }
+        return nullopt;
+    }
+    template <typename T>
+    inline optional<T> operator- (const T& lhs, const optional<T>& rhs)
+    {
+        if (rhs) {
+            return lhs - (*rhs);
+        }
+        return nullopt;
     }
 
     /*
@@ -145,11 +207,28 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
     template <typename T>
-    optional<T> operator* (const optional<T>& lhs, const optional<T>& rhs)
+    inline optional<T> operator* (const optional<T>& lhs, const optional<T>& rhs)
     {
-        optional<T> result{lhs};
-        AccumulateIf (&result, rhs, multiplies{});
-        return result;
+        if (lhs and rhs) {
+            return (*lhs) * (*rhs);
+        }
+        return nullopt;
+    }
+    template <typename T>
+    inline optional<T> operator* (const optional<T>& lhs, const T& rhs)
+    {
+        if (lhs) {
+            return (*lhs) * rhs;
+        }
+        return nullopt;
+    }
+    template <typename T>
+    inline optional<T> operator* (const T& lhs, const optional<T>& rhs)
+    {
+        if (rhs) {
+            return lhs * (*rhs);
+        }
+        return nullopt;
     }
 
     /*
@@ -158,11 +237,27 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
     template <typename T>
-    optional<T> operator/ (const optional<T>& lhs, const optional<T>& rhs)
+    inline optional<T> operator/ (const optional<T>& lhs, const optional<T>& rhs)
     {
-        optional<T> result{lhs};
-        AccumulateIf (&result, rhs, divides{});
-        return result;
+        if (lhs) {
+            return (*lhs) / rhs;
+        }
+    }
+    template <typename T>
+    inline optional<T> operator/ (const optional<T>& lhs, const T& rhs)
+    {
+        if (lhs) {
+            return (*lhs) / rhs;
+        }
+        return nullopt;
+    }
+    template <typename T>
+    inline optional<T> operator/ (const T& lhs, const optional<T>& rhs)
+    {
+        if (rhs) {
+            return lhs / (*rhs);
+        }
+        return nullopt;
     }
 
     template <typename T>

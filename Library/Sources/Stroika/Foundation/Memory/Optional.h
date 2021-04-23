@@ -69,6 +69,10 @@ namespace Stroika::Foundation::Memory {
      *          Memory::AccumulateIf (&addresses, IO::Network::InternetAddress{connection.GET ().GetDataTextInputStream ().ReadAll ().Trim ()});
      *      \endcode
      *
+     *  Notes:
+     *      \note   Overloads that take optional* first argument accumulate in place and return nothing, while
+     *              overloads taking optional<T> as the first agument return the computed result.
+     *              overloads taking optional<CONTAINER> or optional<CONTAINER>* dont take an op as argument, but assume the operation is 'Add' to the container
      *
      *      \note   ITS CONFUSING direction of if-test for this versus CopyToIf
      *
@@ -87,6 +91,14 @@ namespace Stroika::Foundation::Memory {
     void AccumulateIf (optional<CONTAINER<T>>* lhsOptionalValue, const optional<T>& rhsOptionalValue);
     template <typename T, template <typename> typename CONTAINER, enable_if_t<is_convertible_v<typename Containers::Adapters::Adder<CONTAINER<T>>::value_type, T>>* = nullptr>
     void AccumulateIf (optional<CONTAINER<T>>* lhsOptionalValue, const T& rhsValue);
+    template <typename T, typename CONVERTIBLE_TO_T, typename OP = plus<T>, enable_if_t<is_convertible_v<CONVERTIBLE_TO_T, T> and is_convertible_v<OP, function<T (T, T)>>>* = nullptr>
+    optional<T> AccumulateIf (const optional<T>& lhsOptionalValue, const optional<CONVERTIBLE_TO_T>& rhsOptionalValue, const OP& op = OP{});
+    template <typename T, typename OP = plus<T>, enable_if_t<is_convertible_v<OP, function<T (T, T)>>>* = nullptr>
+    optional<T> AccumulateIf (const optional<T>& lhsOptionalValue, const T& rhsValue, const OP& op = OP{});
+    template <typename T, template <typename> typename CONTAINER, enable_if_t<is_convertible_v<typename Containers::Adapters::Adder<CONTAINER<T>>::value_type, T>>* = nullptr>
+    optional<CONTAINER<T>> AccumulateIf (const optional<CONTAINER<T>>& lhsOptionalValue, const optional<T>& rhsOptionalValue);
+    template <typename T, template <typename> typename CONTAINER, enable_if_t<is_convertible_v<typename Containers::Adapters::Adder<CONTAINER<T>>::value_type, T>>* = nullptr>
+    optional<CONTAINER<T>> AccumulateIf (const optional<CONTAINER<T>>& lhsOptionalValue, const T& rhsValue);
 
     /**
      *  Assign the value held by this optional if one is present to destination argument (pointer). Assigns from left to right.
@@ -160,40 +172,56 @@ namespace Stroika::Foundation::Memory {
     optional<T> OptionalFromNullable (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* from);
 
     /**
-     *  Simple overloaded operator which calls @Optional<T>::operator+= (const Optional<T>& rhs)
-     *
-     *  \note this uses AccumulateIf(), so if both sides missing, result is missing, but if only one side is
-     *        empty, the other side defaults to T{}.
+     *  if lhs and rhs engaged, this returns *lhs + *rhs, and otherwise nullopt
+     * 
+     *  \note this used to use AccumulateIf() before Stroika 2.1b12, but that produced confusing results. This is
+     *        slightly safer, I think, and if you want the AccumulateIf () semantics, call AccumulateIf()
      */
     template <typename T>
     optional<T> operator+ (const optional<T>& lhs, const optional<T>& rhs);
+    template <typename T>
+    optional<T> operator+ (const optional<T>& lhs, const T& rhs);
+    template <typename T>
+    optional<T> operator+ (const T& lhs, const optional<T>& rhs);
 
     /**
-     *  Simple overloaded operator which calls @Optional<T>::operator-= (const Optional<T>& rhs)
-     *
-     *  \note this uses AccumulateIf(), so if both sides missing, result is missing, but if only one side is
-     *        empty, the other side defaults to T{}.
+     *  if lhs and rhs engaged, this returns *lhs - *rhs, and otherwise nullopt
+     * 
+     *  \note this used to use AccumulateIf() before Stroika 2.1b12, but that produced confusing results. This is
+     *        slightly safer, I think, and if you want the AccumulateIf () semantics, call AccumulateIf()
      */
     template <typename T>
     optional<T> operator- (const optional<T>& lhs, const optional<T>& rhs);
+    template <typename T>
+    optional<T> operator- (const optional<T>& lhs, const T& rhs);
+    template <typename T>
+    optional<T> operator- (const T& lhs, const optional<T>& rhs);
 
     /**
-     *  Simple overloaded operator which calls @Optional<T>::operator*= (const Optional<T>& rhs)
-     *
-     *  \note this uses AccumulateIf(), so if both sides missing, result is missing, but if only one side is
-     *        empty, the other side defaults to T{}.
+     *  if lhs and rhs engaged, this returns *lhs * *rhs, and otherwise nullopt
+     * 
+     *  \note this used to use AccumulateIf() before Stroika 2.1b12, but that produced confusing results. This is
+     *        slightly safer, I think, and if you want the AccumulateIf () semantics, call AccumulateIf()
      */
     template <typename T>
     optional<T> operator* (const optional<T>& lhs, const optional<T>& rhs);
+    template <typename T>
+    optional<T> operator* (const optional<T>& lhs, const T& rhs);
+    template <typename T>
+    optional<T> operator* (const T& lhs, const optional<T>& rhs);
 
     /**
-     *  Simple overloaded operator which calls @Optional<T>::operator/= (const Optional<T>& rhs)
-     *
-     *  \note this uses AccumulateIf(), so if both sides missing, result is missing, but if only one side is
-     *        empty, the other side defaults to T{}.
+     *  if lhs and rhs engaged, this returns *lhs / *rhs, and otherwise nullopt
+     * 
+     *  \note this used to use AccumulateIf() before Stroika 2.1b12, but that produced confusing results. This is
+     *        slightly safer, I think, and if you want the AccumulateIf () semantics, call AccumulateIf()
      */
     template <typename T>
     optional<T> operator/ (const optional<T>& lhs, const optional<T>& rhs);
+    template <typename T>
+    optional<T> operator/ (const optional<T>& lhs, const T& rhs);
+    template <typename T>
+    optional<T> operator/ (const T& lhs, const optional<T>& rhs);
 
 }
 
