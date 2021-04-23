@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Memory {
             *lhsOptionalValue = rhsValue;
         }
     }
-    template <typename T, template <typename> typename CONTAINER, typename OP, enable_if_t<is_convertible_v<typename Containers::Adapters::Adder<CONTAINER<T>>::value_type, T>>*>
+    template <typename T, template <typename> typename CONTAINER, enable_if_t<is_convertible_v<typename Containers::Adapters::Adder<CONTAINER<T>>::value_type, T>>*>
     void AccumulateIf (optional<CONTAINER<T>>* lhsOptionalValue, const optional<T>& rhsOptionalValue)
     {
         RequireNotNull (lhsOptionalValue);
