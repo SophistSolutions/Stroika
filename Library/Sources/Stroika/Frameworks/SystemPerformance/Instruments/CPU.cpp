@@ -249,9 +249,7 @@ namespace {
                 if (lr == 3) {
                     result.fLoadAverage = Info::LoadAverage (loadAve[0], loadAve[1], loadAve[2]);
                     result.fRunQLength  = EstimateRunQFromLoadAveArray_ (Time::GetTickCount () - _GetCaptureContextTime ().value_or (0), loadAve);
-                    static const unsigned int kCPUCoreCount_{GetSystemConfiguration_CPU ().GetNumberOfLogicalCores ()};
-                    Assert (kCPUCoreCount_ != 0);
-                    Memory::AccumulateIf<double> (&result.fRunQLength, kCPUCoreCount_, std::divides{}); // fRunQLength counts length normalized 0..1 with 1 menaing ALL CPU CORES
+                    Memory::AccumulateIf<double> (&result.fRunQLength, Configuration::GetNumberOfLogicalCPUCores (), std::divides{}); // fRunQLength counts length normalized 0..1 with 1 menaing ALL CPU CORES
                 }
                 else {
                     DbgTrace ("getloadave failed - with result = %d", lr);
@@ -280,7 +278,7 @@ namespace {
                     nonIdleTime += (newVal.softirq - baseline->softirq);
 
                     double totalTime = idleTime + nonIdleTime;
-                    if (Math::NearlyEquals<double> (totalTime, 0)) {
+                    if (totalTime <= this->_fOptions.fMinimumAveragingInterval) {
                         // can happen if called too quickly together. No good answer
                         DbgTrace ("Warning - times too close together for cputime_");
                         return nullopt;
@@ -294,8 +292,10 @@ namespace {
             };
             POSIXSysTimeCaptureContext_ referenceValue{};
             if (auto tmp = getCPUTime (&referenceValue)) {
-                result.fTotalProcessCPUUsage = tmp->fProcessCPUUsage;
-                result.fTotalCPUUsage        = tmp->fTotalCPUUsage;
+                unsigned int nLogicalCores   = Configuration::GetNumberOfLogicalCPUCores ();
+                result.fTotalProcessCPUUsage = tmp->fProcessCPUUsage * nLogicalCores;
+                result.fTotalCPUUsage        = tmp->fTotalCPUUsage * nLogicalCores;
+                result.fTotalLogicalCores    = nLogicalCores;
             }
             _NoteCompletedCapture ();
             _fContext.rwget ().rwref ()->fLastSysTimeCapture = referenceValue;
@@ -357,7 +357,7 @@ namespace {
                     double sys = kernelTimeOverInterval + userTimeOverInterval;
                     if (sys > _fOptions.fMinimumAveragingInterval) {
                         double cpu = 1 - idleTimeOverInterval / sys;
-                        return cpu;
+                        return cpu * ::GetNumberOfLogicalCPUCores ();
                     }
                 }
                 return nullopt;
@@ -367,13 +367,12 @@ namespace {
             WinSysTimeCaptureContext_ newRawValueToStoreAsNextbaseline;
             result.fTotalCPUUsage        = getCPUTime (&newRawValueToStoreAsNextbaseline);
             result.fTotalProcessCPUUsage = result.fTotalCPUUsage; // @todo fix - WMI - remove irq time etc from above? Or add into above if missing (See counter PRocessor/% Interrupt time) - not from System - but Processor - so new collector object
+            result.fTotalLogicalCores    = Configuration::GetNumberOfLogicalCPUCores ();
 #if qUseWMICollectionSupport_
             _fContext.rwget ().rwref ()->fSystemWMICollector_.Collect ();
             Memory::CopyToIf (_fContext.rwget ().rwref ()->fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_), &result.fRunQLength);
             // "if a computer has multiple processors, you need to divide this value by the number of processors servicing the workload"
-            static const double kTotalNumberOfLogicalCores_ = Configuration::GetSystemConfiguration_CPU ().GetNumberOfLogicalCores (); // assume cannot change while running (with virtualization maybe wrong?)
-            Assert (kTotalNumberOfLogicalCores_ != 0);
-            Memory::AccumulateIf (&result.fRunQLength, kTotalNumberOfLogicalCores_, std::divides{}); // both normalized so '1' means all logical cores
+            Memory::AccumulateIf<double> (&result.fRunQLength, Configuration::GetNumberOfLogicalCPUCores (), std::divides{}); // both normalized so '1' means all logical cores
 #endif
             _NoteCompletedCapture ();
             _fContext.rwget ().rwref ()->fLastSysTimeCapture = newRawValueToStoreAsNextbaseline;
@@ -435,13 +434,6 @@ namespace {
 #else
             Info result;
 #endif
-            // Since values externally acquired, force/assure they are all legit, in range
-            if (result.fTotalCPUUsage) {
-                result.fTotalCPUUsage = Math::PinInRange<double> (*result.fTotalCPUUsage, 0, 1);
-                if (result.fTotalProcessCPUUsage) {
-                    result.fTotalProcessCPUUsage = Math::PinInRange<double> (*result.fTotalProcessCPUUsage, 0, *result.fTotalCPUUsage); // all process usage is CPU usage (often same but <=)
-                }
-            }
             return result;
         }
     };
@@ -468,6 +460,7 @@ const ObjectVariantMapper Instruments::CPU::Instrument::kObjectVariantMapper = [
 #if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
         {L"Load-Average", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fLoadAverage), StructFieldInfo::eOmitNullFields},
 #endif
+            {L"Total-Logical-Cores", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fTotalLogicalCores), StructFieldInfo::eOmitNullFields},
             {L"Total-Process-CPU-Usage", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fTotalProcessCPUUsage), StructFieldInfo::eOmitNullFields},
             {L"Total-CPU-Usage", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fTotalCPUUsage), StructFieldInfo::eOmitNullFields},
             {L"Run-Q-Length", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fRunQLength), StructFieldInfo::eOmitNullFields},

@@ -259,7 +259,7 @@ namespace {
                 if (pgfault and updateResult->fPaging.fMajorPageFaultsSinceBoot) {
                     updateResult->fPaging.fMinorPageFaultsSinceBoot = *pgfault - *updateResult->fPaging.fMajorPageFaultsSinceBoot;
                 }
-                auto doAve_ = [] (Time::DurationSecondsType savedVMPageStatsAt, Time::DurationSecondsType now, uint64_t* savedBaseline, optional<uint64_t> faultsSinceBoot, optional<double>* faultsPerSecond) {
+                auto doAve_ = [this] (Time::DurationSecondsType savedVMPageStatsAt, Time::DurationSecondsType now, uint64_t* savedBaseline, optional<uint64_t> faultsSinceBoot, optional<double>* faultsPerSecond) {
                     if (faultsSinceBoot) {
                         if (savedVMPageStatsAt >= _fOptions.fMinimumAveragingInterval) {
                             *faultsPerSecond = (*faultsSinceBoot - *savedBaseline) / (now - savedVMPageStatsAt);

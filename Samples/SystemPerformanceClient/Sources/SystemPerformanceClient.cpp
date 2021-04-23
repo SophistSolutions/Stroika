@@ -180,9 +180,11 @@ namespace {
 
             optional<double> runQLength;
             optional<double> totalCPUUsage;
+            optional<double> totalCPURatio;
             if (auto om = sCapturer_.fCPUInstrument.MeasurementAs<Instruments::CPU::Info> (measurements)) {
                 runQLength    = om->fRunQLength;
                 totalCPUUsage = om->fTotalCPUUsage;
+                totalCPURatio = om->GetTotalCPURatio ();
             }
             optional<Duration> thisProcUptime;
             optional<double>   thisProcAverageCPUTimeUsed;
@@ -196,20 +198,21 @@ namespace {
                     if (auto o = thisProcess.fProcessStartedAt) {
                         thisProcUptime = now - *o;
                     }
-                    thisProcAverageCPUTimeUsed = thisProcess.fAverageCPUTimeUsed;
+                    thisProcAverageCPUTimeUsed       = thisProcess.fAverageCPUTimeUsed;
                     thisProcWorkingOrResidentSetSize = Memory::NullCoalesce (thisProcess.fWorkingSetSize, thisProcess.fResidentMemorySize);
                     thisProcCombinedIORate           = thisProcess.fCombinedIOWriteRate;
                 }
             }
+            using namespace Memory; // for optional operator overloads
             cout << "\tPass: " << pass << endl;
             cout << "\t\tSys: " << endl;
-            cout << "\t\t\trunQLength:               " << Characters::ToString (runQLength).AsNarrowSDKString () << endl;
-            cout << "\t\t\ttotalCPUUsage:            " << Characters::ToString (totalCPUUsage).AsNarrowSDKString () << endl;
+            cout << "\t\t\tRun-Q Length:                 " << Characters::ToString (runQLength).AsNarrowSDKString () << endl;
+            cout << "\t\t\tTotal CPU Usage:              " << Characters::ToString (totalCPUUsage).AsNarrowSDKString () << " (" << Characters::ToString (totalCPURatio * 100.0).AsNarrowSDKString () << "% of computer)" << endl;
             cout << "\t\tThis Process: " << endl;
-            cout << "\t\t\tUptime:                   " << Characters::ToString (thisProcUptime).AsNarrowSDKString () << endl;
-            cout << "\t\t\tAverageCPUTimeUsed:       " << Characters::ToString (thisProcAverageCPUTimeUsed).AsNarrowSDKString () << endl;
-            cout << "\t\t\tWorkingOrResidentSetSize: " << Characters::ToString (thisProcWorkingOrResidentSetSize).AsNarrowSDKString () << endl;
-            cout << "\t\t\tCombinedIORate:           " << Characters::ToString (thisProcCombinedIORate).AsNarrowSDKString () << endl;
+            cout << "\t\t\tUptime:                       " << Characters::ToString (thisProcUptime).AsNarrowSDKString () << endl;
+            cout << "\t\t\tAverage CPU Time Used:        " << Characters::ToString (thisProcAverageCPUTimeUsed).AsNarrowSDKString () << endl;
+            cout << "\t\t\tWorking Or Resident-Set Size: " << Characters::ToString (thisProcWorkingOrResidentSetSize).AsNarrowSDKString () << endl;
+            cout << "\t\t\tCombined IO Rate:             " << Characters::ToString (thisProcCombinedIORate).AsNarrowSDKString () << endl;
             Execution::Sleep (30s);
             pass++;
         }

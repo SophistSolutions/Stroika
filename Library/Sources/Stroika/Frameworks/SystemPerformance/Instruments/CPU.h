@@ -20,20 +20,8 @@
  *  TODO:
  *      @todo   Windows fRunQLength value is a point-in-time snapshot, and it SHOULD be (if we can find out how)
  *              an average over the measurement interval.
- *
- *      @todo   Consider making fTotalProcessCPUUsage and fTotalCPUUsage from Info struct - 0..N where N is numebr of CPUs.
- *              Reason is just for consistency sake with data returned in Process  module. OR - make the inverse
- *              change there? But it would be better if these were consistent.
  * 
- *              <<<maybe make this change AND add number of logical cores - and maybe more info from config>>>
- *
- *      @todo   GetSystemConfiguration_CPU ().GetNumberOfLogicalCores () is cached on Linux, but CAN change while running (crazy - right?)
- *              But so rare and so costly to recompute. Find a way to compromise.
- *              MAYBE the issue is different - hot plug cpu - CPU online/offline. Maybe total cannot change, but just number
- *              online?
- *
- *              @see /sys/devices/system/cpu/online
- *              @see https://www.kernel.org/doc/Documentation/cpu-hotplug.txt
+ *              Also - it appears strangely to be less than the 
  */
 
 namespace Stroika::Frameworks::SystemPerformance::Instruments::CPU {
@@ -61,21 +49,57 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::CPU {
 #endif
 
         /**
-         *  This is a number from 0..1, and is the weighted average across all CPU cores (so
-         *  even on a 4 core machine, this can never execeed 1).
+         *  This is natural number (typically, 4, or 8, or something like that). But this CAN change over time
+         *              @see /sys/devices/system/cpu/online
+         *              @see https://www.kernel.org/doc/Documentation/cpu-hotplug.txt
+         *  Crazy - right?
+         * 
+         *  This is can be used to NORMALIZE the value of fTotalCPUUsage or fTotalProcessCPUUsage to be 0..1
+         */
+        optional<unsigned int> fTotalLogicalCores{};
+
+        /**
+         *  This is a number from 0..fTotalLogicalCores, and is the weighted average across all CPU cores.
+         *  If you have 4 logical cores, all fully occupied, this will return 4.0.
+         * 
+         *  @see GetTotalCPURatio
          */
         optional<double> fTotalCPUUsage{};
 
         /**
+         *  \brief like fTotalCPUUsage, but returns # 0..1 (so 'percentage' of all CPU available on that machine)
+         */
+        optional<double> GetTotalCPURatio () const
+        {
+            if (fTotalLogicalCores and fTotalCPUUsage) {
+                return *fTotalCPUUsage / *fTotalLogicalCores;
+            }
+            return nullopt;
+        }
+
+        /**
          *  \brief Same as fTotalCPUUsage, except not counting time spent handling interrupts
          *
-         *  This is a number from 0..1, and is the weighted average across all CPU cores (so
-         *  even on a 4 core machine, this can never execeed 1).
+         *  This is a number from 0..fTotalLogicalCores, and is the weighted average across all CPU cores.
+         *  If you have 4 logical cores, all fully occupied, this will return 4.0.
          *
          *  This restricts to process usage identifyable attributed to a process (including system processes).
          *  It does not count time handling interupts.
+         * 
+         *  @see GetTotalProcessCPUUsage
          */
         optional<double> fTotalProcessCPUUsage{};
+
+        /**
+         *  \brief like fTotalCPUUsage, but returns # 0..1 (so 'percentage' of all CPU available on that machine)
+         */
+        optional<double> GetTotalProcessCPUUsage () const
+        {
+            if (fTotalLogicalCores and fTotalProcessCPUUsage) {
+                return *fTotalProcessCPUUsage / *fTotalLogicalCores;
+            }
+            return nullopt;
+        }
 
         /**
          *  This is the average number of threads waiting in the run-q (status runnable) / number of logical cores.

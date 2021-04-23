@@ -61,7 +61,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Process {
         /*
          *   on windows, this is in the form of username@domain if a domain is present
          */
-        optional<String>                  fUserName;
+        optional<String> fUserName;
 
         optional<String>                  fCommandLine;
         optional<filesystem::path>        fCurrentWorkingDirectory;
@@ -71,9 +71,9 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Process {
         /**
          * can be differnt than / if chroot()
          */
-        optional<filesystem::path>        fRoot;
+        optional<filesystem::path> fRoot;
 
-        optional<Time::DateTime>          fProcessStartedAt;
+        optional<Time::DateTime> fProcessStartedAt;
 
         /**
          *  Based on
