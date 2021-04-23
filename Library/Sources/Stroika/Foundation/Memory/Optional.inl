@@ -35,6 +35,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, typename CONVERTIBLE_TO_T, typename OP, enable_if_t<is_convertible_v<CONVERTIBLE_TO_T, T> and is_convertible_v<OP, function<T (T, T)>>>*>
     void AccumulateIf (optional<T>* lhsOptionalValue, const optional<CONVERTIBLE_TO_T>& rhsOptionalValue, const OP& op)
     {
+        RequireNotNull (lhsOptionalValue);
         if (lhsOptionalValue->has_value ()) {
             if (rhsOptionalValue.has_value ()) {
                 *lhsOptionalValue = op (**lhsOptionalValue, static_cast<T> (*rhsOptionalValue));
@@ -47,6 +48,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, typename OP, enable_if_t<is_convertible_v<OP, function<T (T, T)>>>*>
     inline void AccumulateIf (optional<T>* lhsOptionalValue, const T& rhsValue, const OP& op)
     {
+        RequireNotNull (lhsOptionalValue);
         if (lhsOptionalValue->has_value ()) {
             *lhsOptionalValue = op (**lhsOptionalValue, rhsValue);
         }
@@ -57,6 +59,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, template <typename> typename CONTAINER, typename OP, enable_if_t<is_convertible_v<typename Containers::Adapters::Adder<CONTAINER<T>>::value_type, T>>*>
     void AccumulateIf (optional<CONTAINER<T>>* lhsOptionalValue, const optional<T>& rhsOptionalValue)
     {
+        RequireNotNull (lhsOptionalValue);
         if (rhsOptionalValue.has_value ()) {
             if (not lhsOptionalValue->has_value ()) {
                 *lhsOptionalValue = CONTAINER<T>{};
@@ -67,6 +70,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, template <typename> typename CONTAINER, enable_if_t<is_convertible_v<typename Containers::Adapters::Adder<CONTAINER<T>>::value_type, T>>*>
     void AccumulateIf (optional<CONTAINER<T>>* lhsOptionalValue, const T& rhsValue)
     {
+        RequireNotNull (lhsOptionalValue);
         if (not lhsOptionalValue->has_value ()) {
             *lhsOptionalValue = CONTAINER<T>{};
         }

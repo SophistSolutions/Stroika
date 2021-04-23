@@ -70,6 +70,7 @@ namespace Stroika::Foundation::Memory {
      *      \endcode
      *
      *  Notes:
+     *      \req    lhsOptionalValue != nullptr (for optional*  first argument)
      *      \note   Overloads that take optional* first argument accumulate in place and return nothing, while
      *              overloads taking optional<T> as the first agument return the computed result.
      *              overloads taking optional<CONTAINER> or optional<CONTAINER>* dont take an op as argument, but assume the operation is 'Add' to the container
