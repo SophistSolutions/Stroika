@@ -16,7 +16,8 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 
 
-VERSION=7.75.0
+VERSION=7.76.1
+#VERSION=7.75.0
 #VERSION=7.74.0
 #VERSION=7.73.0
 #VERSION=7.72.0
