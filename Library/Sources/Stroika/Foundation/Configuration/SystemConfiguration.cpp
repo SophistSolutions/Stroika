@@ -906,16 +906,16 @@ unsigned int Configuration::GetNumberOfLogicalCPUCores (const chrono::duration<d
     [[maybe_unused]] static auto computeViaGetSystemConfiguration_CPU = [] () {
         return Configuration::GetSystemConfiguration_CPU ().GetNumberOfLogicalCores ();
     };
-    #if qDebug
+#if qDebug
     static auto compute = [=] () {
-        unsigned int hc = computeViaStdThreadHardwareConcurrency ();
+        unsigned int hc                = computeViaStdThreadHardwareConcurrency ();
         unsigned int sysConfigLogCores = computeViaGetSystemConfiguration_CPU ();
-        WeakAssert (hc == sysConfigLogCores);   // nice to test/find out if these ever differ
+        WeakAssert (hc == sysConfigLogCores); // nice to test/find out if these ever differ
         return sysConfigLogCores;
     };
 #else
     auto compute = computeViaGetSystemConfiguration_CPU; // maybe choose based on OS, etc???, like if I know which library does a good job with std::thread::hardware_concurrency
-    #endif
+#endif
 
     static atomic<Time::DurationSecondsType> sCachedAt_    = 0;
     static atomic<unsigned int>              sCachedValue_ = compute ();
