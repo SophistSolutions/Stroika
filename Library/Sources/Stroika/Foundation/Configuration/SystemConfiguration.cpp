@@ -920,7 +920,7 @@ unsigned int Configuration::GetNumberOfLogicalCPUCores (const chrono::duration<d
     static atomic<Time::DurationSecondsType> sCachedAt_    = 0;
     static atomic<unsigned int>              sCachedValue_ = compute ();
     Time::DurationSecondsType                now           = Time::GetTickCount ();
-    if (now < sCachedAt_ + allowedStaleness.count ()) {
+    if (now > sCachedAt_ + allowedStaleness.count ()) {
         sCachedValue_ = compute ();
         sCachedAt_    = now;
     }

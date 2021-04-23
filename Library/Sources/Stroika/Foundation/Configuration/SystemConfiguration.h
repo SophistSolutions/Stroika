@@ -314,7 +314,7 @@ namespace Stroika::Foundation::Configuration {
      *  @see GetSystemConfiguration_CPU
      *  @see SystemConfiguration::CPU::GetNumberOfLogicalCores
      */
-    unsigned int GetNumberOfLogicalCPUCores (const chrono::duration<double>& allowedStaleness = 30s);
+    unsigned int GetNumberOfLogicalCPUCores (const chrono::duration<double>& allowedStaleness = 1min);
 
 }
 
