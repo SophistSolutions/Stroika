@@ -895,6 +895,40 @@ SystemConfiguration::ComputerNames Configuration::GetSystemConfiguration_Compute
 
 /*
  ********************************************************************************
+ ******************* Configuration::GetNumberOfLogicalCPUCores ******************
+ ********************************************************************************
+ */
+unsigned int Configuration::GetNumberOfLogicalCPUCores (const chrono::duration<double>& allowedStaleness)
+{
+    [[maybe_unused]] static auto computeViaStdThreadHardwareConcurrency = [] () {
+        return std::thread::hardware_concurrency ();
+    };
+    [[maybe_unused]] static auto computeViaGetSystemConfiguration_CPU = [] () {
+        return Configuration::GetSystemConfiguration_CPU ().GetNumberOfLogicalCores ();
+    };
+    #if qDebug
+    static auto compute = [=] () {
+        unsigned int hc = computeViaStdThreadHardwareConcurrency ();
+        unsigned int sysConfigLogCores = computeViaGetSystemConfiguration_CPU ();
+        WeakAssert (hc == sysConfigLogCores);   // nice to test/find out if these ever differ
+        return sysConfigLogCores;
+    };
+#else
+    auto compute = computeViaGetSystemConfiguration_CPU; // maybe choose based on OS, etc???, like if I know which library does a good job with std::thread::hardware_concurrency
+    #endif
+
+    static atomic<Time::DurationSecondsType> sCachedAt_    = 0;
+    static atomic<unsigned int>              sCachedValue_ = compute ();
+    Time::DurationSecondsType                now           = Time::GetTickCount ();
+    if (now < sCachedAt_ + allowedStaleness.count ()) {
+        sCachedValue_ = compute ();
+        sCachedAt_    = now;
+    }
+    return sCachedValue_;
+}
+
+/*
+ ********************************************************************************
  ****************** SystemConfiguration GetSystemConfiguration ******************
  ********************************************************************************
  */

@@ -64,6 +64,8 @@ namespace Stroika::Foundation::Configuration {
             /**
              *  Number of Logical Cores (aka  max concurrent logical thread count). This will generally be
              *  divisible by fNumberOfSockets.
+             * 
+             *  @see Configuration::GetNumberOfLogicalCPUCores
              */
             nonvirtual unsigned int GetNumberOfLogicalCores () const;
 
@@ -300,6 +302,19 @@ namespace Stroika::Foundation::Configuration {
     /**
      */
     SystemConfiguration::ComputerNames GetSystemConfiguration_ComputerNames ();
+
+    /**
+     *  \brief return the number of currently available CPU cores on this (virtual) machine
+     * 
+     *  This is very roughly GetSystemConfiguration_CPU ().GetNumberOfLogicalCores ()
+     *  BUT - this CAN CHANGE over time, and this routine tries to provide a QUICK (cheap so not 100% guaranteed right) answer
+     *  but generally will be quicker than GetSystemConfiguration_CPU ().GetNumberOfLogicalCores (), and provides
+     *  stronger guaranteeds about accurance than std::thread::hardware_concurrency (https://en.cppreference.com/w/cpp/thread/thread/hardware_concurrency)
+     * 
+     *  @see GetSystemConfiguration_CPU
+     *  @see SystemConfiguration::CPU::GetNumberOfLogicalCores
+     */
+    unsigned int GetNumberOfLogicalCPUCores (const chrono::duration<double>& allowedStaleness = 30s);
 
 }
 
