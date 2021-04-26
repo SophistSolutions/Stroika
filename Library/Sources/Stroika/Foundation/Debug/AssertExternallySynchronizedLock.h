@@ -77,6 +77,13 @@ namespace Stroika::Foundation::Debug {
      *          "Unless it is a bit-field (9.6), a most derived object shall have a non-zero
      *          size and shall occupy one or more bytes of storage. Base class subobjects may
      *          have zero size"
+     * 
+     *  TODO:
+     *      \todo since c++20, we can use [[no_unique_address]], instead of this base class hack
+     *            https://stroika.atlassian.net/browse/STK-734
+     * 
+     *          Doing that will simplify usage, avoiding the lock_guard<const AssertExternallySynchronizedLock>
+     *          hack (cuz we'll say lock_guard {fCritSec} instead of lock_gurad<...type> {*this};
      *
      *  \par Example Usage
      *      \code

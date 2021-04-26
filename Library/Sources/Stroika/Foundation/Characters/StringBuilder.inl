@@ -293,6 +293,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline void StringBuilder::reserve (size_t newCapacity)
     {
+        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         fData_.reserve (newCapacity);
     }
 
