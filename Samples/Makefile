@@ -29,6 +29,7 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 SUBPROJECTS+=	SimpleLedTest
 endif
 SUBPROJECTS+=	Service
+SUBPROJECTS+=	SQLite
 SUBPROJECTS+=	SSDPClient
 SUBPROJECTS+=	SSDPServer
 SUBPROJECTS+=	SystemPerformanceClient
