@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Memory {
     inline void CopyToIf (CONVERTABLE_TO_TYPE* to, const optional<T>& copyFromIfHasValue)
     {
         if (copyFromIfHasValue) {
-            // explicit cast to silence compiler warnigns - use of CopyToIf() is fairly explicit about doing the needed conversions and
+            // explicit cast to silence compiler warnings - use of CopyToIf() is fairly explicit about doing the needed conversions and
             // offers no other direct way to silence the warnings
             *to = static_cast<CONVERTABLE_TO_TYPE> (*copyFromIfHasValue);
         }
@@ -123,7 +123,7 @@ namespace Stroika::Foundation::Memory {
     inline void CopyToIf (optional<CONVERTABLE_TO_OPTIONAL_OF_TYPE>* to, const optional<T>& copyFromIfHasValue)
     {
         if (copyFromIfHasValue) {
-            // explicit cast to silence compiler warnigns - use of CopyToIf() is fairly explicit about doing the needed conversions and
+            // explicit cast to silence compiler warnings - use of CopyToIf() is fairly explicit about doing the needed conversions and
             // offers no other direct way to silence the warnings
             *to = static_cast<CONVERTABLE_TO_OPTIONAL_OF_TYPE> (*copyFromIfHasValue);
         }
