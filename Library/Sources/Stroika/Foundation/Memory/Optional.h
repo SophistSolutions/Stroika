@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Memory {
     optional<CONTAINER<T>> AccumulateIf (const optional<CONTAINER<T>>& lhsOptionalValue, const T& rhsValue);
 
     /**
-     *  Assign the value held by this optional if one is present to destination argument (pointer). Assigns from right to left.
+     *  Assign (overwriting) the value held by this optional (first argument) if one is present with destination (second) argument if engaged. Assigns from right to left.
      *
      *  The point of this to to faciltate a common idiom, where you want to maintain an existing value unless you
      *  get an update. This function is ANALAGOUS to
@@ -125,6 +125,8 @@ namespace Stroika::Foundation::Memory {
      *      \endcode
      *
      *  @see Value
+     * 
+     *  @todo CONSIDER overload where first arg is not ptr (by value) and result is written to return value
      */
     template <typename T, typename CONVERTABLE_TO_TYPE>
     void CopyToIf (CONVERTABLE_TO_TYPE* to, const optional<T>& copyFromIfHasValue);
