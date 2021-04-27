@@ -19,7 +19,6 @@ namespace {
     {
 #if qHasFeature_sqlite
         using namespace SQLite;
-        using Statement = Connection::Statement;
         auto initializeDB = [] (Connection& c) {
             c.Exec (
                 L"CREATE TABLE COMPANY("
@@ -35,7 +34,11 @@ namespace {
                 L" EMP_ID INT NOT     NULL"
                 L");");
         };
-        Connection conn{filesystem::current_path () / "testdb.db", initializeDB};
+#if __cpp_designated_initializers
+        Connection conn{Options{.fDBPath = filesystem::current_path () / "testdb.db"}, initializeDB};
+#else
+        Connection conn{Options{filesystem::current_path () / "testdb.db"}, initializeDB};
+#endif
 #endif
     }
 }

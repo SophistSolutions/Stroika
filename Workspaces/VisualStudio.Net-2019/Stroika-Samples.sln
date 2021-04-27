@@ -553,21 +553,27 @@ Global
 		{1A5CEC6A-16AD-4EFF-AFB9-5833B12D5737}.Release-U-64|x86.ActiveCfg = Release-U-64|Win32
 		{1A5CEC6A-16AD-4EFF-AFB9-5833B12D5737}.Release-U-64|x86.Build.0 = Release-U-64|Win32
 		{D6301E5A-7A66-4929-9367-7F4EDA95730F}.Debug-U-32|Unspecified.ActiveCfg = Debug-U-32|Win32
+		{D6301E5A-7A66-4929-9367-7F4EDA95730F}.Debug-U-32|Unspecified.Build.0 = Debug-U-32|Win32
 		{D6301E5A-7A66-4929-9367-7F4EDA95730F}.Debug-U-32|x86.ActiveCfg = Debug-U-32|Win32
 		{D6301E5A-7A66-4929-9367-7F4EDA95730F}.Debug-U-32|x86.Build.0 = Debug-U-32|Win32
 		{D6301E5A-7A66-4929-9367-7F4EDA95730F}.Debug-U-64|Unspecified.ActiveCfg = Debug-U-64|Win32
+		{D6301E5A-7A66-4929-9367-7F4EDA95730F}.Debug-U-64|Unspecified.Build.0 = Debug-U-64|Win32
 		{D6301E5A-7A66-4929-9367-7F4EDA95730F}.Debug-U-64|x86.ActiveCfg = Debug-U-64|Win32
 		{D6301E5A-7A66-4929-9367-7F4EDA95730F}.Debug-U-64|x86.Build.0 = Debug-U-64|Win32
 		{D6301E5A-7A66-4929-9367-7F4EDA95730F}.Release-Logging-U-32|Unspecified.ActiveCfg = Release-Logging-U-32|Win32
+		{D6301E5A-7A66-4929-9367-7F4EDA95730F}.Release-Logging-U-32|Unspecified.Build.0 = Release-Logging-U-32|Win32
 		{D6301E5A-7A66-4929-9367-7F4EDA95730F}.Release-Logging-U-32|x86.ActiveCfg = Release-Logging-U-32|Win32
 		{D6301E5A-7A66-4929-9367-7F4EDA95730F}.Release-Logging-U-32|x86.Build.0 = Release-Logging-U-32|Win32
 		{D6301E5A-7A66-4929-9367-7F4EDA95730F}.Release-Logging-U-64|Unspecified.ActiveCfg = Release-Logging-U-64|Win32
+		{D6301E5A-7A66-4929-9367-7F4EDA95730F}.Release-Logging-U-64|Unspecified.Build.0 = Release-Logging-U-64|Win32
 		{D6301E5A-7A66-4929-9367-7F4EDA95730F}.Release-Logging-U-64|x86.ActiveCfg = Release-Logging-U-64|Win32
 		{D6301E5A-7A66-4929-9367-7F4EDA95730F}.Release-Logging-U-64|x86.Build.0 = Release-Logging-U-64|Win32
 		{D6301E5A-7A66-4929-9367-7F4EDA95730F}.Release-U-32|Unspecified.ActiveCfg = Release-U-32|Win32
+		{D6301E5A-7A66-4929-9367-7F4EDA95730F}.Release-U-32|Unspecified.Build.0 = Release-U-32|Win32
 		{D6301E5A-7A66-4929-9367-7F4EDA95730F}.Release-U-32|x86.ActiveCfg = Release-U-32|Win32
 		{D6301E5A-7A66-4929-9367-7F4EDA95730F}.Release-U-32|x86.Build.0 = Release-U-32|Win32
 		{D6301E5A-7A66-4929-9367-7F4EDA95730F}.Release-U-64|Unspecified.ActiveCfg = Release-U-64|Win32
+		{D6301E5A-7A66-4929-9367-7F4EDA95730F}.Release-U-64|Unspecified.Build.0 = Release-U-64|Win32
 		{D6301E5A-7A66-4929-9367-7F4EDA95730F}.Release-U-64|x86.ActiveCfg = Release-U-64|Win32
 		{D6301E5A-7A66-4929-9367-7F4EDA95730F}.Release-U-64|x86.Build.0 = Release-U-64|Win32
 	EndGlobalSection

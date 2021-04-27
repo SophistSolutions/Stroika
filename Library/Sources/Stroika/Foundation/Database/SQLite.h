@@ -48,6 +48,91 @@ namespace Stroika::Foundation::Database::SQLite {
 
 #if qHasFeature_sqlite
     /**
+     */
+    struct Options {
+        /**
+         *  NOTE - we choose to only support a PATH, and not the URI syntax, because the URI syntax is used to pass
+         *  extra parameters (as from a GUI) and those can conflict with what is specified here (making it unclear or
+         *  surprising how to interpret). @todo perhaps provide an API to 'parse' an sqlite URI into one of these Stroika
+         *  SQLite options objects?
+         * 
+         *  \note - fInMemoryDB and fDBPath and fTemporaryDB are mutually exclusive options.
+         */
+        optional<filesystem::path> fDBPath;
+
+        /**
+         *  This option only applies if fDBPath is set. 
+         *  \req fCreateDBPathIfDoesNotExist => not fReadOnly
+         */
+        bool fCreateDBPathIfDoesNotExist{true};
+
+        /**
+         *  fTemporaryDB is just like fInMemoryDB, except that it will be written to disk. But its like temporaryDB in that
+         *  it will be automatically deleted when this connection (that created it) closes.
+         * 
+         *  \note - fInMemoryDB and fDBPath and fTemporaryDB are mutually exclusive options.
+         */
+        optional<String> fTemporaryDB;
+
+        /**
+         *  If provided, the database will not be stored to disk, but just saved in memory. The name still must be provided to allow
+         *  for sharing the same (in memory) database between different connections).
+         * 
+         *  \note - fInMemoryDB and fDBPath and fTemporaryDB are mutually exclusive options.
+         */
+        optional<String> fInMemoryDB;
+
+        /**
+         *  @see https://www.sqlite.org/compile.html#threadsafe
+         */
+        enum class ThreadingMode {
+#if SQLITE_THREADSAFE == 0
+            /**
+             *   SQLITE_OPEN_FULLMUTEX
+             *  In this mode, all mutexes are disabled and SQLite is unsafe to use in more than a single thread at once
+             */
+            eSingleThread,
+#endif
+#if SQLITE_THREADSAFE != 0
+            /**
+             *  SQLITE_OPEN_NOMUTEX
+             *  In this mode, SQLite can be safely used by multiple threads provided that no single database connection is used simultaneously in two or more threads.
+             *  (Stroika Debug::AssertExternallySynchronizedLock enforces this)
+             */
+            eMultiThread,
+            /**
+             *  SQLITE_OPEN_FULLMUTEX
+             *  In serialized mode, SQLite can be safely used by multiple threads with no restriction.
+             *  (note even in this mode, each connection is Debug::AssertExternallySynchronizedLock)
+             */
+            eSerialized,
+#endif
+        };
+        optional<ThreadingMode> fThreadingMode;
+
+        /**
+         *  This can generally be ignored, and primarily affects low level OS interface locking choices.
+         *  @see https://www.sqlite.org/vfs.html
+         */
+        optional<String> fVFS;
+
+        /**
+         *  If a database is opened readonly, updates will fail, and if the database doesn't exist, it will not be automatically created.
+         */
+        bool fReadOnly{false};
+
+        /**
+         *  The immutable query parameter is a boolean that signals to SQLite that the underlying database file is held on read-only media and
+         *  cannot be modified, even by another process with elevated privileges.
+         * 
+         *  \req fImmutable ==> fReadOnly
+        */
+        bool fImmutable{false};
+    };
+
+    class Statement;
+
+    /**
      *  Connection provides an API for accessing an SQLite database.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
@@ -59,17 +144,11 @@ namespace Stroika::Foundation::Database::SQLite {
      */
     class Connection : private Debug::AssertExternallySynchronizedLock {
     public:
-        enum InMemoryDBFlag {
-            eInMemoryDB,
-        };
-
-    public:
         /**
          */
         Connection () = delete;
-        Connection (const URI& dbURL, const function<void (Connection&)>& dbInitializer = [] (Connection&) {});
-        Connection (const filesystem::path& dbPath, const function<void (Connection&)>& dbInitializer = [] (Connection&) {});
-        Connection (InMemoryDBFlag memoryDBFlag, const function<void (Connection&)>& dbInitializer = [] (Connection&) {});
+        Connection (
+            const Options& options, const function<void (Connection&)>& dbInitializer = [] (Connection&) {});
         Connection (const Connection&) = delete;
 
     public:
@@ -81,9 +160,6 @@ namespace Stroika::Foundation::Database::SQLite {
         /**
          */
         ~Connection ();
-
-    public:
-        class Statement;
 
     public:
         /**
@@ -100,6 +176,9 @@ namespace Stroika::Foundation::Database::SQLite {
         nonvirtual sqlite3* Peek ();
 
     private:
+        friend class Statement;
+
+    private:
         sqlite3* fDB_{};
     };
 
@@ -107,7 +186,7 @@ namespace Stroika::Foundation::Database::SQLite {
      *  \note - for now - this only supports a SINGLE STATEMENT at a time. But if you give more than one, the subsequent ones are ignored.
      *          Obviously that sucks, and needs work - @todo
      */
-    class Connection::Statement {
+    class Statement {
     public:
         /**
          */
@@ -138,10 +217,10 @@ namespace Stroika::Foundation::Database::SQLite {
         nonvirtual optional<RowType> GetNextRow ();
 
     private:
-        lock_guard<const AssertExternallySynchronizedLock> fConnectionCritSec_;
-        sqlite3_stmt*                                      fStatementObj_;
-        unsigned int                                       fParamsCount_;
-        Sequence<String>                                   fColNames_;
+        lock_guard<const Debug::AssertExternallySynchronizedLock> fConnectionCritSec_;
+        sqlite3_stmt*                                             fStatementObj_;
+        unsigned int                                              fParamsCount_;
+        Sequence<String>                                          fColNames_;
     };
 #endif
 
