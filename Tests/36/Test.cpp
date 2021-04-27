@@ -30,7 +30,7 @@ using namespace Stroika::Foundation::Time;
 namespace {
     namespace RegressionTest1_sqlite_ {
         namespace PRIVATE_ {
-            using Statement = Database::SQLite::Connection::Statement;
+            using namespace  Database::SQLite;
             enum class ScanKindType_ {
                 Background,
                 Reference,
@@ -46,7 +46,11 @@ namespace {
                 {
                     bool created = false;
                     try {
-                        fDB_ = make_unique<Database::SQLite::Connection> (testDBFile, [&created] (Database::SQLite::Connection& db) { created = true; InitialSetup_ (db); });
+#if __cpp_designated_initializers
+                        fDB_ = make_unique<Connection> (Options{.fDBPath= testDBFile}, [&created] (Database::SQLite::Connection& db) { created = true; InitialSetup_ (db); });
+#else
+                        fDB_ = make_unique<Connection> (Options{testDBFile}, [&created] (Database::SQLite::Connection& db) { created = true; InitialSetup_ (db); });
+#endif
                     }
                     catch (...) {
                         DbgTrace (L"Error %s experiment DB: %s: %s", created ? L"creating" : L"opening", Characters::ToString (testDBFile).c_str (), Characters::ToString (current_exception ()).c_str ());
@@ -59,11 +63,15 @@ namespace {
                         DbgTrace (L"Opened experiment DB: %s", Characters::ToString (testDBFile).c_str ());
                     }
                 }
-                DB (Database::SQLite::Connection::InMemoryDBFlag)
+                DB ()
                 {
                     bool created = false;
                     try {
-                        fDB_ = make_unique<Database::SQLite::Connection> (Database::SQLite::Connection::eInMemoryDB, [&created] (Database::SQLite::Connection& db) { created = true; InitialSetup_ (db); });
+#if __cpp_designated_initializers
+                        fDB_ = make_unique<Connection> (Options{.fInMemoryDB = L""}, [&created] (Database::SQLite::Connection& db) { created = true; InitialSetup_(db); });
+#else
+                        fDB_ = make_unique<Connection> (Options{nullopt, true, nullopt, L""}, [&created] (Database::SQLite::Connection& db) { created = true; InitialSetup_(db); });
+#endif
                     }
                     catch (...) {
                         DbgTrace (L"Error %s experiment DB: %s: %s", created ? L"creating" : L"opening", L"MEMORY", Characters::ToString (current_exception ()).c_str ());
@@ -184,7 +192,7 @@ namespace {
         void DoIt ()
         {
             using namespace PRIVATE_;
-            TraceContextBumper ctx ("ScanDB::DB::RunTest");
+            TraceContextBumper ctx {"ScanDB::DB::RunTest"};
             auto               test = [] (PRIVATE_::DB& db, unsigned nTimesRanBefore) {
                 db.fDB_->Exec (L"select * from ScanTypes;");
                 {
@@ -217,7 +225,7 @@ namespace {
                 }
             }
             {
-                PRIVATE_::DB db{SQLite::Connection::eInMemoryDB};
+                PRIVATE_::DB db{};
                 test (db, 0);
             }
         }

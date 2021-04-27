@@ -76,7 +76,8 @@ namespace Stroika::Foundation::Database::SQLite {
 
         /**
          *  If provided, the database will not be stored to disk, but just saved in memory. The name still must be provided to allow
-         *  for sharing the same (in memory) database between different connections).
+         *  for sharing the same (in memory) database between different connections). If the name is the empty string (String{}) then
+         *  it is guaranteed unique.
          * 
          *  \note - fInMemoryDB and fDBPath and fTemporaryDB are mutually exclusive options.
          */

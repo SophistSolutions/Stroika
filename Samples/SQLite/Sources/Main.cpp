@@ -39,6 +39,7 @@ namespace {
 #else
         Connection conn{Options{filesystem::current_path () / "testdb.db"}, initializeDB};
 #endif
+       // Statement addCompanyStatement {&conn, L"INSERT "}
 #endif
     }
 }

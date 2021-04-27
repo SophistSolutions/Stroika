@@ -118,12 +118,22 @@ Connection::Connection (const Options& options, const function<void (Connection&
             AssertNotImplemented ();
         }
     }
+    bool created = false;
     if (options.fInMemoryDB) {
         flags |= SQLITE_OPEN_MEMORY;
         Require (not options.fReadOnly);
-        Require (not options.fCreateDBPathIfDoesNotExist);
+        Require (options.fCreateDBPathIfDoesNotExist);
         uriArg = options.fInMemoryDB->AsNarrowSDKString (); // often empty string
+        if (uriArg.empty ()) {
+            uriArg = ":memory";
+        }
+        else {
+            WeakAssertNotImplemented ();    // maybe can do this with URI syntax, but not totally clear
+        }
+        // For now, it appears we ALWAYS create memory DBS when opening (so cannot find a way to open shared) - so always set created flag
+        created = true;
     }
+
 
     int e;
     if ((e = ::sqlite3_open_v2 (uriArg.c_str (), &fDB_, flags, options.fVFS ? options.fVFS->AsNarrowSDKString ().c_str () : nullptr)) == SQLITE_CANTOPEN) {
@@ -133,13 +143,7 @@ Connection::Connection (const Options& options, const function<void (Connection&
                 fDB_ = nullptr;
             }
             if ((e = ::sqlite3_open_v2 (uriArg.c_str (), &fDB_, SQLITE_OPEN_CREATE | flags, options.fVFS ? options.fVFS->AsNarrowSDKString ().c_str () : nullptr)) == SQLITE_OK) {
-                try {
-                    dbInitializer (*this);
-                }
-                catch (...) {
-                    Verify (::sqlite3_close (fDB_) == SQLITE_OK);
-                    Execution::ReThrow ();
-                }
+                created = true;
             }
         }
     }
@@ -149,6 +153,15 @@ Connection::Connection (const Options& options, const function<void (Connection&
         }
         // @todo add error string
         Execution::Throw (Exception{Characters::Format (L"SQLite Error %d:", e)});
+    }
+    if (created) {
+        try {
+            dbInitializer (*this);
+        }
+        catch (...) {
+            Verify (::sqlite3_close (fDB_) == SQLITE_OK);
+            Execution::ReThrow ();
+        }
     }
     EnsureNotNull (fDB_);
 }

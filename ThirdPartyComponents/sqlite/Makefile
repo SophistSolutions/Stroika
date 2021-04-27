@@ -127,6 +127,8 @@ ifeq (true,$(HasMakefileBugWorkaround_lto_skipping_undefined_incompatible))
 CFLAGS:=$(filter-out -flto, $(CFLAGS))
 endif
 
+### @todo REVIEW - this maybe a very bad/illegal place to add to these CFLAGS values - they may need to get
+### baked into header as well!!!
 
 CFLAGS	+= -DSQLITE_OMIT_LOAD_EXTENSION
 
