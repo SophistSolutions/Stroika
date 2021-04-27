@@ -57,11 +57,11 @@ namespace Stroika::Foundation::Characters {
     inline Float2StringOptions::Float2StringOptions (const Float2StringOptions& b1, const Float2StringOptions& b2)
         : Float2StringOptions (b1)
     {
-        Memory::CopyToIf (b2.fPrecision_, &fPrecision_);
-        Memory::CopyToIf (b2.fFmtFlags_, &fFmtFlags_);
-        Memory::CopyToIf (b2.fUseLocale_, &fUseLocale_);
-        Memory::CopyToIf (b2.fTrimTrailingZeros_, &fTrimTrailingZeros_);
-        Memory::CopyToIf (b2.fFloatFormat_, &fFloatFormat_);
+        Memory::CopyToIf (&fPrecision_, b2.fPrecision_);
+        Memory::CopyToIf (&fFmtFlags_, b2.fFmtFlags_);
+        Memory::CopyToIf (&fUseLocale_, b2.fUseLocale_);
+        Memory::CopyToIf (&fTrimTrailingZeros_, b2.fTrimTrailingZeros_);
+        Memory::CopyToIf (&fFloatFormat_, b2.fFloatFormat_);
     }
     template <typename... ARGS>
     inline Float2StringOptions::Float2StringOptions (const Float2StringOptions& b1, const Float2StringOptions& b2, ARGS&&... args)

@@ -394,7 +394,7 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
                 // ends each socket
                 if (currentProcessorID) {
                     String useModelName = Memory::NullCoalesce (foundProcessor);
-                    Memory::CopyToIf (currentModelName, &useModelName); // currentModelName takes precedence but I doubt both present
+                    Memory::CopyToIf (&useModelName, currentModelName); // currentModelName takes precedence but I doubt both present
                     result.fCores.Append (CPU::CoreDetails{Memory::NullCoalesce (currentSocketID), useModelName});
                 }
                 // intentionally don't clear foundProcessor cuz occurs once it appears
@@ -405,7 +405,7 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
         }
         if (currentProcessorID) {
             String useModelName = Memory::NullCoalesce (foundProcessor);
-            Memory::CopyToIf (currentModelName, &useModelName); // currentModelName takes precedence but I doubt both present
+            Memory::CopyToIf (&useModelName, currentModelName); // currentModelName takes precedence but I doubt both present
             result.fCores.Append (CPU::CoreDetails{Memory::NullCoalesce (currentSocketID), useModelName});
         }
     }

@@ -1366,12 +1366,12 @@ namespace {
                             optional<String>           userName;
                             LookupProcessPath_ (pid, hProcess, &processName, &processEXEPath, &parentProcessID, _fOptions.fCaptureCommandLine ? &cmdLine : nullptr, &userName);
                             if (_fOptions.fProcessNameReadPolicy == Options::eAlways or (_fOptions.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and not processEXEPath.has_value ())) {
-                                Memory::CopyToIf (processName, &processInfo.fProcessName);
+                                Memory::CopyToIf (&processInfo.fProcessName, processName);
                             }
-                            Memory::CopyToIf (processEXEPath, &processInfo.fEXEPath);
-                            Memory::CopyToIf (parentProcessID, &processInfo.fParentProcessID);
-                            Memory::CopyToIf (cmdLine, &processInfo.fCommandLine);
-                            Memory::CopyToIf (userName, &processInfo.fUserName);
+                            Memory::CopyToIf (&processInfo.fEXEPath, processEXEPath);
+                            Memory::CopyToIf (&processInfo.fParentProcessID, parentProcessID);
+                            Memory::CopyToIf (&processInfo.fCommandLine, cmdLine);
+                            Memory::CopyToIf (&processInfo.fUserName, userName);
                         }
                         {
                             PROCESS_MEMORY_COUNTERS_EX memInfo{};

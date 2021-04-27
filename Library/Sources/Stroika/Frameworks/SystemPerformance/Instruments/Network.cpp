@@ -337,7 +337,7 @@ namespace {
                     }
                 }
             }
-            Memory::CopyToIf (totalTCPSegments, &accumSummary->fTotalTCPSegments);
+            Memory::CopyToIf (&accumSummary->fTotalTCPSegments, totalTCPSegments);
         }
 #endif
     };
@@ -456,10 +456,10 @@ namespace {
                  *  Note because WMI maintains these per/second numbers, its not clear there is a need for me to strip them out if
                  *  lastCapture time since now < = _fOptions.fMinimumAveragingInterval
                  */
-                Memory::CopyToIf (context->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesReceivedPerSecond_), &updateResult->fIOStatistics.fBytesPerSecondReceived);
-                Memory::CopyToIf (context->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesSentPerSecond_), &updateResult->fIOStatistics.fBytesPerSecondSent);
-                Memory::CopyToIf (context->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsReceivedPerSecond_), &updateResult->fIOStatistics.fPacketsPerSecondReceived);
-                Memory::CopyToIf (context->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsSentPerSecond_), &updateResult->fIOStatistics.fPacketsPerSecondSent);
+                Memory::CopyToIf (&updateResult->fIOStatistics.fBytesPerSecondReceived, context->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesReceivedPerSecond_));
+                Memory::CopyToIf (&updateResult->fIOStatistics.fBytesPerSecondSent, context->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kBytesSentPerSecond_));
+                Memory::CopyToIf (&updateResult->fIOStatistics.fPacketsPerSecondReceived, context->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsReceivedPerSecond_));
+                Memory::CopyToIf (&updateResult->fIOStatistics.fPacketsPerSecondSent, context->fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsSentPerSecond_));
 
                 Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPSegmentsPerSecond, context->fTCPv4WMICollector_.PeekCurrentValue (wmiInstanceName, kTCPSegmentsPerSecond_));
                 Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPSegmentsPerSecond, context->fTCPv6WMICollector_.PeekCurrentValue (wmiInstanceName, kTCPSegmentsPerSecond_));

@@ -340,11 +340,11 @@ namespace {
             auto                 lock      = scoped_lock{_fContext};
             shared_ptr<_Context> rwContext = _fContext.rwget ().rwref ();
             rwContext->fMemoryWMICollector_.Collect ();
-            Memory::CopyToIf (rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommittedBytes_), &updateResult->fVirtualMemory.fCommittedBytes);
-            Memory::CopyToIf (rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommitLimit_), &updateResult->fVirtualMemory.fCommitLimit);
-            Memory::CopyToIf (rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardPageFaultsPerSec_), &updateResult->fPaging.fMajorPageFaultsPerSecond);
-            Memory::CopyToIf (rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kPagesOutPerSec_), &updateResult->fPaging.fPageOutsPerSecond);
-            Memory::CopyToIf (rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_), &updateResult->fPhysicalMemory.fFree);
+            Memory::CopyToIf (&updateResult->fVirtualMemory.fCommittedBytes, rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommittedBytes_));
+            Memory::CopyToIf (&updateResult->fVirtualMemory.fCommitLimit, rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommitLimit_));
+            Memory::CopyToIf (&updateResult->fPaging.fMajorPageFaultsPerSecond, rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardPageFaultsPerSec_));
+            Memory::CopyToIf (&updateResult->fPaging.fPageOutsPerSecond, rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kPagesOutPerSec_));
+            Memory::CopyToIf (&updateResult->fPhysicalMemory.fFree, rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_));
             if (optional<double> freeMem = rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_)) {
                 if (updateResult->fPhysicalMemory.fActive) {
                     // Active + Inactive + Free == TotalRAM

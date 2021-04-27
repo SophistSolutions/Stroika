@@ -46,7 +46,6 @@ namespace Stroika::Foundation::Memory {
     using std::byte;
 
     /**
-     *  EXPERIEMNTAL - 2015-04-24
      *  \brief  AccumulateIf () add in the rhs argument value to lhs optional, but if both were missing leave 'lhs'
      *          as still missing, and if only RHS available, assign it to the left.
      *
@@ -60,7 +59,7 @@ namespace Stroika::Foundation::Memory {
      *      \endcode
      *      VERSUS
      *      \code
-     *          accumulator.AccumulateIf (SomeFunctionToGetOptionalValue ());
+     *          AccumulateIf (&accumulator, SomeFunctionToGetOptionalValue ());
      *      \endcode
      *
      *  \par Example Usage
@@ -102,7 +101,7 @@ namespace Stroika::Foundation::Memory {
     optional<CONTAINER<T>> AccumulateIf (const optional<CONTAINER<T>>& lhsOptionalValue, const T& rhsValue);
 
     /**
-     *  Assign the value held by this optional if one is present to destination argument (pointer). Assigns from left to right.
+     *  Assign the value held by this optional if one is present to destination argument (pointer). Assigns from right to left.
      *
      *  The point of this to to faciltate a common idiom, where you want to maintain an existing value unless you
      *  get an update. This function is ANALAGOUS to
@@ -115,25 +114,22 @@ namespace Stroika::Foundation::Memory {
      *  \par Example Usage
      *      \code
      *          int curValue = 3;
-     *          optional<long>  oVal = someMap.Lookup (KEY_VALUE);
-     *          oVal.CopyToIf (&curValue);
+     *          Memory::CopyToIf (&curValue, someMap.Lookup (KEY_VALUE));   // curValue will be 3, or overwritten by whatever value MAY have been in someMap
      *      \endcode
      *
      *  \par Example Usage
      *      \code
-     *          optional<int> curValue;
+     *          optional<int> curValue = getSomeValue ();
      *          optional<long>  oVal = someMap.Lookup (KEY_VALUE);
-     *          oVal.CopyToIf (&curValue);      // curValue retains its value from before CopyToIf if oVal was missing
+     *          Memory::CopyToIf (&curValue, oVal);      // curValue retains its value from before CopyToIf if oVal was missing
      *      \endcode
      *
      *  @see Value
-     *
-     *  \note - the overload with the second arg optional<CONVERTABLE_TO_OPTIONAL_OF_TYPE> is just to silence an msvc compiler warning.
      */
     template <typename T, typename CONVERTABLE_TO_TYPE>
-    void CopyToIf (const optional<T>& copyFromIfHasValue, CONVERTABLE_TO_TYPE* to);
+    void CopyToIf (CONVERTABLE_TO_TYPE* to, const optional<T>& copyFromIfHasValue);
     template <typename T, typename CONVERTABLE_TO_OPTIONAL_OF_TYPE>
-    void CopyToIf (const optional<T>& copyFromIfHasValue, optional<CONVERTABLE_TO_OPTIONAL_OF_TYPE>* to);
+    void CopyToIf (optional<CONVERTABLE_TO_OPTIONAL_OF_TYPE>* to, const optional<T>& copyFromIfHasValue);
 
     /**
      * \brief return one of l, or r, with first preference for which is engaged, and second preference for left-to-right.

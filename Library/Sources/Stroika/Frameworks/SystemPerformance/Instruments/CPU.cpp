@@ -370,7 +370,7 @@ namespace {
             result.fTotalLogicalCores    = Configuration::GetNumberOfLogicalCPUCores ();
 #if qUseWMICollectionSupport_
             _fContext.rwget ().rwref ()->fSystemWMICollector_.Collect ();
-            Memory::CopyToIf (_fContext.rwget ().rwref ()->fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_), &result.fRunQLength);
+            Memory::CopyToIf (&result.fRunQLength, _fContext.rwget ().rwref ()->fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_));
             // "if a computer has multiple processors, you need to divide this value by the number of processors servicing the workload"
             Memory::AccumulateIf<double> (&result.fRunQLength, Configuration::GetNumberOfLogicalCPUCores (), std::divides{}); // both normalized so '1' means all logical cores
 #endif
