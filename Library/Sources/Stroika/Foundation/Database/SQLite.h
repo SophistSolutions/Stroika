@@ -87,27 +87,31 @@ namespace Stroika::Foundation::Database::SQLite {
          *  @see https://www.sqlite.org/compile.html#threadsafe
          */
         enum class ThreadingMode {
-#if SQLITE_THREADSAFE == 0
             /**
              *   SQLITE_OPEN_FULLMUTEX
              *  In this mode, all mutexes are disabled and SQLite is unsafe to use in more than a single thread at once
              */
             eSingleThread,
-#endif
-#if SQLITE_THREADSAFE != 0
             /**
              *  SQLITE_OPEN_NOMUTEX
              *  In this mode, SQLite can be safely used by multiple threads provided that no single database connection is used simultaneously in two or more threads.
              *  (Stroika Debug::AssertExternallySynchronizedLock enforces this)
+             * 
+             * This may not always be available depending on how sqlite was compiled, but we dont have access to SQLITE_THREADSAFE at compile time
+             * (since just defined in C file from Stroika/ThirdPartyComponents/sqlite/Makefile);
+             * call sqlite3_threadsafe, to see if this is enabled
              */
             eMultiThread,
             /**
              *  SQLITE_OPEN_FULLMUTEX
              *  In serialized mode, SQLite can be safely used by multiple threads with no restriction.
              *  (note even in this mode, each connection is Debug::AssertExternallySynchronizedLock)
+             * 
+             * This may not always be available depending on how sqlite was compiled, but we dont have access to SQLITE_THREADSAFE at compile time
+             * (since just defined in C file from Stroika/ThirdPartyComponents/sqlite/Makefile);
+             * call sqlite3_threadsafe, to see if this is enabled
              */
             eSerialized,
-#endif
         };
         optional<ThreadingMode> fThreadingMode;
 

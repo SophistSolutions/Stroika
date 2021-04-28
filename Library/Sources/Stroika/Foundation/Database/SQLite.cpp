@@ -74,17 +74,16 @@ Connection::Connection (const Options& options, const function<void (Connection&
     int flags = 0;
     if (options.fThreadingMode) {
         switch (*options.fThreadingMode) {
-#if SQLITE_THREADSAFE == 0
             case Options::ThreadingMode::eSingleThread:
                 break;
-#else
             case Options::ThreadingMode::eMultiThread:
+                Require (::sqlite3_threadsafe ());
                 flags += SQLITE_OPEN_NOMUTEX;
                 break;
             case Options::ThreadingMode::eSerialized:
+                Require (::sqlite3_threadsafe ());
                 flags += SQLITE_OPEN_FULLMUTEX;
                 break;
-#endif
         }
     }
 
@@ -111,6 +110,9 @@ Connection::Connection (const Options& options, const function<void (Connection&
     }
     if (options.fDBPath) {
         uriArg = options.fDBPath->generic_string ();
+        if (uriArg.starts_with (":")) {
+            uriArg = "./" + uriArg; // sqlite docs warn to do this, to avoid issues with :memory or other extensions
+        }
     }
     if (options.fTemporaryDB) {
         uriArg = string{}; // not sure how to give name to tmp file - maybe must use url syntax?
