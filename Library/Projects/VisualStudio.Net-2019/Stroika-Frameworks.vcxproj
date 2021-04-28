@@ -54,7 +54,7 @@
     <NMakeCleanCommandLine>make --directory $(ProjectDir)\..\..\..\Library\Sources\Stroika\Frameworks\ CONFIGURATION=$(CONFIGURATION) clean --silent</NMakeCleanCommandLine>
     <OutDir>$(ProjectDir)\..\..\..\Builds\$(Configuration)</OutDir>
     <IntDir>$(ProjectDir)\..\..\..\IntermediateFiles\Stroika-Frameworks\$(Configuration)</IntDir>
-    <NMakeIncludeSearchPath>$(ProjectDir)\..\..\..\Library\Sources\</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>$(ProjectDir)\..\..\..\Library\Sources\;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
     <AdditionalOptions>/std:c++latest</AdditionalOptions>
   </PropertyGroup>
   <ItemDefinitionGroup />

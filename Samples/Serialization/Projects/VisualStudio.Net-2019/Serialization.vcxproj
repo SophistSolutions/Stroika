@@ -54,7 +54,7 @@
     <IntDir>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-Serialization\</IntDir>
   </PropertyGroup>
   <PropertyGroup>
-    <NMakeIncludeSearchPath>$(ProjectDir)\..\..\;$(ProjectDir)\..\..\..\..\Library\Sources\</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>$(ProjectDir)\..\..\;$(ProjectDir)\..\..\..\..\Library\Sources\;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
     <AdditionalOptions>/std:c++latest</AdditionalOptions>
   </PropertyGroup>
   <ItemGroup>

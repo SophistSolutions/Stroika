@@ -520,7 +520,17 @@ sub WriteVS2kIntellisenseConfigFile
 			$defs2Print .= substr ($element, 2);
 		}
 	}
+
+	local $paths2Print = "";
+	my $tmp		=	trim (`cygpath --ignore --mixed --path "$INCLUDES_PATH"`);
+	foreach my $element (split /;/, $tmp) {
+		if ($paths2Print ne "") {
+			$paths2Print .= ';'
+		}
+		$paths2Print .= $element;
+	}
 	print (OUT "    <NMakePreprocessorDefinitions>$defs2Print</NMakePreprocessorDefinitions>\n");
+	print (OUT "    <NMakeIncludeSearchPath>$paths2Print</NMakeIncludeSearchPath>\n");
 	print (OUT "  </PropertyGroup>\n");
 
 	print (OUT "</Project>\n");

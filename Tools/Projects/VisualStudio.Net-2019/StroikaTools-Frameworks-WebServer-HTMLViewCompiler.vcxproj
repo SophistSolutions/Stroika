@@ -54,7 +54,7 @@
     <IntDir>$(ProjectDir)..\..\..\IntermediateFiles\$(Configuration)\Tools-Frameworks-HTMLViewCompiler\</IntDir>
   </PropertyGroup>
   <PropertyGroup>
-    <NMakeIncludeSearchPath>$(ProjectDir)\..\..\..\Tools\Sources\Stroika\Frameworks\WebServer\HTMLViewCompiler\;$(ProjectDir)\..\..\..\Library\Sources\</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>$(ProjectDir)\..\..\..\Tools\Sources\Stroika\Frameworks\WebServer\HTMLViewCompiler\;$(ProjectDir)\..\..\..\Library\Sources\;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
     <AdditionalOptions>/std:c++latest</AdditionalOptions>
   </PropertyGroup>
   <ItemGroup>
