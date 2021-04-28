@@ -30,7 +30,7 @@ using namespace Stroika::Foundation::Time;
 namespace {
     namespace RegressionTest1_sqlite_ {
         namespace PRIVATE_ {
-            using namespace  Database::SQLite;
+            using namespace Database::SQLite;
             enum class ScanKindType_ {
                 Background,
                 Reference,
@@ -47,7 +47,7 @@ namespace {
                     bool created = false;
                     try {
 #if __cpp_designated_initializers
-                        fDB_ = make_unique<Connection> (Options{.fDBPath= testDBFile}, [&created] (Database::SQLite::Connection& db) { created = true; InitialSetup_ (db); });
+                        fDB_ = make_unique<Connection> (Options{.fDBPath = testDBFile}, [&created] (Database::SQLite::Connection& db) { created = true; InitialSetup_ (db); });
 #else
                         fDB_ = make_unique<Connection> (Options{testDBFile}, [&created] (Database::SQLite::Connection& db) { created = true; InitialSetup_ (db); });
 #endif
@@ -192,7 +192,7 @@ namespace {
         void DoIt ()
         {
             using namespace PRIVATE_;
-            TraceContextBumper ctx {"ScanDB::DB::RunTest"};
+            TraceContextBumper ctx{"ScanDB::DB::RunTest"};
             auto               test = [] (PRIVATE_::DB& db, unsigned nTimesRanBefore) {
                 db.fDB_->Exec (L"select * from ScanTypes;");
                 {
