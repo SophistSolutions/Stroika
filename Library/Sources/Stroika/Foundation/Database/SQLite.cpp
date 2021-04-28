@@ -128,12 +128,11 @@ Connection::Connection (const Options& options, const function<void (Connection&
             uriArg = ":memory";
         }
         else {
-            WeakAssertNotImplemented ();    // maybe can do this with URI syntax, but not totally clear
+            WeakAssertNotImplemented (); // maybe can do this with URI syntax, but not totally clear
         }
         // For now, it appears we ALWAYS create memory DBS when opening (so cannot find a way to open shared) - so always set created flag
         created = true;
     }
-
 
     int e;
     if ((e = ::sqlite3_open_v2 (uriArg.c_str (), &fDB_, flags, options.fVFS ? options.fVFS->AsNarrowSDKString ().c_str () : nullptr)) == SQLITE_CANTOPEN) {
