@@ -296,7 +296,7 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "LIBS_PATH_DIRECTIVES=");
 	for my $l (split /:/, $LIBS_PATH) {
 		if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
-			my $tmp		=	trim (`cygpath --mixed "$l"`);
+			my $tmp		=	trim (`cygpath --ignore --mixed "$l"`);
 			my $len = length ($tmp);
 			my $c = $tmp[length ($tmp)-1];
 			if (length ($tmp) > 0 && substr ($tmp, -1) eq "\\") {
@@ -353,21 +353,21 @@ sub WriteStroikaConfigMakeHeader
 		print (OUT "##\n");
 		print (OUT "## Windows format path versions of some of these variables\n");
 		print (OUT "##\n");
-		print (OUT "##WIN_\$var = cygpath --mixed \"\$var\"                OR\n");
-		print (OUT "##WIN_\$var = cygpath --mixed --path \"\$var\"         (as appropriate)\n");
+		print (OUT "##WIN_\$var = cygpath --ignore --mixed \"\$var\"                OR\n");
+		print (OUT "##WIN_\$var = cygpath --ignore --mixed --path \"\$var\"         (as appropriate)\n");
 		print (OUT "##\n");
 		print (OUT "##\n");
 
 		{
 			my $tmp = GetConfigurationParameter($activeConfiguration, "Linker");
 			if (not ($tmp eq "")) {
-				$tmp		=	trim (`cygpath --mixed "$tmp"`);
+				$tmp		=	trim (`cygpath --ignore --mixed "$tmp"`);
 			}
 		}
 		{
 			my $tmp = GetConfigurationParameter($activeConfiguration, "LIBTOOL");
 			if (not ($tmp eq "")) {
-				$tmp		=	trim (`cygpath --mixed "$tmp"`);
+				$tmp		=	trim (`cygpath --ignore --mixed "$tmp"`);
 			}
 		}
 		{
@@ -381,29 +381,29 @@ sub WriteStroikaConfigMakeHeader
 		{
 			my $tmp = GetConfigurationParameter($activeConfiguration, "CC");
 			if (not ($tmp eq "")) {
-				$tmp		=	trim (`cygpath --mixed "$tmp"`);
+				$tmp		=	trim (`cygpath --ignore --mixed "$tmp"`);
 			}
 		}
 		{
 			my $tmp = GetConfigurationParameter($activeConfiguration, "AS");
 			if (not ($tmp eq "")) {
-				$tmp		=	trim (`cygpath --mixed "$tmp"`);
+				$tmp		=	trim (`cygpath --ignore --mixed "$tmp"`);
 			}
 		}
 		{
 			my $tmp = GetConfigurationParameter($activeConfiguration, "CXX");
 			if (not ($tmp eq "")) {
-				$tmp		=	trim (`cygpath --mixed "$tmp"`);
+				$tmp		=	trim (`cygpath --ignore --mixed "$tmp"`);
 			}
 		}
 		{
 			my $LIBS_PATH = GetConfigurationParameter($activeConfiguration, "LIBS_PATH");
-			my $tmp		=	trim (`cygpath --mixed --path "$LIBS_PATH"`);
+			my $tmp		=	trim (`cygpath --ignore --mixed --path "$LIBS_PATH"`);
 			print (OUT "WIN_LIBS_PATH=$tmp \n");		#nb: space important if $tmp ends in backslash
 		}
 		{
 			my $INCLUDES_PATH = GetConfigurationParameter($activeConfiguration, "INCLUDES_PATH");
-			my $tmp		=	trim (`cygpath --mixed --path "$INCLUDES_PATH"`);
+			my $tmp		=	trim (`cygpath --ignore --mixed --path "$INCLUDES_PATH"`);
 			print (OUT "WIN_INCLUDES_PATH=$tmp \n");		#nb: space important if $tmp ends in backslash
 		}
 		#{
@@ -431,8 +431,8 @@ sub WriteStroikaConfigMakeHeader
 	}
 
 	if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
-		print (OUT "FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE=\$(shell cygpath --mixed \$1)\n");
-		print (OUT "FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE=\$(shell cygpath --mixed \$1)\n");
+		print (OUT "FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE=\$(shell cygpath --ignore --mixed \$1)\n");
+		print (OUT "FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE=\$(shell cygpath --ignore --mixed \$1)\n");
 	}
 	else {
 		print (OUT "FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE=\$1\n");
