@@ -11,13 +11,15 @@ ifneq ($(CONFIGURATION),)
 endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
-
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
-VERSION=3340100
+VERSION=3350500
+#VERSION=3340100
 #VERSION=3340000
-#VERSION=3330000
-#VERSION=3320300
+
+# because we list multiple targets in PRODUCED_OUTPUT_ARTIFACTS, all of which are built with the same script
+.NOTPARALLEL:
 
 #
 # Download of SQLITE from www.sqlite.org mysteriously started failing on the macos machines only for travisci
@@ -51,24 +53,35 @@ PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canoni
 
 
 
-
 .PHONY:	all clean clobber check
-
-
 
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 SQLITE3LIB=libsqlite.a
+SQLITE3EXE=sqlite
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 SQLITE3LIB=sqlite.lib
+SQLITE3EXE=sqlite.exe
 endif
+TARGETDIR				=	$(PER_CONFIGURATION_BUILDS_DIR)bin/
+TARGETEXE				=	$(TARGETDIR)sqlite${EXE_SUFFIX}
+
+LibObjs=\
+	$(ObjDir)sqlite3${OBJ_SUFFIX}\
+
+Objs=\
+	$(LibObjs)\
+	$(ObjDir)shell${OBJ_SUFFIX}\
+
+# Use the stroika link macros, but omit the stroika lib itself, and other injected depepdencies for sqlite executable
+LIB_DEPENDENCIES=
+StroikaLibs=
 
 
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/sqlite/sqlite3.h	\
-	$(PER_CONFIGURATION_BUILDS_DIR)lib/$(SQLITE3LIB)
-
-
+	$(PER_CONFIGURATION_BUILDS_DIR)lib/$(SQLITE3LIB) \
+	$(TARGETEXE)
 
 
 $(ZIPPEDFILE):
@@ -88,11 +101,12 @@ endif
 	@../../ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@#make zippedfile even though a dependency on CURRENT and PRODUCED_ARTIFACTS for parallel-make so completed before either starts (else one sees file partly downloaded and proceeeds)
 	@$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) $(ZIPPEDFILE)
-	@$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) $(PRODUCED_OUTPUT_ARTIFACTS)
 ifneq ($(QUICK_BUILD), 1)
 	@$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) CURRENT
 endif
+	@$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
+
 
 ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPEDFILE)
 	@../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "sqlite ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
@@ -104,22 +118,19 @@ ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPED
 	@touch $@
 
 
-SQLITE3OBJ=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/sqlite3${OBJ_SUFFIX}
-OBJS=$(SQLITE3OBJ)
-
-
-#ALL produced artifacts produced by the same thing. But if you try the same rule to make all, if parallel makes invoked on this, you get
-#multiple tries to run the same rule. So remap all to making the first.
-$(wordlist 2, 9999, $(PRODUCED_OUTPUT_ARTIFACTS)):	$(word 1,$(PRODUCED_OUTPUT_ARTIFACTS))
-
-$(word 1,$(PRODUCED_OUTPUT_ARTIFACTS)):
+$(PRODUCED_OUTPUT_ARTIFACTS):
 	@$(MAKE) --silent $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
 	@../../ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "sqlite $(VERSION) - Build ..."
-	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include/sqlite
-	cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/sqlite3.h $(PER_CONFIGURATION_BUILDS_DIR)include/sqlite/sqlite3.h
-	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib
-	$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) $(OBJS)
-	$(call DEFAULT_LIBRARY_GEN_LINE, $(PER_CONFIGURATION_BUILDS_DIR)lib/$(SQLITE3LIB), $(OBJS))
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include/sqlite
+	@cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/sqlite3.h $(PER_CONFIGURATION_BUILDS_DIR)include/sqlite/sqlite3.h
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib
+	@$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) $(Objs)
+	@$(call DEFAULT_LIBRARY_GEN_LINE, $(PER_CONFIGURATION_BUILDS_DIR)lib/$(SQLITE3LIB), $(LibObjs))
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)bin
+	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
+	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  '$(call DEFAULT_LINK_LINE,$@)';\
+	fi
+	@$(call DEFAULT_LINK_LINE,$@)
 
 
 ifeq (true,$(HasMakefileBugWorkaround_lto_skipping_undefined_incompatible))
@@ -127,8 +138,11 @@ ifeq (true,$(HasMakefileBugWorkaround_lto_skipping_undefined_incompatible))
 CFLAGS:=$(filter-out -flto, $(CFLAGS))
 endif
 
-### @todo REVIEW - this maybe a very bad/illegal place to add to these CFLAGS values - they may need to get
-### baked into header as well!!!
+#
+# NOTE: It appears to be OK to define these CFLAGS here, and not in the CONFIGURATION because these appear to only 
+# be used in the .c file, not in the .h file for sqlite
+#	@todo	Find docs/reference assuring this will always be so -- LGP 2021-04-28
+#
 
 CFLAGS	+= -DSQLITE_OMIT_LOAD_EXTENSION
 
@@ -137,15 +151,17 @@ CFLAGS	+= -DSQLITE_ENABLE_API_ARMOR
 CFLAGS	+= -DSQLITE_DEBUG
 endif
 
+ObjDir=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/
 
-$(SQLITE3OBJ):
-ifeq (Unix,$(ProjectPlatformSubdir))
-	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && $(call DEFAULT_CC_LINE, sqlite3.c,$@)
-else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	export PATH="$(TOOLS_PATH_ADDITIONS):$(PATH)";\
-		cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_); \
-		$(call DEFAULT_CC_LINE, sqlite3.c,$@)
-endif
+vpath %c $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
+
+
+$(ObjDir)%${OBJ_SUFFIX} : %.c
+	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
+	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_CC_LINE,$<,$@)';\
+	fi
+	@mkdir -p `dirname $@`
+	@$(call DEFAULT_CC_LINE,$<,$@)
 
 
 check-prerequisite-tools:
@@ -160,7 +176,7 @@ check:
 	@$(ECHO) " Stroika/ThirdPartyComponents/sqlite -  [Succeeded]";
 
 
-clobber:	clean
+clobber::	clean
 ifeq ($(CONFIGURATION),)
 	@rm -rf CURRENT ORIGS
 	@rm -rf  $(StroikaRoot)Builds/*/ThirdPartyComponents/include/sqlite $(StroikaRoot)Builds/*/ThirdPartyComponents/lib/*sqlite.*
@@ -168,11 +184,12 @@ else
 	@rm -rf $(PRODUCED_OUTPUT_ARTIFACTS) $(PER_CONFIGURATION_BUILDS_DIR)include/sqlite
 endif
 
-	
-clean:
+
+clean::
 	@rm -rf $(AMALGAMATION_WITH_VERSION)
 ifeq ($(CONFIGURATION),)
 	@rm -rf  $(StroikaRoot)IntermediateFiles/*/ThirdPartyComponents/sqlite
 else
 	@rm -rf $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
 endif
+
