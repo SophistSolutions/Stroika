@@ -45,6 +45,19 @@ namespace Stroika::Foundation::Database::SQLite {
     String QuoteStringForDB (const String& s);
 
 #if qHasFeature_sqlite
+
+    /**
+     *  This defines what options sqlite was compiled with.
+     */
+    class CompiledOptions final {
+    public:
+        bool                         ENABLE_NORMALIZE;
+
+        /**
+         */
+        static const CompiledOptions kThe;
+    };
+
     /**
      */
     struct Options {
@@ -243,21 +256,20 @@ namespace Stroika::Foundation::Database::SQLite {
 
     public:
         enum class WhichSQLFlag {
+            /**
+             *  This is the original SQL passed in as argument to the statement.
+             */
             eOriginal,
+
             /**
              * string containing the SQL text of prepared statement P with [bound parameters] expanded
              */
             eExpanded,
-        // not enabled by default and not sure how to check safely...eNormalized
-#if 0
-            // need to run thourhg this and expose these options as enum or something more convenient...
-SQLITE_PRIVATE const char **sqlite3CompileOptions(int *pnOpt){
-  *pnOpt = sizeof(sqlite3azCompileOpt) / sizeof(sqlite3azCompileOpt[0]);
-  return (const char**)sqlite3azCompileOpt;
-
-  // ENABLE_NORMALIZE
-}
-#endif
+        
+            /**
+             * This option is available iff CompiledOptions::kThe.ENABLE_NORMALIZE
+             */
+             eNormalized
         };
 
     public:

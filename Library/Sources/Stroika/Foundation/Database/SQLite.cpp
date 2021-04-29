@@ -78,6 +78,21 @@ String SQLite::QuoteStringForDB (const String& s)
 }
 
 #if qHasFeature_sqlite
+
+/*
+ ********************************************************************************
+ *************************** SQLite::CompiledOptions ****************************
+ ********************************************************************************
+ */
+#if __cpp_designated_initializers
+const CompiledOptions CompiledOptions::kThe{
+    .ENABLE_NORMALIZE = !!::sqlite3_compileoption_used ("ENABLE_NORMALIZE")};
+#else
+const CompiledOptions CompiledOptions::kThe{
+    sqlite3_compileoption_used ("ENABLE_NORMALIZE")};
+#endif
+
+
 /*
  ********************************************************************************
  *************************** SQLite::Connection *********************************
@@ -276,7 +291,7 @@ Statement::Statement (Connection* db, const wchar_t* formatQuery, ...)
     unsigned int colCount = static_cast<unsigned int> (::sqlite3_column_count (fStatementObj_));
     for (unsigned int i = 0; i < colCount; ++i) {
         const char* colTypeUTF8 = ::sqlite3_column_decltype (fStatementObj_, i);
-        fColumns_.push_back (ColumnDescription{String::FromUTF8 (::sqlite3_column_name (fStatementObj_, i)), (colTypeUTF8 == nullptr)? optional<String>{} : String::FromUTF8 (colTypeUTF8)});
+        fColumns_.push_back (ColumnDescription{String::FromUTF8 (::sqlite3_column_name (fStatementObj_, i)), (colTypeUTF8 == nullptr) ? optional<String>{} : String::FromUTF8 (colTypeUTF8)});
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"sqlite3_column_decltype(i) = %s", ::sqlite3_column_decltype (fStatementObj_, i) == nullptr ? L"{nullptr}" : String::FromUTF8 (::sqlite3_column_decltype (fStatementObj_, i)).c_str ());
 #endif
@@ -292,6 +307,7 @@ Statement::Statement (Connection* db, const wchar_t* formatQuery, ...)
 
 String Statement::GetSQL (WhichSQLFlag whichSQL) const
 {
+    Assert (not CompiledOptions::kThe.ENABLE_NORMALIZE);
     switch (whichSQL) {
         case WhichSQLFlag::eOriginal:
             return String::FromUTF8 (::sqlite3_sql (fStatementObj_));
@@ -304,7 +320,9 @@ String Statement::GetSQL (WhichSQLFlag whichSQL) const
             }
             throw bad_alloc{};
         }
-#if 0
+#if SQLITE_ENABLE_NORMALIZE
+        // SB enabled iff CompiledOptions::kThe.ENABLE_NORMALIZE, but right now don't have mechanism to detect at compile time and get link error
+        // if we reference here...
         case WhichSQLFlag::eNormalized:
             return String::FromUTF8 (::sqlite3_normalized_sql (fStatementObj_));
 #endif
