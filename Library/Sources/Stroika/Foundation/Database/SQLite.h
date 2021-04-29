@@ -26,8 +26,6 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Early</a>
  *
  *  TODO
- *      @todo   Add REQUIRE statements on DB::Statement that only one statement is passed in.
- *
  *      @todo   Add DB::Statements object - like DB::Statement - but which allows for multiple statements, and just combines the results.
  *
  *      @todo   Create SQLite Exception class and use sqlite3_errstr () to generate good string message (that seems to return threadafe static const strings)
@@ -85,6 +83,9 @@ namespace Stroika::Foundation::Database::SQLite {
 
         /**
          *  @see https://www.sqlite.org/compile.html#threadsafe
+         * 
+         *  Note this refers to the threading mode for the underlying database. A Connection object is always single-threaded/externally
+         *  synchronized.
          */
         enum class ThreadingMode {
             /**
@@ -149,6 +150,12 @@ namespace Stroika::Foundation::Database::SQLite {
      *
      *          @see https://www.sqlite.org/threadsafe.html
      *          We set SQLITE_OPEN_NOMUTEX on open (so mode Multi-thread, but not Serialized).
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *                              with caveats!
+     *
+     *          The Connection itself is standardC++ thread safety. The thread-safety of the underlying database depends on the setting
+     *          of Options::fThreadingMode when the database is constructed.
      */
     class Connection : private Debug::AssertExternallySynchronizedLock {
     public:
@@ -181,25 +188,22 @@ namespace Stroika::Foundation::Database::SQLite {
         /**
          *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the sqlite API.
          */
-        nonvirtual sqlite3* Peek ();
+        nonvirtual ::sqlite3* Peek ();
 
     private:
         friend class Statement;
 
     private:
-        sqlite3* fDB_{};
+        ::sqlite3* fDB_{};
     };
 
     /**
-     *  \note - for now - this only supports a SINGLE STATEMENT at a time. But if you give more than one, the subsequent ones are ignored.
-     *          Obviously that sucks, and needs work - @todo
-     * 
      *  \note - Design Note - we use String for the result-column-name - and could use int or Atom. But
      *        String slightly simpler, and nearly as performant, so going with that for now.
      *
      *  \todo   CONSIDER redo Row as iterator; or maybe GetREsults () method that returns iterable of Rows? and lazy pulls them?
      */
-    class Statement {
+    class Statement : private Debug::AssertExternallySynchronizedLock {
     public:
         /**
          */
@@ -240,9 +244,11 @@ namespace Stroika::Foundation::Database::SQLite {
     public:
         enum class WhichSQLFlag {
             eOriginal,
+            /**
+             * string containing the SQL text of prepared statement P with [bound parameters] expanded
+             */
             eExpanded,
         // not enabled by default and not sure how to check safely...eNormalized
-
 #if 0
             // need to run thourhg this and expose these options as enum or something more convenient...
 SQLITE_PRIVATE const char **sqlite3CompileOptions(int *pnOpt){
@@ -251,11 +257,12 @@ SQLITE_PRIVATE const char **sqlite3CompileOptions(int *pnOpt){
 
   // ENABLE_NORMALIZE
 }
-
 #endif
         };
 
     public:
+        /**
+         */
         nonvirtual String GetSQL (WhichSQLFlag whichSQL = WhichSQLFlag::eOriginal) const;
 
     public:
@@ -307,6 +314,8 @@ SQLITE_PRIVATE const char **sqlite3CompileOptions(int *pnOpt){
          * 
          *  If iterable argument to Bind (), the if the arguments have parameter names, the association will be done by name.
          *  if they do not have names, the order in the bind argument list will be interpretted as argument order (parameter order) for that item)
+         * 
+         *  \see GetParameters ()
          */
         nonvirtual void Bind (unsigned int parameterIndex, const VariantValue& v);
         nonvirtual void Bind (const String& parameterName, const VariantValue& v);
@@ -320,7 +329,7 @@ SQLITE_PRIVATE const char **sqlite3CompileOptions(int *pnOpt){
 
     private:
         lock_guard<const Debug::AssertExternallySynchronizedLock> fConnectionCritSec_;
-        sqlite3_stmt*                                             fStatementObj_;
+        ::sqlite3_stmt*                                           fStatementObj_;
         vector<ColumnDescription>                                 fColumns_;
         Sequence<ParameterDescription>                            fParameters_;
     };

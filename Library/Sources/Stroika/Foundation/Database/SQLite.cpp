@@ -264,7 +264,14 @@ Statement::Statement (Connection* db, const wchar_t* formatQuery, ...)
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"(db=%p,query='%s')", db, query.c_str ());
 #endif
-    ThrowSQLiteErrorIfNotOK_ (::sqlite3_prepare_v2 (db->Peek (), query.AsUTF8 ().c_str (), -1, &fStatementObj_, NULL), db->Peek ());
+    string      queryUTF8 = query.AsUTF8 ();
+    const char* pzTail    = nullptr;
+    ThrowSQLiteErrorIfNotOK_ (::sqlite3_prepare_v2 (db->Peek (), queryUTF8.c_str (), -1, &fStatementObj_, &pzTail), db->Peek ());
+    Assert (pzTail != nullptr);
+    if (*pzTail != '\0') {
+        // @todo possibly should allow 0 or string of whitespace and ignore that too? -- LGP 2021-04-29
+        Execution::Throw (Exception{L"Unexpected text after query"sv});
+    }
     AssertNotNull (fStatementObj_);
     unsigned int colCount = static_cast<unsigned int> (::sqlite3_column_count (fStatementObj_));
     for (unsigned int i = 0; i < colCount; ++i) {
