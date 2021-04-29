@@ -60,16 +60,9 @@ namespace Stroika::Foundation::Database::SQLite {
         bool ENABLE_NORMALIZE;
 
         /**
+         *  Defined constexpr
          */
         static const CompiledOptions kThe;
-    };
-    constexpr CompiledOptions CompiledOptions::kThe
-    {
-#if __cpp_designated_initializers
-        .ENABLE_NORMALIZE = defined (SQLITE_ENABLE_NORMALIZE)
-#else
-        defined (SQLITE_ENABLE_NORMALIZE)
-#endif
     };
 
     /**
