@@ -110,6 +110,9 @@ namespace Stroika::Foundation::Database::SQLite {
              * This may not always be available depending on how sqlite was compiled, but we dont have access to SQLITE_THREADSAFE at compile time
              * (since just defined in C file from Stroika/ThirdPartyComponents/sqlite/Makefile);
              * call sqlite3_threadsafe, to see if this is enabled
+             * 
+             *  \note Use of this API, as of Stroika 2.1b12, may result in poor error messages, due to how errors are stored (and maybe othe rsuch
+             *        issues - maybe we need to do lock around call to each function to avoid making this mode nearly pointless).
              */
             eSerialized,
         };
@@ -238,7 +241,18 @@ namespace Stroika::Foundation::Database::SQLite {
         enum class WhichSQLFlag {
             eOriginal,
             eExpanded,
-            // not enabled by default and not sure how to check safely...eNormalized
+        // not enabled by default and not sure how to check safely...eNormalized
+
+#if 0
+            // need to run thourhg this and expose these options as enum or something more convenient...
+SQLITE_PRIVATE const char **sqlite3CompileOptions(int *pnOpt){
+  *pnOpt = sizeof(sqlite3azCompileOpt) / sizeof(sqlite3azCompileOpt[0]);
+  return (const char**)sqlite3azCompileOpt;
+
+  // ENABLE_NORMALIZE
+}
+
+#endif
         };
 
     public:
