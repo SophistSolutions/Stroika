@@ -84,13 +84,14 @@ String SQLite::QuoteStringForDB (const String& s)
  *************************** SQLite::CompiledOptions ****************************
  ********************************************************************************
  */
-#if __cpp_designated_initializers
-const CompiledOptions CompiledOptions::kThe{
-    .ENABLE_NORMALIZE = !!::sqlite3_compileoption_used ("ENABLE_NORMALIZE")};
-#else
-const CompiledOptions CompiledOptions::kThe{
-    sqlite3_compileoption_used ("ENABLE_NORMALIZE")};
-#endif
+namespace {
+    struct VerifyFlags_ {
+        VerifyFlags_ ()
+        {
+            Assert (CompiledOptions::kThe.ENABLE_NORMALIZE == !!::sqlite3_compileoption_used ("ENABLE_NORMALIZE"));
+        }
+    } sVerifyFlags_;
+}
 
 
 /*
@@ -320,12 +321,12 @@ String Statement::GetSQL (WhichSQLFlag whichSQL) const
             }
             throw bad_alloc{};
         }
-#if SQLITE_ENABLE_NORMALIZE
-        // SB enabled iff CompiledOptions::kThe.ENABLE_NORMALIZE, but right now don't have mechanism to detect at compile time and get link error
-        // if we reference here...
         case WhichSQLFlag::eNormalized:
-            return String::FromUTF8 (::sqlite3_normalized_sql (fStatementObj_));
-#endif
+            if constexpr (CompiledOptions::kThe.ENABLE_NORMALIZE) {
+                return String::FromUTF8 (::sqlite3_normalized_sql (fStatementObj_));
+            }
+            RequireNotReached ();
+            return String{};
         default:
             RequireNotReached ();
             return String{};

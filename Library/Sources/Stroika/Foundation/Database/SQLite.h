@@ -48,14 +48,28 @@ namespace Stroika::Foundation::Database::SQLite {
 
     /**
      *  This defines what options sqlite was compiled with.
+     * 
+     *      \todo   Find a better way to define! We want this to be available as a constexpr object. But the defines 
+     *              are just done in the .c file that gets defined and the API to lookup values is very non-constexpr.
+     * 
+     *              So instead we take a good guess at the values (based on defaults and #defines done in this file)
+     *              and check with asserts we got the right value.
      */
     class CompiledOptions final {
     public:
-        bool                         ENABLE_NORMALIZE;
+        bool ENABLE_NORMALIZE;
 
         /**
          */
         static const CompiledOptions kThe;
+    };
+    constexpr CompiledOptions CompiledOptions::kThe
+    {
+#if __cpp_designated_initializers
+        .ENABLE_NORMALIZE = defined (SQLITE_ENABLE_NORMALIZE)
+#else
+        defined (SQLITE_ENABLE_NORMALIZE)
+#endif
     };
 
     /**
@@ -265,11 +279,11 @@ namespace Stroika::Foundation::Database::SQLite {
              * string containing the SQL text of prepared statement P with [bound parameters] expanded
              */
             eExpanded,
-        
+
             /**
              * This option is available iff CompiledOptions::kThe.ENABLE_NORMALIZE
              */
-             eNormalized
+            eNormalized
         };
 
     public:
