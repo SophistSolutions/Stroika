@@ -73,10 +73,13 @@ Objs=\
 	$(LibObjs)\
 	$(ObjDir)shell${OBJ_SUFFIX}\
 
-# Use the stroika link macros, but omit the stroika lib itself, and other injected depepdencies for sqlite executable
+# Use the stroika link macro (DEFAULT_LINK_LINE), but omit the stroika lib itself, and other injected depepdencies
+# for sqlite executable
 LIB_DEPENDENCIES=
 StroikaLibs=
-
+ifeq (Unix,$(ProjectPlatformSubdir))
+LIB_DEPENDENCIES=-lpthread
+endif
 
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/sqlite/sqlite3.h	\
