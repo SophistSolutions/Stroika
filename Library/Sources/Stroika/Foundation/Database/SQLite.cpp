@@ -268,7 +268,7 @@ Statement::Statement (Connection* db, const wchar_t* formatQuery, ...)
     AssertNotNull (fStatementObj_);
     unsigned int colCount = static_cast<unsigned int> (::sqlite3_column_count (fStatementObj_));
     for (unsigned int i = 0; i < colCount; ++i) {
-        fColumns_ .push_back( ColumnDescription{String::FromUTF8 (::sqlite3_column_name (fStatementObj_, i)), ::sqlite3_column_type (fStatementObj_, i)});
+        fColumns_.push_back (ColumnDescription{String::FromUTF8 (::sqlite3_column_name (fStatementObj_, i)), ::sqlite3_column_type (fStatementObj_, i)});
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"sqlite3_column_decltype(i) = %s", ::sqlite3_column_decltype (fStatementObj_, i) == nullptr ? L"{nullptr}" : String::FromUTF8 (::sqlite3_column_decltype (fStatementObj_, i)).c_str ());
 #endif
@@ -296,10 +296,10 @@ String Statement::GetSQL (WhichSQLFlag whichSQL) const
             }
             throw bad_alloc{};
         }
-                                    #if 0
+#if 0
         case WhichSQLFlag::eNormalized:
             return String::FromUTF8 (::sqlite3_normalized_sql (fStatementObj_));
-            #endif
+#endif
         default:
             RequireNotReached ();
             return String{};
