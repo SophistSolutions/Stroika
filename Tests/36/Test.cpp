@@ -234,7 +234,6 @@ namespace {
 #endif
 
 namespace {
-
     void DoRegressionTests_ ()
     {
 #if qHasFeature_sqlite

@@ -190,6 +190,11 @@ namespace Stroika::Foundation::Database::SQLite {
     /**
      *  \note - for now - this only supports a SINGLE STATEMENT at a time. But if you give more than one, the subsequent ones are ignored.
      *          Obviously that sucks, and needs work - @todo
+     * 
+     *  \note - Design Note - we use String for the result-column-name - and could use int or Atom. But
+     *        String slightly simpler, and nearly as performant, so going with that for now.
+     * 
+     * 
      */
     class Statement {
     public:
@@ -224,8 +229,11 @@ namespace Stroika::Foundation::Database::SQLite {
     private:
         lock_guard<const Debug::AssertExternallySynchronizedLock> fConnectionCritSec_;
         sqlite3_stmt*                                             fStatementObj_;
-        unsigned int                                              fParamsCount_;
-        Sequence<String>                                          fColNames_;
+        struct ColInfo_ {
+            String fName;
+            int    fType;
+        };
+        Sequence<ColInfo_> fColumns_; // for now name, but soon also types
     };
 #endif
 

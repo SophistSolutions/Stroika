@@ -110,7 +110,7 @@ Connection::Connection (const Options& options, const function<void (Connection&
     }
     if (options.fDBPath) {
         uriArg = options.fDBPath->generic_string ();
-        if (uriArg.starts_with (":")) {
+        if (uriArg[0] == ':') {
             uriArg = "./" + uriArg; // sqlite docs warn to do this, to avoid issues with :memory or other extensions
         }
     }
@@ -221,9 +221,9 @@ Statement::Statement (Connection* db, const wchar_t* formatQuery, ...)
         Execution::Throw (Exception{Characters::Format (L"SQLite Error %s:", String::FromUTF8 (::sqlite3_errmsg (db->Peek ())).c_str ())});
     }
     AssertNotNull (fStatementObj_);
-    fParamsCount_ = ::sqlite3_column_count (fStatementObj_);
-    for (unsigned int i = 0; i < fParamsCount_; ++i) {
-        fColNames_ += String::FromUTF8 (::sqlite3_column_name (fStatementObj_, i));
+    int colCount = ::sqlite3_column_count (fStatementObj_);
+    for (unsigned int i = 0; i < colCount; ++i) {
+        fColumns_ += ColInfo_{String::FromUTF8 (::sqlite3_column_name (fStatementObj_, i)), ::sqlite3_column_type (fStatementObj_, i)};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"sqlite3_column_decltype(i) = %s", ::sqlite3_column_decltype (fStatementObj_, i) == nullptr ? L"{nullptr}" : String::FromUTF8 (::sqlite3_column_decltype (fStatementObj_, i)).c_str ());
 #endif
@@ -241,7 +241,7 @@ auto Statement::GetNextRow () -> optional<RowType>
     AssertNotNull (fStatementObj_);
     if ((rc = ::sqlite3_step (fStatementObj_)) == SQLITE_ROW) {
         RowType row;
-        for (unsigned int i = 0; i < fParamsCount_; ++i) {
+        for (unsigned int i = 0; i < fColumns_.size (); ++i) {
             // redo as sqlite3_column_text16
             // @todo AND iether use value object or check INTERANL TYOPE  - https://www.sqlite.org/c3ref/column_blob.html and return the right one  - NULL, INTEGER, FLOAT, TEXT, BLOB
             VariantValue v;
@@ -268,7 +268,7 @@ auto Statement::GetNextRow () -> optional<RowType>
                     AssertNotReached ();
                 } break;
             }
-            row.Add (fColNames_[i], v);
+            row.Add (fColumns_[i].fName, v);
         }
         return row;
     }
