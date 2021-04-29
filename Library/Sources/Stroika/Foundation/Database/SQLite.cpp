@@ -5,6 +5,7 @@
 
 #include "../Characters/Format.h"
 #include "../Characters/StringBuilder.h"
+#include "../Characters/ToString.h"
 #include "../Debug/Trace.h"
 
 #include "SQLite.h"
@@ -35,6 +36,21 @@ namespace {
             Verify (::sqlite3_shutdown () == SQLITE_OK); // mostly pointless but avoids memory leak complaints
         }
     } sModuleShutdown_;
+}
+#endif
+
+#if qHasFeature_sqlite
+namespace {
+    void ThrowSQLiteErrorIfNotOK_ (int errCode, sqlite3* sqliteConnection = nullptr)
+    {
+        static_assert (SQLITE_OK == 0);
+        if (errCode != SQLITE_OK) [[UNLIKELY_ATTR]] {
+            if (sqliteConnection != nullptr) {
+                Execution::Throw (Exception{Characters::Format (L"SQLite Error: %s (code %d)", String::FromUTF8 (::sqlite3_errmsg (sqliteConnection)).c_str (), errCode)});
+            }
+            Execution::Throw (Exception{Characters::Format (L"SQLite Error: %d", errCode)});
+        }
+    }
 }
 #endif
 
@@ -152,8 +168,7 @@ Connection::Connection (const Options& options, const function<void (Connection&
         if (fDB_ != nullptr) {
             Verify (::sqlite3_close (fDB_) == SQLITE_OK);
         }
-        // @todo add error string
-        Execution::Throw (Exception{Characters::Format (L"SQLite Error %d:", e)});
+        ThrowSQLiteErrorIfNotOK_ (e, fDB_);
     }
     if (created) {
         try {
@@ -185,8 +200,7 @@ void Connection::Exec (const wchar_t* formatCmd2Exec, ...)
     int   e = ::sqlite3_exec (fDB_, cmd2Exec.AsUTF8 ().c_str (), NULL, 0, &db_err);
     if (e != SQLITE_OK) [[UNLIKELY_ATTR]] {
         if (db_err == nullptr or *db_err == '\0') {
-            DbgTrace (L"Failed doing sqllite command: %s", cmd2Exec.c_str ());
-            Execution::Throw (Exception{Characters::Format (L"SQLite Error %d", e)});
+            ThrowSQLiteErrorIfNotOK_ (e, fDB_);
         }
         else {
             Execution::Throw (Exception{Characters::Format (L"SQLite Error %d: %s", e, String::FromUTF8 (db_err).c_str ())});
@@ -198,7 +212,41 @@ void Connection::Exec (const wchar_t* formatCmd2Exec, ...)
 #if qHasFeature_sqlite
 /*
  ********************************************************************************
- ********************* SQLite::Connection::Statement ****************************
+ ********************* SQLite::Statement::ColumnDescription *********************
+ ********************************************************************************
+ */
+String Statement::ColumnDescription::ToString () const
+{
+    StringBuilder sb;
+    sb += L"{";
+    sb += L"name: " + Characters::ToString (fName) + L", ";
+    sb += L"type: " + Characters::ToString (fType);
+    sb += L"}";
+    return sb.str ();
+}
+#endif
+
+#if qHasFeature_sqlite
+/*
+ ********************************************************************************
+ ****************** SQLite::Statement::ParameterDescription *********************
+ ********************************************************************************
+ */
+String Statement::ParameterDescription::ToString () const
+{
+    StringBuilder sb;
+    sb += L"{";
+    sb += L"name: " + Characters::ToString (fName) + L", ";
+    sb += L"value: " + Characters::ToString (fValue);
+    sb += L"}";
+    return sb.str ();
+}
+#endif
+
+#if qHasFeature_sqlite
+/*
+ ********************************************************************************
+ ******************************* SQLite::Statement ******************************
  ********************************************************************************
  */
 Statement::Statement (Connection* db, const wchar_t* formatQuery, ...)
@@ -216,36 +264,64 @@ Statement::Statement (Connection* db, const wchar_t* formatQuery, ...)
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"(db=%p,query='%s')", db, query.c_str ());
 #endif
-    int rc = ::sqlite3_prepare_v2 (db->Peek (), query.AsUTF8 ().c_str (), -1, &fStatementObj_, NULL);
-    if (rc != SQLITE_OK) [[UNLIKELY_ATTR]] {
-        Execution::Throw (Exception{Characters::Format (L"SQLite Error %s:", String::FromUTF8 (::sqlite3_errmsg (db->Peek ())).c_str ())});
-    }
+    ThrowSQLiteErrorIfNotOK_ (::sqlite3_prepare_v2 (db->Peek (), query.AsUTF8 ().c_str (), -1, &fStatementObj_, NULL), db->Peek ());
     AssertNotNull (fStatementObj_);
-    int colCount = ::sqlite3_column_count (fStatementObj_);
+    unsigned int colCount = static_cast<unsigned int> (::sqlite3_column_count (fStatementObj_));
     for (unsigned int i = 0; i < colCount; ++i) {
-        fColumns_ += ColInfo_{String::FromUTF8 (::sqlite3_column_name (fStatementObj_, i)), ::sqlite3_column_type (fStatementObj_, i)};
+        fColumns_ .push_back( ColumnDescription{String::FromUTF8 (::sqlite3_column_name (fStatementObj_, i)), ::sqlite3_column_type (fStatementObj_, i)});
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"sqlite3_column_decltype(i) = %s", ::sqlite3_column_decltype (fStatementObj_, i) == nullptr ? L"{nullptr}" : String::FromUTF8 (::sqlite3_column_decltype (fStatementObj_, i)).c_str ());
 #endif
-        // add VariantValue::Type list based on sqlite3_column_decltype
+    }
+
+    // Default setting (not documented, but I assume) is null
+    unsigned int paramCount = static_cast<unsigned int> (::sqlite3_bind_parameter_count (fStatementObj_));
+    for (unsigned int i = 1; i <= paramCount; ++i) {
+        const char* tmp = ::sqlite3_bind_parameter_name (fStatementObj_, i); // can be null
+        fParameters_ += ParameterDescription{tmp == nullptr ? optional<String>{} : String::FromUTF8 (tmp), nullptr};
     }
 }
 
-auto Statement::GetNextRow () -> optional<RowType>
+String Statement::GetSQL (WhichSQLFlag whichSQL) const
+{
+    switch (whichSQL) {
+        case WhichSQLFlag::eOriginal:
+            return String::FromUTF8 (::sqlite3_sql (fStatementObj_));
+        case WhichSQLFlag::eExpanded: {
+            auto tmp = ::sqlite3_expanded_sql (fStatementObj_);
+            if (tmp != nullptr) {
+                String r = String::FromUTF8 (tmp);
+                ::sqlite3_free (tmp);
+                return r;
+            }
+            throw bad_alloc{};
+        }
+                                    #if 0
+        case WhichSQLFlag::eNormalized:
+            return String::FromUTF8 (::sqlite3_normalized_sql (fStatementObj_));
+            #endif
+        default:
+            RequireNotReached ();
+            return String{};
+    }
+}
+
+auto Statement::GetNextRow () -> optional<Row>
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{"SQLite::DB::Statement::GetNextRow"};
 #endif
-    // @todo redo with https://www.sqlite.org/c3ref/value.html
+    // @todo MAYBE redo with https://www.sqlite.org/c3ref/value.html
     int rc;
     AssertNotNull (fStatementObj_);
     if ((rc = ::sqlite3_step (fStatementObj_)) == SQLITE_ROW) {
-        RowType row;
+        Row row;
         for (unsigned int i = 0; i < fColumns_.size (); ++i) {
-            // redo as sqlite3_column_text16
-            // @todo AND iether use value object or check INTERANL TYOPE  - https://www.sqlite.org/c3ref/column_blob.html and return the right one  - NULL, INTEGER, FLOAT, TEXT, BLOB
             VariantValue v;
-            switch (::sqlite3_column_type (fStatementObj_, i)) {
+            // NOTE - the values returned by sqlite3_column_type () can change (at least after first query) - so
+            // refetch each time through
+            fColumns_[i].fType = ::sqlite3_column_type (fStatementObj_, i);
+            switch (fColumns_[i].fType) {
                 case SQLITE_INTEGER: {
                     v = VariantValue{::sqlite3_column_int (fStatementObj_, i)};
                 } break;
@@ -261,6 +337,7 @@ auto Statement::GetNextRow () -> optional<RowType>
                     // default to null value
                 } break;
                 case SQLITE_TEXT: {
+                    // @todo redo as sqlite3_column_text16, but doesn't help unix case? Maybe just iff sizeof(wchart_t)==2?
                     AssertNotNull (::sqlite3_column_text (fStatementObj_, i));
                     v = VariantValue{String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (fStatementObj_, i)))};
                 } break;
@@ -280,4 +357,63 @@ Statement::~Statement ()
     AssertNotNull (fStatementObj_);
     ::sqlite3_finalize (fStatementObj_);
 }
+
+void Statement::Bind (unsigned int parameterIndex, const VariantValue& v)
+{
+    fParameters_[parameterIndex].fValue = v;
+    switch (v.GetType ()) {
+        case VariantValue::eString:
+            ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_text (fStatementObj_, parameterIndex + 1, v.As<String> ().AsUTF8 ().c_str (), -1, SQLITE_TRANSIENT));
+            break;
+        case VariantValue::eInteger:
+            ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_int64 (fStatementObj_, parameterIndex + 1, v.As<sqlite3_int64> ()));
+            break;
+        case VariantValue::eFloat:
+            ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_double (fStatementObj_, parameterIndex + 1, v.As<double> ()));
+            break;
+        case VariantValue::eNull:
+            ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_null (fStatementObj_, parameterIndex + 1));
+            break;
+        default:
+            AssertNotImplemented (); // add more types - esp BLOB
+            break;
+    }
+}
+
+void Statement::Bind (const String& parameterName, const VariantValue& v)
+{
+    for (unsigned int i = 0; i < fParameters_.length (); ++i) {
+        if (fParameters_[i].fName == parameterName) {
+            Bind (i, v);
+            return;
+        }
+    }
+    RequireNotReached (); // invalid paramter name provided
+}
+
+void Statement::Bind (const Traversal::Iterable<ParameterDescription>& parameters)
+{
+    int idx = 0;
+    for (auto i : parameters) {
+        if (i.fName) {
+            Bind (*i.fName, i.fValue);
+        }
+        else {
+            Bind (idx, i.fValue);
+        }
+        idx++;
+    }
+}
+
+String Statement::ToString () const
+{
+    StringBuilder sb;
+    sb += L"{";
+    sb += L"Parameter-Bindings: " + Characters::ToString (fParameters_) + L", ";
+    sb += L"Column-Descriptions: " + Characters::ToString (fColumns_) + L", ";
+    sb += L"Original-SQL: " + Characters::ToString (GetSQL ());
+    sb += L"}";
+    return sb.str ();
+}
+
 #endif

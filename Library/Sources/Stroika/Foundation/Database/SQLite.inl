@@ -22,5 +22,19 @@ namespace Stroika::Foundation::Database::SQLite {
     }
 #endif
 
+    /*
+     ********************************************************************************
+     ****************************** SQLite::Statement *******************************
+     ********************************************************************************
+     */
+    inline auto Statement::GetColumns () const -> Sequence<ColumnDescription>
+    {
+        return Sequence<ColumnDescription>{fColumns_};
+    }
+    inline auto Statement::GetParameters () const -> Sequence<ParameterDescription>
+    {
+        return fParameters_;
+    }
+
 }
 #endif /*_Stroika_Foundation_Database_SQLite_inl_*/

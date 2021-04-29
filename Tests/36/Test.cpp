@@ -112,8 +112,9 @@ namespace {
                     }();
                     fDB_->Exec (L"%s", insertSQL.c_str ());
                     Statement s{fDB_.get (), L"SELECT MAX(ScanId) FROM Scans;"};
+                    DbgTrace (L"Statement: %s", Characters::ToString (s).c_str ());
 
-                    if (optional<Statement::RowType> r = s.GetNextRow ()) {
+                    if (optional<Statement::Row> r = s.GetNextRow ()) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"ROW: %s", Characters::ToString (*r).c_str ());
 #endif
@@ -125,7 +126,8 @@ namespace {
                 nonvirtual optional<ScanIDType_> GetLastScan (ScanKindType_ scanKind)
                 {
                     Statement s{fDB_.get (), L"select MAX(ScanId) from Scans where  ScanTypeIDRef='%d';", scanKind};
-                    if (optional<Statement::RowType> r = s.GetNextRow ()) {
+                    DbgTrace (L"Statement: %s", Characters::ToString (s).c_str ());
+                    if (optional<Statement::Row> r = s.GetNextRow ()) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"ROW: %s", Characters::ToString (*r).c_str ());
 #endif
@@ -197,7 +199,8 @@ namespace {
                 db.fDB_->Exec (L"select * from ScanTypes;");
                 {
                     Statement s{db.fDB_.get (), L"select * from ScanTypes;"};
-                    while (optional<Statement::RowType> r = s.GetNextRow ()) {
+                    DbgTrace (L"Statement: %s", Characters::ToString (s).c_str ());
+                    while (optional<Statement::Row> r = s.GetNextRow ()) {
                         DbgTrace (L"ROW: %s", Characters::ToString (*r).c_str ());
                     }
                 }

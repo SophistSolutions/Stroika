@@ -193,8 +193,8 @@ namespace Stroika::Foundation::Database::SQLite {
      * 
      *  \note - Design Note - we use String for the result-column-name - and could use int or Atom. But
      *        String slightly simpler, and nearly as performant, so going with that for now.
-     * 
-     * 
+     *
+     *  \todo   CONSIDER redo Row as iterator; or maybe GetREsults () method that returns iterable of Rows? and lazy pulls them?
      */
     class Statement {
     public:
@@ -216,24 +216,99 @@ namespace Stroika::Foundation::Database::SQLite {
 
     public:
         /**
-         * @todo redo as iterator
+         *  Could use 'int' index for this and faster, but tracking names maybe slightly better for readability and logging,
+         *  and given that string shared_ptr, not too bad to copy around/compare
+         *  COULD use Atom<> - which would be a good performance/funcitonality compromise, but would want to use private atomMgr,
+         *  so scope of names limited (else list of interned strings could become large). Not worth the efforts/risk for small benefit for now.
          */
-        using RowType = Mapping<String, VariantValue>;
+        using ColumnName = String;
+
+    public:
+        /**
+         */
+        using Row = Mapping<ColumnName, VariantValue>;
 
     public:
         /**
          * returns 'missing' on EOF, exception on error
          */
-        nonvirtual optional<RowType> GetNextRow ();
+        nonvirtual optional<Row> GetNextRow ();
+
+    public:
+        enum class WhichSQLFlag {
+            eOriginal,
+            eExpanded,
+            // not enabled by default and not sure how to check safely...eNormalized
+        };
+
+    public:
+        nonvirtual String GetSQL (WhichSQLFlag whichSQL = WhichSQLFlag::eOriginal) const;
+
+    public:
+        struct ColumnDescription {
+            ColumnName fName;
+            int        fType;
+
+            /**
+             *  @see Characters::ToString ()
+             */
+            nonvirtual String ToString () const;
+        };
+
+    public:
+        /**
+         *  \note the types returned in .fType are generally wrong until we've run our first query).
+         */
+        nonvirtual Sequence<ColumnDescription> GetColumns () const;
+
+    public:
+        struct ParameterDescription {
+            optional<String> fName; // name is optional - bindings can be specified by index
+            VariantValue     fValue;
+
+            /**
+             *  @see Characters::ToString ()
+             */
+            nonvirtual String ToString () const;
+        };
+
+    public:
+        /**
+         *  Gets the names and values of all the current parameters to this sql statement.
+         * 
+         *  \see Bind ()
+         */
+        nonvirtual Sequence<ParameterDescription> GetParameters () const;
+
+    public:
+        /**
+         *  Specify one, or a collection of parameter bindings. This never changes the order of the bindings, just
+         *  applies them to the appropriate binding elements.
+         * 
+         *  \note the paramterIndex is 'zero-based' unlike sqlite native APIs
+         *
+         *  \req parameterIndex < GetParameters ().length ()
+         *  \req paramterName FOUND in GetParaemters ().fName's
+         *  and similarly for other overloads
+         * 
+         *  If iterable argument to Bind (), the if the arguments have parameter names, the association will be done by name.
+         *  if they do not have names, the order in the bind argument list will be interpretted as argument order (parameter order) for that item)
+         */
+        nonvirtual void Bind (unsigned int parameterIndex, const VariantValue& v);
+        nonvirtual void Bind (const String& parameterName, const VariantValue& v);
+        nonvirtual void Bind (const Traversal::Iterable<ParameterDescription>& parameters);
+
+    public:
+        /**
+         *  @see Characters::ToString ()
+         */
+        nonvirtual String ToString () const;
 
     private:
         lock_guard<const Debug::AssertExternallySynchronizedLock> fConnectionCritSec_;
         sqlite3_stmt*                                             fStatementObj_;
-        struct ColInfo_ {
-            String fName;
-            int    fType;
-        };
-        Sequence<ColInfo_> fColumns_; // for now name, but soon also types
+        vector<ColumnDescription>                                 fColumns_;
+        Sequence<ParameterDescription>                            fParameters_;
     };
 #endif
 
