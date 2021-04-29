@@ -49,6 +49,9 @@ namespace Stroika::Foundation::Database::SQLite {
     /**
      *  This defines what options sqlite was compiled with.
      * 
+     *  Fields correspond to names looked up with ::sqlite3_compileoption_used () - only this is constexpr (and an incomplete replica).
+     *  This is checked to correspond to the sqlite3_compileoption_used() values at startup with assertions.
+     * 
      *      \todo   Find a better way to define! We want this to be available as a constexpr object. But the defines 
      *              are just done in the .c file that gets defined and the API to lookup values is very non-constexpr.
      * 
