@@ -275,7 +275,8 @@ Statement::Statement (Connection* db, const wchar_t* formatQuery, ...)
     AssertNotNull (fStatementObj_);
     unsigned int colCount = static_cast<unsigned int> (::sqlite3_column_count (fStatementObj_));
     for (unsigned int i = 0; i < colCount; ++i) {
-        fColumns_.push_back (ColumnDescription{String::FromUTF8 (::sqlite3_column_name (fStatementObj_, i)), String::FromUTF8 (::sqlite3_column_decltype (fStatementObj_, i))});
+        const char* colTypeUTF8 = ::sqlite3_column_decltype (fStatementObj_, i);
+        fColumns_.push_back (ColumnDescription{String::FromUTF8 (::sqlite3_column_name (fStatementObj_, i)), (colTypeUTF8 == nullptr)? optional<String>{} : String::FromUTF8 (colTypeUTF8)});
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"sqlite3_column_decltype(i) = %s", ::sqlite3_column_decltype (fStatementObj_, i) == nullptr ? L"{nullptr}" : String::FromUTF8 (::sqlite3_column_decltype (fStatementObj_, i)).c_str ());
 #endif

@@ -270,8 +270,8 @@ SQLITE_PRIVATE const char **sqlite3CompileOptions(int *pnOpt){
          *
          */
         struct ColumnDescription {
-            ColumnName fName;
-            String     fType;   // sqlite3_column_decltype
+            ColumnName       fName;
+            optional<String> fType; // sqlite3_column_decltype
 
             /**
              *  @see Characters::ToString ()
