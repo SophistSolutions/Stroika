@@ -275,7 +275,7 @@ Statement::Statement (Connection* db, const wchar_t* formatQuery, ...)
     AssertNotNull (fStatementObj_);
     unsigned int colCount = static_cast<unsigned int> (::sqlite3_column_count (fStatementObj_));
     for (unsigned int i = 0; i < colCount; ++i) {
-        fColumns_.push_back (ColumnDescription{String::FromUTF8 (::sqlite3_column_name (fStatementObj_, i)), ::sqlite3_column_type (fStatementObj_, i)});
+        fColumns_.push_back (ColumnDescription{String::FromUTF8 (::sqlite3_column_name (fStatementObj_, i)), String::FromUTF8 (::sqlite3_column_decltype (fStatementObj_, i))});
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"sqlite3_column_decltype(i) = %s", ::sqlite3_column_decltype (fStatementObj_, i) == nullptr ? L"{nullptr}" : String::FromUTF8 (::sqlite3_column_decltype (fStatementObj_, i)).c_str ());
 #endif
@@ -325,10 +325,8 @@ auto Statement::GetNextRow () -> optional<Row>
         Row row;
         for (unsigned int i = 0; i < fColumns_.size (); ++i) {
             VariantValue v;
-            // NOTE - the values returned by sqlite3_column_type () can change (at least after first query) - so
-            // refetch each time through
-            fColumns_[i].fType = ::sqlite3_column_type (fStatementObj_, i);
-            switch (fColumns_[i].fType) {
+            // The actual returned type may not be the same as the DECLARED type (for example if the column is declared varaint)
+            switch (::sqlite3_column_type (fStatementObj_, i)) {
                 case SQLITE_INTEGER: {
                     v = VariantValue{::sqlite3_column_int (fStatementObj_, i)};
                 } break;

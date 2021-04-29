@@ -266,9 +266,12 @@ SQLITE_PRIVATE const char **sqlite3CompileOptions(int *pnOpt){
         nonvirtual String GetSQL (WhichSQLFlag whichSQL = WhichSQLFlag::eOriginal) const;
 
     public:
+        /**
+         *
+         */
         struct ColumnDescription {
             ColumnName fName;
-            int        fType;
+            String     fType;   // sqlite3_column_decltype
 
             /**
              *  @see Characters::ToString ()
