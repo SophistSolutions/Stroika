@@ -26,8 +26,6 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Early</a>
  *
  *  TODO
- *      @todo   Add DB::Statements object - like DB::Statement - but which allows for multiple statements, and just combines the results.
- *
  *      @todo   Create SQLite Exception class and use sqlite3_errstr () to generate good string message (that seems to return threadafe static const strings)
  */
 
@@ -81,6 +79,9 @@ namespace Stroika::Foundation::Database::SQLite {
     };
 
     /**
+     *  These are options used to create a database Connection::Ptr object (with Connection::New).
+     *
+     *  Since this is also how you create a database, in a sense, its those options too.
      */
     struct Options final {
         /**
@@ -203,27 +204,75 @@ namespace Stroika::Foundation::Database::SQLite {
 
             /**
              *  This returns nothing, but raises exceptions on errors.
-             *
-             *  \todo - EXTEND this to write the RESPONSE (use the callback) to DbgTrace () calls - perhaps optionally?)
              */
-            virtual void Exec (const wchar_t* formatCmd2Exec, ...) = 0;
+            virtual void Exec (const String& sql) = 0;
 
             /**
              *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the sqlite API.
              */
-
             virtual ::sqlite3* Peek () = 0;
         };
 
     public:
-        using Ptr = shared_ptr<IRep>;
+        class Ptr {
+        public:
+            Ptr () = default;
+            Ptr (const Ptr& src) = default;
+            Ptr (Ptr&& src)      = default;
+            Ptr (const shared_ptr<IRep>& src)
+                : fRep_{src}
+            {
+            }
+            Ptr& operator= (const Ptr& src) = default;
+            Ptr& operator= (Ptr&& src) = default;
+
+            IRep* operator-> () const noexcept
+            {
+                return fRep_.get ();
+            }
+
+            auto operator== (const Ptr& rhs) const
+            {
+                return fRep_ == rhs.fRep_;
+            }
+            bool operator== (nullptr_t) const noexcept
+            {
+                return fRep_.get () == nullptr;
+            }
+
+            /**
+             *  This returns nothing, but raises exceptions on errors.
+             *
+             *  \todo - EXTEND this to write the RESPONSE (use the callback) to DbgTrace () calls - perhaps optionally?)
+             */
+            nonvirtual void Exec (const wchar_t* formatCmd2Exec, ...)
+            {
+                RequireNotNull (formatCmd2Exec);
+                va_list argsList;
+                va_start (argsList, formatCmd2Exec);
+                String cmd2Exec = Characters::FormatV (formatCmd2Exec, argsList);
+                va_end (argsList);
+                fRep_->Exec (cmd2Exec);
+            }
+
+            /**
+             *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the sqlite API.
+             */
+            nonvirtual ::sqlite3* Peek ()
+            {
+                return fRep_->Peek ();
+            }
+
+        private:
+            shared_ptr<IRep> fRep_;
+        };
 
     private:
         struct Rep_ final : IRep {
             Rep_ (const Options& options);
             ~Rep_ ();
             bool               fTmpHackCreated_{false};
-            virtual void       Exec (const wchar_t* formatCmd2Exec, ...) override;
+            virtual void       Exec (const String& sql) override;
             virtual ::sqlite3* Peek () override;
             ::sqlite3*         fDB_{};
         };
@@ -236,9 +285,8 @@ namespace Stroika::Foundation::Database::SQLite {
 
     public:
         /**
-        */
-        static Ptr New (
-            const Options& options, const function<void (const Connection::Ptr&)>& dbInitializer = [] (const Connection::Ptr&) {});
+         */
+        static Ptr New (const Options& options, const function<void (const Connection::Ptr&)>& dbInitializer = [] (const Connection::Ptr&) {});
 
     private:
         friend class Statement;

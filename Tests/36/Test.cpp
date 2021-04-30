@@ -110,7 +110,7 @@ namespace {
                         sb += L";";
                         return sb.str ();
                     }();
-                    fDB_->Exec (L"%s", insertSQL.c_str ());
+                    fDB_.Exec (L"%s", insertSQL.c_str ());
                     Statement s{fDB_, L"SELECT MAX(ScanId) FROM Scans;"};
                     DbgTrace (L"Statement: %s", Characters::ToString (s).c_str ());
 
@@ -139,17 +139,17 @@ namespace {
                 {
                     TraceContextBumper ctx{"ScanDB_::DB::InitialSetup_"};
                     auto               tableSetup_ScanTypes = [&db] () {
-                        db->Exec (L"create table 'ScanTypes' "
+                        db.Exec (L"create table 'ScanTypes' "
                                   L"("
                                   L"ScanTypeId tinyint Primary Key,"
                                   L"TypeName varchar(255) not null"
                                   L");");
-                        db->Exec (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Reference';", ScanKindType_::Reference);
-                        db->Exec (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Sample';", ScanKindType_::Sample);
-                        db->Exec (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Background';", ScanKindType_::Background);
+                        db.Exec (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Reference';", ScanKindType_::Reference);
+                        db.Exec (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Sample';", ScanKindType_::Sample);
+                        db.Exec (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Background';", ScanKindType_::Background);
                     };
                     auto tableSetup_Scans = [&db] () {
-                        db->Exec (
+                        db.Exec (
                             L"create table 'Scans'"
                             L"("
                             L"ScanId integer Primary Key AUTOINCREMENT,"
@@ -161,7 +161,7 @@ namespace {
                             L");");
                     };
                     auto tableSetup_ScanSets = [&db] () {
-                        db->Exec (
+                        db.Exec (
                             L"Create table ScanSet"
                             L"("
                             L"ScanSetID bigint,"
@@ -170,7 +170,7 @@ namespace {
                             L");");
                     };
                     auto tableSetup_AuxData = [&db] () {
-                        db->Exec (
+                        db.Exec (
                             L"Create table AuxData"
                             L"("
                             L"ScanSetIDRef bigint Primary Key,"
@@ -179,8 +179,8 @@ namespace {
                             L");");
                     };
                     auto tableSetup_ExtraForeignKeys = [&db] () {
-                        db->Exec (L"Alter table Scans add column DependsOnScanSetIdRef bigint references ScanSet(ScanSetID);");
-                        db->Exec (L"Alter table Scans add column RawScanData BLOB;");
+                        db.Exec (L"Alter table Scans add column DependsOnScanSetIdRef bigint references ScanSet(ScanSetID);");
+                        db.Exec (L"Alter table Scans add column RawScanData BLOB;");
                     };
                     tableSetup_ScanTypes ();
                     tableSetup_Scans ();

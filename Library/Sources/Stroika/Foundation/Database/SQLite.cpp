@@ -100,14 +100,14 @@ namespace {
  ********************************************************************************
  */
 
-auto SQLite::Connection::New (
-    const Options& options, const function<void (const Connection::Ptr&)>& dbInitializer) -> Ptr
+auto SQLite::Connection::New (const Options& options, const function<void (const Connection::Ptr&)>& dbInitializer) -> Ptr
 {
     auto tmp = make_shared<Rep_> (options);
+    Ptr  result{tmp};
     if (tmp->fTmpHackCreated_) {
-        dbInitializer (tmp);
+        dbInitializer (result);
     }
-    return tmp;
+    return result;
 }
 
 Connection::Rep_::Rep_ (const Options& options)
@@ -213,16 +213,11 @@ sqlite3* Connection::Rep_::Peek ()
 }
 #endif
 
-void Connection::Rep_::Exec (const wchar_t* formatCmd2Exec, ...)
+void Connection::Rep_::Exec (const String& sql)
 {
-    RequireNotNull (formatCmd2Exec);
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    va_list                                            argsList;
-    va_start (argsList, formatCmd2Exec);
-    String cmd2Exec = Characters::FormatV (formatCmd2Exec, argsList);
-    va_end (argsList);
-    char* db_err{};
-    int   e = ::sqlite3_exec (fDB_, cmd2Exec.AsUTF8 ().c_str (), NULL, 0, &db_err);
+    char*                                              db_err{};
+    int                                                e = ::sqlite3_exec (fDB_, sql.AsUTF8 ().c_str (), NULL, 0, &db_err);
     if (e != SQLITE_OK) [[UNLIKELY_ATTR]] {
         if (db_err == nullptr or *db_err == '\0') {
             ThrowSQLiteErrorIfNotOK_ (e, fDB_);
@@ -282,8 +277,8 @@ Statement::Statement (const Connection::Ptr& db, const wchar_t* formatQuery, ...
 #endif
     RequireNotNull (db);
     RequireNotNull (db->Peek ());
-    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*fConnectionPtr_};
-    va_list                                                   argsList;
+    //  lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*fConnectionPtr_};
+    va_list argsList;
     va_start (argsList, formatQuery);
     String query = Characters::FormatV (formatQuery, argsList);
     va_end (argsList);
@@ -319,7 +314,7 @@ Statement::Statement (const Connection::Ptr& db, const wchar_t* formatQuery, ...
 String Statement::GetSQL (WhichSQLFlag whichSQL) const
 {
     Assert (not CompiledOptions::kThe.ENABLE_NORMALIZE);
-    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*fConnectionPtr_};
+    // lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*fConnectionPtr_};
     switch (whichSQL) {
         case WhichSQLFlag::eOriginal:
             return String::FromUTF8 (::sqlite3_sql (fStatementObj_));
@@ -349,7 +344,7 @@ auto Statement::GetNextRow () -> optional<Row>
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{"SQLite::DB::Statement::GetNextRow"};
 #endif
-    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*fConnectionPtr_};
+    //  lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*fConnectionPtr_};
     // @todo MAYBE redo with https://www.sqlite.org/c3ref/value.html
     int rc;
     AssertNotNull (fStatementObj_);
@@ -392,13 +387,13 @@ auto Statement::GetNextRow () -> optional<Row>
 Statement::~Statement ()
 {
     AssertNotNull (fStatementObj_);
-    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*fConnectionPtr_};
+    //  lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*fConnectionPtr_};
     ::sqlite3_finalize (fStatementObj_);
 }
 
 void Statement::Bind (unsigned int parameterIndex, const VariantValue& v)
 {
-    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*fConnectionPtr_};
+    //  lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*fConnectionPtr_};
     fParameters_[parameterIndex].fValue = v;
     switch (v.GetType ()) {
         case VariantValue::eString:
@@ -446,8 +441,8 @@ void Statement::Bind (const Traversal::Iterable<ParameterDescription>& parameter
 
 String Statement::ToString () const
 {
-    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*fConnectionPtr_};
-    StringBuilder                                             sb;
+    //   lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*fConnectionPtr_};
+    StringBuilder sb;
     sb += L"{";
     sb += L"Parameter-Bindings: " + Characters::ToString (fParameters_) + L", ";
     sb += L"Column-Descriptions: " + Characters::ToString (fColumns_) + L", ";
