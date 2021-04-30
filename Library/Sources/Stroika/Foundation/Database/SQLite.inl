@@ -14,12 +14,20 @@ namespace Stroika::Foundation::Database::SQLite {
      ****************************** SQLite::CompiledOptions *************************
      ********************************************************************************
      */
-    constexpr CompiledOptions CompiledOptions::kThe
+    inline constexpr CompiledOptions CompiledOptions::kThe
     {
 #if __cpp_designated_initializers
-        .ENABLE_NORMALIZE = defined (SQLITE_ENABLE_NORMALIZE)
+#ifdef SQLITE_ENABLE_NORMALIZE
+        .ENABLE_NORMALIZE = true
 #else
-        defined (SQLITE_ENABLE_NORMALIZE)
+        .ENABLE_NORMALIZE = false
+#endif
+#else
+#ifdef SQLITE_ENABLE_NORMALIZE
+        true
+#else
+        false
+#endif
 #endif
     };
 
