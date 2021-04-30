@@ -23,7 +23,7 @@ The Frameworks depend on the Foundation; Foundation modules frequently depend on
 - [Execution](Library/Sources/Stroika/Foundation/Execution/ReadMe.md) pattern classes (external process runner, synchronization patterns, blocking queue, thread pools, and much more).
 - [Networking](Library/Sources/Stroika/Foundation/IO/Network/ReadMe.md) support (high level socket wrappers, Web client fetching).
 - Simple, elegant [streams library](Library/Sources/Stroika/Foundation/Streams/ReadMe.md), with adapters for cryptography, compression, text transforms, etc.
-- Seamless integration with many important libraries, including: boost, libcurl, lzma sdk, openssl, sqlite, xerces, zlib (e.g. wrap a compression stream - using for example zlib).
+- Seamless integration with many important libraries (often means object oriented wrappers), including: boost, libcurl, lzma sdk, openssl, sqlite, xerces, zlib (e.g. wrap a compression stream - using for example zlib).
 - and more...
 
 ## Stroika [Framework](Library/Sources/Stroika/Frameworks/ReadMe.md)s provides
