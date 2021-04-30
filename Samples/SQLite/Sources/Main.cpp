@@ -35,8 +35,7 @@ namespace {
                 L");");
         };
 #if __cpp_designated_initializers
-        Connection::Ptr conn = Connection::New (Options{.fDBPath = filesystem::current_path () / "testdb.db"}, initializeDB
-    });
+        Connection::Ptr conn = Connection::New (Options{.fDBPath = filesystem::current_path () / "testdb.db"}, initializeDB);
 #else
         Connection::Ptr conn = Connection::New (Options{filesystem::current_path () / "testdb.db"}, initializeDB);
 #endif

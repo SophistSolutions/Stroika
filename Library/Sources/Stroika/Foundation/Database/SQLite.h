@@ -49,6 +49,10 @@ namespace Stroika::Foundation::Database::SQLite {
     /**
      *  This defines what options sqlite was compiled with.
      * 
+     *  For a full list of possible options, see <https://www.sqlite.org/compile.html>
+     *  (though we only capture a limited subset of these). To check the rest, callers
+     *  can use ::sqlite3_compileoption_used ()
+     * 
      *  Fields correspond to names looked up with ::sqlite3_compileoption_used () - only this is constexpr (and an incomplete replica).
      *  This is checked to correspond to the sqlite3_compileoption_used() values at startup with assertions.
      * 
@@ -61,6 +65,8 @@ namespace Stroika::Foundation::Database::SQLite {
     class CompiledOptions final {
     public:
         bool ENABLE_NORMALIZE;
+
+        // uint8_t THREADSAFE;  // SQLITE_THREADSAFE = 0, 1, 2 (0 means no)
 
         /**
          *  Defined constexpr
@@ -182,7 +188,7 @@ namespace Stroika::Foundation::Database::SQLite {
      * 
      * &&& REDO THE DOCS HERE ONCE I MOVE TO IRep and Ptr...
      */
-    class Connection : private Debug::AssertExternallySynchronizedLock, public enable_shared_from_this<Connection> {
+    class Connection : private Debug::AssertExternallySynchronizedLock {
     public:
         using Ptr = shared_ptr<Connection>;
 
