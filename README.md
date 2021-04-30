@@ -1,6 +1,6 @@
 ﻿# Stroika v2.1
 
-Stroika is a modern, thread-savvy C++ application framework designed to make applications easier to write. It does this by providing safe, flexible, modular building blocks which can be easily combined because they are designed to fit together.
+Stroika is a modern, portable, thread-savvy C++ application framework designed to make applications easier to write. It does this by providing safe, flexible, modular building blocks which can be easily combined because they are designed to fit together.
 
 It is comprised of 2 layers, the [Foundation](Library/Sources/Stroika/Foundation/ReadMe.md), which provides directly usable classes which can be built off, and a series of domain specific [Framework](Library/Sources/Stroika/Frameworks/ReadMe.md)s which provide a rich collection of code in different domains.
 
@@ -45,19 +45,21 @@ Stroika's biggest strength is also its biggest weakness:
 
 ## Versions
 
-- Stroika v2.0 is very stable, and requires C++14 or later. Stroika v2.0 is used to power a wide variety of open source and commercial applications.
-
 - Stroika v2.1 is more actively evolving, and requires C++17 or later. Version 2.1 also conditionally supports many c++20 features (such as concepts, three-way-comparison etc, if available).
 
-## Compilers / Platforms tested
+- Stroika v2.0 is very stable, and requires C++14 or later. Stroika v2.0 is used to power a wide variety of open source and commercial applications.
 
-- Stroika v2.0
+## Compilers / Platforms regularly tested/supported
 
-  Regularly tested on x86, arm, gcc5 thru gcc8, clang 3 thru clang 6, XCode 8 thru 9.
+- Linux, MacOS, Windows
 
 - Stroika v2.1
 
   Regularly tested on x86, arm, gcc8 thru gcc10, clang 6 thru clang 11, Visual Studio 17 and Visual Studio 19, XCode 12.
+
+- Stroika v2.0
+
+  Regularly tested on x86, arm, gcc5 thru gcc8, clang 3 thru clang 6, XCode 8 thru 9.
 
 ## CI System Integration
 
