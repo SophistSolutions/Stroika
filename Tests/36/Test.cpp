@@ -47,9 +47,9 @@ namespace {
                     bool created = false;
                     try {
 #if __cpp_designated_initializers
-                        fDB_ = make_unique<Connection> (Options{.fDBPath = testDBFile}, [&created] (Database::SQLite::Connection& db) { created = true; InitialSetup_ (db); });
+                        fDB_ = Connection::New (Options{.fDBPath = testDBFile}, [&created] (Database::SQLite::Connection::Ptr db) { created = true; InitialSetup_ (db); });
 #else
-                        fDB_ = make_unique<Connection> (Options{testDBFile}, [&created] (Database::SQLite::Connection& db) { created = true; InitialSetup_ (db); });
+                        fDB_ = Connection::New (Options{testDBFile}, [&created] (Database::SQLite::Connection::Ptr db) { created = true; InitialSetup_ (db); });
 #endif
                     }
                     catch (...) {
@@ -68,9 +68,9 @@ namespace {
                     bool created = false;
                     try {
 #if __cpp_designated_initializers
-                        fDB_ = make_unique<Connection> (Options{.fInMemoryDB = L""}, [&created] (Database::SQLite::Connection& db) { created = true; InitialSetup_(db); });
+                        fDB_ = Connection::New (Options{.fInMemoryDB = L""}, [&created] (Database::SQLite::Connection::Ptr db) { created = true; InitialSetup_(db); });
 #else
-                        fDB_ = make_unique<Connection> (Options{nullopt, true, nullopt, L""}, [&created] (Database::SQLite::Connection& db) { created = true; InitialSetup_(db); });
+                        fDB_ = Connection::New (Options{nullopt, true, nullopt, L""}, [&created] (Database::SQLite::Connection::Ptr db) { created = true; InitialSetup_(db); });
 #endif
                     }
                     catch (...) {
@@ -111,7 +111,7 @@ namespace {
                         return sb.str ();
                     }();
                     fDB_->Exec (L"%s", insertSQL.c_str ());
-                    Statement s{fDB_.get (), L"SELECT MAX(ScanId) FROM Scans;"};
+                    Statement s{fDB_, L"SELECT MAX(ScanId) FROM Scans;"};
                     DbgTrace (L"Statement: %s", Characters::ToString (s).c_str ());
 
                     if (optional<Statement::Row> r = s.GetNextRow ()) {
@@ -125,7 +125,7 @@ namespace {
                 }
                 nonvirtual optional<ScanIDType_> GetLastScan (ScanKindType_ scanKind)
                 {
-                    Statement s{fDB_.get (), L"select MAX(ScanId) from Scans where  ScanTypeIDRef='%d';", scanKind};
+                    Statement s{fDB_, L"select MAX(ScanId) from Scans where  ScanTypeIDRef='%d';", scanKind};
                     DbgTrace (L"Statement: %s", Characters::ToString (s).c_str ());
                     if (optional<Statement::Row> r = s.GetNextRow ()) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -135,21 +135,21 @@ namespace {
                     }
                     return nullopt;
                 }
-                static void InitialSetup_ (Database::SQLite::Connection& db)
+                static void InitialSetup_ (Database::SQLite::Connection::Ptr db)
                 {
-                    TraceContextBumper ctx ("ScanDB_::DB::InitialSetup_");
+                    TraceContextBumper ctx{"ScanDB_::DB::InitialSetup_"};
                     auto               tableSetup_ScanTypes = [&db] () {
-                        db.Exec (L"create table 'ScanTypes' "
-                                 L"("
-                                 L"ScanTypeId tinyint Primary Key,"
-                                 L"TypeName varchar(255) not null"
-                                 L");");
-                        db.Exec (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Reference';", ScanKindType_::Reference);
-                        db.Exec (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Sample';", ScanKindType_::Sample);
-                        db.Exec (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Background';", ScanKindType_::Background);
+                        db->Exec (L"create table 'ScanTypes' "
+                                  L"("
+                                  L"ScanTypeId tinyint Primary Key,"
+                                  L"TypeName varchar(255) not null"
+                                  L");");
+                        db->Exec (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Reference';", ScanKindType_::Reference);
+                        db->Exec (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Sample';", ScanKindType_::Sample);
+                        db->Exec (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Background';", ScanKindType_::Background);
                     };
                     auto tableSetup_Scans = [&db] () {
-                        db.Exec (
+                        db->Exec (
                             L"create table 'Scans'"
                             L"("
                             L"ScanId integer Primary Key AUTOINCREMENT,"
@@ -161,7 +161,7 @@ namespace {
                             L");");
                     };
                     auto tableSetup_ScanSets = [&db] () {
-                        db.Exec (
+                        db->Exec (
                             L"Create table ScanSet"
                             L"("
                             L"ScanSetID bigint,"
@@ -170,7 +170,7 @@ namespace {
                             L");");
                     };
                     auto tableSetup_AuxData = [&db] () {
-                        db.Exec (
+                        db->Exec (
                             L"Create table AuxData"
                             L"("
                             L"ScanSetIDRef bigint Primary Key,"
@@ -179,8 +179,8 @@ namespace {
                             L");");
                     };
                     auto tableSetup_ExtraForeignKeys = [&db] () {
-                        db.Exec (L"Alter table Scans add column DependsOnScanSetIdRef bigint references  ScanSet(ScanSetID);");
-                        db.Exec (L"Alter table Scans add column RawScanData BLOB;");
+                        db->Exec (L"Alter table Scans add column DependsOnScanSetIdRef bigint references ScanSet(ScanSetID);");
+                        db->Exec (L"Alter table Scans add column RawScanData BLOB;");
                     };
                     tableSetup_ScanTypes ();
                     tableSetup_Scans ();
@@ -188,7 +188,7 @@ namespace {
                     tableSetup_AuxData ();
                     tableSetup_ExtraForeignKeys ();
                 }
-                unique_ptr<Database::SQLite::Connection> fDB_;
+                Database::SQLite::Connection::Ptr fDB_;
             };
         }
         void DoIt ()
@@ -198,7 +198,7 @@ namespace {
             auto               test = [] (PRIVATE_::DB& db, unsigned nTimesRanBefore) {
                 db.fDB_->Exec (L"select * from ScanTypes;");
                 {
-                    Statement s{db.fDB_.get (), L"select * from ScanTypes;"};
+                    Statement s{db.fDB_, L"select * from ScanTypes;"};
                     DbgTrace (L"Statement: %s", Characters::ToString (s).c_str ());
                     while (optional<Statement::Row> r = s.GetNextRow ()) {
                         DbgTrace (L"ROW: %s", Characters::ToString (*r).c_str ());

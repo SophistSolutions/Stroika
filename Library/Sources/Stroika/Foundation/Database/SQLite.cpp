@@ -98,7 +98,7 @@ namespace {
  *************************** SQLite::Connection *********************************
  ********************************************************************************
  */
-Connection::Connection (const Options& options, const function<void (Connection&)>& dbInitializer)
+Connection::Connection (const Options& options)
 {
     TraceContextBumper ctx{"SQLite::Connection::Connection"};
 
@@ -151,7 +151,6 @@ Connection::Connection (const Options& options, const function<void (Connection&
             AssertNotImplemented ();
         }
     }
-    bool created = false;
     if (options.fInMemoryDB) {
         flags |= SQLITE_OPEN_MEMORY;
         Require (not options.fReadOnly);
@@ -164,7 +163,7 @@ Connection::Connection (const Options& options, const function<void (Connection&
             WeakAssertNotImplemented (); // maybe can do this with URI syntax, but not totally clear
         }
         // For now, it appears we ALWAYS create memory DBS when opening (so cannot find a way to open shared) - so always set created flag
-        created = true;
+        fTmpHackCreated_ = true;
     }
 
     int e;
@@ -175,7 +174,7 @@ Connection::Connection (const Options& options, const function<void (Connection&
                 fDB_ = nullptr;
             }
             if ((e = ::sqlite3_open_v2 (uriArg.c_str (), &fDB_, SQLITE_OPEN_CREATE | flags, options.fVFS ? options.fVFS->AsNarrowSDKString ().c_str () : nullptr)) == SQLITE_OK) {
-                created = true;
+                fTmpHackCreated_ = true;
             }
         }
     }
@@ -184,15 +183,6 @@ Connection::Connection (const Options& options, const function<void (Connection&
             Verify (::sqlite3_close (fDB_) == SQLITE_OK);
         }
         ThrowSQLiteErrorIfNotOK_ (e, fDB_);
-    }
-    if (created) {
-        try {
-            dbInitializer (*this);
-        }
-        catch (...) {
-            Verify (::sqlite3_close (fDB_) == SQLITE_OK);
-            Execution::ReThrow ();
-        }
     }
     EnsureNotNull (fDB_);
 }
@@ -264,15 +254,16 @@ String Statement::ParameterDescription::ToString () const
  ******************************* SQLite::Statement ******************************
  ********************************************************************************
  */
-Statement::Statement (Connection* db, const wchar_t* formatQuery, ...)
-    : fConnectionCritSec_{*db}
+Statement::Statement (const Connection::Ptr& db, const wchar_t* formatQuery, ...)
+    : fConnectionPtr_{db}
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{"SQLite::DB::Statement::CTOR"};
 #endif
     RequireNotNull (db);
     RequireNotNull (db->Peek ());
-    va_list argsList;
+    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*fConnectionPtr_};
+    va_list                                                   argsList;
     va_start (argsList, formatQuery);
     String query = Characters::FormatV (formatQuery, argsList);
     va_end (argsList);
@@ -308,6 +299,7 @@ Statement::Statement (Connection* db, const wchar_t* formatQuery, ...)
 String Statement::GetSQL (WhichSQLFlag whichSQL) const
 {
     Assert (not CompiledOptions::kThe.ENABLE_NORMALIZE);
+    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*fConnectionPtr_};
     switch (whichSQL) {
         case WhichSQLFlag::eOriginal:
             return String::FromUTF8 (::sqlite3_sql (fStatementObj_));
@@ -337,6 +329,7 @@ auto Statement::GetNextRow () -> optional<Row>
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{"SQLite::DB::Statement::GetNextRow"};
 #endif
+    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*fConnectionPtr_};
     // @todo MAYBE redo with https://www.sqlite.org/c3ref/value.html
     int rc;
     AssertNotNull (fStatementObj_);
@@ -379,11 +372,13 @@ auto Statement::GetNextRow () -> optional<Row>
 Statement::~Statement ()
 {
     AssertNotNull (fStatementObj_);
+    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*fConnectionPtr_};
     ::sqlite3_finalize (fStatementObj_);
 }
 
 void Statement::Bind (unsigned int parameterIndex, const VariantValue& v)
 {
+    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*fConnectionPtr_};
     fParameters_[parameterIndex].fValue = v;
     switch (v.GetType ()) {
         case VariantValue::eString:
@@ -431,7 +426,8 @@ void Statement::Bind (const Traversal::Iterable<ParameterDescription>& parameter
 
 String Statement::ToString () const
 {
-    StringBuilder sb;
+    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*fConnectionPtr_};
+    StringBuilder                                             sb;
     sb += L"{";
     sb += L"Parameter-Bindings: " + Characters::ToString (fParameters_) + L", ";
     sb += L"Column-Descriptions: " + Characters::ToString (fColumns_) + L", ";

@@ -19,7 +19,7 @@ namespace {
     {
 #if qHasFeature_sqlite
         using namespace SQLite;
-        auto initializeDB = [] (Connection& c) {
+        auto initializeDB = [] (const Connection::Ptr& c) {
             c.Exec (
                 L"CREATE TABLE COMPANY("
                 L"ID INT PRIMARY KEY     NOT NULL,"
@@ -35,13 +35,14 @@ namespace {
                 L");");
         };
 #if __cpp_designated_initializers
-        Connection conn{Options{.fDBPath = filesystem::current_path () / "testdb.db"}, initializeDB};
+        Connection::Ptr conn = Connection::New (Options{.fDBPath = filesystem::current_path () / "testdb.db"}, initializeDB
+    });
 #else
-        Connection conn{Options{filesystem::current_path () / "testdb.db"}, initializeDB};
+        Connection::Ptr conn = Connection::New (Options{filesystem::current_path () / "testdb.db"}, initializeDB);
 #endif
-        // Statement addCompanyStatement {&conn, L"INSERT "}
+    // Statement addCompanyStatement {&conn, L"INSERT "}
 #endif
-    }
+}
 }
 
 int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])

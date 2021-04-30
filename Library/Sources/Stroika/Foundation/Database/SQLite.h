@@ -179,15 +179,33 @@ namespace Stroika::Foundation::Database::SQLite {
      *
      *          The Connection itself is standardC++ thread safety. The thread-safety of the underlying database depends on the setting
      *          of Options::fThreadingMode when the database is constructed.
+     * 
+     * &&& REDO THE DOCS HERE ONCE I MOVE TO IRep and Ptr...
      */
-    class Connection : private Debug::AssertExternallySynchronizedLock {
+    class Connection : private Debug::AssertExternallySynchronizedLock, public enable_shared_from_this<Connection> {
+    public:
+        using Ptr = shared_ptr<Connection>;
+
     public:
         /**
          */
         Connection () = delete;
-        Connection (
-            const Options& options, const function<void (Connection&)>& dbInitializer = [] (Connection&) {});
+        Connection (const Options& options);
         Connection (const Connection&) = delete;
+
+    public:
+        //tmphack - progress to restructure like Streams
+        static Ptr New (
+            const Options& options, const function<void (const Connection::Ptr&)>& dbInitializer = [] (const Connection::Ptr&) {})
+        {
+            auto tmp = make_shared<Connection> (options);
+            if (tmp->fTmpHackCreated_) {
+                dbInitializer (tmp);
+            }
+            return tmp;
+        }
+
+        bool fTmpHackCreated_{false};
 
     public:
         /**
@@ -225,13 +243,15 @@ namespace Stroika::Foundation::Database::SQLite {
      *        String slightly simpler, and nearly as performant, so going with that for now.
      *
      *  \todo   CONSIDER redo Row as iterator; or maybe GetREsults () method that returns iterable of Rows? and lazy pulls them?
+     * 
+     *  Unlike a Connection::Ptr, a Statement cannot be copied (though you can use shared_ptr<Statement> if you wish to copy them).
      */
     class Statement : private Debug::AssertExternallySynchronizedLock {
     public:
         /**
          */
         Statement () = delete;
-        Statement (Connection* db, const wchar_t* formatQuery, ...);
+        Statement (const Connection::Ptr& db, const wchar_t* formatQuery, ...);
         Statement (const Statement&) = delete;
 
     public:
@@ -353,10 +373,10 @@ namespace Stroika::Foundation::Database::SQLite {
         nonvirtual String ToString () const;
 
     private:
-        lock_guard<const Debug::AssertExternallySynchronizedLock> fConnectionCritSec_;
-        ::sqlite3_stmt*                                           fStatementObj_;
-        vector<ColumnDescription>                                 fColumns_;
-        Sequence<ParameterDescription>                            fParameters_;
+        Connection::Ptr                fConnectionPtr_;
+        ::sqlite3_stmt*                fStatementObj_;
+        vector<ColumnDescription>      fColumns_;
+        Sequence<ParameterDescription> fParameters_;
     };
 #endif
 
