@@ -17,17 +17,31 @@ namespace Stroika::Foundation::Database::SQLite {
     inline constexpr CompiledOptions CompiledOptions::kThe
     {
 #if __cpp_designated_initializers
-#ifdef SQLITE_ENABLE_NORMALIZE
+    #ifdef SQLITE_ENABLE_NORMALIZE
         .ENABLE_NORMALIZE = true
-#else
+    #else
         .ENABLE_NORMALIZE = false
-#endif
+    #endif
+    #ifdef SQLITE_THREADSAFE
+        , .THREADSAFE = SQLITE_THREADSAFE
+    #elif defined (THREADSAFE)
+        , .THREADSAFE = THREADSAFE
+    #else
+        , .THREADSAFE = 1
+    #endif
 #else
-#ifdef SQLITE_ENABLE_NORMALIZE
-        true
-#else
+    #ifdef SQLITE_ENABLE_NORMALIZE
+        , SQLITE_ENABLE_NORMALIZE
+    #else
         false
-#endif
+    #endif
+    #ifdef SQLITE_THREADSAFE
+        , SQLITE_THREADSAFE
+    #elif defined(THREADSAFE)
+        , THREADSAFE
+    #else
+        , 1
+    #endif
 #endif
     };
 

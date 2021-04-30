@@ -64,9 +64,15 @@ namespace Stroika::Foundation::Database::SQLite {
      */
     class CompiledOptions final {
     public:
+        /**
+         *  c++ #define SQLITE_ENABLE_NORMALIZE (not in docs file but does appear as a compile time option - we need to check)
+         */
         bool ENABLE_NORMALIZE;
 
-        // uint8_t THREADSAFE;  // SQLITE_THREADSAFE = 0, 1, 2 (0 means no)
+        /**
+         *  SQLITE_THREADSAFE = 0, 1, 2 (0 means no)
+         */
+        uint8_t THREADSAFE;
 
         /**
          *  Defined constexpr
@@ -76,7 +82,7 @@ namespace Stroika::Foundation::Database::SQLite {
 
     /**
      */
-    struct Options {
+    struct Options final {
         /**
          *  NOTE - we choose to only support a PATH, and not the URI syntax, because the URI syntax is used to pass
          *  extra parameters (as from a GUI) and those can conflict with what is specified here (making it unclear or

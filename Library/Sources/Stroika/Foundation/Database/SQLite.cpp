@@ -89,6 +89,7 @@ namespace {
         VerifyFlags_ ()
         {
             Assert (CompiledOptions::kThe.ENABLE_NORMALIZE == !!::sqlite3_compileoption_used ("ENABLE_NORMALIZE"));
+            Assert (CompiledOptions::kThe.THREADSAFE == !!::sqlite3_compileoption_used ("THREADSAFE"));
         }
     } sVerifyFlags_;
 }
