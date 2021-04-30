@@ -140,10 +140,10 @@ namespace {
                     TraceContextBumper ctx{"ScanDB_::DB::InitialSetup_"};
                     auto               tableSetup_ScanTypes = [&db] () {
                         db.Exec (L"create table 'ScanTypes' "
-                                  L"("
-                                  L"ScanTypeId tinyint Primary Key,"
-                                  L"TypeName varchar(255) not null"
-                                  L");");
+                                 L"("
+                                 L"ScanTypeId tinyint Primary Key,"
+                                 L"TypeName varchar(255) not null"
+                                 L");");
                         db.Exec (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Reference';", ScanKindType_::Reference);
                         db.Exec (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Sample';", ScanKindType_::Sample);
                         db.Exec (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Background';", ScanKindType_::Background);

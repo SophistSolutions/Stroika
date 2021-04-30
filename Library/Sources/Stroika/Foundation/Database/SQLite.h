@@ -216,7 +216,7 @@ namespace Stroika::Foundation::Database::SQLite {
     public:
         class Ptr {
         public:
-            Ptr () = default;
+            Ptr ()               = default;
             Ptr (const Ptr& src) = default;
             Ptr (Ptr&& src)      = default;
             Ptr (const shared_ptr<IRep>& src)
@@ -239,6 +239,17 @@ namespace Stroika::Foundation::Database::SQLite {
             {
                 return fRep_.get () == nullptr;
             }
+#if __cpp_impl_three_way_comparison < 201907
+            bool operator!= (const Ptr& rhs) const
+            {
+                return fRep_ == rhs.fRep_;
+            }
+            bool operator!= (nullptr_t) const
+            {
+                return fRep_ != nullptr;
+            }
+#endif
+
 
             /**
              *  This returns nothing, but raises exceptions on errors.
@@ -286,7 +297,8 @@ namespace Stroika::Foundation::Database::SQLite {
     public:
         /**
          */
-        static Ptr New (const Options& options, const function<void (const Connection::Ptr&)>& dbInitializer = [] (const Connection::Ptr&) {});
+        static Ptr New (
+            const Options& options, const function<void (const Connection::Ptr&)>& dbInitializer = [] (const Connection::Ptr&) {});
 
     private:
         friend class Statement;
