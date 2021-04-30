@@ -99,7 +99,18 @@ namespace {
  *************************** SQLite::Connection *********************************
  ********************************************************************************
  */
-Connection::Connection (const Options& options)
+
+auto SQLite::Connection::New (
+    const Options& options, const function<void (const Connection::Ptr&)>& dbInitializer) -> Ptr
+{
+    auto tmp = make_shared<Rep_> (options);
+    if (tmp->fTmpHackCreated_) {
+        dbInitializer (tmp);
+    }
+    return tmp;
+}
+
+Connection::Rep_::Rep_ (const Options& options)
 {
     TraceContextBumper ctx{"SQLite::Connection::Connection"};
 
@@ -188,13 +199,21 @@ Connection::Connection (const Options& options)
     EnsureNotNull (fDB_);
 }
 
-Connection::~Connection ()
+Connection::Rep_::~Rep_ ()
 {
     AssertNotNull (fDB_);
     Verify (::sqlite3_close (fDB_) == SQLITE_OK);
 }
 
-void Connection::Exec (const wchar_t* formatCmd2Exec, ...)
+#if qHasFeature_sqlite
+sqlite3* Connection::Rep_::Peek ()
+{
+    lock_guard<const AssertExternallySynchronizedLock> critSec{*this}; // not super helpful, but could catch errors - reason not very helpful is we lose lock long before we stop using ptr
+    return fDB_;
+}
+#endif
+
+void Connection::Rep_::Exec (const wchar_t* formatCmd2Exec, ...)
 {
     RequireNotNull (formatCmd2Exec);
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};

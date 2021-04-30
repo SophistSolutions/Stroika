@@ -17,31 +17,35 @@ namespace Stroika::Foundation::Database::SQLite {
     inline constexpr CompiledOptions CompiledOptions::kThe
     {
 #if __cpp_designated_initializers
-    #ifdef SQLITE_ENABLE_NORMALIZE
+#ifdef SQLITE_ENABLE_NORMALIZE
         .ENABLE_NORMALIZE = true
-    #else
-        .ENABLE_NORMALIZE = false
-    #endif
-    #ifdef SQLITE_THREADSAFE
-        , .THREADSAFE = SQLITE_THREADSAFE
-    #elif defined (THREADSAFE)
-        , .THREADSAFE = THREADSAFE
-    #else
-        , .THREADSAFE = 1
-    #endif
 #else
-    #ifdef SQLITE_ENABLE_NORMALIZE
+        .ENABLE_NORMALIZE = false
+#endif
+#ifdef SQLITE_THREADSAFE
+            ,
+        .THREADSAFE = SQLITE_THREADSAFE
+#elif defined(THREADSAFE)
+            ,
+        .THREADSAFE = THREADSAFE
+#else
+        , .THREADSAFE = 1
+#endif
+#else
+#ifdef SQLITE_ENABLE_NORMALIZE
         , SQLITE_ENABLE_NORMALIZE
-    #else
+#else
         false
-    #endif
-    #ifdef SQLITE_THREADSAFE
-        , SQLITE_THREADSAFE
-    #elif defined(THREADSAFE)
-        , THREADSAFE
-    #else
+#endif
+#ifdef SQLITE_THREADSAFE
+            ,
+            SQLITE_THREADSAFE
+#elif defined(THREADSAFE)
+            ,
+            THREADSAFE
+#else
         , 1
-    #endif
+#endif
 #endif
     };
 
@@ -50,13 +54,6 @@ namespace Stroika::Foundation::Database::SQLite {
      ****************************** SQLite::Connection ******************************
      ********************************************************************************
      */
-#if qHasFeature_sqlite
-    inline sqlite3* Connection::Peek ()
-    {
-        lock_guard<const AssertExternallySynchronizedLock> critSec{*this}; // not super helpful, but could catch errors - reason not very helpful is we lose lock long before we stop using ptr
-        return fDB_;
-    }
-#endif
 
     /*
      ********************************************************************************

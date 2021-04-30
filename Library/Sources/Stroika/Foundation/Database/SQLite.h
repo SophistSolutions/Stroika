@@ -128,6 +128,7 @@ namespace Stroika::Foundation::Database::SQLite {
              *  In this mode, all mutexes are disabled and SQLite is unsafe to use in more than a single thread at once
              */
             eSingleThread,
+
             /**
              *  SQLITE_OPEN_NOMUTEX
              *  In this mode, SQLite can be safely used by multiple threads provided that no single database connection is used simultaneously in two or more threads.
@@ -138,6 +139,7 @@ namespace Stroika::Foundation::Database::SQLite {
              * call sqlite3_threadsafe, to see if this is enabled
              */
             eMultiThread,
+
             /**
              *  SQLITE_OPEN_FULLMUTEX
              *  In serialized mode, SQLite can be safely used by multiple threads with no restriction.
@@ -194,60 +196,52 @@ namespace Stroika::Foundation::Database::SQLite {
      * 
      * &&& REDO THE DOCS HERE ONCE I MOVE TO IRep and Ptr...
      */
-    class Connection : private Debug::AssertExternallySynchronizedLock {
+    class Connection {
     public:
-        using Ptr = shared_ptr<Connection>;
+        struct IRep : Debug::AssertExternallySynchronizedLock {
+            virtual ~IRep () = default;
+
+            /**
+             *  This returns nothing, but raises exceptions on errors.
+             *
+             *  \todo - EXTEND this to write the RESPONSE (use the callback) to DbgTrace () calls - perhaps optionally?)
+             */
+            virtual void Exec (const wchar_t* formatCmd2Exec, ...) = 0;
+
+            /**
+             *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the sqlite API.
+             */
+
+            virtual ::sqlite3* Peek () = 0;
+        };
+
+    public:
+        using Ptr = shared_ptr<IRep>;
+
+    private:
+        struct Rep_ final : IRep {
+            Rep_ (const Options& options);
+            ~Rep_ ();
+            bool               fTmpHackCreated_{false};
+            virtual void       Exec (const wchar_t* formatCmd2Exec, ...) override;
+            virtual ::sqlite3* Peek () override;
+            ::sqlite3*         fDB_{};
+        };
 
     public:
         /**
+         *  Quasi-namespace class - don't construct - construct a Connection:::Ptr class with Connection::New ()
          */
         Connection () = delete;
-        Connection (const Options& options);
-        Connection (const Connection&) = delete;
 
     public:
-        //tmphack - progress to restructure like Streams
+        /**
+        */
         static Ptr New (
-            const Options& options, const function<void (const Connection::Ptr&)>& dbInitializer = [] (const Connection::Ptr&) {})
-        {
-            auto tmp = make_shared<Connection> (options);
-            if (tmp->fTmpHackCreated_) {
-                dbInitializer (tmp);
-            }
-            return tmp;
-        }
-
-        bool fTmpHackCreated_{false};
-
-    public:
-        /**
-         */
-        nonvirtual Connection& operator= (const Connection&) = delete;
-
-    public:
-        /**
-         */
-        ~Connection ();
-
-    public:
-        /**
-         *  This returns nothing, but raises exceptions on errors.
-         *
-         *  \todo - EXTEND this to write the RESPONSE (use the callback) to DbgTrace () calls - perhaps optionally?)
-         */
-        nonvirtual void Exec (const wchar_t* formatCmd2Exec, ...);
-
-    public:
-        /**
-         *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the sqlite API.
-         */
-        nonvirtual ::sqlite3* Peek ();
+            const Options& options, const function<void (const Connection::Ptr&)>& dbInitializer = [] (const Connection::Ptr&) {});
 
     private:
         friend class Statement;
-
-    private:
-        ::sqlite3* fDB_{};
     };
 
     /**
@@ -316,16 +310,20 @@ namespace Stroika::Foundation::Database::SQLite {
 
     public:
         /**
+         *  Return the original (or normalized or expanded with bindings) SQL associated with this statement.
          */
         nonvirtual String GetSQL (WhichSQLFlag whichSQL = WhichSQLFlag::eOriginal) const;
 
     public:
         /**
-         *
+         *  This describes an SQL column. THe 'type' is a string (and optional at that), and refers to the SQLite type system.
          */
         struct ColumnDescription {
-            ColumnName       fName;
-            optional<String> fType; // sqlite3_column_decltype
+            ColumnName fName;
+            /**
+             * sqlite3_column_decltype
+             */
+            optional<String> fType;
 
             /**
              *  @see Characters::ToString ()
@@ -340,6 +338,9 @@ namespace Stroika::Foundation::Database::SQLite {
         nonvirtual Sequence<ColumnDescription> GetColumns () const;
 
     public:
+        /**
+         *  Parameters are set with a call to "Bind" so maybe also called parameter bindings.
+         */
         struct ParameterDescription {
             optional<String> fName; // name is optional - bindings can be specified by index
             VariantValue     fValue;
