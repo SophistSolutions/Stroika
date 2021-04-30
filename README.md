@@ -1,7 +1,6 @@
 ﻿# Stroika v2.1
 
-Stroika is a C++ application framework designed to make high performance,
-modern, reliable and threaded applications easier to write.
+Stroika is a modern, thread-savvy C++ application framework designed to make applications easier to write. It does this by providing safe, flexible, modular building blocks which can be easily combined because they are designed to fit together.
 
 It is comprised of 2 layers, the [Foundation](Library/Sources/Stroika/Foundation/ReadMe.md), which provides directly usable classes which can be built off, and a series of domain specific [Framework](Library/Sources/Stroika/Frameworks/ReadMe.md)s which provide a rich collection of code in different domains.
 
