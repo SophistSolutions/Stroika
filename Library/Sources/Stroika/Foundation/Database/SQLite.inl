@@ -51,9 +51,95 @@ namespace Stroika::Foundation::Database::SQLite {
 
     /*
      ********************************************************************************
-     ****************************** SQLite::Connection ******************************
+     ****************************** SQLite::Connection::Ptr *************************
      ********************************************************************************
      */
+    inline Connection::Ptr::Ptr (const Ptr& src)
+        : fRep_{src.fRep_}
+    {
+#if qDebug
+        if (fRep_) {
+            _fSharedContext = fRep_->_fSharedContext;
+        }
+#endif
+    }
+    inline Connection::Ptr::Ptr (Ptr&& src) noexcept
+        : fRep_{move (src.fRep_)}
+    {
+#if qDebug
+        if (fRep_) {
+            _fSharedContext = fRep_->_fSharedContext;
+        }
+#endif
+    }
+    inline Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
+        : fRep_{src}
+    {
+#if qDebug
+        if (fRep_) {
+            _fSharedContext = fRep_->_fSharedContext;
+        }
+#endif
+    }
+    inline Connection::Ptr& Connection::Ptr::operator= (const Ptr& src)
+    {
+        if (this != &src) {
+            fRep_ = src.fRep_;
+#if qDebug
+            if (fRep_) {
+                _fSharedContext = fRep_->_fSharedContext;
+            }
+#endif
+        }
+        return *this;
+    }
+    inline Connection::Ptr& Connection::Ptr::operator= (Ptr&& src) noexcept
+    {
+        if (this != &src) {
+            fRep_ = move (src.fRep_);
+#if qDebug
+            if (fRep_) {
+                _fSharedContext = fRep_->_fSharedContext;
+            }
+#endif
+        }
+        return *this;
+    }
+    inline Connection::IRep* Connection::Ptr::operator-> () const noexcept
+    {
+        return fRep_.get ();
+    }
+    inline auto Connection::Ptr::operator== (const Ptr& rhs) const
+    {
+        return fRep_ == rhs.fRep_;
+    }
+    inline bool Connection::Ptr::operator== (nullptr_t) const noexcept
+    {
+        return fRep_.get () == nullptr;
+    }
+#if __cpp_impl_three_way_comparison < 201907
+    inline bool Connection::Ptr::operator!= (const Ptr& rhs) const
+    {
+        return fRep_ == rhs.fRep_;
+    }
+    inline bool Connection::Ptr::operator!= (nullptr_t) const
+    {
+        return fRep_ != nullptr;
+    }
+#endif
+    inline void Connection::Ptr::Exec (const wchar_t* formatCmd2Exec, ...)
+    {
+        RequireNotNull (formatCmd2Exec);
+        va_list argsList;
+        va_start (argsList, formatCmd2Exec);
+        String cmd2Exec = Characters::FormatV (formatCmd2Exec, argsList);
+        va_end (argsList);
+        fRep_->Exec (cmd2Exec);
+    }
+    inline ::sqlite3* Connection::Ptr::Peek ()
+    {
+        return fRep_->Peek ();
+    }
 
     /*
      ********************************************************************************

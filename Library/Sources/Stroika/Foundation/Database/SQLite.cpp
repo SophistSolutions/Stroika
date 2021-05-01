@@ -36,11 +36,6 @@ namespace {
             Verify (::sqlite3_shutdown () == SQLITE_OK); // mostly pointless but avoids memory leak complaints
         }
     } sModuleShutdown_;
-}
-#endif
-
-#if qHasFeature_sqlite
-namespace {
     void ThrowSQLiteErrorIfNotOK_ (int errCode, sqlite3* sqliteConnection = nullptr)
     {
         static_assert (SQLITE_OK == 0);
@@ -77,8 +72,9 @@ String SQLite::QuoteStringForDB (const String& s)
     }
 }
 
-#if qHasFeature_sqlite
 
+
+#if qHasFeature_sqlite
 /*
  ********************************************************************************
  *************************** SQLite::CompiledOptions ****************************
@@ -93,13 +89,139 @@ namespace {
         }
     } sVerifyFlags_;
 }
+#endif
 
+
+#if qHasFeature_sqlite
+/*
+ ********************************************************************************
+ *************************** SQLite::Connection::Rep_ ***************************
+ ********************************************************************************
+ */
+struct Connection::Rep_ final : IRep {
+    Rep_ (const Options& options)
+    {
+        TraceContextBumper ctx{"SQLite::Connection::Connection"};
+
+        int flags = 0;
+        if (options.fThreadingMode) {
+            switch (*options.fThreadingMode) {
+                case Options::ThreadingMode::eSingleThread:
+                    break;
+                case Options::ThreadingMode::eMultiThread:
+                    Require (::sqlite3_threadsafe ());
+                    flags += SQLITE_OPEN_NOMUTEX;
+                    break;
+                case Options::ThreadingMode::eSerialized:
+                    Require (::sqlite3_threadsafe ());
+                    flags += SQLITE_OPEN_FULLMUTEX;
+                    break;
+            }
+        }
+
+        if (options.fImmutable) {
+            // NYI cuz requires uri syntax
+            WeakAssertNotImplemented ();
+            Require (options.fReadOnly);
+        }
+        flags |= options.fReadOnly ? SQLITE_OPEN_READONLY : SQLITE_OPEN_READWRITE;
+
+        string uriArg;
+        {
+            int n{};
+            if (options.fDBPath) {
+                n++;
+            }
+            if (options.fTemporaryDB) {
+                n++;
+            }
+            if (options.fInMemoryDB) {
+                n++;
+            }
+            Require (n == 1); // exactly one of fDBPath, fTemporaryDB, fInMemoryDB must be provided
+        }
+        if (options.fDBPath) {
+            uriArg = options.fDBPath->generic_string ();
+            if (uriArg[0] == ':') {
+                uriArg = "./" + uriArg; // sqlite docs warn to do this, to avoid issues with :memory or other extensions
+            }
+        }
+        if (options.fTemporaryDB) {
+            uriArg = string{}; // not sure how to give name to tmp file - maybe must use url syntax?
+            if (not options.fTemporaryDB->empty ()) {
+                AssertNotImplemented ();
+            }
+        }
+        if (options.fInMemoryDB) {
+            flags |= SQLITE_OPEN_MEMORY;
+            Require (not options.fReadOnly);
+            Require (options.fCreateDBPathIfDoesNotExist);
+            uriArg = options.fInMemoryDB->AsNarrowSDKString (); // often empty string
+            if (uriArg.empty ()) {
+                uriArg = ":memory";
+            }
+            else {
+                WeakAssertNotImplemented (); // maybe can do this with URI syntax, but not totally clear
+            }
+            // For now, it appears we ALWAYS create memory DBS when opening (so cannot find a way to open shared) - so always set created flag
+            fTmpHackCreated_ = true;
+        }
+
+        int e;
+        if ((e = ::sqlite3_open_v2 (uriArg.c_str (), &fDB_, flags, options.fVFS ? options.fVFS->AsNarrowSDKString ().c_str () : nullptr)) == SQLITE_CANTOPEN) {
+            if (options.fCreateDBPathIfDoesNotExist) {
+                if (fDB_ != nullptr) {
+                    Verify (::sqlite3_close (fDB_) == SQLITE_OK);
+                    fDB_ = nullptr;
+                }
+                if ((e = ::sqlite3_open_v2 (uriArg.c_str (), &fDB_, SQLITE_OPEN_CREATE | flags, options.fVFS ? options.fVFS->AsNarrowSDKString ().c_str () : nullptr)) == SQLITE_OK) {
+                    fTmpHackCreated_ = true;
+                }
+            }
+        }
+        if (e != SQLITE_OK) [[UNLIKELY_ATTR]] {
+            if (fDB_ != nullptr) {
+                Verify (::sqlite3_close (fDB_) == SQLITE_OK);
+            }
+            ThrowSQLiteErrorIfNotOK_ (e, fDB_);
+        }
+        EnsureNotNull (fDB_);
+    }
+    ~Rep_ ()
+    {
+        AssertNotNull (fDB_);
+        Verify (::sqlite3_close (fDB_) == SQLITE_OK);
+    }
+    bool               fTmpHackCreated_{false};
+    virtual void       Exec (const String& sql) override
+    {
+        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        char*                                              db_err{};
+        int                                                e = ::sqlite3_exec (fDB_, sql.AsUTF8 ().c_str (), NULL, 0, &db_err);
+        if (e != SQLITE_OK) [[UNLIKELY_ATTR]] {
+            if (db_err == nullptr or *db_err == '\0') {
+                ThrowSQLiteErrorIfNotOK_ (e, fDB_);
+            }
+            else {
+                Execution::Throw (Exception{Characters::Format (L"SQLite Error %d: %s", e, String::FromUTF8 (db_err).c_str ())});
+            }
+        }
+    }
+    virtual ::sqlite3* Peek () override
+    {
+        lock_guard<const AssertExternallySynchronizedLock> critSec{*this}; // not super helpful, but could catch errors - reason not very helpful is we lose lock long before we stop using ptr
+        return fDB_;
+    }
+    ::sqlite3* fDB_{};
+};
+#endif
+
+#if qHasFeature_sqlite
 /*
  ********************************************************************************
  *************************** SQLite::Connection *********************************
  ********************************************************************************
  */
-
 auto SQLite::Connection::New (const Options& options, const function<void (const Connection::Ptr&)>& dbInitializer) -> Ptr
 {
     auto tmp = make_shared<Rep_> (options);
@@ -108,124 +230,6 @@ auto SQLite::Connection::New (const Options& options, const function<void (const
         dbInitializer (result);
     }
     return result;
-}
-
-Connection::Rep_::Rep_ (const Options& options)
-{
-    TraceContextBumper ctx{"SQLite::Connection::Connection"};
-
-    int flags = 0;
-    if (options.fThreadingMode) {
-        switch (*options.fThreadingMode) {
-            case Options::ThreadingMode::eSingleThread:
-                break;
-            case Options::ThreadingMode::eMultiThread:
-                Require (::sqlite3_threadsafe ());
-                flags += SQLITE_OPEN_NOMUTEX;
-                break;
-            case Options::ThreadingMode::eSerialized:
-                Require (::sqlite3_threadsafe ());
-                flags += SQLITE_OPEN_FULLMUTEX;
-                break;
-        }
-    }
-
-    if (options.fImmutable) {
-        // NYI cuz requires uri syntax
-        WeakAssertNotImplemented ();
-        Require (options.fReadOnly);
-    }
-    flags |= options.fReadOnly ? SQLITE_OPEN_READONLY : SQLITE_OPEN_READWRITE;
-
-    string uriArg;
-    {
-        int n{};
-        if (options.fDBPath) {
-            n++;
-        }
-        if (options.fTemporaryDB) {
-            n++;
-        }
-        if (options.fInMemoryDB) {
-            n++;
-        }
-        Require (n == 1); // exactly one of fDBPath, fTemporaryDB, fInMemoryDB must be provided
-    }
-    if (options.fDBPath) {
-        uriArg = options.fDBPath->generic_string ();
-        if (uriArg[0] == ':') {
-            uriArg = "./" + uriArg; // sqlite docs warn to do this, to avoid issues with :memory or other extensions
-        }
-    }
-    if (options.fTemporaryDB) {
-        uriArg = string{}; // not sure how to give name to tmp file - maybe must use url syntax?
-        if (not options.fTemporaryDB->empty ()) {
-            AssertNotImplemented ();
-        }
-    }
-    if (options.fInMemoryDB) {
-        flags |= SQLITE_OPEN_MEMORY;
-        Require (not options.fReadOnly);
-        Require (options.fCreateDBPathIfDoesNotExist);
-        uriArg = options.fInMemoryDB->AsNarrowSDKString (); // often empty string
-        if (uriArg.empty ()) {
-            uriArg = ":memory";
-        }
-        else {
-            WeakAssertNotImplemented (); // maybe can do this with URI syntax, but not totally clear
-        }
-        // For now, it appears we ALWAYS create memory DBS when opening (so cannot find a way to open shared) - so always set created flag
-        fTmpHackCreated_ = true;
-    }
-
-    int e;
-    if ((e = ::sqlite3_open_v2 (uriArg.c_str (), &fDB_, flags, options.fVFS ? options.fVFS->AsNarrowSDKString ().c_str () : nullptr)) == SQLITE_CANTOPEN) {
-        if (options.fCreateDBPathIfDoesNotExist) {
-            if (fDB_ != nullptr) {
-                Verify (::sqlite3_close (fDB_) == SQLITE_OK);
-                fDB_ = nullptr;
-            }
-            if ((e = ::sqlite3_open_v2 (uriArg.c_str (), &fDB_, SQLITE_OPEN_CREATE | flags, options.fVFS ? options.fVFS->AsNarrowSDKString ().c_str () : nullptr)) == SQLITE_OK) {
-                fTmpHackCreated_ = true;
-            }
-        }
-    }
-    if (e != SQLITE_OK) [[UNLIKELY_ATTR]] {
-        if (fDB_ != nullptr) {
-            Verify (::sqlite3_close (fDB_) == SQLITE_OK);
-        }
-        ThrowSQLiteErrorIfNotOK_ (e, fDB_);
-    }
-    EnsureNotNull (fDB_);
-}
-
-Connection::Rep_::~Rep_ ()
-{
-    AssertNotNull (fDB_);
-    Verify (::sqlite3_close (fDB_) == SQLITE_OK);
-}
-
-#if qHasFeature_sqlite
-sqlite3* Connection::Rep_::Peek ()
-{
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this}; // not super helpful, but could catch errors - reason not very helpful is we lose lock long before we stop using ptr
-    return fDB_;
-}
-#endif
-
-void Connection::Rep_::Exec (const String& sql)
-{
-    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    char*                                              db_err{};
-    int                                                e = ::sqlite3_exec (fDB_, sql.AsUTF8 ().c_str (), NULL, 0, &db_err);
-    if (e != SQLITE_OK) [[UNLIKELY_ATTR]] {
-        if (db_err == nullptr or *db_err == '\0') {
-            ThrowSQLiteErrorIfNotOK_ (e, fDB_);
-        }
-        else {
-            Execution::Throw (Exception{Characters::Format (L"SQLite Error %d: %s", e, String::FromUTF8 (db_err).c_str ())});
-        }
-    }
 }
 #endif
 
@@ -277,8 +281,13 @@ Statement::Statement (const Connection::Ptr& db, const wchar_t* formatQuery, ...
 #endif
     RequireNotNull (db);
     RequireNotNull (db->Peek ());
-    //  lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*fConnectionPtr_};
-    va_list argsList;
+
+#if qDebug
+    _fSharedContext = fConnectionPtr_._fSharedContext;
+#endif
+
+    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
+    va_list                                                   argsList;
     va_start (argsList, formatQuery);
     String query = Characters::FormatV (formatQuery, argsList);
     va_end (argsList);
@@ -314,7 +323,7 @@ Statement::Statement (const Connection::Ptr& db, const wchar_t* formatQuery, ...
 String Statement::GetSQL (WhichSQLFlag whichSQL) const
 {
     Assert (not CompiledOptions::kThe.ENABLE_NORMALIZE);
-    // lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*fConnectionPtr_};
+    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
     switch (whichSQL) {
         case WhichSQLFlag::eOriginal:
             return String::FromUTF8 (::sqlite3_sql (fStatementObj_));
@@ -344,7 +353,7 @@ auto Statement::GetNextRow () -> optional<Row>
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{"SQLite::DB::Statement::GetNextRow"};
 #endif
-    //  lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*fConnectionPtr_};
+    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
     // @todo MAYBE redo with https://www.sqlite.org/c3ref/value.html
     int rc;
     AssertNotNull (fStatementObj_);
@@ -387,13 +396,13 @@ auto Statement::GetNextRow () -> optional<Row>
 Statement::~Statement ()
 {
     AssertNotNull (fStatementObj_);
-    //  lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*fConnectionPtr_};
+    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
     ::sqlite3_finalize (fStatementObj_);
 }
 
 void Statement::Bind (unsigned int parameterIndex, const VariantValue& v)
 {
-    //  lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*fConnectionPtr_};
+    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
     fParameters_[parameterIndex].fValue = v;
     switch (v.GetType ()) {
         case VariantValue::eString:
@@ -441,8 +450,8 @@ void Statement::Bind (const Traversal::Iterable<ParameterDescription>& parameter
 
 String Statement::ToString () const
 {
-    //   lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*fConnectionPtr_};
-    StringBuilder sb;
+    shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{*this};
+    StringBuilder                                             sb;
     sb += L"{";
     sb += L"Parameter-Bindings: " + Characters::ToString (fParameters_) + L", ";
     sb += L"Column-Descriptions: " + Characters::ToString (fColumns_) + L", ";

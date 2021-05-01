@@ -180,113 +180,21 @@ namespace Stroika::Foundation::Database::SQLite {
     class Statement;
 
     /**
-     *  Connection provides an API for accessing an SQLite database.
-     *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-     *          But though each connection can only be accessed from a single thread at a time, the underlying database is
-     *          threadsafe (even if accessed across processes)
-     *
-     *          @see https://www.sqlite.org/threadsafe.html
-     *          We set SQLITE_OPEN_NOMUTEX on open (so mode Multi-thread, but not Serialized).
-     *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-     *                              with caveats!
-     *
-     *          The Connection itself is standardC++ thread safety. The thread-safety of the underlying database depends on the setting
-     *          of Options::fThreadingMode when the database is constructed.
-     * 
-     * &&& REDO THE DOCS HERE ONCE I MOVE TO IRep and Ptr...
+     *  'Connection' is a quasi-namespace.
      */
     class Connection {
     public:
-        struct IRep : Debug::AssertExternallySynchronizedLock {
-            virtual ~IRep () = default;
-
-            /**
-             *  This returns nothing, but raises exceptions on errors.
-             */
-            virtual void Exec (const String& sql) = 0;
-
-            /**
-             *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the sqlite API.
-             */
-            virtual ::sqlite3* Peek () = 0;
-        };
+        /**
+         */
+        class IRep;
 
     public:
-        class Ptr {
-        public:
-            Ptr ()               = default;
-            Ptr (const Ptr& src) = default;
-            Ptr (Ptr&& src)      = default;
-            Ptr (const shared_ptr<IRep>& src)
-                : fRep_{src}
-            {
-            }
-            Ptr& operator= (const Ptr& src) = default;
-            Ptr& operator= (Ptr&& src) = default;
-
-            IRep* operator-> () const noexcept
-            {
-                return fRep_.get ();
-            }
-
-            auto operator== (const Ptr& rhs) const
-            {
-                return fRep_ == rhs.fRep_;
-            }
-            bool operator== (nullptr_t) const noexcept
-            {
-                return fRep_.get () == nullptr;
-            }
-#if __cpp_impl_three_way_comparison < 201907
-            bool operator!= (const Ptr& rhs) const
-            {
-                return fRep_ == rhs.fRep_;
-            }
-            bool operator!= (nullptr_t) const
-            {
-                return fRep_ != nullptr;
-            }
-#endif
-
-
-            /**
-             *  This returns nothing, but raises exceptions on errors.
-             *
-             *  \todo - EXTEND this to write the RESPONSE (use the callback) to DbgTrace () calls - perhaps optionally?)
-             */
-            nonvirtual void Exec (const wchar_t* formatCmd2Exec, ...)
-            {
-                RequireNotNull (formatCmd2Exec);
-                va_list argsList;
-                va_start (argsList, formatCmd2Exec);
-                String cmd2Exec = Characters::FormatV (formatCmd2Exec, argsList);
-                va_end (argsList);
-                fRep_->Exec (cmd2Exec);
-            }
-
-            /**
-             *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the sqlite API.
-             */
-            nonvirtual ::sqlite3* Peek ()
-            {
-                return fRep_->Peek ();
-            }
-
-        private:
-            shared_ptr<IRep> fRep_;
-        };
+        /**
+         */
+        class Ptr;
 
     private:
-        struct Rep_ final : IRep {
-            Rep_ (const Options& options);
-            ~Rep_ ();
-            bool               fTmpHackCreated_{false};
-            virtual void       Exec (const String& sql) override;
-            virtual ::sqlite3* Peek () override;
-            ::sqlite3*         fDB_{};
-        };
+        struct Rep_;
 
     public:
         /**
@@ -296,9 +204,108 @@ namespace Stroika::Foundation::Database::SQLite {
 
     public:
         /**
+         *  The dbInitializer is called IFF the New () call results in a newly created database (@todo RECONSIDER).
          */
         static Ptr New (
             const Options& options, const function<void (const Connection::Ptr&)>& dbInitializer = [] (const Connection::Ptr&) {});
+    };
+
+    /**
+     *  Connection provides an API for accessing an SQLite database.
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
+     *          But though each connection can only be accessed from a single thread at a time, the underlying database may be
+     *          threadsafe (even if accessed across processes) - depending on its construction OPtions::ThreadSafety
+     *
+     *          The Connection itself is standardC++ thread safety. The thread-safety of the underlying database depends on the setting
+     *          of Options::fThreadingMode when the database is constructed.
+     * 
+     *          @see https://www.sqlite.org/threadsafe.html
+     *          We set SQLITE_OPEN_NOMUTEX on open (so mode Multi-thread, but not Serialized).
+     */
+    class Connection::IRep : protected Debug::AssertExternallySynchronizedLock {
+    public:
+        /**
+         */
+        virtual ~IRep () = default;
+
+    public:
+        /**
+         *  This returns nothing, but raises exceptions on errors.
+         */
+        virtual void Exec (const String& sql) = 0;
+
+    public:
+        /**
+         *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the sqlite API.
+         */
+        virtual ::sqlite3* Peek () = 0;
+
+    private:
+        friend class Ptr;
+    };
+
+    /**
+     *  Connection provides an API for accessing an SQLite database.
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
+     *          But though each connection can only be accessed from a single thread at a time, the underlying database may be
+     *          threadsafe (even if accessed across processes) - depending on its construction OPtions::ThreadSafety
+     *
+     *          The Connection itself is standardC++ thread safety. The thread-safety of the underlying database depends on the setting
+     *          of Options::fThreadingMode when the database is constructed.
+     * 
+     *          @see https://www.sqlite.org/threadsafe.html
+     *          We set SQLITE_OPEN_NOMUTEX on open (so mode Multi-thread, but not Serialized).
+     *
+     */
+    class Connection::Ptr : private Debug::AssertExternallySynchronizedLock {
+    public:
+        /**
+         */
+        Ptr ()                   = default;
+        Ptr (const Ptr& src);
+        Ptr (Ptr&& src) noexcept;
+        Ptr (const shared_ptr<IRep>& src);
+
+    public:
+        ~Ptr () = default;
+
+    public:
+        /**
+         */
+        nonvirtual Ptr& operator= (const Ptr& src);
+        nonvirtual Ptr& operator= (Ptr&& src) noexcept;
+
+    public:
+        /**
+         */
+        nonvirtual IRep* operator-> () const noexcept;
+
+    public:
+        /**
+         *  This returns nothing, but raises exceptions on errors.
+         *
+         *  \todo - EXTEND this to write the RESPONSE (use the callback) to DbgTrace () calls - perhaps optionally?)
+         */
+        nonvirtual void Exec (const wchar_t* formatCmd2Exec, ...);
+
+    public:
+        /**
+         *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the sqlite API.
+         */
+        nonvirtual ::sqlite3* Peek ();
+
+    public:
+        nonvirtual auto operator== (const Ptr& rhs) const;
+        nonvirtual bool operator== (nullptr_t) const noexcept;
+#if __cpp_impl_three_way_comparison < 201907
+        nonvirtual bool operator!= (const Ptr& rhs) const;
+        nonvirtual bool operator!= (nullptr_t) const;
+#endif
+
+    private:
+        shared_ptr<IRep> fRep_;
 
     private:
         friend class Statement;
@@ -379,7 +386,10 @@ namespace Stroika::Foundation::Database::SQLite {
          *  This describes an SQL column. THe 'type' is a string (and optional at that), and refers to the SQLite type system.
          */
         struct ColumnDescription {
+            /**
+             */
             ColumnName fName;
+
             /**
              * sqlite3_column_decltype
              */
@@ -402,7 +412,13 @@ namespace Stroika::Foundation::Database::SQLite {
          *  Parameters are set with a call to "Bind" so maybe also called parameter bindings.
          */
         struct ParameterDescription {
-            optional<String> fName; // name is optional - bindings can be specified by index
+            /**
+             *  name is optional - bindings can be specified by index
+             */
+            optional<String> fName;
+
+            /**
+             */
             VariantValue     fValue;
 
             /**
