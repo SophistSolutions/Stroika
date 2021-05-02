@@ -193,6 +193,8 @@ namespace {
         }
         void DoIt ()
         {
+            //static const     DateTime   kScanStartTime4Reference_   = DateTime::Now ();
+            static const DateTime kScanStartTime4Reference_ = DateTime{Date{Year{2020}, MonthOfYear::eApril, DayOfMonth::e1}, TimeOfDay{4, 0, 0}}; // hardwired data to be able to ccompare DBs
             using namespace PRIVATE_;
             TraceContextBumper ctx{"ScanDB::DB::RunTest"};
             auto               test = [] (PRIVATE_::DB& db, unsigned nTimesRanBefore) {
@@ -208,8 +210,8 @@ namespace {
                 SpectrumType_      spectrum;
                 const unsigned int kNRecordsAddedPerTestCall = 100;
                 for (int i = 0; i < kNRecordsAddedPerTestCall; ++i) {
-                    DateTime    scanStartTime = DateTime::Now () - Duration (.1);
-                    DateTime    scanEndTime   = DateTime::Now ();
+                    DateTime    scanStartTime = kScanStartTime4Reference_ - 100ms;
+                    DateTime    scanEndTime   = kScanStartTime4Reference_;
                     ScanIDType_ sid           = db.ScanPersistenceAdd (scanStartTime, scanEndTime, String{L"Hi Mom"}, ScanKindType_::Reference, spectrum);
                     Verify (sid == *db.GetLastScan (ScanKindType_::Reference));
                     Verify (sid == nTimesRanBefore * kNRecordsAddedPerTestCall + i + 1);

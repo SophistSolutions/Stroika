@@ -263,7 +263,7 @@ namespace Stroika::Foundation::Database::SQLite {
     public:
         /**
          */
-        Ptr ()                   = default;
+        Ptr () = default;
         Ptr (const Ptr& src);
         Ptr (Ptr&& src) noexcept;
         Ptr (const shared_ptr<IRep>& src);
@@ -419,7 +419,7 @@ namespace Stroika::Foundation::Database::SQLite {
 
             /**
              */
-            VariantValue     fValue;
+            VariantValue fValue;
 
             /**
              *  @see Characters::ToString ()
