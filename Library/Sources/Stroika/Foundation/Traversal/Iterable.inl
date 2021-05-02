@@ -565,7 +565,7 @@ namespace Stroika::Foundation::Traversal {
             while (perIteratorContextBaseIterator) {
                 auto t = extract (*perIteratorContextBaseIterator++);
                 if (t) {
-                    return RESULT (*t);
+                    return RESULT{*t};
                 }
             }
             return nullopt;
