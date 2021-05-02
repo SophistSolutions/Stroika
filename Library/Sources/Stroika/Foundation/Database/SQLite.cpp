@@ -476,6 +476,7 @@ void Statement::Bind (const String& parameterName, const VariantValue& v)
             return;
         }
     }
+    DbgTrace (L"Statement::Bind: Parameter '%s' not found in list %s", parameterName.c_str (), Characters::ToString (fParameters_.Select<String> ([] (const auto& i) { return i.fName; })).c_str ());
     RequireNotReached (); // invalid paramter name provided
 }
 
