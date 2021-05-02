@@ -18,7 +18,7 @@ namespace Stroika::Foundation::Traversal {
             bool                     fSuppressMore_{false}; // needed cuz we need to be able to answer 'isdone' before advance begins
             GenItWrapper_ () = delete;
             GenItWrapper_ (const function<optional<T> ()>& f)
-                : fFun_ (f)
+                : fFun_{f}
                 , fCur_{fFun_ ()}
             {
             }
@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Traversal {
                 using inherited             = typename IterableFromIterator<T, MyIteratorRep_, MyContextData_>::_Rep;
                 using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
                 MyIterableRep_ (const MyContextData_& context)
-                    : inherited (context)
+                    : inherited{context}
                 {
                 }
                 virtual _IterableRepSharedPtr Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
@@ -87,11 +87,11 @@ namespace Stroika::Foundation::Traversal {
                 }
             };
             MyIterable_ (const function<optional<T> ()>& getNext)
-                : Iterable<T> (Iterable<T>::template MakeSmartPtr<MyIterableRep_> (getNext))
+                : Iterable<T>{Iterable<T>::template MakeSmartPtr<MyIterableRep_> (getNext)}
             {
             }
         };
-        return MyIterable_ (getNext);
+        return MyIterable_{getNext};
     }
 
 }
