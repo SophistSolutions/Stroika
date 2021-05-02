@@ -88,29 +88,45 @@ namespace {
                 nonvirtual DB&         operator= (const DB&) = delete;
                 nonvirtual ScanIDType_ ScanPersistenceAdd (const DateTime& ScanStart, const DateTime& ScanEnd, const optional<String>& ScanLabel, ScanKindType_ scanKind, const optional<SpectrumType_>& rawSpectrum)
                 {
-                    String insertSQL = [&] () {
-                        StringBuilder sb;
-                        sb += L"insert into Scans (StartAt, EndAt, ScanTypeIDRef, RawScanData, ScanLabel)";
-                        sb += L"select ";
-                        sb += L"'" + ScanStart.AsUTC ().Format (DateTime::kISO8601Format) + L"',";
-                        sb += L"'" + ScanEnd.AsUTC ().Format (DateTime::kISO8601Format) + L"',";
-                        sb += Characters::Format (L"%d", scanKind) + L",";
+                    constexpr bool kUseBind_ = true;
+                    if (kUseBind_) {
+                        Statement s{fDB_, L"insert into Scans (StartAt, EndAt, ScanTypeIDRef, RawScanData, ScanLabel) Values (:StartAt, :EndAt, :ScanTypeIDRef, :RawScanData, :ScanLabel);"};
+                        s.Bind (L":StartAt", ScanStart.AsUTC ().Format (DateTime::kISO8601Format));
+                        s.Bind (L":EndAt", ScanEnd.AsUTC ().Format (DateTime::kISO8601Format));
+                        s.Bind (L":ScanTypeIDRef", (int)scanKind);
                         if (rawSpectrum) {
-                            sb += L"'" + Database::SQLite::QuoteStringForDB (L"SomeLongASCIIStringS\r\r\n\t'omeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString") + L"',";
-                        }
-                        else {
-                            sb += L"NULL,";
+                            s.Bind (L":RawScanData", VariantValue{L"SomeLongASCIIStringS\r\r\n\t'omeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString"});
                         }
                         if (ScanLabel) {
-                            sb += L"'" + Database::SQLite::QuoteStringForDB (*ScanLabel) + L"'";
+                            s.Bind (L":ScanLabel", VariantValue{*ScanLabel});
                         }
-                        else {
-                            sb += L"NULL";
-                        }
-                        sb += L";";
-                        return sb.str ();
-                    }();
-                    fDB_.Exec (L"%s", insertSQL.c_str ());
+                        s.GetNextRow ();
+                    }
+                    else {
+                        String insertSQL = [&] () {
+                            StringBuilder sb;
+                            sb += L"insert into Scans (StartAt, EndAt, ScanTypeIDRef, RawScanData, ScanLabel)";
+                            sb += L"select ";
+                            sb += L"'" + ScanStart.AsUTC ().Format (DateTime::kISO8601Format) + L"',";
+                            sb += L"'" + ScanEnd.AsUTC ().Format (DateTime::kISO8601Format) + L"',";
+                            sb += Characters::Format (L"%d", scanKind) + L",";
+                            if (rawSpectrum) {
+                                sb += L"'" + Database::SQLite::QuoteStringForDB (L"SomeLongASCIIStringS\r\r\n\t'omeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString") + L"',";
+                            }
+                            else {
+                                sb += L"NULL,";
+                            }
+                            if (ScanLabel) {
+                                sb += L"'" + Database::SQLite::QuoteStringForDB (*ScanLabel) + L"'";
+                            }
+                            else {
+                                sb += L"NULL";
+                            }
+                            sb += L";";
+                            return sb.str ();
+                        }();
+                        fDB_.Exec (L"%s", insertSQL.c_str ());
+                    }
                     Statement s{fDB_, L"SELECT MAX(ScanId) FROM Scans;"};
                     DbgTrace (L"Statement: %s", Characters::ToString (s).c_str ());
                     return s.GetNextRow ()->Lookup (L"MAX(ScanId)")->As<ScanIDType_> ();
