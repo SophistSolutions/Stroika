@@ -113,19 +113,31 @@ namespace {
                     fDB_.Exec (L"%s", insertSQL.c_str ());
                     Statement s{fDB_, L"SELECT MAX(ScanId) FROM Scans;"};
                     DbgTrace (L"Statement: %s", Characters::ToString (s).c_str ());
-
+                    return s.GetNextRow ()->Lookup (L"MAX(ScanId)")->As<ScanIDType_> ();
+                }
+                nonvirtual optional<ScanIDType_> GetLastScan (ScanKindType_ scanKind)
+                {
+                    auto r1 = GetLastScan_Explicit_ (scanKind);
+                    auto r2 = GetLastScan_Bind_ (scanKind);
+                    VerifyTestResult (r1 == r2);
+                    return r2;
+                }
+                nonvirtual optional<ScanIDType_> GetLastScan_Explicit_ (ScanKindType_ scanKind)
+                {
+                    Statement s{fDB_, L"select MAX(ScanId) from Scans where  ScanTypeIDRef='%d';", scanKind};
+                    DbgTrace (L"Statement: %s", Characters::ToString (s).c_str ());
                     if (optional<Statement::Row> r = s.GetNextRow ()) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"ROW: %s", Characters::ToString (*r).c_str ());
 #endif
                         return r->Lookup (L"MAX(ScanId)")->As<ScanIDType_> ();
                     }
-                    AssertNotReached ();
-                    return ScanIDType_{};
+                    return nullopt;
                 }
-                nonvirtual optional<ScanIDType_> GetLastScan (ScanKindType_ scanKind)
+                nonvirtual optional<ScanIDType_> GetLastScan_Bind_ (ScanKindType_ scanKind)
                 {
-                    Statement s{fDB_, L"select MAX(ScanId) from Scans where  ScanTypeIDRef='%d';", scanKind};
+                    Statement s{fDB_, L"select MAX(ScanId) from Scans where  ScanTypeIDRef=:ScanKind;"};
+                    s.Bind (L":ScanKind", VariantValue{(int)scanKind});
                     DbgTrace (L"Statement: %s", Characters::ToString (s).c_str ());
                     if (optional<Statement::Row> r = s.GetNextRow ()) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
