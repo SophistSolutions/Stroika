@@ -416,6 +416,7 @@ auto Statement::GetAllRows () -> Sequence<Row>
     while (auto o = GetNextRow ()) {
         result += *o;
     }
+    Reset ();
     return result;
 }
 
@@ -429,6 +430,7 @@ Sequence<VariantValue> Statement::GetAllRows (size_t restrictToColumn)
     while (auto o = GetNextRow ()) {
         result += *o->Lookup (col0.fName);
     }
+    Reset ();
     return result;
 }
 
@@ -443,6 +445,7 @@ Sequence<tuple<VariantValue, VariantValue>> Statement::GetAllRows (size_t restri
     while (auto o = GetNextRow ()) {
         result += make_tuple (*o->Lookup (col0.fName), *o->Lookup (col1.fName));
     }
+    Reset ();
     return result;
 }
 

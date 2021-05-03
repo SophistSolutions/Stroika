@@ -374,6 +374,8 @@ namespace Stroika::Foundation::Database::SQLite {
          * ... @todo use variadic templates to generatelas GetAllRows()
          * ... @todo COULD overload so columns named by 'name' instead of index, but simple to use index (as specified by result of
          *           GetColumns ()
+         * 
+         *  \note GetAllRows() calls Reset() when its done, so it can be called repeatedly.
          */
         nonvirtual Sequence<Row> GetAllRows ();
         nonvirtual Sequence<VariantValue> GetAllRows (size_t restrictToColumn);
