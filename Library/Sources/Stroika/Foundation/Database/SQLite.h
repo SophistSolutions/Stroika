@@ -353,6 +353,21 @@ namespace Stroika::Foundation::Database::SQLite {
 
     public:
         /**
+         * Execute the given statement, and ignore its value. Do NOT mix Execute() with GetNextRow().
+         *  It is legal to call this on an SQL statement that returns results, but you will not see the results.
+         */
+        nonvirtual void Execute ();
+
+    public:
+        /**
+         */
+        nonvirtual void Reset ();
+
+    public:
+        /**
+         *  If called on a new Statement, or on a statement that has been reset (since the last call to GetNextRow() - this re-runs the query.
+         *  But either way, it returns the next row.
+         *
          * returns 'missing' on EOF, exception on error
          */
         nonvirtual optional<Row> GetNextRow ();

@@ -385,6 +385,34 @@ String Statement::GetSQL (WhichSQLFlag whichSQL) const
     }
 }
 
+void Statement::Execute ()
+{
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    TraceContextBumper ctx{"SQLite::DB::Statement::Execute"};
+#endif
+    AssertNotNull (fStatementObj_);
+    int rc = ::sqlite3_step (fStatementObj_);
+    switch (rc) {
+        case SQLITE_ROW:
+        case SQLITE_DONE: {
+            return; // this is OK, the main way thoush should go
+        } break;
+        default: {
+            ThrowSQLiteError_ (rc, fConnectionPtr_->Peek ());
+        } break;
+    }
+}
+
+void Statement::Reset ()
+{
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    TraceContextBumper ctx{"SQLite::DB::Statement::Reset"};
+#endif
+    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
+    AssertNotNull (fStatementObj_);
+    ThrowSQLiteError_ (::sqlite3_reset (fStatementObj_), fConnectionPtr_->Peek ());
+}
+
 auto Statement::GetNextRow () -> optional<Row>
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -392,9 +420,9 @@ auto Statement::GetNextRow () -> optional<Row>
 #endif
     lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
     // @todo MAYBE redo with https://www.sqlite.org/c3ref/value.html
-    int rc;
     AssertNotNull (fStatementObj_);
-    switch (rc = ::sqlite3_step (fStatementObj_)) {
+    int rc = ::sqlite3_step (fStatementObj_);
+    switch (rc) {
         case SQLITE_OK: {
             AssertNotReached (); // I think this should never happen with this API
         } break;
@@ -440,8 +468,8 @@ auto Statement::GetNextRow () -> optional<Row>
 
 Statement::~Statement ()
 {
-    AssertNotNull (fStatementObj_);
     lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
+    AssertNotNull (fStatementObj_);
     ::sqlite3_finalize (fStatementObj_);
 }
 
