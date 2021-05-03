@@ -41,13 +41,17 @@ namespace {
     [[noreturn]] void ThrowSQLiteError_ (int errCode, sqlite3* sqliteConnection = nullptr)
     {
         Require (errCode != SQLITE_OK);
+        optional<String> errMsgDetails;
+        if (sqliteConnection != nullptr) {
+            errMsgDetails = String::FromUTF8 (::sqlite3_errmsg (sqliteConnection));
+        }
         switch (errCode) {
             case SQLITE_CONSTRAINT: {
-                if (sqliteConnection == nullptr) {
-                    Execution::Throw (Exception{L"SQLITE_CONSTRAINT"sv});
+                if (errMsgDetails) {
+                    Execution::Throw (Exception{Characters::Format (L"SQLITE_CONSTRAINT: %s", errMsgDetails->c_str ())});
                 }
                 else {
-                    Execution::Throw (Exception{Characters::Format (L"SQLITE_CONSTRAINT: %s", String::FromUTF8 (::sqlite3_errmsg (sqliteConnection)).c_str ())});
+                    Execution::Throw (Exception{L"SQLITE_CONSTRAINT"sv});
                 }
             } break;
             case SQLITE_TOOBIG: {
@@ -60,13 +64,20 @@ namespace {
             case SQLITE_READONLY: {
                 Execution::Throw (Exception{L"SQLITE_READONLY"sv});
             } break;
-            case SQLITE_ERROR: {
-                if (sqliteConnection == nullptr) {
-                    Execution::Throw (Exception{L"SQLITE_ERROR"sv});
+            case SQLITE_MISUSE: {
+                if (errMsgDetails) {
+                    Execution::Throw (Exception{Characters::Format (L"SQLITE_MISUSE: %s", errMsgDetails->c_str ())});
                 }
                 else {
-                    DbgTrace (L"SQLITE_ERROR: %s", String::FromUTF8 (::sqlite3_errmsg (sqliteConnection)).c_str ());
-                    Execution::Throw (Exception{Characters::Format (L"SQLITE_ERROR: %s", String::FromUTF8 (::sqlite3_errmsg (sqliteConnection)).c_str ())});
+                    Execution::Throw (Exception{L"SQLITE_MISUSE"sv});
+                }
+            } break;
+            case SQLITE_ERROR: {
+                if (errMsgDetails) {
+                    Execution::Throw (Exception{Characters::Format (L"SQLITE_ERROR: %s", errMsgDetails->c_str ())});
+                }
+                else {
+                    Execution::Throw (Exception{L"SQLITE_ERROR"sv});
                 }
             } break;
             case SQLITE_NOMEM: {
@@ -74,10 +85,12 @@ namespace {
                 Execution::Throw (bad_alloc{});
             } break;
         }
-        if (sqliteConnection != nullptr) {
-            Execution::Throw (Exception{Characters::Format (L"SQLite Error: %s (code %d)", String::FromUTF8 (::sqlite3_errmsg (sqliteConnection)).c_str (), errCode)});
+        if (errMsgDetails) {
+            Execution::Throw (Exception{Characters::Format (L"SQLite Error: %s (code %d)", errMsgDetails->c_str (), errCode)});
         }
-        Execution::Throw (Exception{Characters::Format (L"SQLite Error: %d", errCode)});
+        else {
+            Execution::Throw (Exception{Characters::Format (L"SQLite Error: %d", errCode)});
+        }
     }
     void ThrowSQLiteErrorIfNotOK_ (int errCode, sqlite3* sqliteConnection = nullptr)
     {
@@ -115,7 +128,7 @@ namespace {
 struct Connection::Rep_ final : IRep {
     Rep_ (const Options& options)
     {
-        TraceContextBumper ctx{"SQLite::Connection::Connection"};
+        TraceContextBumper ctx{"SQLite::Connection::Rep_::Rep_"};
 
         int flags = 0;
         if (options.fThreadingMode) {
@@ -361,6 +374,7 @@ void Statement::Execute ()
     TraceContextBumper ctx{"SQLite::DB::Statement::Execute"};
 #endif
     AssertNotNull (fStatementObj_);
+    ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (fStatementObj_), fConnectionPtr_->Peek ());
     int rc = ::sqlite3_step (fStatementObj_);
     switch (rc) {
         case SQLITE_ROW:
@@ -373,6 +387,16 @@ void Statement::Execute ()
     }
 }
 
+void Statement::Execute (const Traversal::Iterable<ParameterDescription>& parameters)
+{
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    TraceContextBumper ctx{"SQLite::DB::Statement::Execute"};
+#endif
+    Reset ();
+    Bind (parameters);
+    Execute ();
+}
+
 void Statement::Reset ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -380,7 +404,7 @@ void Statement::Reset ()
 #endif
     lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
     AssertNotNull (fStatementObj_);
-    ThrowSQLiteError_ (::sqlite3_reset (fStatementObj_), fConnectionPtr_->Peek ());
+    ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (fStatementObj_), fConnectionPtr_->Peek ());
 }
 
 auto Statement::GetNextRow () -> optional<Row>
@@ -440,7 +464,7 @@ Statement::~Statement ()
 {
     lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
     AssertNotNull (fStatementObj_);
-    ::sqlite3_finalize (fStatementObj_);
+    (void)::sqlite3_finalize (fStatementObj_);
 }
 
 void Statement::Bind (unsigned int parameterIndex, const VariantValue& v)
@@ -449,16 +473,16 @@ void Statement::Bind (unsigned int parameterIndex, const VariantValue& v)
     fParameters_[parameterIndex].fValue = v;
     switch (v.GetType ()) {
         case VariantValue::eString:
-            ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_text (fStatementObj_, parameterIndex + 1, v.As<String> ().AsUTF8 ().c_str (), -1, SQLITE_TRANSIENT));
+            ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_text (fStatementObj_, parameterIndex + 1, v.As<String> ().AsUTF8 ().c_str (), -1, SQLITE_TRANSIENT), fConnectionPtr_->Peek ());
             break;
         case VariantValue::eInteger:
-            ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_int64 (fStatementObj_, parameterIndex + 1, v.As<sqlite3_int64> ()));
+            ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_int64 (fStatementObj_, parameterIndex + 1, v.As<sqlite3_int64> ()), fConnectionPtr_->Peek ());
             break;
         case VariantValue::eFloat:
-            ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_double (fStatementObj_, parameterIndex + 1, v.As<double> ()));
+            ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_double (fStatementObj_, parameterIndex + 1, v.As<double> ()), fConnectionPtr_->Peek ());
             break;
         case VariantValue::eNull:
-            ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_null (fStatementObj_, parameterIndex + 1));
+            ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_null (fStatementObj_, parameterIndex + 1), fConnectionPtr_->Peek ());
             break;
         default:
             AssertNotImplemented (); // add more types - esp BLOB

@@ -349,13 +349,12 @@ namespace Stroika::Foundation::Database::SQLite {
 
     public:
         /**
-         * Execute the given statement, and ignore its value. Do NOT mix Execute() with GetNextRow().
-         *  It is legal to call this on an SQL statement that returns results, but you will not see the results.
-         */
-        nonvirtual void Execute ();
-
-    public:
-        /**
+         *  This mimics the sqlite3_reset () functionality/API.
+         * 
+         *  This clears any ongoing query, so the next call to GetNextRow () will start with the first row from the current query.
+         *  This does NOT affect any values currently bound.
+         * 
+         *  BUT NOTE, it is required to call Reset() (if there are any ongoing queries) before calling Bind.
          */
         nonvirtual void Reset ();
 
@@ -465,6 +464,21 @@ namespace Stroika::Foundation::Database::SQLite {
         nonvirtual void Bind (unsigned int parameterIndex, const VariantValue& v);
         nonvirtual void Bind (const String& parameterName, const VariantValue& v);
         nonvirtual void Bind (const Traversal::Iterable<ParameterDescription>& parameters);
+
+    public:
+        /**
+         *  Execute the given statement, and ignore its result value. Do NOT mix Execute() with GetNextRow().
+         *  It is legal to call this on an SQL statement that returns results, but you will not see the results.
+         * 
+         *  Execute () with a list of ParameterDescriptions is like:
+         *      >   Reset
+         *      >   Bind () with that list of parameters and then 
+         *      >   Execute ()
+         * 
+         *  No need to call Reset() before calling Execute () as it calls it internally.
+         */
+        nonvirtual void Execute ();
+        nonvirtual void Execute (const Traversal::Iterable<ParameterDescription>& parameters);
 
     public:
         /**

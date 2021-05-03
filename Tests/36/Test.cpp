@@ -89,6 +89,7 @@ namespace {
                 nonvirtual DB&         operator= (const DB&) = delete;
                 nonvirtual ScanIDType_ ScanPersistenceAdd (const DateTime& ScanStart, const DateTime& ScanEnd, const optional<String>& ScanLabel, ScanKindType_ scanKind, const optional<SpectrumType_>& rawSpectrum)
                 {
+                    // @todo write rawSpectrum isntead o fhardwired string...
                     constexpr bool kUseBind_ = true;
                     if (kUseBind_) {
                         Statement s{fDB_, L"insert into Scans (StartAt, EndAt, ScanTypeIDRef, RawScanData, ScanLabel) Values (:StartAt, :EndAt, :ScanTypeIDRef, :RawScanData, :ScanLabel);"};
@@ -126,7 +127,7 @@ namespace {
                             sb += L";";
                             return sb.str ();
                         }();
-                        fDB_.Exec (L"%s", insertSQL.c_str ());
+                        fDB_.Exec (insertSQL);
                     }
                     Statement s{fDB_, L"SELECT MAX(ScanId) FROM Scans;"};
                     DbgTrace (L"Statement: %s", Characters::ToString (s).c_str ());
@@ -173,9 +174,9 @@ namespace {
                                  L"ScanTypeId tinyint Primary Key,"
                                  L"TypeName varchar(255) not null"
                                  L");");
-                        db.Exec (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Reference';", ScanKindType_::Reference);
-                        db.Exec (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Sample';", ScanKindType_::Sample);
-                        db.Exec (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Background';", ScanKindType_::Background);
+                        db.Exec (Characters::Format (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Reference';", ScanKindType_::Reference));
+                        db.Exec (Characters::Format (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Sample';", ScanKindType_::Sample));
+                        db.Exec (Characters::Format (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Background';", ScanKindType_::Background));
                     };
                     auto tableSetup_Scans = [&db] () {
                         db.Exec (
