@@ -368,6 +368,18 @@ namespace Stroika::Foundation::Database::SQLite {
         nonvirtual optional<Row> GetNextRow ();
 
     public:
+        /**
+         *  \brief - Call GetNextRow () repeatedly, and accumulate Rows into a Sequence (could have been called GetAllRemainingRows)
+         * 
+         * ... @todo use variadic templates to generatelas GetAllRows()
+         * ... @todo COULD overload so columns named by 'name' instead of index, but simple to use index (as specified by result of
+         *           GetColumns ()
+         */
+        nonvirtual Sequence<Row> GetAllRows ();
+        nonvirtual Sequence<VariantValue> GetAllRows (size_t restrictToColumn);
+        nonvirtual Sequence<tuple<VariantValue, VariantValue>> GetAllRows (size_t restrictToColumn1, size_t restrictToColumn2);
+
+    public:
         enum class WhichSQLFlag {
             /**
              *  This is the original SQL passed in as argument to the statement.
@@ -393,7 +405,7 @@ namespace Stroika::Foundation::Database::SQLite {
 
     public:
         /**
-         *  This describes an SQL column. THe 'type' is a string (and optional at that), and refers to the SQLite type system.
+         *  This describes an SQL column. The 'type' is a string (and optional at that), and refers to the SQLite type system.
          */
         struct ColumnDescription {
             /**
@@ -414,6 +426,8 @@ namespace Stroika::Foundation::Database::SQLite {
     public:
         /**
          *  \note the types returned in .fType are generally wrong until we've run our first query).
+         * 
+         * @ todo consider rename to GetResultColumns
          */
         nonvirtual Sequence<ColumnDescription> GetColumns () const;
 
