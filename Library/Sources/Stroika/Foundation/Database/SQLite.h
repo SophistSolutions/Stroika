@@ -284,13 +284,13 @@ namespace Stroika::Foundation::Database::SQLite {
          *
          *  \todo - EXTEND this to write the RESPONSE (use the callback) to DbgTrace () calls - perhaps optionally?)
          */
-        nonvirtual void Exec (const wchar_t* formatCmd2Exec, ...);
+        nonvirtual void Exec (const String& sql) const;
 
     public:
         /**
          *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the sqlite API.
          */
-        nonvirtual ::sqlite3* Peek ();
+        nonvirtual ::sqlite3* Peek () const;
 
     public:
         nonvirtual auto operator== (const Ptr& rhs) const;

@@ -127,16 +127,11 @@ namespace Stroika::Foundation::Database::SQLite {
         return fRep_ != nullptr;
     }
 #endif
-    inline void Connection::Ptr::Exec (const wchar_t* formatCmd2Exec, ...)
+    inline void Connection::Ptr::Exec (const String& sql) const
     {
-        RequireNotNull (formatCmd2Exec);
-        va_list argsList;
-        va_start (argsList, formatCmd2Exec);
-        String cmd2Exec = Characters::FormatV (formatCmd2Exec, argsList);
-        va_end (argsList);
-        fRep_->Exec (cmd2Exec);
+        fRep_->Exec (sql);
     }
-    inline ::sqlite3* Connection::Ptr::Peek ()
+    inline ::sqlite3* Connection::Ptr::Peek () const
     {
         return fRep_->Peek ();
     }

@@ -20,7 +20,7 @@ namespace {
 #if qHasFeature_sqlite
         using namespace SQLite;
         auto initializeDB = [] (const Connection::Ptr& c) {
-            c->Exec (
+            c.Exec (
                 L"CREATE TABLE COMPANY("
                 L"ID INT PRIMARY KEY     NOT NULL,"
                 L"NAME           TEXT    NOT NULL,"
@@ -28,7 +28,7 @@ namespace {
                 L"ADDRESS        CHAR(50),"
                 L"SALARY         REAL"
                 L");");
-            c->Exec (
+            c.Exec (
                 L"CREATE TABLE DEPARTMENT( ID INT PRIMARY KEY NOT NULL,"
                 L"DEPT CHAR (50) NOT NULL,"
                 L" EMP_ID INT NOT     NULL"
