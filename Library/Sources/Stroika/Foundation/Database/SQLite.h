@@ -26,7 +26,8 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Early</a>
  *
  *  TODO
- *      @todo   Create SQLite Exception class and use sqlite3_errstr () to generate good string message (that seems to return threadafe static const strings)
+ *      @todo   Create SQLite Exception class and use sqlite3_errstr () to generate good string 
+ *              message (that seems to return threadafe static const strings)
  */
 
 namespace Stroika::Foundation::Database::SQLite {
@@ -36,11 +37,6 @@ namespace Stroika::Foundation::Database::SQLite {
     using Containers::Sequence;
     using DataExchange::VariantValue;
     using IO::Network::URI;
-
-    /**
-     *  @todo - probably move to common area - for all DB stuff - not specific to SQLite (maybe have folder for "SQL")
-     */
-    String QuoteStringForDB (const String& s);
 
 #if qHasFeature_sqlite
 
@@ -324,7 +320,7 @@ namespace Stroika::Foundation::Database::SQLite {
         /**
          */
         Statement () = delete;
-        Statement (const Connection::Ptr& db, const wchar_t* formatQuery, ...);
+        Statement (const Connection::Ptr& db, const String& query);
         Statement (const Statement&) = delete;
 
     public:

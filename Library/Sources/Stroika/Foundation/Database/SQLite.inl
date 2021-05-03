@@ -156,4 +156,5 @@ namespace Stroika::Foundation::Database::SQLite {
     }
 
 }
+
 #endif /*_Stroika_Foundation_Database_SQLite_inl_*/

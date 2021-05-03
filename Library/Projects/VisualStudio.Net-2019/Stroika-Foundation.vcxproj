@@ -96,6 +96,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Exception.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQLite.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQLUtils.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\7z\Reader.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Reader.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Zip\Reader.cpp" />
@@ -440,6 +441,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQLite.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQLUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\7z\Reader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Reader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Zip\Reader.h" />
@@ -862,6 +864,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Database\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\SQLite.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Database\SQLUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\7z\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Reader.inl" />

@@ -810,6 +810,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\TransferEncoding.cpp">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQLUtils.cpp">
+      <Filter>Sources\Database</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2075,6 +2078,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\Algorithm.h">
       <Filter>Sources\Cryptography\Digest\Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQLUtils.h">
+      <Filter>Sources\Database</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3383,6 +3389,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Common\ObjectForSideEffects.inl">
       <Filter>Sources\Common</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Database\SQLUtils.inl">
+      <Filter>Sources\Database</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

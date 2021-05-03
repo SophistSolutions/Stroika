@@ -89,29 +89,6 @@ namespace {
 }
 #endif
 
-/*
- ********************************************************************************
- ************************* SQLite::QuoteStringForDB *****************************
- ********************************************************************************
- */
-String SQLite::QuoteStringForDB (const String& s)
-{
-    // @todo discuss with John/review sqlite docs
-    if (s.Contains ('\'')) {
-        StringBuilder sb;
-        for (Character c : s) {
-            if (c == '\'') {
-                sb += '\'';
-            }
-            sb += c;
-        }
-        return sb.str ();
-    }
-    else {
-        return s;
-    }
-}
-
 #if qHasFeature_sqlite
 /*
  ********************************************************************************
@@ -310,11 +287,11 @@ String Statement::ParameterDescription::ToString () const
  ******************************* SQLite::Statement ******************************
  ********************************************************************************
  */
-Statement::Statement (const Connection::Ptr& db, const wchar_t* formatQuery, ...)
+Statement::Statement (const Connection::Ptr& db, const String& query)
     : fConnectionPtr_{db}
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{"SQLite::DB::Statement::CTOR"};
+    TraceContextBumper ctx{"SQLite::DB::Statement::CTOR", Stroika_Foundation_Debug_OptionalizeTraceArgs (L "db=%p, query='%s'", db, query.c_str ())};
 #endif
     RequireNotNull (db);
     RequireNotNull (db->Peek ());
@@ -323,16 +300,9 @@ Statement::Statement (const Connection::Ptr& db, const wchar_t* formatQuery, ...
     _fSharedContext = fConnectionPtr_._fSharedContext;
 #endif
 
+    string                                                    queryUTF8 = query.AsUTF8 ();
     lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
-    va_list                                                   argsList;
-    va_start (argsList, formatQuery);
-    String query = Characters::FormatV (formatQuery, argsList);
-    va_end (argsList);
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"(db=%p,query='%s')", db, query.c_str ());
-#endif
-    string      queryUTF8 = query.AsUTF8 ();
-    const char* pzTail    = nullptr;
+    const char*                                               pzTail = nullptr;
     ThrowSQLiteErrorIfNotOK_ (::sqlite3_prepare_v2 (db->Peek (), queryUTF8.c_str (), -1, &fStatementObj_, &pzTail), db->Peek ());
     Assert (pzTail != nullptr);
     if (*pzTail != '\0') {

@@ -21,6 +21,7 @@ vpath %cpp $(SrcDir)
 Objs	=	\
 	$(ObjDir)ODBCClient${OBJ_SUFFIX}\
 	$(ObjDir)SQLite${OBJ_SUFFIX}\
+	$(ObjDir)SQLUtils${OBJ_SUFFIX}\
 
 
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk

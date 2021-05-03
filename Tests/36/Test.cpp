@@ -8,6 +8,7 @@
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Database/SQLite.h"
+#include "Stroika/Foundation/Database/SQLUtils.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/IO/FileSystem/FileSystem.h"
 #include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
@@ -111,13 +112,13 @@ namespace {
                             sb += L"'" + ScanEnd.AsUTC ().Format (DateTime::kISO8601Format) + L"',";
                             sb += Characters::Format (L"%d", scanKind) + L",";
                             if (rawSpectrum) {
-                                sb += L"'" + Database::SQLite::QuoteStringForDB (L"SomeLongASCIIStringS\r\r\n\t'omeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString") + L"',";
+                                sb += L"'" + Database::SQLUtils::QuoteStringForDB (L"SomeLongASCIIStringS\r\r\n\t'omeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString") + L"',";
                             }
                             else {
                                 sb += L"NULL,";
                             }
                             if (ScanLabel) {
-                                sb += L"'" + Database::SQLite::QuoteStringForDB (*ScanLabel) + L"'";
+                                sb += L"'" + Database::SQLUtils::QuoteStringForDB (*ScanLabel) + L"'";
                             }
                             else {
                                 sb += L"NULL";
@@ -140,7 +141,7 @@ namespace {
                 }
                 nonvirtual optional<ScanIDType_> GetLastScan_Explicit_ (ScanKindType_ scanKind)
                 {
-                    Statement s{fDB_, L"select MAX(ScanId) from Scans where  ScanTypeIDRef='%d';", scanKind};
+                    Statement s{fDB_, Characters::Format (L"select MAX(ScanId) from Scans where  ScanTypeIDRef='%d';", scanKind)};
                     DbgTrace (L"Statement: %s", Characters::ToString (s).c_str ());
                     if (optional<Statement::Row> r = s.GetNextRow ()) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
