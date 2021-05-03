@@ -38,7 +38,6 @@ namespace Stroika::Foundation::Characters {
 }
 namespace Stroika::Foundation::Memory {
     class BLOB;
-
 }
 
 namespace Stroika::Foundation::Streams {
