@@ -5,6 +5,9 @@
 
 #include <cstdlib>
 
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Containers/Set.h"
+
 #if qHasFeature_sqlite
 #include "Stroika/Foundation/Database/SQLite.h"
 #endif
@@ -12,6 +15,8 @@
 using namespace std;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Database;
 
 namespace {
@@ -103,9 +108,9 @@ namespace {
             {L":ADDRESS", L"Houston"},
             {L":SALARY", 10000.00},
         });
-        Statement        getAllNames{conn, L"Select NAME from COMPANY;"};
-        Sequence<String> allNames = getAllNames.GetAllRows (0).Select<String> ([] (VariantValue v) { return v.As<String> (); }).As<Sequence<String>> ();
-        Assert (allNames.length () == 7 and allNames[6] == L"James");
+        Statement   getAllNames{conn, L"Select NAME from COMPANY;"};
+        Set<String> allNames = getAllNames.GetAllRows (0).Select<String> ([] (VariantValue v) { return v.As<String> (); }).As<Set<String>> ();
+        Assert ((allNames == Set<String>{L"Paul", L"Allen", L"Kim", L"David", L"Mark", L"James", L"Teddy"}));
 #endif
     }
 }
