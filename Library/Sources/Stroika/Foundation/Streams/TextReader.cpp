@@ -186,7 +186,7 @@ protected:
     SeekOffsetType _fOffset;
 };
 
-class TextReader::UnseekableBinaryStreamRep_ : public FromBinaryStreamBaseRep_ {
+class TextReader::UnseekableBinaryStreamRep_ final : public FromBinaryStreamBaseRep_ {
     using inherited = FromBinaryStreamBaseRep_;
 
 public:
@@ -196,7 +196,7 @@ public:
     }
 };
 
-class TextReader::CachingSeekableBinaryStreamRep_ : public FromBinaryStreamBaseRep_ {
+class TextReader::CachingSeekableBinaryStreamRep_ final : public FromBinaryStreamBaseRep_ {
     using inherited = FromBinaryStreamBaseRep_;
 
 public:
@@ -343,7 +343,7 @@ private:
     SmallStackBuffer<wchar_t> fCache_; // Cache uses wchar_t instead of Character so can use resize_uninitialized () - requires is_trivially_constructible
 };
 
-class TextReader::IterableAdapterStreamRep_ : public InputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedLock {
+class TextReader::IterableAdapterStreamRep_ final : public InputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedLock {
 public:
     IterableAdapterStreamRep_ (const Traversal::Iterable<Character>& src)
         : fSource_{src}

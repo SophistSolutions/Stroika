@@ -321,6 +321,6 @@ InputStream<byte>::Ptr FileInputStream::New (FileDescriptorType fd, AdoptFDPolic
  ********************************************************************************
  */
 IO::FileSystem::FileInputStream::Ptr::Ptr (const shared_ptr<Rep_>& from)
-    : inherited (from)
+    : inherited{from}
 {
 }

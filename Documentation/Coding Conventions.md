@@ -377,6 +377,12 @@ namespace {
 
 ---
 
+## class/method Final
+
+- It does very little good (helps optimization sometimes but also can needlessly limit programmer options later)
+- It CAN serve as a bit of DOCUMENTATION about what is intended to be extended or not (but unfortunately its not a good fit for this because you cannot say 'generally intended not to subclass' - just 'may not').
+- So – Stroika use of final is haphazard – used when its clearly not going to be extended in CASE it might help performance, but rarely otherwise).
+
 ## Final Singleton objects (kThe, Get, Set)
 
 Singleton objects are a common pattern. Stroika doesn't use these a ton, but some. One issue with singletons to be careful about is thread safety. Stroika leverages a couple of patterns to handle this.

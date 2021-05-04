@@ -42,7 +42,7 @@ namespace {
     // note - we use UseBlockAllocationIfAppropriate iff kIterableUsesStroikaSharedPtr because SharedPtr separately allocates
     // counter and counted object. So we benefit from blockallocation on T. But if using shared_ptr, this uses make_shared that already combines the counter and
     // the shared object...
-    class String_BufferedArray_Rep_
+    class String_BufferedArray_Rep_ final
         : public Concrete::Private::BufferedStringRep::_Rep,
           public conditional_t<Traversal::kIterableUsesStroikaSharedPtr, Memory::UseBlockAllocationIfAppropriate<String_BufferedArray_Rep_>, Configuration::Empty> {
 
@@ -102,7 +102,7 @@ namespace   {
 
 namespace {
     template <typename FACET>
-    struct deletable_facet_ : FACET {
+    struct deletable_facet_ final : FACET {
         template <typename... Args>
         deletable_facet_ (Args&&... args)
             : FACET (forward<Args> (args)...)
@@ -129,7 +129,7 @@ const wregex& Characters::Private_::RegularExpression_GetCompiled (const Regular
  */
 Traversal::Iterator<Character> String::_IRep::MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const
 {
-    struct MyIterRep_ : Iterator<Character>::IRep, public Memory::UseBlockAllocationIfAppropriate<MyIterRep_> {
+    struct MyIterRep_ final : Iterator<Character>::IRep, public Memory::UseBlockAllocationIfAppropriate<MyIterRep_> {
         _SharedPtrIRep fStr; // effectively RO, since if anyone modifies, our copy will remain unchanged
         size_t         fCurIdx;
         MyIterRep_ (const _SharedPtrIRep& r, size_t idx = 0)
@@ -178,7 +178,7 @@ Traversal::Iterator<Character> String::_IRep::MakeIterator ([[maybe_unused]] Ite
 #endif
     // Because of 'Design Choice - Iterable<T> / Iterator<T> behavior' in String class docs - we
     // ignore suggested IteratorOwnerID - which explains the arg to Clone () below
-    return Iterator<Character> (Iterator<Character>::MakeSmartPtr<MyIterRep_> (sharedContainerRep));
+    return Iterator<Character>{Iterator<Character>::MakeSmartPtr<MyIterRep_> (sharedContainerRep)};
 }
 
 size_t String::_IRep::GetLength () const

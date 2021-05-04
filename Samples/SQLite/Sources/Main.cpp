@@ -24,6 +24,9 @@ namespace {
     {
 #if qHasFeature_sqlite
         using namespace SQLite;
+        /*
+         ***** SETUP SCHEMA ****
+         */
         // Example roughly from https://www.tutorialspoint.com/sqlite/sqlite_insert_query.htm
         auto initializeDB = [] (const Connection::Ptr& c) {
             c.Exec (
@@ -42,6 +45,9 @@ namespace {
         };
         auto dbPath = filesystem::current_path () / "testdb.db";
         (void)std::filesystem::remove (dbPath);
+        /*
+         ***** CONNECT TO DATABASE ****
+         */
 #if __cpp_designated_initializers
         Connection::Ptr conn = Connection::New (Options{.fDBPath = dbPath}, initializeDB);
 #else
@@ -58,6 +64,9 @@ namespace {
             6           Kim         22          South-Hall  45000.0
             7           James       24          Houston     10000.0
         */
+        /*
+         ***** INSERT ROWS ****
+         */
         Statement addCompanyStatement{conn, L"INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY) values (:ID, :NAME, :AGE, :ADDRESS, :SALARY);"};
         addCompanyStatement.Execute (initializer_list<Statement::ParameterDescription>{
             {L":ID", 1},
@@ -108,7 +117,10 @@ namespace {
             {L":ADDRESS", L"Houston"},
             {L":SALARY", 10000.00},
         });
-        #if 0
+/*
+         ***** INSERT ROWS (ERROR CHECKING) ****
+         */
+#if 0
             // This call will generate a REQUIRE assertion error - terminating your program. Don't violate assertions!
             addCompanyStatement.Execute (initializer_list<Statement::ParameterDescription>{
                 {L":BAD-ARGUMENT", 7},
@@ -118,7 +130,7 @@ namespace {
                 {L":SALARY", 10000.00},
             });
             AssertNotReached ();
-        #endif
+#endif
         try {
             addCompanyStatement.Execute (initializer_list<Statement::ParameterDescription>{
                 {L":ID", 7},
@@ -127,12 +139,15 @@ namespace {
                 {L":ADDRESS", L"Houston"},
                 {L":SALARY", 10000.00},
             });
-            AssertNotReached ();    // RE-USED ID!!! - only detectable at runtime - so exception thrown
+            AssertNotReached (); // RE-USED ID!!! - only detectable at runtime - so exception thrown
         }
         catch (...) {
-            DbgTrace (L"Note good error message: %s", Characters::ToString (current_exception ()).c_str ());    // silently ignore this here...
+            DbgTrace (L"Note good error message: %s", Characters::ToString (current_exception ()).c_str ()); // silently ignore this here...
         }
 
+        /*
+         ***** SIMPLE QUERIES ****
+         */
         Statement   getAllNames{conn, L"Select NAME from COMPANY;"};
         Set<String> allNames = getAllNames.GetAllRows (0).Select<String> ([] (VariantValue v) { return v.As<String> (); }).As<Set<String>> ();
         Assert ((allNames == Set<String>{L"Paul", L"Allen", L"Kim", L"David", L"Mark", L"James", L"Teddy"}));

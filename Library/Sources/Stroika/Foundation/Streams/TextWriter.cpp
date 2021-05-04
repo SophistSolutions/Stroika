@@ -157,7 +157,7 @@ protected:
     OutputStream<byte>::Ptr _fSource;
 };
 
-class TextWriter::Seekable_UTF8_Rep_ : public UnSeekable_UTF8_Rep_ {
+class TextWriter::Seekable_UTF8_Rep_ final : public UnSeekable_UTF8_Rep_ {
 public:
     Seekable_UTF8_Rep_ (const OutputStream<byte>::Ptr& src, bool useBOM)
         : UnSeekable_UTF8_Rep_{src, useBOM}
@@ -196,7 +196,7 @@ private:
     size_t fOffset_;
 };
 
-class TextWriter::Seekable_WCharT_Rep_ : public UnSeekable_WCharT_Rep_ {
+class TextWriter::Seekable_WCharT_Rep_ final : public UnSeekable_WCharT_Rep_ {
 public:
     Seekable_WCharT_Rep_ (const OutputStream<byte>::Ptr& src, bool useBOM)
         : UnSeekable_WCharT_Rep_{src, useBOM}

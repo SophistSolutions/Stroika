@@ -18,7 +18,7 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE, typename BASE_CLASS, typename BASE_REP_TYPE>
-    class InternallySynchronizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::Rep_ : public BASE_REP_TYPE {
+    class InternallySynchronizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::Rep_ final : public BASE_REP_TYPE {
     public:
         template <typename... ARGS>
         Rep_ (ARGS&&... args)
