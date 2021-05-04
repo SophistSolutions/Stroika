@@ -35,7 +35,7 @@ namespace {
                 L"SALARY         REAL"
                 L");");
             c.Exec (
-                L"CREATE TABLE DEPARTMENT( ID INT PRIMARY KEY NOT NULL,"
+                L"CREATE TABLE DEPARTMENT(ID INT PRIMARY KEY NOT NULL,"
                 L"DEPT CHAR (50) NOT NULL,"
                 L" EMP_ID INT NOT     NULL"
                 L");");
@@ -108,6 +108,30 @@ namespace {
             {L":ADDRESS", L"Houston"},
             {L":SALARY", 10000.00},
         });
+        #if 0
+            // This call will generate a REQUIRE assertion error - terminating your program. Don't violate assertions!
+            addCompanyStatement.Execute (initializer_list<Statement::ParameterDescription>{
+                {L":BAD-ARGUMENT", 7},
+                {L":NAME", L"James"},
+                {L":AGE", 24},
+                {L":ADDRESS", L"Houston"},
+                {L":SALARY", 10000.00},
+            });
+            AssertNotReached ();
+        #endif
+        try {
+            addCompanyStatement.Execute (initializer_list<Statement::ParameterDescription>{
+                {L":ID", 7},
+                {L":NAME", L"James"},
+                {L":AGE", 24},
+                {L":ADDRESS", L"Houston"},
+                {L":SALARY", 10000.00},
+            });
+            AssertNotReached ();    // RE-USED ID!!! - only detectable at runtime - so exception thrown
+        }
+        catch (...) {
+            DbgTrace (L"Note good error message: %s", Characters::ToString (current_exception ()).c_str ());    // silently ignore this here...
+        }
 
         Statement   getAllNames{conn, L"Select NAME from COMPANY;"};
         Set<String> allNames = getAllNames.GetAllRows (0).Select<String> ([] (VariantValue v) { return v.As<String> (); }).As<Set<String>> ();
