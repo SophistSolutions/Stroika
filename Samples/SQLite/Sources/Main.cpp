@@ -152,10 +152,10 @@ namespace {
         Set<String> allNames = getAllNames.GetAllRows (0).Select<String> ([] (VariantValue v) { return v.As<String> (); }).As<Set<String>> ();
         Assert ((allNames == Set<String>{L"Paul", L"Allen", L"Kim", L"David", L"Mark", L"James", L"Teddy"}));
 
-        Statement sumAllSalarys{conn, L"select SUM(SALARY) from COMPANY;"};
-        [[maybe_unused]]double    sumSalaryUsingSQL = sumAllSalarys.GetAllRows (0)[0].As<double> ();
-        Statement getAllSalarys{conn, L"select SALARY from COMPANY;"};
-        [[maybe_unused]] double   sumSalaryUsingIterableApply = getAllSalarys.GetAllRows (0).Select<double> ([] (VariantValue v) { return v.As<double> (); }).SumValue ();
+        Statement               sumAllSalarys{conn, L"select SUM(SALARY) from COMPANY;"};
+        [[maybe_unused]] double sumSalaryUsingSQL = sumAllSalarys.GetAllRows (0)[0].As<double> ();
+        Statement               getAllSalarys{conn, L"select SALARY from COMPANY;"};
+        [[maybe_unused]] double sumSalaryUsingIterableApply = getAllSalarys.GetAllRows (0).Select<double> ([] (VariantValue v) { return v.As<double> (); }).SumValue ();
         Assert (Math::NearlyEquals (sumSalaryUsingSQL, sumSalaryUsingIterableApply));
 #endif
     }
