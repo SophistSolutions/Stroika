@@ -141,6 +141,10 @@ namespace Stroika::Foundation::Memory {
     {
         return Hex (s.c_str ());
     }
+    inline BLOB BLOB::Hex (const string_view& s)
+    {
+        return Hex (s.data (), s.data () + s.length ());
+    }
     template <typename T, enable_if_t<is_trivially_copyable_v<T>>*>
     inline BLOB BLOB::Raw (const T* s, const T* e)
     {

@@ -131,6 +131,7 @@ namespace Stroika::Foundation::Memory {
         static BLOB Hex (const char* b);
         static BLOB Hex (const char* s, const char* e);
         static BLOB Hex (const string& s);
+        static BLOB Hex (const string_view& s);
 
     public:
         /**
