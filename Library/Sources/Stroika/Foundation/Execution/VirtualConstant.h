@@ -21,6 +21,9 @@ namespace Stroika::Foundation::Execution {
      *
      *  Allow use of regular constant declaration use when we have
      *  an underlying system where the constant is actually FETECHED from the argument function.
+     * 
+     *  \note - this one-time-computed constant value is then CACHED (so re-used), and called LAZILY, so you can count on
+     *          it not being called until the data is first required.
      *
      *  This doesn't work perfectly (e.g. see below about operator.) - but its pretty usable.
      * 
@@ -63,7 +66,7 @@ namespace Stroika::Foundation::Execution {
      *          apply () after the VirtualConstant<> instance.
      *
      *  \note   constexpr VirtualConstant<> not yet supported, but hopefully will be soon. In the meantime,
-     *          strongly suggested to use inline const variable declarations.
+     *          it is suggested to use inline const variable declarations.
      *  
      *  TODO:
      *      @todo   See https://stackoverflow.com/questions/53977787/constexpr-version-of-stdfunction - and
@@ -80,6 +83,7 @@ namespace Stroika::Foundation::Execution {
         template <typename F>
         constexpr VirtualConstant (F oneTimeGetter);
         VirtualConstant& operator= (const VirtualConstant&) = delete;
+        ~VirtualConstant ()                                 = default;
 
         /**
          *  A virtual constant can be automatically assigned to its underlying base type.
