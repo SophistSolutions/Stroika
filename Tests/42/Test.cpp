@@ -153,6 +153,14 @@ namespace {
                     const int a [[maybe_unused]] = kX;
                 }
             }
+            namespace T4_ {
+                const Execution::VirtualConstant<int> kX = [] () { return 4; };
+                void                                  DoIt ()
+                {
+                    const int a [[maybe_unused]] = kX;
+                    VerifyTestResult (a == 4); // Before Stroika 2.1b12 there was a bug that VirtualConstant stored teh constant in a static variable not data member!
+                }
+            }
         }
         void DoAll ()
         {
