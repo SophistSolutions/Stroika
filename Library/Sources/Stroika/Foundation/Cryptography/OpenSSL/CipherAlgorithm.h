@@ -52,6 +52,16 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         eAES_256_CFB8,
         eAES_256_CFB128,
 
+        /*
+         * NB: In OpenSSL v3, the algorithms:
+         *  o   eBlowfish
+         *  o   eRC2,
+         *  o   eRC4,
+         *  o   (and others listed in https://wiki.openssl.org/index.php/OpenSSL_3.0 but we never supported them before)
+         * are only available in the LEGACY provider, and it is not recommended to use, so dont make that easy
+         * from Stroika. By default just assume default provider is in use.
+         *  @see https://stroika.atlassian.net/browse/STK-735
+         */
         eBlowfish_CBC,
         eBlowfish = eBlowfish_CBC,
         eBlowfish_ECB,
@@ -65,8 +75,18 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
 
         eRC4,
 
+        eStartInDefaultProvider = eAES_128_CBC,
+        eEndInDefaultProvider   = eBlowfish_CBC,
+
         Stroika_Define_Enum_Bounds (eAES_128_CBC, eRC4)
     };
+#endif
+
+#if qHasFeature_OpenSSL
+    inline bool IsAlgorithmSupported (CipherAlgorithm ci)
+    {
+        return CipherAlgorithm::eStartInDefaultProvider <= ci and ci < CipherAlgorithm::eEndInDefaultProvider;
+    }
 #endif
 
 #if qHasFeature_OpenSSL

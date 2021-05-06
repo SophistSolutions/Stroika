@@ -502,7 +502,7 @@ namespace {
 
             for (BLOB passphrase : kPassphrases_) {
                 for (BLOB inputMessage : kTestMessages_) {
-                    for (CipherAlgorithm ci = CipherAlgorithm::eSTART; ci != CipherAlgorithm::eEND; ci = Configuration::Inc (ci)) {
+                    for (CipherAlgorithm ci = CipherAlgorithm::eStartInDefaultProvider; ci != CipherAlgorithm::eEndInDefaultProvider; ci = Configuration::Inc (ci)) {
                         for (DigestAlgorithm di = DigestAlgorithm::eSTART; di != DigestAlgorithm::eEND; di = Configuration::Inc (di)) {
                             try {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -594,14 +594,16 @@ namespace {
             using namespace Stroika::Foundation::Cryptography::Encoding;
 
             auto checkNoSalt = [] (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String& password, const BLOB& src, const BLOB& expected) {
-                unsigned int        nRounds = 1; // command-line tool uses this
-                OpenSSLCryptoParams cryptoParams{cipherAlgorithm, OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds}};
-                DbgTrace (L"dk=%s", Characters::ToString (OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds}).c_str ());
-                BLOB encodedData = OpenSSLInputStream::New (cryptoParams, Direction::eEncrypt, src.As<Streams::InputStream<byte>::Ptr> ()).ReadAll ();
-                BLOB decodedData = OpenSSLInputStream::New (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::InputStream<byte>::Ptr> ()).ReadAll ();
-                DbgTrace (L"src=%s; encodedData=%s; expected=%s; decodedData=%s", Characters::ToString (src).c_str (), Characters::ToString (encodedData).c_str (), Characters::ToString (expected).c_str (), Characters::ToString (decodedData).c_str ());
-                VerifyTestResult (encodedData == expected);
-                VerifyTestResult (src == decodedData);
+                if (IsAlgorithmSupported (cipherAlgorithm)) {
+                    unsigned int        nRounds = 1; // command-line tool uses this
+                    OpenSSLCryptoParams cryptoParams{cipherAlgorithm, OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds}};
+                    DbgTrace (L"dk=%s", Characters::ToString (OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds}).c_str ());
+                    BLOB encodedData = OpenSSLInputStream::New (cryptoParams, Direction::eEncrypt, src.As<Streams::InputStream<byte>::Ptr> ()).ReadAll ();
+                    BLOB decodedData = OpenSSLInputStream::New (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::InputStream<byte>::Ptr> ()).ReadAll ();
+                    DbgTrace (L"src=%s; encodedData=%s; expected=%s; decodedData=%s", Characters::ToString (src).c_str (), Characters::ToString (encodedData).c_str (), Characters::ToString (expected).c_str (), Characters::ToString (decodedData).c_str ());
+                    VerifyTestResult (encodedData == expected);
+                    VerifyTestResult (src == decodedData);
+                }
             };
 
             //  echo apples and pears| od -t x1 --width=64
@@ -624,13 +626,13 @@ namespace {
             //      hi mom
             //  echo hi mom| openssl bf -md md5 -k aaa -nosalt | od -t x1 --width=64
             //      0000000 29 14 4a db 4e ce 20 45 09 56 e8 13 65 2f e8 d6
-            checkNoSalt (CipherAlgorithm::eBlowfish, DigestAlgorithm::eMD5, L"aaa", BLOB::Hex ("68 69 20 6d 6f 6d 0d 0a"), BLOB::Hex ("29 14 4a db 4e ce 20 45 09 56 e8 13 65 2f e8 d6"));
+            checkNoSalt (CipherAlgorithm::eBlowfish, DigestAlgorithm::eMD5, L"aaa", BLOB::Hex ("68 69 20 6d 6f 6d 0d 0a"), BLOB::Hex ("29 14 4a db 4e ce 20 45 09 56 e8 13 65 2f e8 d6"sv));
 
             //  echo hi mom| od -t x1 --width=64
             //      0000000 68 69 20 6d 6f 6d 0d 0a
             //   echo hi mom| openssl aes-128-cbc -md md5 -k aaa -nosalt | od -t x1 --width=64
             //      0000000 6b 95 c9 eb 68 5e c3 7f 4f e4 86 99 55 1d 05 53
-            checkNoSalt (CipherAlgorithm::eAES_128_CBC, DigestAlgorithm::eMD5, L"aaa", BLOB::Hex ("68 69 20 6d 6f 6d 0d 0a"), BLOB::Hex ("6b 95 c9 eb 68 5e c3 7f 4f e4 86 99 55 1d 05 53"));
+            checkNoSalt (CipherAlgorithm::eAES_128_CBC, DigestAlgorithm::eMD5, L"aaa", BLOB::Hex ("68 69 20 6d 6f 6d 0d 0a"sv), BLOB::Hex ("6b 95 c9 eb 68 5e c3 7f 4f e4 86 99 55 1d 05 53"));
 #endif
         }
     }

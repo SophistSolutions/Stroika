@@ -101,7 +101,7 @@ void Exception::ThrowLastErrorIfFailed (int status)
 
 void Exception::ThrowLastError ()
 {
-    Execution::Throw (Exception (ERR_get_error ()));
+    Execution::Throw (Exception{ERR_get_error ()});
 }
 
 bool Exception::GetNamesSupported ()
