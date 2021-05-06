@@ -41,10 +41,9 @@ namespace Stroika::Foundation::Execution {
     template <typename T>
     const inline T& VirtualConstant<T>::Getter_ () const
     {
-        // Subtle, but C++ guarantees this will be (ODR) created just ONCE per executable, and so called/initialized
-        // just once, and all copies of the VirtualConstant will share the same value;
-        static const T kCachedValue_ = fOneTimeGetter_ ();
-        return kCachedValue_;
+        std::call_once (fValueInitialized_, [&] () { fCachedValue_ = fOneTimeGetter_ (); });
+        Ensure (fCachedValue_.has_value ());
+        return *fCachedValue_;
     }
 
 }

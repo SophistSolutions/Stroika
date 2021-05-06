@@ -7,7 +7,7 @@
 #include "../StroikaPreComp.h"
 
 /**
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  */
 
 namespace Stroika::Foundation::Execution {
@@ -23,7 +23,8 @@ namespace Stroika::Foundation::Execution {
      *  an underlying system where the constant is actually FETECHED from the argument function.
      * 
      *  \note - this one-time-computed constant value is then CACHED (so re-used), and called LAZILY, so you can count on
-     *          it not being called until the data is first required.
+     *          it not being called until the data is first required. This requires a little extra space, but is
+     *          always desirable (lazy compute) because otherwise you would use const T, instead of const VirtualConstant<T>.
      *
      *  This doesn't work perfectly (e.g. see below about operator.) - but its pretty usable.
      * 
@@ -71,7 +72,10 @@ namespace Stroika::Foundation::Execution {
      *  TODO:
      *      @todo   See https://stackoverflow.com/questions/53977787/constexpr-version-of-stdfunction - and
      *              get constexpr version of VirtualConstant working
-     *          
+     * 
+     *      @todo   Using optional<> and fValueInitialized_ (once_flag) is REDUNDANT, and wasteful of space.
+     *              But re-using these APIs is tricky without keeping both 'flags'. Probably just store in byte array
+     *              (re-implementing parts of Optional) - and do right magic destruct/etc...
      */
     template <typename T>
     struct VirtualConstant {
@@ -82,8 +86,14 @@ namespace Stroika::Foundation::Execution {
         VirtualConstant () = delete;
         template <typename F>
         constexpr VirtualConstant (F oneTimeGetter);
+
+        /**
+         */
         VirtualConstant& operator= (const VirtualConstant&) = delete;
-        ~VirtualConstant ()                                 = default;
+
+        /**
+         */
+        ~VirtualConstant () = default;
 
         /**
          *  A virtual constant can be automatically assigned to its underlying base type.
@@ -120,6 +130,8 @@ namespace Stroika::Foundation::Execution {
 
     private:
         const function<T ()> fOneTimeGetter_;
+        mutable optional<T>  fCachedValue_;
+        mutable once_flag    fValueInitialized_;
         const T&             Getter_ () const;
     };
 

@@ -142,6 +142,7 @@ namespace {
                 void                                     DoIt ()
                 {
                     const String a = kX;
+                    VerifyTestResult (a == L"6"); // Before Stroika 2.1b12 there was a bug that VirtualConstant stored teh constant in a static variable not data member!
                 }
             }
             namespace T3_ {
