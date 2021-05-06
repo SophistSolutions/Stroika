@@ -41,7 +41,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T>
     const inline T& VirtualConstant<T>::Getter_ () const
     {
-        std::call_once (fValueInitialized_, [&] () { fCachedValue_ = fOneTimeGetter_ (); });
+        call_once (fValueInitialized_, [&] () { fCachedValue_ = fOneTimeGetter_ (); });
         Ensure (fCachedValue_.has_value ());
         return *fCachedValue_;
     }

@@ -75,7 +75,7 @@ namespace {
 #if OPENSSL_VERSION_NUMBER >= 0x1010000fL
         ~FakeCryptoAlgo_ ()
         {
-            EVP_CIPHER_meth_free (tmpCipher);
+            ::EVP_CIPHER_meth_free (tmpCipher);
         }
 #endif
         operator const EVP_CIPHER* () const
@@ -98,23 +98,11 @@ namespace {
  */
 size_t DerivedKey::KeyLength (CipherAlgorithm cipherAlgorithm)
 {
-    return ::EVP_CIPHER_key_length (Convert2OpenSSL (cipherAlgorithm));
-}
-
-size_t DerivedKey::KeyLength (const EVP_CIPHER* cipherAlgorithm)
-{
-    RequireNotNull (cipherAlgorithm);
     return ::EVP_CIPHER_key_length (cipherAlgorithm);
 }
 
 size_t DerivedKey::IVLength (CipherAlgorithm cipherAlgorithm)
 {
-    return ::EVP_CIPHER_iv_length (Convert2OpenSSL (cipherAlgorithm));
-}
-
-size_t DerivedKey::IVLength (const EVP_CIPHER* cipherAlgorithm)
-{
-    RequireNotNull (cipherAlgorithm);
     return ::EVP_CIPHER_iv_length (cipherAlgorithm);
 }
 
@@ -189,30 +177,20 @@ namespace {
 
         switch (provider) {
             case WinCryptDeriveKey::Provider::Base: {
-                switch (cipherAlgorithm) {
-                    case CipherAlgorithm::eRC2_CBC:
-                    case CipherAlgorithm::eRC2_CFB:
-                    case CipherAlgorithm::eRC2_ECB:
-                    case CipherAlgorithm::eRC2_OFB:
-                    case CipherAlgorithm::eRC4: {
-                        return 40 / 8;
-                    }
+                if (
+                    cipherAlgorithm == CipherAlgorithms::kRC2_CBC () or cipherAlgorithm == CipherAlgorithms::kRC2_CFB () or cipherAlgorithm == CipherAlgorithms::kRC2_ECB () or cipherAlgorithm == CipherAlgorithms::kRC2_OFB () or cipherAlgorithm == CipherAlgorithms::kRC4 ()) {
+                    return 40 / 8;
+                }
 #if 0
                         case    CipherAlgorithm::eDES {
                                 return 56 / 8;
                             }
 #endif
-                }
             } break;
             case WinCryptDeriveKey::Provider::Enhanced: {
-                switch (cipherAlgorithm) {
-                    case CipherAlgorithm::eRC2_CBC:
-                    case CipherAlgorithm::eRC2_CFB:
-                    case CipherAlgorithm::eRC2_ECB:
-                    case CipherAlgorithm::eRC2_OFB:
-                    case CipherAlgorithm::eRC4: {
-                        return 128 / 8;
-                    }
+                if (
+                    cipherAlgorithm == CipherAlgorithms::kRC2_CBC () or cipherAlgorithm == CipherAlgorithms::kRC2_CFB () or cipherAlgorithm == CipherAlgorithms::kRC2_ECB () or cipherAlgorithm == CipherAlgorithms::kRC2_OFB () or cipherAlgorithm == CipherAlgorithms::kRC4 ()) {
+                    return 128 / 8;
                 }
             } break;
         }

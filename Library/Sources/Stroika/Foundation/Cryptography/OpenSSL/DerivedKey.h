@@ -82,12 +82,10 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         /**
          */
         static size_t KeyLength (CipherAlgorithm cipherAlgorithm);
-        static size_t KeyLength (const EVP_CIPHER* cipherAlgorithm);
 
         /**
          */
         static size_t IVLength (CipherAlgorithm cipherAlgorithm);
-        static size_t IVLength (const EVP_CIPHER* cipherAlgorithm);
     };
 #if __cpp_impl_three_way_comparison < 201907
     bool operator== (const DerivedKey& lhs, const DerivedKey& rhs);

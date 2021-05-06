@@ -343,40 +343,15 @@ namespace {
 
 OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, const BLOB& key, const BLOB& initialIV)
 {
-    bool nopad = false;
-    switch (alg) {
-        case CipherAlgorithm::eRC2_CBC: {
-            fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX* ctx, Direction d) {
-                ApplySettings2CTX_ (ctx, ::EVP_rc2_cbc (), d, nopad, true, key, initialIV);
-            };
-        } break;
-        case CipherAlgorithm::eRC2_ECB: {
-            fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX* ctx, Direction d) {
-                ApplySettings2CTX_ (ctx, ::EVP_rc2_ecb (), d, nopad, true, key, initialIV);
-            };
-        } break;
-        case CipherAlgorithm::eRC2_CFB: {
-            fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX* ctx, Direction d) {
-                ApplySettings2CTX_ (ctx, ::EVP_rc2_cfb (), d, nopad, true, key, initialIV);
-            };
-        } break;
-        case CipherAlgorithm::eRC2_OFB: {
-            fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX* ctx, Direction d) {
-                ApplySettings2CTX_ (ctx, ::EVP_rc2_ofb (), d, nopad, true, key, initialIV);
-            };
-        } break;
-        case CipherAlgorithm::eRC4: {
-            fInitializer = [nopad, key, initialIV] (EVP_CIPHER_CTX* ctx, Direction d) {
-                ApplySettings2CTX_ (ctx, ::EVP_rc4 (), d, nopad, true, key, initialIV);
-            };
-        } break;
-        default: {
-            fInitializer = [alg, nopad, key, initialIV] (EVP_CIPHER_CTX* ctx, Direction d) {
-                ApplySettings2CTX_ (ctx, Convert2OpenSSL (alg), d, nopad, false, key, initialIV);
-            };
-            break;
-        }
+    using namespace OpenSSL;
+    bool nopad                = false;
+    bool useArgumentKeyLength = false;
+    if (alg == CipherAlgorithms::kRC2_CBC () or alg == CipherAlgorithms::kRC2_ECB () or alg == CipherAlgorithms::kRC2_CFB () or alg == CipherAlgorithms::kRC2_OFB () or alg == CipherAlgorithms::kRC4 ()) {
+        useArgumentKeyLength = true;
     }
+    fInitializer = [=] (EVP_CIPHER_CTX* ctx, Direction d) {
+        ApplySettings2CTX_ (ctx, alg, d, nopad, useArgumentKeyLength, key, initialIV);
+    };
 }
 
 OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, const DerivedKey& derivedKey)

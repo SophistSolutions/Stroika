@@ -572,6 +572,27 @@ INTERNAL COMPILER ERROR in 'C:\Program Files (x86)\Microsoft Visual Studio\2019\
 #endif
 #endif
 
+/**
+1>   Compiling Library/Sources/Stroika/Foundation/Cryptography/OpenSSL/CipherAlgorithm.cpp ...
+1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Cryptography\OpenSSL\CipherAlgorithm.cpp(89): fatal error C1001: Internal compiler error.
+1>(compiler file 'msc1.cpp', line 1588)
+1> To work around this problem, try simplifying or changing the program near the locations listed above.
+1>If possible please provide a repro here: https://developercommunity.visualstudio.com
+1>Please choose the Technical Support command on the Visual C++
+1> Help menu, or open the Technical Support help file for more information
+1>INTERNAL COMPILER ERROR in 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\bin\HostX64\x86\cl.exe'
+1>    Please choose the Technical Support command on the Visual C++
+1>    Help menu, or open the Technical Support help file for more information
+ */
+#ifndef qCompilerAndStdLib_const_extern_declare_then_const_define_namespace_Buggy
+#if defined(_MSC_VER)
+// First broken in _MSC_VER_2k19_16Pt8_
+#define qCompilerAndStdLib_const_extern_declare_then_const_define_namespace_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER == _MSC_VER_2k19_16Pt8_)
+#else
+#define qCompilerAndStdLib_const_extern_declare_then_const_define_namespace_Buggy 0
+#endif
+#endif
+
 #ifndef qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
 #if defined(_MSC_VER)
 // First broken in _MSC_VER_2k19_16Pt8_

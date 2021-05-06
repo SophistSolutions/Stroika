@@ -21,7 +21,7 @@ using Memory::BLOB;
 namespace {
     OpenSSLCryptoParams cvt_ (const BLOB& key)
     {
-        return OpenSSLCryptoParams (CipherAlgorithm::eRC4, key, BLOB{});
+        return OpenSSLCryptoParams{OpenSSL::CipherAlgorithms::kRC4, key, BLOB{}};
     }
 }
 #endif
