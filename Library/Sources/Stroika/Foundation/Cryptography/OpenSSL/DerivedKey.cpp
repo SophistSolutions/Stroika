@@ -221,12 +221,12 @@ namespace {
     }
 }
 WinCryptDeriveKey::WinCryptDeriveKey (size_t keyLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd)
-    : DerivedKey (mkWinCryptDeriveKey_ (keyLen, digestAlgorithm, passwd))
+    : DerivedKey{mkWinCryptDeriveKey_ (keyLen, digestAlgorithm, passwd)}
 {
 }
 
 WinCryptDeriveKey::WinCryptDeriveKey (Provider provider, CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const BLOB& passwd)
-    : DerivedKey (WinCryptDeriveKey (mkDefKeyLen_ (provider, cipherAlgorithm), digestAlgorithm, passwd))
+    : DerivedKey{WinCryptDeriveKey{mkDefKeyLen_ (provider, cipherAlgorithm), digestAlgorithm, passwd}}
 {
 }
 #endif
@@ -245,7 +245,7 @@ namespace {
         SmallStackBuffer<byte> useIV{SmallStackBufferCommon::eUninitialized, ivLen};
         if (salt and salt->GetSize () != 8) [[UNLIKELY_ATTR]] {
             // Could truncate and fill to adapt to different sized salt...
-            Execution::Throw (Execution::Exception (L"only 8-byte salt with EVP_BytesToKey"sv));
+            Execution::Throw (Execution::Exception{L"only 8-byte salt with EVP_BytesToKey"sv});
         }
         int i = ::EVP_BytesToKey (
             FakeCryptoAlgo_ (keyLen, ivLen),
@@ -260,7 +260,7 @@ namespace {
             Cryptography::OpenSSL::Exception::ThrowLastError ();
         }
         Assert (i == static_cast<int> (keyLen));
-        return pair<BLOB, BLOB> (BLOB (useKey.begin (), useKey.end ()), BLOB (useIV.begin (), useIV.end ()));
+        return pair<BLOB, BLOB>{BLOB{useKey.begin (), useKey.end ()}, BLOB{useIV.begin (), useIV.end ()}};
     }
 }
 template <>
@@ -297,7 +297,7 @@ namespace {
 }
 template <>
 PKCS5_PBKDF2_HMAC::PKCS5_PBKDF2_HMAC (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const optional<BLOB>& salt)
-    : DerivedKey (mkPKCS5_PBKDF2_HMAC_ (keyLen, ivLen, digestAlgorithm, passwd, nRounds, salt))
+    : DerivedKey{mkPKCS5_PBKDF2_HMAC_ (keyLen, ivLen, digestAlgorithm, passwd, nRounds, salt)}
 {
 }
 #endif

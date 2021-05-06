@@ -105,13 +105,8 @@ private:
 
 public:
     Rep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const InputStream<byte>::Ptr& realIn)
-        : InputStream<byte>::_IRep ()
-        , InOutStrmCommon_ (cryptoParams, d)
-        , fCriticalSection_ ()
-        , fOutBuf_ (_GetMinOutBufSize (kInBufSize_))
-        , fOutBufStart_ (nullptr)
-        , fOutBufEnd_ (nullptr)
-        , fRealIn_ (realIn)
+        : InOutStrmCommon_{cryptoParams, d}
+        , fRealIn_{realIn}
     {
     }
     virtual bool IsSeekable () const override
@@ -228,9 +223,9 @@ public:
 
 private:
     mutable recursive_mutex                                            fCriticalSection_;
-    Memory::SmallStackBuffer<byte, kInBufSize_ + EVP_MAX_BLOCK_LENGTH> fOutBuf_;
-    byte*                                                              fOutBufStart_;
-    byte*                                                              fOutBufEnd_;
+    Memory::SmallStackBuffer<byte, kInBufSize_ + EVP_MAX_BLOCK_LENGTH> fOutBuf_{_GetMinOutBufSize (kInBufSize_)};
+    byte*                                                              fOutBufStart_{nullptr};
+    byte*                                                              fOutBufEnd_{nullptr};
     InputStream<byte>::Ptr                                             fRealIn_;
 };
 #endif
@@ -239,10 +234,8 @@ private:
 class OpenSSLOutputStream::Rep_ : public OutputStream<byte>::_IRep, private InOutStrmCommon_ {
 public:
     Rep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const OutputStream<byte>::Ptr& realOut)
-        : OutputStream<byte>::_IRep ()
-        , InOutStrmCommon_ (cryptoParams, d)
-        , fCriticalSection_ ()
-        , fRealOut_ (realOut)
+        : InOutStrmCommon_{cryptoParams, d}
+        , fRealOut_{realOut}
     {
     }
     virtual ~Rep_ ()
@@ -349,7 +342,6 @@ namespace {
 }
 
 OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, const BLOB& key, const BLOB& initialIV)
-    : fInitializer ()
 {
     bool nopad = false;
     switch (alg) {
@@ -388,7 +380,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, const BLOB& key, 
 }
 
 OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, const DerivedKey& derivedKey)
-    : OpenSSLCryptoParams (alg, derivedKey.fKey, derivedKey.fIV)
+    : OpenSSLCryptoParams{alg, derivedKey.fKey, derivedKey.fIV}
 {
 }
 #endif
