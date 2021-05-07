@@ -5,7 +5,9 @@
 
 #if qHasFeature_OpenSSL
 #include <openssl/evp.h>
+#if OPENSSL_VERSION_MAJOR >= 3
 #include <openssl/provider.h>
+#endif
 #endif
 
 #include "../../Debug/Assertions.h"

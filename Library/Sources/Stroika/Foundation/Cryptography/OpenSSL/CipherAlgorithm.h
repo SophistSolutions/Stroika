@@ -20,16 +20,12 @@
 /**
  *  \file
  *
- *  TODO:
- *      @todo   AddLookupByName functions.
- *
- *      @todo   document/enforce thread safety checks
- *
  */
 
 #if qHasFeature_OpenSSL
 namespace Stroika::Foundation::Cryptography::OpenSSL {
 
+    using Characters::String;
     using Containers::Set;
 
     using CipherAlgorithm = const EVP_CIPHER*;
@@ -80,6 +76,13 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         extern const Execution::VirtualConstant<CipherAlgorithm> kRC2_OFB;
         extern const Execution::VirtualConstant<CipherAlgorithm> kRC4;
     }
+
+    /**
+     *  Wrapper on CipherAlgorithm
+     * 
+     *  @see https://linux.die.net/man/3/evp_get_cipherbyname
+     */
+    CipherAlgorithm GetCipherByName (const String& cipherName);
 
     extern const Execution::VirtualConstant<Set<CipherAlgorithm>> kAllCiphers;
     extern const Execution::VirtualConstant<Set<CipherAlgorithm>> kAllLoadedCiphers;

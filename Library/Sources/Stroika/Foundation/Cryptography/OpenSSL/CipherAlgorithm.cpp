@@ -16,6 +16,7 @@
 #include "CipherAlgorithm.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Cryptography;
 using namespace Stroika::Foundation::Cryptography::OpenSSL;
@@ -115,6 +116,19 @@ const Execution::VirtualConstant<CipherAlgorithm> CipherAlgorithms::kRC2_CFB{[] 
 const Execution::VirtualConstant<CipherAlgorithm> CipherAlgorithms::kRC2_OFB{[] () { return ::EVP_rc2_ofb (); }};
 const Execution::VirtualConstant<CipherAlgorithm> CipherAlgorithms::kRC4{[] () { return ::EVP_rc4 (); }};
 #endif
+
+/*
+ ********************************************************************************
+ ****************** Cryptography::OpenSSL::GetCipherByName **********************
+ ********************************************************************************
+ */
+CipherAlgorithm OpenSSL::GetCipherByName (const String& cipherName)
+{
+    static const Execution::RuntimeErrorException kErr_{L"No such cipher"sv};
+    auto p = EVP_get_cipherbyname (cipherName.AsNarrowSDKString ().c_str ());
+    Execution::ThrowIfNull (p, kErr_);
+    return p;
+}
 
 /*
  ********************************************************************************

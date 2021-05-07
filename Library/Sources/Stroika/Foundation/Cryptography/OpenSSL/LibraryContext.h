@@ -18,7 +18,6 @@
 #include "../../Containers/Mapping.h"
 #include "../../Debug/AssertExternallySynchronizedLock.h"
 
-
 /**
  *  \file
  *
