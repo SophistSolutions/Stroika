@@ -94,6 +94,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DerivedKey.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DigestAlgorithm.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Exception.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\LibraryContext.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQLite.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQLUtils.cpp" />
@@ -436,6 +437,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DerivedKey.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DigestAlgorithm.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Exception.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\LibraryContext.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ClientContext.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.h" />
@@ -859,6 +861,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\CipherAlgorithm.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DerivedKey.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Exception.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\LibraryContext.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\Makefile" />

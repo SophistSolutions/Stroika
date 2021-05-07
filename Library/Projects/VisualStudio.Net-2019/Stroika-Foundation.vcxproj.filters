@@ -813,6 +813,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQLUtils.cpp">
       <Filter>Sources\Database</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\LibraryContext.cpp">
+      <Filter>Sources\Cryptography\OpenSSL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2081,6 +2084,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQLUtils.h">
       <Filter>Sources\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\LibraryContext.h">
+      <Filter>Sources\Cryptography\OpenSSL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3394,6 +3400,9 @@
       <Filter>Sources\Database</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\CipherAlgorithm.inl">
+      <Filter>Sources\Cryptography\OpenSSL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\LibraryContext.inl">
       <Filter>Sources\Cryptography\OpenSSL</Filter>
     </None>
   </ItemGroup>

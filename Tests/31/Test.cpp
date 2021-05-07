@@ -28,6 +28,7 @@
 #include "Stroika/Foundation/Cryptography/Encoding/Algorithm/RC4.h"
 #include "Stroika/Foundation/Cryptography/Encoding/OpenSSLCryptoStream.h"
 #include "Stroika/Foundation/Cryptography/Format.h"
+#include "Stroika/Foundation/Cryptography/OpenSSL/LibraryContext.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/IO/Network/InternetAddress.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
@@ -502,17 +503,20 @@ namespace {
 
             for (BLOB passphrase : kPassphrases_) {
                 for (BLOB inputMessage : kTestMessages_) {
-                    for (CipherAlgorithm ci : OpenSSL::kAllLoadedCiphers ()) {
-                        for (DigestAlgorithm di = DigestAlgorithm::eSTART; di != DigestAlgorithm::eEND; di = Configuration::Inc (di)) {
-                            try {
+                    for (int provider = 0; provider < 2; provider++) {
+                        OpenSSL::LibraryContext::TemporarilyAddProvider providerAdder{&OpenSSL::LibraryContext::sDefault, provider == 0 ? OpenSSL::LibraryContext::kDefaultProvider : OpenSSL::LibraryContext::kLegacyProvider};
+                        for (CipherAlgorithm ci : OpenSSL::kAllLoadedCiphers ()) {
+                            for (DigestAlgorithm di = DigestAlgorithm::eSTART; di != DigestAlgorithm::eEND; di = Configuration::Inc (di)) {
+                                try {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                                Debug::TraceContextBumper ctx{L"roundtriptesting", L"ci=%s, di=%s", Characters::ToString (ci).c_str (), Characters::ToString (di).c_str ()};
+                                    Debug::TraceContextBumper ctx{L"roundtriptesting", L"ci=%s, di=%s", Characters::ToString (ci).c_str (), Characters::ToString (di).c_str ()};
 #endif
-                                OpenSSLCryptoParams cryptoParams{ci, OpenSSL::EVP_BytesToKey{ci, di, passphrase}};
-                                roundTripTester_ (cryptoParams, inputMessage);
-                            }
-                            catch (...) {
-                                Stroika::TestHarness::WarnTestIssue (Characters::Format (L"For Test (%s, %s): Ignorning %s", Characters::ToString (ci).c_str (), Characters::ToString (di).c_str (), Characters::ToString (current_exception ()).c_str ()).c_str ());
+                                    OpenSSLCryptoParams cryptoParams{ci, OpenSSL::EVP_BytesToKey{ci, di, passphrase}};
+                                    roundTripTester_ (cryptoParams, inputMessage);
+                                }
+                                catch (...) {
+                                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"For Test (%s, %s): Ignorning %s", Characters::ToString (ci).c_str (), Characters::ToString (di).c_str (), Characters::ToString (current_exception ()).c_str ()).c_str ());
+                                }
                             }
                         }
                     }

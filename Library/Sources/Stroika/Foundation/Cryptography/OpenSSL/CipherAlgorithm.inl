@@ -3,11 +3,13 @@
  */
 #ifndef _Stroika_Foundation_Cryptography_OpenSSL_CipherAlgorithm_inl_
 #define _Stroika_Foundation_Cryptography_OpenSSL_CipherAlgorithm_inl_ 1
+
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+
 namespace Stroika::Foundation::Cryptography::OpenSSL {
 
 #if qHas_OpenSSL
