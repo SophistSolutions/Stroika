@@ -50,8 +50,7 @@ using Memory::BLOB;
 namespace {
     struct InOutStrmCommon_ {
         InOutStrmCommon_ (const OpenSSLCryptoParams& cryptoParams, Direction d)
-            : fCTX_ (::EVP_CIPHER_CTX_new ())
-            , fFinalCalled_ (false)
+            : fCTX_{::EVP_CIPHER_CTX_new ()}
         {
             ::EVP_CIPHER_CTX_init (fCTX_);
             cryptoParams.fInitializer (fCTX_, d);
@@ -92,8 +91,8 @@ namespace {
             Ensure (outLen <= (outBufEnd - outBufStart));
             return size_t (outLen);
         }
-        EVP_CIPHER_CTX* fCTX_;
-        bool            fFinalCalled_;
+        EVP_CIPHER_CTX* fCTX_{nullptr};
+        bool            fFinalCalled_{false};
     };
 }
 #endif
@@ -319,8 +318,8 @@ namespace {
             Verify (::EVP_CIPHER_CTX_set_padding (ctx, 0) == 1);
         }
         Cryptography::OpenSSL::Exception::ThrowLastErrorIfFailed (::EVP_CipherInit_ex (ctx, cipher, NULL, nullptr, nullptr, enc));
-        size_t keyLen = EVP_CIPHER_CTX_key_length (ctx);
-        size_t ivLen  = EVP_CIPHER_CTX_iv_length (ctx);
+        size_t keyLen = ::EVP_CIPHER_CTX_key_length (ctx);
+        size_t ivLen  = ::EVP_CIPHER_CTX_iv_length (ctx);
 
         if (useArgumentKeyLength) {
             keyLen = key.length ();
@@ -349,7 +348,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, const BLOB& key, 
     if (alg == CipherAlgorithms::kRC2_CBC () or alg == CipherAlgorithms::kRC2_ECB () or alg == CipherAlgorithms::kRC2_CFB () or alg == CipherAlgorithms::kRC2_OFB () or alg == CipherAlgorithms::kRC4 ()) {
         useArgumentKeyLength = true;
     }
-    fInitializer = [=] (EVP_CIPHER_CTX* ctx, Direction d) {
+    fInitializer = [=] (::EVP_CIPHER_CTX* ctx, Direction d) {
         ApplySettings2CTX_ (ctx, alg, d, nopad, useArgumentKeyLength, key, initialIV);
     };
 }
