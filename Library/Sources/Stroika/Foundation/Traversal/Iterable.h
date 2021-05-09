@@ -260,6 +260,9 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     class Iterable : public IterableBase, protected Debug::AssertExternallySynchronizedLock {
     public:
+        static_assert (is_copy_constructible_v<Iterator<T>>, "Must be able to create Iterator<T> to use Iterable<T>");
+
+    public:
         /**
          * \brief value_type is an alias for the type iterated over - like vector<T>::value_type
          */
