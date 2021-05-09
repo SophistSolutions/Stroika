@@ -63,11 +63,14 @@ LibraryContext::LibraryContext ()
                       Set<String>* ciphers = reinterpret_cast<Set<String>*> (arg);
                       if (ciph != nullptr) {
                           DbgTrace (L"cipher: %p (name: %s), provider: %p", ciph, CipherAlgorithm{ciph}.pName ().c_str (), ::EVP_CIPHER_provider (ciph));
+                          Assert (GetCiphrName_ (ciph));
                           if (auto cipherName = GetCiphrName_ (ciph)) {
 
+#if OPENSSL_VERSION_MAJOR >= 3
                               if (auto provider = ::EVP_CIPHER_provider (ciph)) {
                                   DbgTrace ("providername = %s", ::OSSL_PROVIDER_name (provider));
                               }
+#endif
                               int flags = ::EVP_CIPHER_flags (ciph);
                               DbgTrace ("flags=%x", flags);
 
