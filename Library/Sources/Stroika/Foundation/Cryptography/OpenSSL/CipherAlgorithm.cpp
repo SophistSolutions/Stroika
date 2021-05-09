@@ -43,13 +43,13 @@ using namespace Stroika::Foundation::Memory;
  ********************************************************************************
  */
 CipherAlgorithm::CipherAlgorithm (const EVP_CIPHER* cipher)
-    : fCipher_{cipher}
-    , pName{
+    : pName{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> String {
               const CipherAlgorithm* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &CipherAlgorithm::pName);
               AssertNotNull (::EVP_CIPHER_name (thisObj->fCipher_));
               return String::FromASCII (::EVP_CIPHER_name (thisObj->fCipher_));
           }}
+    , fCipher_{cipher}
 {
 }
 
