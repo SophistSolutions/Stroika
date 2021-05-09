@@ -33,6 +33,17 @@ using namespace Stroika::Foundation::Cryptography::OpenSSL;
 #endif
 
 #if qHasFeature_OpenSSL
+
+namespace {
+    optional<String> GetCiphrName_ (CipherAlgorithm a)
+    {
+        if (auto i = ::EVP_CIPHER_name (a)) {
+            return String::FromASCII (i);
+        }
+        return nullopt;
+    }
+}
+
 /*
  ********************************************************************************
  ******************* Cryptography::OpenSSL::LibraryContext **********************
@@ -41,6 +52,50 @@ using namespace Stroika::Foundation::Cryptography::OpenSSL;
 LibraryContext LibraryContext::sDefault;
 
 LibraryContext::LibraryContext ()
+    : pAvailableAlgorithms{
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<CipherAlgorithm> {
+              const LibraryContext*                               thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pAvailableAlgorithms);
+              shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+              Set<String>                                         ciphers;
+              ::EVP_CIPHER_do_all_provided (
+                  nullptr,
+                  [] (EVP_CIPHER* ciph, void* arg) {
+                      Set<String>* ciphers = reinterpret_cast<Set<String>*> (arg);
+                      if (ciph != nullptr) {
+                          DbgTrace (L"cipher: %p (name: %s), provider: %p", ciph, CipherAlgorithm{ciph}.pName ().c_str (), ::EVP_CIPHER_provider (ciph));
+                          if (auto cipherName = GetCiphrName_ (ciph)) {
+
+                              if (auto provider = ::EVP_CIPHER_provider (ciph)) {
+                                  DbgTrace ("providername = %s", ::OSSL_PROVIDER_name (provider));
+                              }
+                              int flags = ::EVP_CIPHER_flags (ciph);
+                              DbgTrace ("flags=%x", flags);
+
+                              ciphers->Add (*cipherName);
+                          }
+                      }
+                  },
+                  &ciphers);
+              DbgTrace (L"Found kAllLoadedCiphers=%s", Characters::ToString (ciphers).c_str ());
+
+              auto fn = [] (const String& n) -> optional<CipherAlgorithm> { return OpenSSL::GetCipherByNameQuietly (n); };
+
+              Traversal::Iterable<int> yyy{};
+              Set<int>                 resultyyy{yyy};
+
+              using namespace Configuration;
+              static_assert (IsIterable_v<Traversal::Iterable<CipherAlgorithm>>);
+
+              using ITERABLE_OF_T = Traversal::Iterable<CipherAlgorithm>;
+    //Configuration::Private::  IsIterableOfT_Impl2_<set<int>, int> aa;
+
+#if 1
+
+              Set<CipherAlgorithm> result{ciphers.Select<CipherAlgorithm> ([] (const String& n) -> optional<CipherAlgorithm> { return OpenSSL::GetCipherByNameQuietly (n); })};
+              WeakAssert (result.size () == ciphers.size ());
+#endif
+              return result;
+          }}
 {
     LoadProvider (kDefaultProvider);
 }

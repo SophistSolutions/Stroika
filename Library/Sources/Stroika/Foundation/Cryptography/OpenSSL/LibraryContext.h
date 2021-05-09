@@ -14,9 +14,13 @@
 #endif
 
 #include "../../Characters/String.h"
+#include "../../Common/Property.h"
 #include "../../Configuration/Common.h"
 #include "../../Containers/Mapping.h"
+#include "../../Containers/Set.h"
 #include "../../Debug/AssertExternallySynchronizedLock.h"
+
+#include "CipherAlgorithm.h"
 
 /**
  *  \file
@@ -29,6 +33,7 @@
 namespace Stroika::Foundation::Cryptography::OpenSSL {
 
     using Characters::String;
+    using Containers::Set;
 
     /**
      *  For now, provide no way to access additional library contexts, as I have no such need right now
@@ -83,6 +88,9 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
             LibraryContext* fContext;
             String          fProviderName_;
         };
+
+    public:
+        Common::ReadOnlyProperty<Set<CipherAlgorithm>> pAvailableAlgorithms;
 
     private:
 #if OPENSSL_VERSION_MAJOR >= 3

@@ -12,22 +12,46 @@
 
 namespace Stroika::Foundation::Cryptography::OpenSSL {
 
-#if qHas_OpenSSL
+#if qHasFeature_OpenSSL
+
     /*
      ********************************************************************************
-     ********************* Cryptography::OpenSSLCryptoParams ************************
+     ***************************** OpenSSL::CipherAlgorithm *************************
      ********************************************************************************
      */
-    inline OpenSSLCryptoParams::OpenSSLCryptoParams (const function<void (EVP_CIPHER_CTX*, Direction)>& f)
-        : fInitializer{f}
+    inline CipherAlgorithm::CipherAlgorithm (const CipherAlgorithm& src)
+        : CipherAlgorithm{src.fCipher_}
     {
     }
+    inline CipherAlgorithm& CipherAlgorithm::operator= (const CipherAlgorithm& src)
+    {
+        fCipher_ = src.fCipher_;
+        return *this;
+    }
+    inline CipherAlgorithm::operator const EVP_CIPHER* () const
+    {
+        return fCipher_;
+    }
+#if __cpp_impl_three_way_comparison >= 201907
+    inline auto CipherAlgorithm::operator<=> (const CipherAlgorithm& rhs) const
+    {
+        return fCipher_ <=> rhs.fCipher_;
+    }
+#else
+    inline auto CipherAlgorithm::operator< (const CipherAlgorithm& rhs) const
+    {
+        return fCipher_ < rhs.fCipher_;
+    }
+#endif
+    inline bool CipherAlgorithm::operator== (const CipherAlgorithm& rhs) const
+    {
+        return fCipher_ == rhs.fCipher_;
+    }
+    inline String CipherAlgorithm::ToString () const
+    {
+        return String::FromASCII (::EVP_CIPHER_name (fCipher_));
+    }
 
-    /**
-     *  \req valid algorithm from above enum, and \ens not nullptr.
-     *
-     *  \note - the returned pointer is immutable, and the data remains valid until the end of the program.
-     */
     [[deprecated ("Since Stroika 2.1b12")]] inline const EVP_CIPHER* Convert2OpenSSL (CipherAlgorithm alg)
     {
         return alg;

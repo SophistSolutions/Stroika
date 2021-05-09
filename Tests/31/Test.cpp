@@ -41,6 +41,8 @@
 using std::byte;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Cryptography;
 using namespace Stroika::Foundation::Streams;
 
@@ -501,12 +503,16 @@ namespace {
                 BLOB::Raw (kSrc3_, NEltsOf (kSrc3_) - 1),
                 BLOB::Raw (kSrc4_, NEltsOf (kSrc4_) - 1)};
 
-            for (BLOB passphrase : kPassphrases_) {
-                for (BLOB inputMessage : kTestMessages_) {
-                    for (int provider = 0; provider < 2; provider++) {
-                        OpenSSL::LibraryContext::TemporarilyAddProvider providerAdder{&OpenSSL::LibraryContext::sDefault, provider == 0 ? OpenSSL::LibraryContext::kDefaultProvider : OpenSSL::LibraryContext::kLegacyProvider};
-                        for (CipherAlgorithm ci : OpenSSL::kAllLoadedCiphers ()) {
+            for (int provider = 0; provider < 2; provider++) {
+                // OpenSSL::LibraryContext::TemporarilyAddProvider providerAdder{&OpenSSL::LibraryContext::sDefault, provider == 0 ? OpenSSL::LibraryContext::kDefaultProvider : OpenSSL::LibraryContext::kLegacyProvider};
+                unsigned int nCipherTests{};
+                unsigned int nFailures{};
+                Set<String>  failingCiphers;
+                for (BLOB passphrase : kPassphrases_) {
+                    for (BLOB inputMessage : kTestMessages_) {
+                        for (CipherAlgorithm ci : OpenSSL::LibraryContext::sDefault.pAvailableAlgorithms ()) {
                             for (DigestAlgorithm di = DigestAlgorithm::eSTART; di != DigestAlgorithm::eEND; di = Configuration::Inc (di)) {
+                                nCipherTests++;
                                 try {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                                     Debug::TraceContextBumper ctx{L"roundtriptesting", L"ci=%s, di=%s", Characters::ToString (ci).c_str (), Characters::ToString (di).c_str ()};
@@ -515,11 +521,18 @@ namespace {
                                     roundTripTester_ (cryptoParams, inputMessage);
                                 }
                                 catch (...) {
+                                    nFailures++;
+                                    failingCiphers.Add (Characters::ToString (ci));
                                     Stroika::TestHarness::WarnTestIssue (Characters::Format (L"For Test (%s, %s): Ignorning %s", Characters::ToString (ci).c_str (), Characters::ToString (di).c_str (), Characters::ToString (current_exception ()).c_str ()).c_str ());
                                 }
                             }
                         }
                     }
+                }
+                if (nFailures != 0) {
+                    Set<String> allCiphers{OpenSSL::LibraryContext::sDefault.pAvailableAlgorithms ().Select<String> ([] (auto i) { return i.pName (); })};
+                    Set<String> passingCiphers = allCiphers - failingCiphers;
+                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"For provider=%d, nCipherTests=%d, nFailures=%d, failingCiphers=%s, passing-ciphrs=%s", provider, nCipherTests, nFailures, Characters::ToString (failingCiphers).c_str (), Characters::ToString (passingCiphers).c_str ()).c_str ());
                 }
             }
 #endif
@@ -598,7 +611,7 @@ namespace {
             using namespace Stroika::Foundation::Cryptography::Encoding;
 
             auto checkNoSalt = [] (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String& password, const BLOB& src, const BLOB& expected) {
-                if (OpenSSL::kAllLoadedCiphers ().Contains (cipherAlgorithm)) {
+                if (OpenSSL::LibraryContext::sDefault.pAvailableAlgorithms ().Contains (cipherAlgorithm)) {
                     unsigned int        nRounds = 1; // command-line tool uses this
                     OpenSSLCryptoParams cryptoParams{cipherAlgorithm, OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds}};
                     DbgTrace (L"dk=%s", Characters::ToString (OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds}).c_str ());

@@ -9,9 +9,9 @@
 
 #include "../../Containers/Common.h"
 #include "../../Debug/Assertions.h"
+#include "../../Debug/Trace.h"
 #include "../../Execution/Common.h"
-#include "../../Execution/Synchronized.h"
-#include "../../Memory/SmallStackBuffer.h"
+#include "../../Memory/Optional.h"
 
 #include "CipherAlgorithm.h"
 
@@ -37,17 +37,20 @@ using namespace Stroika::Foundation::Memory;
 
 #if qHasFeature_OpenSSL
 
-namespace Stroika::Foundation::Characters {
-    /*
-     ********************************************************************************
-     ***************** Stroika::Foundation::Characters::ToString ********************
-     ********************************************************************************
-     */
-    template <>
-    String ToString (const Cryptography::OpenSSL::CipherAlgorithm& v)
-    {
-        return String::FromASCII (::EVP_CIPHER_name (v));
-    }
+/*
+ ********************************************************************************
+ ***************** Cryptography::OpenSSL::CipherAlgorithms **********************
+ ********************************************************************************
+ */
+CipherAlgorithm::CipherAlgorithm (const EVP_CIPHER* cipher)
+    : fCipher_{cipher}
+    , pName{
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> String {
+              const CipherAlgorithm* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &CipherAlgorithm::pName);
+              AssertNotNull (::EVP_CIPHER_name (thisObj->fCipher_));
+              return String::FromASCII (::EVP_CIPHER_name (thisObj->fCipher_));
+          }}
+{
 }
 
 /*
@@ -125,146 +128,16 @@ const Execution::VirtualConstant<CipherAlgorithm> CipherAlgorithms::kRC4{[] () {
 CipherAlgorithm OpenSSL::GetCipherByName (const String& cipherName)
 {
     static const Execution::RuntimeErrorException kErr_{L"No such cipher"sv};
-    auto p = EVP_get_cipherbyname (cipherName.AsNarrowSDKString ().c_str ());
+    auto                                          p = EVP_get_cipherbyname (cipherName.AsNarrowSDKString ().c_str ());
     Execution::ThrowIfNull (p, kErr_);
     return p;
 }
 
-/*
- ********************************************************************************
- ****************** Cryptography::OpenSSL::kAllCiphers **************************
- ********************************************************************************
- */
-#if qCompilerAndStdLib_const_extern_declare_then_const_define_namespace_Buggy
-namespace Stroika::Foundation::Cryptography::OpenSSL {
-    const Execution::VirtualConstant<Set<CipherAlgorithm>> kAllCiphers{
-        [] () {
-            return kDefaultProviderCiphers () + kLegacyProviderCiphers ();
-        }};
+optional<CipherAlgorithm> OpenSSL::GetCipherByNameQuietly (const String& cipherName)
+{
+    static const Execution::RuntimeErrorException kErr_{L"No such cipher"sv};
+    //return Memory::OptionalFromNullable (EVP_get_cipherbyname (cipherName.AsNarrowSDKString ().c_str ()));
+    auto tmp = EVP_get_cipherbyname (cipherName.AsNarrowSDKString ().c_str ());
+    return tmp == nullptr ? optional<CipherAlgorithm>{} : tmp;
 }
-#else
-const Execution::VirtualConstant<Set<CipherAlgorithm>> OpenSSL::kAllCiphers{
-    [] () {
-        return kDefaultProviderCiphers () + kLegacyProviderCiphers ();
-    }};
-#endif
-
-/*
- ********************************************************************************
- ************** Cryptography::OpenSSL::AllLoadedCiphers *************************
- ********************************************************************************
- */
-#if qCompilerAndStdLib_const_extern_declare_then_const_define_namespace_Buggy
-namespace Stroika::Foundation::Cryptography::OpenSSL {
-    const Execution::VirtualConstant<Set<CipherAlgorithm>> kAllLoadedCiphers{
-        [] () {
-            return kDefaultProviderCiphers ();
-        }};
-}
-#else
-const Execution::VirtualConstant<Set<CipherAlgorithm>> OpenSSL::kAllLoadedCiphers{
-    [] () {
-        return kDefaultProviderCiphers ();
-    }};
-#endif
-
-/*
- ********************************************************************************
- ************** Cryptography::OpenSSL::kDefaultProviderCiphers ******************
- ********************************************************************************
- */
-#if qCompilerAndStdLib_const_extern_declare_then_const_define_namespace_Buggy
-namespace Stroika::Foundation::Cryptography::OpenSSL {
-    const Execution::VirtualConstant<Set<CipherAlgorithm>> kDefaultProviderCiphers{
-        [] () {
-            // for now hardwire - good enuf cuz mimicing what we already had in enum implementation
-            return Set<CipherAlgorithm>{
-                CipherAlgorithms::kAES_128_CBC (),
-                CipherAlgorithms::kAES_128_ECB (),
-                CipherAlgorithms::kAES_128_OFB (),
-                CipherAlgorithms::kAES_128_CFB1 (),
-                CipherAlgorithms::kAES_128_CFB8 (),
-                CipherAlgorithms::kAES_128_CFB128 (),
-                CipherAlgorithms::kAES_192_CBC (),
-                CipherAlgorithms::kAES_192_ECB (),
-                CipherAlgorithms::kAES_192_OFB (),
-                CipherAlgorithms::kAES_192_CFB1 (),
-                CipherAlgorithms::kAES_192_CFB8 (),
-                CipherAlgorithms::kAES_192_CFB128 (),
-                CipherAlgorithms::kAES_256_CBC (),
-                CipherAlgorithms::kAES_256_ECB (),
-                CipherAlgorithms::kAES_256_OFB (),
-                CipherAlgorithms::kAES_256_CFB1 (),
-                CipherAlgorithms::kAES_256_CFB8 (),
-                CipherAlgorithms::kAES_256_CFB128 (),
-            };
-        }};
-}
-#else
-const Execution::VirtualConstant<Set<CipherAlgorithm>> OpenSSL::kDefaultProviderCiphers{
-    [] () {
-        // for now hardwire - good enuf cuz mimicing what we already had in enum implementation
-        return Set<CipherAlgorithm>{
-            CipherAlgorithms::kAES_128_CBC (),
-            CipherAlgorithms::kAES_128_ECB (),
-            CipherAlgorithms::kAES_128_OFB (),
-            CipherAlgorithms::kAES_128_CFB1 (),
-            CipherAlgorithms::kAES_128_CFB8 (),
-            CipherAlgorithms::kAES_128_CFB128 (),
-            CipherAlgorithms::kAES_192_CBC (),
-            CipherAlgorithms::kAES_192_ECB (),
-            CipherAlgorithms::kAES_192_OFB (),
-            CipherAlgorithms::kAES_192_CFB1 (),
-            CipherAlgorithms::kAES_192_CFB8 (),
-            CipherAlgorithms::kAES_192_CFB128 (),
-            CipherAlgorithms::kAES_256_CBC (),
-            CipherAlgorithms::kAES_256_ECB (),
-            CipherAlgorithms::kAES_256_OFB (),
-            CipherAlgorithms::kAES_256_CFB1 (),
-            CipherAlgorithms::kAES_256_CFB8 (),
-            CipherAlgorithms::kAES_256_CFB128 (),
-        };
-    }};
-#endif
-
-/*
- ********************************************************************************
- ************** Cryptography::OpenSSL::kLegacyProviderCiphers *******************
- ********************************************************************************
- */
-#if qCompilerAndStdLib_const_extern_declare_then_const_define_namespace_Buggy
-namespace Stroika::Foundation::Cryptography::OpenSSL {
-    // @todo check #if OPENSSL_VERSION_NUMBER >= 0x30000000L   to see what is and is not legacy
-    const Execution::VirtualConstant<Set<CipherAlgorithm>> kLegacyProviderCiphers{
-        [] () {
-            return Set<CipherAlgorithm>{
-                CipherAlgorithms::kBlowfish_CBC (),
-                CipherAlgorithms::kBlowfish_ECB (),
-                CipherAlgorithms::kBlowfish_CFB (),
-                CipherAlgorithms::kBlowfish_OFB (),
-                CipherAlgorithms::kRC2_CBC (),
-                CipherAlgorithms::kRC2_ECB (),
-                CipherAlgorithms::kRC2_CFB (),
-                CipherAlgorithms::kRC2_OFB (),
-                CipherAlgorithms::kRC4 (),
-            };
-        }};
-}
-#else
-const Execution::VirtualConstant<Set<CipherAlgorithm>> OpenSSL::kLegacyProviderCiphers{
-    [] () {
-        return Set<CipherAlgorithm>{
-            CipherAlgorithms::kBlowfish_CBC (),
-            CipherAlgorithms::kBlowfish_ECB (),
-            CipherAlgorithms::kBlowfish_CFB (),
-            CipherAlgorithms::kBlowfish_OFB (),
-            CipherAlgorithms::kRC2_CBC (),
-            CipherAlgorithms::kRC2_ECB (),
-            CipherAlgorithms::kRC2_CFB (),
-            CipherAlgorithms::kRC2_OFB (),
-            CipherAlgorithms::kRC4 (),
-        };
-    }};
-#endif
-
 #endif

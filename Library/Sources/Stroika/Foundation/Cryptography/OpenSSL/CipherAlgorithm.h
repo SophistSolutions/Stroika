@@ -11,6 +11,7 @@
 #endif
 
 #include "../../Characters/ToString.h"
+#include "../../Common/Property.h"
 #include "../../Configuration/Common.h"
 #include "../../Containers/Set.h"
 #include "../../Execution/Exceptions.h"
@@ -28,7 +29,43 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
     using Characters::String;
     using Containers::Set;
 
-    using CipherAlgorithm = const EVP_CIPHER*;
+    /**
+     *  \brief object oriented wrapper on OpenSSL cipher algoritms (const EVP_CIPHER*)
+     */
+    class CipherAlgorithm {
+    public:
+        /**
+         */
+        CipherAlgorithm (const EVP_CIPHER* cipher);
+        CipherAlgorithm (const CipherAlgorithm& src);
+
+    public:
+        nonvirtual CipherAlgorithm& operator= (const CipherAlgorithm& src);
+
+    public:
+        nonvirtual operator const EVP_CIPHER* () const;
+
+    public:
+        /**
+         */
+        Common::ReadOnlyProperty<String> pName;
+
+    public:
+#if __cpp_impl_three_way_comparison >= 201907
+        nonvirtual auto operator<=> (const CipherAlgorithm& rhs) const;
+#else
+        nonvirtual auto operator< (const CipherAlgorithm& rhs) const;
+#endif
+        nonvirtual bool operator== (const CipherAlgorithm& rhs) const;
+
+    public:
+        /**
+         */
+        nonvirtual String ToString () const;
+
+    private:
+        const EVP_CIPHER* fCipher_;
+    };
 
     /**
      *      @see http://linux.die.net/man/3/evp_cipher_ctx_init
@@ -82,20 +119,10 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
      * 
      *  @see https://linux.die.net/man/3/evp_get_cipherbyname
      */
-    CipherAlgorithm GetCipherByName (const String& cipherName);
-
-    extern const Execution::VirtualConstant<Set<CipherAlgorithm>> kAllCiphers;
-    extern const Execution::VirtualConstant<Set<CipherAlgorithm>> kAllLoadedCiphers;
-    extern const Execution::VirtualConstant<Set<CipherAlgorithm>> kDefaultProviderCiphers;
-    extern const Execution::VirtualConstant<Set<CipherAlgorithm>> kLegacyProviderCiphers;
+    CipherAlgorithm           GetCipherByName (const String& cipherName);
+    optional<CipherAlgorithm> GetCipherByNameQuietly (const String& cipherName);
 
 }
-
-namespace Stroika::Foundation::Characters {
-    template <>
-    String ToString (const Cryptography::OpenSSL::CipherAlgorithm& v);
-}
-
 #endif
 
 /*
