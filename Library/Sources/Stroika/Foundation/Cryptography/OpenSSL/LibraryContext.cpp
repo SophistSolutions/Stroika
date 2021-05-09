@@ -57,7 +57,7 @@ namespace {
 #if OPENSSL_VERSION_MAJOR >= 3
             DbgTrace (L"cipher: %p (name: %s), provider: %p", ciph, CipherAlgorithm{ciph}.pName ().c_str (), ::EVP_CIPHER_provider (ciph));
 #else
-                          DbgTrace (L"cipher: %p (name: %s), ciph, CipherAlgorithm{ciph}.pName ().c_str ());
+                          DbgTrace (L"cipher: %p (name: %s)", ciph, CipherAlgorithm{ciph}.pName ().c_str ());
 #endif
             Assert (GetCiphrName_ (ciph));
             if (auto cipherName = GetCiphrName_ (ciph)) {
