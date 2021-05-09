@@ -503,8 +503,12 @@ namespace {
                 BLOB::Raw (kSrc3_, NEltsOf (kSrc3_) - 1),
                 BLOB::Raw (kSrc4_, NEltsOf (kSrc4_) - 1)};
 
-            for (int provider = 0; provider < 2; provider++) {
-                OpenSSL::LibraryContext::TemporarilyAddProvider providerAdder{&OpenSSL::LibraryContext::sDefault, provider == 0 ? OpenSSL::LibraryContext::kDefaultProvider : OpenSSL::LibraryContext::kLegacyProvider};
+            Set<String> providers2Try  {OpenSSL::LibraryContext::kDefaultProvider};
+            if (OPENSSL_VERSION_NUMBER >= 0x30000000L) {
+                providers2Try += OpenSSL::LibraryContext::kLegacyProvider;
+            }
+            for (String provider : providers2Try) {
+                OpenSSL::LibraryContext::TemporarilyAddProvider providerAdder{&OpenSSL::LibraryContext::sDefault, provider};
                 unsigned int                                    nCipherTests{};
                 unsigned int                                    nFailures{};
                 Set<String>                                     failingCiphers;
@@ -523,7 +527,7 @@ namespace {
                                 catch (...) {
                                     nFailures++;
                                     failingCiphers.Add (Characters::ToString (ci));
-                                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"For Test (%s, %s): Ignorning %s", Characters::ToString (ci).c_str (), Characters::ToString (di).c_str (), Characters::ToString (current_exception ()).c_str ()).c_str ());
+                                    DbgTrace (L"For Test (%s, %s): Ignorning exception: %s", Characters::ToString (ci).c_str (), Characters::ToString (di).c_str (), Characters::ToString (current_exception ()).c_str ());
                                 }
                             }
                         }
@@ -532,7 +536,7 @@ namespace {
                 if (nFailures != 0) {
                     Set<String> allCiphers{OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ().Select<String> ([] (auto i) { return i.pName (); })};
                     Set<String> passingCiphers = allCiphers - failingCiphers;
-                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"For provider=%d, nCipherTests=%d, nFailures=%d, failingCiphers=%s, passing-ciphrs=%s", provider, nCipherTests, nFailures, Characters::ToString (failingCiphers).c_str (), Characters::ToString (passingCiphers).c_str ()).c_str ());
+                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"For provider=%s, nCipherTests=%d, nFailures=%d, failingCiphers=%s, passing-ciphrs=%s", provider.c_str (), nCipherTests, nFailures, Characters::ToString (failingCiphers).c_str (), Characters::ToString (passingCiphers).c_str ()).c_str ());
                 }
             }
 #endif

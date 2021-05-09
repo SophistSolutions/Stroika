@@ -80,11 +80,11 @@ LibraryContext::LibraryContext ()
                   [] (const ::EVP_CIPHER* ciph, [[maybe_unused]] const char* from, [[maybe_unused]] const char* to, void* arg) { AccumulateIntoSetOfCipherNames_ (ciph, reinterpret_cast<Set<String>*> (arg)); },
                   &ciphers);
 #endif
-              DbgTrace (L"Found kAllLoadedCiphers=%s", Characters::ToString (ciphers).c_str ());
+              DbgTrace (L"Found pAvailableCipherAlgorithms-FIRST-PASS (cnt=%d): %s", ciphers.size (), Characters::ToString (ciphers).c_str ());
 
               Set<CipherAlgorithm> result{ciphers.Select<CipherAlgorithm> ([] (const String& n) -> optional<CipherAlgorithm> { return OpenSSL::GetCipherByNameQuietly (n); })};
               WeakAssert (result.size () == ciphers.size ());
-              DbgTrace (L"Found result=%s", Characters::ToString (result).c_str ());
+              DbgTrace (L"Found pAvailableCipherAlgorithms (cnt=%d): %s", result.size (), Characters::ToString (result).c_str ());
               return result;
           }}
     , pStandardCipherAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<CipherAlgorithm> {
@@ -163,6 +163,7 @@ LibraryContext ::~LibraryContext ()
 
 void LibraryContext::LoadProvider ([[maybe_unused]] const String& providerName)
 {
+    DbgTrace (L"OpenSSL::LibraryContext::LoadProvider", L"%s", providerName.c_str ());
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
 #if OPENSSL_VERSION_MAJOR >= 3
     OSSL_PROVIDER*                                p = ::OSSL_PROVIDER_load (nullptr, providerName.AsNarrowSDKString ().c_str ());
@@ -182,6 +183,7 @@ void LibraryContext::LoadProvider ([[maybe_unused]] const String& providerName)
 
 void LibraryContext ::UnLoadProvider ([[maybe_unused]] const String& providerName)
 {
+    DbgTrace (L"OpenSSL::LibraryContext::UnLoadProvider", L"%s", providerName.c_str ());
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
 #if OPENSSL_VERSION_MAJOR >= 3
     Require (fLoadedProviders_.ContainsKey (providerName));
