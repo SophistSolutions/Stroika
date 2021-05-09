@@ -42,7 +42,7 @@ using namespace Stroika::Foundation::Memory;
  ***************** Cryptography::OpenSSL::CipherAlgorithms **********************
  ********************************************************************************
  */
-CipherAlgorithm::CipherAlgorithm (const EVP_CIPHER* cipher)
+CipherAlgorithm::CipherAlgorithm (const ::EVP_CIPHER* cipher)
     : pName{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> String {
               const CipherAlgorithm* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &CipherAlgorithm::pName);
@@ -128,7 +128,7 @@ const Execution::VirtualConstant<CipherAlgorithm> CipherAlgorithms::kRC4{[] () {
 CipherAlgorithm OpenSSL::GetCipherByName (const String& cipherName)
 {
     static const Execution::RuntimeErrorException kErr_{L"No such cipher"sv};
-    auto                                          p = EVP_get_cipherbyname (cipherName.AsNarrowSDKString ().c_str ());
+    auto                                          p = ::EVP_get_cipherbyname (cipherName.AsNarrowSDKString ().c_str ());
     Execution::ThrowIfNull (p, kErr_);
     return p;
 }

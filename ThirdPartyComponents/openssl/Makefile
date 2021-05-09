@@ -35,7 +35,8 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 #VERSION=3.0.0-alpha6
 
 
-VERSION=1.1.1j
+VERSION=1.1.1k
+#VERSION=1.1.1j
 #VERSION=1.1.1i
 #VERSION=1.1.1h
 #VERSION=1.1.1g

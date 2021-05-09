@@ -36,14 +36,14 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
     public:
         /**
          */
-        CipherAlgorithm (const EVP_CIPHER* cipher);
+        CipherAlgorithm (const ::EVP_CIPHER* cipher);
         CipherAlgorithm (const CipherAlgorithm& src);
 
     public:
         nonvirtual CipherAlgorithm& operator= (const CipherAlgorithm& src);
 
     public:
-        nonvirtual operator const EVP_CIPHER* () const;
+        nonvirtual operator const ::EVP_CIPHER* () const;
 
     public:
         /**
@@ -64,7 +64,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         nonvirtual String ToString () const;
 
     private:
-        const EVP_CIPHER* fCipher_;
+        const ::EVP_CIPHER* fCipher_;
     };
 
     /**

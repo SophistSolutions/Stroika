@@ -79,6 +79,9 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         nonvirtual void UnLoadProvider (const String& providerName);
 
     public:
+        /**
+         *  Stack based wrapper on LoadProvider/UnLoadProvider()
+         */
         class TemporarilyAddProvider {
         public:
             TemporarilyAddProvider (LibraryContext* context, const String& providerName);
@@ -94,7 +97,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
 
     private:
 #if OPENSSL_VERSION_MAJOR >= 3
-        Containers::Mapping<String, pair<OSSL_PROVIDER*, unsigned int>> fLoadedProviders_;
+        Containers::Mapping<String, pair<::OSSL_PROVIDER*, unsigned int>> fLoadedProviders_;
 #endif
     };
 

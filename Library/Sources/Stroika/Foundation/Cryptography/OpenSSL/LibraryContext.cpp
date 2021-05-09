@@ -42,22 +42,14 @@ namespace {
         }
         return nullopt;
     }
-}
-
-/*
- ********************************************************************************
- ******************* Cryptography::OpenSSL::LibraryContext **********************
- ********************************************************************************
- */
-LibraryContext LibraryContext::sDefault;
-namespace {
-    void f (const EVP_CIPHER* ciph, void* arg) {
-        Set<String>* ciphers = reinterpret_cast<Set<String>*> (arg);
+    void AccumulateIntoSetOfCipherNames_ (const ::EVP_CIPHER* ciph, Set<String>* ciphers)
+    {
+        RequireNotNull (ciphers);
         if (ciph != nullptr) {
 #if OPENSSL_VERSION_MAJOR >= 3
             DbgTrace (L"cipher: %p (name: %s), provider: %p", ciph, CipherAlgorithm{ciph}.pName ().c_str (), ::EVP_CIPHER_provider (ciph));
 #else
-                          DbgTrace (L"cipher: %p (name: %s)", ciph, CipherAlgorithm{ciph}.pName ().c_str ());
+            DbgTrace (L"cipher: %p (name: %s)", ciph, CipherAlgorithm{ciph}.pName ().c_str ());
 #endif
             Assert (GetCiphrName_ (ciph));
             if (auto cipherName = GetCiphrName_ (ciph)) {
@@ -75,42 +67,35 @@ namespace {
         }
     };
 }
+
+/*
+ ********************************************************************************
+ ******************* Cryptography::OpenSSL::LibraryContext **********************
+ ********************************************************************************
+ */
+LibraryContext LibraryContext::sDefault;
+
 LibraryContext::LibraryContext ()
     : pAvailableAlgorithms{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<CipherAlgorithm> {
               const LibraryContext*                               thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pAvailableAlgorithms);
               shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
               Set<String>                                         ciphers;
-
-
 #if OPENSSL_VERSION_MAJOR >= 3
               ::EVP_CIPHER_do_all_provided (
                   nullptr,
-                  [] (EVP_CIPHER* ciph, void* arg) { f (ciph, arg); },
+                  [] (::EVP_CIPHER* ciph, void* arg) { AccumulateIntoSetOfCipherNames_ (ciph, reinterpret_cast<Set<String>*> (arg)); },
                   &ciphers);
 #else
               ::EVP_CIPHER_do_all_sorted (
-                  [] (const EVP_CIPHER* ciph, [[maybe_unused]] const char* from, [[maybe_unused]] const char* to, void* arg) { f (ciph, arg); },
+                  [] (const ::EVP_CIPHER* ciph, [[maybe_unused]] const char* from, [[maybe_unused]] const char* to, void* arg) { AccumulateIntoSetOfCipherNames_ (ciph, reinterpret_cast<Set<String>*> (arg)); },
                   &ciphers);
 #endif
               DbgTrace (L"Found kAllLoadedCiphers=%s", Characters::ToString (ciphers).c_str ());
 
-              auto fn = [] (const String& n) -> optional<CipherAlgorithm> { return OpenSSL::GetCipherByNameQuietly (n); };
-
-              Traversal::Iterable<int> yyy{};
-              Set<int>                 resultyyy{yyy};
-
-              using namespace Configuration;
-              static_assert (IsIterable_v<Traversal::Iterable<CipherAlgorithm>>);
-
-              using ITERABLE_OF_T = Traversal::Iterable<CipherAlgorithm>;
-    //Configuration::Private::  IsIterableOfT_Impl2_<set<int>, int> aa;
-
-#if 1
-
               Set<CipherAlgorithm> result{ciphers.Select<CipherAlgorithm> ([] (const String& n) -> optional<CipherAlgorithm> { return OpenSSL::GetCipherByNameQuietly (n); })};
               WeakAssert (result.size () == ciphers.size ());
-#endif
+              DbgTrace (L"Found result=%s", Characters::ToString (result).c_str ());
               return result;
           }}
 {
@@ -127,11 +112,11 @@ LibraryContext ::~LibraryContext ()
 #endif
 }
 
-void LibraryContext::LoadProvider (const String& providerName)
+void LibraryContext::LoadProvider ([[maybe_unused]] const String& providerName)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
 #if OPENSSL_VERSION_MAJOR >= 3
-    OSSL_PROVIDER*                                p = ::OSSL_PROVIDER_load (NULL, providerName.AsNarrowSDKString ().c_str ());
+    OSSL_PROVIDER*                                p = ::OSSL_PROVIDER_load (nullptr, providerName.AsNarrowSDKString ().c_str ());
     static const Execution::RuntimeErrorException kErr_{L"No such SSL provider"sv};
     Execution::ThrowIfNull (p, kErr_);
     if (auto l = fLoadedProviders_.Lookup (providerName)) {
@@ -146,7 +131,7 @@ void LibraryContext::LoadProvider (const String& providerName)
 #endif
 }
 
-void LibraryContext ::UnLoadProvider (const String& providerName)
+void LibraryContext ::UnLoadProvider ([[maybe_unused]] const String& providerName)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
 #if OPENSSL_VERSION_MAJOR >= 3
