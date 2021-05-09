@@ -92,25 +92,23 @@ LibraryContext::LibraryContext ()
         shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
         Set<CipherAlgorithm>                                results;
 
-
-
-    results += CipherAlgorithms::kAES_128_CBC;
+        results += CipherAlgorithms::kAES_128_CBC;
         results += CipherAlgorithms::kAES_128_ECB;
-    results += CipherAlgorithms::kAES_128_OFB;
+        results += CipherAlgorithms::kAES_128_OFB;
         results += CipherAlgorithms::kAES_128_CFB1;
-    results += CipherAlgorithms::kAES_128_CFB8;
+        results += CipherAlgorithms::kAES_128_CFB8;
         results += CipherAlgorithms::kAES_128_CFB128;
-    results += CipherAlgorithms::kAES_192_CBC;
+        results += CipherAlgorithms::kAES_192_CBC;
         results += CipherAlgorithms::kAES_192_ECB;
-    results += CipherAlgorithms::kAES_192_OFB;
+        results += CipherAlgorithms::kAES_192_OFB;
         results += CipherAlgorithms::kAES_192_CFB1;
-    results += CipherAlgorithms::kAES_192_CFB8;
+        results += CipherAlgorithms::kAES_192_CFB8;
         results += CipherAlgorithms::kAES_192_CFB128;
-    results += CipherAlgorithms::kAES_256_CBC;
+        results += CipherAlgorithms::kAES_256_CBC;
         results += CipherAlgorithms::kAES_256_ECB;
-    results += CipherAlgorithms::kAES_256_OFB;
+        results += CipherAlgorithms::kAES_256_OFB;
         results += CipherAlgorithms::kAES_256_CFB1;
-    results += CipherAlgorithms::kAES_256_CFB8;
+        results += CipherAlgorithms::kAES_256_CFB8;
         results += CipherAlgorithms::kAES_256_CFB128;
 
         /*

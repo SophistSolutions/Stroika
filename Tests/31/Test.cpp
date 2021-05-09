@@ -505,9 +505,9 @@ namespace {
 
             for (int provider = 0; provider < 2; provider++) {
                 OpenSSL::LibraryContext::TemporarilyAddProvider providerAdder{&OpenSSL::LibraryContext::sDefault, provider == 0 ? OpenSSL::LibraryContext::kDefaultProvider : OpenSSL::LibraryContext::kLegacyProvider};
-                unsigned int nCipherTests{};
-                unsigned int nFailures{};
-                Set<String>  failingCiphers;
+                unsigned int                                    nCipherTests{};
+                unsigned int                                    nFailures{};
+                Set<String>                                     failingCiphers;
                 for (BLOB passphrase : kPassphrases_) {
                     for (BLOB inputMessage : kTestMessages_) {
                         for (CipherAlgorithm ci : OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ()) {
