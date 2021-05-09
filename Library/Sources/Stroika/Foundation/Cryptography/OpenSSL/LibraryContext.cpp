@@ -35,13 +35,6 @@ using namespace Stroika::Foundation::Cryptography::OpenSSL;
 #if qHasFeature_OpenSSL
 
 namespace {
-    optional<String> GetCiphrName_ (CipherAlgorithm a)
-    {
-        if (auto i = ::EVP_CIPHER_name (a)) {
-            return String::FromASCII (i);
-        }
-        return nullopt;
-    }
     void AccumulateIntoSetOfCipherNames_ (const ::EVP_CIPHER* ciph, Set<String>* ciphers)
     {
         RequireNotNull (ciphers);
@@ -51,19 +44,15 @@ namespace {
 #else
             DbgTrace (L"cipher: %p (name: %s)", ciph, CipherAlgorithm{ciph}.pName ().c_str ());
 #endif
-            Assert (GetCiphrName_ (ciph));
-            if (auto cipherName = GetCiphrName_ (ciph)) {
-
 #if OPENSSL_VERSION_MAJOR >= 3
-                if (auto provider = ::EVP_CIPHER_provider (ciph)) {
-                    DbgTrace ("providername = %s", ::OSSL_PROVIDER_name (provider));
-                }
-#endif
-                int flags = ::EVP_CIPHER_flags (ciph);
-                DbgTrace ("flags=%x", flags);
-
-                ciphers->Add (*cipherName);
+            if (auto provider = ::EVP_CIPHER_provider (ciph)) {
+                DbgTrace ("providername = %s", ::OSSL_PROVIDER_name (provider));
             }
+#endif
+            int flags = ::EVP_CIPHER_flags (ciph);
+            DbgTrace ("flags=%x", flags);
+
+            ciphers->Add (CipherAlgorithm{ciph}.pName ());
         }
     };
 }
