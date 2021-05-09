@@ -50,35 +50,49 @@ namespace {
  ********************************************************************************
  */
 LibraryContext LibraryContext::sDefault;
+namespace {
+    void f (const EVP_CIPHER* ciph, void* arg) {
+        Set<String>* ciphers = reinterpret_cast<Set<String>*> (arg);
+        if (ciph != nullptr) {
+#if OPENSSL_VERSION_MAJOR >= 3
+            DbgTrace (L"cipher: %p (name: %s), provider: %p", ciph, CipherAlgorithm{ciph}.pName ().c_str (), ::EVP_CIPHER_provider (ciph));
+#else
+                          DbgTrace (L"cipher: %p (name: %s), ciph, CipherAlgorithm{ciph}.pName ().c_str ());
+#endif
+            Assert (GetCiphrName_ (ciph));
+            if (auto cipherName = GetCiphrName_ (ciph)) {
 
+#if OPENSSL_VERSION_MAJOR >= 3
+                if (auto provider = ::EVP_CIPHER_provider (ciph)) {
+                    DbgTrace ("providername = %s", ::OSSL_PROVIDER_name (provider));
+                }
+#endif
+                int flags = ::EVP_CIPHER_flags (ciph);
+                DbgTrace ("flags=%x", flags);
+
+                ciphers->Add (*cipherName);
+            }
+        }
+    };
+}
 LibraryContext::LibraryContext ()
     : pAvailableAlgorithms{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<CipherAlgorithm> {
               const LibraryContext*                               thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pAvailableAlgorithms);
               shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
               Set<String>                                         ciphers;
-              ::EVP_CIPHER_do_all_provided (
-                  nullptr,
-                  [] (EVP_CIPHER* ciph, void* arg) {
-                      Set<String>* ciphers = reinterpret_cast<Set<String>*> (arg);
-                      if (ciph != nullptr) {
-                          DbgTrace (L"cipher: %p (name: %s), provider: %p", ciph, CipherAlgorithm{ciph}.pName ().c_str (), ::EVP_CIPHER_provider (ciph));
-                          Assert (GetCiphrName_ (ciph));
-                          if (auto cipherName = GetCiphrName_ (ciph)) {
+
 
 #if OPENSSL_VERSION_MAJOR >= 3
-                              if (auto provider = ::EVP_CIPHER_provider (ciph)) {
-                                  DbgTrace ("providername = %s", ::OSSL_PROVIDER_name (provider));
-                              }
-#endif
-                              int flags = ::EVP_CIPHER_flags (ciph);
-                              DbgTrace ("flags=%x", flags);
-
-                              ciphers->Add (*cipherName);
-                          }
-                      }
-                  },
+              ::EVP_CIPHER_do_all_provided (
+                  nullptr,
+                  [] (EVP_CIPHER* ciph, void* arg) { f (ciph, arg); },
                   &ciphers);
+#else
+              ::EVP_CIPHER_do_all_sorted (
+                  [] (const EVP_CIPHER* ciph, [[maybe_unused]] const char* from, [[maybe_unused]] const char* to, void* arg) { f (ciph, arg); },
+                  &ciphers);
+#endif
               DbgTrace (L"Found kAllLoadedCiphers=%s", Characters::ToString (ciphers).c_str ());
 
               auto fn = [] (const String& n) -> optional<CipherAlgorithm> { return OpenSSL::GetCipherByNameQuietly (n); };
