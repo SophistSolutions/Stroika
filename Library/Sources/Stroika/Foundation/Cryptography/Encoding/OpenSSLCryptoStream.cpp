@@ -286,7 +286,6 @@ public:
         Assert (nBytesEncypted <= outBuf.GetSize ());
         fRealOut_.Write (outBuf.begin (), outBuf.begin () + nBytesEncypted);
     }
-
     virtual void Flush () override
     {
         Require (IsOpenWrite ());

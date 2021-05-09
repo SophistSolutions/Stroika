@@ -504,14 +504,14 @@ namespace {
                 BLOB::Raw (kSrc4_, NEltsOf (kSrc4_) - 1)};
 
             for (int provider = 0; provider < 2; provider++) {
-                // OpenSSL::LibraryContext::TemporarilyAddProvider providerAdder{&OpenSSL::LibraryContext::sDefault, provider == 0 ? OpenSSL::LibraryContext::kDefaultProvider : OpenSSL::LibraryContext::kLegacyProvider};
+                OpenSSL::LibraryContext::TemporarilyAddProvider providerAdder{&OpenSSL::LibraryContext::sDefault, provider == 0 ? OpenSSL::LibraryContext::kDefaultProvider : OpenSSL::LibraryContext::kLegacyProvider};
                 unsigned int nCipherTests{};
                 unsigned int nFailures{};
                 Set<String>  failingCiphers;
                 for (BLOB passphrase : kPassphrases_) {
                     for (BLOB inputMessage : kTestMessages_) {
-                        for (CipherAlgorithm ci : OpenSSL::LibraryContext::sDefault.pAvailableAlgorithms ()) {
-                            for (DigestAlgorithm di = DigestAlgorithm::eSTART; di != DigestAlgorithm::eEND; di = Configuration::Inc (di)) {
+                        for (CipherAlgorithm ci : OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ()) {
+                            for (DigestAlgorithm di : OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ()) {
                                 nCipherTests++;
                                 try {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -530,7 +530,7 @@ namespace {
                     }
                 }
                 if (nFailures != 0) {
-                    Set<String> allCiphers{OpenSSL::LibraryContext::sDefault.pAvailableAlgorithms ().Select<String> ([] (auto i) { return i.pName (); })};
+                    Set<String> allCiphers{OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ().Select<String> ([] (auto i) { return i.pName (); })};
                     Set<String> passingCiphers = allCiphers - failingCiphers;
                     Stroika::TestHarness::WarnTestIssue (Characters::Format (L"For provider=%d, nCipherTests=%d, nFailures=%d, failingCiphers=%s, passing-ciphrs=%s", provider, nCipherTests, nFailures, Characters::ToString (failingCiphers).c_str (), Characters::ToString (passingCiphers).c_str ()).c_str ());
                 }
@@ -611,7 +611,7 @@ namespace {
             using namespace Stroika::Foundation::Cryptography::Encoding;
 
             auto checkNoSalt = [] (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String& password, const BLOB& src, const BLOB& expected) {
-                if (OpenSSL::LibraryContext::sDefault.pAvailableAlgorithms ().Contains (cipherAlgorithm)) {
+                if (OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ().Contains (cipherAlgorithm)) {
                     unsigned int        nRounds = 1; // command-line tool uses this
                     OpenSSLCryptoParams cryptoParams{cipherAlgorithm, OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds}};
                     DbgTrace (L"dk=%s", Characters::ToString (OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds}).c_str ());

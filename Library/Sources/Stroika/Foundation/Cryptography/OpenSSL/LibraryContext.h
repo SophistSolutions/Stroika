@@ -21,6 +21,7 @@
 #include "../../Debug/AssertExternallySynchronizedLock.h"
 
 #include "CipherAlgorithm.h"
+#include "DigestAlgorithm.h"
 
 /**
  *  \file
@@ -93,7 +94,16 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         };
 
     public:
-        Common::ReadOnlyProperty<Set<CipherAlgorithm>> pAvailableAlgorithms;
+        Common::ReadOnlyProperty<Set<CipherAlgorithm>> pAvailableCipherAlgorithms;
+
+    public:
+        Common::ReadOnlyProperty<Set<CipherAlgorithm>> pStandardCipherAlgorithms;
+
+    public:
+        Common::ReadOnlyProperty<Set<DigestAlgorithm>> pAvailableDigestAlgorithms;
+
+    public:
+        Common::ReadOnlyProperty<Set<DigestAlgorithm>> pStandardDigestAlgorithms;
 
     private:
 #if OPENSSL_VERSION_MAJOR >= 3

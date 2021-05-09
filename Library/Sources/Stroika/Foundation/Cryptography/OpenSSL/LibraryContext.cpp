@@ -65,9 +65,9 @@ namespace {
 LibraryContext LibraryContext::sDefault;
 
 LibraryContext::LibraryContext ()
-    : pAvailableAlgorithms{
+    : pAvailableCipherAlgorithms{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<CipherAlgorithm> {
-              const LibraryContext*                               thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pAvailableAlgorithms);
+              const LibraryContext*                               thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pAvailableCipherAlgorithms);
               shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
               Set<String>                                         ciphers;
 #if OPENSSL_VERSION_MAJOR >= 3
@@ -87,6 +87,68 @@ LibraryContext::LibraryContext ()
               DbgTrace (L"Found result=%s", Characters::ToString (result).c_str ());
               return result;
           }}
+    , pStandardCipherAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<CipherAlgorithm> {
+        const LibraryContext*                               thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pStandardCipherAlgorithms);
+        shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+        Set<CipherAlgorithm>                                results;
+
+
+
+    results += CipherAlgorithms::kAES_128_CBC;
+        results += CipherAlgorithms::kAES_128_ECB;
+    results += CipherAlgorithms::kAES_128_OFB;
+        results += CipherAlgorithms::kAES_128_CFB1;
+    results += CipherAlgorithms::kAES_128_CFB8;
+        results += CipherAlgorithms::kAES_128_CFB128;
+    results += CipherAlgorithms::kAES_192_CBC;
+        results += CipherAlgorithms::kAES_192_ECB;
+    results += CipherAlgorithms::kAES_192_OFB;
+        results += CipherAlgorithms::kAES_192_CFB1;
+    results += CipherAlgorithms::kAES_192_CFB8;
+        results += CipherAlgorithms::kAES_192_CFB128;
+    results += CipherAlgorithms::kAES_256_CBC;
+        results += CipherAlgorithms::kAES_256_ECB;
+    results += CipherAlgorithms::kAES_256_OFB;
+        results += CipherAlgorithms::kAES_256_CFB1;
+    results += CipherAlgorithms::kAES_256_CFB8;
+        results += CipherAlgorithms::kAES_256_CFB128;
+
+        /*
+         * @todo mark these below as deprecated...??? in openssl3?
+         */
+        results += CipherAlgorithms::kBlowfish_CBC;
+        results += CipherAlgorithms::kBlowfish_ECB;
+        results += CipherAlgorithms::kBlowfish_CFB;
+        results += CipherAlgorithms::kBlowfish_OFB;
+        results += CipherAlgorithms::kBlowfish;
+        results += CipherAlgorithms::kRC2_CBC;
+        results += CipherAlgorithms::kRC2_ECB;
+        results += CipherAlgorithms::kRC2_CFB;
+        results += CipherAlgorithms::kRC2_OFB;
+        results += CipherAlgorithms::kRC4;
+
+        return results;
+    }}
+    , pAvailableDigestAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<DigestAlgorithm> {
+        const LibraryContext*                               thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pAvailableDigestAlgorithms);
+        shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+        Set<DigestAlgorithm>                                results;
+        results += DigestAlgorithm::eMD5;
+        results += DigestAlgorithm::eSHA1;
+        results += DigestAlgorithm::eSHA224;
+        results += DigestAlgorithm::eSHA256;
+        return results;
+    }}
+    , pStandardDigestAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<DigestAlgorithm> {
+        const LibraryContext*                               thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pStandardDigestAlgorithms);
+        shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
+        Set<DigestAlgorithm>                                results;
+        results += DigestAlgorithm::eMD5;
+        results += DigestAlgorithm::eSHA1;
+        results += DigestAlgorithm::eSHA224;
+        results += DigestAlgorithm::eSHA256;
+        return results;
+    }}
 {
     LoadProvider (kDefaultProvider);
 }
