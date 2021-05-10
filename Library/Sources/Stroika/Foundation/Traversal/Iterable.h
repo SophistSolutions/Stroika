@@ -335,6 +335,12 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
+         *  Often handy short-hand (punning) for a container to see if zero elts, then if on it returns false.
+         */
+        nonvirtual operator bool () const;
+
+    public:
+        /**
          * \brief Create an iterator object which can be used to traverse the 'Iterable'.
          *
          * Create an iterator object which can be used to traverse the 'Iterable' - this object -

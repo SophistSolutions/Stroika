@@ -229,6 +229,11 @@ namespace Stroika::Foundation::Traversal {
         return *this;
     }
     template <typename T>
+    inline Iterable<T>::operator bool () const
+    {
+        return empty ();
+    }
+    template <typename T>
     inline typename Iterable<T>::_IterableRepSharedPtr Iterable<T>::Clone_ (const _IRep& rep, IteratorOwnerID forIterableEnvelope)
     {
         return rep.Clone (forIterableEnvelope);
