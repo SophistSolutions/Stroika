@@ -503,7 +503,7 @@ namespace {
                 BLOB::Raw (kSrc3_, NEltsOf (kSrc3_) - 1),
                 BLOB::Raw (kSrc4_, NEltsOf (kSrc4_) - 1)};
 
-            Set<String> providers2Try  {OpenSSL::LibraryContext::kDefaultProvider};
+            Set<String> providers2Try{OpenSSL::LibraryContext::kDefaultProvider};
             if (OPENSSL_VERSION_NUMBER >= 0x30000000L) {
                 providers2Try += OpenSSL::LibraryContext::kLegacyProvider;
             }
@@ -536,7 +536,10 @@ namespace {
                 if (nFailures != 0) {
                     Set<String> allCiphers{OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ().Select<String> ([] (auto i) { return i.pName (); })};
                     Set<String> passingCiphers = allCiphers - failingCiphers;
-                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"For provider=%s, nCipherTests=%d, nFailures=%d, failingCiphers=%s, passing-ciphrs=%s", provider.c_str (), nCipherTests, nFailures, Characters::ToString (failingCiphers).c_str (), Characters::ToString (passingCiphers).c_str ()).c_str ());
+                    static const Set<String> kLastSeenAllCiphers_ = {L"AES-128-OCB", L"AES-128-XTS", L"AES-192-OCB", L"AES-256-OCB", L"AES-256-XTS", L"ARIA-128-CCM", L"ARIA-128-GCM", L"ARIA-192-CCM", L"ARIA-192-GCM", L"ARIA-256-CCM", L"ARIA-256-GCM", L"id-aes128-CCM", L"id-aes128-GCM", L"id-aes128-wrap", L"id-aes128-wrap-pad", L"id-aes192-CCM", L"id-aes192-GCM", L"id-aes192-wrap", L"id-aes192-wrap-pad", L"id-aes256-CCM", L"id-aes256-GCM", L"id-aes256-wrap", L"id-aes256-wrap-pad", L"id-smime-alg-CMS3DESwrap"};
+                    if (kLastSeenAllCiphers_ != failingCiphers) {
+                        Stroika::TestHarness::WarnTestIssue (Characters::Format (L"For provider=%s, nCipherTests=%d, nFailures=%d, failingCiphers=%s, passing-ciphrs=%s", provider.c_str (), nCipherTests, nFailures, Characters::ToString (failingCiphers).c_str (), Characters::ToString (passingCiphers).c_str ()).c_str ());
+                    }
                 }
             }
 #endif
