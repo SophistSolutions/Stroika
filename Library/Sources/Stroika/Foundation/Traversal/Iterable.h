@@ -337,7 +337,7 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  Often handy short-hand (punning) for a container to see if zero elts, then if on it returns false.
          */
-        nonvirtual operator bool () const;
+        nonvirtual explicit operator bool () const;
 
     public:
         /**
