@@ -13,7 +13,6 @@
 #include "../../Characters/ToString.h"
 #include "../../Common/Property.h"
 #include "../../Configuration/Common.h"
-#include "../../Containers/Set.h"
 #include "../../Execution/Exceptions.h"
 #include "../../Execution/VirtualConstant.h"
 #include "../../Memory/Common.h"
@@ -27,7 +26,6 @@
 namespace Stroika::Foundation::Cryptography::OpenSSL {
 
     using Characters::String;
-    using Containers::Set;
 
     /**
      *  \brief object oriented wrapper on OpenSSL cipher algoritms (const EVP_CIPHER*)

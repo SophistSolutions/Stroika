@@ -49,11 +49,11 @@ namespace {
     // This trick counts on the fact that EVP_BytesToKey() only ever looks at key_len and iv_len
     struct FakeCryptoAlgo_
 #if OPENSSL_VERSION_NUMBER < 0x1010000fL
-        : EVP_CIPHER
+        : ::EVP_CIPHER
 #endif
     {
 #if OPENSSL_VERSION_NUMBER >= 0x1010000fL
-        EVP_CIPHER* tmpCipher{};
+        ::EVP_CIPHER* tmpCipher{};
 #endif
         FakeCryptoAlgo_ ()                       = delete;
         FakeCryptoAlgo_ (const FakeCryptoAlgo_&) = delete;
@@ -78,7 +78,7 @@ namespace {
             ::EVP_CIPHER_meth_free (tmpCipher);
         }
 #endif
-        operator const EVP_CIPHER* () const
+        operator const ::EVP_CIPHER* () const
         {
 #if OPENSSL_VERSION_NUMBER >= 0x1010000fL
             return tmpCipher;
@@ -110,9 +110,9 @@ String DerivedKey::ToString () const
 {
     Characters::StringBuilder result;
     result += L"{";
-    result += L"fKey: " + Characters::ToString (fKey);
+    result += L"key: " + Characters::ToString (fKey);
     result += L", ";
-    result += L"fIV: " + Characters::ToString (fIV);
+    result += L"IV: " + Characters::ToString (fIV);
     result += L"}";
     return result.str ();
 }
@@ -162,7 +162,7 @@ namespace {
                 buf2[i] ^= passwordBytes[i];
             }
         }
-        Require (digestAlgorithm == DigestAlgorithm::eMD5); // else NYI
+        Require (digestAlgorithm == DigestAlgorithms::kMD5); // else NYI
         uint8_t md5OutputBuf[2 * MD5_DIGEST_LENGTH];
         (void)::MD5 (reinterpret_cast<unsigned char*> (buf1), NEltsOf (buf1), md5OutputBuf);
         (void)::MD5 (reinterpret_cast<unsigned char*> (buf2), NEltsOf (buf2), md5OutputBuf + MD5_DIGEST_LENGTH);
@@ -227,7 +227,7 @@ namespace {
         }
         int i = ::EVP_BytesToKey (
             FakeCryptoAlgo_ (keyLen, ivLen),
-            Convert2OpenSSL (digestAlgorithm),
+            digestAlgorithm,
             reinterpret_cast<const unsigned char*> (salt ? NullCoalesce (salt).begin () : nullptr),
             reinterpret_cast<const unsigned char*> (passwd.begin ()),
             static_cast<int> (passwd.size ()),
@@ -243,7 +243,7 @@ namespace {
 }
 template <>
 EVP_BytesToKey::EVP_BytesToKey (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const optional<BLOB>& salt)
-    : DerivedKey (mkEVP_BytesToKey_ (keyLen, ivLen, digestAlgorithm, passwd, nRounds, salt))
+    : DerivedKey{mkEVP_BytesToKey_ (keyLen, ivLen, digestAlgorithm, passwd, nRounds, salt)}
 {
 }
 
@@ -263,7 +263,7 @@ namespace {
             reinterpret_cast<const unsigned char*> (salt ? salt->begin () : nullptr),
             static_cast<int> (salt ? salt->size () : 0),
             nRounds,
-            Convert2OpenSSL (digestAlgorithm),
+            digestAlgorithm,
             static_cast<int> (keyLen + ivLen),
             reinterpret_cast<unsigned char*> (outBuf.begin ()));
         if (a == 0) [[UNLIKELY_ATTR]] {

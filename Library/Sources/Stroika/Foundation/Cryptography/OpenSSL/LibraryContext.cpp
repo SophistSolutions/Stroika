@@ -49,8 +49,10 @@ namespace {
                 DbgTrace ("providername = %s", ::OSSL_PROVIDER_name (provider));
             }
 #endif
+#if 0
             int flags = ::EVP_CIPHER_flags (ciph);
             DbgTrace ("flags=%x", flags);
+#endif
 
             ciphers->Add (CipherAlgorithm{ciph}.pName ());
         }
@@ -131,20 +133,21 @@ LibraryContext::LibraryContext ()
         const LibraryContext*                               thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pAvailableDigestAlgorithms);
         shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
         Set<DigestAlgorithm>                                results;
-        results += DigestAlgorithm::eMD5;
-        results += DigestAlgorithm::eSHA1;
-        results += DigestAlgorithm::eSHA224;
-        results += DigestAlgorithm::eSHA256;
+        // @todo use EVP_MD_do_all (like we do for ciphers above)
+        results += DigestAlgorithms::kMD5;
+        results += DigestAlgorithms::kSHA1;
+        results += DigestAlgorithms::kSHA224;
+        results += DigestAlgorithms::kSHA256;
         return results;
     }}
     , pStandardDigestAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<DigestAlgorithm> {
         const LibraryContext*                               thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pStandardDigestAlgorithms);
         shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
         Set<DigestAlgorithm>                                results;
-        results += DigestAlgorithm::eMD5;
-        results += DigestAlgorithm::eSHA1;
-        results += DigestAlgorithm::eSHA224;
-        results += DigestAlgorithm::eSHA256;
+        results += DigestAlgorithms::kMD5;
+        results += DigestAlgorithms::kSHA1;
+        results += DigestAlgorithms::kSHA224;
+        results += DigestAlgorithms::kSHA256;
         return results;
     }}
 {

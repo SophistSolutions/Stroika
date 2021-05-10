@@ -3405,6 +3405,9 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\LibraryContext.inl">
       <Filter>Sources\Cryptography\OpenSSL</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DigestAlgorithm.inl">
+      <Filter>Sources\Cryptography\OpenSSL</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="VisualStudio-Stroika-Foundation-Debugger-Template.natvis" />

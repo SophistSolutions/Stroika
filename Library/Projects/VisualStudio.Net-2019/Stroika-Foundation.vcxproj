@@ -860,6 +860,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\CipherAlgorithm.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DerivedKey.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DigestAlgorithm.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Exception.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\LibraryContext.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Makefile" />

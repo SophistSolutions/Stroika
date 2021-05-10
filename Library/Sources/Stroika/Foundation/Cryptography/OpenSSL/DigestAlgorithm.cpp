@@ -7,6 +7,7 @@
 #include <openssl/evp.h>
 #endif
 
+#include "../../Common/Property.h"
 #include "../../Containers/Common.h"
 #include "../../Debug/Assertions.h"
 #include "../../Execution/Common.h"
@@ -38,27 +39,37 @@ using namespace Stroika::Foundation::Memory;
 
 /*
  ********************************************************************************
- ************** Cryptography::OpenSSL::Convert2OpenSSL **************************
+ ***************** Cryptography::OpenSSL::DigestAlgorithm **********************
  ********************************************************************************
  */
-const EVP_MD* OpenSSL::Convert2OpenSSL (DigestAlgorithm digestAlgorithm)
+DigestAlgorithm::DigestAlgorithm (const ::EVP_MD* digester)
+    : pName{
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> String {
+              const DigestAlgorithm* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &DigestAlgorithm::pName);
+              AssertNotNull (EVP_MD_name (thisObj->fDigester_));
+              return String::FromASCII (EVP_MD_name (thisObj->fDigester_));
+          }}
+    , fDigester_{digester}
 {
-    switch (digestAlgorithm) {
-#if 0
-        case DigestAlgorithm::eDSS:
-            return ::EVP_dss ();
-#endif
-        case DigestAlgorithm::eMD5:
-            return ::EVP_md5 ();
-        case DigestAlgorithm::eSHA1:
-            return ::EVP_sha1 ();
-        case DigestAlgorithm::eSHA224:
-            return ::EVP_sha224 ();
-        case DigestAlgorithm::eSHA256:
-            return ::EVP_sha256 ();
-        default:
-            RequireNotReached ();
-            return nullptr;
-    }
 }
+
+/*
+ ********************************************************************************
+ ***************** Cryptography::OpenSSL::DigestAlgorithms **********************
+ ********************************************************************************
+ */
+#if qCompilerAndStdLib_const_extern_declare_then_const_define_namespace_Buggy
+namespace Stroika::Foundation::Cryptography::OpenSSL::DigestAlgorithms {
+    const Execution::VirtualConstant<DigestAlgorithm> kMD5{[] () { return ::EVP_md5 (); }};
+    const Execution::VirtualConstant<DigestAlgorithm> kSHA1{[] () { return ::EVP_sha1 (); }};
+    const Execution::VirtualConstant<DigestAlgorithm> kSHA224{[] () { return ::EVP_sha224 (); }};
+    const Execution::VirtualConstant<DigestAlgorithm> kSHA256{[] () { return ::EVP_sha256 (); }};
+}
+#else
+const Execution::VirtualConstant<DigestAlgorithm> DigestAlgorithms::kMD5{[] () { return ::EVP_md5 (); }};
+const Execution::VirtualConstant<DigestAlgorithm> DigestAlgorithms::kSHA1{[] () { return ::EVP_sha1 (); }};
+const Execution::VirtualConstant<DigestAlgorithm> DigestAlgorithms::kSHA224{[] () { return ::EVP_sha224 (); }};
+const Execution::VirtualConstant<DigestAlgorithm> DigestAlgorithms::kSHA256{[] () { return ::EVP_sha256 (); }};
+#endif
+
 #endif
