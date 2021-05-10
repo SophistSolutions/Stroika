@@ -39,7 +39,7 @@ using namespace Stroika::Foundation::Memory;
 
 /*
  ********************************************************************************
- ***************** Cryptography::OpenSSL::DigestAlgorithm **********************
+ ***************** Cryptography::OpenSSL::DigestAlgorithm ***********************
  ********************************************************************************
  */
 DigestAlgorithm::DigestAlgorithm (const ::EVP_MD* digester)
@@ -51,6 +51,7 @@ DigestAlgorithm::DigestAlgorithm (const ::EVP_MD* digester)
           }}
     , fDigester_{digester}
 {
+    RequireNotNull (digester);
 }
 
 /*

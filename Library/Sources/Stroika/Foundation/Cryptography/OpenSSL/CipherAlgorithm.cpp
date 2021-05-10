@@ -51,6 +51,7 @@ CipherAlgorithm::CipherAlgorithm (const ::EVP_CIPHER* cipher)
           }}
     , fCipher_{cipher}
 {
+    RequireNotNull (cipher);
 }
 
 /*
