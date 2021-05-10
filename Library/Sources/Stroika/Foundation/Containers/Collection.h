@@ -349,7 +349,7 @@ namespace Stroika::Foundation::Containers {
     };
 
     /**
-     *  Basic operator overload with the obivous meaning (Collection<T> copy and Collection<T>::AddAll)
+     *  Basic operator overload with the obvious meaning (Collection<T> copy and Collection<T>::AddAll)
      */
     template <typename T>
     Collection<T> operator+ (const Iterable<T>& lhs, const Collection<T>& rhs);

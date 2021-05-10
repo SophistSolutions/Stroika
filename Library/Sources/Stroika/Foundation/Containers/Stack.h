@@ -231,7 +231,7 @@ namespace Stroika::Foundation::Containers {
 
 #if __cpp_impl_three_way_comparison < 201907
     /**
-     *  Basic comparison operator overloads with the obivous meaning, and simply indirect to @Bijection<>::EqualsComparer
+     *  Basic comparison operator overloads with the obvious meaning, and simply indirect to @Bijection<>::EqualsComparer
      */
     template <typename T>
     bool operator== (const Stack<T>& lhs, const Stack<T>& rhs);

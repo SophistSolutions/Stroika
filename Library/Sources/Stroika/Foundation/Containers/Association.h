@@ -549,7 +549,7 @@ namespace Stroika::Foundation::Containers {
     };
 
     /**
-     *  Basic comparison operator overloads with the obivous meaning, and simply indirect to @Set<T>::EqualsComparer
+     *  Basic comparison operator overloads with the obvious meaning, and simply indirect to @Set<T>::EqualsComparer
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     bool operator== (const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& lhs, const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs);

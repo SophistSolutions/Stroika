@@ -1577,7 +1577,7 @@ namespace Stroika::Foundation::Characters {
 #endif
 
     /**
-     *  Basic operator overload with the obivous meaning, and simply indirect to @String::Concatenate (const String& rhs)
+     *  Basic operator overload with the obvious meaning, and simply indirect to @String::Concatenate (const String& rhs)
      */
     String operator+ (const String& lhs, const wchar_t* rhs);
     String operator+ (const String& lhs, const String& rhs);

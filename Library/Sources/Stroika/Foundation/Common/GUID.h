@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Common {
 
 #if __cpp_impl_three_way_comparison < 201907 or qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy
     /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to @GUID::ThreeWayComparer ()
+     *  Basic operator overloads with the obvious meaning, and simply indirect to @GUID::ThreeWayComparer ()
      */
     bool operator< (const GUID& lhs, const GUID& rhs);
     bool operator<= (const GUID& lhs, const GUID& rhs);

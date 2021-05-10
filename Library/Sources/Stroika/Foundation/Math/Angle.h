@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Math {
 
 #if __cpp_impl_three_way_comparison < 201907
     /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to @Common::ThreeWayCompare ()
+     *  Basic operator overloads with the obvious meaning, and simply indirect to @Common::ThreeWayCompare ()
      */
     constexpr bool operator< (const Angle& lhs, const Angle& rhs);
     constexpr bool operator<= (const Angle& lhs, const Angle& rhs);

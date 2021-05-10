@@ -215,7 +215,7 @@ namespace Stroika::Foundation::Containers {
 
 #if __cpp_impl_three_way_comparison < 201907
     /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to 
+     *  Basic operator overloads with the obvious meaning, and simply indirect to 
      *  @Sequence<>::EqualsComparer
      */
     template <typename T, typename... INDEXES>

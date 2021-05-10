@@ -218,7 +218,7 @@ namespace Stroika::Foundation::DataExchange {
 
 #if __cpp_impl_three_way_comparison < 201907
     /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to @Version::ThreeWayComparer (const Version& rhs)
+     *  Basic operator overloads with the obvious meaning, and simply indirect to @Version::ThreeWayComparer (const Version& rhs)
      */
     template <typename ATOM_MANAGER>
     bool operator< (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);

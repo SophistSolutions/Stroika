@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Common {
 
 #if __cpp_impl_three_way_comparison < 201907
     /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to @CountedValue<KEY_TYPE, VALUE_TYPE>::ThreeWayComparer (const Version& rhs), and EqualsComparer
+     *  Basic operator overloads with the obvious meaning, and simply indirect to @CountedValue<KEY_TYPE, VALUE_TYPE>::ThreeWayComparer (const Version& rhs), and EqualsComparer
      */
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     bool operator< (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs);

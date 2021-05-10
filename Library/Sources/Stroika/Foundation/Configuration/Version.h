@@ -135,7 +135,7 @@ namespace Stroika::Foundation::Configuration {
 
 #if __cpp_impl_three_way_comparison < 201907
     /**
-     *  Basic operator overloads with the obivous meaning, and simply indirect to @Version::ThreeWayComparer ()
+     *  Basic operator overloads with the obvious meaning, and simply indirect to @Version::ThreeWayComparer ()
      */
     constexpr bool operator< (const Version& lhs, const Version& rhs);
     constexpr bool operator<= (const Version& lhs, const Version& rhs);

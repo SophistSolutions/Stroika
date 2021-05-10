@@ -1785,7 +1785,7 @@ especially those they need to be aware of when upgrading.
   - broke Tests/Valgrind-MemCheck-Common.supp into itself and Tests/Valgrind-MemCheck-Common-armhf.supp and fixed defaults for makefile to include that extra file (Valgrind-MemCheck-Common-\$(ARCH).supp)
   - qCompilerAndStdLib_GenericLambdaInsideGenericLambdaAssertCall_Buggy workaround, and additional regtests for new upgradelock code
   - wrap warning suppression around include of afxole.h because of internal issue with latest MSFT compiler release (16.2) - they now warn about issues internal to their includes
-  - building activeledit we got warning (msvc2k19 only) warning MIDL2015: failed to load tlb in importlib: : olepro32.dll so remove include - not obivously need (may need to retest ocx)
+  - building activeledit we got warning (msvc2k19 only) warning MIDL2015: failed to load tlb in importlib: : olepro32.dll so remove include - not obviously need (may need to retest ocx)
   - workaround qCompilerAndStdLib_template_GenericLambdaInsideGenericLambdaDeductionInternalError_Buggy bug; and added extra UpgradableRWSynchronized<> regtest
   - remove suppression for https://stroika.atlassian.net/browse/STK-548
   - tweak helpgrind suppressions for https://stroika.atlassian.net/browse/STK-628

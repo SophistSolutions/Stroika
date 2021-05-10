@@ -621,7 +621,7 @@ namespace Stroika::Foundation::Containers {
 
 #if __cpp_impl_three_way_comparison < 201907
     /**
-     *  Basic comparison operator overloads with the obivous meaning, and simply indirect to @Mapping<>::EqualsComparer
+     *  Basic comparison operator overloads with the obvious meaning, and simply indirect to @Mapping<>::EqualsComparer
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     bool operator== (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& lhs, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs);
