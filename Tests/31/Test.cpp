@@ -540,6 +540,10 @@ namespace {
                     if (kLastSeenAllCiphers_ != failingCiphers) {
                         Stroika::TestHarness::WarnTestIssue (Characters::Format (L"For provider=%s, nCipherTests=%d, nFailures=%d, failingCiphers=%s, passing-ciphrs=%s", provider.c_str (), nCipherTests, nFailures, Characters::ToString (failingCiphers).c_str (), Characters::ToString (passingCiphers).c_str ()).c_str ());
                     }
+                    static const Set<String> kStandardCipherAlgorithmNames{OpenSSL::LibraryContext::sDefault.pStandardCipherAlgorithms ().Select<String> ([] (auto i) { return i.pName (); })};
+                    if (failingCiphers ^ kStandardCipherAlgorithmNames) {
+                        Stroika::TestHarness::WarnTestIssue (Characters::Format (L"For provider=%s, some standard ciphers failed: %s", provider.c_str (), Characters::ToString (failingCiphers ^ kStandardCipherAlgorithmNames).c_str ()).c_str ());
+                    }
                 }
             }
 #endif
