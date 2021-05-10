@@ -88,12 +88,12 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
      */
     template <typename PASSWORD_TYPE>
     inline PKCS5_PBKDF2_HMAC_SHA1::PKCS5_PBKDF2_HMAC_SHA1 (size_t keyLen, size_t ivLen, const PASSWORD_TYPE& passwd, unsigned int nRounds, const optional<BLOB>& salt)
-        : PKCS5_PBKDF2_HMAC{keyLen, ivLen, DigestAlgorithm::eSHA1, passwd, nRounds, salt}
+        : PKCS5_PBKDF2_HMAC{keyLen, ivLen, DigestAlgorithms::kSHA1, passwd, nRounds, salt}
     {
     }
     template <typename PASSWORD_TYPE, typename CIPHER_ALGORITHM_TYPE>
     inline PKCS5_PBKDF2_HMAC_SHA1::PKCS5_PBKDF2_HMAC_SHA1 (CIPHER_ALGORITHM_TYPE cipherAlgorithm, const PASSWORD_TYPE& passwd, unsigned int nRounds, const optional<BLOB>& salt)
-        : PKCS5_PBKDF2_HMAC{cipherAlgorithm, DigestAlgorithm::eSHA1, passwd, nRounds, salt}
+        : PKCS5_PBKDF2_HMAC{cipherAlgorithm, DigestAlgorithms::kSHA1, passwd, nRounds, salt}
     {
     }
 #endif
