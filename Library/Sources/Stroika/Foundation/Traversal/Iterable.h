@@ -666,6 +666,14 @@ namespace Stroika::Foundation::Traversal {
          *  \brief  Compute a projection (or transformation) of the given type T to some argument set of subtypes, and apply that projection
          *          to the entire iterable, creating a new iterable.
          * 
+         *  \note - this could have been called map() (@see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)
+         *          as it does essentially the same thing. It can be used to completely transform a container of one thing
+         *          into a (possibly smaller) container of something else by iterating over all the members, applying a function, and
+         *          (optionally) appending the result of that function to the new container.
+         * 
+         *  \note - this does NOT IMMEDIATELY traverse its argument, but uses @see CreateGenerator - to create a new iterable that dymanically pulls
+         *          from 'this' Iterable<>'.
+         * 
          *  If the argument function returns optional<THE RETURN TYPE> - then only accomulate those that are returned with has_value () (so also can be used to rollup).
          *
          *  \par Example Usage
@@ -698,6 +706,14 @@ namespace Stroika::Foundation::Traversal {
          *          // GetAssociatedContentType -> optional<String> - skip items that are 'missing'
          *          possibleFileSuffixes.Select<InternetMediaType> ([&] (String suffix) { return r.GetAssociatedContentType (suffix); }).As<Set<InternetMediaType>> ())
          *      \endcode
+         * 
+         *  \note   @todo after we lose the multiple-template-arg overloads of Select<> - MAYBE - add an optional template
+         *          arg CONTAINER=Iterable<RESULT> to these Select<> templates. Then they can be used to - in one step - transform not
+         *          only the type contained, but what we do with As<> template - and create a differnt result type (like Set<T> etc) as needed.
+         *          MAY need a third arg to go with this for "Adder".
+         * 
+         *          NOTE - in some ways - this new Select() 'overload' will be differnt in that the current one creates a generator, and then
+         *          new one would (presumably) not - and directly construc tthe new type (though I suppose it too could use the generator apporahc).
          */
         template <typename RESULT>
         nonvirtual Iterable<RESULT> Select (const function<RESULT (const T&)>& extract) const;
