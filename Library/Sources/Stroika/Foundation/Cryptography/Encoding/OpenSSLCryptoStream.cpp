@@ -56,7 +56,7 @@ namespace {
         }
         InOutStrmCommon_ (const InOutStrmCommon_&) = delete;
         InOutStrmCommon_& operator= (const InOutStrmCommon_&) = delete;
-        ~InOutStrmCommon_ ()
+        virtual ~InOutStrmCommon_ ()
         {
             ::EVP_CIPHER_CTX_free (fCTX_);
         }
