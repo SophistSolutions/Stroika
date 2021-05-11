@@ -1417,12 +1417,12 @@ namespace {
     {
         Debug::TraceContextBumper ctx{L"Test51_Utf16Conversions_"};
         {
-            VerifyTestResult (u16string (u"phred") == String (u16string (u"phred")).AsUTF16 ());
-            VerifyTestResult (u16string (u"שלום") == String (u16string (u"שלום")).AsUTF16 ());
+            VerifyTestResult (u16string{u"phred"} == String{u16string{u"phred"}}.AsUTF16 ());
+            VerifyTestResult (u16string{u"שלום"} == String{u16string{u"שלום"}}.AsUTF16 ());
         }
         {
-            VerifyTestResult (u16string (u"phred") == String (u"phred").AsUTF16 ());
-            VerifyTestResult (u16string (u"שלום") == String (u"שלום").AsUTF16 ());
+            VerifyTestResult (u16string{u"phred"} == String{u"phred"}.AsUTF16 ());
+            VerifyTestResult (u16string{u"שלום"} == String{u"שלום"}.AsUTF16 ());
         }
         {
             String tmp;
