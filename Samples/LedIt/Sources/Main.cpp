@@ -143,11 +143,9 @@ static int MyXErrorHandler (Display* display, XErrorEvent* error)
 #endif
 
 #if qPlatform_MacOS || qStroika_FeatureSupported_XWindows
-int main (int argc, char** argv)
+int main ([[maybe_unused]]int argc, [maybe_unused]]char** argv)
 {
 #if qPlatform_MacOS
-    Led_Arg_Unused (argc);
-    Led_Arg_Unused (argv);
 #if qDebug
     // Set Debugging options
     SetDebugThrow_ (debugAction_Alert);

@@ -88,7 +88,7 @@ namespace {
                    *            But a better pattern is to create the folder in your application installer, typically.
                    */
                   OptionsFile::mkFilenameMapper (L"Put-Your-App-Name-Here")}
-            , fActualCurrentConfigData_ (fOptionsFile_.Read<OptionsData_> (OptionsData_{}))
+            , fActualCurrentConfigData_{fOptionsFile_.Read<OptionsData_> (OptionsData_{})}
         {
             Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
         }

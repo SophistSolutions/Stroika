@@ -92,7 +92,7 @@ namespace {
                   OptionsFile::kDefaultUpgrader,
 
                   OptionsFile::mkFilenameMapper (L"LedIt"sv)}
-            , fActualCurrentConfigData_ (fOptionsFile_.Read<Options_> (Options_{}))
+            , fActualCurrentConfigData_{fOptionsFile_.Read<Options_> (Options_{})}
         {
             Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
         }
@@ -253,11 +253,9 @@ Led_FontSpecification Options::GetDefaultNewDocFont () const
     return TextImager::GetStaticDefaultFont ();
 }
 
-void Options::SetDefaultNewDocFont (const Led_FontSpecification& defaultNewDocFont)
+void Options::SetDefaultNewDocFont ([[maybe_unused]] const Led_FontSpecification& defaultNewDocFont)
 {
 #if qPlatform_Windows
     sOptions_.Update ([&] (Options_ d) { d.fDefaultNewDocFont = BLOB::Raw (defaultNewDocFont.GetOSRep ()); return d; });
-#else
-    Led_Arg_Unused (defaultNewDocFont);
 #endif
 }

@@ -47,7 +47,7 @@ namespace Stroika::Foundation ::Execution {
      *                      , OptionsFile::kDefaultUpgrader
      *                      , OptionsFile::mkFilenameMapper (L"Put-Your-App-Name-Here")
      *                  }
-     *                  , fActualCurrentConfigData_ (fOptionsFile_.Read<MyData_> (MyData_ ()))
+     *                  , fActualCurrentConfigData_{fOptionsFile_.Read<MyData_> (MyData_{})}
      *                  {
      *                      Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
      *                  }
