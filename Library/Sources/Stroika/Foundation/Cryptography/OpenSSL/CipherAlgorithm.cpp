@@ -134,9 +134,13 @@ CipherAlgorithm OpenSSL::GetCipherByName (const String& cipherName)
     return p;
 }
 
+/*
+ ********************************************************************************
+ *************** Cryptography::OpenSSL::GetCipherByNameQuietly ******************
+ ********************************************************************************
+ */
 optional<CipherAlgorithm> OpenSSL::GetCipherByNameQuietly (const String& cipherName)
 {
-    static const Execution::RuntimeErrorException kErr_{L"No such cipher"sv};
     //return Memory::OptionalFromNullable (EVP_get_cipherbyname (cipherName.AsNarrowSDKString ().c_str ()));
     auto tmp = EVP_get_cipherbyname (cipherName.AsNarrowSDKString ().c_str ());
     return tmp == nullptr ? optional<CipherAlgorithm>{} : tmp;

@@ -79,7 +79,6 @@ namespace Stroika::Foundation::Cryptography::Encoding {
     using Cryptography::OpenSSL::DerivedKey;
     using Cryptography::OpenSSL::DigestAlgorithm;
 
-
     class OpenSSLCryptoParams {
     public:
         // use this CTOR and fill in parameters manually for EVP_EncryptInit_ex

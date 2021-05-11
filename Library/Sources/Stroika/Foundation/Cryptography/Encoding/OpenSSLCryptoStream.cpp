@@ -101,7 +101,6 @@ namespace {
     };
 }
 
-
 class OpenSSLInputStream::Rep_ : public InputStream<byte>::_IRep, private InOutStrmCommon_ {
 private:
     static constexpr size_t kInBufSize_ = 10 * 1024;
@@ -301,7 +300,6 @@ private:
     mutable recursive_mutex fCriticalSection_;
     OutputStream<byte>::Ptr fRealOut_;
 };
-
 
 /*
  ********************************************************************************

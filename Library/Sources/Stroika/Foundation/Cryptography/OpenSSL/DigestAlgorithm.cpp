@@ -73,4 +73,29 @@ const Execution::VirtualConstant<DigestAlgorithm> DigestAlgorithms::kSHA224{[] (
 const Execution::VirtualConstant<DigestAlgorithm> DigestAlgorithms::kSHA256{[] () { return ::EVP_sha256 (); }};
 #endif
 
+
+/*
+ ********************************************************************************
+ ****************** Cryptography::OpenSSL::GetDigestByName **********************
+ ********************************************************************************
+ */
+DigestAlgorithm OpenSSL::GetDigestByName (const String& digestName)
+{
+    static const Execution::RuntimeErrorException kErr_{L"No such digest"sv};
+    auto                                          p = ::EVP_get_digestbyname (digestName.AsNarrowSDKString ().c_str ());
+    Execution::ThrowIfNull (p, kErr_);
+    return p;
+}
+
+/*
+ ********************************************************************************
+ *************** Cryptography::OpenSSL::GetDigestByNameQuietly ******************
+ ********************************************************************************
+ */
+optional<DigestAlgorithm> OpenSSL::GetDigestByNameQuietly (const String& digestName)
+{
+    //return Memory::OptionalFromNullable (EVP_get_digestbyname (digestName.AsNarrowSDKString ().c_str ()));
+    auto tmp = EVP_get_digestbyname (digestName.AsNarrowSDKString ().c_str ());
+    return tmp == nullptr ? optional<DigestAlgorithm>{} : tmp;
+}
 #endif

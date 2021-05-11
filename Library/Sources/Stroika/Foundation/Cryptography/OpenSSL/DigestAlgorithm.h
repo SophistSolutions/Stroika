@@ -33,6 +33,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
 #if qHasFeature_OpenSSL
 
     /**
+     *  \brief object oriented wrapper on OpenSSL digest algoritms (const EVP_MD*)
      */
     class DigestAlgorithm {
     public:
@@ -75,6 +76,14 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         extern const Execution::VirtualConstant<DigestAlgorithm> kSHA224;
         extern const Execution::VirtualConstant<DigestAlgorithm> kSHA256;
     }
+
+    /**
+     *  Wrapper on DigestAlgorithm
+     * 
+     *  @see https://linux.die.net/man/3/evp_get_cipherbyname
+     */
+    DigestAlgorithm           GetDigestByName (const String& digestName);
+    optional<DigestAlgorithm> GetDigestByNameQuietly (const String& digestName);
 
 #endif
 
