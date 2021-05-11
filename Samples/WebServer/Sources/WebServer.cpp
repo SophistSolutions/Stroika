@@ -44,6 +44,10 @@ using Time::Duration;
 
 namespace {
 
+    /**
+     *  You don't need to specify any of this, but it maybe helpful to specify caching control policies to
+     *  get the best web-server performance.
+     */
     const VirtualConstant<FileSystemRequestHandler::Options> kFileSystemRouterOptions_{[] () {
         Sequence<pair<RegularExpression, CacheControl>> cacheControlSettings_
         {
@@ -60,6 +64,9 @@ namespace {
         return FileSystemRequestHandler::Options{L"Files"_k, Sequence<String>{L"index.html"_k}, nullopt, cacheControlSettings_};
     }};
 
+    /**
+     *  You don't need to specify any of this, but its a good idea to propery identify your application.
+     */
     const VirtualConstant<Headers> kDefaultResponseHeaders_{[] () {
         Headers h;
         h.server = L"Stroika-Sample-WebServer/"_k + AppVersion::kVersion.AsMajorMinorString ();
@@ -75,8 +82,17 @@ namespace {
      */
     struct MyWebServer_ {
 
+        /**
+         *  Routes specify the 'handlers' for the various web urls your webserver will support.
+         */
         const Sequence<Route> kRoutes_;
-        ConnectionManager     fConnectionMgr_;
+
+        /**
+         *  The connectionMgr specifies parameters that govener the procedural behavior of your webserver.
+         *  For example, caching settings go here, thread pool settings, network bindings, and so on.
+         */
+        ConnectionManager fConnectionMgr_;
+
         MyWebServer_ (uint16_t portNumber)
             : kRoutes_
         {

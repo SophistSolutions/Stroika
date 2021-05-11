@@ -245,7 +245,7 @@ Led_FontSpecification Options::GetDefaultNewDocFont () const
     return defFont;
 }
 
-void Options::SetDefaultNewDocFont ([[maybe_unused]]const Led_FontSpecification& defaultNewDocFont)
+void Options::SetDefaultNewDocFont ([[maybe_unused]] const Led_FontSpecification& defaultNewDocFont)
 {
 #if qPlatform_Windows
     sOptions_.Update ([&] (Options_ d) { d.fDefaultNewDocFont = BLOB::Raw (defaultNewDocFont.GetOSRep ()); return d; });

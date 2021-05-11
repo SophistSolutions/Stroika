@@ -73,7 +73,6 @@ const Execution::VirtualConstant<DigestAlgorithm> DigestAlgorithms::kSHA224{[] (
 const Execution::VirtualConstant<DigestAlgorithm> DigestAlgorithms::kSHA256{[] () { return ::EVP_sha256 (); }};
 #endif
 
-
 /*
  ********************************************************************************
  ****************** Cryptography::OpenSSL::GetDigestByName **********************
