@@ -52,7 +52,13 @@ namespace {
         InOutStrmCommon_ (const OpenSSLCryptoParams& cryptoParams, Direction d)
             : fCTX_{::EVP_CIPHER_CTX_new ()}
         {
-            cryptoParams.fInitializer (fCTX_, d);
+            try {
+                cryptoParams.fInitializer (fCTX_, d);
+            }
+            catch (...) {
+                ::EVP_CIPHER_CTX_free (fCTX_);
+                Execution::ReThrow ();
+            }
         }
         InOutStrmCommon_ (const InOutStrmCommon_&) = delete;
         InOutStrmCommon_& operator= (const InOutStrmCommon_&) = delete;
