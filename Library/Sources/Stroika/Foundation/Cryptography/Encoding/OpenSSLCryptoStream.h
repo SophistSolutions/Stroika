@@ -50,8 +50,6 @@ using EVP_CIPHER_CTX = struct evp_cipher_ctx_st;
  *               BLOB ((const byte*)kSrc4_, (const byte*)kSrc4_ + ::strlen(kSrc4_)),
  *          #endif
  *
- *      @todo   Generate exceptions on errors
- *
  *      @todo   this module includes <openssl> stuff in the header. Add additioanl modules inside
  *              Crypto that just are called 'Blowfish', and 'rc2', and these have classes that tkae
  *              constructors with just the needed data = maybe not even ctors - maybe functions - that
@@ -69,6 +67,7 @@ namespace Stroika::Foundation::Cryptography::Encoding {
 
     using Memory::BLOB;
 
+#if qHasFeature_OpenSSL
     /**
      */
     enum class Direction {
@@ -76,13 +75,11 @@ namespace Stroika::Foundation::Cryptography::Encoding {
         eDecrypt,
     };
 
-#if qHasFeature_OpenSSL
     using Cryptography::OpenSSL::CipherAlgorithm;
     using Cryptography::OpenSSL::DerivedKey;
     using Cryptography::OpenSSL::DigestAlgorithm;
-#endif
 
-#if qHasFeature_OpenSSL
+
     class OpenSSLCryptoParams {
     public:
         // use this CTOR and fill in parameters manually for EVP_EncryptInit_ex
@@ -94,9 +91,7 @@ namespace Stroika::Foundation::Cryptography::Encoding {
     public:
         function<void (::EVP_CIPHER_CTX*, Direction)> fInitializer;
     };
-#endif
 
-#if qHasFeature_OpenSSL
     /**
      *  @brief  OpenSSLInputStream is a BinaryInputStream which does OpenSSL-based encryption or decryption (depending on direction arg)
      *
@@ -131,9 +126,6 @@ namespace Stroika::Foundation::Cryptography::Encoding {
         using InternalSyncRep_ = Streams::InternallySynchronizedInputStream<std::byte, OpenSSLInputStream, OpenSSLInputStream::Rep_>;
     };
 
-#endif
-
-#if qHasFeature_OpenSSL
     /**
      *  @brief  OpenSSLOutputStream is a BinaryOutputStream which does OpenSSL-based encryption or decryption (depending on direction arg)
      *

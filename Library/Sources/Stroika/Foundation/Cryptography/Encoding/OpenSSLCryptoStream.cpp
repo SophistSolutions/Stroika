@@ -47,6 +47,7 @@ using Memory::BLOB;
 //// for details on what todo
 
 #if qHasFeature_OpenSSL
+
 namespace {
     struct InOutStrmCommon_ {
         InOutStrmCommon_ (const OpenSSLCryptoParams& cryptoParams, Direction d)
@@ -99,9 +100,8 @@ namespace {
         bool            fFinalCalled_{false};
     };
 }
-#endif
 
-#if qHasFeature_OpenSSL
+
 class OpenSSLInputStream::Rep_ : public InputStream<byte>::_IRep, private InOutStrmCommon_ {
 private:
     static constexpr size_t kInBufSize_ = 10 * 1024;
@@ -231,9 +231,7 @@ private:
     byte*                                                              fOutBufEnd_{nullptr};
     InputStream<byte>::Ptr                                             fRealIn_;
 };
-#endif
 
-#if qHasFeature_OpenSSL
 class OpenSSLOutputStream::Rep_ : public OutputStream<byte>::_IRep, private InOutStrmCommon_ {
 public:
     Rep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const OutputStream<byte>::Ptr& realOut)
@@ -303,9 +301,8 @@ private:
     mutable recursive_mutex fCriticalSection_;
     OutputStream<byte>::Ptr fRealOut_;
 };
-#endif
 
-#if qHasFeature_OpenSSL
+
 /*
  ********************************************************************************
  ******************** Cryptography::OpenSSLInputStream **************************
@@ -360,9 +357,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, const DerivedKey&
     : OpenSSLCryptoParams{alg, derivedKey.fKey, derivedKey.fIV}
 {
 }
-#endif
 
-#if qHasFeature_OpenSSL
 /*
  ********************************************************************************
  ******************** Cryptography::OpenSSLInputStream **************************
@@ -385,9 +380,7 @@ auto OpenSSLInputStream::New (Execution::InternallySynchronized internallySynchr
             return New (cryptoParams, direction, realIn);
     }
 }
-#endif
 
-#if qHasFeature_OpenSSL
 /*
  ********************************************************************************
  ******************* Cryptography::OpenSSLOutputStream **************************
