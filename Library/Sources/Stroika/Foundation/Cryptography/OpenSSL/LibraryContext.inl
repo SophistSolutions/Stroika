@@ -12,6 +12,7 @@
 
 namespace Stroika::Foundation::Cryptography::OpenSSL {
 
+#if qHasFeature_OpenSSL
     /*
      ********************************************************************************
      *************** OpenSSL::LibraryContext::TemporarilyAddProvider ****************
@@ -29,6 +30,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         AssertNotNull (fContext);
         fContext->UnLoadProvider (fProviderName_);
     }
+#endif
 
 }
 

@@ -9,6 +9,7 @@
 
 namespace Stroika::Foundation::Database::SQLite {
 
+#if qHasFeature_sqlite
     /*
      ********************************************************************************
      ****************************** SQLite::CompiledOptions *************************
@@ -149,6 +150,7 @@ namespace Stroika::Foundation::Database::SQLite {
     {
         return fParameters_;
     }
+#endif
 
 }
 

@@ -8,9 +8,7 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Set.h"
 
-#if qHasFeature_sqlite
 #include "Stroika/Foundation/Database/SQLite.h"
-#endif
 
 using namespace std;
 
