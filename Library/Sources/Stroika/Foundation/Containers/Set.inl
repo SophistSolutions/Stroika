@@ -109,6 +109,16 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Contains (item);
     }
     template <typename T>
+    bool Set<T>::Contains (const Iterable<T>& items) const
+    {
+        for (auto i : items) {
+            if (not Contains (i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    template <typename T>
     bool Set<T>::IsSubsetOf (const Set& superset) const
     {
         for (auto i : *this) {

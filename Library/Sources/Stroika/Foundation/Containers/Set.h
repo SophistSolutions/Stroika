@@ -209,6 +209,7 @@ namespace Stroika::Foundation::Containers {
         /**
          */
         nonvirtual bool Contains (ArgByValueType<T> item) const;
+        nonvirtual bool Contains (const Iterable<T>& items) const;
 
     public:
         /**
