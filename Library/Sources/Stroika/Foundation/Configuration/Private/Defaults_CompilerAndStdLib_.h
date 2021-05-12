@@ -83,7 +83,7 @@
 #if __GNUC__ < 8
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v2.1 does not support versions prior to GCC 8 (v2.0 supports g++5 and g++6 and g++-7)"
 #endif
-#if __GNUC__ > 10 || (__GNUC__ == 10 && (__GNUC_MINOR__ > 2))
+#if __GNUC__ > 10 || (__GNUC__ == 10 && (__GNUC_MINOR__ > 3))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
@@ -214,7 +214,8 @@ foo.cpp:
 #define GLIBCXX_8x_ 20180728
 #define GLIBCXX_9x_ 20191008
 #define GLIBCXX_93x_ 20200408
-#define GLIBCXX_10x_ 20200930
+//#define GLIBCXX_10x_ 20200930
+#define GLIBCXX_10x_ 20210408
 
 /*
  *
@@ -788,6 +789,8 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
  * 
  *      GCC bug report:
  *              https://gcc.gnu.org/bugzilla/show_bug.cgi?id=99439
+ *              (known bug but they said DUP of other report - still not fixed -LGP 2021-05-12)
+ *              https://gcc.gnu.org/bugzilla/show_bug.cgi?id=45896 (about 10 years old so not sure gonna be fixed anytime soon)
  * 
  *      but libstdc++ doesn't appear to support the leading zero.
  */
@@ -811,6 +814,8 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
 
     REPORTED TO GCC folks as:
          https://gcc.gnu.org/bugzilla/show_bug.cgi?id=99556
+         They responded this IS dup of https://gcc.gnu.org/bugzilla/show_bug.cgi?id=9635
+         which is almost 20 years old, so dont hold breath on fix ;-) --LGP 2021-05-12
  */
 #ifndef qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy
 #if defined(__GLIBCXX__) && __GLIBCXX__ <= GLIBCXX_10x_
