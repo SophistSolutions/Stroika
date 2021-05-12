@@ -485,6 +485,8 @@ namespace {
             // worth noting if these fail
             VerifyTestResultWarning (defaultContextAvailableCipherAlgorithms.Contains (defaultContextStandardCipherAlgorithms));
             VerifyTestResultWarning (defaultContextAvailableDigestAlgorithms.Contains (defaultContextStandardDigestAlgorithms));
+
+            // for openssl v3 could also check with legacy provider loaded...
 #endif
         }
     }
