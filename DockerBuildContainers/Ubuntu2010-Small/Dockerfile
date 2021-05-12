@@ -1,3 +1,5 @@
+##### DEPRECATED VERSION OF UBUNTU -- LGP 2021-05-12 ######
+
 # Could use about any version of ubuntu, but 1804 or later comes with C++17 friendly compilers
 FROM ubuntu:20.10
 

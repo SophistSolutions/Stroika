@@ -1,3 +1,5 @@
+##### DEPRECATED VERSION OF UBUNTU -- LGP 2021-05-12 ######
+
 FROM sophistsolutionsinc/stroika-buildvm-ubuntu2010-small
 
 # Get latest packages system, so can do installs
