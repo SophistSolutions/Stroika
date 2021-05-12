@@ -57,6 +57,23 @@ namespace {
             ciphers->Add (CipherAlgorithm{ciph}.pName ());
         }
     };
+    void AccumulateIntoSetOfDigestNames_ (const ::EVP_MD* digest, Set<String>* digestNames)
+    {
+        RequireNotNull (digestNames);
+        if (digest != nullptr) {
+#if OPENSSL_VERSION_MAJOR >= 3
+            DbgTrace (L"cipher: %p (name: %s), provider: %p", ciph, DigestAlgorithm{digest}.pName ().c_str (), ::EVP_MD_provider (ciph));
+#else
+            DbgTrace (L"cipher: %p (name: %s)", digest, DigestAlgorithm{digest}.pName ().c_str ());
+#endif
+#if OPENSSL_VERSION_MAJOR >= 3
+            if (auto provider = ::EVP_MD_provider (ciph)) {
+                DbgTrace ("providername = %s", ::OSSL_PROVIDER_name (provider));
+            }
+#endif
+            digestNames->Add (DigestAlgorithm{digest}.pName ());
+        }
+    };
 }
 
 /*
@@ -71,23 +88,23 @@ LibraryContext::LibraryContext ()
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<CipherAlgorithm> {
               const LibraryContext*                               thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pAvailableCipherAlgorithms);
               shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
-              Set<String>                                         ciphers;
+              Set<String>                                         cipherNames;
 #if OPENSSL_VERSION_MAJOR >= 3
               ::EVP_CIPHER_do_all_provided (
                   nullptr,
                   [] (::EVP_CIPHER* ciph, void* arg) { AccumulateIntoSetOfCipherNames_ (ciph, reinterpret_cast<Set<String>*> (arg)); },
-                  &ciphers);
+                  &cipherNames);
 #else
               ::EVP_CIPHER_do_all_sorted (
                   [] (const ::EVP_CIPHER* ciph, [[maybe_unused]] const char* from, [[maybe_unused]] const char* to, void* arg) { AccumulateIntoSetOfCipherNames_ (ciph, reinterpret_cast<Set<String>*> (arg)); },
-                  &ciphers);
+                  &cipherNames);
 #endif
-              DbgTrace (L"Found pAvailableCipherAlgorithms-FIRST-PASS (cnt=%d): %s", ciphers.size (), Characters::ToString (ciphers).c_str ());
+              DbgTrace (L"Found pAvailableCipherAlgorithms-FIRST-PASS (cnt=%d): %s", cipherNames.size (), Characters::ToString (cipherNames).c_str ());
 
-              Set<CipherAlgorithm> result{ciphers.Select<CipherAlgorithm> ([] (const String& n) -> optional<CipherAlgorithm> { return OpenSSL::GetCipherByNameQuietly (n); })};
-              WeakAssert (result.size () == ciphers.size ());
-              DbgTrace (L"Found pAvailableCipherAlgorithms (cnt=%d): %s", result.size (), Characters::ToString (result).c_str ());
-              return result;
+              Set<CipherAlgorithm> results{cipherNames.Select<CipherAlgorithm> ([] (const String& n) -> optional<CipherAlgorithm> { return OpenSSL::CipherAlgorithm::GetByNameQuietly (n); })};
+              WeakAssert (results.size () == cipherNames.size ());
+              DbgTrace (L"Found pAvailableCipherAlgorithms (cnt=%d): %s", results.size (), Characters::ToString (results).c_str ());
+              return results;
           }}
     , pStandardCipherAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<CipherAlgorithm> {
         const LibraryContext*                               thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pStandardCipherAlgorithms);
@@ -132,12 +149,24 @@ LibraryContext::LibraryContext ()
     , pAvailableDigestAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<DigestAlgorithm> {
         const LibraryContext*                               thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pAvailableDigestAlgorithms);
         shared_lock<const AssertExternallySynchronizedLock> critSec{*thisObj};
-        Set<DigestAlgorithm>                                results;
-        // @todo use EVP_MD_do_all (like we do for ciphers above)
-        results += DigestAlgorithms::kMD5;
-        results += DigestAlgorithms::kSHA1;
-        results += DigestAlgorithms::kSHA224;
-        results += DigestAlgorithms::kSHA256;
+
+        Set<String> digestNames;
+#if OPENSSL_VERSION_MAJOR >= 3
+        ::EVP_MD_do_all_provided (
+            nullptr,
+            [] (::EVP_MD* md, void* arg) { AccumulateIntoSetOfDigestNames_ (md, reinterpret_cast<Set<String>*> (arg)); },
+            &digestNames);
+#else
+        ::EVP_MD_do_all_sorted (
+            [] (const ::EVP_MD* md, [[maybe_unused]] const char* from, [[maybe_unused]] const char* to, void* arg) { AccumulateIntoSetOfDigestNames_ (md, reinterpret_cast<Set<String>*> (arg)); },
+            &digestNames);
+#endif
+        DbgTrace (L"Found pAvailableCipherAlgorithms-FIRST-PASS (cnt=%d): %s", digestNames.size (), Characters::ToString (digestNames).c_str ());
+
+        Set<DigestAlgorithm> results{digestNames.Select<DigestAlgorithm> ([] (const String& n) -> optional<DigestAlgorithm> { return OpenSSL::DigestAlgorithm::GetByNameQuietly (n); })};
+        WeakAssert (results.size () == digestNames.size ());
+        DbgTrace (L"Found pAvailableCipherAlgorithms (cnt=%d): %s", results.size (), Characters::ToString (results).c_str ());
+
         return results;
     }}
     , pStandardDigestAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<DigestAlgorithm> {
@@ -148,6 +177,8 @@ LibraryContext::LibraryContext ()
         results += DigestAlgorithms::kSHA1;
         results += DigestAlgorithms::kSHA224;
         results += DigestAlgorithms::kSHA256;
+        results += DigestAlgorithms::kSHA384;
+        results += DigestAlgorithms::kSHA512;
         return results;
     }}
 {

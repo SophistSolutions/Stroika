@@ -41,6 +41,15 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         nonvirtual CipherAlgorithm& operator= (const CipherAlgorithm& src);
 
     public:
+        /**
+         *  Wrapper on CipherAlgorithm
+         * 
+         *  @see https://linux.die.net/man/3/evp_get_cipherbyname
+         */
+        static CipherAlgorithm           GetByName (const String& cipherName);
+        static optional<CipherAlgorithm> GetByNameQuietly (const String& cipherName);
+
+    public:
         nonvirtual operator const ::EVP_CIPHER* () const;
 
     public:
@@ -111,14 +120,6 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         extern const Execution::VirtualConstant<CipherAlgorithm> kRC2_OFB;
         extern const Execution::VirtualConstant<CipherAlgorithm> kRC4;
     }
-
-    /**
-     *  Wrapper on CipherAlgorithm
-     * 
-     *  @see https://linux.die.net/man/3/evp_get_cipherbyname
-     */
-    CipherAlgorithm           GetCipherByName (const String& cipherName);
-    optional<CipherAlgorithm> GetCipherByNameQuietly (const String& cipherName);
 
 }
 #endif

@@ -10,6 +10,7 @@
 #include <openssl/evp.h>
 #endif
 
+#include "../../Common/Property.h"
 #include "../../Configuration/Common.h"
 #include "../../Execution/Exceptions.h"
 #include "../../Execution/VirtualConstant.h"
@@ -19,11 +20,7 @@
  *  \file
  *
  *  TODO:
- *      @todo   AddLookupByName functions.
- *
  *      @todo   document/enforce thread safety checks
- *
- *
  */
 
 namespace Stroika::Foundation::Cryptography::OpenSSL {
@@ -44,6 +41,15 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
 
     public:
         nonvirtual DigestAlgorithm& operator= (const DigestAlgorithm& src);
+
+    public:
+        /**
+         *  Wrapper on DigestAlgorithm
+         * 
+         *  @see https://linux.die.net/man/3/evp_get_digestbyname
+         */
+        static DigestAlgorithm           GetByName (const String& digestName);
+        static optional<DigestAlgorithm> GetByNameQuietly (const String& digestName);
 
     public:
         nonvirtual operator const ::EVP_MD* () const;
@@ -71,19 +77,24 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
     };
 
     namespace DigestAlgorithms {
+        /**
+         *  very widely used, but not secure
+         */
         extern const Execution::VirtualConstant<DigestAlgorithm> kMD5;
+
+        /**
+         *  very widely used, but not secure
+         */
         extern const Execution::VirtualConstant<DigestAlgorithm> kSHA1;
+
+        /**
+         *  kSHA224, kSHA256, kSHA384, and kSHA512 are generally a good (secure) choice
+         */
         extern const Execution::VirtualConstant<DigestAlgorithm> kSHA224;
         extern const Execution::VirtualConstant<DigestAlgorithm> kSHA256;
+        extern const Execution::VirtualConstant<DigestAlgorithm> kSHA384;
+        extern const Execution::VirtualConstant<DigestAlgorithm> kSHA512;
     }
-
-    /**
-     *  Wrapper on DigestAlgorithm
-     * 
-     *  @see https://linux.die.net/man/3/evp_get_cipherbyname
-     */
-    DigestAlgorithm           GetDigestByName (const String& digestName);
-    optional<DigestAlgorithm> GetDigestByNameQuietly (const String& digestName);
 
 #endif
 

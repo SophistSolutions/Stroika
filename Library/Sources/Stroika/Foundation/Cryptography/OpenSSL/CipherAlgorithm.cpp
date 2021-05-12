@@ -54,6 +54,21 @@ CipherAlgorithm::CipherAlgorithm (const ::EVP_CIPHER* cipher)
     RequireNotNull (cipher);
 }
 
+CipherAlgorithm CipherAlgorithm::GetByName (const String& cipherName)
+{
+    static const Execution::RuntimeErrorException kErr_{L"No such cipher"sv};
+    auto                                          p = ::EVP_get_cipherbyname (cipherName.AsNarrowSDKString ().c_str ());
+    Execution::ThrowIfNull (p, kErr_);
+    return p;
+}
+
+optional<CipherAlgorithm> CipherAlgorithm::GetByNameQuietly (const String& cipherName)
+{
+    //return Memory::OptionalFromNullable (EVP_get_cipherbyname (cipherName.AsNarrowSDKString ().c_str ()));
+    auto tmp = EVP_get_cipherbyname (cipherName.AsNarrowSDKString ().c_str ());
+    return tmp == nullptr ? optional<CipherAlgorithm>{} : tmp;
+}
+
 /*
  ********************************************************************************
  ***************** Cryptography::OpenSSL::CipherAlgorithms **********************
@@ -121,28 +136,4 @@ const Execution::VirtualConstant<CipherAlgorithm> CipherAlgorithms::kRC2_OFB{[] 
 const Execution::VirtualConstant<CipherAlgorithm> CipherAlgorithms::kRC4{[] () { return ::EVP_rc4 (); }};
 #endif
 
-/*
- ********************************************************************************
- ****************** Cryptography::OpenSSL::GetCipherByName **********************
- ********************************************************************************
- */
-CipherAlgorithm OpenSSL::GetCipherByName (const String& cipherName)
-{
-    static const Execution::RuntimeErrorException kErr_{L"No such cipher"sv};
-    auto                                          p = ::EVP_get_cipherbyname (cipherName.AsNarrowSDKString ().c_str ());
-    Execution::ThrowIfNull (p, kErr_);
-    return p;
-}
-
-/*
- ********************************************************************************
- *************** Cryptography::OpenSSL::GetCipherByNameQuietly ******************
- ********************************************************************************
- */
-optional<CipherAlgorithm> OpenSSL::GetCipherByNameQuietly (const String& cipherName)
-{
-    //return Memory::OptionalFromNullable (EVP_get_cipherbyname (cipherName.AsNarrowSDKString ().c_str ()));
-    auto tmp = EVP_get_cipherbyname (cipherName.AsNarrowSDKString ().c_str ());
-    return tmp == nullptr ? optional<CipherAlgorithm>{} : tmp;
-}
 #endif

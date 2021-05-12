@@ -467,6 +467,30 @@ namespace {
 }
 
 namespace {
+    namespace EnumerateOpenSSLAlgorithmsInContexts_ {
+        void DoRegressionTests_ ()
+        {
+#if qHasFeature_OpenSSL
+            Debug::TraceContextBumper ctx{"EnumerateOpenSSLAlgorithmsInContexts_::DoRegressionTests_"};
+            Set<String>               defaultContextAvailableCipherAlgorithms = Set<String>{OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ().Select<String> ([] (auto i) { return i.pName (); })};
+            Set<String>               defaultContextStandardCipherAlgorithms  = Set<String>{OpenSSL::LibraryContext::sDefault.pStandardCipherAlgorithms ().Select<String> ([] (auto i) { return i.pName (); })};
+            Set<String>               defaultContextAvailableDigestAlgorithms = Set<String>{OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ().Select<String> ([] (auto i) { return i.pName (); })};
+            Set<String>               defaultContextStandardDigestAlgorithms  = Set<String>{OpenSSL::LibraryContext::sDefault.pStandardDigestAlgorithms ().Select<String> ([] (auto i) { return i.pName (); })};
+
+            DbgTrace (L"defaultContextAvailableCipherAlgorithms = #%d %s", defaultContextAvailableCipherAlgorithms.size (), Characters::ToString (defaultContextAvailableCipherAlgorithms).c_str ());
+            DbgTrace (L"defaultContextStandardCipherAlgorithms = #%d %s", defaultContextStandardCipherAlgorithms.size (), Characters::ToString (defaultContextStandardCipherAlgorithms).c_str ());
+            DbgTrace (L"defaultContextAvailableDigestAlgorithms = #%d %s", defaultContextAvailableDigestAlgorithms.size (), Characters::ToString (defaultContextAvailableDigestAlgorithms).c_str ());
+            DbgTrace (L"defaultContextStandardDigestAlgorithms = #%d %s", defaultContextStandardDigestAlgorithms.size (), Characters::ToString (defaultContextStandardDigestAlgorithms).c_str ());
+
+            // worth noting if these fail
+            VerifyTestResultWarning (defaultContextAvailableCipherAlgorithms.Contains (defaultContextStandardCipherAlgorithms));
+            VerifyTestResultWarning (defaultContextAvailableDigestAlgorithms.Contains (defaultContextStandardDigestAlgorithms));
+#endif
+        }
+    }
+}
+
+namespace {
     namespace AllSSLEncrytionRoundtrip {
         using namespace Cryptography::Encoding;
         using namespace Cryptography::Encoding::Algorithm;
@@ -709,6 +733,7 @@ namespace {
         Digest_Jenkins_::DoRegressionTests_ ();
         Digester_MD5_::DoRegressionTests_ ();
         Digester_SuperFastHash_::DoRegressionTests_ ();
+        EnumerateOpenSSLAlgorithmsInContexts_::DoRegressionTests_ ();
         AllSSLEncrytionRoundtrip::DoRegressionTests_ ();
         OpenSSLDeriveKeyTests_::DoRegressionTests_ ();
         OpenSSLEncryptDecryptTests_::DoRegressionTests_ ();
