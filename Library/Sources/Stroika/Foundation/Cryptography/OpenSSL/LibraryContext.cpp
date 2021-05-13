@@ -62,12 +62,12 @@ namespace {
         RequireNotNull (digestNames);
         if (digest != nullptr) {
 #if OPENSSL_VERSION_MAJOR >= 3
-            DbgTrace (L"cipher: %p (name: %s), provider: %p", ciph, DigestAlgorithm{digest}.pName ().c_str (), ::EVP_MD_provider (ciph));
+            DbgTrace (L"digest: %p (name: %s), provider: %p", digest, DigestAlgorithm{digest}.pName ().c_str (), ::EVP_MD_provider (digest));
 #else
-            DbgTrace (L"cipher: %p (name: %s)", digest, DigestAlgorithm{digest}.pName ().c_str ());
+            DbgTrace (L"digest: %p (name: %s)", digest, DigestAlgorithm{digest}.pName ().c_str ());
 #endif
 #if OPENSSL_VERSION_MAJOR >= 3
-            if (auto provider = ::EVP_MD_provider (ciph)) {
+            if (auto provider = ::EVP_MD_provider (digest)) {
                 DbgTrace ("providername = %s", ::OSSL_PROVIDER_name (provider));
             }
 #endif
@@ -102,7 +102,6 @@ LibraryContext::LibraryContext ()
               DbgTrace (L"Found pAvailableCipherAlgorithms-FIRST-PASS (cnt=%d): %s", cipherNames.size (), Characters::ToString (cipherNames).c_str ());
 
               Set<CipherAlgorithm> results{cipherNames.Select<CipherAlgorithm> ([] (const String& n) -> optional<CipherAlgorithm> { return OpenSSL::CipherAlgorithm::GetByNameQuietly (n); })};
-              WeakAssert (results.size () == cipherNames.size ());
               DbgTrace (L"Found pAvailableCipherAlgorithms (cnt=%d): %s", results.size (), Characters::ToString (results).c_str ());
               return results;
           }}
@@ -130,9 +129,10 @@ LibraryContext::LibraryContext ()
         results += CipherAlgorithms::kAES_256_CFB8;
         results += CipherAlgorithms::kAES_256_CFB128;
 
-        /*
+    /*
          * @todo mark these below as deprecated...??? in openssl3?
          */
+#if OPENSSL_VERSION_MAJOR < 3
         results += CipherAlgorithms::kBlowfish_CBC;
         results += CipherAlgorithms::kBlowfish_ECB;
         results += CipherAlgorithms::kBlowfish_CFB;
@@ -143,6 +143,7 @@ LibraryContext::LibraryContext ()
         results += CipherAlgorithms::kRC2_CFB;
         results += CipherAlgorithms::kRC2_OFB;
         results += CipherAlgorithms::kRC4;
+#endif
 
         return results;
     }}
@@ -161,11 +162,10 @@ LibraryContext::LibraryContext ()
             [] (const ::EVP_MD* md, [[maybe_unused]] const char* from, [[maybe_unused]] const char* to, void* arg) { AccumulateIntoSetOfDigestNames_ (md, reinterpret_cast<Set<String>*> (arg)); },
             &digestNames);
 #endif
-        DbgTrace (L"Found pAvailableCipherAlgorithms-FIRST-PASS (cnt=%d): %s", digestNames.size (), Characters::ToString (digestNames).c_str ());
+        DbgTrace (L"Found pAvailableDigestAlgorithms-FIRST-PASS (cnt=%d): %s", digestNames.size (), Characters::ToString (digestNames).c_str ());
 
         Set<DigestAlgorithm> results{digestNames.Select<DigestAlgorithm> ([] (const String& n) -> optional<DigestAlgorithm> { return OpenSSL::DigestAlgorithm::GetByNameQuietly (n); })};
-        WeakAssert (results.size () == digestNames.size ());
-        DbgTrace (L"Found pAvailableCipherAlgorithms (cnt=%d): %s", results.size (), Characters::ToString (results).c_str ());
+        DbgTrace (L"Found pAvailableDigestAlgorithms (cnt=%d): %s", results.size (), Characters::ToString (results).c_str ());
 
         return results;
     }}

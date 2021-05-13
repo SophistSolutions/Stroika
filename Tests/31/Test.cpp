@@ -483,9 +483,12 @@ namespace {
             DbgTrace (L"defaultContextStandardDigestAlgorithms = #%d %s", defaultContextStandardDigestAlgorithms.size (), Characters::ToString (defaultContextStandardDigestAlgorithms).c_str ());
 
             // worth noting if these fail
-            VerifyTestResultWarning (defaultContextAvailableCipherAlgorithms.Contains (defaultContextStandardCipherAlgorithms));
-            VerifyTestResultWarning (defaultContextAvailableDigestAlgorithms.Contains (defaultContextStandardDigestAlgorithms));
-
+            if (not defaultContextAvailableCipherAlgorithms.Contains (defaultContextStandardCipherAlgorithms)) {
+                Stroika::TestHarness::WarnTestIssue (Characters::Format (L"defaultContextAvailableCipherAlgorithms missing standard algoritmhs: %s", Characters::ToString (defaultContextStandardCipherAlgorithms - defaultContextAvailableCipherAlgorithms).c_str ()).c_str ());
+            }
+            if (not defaultContextAvailableDigestAlgorithms.Contains (defaultContextStandardDigestAlgorithms)) {
+                Stroika::TestHarness::WarnTestIssue (Characters::Format (L"defaultContextAvailableDigestAlgorithms missing standard algoritmhs: %s", Characters::ToString (defaultContextStandardDigestAlgorithms - defaultContextAvailableDigestAlgorithms).c_str ()).c_str ());
+            }
             // for openssl v3 could also check with legacy provider loaded...
 #endif
         }
