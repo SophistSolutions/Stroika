@@ -91,7 +91,8 @@
 			"csetjmp": "cpp",
 			"*.inc": "cpp",
 			"future": "cpp"
-		}
+		},
+		"git.ignoreLimitWarning": true
 
 	}
 }
