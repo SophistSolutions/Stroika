@@ -13,7 +13,6 @@
 #include "../../Common/Property.h"
 #include "../../Configuration/Common.h"
 #include "../../Execution/Exceptions.h"
-#include "../../Execution/VirtualConstant.h"
 #include "../../Memory/Common.h"
 
 /**
@@ -80,20 +79,20 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         /**
          *  very widely used, but not secure
          */
-        extern const Execution::VirtualConstant<DigestAlgorithm> kMD5;
+        extern const Common::ConstantProperty<DigestAlgorithm> kMD5;
 
         /**
          *  very widely used, but not secure
          */
-        extern const Execution::VirtualConstant<DigestAlgorithm> kSHA1;
+        extern const Common::ConstantProperty<DigestAlgorithm> kSHA1;
 
         /**
          *  kSHA224, kSHA256, kSHA384, and kSHA512 are generally a good (secure) choice
          */
-        extern const Execution::VirtualConstant<DigestAlgorithm> kSHA224;
-        extern const Execution::VirtualConstant<DigestAlgorithm> kSHA256;
-        extern const Execution::VirtualConstant<DigestAlgorithm> kSHA384;
-        extern const Execution::VirtualConstant<DigestAlgorithm> kSHA512;
+        extern const Common::ConstantProperty<DigestAlgorithm> kSHA224;
+        extern const Common::ConstantProperty<DigestAlgorithm> kSHA256;
+        extern const Common::ConstantProperty<DigestAlgorithm> kSHA384;
+        extern const Common::ConstantProperty<DigestAlgorithm> kSHA512;
     }
 
 #endif

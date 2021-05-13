@@ -75,20 +75,20 @@ optional<DigestAlgorithm> DigestAlgorithm::GetByNameQuietly (const String& diges
  */
 #if qCompilerAndStdLib_const_extern_declare_then_const_define_namespace_Buggy
 namespace Stroika::Foundation::Cryptography::OpenSSL::DigestAlgorithms {
-    const Execution::VirtualConstant<DigestAlgorithm> kMD5{[] () { return ::EVP_md5 (); }};
-    const Execution::VirtualConstant<DigestAlgorithm> kSHA1{[] () { return ::EVP_sha1 (); }};
-    const Execution::VirtualConstant<DigestAlgorithm> kSHA224{[] () { return ::EVP_sha224 (); }};
-    const Execution::VirtualConstant<DigestAlgorithm> kSHA256{[] () { return ::EVP_sha256 (); }};
-    const Execution::VirtualConstant<DigestAlgorithm> kSHA384{[] () { return ::EVP_sha384 (); }};
-    const Execution::VirtualConstant<DigestAlgorithm> kSHA512{[] () { return ::EVP_sha512 (); }};
+    const Common::ConstantProperty<DigestAlgorithm> kMD5{[] () { return ::EVP_md5 (); }};
+    const Common::ConstantProperty<DigestAlgorithm> kSHA1{[] () { return ::EVP_sha1 (); }};
+    const Common::ConstantProperty<DigestAlgorithm> kSHA224{[] () { return ::EVP_sha224 (); }};
+    const Common::ConstantProperty<DigestAlgorithm> kSHA256{[] () { return ::EVP_sha256 (); }};
+    const Common::ConstantProperty<DigestAlgorithm> kSHA384{[] () { return ::EVP_sha384 (); }};
+    const Common::ConstantProperty<DigestAlgorithm> kSHA512{[] () { return ::EVP_sha512 (); }};
 }
 #else
-const Execution::VirtualConstant<DigestAlgorithm> DigestAlgorithms::kMD5{[] () { return ::EVP_md5 (); }};
-const Execution::VirtualConstant<DigestAlgorithm> DigestAlgorithms::kSHA1{[] () { return ::EVP_sha1 (); }};
-const Execution::VirtualConstant<DigestAlgorithm> DigestAlgorithms::kSHA224{[] () { return ::EVP_sha224 (); }};
-const Execution::VirtualConstant<DigestAlgorithm> DigestAlgorithms::kSHA256{[] () { return ::EVP_sha256 (); }};
-const Execution::VirtualConstant<DigestAlgorithm> DigestAlgorithms::kSHA384{[] () { return ::EVP_sha384 (); }};
-const Execution::VirtualConstant<DigestAlgorithm> DigestAlgorithms::kSHA512{[] () { return ::EVP_sha512 (); }};
+const Common::ConstantProperty<DigestAlgorithm> DigestAlgorithms::kMD5{[] () { return ::EVP_md5 (); }};
+const Common::ConstantProperty<DigestAlgorithm> DigestAlgorithms::kSHA1{[] () { return ::EVP_sha1 (); }};
+const Common::ConstantProperty<DigestAlgorithm> DigestAlgorithms::kSHA224{[] () { return ::EVP_sha224 (); }};
+const Common::ConstantProperty<DigestAlgorithm> DigestAlgorithms::kSHA256{[] () { return ::EVP_sha256 (); }};
+const Common::ConstantProperty<DigestAlgorithm> DigestAlgorithms::kSHA384{[] () { return ::EVP_sha384 (); }};
+const Common::ConstantProperty<DigestAlgorithm> DigestAlgorithms::kSHA512{[] () { return ::EVP_sha512 (); }};
 #endif
 
 #endif

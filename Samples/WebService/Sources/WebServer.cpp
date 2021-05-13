@@ -8,8 +8,8 @@
 #include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
-#include "Stroika/Foundation/Execution/VirtualConstant.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
@@ -43,7 +43,7 @@ using Stroika::Frameworks::WebServer::Response;
 using namespace StroikaSample::WebServices;
 
 namespace {
-    const Execution::VirtualConstant<Headers> kDefaultResponseHeaders_{[] () {
+    const Common::ConstantProperty<Headers> kDefaultResponseHeaders_{[] () {
         Headers h;
         h.server = L"Stroika-Sample-WebServices/"_k + AppVersion::kVersion.AsMajorMinorString ();
         return h;

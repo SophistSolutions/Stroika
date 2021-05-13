@@ -13,10 +13,10 @@
 #include <optional>
 
 #include "../../../Foundation/Characters/String.h"
+#include "../../../Foundation/Common/Property.h"
 #include "../../../Foundation/Configuration/Common.h"
 #include "../../../Foundation/Containers/Mapping.h"
 #include "../../../Foundation/DataExchange/ObjectVariantMapper.h"
-#include "../../../Foundation/Execution/VirtualConstant.h"
 #include "../../../Foundation/IO/Network/SocketAddress.h"
 #include "../../../Foundation/IO/Network/URI.h"
 #include "../../../Foundation/Memory/BLOB.h"
@@ -80,7 +80,7 @@ namespace Stroika::Frameworks::UPnP::SSDP {
         /**
          *  Mapper to facilitiate serialization
          */
-        static const Foundation::Execution::VirtualConstant<Foundation::DataExchange::ObjectVariantMapper> kMapper;
+        static const Foundation::Common::ConstantProperty<Foundation::DataExchange::ObjectVariantMapper> kMapper;
 
         /**
          *  @see Characters::ToString ();
@@ -90,7 +90,7 @@ namespace Stroika::Frameworks::UPnP::SSDP {
     private:
         static Foundation::DataExchange::ObjectVariantMapper kMapperGetter_ ();
     };
-    inline const Foundation::Execution::VirtualConstant<Foundation::DataExchange::ObjectVariantMapper> Advertisement::kMapper{Advertisement::kMapperGetter_};
+    inline const Foundation::Common::ConstantProperty<Foundation::DataExchange::ObjectVariantMapper> Advertisement::kMapper{Advertisement::kMapperGetter_};
 
     /**
      */

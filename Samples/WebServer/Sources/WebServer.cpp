@@ -7,12 +7,12 @@
 
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/Execution/TimeOutException.h"
-#include "Stroika/Foundation/Execution/VirtualConstant.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
@@ -34,7 +34,7 @@ using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Frameworks::WebServer;
 
 using Characters::String;
-using Execution::VirtualConstant;
+using Common::ConstantProperty;
 using Memory::BLOB;
 
 using Stroika::Frameworks::WebServer::FileSystemRequestHandler;
@@ -48,7 +48,7 @@ namespace {
      *  You don't need to specify any of this, but it maybe helpful to specify caching control policies to
      *  get the best web-server performance.
      */
-    const VirtualConstant<FileSystemRequestHandler::Options> kFileSystemRouterOptions_{[] () {
+    const ConstantProperty<FileSystemRequestHandler::Options> kFileSystemRouterOptions_{[] () {
         Sequence<pair<RegularExpression, CacheControl>> cacheControlSettings_
         {
 #if __cpp_designated_initializers
@@ -67,7 +67,7 @@ namespace {
     /**
      *  You don't need to specify any of this, but its a good idea to propery identify your application.
      */
-    const VirtualConstant<Headers> kDefaultResponseHeaders_{[] () {
+    const ConstantProperty<Headers> kDefaultResponseHeaders_{[] () {
         Headers h;
         h.server = L"Stroika-Sample-WebServer/"_k + AppVersion::kVersion.AsMajorMinorString ();
         return h;

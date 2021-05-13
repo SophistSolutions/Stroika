@@ -15,7 +15,6 @@
 #include "../../Foundation/Execution/Synchronized.h"
 #include "../../Foundation/Execution/ThreadPool.h"
 #include "../../Foundation/Execution/UpdatableWaitForIOReady.h"
-#include "../../Foundation/Execution/VirtualConstant.h"
 #include "../../Foundation/IO/Network/HTTP/Headers.h"
 #include "../../Foundation/IO/Network/Listener.h"
 #include "../../Foundation/IO/Network/SocketAddress.h"
@@ -160,13 +159,13 @@ namespace Stroika::Frameworks::WebServer {
              */
             optional<unsigned int> fTCPBacklog;
 
-            static constexpr unsigned int                               kDefault_MaxConnections{25};
-            static constexpr Socket::BindFlags                          kDefault_BindFlags{};
-            static inline const Headers                                 kDefault_Headers{Iterable<KeyValuePair<String, String>>{{IO::Network::HTTP::HeaderName::kServer, L"Stroika/2.1"sv}}};
-            static inline const Execution::VirtualConstant<CORSOptions> kDefault_CORS{[] () { return kDefault_CORSOptions; }};
-            static constexpr bool                                       kDefault_AutoComputeETagResponse{true};
-            static constexpr Time::DurationSecondsType                  kDefault_AutomaticTCPDisconnectOnClose{2.0};
-            static constexpr optional<int>                              kDefault_Linger{nullopt}; // intentionally optional-valued
+            static constexpr unsigned int                             kDefault_MaxConnections{25};
+            static constexpr Socket::BindFlags                        kDefault_BindFlags{};
+            static inline const Headers                               kDefault_Headers{Iterable<KeyValuePair<String, String>>{{IO::Network::HTTP::HeaderName::kServer, L"Stroika/2.1"sv}}};
+            static inline const Common::ConstantProperty<CORSOptions> kDefault_CORS{[] () { return kDefault_CORSOptions; }};
+            static constexpr bool                                     kDefault_AutoComputeETagResponse{true};
+            static constexpr Time::DurationSecondsType                kDefault_AutomaticTCPDisconnectOnClose{2.0};
+            static constexpr optional<int>                            kDefault_Linger{nullopt}; // intentionally optional-valued
         };
         static const Options kDefaultOptions;
 

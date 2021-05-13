@@ -78,7 +78,8 @@ namespace Stroika::Foundation::Execution {
      *              (re-implementing parts of Optional) - and do right magic destruct/etc...
      */
     template <typename T>
-    struct VirtualConstant {
+    struct [[deprecated ("Since Stroika 2.1b12 use ConstantPropery")]] VirtualConstant
+    {
         /**
          *  oneTimeGetter is a function (can be a lambda()) which computes the given value. It is called 
          *  just once, and LAZILY, the first time the given VirtualConstant value is required.

@@ -4,6 +4,7 @@
 //  TEST    Foundation::Execution::Other
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include "Stroika/Foundation/DataExchange/OptionsFile.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
@@ -12,7 +13,6 @@
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Function.h"
 #include "Stroika/Foundation/Execution/ModuleGetterSetter.h"
-#include "Stroika/Foundation/Execution/VirtualConstant.h"
 #include "Stroika/Foundation/Time/DateTime.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
@@ -127,39 +127,39 @@ namespace {
 }
 
 namespace {
-    namespace Test4_VirtualConstant_ {
+    namespace Test4_ConstantProperty_ {
         namespace Private_ {
             namespace T1_ {
-                static const String                      x{L"3"};
-                const Execution::VirtualConstant<String> kX = [] () { return x; };
-                void                                     DoIt ()
+                static const String                    x{L"3"};
+                const Common::ConstantProperty<String> kX = [] () { return x; };
+                void                                   DoIt ()
                 {
                     const String a = kX;
                 }
             }
             namespace T2_ {
-                const Execution::VirtualConstant<String> kX = [] () { return L"6"; };
-                void                                     DoIt ()
+                const Common::ConstantProperty<String> kX = [] () { return L"6"; };
+                void                                   DoIt ()
                 {
                     const String a = kX;
-                    VerifyTestResult (a == L"6"); // Before Stroika 2.1b12 there was a bug that VirtualConstant stored teh constant in a static variable not data member!
+                    VerifyTestResult (a == L"6"); // Before Stroika 2.1b12 there was a bug that ConstantProperty stored teh constant in a static variable not data member!
                 }
             }
             namespace T3_ {
-                // @todo get constexpr working - see docs for VirtualConstant
-                //constexpr Execution::VirtualConstant<int> kX = [] () { return 3; };
-                const Execution::VirtualConstant<int> kX = [] () { return 3; };
-                void                                  DoIt ()
+                // @todo get constexpr working - see docs for Common::ConstantProperty
+                //constexpr Common::ConstantProperty<int> kX = [] () { return 3; };
+                const Common::ConstantProperty<int> kX = [] () { return 3; };
+                void                                DoIt ()
                 {
                     const int a [[maybe_unused]] = kX;
                 }
             }
             namespace T4_ {
-                const Execution::VirtualConstant<int> kX = [] () { return 4; };
-                void                                  DoIt ()
+                const Common::ConstantProperty<int> kX = [] () { return 4; };
+                void                                DoIt ()
                 {
                     const int a [[maybe_unused]] = kX;
-                    VerifyTestResult (a == 4); // Before Stroika 2.1b12 there was a bug that VirtualConstant stored teh constant in a static variable not data member!
+                    VerifyTestResult (a == 4); // Before Stroika 2.1b12 there was a bug that ConstantProperty stored teh constant in a static variable not data member!
                 }
             }
         }
@@ -252,7 +252,7 @@ namespace {
         Test1_Function_ ();
         Test2_CommandLine_ ();
         Test3_::DoAll ();
-        Test4_VirtualConstant_::DoAll ();
+        Test4_ConstantProperty_::DoAll ();
         Test5_ModuleGetterSetter_::DoAll ();
     }
 }

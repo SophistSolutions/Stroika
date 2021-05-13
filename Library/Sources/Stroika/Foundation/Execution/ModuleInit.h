@@ -130,7 +130,7 @@ namespace Stroika::Foundation::Execution {
      * This class makes sure that - if you construct a ModuleInitializer<> object in every module which might
      * use this module, then the is constructed at the earliest time, and destroyed at the latest.
      *
-     *  \note   ModuleInitializer works well with @see VirtualConstant<> - which can be used
+     *  \note   ModuleInitializer works well with @see ConstantProperty<> - which can be used
      *          to expose the carefully initialized data as if it were a constant.
      */
     template <typename MODULE_DATA>

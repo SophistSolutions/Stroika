@@ -14,7 +14,6 @@
 #include "../../Common/Property.h"
 #include "../../Configuration/Common.h"
 #include "../../Execution/Exceptions.h"
-#include "../../Execution/VirtualConstant.h"
 #include "../../Memory/Common.h"
 
 /**
@@ -78,24 +77,24 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
      *      @see http://linux.die.net/man/3/evp_cipher_ctx_init
      */
     namespace CipherAlgorithms {
-        extern const Execution::VirtualConstant<CipherAlgorithm> kAES_128_CBC;
-        extern const Execution::VirtualConstant<CipherAlgorithm> kAES_128_ECB;
-        extern const Execution::VirtualConstant<CipherAlgorithm> kAES_128_OFB;
-        extern const Execution::VirtualConstant<CipherAlgorithm> kAES_128_CFB1;
-        extern const Execution::VirtualConstant<CipherAlgorithm> kAES_128_CFB8;
-        extern const Execution::VirtualConstant<CipherAlgorithm> kAES_128_CFB128;
-        extern const Execution::VirtualConstant<CipherAlgorithm> kAES_192_CBC;
-        extern const Execution::VirtualConstant<CipherAlgorithm> kAES_192_ECB;
-        extern const Execution::VirtualConstant<CipherAlgorithm> kAES_192_OFB;
-        extern const Execution::VirtualConstant<CipherAlgorithm> kAES_192_CFB1;
-        extern const Execution::VirtualConstant<CipherAlgorithm> kAES_192_CFB8;
-        extern const Execution::VirtualConstant<CipherAlgorithm> kAES_192_CFB128;
-        extern const Execution::VirtualConstant<CipherAlgorithm> kAES_256_CBC;
-        extern const Execution::VirtualConstant<CipherAlgorithm> kAES_256_ECB;
-        extern const Execution::VirtualConstant<CipherAlgorithm> kAES_256_OFB;
-        extern const Execution::VirtualConstant<CipherAlgorithm> kAES_256_CFB1;
-        extern const Execution::VirtualConstant<CipherAlgorithm> kAES_256_CFB8;
-        extern const Execution::VirtualConstant<CipherAlgorithm> kAES_256_CFB128;
+        extern const Common::ConstantProperty<CipherAlgorithm> kAES_128_CBC;
+        extern const Common::ConstantProperty<CipherAlgorithm> kAES_128_ECB;
+        extern const Common::ConstantProperty<CipherAlgorithm> kAES_128_OFB;
+        extern const Common::ConstantProperty<CipherAlgorithm> kAES_128_CFB1;
+        extern const Common::ConstantProperty<CipherAlgorithm> kAES_128_CFB8;
+        extern const Common::ConstantProperty<CipherAlgorithm> kAES_128_CFB128;
+        extern const Common::ConstantProperty<CipherAlgorithm> kAES_192_CBC;
+        extern const Common::ConstantProperty<CipherAlgorithm> kAES_192_ECB;
+        extern const Common::ConstantProperty<CipherAlgorithm> kAES_192_OFB;
+        extern const Common::ConstantProperty<CipherAlgorithm> kAES_192_CFB1;
+        extern const Common::ConstantProperty<CipherAlgorithm> kAES_192_CFB8;
+        extern const Common::ConstantProperty<CipherAlgorithm> kAES_192_CFB128;
+        extern const Common::ConstantProperty<CipherAlgorithm> kAES_256_CBC;
+        extern const Common::ConstantProperty<CipherAlgorithm> kAES_256_ECB;
+        extern const Common::ConstantProperty<CipherAlgorithm> kAES_256_OFB;
+        extern const Common::ConstantProperty<CipherAlgorithm> kAES_256_CFB1;
+        extern const Common::ConstantProperty<CipherAlgorithm> kAES_256_CFB8;
+        extern const Common::ConstantProperty<CipherAlgorithm> kAES_256_CFB128;
 
         /*
          * NB: In OpenSSL v3, the algorithms:
@@ -109,16 +108,16 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
          * 
          * @todo mark these below as deprecated...
          */
-        extern const Execution::VirtualConstant<CipherAlgorithm> kBlowfish_CBC;
-        extern const Execution::VirtualConstant<CipherAlgorithm> kBlowfish_ECB;
-        extern const Execution::VirtualConstant<CipherAlgorithm> kBlowfish_CFB;
-        extern const Execution::VirtualConstant<CipherAlgorithm> kBlowfish_OFB;
-        extern const Execution::VirtualConstant<CipherAlgorithm> kBlowfish;
-        extern const Execution::VirtualConstant<CipherAlgorithm> kRC2_CBC;
-        extern const Execution::VirtualConstant<CipherAlgorithm> kRC2_ECB;
-        extern const Execution::VirtualConstant<CipherAlgorithm> kRC2_CFB;
-        extern const Execution::VirtualConstant<CipherAlgorithm> kRC2_OFB;
-        extern const Execution::VirtualConstant<CipherAlgorithm> kRC4;
+        extern const Common::ConstantProperty<CipherAlgorithm> kBlowfish_CBC;
+        extern const Common::ConstantProperty<CipherAlgorithm> kBlowfish_ECB;
+        extern const Common::ConstantProperty<CipherAlgorithm> kBlowfish_CFB;
+        extern const Common::ConstantProperty<CipherAlgorithm> kBlowfish_OFB;
+        extern const Common::ConstantProperty<CipherAlgorithm> kBlowfish;
+        extern const Common::ConstantProperty<CipherAlgorithm> kRC2_CBC;
+        extern const Common::ConstantProperty<CipherAlgorithm> kRC2_ECB;
+        extern const Common::ConstantProperty<CipherAlgorithm> kRC2_CFB;
+        extern const Common::ConstantProperty<CipherAlgorithm> kRC2_OFB;
+        extern const Common::ConstantProperty<CipherAlgorithm> kRC4;
     }
 
 }

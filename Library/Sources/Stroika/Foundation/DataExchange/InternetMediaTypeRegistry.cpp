@@ -18,7 +18,7 @@
 #include "../Execution/Platform/Windows/Exception.h"
 #endif
 #if qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy
-#include "../Execution/VirtualConstant.h"
+#include "../Common/Property.h"
 #endif
 #include "../Execution/Synchronized.h"
 #include "../IO/FileSystem/FileInputStream.h"
@@ -57,7 +57,7 @@ namespace {
         }};
         return kDefaults_;
     }
-    VirtualConstant<Mapping<InternetMediaType, OverrideRecord>> kDefaults_{mkDefaults_};
+    Common::ConstantProperty<Mapping<InternetMediaType, OverrideRecord>> kDefaults_{mkDefaults_};
 }
 #endif
 
