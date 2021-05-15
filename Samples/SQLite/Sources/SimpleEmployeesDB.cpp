@@ -124,16 +124,17 @@ void Stroika::Samples::SQLite::SimpleEmployeesDB (const Options& options)
      ***** INSERT ROWS (ERROR CHECKING) ****
      */
     // This call will generate a REQUIRE assertion error - terminating your program. Don't violate assertions!
-#if 0
-    addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-        {L":BAD-ARGUMENT", 7},
-        {L":NAME", L"James"},
-        {L":AGE", 24},
-        {L":ADDRESS", L"Houston"},
-        {L":SALARY", 10000.00},
-    });
-    AssertNotReached ();
-#endif
+    if (false) {
+        addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
+            {L":BAD-ARGUMENT", 7},  // almost as good as static type checking to make sure paramter names match call
+            {L":NAME", L"James"},
+            {L":AGE", 24},
+            {L":ADDRESS", L"Houston"},
+            {L":SALARY", 10000.00},
+        });
+        AssertNotReached ();
+    }
+
     try {
         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
             {L":ID", 7},
