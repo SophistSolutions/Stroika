@@ -126,7 +126,7 @@ void Stroika::Samples::SQLite::SimpleEmployeesDB (const Options& options)
     // This call will generate a REQUIRE assertion error - terminating your program. Don't violate assertions!
     if (false) {
         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-            {L":BAD-ARGUMENT", 7},  // almost as good as static type checking to make sure paramter names match call
+            {L":BAD-ARGUMENT", 7}, // almost as good as static type checking to make sure paramter names match call
             {L":NAME", L"James"},
             {L":AGE", 24},
             {L":ADDRESS", L"Houston"},
