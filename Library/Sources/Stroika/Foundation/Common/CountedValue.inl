@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Common {
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     constexpr CountedValue<VALUE_TYPE, COUNTER_TYPE>::CountedValue (typename Configuration::ArgByValueType<ValueType> value, CounterType count)
         : fValue{value}
-        , fCount {count}
+        , fCount{count}
     {
     }
     template <typename VALUE_TYPE, typename COUNTER_TYPE>

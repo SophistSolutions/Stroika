@@ -65,6 +65,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Main.cpp" />
+    <ClCompile Include="..\..\Sources\SimpleEmployeesDB.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Sources\SimpleEmployeesDB.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

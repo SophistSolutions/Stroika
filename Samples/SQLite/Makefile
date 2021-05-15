@@ -17,6 +17,7 @@ TARGETEXE				=	$(TARGETDIR)SQLite${EXE_SUFFIX}
 
 Objs	=	\
 	$(ObjDir)Main${OBJ_SUFFIX}\
+	$(ObjDir)SimpleEmployeesDB${OBJ_SUFFIX}\
 	\
 
 
