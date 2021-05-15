@@ -15,7 +15,7 @@ namespace Stroika::Samples::SQLite {
      *  \brief  Simple test of creating a plain (employees) db and adding to it, and a few simple queries.
      */
     void SimpleEmployeesDB (const Options& options);
-    #endif
+#endif
 }
 
 /*

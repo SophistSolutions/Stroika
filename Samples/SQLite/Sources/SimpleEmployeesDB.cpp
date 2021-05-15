@@ -19,8 +19,6 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Database;
 
-
-
 void Stroika::Samples::SQLite::SimpleEmployeesDB (const Options& options)
 {
 #if qHasFeature_sqlite
