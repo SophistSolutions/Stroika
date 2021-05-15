@@ -21,22 +21,22 @@ namespace Stroika::Foundation::Common {
      */
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     constexpr CountedValue<VALUE_TYPE, COUNTER_TYPE>::CountedValue (typename Configuration::ArgByValueType<ValueType> value, CounterType count)
-        : fValue (value)
-        , fCount (count)
+        : fValue{value}
+        , fCount {count}
     {
     }
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     template <typename VALUE2_TYPE, typename COUNTER2_TYPE, enable_if_t<is_convertible_v<VALUE2_TYPE, VALUE_TYPE> and is_convertible_v<COUNTER2_TYPE, COUNTER_TYPE>>*>
     constexpr CountedValue<VALUE_TYPE, COUNTER_TYPE>::CountedValue (pair<VALUE2_TYPE, COUNTER2_TYPE> src)
-        : fValue (src.first)
-        , fCount (src.second)
+        : fValue{src.first}
+        , fCount{src.second}
     {
     }
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     template <typename VALUE2_TYPE, typename COUNTER2_TYPE, enable_if_t<is_convertible_v<VALUE2_TYPE, VALUE_TYPE> and is_convertible_v<COUNTER2_TYPE, COUNTER_TYPE>>*>
     constexpr CountedValue<VALUE_TYPE, COUNTER_TYPE>::CountedValue (const CountedValue<VALUE2_TYPE, COUNTER2_TYPE>& src)
-        : fValue (src.fValue)
-        , fCount (src.fCount)
+        : fValue{src.fValue}
+        , fCount{src.fCount}
     {
     }
 #if __cpp_impl_three_way_comparison >= 201907
