@@ -19,10 +19,11 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Database;
 
+#if qHasFeature_sqlite
+using namespace Database::SQLite;
+
 void Stroika::Samples::SQLite::SimpleEmployeesDB (const Options& options)
 {
-#if qHasFeature_sqlite
-    using namespace Database::SQLite;
     /*
      ***** SETUP SCHEMA ****
      */
@@ -45,11 +46,8 @@ void Stroika::Samples::SQLite::SimpleEmployeesDB (const Options& options)
     /*
      ***** CONNECT TO DATABASE ****
      */
-#if __cpp_designated_initializers
     Connection::Ptr conn = Connection::New (options, initializeDB);
-#else
-    Connection::Ptr conn = Connection::New (options, initializeDB);
-#endif
+
     /*
         ID          NAME        AGE         ADDRESS     SALARY
         ----------  ----------  ----------  ----------  ----------
@@ -162,5 +160,5 @@ void Stroika::Samples::SQLite::SimpleEmployeesDB (const Options& options)
     Statement               getAllSalarys{conn, L"select SALARY from EMPLOYEES;"};
     [[maybe_unused]] double sumSalaryUsingIterableApply = getAllSalarys.GetAllRows (0).Select<double> ([] (VariantValue v) { return v.As<double> (); }).SumValue ();
     Assert (Math::NearlyEquals (sumSalaryUsingSQL, sumSalaryUsingIterableApply));
-#endif
 }
+#endif

@@ -449,6 +449,22 @@ Sequence<tuple<VariantValue, VariantValue>> Statement::GetAllRows (size_t restri
     return result;
 }
 
+Sequence<tuple<VariantValue, VariantValue, VariantValue>> Statement::GetAllRows (size_t restrictToColumn1, size_t restrictToColumn2, size_t restrictToColumn3)
+{
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    TraceContextBumper ctx{"SQLite::DB::Statement::GetAllRows"};
+#endif
+    Sequence<tuple<VariantValue, VariantValue, VariantValue>> result;
+    ColumnDescription                           col0 = GetColumns ()[restrictToColumn1];
+    ColumnDescription                           col1 = GetColumns ()[restrictToColumn2];
+    ColumnDescription                           col2 = GetColumns ()[restrictToColumn3];
+    while (auto o = GetNextRow ()) {
+        result += make_tuple (*o->Lookup (col0.fName), *o->Lookup (col1.fName), *o->Lookup (col2.fName));
+    }
+    Reset ();
+    return result;
+}
+
 auto Statement::GetNextRow () -> optional<Row>
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

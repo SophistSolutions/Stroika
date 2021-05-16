@@ -380,6 +380,7 @@ namespace Stroika::Foundation::Database::SQLite {
         nonvirtual Sequence<Row> GetAllRows ();
         nonvirtual Sequence<VariantValue> GetAllRows (size_t restrictToColumn);
         nonvirtual Sequence<tuple<VariantValue, VariantValue>> GetAllRows (size_t restrictToColumn1, size_t restrictToColumn2);
+        nonvirtual Sequence<tuple<VariantValue, VariantValue, VariantValue>> GetAllRows (size_t restrictToColumn1, size_t restrictToColumn2, size_t restrictToColumn3);
 
     public:
         enum class WhichSQLFlag {
