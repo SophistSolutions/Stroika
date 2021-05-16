@@ -209,6 +209,7 @@ namespace Stroika::Foundation::Execution {
          *  \note   ***Cancelation Point***
          */
         nonvirtual bool WaitQuietly (Time::DurationSecondsType timeout = Time::kInfinite);
+        nonvirtual bool WaitQuietly (const Time::Duration& timeout);
 
     public:
         /**
