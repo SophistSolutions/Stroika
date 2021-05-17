@@ -14,11 +14,13 @@
 #endif
 
 #include "../Characters/String.h"
+#include "../Common/Property.h"
 #include "../Containers/Mapping.h"
 #include "../Containers/Sequence.h"
 #include "../DataExchange/VariantValue.h"
 #include "../Debug/AssertExternallySynchronizedLock.h"
 #include "../IO/Network/URI.h"
+#include "../Time/Duration.h"
 
 /**
  *  \file
@@ -37,6 +39,7 @@ namespace Stroika::Foundation::Database::SQLite {
     using Containers::Sequence;
     using DataExchange::VariantValue;
     using IO::Network::URI;
+    using Time::Duration;
 
 #if qHasFeature_sqlite
 
@@ -171,6 +174,12 @@ namespace Stroika::Foundation::Database::SQLite {
          *  \req fImmutable ==> fReadOnly
         */
         bool fImmutable{false};
+
+        /**
+         *  This is only useful if the database can be opened by multiple threads of control (multiple threads with connections
+         *  within the same app, or multiple applications).
+         */
+        optional<Duration> fBusyTimeout;
     };
 
     class Statement;
@@ -237,6 +246,18 @@ namespace Stroika::Foundation::Database::SQLite {
          */
         virtual ::sqlite3* Peek () = 0;
 
+    public:
+        /**
+         *  Fetched dynamically with pragma busy_timeout;
+         */
+        virtual Duration GetBusyTimeout () const = 0;
+
+    public:
+        /**
+         *  \req timeout >= 0
+         */
+        virtual void SetBusyTimeout (const Duration& timeout) = 0;
+
     private:
         friend class Ptr;
     };
@@ -259,10 +280,8 @@ namespace Stroika::Foundation::Database::SQLite {
     public:
         /**
          */
-        Ptr () = default;
         Ptr (const Ptr& src);
-        Ptr (Ptr&& src) noexcept;
-        Ptr (const shared_ptr<IRep>& src);
+        Ptr (const shared_ptr<IRep>& src = nullptr);
 
     public:
         ~Ptr () = default;
@@ -291,6 +310,13 @@ namespace Stroika::Foundation::Database::SQLite {
          *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the sqlite API.
          */
         nonvirtual ::sqlite3* Peek () const;
+
+    public:
+        /**
+         *  When doing a query that would have failed due to SQL_BUSY timeout, sqlite will wait
+         *  and retry up to this long, to avoid the timeout.
+         */
+        Common::Property<Duration> pBusyTimeout;
 
     public:
         nonvirtual auto operator== (const Ptr& rhs) const;

@@ -51,12 +51,15 @@ namespace {
                 L"DATE TEXT"
                 L");");
         };
-        return Connection::New (options, initializeDB);
+        Options o      = options;
+        o.fBusyTimeout = o.fBusyTimeout.value_or (1s); // default to 1 second busy timeout for these tests
+        return Connection::New (o, initializeDB);
     }
 
     void PeriodicallyUpdateEmployeesTable_ (const Options& options)
     {
         Connection::Ptr conn = SetupDB_ (options);
+        DbgTrace (L"TESTING TIMEOUT = %s", Characters::ToString (conn.pBusyTimeout ()).c_str ());
 
         Statement addEmployeeStatement{conn, L"INSERT INTO EMPLOYEES (NAME,AGE,ADDRESS,SALARY,STILL_EMPLOYED) values (:NAME, :AGE, :ADDRESS, :SALARY, :STILL_EMPLOYED);"};
 
@@ -118,6 +121,8 @@ namespace {
 
         Statement fireEmployee{conn, L"Update EMPLOYEES Set STILL_EMPLOYED=0 where ID=:ID;"};
 
+        // then keep adding/removing people randomly (but dont really remove just mark no longer employed so we
+        // can REF in paycheck table
         while (true) {
             static const Sequence<String>    kNames_{L"Joe", L"Phred", L"Barny", L"Sue", L"Anne"};
             uniform_int_distribution<int>    namesDistr{0, static_cast<int> (kNames_.size () - 1)};
@@ -145,7 +150,7 @@ namespace {
                         // Look somebody up, and fire them
                         Sequence<tuple<VariantValue, VariantValue>> activeEmps = getAllActiveEmployees.GetAllRows (0, 1);
                         if (not activeEmps.empty ()) {
-                            uniform_int_distribution<int>     empDistr{0, static_cast<int> (activeEmps.size ()-1)};
+                            uniform_int_distribution<int>     empDistr{0, static_cast<int> (activeEmps.size () - 1)};
                             tuple<VariantValue, VariantValue> killMe = activeEmps[empDistr (generator)];
                             DbgTrace (L"Firing employee: %d, %s", get<0> (killMe).As<int> (), get<1> (killMe).As<String> ().c_str ());
                             fireEmployee.Execute (initializer_list<Statement::ParameterDescription>{
@@ -173,10 +178,10 @@ namespace {
         while (true) {
             try {
                 for (auto employee : getAllActiveEmployees.GetAllRows (0, 1, 2)) {
-                    int    id     = std::get<0> (employee).As<int> ();
+                    int    id     = get<0> (employee).As<int> ();
                     String name   = get<1> (employee).As<String> ();
                     double salary = get<2> (employee).As<double> ();
-                    DbgTrace (L"Writing patcheck for employee #%d (%s) amount %f", id, name.c_str (), salary);
+                    DbgTrace (L"Writing paycheck for employee #%d (%s) amount %f", id, name.c_str (), salary);
                     addPaycheckStatement.Execute (initializer_list<Statement::ParameterDescription>{
                         {L":EMPLOYEEREF", id},
                         {L":AMOUNT", salary / 12},
@@ -201,6 +206,6 @@ void Stroika::Samples::SQLite::ThreadTest (const Options& options)
      */
     Thread::CleanupPtr updateEmpDBThread{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { PeriodicallyUpdateEmployeesTable_ (options); }, Thread::eAutoStart, L"Update Employee Table")};
     Thread::CleanupPtr writeChecks{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { PeriodicallyWriteChecksForEmployeesTable_ (options); }, Thread::eAutoStart, L"Write Checks")};
-    Execution::WaitableEvent{}.WaitQuietly (/*15d*/);
+    Execution::WaitableEvent{}.WaitQuietly (15s);
 }
 #endif

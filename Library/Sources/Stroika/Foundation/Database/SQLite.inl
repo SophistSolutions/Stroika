@@ -56,31 +56,8 @@ namespace Stroika::Foundation::Database::SQLite {
      ********************************************************************************
      */
     inline Connection::Ptr::Ptr (const Ptr& src)
-        : fRep_{src.fRep_}
+        : Ptr{src.fRep_}
     {
-#if qDebug
-        if (fRep_) {
-            _fSharedContext = fRep_->_fSharedContext;
-        }
-#endif
-    }
-    inline Connection::Ptr::Ptr (Ptr&& src) noexcept
-        : fRep_{move (src.fRep_)}
-    {
-#if qDebug
-        if (fRep_) {
-            _fSharedContext = fRep_->_fSharedContext;
-        }
-#endif
-    }
-    inline Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
-        : fRep_{src}
-    {
-#if qDebug
-        if (fRep_) {
-            _fSharedContext = fRep_->_fSharedContext;
-        }
-#endif
     }
     inline Connection::Ptr& Connection::Ptr::operator= (const Ptr& src)
     {

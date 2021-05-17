@@ -9,6 +9,7 @@
 #include "../Characters/StringBuilder.h"
 #include "../Characters/ToString.h"
 #include "../Debug/Trace.h"
+#include "../Time/Duration.h"
 
 #include "SQLite.h"
 
@@ -21,6 +22,7 @@ using namespace Debug;
 using namespace Database;
 using namespace Database::SQLite;
 using namespace Execution;
+using namespace Time;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -46,6 +48,10 @@ namespace {
             errMsgDetails = String::FromUTF8 (::sqlite3_errmsg (sqliteConnection));
         }
         switch (errCode) {
+            case SQLITE_BUSY: {
+                DbgTrace (L"SQLITE_BUSY");
+                Execution::Throw (system_error{make_error_code (errc::device_or_resource_busy)});
+            } break;
             case SQLITE_CONSTRAINT: {
                 if (errMsgDetails) {
                     Execution::Throw (Exception{Characters::Format (L"SQLITE_CONSTRAINT: %s", errMsgDetails->c_str ())});
@@ -100,9 +106,7 @@ namespace {
         }
     }
 }
-#endif
 
-#if qHasFeature_sqlite
 /*
  ********************************************************************************
  *************************** SQLite::CompiledOptions ****************************
@@ -117,9 +121,7 @@ namespace {
         }
     } sVerifyFlags_;
 }
-#endif
 
-#if qHasFeature_sqlite
 /*
  ********************************************************************************
  *************************** SQLite::Connection::Rep_ ***************************
@@ -212,6 +214,9 @@ struct Connection::Rep_ final : IRep {
             }
             ThrowSQLiteErrorIfNotOK_ (e, fDB_);
         }
+        if (options.fBusyTimeout) {
+            SetBusyTimeout (*options.fBusyTimeout);
+        }
         EnsureNotNull (fDB_);
     }
     ~Rep_ ()
@@ -239,11 +244,57 @@ struct Connection::Rep_ final : IRep {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this}; // not super helpful, but could catch errors - reason not very helpful is we lose lock long before we stop using ptr
         return fDB_;
     }
+    virtual Duration GetBusyTimeout () const override
+    {
+        optional<int> d;
+        auto          callback = [] (void* lamdaArg, int argc, char** argv, char** azColName) {
+            optional<int>* pd = reinterpret_cast<optional<int>*> (lamdaArg);
+            AssertNotNull (pd);
+            Assert (argc == 1);
+            Assert (::strcmp (azColName[0], "timeout") == 0);
+            int val = ::atoi (argv[0]);
+            Assert (val >= 0);
+            *pd = val;
+            return 0;
+        };
+        ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma busy_timeout;", callback, &d, nullptr));
+        Assert (d);
+        return Duration{double (*d) / 1000.0};
+    }
+    virtual void SetBusyTimeout (const Duration& timeout) override
+    {
+        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        ThrowSQLiteErrorIfNotOK_ (::sqlite3_busy_timeout (fDB_, (int)(timeout.As<float> () * 1000)), fDB_);
+    }
     ::sqlite3* fDB_{};
 };
-#endif
 
-#if qHasFeature_sqlite
+/*
+ ********************************************************************************
+ ******************************* SQLite::Ptr ************************************
+ ********************************************************************************
+ */
+SQLite::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
+    : pBusyTimeout{
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+              const Ptr* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Ptr::pBusyTimeout);
+              RequireNotNull (thisObj->fRep_);
+              return thisObj->fRep_->GetBusyTimeout ();
+          },
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, auto timeout) {
+              Ptr* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Ptr::pBusyTimeout);
+              RequireNotNull (thisObj->fRep_);
+              thisObj->fRep_->SetBusyTimeout (timeout);
+          }}
+    , fRep_{src}
+{
+#if qDebug
+    if (fRep_) {
+        _fSharedContext = fRep_->_fSharedContext;
+    }
+#endif
+}
+
 /*
  ********************************************************************************
  *************************** SQLite::Connection *********************************
@@ -258,9 +309,7 @@ auto SQLite::Connection::New (const Options& options, const function<void (const
     }
     return result;
 }
-#endif
 
-#if qHasFeature_sqlite
 /*
  ********************************************************************************
  ********************* SQLite::Statement::ColumnDescription *********************
@@ -275,9 +324,7 @@ String Statement::ColumnDescription::ToString () const
     sb += L"}";
     return sb.str ();
 }
-#endif
 
-#if qHasFeature_sqlite
 /*
  ********************************************************************************
  ****************** SQLite::Statement::ParameterDescription *********************
@@ -292,9 +339,7 @@ String Statement::ParameterDescription::ToString () const
     sb += L"}";
     return sb.str ();
 }
-#endif
 
-#if qHasFeature_sqlite
 /*
  ********************************************************************************
  ******************************* SQLite::Statement ******************************
@@ -455,9 +500,9 @@ Sequence<tuple<VariantValue, VariantValue, VariantValue>> Statement::GetAllRows 
     TraceContextBumper ctx{"SQLite::DB::Statement::GetAllRows"};
 #endif
     Sequence<tuple<VariantValue, VariantValue, VariantValue>> result;
-    ColumnDescription                           col0 = GetColumns ()[restrictToColumn1];
-    ColumnDescription                           col1 = GetColumns ()[restrictToColumn2];
-    ColumnDescription                           col2 = GetColumns ()[restrictToColumn3];
+    ColumnDescription                                         col0 = GetColumns ()[restrictToColumn1];
+    ColumnDescription                                         col1 = GetColumns ()[restrictToColumn2];
+    ColumnDescription                                         col2 = GetColumns ()[restrictToColumn3];
     while (auto o = GetNextRow ()) {
         result += make_tuple (*o->Lookup (col0.fName), *o->Lookup (col1.fName), *o->Lookup (col2.fName));
     }
