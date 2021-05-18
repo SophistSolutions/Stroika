@@ -23,7 +23,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 #if __cpp_designated_initializers
         SimpleEmployeesDB (Options{.fInMemoryDB = u"simple-employees-test"});
 #else
-        SimpleEmployeesDB (Options{u"simple-employees-test"});
+        SimpleEmployeesDB (Options{nullopt, true, nullopt, u"simple-employees-test"});
 #endif
     }
     {
