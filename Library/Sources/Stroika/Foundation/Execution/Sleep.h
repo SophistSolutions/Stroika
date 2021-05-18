@@ -24,8 +24,8 @@
 namespace Stroika::Foundation::Execution {
 
     /**
-     * The portable Sleep() function - will wait the given amount of time - blocking the running thread.
-     * It CAN be interrupted (not talking about thread interrupt). If interrupted, one overload will return the amount of time remaining, allowing
+     * The portable Sleep() function - will wait the given amount of time - blocking the calling thread.
+     * It CAN be interrupted (not talking about thread interrupt - e.g. POSIX signal). If interrupted, one overload will return the amount of time remaining, allowing
      * easy re-sleeping. The other overload (/1) - will check for aborting, but otherwise keep sleeping
      * through interrupts until the time has elapsed.
      *
@@ -58,8 +58,8 @@ namespace Stroika::Foundation::Execution {
      *  \par Example Usage
      *      \code
      *          Time::DurationSeconds startedAt =   Time::GetTickCount ();
-     *          do_someting_dont_know_how_long_it_will_take();
-     *          Execution::SleepUntil (1.0 + startedAt);        // make sure do_someting_dont_know_how_long_it_will_take () took at least one second
+     *          do_something_dont_know_how_long_it_will_take();
+     *          Execution::SleepUntil (1.0 + startedAt);        // make sure do_something_dont_know_how_long_it_will_take () took at least one second
      *      \endcode
      *
      *  @see Sleep ();
