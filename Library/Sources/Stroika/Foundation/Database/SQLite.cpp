@@ -176,10 +176,10 @@ struct Connection::Rep_ final : IRep {
             }
         }
         if (options.fTemporaryDB) {
-            uriArg = string{}; // not sure how to give name to tmp file - maybe must use url syntax?
-            if (not options.fTemporaryDB->empty ()) {
-                AssertNotImplemented ();
-            }
+            uriArg = string{};
+            // According to https://sqlite.org/inmemorydb.html, temporary DBs appear to require empty name
+            // @todo MAYBE fix to find a way to do named temporary DB? - or adjust API so no string name provided.
+            Require (not options.fTemporaryDB->empty ());
         }
         if (options.fInMemoryDB) {
             flags |= SQLITE_OPEN_MEMORY;
@@ -190,7 +190,7 @@ struct Connection::Rep_ final : IRep {
                 uriArg = ":memory";
             }
             else {
-                WeakAssertNotImplemented (); // maybe can do this with URI syntax, but not totally clear
+                uriArg = "file:" + uriArg + "?mode=memory&cache=shared";
             }
             // For now, it appears we ALWAYS create memory DBS when opening (so cannot find a way to open shared) - so always set created flag
             fTmpHackCreated_ = true;
