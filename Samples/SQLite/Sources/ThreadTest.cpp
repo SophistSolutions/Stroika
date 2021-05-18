@@ -36,7 +36,7 @@ namespace {
             // Use Connection::Ptr::Exec because no parameter bindings needed
             c.Exec (
                 L"CREATE TABLE EMPLOYEES("
-                L"ID INTEGER PRIMARY KEY AUTOINCREMENT ,"
+                L"ID INTEGER PRIMARY KEY AUTOINCREMENT,"
                 L"NAME           TEXT    NOT NULL,"
                 L"AGE            INT     NOT NULL,"
                 L"ADDRESS        CHAR(50),"
@@ -56,11 +56,8 @@ namespace {
         return Connection::New (o, initializeDB);
     }
 
-    void PeriodicallyUpdateEmployeesTable_ (const Options& options)
+    void PeriodicallyUpdateEmployeesTable_ (Connection::Ptr conn)
     {
-        Connection::Ptr conn = SetupDB_ (options);
-        DbgTrace (L"TESTING TIMEOUT = %s", Characters::ToString (conn.pBusyTimeout ()).c_str ());
-
         Statement addEmployeeStatement{conn, L"INSERT INTO EMPLOYEES (NAME,AGE,ADDRESS,SALARY,STILL_EMPLOYED) values (:NAME, :AGE, :ADDRESS, :SALARY, :STILL_EMPLOYED);"};
 
         // Add Initial Employees
@@ -168,10 +165,8 @@ namespace {
         }
     }
 
-    void PeriodicallyWriteChecksForEmployeesTable_ (const Options& options)
+    void PeriodicallyWriteChecksForEmployeesTable_ (Connection::Ptr conn)
     {
-        Connection::Ptr conn = SetupDB_ (options);
-
         Statement addPaycheckStatement{conn, L"INSERT INTO PAYCHECKS (EMPLOYEEREF,AMOUNT,DATE) values (:EMPLOYEEREF, :AMOUNT, :DATE);"};
         Statement getAllActiveEmployees{conn, L"Select ID,NAME,SALARY from EMPLOYEES where STILL_EMPLOYED=1;"};
 
@@ -204,8 +199,10 @@ void Stroika::Samples::SQLite::ThreadTest (const Options& options)
      *  Create threads for each of our activities.
      *  When the waitable even times out, the threads will automatically be 'canceled' as they go out of scope.
      */
-    Thread::CleanupPtr updateEmpDBThread{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { PeriodicallyUpdateEmployeesTable_ (options); }, Thread::eAutoStart, L"Update Employee Table")};
-    Thread::CleanupPtr writeChecks{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { PeriodicallyWriteChecksForEmployeesTable_ (options); }, Thread::eAutoStart, L"Write Checks")};
+    Connection::Ptr    conn1 = SetupDB_ (options); // serialize construction of connections so no race creating/setting up DB
+    Connection::Ptr    conn2 = SetupDB_ (options);
+    Thread::CleanupPtr updateEmpDBThread{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { PeriodicallyUpdateEmployeesTable_ (conn1); }, Thread::eAutoStart, L"Update Employee Table")};
+    Thread::CleanupPtr writeChecks{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { PeriodicallyWriteChecksForEmployeesTable_ (conn2); }, Thread::eAutoStart, L"Write Checks")};
     Execution::WaitableEvent{}.WaitQuietly (15s);
 }
 #endif

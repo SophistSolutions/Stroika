@@ -36,7 +36,7 @@ void Stroika::Samples::SQLite::SimpleEmployeesDB (const Options& options)
             L");");
         c.Exec (
             L"CREATE TABLE EMPLOYEES("
-            L"ID INT PRIMARY KEY     NOT NULL,"
+            L"ID INT PRIMARY KEY     NOT NULL," // See example ThreadTest for simple example using AUTOINCREMENT instead of explicit IDs
             L"NAME           TEXT    NOT NULL,"
             L"AGE            INT     NOT NULL,"
             L"ADDRESS        CHAR(50),"
