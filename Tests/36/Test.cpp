@@ -35,7 +35,7 @@ using namespace Stroika::Foundation::Time;
 #if qHasFeature_sqlite
 namespace {
     // Bad example (for now) without Bind - just formatting sql lines
-    namespace RegressionTest1_sqlite_bad_without_bind_ {
+    namespace RegressionTest1_sqlite_ScansDBTest_ {
         namespace PRIVATE_ {
             using namespace Database::SQLite;
             enum class ScanKindType_ {
@@ -173,6 +173,7 @@ namespace {
                 }
                 static void InitialSetup_ (Database::SQLite::Connection::Ptr db)
                 {
+                    // @todo rewrite this using Bind()
                     TraceContextBumper ctx{"ScanDB_::DB::InitialSetup_"};
                     auto               tableSetup_ScanTypes = [&db] () {
                         db.Exec (L"create table 'ScanTypes' "
@@ -272,7 +273,7 @@ namespace {
         }
     }
 
-    namespace RegressionTest2_sqlite_with_threads_ {
+    namespace RegressionTest2_sqlite_EmployeesDB_with_threads_ {
 
         using namespace Database::SQLite;
 
@@ -280,7 +281,7 @@ namespace {
 
             Connection::Ptr SetupDB_ (const Options& options)
             {
-                TraceContextBumper ctx{"RegressionTest2_sqlite_with_threads_::SetupDB_"};
+                TraceContextBumper ctx{"RegressionTest2_sqlite_EmployeesDB_with_threads_::SetupDB_"};
                 auto               initializeDB = [] (const Connection::Ptr& c) {
                     // Use Connection::Ptr::Exec because no parameter bindings needed
                     c.Exec (
@@ -309,7 +310,7 @@ namespace {
 
             void PeriodicallyUpdateEmployeesTable_ (Connection::Ptr conn)
             {
-                TraceContextBumper ctx{"RegressionTest2_sqlite_with_threads_::PeriodicallyUpdateEmployeesTable_"};
+                TraceContextBumper ctx{"RegressionTest2_sqlite_EmployeesDB_with_threads_::PeriodicallyUpdateEmployeesTable_"};
 
                 Statement addEmployeeStatement{conn, L"INSERT INTO EMPLOYEES (NAME,AGE,ADDRESS,SALARY,STILL_EMPLOYED) values (:NAME, :AGE, :ADDRESS, :SALARY, :STILL_EMPLOYED);"};
 
@@ -420,7 +421,7 @@ namespace {
 
             void PeriodicallyWriteChecksForEmployeesTable_ (Connection::Ptr conn)
             {
-                TraceContextBumper ctx{"RegressionTest2_sqlite_with_threads_::PeriodicallyWriteChecksForEmployeesTable_"};
+                TraceContextBumper ctx{"RegressionTest2_sqlite_EmployeesDB_with_threads_::PeriodicallyWriteChecksForEmployeesTable_"};
                 Statement          addPaycheckStatement{conn, L"INSERT INTO PAYCHECKS (EMPLOYEEREF,AMOUNT,DATE) values (:EMPLOYEEREF, :AMOUNT, :DATE);"};
                 Statement          getAllActiveEmployees{conn, L"Select ID,NAME,SALARY from EMPLOYEES where STILL_EMPLOYED=1;"};
 
@@ -448,7 +449,7 @@ namespace {
 
             void ThreadTest_ (const Options& options)
             {
-                TraceContextBumper ctx{"RegressionTest2_sqlite_with_threads_::ThreadTest_"};
+                TraceContextBumper ctx{"RegressionTest2_sqlite_EmployeesDB_with_threads_::ThreadTest_"};
                 /*
                  *  Create threads for each of our activities.
                  *  When the waitable even times out, the threads will automatically be 'canceled' as they go out of scope.
@@ -464,7 +465,7 @@ namespace {
 
         void DoIt ()
         {
-            TraceContextBumper ctx{"RegressionTest2_sqlite_with_threads_::DoIt"};
+            TraceContextBumper ctx{"RegressionTest2_sqlite_EmployeesDB_with_threads_::DoIt"};
             using namespace Database::SQLite;
             auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "threads-test.db";
             (void)std::filesystem::remove (dbPath);
@@ -482,8 +483,8 @@ namespace {
     void DoRegressionTests_ ()
     {
 #if qHasFeature_sqlite
-        RegressionTest1_sqlite_bad_without_bind_::DoIt ();
-        RegressionTest2_sqlite_with_threads_::DoIt ();
+        RegressionTest1_sqlite_ScansDBTest_::DoIt ();
+        RegressionTest2_sqlite_EmployeesDB_with_threads_::DoIt ();
 #endif
     }
 }
