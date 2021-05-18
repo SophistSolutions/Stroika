@@ -302,7 +302,7 @@ namespace {
                 };
                 Options o      = options;
                 o.fBusyTimeout = o.fBusyTimeout.value_or (1s); // default to 1 second busy timeout for these tests
-                auto r = Connection::New (o, initializeDB);
+                auto r         = Connection::New (o, initializeDB);
                 VerifyTestResult (Math::NearlyEquals (r.pBusyTimeout ().As<double> (), 1.0));
                 return r;
             }
