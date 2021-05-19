@@ -84,3 +84,11 @@ And, first thing when you run docker image, cat /Getting-Started-With-Stroika.md
 ```bash
 cat /Getting-Started-With-Stroika.md
 ```
+
+## Create and setup for ssh Stroika-Dev images
+
+(used for LGP development - very optional)
+
+- `make stroika-dev-containers`
+- docker start Stroika-Dev Stroika-Dev-2104 Stroika-Dev-2004
+- docker exec -it Stroika-Dev-2004 sudo service ssh start
