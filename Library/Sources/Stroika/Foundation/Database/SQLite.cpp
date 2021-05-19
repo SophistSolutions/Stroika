@@ -247,7 +247,7 @@ struct Connection::Rep_ final : IRep {
     virtual Duration GetBusyTimeout () const override
     {
         optional<int> d;
-        auto          callback = [] (void* lamdaArg, int argc, char** argv, char** azColName) {
+        auto          callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
             optional<int>* pd = reinterpret_cast<optional<int>*> (lamdaArg);
             AssertNotNull (pd);
             Assert (argc == 1);
