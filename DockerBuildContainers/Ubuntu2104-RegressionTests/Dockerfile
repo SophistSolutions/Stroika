@@ -13,6 +13,9 @@ RUN apt-get install -y lsb-release
 #install the latest (C++17 compat) g++ compilers
 RUN apt-get install -y g++-7 g++-8 g++-9 g++-10 g++-11
 
+# For some reason not installed on ubuntu 21.04 otherwise
+RUN apt-get install -y libz.a
+
 #install the latest (C++17 compat) clang compilers (and libs)
 ### NOTE - for some reason, installing libc++-7-dev AND libc++-8-dev appears to work poorly - only one can be installed at
 ### a time - or so it appears --LGP 2019-04-19
