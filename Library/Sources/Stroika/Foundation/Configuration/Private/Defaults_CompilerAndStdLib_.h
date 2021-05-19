@@ -679,11 +679,31 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 // VERIFIED BROKEN IN GCC 9.3
 // VERIFIED BROKEN IN GCC 10.0
 // VERIFIED BROKEN IN GCC 10.2
-#define qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 10)
+// VERIFIED BROKEN IN GCC 11
+#define qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 11)
 #else
 #define qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy 0
 #endif
 
+#endif
+
+/*
+esponse.h: In member function ‘auto Stroika::Frameworks::WebServer::Response::UpdateHeader(FUNCTION&&)’:
+Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘unsigned char:3’ and ‘Stroika::Frameworks::WebServer::Response::State’)
+  373 |             Require (fState_ == State::ePreparingHeaders);
+      |                      ~~~~~~~ ^~ ~~~~~~~~~~~~~~~~~~~~~~~~
+      |                      |                 |
+      |                      unsigned char:3   Stroika::Frameworks::WebServer::Response::State
+../../Foundation/Characters/../Configuration/../Debug/Assertions.h:215:24: note: in definition of macro ‘
+ */
+#ifndef qCompilerAndStdLib_enum_with_bitLength_opequals_Buggy
+
+#if defined(__GNUC__) && !defined(__clang__)
+// FIRST SEEEN BROKEN IN GCC 11
+#define qCompilerAndStdLib_enum_with_bitLength_opequals_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 11)
+#else
+#define qCompilerAndStdLib_enum_with_bitLength_opequals_Buggy 0
+#endif
 #endif
 
 #ifndef qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy

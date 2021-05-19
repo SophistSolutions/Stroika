@@ -390,7 +390,7 @@ namespace Stroika::Frameworks::WebServer {
 
     private:
         IO::Network::Socket::Ptr fSocket_;
-#if __cplusplus >= 202002L
+#if __cplusplus >= 202002L && !qCompilerAndStdLib_enum_with_bitLength_opequals_Buggy
         bool  fInChunkedModeCache_ : 1 {false};
         State fState_ : 3 {State::ePreparingHeaders};
         bool  fHeadMode_ : 1 {false};
