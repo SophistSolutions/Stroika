@@ -72,8 +72,8 @@
 #if (__clang_major__ < 6) || (__clang_major__ == 6 && (__clang_minor__ < 0))
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v2.1 does not support versions prior to clang++ 6 (non-apple); note that Stroika v2.0 supports clang3.9, clang4, and clang5"
 #endif
-#if (__clang_major__ > 11) || (__clang_major__ == 11 && (__clang_minor__ > 0))
-#define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of clang++ - (>10.0) USING PREVIOUS COMPILER VERSION BUG DEFINES"
+#if (__clang_major__ > 12) || (__clang_major__ == 12 && (__clang_minor__ > 0))
+#define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of clang++ - (>12.0) USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 #endif
@@ -83,7 +83,7 @@
 #if __GNUC__ < 8
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v2.1 does not support versions prior to GCC 8 (v2.0 supports g++5 and g++6 and g++-7)"
 #endif
-#if __GNUC__ > 10 || (__GNUC__ == 10 && (__GNUC_MINOR__ > 3))
+#if __GNUC__ > 11 || (__GNUC__ == 11 && (__GNUC_MINOR__ > 0))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
@@ -215,7 +215,9 @@ foo.cpp:
 #define GLIBCXX_9x_ 20191008
 #define GLIBCXX_93x_ 20200408
 //#define GLIBCXX_10x_ 20200930
-#define GLIBCXX_10x_ 20210408
+//#define GLIBCXX_10x_ 20210408
+//20210417 used by clang++-12 when target libstdc++ on ubuntu 21.04
+#define GLIBCXX_10x_ 20210417
 
 /*
  *
@@ -1273,7 +1275,8 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 // still broken in clang++-9
 // still broken in clang++-10
 // still broken in clang++-11
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 11))
+// still broken in clang++-12
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
 #elif defined(_MSC_VER)
 // still broken in _MS_VS_2k17_15Pt1_
 // still broken in _MS_VS_2k17_15Pt3Pt2_
@@ -1324,7 +1327,8 @@ Test.cpp:173:31: error: template template argument has different template parame
 #elif defined(__clang__) && !defined(__APPLE__)
 // verified still broken in clang++-10
 // verified still broken in clang++-11
-#define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 11))
+// verified still broken in clang++-12
+#define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
 #else
 #define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy 0
 #endif
@@ -1361,7 +1365,8 @@ Segmentation fault (core dumped)
 
 #if defined(__clang__) && !defined(__APPLE__)
 // This apears to be FIXED in XCODE 12
-#define qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((9 <= __clang_major__ && __clang_major__ <= 11))
+// this appears still broken in clang++-12 on ubuntu 21.04
+#define qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((9 <= __clang_major__ && __clang_major__ <= 12))
 #else
 #define qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy 0
 #endif
@@ -1819,7 +1824,8 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
 // VERIFIED BROKEN IN GCC8
 // VERIFIED BROKEN IN GCC9.0
 // VERIFIED BROKEN IN GCC10.0
-#define qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_GLIBCXX_RELEASE <= 10)
+// VERIFIED BROKEN IN GCC11
+#define qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_GLIBCXX_RELEASE <= 11)
 #else
 #define qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy 0
 #endif

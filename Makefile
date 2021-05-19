@@ -438,6 +438,10 @@ basic-unix-test-configurations_g++_versions_:
 	./configure g++-10-debug-c++17 --config-tag Unix --compiler-driver g++-10 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17
 	./configure g++-10-release-c++17 --config-tag Unix --compiler-driver g++-10 --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17
 	./configure g++-10-debug-c++2a --config-tag Unix --compiler-driver g++-10 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2a
+	# g++-11
+	./configure g++-11-debug-c++17 --config-tag Unix --compiler-driver g++-11 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17
+	./configure g++-11-release-c++17 --config-tag Unix --compiler-driver g++-11 --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17
+	./configure g++-11-debug-c++2a --config-tag Unix --compiler-driver g++-11 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2a
 
 basic-unix-test-configurations_clang++_versions_:
 	#
@@ -468,6 +472,10 @@ basic-unix-test-configurations_clang++_versions_:
 	./configure clang++-11-debug-libc++ --config-tag Unix --compiler-driver clang++-11 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable
 	./configure clang++-11-debug-libc++-c++2a --config-tag Unix --compiler-driver clang++-11 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a
 	./configure clang++-11-release-libstdc++ --config-tag Unix --compiler-driver clang++-11 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable
+	# clang-12
+	./configure clang++-12-debug-libc++ --config-tag Unix --compiler-driver clang++-12 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable
+	./configure clang++-12-debug-libc++-c++2a --config-tag Unix --compiler-driver clang++-12 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2a
+	./configure clang++-12-release-libstdc++ --config-tag Unix --compiler-driver clang++-12 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable
 
 basic-unix-test-configurations_sanitizer_configs_:
 	# A few sanitize/configs (must do explicit -g++-8 versions for ubuntu 1804 since its default g++ is 7 and not supported any longer)
