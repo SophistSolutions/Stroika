@@ -379,8 +379,10 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t BUF_SIZE>
     inline byte* SmallStackBuffer<T, BUF_SIZE>::Allocate_ (size_t bytes)
     {
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"") // crazy warning from g++-11
         void* p = ::malloc (bytes);
         Execution::ThrowIfNull (p);
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"") // crazy warning from g++-11
         return reinterpret_cast<byte*> (p);
     }
     template <typename T, size_t BUF_SIZE>
