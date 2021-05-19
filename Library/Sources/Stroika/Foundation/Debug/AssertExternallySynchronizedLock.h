@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <atomic>
 #include <forward_list>
+#include <memory>
 #include <mutex>
 #include <optional>
 #include <shared_mutex>
