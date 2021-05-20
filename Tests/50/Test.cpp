@@ -556,6 +556,7 @@ namespace {
                 // crazy large epsilon for now because we represent datetime to nearest second
                 // (note - failed once with clang++ on vm - could be something else slowed vm down - LGP 2018-04-17 - ignore for now)
                 // But even the 1.1 failed once (--LGP 2019-05-03) - so change to warning and use bigger number (2.1) for error check
+                // Failed again on (slowish) vm under VS2k17 - but rarely --LGP 2021-05-20
                 VerifyTestResultWarning (Math::NearlyEquals (dt.ToTickCount (), ds, 1.1));
                 VerifyTestResult (Math::NearlyEquals (dt.ToTickCount (), ds, 2.1));
             }
