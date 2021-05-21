@@ -138,10 +138,12 @@ struct Connection::Rep_ final : IRep {
                 case Options::ThreadingMode::eSingleThread:
                     break;
                 case Options::ThreadingMode::eMultiThread:
+                    Require (CompiledOptions::kThe.THREADSAFE);
                     Require (::sqlite3_threadsafe ());
                     flags += SQLITE_OPEN_NOMUTEX;
                     break;
                 case Options::ThreadingMode::eSerialized:
+                    Require (CompiledOptions::kThe.THREADSAFE);
                     Require (::sqlite3_threadsafe ());
                     flags += SQLITE_OPEN_FULLMUTEX;
                     break;

@@ -149,7 +149,7 @@ namespace Stroika::Foundation::Database::SQLite {
              * (since just defined in C file from Stroika/ThirdPartyComponents/sqlite/Makefile);
              * call sqlite3_threadsafe, to see if this is enabled
              * 
-             *  \note Use of this API, as of Stroika 2.1b12, may result in poor error messages, due to how errors are stored (and maybe othe rsuch
+             *  \note Use of this API, as of Stroika 2.1b12, may result in poor error messages, due to how errors are stored (and maybe other such
              *        issues - maybe we need to do lock around call to each function to avoid making this mode nearly pointless).
              */
             eSerialized,

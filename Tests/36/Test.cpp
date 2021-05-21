@@ -470,9 +470,9 @@ namespace {
             auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "threads-test.db";
             (void)std::filesystem::remove (dbPath);
 #if __cpp_designated_initializers
-            PRIVATE_::ThreadTest_ (Options{.fDBPath = dbPath});
+            PRIVATE_::ThreadTest_ (Options{.fDBPath = dbPath, .fThreadingMode = Options::ThreadingMode::eMultiThread});
 #else
-            PRIVATE_::ThreadTest_ (Options{dbPath});
+            PRIVATE_::ThreadTest_ (Options{dbPath, true, nullopt, nullopt, Options::ThreadingMode::eMultiThread});
 #endif
         }
     }
