@@ -39,3 +39,7 @@ signal:Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHan
 # Ideally, we would match on having ONE of these in one stack, and the other in the other stack, but could come in either order
 deadlock:Stroika::Foundation::Debug::AssertExternallySynchronizedLock::AssertExternallySynchronizedLock
 deadlock:Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler_
+
+# https://stroika.atlassian.net/browse/STK-736 (sqlite)
+race:sqlite3_mutex_enter
+race:sqlite3_prepare_v2
