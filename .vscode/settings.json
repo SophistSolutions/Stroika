@@ -18,7 +18,17 @@
     "regex": "cpp",
     "typeindex": "cpp",
     "memory": "cpp",
-    "functional": "cpp"
+    "functional": "cpp",
+    "*.tcc": "cpp",
+    "future": "cpp",
+    "istream": "cpp",
+    "ranges": "cpp",
+    "tuple": "cpp",
+    "utility": "cpp",
+    "variant": "cpp",
+    "optional": "cpp",
+    "mutex": "cpp",
+    "shared_mutex": "cpp"
   },
   "files.watcherExclude": {
     "Archive/**": true,
