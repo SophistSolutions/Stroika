@@ -1230,7 +1230,8 @@ clang says:
 #elif defined(__clang__) && !defined(__APPLE__)
 // First noted in C++20 mode on clang++-10
 // broken in clang++-11
-#define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 11))
+// broken in clang++-12
+#define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
 #else
 #define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy 0
 #endif
