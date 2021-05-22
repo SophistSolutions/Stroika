@@ -39,7 +39,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         auto dbPath = filesystem::current_path () / "threads-test.db";
         (void)std::filesystem::remove (dbPath);
 #if __cpp_designated_initializers
-        ThreadTest (Options{.fDBPath = dbPath.fThreadingMode = Options::ThreadingMode::eMultiThread});
+        ThreadTest (Options{.fDBPath = dbPath, .fThreadingMode = Options::ThreadingMode::eMultiThread});
 #else
         ThreadTest (Options{dbPath, true, nullopt, nullopt, Options::ThreadingMode::eMultiThread});
 #endif
