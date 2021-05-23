@@ -299,7 +299,7 @@ SQLite::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
 
 /*
  ********************************************************************************
- *************************** SQLite::Connection *********************************
+ ***************************** SQLite::Connection *******************************
  ********************************************************************************
  */
 auto SQLite::Connection::New (const Options& options, const function<void (const Connection::Ptr&)>& dbInitializer) -> Ptr
