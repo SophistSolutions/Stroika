@@ -14,7 +14,6 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Database;
 using namespace Stroika::Foundation::DataExchange;
 
-
 /*
  ********************************************************************************
  ****************************** ORM::Schema::Table ******************************
@@ -38,7 +37,7 @@ VariantValue ORM::Schema::Table::MapToDB (const VariantValue& vv) const
     if (not fields2Accumulate.empty ()) {
         Mapping<String, VariantValue> extraFields;
         for (auto i : fields2Accumulate) {
-            resultFields.Add (i, *actualFields.Lookup(i));
+            resultFields.Add (i, *actualFields.Lookup (i));
         }
         // convert to JSON and store as string
     }
@@ -65,7 +64,7 @@ namespace {
                     return L"REAL"sv;
             }
         }
-        return L"TEXT"sv;   // @todo better
+        return L"TEXT"sv; // @todo better
     }
 }
 
