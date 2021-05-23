@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Memory {
             return sLock_;
         }
 
-        void                    DoDeleteHandlingLocksExceptionsEtc_ (void* p, void** staticNextLinkP) noexcept;
+        void DoDeleteHandlingLocksExceptionsEtc_ (void* p, void** staticNextLinkP) noexcept;
 #endif
     }
 
@@ -417,7 +417,7 @@ namespace Stroika::Foundation::Memory {
             BlockAllocationPool_<AdjustSizeForPool_ ()>::Deallocate (p);
         }
 #else
-        ::               operator delete (p);
+        ::operator delete (p);
 #endif
     }
     template <typename T>
