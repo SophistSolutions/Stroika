@@ -1,0 +1,84 @@
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
+ */
+#include "../../StroikaPreComp.h"
+
+#include "../../Characters/StringBuilder.h"
+
+#include "Schema.h"
+
+using std::byte;
+
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Database;
+using namespace Stroika::Foundation::DataExchange;
+
+/*
+ ********************************************************************************
+ ****************************** ORM::Schema::Table ******************************
+ ********************************************************************************
+ */
+VariantValue ORM::Schema::Table::MapToDB (const VariantValue& vv) const
+{
+    Mapping<String, VariantValue> actualFields = vv.As<Mapping<String, VariantValue>> ();
+    Mapping<String, VariantValue> resultFields;
+    for (const auto& fi : fNamedFields) {
+    }
+    return VariantValue{resultFields};
+}
+
+VariantValue ORM::Schema::Table::MapFromDB (const VariantValue& vv) const
+{
+    return VariantValue{};
+}
+
+namespace {
+    String GetSQLiteFldName_ (const ORM::Schema::Field& f)
+    {
+        if (f.fVariantType) {
+            switch (*f.fVariantType) {
+                case VariantValue::Type::eBLOB:
+                    return L"BLOB"sv;
+                case VariantValue::Type::eString:
+                    return L"TEXT"sv;
+                case VariantValue::Type::eInteger:
+                    return L"INT"sv;
+            }
+        }
+        return L"TEXT"sv;
+    }
+}
+
+String ORM::Schema::Table::GetSQLToCreateTable () const
+{
+    StringBuilder sb;
+
+    /*
+     *   CREATE TABLE DEVICES(
+     *      ID BLOB PRIMARY KEY DEFAULT(randomblob(16)),
+     *      NAME           TEXT    NOT NULL
+     *     );
+     */
+    sb += L"CREATE TABLE " + fName + L" (";
+    bool firstField = true;
+    for (const Field& i : fNamedFields) {
+        if (firstField) {
+            firstField = false;
+        }
+        else {
+            sb += L", ";
+        }
+        sb += i.fName + L" ";
+        sb += GetSQLiteFldName_ (i) + L" ";
+        if (i.fIsKeyField == true) {
+            sb += L" PRIMARY KEY";
+        }
+        if (i.fNotNull == true) {
+            sb += L" NOT NULL";
+        }
+    }
+    sb += L");";
+
+    return sb.str ();
+}

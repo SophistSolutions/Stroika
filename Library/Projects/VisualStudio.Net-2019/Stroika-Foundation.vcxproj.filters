@@ -214,6 +214,9 @@
     <Filter Include="Sources\Configuration\Platform\Windows">
       <UniqueIdentifier>{9ae88586-8d81-45fe-a5f3-d1652094bebe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Database\ORM">
+      <UniqueIdentifier>{46c7b135-f3a0-4455-9111-13e571b66e7c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -815,6 +818,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\LibraryContext.cpp">
       <Filter>Sources\Cryptography\OpenSSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\ORM\Schema.cpp">
+      <Filter>Sources\Database\ORM</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2087,6 +2093,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\LibraryContext.h">
       <Filter>Sources\Cryptography\OpenSSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\ORM\Schema.h">
+      <Filter>Sources\Database\ORM</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3407,6 +3416,12 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DigestAlgorithm.inl">
       <Filter>Sources\Cryptography\OpenSSL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Database\ORM\Schema.inl">
+      <Filter>Sources\Database\ORM</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Database\ORM\Makefile">
+      <Filter>Sources\Database\ORM</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
