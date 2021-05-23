@@ -7,6 +7,7 @@
 
 #include "Stroika/Foundation/Database/SQLite.h"
 
+#include "ComputerNetwork.h"
 #include "SimpleEmployeesDB.h"
 #include "ThreadTest.h"
 
@@ -42,6 +43,15 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         ThreadTest (Options{.fDBPath = dbPath, .fThreadingMode = Options::ThreadingMode::eMultiThread});
 #else
         ThreadTest (Options{dbPath, true, nullopt, nullopt, Options::ThreadingMode::eMultiThread});
+#endif
+    }
+    {
+        auto dbPath = filesystem::current_path () / "computer-network.db";
+        (void)std::filesystem::remove (dbPath);
+#if __cpp_designated_initializers
+        ComputerNetworksModel (Options{.fDBPath = dbPath});
+#else
+        ComputerNetworksModel (Options{dbPath});
 #endif
     }
 #endif

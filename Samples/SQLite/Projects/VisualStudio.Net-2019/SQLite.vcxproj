@@ -62,11 +62,13 @@
     <None Include="..\..\ReadMe.md" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Sources\ComputerNetwork.cpp" />
     <ClCompile Include="..\..\Sources\Main.cpp" />
     <ClCompile Include="..\..\Sources\SimpleEmployeesDB.cpp" />
     <ClCompile Include="..\..\Sources\ThreadTest.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Sources\ComputerNetwork.h" />
     <ClInclude Include="..\..\Sources\SimpleEmployeesDB.h" />
     <ClInclude Include="..\..\Sources\ThreadTest.h" />
   </ItemGroup>

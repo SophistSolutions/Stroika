@@ -28,12 +28,18 @@
     <ClCompile Include="..\..\Sources\ThreadTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\ComputerNetwork.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\SimpleEmployeesDB.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\ThreadTest.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\ComputerNetwork.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
