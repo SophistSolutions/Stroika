@@ -946,7 +946,7 @@ sub	SetDefaultForCompilerDriver_
 
 	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) >= 11.0)) {
 		# Needed for sqlite build warning
-		qCompiler_HasNoMisleadingIndentation_Flag = true;
+		$qCompiler_HasNoMisleadingIndentation_Flag = true;
 	}
 	
 	if (trim (`lsb_release -rs 2>/dev/null`) == "20.10" or trim (`lsb_release -rs 2>/dev/null`) == "21.04") {
