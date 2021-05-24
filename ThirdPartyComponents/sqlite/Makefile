@@ -154,7 +154,9 @@ CFLAGS	+= -DSQLITE_ENABLE_API_ARMOR
 CFLAGS	+= -DSQLITE_DEBUG
 endif
 
+ifeq(true,$(qCompiler_HasNoMisleadingIndentation_Flag))
 CFLAGS	+= -Wno-misleading-indentation
+endif
 
 ObjDir=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/
 

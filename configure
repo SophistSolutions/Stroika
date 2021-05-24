@@ -150,6 +150,7 @@ my $FEATUREFLAG_LZMA = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_librt = undef;
 my $FEATUREFLAG_WIX = undef;
 my $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = undef;
+my $qCompiler_HasNoMisleadingIndentation_Flag = undef;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
 my $INCLUDE_SYMBOLS_LIB = true;
 my $INCLUDE_SYMBOLS_EXE = DEFAULT_BOOL_OPTIONS;
@@ -899,12 +900,12 @@ sub	SetDefaultForCompilerDriver_
 	}
 
 	if (!(defined $AR)) {
-		if ( IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
 			my $ccLessArgs = $COMPILER_DRIVER_C;
 			$ccLessArgs  =~ s/\ .*//;
 			$AR = ReplaceLast_ ($ccLessArgs, 'gcc', 'gcc-ar');
 		}
-		elsif ( IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
 			my $ccLessArgs = $COMPILER_DRIVER_C;
 			$ccLessArgs  =~ s/\ .*//;
 			$AR = ReplaceLast_ ($ccLessArgs, 'clang', 'llvm-ar');
@@ -942,6 +943,12 @@ sub	SetDefaultForCompilerDriver_
 			$STRIP = $ma . "-strip";
 		}
 	}
+
+	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) >= 11.0)) {
+		# Needed for sqlite build warning
+		qCompiler_HasNoMisleadingIndentation_Flag = true;
+	}
+	
 	if (trim (`lsb_release -rs 2>/dev/null`) == "20.10" or trim (`lsb_release -rs 2>/dev/null`) == "21.04") {
 		# so far only seen on ubuntu 20.10, clang++11, and g++10 - https://stroika.atlassian.net/browse/STK-717
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and (10.0 <= GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) and GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 11.0)) {
@@ -2427,6 +2434,9 @@ sub	WriteConfigFile_
 
 	if (defined ($qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy)) {
 		print (OUT "    <qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy>$qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy</qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy>\n");
+	}
+	if (defined ($qCompiler_HasNoMisleadingIndentation_Flag)) {
+		print (OUT "    <qCompiler_HasNoMisleadingIndentation_Flag>$qCompiler_HasNoMisleadingIndentation_Flag</qCompiler_HasNoMisleadingIndentation_Flag>\n");
 	}
 
 	print (OUT "</Configuration>\n");
