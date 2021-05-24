@@ -76,7 +76,7 @@ pull-base-images:
 ifeq ($(shell uname),Linux)
 	docker pull ubuntu:18.04
 	docker pull ubuntu:20.04
-	docker pull ubuntu:20.10
+	#DEPRECATED docker pull ubuntu:20.10
 	docker pull ubuntu:21.04
 	docker pull centos:centos7
 	docker pull centos:centos8
