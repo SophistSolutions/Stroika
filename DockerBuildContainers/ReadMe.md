@@ -90,7 +90,4 @@ cat /Getting-Started-With-Stroika.md
 (used for LGP development - very optional)
 
 - `make stroika-dev-containers`
-- docker start Stroika-Dev Stroika-Dev-2004 Stroika-Dev-2104
-- docker exec -it Stroika-Dev sudo service ssh start
-- docker exec -it Stroika-Dev-2004 sudo service ssh start
-- docker exec -it Stroika-Dev-2104 sudo service ssh start
+- `for i in Stroika-Dev Stroika-Dev-2004 Stroika-Dev-2104; do docker start $i; docker exec -it $i sudo service ssh start; done`
