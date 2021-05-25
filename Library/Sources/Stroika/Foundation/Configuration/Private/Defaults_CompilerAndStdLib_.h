@@ -323,6 +323,17 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 
 #endif
 
+// see https://en.cppreference.com/w/cpp/types/byte "due to C++17 relaxed enum class initialization rules."
+#ifndef qCompilerAndStdLib_relaxedEnumClassInitializationRules_Buggy
+
+#if defined(_MSC_VER)
+#define qCompilerAndStdLib_relaxedEnumClassInitializationRules_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt9_)
+#else
+#define qCompilerAndStdLib_relaxedEnumClassInitializationRules_Buggy 0
+#endif
+
+#endif
+
 //
 // Issue APPEARS to be operator bool called, and that is what gets compared on!!!
 // Also breaks other operators
