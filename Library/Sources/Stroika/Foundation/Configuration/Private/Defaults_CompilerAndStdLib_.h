@@ -215,9 +215,8 @@ foo.cpp:
 #define GLIBCXX_9x_ 20191008
 #define GLIBCXX_93x_ 20200408
 //#define GLIBCXX_10x_ 20200930
-//#define GLIBCXX_10x_ 20210408
-//20210417 used by clang++-12 when target libstdc++ on ubuntu 21.04
-#define GLIBCXX_10x_ 20210417
+#define GLIBCXX_10x_ 20210408
+#define GLIBCXX_11x_ 20210427
 
 /*
  *
@@ -828,7 +827,7 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
  *      but libstdc++ doesn't appear to support the leading zero.
  */
 #ifndef qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy
-#if defined(__GLIBCXX__) && __GLIBCXX__ <= GLIBCXX_10x_
+#if defined(__GLIBCXX__) && __GLIBCXX__ <= GLIBCXX_11x_
 #define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy 1
 #else
 #define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy 0
@@ -851,7 +850,7 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
          which is almost 20 years old, so dont hold breath on fix ;-) --LGP 2021-05-12
  */
 #ifndef qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy
-#if defined(__GLIBCXX__) && __GLIBCXX__ <= GLIBCXX_10x_
+#if defined(__GLIBCXX__) && __GLIBCXX__ <= GLIBCXX_11x_
 #define qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy 1
 #else
 #define qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy 0
