@@ -273,7 +273,9 @@ protected:
                 }
                 pushIntoCacheBuf (reinterpret_cast<Character*> (std::begin (buf)), reinterpret_cast<Character*> (std::begin (buf)) + n);
                 n = intoEnd - intoStart;
+                DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wclass-memaccess\"");
                 (void)::memcpy (intoStart, std::begin (buf), n * sizeof (wchar_t));
+                DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wclass-memaccess\"");
                 _fOffset = origOffset + n;
             }
             return n;
