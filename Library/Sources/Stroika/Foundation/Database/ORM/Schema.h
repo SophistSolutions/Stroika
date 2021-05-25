@@ -18,6 +18,9 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Early</a>
  *
  *  TODO
+ *      @todo   NOTE - this 'scehma appropach of picking out important attributes and rolling rest into a
+ *              BLOB might be used to turn a keystore DB into a JSON Document DB (not completely but a big
+ *              step).
  */
 
 namespace Stroika::Foundation::Database::ORM {

@@ -25,7 +25,9 @@ VariantValue ORM::Schema::Table::MapToDB (const VariantValue& vv) const
     Mapping<String, VariantValue> resultFields;
     for (const auto& fi : fNamedFields) {
         if (auto oFieldVal = actualFields.Lookup (fi.fName)) {
-            // @todo type check...
+            if (fi.fVariantType) {
+                oFieldVal->CheckConvertibleTo (*fi.fVariantType);
+            }
             resultFields.Add (fi.fName, *oFieldVal);
         }
         else if (fi.fRequired) {
