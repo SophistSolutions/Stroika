@@ -315,6 +315,26 @@ namespace Stroika::Foundation::DataExchange {
         template <typename RETURNTYPE>
         nonvirtual RETURNTYPE As () const;
 
+    public:
+        /**
+         *  Return true if this VariantValue would be convertible to the argument type.
+         *  Note - not just potentially convertible, but the data is actually formatted to allow the conversion.
+         *  So for example, if to is DateTime, then an ill formed string would NOT be IsConvertibleTo
+         * 
+         *  @see CheckConvertibleTo
+         */
+        nonvirtual bool IsConvertibleTo (Type to) const;
+
+    public:
+        /**
+         *  Check if this VariantValue would be convertible to the argument type.
+         *  Note - not just potentially convertible, but the data is actually formatted to allow the conversion.
+         *  So for example, if to is DateTime, then an ill formed string would NOT be IsConvertibleTo
+         * 
+         *  @see CheckConvertibleTo
+         */
+        nonvirtual void CheckConvertibleTo (Type to) const;
+
     private:
         nonvirtual Memory::BLOB         AsBLOB_ () const;
         nonvirtual IntegerType_         AsInteger_ () const;
