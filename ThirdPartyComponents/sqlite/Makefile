@@ -154,7 +154,7 @@ CFLAGS	+= -DSQLITE_ENABLE_API_ARMOR
 CFLAGS	+= -DSQLITE_DEBUG
 endif
 
-ifeq (true,$(qCompiler_HasNoMisleadingIndentation_Flag))
+ifeq (1,$(qCompiler_HasNoMisleadingIndentation_Flag))
 CFLAGS	+= -Wno-misleading-indentation
 endif
 

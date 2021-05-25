@@ -124,6 +124,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'HasMakefileBugWorkaround_lto_skipping_undefined_incompatible'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<qCompiler_HasNoMisleadingIndentation_Flag>");
+		if (defined $pps) {
+			$configuration {'qCompiler_HasNoMisleadingIndentation_Flag'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<qFeatureFlag_boost>");
 		if (defined $pps) {
 			$configuration {'qFeatureFlag_boost'} = $pps;
