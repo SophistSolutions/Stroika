@@ -53,14 +53,12 @@ namespace {
         step_d
     };
     struct base64_decodestate_ {
-        base64_decodestep_ step;
-        byte               plainchar;
-
-        base64_decodestate_ ()
-            : step (step_a)
-            , plainchar{'\0'}
-        {
-        }
+        base64_decodestep_ step{step_a};
+#if qCompilerAndStdLib_relaxedEnumClassInitializationRules_Buggy
+        byte plainchar{(byte)0};
+#else
+        byte plainchar{0};
+#endif
     };
     int base64_decode_value_ (signed char value_in)
     {
@@ -84,7 +82,7 @@ namespace {
         *plainchar = state->plainchar;
 
         switch (state->step) {
-            while (1) {
+            while (true) {
                 case step_a:
                     do {
                         if (codechar == code_in + length_in) {
@@ -142,14 +140,15 @@ Memory::BLOB Algorithm::DecodeBase64 (const Characters::String& s)
 Memory::BLOB Algorithm::DecodeBase64 (const string& s)
 {
     if (s.empty ()) {
-        return Memory::BLOB ();
+        return Memory::BLOB{};
     }
     size_t                 dataSize1 = s.length ();
-    SmallStackBuffer<byte> buf1 (SmallStackBufferCommon::eUninitialized, dataSize1); // MUCH more than big enuf
-    base64_decodestate_    state;
+    SmallStackBuffer<byte> buf1{SmallStackBufferCommon::eUninitialized, dataSize1}; // MUCH more than big enuf
+    base64_decodestate_    state{};
     size_t                 r = base64_decode_block_ (reinterpret_cast<const signed char*> (Containers::Start (s)), s.length (), buf1.begin (), &state);
     Assert (r <= dataSize1);
-    return Memory::BLOB (buf1.begin (), buf1.begin () + r);
+    // @todo - should validate this produced a good result? - maybe check resulting state?
+    return Memory::BLOB{buf1.begin (), buf1.begin () + r};
 }
 
 void Algorithm::DecodeBase64 (const string& s, const Streams::OutputStream<byte>::Ptr& out)
@@ -171,16 +170,13 @@ namespace {
         step_C
     };
     struct base64_encodestate {
-        base64_encodestep step;
-        signed char       result;
-        int               stepcount;
+        base64_encodestep step{step_A};
+        signed char       result{0};
+        int               stepcount{0};
         LineBreak         fLineBreak;
 
         base64_encodestate (LineBreak lb)
-            : step (step_A)
-            , result (0)
-            , stepcount (0)
-            , fLineBreak (lb)
+            : fLineBreak{lb}
         {
         }
     };
@@ -283,34 +279,34 @@ string Algorithm::EncodeBase64 (const Streams::InputStream<byte>::Ptr& from, Lin
 #elif 1
     // quick hack impl
     Memory::BLOB bytes = Streams::InputStream<byte>::Ptr (from).ReadAll ();
-    const byte*  start = bytes.begin ();
-    const byte*  end   = bytes.end ();
+    const byte* start = bytes.begin ();
+    const byte* end = bytes.end ();
     Require (start == end or start != nullptr);
     Require (start == end or end != nullptr);
-    base64_encodestate state (lb);
-    size_t             srcLen  = end - start;
-    size_t             bufSize = 4 * srcLen;
+    base64_encodestate state{lb};
+    size_t srcLen = end - start;
+    size_t bufSize = 4 * srcLen;
     Assert (bufSize >= srcLen); // no overflow!
-    SmallStackBuffer<signed char> data (SmallStackBufferCommon::eUninitialized, bufSize);
-    size_t                        mostBytesCopied = base64_encode_block_ (start, srcLen, data.begin (), &state);
-    size_t                        extraBytes      = base64_encode_blockend_ (data.begin () + mostBytesCopied, &state);
-    size_t                        totalBytes      = mostBytesCopied + extraBytes;
+    SmallStackBuffer<signed char> data{SmallStackBufferCommon::eUninitialized, bufSize};
+    size_t mostBytesCopied = base64_encode_block_ (start, srcLen, data.begin (), &state);
+    size_t extraBytes = base64_encode_blockend_ (data.begin () + mostBytesCopied, &state);
+    size_t totalBytes = mostBytesCopied + extraBytes;
     Assert (totalBytes <= bufSize);
-    return string (data.begin (), data.begin () + totalBytes);
+    return string{data.begin (), data.begin () + totalBytes};
 #else
     Require (start == end or start != nullptr);
     Require (start == end or end != nullptr);
 
-    base64_encodestate state (lb);
+    base64_encodestate state{lb};
     size_t             srcLen  = end - start;
     size_t             bufSize = 4 * srcLen;
     Assert (bufSize >= srcLen); // no overflow!
-    SmallStackBuffer<char> data (SmallStackBufferCommon::eUninitialized, bufSize);
+    SmallStackBuffer<char> data{SmallStackBufferCommon::eUninitialized, bufSize};
     size_t                 mostBytesCopied = base64_encode_block_ (start, srcLen, data.begin (), &state);
     size_t                 extraBytes      = base64_encode_blockend_ (data.begin () + mostBytesCopied, &state);
     size_t                 totalBytes      = mostBytesCopied + extraBytes;
     Assert (totalBytes <= bufSize);
-    return string (data.begin (), data.begin () + totalBytes);
+    return string{data.begin (), data.begin () + totalBytes};
 #endif
 }
 
@@ -320,14 +316,14 @@ string Algorithm::EncodeBase64 (const Memory::BLOB& from, LineBreak lb)
     const byte* end   = from.end ();
     Require (start == end or start != nullptr);
     Require (start == end or end != nullptr);
-    base64_encodestate state (lb);
+    base64_encodestate state{lb};
     size_t             srcLen  = end - start;
     size_t             bufSize = 4 * srcLen;
     Assert (bufSize >= srcLen); // no overflow!
-    SmallStackBuffer<signed char> data (SmallStackBufferCommon::eUninitialized, bufSize);
+    SmallStackBuffer<signed char> data{SmallStackBufferCommon::eUninitialized, bufSize};
     size_t                        mostBytesCopied = base64_encode_block_ (start, srcLen, data.begin (), &state);
     size_t                        extraBytes      = base64_encode_blockend_ (data.begin () + mostBytesCopied, &state);
     size_t                        totalBytes      = mostBytesCopied + extraBytes;
     Assert (totalBytes <= bufSize);
-    return string (data.begin (), data.begin () + totalBytes);
+    return string{data.begin (), data.begin () + totalBytes};
 }
