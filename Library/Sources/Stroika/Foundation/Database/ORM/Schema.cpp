@@ -48,7 +48,10 @@ VariantValue ORM::Schema::Table::MapToDB (const VariantValue& vv) const
 
 VariantValue ORM::Schema::Table::MapFromDB (const VariantValue& vv) const
 {
-    return VariantValue{};
+    Mapping<String, VariantValue> actualFields = vv.As<Mapping<String, VariantValue>> ();
+    Mapping<String, VariantValue> resultFields;
+    AssertNotImplemented ();
+    return VariantValue{resultFields};
 }
 
 namespace {
