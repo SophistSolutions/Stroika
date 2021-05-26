@@ -39,18 +39,29 @@ namespace Stroika::Foundation::Database::ORM {
             optional<String>             fTypeName;
             optional<bool>               fIsKeyField;
             optional<String>             fForeignKeyToTable;
+            optional<String>             fDefaultExpression;
             optional<bool>               fNotNull;
         };
 
         /**
          */
         struct CatchAllField : Field {
+
+            /**
+             */
+            CatchAllField ();
+
             /*
              *  add extra properties like transform method
              *  DEFAULT IS XXX - maps by serializing to JSON and storing as BLOB (or maybe text)
              */
-            function<VariantValue (const Mapping<String, VariantValue>& fields2Map)> fMapper;
+            function<VariantValue (const Mapping<String, VariantValue>& fields2Map)> fMapRawFieldsToCombinedField;
+            function<Mapping<String, VariantValue> (const VariantValue& map2Fields)> fMapCombinedFieldToRawFields;
+
+            static VariantValue                  kDefaultMapper_RawToCombined (const Mapping<String, VariantValue>& fields2Map);
+            static Mapping<String, VariantValue> kDefaultMapper_CombinedToRaw (const VariantValue& fields2Map);
         };
+
 
         /**
          */
