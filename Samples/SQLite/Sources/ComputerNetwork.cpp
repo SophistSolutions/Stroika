@@ -11,6 +11,7 @@
 #include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
+#include "Stroika/Foundation/Database/ORM/Schema.h"
 #include "Stroika/Foundation/Database/SQLite.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
@@ -29,6 +30,7 @@ using namespace Stroika::Foundation::Time;
 
 using Common::GUID;
 using DataExchange::ObjectVariantMapper;
+using DataExchange::VariantValue;
 
 #if qHasFeature_sqlite
 using namespace Database::SQLite;
@@ -61,10 +63,7 @@ namespace {
         mapper.AddClass<Device> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
             {L"id", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Device, id)},
             {L"name", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Device, name)},
-            // need to handle MAP for sets to another table
             {L"openPorts", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Device, openPorts)},
-
-            // need to handle MAP for sets to another table
             {L"hardwareAddresses", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Device, hardwareAddresses)},
         });
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
@@ -73,15 +72,33 @@ namespace {
         return mapper;
     }();
 
+    const ORM::Schema::Table kDeviceTableSchema_{
+        L"Devices", Collection<ORM::Schema::Field>{
+    /*
+         *  use the same names as the ObjectVariantMapper for simpler mapping, or specify an alternate name
+         *  for ID, just as an example.
+         */
+#if __cpp_designated_initializers
+                        {.fName = L"ID", .fVariantValueFieldName = L"id"sv, .fVariantType = VariantValue::eBLOB, .fIsKeyField = true, .fDefaultExpression = L"randomblob(16)"sv, .fNotNull = true}, {.fName = L"name", .fVariantType = VariantValue::eString, .fNotNull = true}
+#else
+                        {L"ID", L"id"sv, false, VariantValue::eBLOB, nullopt, true, nullopt, L"randomblob(16)"sv, true}, {L"name", nullopt, false, VariantValue::eString, nullopt, nullopt, nullopt, nullopt, true}
+#endif
+                    },
+        ORM::Schema::CatchAllField{}};
+
     Connection::Ptr SetupDB_ (const Options& options)
     {
         auto initializeDB = [] (const Connection::Ptr& c) {
             // Use Connection::Ptr::Exec because no parameter bindings needed
+            #if 1
+            c.Exec (kDeviceTableSchema_.GetSQLToCreateTable ());
+            #else
             c.Exec (
-                L"CREATE TABLE DEVICES("
+                L"CREATE TABLE Devices("
                 L"ID BLOB PRIMARY KEY DEFAULT(randomblob(16)),"
-                L"NAME           TEXT    NOT NULL"
+                L"name           TEXT    NOT NULL"
                 L");");
+            #endif
         };
         Options o      = options;
         o.fBusyTimeout = o.fBusyTimeout.value_or (1s); // default to 1 second busy timeout for these tests
@@ -90,7 +107,7 @@ namespace {
 
     void AddDevices_ (Connection::Ptr conn)
     {
-        Statement addDeviceStatement{conn, L"INSERT INTO DEVICES (NAME) values (:NAME);"};
+        Statement addDeviceStatement{conn, L"INSERT INTO DEVICES (name) values (:NAME);"};
         addDeviceStatement.Execute (initializer_list<Statement::ParameterDescription>{
             {L":NAME", L"PLATO"},
         });

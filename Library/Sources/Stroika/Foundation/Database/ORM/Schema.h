@@ -33,7 +33,12 @@ namespace Stroika::Foundation::Database::ORM {
         /**
          */
         struct Field {
+            /*
+             *  This is the database field name, and by default also the name of the field
+             *  mapped to in the VariantValue
+             */
             String                       fName;
+            optional<String>             fVariantValueFieldName;
             bool                         fRequired{false};
             optional<VariantValue::Type> fVariantType;
             optional<String>             fTypeName;
@@ -61,7 +66,6 @@ namespace Stroika::Foundation::Database::ORM {
             static VariantValue                  kDefaultMapper_RawToCombined (const Mapping<String, VariantValue>& fields2Map);
             static Mapping<String, VariantValue> kDefaultMapper_CombinedToRaw (const VariantValue& fields2Map);
         };
-
 
         /**
          */
