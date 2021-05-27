@@ -69,14 +69,16 @@ namespace Stroika::Foundation::Memory {
     {
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wnull-dereference\"")
 #if 0
-        auto o = declval<OWNING_OBJECT> (); // function only valid in unevaluated contexts
+        auto o = declval<OWNING_OBJECT> (); // function only valid in unevaluated contexts - produces link errors
 #elif 0
+        // gcc doesn't allow reinterpret_cast of nullptr: invalid cast from type ‘std::nullptr_t’ to type ‘const ...*’
         const OWNING_OBJECT& o = *reinterpret_cast<const OWNING_OBJECT*> (nullptr);
-        gcc doesn't allow reinterpret_cast of nullptr: invalid cast from type ‘std::nullptr_t’ to type ‘const ...*’
 #elif 0
         //TSAN detects undefined behavior
         const OWNING_OBJECT& o = *reinterpret_cast<const OWNING_OBJECT*> (0);
 #else
+        // Still not totally legal for non-std-layout classes, but seems to work, and I haven't found a better way
+        //      --LGP 2021-05-27
         alignas(OWNING_OBJECT) std::byte            buf[sizeof (OWNING_OBJECT)];
         const OWNING_OBJECT&              o = *reinterpret_cast<const OWNING_OBJECT*> (&buf);
 #endif
