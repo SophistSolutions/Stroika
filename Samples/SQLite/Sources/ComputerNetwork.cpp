@@ -101,8 +101,7 @@ namespace {
 
     void AddDevice_ (Connection::Ptr conn, const Model::Device& d)
     {
-        DbgTrace (L"***kDeviceTableSchema_.GetSQLToInsert ()=%s", kDeviceTableSchema_.GetSQLToInsert ().c_str ());
-        Statement addDeviceStatement{conn, kDeviceTableSchema_.GetSQLToInsert ()}; // @todo next auto-gen INSERT STATEMENT
+        Statement addDeviceStatement{conn, kDeviceTableSchema_.GetSQLToInsert ()};
         addDeviceStatement.Execute (kDeviceTableSchema_.MapToDB (Model::Device::kMapper.FromObject (d)));
     }
 
