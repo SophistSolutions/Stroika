@@ -972,7 +972,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\TimedLockGuard.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\UpdatableWaitForIOReady.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\VirtualConstant.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.inl" />

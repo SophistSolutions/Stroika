@@ -3291,9 +3291,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.inl">
       <Filter>Sources\Execution</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\VirtualConstant.inl">
-      <Filter>Sources\Execution</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.inl">
       <Filter>Sources\Execution</Filter>
     </None>
