@@ -82,9 +82,10 @@ namespace Stroika::Foundation::Memory {
      * 
      *  @see https://gist.github.com/graphitemaster/494f21190bb2c63c5516
      *  @see https://en.cppreference.com/w/cpp/types/offsetof
+     *  @see https://stackoverflow.com/questions/65940393/c-why-the-restriction-on-offsetof-for-non-standard-layout-objects-or-how-t
      */
-    template <typename T1, typename T2>
-    size_t constexpr OffsetOf (T1 T2::*member);
+    template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
+    size_t constexpr OffsetOf (FIELD_VALUE_TYPE OWNING_OBJECT::*member);
 
 }
 

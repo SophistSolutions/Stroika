@@ -64,11 +64,15 @@ namespace Stroika::Foundation::Memory {
     }
 #endif
 
-    template <typename T1, typename T2>
-    inline size_t constexpr OffsetOf (T1 T2::*member)
+    template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
+    inline size_t constexpr OffsetOf (FIELD_VALUE_TYPE OWNING_OBJECT::*member)
     {
-        auto o = declval<T2> ();
-        return size_t (&(o.*member)) - size_t (&o);
+        //auto o = declval<OWNING_OBJECT> ();
+        //const T2& o = *reinterpret_cast<const OWNING_OBJECT*> (nullptr); gcc doesn't allow reinterpret_cast of nullptr: invalid cast from type ‘std::nullptr_t’ to type ‘const ...*’
+        const OWNING_OBJECT& o      = *reinterpret_cast<const OWNING_OBJECT*> (0);
+        auto                 result = size_t (reinterpret_cast<const char*> (&(o.*member)) - reinterpret_cast<const char*> (&o));
+        //Ensure (result <= sizeof (OWNING_OBJECT));
+        return result;
     }
 
 }
