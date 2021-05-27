@@ -1639,9 +1639,18 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 
 #endif
 
+
+// NOT REALLY a compiler bug - but treat it that way. I just havent been able to find portable solution for this yet.
+// 
+// FOR CLANG we get the message:
+// Memory/Common.inl:80:24: note: cast that performs the conversions of a reinterpret_cast is not allowed in a constant expression
 #ifndef qCompilerAndStdLib_OffsetOf_Constexpr_Buggy
 
-#if defined(_MSC_VER)
+#if defined(__clang__) && defined(__APPLE__)
+#define qCompilerAndStdLib_OffsetOf_Constexpr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
+#elif defined(__clang__) && !defined(__APPLE__)
+#define qCompilerAndStdLib_OffsetOf_Constexpr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
+#elif defined(_MSC_VER)
 // Verified still broken in _MSC_VER_2k19_16Pt8_
 #define qCompilerAndStdLib_OffsetOf_Constexpr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt8_)
 #else
