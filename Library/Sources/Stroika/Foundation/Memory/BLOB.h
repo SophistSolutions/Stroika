@@ -280,12 +280,14 @@ namespace Stroika::Foundation::Memory {
     public:
         /**
          *  Pointers returned by begin(), remain valid for the lifetime of the containing BLOB.
+         *  \note - this is legal to call even on an empty BLOB (but may return nullptr)
          */
         nonvirtual const byte* begin () const;
 
     public:
         /**
          *  Pointers returned by end(), remain valid for the lifetime of the containing BLOB.
+         *  \note - this is legal to call even on an empty BLOB (but may return nullptr)
          */
         nonvirtual const byte* end () const;
 
