@@ -19,7 +19,6 @@ using namespace Stroika::Foundation::DataExchange;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-
 /*
  ********************************************************************************
  *************************** ORM::Schema::CatchAllField *************************
@@ -49,7 +48,7 @@ Mapping<String, VariantValue> ORM::Schema::CatchAllField::kDefaultMapper_Combine
 Mapping<String, VariantValue> ORM::Schema::Table::MapToDB (const VariantValue& vv) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{"ORM::Schema::Table::MapToDB", Stroika_Foundation_Debug_OptionalizeTraceArgs (L"vv=%s", Characters::ToString(vv).c_str ())};
+    TraceContextBumper ctx{"ORM::Schema::Table::MapToDB", Stroika_Foundation_Debug_OptionalizeTraceArgs (L"vv=%s", Characters::ToString (vv).c_str ())};
 #endif
     Mapping<String, VariantValue> actualFields = vv.As<Mapping<String, VariantValue>> ();
     Mapping<String, VariantValue> resultFields;
@@ -85,7 +84,7 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapToDB (const VariantValue& v
         Require (fields2Accumulate.empty () or fSpecialCatchAll.has_value ());
     }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"returning: %s", Characters::ToString (vv).c_str ())};
+    DbgTrace (L"returning: %s", Characters::ToString (vv).c_str ());
 #endif
     return resultFields;
 }
