@@ -64,8 +64,26 @@ namespace Stroika::Foundation::Memory {
     }
 #endif
 
-    template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
+
+
+    namespace PRIVATE_ {
+        template <typename T1, typename T2>
+        struct OffsetOfRequiringDefaultConstexprObjectType_ {
+            static inline constexpr T2               object;
+            static constexpr size_t offset (T1 T2::*member)
+            {
+                return size_t (&(OffsetOfRequiringDefaultConstexprObjectType_<T1, T2>::object.*member)) - size_t (&OffsetOfRequiringDefaultConstexprObjectType_<T1, T2>::object);
+            }
+        };
+    }
+
+    template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT, enable_if_t<is_default_constructible_v<OWNING_OBJECT>>*>
     inline size_t constexpr OffsetOf (FIELD_VALUE_TYPE OWNING_OBJECT::*member)
+    {
+        return PRIVATE_::OffsetOfRequiringDefaultConstexprObjectType_<FIELD_VALUE_TYPE, OWNING_OBJECT>::offset (member);
+    }
+    template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT, enable_if_t<not is_default_constructible_v<OWNING_OBJECT>>*>
+    inline size_t  OffsetOf (FIELD_VALUE_TYPE OWNING_OBJECT::*member)
     {
 #if 0
         auto o = declval<OWNING_OBJECT> (); // function only valid in unevaluated contexts - produces link errors
@@ -80,7 +98,7 @@ namespace Stroika::Foundation::Memory {
 #else
         // Still not totally legal for non-std-layout classes, but seems to work, and I haven't found a better way
         //      --LGP 2021-05-27
-        alignas (OWNING_OBJECT) std::byte buf[sizeof (OWNING_OBJECT)];
+        alignas (OWNING_OBJECT) std::byte buf[sizeof (OWNING_OBJECT)]{};
         const OWNING_OBJECT&              o = *reinterpret_cast<const OWNING_OBJECT*> (&buf);
 #endif
         auto result = size_t (reinterpret_cast<const char*> (&(o.*member)) - reinterpret_cast<const char*> (&o));

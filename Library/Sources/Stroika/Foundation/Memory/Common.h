@@ -80,12 +80,26 @@ namespace Stroika::Foundation::Memory {
      * with:
      *       OffsetOf (&CLASS::MEMBER)
      * 
+     *  \note   This implementation supports constexpr evaluation if T"
+     *  \par Example Usage
+     *      \code
+     *          struct  Person {
+     *              String  firstName;
+     *              String  lastName;
+     *          };
+     *          constexpr size_t kOffset_ = OffsetOf(&Person::lastName);
+     *          static_assert (OffsetOf (&Person::firstName) == 0);
+     *      \endcode
+     *
+     * 
      *  @see https://gist.github.com/graphitemaster/494f21190bb2c63c5516
      *  @see https://en.cppreference.com/w/cpp/types/offsetof
      *  @see https://stackoverflow.com/questions/65940393/c-why-the-restriction-on-offsetof-for-non-standard-layout-objects-or-how-t
      */
-    template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
+    template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT, enable_if_t<is_default_constructible_v<OWNING_OBJECT>>* = nullptr>
     size_t constexpr OffsetOf (FIELD_VALUE_TYPE OWNING_OBJECT::*member);
+    template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT, enable_if_t<not is_default_constructible_v<OWNING_OBJECT>>* = nullptr>
+    size_t  OffsetOf (FIELD_VALUE_TYPE OWNING_OBJECT::*member);
 
 }
 
