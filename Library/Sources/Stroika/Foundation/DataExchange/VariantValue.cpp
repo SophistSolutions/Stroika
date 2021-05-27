@@ -301,7 +301,7 @@ bool VariantValue::As () const
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"failed coerce-to-bool: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
 #endif
-            Execution::Throw (DataExchange::BadFormatException (L"Cannot coerce VariantValue to bool"sv));
+            Execution::Throw (DataExchange::BadFormatException{L"Cannot coerce VariantValue to bool"sv});
         }
     }
 }
@@ -313,7 +313,7 @@ bool VariantValue::IsConvertibleTo (Type to) const
     }
     try {
         Debug::TraceContextSuppressor suppressTraceInThisBlock;
-        CheckConvertibleTo (to);
+        (void)ConvertTo (to);
         return true;
     }
     catch (...) {
@@ -321,47 +321,37 @@ bool VariantValue::IsConvertibleTo (Type to) const
     }
 }
 
-void VariantValue::CheckConvertibleTo (Type to) const
+VariantValue VariantValue::ConvertTo (Type to) const
 {
     if (GetType () == to) [[LIKELY_ATTR]] {
-        return; // performance tweak
+        return *this; // performance tweak
     }
     switch (to) {
         case Type::eNull:
             // Only null (caught above) can translate to null...
             Execution::Throw (DataExchange::BadFormatException{L"Cannot coerce VariantValue to null"sv});
-            return;
         case Type::eBLOB:
-            (void)As<Memory::BLOB> ();
-            return;
+            return As<Memory::BLOB> ();
         case Type::eBoolean:
-            (void)As<bool> ();
-            return;
+            return As<bool> ();
         case Type::eInteger:
-            (void)As<int> ();
-            return;
+            return As<int> ();
         case Type::eUnsignedInteger:
-            (void)As<unsigned int> ();
-            return;
+            return As<unsigned int> ();
         case Type::eFloat:
-            (void)As<float> ();
-            return;
+            return As<float> ();
         case Type::eDate:
-            (void)As<Time::Date> ();
-            return;
+            return As<Time::Date> ();
         case Type::eDateTime:
-            (void)As<Time::DateTime> ();
-            return;
+            return As<Time::DateTime> ();
         case Type::eString:
-            (void)As<String> ();
-            return;
+            return As<String> ();
         case Type::eArray:
-            (void)As<Sequence<VariantValue>> ();
-            return;
+            return As<Sequence<VariantValue>> ();
         case Type::eMap:
-            (void)As<Mapping<String, VariantValue>> ();
-            return;
+            return As<Mapping<String, VariantValue>> ();
     }
+    Execution::Throw (DataExchange::BadFormatException{L"Cannot coerce VariantValue to that type"sv});
 }
 
 Memory::BLOB VariantValue::AsBLOB_ () const

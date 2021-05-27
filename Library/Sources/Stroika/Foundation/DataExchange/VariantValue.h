@@ -321,19 +321,17 @@ namespace Stroika::Foundation::DataExchange {
          *  Note - not just potentially convertible, but the data is actually formatted to allow the conversion.
          *  So for example, if to is DateTime, then an ill formed string would NOT be IsConvertibleTo
          * 
-         *  @see CheckConvertibleTo
+         *  @see ConvertTo
          */
         nonvirtual bool IsConvertibleTo (Type to) const;
 
     public:
         /**
-         *  Check if this VariantValue would be convertible to the argument type.
-         *  Note - not just potentially convertible, but the data is actually formatted to allow the conversion.
-         *  So for example, if to is DateTime, then an ill formed string would NOT be IsConvertibleTo
+         *  \brief Return this VariantValue converted to the given type (as if by As<T> for the T appropriate to 'Type to')
          * 
-         *  @see CheckConvertibleTo
+         *  This will throw DataExchange::BadFormatException if the conversion doesn't make sense.
          */
-        nonvirtual void CheckConvertibleTo (Type to) const;
+        nonvirtual VariantValue ConvertTo (Type to) const;
 
     private:
         nonvirtual Memory::BLOB         AsBLOB_ () const;
