@@ -64,15 +64,13 @@ namespace Stroika::Foundation::Memory {
     }
 #endif
 
-
-
     namespace PRIVATE_ {
         template <typename T1, typename T2>
         struct OffsetOfRequiringDefaultConstexprObjectType_ {
-            static inline constexpr T2               object;
-            static constexpr size_t offset (T1 T2::*member)
+            static inline /*constexpr*/ T2 sObj_{};
+            static constexpr size_t        offset (T1 T2::*member)
             {
-                return size_t (&(OffsetOfRequiringDefaultConstexprObjectType_<T1, T2>::object.*member)) - size_t (&OffsetOfRequiringDefaultConstexprObjectType_<T1, T2>::object);
+                return size_t (&(OffsetOfRequiringDefaultConstexprObjectType_<T1, T2>::sObj_.*member)) - size_t (&OffsetOfRequiringDefaultConstexprObjectType_<T1, T2>::sObj_);
             }
         };
     }
@@ -83,25 +81,28 @@ namespace Stroika::Foundation::Memory {
         return PRIVATE_::OffsetOfRequiringDefaultConstexprObjectType_<FIELD_VALUE_TYPE, OWNING_OBJECT>::offset (member);
     }
     template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT, enable_if_t<not is_default_constructible_v<OWNING_OBJECT>>*>
-    inline size_t  OffsetOf (FIELD_VALUE_TYPE OWNING_OBJECT::*member)
+    inline size_t OffsetOf (FIELD_VALUE_TYPE OWNING_OBJECT::*member)
     {
 #if 0
         auto o = declval<OWNING_OBJECT> (); // function only valid in unevaluated contexts - produces link errors
+        auto result = size_t (reinterpret_cast<const char*> (&(o.*member)) - reinterpret_cast<const char*> (&o));
 #elif 0
-        // gcc doesn't allow reinterpret_cast of nullptr: invalid cast from type ‘std::nullptr_t’ to type ‘const ...*’
+        // gcc doesn't allow reinterpret_cast of nullptr: invalid cast from type ï¿½std::nullptr_tï¿½ to type ï¿½const ...*ï¿½
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wnull-dereference\"")
         const OWNING_OBJECT& o = *reinterpret_cast<const OWNING_OBJECT*> (nullptr);
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wnull-dereference\"")
+        auto result = size_t (reinterpret_cast<const char*> (&(o.*member)) - reinterpret_cast<const char*> (&o));
 #elif 0
         //TSAN detects undefined behavior
-        const OWNING_OBJECT& o = *reinterpret_cast<const OWNING_OBJECT*> (0);
+        const OWNING_OBJECT& o      = *reinterpret_cast<const OWNING_OBJECT*> (0);
+        auto                 result = size_t (reinterpret_cast<const char*> (&(o.*member)) - reinterpret_cast<const char*> (&o));
 #else
         // Still not totally legal for non-std-layout classes, but seems to work, and I haven't found a better way
         //      --LGP 2021-05-27
         alignas (OWNING_OBJECT) std::byte buf[sizeof (OWNING_OBJECT)]{};
-        const OWNING_OBJECT&              o = *reinterpret_cast<const OWNING_OBJECT*> (&buf);
+        const OWNING_OBJECT&              o      = *reinterpret_cast<const OWNING_OBJECT*> (&buf);
+        auto                              result = size_t (reinterpret_cast<const char*> (&(o.*member)) - reinterpret_cast<const char*> (&o));
 #endif
-        auto result = size_t (reinterpret_cast<const char*> (&(o.*member)) - reinterpret_cast<const char*> (&o));
         // Avoid #include - Ensure (result <= sizeof (OWNING_OBJECT));
         return result;
     }
