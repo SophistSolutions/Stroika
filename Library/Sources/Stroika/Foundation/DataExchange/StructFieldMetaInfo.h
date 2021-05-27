@@ -105,7 +105,7 @@ namespace Stroika::Foundation::DataExchange {
      *      \endcode
      */
 #define Stroika_Foundation_DataExchange_StructFieldMetaInfo(CLASS, MEMBER) \
-    Stroika::Foundation::DataExchange::StructFieldMetaInfo { Stroika::Foundation::Memory::OffsetOf (&CLASS::MEMBER), typeid (decltype (CLASS::MEMBER)) }
+    Stroika::Foundation::DataExchange::StructFieldMetaInfo{&CLASS::MEMBER}
 
 }
 
