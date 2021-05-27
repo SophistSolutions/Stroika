@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Memory {
 #else
         // Still not totally legal for non-std-layout classes, but seems to work, and I haven't found a better way
         //      --LGP 2021-05-27
-        alignas(OWNING_OBJECT) std::byte            buf[sizeof (OWNING_OBJECT)];
+        alignas (OWNING_OBJECT) std::byte buf[sizeof (OWNING_OBJECT)];
         const OWNING_OBJECT&              o = *reinterpret_cast<const OWNING_OBJECT*> (&buf);
 #endif
         auto result = size_t (reinterpret_cast<const char*> (&(o.*member)) - reinterpret_cast<const char*> (&o));
