@@ -76,17 +76,21 @@ namespace Stroika::Foundation::Database::ORM {
 
             /**
              */
-            nonvirtual VariantValue MapToDB (const VariantValue& vv) const;
+            nonvirtual Mapping<String, VariantValue> MapToDB (const VariantValue& vv) const;
 
             /**
              */
-            nonvirtual VariantValue MapFromDB (const VariantValue& vv) const;
+            nonvirtual Mapping<String, VariantValue> MapFromDB (const VariantValue& vv) const;
 
             /**
              * A future version will take parameter to capture differences between
              *  differnet SQL implemtnations so can generate differnt types etc.
              */
             nonvirtual String GetSQLToCreateTable () const;
+
+            /**
+             */
+            nonvirtual String GetSQLToInsert () const;
         };
 
 /**

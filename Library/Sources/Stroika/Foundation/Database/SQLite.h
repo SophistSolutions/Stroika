@@ -496,9 +496,11 @@ namespace Stroika::Foundation::Database::SQLite {
          *  \note the paramterIndex is 'zero-based' unlike sqlite native APIs
          *
          *  \req parameterIndex < GetParameters ().length ()
-         *  \req paramterName FOUND in GetParaemters ().fName's
+         *  \req paramterName FOUND in GetParameters ().fName's
          *  and similarly for other overloads
-         * 
+         *
+         *  \note - parameterName can be the name of the variable with or without the prefixing :
+         *
          *  If iterable argument to Bind (), the if the arguments have parameter names, the association will be done by name.
          *  if they do not have names, the order in the bind argument list will be interpretted as argument order (parameter order) for that item)
          * 
@@ -507,6 +509,7 @@ namespace Stroika::Foundation::Database::SQLite {
         nonvirtual void Bind (unsigned int parameterIndex, const VariantValue& v);
         nonvirtual void Bind (const String& parameterName, const VariantValue& v);
         nonvirtual void Bind (const Traversal::Iterable<ParameterDescription>& parameters);
+        nonvirtual void Bind (const Traversal::Iterable<Common::KeyValuePair<String, VariantValue>>& parameters);
 
     public:
         /**
@@ -522,6 +525,7 @@ namespace Stroika::Foundation::Database::SQLite {
          */
         nonvirtual void Execute ();
         nonvirtual void Execute (const Traversal::Iterable<ParameterDescription>& parameters);
+        nonvirtual void Execute (const Traversal::Iterable<Common::KeyValuePair<String, VariantValue>>& parameters);
 
     public:
         /**

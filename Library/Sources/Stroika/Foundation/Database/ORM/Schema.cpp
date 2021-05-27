@@ -16,6 +16,10 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Database;
 using namespace Stroika::Foundation::DataExchange;
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
 /*
  ********************************************************************************
  *************************** ORM::Schema::CatchAllField *************************
@@ -26,6 +30,7 @@ ORM::Schema::CatchAllField::CatchAllField ()
     fName        = L"_other_fields_"sv;
     fVariantType = VariantValue::Type::eString; // sb BLOB probably
 }
+
 VariantValue ORM::Schema::CatchAllField::kDefaultMapper_RawToCombined (const Mapping<String, VariantValue>& fields2Map)
 {
     return DataExchange::Variant::JSON::Writer{}.WriteAsString (VariantValue{fields2Map});
@@ -41,27 +46,36 @@ Mapping<String, VariantValue> ORM::Schema::CatchAllField::kDefaultMapper_Combine
  ****************************** ORM::Schema::Table ******************************
  ********************************************************************************
  */
-VariantValue ORM::Schema::Table::MapToDB (const VariantValue& vv) const
+Mapping<String, VariantValue> ORM::Schema::Table::MapToDB (const VariantValue& vv) const
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    TraceContextBumper ctx{"ORM::Schema::Table::MapToDB", Stroika_Foundation_Debug_OptionalizeTraceArgs (L"vv=%s", Characters::ToString(vv).c_str ())};
+#endif
     Mapping<String, VariantValue> actualFields = vv.As<Mapping<String, VariantValue>> ();
     Mapping<String, VariantValue> resultFields;
+    Set<String>                   usedFields; // must track outside of resultFields.Keys () cuz input key could differ from output
     for (const auto& fi : fNamedFields) {
-        if (auto oFieldVal = actualFields.Lookup (fi.fName)) {
+        String srcKey = Memory::NullCoalesce (fi.fVariantValueFieldName, fi.fName);
+        if (auto oFieldVal = actualFields.Lookup (srcKey)) {
             if (fi.fVariantType) {
-                oFieldVal->CheckConvertibleTo (*fi.fVariantType);
+                resultFields.Add (fi.fName, oFieldVal->ConvertTo (*fi.fVariantType));
             }
-            resultFields.Add (fi.fName, *oFieldVal);
+            else {
+                resultFields.Add (fi.fName, *oFieldVal);
+            }
+            usedFields += srcKey;
         }
         else if (fi.fRequired) {
             // throw or assert?
+            AssertNotReached ();
         }
     }
     // now fold remaining fields into special 'extra' field (for structured non-indexed/non-searchable data)
-    Set<String> fields2Accumulate = Set<String>{actualFields.Keys ()} - Set<String>{resultFields.Keys ()};
+    Set<String> fields2Accumulate = Set<String>{actualFields.Keys ()} - usedFields;
     if (fSpecialCatchAll.has_value () and not fields2Accumulate.empty ()) {
         Mapping<String, VariantValue> extraFields;
         for (auto i : fields2Accumulate) {
-            resultFields.Add (i, *actualFields.Lookup (i));
+            extraFields.Add (i, *actualFields.Lookup (i));
         }
         // convert to JSON and store as string
         auto mapperFieldsToCombinedField = fSpecialCatchAll->fMapRawFieldsToCombinedField != nullptr ? fSpecialCatchAll->fMapRawFieldsToCombinedField : CatchAllField::kDefaultMapper_RawToCombined;
@@ -70,19 +84,24 @@ VariantValue ORM::Schema::Table::MapToDB (const VariantValue& vv) const
     else {
         Require (fields2Accumulate.empty () or fSpecialCatchAll.has_value ());
     }
-    return VariantValue{resultFields};
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace (L"returning: %s", Characters::ToString (vv).c_str ())};
+#endif
+    return resultFields;
 }
 
-VariantValue ORM::Schema::Table::MapFromDB (const VariantValue& vv) const
+Mapping<String, VariantValue> ORM::Schema::Table::MapFromDB (const VariantValue& vv) const
 {
     Mapping<String, VariantValue> actualFields = vv.As<Mapping<String, VariantValue>> ();
     Mapping<String, VariantValue> resultFields;
     for (const auto& fi : fNamedFields) {
         if (auto oFieldVal = actualFields.Lookup (fi.fName)) {
             if (fi.fVariantType) {
-                oFieldVal->CheckConvertibleTo (*fi.fVariantType);
+                resultFields.Add (fi.fName, oFieldVal->ConvertTo (*fi.fVariantType));
             }
-            resultFields.Add (fi.fName, *oFieldVal);
+            else {
+                resultFields.Add (fi.fName, *oFieldVal);
+            }
         }
         else if (fi.fRequired) {
             // throw or assert?
@@ -98,7 +117,7 @@ VariantValue ORM::Schema::Table::MapFromDB (const VariantValue& vv) const
     else {
         // @todo maybe check fNamedFields contains all the actual fields??? Maybe OK to not check
     }
-    return VariantValue{resultFields};
+    return resultFields;
 }
 
 namespace {
@@ -163,5 +182,50 @@ String ORM::Schema::Table::GetSQLToCreateTable () const
     }
     sb += L");";
 
+    return sb.str ();
+}
+
+String ORM::Schema::Table::GetSQLToInsert () const
+{
+    StringBuilder sb;
+
+    /*
+     *   INSERT INTO DEVICES (name) values (:NAME);
+     */
+    sb += L"INSERT INTO " + fName + L" (";
+    bool firstField   = true;
+    auto addFieldName = [&] (const Field& fi) {
+        if (firstField) {
+            firstField = false;
+        }
+        else {
+            sb += L", ";
+        }
+        sb += fi.fName;
+    };
+    for (const Field& i : fNamedFields) {
+        addFieldName (i);
+    }
+    if (fSpecialCatchAll) {
+        addFieldName (*fSpecialCatchAll);
+    }
+    sb += L") VALUES (";
+    firstField                     = true;
+    auto addFieldValueVariableName = [&] (const Field& fi) {
+        if (firstField) {
+            firstField = false;
+        }
+        else {
+            sb += L", ";
+        }
+        sb += L":" + fi.fName;
+    };
+    for (const Field& i : fNamedFields) {
+        addFieldValueVariableName (i);
+    }
+    if (fSpecialCatchAll) {
+        addFieldValueVariableName (*fSpecialCatchAll);
+    }
+    sb += L");";
     return sb.str ();
 }

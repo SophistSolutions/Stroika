@@ -40,7 +40,6 @@ namespace {
     ///         (1) store as BLOB
     ///         (2) Store in Cross-table
 
-    // see if can mark ID as random (lower(hex(randomblob(16))))
     namespace Model {
         struct Device {
             GUID        id;
@@ -73,39 +72,41 @@ namespace {
     }();
 
     const ORM::Schema::Table kDeviceTableSchema_{
-        L"Devices", Collection<ORM::Schema::Field>{
-    /*
+        L"Devices",
+        /*
          *  use the same names as the ObjectVariantMapper for simpler mapping, or specify an alternate name
          *  for ID, just as an example.
          */
+        Collection<ORM::Schema::Field>{
 #if __cpp_designated_initializers
-                        {.fName = L"ID", .fVariantValueFieldName = L"id"sv, .fVariantType = VariantValue::eBLOB, .fIsKeyField = true, .fDefaultExpression = L"randomblob(16)"sv, .fNotNull = true}, {.fName = L"name", .fVariantType = VariantValue::eString, .fNotNull = true}
+            /**
+             *  For ID, generate random GUID (BLOB) automatically in database
+             */
+            {.fName = L"ID", .fVariantValueFieldName = L"id"sv, .fVariantType = VariantValue::eBLOB, .fIsKeyField = true, .fDefaultExpression = L"randomblob(16)"sv, .fNotNull = true},
+            {.fName = L"name", .fVariantType = VariantValue::eString, .fNotNull = true}
 #else
-                        {L"ID", L"id"sv, false, VariantValue::eBLOB, nullopt, true, nullopt, L"randomblob(16)"sv, true}, {L"name", nullopt, false, VariantValue::eString, nullopt, nullopt, nullopt, nullopt, true}
+            {L"ID", L"id"sv, false, VariantValue::eBLOB, nullopt, true, nullopt, L"randomblob(16)"sv, true},
+            {L"name", nullopt, false, VariantValue::eString, nullopt, nullopt, nullopt, nullopt, true}
 #endif
-                    },
+        },
         ORM::Schema::CatchAllField{}};
 
     Connection::Ptr SetupDB_ (const Options& options)
     {
         auto initializeDB = [] (const Connection::Ptr& c) {
-            // Use Connection::Ptr::Exec because no parameter bindings needed
-            #if 1
             c.Exec (kDeviceTableSchema_.GetSQLToCreateTable ());
-            #else
-            c.Exec (
-                L"CREATE TABLE Devices("
-                L"ID BLOB PRIMARY KEY DEFAULT(randomblob(16)),"
-                L"name           TEXT    NOT NULL"
-                L");");
-            #endif
         };
-        Options o      = options;
-        o.fBusyTimeout = o.fBusyTimeout.value_or (1s); // default to 1 second busy timeout for these tests
-        return Connection::New (o, initializeDB);
+        return Connection::New (options, initializeDB);
     }
 
-    void AddDevices_ (Connection::Ptr conn)
+    void AddDevice_ (Connection::Ptr conn, const Model::Device& d)
+    {
+        DbgTrace (L"***kDeviceTableSchema_.GetSQLToInsert ()=%s", kDeviceTableSchema_.GetSQLToInsert ().c_str ());
+        Statement addDeviceStatement{conn, kDeviceTableSchema_.GetSQLToInsert ()}; // @todo next auto-gen INSERT STATEMENT
+        addDeviceStatement.Execute (kDeviceTableSchema_.MapToDB (Model::Device::kMapper.FromObject (d)));
+    }
+
+    void AddDevices_OldWay_ (Connection::Ptr conn)
     {
         Statement addDeviceStatement{conn, L"INSERT INTO DEVICES (name) values (:NAME);"};
         addDeviceStatement.Execute (initializer_list<Statement::ParameterDescription>{
@@ -114,6 +115,13 @@ namespace {
         addDeviceStatement.Execute (initializer_list<Statement::ParameterDescription>{
             {L":NAME", L"ROUTER"},
         });
+    }
+
+    void AddDevices_ (Connection::Ptr conn)
+    {
+        AddDevices_OldWay_ (conn);
+
+        AddDevice_ (conn, Model::Device{GUID::GenerateNew (), Set<int>{33}, L"myLaptop"sv, Set<String>{L"ff:33:aa:da:ff:33"}});
     }
 }
 

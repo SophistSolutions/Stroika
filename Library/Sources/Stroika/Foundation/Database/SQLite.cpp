@@ -444,6 +444,16 @@ void Statement::Execute (const Traversal::Iterable<ParameterDescription>& parame
     Execute ();
 }
 
+void Statement::Execute (const Traversal::Iterable<Common::KeyValuePair<String, VariantValue>>& parameters)
+{
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"SQLite::DB::Statement::Execute", L"parameters=%s", Characters::ToString (parameters).c_str ())};
+#endif
+    Reset ();
+    Bind (parameters);
+    Execute ();
+}
+
 void Statement::Reset ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -577,28 +587,40 @@ void Statement::Bind (unsigned int parameterIndex, const VariantValue& v)
     lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
     fParameters_[parameterIndex].fValue = v;
     switch (v.GetType ()) {
+        case VariantValue::eDate:
+        case VariantValue::eDateTime:
         case VariantValue::eString:
             ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_text (fStatementObj_, parameterIndex + 1, v.As<String> ().AsUTF8 ().c_str (), -1, SQLITE_TRANSIENT), fConnectionPtr_->Peek ());
             break;
+        case VariantValue::eBoolean:
         case VariantValue::eInteger:
             ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_int64 (fStatementObj_, parameterIndex + 1, v.As<sqlite3_int64> ()), fConnectionPtr_->Peek ());
             break;
         case VariantValue::eFloat:
             ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_double (fStatementObj_, parameterIndex + 1, v.As<double> ()), fConnectionPtr_->Peek ());
             break;
+        case VariantValue::eBLOB: {
+            Memory::BLOB b = v.As<Memory::BLOB> ();
+            ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_blob64 (fStatementObj_, parameterIndex + 1, b.begin (), b.size (), nullptr), fConnectionPtr_->Peek ());
+        } break;
         case VariantValue::eNull:
             ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_null (fStatementObj_, parameterIndex + 1), fConnectionPtr_->Peek ());
             break;
         default:
-            AssertNotImplemented (); // add more types - esp BLOB
+            AssertNotImplemented (); // add more types
             break;
     }
 }
 
 void Statement::Bind (const String& parameterName, const VariantValue& v)
 {
+    Require (not parameterName.empty ());
+    String pn = parameterName;
+    if (pn[0] != ':') {
+        pn = L":" + pn;
+    }
     for (unsigned int i = 0; i < fParameters_.length (); ++i) {
-        if (fParameters_[i].fName == parameterName) {
+        if (fParameters_[i].fName == pn) {
             Bind (i, v);
             return;
         }
@@ -618,6 +640,13 @@ void Statement::Bind (const Traversal::Iterable<ParameterDescription>& parameter
             Bind (idx, i.fValue);
         }
         idx++;
+    }
+}
+
+void Statement::Bind (const Traversal::Iterable<Common::KeyValuePair<String, VariantValue>>& parameters)
+{
+    for (auto i : parameters) {
+        Bind (i.fKey, i.fValue);
     }
 }
 
