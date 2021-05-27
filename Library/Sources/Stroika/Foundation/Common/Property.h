@@ -493,8 +493,6 @@ namespace Stroika::Foundation::Common {
      *          const String a = kX;
      *      \endcode
      *
-     *  @see https://stroika.atlassian.net/browse/STK-381 for details.
-     *
      *  \note   it would be HIGHLY DESIRABLE if C++ allowed operator. overloading, as accessing one of these
      *          values without assinging to a temporary first - means that you cannot directly call its methods.
      *          Thats a bit awkward.
