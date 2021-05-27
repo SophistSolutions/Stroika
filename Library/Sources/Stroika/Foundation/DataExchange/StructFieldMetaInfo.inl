@@ -9,6 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "../Memory/Common.h"
 
 namespace Stroika::Foundation::DataExchange {
 
@@ -20,6 +21,12 @@ namespace Stroika::Foundation::DataExchange {
     inline StructFieldMetaInfo::StructFieldMetaInfo (size_t fieldOffset, type_index typeInfo)
         : fOffset{fieldOffset}
         , fTypeInfo{typeInfo}
+    {
+    }
+    template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
+    inline StructFieldMetaInfo::StructFieldMetaInfo (FIELD_VALUE_TYPE OWNING_OBJECT::*member)
+        : fOffset{Memory::OffsetOf (member)}
+        , fTypeInfo{typeid (FIELD_VALUE_TYPE)}
     {
     }
 

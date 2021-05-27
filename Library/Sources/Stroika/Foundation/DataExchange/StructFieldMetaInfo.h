@@ -38,8 +38,16 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
+         *  This is only defined to be perfectly safe in C++ for classes of type is_standard_layout()
+         *  But that is uselessly insanely overly restricive (e.g. having private data members makes a
+         *  struct not standard_layout).
+         * 
+         *  This appears to always work for all cases I've tried (but avoid things like virtual base classes - that might not
+         *  work).
          */
         StructFieldMetaInfo (size_t fieldOffset, type_index typeInfo);
+        template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
+        StructFieldMetaInfo (FIELD_VALUE_TYPE OWNING_OBJECT::*member);
 
 #if __cpp_impl_three_way_comparison >= 201907 && !qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy
     public:
@@ -96,19 +104,8 @@ namespace Stroika::Foundation::DataExchange {
      *          StructFieldMetaInfo lastNameFieldInfo       =   Stroika_Foundation_DataExchange_StructFieldMetaInfo(Person, lastName)
      *      \endcode
      */
-#if defined(__clang__)
-#define Stroika_Foundation_DataExchange_StructFieldMetaInfo(CLASS, MEMBER)                   \
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Winvalid-offsetof\"") \
-    Stroika::Foundation::DataExchange::StructFieldMetaInfo{offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER))} DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Winvalid-offsetof\"")
-#elif defined(__GNUC__) && 0
-    // sadly, this macro stuff breaks with gcc 48..10.x - not sure why...
-#define Stroika_Foundation_DataExchange_StructFieldMetaInfo(CLASS, MEMBER)               \
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"") \
-    Stroika::Foundation::DataExchange::StructFieldMetaInfo{offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER))} DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"")
-#else
 #define Stroika_Foundation_DataExchange_StructFieldMetaInfo(CLASS, MEMBER) \
-    Stroika::Foundation::DataExchange::StructFieldMetaInfo { offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER)) }
-#endif
+    Stroika::Foundation::DataExchange::StructFieldMetaInfo { Stroika::Foundation::Memory::OffsetOf (&CLASS::MEMBER), typeid (decltype (CLASS::MEMBER)) }
 
 }
 

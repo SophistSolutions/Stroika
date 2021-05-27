@@ -90,8 +90,8 @@ namespace {
                   [] () -> ObjectVariantMapper {
                       ObjectVariantMapper mapper;
                       mapper.AddClass<MyData_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                          {L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fEnabled)},
-                          {L"Last-Synchronized-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fLastSynchronizedAt)},
+                          {L"Enabled", StructFieldMetaInfo{&MyData_::fEnabled}},
+                          {L"Last-Synchronized-At", StructFieldMetaInfo{&MyData_::fLastSynchronizedAt}},
                       });
                       return mapper;
                   }(),
@@ -100,7 +100,7 @@ namespace {
                       // for regression tests write to /tmp
                       return IO::FileSystem::WellKnownLocations::GetTemporary () / IO::FileSystem::ToPath (moduleName + fileSuffix);
                   }}
-            , fActualCurrentConfigData_ (fOptionsFile_.Read<MyData_> (MyData_ ()))
+            , fActualCurrentConfigData_{fOptionsFile_.Read<MyData_> (MyData_{})}
         {
             Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
         }
