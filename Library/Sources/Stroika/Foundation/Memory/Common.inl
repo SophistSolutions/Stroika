@@ -68,14 +68,19 @@ namespace Stroika::Foundation::Memory {
     inline size_t constexpr OffsetOf (FIELD_VALUE_TYPE OWNING_OBJECT::*member)
     {
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wnull-dereference\"")
-        #if 0
+#if 0
         auto o = declval<OWNING_OBJECT> (); // function only valid in unevaluated contexts
-        #elif 0
-        const OWNING_OBJECT& o = *reinterpret_cast<const OWNING_OBJECT*> (nullptr); gcc doesn't allow reinterpret_cast of nullptr: invalid cast from type ‘std::nullptr_t’ to type ‘const ...*’
-        #else
-        const OWNING_OBJECT& o      = *reinterpret_cast<const OWNING_OBJECT*> (0);
-        #endif
-        auto                 result = size_t (reinterpret_cast<const char*> (&(o.*member)) - reinterpret_cast<const char*> (&o));
+#elif 0
+        const OWNING_OBJECT& o = *reinterpret_cast<const OWNING_OBJECT*> (nullptr);
+        gcc doesn't allow reinterpret_cast of nullptr: invalid cast from type ‘std::nullptr_t’ to type ‘const ...*’
+#elif 0
+        //TSAN detects undefined behavior
+        const OWNING_OBJECT& o = *reinterpret_cast<const OWNING_OBJECT*> (0);
+#else
+        alignas(OWNING_OBJECT) std::byte            buf[sizeof (OWNING_OBJECT)];
+        const OWNING_OBJECT&              o = *reinterpret_cast<const OWNING_OBJECT*> (&buf);
+#endif
+        auto result = size_t (reinterpret_cast<const char*> (&(o.*member)) - reinterpret_cast<const char*> (&o));
         // Avoid #include - Ensure (result <= sizeof (OWNING_OBJECT));
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wnull-dereference\"")
         return result;
