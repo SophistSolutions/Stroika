@@ -434,30 +434,30 @@ namespace {
 }
 
 namespace {
-    namespace  Test12_OffsetOf_ {
+    namespace Test12_OffsetOf_ {
         struct Person {
             int firstName;
             int lastName;
         };
         struct NotDefaultConstructible {
             NotDefaultConstructible () = delete;
-           constexpr NotDefaultConstructible (int a) {}
-            int firstName;
-            int lastName;
+            constexpr NotDefaultConstructible (int a) {}
+            int firstName{};
+            int lastName{};
         };
         void DoTest ()
         {
             {
-                size_t kOffset_ = OffsetOf (&Person::lastName);
-                Assert (OffsetOf (&Person::firstName) == 0);
+                [[maybe_unused]] size_t kOffset_ = OffsetOf (&Person::lastName);
+                VerifyTestResult (OffsetOf (&Person::firstName) == 0);
             }
             {
-                size_t kOffset_ = OffsetOf (&NotDefaultConstructible::lastName);
-                Assert (OffsetOf (&NotDefaultConstructible::firstName) == 0);
+                [[maybe_unused]] size_t kOffset_ = OffsetOf (&NotDefaultConstructible::lastName);
+                VerifyTestResult (OffsetOf (&NotDefaultConstructible::firstName) == 0);
             }
             {
-                //constexpr size_t kOffsetx_ = OffsetOf (&Person::lastName);
-                //static_assert (OffsetOf (&Person::firstName) == 0);
+                //  [[maybe_unused]] constexpr size_t kOffsetx_ = OffsetOf (&Person::lastName);
+                //  static_assert (OffsetOf (&Person::firstName) == 0);
             }
         }
     }
