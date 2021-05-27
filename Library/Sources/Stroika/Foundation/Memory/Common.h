@@ -74,6 +74,18 @@ namespace Stroika::Foundation::Memory {
     }
 #endif
 
+    /**
+     *  REPLACE calls to:
+     *       offsetof (CLASS, MEMBER)
+     * with:
+     *       OffsetOf (&CLASS::MEMBER)
+     * 
+     *  @see https://gist.github.com/graphitemaster/494f21190bb2c63c5516
+     *  @see https://en.cppreference.com/w/cpp/types/offsetof
+     */
+    template <typename T1, typename T2>
+    size_t constexpr OffsetOf (T1 T2::*member);
+
 }
 
 /*

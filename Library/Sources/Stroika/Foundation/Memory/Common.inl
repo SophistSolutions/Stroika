@@ -64,5 +64,12 @@ namespace Stroika::Foundation::Memory {
     }
 #endif
 
+    template <typename T1, typename T2>
+    inline size_t constexpr OffsetOf (T1 T2::*member)
+    {
+        auto o = declval<T2> ();
+        return size_t (&(o.*member)) - size_t (&o);
+    }
+
 }
 #endif /*_Stroika_Foundation_Memory_Common_inl_*/
