@@ -65,12 +65,19 @@ namespace Stroika::Foundation::Memory {
 #endif
 
     namespace PRIVATE_ {
+        // @see https://gist.github.com/graphitemaster/494f21190bb2c63c5516 for more info on maybe how to
+        // get this working with constexpr and without static object
         template <typename T1, typename T2>
-        struct OffsetOfRequiringDefaultConstexprObjectType_ {
+        struct OffsetOfRequiringDefaultConstructibleObjectType_ {
             static inline /*constexpr*/ T2 sObj_{};
             static constexpr size_t        offset (T1 T2::*member)
             {
-                return size_t (&(OffsetOfRequiringDefaultConstexprObjectType_<T1, T2>::sObj_.*member)) - size_t (&OffsetOfRequiringDefaultConstexprObjectType_<T1, T2>::sObj_);
+                /*
+                 *  UNDEFINED BEHAVIOR: it is undefined, but for the following reason: expr.add-5.sentence-2
+                // "If the expressions P and Q point to, respectively, elements x[i] and x[j] of 
+                // the same array object x, the expression P - Q has the value i - j; otherwise, the behavior is undefined."]
+                 */
+                return size_t (&(OffsetOfRequiringDefaultConstructibleObjectType_<T1, T2>::sObj_.*member)) - size_t (&OffsetOfRequiringDefaultConstructibleObjectType_<T1, T2>::sObj_);
             }
         };
     }
@@ -78,7 +85,7 @@ namespace Stroika::Foundation::Memory {
     template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT, enable_if_t<is_default_constructible_v<OWNING_OBJECT>>*>
     inline size_t constexpr OffsetOf (FIELD_VALUE_TYPE OWNING_OBJECT::*member)
     {
-        return PRIVATE_::OffsetOfRequiringDefaultConstexprObjectType_<FIELD_VALUE_TYPE, OWNING_OBJECT>::offset (member);
+        return PRIVATE_::OffsetOfRequiringDefaultConstructibleObjectType_<FIELD_VALUE_TYPE, OWNING_OBJECT>::offset (member);
     }
     template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT, enable_if_t<not is_default_constructible_v<OWNING_OBJECT>>*>
     inline size_t OffsetOf (FIELD_VALUE_TYPE OWNING_OBJECT::*member)

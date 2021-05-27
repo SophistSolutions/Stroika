@@ -1639,6 +1639,17 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 
 #endif
 
+#ifndef qCompilerAndStdLib_OffsetOf_Constexpr_Buggy
+
+#if defined(_MSC_VER)
+// Verified still broken in _MSC_VER_2k19_16Pt8_
+#define qCompilerAndStdLib_OffsetOf_Constexpr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt8_)
+#else
+#define qCompilerAndStdLib_OffsetOf_Constexpr_Buggy 0
+#endif
+
+#endif
+
 /**
  // _mkgmtime64 not portable, but seems to be defined everywhere I've tried - add a qSupported if/when needed
  https://msdn.microsoft.com/en-us/library/2093ets1.aspx

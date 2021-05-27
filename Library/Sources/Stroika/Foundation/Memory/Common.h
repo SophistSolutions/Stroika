@@ -80,7 +80,12 @@ namespace Stroika::Foundation::Memory {
      * with:
      *       OffsetOf (&CLASS::MEMBER)
      * 
-     *  \note   This implementation supports constexpr evaluation if T"
+     *  \note   This exploits UNDEFINED BEHAVIOR.
+     * 
+     *          expr.add-5.sentence-2
+     *              "If the expressions P and Q point to, respectively, elements x[i] and x[j] of 
+     *              the same array object x, the expression P - Q has the value i - j; otherwise, the behavior is undefined.
+     * 
      *  \par Example Usage
      *      \code
      *          struct  Person {
@@ -95,11 +100,14 @@ namespace Stroika::Foundation::Memory {
      *  @see https://gist.github.com/graphitemaster/494f21190bb2c63c5516
      *  @see https://en.cppreference.com/w/cpp/types/offsetof
      *  @see https://stackoverflow.com/questions/65940393/c-why-the-restriction-on-offsetof-for-non-standard-layout-objects-or-how-t
+     * 
+     *  \note   Tricky to get this to work with constexpr. Works on clang++ and g++, but not VisualStudio
+     *          really only constexpr if !qCompilerAndStdLib_OffsetOf_Constexpr_Buggy and is_default_constructible_v<OWNING_OBJECT>
      */
     template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT, enable_if_t<is_default_constructible_v<OWNING_OBJECT>>* = nullptr>
     size_t constexpr OffsetOf (FIELD_VALUE_TYPE OWNING_OBJECT::*member);
     template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT, enable_if_t<not is_default_constructible_v<OWNING_OBJECT>>* = nullptr>
-    size_t  OffsetOf (FIELD_VALUE_TYPE OWNING_OBJECT::*member);
+    size_t OffsetOf (FIELD_VALUE_TYPE OWNING_OBJECT::*member);
 
 }
 
