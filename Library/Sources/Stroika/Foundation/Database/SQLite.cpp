@@ -589,9 +589,10 @@ void Statement::Bind (unsigned int parameterIndex, const VariantValue& v)
     switch (v.GetType ()) {
         case VariantValue::eDate:
         case VariantValue::eDateTime:
-        case VariantValue::eString:
-            ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_text (fStatementObj_, parameterIndex + 1, v.As<String> ().AsUTF8 ().c_str (), -1, SQLITE_TRANSIENT), fConnectionPtr_->Peek ());
-            break;
+        case VariantValue::eString: {
+            string u = v.As<String> ().AsUTF8 ();
+            ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_text (fStatementObj_, parameterIndex + 1, u.c_str (), u.length (), SQLITE_TRANSIENT), fConnectionPtr_->Peek ());
+        } break;
         case VariantValue::eBoolean:
         case VariantValue::eInteger:
             ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_int64 (fStatementObj_, parameterIndex + 1, v.As<sqlite3_int64> ()), fConnectionPtr_->Peek ());
@@ -601,7 +602,7 @@ void Statement::Bind (unsigned int parameterIndex, const VariantValue& v)
             break;
         case VariantValue::eBLOB: {
             Memory::BLOB b = v.As<Memory::BLOB> ();
-            ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_blob64 (fStatementObj_, parameterIndex + 1, b.begin (), b.size (), nullptr), fConnectionPtr_->Peek ());
+            ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_blob64 (fStatementObj_, parameterIndex + 1, b.begin (), b.size (), SQLITE_TRANSIENT), fConnectionPtr_->Peek ());
         } break;
         case VariantValue::eNull:
             ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_null (fStatementObj_, parameterIndex + 1), fConnectionPtr_->Peek ());
