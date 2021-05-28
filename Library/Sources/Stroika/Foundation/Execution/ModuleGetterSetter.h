@@ -39,8 +39,8 @@ namespace Stroika::Foundation ::Execution {
      *                      [] () -> ObjectVariantMapper {
      *                          ObjectVariantMapper mapper;
      *                          mapper.AddClass<MyData_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
-     *                              { L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fEnabled) },
-     *                              { L"Last-Synchronized-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fLastSynchronizedAt) },
+     *                              { L"Enabled", StructFieldMetaInfo{&MyData_::fEnabled} },
+     *                              { L"Last-Synchronized-At", StructFieldMetaInfo{&MyData_::fLastSynchronizedAt} },
      *                          });
      *                          return mapper;
      *                      } ()

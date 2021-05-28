@@ -153,16 +153,16 @@ namespace Stroika::Foundation::DataExchange {
      *
      *          // register each of your mappable (even private) types
      *          mapper.AddClass<SharedContactsConfig_> ({
-     *              ObjectVariantMapper::StructFieldInfo { L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fEnabled) },
-     *              ObjectVariantMapper::StructFieldInfo { L"Last-Synchronized-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fLastSynchronizedAt) },
-     *              ObjectVariantMapper::StructFieldInfo { L"This-HR-ContactID-To-SharedContactID-Map", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fThisPHRsIDToSharedContactID) },
+     *              ObjectVariantMapper::StructFieldInfo { L"Enabled", StructFieldMetaInfo{&SharedContactsConfig_::fEnabled} },
+     *              ObjectVariantMapper::StructFieldInfo { L"Last-Synchronized-At", StructFieldMetaInfo{&SharedContactsConfig_::fLastSynchronizedAt} },
+     *              ObjectVariantMapper::StructFieldInfo { L"This-HR-ContactID-To-SharedContactID-Map", StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID} },
      *          });
      *
      *          // OR Equivalently
      *          mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
-     *              { L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fEnabled) },
-     *              { L"Last-Synchronized-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fLastSynchronizedAt) },
-     *              { L"This-HR-ContactID-To-SharedContactID-Map", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fThisPHRsIDToSharedContactID) },
+     *              { L"Enabled", StructFieldMetaInfo{&SharedContactsConfig_::fEnabled} },
+     *              { L"Last-Synchronized-At", StructFieldMetaInfo{&SharedContactsConfig_::fLastSynchronizedAt} },
+     *              { L"This-HR-ContactID-To-SharedContactID-Map", StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID} },
      *          });
      *
      *          SharedContactsConfig_   tmp;
@@ -458,9 +458,9 @@ namespace Stroika::Foundation::DataExchange {
          *
          *          // register each of your mappable (even private) types
          *          mapper.AddClass<MyConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
-         *              { L"fURL1_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fURL1_) },        // use default parser
+         *              { L"fURL1_", StructFieldMetaInfo{&SharedContactsConfig_::fURL1_} },        // use default parser
          *              // for fURL2_ - instead - allow parsing of things like 'localhost:1234' - helpful for configuration files
-         *              { L"fURL2_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fURL2_), ObjectVariantMapper::MakeCommonSerializer<IO::Network::URI> ()  },
+         *              { L"fURL2_", StructFieldMetaInfo{&SharedContactsConfig_::fURL2_}, ObjectVariantMapper::MakeCommonSerializer<IO::Network::URI> ()  },
          *          });
          *
          *          MyConfig_   tmp;
@@ -491,10 +491,10 @@ namespace Stroika::Foundation::DataExchange {
          *          };
          *          ObjectVariantMapper mapper;
          *          mapper.AddClass<BaseObj_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-         *              {L"fVV1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (BaseObj_, fVV1)},
+         *              {L"fVV1", StructFieldMetaInfo{&BaseObj_, fVV1}},
          *          });
          *          mapper.AddSubClass<Derived_, BaseObj_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-         *              {L"fVV2", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Derived_, fVV2)},
+         *              {L"fVV2", StructFieldMetaInfo{&Derived_::fVV2}},
          *          });
          *      \endcode
          */
@@ -817,17 +817,17 @@ namespace Stroika::Foundation::DataExchange {
      *
      *  \par Example Usage
      *       \code
-     *          ObjectVariantMapper::StructFieldInfo{L"fInt1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt1)},
+     *          ObjectVariantMapper::StructFieldInfo{L"fInt1", StructFieldMetaInfo{&SharedContactsConfig_::fInt1}},
      *      \endcode
      *
      *  \par Example Usage
      *      \code
-     *          ObjectVariantMapper::StructFieldInfo{L"fInt2", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt2), ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
+     *          ObjectVariantMapper::StructFieldInfo{L"fInt2", StructFieldMetaInfo{&SharedContactsConfig_::fInt2}, ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
      *      \endcode
      *
      *  \par Example Usage
      *      \code
-     *          ObjectVariantMapper::StructFieldInfo{L"fBasicArray1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fBasicArray1), ObjectVariantMapper::MakeCommonSerializer<int[5]> ()},
+     *          ObjectVariantMapper::StructFieldInfo{L"fBasicArray1", StructFieldMetaInfo{&SharedContactsConfig_::fBasicArray1}, ObjectVariantMapper::MakeCommonSerializer<int[5]> ()},
      *      \endcode
      *
      */

@@ -545,7 +545,6 @@ const ObjectVariantMapper Instruments::Network::Instrument::kObjectVariantMapper
     mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<Interface::Status> ());
     mapper.AddCommonType<Set<Interface::Status>> ();
     mapper.AddCommonType<optional<Set<Interface::Status>>> ();
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
     mapper.AddClass<InterfaceInfo::Interface> (initializer_list<StructFieldInfo>{
         {L"Interface-Internal-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fInternalInterfaceID)},
         {L"Friendly-Name", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fFriendlyName)},
@@ -585,7 +584,6 @@ const ObjectVariantMapper Instruments::Network::Instrument::kObjectVariantMapper
         {L"Interfaces", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fInterfaces), StructFieldInfo::eOmitNullFields},
         {L"Summary-IO-Statistics", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fSummaryIOStatistics), StructFieldInfo::eOmitNullFields},
     });
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
     return mapper;
 }();
 

@@ -205,8 +205,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      *          Registry mapper;
      *          mapper.AddCommonType<String> ();
      *          mapper.AddClass<Person_> (initializer_list<StructFieldInfo> {
-     *              { Name { L"FirstName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName) },
-     *              { Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
+     *              { Name { L"FirstName" }, StructFieldMetaInfo{&Person_::firstName} },
+     *              { Name { L"LastName" }, StructFieldMetaInfo{&Person_::lastName} },
      *          });
      *          Person_ p;
      *          IConsumerDelegateToContext tmpCtx1 (mapper, make_shared<ReadDownToReader> (mapper.MakeContextReader (&p)));
@@ -926,19 +926,19 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      *      Registry registry;
      *      registry.AddCommonType<String> ();
      *      registry.AddClass<Person_> (initializer_list<Registry::StructFieldInfo> {
-     *          { Name { L"FirstName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName) },
-     *          { Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
+     *          { Name { L"FirstName" }, StructFieldMetaInfo{&Person_::firstName} },
+     *          { Name { L"LastName" }, StructFieldMetaInfo{&Person_::lastName} },
      *      });
      *      registry.AddCommonType<vector<Person_>> ();
      *      registry.Add<vector<Person_>> (Registry::ConvertReaderToFactory <vector<Person_>, RepeatedElementReader<vector<Person_>>> ());
      *      registry.AddClass<Address_> (initializer_list<Registry::StructFieldInfo> {
-     *          { Name { L"city" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Address_, city) },
-     *          { Name { L"state" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Address_, state) },
+     *          { Name { L"city" }, StructFieldMetaInfo{&Address_::city} },
+     *          { Name { L"state" }, StructFieldMetaInfo{&Address_::state} },
      *      });
      *      registry.Add<vector<Address_>> (Registry::ConvertReaderToFactory <vector<Address_>, RepeatedElementReader<vector<Address_>>> ());
      *      registry.AddClass<Data_> (initializer_list<Registry::StructFieldInfo> {
-     *          { Name { L"person" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Data_, people) },
-     *          { Name { L"address" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Data_, addresses) },
+     *          { Name { L"person" }, StructFieldMetaInfo{&Data_::people} },
+     *          { Name { L"address" }, StructFieldMetaInfo{&Data_::addresses} },
      *      });
      *      Data_   data;
      *      Registry::IConsumerDelegateToContext ctx { registry, make_shared<ReadDownToReader> (registry.MakeContextReader (&data)) };

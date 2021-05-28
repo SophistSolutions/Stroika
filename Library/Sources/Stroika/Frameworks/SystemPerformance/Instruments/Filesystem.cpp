@@ -1011,7 +1011,6 @@ const ObjectVariantMapper Instruments::Filesystem::Instrument::kObjectVariantMap
     ObjectVariantMapper mapper;
     mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<BlockDeviceKind> ());
     mapper.AddCommonType<optional<BlockDeviceKind>> ();
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
     mapper.AddClass<IOStatsType> (initializer_list<StructFieldInfo>{
         {L"Bytes", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatsType, fBytesTransfered), StructFieldInfo::eOmitNullFields},
         {L"Q-Length", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatsType, fQLength), StructFieldInfo::eOmitNullFields},
@@ -1032,11 +1031,11 @@ const ObjectVariantMapper Instruments::Filesystem::Instrument::kObjectVariantMap
     mapper.AddCommonType<Set<filesystem::path>> ();
     mapper.AddCommonType<optional<Set<filesystem::path>>> ();
     mapper.AddClass<MountedFilesystemInfoType> (initializer_list<StructFieldInfo>{
-        {L"Device-Kind", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fDeviceKind), StructFieldInfo::eOmitNullFields},
-        {L"Filesystem-Type", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fFileSystemType), StructFieldInfo::eOmitNullFields},
-        {L"Device-Name", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fDeviceOrVolumeName), StructFieldInfo::eOmitNullFields},
-        {L"On-Physical-Drives", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fOnPhysicalDrive), StructFieldInfo::eOmitNullFields},
-        {L"Volume-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fVolumeID), StructFieldInfo::eOmitNullFields},
+        {L"Device-Kind", StructFieldMetaInfo{&MountedFilesystemInfoType::fDeviceKind}, StructFieldInfo::eOmitNullFields},
+        {L"Filesystem-Type", StructFieldMetaInfo{&MountedFilesystemInfoType::fFileSystemType}, StructFieldInfo::eOmitNullFields},
+        {L"Device-Name", StructFieldMetaInfo{&MountedFilesystemInfoType::fDeviceOrVolumeName}, StructFieldInfo::eOmitNullFields},
+        {L"On-Physical-Drives", StructFieldMetaInfo{&MountedFilesystemInfoType::fOnPhysicalDrive}, StructFieldInfo::eOmitNullFields},
+        {L"Volume-ID", StructFieldMetaInfo{&MountedFilesystemInfoType::fVolumeID}, StructFieldInfo::eOmitNullFields},
         {L"Total-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fSizeInBytes), StructFieldInfo::eOmitNullFields},
         {L"Available-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fAvailableSizeInBytes), StructFieldInfo::eOmitNullFields},
         {L"Used-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fUsedSizeInBytes), StructFieldInfo::eOmitNullFields},
@@ -1050,7 +1049,6 @@ const ObjectVariantMapper Instruments::Filesystem::Instrument::kObjectVariantMap
         {L"Disks", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fDisks)},
         {L"Mounted-Filesystems", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fMountedFilesystems)},
     });
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
     return mapper;
 }();
 

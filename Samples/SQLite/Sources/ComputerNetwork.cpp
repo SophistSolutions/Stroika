@@ -25,12 +25,11 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Database;
+using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Time;
 
 using Common::GUID;
-using DataExchange::ObjectVariantMapper;
-using DataExchange::VariantValue;
 
 #if qHasFeature_sqlite
 using namespace Database::SQLite;
@@ -57,16 +56,12 @@ namespace {
         mapper.AddCommonType<Set<int>> ();
         mapper.AddCommonType<Set<String>> ();
 
-        DISABLE_COMPILER_MSC_WARNING_START (4573);
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         mapper.AddClass<Device> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-            {L"id", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Device, id)},
-            {L"name", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Device, name)},
-            {L"openPorts", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Device, openPorts)},
-            {L"hardwareAddresses", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Device, hardwareAddresses)},
+            {L"id", StructFieldMetaInfo{&Device::id}},
+            {L"name", StructFieldMetaInfo{&Device::name}},
+            {L"openPorts", StructFieldMetaInfo{&Device::openPorts}},
+            {L"hardwareAddresses", StructFieldMetaInfo{&Device::hardwareAddresses}},
         });
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
-        DISABLE_COMPILER_MSC_WARNING_END (4573);
 
         return mapper;
     }();

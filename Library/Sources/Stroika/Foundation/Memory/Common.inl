@@ -69,7 +69,7 @@ namespace Stroika::Foundation::Memory {
         // get this working with constexpr and without static object
         template <typename T1, typename T2>
         struct OffsetOfRequiringDefaultConstructibleObjectType_ {
-            static inline /*constexpr*/ T2 sObj_{};
+            static inline /*constexpr*/ T2 sObj_{T2{}};
             static constexpr size_t        offset (T1 T2::*member)
             {
                 /*

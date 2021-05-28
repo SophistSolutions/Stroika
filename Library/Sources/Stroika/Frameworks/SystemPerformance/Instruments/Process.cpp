@@ -1696,7 +1696,6 @@ const ObjectVariantMapper Instruments::Process::Instrument::kObjectVariantMapper
     mapper.AddCommonType<optional<MemorySizeType>> ();
     mapper.AddCommonType<optional<DurationSecondsType>> ();
     mapper.AddCommonType<optional<Mapping<String, String>>> ();
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
     mapper.AddClass<ProcessType::TCPStats> (initializer_list<StructFieldInfo>{
         {L"Established", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType::TCPStats, fEstablished)},
         {L"Listening", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType::TCPStats, fListening)},
@@ -1732,7 +1731,6 @@ const ObjectVariantMapper Instruments::Process::Instrument::kObjectVariantMapper
         {L"Combined-IO-Write-Bytes", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCombinedIOWriteBytes), StructFieldInfo::eOmitNullFields},
         {L"TCP-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fTCPStats), StructFieldInfo::eOmitNullFields},
     });
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
     mapper.AddCommonType<ProcessMapType> ();
     return mapper;
 }();

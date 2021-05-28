@@ -1094,19 +1094,17 @@ namespace {
             mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<ScanKindType> (ScanKindType_NAMES));
             mapper.AddCommonType<SpectrumType> ();
             mapper.AddCommonType<PersistenceScanAuxDataType> ();
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
             mapper.AddClass<ScanDetails_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                {L"Scan-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanID)},
-                {L"Scan-Start", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanStart)},
-                {L"Scan-End", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanEnd)},
-                {L"Scan-Kind", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanKind)},
-                {L"Scan-Label", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanLabel)},
-                {L"Raw-Spectrum", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fRawSpectrum)},
-                {L"Aux-Data", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fAuxData)},
-                {L"Background-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fUseBackground)},
-                {L"Reference-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fUseReference)},
+                {L"Scan-ID", StructFieldMetaInfo{&ScanDetails_::fScanID}},
+                {L"Scan-Start", StructFieldMetaInfo{&ScanDetails_::fScanStart}},
+                {L"Scan-End", StructFieldMetaInfo{&ScanDetails_::fScanEnd}},
+                {L"Scan-Kind", StructFieldMetaInfo{&ScanDetails_::fScanKind}},
+                {L"Scan-Label", StructFieldMetaInfo{&ScanDetails_::fScanLabel}},
+                {L"Raw-Spectrum", StructFieldMetaInfo{&ScanDetails_::fRawSpectrum}},
+                {L"Aux-Data", StructFieldMetaInfo{&ScanDetails_::fAuxData}},
+                {L"Background-ID", StructFieldMetaInfo{&ScanDetails_::fUseBackground}},
+                {L"Reference-ID", StructFieldMetaInfo{&ScanDetails_::fUseReference}},
             });
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
             return mapper;
         }
         ScanDetails_ doRead_ (const InputStream<byte>::Ptr in)

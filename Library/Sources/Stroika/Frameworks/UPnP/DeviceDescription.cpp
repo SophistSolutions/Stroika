@@ -104,8 +104,6 @@ ObjectVariantMapper DeviceDescription::mkMapper_ ()
 {
     ObjectVariantMapper mapper;
 
-    DISABLE_COMPILER_MSC_WARNING_START (4573);
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
     mapper.AddClass<Icon> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
         {L"Alive", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Icon, fMimeType)},
         {L"USN", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Icon, fHorizontalPixels)},
@@ -145,8 +143,6 @@ ObjectVariantMapper DeviceDescription::mkMapper_ ()
         {L"Icons", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fIcons)},
         {L"Services", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fServices)},
     });
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
-    DISABLE_COMPILER_MSC_WARNING_END (4573);
     return mapper;
 };
 
@@ -257,31 +253,30 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
         registry.AddCommonType<URI> ();
         registry.AddCommonType<optional<URI>> ();
         registry.AddCommonReader_Simple<InternetMediaType> ([] (const String& s) { return InternetMediaType{s}; });
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
         registry.AddCommonReader_Class<DeviceDescription::Icon> (initializer_list<ObjectReader::StructFieldInfo>{
-            {Name{L"mimetype"sv}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Icon, fMimeType)},
-            {Name{L"width"sv}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Icon, fHorizontalPixels)},
-            {Name{L"height"sv}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Icon, fVerticalPixels)},
-            {Name{L"depth"sv}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Icon, fColorDepth)},
-            {Name{L"url"sv}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Icon, fURL)},
+            {Name{L"mimetype"sv}, StructFieldMetaInfo{&DeviceDescription::Icon::fMimeType}},
+            {Name{L"width"sv}, StructFieldMetaInfo{&DeviceDescription::Icon::fHorizontalPixels}},
+            {Name{L"height"sv}, StructFieldMetaInfo{&DeviceDescription::Icon::fVerticalPixels}},
+            {Name{L"depth"sv}, StructFieldMetaInfo{&DeviceDescription::Icon::fColorDepth}},
+            {Name{L"url"sv}, StructFieldMetaInfo{&DeviceDescription::Icon::fURL}},
         });
         registry.AddCommonReader_Class<DeviceDescription::Service> (initializer_list<ObjectReader::StructFieldInfo>{
-            {Name{L"serviceType"sv}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Service, fServiceType)},
-            {Name{L"serviceId"sv}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Service, fServiceID)},
-            {Name{L"SCPDURL"sv}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Service, fSCPDURL)},
-            {Name{L"controlURL"sv}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription::Service, fControlURL)},
+            {Name{L"serviceType"sv}, StructFieldMetaInfo{&DeviceDescription::Service::fServiceType}},
+            {Name{L"serviceId"sv}, StructFieldMetaInfo{&DeviceDescription::Service::fServiceID}},
+            {Name{L"SCPDURL"sv}, StructFieldMetaInfo{&DeviceDescription::Service::fSCPDURL}},
+            {Name{L"controlURL"sv}, StructFieldMetaInfo{&DeviceDescription::Service::fControlURL}},
         });
         registry.AddCommonType<Collection<DeviceDescription::Icon>> (Name{L"icon"});
         registry.AddCommonType<optional<Collection<DeviceDescription::Icon>>> ();
         registry.AddCommonType<Collection<DeviceDescription::Service>> (Name{L"service"});
         registry.AddCommonType<optional<Collection<DeviceDescription::Service>>> ();
         registry.AddCommonReader_Class<DeviceDescription> (initializer_list<ObjectReader::StructFieldInfo>{
-            {Name{L"presentationURL"sv}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fPresentationURL)},
-            {Name{L"deviceType"sv}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fDeviceType)},
-            {Name{L"manufacturer"sv}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fManufactureName)},
-            {Name{L"friendlyName"sv}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fFriendlyName)},
-            {Name{L"manufacturerURL"sv}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fManufacturingURL)},
-            {Name{L"modelDescription"sv}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fModelDescription)},
+            {Name{L"presentationURL"sv}, StructFieldMetaInfo{&DeviceDescription::fPresentationURL}},
+            {Name{L"deviceType"sv}, StructFieldMetaInfo{&DeviceDescription::fDeviceType}},
+            {Name{L"manufacturer"sv}, StructFieldMetaInfo{&DeviceDescription::fManufactureName}},
+            {Name{L"friendlyName"sv}, StructFieldMetaInfo{&DeviceDescription::fFriendlyName}},
+            {Name{L"manufacturerURL"sv}, StructFieldMetaInfo{&DeviceDescription::fManufacturingURL}},
+            {Name{L"modelDescription"sv}, StructFieldMetaInfo{&DeviceDescription::fModelDescription}},
             {Name{L"modelName"sv}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fModelName)},
             {Name{L"modelNumber"sv}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fModelNumber)},
             {Name{L"modelURL"sv}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fModelURL)},
@@ -291,7 +286,6 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
             {Name{L"iconList"sv}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fIcons)},
             {Name{L"serviceList"sv}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fServices)},
         });
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         return registry;
     }();
 

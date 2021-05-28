@@ -66,27 +66,27 @@ namespace {
 #endif
 
                       mapper.AddClass<SearchParameters> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                          {L"Match-String", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SearchParameters, fMatchString)},
-                          {L"Wrap-Search", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SearchParameters, fWrapSearch)},
-                          {L"Whole-Word-Search", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SearchParameters, fWholeWordSearch)},
-                          {L"Case-Sensative-Search", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SearchParameters, fCaseSensativeSearch)},
-                          {L"Recent-Match-Strings", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SearchParameters, fRecentFindStrings)},
+                          {L"Match-String", StructFieldMetaInfo{&SearchParameters::fMatchString}},
+                          {L"Wrap-Search", StructFieldMetaInfo{&SearchParameters::fWrapSearch}},
+                          {L"Whole-Word-Search", StructFieldMetaInfo{&SearchParameters::fWholeWordSearch}},
+                          {L"Case-Sensative-Search", StructFieldMetaInfo{&SearchParameters::fCaseSensativeSearch}},
+                          {L"Recent-Match-Strings", StructFieldMetaInfo{&SearchParameters::fRecentFindStrings}},
                       });
 
                       mapper.AddClass<Options_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
-                          {L"Dock-Bar-State", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Options_, fDockBarState)},
-                              {L"Search-Parameters", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Options_, fSearchParameters)},
-                              {L"Smart-Cut-And-Paste", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Options_, fSmartCutAndPaste)},
-                              {L"Auto-Indent", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Options_, fAutoIndent)},
-                              {L"Tabs-Auto-Shifts-Text", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Options_, fTabsAutoShiftsText)},
+                          {L"Dock-Bar-State", StructFieldMetaInfo{&Options_::fDockBarState}},
+                              {L"Search-Parameters", StructFieldMetaInfo{&Options_::fSearchParameters}},
+                              {L"Smart-Cut-And-Paste", StructFieldMetaInfo{&Options_::fSmartCutAndPaste}},
+                              {L"Auto-Indent", StructFieldMetaInfo{&Options_::fAutoIndent}},
+                              {L"Tabs-Auto-Shifts-Text", StructFieldMetaInfo{&Options_::fTabsAutoShiftsText}},
 
 #if qSupportSyntaxColoring
-                              {L"Syntax-Coloring", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Options_, fSyntaxColoring)},
+                              {L"Syntax-Coloring", StructFieldMetaInfo{&Options_::fSyntaxColoring}},
 #endif
 
 #if qPlatform_Windows
-                              {L"Check-File-Assoc-At-Startup", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Options_, fCheckFileAssocAtStartup)},
-                              {L"Default-New-Doc-Font", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Options_, fDefaultNewDocFont)},
+                              {L"Check-File-Assoc-At-Startup", StructFieldMetaInfo{&Options_::fCheckFileAssocAtStartup}},
+                              {L"Default-New-Doc-Font", StructFieldMetaInfo{&Options_::fDefaultNewDocFont}},
 #endif
                       });
                       return mapper;

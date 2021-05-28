@@ -47,24 +47,20 @@ String Advertisement::ToString () const
     return sb.str ();
 }
 
-DISABLE_COMPILER_MSC_WARNING_START (4573);
-DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 ObjectVariantMapper Advertisement::kMapperGetter_ ()
 {
     ObjectVariantMapper mapper;
     mapper.AddCommonType<Set<String>> ();
     mapper.AddCommonType<optional<Set<String>>> ();
     mapper.AddClass<Advertisement> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-        {L"Alive", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Advertisement, fAlive), ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
-        {L"USN", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Advertisement, fUSN)},
-        {L"Server", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Advertisement, fServer)},
-        {L"Target", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Advertisement, fTarget)},
-        {L"RawHeaders", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Advertisement, fRawHeaders)},
+        {L"Alive", StructFieldMetaInfo{&Advertisement::fAlive}, ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
+        {L"USN", StructFieldMetaInfo{&Advertisement::fUSN}},
+        {L"Server", StructFieldMetaInfo{&Advertisement::fServer}},
+        {L"Target", StructFieldMetaInfo{&Advertisement::fTarget}},
+        {L"RawHeaders", StructFieldMetaInfo{&Advertisement::fRawHeaders}},
     });
     return mapper;
 };
-DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
-DISABLE_COMPILER_MSC_WARNING_END (4573);
 
 /*
  ********************************************************************************

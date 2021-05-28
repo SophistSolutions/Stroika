@@ -105,7 +105,6 @@ namespace {
 
         mapper.AddCommonType<Bijection<String, String>> ();
 
-        //DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
         // register each of your mappable (even private) types
         mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
             {L"Enabled", StructFieldMetaInfo{&SharedContactsConfig_::fEnabled}},
@@ -113,7 +112,6 @@ namespace {
             {L"This-HR-ContactID-To-SharedContactID-Map", StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID}},
             {L"This-HR-ContactID-To-SharedContactID-Bijection", StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID2}},
         });
-        // DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
         bool                  newEnabled = true;
         SharedContactsConfig_ tmp;
@@ -177,15 +175,13 @@ namespace {
 
         ObjectVariantMapper mapper;
 
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
         // register each of your mappable (even private) types
         mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-            {L"Int1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt1)},
-            {L"Int2", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt2)},
-            {L"Int3", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt3)},
-            {L"Int4", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt4)},
+            {L"Int1", StructFieldMetaInfo{&SharedContactsConfig_::fInt1}},
+            {L"Int2", StructFieldMetaInfo{&SharedContactsConfig_::fInt2}},
+            {L"Int3", StructFieldMetaInfo{&SharedContactsConfig_::fInt3}},
+            {L"Int4", StructFieldMetaInfo{&SharedContactsConfig_::fInt4}},
         });
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
         SharedContactsConfig_ tmp;
         tmp.fInt1 = 2;
@@ -241,12 +237,10 @@ namespace {
         mapper.AddCommonType<Range<int>> ();
         mapper.AddCommonType<DiscreteRange<int>> ();
 
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-            {L"fIntRange", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fIntRange)},
-            {L"fDiscIntRange2", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fDiscIntRange2)},
+            {L"fIntRange", StructFieldMetaInfo{&SharedContactsConfig_::fIntRange}},
+            {L"fDiscIntRange2", StructFieldMetaInfo{&SharedContactsConfig_::fDiscIntRange2}},
         });
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
         SharedContactsConfig_ tmp;
         tmp.fIntRange      = Range<int> (1, 10);
@@ -318,11 +312,9 @@ namespace {
             ObjectVariantMapper mapper;
 
             mapper.Add (ObjectVariantMapper::MakeCommonSerializer_NamedEnumerations<Fred> (Fred_NAMES));
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
             mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                {L"fEnum1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fEnum1)},
+                {L"fEnum1", StructFieldMetaInfo{&SharedContactsConfig_::fEnum1}},
             });
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
             SharedContactsConfig_ tmp;
             tmp.fEnum1     = Fred::b;
@@ -349,11 +341,9 @@ namespace {
             ObjectVariantMapper mapper;
 
             mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<Fred> (Bijection<Fred, String> (Fred_NAMES)));
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
             mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                {L"fEnum1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fEnum1)},
+                {L"fEnum1", StructFieldMetaInfo{&SharedContactsConfig_::fEnum1}},
             });
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
             SharedContactsConfig_ tmp;
             tmp.fEnum1     = Fred::b;
@@ -403,14 +393,12 @@ namespace {
         };
 
         ObjectVariantMapper mapper;
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-            {L"fDuration1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fDuration1)},
-            {L"fDateTime1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fDateTime1)},
-            {L"fDate1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fDate1)},
-            {L"fTimeOfDay1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fTimeOfDay1)},
+            {L"fDuration1", StructFieldMetaInfo{&SharedContactsConfig_::fDuration1}},
+            {L"fDateTime1", StructFieldMetaInfo{&SharedContactsConfig_::fDateTime1}},
+            {L"fDate1", StructFieldMetaInfo{&SharedContactsConfig_::fDate1}},
+            {L"fTimeOfDay1", StructFieldMetaInfo{&SharedContactsConfig_::fTimeOfDay1}},
         });
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
         SharedContactsConfig_ tmp;
         tmp.fDate1      = Date (Time::Year (2001), Time::MonthOfYear::eFebruary, Time::DayOfMonth::e12);
@@ -460,11 +448,9 @@ namespace {
         };
 
         ObjectVariantMapper mapper;
-        //DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
             {L"fVV1", StructFieldMetaInfo{&SharedContactsConfig_::fVV1}},
         });
-        //DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
         SharedContactsConfig_ tmp;
         tmp.fVV1       = Date{Time::Year (2001), Time::MonthOfYear::eFebruary, Time::DayOfMonth::e12};
@@ -539,19 +525,17 @@ namespace {
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<pair<int, String>> ());
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<tuple<int, String>> ());
 
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-            {L"fInt1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt1)},
-            {L"fInt2", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt2)},
-            {L"fMapping1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fMapping1)},
-            {L"fSequence1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fSequence1)},
-            {L"fBasicArray1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fBasicArray1)},
-            {L"fSet1_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fSet1_)},
-            {L"fVector1_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fVector1_)},
-            {L"fPair1_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fPair1_)},
-            {L"fTuple2", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fTuple2_)},
+            {L"fInt1", StructFieldMetaInfo{&SharedContactsConfig_::fInt1}},
+            {L"fInt2", StructFieldMetaInfo{&SharedContactsConfig_::fInt2}},
+            {L"fMapping1", StructFieldMetaInfo{&SharedContactsConfig_::fMapping1}},
+            {L"fSequence1", StructFieldMetaInfo{&SharedContactsConfig_::fSequence1}},
+            {L"fBasicArray1", StructFieldMetaInfo{&SharedContactsConfig_::fBasicArray1}},
+            {L"fSet1_", StructFieldMetaInfo{&SharedContactsConfig_::fSet1_}},
+            {L"fVector1_", StructFieldMetaInfo{&SharedContactsConfig_::fVector1_}},
+            {L"fPair1_", StructFieldMetaInfo{&SharedContactsConfig_::fPair1_}},
+            {L"fTuple2", StructFieldMetaInfo{&SharedContactsConfig_::fTuple2_}},
         });
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
         SharedContactsConfig_ tmp;
         tmp.fInt1 = 4;
@@ -604,14 +588,12 @@ namespace {
         };
 
         ObjectVariantMapper mapper;
-        // DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<BaseObj_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
             {L"fVV1", StructFieldMetaInfo{&BaseObj_::fVV1}},
         });
         mapper.AddSubClass<Derived_, BaseObj_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
             {L"fVV2", StructFieldMetaInfo{&Derived_::fVV2}},
         });
-        //DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
         Derived_ tmp;
         tmp.fVV1       = 55;
@@ -674,19 +656,17 @@ namespace {
         mapper.AddCommonType<Sequence<int>> ();
         mapper.AddCommonType<vector<int>> ();
 
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-            {L"fInt1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt1)},
-            {L"fInt2", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt2), ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
-            {L"fMapping1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fMapping1)},
-            {L"fSequence1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fSequence1)},
-            {L"fBasicArray1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fBasicArray1), ObjectVariantMapper::MakeCommonSerializer<int[5]> ()},
-            {L"fSet1_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fSet1_), ObjectVariantMapper::MakeCommonSerializer<Set<int>> ()},
-            {L"fVector1_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fVector1_)},
-            {L"fURL1_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fURL1_), ObjectVariantMapper::MakeCommonSerializer<IO::Network::URI> ()},
-            {L"fURL2_", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fURL2_), ObjectVariantMapper::MakeCommonSerializer<IO::Network::URI> ()},
+            {L"fInt1", StructFieldMetaInfo{&SharedContactsConfig_::fInt1}},
+            {L"fInt2", StructFieldMetaInfo{&SharedContactsConfig_::fInt2}, ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
+            {L"fMapping1", StructFieldMetaInfo{&SharedContactsConfig_::fMapping1}},
+            {L"fSequence1", StructFieldMetaInfo{&SharedContactsConfig_::fSequence1}},
+            {L"fBasicArray1", StructFieldMetaInfo{&SharedContactsConfig_::fBasicArray1}, ObjectVariantMapper::MakeCommonSerializer<int[5]> ()},
+            {L"fSet1_", StructFieldMetaInfo{&SharedContactsConfig_::fSet1_}, ObjectVariantMapper::MakeCommonSerializer<Set<int>> ()},
+            {L"fVector1_", StructFieldMetaInfo{&SharedContactsConfig_::fVector1_}},
+            {L"fURL1_", StructFieldMetaInfo{&SharedContactsConfig_::fURL1_}, ObjectVariantMapper::MakeCommonSerializer<IO::Network::URI> ()},
+            {L"fURL2_", StructFieldMetaInfo{&SharedContactsConfig_::fURL2_}, ObjectVariantMapper::MakeCommonSerializer<IO::Network::URI> ()},
         });
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
         SharedContactsConfig_ tmp;
         tmp.fInt1 = 4;
@@ -789,8 +769,6 @@ namespace {
         };
     }
     using namespace aaa;
-    DISABLE_COMPILER_MSC_WARNING_START (4573);
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
     const ObjectVariantMapper dev::kMapper_ = [] () {
         ObjectVariantMapper mapper;
         using IO::Network::CIDR;
@@ -839,11 +817,9 @@ namespace {
             ObjectVariantMapper mapper;
 
             mapper.Add (ObjectVariantMapper::MakeCommonSerializer_EnumAsInt<Fred> ());
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
             mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                {L"fEnum1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fEnum1)},
+                {L"fEnum1", StructFieldMetaInfo{&SharedContactsConfig_::fEnum1}},
             });
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
             SharedContactsConfig_ tmp;
             tmp.fEnum1     = Fred::b;

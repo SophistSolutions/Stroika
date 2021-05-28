@@ -1639,9 +1639,8 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 
 #endif
 
-
 // NOT REALLY a compiler bug - but treat it that way. I just havent been able to find portable solution for this yet.
-// 
+//
 // FOR CLANG we get the message:
 // Memory/Common.inl:80:24: note: cast that performs the conversions of a reinterpret_cast is not allowed in a constant expression
 #ifndef qCompilerAndStdLib_OffsetOf_Constexpr_Buggy
@@ -1893,8 +1892,6 @@ namespace {
         };
     }
     using namespace aaa;
-    DISABLE_COMPILER_MSC_WARNING_START (4573);
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
     const ObjectVariantMapper dev::kMapper_ = []() {
         ObjectVariantMapper mapper;
 

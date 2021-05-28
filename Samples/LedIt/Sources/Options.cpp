@@ -65,25 +65,25 @@ namespace {
                       mapper.AddCommonType<Memory::BLOB> ();
 
                       mapper.AddClass<SearchParameters> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                          {L"MatchString", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SearchParameters, fMatchString)},
-                          {L"WrapSearch", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SearchParameters, fWrapSearch)},
-                          {L"WholeWordSearch", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SearchParameters, fWholeWordSearch)},
-                          {L"CaseSensativeSearch", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SearchParameters, fCaseSensativeSearch)},
-                          {L"RecentMatchStrings", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SearchParameters, fRecentFindStrings)},
+                          {L"MatchString", StructFieldMetaInfo{&SearchParameters::fMatchString}},
+                          {L"WrapSearch", StructFieldMetaInfo{&SearchParameters::fWrapSearch}},
+                          {L"WholeWordSearch", StructFieldMetaInfo{&SearchParameters::fWholeWordSearch}},
+                          {L"CaseSensativeSearch", StructFieldMetaInfo{&SearchParameters::fCaseSensativeSearch}},
+                          {L"RecentMatchStrings", StructFieldMetaInfo{&SearchParameters::fRecentFindStrings}},
                       });
 
                       mapper.AddClass<Options_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
-                          {L"DockBarState", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Options_, fDockBarState)},
-                              {L"Search-Parameters", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Options_, fSearchParameters)},
-                              {L"SmartCutAndPaste", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Options_, fSmartCutAndPaste)},
-                              {L"WrapToWindow", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Options_, fWrapToWindow)},
-                              {L"ShowHiddenText", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Options_, fShowHiddenText)},
-                              {L"ShowParagraphGlyphs", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Options_, fShowParagraphGlyphs)},
-                              {L"ShowTabGlyphs", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Options_, fShowTabGlyphs)},
-                              {L"ShowSpaceGlyphs", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Options_, fShowSpaceGlyphs)},
+                          {L"DockBarState", StructFieldMetaInfo{&Options_::fDockBarState}},
+                              {L"Search-Parameters", StructFieldMetaInfo{&Options_::fSearchParameters}},
+                              {L"SmartCutAndPaste", StructFieldMetaInfo{&Options_::fSmartCutAndPaste}},
+                              {L"WrapToWindow", StructFieldMetaInfo{&Options_::fWrapToWindow}},
+                              {L"ShowHiddenText", StructFieldMetaInfo{&Options_::fShowHiddenText}},
+                              {L"ShowParagraphGlyphs", StructFieldMetaInfo{&Options_::fShowParagraphGlyphs}},
+                              {L"ShowTabGlyphs", StructFieldMetaInfo{&Options_::fShowTabGlyphs}},
+                              {L"ShowSpaceGlyphs", StructFieldMetaInfo{&Options_::fShowSpaceGlyphs}},
 #if qPlatform_Windows
-                              {L"CheckFileAssocAtStartup", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Options_, fCheckFileAssocAtStartup)},
-                              {L"DefaultNewDocFont", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Options_, fDefaultNewDocFont)},
+                              {L"CheckFileAssocAtStartup", StructFieldMetaInfo{&Options_::fCheckFileAssocAtStartup}},
+                              {L"DefaultNewDocFont", StructFieldMetaInfo{&Options_::fDefaultNewDocFont}},
 #endif
                       });
                       return mapper;

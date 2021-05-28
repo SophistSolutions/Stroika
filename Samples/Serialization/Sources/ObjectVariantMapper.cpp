@@ -47,11 +47,9 @@ namespace {
         ObjectVariantMapper mapper;
 
         // Add the types to the mapper, which it will need
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<MyType2Serialize1_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-            {L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyType2Serialize1_, fEnabled)},
+            {L"Enabled", StructFieldMetaInfo{&MyType2Serialize1_::fEnabled}},
         });
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
         // Create a test object to serialize
         MyType2Serialize1_ tmp;
@@ -115,13 +113,11 @@ namespace {
         // Some types pre-loaded (see @ObjectVariantMapper::ResetToDefaultTypeRegistry)
         // The rest must be explicitly added to the registry before use.
 
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-            {L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fEnabled)},
-            {L"Last-Synchronized-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fLastSynchronizedAt)},
-            {L"This-HR-ContactID-To-SharedContactID-Map", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fThisPHRsIDToSharedContactID)},
+            {L"Enabled", StructFieldMetaInfo{&SharedContactsConfig_::fEnabled}},
+            {L"Last-Synchronized-At", StructFieldMetaInfo{&SharedContactsConfig_::fLastSynchronizedAt}},
+            {L"This-HR-ContactID-To-SharedContactID-Map", StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID}},
         });
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
         // fill in a sample object to write
         SharedContactsConfig_ tmp;

@@ -55,15 +55,15 @@ namespace {
                       mapper.AddCommonType<vector<Led_tString>> ();
 
                       mapper.AddClass<SearchParameters> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                          {L"MatchString", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SearchParameters, fMatchString)},
-                          {L"WrapSearch", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SearchParameters, fWrapSearch)},
-                          {L"WholeWordSearch", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SearchParameters, fWholeWordSearch)},
-                          {L"CaseSensativeSearch", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SearchParameters, fCaseSensativeSearch)},
-                          {L"RecentMatchStrings", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SearchParameters, fRecentFindStrings)},
+                          {L"MatchString", StructFieldMetaInfo{&SearchParameters::fMatchString}},
+                          {L"WrapSearch", StructFieldMetaInfo{&SearchParameters::fWrapSearch}},
+                          {L"WholeWordSearch", StructFieldMetaInfo{&SearchParameters::fWholeWordSearch}},
+                          {L"CaseSensativeSearch", StructFieldMetaInfo{&SearchParameters::fCaseSensativeSearch}},
+                          {L"RecentMatchStrings", StructFieldMetaInfo{&SearchParameters::fRecentFindStrings}},
                       });
 
                       mapper.AddClass<Options_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                          {L"Search-Parameters", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Options_, fSearchParameters)},
+                          {L"Search-Parameters", StructFieldMetaInfo{&Options_::fSearchParameters}},
                       });
                       return mapper;
                   }(),

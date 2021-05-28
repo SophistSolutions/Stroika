@@ -21,7 +21,7 @@
  *
  *  TODO:
  *      @todo   This is NOT safe (annoying offsetof rules). MAYBE possible to do with ptr-to-member, but I don't think
- *              so.
+ *              so.&&&&&&&
  */
 
 namespace Stroika::Foundation::DataExchange {
@@ -30,6 +30,10 @@ namespace Stroika::Foundation::DataExchange {
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
      *        o C++20 only (for c++17 only supported == and operator<)
+     * 
+     * 
+     * 
+     * &&&& TODO DOCS - IF CANNOT USE - DONT USE AddClass<> bvut do custom serializer
      */
     struct StructFieldMetaInfo {
     public:
@@ -81,28 +85,7 @@ namespace Stroika::Foundation::DataExchange {
 #endif
 
     /**
-     *  Regret adding a macro, but it just seems helpful (makes things much more terse,
-     *  and avoids the possible bugs from specifing the CLASS twice).
-     *  No need to use - but some may find it helpful...
-     *
-     *  I don't know of any way in C++ without macro - to capture a member name (for use in decltype
-     *  thing and offsetof()).
-     *
-     *  \note
-     *      This macro uses offsetof(). According to the C++11 spec, offsetof() is only supported
-     *      for 'standard-layout' objects (e.g. those without virtual functions, or other fancy
-     *      c++ stuff). As near as I can tell, this always works, but we may need to revisit
-     *      the approach/question (could  we use pointer to member?).
-     *
-     *  \par Example Usage
-     *      \code
-     *          struct  Person {
-     *              String  firstName;
-     *              String  lastName;
-     *          };
-     *          StructFieldMetaInfo firstNameFieldInfo      =   Stroika_Foundation_DataExchange_StructFieldMetaInfo(Person, firstName)
-     *          StructFieldMetaInfo lastNameFieldInfo       =   Stroika_Foundation_DataExchange_StructFieldMetaInfo(Person, lastName)
-     *      \endcode
+        &&&& DEPREACATED MACRO --- USE StructFieldMetaInfo{} CTOR DIRECTLY - SINCE Stroika 2.1b12
      */
 #define Stroika_Foundation_DataExchange_StructFieldMetaInfo(CLASS, MEMBER) \
     Stroika::Foundation::DataExchange::StructFieldMetaInfo { &CLASS::MEMBER }

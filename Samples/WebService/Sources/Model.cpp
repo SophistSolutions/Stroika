@@ -22,8 +22,6 @@ using namespace StroikaSample::WebServices::Model;
 
 #if qCompilerAndStdLib_static_initializer_lambda_funct_init_Buggy
 namespace {
-    DISABLE_COMPILER_MSC_WARNING_START (4573);
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
     ObjectVariantMapper mkMapper_ ()
     {
         ObjectVariantMapper mapper;
@@ -96,13 +94,9 @@ namespace {
         mapper.AddCommonType<Collection<String>> ();
         return mapper;
     };
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
-    DISABLE_COMPILER_MSC_WARNING_END (4573);
 }
 const ObjectVariantMapper StroikaSample::WebServices::Model::kMapper = mkMapper_ ();
 #else
-DISABLE_COMPILER_MSC_WARNING_START (4573);
-DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 const ObjectVariantMapper StroikaSample::WebServices::Model::kMapper = [] () {
     ObjectVariantMapper mapper;
 
@@ -177,6 +171,4 @@ const ObjectVariantMapper StroikaSample::WebServices::Model::kMapper = [] () {
 
     return mapper;
 }();
-DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
-DISABLE_COMPILER_MSC_WARNING_END (4573);
 #endif

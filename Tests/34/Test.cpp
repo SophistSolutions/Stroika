@@ -186,19 +186,16 @@ namespace {
             registry.AddCommonType<String> ();
             registry.AddCommonType<optional<String>> ();
 
-            // not sure if this is clearer or macro version
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
             registry.AddCommonReader_Class<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"FirstName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName)},
-                {Name{L"LastName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName)},
-                {Name{L"MiddleName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, middleName)},
+                {Name{L"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
+                {Name{L"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
+                {Name{L"MiddleName"}, StructFieldMetaInfo{&Person_::middleName}},
             });
             registry.AddCommonReader_Class<Appointment_> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"When"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Appointment_, when)},
-                {Name{L"WithWhom"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Appointment_, withWhom)},
+                {Name{L"When"}, StructFieldMetaInfo{&Appointment_::when}},
+                {Name{L"WithWhom"}, StructFieldMetaInfo{&Appointment_::withWhom}},
             });
             registry.AddCommonType<vector<Appointment_>> (Name{L"Appointment"});
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
             {
                 vector<Appointment_>                     calendar;
@@ -273,12 +270,10 @@ namespace {
             ObjectReader::Registry registry;
             registry.AddCommonType<String> ();
 
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
             registry.AddCommonReader_Class<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"FirstName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName)},
-                {Name{L"LastName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName)},
+                {Name{L"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
+                {Name{L"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
             });
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
             vector<Person_> people;
             {
@@ -367,19 +362,15 @@ namespace {
         {
             ObjectReader::Registry mapper;
 
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
-
             mapper.AddCommonType<String> ();
 
             mapper.AddCommonReader_Class<ManagedObjectReference> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"type", Name::eAttribute}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (ManagedObjectReference, type)},
-                {Name{Name::eValue}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (ManagedObjectReference, value)}});
+                {Name{L"type", Name::eAttribute}, StructFieldMetaInfo{&ManagedObjectReference::type}},
+                {Name{Name::eValue}, StructFieldMetaInfo{&ManagedObjectReference::value}}});
             mapper.AddCommonReader_Class<ObjectContent> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"obj"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (ObjectContent, obj)}
+                {Name{L"obj"}, StructFieldMetaInfo{&ObjectContent::obj}}
                 /// wrong - must be mapping of this --metaInfo.Add (L"propSet", pair<type_index, size_t> {typeid(decltype (ObjectContent::value)), offsetof(ObjectContent, propSet)});
             });
-
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
             vector<ObjectContent>                    objsContent;
             ObjectReader::IConsumerDelegateToContext ctx{
@@ -419,13 +410,11 @@ namespace {
         void DoTest1 ()
         {
             ObjectReader::Registry mapper;
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
             mapper.AddCommonType<String> ();
             mapper.AddCommonReader_Class<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"FirstName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName)},
-                {Name{L"LastName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName)},
+                {Name{L"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
+                {Name{L"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
             });
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
             Person_                                  p;
             ObjectReader::IConsumerDelegateToContext tmp{mapper, make_shared<ObjectReader::ReadDownToReader> (mapper.MakeContextReader (&p))};
             XML::SAXParse (mkdata_ (), tmp);
@@ -493,7 +482,6 @@ namespace {
         void DoTest ()
         {
             ObjectReader::Registry registry;
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
             registry.AddCommonType<String> ();
             registry.AddCommonReader_NamedEnumerations<GenderType_> (Containers::Bijection<GenderType_, String>{
                 pair<GenderType_, String>{GenderType_::Male, L"Male"},
@@ -501,22 +489,21 @@ namespace {
             });
             registry.AddCommonType<optional<GenderType_>> ();
             registry.AddCommonReader_Class<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"FirstName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName)},
-                {Name{L"LastName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName)},
-                {Name{L"Gender"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, gender)},
+                {Name{L"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
+                {Name{L"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
+                {Name{L"Gender"}, StructFieldMetaInfo{&Person_::gender}},
             });
             registry.AddCommonType<vector<Person_>> ();
             registry.Add<vector<Person_>> (ObjectReader::RepeatedElementReader<vector<Person_>>::AsFactory ());
             registry.AddCommonReader_Class<Address_> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"city"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Address_, city)},
-                {Name{L"state"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Address_, state)},
+                {Name{L"city"}, StructFieldMetaInfo{&Address_::city}},
+                {Name{L"state"}, StructFieldMetaInfo{&Address_::state}},
             });
             registry.Add<vector<Address_>> (ObjectReader::RepeatedElementReader<vector<Address_>>::AsFactory ());
             registry.AddCommonReader_Class<Data_> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"person"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Data_, people)},
-                {Name{L"address"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Data_, addresses)},
+                {Name{L"person"}, StructFieldMetaInfo{&Data_::people}},
+                {Name{L"address"}, StructFieldMetaInfo{&Data_::addresses}},
             });
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
             Data_ data;
             {
@@ -629,8 +616,8 @@ namespace {
                     using KVPType_ = KeyValuePair<TunerNumberType_, TARGET_TYPE>;
 #endif
                     return Registry::MakeClassReader<KVPType_> (initializer_list<StructFieldInfo>{
-                        {Name{L"Tuner", Name::eAttribute}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey)},
-                        {Name{Name::eValue}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fValue)},
+                        {Name{L"Tuner", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fKey}},
+                        {Name{Name::eValue}, StructFieldMetaInfo{&KVPType_::fValue}},
                     });
                 }();
                 DISABLE_COMPILER_MSC_WARNING_END (4573)
@@ -644,7 +631,6 @@ namespace {
         void DoTest ()
         {
             ObjectReader::Registry registry;
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
             registry.AddCommonReader_NamedEnumerations<TunerNumberType_> (Containers::Bijection<TunerNumberType_, String>{
                 pair<TunerNumberType_, String>{TunerNumberType_::eT1, L"1"},
                 pair<TunerNumberType_, String>{TunerNumberType_::eT2, L"2"},
@@ -662,16 +648,15 @@ namespace {
             registry.Add<TECPowerConsumptionStatsType_> (TunerMappingReader_<CurrentType_>::AsFactory ());
             registry.AddCommonType<optional<TECPowerConsumptionStatsType_>> ();
             registry.AddCommonReader_Class<SensorDataType_> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"ActiveLaser"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, ActiveLaser)},
-                {Name{L"DetectorTemperature"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, DetectorTemperature)},
-                {Name{L"OpticsTemperature"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, OpticsTemperature)},
-                {Name{L"ExternalTemperature1"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, ExternalTemperature1)},
-                {Name{L"LaserTemperature"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, LaserTemperatures)},
-                {Name{L"LaserCurrent"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, LaserCurrents)},
-                {Name{L"MirrorTemperature"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, MirrorTemperatures)},
-                {Name{L"TECPowerConsumptionStats"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, TECPowerConsumptionStats)},
+                {Name{L"ActiveLaser"}, StructFieldMetaInfo{&SensorDataType_::ActiveLaser}},
+                {Name{L"DetectorTemperature"}, StructFieldMetaInfo{&SensorDataType_::DetectorTemperature}},
+                {Name{L"OpticsTemperature"}, StructFieldMetaInfo{&SensorDataType_::OpticsTemperature}},
+                {Name{L"ExternalTemperature1"}, StructFieldMetaInfo{&SensorDataType_::ExternalTemperature1}},
+                {Name{L"LaserTemperature"}, StructFieldMetaInfo{&SensorDataType_::LaserTemperatures}},
+                {Name{L"LaserCurrent"}, StructFieldMetaInfo{&SensorDataType_::LaserCurrents}},
+                {Name{L"MirrorTemperature"}, StructFieldMetaInfo{&SensorDataType_::MirrorTemperatures}},
+                {Name{L"TECPowerConsumptionStats"}, StructFieldMetaInfo{&SensorDataType_::TECPowerConsumptionStats}},
             });
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
             SensorDataType_ data;
             {
@@ -829,7 +814,7 @@ namespace {
             struct SpectrumReader_ : public ObjectReader::IElementConsumer {
                 SpectrumType_* fValuePtr_;
                 SpectrumReader_ (SpectrumType_* v)
-                    : fValuePtr_ (v)
+                    : fValuePtr_{v}
                 {
                 }
                 virtual shared_ptr<IElementConsumer> HandleChildStart ([[maybe_unused]] const Name& name) override
@@ -845,8 +830,8 @@ namespace {
 #endif
                         return Registry::MakeClassReader<KVPType_> (
                             initializer_list<StructFieldInfo>{
-                                {Name{L"waveNumber", Name::eAttribute}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey)},
-                                {Name{L"intensity", Name::eAttribute}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fValue)},
+                                {Name{L"waveNumber", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fKey}},
+                                {Name{L"intensity", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fValue}},
                             });
                     }();
                     DISABLE_COMPILER_MSC_WARNING_END (4573)
@@ -860,14 +845,12 @@ namespace {
             struct StringKVStringReader : public ObjectReader::IElementConsumer {
                 Mapping<String, String>* fValuePtr_;
                 StringKVStringReader (Mapping<String, String>* v)
-                    : fValuePtr_ (v)
+                    : fValuePtr_{v}
                 {
                 }
                 virtual shared_ptr<IElementConsumer> HandleChildStart ([[maybe_unused]] const Name& name) override
                 {
                     using namespace ObjectReader;
-                    DISABLE_COMPILER_MSC_WARNING_START (4573)
-                    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
                     static const ReaderFromVoidStarFactory sEltReader_ =
                         [] () -> ReaderFromVoidStarFactory {
 #if qCompilerAndStdLib_using_in_template_invoke_other_template_Buggy
@@ -878,12 +861,10 @@ namespace {
 
                         return Registry::MakeClassReader<KVPType_> (
                             initializer_list<StructFieldInfo>{
-                                {Name{L"Key", Name::eAttribute}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey)},
-                                {Name{L"Value", Name::eAttribute}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fValue)},
+                                {Name{L"Key", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fKey}},
+                                {Name{L"Value", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fValue}},
                             });
                     }();
-                    DISABLE_COMPILER_MSC_WARNING_END (4573)
-                    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
                     return make_shared<RepeatedElementReader<Mapping<String, String>>> (fValuePtr_, sEltReader_);
                 }
                 static ObjectReader::ReaderFromVoidStarFactory AsFactory ()
@@ -895,7 +876,6 @@ namespace {
         void DoTest ()
         {
             ObjectReader::Registry registry;
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
             registry.AddCommonType<ScanIDType_> ();
             registry.AddCommonType<WaveNumberType_> ();
             registry.AddCommonType<IntensityType_> ();
@@ -907,14 +887,13 @@ namespace {
             registry.AddCommonType<optional<SpectrumType_>> ();
             registry.Add<PersistenceScanAuxDataType_> (PRIVATE_::StringKVStringReader::AsFactory ());
             registry.AddCommonReader_Class<PersistentScanDetailsType_> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"ScanID"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, ScanID)},
-                {Name{L"ScanStart"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, ScanStart)},
-                {Name{L"ScanEnd"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, ScanEnd)},
-                {Name{L"ScanLabel"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, ScanLabel)},
-                {Name{L"RawSpectrum"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, RawSpectrum)},
-                {Name{L"AuxData"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, AuxData)},
+                {Name{L"ScanID"}, StructFieldMetaInfo{&PersistentScanDetailsType_::ScanID}},
+                {Name{L"ScanStart"}, StructFieldMetaInfo{&PersistentScanDetailsType_::ScanStart}},
+                {Name{L"ScanEnd"}, StructFieldMetaInfo{&PersistentScanDetailsType_::ScanEnd}},
+                {Name{L"ScanLabel"}, StructFieldMetaInfo{&PersistentScanDetailsType_::ScanLabel}},
+                {Name{L"RawSpectrum"}, StructFieldMetaInfo{&PersistentScanDetailsType_::RawSpectrum}},
+                {Name{L"AuxData"}, StructFieldMetaInfo{&PersistentScanDetailsType_::AuxData}},
             });
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
             PersistentScanDetailsType_ data;
             {
                 ObjectReader::IConsumerDelegateToContext consumerCallback{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{L"ScanPersistenceGetScanDetailsResponse"}, Name{L"Scan"})};
@@ -970,14 +949,12 @@ namespace {
             TraceContextBumper     traceCtx ("T10_SAXObjectReader_NANValues_");
             ObjectReader::Registry registry;
             registry.AddCommonType<double> ();
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
             registry.AddCommonReader_Class<Values_> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"valueMissing"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Values_, valueMissing)},
-                {Name{L"valueExplicitGood"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Values_, valueExplicitGood)},
-                {Name{L"valueExplicitNAN1"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Values_, valueExplicitNAN1)},
-                {Name{L"valueExplicitNAN2"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Values_, valueExplicitNAN2)},
+                {Name{L"valueMissing"}, StructFieldMetaInfo{&Values_::valueMissing}},
+                {Name{L"valueExplicitGood"}, StructFieldMetaInfo{&Values_::valueExplicitGood}},
+                {Name{L"valueExplicitNAN1"}, StructFieldMetaInfo{&Values_::valueExplicitNAN1}},
+                {Name{L"valueExplicitNAN2"}, StructFieldMetaInfo{&Values_::valueExplicitNAN2}},
             });
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
             {
                 Values_ values{};
                 values.valueMissing = 999;
@@ -1051,8 +1028,8 @@ namespace {
 
         static const ObjectReader::ReaderFromVoidStarFactory k_PerTunerFactorySettingsType_ReaderFactory_ =
             ObjectReader::Registry::MakeClassReader<PerTunerFactorySettingsType_> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"MirrorOperationFrequency"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PerTunerFactorySettingsType_, MirrorOperationFrequency)},
-                {Name{L"MirrorResonantFrequency"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PerTunerFactorySettingsType_, MirrorResonantFrequency)},
+                {Name{L"MirrorOperationFrequency"}, StructFieldMetaInfo{&PerTunerFactorySettingsType_::MirrorOperationFrequency}},
+                {Name{L"MirrorResonantFrequency"}, StructFieldMetaInfo{&PerTunerFactorySettingsType_::MirrorResonantFrequency}},
             });
 
         /*
@@ -1080,7 +1057,7 @@ namespace {
                         using KVPType_ = KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>;
                         static const ReaderFromVoidStarFactory kTunerReader_ =
                             Registry::MakeClassReader<KVPType_> (initializer_list<StructFieldInfo>{
-                                {Name{L"Tuner", Name::eAttribute}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey)},
+                                {Name{L"Tuner", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fKey}},
                             });
                         Sequence<MixinEltTraits> tmp;
                         tmp += MixinEltTraits{kTunerReader_, [] (const Name& name) { return name == Name{L"Tuner", Name::eAttribute}; }, [] (KVPType_* kvp) { return reinterpret_cast<byte*> (&kvp->fKey); }};
@@ -1106,7 +1083,6 @@ namespace {
         void DoTest ()
         {
             ObjectReader::Registry registry;
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
             registry.AddCommonReader_NamedEnumerations<TunerNumberType_> (Containers::Bijection<TunerNumberType_, String>{
                 pair<TunerNumberType_, String>{TunerNumberType_::eT1, L"1"},
                 pair<TunerNumberType_, String>{TunerNumberType_::eT2, L"2"},
@@ -1119,9 +1095,8 @@ namespace {
             registry.Add<PerTunerFactorySettingsType_> (k_PerTunerFactorySettingsType_ReaderFactory_);
             registry.Add<Mapping<TunerNumberType_, PerTunerFactorySettingsType_>> (TunerMappingReader_::AsFactory ());
             registry.AddCommonReader_Class<FactorySettingsType_> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"Tuners"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (FactorySettingsType_, Tuners)},
+                {Name{L"Tuners"}, StructFieldMetaInfo{&FactorySettingsType_::Tuners}},
             });
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
             FactorySettingsType_ data;
             {
@@ -1180,11 +1155,9 @@ namespace {
             ObjectReader::Registry registry;
             registry.AddCommonType<MY_TEST_RANGE_::value_type> ();
             registry.Add<MY_TEST_RANGE_> (ObjectReader::RangeReader<MY_TEST_RANGE_>::AsFactory ());
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
             registry.AddCommonReader_Class<Values_> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"r"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Values_, r)},
+                {Name{L"r"}, StructFieldMetaInfo{&Values_::r}},
             });
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
             {
                 Values_                                  values{};
                 ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&values), Name{L"Values"})};
@@ -1234,23 +1207,21 @@ namespace {
         void DoTest ()
         {
             ObjectReader::Registry registry;
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
             registry.AddCommonType<String> ();
             static const auto kGenderType_Reader_ = ObjectReader::Registry::MakeCommonReader_NamedEnumerations<GenderType_> (Containers::Bijection<GenderType_, String>{
                 pair<GenderType_, String>{GenderType_::Male, L"Male"},
                 pair<GenderType_, String>{GenderType_::Female, L"Female"},
             });
             registry.AddCommonReader_Class<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"FirstName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName)},
-                {Name{L"LastName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName)},
-                {Name{L"Gender"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, gender), kGenderType_Reader_},
+                {Name{L"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
+                {Name{L"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
+                {Name{L"Gender"}, StructFieldMetaInfo{&Person_::gender}, kGenderType_Reader_},
             });
             registry.AddCommonType<vector<Person_>> ();
             registry.Add<vector<Person_>> (ObjectReader::RepeatedElementReader<vector<Person_>>::AsFactory ());
             registry.AddCommonReader_Class<Data_> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"person"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Data_, people)},
+                {Name{L"person"}, StructFieldMetaInfo{&Data_::people}},
             });
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
             Data_ data;
             {
@@ -1306,20 +1277,18 @@ namespace T14_SAXObjectReader_CustomSimpleType_ {
     void DoTest ()
     {
         ObjectReader::Registry registry;
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         registry.AddCommonType<String> ();
         registry.AddCommonReader_Simple<GenderType_> ([] (String s) -> GenderType_ { GenderType_ result; result.fRep = s; return result; });
         registry.AddCommonReader_Class<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
-            {Name{L"FirstName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName)},
-            {Name{L"LastName"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName)},
-            {Name{L"Gender"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, gender)},
+            {Name{L"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
+            {Name{L"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
+            {Name{L"Gender"}, StructFieldMetaInfo{&Person_::gender}},
         });
         registry.AddCommonType<vector<Person_>> ();
         registry.Add<vector<Person_>> (ObjectReader::RepeatedElementReader<vector<Person_>>::AsFactory ());
         registry.AddCommonReader_Class<Data_> (initializer_list<ObjectReader::StructFieldInfo>{
-            {Name{L"person"}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Data_, people)},
+            {Name{L"person"}, StructFieldMetaInfo{&Data_::people}},
         });
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
         Data_ data;
         {

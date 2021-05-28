@@ -19,19 +19,15 @@ using namespace Stroika::Frameworks::UPnP;
  ************************************* Device ***********************************
  ********************************************************************************
  */
-DISABLE_COMPILER_MSC_WARNING_START (4573);
-DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 const ObjectVariantMapper Device::kMapper = [] () {
     ObjectVariantMapper mapper;
     mapper.AddClass<Device> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-        {L"Alive", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Device, fDeviceID)},
-        {L"USN", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Device, fLocation)},
-        {L"Server", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Device, fServer)},
+        {L"Alive", StructFieldMetaInfo{&Device::fDeviceID}},
+        {L"USN", StructFieldMetaInfo{&Device::fLocation}},
+        {L"Server", StructFieldMetaInfo{&Device::fServer}},
     });
     return mapper;
 }();
-DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
-DISABLE_COMPILER_MSC_WARNING_END (4573);
 
 /*
 ********************************************************************************
