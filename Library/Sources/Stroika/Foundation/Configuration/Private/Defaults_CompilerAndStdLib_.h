@@ -1914,6 +1914,28 @@ namespace {
 
 #endif
 
+/**
+stHarness/SimpleClass.cpp ...
+37>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Memory\Common.inl(73): error C2512: 'Stroika::Foundation::Traversal::Range<double,Stroika::Foundation::Traversal::RangeTraits::Default<T>>': no appropriate default constructor available
+37>        with
+37>        [
+37>            T=double
+37>        ]
+37>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Memory\Common.inl(73): note: Constructor for class 'Stroika::Foundation::Traversal::Range<double,Stroika::Foundation::Traversal::RangeTraits::Default<T>>' is declared 'explicit'
+37>        with
+37>        [
+ */
+#ifndef qCompilerAndStdLib_default_constructor_initialization_issueWithExplicit_Buggy
+
+#if defined(_MSC_VER)
+// first noticed broken in _MSC_VER_2k19_16Pt8_
+#define qCompilerAndStdLib_default_constructor_initialization_issueWithExplicit_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt8_)
+#else
+#define qCompilerAndStdLib_default_constructor_initialization_issueWithExplicit_Buggy 0
+#endif
+
+#endif
+
 /*
  * https://developercommunity.visualstudio.com/content/problem/330322/stdlocale-l2-en-usutf-8-broken-crashes-now.html
  * https://developercommunity.visualstudio.com/t/std::locale-l2-en_USUTF-8;--broke/330322
