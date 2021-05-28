@@ -19,9 +19,6 @@
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
- *  TODO:
- *      @todo   This is NOT safe (annoying offsetof rules). MAYBE possible to do with ptr-to-member, but I don't think
- *              so.&&&&&&&
  */
 
 namespace Stroika::Foundation::DataExchange {
@@ -31,9 +28,13 @@ namespace Stroika::Foundation::DataExchange {
      *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
      *        o C++20 only (for c++17 only supported == and operator<)
      * 
+     *  \note This class is just a utility to capture information about fields relative to
+     *        a class for the purpose of serialization. It may not work for all class types
+     *        due to C++ issues with pointers to members.
+     *        @see Memory::OffsetOf() for details.
      * 
-     * 
-     * &&&& TODO DOCS - IF CANNOT USE - DONT USE AddClass<> bvut do custom serializer
+     *        But - when you cannot use this, you can still always use a custom serializer
+     *        within ObjectVariantMapper;
      */
     struct StructFieldMetaInfo {
     public:
@@ -85,7 +86,7 @@ namespace Stroika::Foundation::DataExchange {
 #endif
 
     /**
-        &&&& DEPREACATED MACRO --- USE StructFieldMetaInfo{} CTOR DIRECTLY - SINCE Stroika 2.1b12
+     ************* DEPREACATED MACRO --- USE StructFieldMetaInfo{} CTOR DIRECTLY - SINCE Stroika 2.1b12
      */
 #define Stroika_Foundation_DataExchange_StructFieldMetaInfo(CLASS, MEMBER) \
     Stroika::Foundation::DataExchange::StructFieldMetaInfo { &CLASS::MEMBER }

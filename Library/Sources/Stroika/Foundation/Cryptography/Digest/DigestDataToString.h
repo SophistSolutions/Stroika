@@ -17,7 +17,7 @@
  *
  *  TODO:
  * 
- *          &&&DEPRECATED&&&&
+ *          DEPRECATED
  *          ALMOST EQUIVILENT TO just forcing return type from Digester to String (or string)
  *          AS OF Stroika 2.1b6
  *  && ONLY DIFF IS THIS USES Streams::iostream::SerializeItemToBLOB instead of DefaultSerializer
@@ -26,7 +26,7 @@
 namespace Stroika::Foundation::Cryptography::Digest {
 
     /**
-     *          &&&& CONSIDER DEPRECATING &&&&&
+     *          DEPRECATED
      */
     template <typename DIGESTER, typename T, typename RESULT_TYPE = string>
     [[deprecated ("Since Stroika 2.1b6 use Digester<> directly or Hash - this is equivilent to Hash<T,DIGESTER,RESULT_TYPE,SERIALIZR=Streams::iostream::SerializeItemToBLOB)")]] RESULT_TYPE DigestDataToString (const T& t);

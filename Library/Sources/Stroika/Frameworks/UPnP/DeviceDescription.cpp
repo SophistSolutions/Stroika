@@ -105,21 +105,21 @@ ObjectVariantMapper DeviceDescription::mkMapper_ ()
     ObjectVariantMapper mapper;
 
     mapper.AddClass<Icon> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-        {L"Alive", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Icon, fMimeType)},
-        {L"USN", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Icon, fHorizontalPixels)},
-        {L"Server", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Icon, fVerticalPixels)},
-        {L"Target", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Icon, fColorDepth)},
-        {L"RawHeaders", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Icon, fURL)},
+        {L"Alive", StructFieldMetaInfo{&Icon::fMimeType}},
+        {L"USN", StructFieldMetaInfo{&Icon::fHorizontalPixels}},
+        {L"Server", StructFieldMetaInfo{&Icon::fVerticalPixels}},
+        {L"Target", StructFieldMetaInfo{&Icon::fColorDepth}},
+        {L"RawHeaders", StructFieldMetaInfo{&Icon::fURL}},
     });
     mapper.AddCommonType<Collection<Icon>> ();
     mapper.AddCommonType<optional<Collection<Icon>>> ();
 
     mapper.AddClass<Service> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-        {L"Alive", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Service, fServiceType)},
-        {L"USN", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Service, fServiceID)},
-        {L"Server", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Service, fSCPDURL)},
-        {L"Target", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Service, fControlURL)},
-        {L"RawHeaders", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Service, fEventSubURL)},
+        {L"Alive", StructFieldMetaInfo{&Service::fServiceType}},
+        {L"USN", StructFieldMetaInfo{&Service::fServiceID}},
+        {L"Server", StructFieldMetaInfo{&Service::fSCPDURL}},
+        {L"Target", StructFieldMetaInfo{&Service::fControlURL}},
+        {L"RawHeaders", StructFieldMetaInfo{&Service::fEventSubURL}},
     });
     mapper.AddCommonType<Collection<Service>> ();
     mapper.AddCommonType<optional<Collection<Service>>> ();
@@ -128,20 +128,20 @@ ObjectVariantMapper DeviceDescription::mkMapper_ ()
     mapper.AddCommonType<optional<URI>> ();
 
     mapper.AddClass<DeviceDescription> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-        {L"PresentationURL", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fPresentationURL)},
-        {L"DeviceType", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fDeviceType)},
-        {L"ManufactureName", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fManufactureName)},
-        {L"FriendlyName", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fFriendlyName)},
-        {L"ManufacturingURL", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fManufacturingURL)},
-        {L"ModelDescription", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fModelDescription)},
-        {L"ModelName", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fModelName)},
-        {L"ModelNumber", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fModelNumber)},
-        {L"ModelURL", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fModelURL)},
-        {L"SerialNumber", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fSerialNumber)},
-        {L"UDN", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fUDN)},
-        {L"UPC", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fUPC)},
-        {L"Icons", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fIcons)},
-        {L"Services", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fServices)},
+        {L"PresentationURL", StructFieldMetaInfo{&DeviceDescription::fPresentationURL}},
+        {L"DeviceType", StructFieldMetaInfo{&DeviceDescription::fDeviceType}},
+        {L"ManufactureName", StructFieldMetaInfo{&DeviceDescription::fManufactureName}},
+        {L"FriendlyName", StructFieldMetaInfo{&DeviceDescription::fFriendlyName}},
+        {L"ManufacturingURL", StructFieldMetaInfo{&DeviceDescription::fManufacturingURL}},
+        {L"ModelDescription", StructFieldMetaInfo{&DeviceDescription::fModelDescription}},
+        {L"ModelName", StructFieldMetaInfo{&DeviceDescription::fModelName}},
+        {L"ModelNumber", StructFieldMetaInfo{&DeviceDescription::fModelNumber}},
+        {L"ModelURL", StructFieldMetaInfo{&DeviceDescription::fModelURL}},
+        {L"SerialNumber", StructFieldMetaInfo{&DeviceDescription::fSerialNumber}},
+        {L"UDN", StructFieldMetaInfo{&DeviceDescription::fUDN}},
+        {L"UPC", StructFieldMetaInfo{&DeviceDescription::fUPC}},
+        {L"Icons", StructFieldMetaInfo{&DeviceDescription::fIcons}},
+        {L"Services", StructFieldMetaInfo{&DeviceDescription::fServices}},
     });
     return mapper;
 };
@@ -277,14 +277,14 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
             {Name{L"friendlyName"sv}, StructFieldMetaInfo{&DeviceDescription::fFriendlyName}},
             {Name{L"manufacturerURL"sv}, StructFieldMetaInfo{&DeviceDescription::fManufacturingURL}},
             {Name{L"modelDescription"sv}, StructFieldMetaInfo{&DeviceDescription::fModelDescription}},
-            {Name{L"modelName"sv}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fModelName)},
-            {Name{L"modelNumber"sv}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fModelNumber)},
-            {Name{L"modelURL"sv}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fModelURL)},
-            {Name{L"serialNum"sv}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fSerialNumber)},
-            {Name{L"UDN"sv}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fUDN)},
-            {Name{L"UPC"sv}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fUPC)},
-            {Name{L"iconList"sv}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fIcons)},
-            {Name{L"serviceList"sv}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (DeviceDescription, fServices)},
+            {Name{L"modelName"sv}, StructFieldMetaInfo{&DeviceDescription::fModelName}},
+            {Name{L"modelNumber"sv}, StructFieldMetaInfo{&DeviceDescription::fModelNumber}},
+            {Name{L"modelURL"sv}, StructFieldMetaInfo{&DeviceDescription::fModelURL}},
+            {Name{L"serialNum"sv}, StructFieldMetaInfo{&DeviceDescription::fSerialNumber}},
+            {Name{L"UDN"sv}, StructFieldMetaInfo{&DeviceDescription::fUDN}},
+            {Name{L"UPC"sv}, StructFieldMetaInfo{&DeviceDescription::fUPC}},
+            {Name{L"iconList"sv}, StructFieldMetaInfo{&DeviceDescription::fIcons}},
+            {Name{L"serviceList"sv}, StructFieldMetaInfo{&DeviceDescription::fServices}},
         });
         return registry;
     }();

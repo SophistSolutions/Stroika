@@ -432,29 +432,29 @@ const ObjectVariantMapper Instruments::Memory::Instrument::kObjectVariantMapper 
     using StructFieldInfo = ObjectVariantMapper::StructFieldInfo;
     ObjectVariantMapper mapper;
     mapper.AddClass<Info::PhysicalRAMDetailsType> (initializer_list<StructFieldInfo>{
-        {L"Available", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PhysicalRAMDetailsType, fAvailable), StructFieldInfo::eOmitNullFields},
-        {L"Active", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PhysicalRAMDetailsType, fActive), StructFieldInfo::eOmitNullFields},
-        {L"Inactive", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PhysicalRAMDetailsType, fInactive), StructFieldInfo::eOmitNullFields},
-        {L"Free", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PhysicalRAMDetailsType, fFree), StructFieldInfo::eOmitNullFields},
-        {L"OS-Reserved", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PhysicalRAMDetailsType, fOSReserved), StructFieldInfo::eOmitNullFields},
+        {L"Available", StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fAvailable}, StructFieldInfo::eOmitNullFields},
+        {L"Active", StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fActive}, StructFieldInfo::eOmitNullFields},
+        {L"Inactive", StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fInactive}, StructFieldInfo::eOmitNullFields},
+        {L"Free", StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fFree}, StructFieldInfo::eOmitNullFields},
+        {L"OS-Reserved", StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fOSReserved}, StructFieldInfo::eOmitNullFields},
     });
     mapper.AddClass<Info::VirtualMemoryDetailsType> (initializer_list<StructFieldInfo>{
-        {L"Commit-Limit", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::VirtualMemoryDetailsType, fCommitLimit), StructFieldInfo::eOmitNullFields},
-        {L"Committed-Bytes", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::VirtualMemoryDetailsType, fCommittedBytes), StructFieldInfo::eOmitNullFields},
-        {L"Pagefile-Total-Size", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::VirtualMemoryDetailsType, fPagefileTotalSize), StructFieldInfo::eOmitNullFields},
+        {L"Commit-Limit", StructFieldMetaInfo{&Info::VirtualMemoryDetailsType::fCommitLimit}, StructFieldInfo::eOmitNullFields},
+        {L"Committed-Bytes", StructFieldMetaInfo{&Info::VirtualMemoryDetailsType::fCommittedBytes}, StructFieldInfo::eOmitNullFields},
+        {L"Pagefile-Total-Size", StructFieldMetaInfo{&Info::VirtualMemoryDetailsType::fPagefileTotalSize}, StructFieldInfo::eOmitNullFields},
     });
     mapper.AddClass<Info::PagingDetailsType> (initializer_list<StructFieldInfo>{
-        {L"Major-Faults-Since-Boot", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PagingDetailsType, fMajorPageFaultsSinceBoot), StructFieldInfo::eOmitNullFields},
-        {L"Minor-Faults-Since-Boot", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PagingDetailsType, fMinorPageFaultsSinceBoot), StructFieldInfo::eOmitNullFields},
-        {L"Page-Outs-Since-Boot", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PagingDetailsType, fPageOutsSinceBoot), StructFieldInfo::eOmitNullFields},
-        {L"Major-Faults-Per-Second", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PagingDetailsType, fMajorPageFaultsPerSecond), StructFieldInfo::eOmitNullFields},
-        {L"Minor-Faults-Per-Second", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PagingDetailsType, fMinorPageFaultsPerSecond), StructFieldInfo::eOmitNullFields},
-        {L"Page-Outs-Per-Second", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PagingDetailsType, fPageOutsPerSecond), StructFieldInfo::eOmitNullFields},
+        {L"Major-Faults-Since-Boot", StructFieldMetaInfo{&Info::PagingDetailsType::fMajorPageFaultsSinceBoot}, StructFieldInfo::eOmitNullFields},
+        {L"Minor-Faults-Since-Boot", StructFieldMetaInfo{&Info::PagingDetailsType::fMinorPageFaultsSinceBoot}, StructFieldInfo::eOmitNullFields},
+        {L"Page-Outs-Since-Boot", StructFieldMetaInfo{&Info::PagingDetailsType::fPageOutsSinceBoot}, StructFieldInfo::eOmitNullFields},
+        {L"Major-Faults-Per-Second", StructFieldMetaInfo{&Info::PagingDetailsType::fMajorPageFaultsPerSecond}, StructFieldInfo::eOmitNullFields},
+        {L"Minor-Faults-Per-Second", StructFieldMetaInfo{&Info::PagingDetailsType::fMinorPageFaultsPerSecond}, StructFieldInfo::eOmitNullFields},
+        {L"Page-Outs-Per-Second", StructFieldMetaInfo{&Info::PagingDetailsType::fPageOutsPerSecond}, StructFieldInfo::eOmitNullFields},
     });
     mapper.AddClass<Info> (initializer_list<StructFieldInfo>{
-        {L"Physical-Memory", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fPhysicalMemory)},
-        {L"Virtual-Memory", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fVirtualMemory)},
-        {L"Paging", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fPaging)},
+        {L"Physical-Memory", StructFieldMetaInfo{&Info::fPhysicalMemory}},
+        {L"Virtual-Memory", StructFieldMetaInfo{&Info::fVirtualMemory}},
+        {L"Paging", StructFieldMetaInfo{&Info::fPaging}},
     });
     return mapper;
 }();

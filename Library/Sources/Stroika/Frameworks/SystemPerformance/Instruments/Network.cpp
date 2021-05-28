@@ -546,43 +546,43 @@ const ObjectVariantMapper Instruments::Network::Instrument::kObjectVariantMapper
     mapper.AddCommonType<Set<Interface::Status>> ();
     mapper.AddCommonType<optional<Set<Interface::Status>>> ();
     mapper.AddClass<InterfaceInfo::Interface> (initializer_list<StructFieldInfo>{
-        {L"Interface-Internal-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fInternalInterfaceID)},
-        {L"Friendly-Name", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fFriendlyName)},
-        {L"Description", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fDescription), StructFieldInfo::eOmitNullFields},
-        {L"Interface-Type", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fType), StructFieldInfo::eOmitNullFields},
-        {L"Hardware-Address", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fHardwareAddress), StructFieldInfo::eOmitNullFields},
-        {L"Interface-Status", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fStatus), StructFieldInfo::eOmitNullFields},
-        {L"Transmit-Speed-Baud", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fTransmitSpeedBaud), StructFieldInfo::eOmitNullFields},
-        {L"Receive-Link-Speed-Baud", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo::Interface, fReceiveLinkSpeedBaud), StructFieldInfo::eOmitNullFields},
+        {L"Interface-Internal-ID", StructFieldMetaInfo{&InterfaceInfo::Interface::fInternalInterfaceID}},
+        {L"Friendly-Name", StructFieldMetaInfo{&InterfaceInfo::Interface::fFriendlyName}},
+        {L"Description", StructFieldMetaInfo{&InterfaceInfo::Interface::fDescription}, StructFieldInfo::eOmitNullFields},
+        {L"Interface-Type", StructFieldMetaInfo{&InterfaceInfo::Interface::fType}, StructFieldInfo::eOmitNullFields},
+        {L"Hardware-Address", StructFieldMetaInfo{&InterfaceInfo::Interface::fHardwareAddress}, StructFieldInfo::eOmitNullFields},
+        {L"Interface-Status", StructFieldMetaInfo{&InterfaceInfo::Interface::fStatus}, StructFieldInfo::eOmitNullFields},
+        {L"Transmit-Speed-Baud", StructFieldMetaInfo{&InterfaceInfo::Interface::fTransmitSpeedBaud}, StructFieldInfo::eOmitNullFields},
+        {L"Receive-Link-Speed-Baud", StructFieldMetaInfo{&InterfaceInfo::Interface::fReceiveLinkSpeedBaud}, StructFieldInfo::eOmitNullFields},
         // TODO ADD:
         //Containers::Set<InternetAddress>            fBindings;
     });
     mapper.AddClass<IOStatistics> (initializer_list<StructFieldInfo>{
-        {L"Total-Bytes-Sent", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalBytesSent), StructFieldInfo::eOmitNullFields},
-        {L"Total-Bytes-Received", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalBytesReceived), StructFieldInfo::eOmitNullFields},
-        {L"Bytes-Per-Second-Sent", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fBytesPerSecondSent), StructFieldInfo::eOmitNullFields},
-        {L"Bytes-Per-Second-Received", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fBytesPerSecondReceived), StructFieldInfo::eOmitNullFields},
-        {L"Total-TCP-Segments", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalTCPSegments), StructFieldInfo::eOmitNullFields},
-        {L"TCP-Segments-Per-Second", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTCPSegmentsPerSecond), StructFieldInfo::eOmitNullFields},
-        {L"Total-TCP-Retransmitted-Segments", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalTCPRetransmittedSegments), StructFieldInfo::eOmitNullFields},
-        {L"TCP-Retransmitted-Segments-Per-Second", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTCPRetransmittedSegmentsPerSecond), StructFieldInfo::eOmitNullFields},
-        {L"Total-Packets-Sent", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalPacketsSent), StructFieldInfo::eOmitNullFields},
-        {L"Total-Packets-Received", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalPacketsReceived), StructFieldInfo::eOmitNullFields},
-        {L"Packets-Per-Second-Sent", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fPacketsPerSecondSent), StructFieldInfo::eOmitNullFields},
-        {L"Packets-Per-Second-Received", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fPacketsPerSecondReceived), StructFieldInfo::eOmitNullFields},
-        {L"Total-Errors", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalErrors), StructFieldInfo::eOmitNullFields},
-        {L"Total-Packets-Dropped", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatistics, fTotalPacketsDropped), StructFieldInfo::eOmitNullFields},
+        {L"Total-Bytes-Sent", StructFieldMetaInfo{&IOStatistics::fTotalBytesSent}, StructFieldInfo::eOmitNullFields},
+        {L"Total-Bytes-Received", StructFieldMetaInfo{&IOStatistics::fTotalBytesReceived}, StructFieldInfo::eOmitNullFields},
+        {L"Bytes-Per-Second-Sent", StructFieldMetaInfo{&IOStatistics::fBytesPerSecondSent}, StructFieldInfo::eOmitNullFields},
+        {L"Bytes-Per-Second-Received", StructFieldMetaInfo{&IOStatistics::fBytesPerSecondReceived}, StructFieldInfo::eOmitNullFields},
+        {L"Total-TCP-Segments", StructFieldMetaInfo{&IOStatistics::fTotalTCPSegments}, StructFieldInfo::eOmitNullFields},
+        {L"TCP-Segments-Per-Second", StructFieldMetaInfo{&IOStatistics::fTCPSegmentsPerSecond}, StructFieldInfo::eOmitNullFields},
+        {L"Total-TCP-Retransmitted-Segments", StructFieldMetaInfo{&IOStatistics::fTotalTCPRetransmittedSegments}, StructFieldInfo::eOmitNullFields},
+        {L"TCP-Retransmitted-Segments-Per-Second", StructFieldMetaInfo{&IOStatistics::fTCPRetransmittedSegmentsPerSecond}, StructFieldInfo::eOmitNullFields},
+        {L"Total-Packets-Sent", StructFieldMetaInfo{&IOStatistics::fTotalPacketsSent}, StructFieldInfo::eOmitNullFields},
+        {L"Total-Packets-Received", StructFieldMetaInfo{&IOStatistics::fTotalPacketsReceived}, StructFieldInfo::eOmitNullFields},
+        {L"Packets-Per-Second-Sent", StructFieldMetaInfo{&IOStatistics::fPacketsPerSecondSent}, StructFieldInfo::eOmitNullFields},
+        {L"Packets-Per-Second-Received", StructFieldMetaInfo{&IOStatistics::fPacketsPerSecondReceived}, StructFieldInfo::eOmitNullFields},
+        {L"Total-Errors", StructFieldMetaInfo{&IOStatistics::fTotalErrors}, StructFieldInfo::eOmitNullFields},
+        {L"Total-Packets-Dropped", StructFieldMetaInfo{&IOStatistics::fTotalPacketsDropped}, StructFieldInfo::eOmitNullFields},
     });
     mapper.AddClass<InterfaceInfo> (initializer_list<StructFieldInfo>{
-        {L"Interface", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo, fInterface)},
-        {L"IO-Statistics", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo, fIOStatistics)},
+        {L"Interface", StructFieldMetaInfo{&InterfaceInfo::fInterface}},
+        {L"IO-Statistics", StructFieldMetaInfo{&InterfaceInfo::fIOStatistics}},
     });
     mapper.AddCommonType<Collection<InterfaceInfo>> ();
     mapper.AddCommonType<optional<Collection<InterfaceInfo>>> ();
     mapper.AddCommonType<optional<IOStatistics>> ();
     mapper.AddClass<Info> (initializer_list<StructFieldInfo>{
-        {L"Interfaces", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fInterfaces), StructFieldInfo::eOmitNullFields},
-        {L"Summary-IO-Statistics", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fSummaryIOStatistics), StructFieldInfo::eOmitNullFields},
+        {L"Interfaces", StructFieldMetaInfo{&Info::fInterfaces}, StructFieldInfo::eOmitNullFields},
+        {L"Summary-IO-Statistics", StructFieldMetaInfo{&Info::fSummaryIOStatistics}, StructFieldInfo::eOmitNullFields},
     });
     return mapper;
 }();
