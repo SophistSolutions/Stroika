@@ -1,8 +1,8 @@
 ﻿# Stroika v2.1
 
-Stroika is a modern, portable, thread-savvy C++ application framework designed to make applications easier to write. It does this by providing safe, flexible, modular building blocks which can be easily combined because they are designed to fit together.
+Stroika is a modern, portable, thread-savvy C++ application framework. It makes applications easier to write by providing safe, flexible, modular building blocks which can be easily combined because they are designed to fit together.
 
-It is comprised of 2 layers, the [Foundation](Library/Sources/Stroika/Foundation/ReadMe.md), which provides directly usable classes which can be built off, and a series of domain specific [Framework](Library/Sources/Stroika/Frameworks/ReadMe.md)s which provide a rich collection of code in different domains.
+It is comprised of 2 layers, the [Foundation](Library/Sources/Stroika/Foundation/ReadMe.md), which provides directly usable classes, and a series of domain specific [Framework](Library/Sources/Stroika/Frameworks/ReadMe.md)s which provide a rich collection of code in different domains.
 
 ![alt text](Documentation/Images/AppLayersBlockDiagram.png "Title")
 
@@ -23,7 +23,7 @@ The Frameworks depend on the Foundation; Foundation modules frequently depend on
 - [Execution](Library/Sources/Stroika/Foundation/Execution/ReadMe.md) pattern classes (external process runner, synchronization patterns, blocking queue, thread pools, and much more).
 - [Networking](Library/Sources/Stroika/Foundation/IO/Network/ReadMe.md) support (high level socket wrappers, Web client fetching).
 - Simple, elegant [streams library](Library/Sources/Stroika/Foundation/Streams/ReadMe.md), with adapters for cryptography, compression, text transforms, etc.
-- Seamless integration with many important libraries (often means object oriented wrappers), including: boost, libcurl, lzma sdk, openssl, sqlite, xerces, zlib (e.g. wrap a compression stream - using for example zlib).
+- Seamless integration (object oriented wrappers respecting Stroika's safety and adapter rules) with many important libraries , including: boost, libcurl, lzma sdk, openssl, sqlite, xerces, zlib (e.g. wrap a compression stream - using for example zlib).
 - and more...
 
 ## Stroika [Framework](Library/Sources/Stroika/Frameworks/ReadMe.md)s provides
