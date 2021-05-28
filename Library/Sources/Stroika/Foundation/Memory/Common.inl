@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Memory {
 #else
             static inline /*constexpr*/ T2 sObj_{};
 #endif
-            static constexpr size_t        offset (T1 T2::*member)
+            static constexpr size_t offset (T1 T2::*member)
             {
                 /*
                  *  UNDEFINED BEHAVIOR: it is undefined, but for the following reason: expr.add-5.sentence-2
