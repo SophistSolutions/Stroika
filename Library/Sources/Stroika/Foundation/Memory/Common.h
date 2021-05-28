@@ -75,6 +75,9 @@ namespace Stroika::Foundation::Memory {
 #endif
 
     /**
+     *  \brief use Memory::OffsetOf(&CLASS::MEMBER) in place of offsetof(CLASS,MEMBER) to avoid compiler warnings, and cuz easier to 
+     *         map from other constructors (e.g. StructFieldMetaInfo) cuz ptr to member legit C++ object, whereas CLASS and MEMBER are not.
+     * 
      *  REPLACE calls to:
      *       offsetof (CLASS, MEMBER)
      * with:
@@ -95,7 +98,6 @@ namespace Stroika::Foundation::Memory {
      *          constexpr size_t kOffset_ = OffsetOf(&Person::lastName);
      *          static_assert (OffsetOf (&Person::firstName) == 0);
      *      \endcode
-     *
      * 
      *  @see https://gist.github.com/graphitemaster/494f21190bb2c63c5516
      *  @see https://en.cppreference.com/w/cpp/types/offsetof
@@ -103,6 +105,11 @@ namespace Stroika::Foundation::Memory {
      * 
      *  \note   Tricky to get this to work with constexpr. Works on clang++ and g++, but not VisualStudio
      *          really only constexpr if !qCompilerAndStdLib_OffsetOf_Constexpr_Buggy and is_default_constructible_v<OWNING_OBJECT>
+     * 
+     *  TODO:
+     *      @todo   Try to get this working more uniformly - regardless of is_default_constructible_v, and with constexpr, and
+     *              more reliably portably, and detect errors somehow for cases where this cannot work, but not as widely warning
+     *              as offsetof() - care about case of struct x { private: int a; public: int b; working}.
      */
     template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT, enable_if_t<is_default_constructible_v<OWNING_OBJECT>>* = nullptr>
     size_t constexpr OffsetOf (FIELD_VALUE_TYPE OWNING_OBJECT::*member);
