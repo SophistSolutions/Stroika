@@ -757,6 +757,7 @@ namespace {
          *      2018-12-21 - saw happen on Linux (WSL), but still very rare
          *      2019-08-28 - saw happen on Linux (WSL), but still very rare
          *      2020-07-07 - saw happen on Windows, but still very rare
+         *      2021-05-29 - saw happen on Ubuntu 2004(docker), but still very rare
          */
         VerifyTestResult (WaitableEvent::WaitForAny (Sequence<WaitableEvent*> ({&we1, &we2})) == set<WaitableEvent*> ({&we2})); // may not indicate a real problem if triggered rarely - just threads ran in queer order, but can happen
         Time::DurationSecondsType timeTaken = Time::GetTickCount () - startAt;
