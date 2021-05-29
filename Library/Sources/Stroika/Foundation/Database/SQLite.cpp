@@ -591,7 +591,7 @@ void Statement::Bind (unsigned int parameterIndex, const VariantValue& v)
         case VariantValue::eDateTime:
         case VariantValue::eString: {
             string u = v.As<String> ().AsUTF8 ();
-            ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_text (fStatementObj_, parameterIndex + 1, u.c_str (), u.length (), SQLITE_TRANSIENT), fConnectionPtr_->Peek ());
+            ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_text (fStatementObj_, parameterIndex + 1, u.c_str (), static_cast<int> (u.length ()), SQLITE_TRANSIENT), fConnectionPtr_->Peek ());
         } break;
         case VariantValue::eBoolean:
         case VariantValue::eInteger:

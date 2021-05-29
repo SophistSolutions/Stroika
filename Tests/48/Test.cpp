@@ -456,6 +456,7 @@ namespace {
                 VerifyTestResult (OffsetOf (&NotDefaultConstructible::firstName) == 0);
             }
 #if 0
+            // disabled til we can figure out a way to get this constexpr version of OffsetOf() working...
             {
                 [[maybe_unused]] constexpr size_t kOffsetx_ = OffsetOf_Constexpr (&Person::lastName);
                 static_assert (OffsetOf_Constexpr (&Person::firstName) == 0);
