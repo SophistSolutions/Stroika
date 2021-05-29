@@ -86,12 +86,12 @@ namespace Stroika::Foundation::Memory {
         };
     }
 
-    template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT, enable_if_t<is_default_constructible_v<OWNING_OBJECT>>*>
-    inline size_t constexpr OffsetOf (FIELD_VALUE_TYPE OWNING_OBJECT::*member)
+    template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
+    inline size_t constexpr OffsetOf_Constexpr (FIELD_VALUE_TYPE OWNING_OBJECT::*member)
     {
         return PRIVATE_::OffsetOfRequiringDefaultConstructibleObjectType_<FIELD_VALUE_TYPE, OWNING_OBJECT>::offset (member);
     }
-    template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT, enable_if_t<not is_default_constructible_v<OWNING_OBJECT>>*>
+    template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
     inline size_t OffsetOf (FIELD_VALUE_TYPE OWNING_OBJECT::*member)
     {
 #if 0

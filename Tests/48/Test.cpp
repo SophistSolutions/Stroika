@@ -441,7 +441,7 @@ namespace {
         };
         struct NotDefaultConstructible {
             NotDefaultConstructible () = delete;
-            constexpr NotDefaultConstructible (int a) {}
+            constexpr NotDefaultConstructible (int) {}
             int firstName{};
             int lastName{};
         };
@@ -455,10 +455,10 @@ namespace {
                 [[maybe_unused]] size_t kOffset_ = OffsetOf (&NotDefaultConstructible::lastName);
                 VerifyTestResult (OffsetOf (&NotDefaultConstructible::firstName) == 0);
             }
-#if !qCompilerAndStdLib_OffsetOf_Constexpr_Buggy
+#if 0
             {
-                [[maybe_unused]] constexpr size_t kOffsetx_ = OffsetOf (&Person::lastName);
-                static_assert (OffsetOf (&Person::firstName) == 0);
+                [[maybe_unused]] constexpr size_t kOffsetx_ = OffsetOf_Constexpr (&Person::lastName);
+                static_assert (OffsetOf_Constexpr (&Person::firstName) == 0);
             }
 #endif
         }

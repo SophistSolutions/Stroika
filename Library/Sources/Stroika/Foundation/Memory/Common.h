@@ -103,18 +103,17 @@ namespace Stroika::Foundation::Memory {
      *  @see https://en.cppreference.com/w/cpp/types/offsetof
      *  @see https://stackoverflow.com/questions/65940393/c-why-the-restriction-on-offsetof-for-non-standard-layout-objects-or-how-t
      * 
-     *  \note   Tricky to get this to work with constexpr. Works on clang++ and g++, but not VisualStudio
-     *          really only constexpr if !qCompilerAndStdLib_OffsetOf_Constexpr_Buggy and is_default_constructible_v<OWNING_OBJECT>
+     *  \note   Tricky to get this to work with constexpr. Experimenting with OffsetOf_Constexpr
      * 
      *  TODO:
      *      @todo   Try to get this working more uniformly - regardless of is_default_constructible_v, and with constexpr, and
      *              more reliably portably, and detect errors somehow for cases where this cannot work, but not as widely warning
      *              as offsetof() - care about case of struct x { private: int a; public: int b; working}.
      */
-    template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT, enable_if_t<is_default_constructible_v<OWNING_OBJECT>>* = nullptr>
-    size_t constexpr OffsetOf (FIELD_VALUE_TYPE OWNING_OBJECT::*member);
-    template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT, enable_if_t<not is_default_constructible_v<OWNING_OBJECT>>* = nullptr>
+    template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
     size_t OffsetOf (FIELD_VALUE_TYPE OWNING_OBJECT::*member);
+    template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
+    size_t constexpr OffsetOf_Constexpr (FIELD_VALUE_TYPE OWNING_OBJECT::*member);
 
 }
 
