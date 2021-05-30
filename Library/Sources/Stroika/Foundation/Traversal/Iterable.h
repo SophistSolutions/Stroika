@@ -871,8 +871,10 @@ namespace Stroika::Foundation::Traversal {
          *      BASED ON Microsoft .net Linq.
          *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.first(v=vs.110).aspx
          */
-        nonvirtual optional<T> First () const;
-        nonvirtual optional<T> First (const function<bool (ArgByValueType<T>)>& that) const;
+        nonvirtual optional<T>                                                             First () const;
+        nonvirtual [[deprecated ("Since Stroika 2.1b12, use First<RESULTT>")]] optional<T> First (const function<bool (ArgByValueType<T>)>& that) const;
+        template <typename RESULT_T = T>
+        nonvirtual optional<RESULT_T> First (const function<optional<RESULT_T> (ArgByValueType<T>)>& that) const;
 
     public:
         /**
@@ -905,8 +907,10 @@ namespace Stroika::Foundation::Traversal {
          *      BASED ON Microsoft .net Linq. (Last)
          *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.last(v=vs.110).aspx
          */
-        nonvirtual optional<T> Last () const;
-        nonvirtual optional<T> Last (const function<bool (ArgByValueType<T>)>& that) const;
+        nonvirtual optional<T>                                                            Last () const;
+        nonvirtual [[deprecated ("Since Stroika 2.1b12, use Last<RESULTT>")]] optional<T> Last (const function<bool (ArgByValueType<T>)>& that) const;
+        template <typename RESULT_T = T>
+        nonvirtual optional<RESULT_T> Last (const function<optional<RESULT_T> (ArgByValueType<T>)>& that) const;
 
     public:
         /**

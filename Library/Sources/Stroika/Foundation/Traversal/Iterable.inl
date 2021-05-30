@@ -710,6 +710,18 @@ namespace Stroika::Foundation::Traversal {
         return nullopt;
     }
     template <typename T>
+    template <typename RESULT_T>
+    inline optional<RESULT_T> Iterable<T>::First (const function<optional<RESULT_T> (ArgByValueType<T>)>& that) const
+    {
+        RequireNotNull (that);
+        for (const auto i : *this) {
+            if (auto r = that (i)) {
+                return r;
+            }
+        }
+        return nullopt;
+    }
+    template <typename T>
     inline T Iterable<T>::FirstValue (ArgByValueType<T> defaultValue) const
     {
         if (auto i = begin ()) {
@@ -742,6 +754,17 @@ namespace Stroika::Foundation::Traversal {
             if (that (i)) {
                 result = i;
             }
+        }
+        return result;
+    }
+    template <typename T>
+    template <typename RESULT_T>
+    inline optional<RESULT_T> Iterable<T>::Last (const function<optional<RESULT_T> (ArgByValueType<T>)>& that) const
+    {
+        RequireNotNull (that);
+        optional<T> result;
+        for (const auto i : *this) {
+            result = that (i);
         }
         return result;
     }
