@@ -97,7 +97,7 @@ namespace {
     void AddDevice_ (Connection::Ptr conn, const Model::Device& d)
     {
         Statement addDeviceStatement{conn, kDeviceTableSchema_.GetSQLToInsert ()};
-        addDeviceStatement.Execute (kDeviceTableSchema_.MapToDB (Model::Device::kMapper.FromObject (d)));
+        addDeviceStatement.Execute (kDeviceTableSchema_.MapToDB (Model::Device::kMapper.FromObject (d).As<Mapping<String, VariantValue>> ()));
     }
 
     void AddDevices_OldWay_ (Connection::Ptr conn)
@@ -116,6 +116,7 @@ namespace {
         AddDevices_OldWay_ (conn);
 
         AddDevice_ (conn, Model::Device{GUID::GenerateNew (), Set<int>{33}, L"myLaptop"sv, Set<String>{L"ff:33:aa:da:ff:33"}});
+        AddDevice_ (conn, Model::Device{GUID::GenerateNew (), Set<int>{123, 145}, L"some machine"sv, Set<String>{L"33:aa:dd:ad:af:11"}});
     }
 }
 

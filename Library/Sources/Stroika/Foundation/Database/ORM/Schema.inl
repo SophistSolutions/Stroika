@@ -7,7 +7,19 @@
 #ifndef _Stroika_Foundation_Database_ORM_Schema_inl_
 #define _Stroika_Foundation_Database_ORM_Schema_inl_ 1
 
-namespace Stroika::Foundation::Database::SQLite {
+#include "../../Memory/Optional.h"
+
+namespace Stroika::Foundation::Database::ORM {
+
+    /*
+     ********************************************************************************
+     ***************************** Schema::Field::Field *****************************
+     ********************************************************************************
+     */
+    inline String Schema::Field::GetVariantValueFieldName () const
+    {
+        return Memory::NullCoalesce (fVariantValueFieldName, fName);
+    }
 
 }
 

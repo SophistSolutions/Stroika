@@ -45,17 +45,16 @@ Mapping<String, VariantValue> ORM::Schema::CatchAllField::kDefaultMapper_Combine
  ****************************** ORM::Schema::Table ******************************
  ********************************************************************************
  */
-Mapping<String, VariantValue> ORM::Schema::Table::MapToDB (const VariantValue& vv) const
+Mapping<String, VariantValue> ORM::Schema::Table::MapToDB (const Mapping<String, VariantValue>& fields) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{"ORM::Schema::Table::MapToDB", Stroika_Foundation_Debug_OptionalizeTraceArgs (L"vv=%s", Characters::ToString (vv).c_str ())};
+    TraceContextBumper ctx{"ORM::Schema::Table::MapToDB", Stroika_Foundation_Debug_OptionalizeTraceArgs (L"fields=%s", Characters::ToString (fields).c_str ())};
 #endif
-    Mapping<String, VariantValue> actualFields = vv.As<Mapping<String, VariantValue>> ();
     Mapping<String, VariantValue> resultFields;
     Set<String>                   usedFields; // must track outside of resultFields.Keys () cuz input key could differ from output
     for (const auto& fi : fNamedFields) {
-        String srcKey = Memory::NullCoalesce (fi.fVariantValueFieldName, fi.fName);
-        if (auto oFieldVal = actualFields.Lookup (srcKey)) {
+        String srcKey = fi.GetVariantValueFieldName ();
+        if (auto oFieldVal = fields.Lookup (srcKey)) {
             if (fi.fVariantType) {
                 resultFields.Add (fi.fName, oFieldVal->ConvertTo (*fi.fVariantType));
             }
@@ -70,11 +69,11 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapToDB (const VariantValue& v
         }
     }
     // now fold remaining fields into special 'extra' field (for structured non-indexed/non-searchable data)
-    Set<String> fields2Accumulate = Set<String>{actualFields.Keys ()} - usedFields;
+    Set<String> fields2Accumulate = Set<String>{fields.Keys ()} - usedFields;
     if (fSpecialCatchAll.has_value () and not fields2Accumulate.empty ()) {
         Mapping<String, VariantValue> extraFields;
         for (auto i : fields2Accumulate) {
-            extraFields.Add (i, *actualFields.Lookup (i));
+            extraFields.Add (i, *fields.Lookup (i));
         }
         // convert to JSON and store as string
         auto mapperFieldsToCombinedField = fSpecialCatchAll->fMapRawFieldsToCombinedField != nullptr ? fSpecialCatchAll->fMapRawFieldsToCombinedField : CatchAllField::kDefaultMapper_RawToCombined;
@@ -89,17 +88,17 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapToDB (const VariantValue& v
     return resultFields;
 }
 
-Mapping<String, VariantValue> ORM::Schema::Table::MapFromDB (const VariantValue& vv) const
+Mapping<String, VariantValue> ORM::Schema::Table::MapFromDB (const Mapping<String, VariantValue>& fields) const
 {
-    Mapping<String, VariantValue> actualFields = vv.As<Mapping<String, VariantValue>> ();
     Mapping<String, VariantValue> resultFields;
     for (const auto& fi : fNamedFields) {
-        if (auto oFieldVal = actualFields.Lookup (fi.fName)) {
+        if (auto oFieldVal = fields.Lookup (fi.fName)) {
+            String toName = fi.GetVariantValueFieldName ();
             if (fi.fVariantType) {
-                resultFields.Add (fi.fName, oFieldVal->ConvertTo (*fi.fVariantType));
+                resultFields.Add (toName, oFieldVal->ConvertTo (*fi.fVariantType));
             }
             else {
-                resultFields.Add (fi.fName, *oFieldVal);
+                resultFields.Add (toName, *oFieldVal);
             }
         }
         else if (fi.fRequired) {
@@ -108,8 +107,9 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapFromDB (const VariantValue&
     }
     // now fold remaining fields into special 'extra' field (for structured non-indexed/non-searchable data)
     if (fSpecialCatchAll.has_value ()) {
-        if (auto o = actualFields.Lookup (fSpecialCatchAll->fName)) {
+        if (auto o = fields.Lookup (fSpecialCatchAll->fName)) {
             auto mapperCombinedToRawFields = fSpecialCatchAll->fMapCombinedFieldToRawFields != nullptr ? fSpecialCatchAll->fMapCombinedFieldToRawFields : CatchAllField::kDefaultMapper_CombinedToRaw;
+            // no need to map names here because that is for DBRep to/from VariantValue rep name mapping and there is none for these fields
             resultFields.AddAll (mapperCombinedToRawFields (*o));
         }
     }
@@ -120,7 +120,7 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapFromDB (const VariantValue&
 }
 
 namespace {
-    String GetSQLiteFldName_ (const ORM::Schema::Field& f)
+    String GetSQLiteFldType_ (const ORM::Schema::Field& f)
     {
         if (f.fVariantType) {
             switch (*f.fVariantType) {
@@ -162,7 +162,7 @@ String ORM::Schema::Table::GetSQLToCreateTable () const
             sb += L", ";
         }
         sb += fi.fName + L" ";
-        sb += GetSQLiteFldName_ (fi) + L" ";
+        sb += GetSQLiteFldType_ (fi) + L" ";
         if (fi.fIsKeyField == true) {
             sb += L" PRIMARY KEY";
         }
@@ -226,5 +226,16 @@ String ORM::Schema::Table::GetSQLToInsert () const
         addFieldValueVariableName (*fSpecialCatchAll);
     }
     sb += L");";
+    return sb.str ();
+}
+
+String ORM::Schema::Table::GetSQLToDelete () const
+{
+    StringBuilder sb;
+    /*
+     *   Delete from DEVICES (ID) where ID=:ID;
+     */
+    Field indexField = Memory::ValueOf (fNamedFields.First<Field> ([] (const Field& fi) { if (fi.fIsKeyField) { return fi; } }));
+    sb += L"DELETE FROM " + fName + L" WHERE " + indexField.fName + L"=:" + indexField.fName + L";";
     return sb.str ();
 }

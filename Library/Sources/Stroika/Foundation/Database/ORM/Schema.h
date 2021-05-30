@@ -37,8 +37,13 @@ namespace Stroika::Foundation::Database::ORM {
              *  This is the database field name, and by default also the name of the field
              *  mapped to in the VariantValue
              */
-            String                       fName;
-            optional<String>             fVariantValueFieldName;
+            String fName;
+
+            /*
+             *  Only used in mapping to/from DB representation
+             */
+            optional<String> fVariantValueFieldName;
+
             bool                         fRequired{false};
             optional<VariantValue::Type> fVariantType;
             optional<String>             fTypeName;
@@ -46,12 +51,13 @@ namespace Stroika::Foundation::Database::ORM {
             optional<String>             fForeignKeyToTable;
             optional<String>             fDefaultExpression;
             optional<bool>               fNotNull;
+
+            nonvirtual String GetVariantValueFieldName () const;
         };
 
         /**
          */
         struct CatchAllField : Field {
-
             /**
              */
             CatchAllField ();
@@ -70,17 +76,24 @@ namespace Stroika::Foundation::Database::ORM {
         /**
          */
         struct Table {
-            String                  fName; // table name
+            /**
+             *   table name
+             */
+            String                  fName;
             Collection<Field>       fNamedFields;
             optional<CatchAllField> fSpecialCatchAll;
 
             /**
+             *  Note - this looks for fieldnames as provided by Field::GetVariantValueFieldName () and 
+             *  returns field-names as provided by Field::fName.
              */
-            nonvirtual Mapping<String, VariantValue> MapToDB (const VariantValue& vv) const;
+            nonvirtual Mapping<String, VariantValue> MapToDB (const Mapping<String, VariantValue>& fields) const;
 
             /**
+             *  Note - this looks for fieldnames as provided by Field::fName and 
+             *  returns field-names as provided by Field::GetVariantValueFieldName().
              */
-            nonvirtual Mapping<String, VariantValue> MapFromDB (const VariantValue& vv) const;
+            nonvirtual Mapping<String, VariantValue> MapFromDB (const Mapping<String, VariantValue>& fields) const;
 
             /**
              * A future version will take parameter to capture differences between
@@ -91,9 +104,14 @@ namespace Stroika::Foundation::Database::ORM {
             /**
              */
             nonvirtual String GetSQLToInsert () const;
+
+            /**
+             *  Return SQL to delete record by ID parameter.
+             */
+            nonvirtual String GetSQLToDelete () const;
         };
 
-/**
+        /**
         * &&& multiple table set
         * &&&& NOT SURE HOW TO HANDLE THIS - things like cross-tables etc...
          */
