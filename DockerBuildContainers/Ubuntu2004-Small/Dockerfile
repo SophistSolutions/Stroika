@@ -1,18 +1,12 @@
 FROM ubuntu:20.04
 
-# Sometimes apt-get complains about issues with TERM
-ARG DEBIAN_FRONTEND=noninteractive
-
 # Get latest packages system, so can do installs
 RUN apt-get update
 
-# Tried but cannot silence warning about apt-utils missing
-#RUN apt-get install -y --no-install-recommends apt-utils
-
-# This hack is needed to avoid failure in apt-get install -y pkg-config for Ubuntu 20.04 - pre-release
+# This hack is needed to avoid failure in apt-get install -y pkg-config for Ubuntu 20.04
 #https://serverfault.com/questions/949991/how-to-install-tzdata-on-a-ubuntu-docker-image
-RUN export DEBIAN_FRONTEND=noninteractive && apt-get install -y tzdata
-RUN ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime && dpkg-reconfigure --frontend noninteractive tzdata
+RUN apt-get install -y tzdata
+#RUN ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime && dpkg-reconfigure --frontend noninteractive tzdata
 
 # cuz you need this alot, like if something else missing; use NOPASSWD in sudoers file so this works, cuz hard
 # to get sudo/enter password working under docker; sb relatively safe cuz only for sudo group members from base os

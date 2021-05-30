@@ -2,7 +2,7 @@
 FROM ubuntu:21.04
 
 # Sometimes apt-get complains about issues with TERM
-ARG DEBIAN_FRONTEND=noninteractive
+#ARG DEBIAN_FRONTEND=noninteractive
 
 # Get latest packages system, so can do installs
 RUN apt-get update
