@@ -70,16 +70,16 @@ namespace Stroika::Foundation::Memory {
         template <typename T1, typename T2>
         struct OffsetOfRequiringDefaultConstructibleObjectType_ {
 #if qCompilerAndStdLib_default_constructor_initialization_issueWithExplicit_Buggy
-            static inline /*constexpr*/ T2 sObj_{T2{}};
+            static inline constexpr T2 sObj_{T2{}};
 #else
-            static inline /*constexpr*/ T2 sObj_{};
+            static inline constexpr T2 sObj_{};
 #endif
             static constexpr size_t offset (T1 T2::*member)
             {
                 /*
                  *  UNDEFINED BEHAVIOR: it is undefined, but for the following reason: expr.add-5.sentence-2
-                // "If the expressions P and Q point to, respectively, elements x[i] and x[j] of 
-                // the same array object x, the expression P - Q has the value i - j; otherwise, the behavior is undefined."]
+                 * "If the expressions P and Q point to, respectively, elements x[i] and x[j] of 
+                 * the same array object x, the expression P - Q has the value i - j; otherwise, the behavior is undefined."]
                  */
                 return size_t (&(OffsetOfRequiringDefaultConstructibleObjectType_<T1, T2>::sObj_.*member)) - size_t (&OffsetOfRequiringDefaultConstructibleObjectType_<T1, T2>::sObj_);
             }
