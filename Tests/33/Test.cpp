@@ -845,6 +845,17 @@ namespace {
 }
 
 namespace {
+    namespace Test13_ObjVarMapperAndGUID_ {
+        void DoIt ()
+        {
+            ObjectVariantMapper m;
+            Common::GUID g = Common::GUID::GenerateNew ();
+            VerifyTestResult (m.ToObject<Common::GUID> (m.FromObject (g)) == g);
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         DoRegressionTests_BasicDataRoundtrips_1_::DoAll ();
@@ -859,6 +870,7 @@ namespace {
         DoRegressionTests_FileTypeConverterOverride_10_ ();
         DoRegressionTests_CustomMapper_11_ ();
         DoRegressionTests_MakeCommonSerializer_EnumAsInt_12_ ();
+        Test13_ObjVarMapperAndGUID_::DoIt ();
     }
 }
 

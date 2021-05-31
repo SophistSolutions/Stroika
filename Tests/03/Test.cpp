@@ -3,11 +3,6 @@
  */
 //  TEST    Foundation::Common
 #include "Stroika/Foundation/StroikaPreComp.h"
-/*
- * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
- */
-//  TEST    Foundation::Traveral
-#include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/ToString.h"
@@ -15,6 +10,7 @@
 #include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/Common/TemplateUtilities.h"
 #include "Stroika/Foundation/Configuration/Endian.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Memory/ObjectFieldUtilities.h"
 
 #include "../TestHarness/TestHarness.h"
@@ -40,9 +36,9 @@ namespace {
             Common::GUID guidFromStr{L"61e4d49d-8c26-3480-f5c8-564e155c67a6"};
             Common::GUID guidFromArray{array<uint8_t, 16>{0x9d, 0xd4, 0xe4, 0x61, 0x26, 0x8c, 0x80, 0x34, 0xf5, 0xc8, 0x56, 0x4e, 0x15, 0x5c, 0x67, 0xa6}};
             if (Configuration ::GetEndianness () == Configuration::Endian::eX86) {
-                VerifyTestResult (memcmp (&guidFromStr, &guidFromArray, sizeof (Common::GUID)) == 0);
+                VerifyTestResult (::memcmp (&guidFromStr, &guidFromArray, sizeof (Common::GUID)) == 0);
             }
-            if (memcmp (&guidFromStr, &guidFromArray, sizeof (Common::GUID)) == 0) {
+            if (::memcmp (&guidFromStr, &guidFromArray, sizeof (Common::GUID)) == 0) {
                 VerifyTestResult (guidFromStr == guidFromArray); // fails due to qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy
             }
         }
@@ -57,9 +53,9 @@ namespace {
             public:
                 Headers ();
                 Headers (const Headers& src);
-                Headers (Headers&& src);
+                Headers (Headers&& src) noexcept;
                 nonvirtual Headers& operator= (const Headers& rhs) = default; // properties are assignable, so this is OK
-                nonvirtual Headers& operator                       = (Headers&& rhs);
+                nonvirtual Headers& operator                       = (Headers&& rhs) noexcept;
 
                 Property<unsigned int>           contentLength1; // both refer to the private fContentLength_ field
                 Property<unsigned int>           contentLength2;
@@ -118,7 +114,7 @@ namespace {
                 contentLength2 = src.contentLength2;
                 // COULD EITHER initialize fContentLength_ or pContentLength1/pContentLength2 - but no need to do both
             }
-            Headers::Headers (Headers&& src)
+            Headers::Headers (Headers&& src) noexcept
                 : Headers{} // do default initialization of properties
             {
                 // NOTE - cannot MOVE properties with src.Properties values since they are not copy constructible
@@ -127,7 +123,7 @@ namespace {
                 contentLength2 = src.contentLength2;
                 // COULD EITHER initialize fContentLength_ or pContentLength1/pContentLength2 - but no need to do both
             }
-            Headers& Headers::operator= (Headers&& rhs)
+            Headers& Headers::operator= (Headers&& rhs) noexcept
             {
                 // Could copy either properties or underlying field - no matter which
                 fContentLength_ = rhs.fContentLength_;
@@ -177,11 +173,33 @@ namespace {
 }
 
 namespace {
+    namespace Test3_CommonGUID_ {
+        void DoIt ()
+        {
+            using Common::GUID;
+            {
+                GUID g1 = GUID::GenerateNew ();
+                GUID g2 = GUID::GenerateNew ();
+                VerifyTestResultWarning (g1 != g2);
+                VerifyTestResultWarning (g1 < g2 or g2 < g1);
+            }
+            {
+                GUID g1 = GUID::GenerateNew ();
+                VerifyTestResult (GUID{g1.As<Characters::String> ()} == g1);
+                VerifyTestResult (GUID{g1.As<string> ()} == g1);
+                VerifyTestResult (GUID{g1.As<Memory::BLOB> ()} == g1);
+            }
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_"};
         Test_1_SpaceshipAutoGenForOpEqualsForCommonGUIDBug_ ();
         Test02_Properties_::Run ();
+        Test3_CommonGUID_::DoIt ();
     }
 }
 
