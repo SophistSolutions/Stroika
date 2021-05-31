@@ -350,10 +350,10 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Common::GUID> ()
 {
     using T                                  = Common::GUID;
     FromObjectMapperType<T> fromObjectMapper = [] (const ObjectVariantMapper&, const T* fromObjOfTypeT) -> VariantValue {
-        return fromObjOfTypeT->ToString ();
+        return fromObjOfTypeT->As<String> ();
     };
     ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
-        *intoObjOfTypeT = Common::GUID{d.As<String> ()};
+        *intoObjOfTypeT = (d.GetType () == VariantValue::eBLOB) ? Common::GUID{d.As<Memory::BLOB> ()} : Common::GUID{d.As<String> ()};
     };
     return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
 }
