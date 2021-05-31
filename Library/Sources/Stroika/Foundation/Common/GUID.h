@@ -40,6 +40,8 @@ namespace Stroika::Foundation::Common {
          *  no argument CTOR, creates an all-zero GUID.
          * 
          *  @todo maybe support more input formats, such as https://stackoverflow.com/questions/7775439/is-the-format-of-guid-always-the-same
+         *  @todo - should allow input format of raw bytes (though unclear of endian interpretation that would be best
+         *        in that case)
          */
         constexpr GUID () = default;
 #if qPlatform_Windows
