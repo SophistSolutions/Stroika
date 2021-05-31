@@ -6,6 +6,7 @@
 #include <cinttypes>
 #include <random>
 
+#include "../Characters/CString/Utilities.h"
 #include "../Characters/Format.h"
 #include "../DataExchange/CheckedConverter.h"
 #include "../DataExchange/DefaultSerializer.h"
@@ -35,17 +36,17 @@ Common::GUID::GUID (const string& src)
     DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
     int nchars = -1;
     int nfields =
-        sscanf (src.c_str (), "{" G32 "-" G16 "-" G16 "-" G8 G8 "-" G8 G8 G8 G8 G8 G8 "}%n",
-                &Data1, &Data2, &Data3,
-                &Data4[0], &Data4[1], &Data4[2], &Data4[3], &Data4[4], &Data4[5], &Data4[6], &Data4[7],
-                &nchars);
+        ::sscanf (src.c_str (), "{" G32 "-" G16 "-" G16 "-" G8 G8 "-" G8 G8 G8 G8 G8 G8 "}%n",
+                  &Data1, &Data2, &Data3,
+                  &Data4[0], &Data4[1], &Data4[2], &Data4[3], &Data4[4], &Data4[5], &Data4[6], &Data4[7],
+                  &nchars);
     if (nfields != 11 || nchars != 38) {
         nchars = -1;
         nfields =
-            sscanf (src.c_str (), G32 "-" G16 "-" G16 "-" G8 G8 "-" G8 G8 G8 G8 G8 G8 "%n",
-                    &Data1, &Data2, &Data3,
-                    &Data4[0], &Data4[1], &Data4[2], &Data4[3], &Data4[4], &Data4[5], &Data4[6], &Data4[7],
-                    &nchars);
+            ::sscanf (src.c_str (), G32 "-" G16 "-" G16 "-" G8 G8 "-" G8 G8 G8 G8 G8 G8 "%n",
+                      &Data1, &Data2, &Data3,
+                      &Data4[0], &Data4[1], &Data4[2], &Data4[3], &Data4[4], &Data4[5], &Data4[6], &Data4[7],
+                      &nchars);
     }
     DISABLE_COMPILER_MSC_WARNING_END (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
     if (nfields != 11 and nchars != 36) {
@@ -53,9 +54,33 @@ Common::GUID::GUID (const string& src)
     }
 }
 
+Common::GUID::GUID (const Memory::BLOB& src)
+{
+    if (src.size () != 16) {
+        Execution::Throw (DataExchange::BadFormatException{L"GUID from BLOB must be 16 bytes"sv});
+    }
+    ::memcpy (this, src.begin (), 16);
+}
+
 Common::GUID::GUID (const Characters::String& src)
     : GUID{src.AsASCII ()}
 {
+}
+
+template <>
+Characters::String Common::GUID::As () const
+{
+    return Characters::Format (L"%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
+                               Data1, Data2, Data3,
+                               Data4[0], Data4[1], Data4[2], Data4[3], Data4[4], Data4[5], Data4[6], Data4[7]);
+}
+
+template <>
+string Common::GUID::As () const
+{
+    return Characters::CString::Format ("%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
+                                        Data1, Data2, Data3,
+                                        Data4[0], Data4[1], Data4[2], Data4[3], Data4[4], Data4[5], Data4[6], Data4[7]);
 }
 
 Characters::String Common::GUID::ToString () const
@@ -63,6 +88,17 @@ Characters::String Common::GUID::ToString () const
     return Characters::Format (L"%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
                                Data1, Data2, Data3,
                                Data4[0], Data4[1], Data4[2], Data4[3], Data4[4], Data4[5], Data4[6], Data4[7]);
+}
+
+template <>
+Memory::BLOB Common::GUID::As () const
+{
+    return Memory::BLOB{begin (), end ()};
+}
+
+Common::GUID::operator Memory::BLOB () const
+{
+    return Memory::BLOB{begin (), end ()};
 }
 
 Common::GUID Common::GUID::GenerateNew ()

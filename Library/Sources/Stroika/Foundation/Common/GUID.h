@@ -20,6 +20,10 @@
 /**
  */
 
+namespace Stroika::Foundation::Memory {
+    class BLOB; // Forward declare to avoid mutual include issues
+}
+
 namespace Stroika::Foundation::Common {
 
     /**
@@ -31,13 +35,18 @@ namespace Stroika::Foundation::Common {
     struct GUID {
         /**
          *  \note - when converting from a string, GUID allows the leading/trailing {} to be optionally provided.
+         *        - format's supported {61e4d49d-8c26-3480-f5c8-564e155c67a6} 
+         *                           or 61e4d49d-8c26-3480-f5c8-564e155c67a6
          *  no argument CTOR, creates an all-zero GUID.
+         * 
+         *  @todo maybe support more input formats, such as https://stackoverflow.com/questions/7775439/is-the-format-of-guid-always-the-same
          */
         constexpr GUID () = default;
 #if qPlatform_Windows
         constexpr GUID (const ::GUID& src);
 #endif
         GUID (const string& src);
+        GUID (const Memory::BLOB& src);
         GUID (const array<uint8_t, 16>& src);
         GUID (const Characters::String& src);
 
@@ -63,6 +72,11 @@ namespace Stroika::Foundation::Common {
     public:
         /**
          */
+        nonvirtual explicit operator Memory::BLOB () const;
+
+    public:
+        /**
+         */
         [[deprecated ("Since v2.1b9 - just use default CTOR")]] static constexpr GUID Zero ();
 
     public:
@@ -77,6 +91,16 @@ namespace Stroika::Foundation::Common {
          */
         nonvirtual strong_ordering operator<=> (const GUID&) const = default;
 #endif
+
+    public:
+        /**
+         *  For now, only supported formats are
+         *      o   String          -- format: {61e4d49d-8c26-3480-f5c8-564e155c67a6}
+         *      o   string          -- ''
+         *      o   BLOB
+         */
+        template <typename T>
+        nonvirtual T As () const;
 
     public:
         /**
@@ -98,10 +122,13 @@ namespace Stroika::Foundation::Common {
     bool operator> (const GUID& lhs, const GUID& rhs);
 #endif
 
-}
+    template <>
+    Characters::String GUID::As () const;
+    template <>
+    string GUID::As () const;
+    template <>
+    Memory::BLOB GUID::As () const;
 
-namespace Stroika::Foundation::Memory {
-    class BLOB; // Forward declare to avoid mutual include issues
 }
 
 namespace Stroika::Foundation::DataExchange {
