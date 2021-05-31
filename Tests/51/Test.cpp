@@ -833,9 +833,9 @@ namespace {
             // From Iterable::First/Iterable::Last docs
             Iterable<int> c{3, 5, 9, 38, 3, 5};
             VerifyTestResult (*c.First () == 3);
-            VerifyTestResult (*c.First ([] (int i) { return i % 2 == 0; }) == 38);
+            VerifyTestResult (*c.First<int> ([] (int i) { return (i % 2 == 0) ? i : optional<int>{}; }) == 38);
             VerifyTestResult (*c.Last () == 5);
-            VerifyTestResult (*c.Last ([] (int i) { return i % 2 == 0; }) == 38);
+            VerifyTestResult (*c.Last<int> ([] (int i) { return i % 2 == 0 ? i : optional<int>{}; }) == 38);
         }
         {
             // From Iterable::All docs
