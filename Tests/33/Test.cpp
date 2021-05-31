@@ -849,7 +849,7 @@ namespace {
         void DoIt ()
         {
             ObjectVariantMapper m;
-            Common::GUID g = Common::GUID::GenerateNew ();
+            Common::GUID        g = Common::GUID::GenerateNew ();
             VerifyTestResult (m.ToObject<Common::GUID> (m.FromObject (g)) == g);
         }
     }
