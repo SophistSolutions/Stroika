@@ -27,15 +27,59 @@ using namespace Stroika::Foundation::DataExchange;
 ORM::Schema::CatchAllField::CatchAllField ()
 {
     fName        = L"_other_fields_"sv;
-    fVariantType = VariantValue::Type::eString; // sb BLOB probably
+    fVariantType = VariantValue::Type::eBLOB; // can be BLOB or String, but BLOB more compact/efficient
 }
 
-VariantValue ORM::Schema::CatchAllField::kDefaultMapper_RawToCombined (const Mapping<String, VariantValue>& fields2Map)
+function<VariantValue (const Mapping<String, VariantValue>& fields2Map)> ORM::Schema::CatchAllField::GetEffectiveRawToCombined () const
+{
+    if (fMapRawFieldsToCombinedField != nullptr) {
+        return fMapRawFieldsToCombinedField;
+    }
+    Require (fVariantType);
+    switch (*fVariantType) {
+        case VariantValue::eBLOB:
+            return kDefaultMapper_RawToCombined_BLOB;
+        case VariantValue::eString:
+            return kDefaultMapper_RawToCombined_String;
+        default:
+            RequireNotReached ();
+            return nullptr;
+    }
+}
+
+function<Mapping<String, VariantValue> (const VariantValue& map2Fields)> ORM::Schema::CatchAllField::GetEffectiveCombinedToRaw () const
+{
+    if (fMapCombinedFieldToRawFields != nullptr) {
+        return fMapCombinedFieldToRawFields;
+    }
+    Require (fVariantType);
+    switch (*fVariantType) {
+        case VariantValue::eBLOB:
+            return kDefaultMapper_CombinedToRaw_BLOB;
+        case VariantValue::eString:
+            return kDefaultMapper_CombinedToRaw_String;
+        default:
+            RequireNotReached ();
+            return nullptr;
+    }
+}
+
+VariantValue ORM::Schema::CatchAllField::kDefaultMapper_RawToCombined_BLOB (const Mapping<String, VariantValue>& fields2Map)
+{
+    return DataExchange::Variant::JSON::Writer{}.WriteAsBLOB (VariantValue{fields2Map});
+}
+
+VariantValue ORM::Schema::CatchAllField::kDefaultMapper_RawToCombined_String (const Mapping<String, VariantValue>& fields2Map)
 {
     return DataExchange::Variant::JSON::Writer{}.WriteAsString (VariantValue{fields2Map});
 }
 
-Mapping<String, VariantValue> ORM::Schema::CatchAllField::kDefaultMapper_CombinedToRaw (const VariantValue& fields2Map)
+Mapping<String, VariantValue> ORM::Schema::CatchAllField::kDefaultMapper_CombinedToRaw_BLOB (const VariantValue& fields2Map)
+{
+    return DataExchange::Variant::JSON::Reader{}.Read (fields2Map.As<Memory::BLOB> ()).As<Mapping<String, VariantValue>> ();
+}
+
+Mapping<String, VariantValue> ORM::Schema::CatchAllField::kDefaultMapper_CombinedToRaw_String (const VariantValue& fields2Map)
 {
     return DataExchange::Variant::JSON::Reader{}.Read (fields2Map.As<String> ()).As<Mapping<String, VariantValue>> ();
 }
@@ -75,9 +119,8 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapToDB (const Mapping<String,
         for (auto i : fields2Accumulate) {
             extraFields.Add (i, *fields.Lookup (i));
         }
-        // convert to JSON and store as string
-        auto mapperFieldsToCombinedField = fSpecialCatchAll->fMapRawFieldsToCombinedField != nullptr ? fSpecialCatchAll->fMapRawFieldsToCombinedField : CatchAllField::kDefaultMapper_RawToCombined;
-        resultFields.Add (fSpecialCatchAll->fName, mapperFieldsToCombinedField (extraFields));
+        // Combine fields into a new variant value (typically json string)
+        resultFields.Add (fSpecialCatchAll->fName, fSpecialCatchAll->GetEffectiveRawToCombined () (extraFields));
     }
     else {
         Require (fields2Accumulate.empty () or fSpecialCatchAll.has_value ());
@@ -90,6 +133,9 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapToDB (const Mapping<String,
 
 Mapping<String, VariantValue> ORM::Schema::Table::MapFromDB (const Mapping<String, VariantValue>& fields) const
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    TraceContextBumper ctx{"ORM::Schema::Table::MapFromDB", Stroika_Foundation_Debug_OptionalizeTraceArgs (L"fields=%s", Characters::ToString (fields).c_str ())};
+#endif
     Mapping<String, VariantValue> resultFields;
     for (const auto& fi : fNamedFields) {
         if (auto oFieldVal = fields.Lookup (fi.fName)) {
@@ -108,9 +154,8 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapFromDB (const Mapping<Strin
     // now fold remaining fields into special 'extra' field (for structured non-indexed/non-searchable data)
     if (fSpecialCatchAll.has_value ()) {
         if (auto o = fields.Lookup (fSpecialCatchAll->fName)) {
-            auto mapperCombinedToRawFields = fSpecialCatchAll->fMapCombinedFieldToRawFields != nullptr ? fSpecialCatchAll->fMapCombinedFieldToRawFields : CatchAllField::kDefaultMapper_CombinedToRaw;
             // no need to map names here because that is for DBRep to/from VariantValue rep name mapping and there is none for these fields
-            resultFields.AddAll (mapperCombinedToRawFields (*o));
+            resultFields.AddAll (fSpecialCatchAll->GetEffectiveCombinedToRaw () (*o));
         }
     }
     else {

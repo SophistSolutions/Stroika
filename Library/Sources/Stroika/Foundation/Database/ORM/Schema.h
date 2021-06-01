@@ -69,8 +69,13 @@ namespace Stroika::Foundation::Database::ORM {
             function<VariantValue (const Mapping<String, VariantValue>& fields2Map)> fMapRawFieldsToCombinedField;
             function<Mapping<String, VariantValue> (const VariantValue& map2Fields)> fMapCombinedFieldToRawFields;
 
-            static VariantValue                  kDefaultMapper_RawToCombined (const Mapping<String, VariantValue>& fields2Map);
-            static Mapping<String, VariantValue> kDefaultMapper_CombinedToRaw (const VariantValue& fields2Map);
+            function<VariantValue (const Mapping<String, VariantValue>& fields2Map)> GetEffectiveRawToCombined () const;
+            function<Mapping<String, VariantValue> (const VariantValue& map2Fields)> GetEffectiveCombinedToRaw () const;
+
+            static VariantValue                  kDefaultMapper_RawToCombined_BLOB (const Mapping<String, VariantValue>& fields2Map);
+            static VariantValue                  kDefaultMapper_RawToCombined_String (const Mapping<String, VariantValue>& fields2Map);
+            static Mapping<String, VariantValue> kDefaultMapper_CombinedToRaw_BLOB (const VariantValue& fields2Map);
+            static Mapping<String, VariantValue> kDefaultMapper_CombinedToRaw_String (const VariantValue& fields2Map);
         };
 
         /**
