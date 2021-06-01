@@ -96,19 +96,35 @@ namespace Stroika::Foundation::Database::ORM {
             nonvirtual Mapping<String, VariantValue> MapFromDB (const Mapping<String, VariantValue>& fields) const;
 
             /**
-             * A future version will take parameter to capture differences between
-             *  differnet SQL implemtnations so can generate differnt types etc.
+             *  For now only support a single-field ID, and make it optional.
              */
-            nonvirtual String GetSQLToCreateTable () const;
+            nonvirtual optional<Field> GetIDField () const;
+        };
+
+        /**
+         */
+        struct StandardSQLStatements {
+            Table fTable;
+
+            /**
+             * A future version will take parameter to capture differences between
+             *  differnet SQL implementations so can generate differnt types etc.
+             */
+            nonvirtual String CreateTable () const;
 
             /**
              */
-            nonvirtual String GetSQLToInsert () const;
+            nonvirtual String Insert () const;
 
             /**
              *  Return SQL to delete record by ID parameter.
              */
-            nonvirtual String GetSQLToDelete () const;
+            nonvirtual String DeleteByID () const;
+
+            /**
+             *  @todo add overload taking restrict to list of args projection and maybe arg for filterby
+             */
+            nonvirtual String GetAllElements () const;
         };
 
         /**

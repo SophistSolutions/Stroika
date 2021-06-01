@@ -34,6 +34,8 @@ using Common::GUID;
 #if qHasFeature_sqlite
 using namespace Database::SQLite;
 
+using ORM::Schema::StandardSQLStatements;
+
 namespace {
     /// TWO ways to handle sets:
     ///         (1) store as BLOB
@@ -47,14 +49,30 @@ namespace {
             Set<String> hardwareAddresses;
 
             static const ObjectVariantMapper kMapper;
+
+#if __cpp_impl_three_way_comparison >= 201907
+            nonvirtual bool operator== (const Device& rhs) const = default;
+#else
+            nonvirtual bool operator== (const Device& rhs) const
+            {
+                return id == rhs.id and openPorts == rhs.openPorts and name == rhs.name and hardwareAddresses == rhs.hardwareAddresses;
+            }
+#endif
         };
     }
 
+    /**
+     *  This defines the mapping from C++ to how we would display the object in our 'model' - like via a webservice
+     *  or stored in external files, or for debugging.
+     */
     const ObjectVariantMapper Model::Device::kMapper = [] () {
         ObjectVariantMapper mapper;
 
         mapper.AddCommonType<Set<int>> ();
         mapper.AddCommonType<Set<String>> ();
+
+        // ONLY DO THIS FOR WHEN WRITING TO DB -- store GUIDs as BLOBs - at least for database interactions (cuz more efficient)
+        mapper.AddCommonType<Common::GUID> (VariantValue::eBLOB);
 
         mapper.AddClass<Device> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
             {L"id", StructFieldMetaInfo{&Device::id}},
@@ -66,6 +84,9 @@ namespace {
         return mapper;
     }();
 
+    /**
+     *  This defines the mapping from our external data model (Device::kMapper) to the SQL data model.
+     */
     const ORM::Schema::Table kDeviceTableSchema_{
         L"Devices",
         /*
@@ -89,34 +110,9 @@ namespace {
     Connection::Ptr SetupDB_ (const Options& options)
     {
         auto initializeDB = [] (const Connection::Ptr& c) {
-            c.Exec (kDeviceTableSchema_.GetSQLToCreateTable ());
+            c.Exec (StandardSQLStatements{kDeviceTableSchema_}.CreateTable ());
         };
         return Connection::New (options, initializeDB);
-    }
-
-    void AddDevice_ (Connection::Ptr conn, const Model::Device& d)
-    {
-        Statement addDeviceStatement{conn, kDeviceTableSchema_.GetSQLToInsert ()};
-        addDeviceStatement.Execute (kDeviceTableSchema_.MapToDB (Model::Device::kMapper.FromObject (d).As<Mapping<String, VariantValue>> ()));
-    }
-
-    void AddDevices_OldWay_ (Connection::Ptr conn)
-    {
-        Statement addDeviceStatement{conn, L"INSERT INTO DEVICES (name) values (:NAME);"};
-        addDeviceStatement.Execute (initializer_list<Statement::ParameterDescription>{
-            {L":NAME", L"PLATO"},
-        });
-        addDeviceStatement.Execute (initializer_list<Statement::ParameterDescription>{
-            {L":NAME", L"ROUTER"},
-        });
-    }
-
-    void AddDevices_ (Connection::Ptr conn)
-    {
-        AddDevices_OldWay_ (conn);
-
-        AddDevice_ (conn, Model::Device{GUID::GenerateNew (), Set<int>{33}, L"myLaptop"sv, Set<String>{L"ff:33:aa:da:ff:33"}});
-        AddDevice_ (conn, Model::Device{GUID::GenerateNew (), Set<int>{123, 145}, L"some machine"sv, Set<String>{L"33:aa:dd:ad:af:11"}});
     }
 }
 
@@ -125,6 +121,52 @@ void Stroika::Samples::SQLite::ComputerNetworksModel (const Options& options)
     /*
      */
     Connection::Ptr conn = SetupDB_ (options);
-    AddDevices_ (conn);
+
+    using Model::Device;
+    auto addDevice = [&] (const Device& d) {
+        Statement addDeviceStatement{conn, StandardSQLStatements{kDeviceTableSchema_}.Insert ()};
+        addDeviceStatement.Execute (kDeviceTableSchema_.MapToDB (Device::kMapper.FromObject (d).As<Mapping<String, VariantValue>> ()));
+    };
+    auto getAllDevices = [&] () -> Sequence<Device> {
+        Statement getAllDevicesStatement{conn, StandardSQLStatements{kDeviceTableSchema_}.GetAllElements ()};
+        return getAllDevicesStatement.GetAllRows ().Select<Device> ([] (const Statement::Row& r) {
+                                                       return Device::kMapper.ToObject<Device> (kDeviceTableSchema_.MapFromDB (r));
+                                                   })
+            .As<Sequence<Device>> ();
+    };
+    auto removeDevice = [&] (const GUID& id) {
+        Statement deleteDeviceStatement{conn, StandardSQLStatements{kDeviceTableSchema_}.DeleteByID ()};
+        deleteDeviceStatement.Execute (initializer_list<Common::KeyValuePair<String, VariantValue>>{{kDeviceTableSchema_.GetIDField ()->fName, VariantValue{static_cast<Memory::BLOB> (id)}}});
+    };
+
+    const Device kDevice1_ = Device{GUID::GenerateNew (), Set<int>{33}, L"myLaptop"sv, Set<String>{L"ff:33:aa:da:ff:33"}};
+    const Device kDevice2_ = Device{GUID::GenerateNew (), Set<int>{123, 145}, L"some machine"sv, Set<String>{L"33:aa:dd:ad:af:11"}};
+    if (not getAllDevices ().empty ()) {
+        Execution::Throw (Execution::RuntimeErrorException{L"database should start empty"});
+    }
+    addDevice (kDevice1_);
+    addDevice (kDevice2_);
+    {
+        auto devices = getAllDevices ();
+        if (devices.size () != 2) {
+            Execution::Throw (Execution::RuntimeErrorException{L"we should have the ones we just added"});
+        }
+        if (not devices.Contains (kDevice1_)) {
+            Execution::Throw (Execution::RuntimeErrorException{L"we should have the ones we just added{1}"});
+        }
+        if (not devices.Contains (kDevice2_)) {
+            Execution::Throw (Execution::RuntimeErrorException{L"we should have the ones we just added{2}"});
+        }
+    }
+    removeDevice (kDevice2_.id);
+    {
+        auto devices = getAllDevices ();
+        if (devices.size () != 1) {
+            Execution::Throw (Execution::RuntimeErrorException{L"we should have the ones we just added"});
+        }
+        if (not devices.Contains (kDevice1_)) {
+            Execution::Throw (Execution::RuntimeErrorException{L"we should have kDevice1_"});
+        }
+    }
 }
 #endif

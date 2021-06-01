@@ -119,6 +119,21 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapFromDB (const Mapping<Strin
     return resultFields;
 }
 
+auto ORM::Schema::Table::GetIDField () const -> optional<Field>
+{
+    return fNamedFields.First<Field> ([] (const Field& fi) -> optional<Field> {
+        if (fi.fIsKeyField) {
+            return fi;
+        }
+        return nullopt;
+    });
+}
+
+/*
+ ********************************************************************************
+ ************************* ORM::Schema::StandardSQLStatements *******************
+ ********************************************************************************
+ */
 namespace {
     String GetSQLiteFldType_ (const ORM::Schema::Field& f)
     {
@@ -142,7 +157,7 @@ namespace {
     }
 }
 
-String ORM::Schema::Table::GetSQLToCreateTable () const
+String ORM::Schema::StandardSQLStatements::CreateTable () const
 {
     StringBuilder sb;
 
@@ -152,7 +167,7 @@ String ORM::Schema::Table::GetSQLToCreateTable () const
      *      NAME           TEXT    NOT NULL
      *     );
      */
-    sb += L"CREATE TABLE " + fName + L" (";
+    sb += L"CREATE TABLE " + fTable.fName + L" (";
     bool firstField = true;
     auto addField   = [&] (const Field& fi) {
         if (firstField) {
@@ -173,25 +188,25 @@ String ORM::Schema::Table::GetSQLToCreateTable () const
             sb += L" NOT NULL";
         }
     };
-    for (const Field& i : fNamedFields) {
+    for (const Field& i : fTable.fNamedFields) {
         addField (i);
     }
-    if (fSpecialCatchAll) {
-        addField (*fSpecialCatchAll);
+    if (fTable.fSpecialCatchAll) {
+        addField (*fTable.fSpecialCatchAll);
     }
     sb += L");";
 
     return sb.str ();
 }
 
-String ORM::Schema::Table::GetSQLToInsert () const
+String ORM::Schema::StandardSQLStatements::Insert () const
 {
     StringBuilder sb;
 
     /*
      *   INSERT INTO DEVICES (name) values (:NAME);
      */
-    sb += L"INSERT INTO " + fName + L" (";
+    sb += L"INSERT INTO " + fTable.fName + L" (";
     bool firstField   = true;
     auto addFieldName = [&] (const Field& fi) {
         if (firstField) {
@@ -202,11 +217,11 @@ String ORM::Schema::Table::GetSQLToInsert () const
         }
         sb += fi.fName;
     };
-    for (const Field& i : fNamedFields) {
+    for (const Field& i : fTable.fNamedFields) {
         addFieldName (i);
     }
-    if (fSpecialCatchAll) {
-        addFieldName (*fSpecialCatchAll);
+    if (fTable.fSpecialCatchAll) {
+        addFieldName (*fTable.fSpecialCatchAll);
     }
     sb += L") VALUES (";
     firstField                     = true;
@@ -219,23 +234,33 @@ String ORM::Schema::Table::GetSQLToInsert () const
         }
         sb += L":" + fi.fName;
     };
-    for (const Field& i : fNamedFields) {
+    for (const Field& i : fTable.fNamedFields) {
         addFieldValueVariableName (i);
     }
-    if (fSpecialCatchAll) {
-        addFieldValueVariableName (*fSpecialCatchAll);
+    if (fTable.fSpecialCatchAll) {
+        addFieldValueVariableName (*fTable.fSpecialCatchAll);
     }
     sb += L");";
     return sb.str ();
 }
 
-String ORM::Schema::Table::GetSQLToDelete () const
+String ORM::Schema::StandardSQLStatements::DeleteByID () const
 {
     StringBuilder sb;
     /*
      *   Delete from DEVICES (ID) where ID=:ID;
      */
-    Field indexField = Memory::ValueOf (fNamedFields.First<Field> ([] (const Field& fi) { if (fi.fIsKeyField) { return fi; } }));
-    sb += L"DELETE FROM " + fName + L" WHERE " + indexField.fName + L"=:" + indexField.fName + L";";
+    Field indexField = Memory::ValueOf (fTable.GetIDField ());
+    sb += L"DELETE FROM " + fTable.fName + L" WHERE " + indexField.fName + L"=:" + indexField.fName + L";";
+    return sb.str ();
+}
+
+String ORM::Schema::StandardSQLStatements::GetAllElements () const
+{
+    StringBuilder sb;
+    /*
+      *   Select * from DEVICES;
+      */
+    sb += L"SELECT * FROM " + fTable.fName + L";";
     return sb.str ();
 }
