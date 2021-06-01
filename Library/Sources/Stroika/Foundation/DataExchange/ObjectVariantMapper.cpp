@@ -347,7 +347,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network
 
 TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Common::GUID*, VariantValue::Type representAs)
 {
-    using T                                  = Common::GUID;
+    using T = Common::GUID;
     Require (representAs == VariantValue::eBLOB or representAs == VariantValue::eString);
     switch (representAs) {
         case VariantValue::eBLOB: {
