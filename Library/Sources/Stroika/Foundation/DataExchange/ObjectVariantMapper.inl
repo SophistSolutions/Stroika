@@ -196,12 +196,12 @@ namespace Stroika::Foundation::DataExchange {
     {
         Add (rhs);
     }
-    template <typename T>
-    inline void ObjectVariantMapper::AddCommonType ()
+    template <typename T, typename... ARGS>
+    inline void ObjectVariantMapper::AddCommonType (ARGS&&... args)
     {
         const T* n = nullptr; // arg unused, just for overloading
         AssertDependentTypesAlreadyInRegistry_ (n);
-        const auto&& serializer = MakeCommonSerializer<T> ();
+        const auto&& serializer = MakeCommonSerializer<T> (forward<ARGS>(args)...);
         Assert (serializer.fForType == typeid (T));
         Add (serializer);
     }
@@ -454,7 +454,7 @@ namespace Stroika::Foundation::DataExchange {
     inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer (ARGS&&... args)
     {
         const T*           n = nullptr; // arg unused, just for overloading
-        TypeMappingDetails tmp{MakeCommonSerializer_ (n, forward<ARGS> (args)...)};
+        TypeMappingDetails tmp{MakeCommonSerializer_ (n, forward<ARGS>(args)...)};
         // NB: beacuse of how we match on MakeCommonSerializer_, the type it sees maybe a base class of T, and we want to actually register the type the user specified.
         return TypeMappingDetails{typeid (T), tmp.fFromObjecttMapper, tmp.fToObjectMapper};
     }

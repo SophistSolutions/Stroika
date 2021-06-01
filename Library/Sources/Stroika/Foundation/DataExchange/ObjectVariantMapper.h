@@ -392,8 +392,8 @@ namespace Stroika::Foundation::DataExchange {
          *      \endcode
          *
          */
-        template <typename T>
-        nonvirtual void AddCommonType ();
+        template <typename T, typename... ARGS>
+        nonvirtual void AddCommonType (ARGS&&... args);
 
     public:
         /**
@@ -732,6 +732,7 @@ namespace Stroika::Foundation::DataExchange {
         static TypeMappingDetails MakeCommonSerializer_ (const IO::Network::CIDR*);
         static TypeMappingDetails MakeCommonSerializer_ (const IO::Network::InternetAddress*);
         static TypeMappingDetails MakeCommonSerializer_ (const IO::Network::URI*);
+        static TypeMappingDetails MakeCommonSerializer_ (const Common::GUID*, VariantValue::Type representAs = VariantValue::Type::eString);
         template <typename T>
         static TypeMappingDetails MakeCommonSerializer_ (const vector<T>*);
         template <typename T1, typename T2>

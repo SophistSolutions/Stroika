@@ -345,17 +345,32 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const IO::Network
     return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
 }
 
-template <>
-TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Common::GUID> ()
+TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Common::GUID*, VariantValue::Type representAs)
 {
     using T                                  = Common::GUID;
-    FromObjectMapperType<T> fromObjectMapper = [] (const ObjectVariantMapper&, const T* fromObjOfTypeT) -> VariantValue {
-        return fromObjOfTypeT->As<String> ();
-    };
-    ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
-        *intoObjOfTypeT = (d.GetType () == VariantValue::eBLOB) ? Common::GUID{d.As<Memory::BLOB> ()} : Common::GUID{d.As<String> ()};
-    };
-    return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
+    Require (representAs == VariantValue::eBLOB or representAs == VariantValue::eString);
+    switch (representAs) {
+        case VariantValue::eBLOB: {
+            FromObjectMapperType<T> fromObjectMapper = [] (const ObjectVariantMapper&, const T* fromObjOfTypeT) -> VariantValue {
+                return fromObjOfTypeT->As<Memory::BLOB> ();
+            };
+            ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
+                *intoObjOfTypeT = Common::GUID{d.As<Memory::BLOB> ()};
+            };
+            return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
+        }
+        case VariantValue::eString: {
+            FromObjectMapperType<T> fromObjectMapper = [] (const ObjectVariantMapper&, const T* fromObjOfTypeT) -> VariantValue {
+                return fromObjOfTypeT->As<String> ();
+            };
+            ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
+                *intoObjOfTypeT = Common::GUID{d.As<String> ()};
+            };
+            return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
+        }
+        default:
+            RequireNotReached ();
+    }
 }
 
 namespace {
