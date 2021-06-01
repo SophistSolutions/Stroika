@@ -764,7 +764,9 @@ namespace Stroika::Foundation::Traversal {
         RequireNotNull (that);
         optional<T> result;
         for (const auto i : *this) {
-            result = that (i);
+            if (auto o = that (i)) {
+                result = *o;
+            }
         }
         return result;
     }
