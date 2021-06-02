@@ -16,13 +16,6 @@
 namespace Stroika::Foundation::Characters::Concrete {
     namespace Private {
 
-// Experimental block allocation scheme for strings. We COULD enahce this to have 2 block sizes - say 16 and 32 characters?
-// But experiment with this a bit first, and see how it goes...
-//      -- LGP 2011-12-04
-#ifndef qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
-#define qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings qAllowBlockAllocation
-#endif
-
 #if qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
         template <size_t SZ>
         struct BufferedStringRepBlock_ {
@@ -125,7 +118,7 @@ namespace Stroika::Foundation::Characters::Concrete {
             }
         }
         inline BufferedStringRep::_Rep::_Rep (const wchar_t* start, const wchar_t* end, size_t reserveExtraCharacters)
-            : inherited (nullptr, nullptr)
+            : inherited{nullptr, nullptr}
         {
             size_t   len      = end - start;
             size_t   capacity = AdjustCapacity_ (len + 1 + reserveExtraCharacters);
