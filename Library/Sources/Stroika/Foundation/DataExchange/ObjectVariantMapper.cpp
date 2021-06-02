@@ -370,6 +370,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Common::GUI
         }
         default:
             RequireNotReached ();
+            return TypeMappingDetails{typeid (T), nullptr, nullptr};
     }
 }
 
