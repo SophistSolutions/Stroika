@@ -295,8 +295,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project-Template", "Project
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test51", "..\..\Tests\Projects\VisualStudio.Net-2019\51\Test51.vcxproj", "{35AA9E83-4057-49EB-B522-18FC2FBF29BF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B} = {5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test52", "..\..\Tests\Projects\VisualStudio.Net-2019\52\Test52.vcxproj", "{9AC2A6A5-FC3D-4848-A7CA-67B066BF92E9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B} = {5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
