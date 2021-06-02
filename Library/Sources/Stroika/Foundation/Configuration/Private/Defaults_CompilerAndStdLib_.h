@@ -167,6 +167,9 @@
 // _MSC_VER=1928 (SADLY - due to https://developercommunity2.visualstudio.com/t/The-169-cc-compiler-still-uses-the-s/1335194)
 #define _MSC_VER_2k19_16Pt9_ 1928
 
+// _MSC_VER=1929 (back to incrementing for new 'second dot' versions it appears)...
+#define _MSC_VER_2k19_16Pt10_ 1929
+
 #if _MSC_VER < 1910
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2017 (use Stroika v2.0 or earlier)"
 #elif _MSC_VER <= _MSC_VER_2k17_15Pt7_
@@ -180,10 +183,10 @@
 #elif _MSC_VER <= _MSC_VER_2k19_16Pt4_
 // We COULD look at _MSC_FULL_VER and compare to _MS_VS_2k19_16Pt3Pt5_ etc, but changes too often and too rarely makes a difference
 // Just assume all bug defines the same for a given _MSC_VER
-#elif _MSC_VER <= _MSC_VER_2k19_16Pt8_
+#elif _MSC_VER <= _MSC_VER_2k19_16Pt10_
 // We COULD look at _MSC_FULL_VER but changes too often and too rarely makes a difference: just assume all bug defines the same for a given _MSC_VER
 #else
-#define _STROIKA_CONFIGURATION_WARNING_ "Warning: This version (> 16.8) of Stroika is untested with this release of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
+#define _STROIKA_CONFIGURATION_WARNING_ "Warning: This version (> 16.10) of Stroika is untested with this release of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 
@@ -315,18 +318,24 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 #ifndef qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy
 
 #if defined(_MSC_VER)
-#define qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER == _MSC_VER_2k19_16Pt8_)
+// verified broken in _MSC_VER_2k19_16Pt10_
+#define qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER == _MSC_VER_2k19_16Pt10_)
 #else
 #define qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy 0
 #endif
 
 #endif
 
+/*
+1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\Base64.cpp(60): error C2440: 'initializing': cannot convert from 'int' to 'std::byte'
+1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\Base64.cpp(60): note: Conversion to enumeration type requires an explicit cast (static_cast, C-style cast or function-style cast)
+*/
 // see https://en.cppreference.com/w/cpp/types/byte "due to C++17 relaxed enum class initialization rules."
 #ifndef qCompilerAndStdLib_relaxedEnumClassInitializationRules_Buggy
 
 #if defined(_MSC_VER)
-#define qCompilerAndStdLib_relaxedEnumClassInitializationRules_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt9_)
+// verified still broken in _MSC_VER_2k19_16Pt10_
+#define qCompilerAndStdLib_relaxedEnumClassInitializationRules_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt10_)
 #else
 #define qCompilerAndStdLib_relaxedEnumClassInitializationRules_Buggy 0
 #endif
@@ -368,7 +377,8 @@ C :\Sandbox\Stroika\DevRoot\Tests\48\Test.cpp : 750
 // first/only found broken in _MSC_VER_2k19_16Pt6_ - and only in RELEASE and 32-bit builds
 // still broken in _MSC_VER_2k19_16Pt7_
 // still broken in _MSC_VER_2k19_16Pt8_
-#define qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k19_16Pt6_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k19_16Pt8_) && !qDebug && defined (_M_IX86))
+// still broken in in _MSC_VER_2k19_16Pt10_
+#define qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k19_16Pt6_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k19_16Pt10_) && !qDebug && defined (_M_IX86))
 #else
 #define qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy 0
 #endif
@@ -523,7 +533,8 @@ ABORTING...
 // VERIFIED STILL BROKEN in _MSC_VER_2k19_16Pt6_
 // VERIFIED STILL BROKEN in _MSC_VER_2k19_16Pt7_
 // VERIFIED STILL BROKEN in _MSC_VER_2k19_16Pt8_
-#define qCompilerAndStdLib_std_get_time_pctx_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt8_)
+// VERIFIED STILL BROKEN in _MSC_VER_2k19_16Pt10_
+#define qCompilerAndStdLib_std_get_time_pctx_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt10_)
 #else
 #define qCompilerAndStdLib_std_get_time_pctx_Buggy 0
 #endif
@@ -579,6 +590,7 @@ INTERNAL COMPILER ERROR in 'C:\Program Files (x86)\Microsoft Visual Studio\2019\
 #ifndef qCompilerAndStdLib_static_initializer_lambda_funct_init_Buggy
 #if defined(_MSC_VER)
 // First broken in _MSC_VER_2k19_16Pt8_
+// APPEARS FIXED IN _MSC_VER_2k19_16Pt10_
 #define qCompilerAndStdLib_static_initializer_lambda_funct_init_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER == _MSC_VER_2k19_16Pt8_)
 #else
 #define qCompilerAndStdLib_static_initializer_lambda_funct_init_Buggy 0
@@ -600,16 +612,32 @@ INTERNAL COMPILER ERROR in 'C:\Program Files (x86)\Microsoft Visual Studio\2019\
 #ifndef qCompilerAndStdLib_const_extern_declare_then_const_define_namespace_Buggy
 #if defined(_MSC_VER)
 // First broken in _MSC_VER_2k19_16Pt8_
+// APPEARS FIXED IN _MSC_VER_2k19_16Pt10_
 #define qCompilerAndStdLib_const_extern_declare_then_const_define_namespace_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER == _MSC_VER_2k19_16Pt8_)
 #else
 #define qCompilerAndStdLib_const_extern_declare_then_const_define_namespace_Buggy 0
 #endif
 #endif
 
+/*
+C:\Sandbox\Stroika\DevRoot\Samples\ActiveLedIt\Sources\Toolbar.cpp(660): error C2440: 'initializing': cannot convert from '_Ty' to 'ATL::CComQIPtr<IALCommand,& _GUID_e331d383_5bba_401a_91eb_5d3538b16053>'
+        with
+        [
+            _Ty=ATL::CComPtr<IALCommand>
+        ]
+C:\Sandbox\Stroika\DevRoot\Samples\ActiveLedIt\Sources\Toolbar.cpp(660): note: No user-defined-conversion operator available that can perform this conversion, or the operator cannot be called
+C:\Sandbox\Stroika\DevRoot\Samples\ActiveLedIt\Sources\Toolbar.cpp(812): error C2440: 'initializing': cannot convert from 'ATL::CComPtr<IALCommand>' to 'ATL::CComVariant'
+C:\Sandbox\Stroika\DevRoot\Samples\ActiveLedIt\Sources\Toolbar.cpp(812): note: No user-defined-conversion operator available that can perform this conversion, or the operator cannot be called
+C:\Sandbox\Stroika\DevRoot\Samples\ActiveLedIt\Sources\Toolbar.cpp(825): error C2440: 'initializing': cannot convert from 'ATL::CComPtr<IALCommand>' to 'ATL::CComVariant'
+C:\Sandbox\Stroika\DevRoot\Samples\ActiveLedIt\Sources\Toolbar.cpp(825): note: No user-defined-conversion operator available that can perform this conversion, or the operator cannot be called
+C:\Sandbox\Stroika\DevRoot\Samples\ActiveLedIt\Sources\Toolbar.cpp(885): error C2440: 'initializing': cannot convert from 'ATL::CComPtr<IDispatch>' to 'ATL::CComQIPtr<IALCommandList,& _GUID_ae36308e_681b_402b_afb5_ec4737844073>'
+C:\Sandbox\Stroika\DevRoot\Samples\ActiveLedIt\Sources\Toolbar.cpp(885): note: No user-defined-conversion operator available that can perform this conversion, or the operator cannot be called
+*/
 #ifndef qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
 #if defined(_MSC_VER)
 // First broken in _MSC_VER_2k19_16Pt8_
-#define qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER == _MSC_VER_2k19_16Pt8_)
+// still broken in _MSC_VER_2k19_16Pt10_
+#define qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER == _MSC_VER_2k19_16Pt10_)
 #else
 #define qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy 0
 #endif
@@ -767,7 +795,8 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
 // still broken in _MSC_VER_2k19_16Pt6_
 // still broken in _MSC_VER_2k19_16Pt7_
 // still broken in _MSC_VER_2k19_16Pt8_
-#define qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt8_)
+// still broken in _MSC_VER_2k19_16Pt10_
+#define qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt10_)
 #else
 #define qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy 0
 #endif
@@ -1085,6 +1114,7 @@ STILL:
 #if defined(_MSC_VER)
 
 // first found broken in _MSC_VER_2k19_16Pt8_
+// appears fixed in _MSC_VER_2k19_16Pt10_
 #define qCompilerAndStdLib_stdOptionalThreeWayCompare_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt8_)
 #elif defined(_LIBCPP_VERSION)
 // only seen on _LIBCPP_VERSION=11, but thats cuz requires c++20
@@ -1157,7 +1187,8 @@ STILL:
 // verified still broken in _MSC_VER_2k19_16Pt6_
 // verified still broken in _MSC_VER_2k19_16Pt7_
 // verified still broken in _MSC_VER_2k19_16Pt8_
-#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt8_)
+// verified still broken in _MSC_VER_2k19_16Pt10_
+#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt10_)
 #else
 #define qCompilerAndStdLib_cplusplus_macro_value_Buggy 0
 #endif
@@ -1333,7 +1364,8 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 // verified still broken in _MSC_VER_2k19_16Pt6_
 // verified still broken in _MSC_VER_2k19_16Pt7_
 // verified still broken in _MSC_VER_2k19_16Pt8_
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt8_)
+// verified still broken in _MSC_VER_2k19_16Pt10_
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt10_)
 #else
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy 0
 #endif
@@ -1632,7 +1664,8 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 // Verified still broken in _MSC_VER_2k19_16Pt6_
 // Verified still broken in _MSC_VER_2k19_16Pt7_
 // Verified still broken in _MSC_VER_2k19_16Pt8_
-#define qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt8_)
+// Verified still broken in _MSC_VER_2k19_16Pt10_
+#define qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt10_)
 #else
 #define qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy 0
 #endif
@@ -1782,7 +1815,8 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
 // VERIFIED BROKEN IN _MSC_VER_2k19_16Pt6_
 // VERIFIED BROKEN IN _MSC_VER_2k19_16Pt7_
 // VERIFIED BROKEN IN _MSC_VER_2k19_16Pt8_
-#define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt8_)
+// VERIFIED BROKEN IN _MSC_VER_2k19_16Pt10_
+#define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt10_)
 #else
 #define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy 0
 #endif
@@ -1835,7 +1869,8 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
 // verified still broken in _MSC_VER_2k19_16Pt6_
 // verified still broken in _MSC_VER_2k19_16Pt7_
 // verified still broken in _MSC_VER_2k19_16Pt8_
-#define qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt8_)
+// verified still broken in _MSC_VER_2k19_16Pt10_
+#define qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt10_)
 #else
 #define qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy 0
 #endif
@@ -1910,6 +1945,7 @@ stHarness/SimpleClass.cpp ...
 
 #if defined(_MSC_VER)
 // first noticed broken in _MSC_VER_2k19_16Pt8_
+// APPEARS FIXED IN _MSC_VER_2k19_16Pt10_
 #define qCompilerAndStdLib_default_constructor_initialization_issueWithExplicit_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt8_)
 #else
 #define qCompilerAndStdLib_default_constructor_initialization_issueWithExplicit_Buggy 0
@@ -1976,7 +2012,8 @@ stHarness/SimpleClass.cpp ...
 // verified still broken in _MSC_VER_2k19_16Pt6_
 // verified still broken in _MSC_VER_2k19_16Pt7_
 // verified still broken in _MSC_VER_2k19_16Pt8_
-#define qCompilerAndStdLib_locale_utf8_string_convert_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt8_)
+// verified still broken in _MSC_VER_2k19_16Pt10_
+#define qCompilerAndStdLib_locale_utf8_string_convert_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt10_)
 #else
 #define qCompilerAndStdLib_locale_utf8_string_convert_Buggy 0
 #endif
