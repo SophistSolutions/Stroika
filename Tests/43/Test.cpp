@@ -370,7 +370,17 @@ namespace {
                 else {
                     VerifyTestResult (false);
                 }
-                for (URI u : initializer_list<URI>{URI{L"http://httpbin.org/get"}, URI{L"http://www.google.com"}, fred, URI{L"http://www.cnn.com"}}) {
+// workaround really only needed if ASAN enabled, but more of a PITA to test that
+#if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
+                static const auto kInitList_ = initializer_list<URI>{URI{L"http://httpbin.org/get"}, URI{L"http://www.google.com"}, fred, URI{L"http://www.cnn.com"}};
+#endif
+                for (URI u :
+#if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
+                     kInitList_
+#else
+                     initializer_list<URI>{URI{L"http://httpbin.org/get"}, URI{L"http://www.google.com"}, fred, URI{L"http://www.cnn.com"}}
+#endif
+                ) {
                     auto schemeAndAuthority = fred.GetSchemeAndAuthority ();
                     URI  fURL_              = u;
                     URI  newURL             = u;

@@ -319,9 +319,30 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 
 #if defined(_MSC_VER)
 // verified broken in _MSC_VER_2k19_16Pt10_
-#define qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k19_16Pt8_ <= _MSC_VER &&_MSC_VER <= _MSC_VER_2k19_16Pt10_)
+#define qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k19_16Pt8_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k19_16Pt10_)
 #else
 #define qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy 0
+#endif
+
+#endif
+
+/**
+ *
+ Sent email to MSFT - can reproduce with ASAN and -- https://developercommunity.visualstudio.com/t/initializer-list-lifetime-buggy-maybe-just-asan-is/1439352
+
+                 for (string i : initializer_list<string>{"a", "b", "c"}) {
+                    assert (i.length () == 1);
+                }
+
+
+ */
+#ifndef qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
+
+#if defined(_MSC_VER)
+// verified broken in _MSC_VER_2k19_16Pt10_
+#define qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt10_)
+#else
+#define qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy 0
 #endif
 
 #endif

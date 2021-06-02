@@ -563,8 +563,17 @@ namespace {
         namespace Private_ {
             void SimpleGetFetch_T1 (Connection::Ptr c)
             {
-                Debug::TraceContextBumper ctx ("{}::...SimpleGetFetch_T1");
-                for (URI u : initializer_list<URI>{URI{L"http://httpbin.org/get"}, URI{L"http://www.google.com"}, URI{L"http://www.cnn.com"}}) {
+                Debug::TraceContextBumper ctx{"{}::...SimpleGetFetch_T1"};
+#if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
+                static const auto kInitList_ = initializer_list<URI>{URI{L"http://httpbin.org/get"}, URI{L"http://www.google.com"}, URI{L"http://www.cnn.com"}};
+#endif
+                for (URI u :
+#if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
+                     kInitList_
+#else
+                     initializer_list<URI> {URI{L"http://httpbin.org/get"}, URI{L"http://www.google.com"}, URI{L"http://www.cnn.com"} }
+#endif
+                ) {
 #if qCompilerAndStdLib_arm_openssl_valgrind_Buggy
                     // Not SURE this is the same bug (openssl related) but could be due to redirect?) Anyhow - both are raspberrypi only - and valgrind only
                     if (u == URI{L"http://www.cnn.com"} and Debug::IsRunningUnderValgrind ()) {
@@ -631,8 +640,17 @@ namespace {
         namespace Private_ {
             void SimpleGetFetch_T1 (function<Connection::Ptr (const URI& uriHint)> factory)
             {
-                Debug::TraceContextBumper ctx ("{}::...SimpleGetFetch_T1");
-                for (URI u : initializer_list<URI>{URI{L"http://httpbin.org/get"}, URI{L"http://www.google.com"}, URI{L"http://www.cnn.com"}}) {
+                Debug::TraceContextBumper ctx{"{}::...SimpleGetFetch_T1"};
+#if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
+                static const auto kInitList_ = initializer_list<URI>{URI{L"http://httpbin.org/get"}, URI{L"http://www.google.com"}, URI{L"http://www.cnn.com"}};
+#endif
+                for (URI u :
+#if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
+                     kInitList_
+#else
+                initializer_list<URI>{URI{L"http://httpbin.org/get" }, URI{L"http://www.google.com" }, URI { L"http://www.cnn.com" }}
+                    #endif
+                    ) {
 #if qCompilerAndStdLib_arm_openssl_valgrind_Buggy
                     // Not SURE this is the same bug (openssl related) but could be due to redirect?) Anyhow - both are raspberrypi only - and valgrind only
                     if (u == URI{L"http://www.cnn.com"} and Debug::IsRunningUnderValgrind ()) {
