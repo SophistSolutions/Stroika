@@ -851,6 +851,7 @@ sub	SetDefaultForCompilerDriver_
 				else {
 					$noSanitizerFlags = $test2Suppress . "," . $noSanitizerFlags;
 				}
+				$sanitizerFlagsIsDefined = true;
 			}
 		}
 
