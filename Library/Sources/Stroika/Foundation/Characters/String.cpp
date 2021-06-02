@@ -105,7 +105,7 @@ namespace {
     struct deletable_facet_ final : FACET {
         template <typename... Args>
         deletable_facet_ (Args&&... args)
-            : FACET (forward<Args> (args)...)
+            : FACET{forward<Args> (args)...}
         {
         }
         ~deletable_facet_ () {}
