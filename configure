@@ -854,6 +854,19 @@ sub	SetDefaultForCompilerDriver_
 			}
 		}
 
+
+
+		### if is msvc and version > 19.29 (which is 16.10), enable asan
+		if (IsMSVCCompiler_($COMPILER_DRIVER_CPlusPlus) && Get_MSVC_CL_Version_ ($COMPILER_DRIVER_CPlusPlus) >= 192930037 ) {
+			if (!$sanitizerFlagsNoneSet) {
+				my %already = map { $_ => 1 } @sanitizerFlags;
+				if(!exists($already{'address'})) {
+					push @sanitizerFlags, 'address';
+				}
+			}
+			$sanitizerFlagsIsDefined = true;
+		}
+
 		if ($ENABLE_TRACE2FILE == DEFAULT_BOOL_OPTIONS) {
 			$ENABLE_TRACE2FILE = 1;
 		}
