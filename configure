@@ -290,8 +290,6 @@ sub     ToBool_
 }
 
 
-
-
 sub     IsGCCOrGPlusPlus_
 {
 	my $x = shift(@_);
@@ -346,11 +344,13 @@ sub     GetClangVersion_
 
 sub     IsMSVCCompiler_
 {
+	my $x = shift(@_);
+	return ($x =~ /.*cl.exe.*/);
    #bad way but best I know for now
-	if ("$^O" eq "cygwin") {
-		return true;
-	}
-	return false
+	# if ("$^O" eq "cygwin") {
+	# 	return true;
+	# }
+	# return false
 }
 
 sub     Get_MSVC_CL_Version_
@@ -561,7 +561,7 @@ sub     FillInToolsPathAdditionsIfNeeded_
 			my $x = GetMSVCVarName_ ("TOOLS_PATH_ADDITIONS");
 			$TOOLS_PATH_ADDITIONS = trim ($x);
 			my $v = Get_MSVC_CL_Version_ ($COMPILER_DRIVER_CPlusPlus) ;
-			if (IsMSVCCompiler_ () && 191627034 <= $v  && $v <= 191800000 ) {
+			if (IsMSVCCompiler_ ($COMPILER_DRIVER_CPlusPlus) && 191627034 <= $v  && $v <= 191800000 ) {
 				## only need the one, but this is easiest way to get the right path
 				## $TOOLS_PATH_ADDITIONS_BUGWORKAROUND = '/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.16.27023/bin/Hostx64/x64';
 				$TOOLS_PATH_ADDITIONS_BUGWORKAROUND = $TOOLS_PATH_ADDITIONS;
@@ -707,6 +707,16 @@ sub	SetDefaultForCompilerDriver_
 		if ($ARCH eq "") {
 			$ARCH = "x86_64";
 			print STDERR "WARNING: guessing the target arch x86_64: use --arch (x86 or x86_64) instead!\n";
+		}
+
+		if (!(defined $AS)) {
+			$AS = GetMSVCVarName_ ("AS");
+		}
+		if (($COMPILER_DRIVER_C eq "") ) {
+			$COMPILER_DRIVER_C = GetMSVCVarName_ ("CC");
+		}
+		if (($COMPILER_DRIVER_CPlusPlus eq "")) {
+			$COMPILER_DRIVER_CPlusPlus = GetMSVCVarName_ ("CC");	# not cxx for msvc
 		}
 	}
 
@@ -971,15 +981,6 @@ sub	SetDefaultForCompilerDriver_
 		$STRIP = "strip";
 	}
 
-	if (!(defined $AS) and ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/)) {
-		$AS = GetMSVCVarName_ ("AS");
-	}
-	if (($COMPILER_DRIVER_C eq "") and ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/)) {
-		$COMPILER_DRIVER_C = GetMSVCVarName_ ("CC");
-	}
-	if (($COMPILER_DRIVER_CPlusPlus eq "") and ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/)) {
-		$COMPILER_DRIVER_CPlusPlus = GetMSVCVarName_ ("CC");	# not cxx for msvc
-	}
 
 	if (!(defined $STRIP)) {
 		$STRIP = "";
