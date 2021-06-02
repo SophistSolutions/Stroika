@@ -513,7 +513,7 @@ namespace {
         {
             Date d = Date{Year{1903}, MonthOfYear::eApril, DayOfMonth{6}};
             TestRoundTripFormatThenParseNoChange_ (d);
-            DateTime dt{d, TimeOfDay (101)};
+            DateTime dt{d, TimeOfDay{101}};
             TestRoundTripFormatThenParseNoChange_ (dt);
             String tmp = dt.Format (locale{});
             VerifyTestResult (tmp == L"Mon Apr  6 00:01:41 1903");
@@ -973,7 +973,7 @@ namespace {
 namespace {
     void Test_13_DateTimeRange_ ()
     {
-        TraceContextBumper ctx ("Test_13_DateTimeRange_");
+        TraceContextBumper ctx{"Test_13_DateTimeRange_"};
         using Traversal::Range;
         {
             Range<DateTime> d1;
