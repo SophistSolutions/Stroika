@@ -319,7 +319,7 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 
 #if defined(_MSC_VER)
 // verified broken in _MSC_VER_2k19_16Pt10_
-#define qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER == _MSC_VER_2k19_16Pt10_)
+#define qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k19_16Pt8_ <= _MSC_VER &&_MSC_VER <= _MSC_VER_2k19_16Pt10_)
 #else
 #define qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy 0
 #endif
