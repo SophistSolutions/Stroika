@@ -1992,7 +1992,9 @@ sub PostProcessOptions_ ()
 					$crap2Add2CZZFlags .= ",";
 				}
 			}
-			$EXTRA_PREFIX_LINKER_ARGS .= $crap2Add2CZZFlags;
+			if (IsGCCOrGPlusPlus_($COMPILER_DRIVER) or IsClangOrClangPlusPlus_ ($COMPILER_DRIVER)) {
+				$EXTRA_PREFIX_LINKER_ARGS .= $crap2Add2CZZFlags;
+			}
 			push @CFLAGS, $crap2Add2CZZFlags;
 			push @CXXFLAGS, $crap2Add2CZZFlags;
 		}
@@ -2028,7 +2030,9 @@ sub PostProcessOptions_ ()
 		}
 	}
 	if (not ($noSanitizerFlags eq "")) {
-		$EXTRA_PREFIX_LINKER_ARGS .= " -fno-sanitize=" . $noSanitizerFlags;
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER) or IsClangOrClangPlusPlus_ ($COMPILER_DRIVER)) {
+			$EXTRA_PREFIX_LINKER_ARGS .= " -fno-sanitize=" . $noSanitizerFlags;
+		}
 		push @CFLAGS, " -fno-sanitize=" . $noSanitizerFlags;
 		push @CXXFLAGS, " -fno-sanitize=" . $noSanitizerFlags;
 	}
@@ -2051,7 +2055,6 @@ sub PostProcessOptions_ ()
 		push (@useExtraCDefines, '#define qStroika_Foundation_Debug_MallocGuard 1');
 	}
 
-	
 	
 	if (! defined $FEATUREFLAG_ActivePerl) {
 		if ($FEATUREFLAG_OpenSSL eq "use" && ("$^O" eq "cygwin")) {
