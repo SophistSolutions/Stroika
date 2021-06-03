@@ -92,7 +92,10 @@
 			"*.inc": "cpp",
 			"future": "cpp"
 		},
-		"git.ignoreLimitWarning": true
+		"git.ignoreLimitWarning": true,
+		"files.watcherExclude": {
+			"**/target": true
+		}
 
 	}
 }
