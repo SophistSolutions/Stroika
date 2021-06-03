@@ -102,6 +102,7 @@ EXTRA_SUFFIX_LINKER_ARGS+= /ENTRY:wWinMainCRTStartup
 endif
 
 # WORKAROUND https://developercommunity.visualstudio.com/t/mfc-application-fails-to-link-with-address-sanitiz/1144525
+# https://developercommunity.visualstudio.com/t/please-re-open-httpsdevelopercommunityvisualstudio/1440675
 ifneq ($(filter-out -fanitize=address, $(CXXFLAGS)), $(CXXFLAGS))
 EXTRA_SUFFIX_LINKER_ARGS+= /FORCE:MULTIPLE
 endif
