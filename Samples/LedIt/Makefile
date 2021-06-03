@@ -101,6 +101,12 @@ EXTRA_SUFFIX_LINKER_ARGS+= /SUBSYSTEM:Windows
 EXTRA_SUFFIX_LINKER_ARGS+= /ENTRY:wWinMainCRTStartup
 endif
 
+# WORKAROUND https://developercommunity.visualstudio.com/t/mfc-application-fails-to-link-with-address-sanitiz/1144525
+ifneq ($(filter-out -fanitize=address, $(CXXFLAGS)), $(CXXFLAGS))
+EXTRA_SUFFIX_LINKER_ARGS+= /FORCE:MULTIPLE
+endif
+
+
 $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@`" "... "
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\

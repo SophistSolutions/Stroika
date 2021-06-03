@@ -90,6 +90,10 @@ $(ObjDir)LedLineIt.res:
 
 
 
+# WORKAROUND https://developercommunity.visualstudio.com/t/mfc-application-fails-to-link-with-address-sanitiz/1144525
+ifneq ($(filter-out -fanitize=address, $(CXXFLAGS)), $(CXXFLAGS))
+EXTRA_SUFFIX_LINKER_ARGS+= /FORCE:MULTIPLE
+endif
 
 
 # Cannot be done generically through configuration cuz a given build of Stroika might contain EXEs targetting multiple subsystems
