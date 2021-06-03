@@ -91,9 +91,9 @@ sub GetDefaultToolsBuildDir ()
 	
 	local $VSDIR;
 	foreach $n ( @names ) {
-		$VSDIR = "$PROGRAMFILESDIR86\\Microsoft Visual Studio\\2019";
+		$VSDIR = "$PROGRAMFILESDIR86\\Microsoft Visual Studio\\$n";
 		if (! (-e toCygPath_ ($VSDIR))) {
-			$VSDIR = "$PROGRAMFILESDIR\\Microsoft Visual Studio\\2019";
+			$VSDIR = "$PROGRAMFILESDIR\\Microsoft Visual Studio\\$n";
 		}
 		if (!-e toCygPath_ ($VSDIR)) {
 			last;
