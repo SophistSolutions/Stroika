@@ -553,13 +553,13 @@ namespace {
 #if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
             static const auto kInitList_ = initializer_list<DurationSecondsType>{3, 995, 3.4, 3004.5, 1055646.4, 60 * 60 * 24 * 300};
 #endif
-            for (DurationSecondsType ds : 
-            #if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
+            for (DurationSecondsType ds :
+#if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
                  kInitList_
 #else
-            initializer_list<DurationSecondsType>{3, 995, 3.4, 3004.5, 1055646.4, 60 * 60 * 24 * 300}
+                 initializer_list<DurationSecondsType> { 3, 995, 3.4, 3004.5, 1055646.4, 60 * 60 * 24 * 300 }
 #endif
-                ) {
+            ) {
                 ds += now;
                 DateTime dt = DateTime::FromTickCount (ds);
                 VerifyTestResult (Math::NearlyEquals (dt, DateTime::FromTickCount (dt.ToTickCount ())));
