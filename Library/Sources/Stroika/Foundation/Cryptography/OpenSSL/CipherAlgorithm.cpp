@@ -125,7 +125,7 @@ const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kAES_256_CFB1{
 const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kAES_256_CFB8{[] () { return ::EVP_aes_256_cfb8 (); }};
 const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kAES_256_CFB128{[] () { return ::EVP_aes_256_cfb128 (); }};
 const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kBlowfish_CBC{[] () { return ::EVP_bf_cbc (); }};
-const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kBlowfish{[] () { return kBlowfish_CBC (); }};
+const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kBlowfish{[] () { return CipherAlgorithms::kBlowfish_CBC (); }};
 const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kBlowfish_ECB{[] () { return ::EVP_bf_ecb (); }};
 const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kBlowfish_CFB{[] () { return ::EVP_bf_cfb (); }};
 const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kBlowfish_OFB{[] () { return ::EVP_bf_ofb (); }};
