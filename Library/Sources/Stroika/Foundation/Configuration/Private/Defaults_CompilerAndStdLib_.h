@@ -326,7 +326,6 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 
 #endif
 
-
 /*
   Building Stroika Foundation Objs:
       Compiling Library/Sources/Stroika/Foundation/Configuration/Version.cpp ... 
@@ -351,7 +350,6 @@ Please choose the Technical Support command on the Visual C++
 #endif
 
 #endif
-
 
 #ifndef qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
 
@@ -389,8 +387,6 @@ c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.1
 #endif
 
 #endif
-
-
 
 /**
  *
