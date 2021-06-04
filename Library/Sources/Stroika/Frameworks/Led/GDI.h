@@ -857,7 +857,7 @@ namespace Stroika::Frameworks::Led {
                 return (::_tcscmp (fName, rhs.fName) == 0);
             }
 #if __cpp_impl_three_way_comparison < 201907
-            bool operator== (const Led_FontSpecification::FontNameSpecifier& rhs) const
+            bool operator!= (const Led_FontSpecification::FontNameSpecifier& rhs) const
             {
                 return not(*this == rhs);
             }
@@ -1117,7 +1117,7 @@ namespace Stroika::Frameworks::Led {
                                                             // for. Makes MergeIn() just copy flat out!
 #endif
 
-#if __cpp_impl_three_way_comparison < 201907
+#if __cpp_impl_three_way_comparison >= 201907
         bool operator<=> (const Led_IncrementalFontSpecification& rhs) = delete;
         bool operator== (const Led_IncrementalFontSpecification& rhs);
 #endif
