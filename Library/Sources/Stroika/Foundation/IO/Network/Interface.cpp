@@ -515,9 +515,9 @@ namespace {
             : fDLL{::LoadLibrary (_T ("wlanapi.dll"))}
         {
             Execution::ThrowIfNull (fDLL);
-            fWlanOpenHandle     = (DWORD (WINAPI*) (_In_ DWORD dwClientVersion, _Reserved_ PVOID pReserved, _Out_ PDWORD pdwNegotiatedVersion, _Out_ PHANDLE phClientHandle)) (::GetProcAddress (fDLL, "WlanOpenHandle"));
-            fWlanCloseHandle    = (DWORD (WINAPI*) (_In_ HANDLE hClientHandle, _Reserved_ PVOID pReserved)) (::GetProcAddress (fDLL, "WlanCloseHandle"));
-            fWlanFreeMemory     = (DWORD (WINAPI*) (_In_ PVOID pMemory)) (::GetProcAddress (fDLL, "WlanFreeMemory"));
+            fWlanOpenHandle     = (DWORD (WINAPI*) (_In_ DWORD dwClientVersion, _Reserved_ PVOID pReserved, _Out_ PDWORD pdwNegotiatedVersion, _Out_ PHANDLE phClientHandle))(::GetProcAddress (fDLL, "WlanOpenHandle"));
+            fWlanCloseHandle    = (DWORD (WINAPI*) (_In_ HANDLE hClientHandle, _Reserved_ PVOID pReserved))(::GetProcAddress (fDLL, "WlanCloseHandle"));
+            fWlanFreeMemory     = (DWORD (WINAPI*) (_In_ PVOID pMemory))(::GetProcAddress (fDLL, "WlanFreeMemory"));
             fWlanEnumInterfaces = (DWORD (WINAPI*) (_In_ HANDLE hClientHandle, _Reserved_ PVOID pReserved, _Outptr_ PWLAN_INTERFACE_INFO_LIST * ppInterfaceList)) (::GetProcAddress (fDLL, "WlanEnumInterfaces"));
             fWlanQueryInterface = (DWORD (WINAPI*) (_In_ HANDLE hClientHandle, _In_ CONST GUID * pInterfaceGuid, _In_ WLAN_INTF_OPCODE OpCode, _Reserved_ PVOID pReserved, _Out_ PDWORD pdwDataSize, _Outptr_result_bytebuffer_ (*pdwDataSize) PVOID * ppData, _Out_opt_ PWLAN_OPCODE_VALUE_TYPE pWlanOpcodeValueType)) (::GetProcAddress (fDLL, "WlanQueryInterface"));
         }
@@ -608,7 +608,7 @@ namespace {
                             sWlanAPI_->fWlanQueryInterface (hClient, &pIfInfo->InterfaceGuid, wlan_intf_opcode_current_connection,
                                                             nullptr, &connectInfoSize, (PVOID*)&pConnectInfo, &opCode));
                     }
-                    [[maybe_unused]] auto&& cleanup3 = Execution::Finally ([&] () noexcept { if (pConnectInfo !=nullptr) {sWlanAPI_->fWlanFreeMemory (pConnectInfo);} });
+                    [[maybe_unused]] auto&& cleanup3 = Execution::Finally ([&] () noexcept { if (pConnectInfo != nullptr) {sWlanAPI_->fWlanFreeMemory (pConnectInfo);} });
 
                     if (pConnectInfo->isState != pIfInfo->isState) {
                         DbgTrace (L"Not sure how these can differ (except for race condition) - but if they do, maybe worth looking into");
