@@ -1514,7 +1514,11 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASE_INTERACTOR>
     bool Led_Win32_Helper<BASE_INTERACTOR>::OnMouseWheel_Msg (WPARAM wParam, LPARAM lParam)
     {
+#if qCompilerAndStdLib_usingOfEnumFailsToBringIntoScope_Buggy
+        static constexpr auto eImmediateUpdate = TextInteractor::eImmediateUpdate;
+#else
         using TextInteractor::eImmediateUpdate;
+#endif
 #if (_WIN32_WINNT >= 0x0400) || (_WIN32_WINDOWS > 0x0400)
         UINT keyState = LOWORD (wParam); //GET_KEYSTATE_WPARAM (wParam);
         // we don't handle anything but scrolling just now (comment from MFC).

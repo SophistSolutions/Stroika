@@ -371,7 +371,6 @@ Please choose the Technical Support command on the Visual C++
 
 #endif
 
-
 #ifndef qCompilerAndStdLib_usingOfEnumFailsToBringIntoScope_Buggy
 
 #if defined(_MSC_VER)
