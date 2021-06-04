@@ -829,6 +829,22 @@ namespace Stroika::Frameworks::Led::Platform {
         bool shiftPressed   = !!(::GetKeyState (VK_SHIFT) & 0x8000);
         bool controlPressed = !!(::GetKeyState (VK_CONTROL) & 0x8000);
 
+#if qCompilerAndStdLib_usingOfEnumFailsToBringIntoScope_Buggy
+        static constexpr auto eDefaultUpdate = TextInteractor::eDefaultUpdate;
+        static constexpr auto eImmediateUpdate =  TextInteractor::eImmediateUpdate;
+
+        static constexpr auto eCursorBack =  TextInteractor::eCursorBack;
+        static constexpr auto eCursorByBuffer =  TextInteractor::eCursorByBuffer;
+        static constexpr auto eCursorByChar =  TextInteractor::eCursorByChar;
+        static constexpr auto eCursorByLine =  TextInteractor::eCursorByLine;
+        static constexpr auto eCursorByRow =  TextInteractor::eCursorByRow;
+        static constexpr auto eCursorByWord =  TextInteractor::eCursorByWord;
+        static constexpr auto eCursorExtendingSelection =  TextInteractor::eCursorExtendingSelection;
+        static constexpr auto eCursorForward =  TextInteractor::eCursorForward;
+        static constexpr auto eCursorMoving =  TextInteractor::eCursorMoving;
+        static constexpr auto eCursorToEnd =  TextInteractor::eCursorToEnd;
+        static constexpr auto eCursorToStart =  TextInteractor::eCursorToStart;
+#else
         using TextInteractor::eDefaultUpdate;
         using TextInteractor::eImmediateUpdate;
 
@@ -843,6 +859,7 @@ namespace Stroika::Frameworks::Led::Platform {
         using TextInteractor::eCursorMoving;
         using TextInteractor::eCursorToEnd;
         using TextInteractor::eCursorToStart;
+#endif
 
         /*
          *  There are zillions of these virtual keycodes, and I'm unsure exactly if/how
