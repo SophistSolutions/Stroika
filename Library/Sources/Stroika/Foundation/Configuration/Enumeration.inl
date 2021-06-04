@@ -110,7 +110,9 @@ namespace Stroika::Foundation::Configuration {
     constexpr EnumNames<ENUM_TYPE>::EnumNames (const typename EnumNames<ENUM_TYPE>::BasicArrayInitializer& init)
         : fEnumNames_{init}
     {
+#if !qCompilerAndStdLib_constexpr_call_constexpr_sometimes_internalError_Buggy
         RequireItemsOrderedByEnumValue_ ();
+#endif
     }
     template <typename ENUM_TYPE>
     template <size_t N>

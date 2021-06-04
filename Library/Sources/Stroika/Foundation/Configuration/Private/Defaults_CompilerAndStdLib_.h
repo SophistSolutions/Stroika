@@ -363,6 +363,34 @@ Please choose the Technical Support command on the Visual C++
 
 #endif
 
+/*
+Building Stroika Foundation Objs:
+      Compiling Library/Sources/Stroika/Foundation/IO/Network/HTTP/CacheControl.cpp ... 
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\configuration\enumeration.inl(210): fatal error C1001: An internal error has occurred in the compiler.
+(compiler file 'd:\agent\_work\4\s\src\vctools\compiler\cxxfe\sl\p1\c\yyaction.cpp', line 1142)
+ To work around this problem, try simplifying or changing the program near the locations listed above.
+Please choose the Technical Support command on the Visual C++
+ Help menu, or open the Technical Support help file for more information
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\configuration\enumeration.inl(207): note: see reference to function template instantiation 'void Stroika::Foundation::Configuration::EnumNames<Stroika::Foundation::IO::Network::HTTP::CacheControl::Cacheability>::RequireItemsOrderedByEnumValue_(void) const' being compiled
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\configuration\enumeration.inl(114): note: see reference to function template instantiation 'void Stroika::Foundation::Configuration::EnumNames<Stroika::Foundation::IO::Network::HTTP::CacheControl::Cacheability>::RequireItemsOrderedByEnumValue_(void) const' being compiled
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\characters\string.inl(370): note: see reference to class template instantiation 'std::optional<size_t>' being compiled
+c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\filesystem(2392): note: see reference to class template instantiation 'std::chrono::time_point<std::filesystem::_File_time_clock,std::filesystem::_File_time_clock::duration>' being compiled   
+c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\type_traits(616): note: see reference to class template instantiation 'std::basic_string_view<wchar_t,std::char_traits<wchar_t>>' being compiled
+c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\xstring(2124): note: see reference to class template instantiation 'std::is_convertible<const _StringViewIsh &,std::basic_string_view<wchar_t,std::char_traits<wchar_t>>>' being compiled       
+        with
+        [
+*/
+#ifndef qCompilerAndStdLib_constexpr_call_constexpr_sometimes_internalError_Buggy
+
+#if defined(_MSC_VER)
+#define qCompilerAndStdLib_constexpr_call_constexpr_sometimes_internalError_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
+#else
+#define qCompilerAndStdLib_constexpr_call_constexpr_sometimes_internalError_Buggy 0
+#endif
+
+#endif
+
+
 
 /**
  *
