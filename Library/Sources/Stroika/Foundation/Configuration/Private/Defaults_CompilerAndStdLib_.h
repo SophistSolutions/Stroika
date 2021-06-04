@@ -353,6 +353,17 @@ Please choose the Technical Support command on the Visual C++
 #endif
 
 
+#ifndef qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
+
+#if defined(_MSC_VER)
+#define qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
+#else
+#define qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy 0
+#endif
+
+#endif
+
+
 /**
  *
  Sent email to MSFT - can reproduce with ASAN and -- https://developercommunity.visualstudio.com/t/initializer-list-lifetime-buggy-maybe-just-asan-is/1439352

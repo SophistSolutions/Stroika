@@ -96,7 +96,11 @@ LibraryContext::LibraryContext ()
                   &cipherNames);
 #else
               ::EVP_CIPHER_do_all_sorted (
+                  #if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
+                  [] (const ::EVP_CIPHER* ciph, const char* , const char* , void* arg) { AccumulateIntoSetOfCipherNames_ (ciph, reinterpret_cast<Set<String>*> (arg)); },
+                  #else
                   [] (const ::EVP_CIPHER* ciph, [[maybe_unused]] const char* from, [[maybe_unused]] const char* to, void* arg) { AccumulateIntoSetOfCipherNames_ (ciph, reinterpret_cast<Set<String>*> (arg)); },
+                  #endif
                   &cipherNames);
 #endif
               DbgTrace (L"Found pAvailableCipherAlgorithms-FIRST-PASS (cnt=%d): %s", cipherNames.size (), Characters::ToString (cipherNames).c_str ());
