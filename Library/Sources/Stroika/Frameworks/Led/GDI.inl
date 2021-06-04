@@ -334,32 +334,21 @@ namespace Stroika::Frameworks::Led {
 
     /*
      ********************************************************************************
-     ************************************ auto_gdi_ptr ******************************
-     ********************************************************************************
-     */
-#if qPlatform_Windows
-    //class auto_gdi_ptr
-    inline auto_gdi_ptr::auto_gdi_ptr (HGDIOBJ gdiObj)
-        : fGDIObj (gdiObj)
-    {
-    }
-    inline auto_gdi_ptr::~auto_gdi_ptr ()
-    {
-        Verify (::DeleteObject (fGDIObj));
-    }
-#endif
-
-    /*
-     ********************************************************************************
      ************************************ Led_Region ********************************
      ********************************************************************************
      */
     inline Led_Region::Led_Region ()
 #if qPlatform_MacOS
-        : fRgn (::NewRgn ())
-        , fOwned (true)
+        : fRgn{::NewRgn ()}
+        , fOwned
+    {
+        true
+    }
 #elif qPlatform_Windows
-        : fRgn (::CreateRectRgn (0, 0, 0, 0))
+        : fRgn
+    {
+        ::CreateRectRgn (0, 0, 0, 0)
+    }
 #endif
     {
 #if qPlatform_MacOS || qPlatform_Windows
@@ -368,7 +357,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline Led_Region::Led_Region (const Led_Rect& r)
 #if qPlatform_MacOS
-        : fRgn (::NewRgn ())
+        : fRgn{::NewRgn ()}
         , fOwned (true)
 #elif qPlatform_Windows
         : fRgn (::CreateRectRgn (r.GetLeft (), r.GetTop (), r.GetRight (), r.GetBottom ()))
@@ -1474,9 +1463,9 @@ namespace Stroika::Frameworks::Led {
      ********************************************************************************
      */
     inline Led_Color::Led_Color (ColorValue redValue, ColorValue greenValue, ColorValue blueValue)
-        : fRed (redValue)
-        , fGreen (greenValue)
-        , fBlue (blueValue)
+        : fRed{redValue}
+        , fGreen{greenValue}
+        , fBlue{blueValue}
     {
     }
 #if qPlatform_MacOS
@@ -1608,16 +1597,6 @@ namespace Stroika::Frameworks::Led {
     {
         fName[0] = '\0';
     }
-#if __cpp_impl_three_way_comparison < 201907
-    inline bool operator== (const Led_FontSpecification::FontNameSpecifier& lhs, const Led_FontSpecification::FontNameSpecifier& rhs)
-    {
-        return (::_tcscmp (lhs.fName, rhs.fName) == 0);
-    }
-    inline bool operator!= (const Led_FontSpecification::FontNameSpecifier& lhs, const Led_FontSpecification::FontNameSpecifier& rhs)
-    {
-        return (::_tcscmp (lhs.fName, rhs.fName) != 0);
-    }
-#endif
 #endif
 
     /*
@@ -2001,7 +1980,6 @@ namespace Stroika::Frameworks::Led {
         LightSetOSRep (logFont);
     }
 #endif
-#if __cpp_impl_three_way_comparison >= 201907
     inline bool Led_FontSpecification::operator== (const Led_FontSpecification& rhs) const
     {
         const Led_FontSpecification& lhs = *this;
@@ -2071,11 +2049,6 @@ namespace Stroika::Frameworks::Led {
 
         return true;
     }
-    inline bool operator!= (const Led_FontSpecification& lhs, const Led_FontSpecification& rhs)
-    {
-        return not(lhs == rhs);
-    }
-#endif
     inline void Led_FontSpecification::MergeIn (const Led_IncrementalFontSpecification& addInTheseAttributes)
     {
         // Font Name
@@ -2147,80 +2120,6 @@ namespace Stroika::Frameworks::Led {
         }
 #endif
     }
-#if __cpp_impl_three_way_comparison < 201907
-    inline bool operator== (const Led_FontSpecification& lhs, const Led_FontSpecification& rhs)
-    {
-        // FontName Info
-        if (lhs.GetFontNameSpecifier () != rhs.GetFontNameSpecifier ()) {
-            return false;
-        }
-
-// Style Info
-#if qPlatform_MacOS
-        Style lhsStyle;
-        Style rhsStyle;
-        lhs.GetOSRep (nullptr, nullptr, &lhsStyle);
-        rhs.GetOSRep (nullptr, nullptr, &rhsStyle);
-        if (lhsStyle != rhsStyle) {
-            return false;
-        }
-#elif qPlatform_Windows
-        if (lhs.GetStyle_Bold () != rhs.GetStyle_Bold ()) {
-            return false;
-        }
-        if (lhs.GetStyle_Italic () != rhs.GetStyle_Italic ()) {
-            return false;
-        }
-        if (lhs.GetStyle_Underline () != rhs.GetStyle_Underline ()) {
-            return false;
-        }
-        if (lhs.GetStyle_Strikeout () != rhs.GetStyle_Strikeout ()) {
-            return false;
-        }
-#elif qStroika_FeatureSupported_XWindows
-        if (lhs.GetStyle_Bold () != rhs.GetStyle_Bold ()) {
-            return false;
-        }
-        if (lhs.GetStyle_Italic () != rhs.GetStyle_Italic ()) {
-            return false;
-        }
-        if (lhs.GetStyle_Underline () != rhs.GetStyle_Underline ()) {
-            return false;
-        }
-#endif
-        if (lhs.GetStyle_SubOrSuperScript () != rhs.GetStyle_SubOrSuperScript ()) {
-            return false;
-        }
-
-        // Color Info
-        if (lhs.GetTextColor () != rhs.GetTextColor ()) {
-            return false;
-        }
-
-// Size Info
-#if qPlatform_Windows
-        // Speed tweek to avoid divide and getdevicecaps crap...
-        if (lhs.PeekAtTMHeight () == rhs.PeekAtTMHeight ()) {
-            return true;
-        }
-        else if ((lhs.PeekAtTMHeight () > 0) == (rhs.PeekAtTMHeight () > 0)) {
-            return false; // if same sign, we can just compare for equality, and since they
-            // ABOVE didn't compare equal, they must be different point sizes
-            // (or at least very close depending a little on resoution...)
-            // If their signs DIFFER, we must fall through into the scaling crap (GetPointSize).
-        }
-#endif
-        if (lhs.GetPointSize () != rhs.GetPointSize ()) {
-            return false;
-        }
-
-        return true;
-    }
-    inline bool operator!= (const Led_FontSpecification& lhs, const Led_FontSpecification& rhs)
-    {
-        return not(lhs == rhs);
-    }
-#endif
 
     /*
      ********************************************************************************
@@ -2228,8 +2127,7 @@ namespace Stroika::Frameworks::Led {
      ********************************************************************************
      */
     inline Led_IncrementalFontSpecification::Led_IncrementalFontSpecification ()
-        : Led_FontSpecification ()
-        , fFontSpecifierValid (false)
+        : fFontSpecifierValid (false)
         , fStyleValid_Bold (false)
         , fStyleValid_Italic (false)
         , fStyleValid_Underline (false)
@@ -2252,7 +2150,7 @@ namespace Stroika::Frameworks::Led {
     {
     }
     inline Led_IncrementalFontSpecification::Led_IncrementalFontSpecification (const Led_FontSpecification& fontSpec)
-        : Led_FontSpecification (fontSpec)
+        : Led_FontSpecification{fontSpec}
         , fFontSpecifierValid (true)
         , fStyleValid_Bold (true)
         , fStyleValid_Italic (true)
@@ -2275,7 +2173,6 @@ namespace Stroika::Frameworks::Led {
         , fTextColorValid (true)
     {
     }
-    // FontName info
     inline Led_FontSpecification::FontNameSpecifier Led_IncrementalFontSpecification::GetFontNameSpecifier () const
     {
         Require (fFontSpecifierValid);
@@ -2308,7 +2205,6 @@ namespace Stroika::Frameworks::Led {
 #endif
         inherited::SetFontName (fontName);
     }
-    // Style info
     inline bool Led_IncrementalFontSpecification::GetStyle_Plain () const
     {
         Require (fStyleValid_Bold);
@@ -2725,7 +2621,6 @@ namespace Stroika::Frameworks::Led {
         return fDidSetOSRepCallFlag;
     }
 #endif
-
     inline void Led_IncrementalFontSpecification::MergeIn (const Led_IncrementalFontSpecification& addInTheseAttributes)
     {
         // Font Name
@@ -2789,95 +2684,93 @@ namespace Stroika::Frameworks::Led {
         fDidSetOSRepCallFlag = addInTheseAttributes.GetDidSetOSRepCallFlag ();
 #endif
     }
-
-#if __cpp_impl_three_way_comparison < 201907
-    inline bool operator== (const Led_IncrementalFontSpecification& lhs, const Led_IncrementalFontSpecification& rhs)
+    inline bool Led_IncrementalFontSpecification::operator== (const Led_IncrementalFontSpecification& rhs) const
     {
         // Either make this non-portable, or somehow do some hack to make this test FASTER than it looks like
         // it may be currently - profile??? - LGP 960517
         //
         // FontName Info
         {
-            if (lhs.GetFontNameSpecifier_Valid () != rhs.GetFontNameSpecifier_Valid ()) {
+            if (GetFontNameSpecifier_Valid () != rhs.GetFontNameSpecifier_Valid ()) {
                 return false;
             }
-            if (lhs.GetFontNameSpecifier_Valid () and (lhs.GetFontNameSpecifier () != rhs.GetFontNameSpecifier ())) {
+            if (GetFontNameSpecifier_Valid () and (GetFontNameSpecifier () != rhs.GetFontNameSpecifier ())) {
                 return false;
             }
         }
 
         // Style Info
         {
-            if (lhs.GetStyle_Bold_Valid () != rhs.GetStyle_Bold_Valid ()) {
+            if (GetStyle_Bold_Valid () != rhs.GetStyle_Bold_Valid ()) {
                 return false;
             }
-            if (lhs.GetStyle_Bold_Valid () and (lhs.GetStyle_Bold () != rhs.GetStyle_Bold ())) {
-                return false;
-            }
-        }
-        {
-            if (lhs.GetStyle_Italic_Valid () != rhs.GetStyle_Italic_Valid ()) {
-                return false;
-            }
-            if (lhs.GetStyle_Italic_Valid () and (lhs.GetStyle_Italic () != rhs.GetStyle_Italic ())) {
+            if (GetStyle_Bold_Valid () and (GetStyle_Bold () != rhs.GetStyle_Bold ())) {
                 return false;
             }
         }
         {
-            if (lhs.GetStyle_Underline_Valid () != rhs.GetStyle_Underline_Valid ()) {
+            if (GetStyle_Italic_Valid () != rhs.GetStyle_Italic_Valid ()) {
                 return false;
             }
-            if (lhs.GetStyle_Underline_Valid () and (lhs.GetStyle_Underline () != rhs.GetStyle_Underline ())) {
+            if (GetStyle_Italic_Valid () and (GetStyle_Italic () != rhs.GetStyle_Italic ())) {
                 return false;
             }
         }
         {
-            if (lhs.GetStyle_SubOrSuperScript_Valid () != rhs.GetStyle_SubOrSuperScript_Valid ()) {
+            if (GetStyle_Underline_Valid () != rhs.GetStyle_Underline_Valid ()) {
                 return false;
             }
-            if (lhs.GetStyle_SubOrSuperScript_Valid () and (lhs.GetStyle_SubOrSuperScript () != rhs.GetStyle_SubOrSuperScript ())) {
+            if (GetStyle_Underline_Valid () and (GetStyle_Underline () != rhs.GetStyle_Underline ())) {
+                return false;
+            }
+        }
+        {
+            if (GetStyle_SubOrSuperScript_Valid () != rhs.GetStyle_SubOrSuperScript_Valid ()) {
+                return false;
+            }
+            if (GetStyle_SubOrSuperScript_Valid () and (GetStyle_SubOrSuperScript () != rhs.GetStyle_SubOrSuperScript ())) {
                 return false;
             }
         }
 #if qPlatform_MacOS
         {
-            if (lhs.GetStyle_Outline_Valid () != rhs.GetStyle_Outline_Valid ()) {
+            if (GetStyle_Outline_Valid () != rhs.GetStyle_Outline_Valid ()) {
                 return false;
             }
-            if (lhs.GetStyle_Outline_Valid () and (lhs.GetStyle_Outline () != rhs.GetStyle_Outline ())) {
-                return false;
-            }
-        }
-        {
-            if (lhs.GetStyle_Shadow_Valid () != rhs.GetStyle_Shadow_Valid ()) {
-                return false;
-            }
-            if (lhs.GetStyle_Shadow_Valid () and (lhs.GetStyle_Shadow () != rhs.GetStyle_Shadow ())) {
+            if (GetStyle_Outline_Valid () and (GetStyle_Outline () != rhs.GetStyle_Outline ())) {
                 return false;
             }
         }
         {
-            if (lhs.GetStyle_Condensed_Valid () != rhs.GetStyle_Condensed_Valid ()) {
+            if (GetStyle_Shadow_Valid () != rhs.GetStyle_Shadow_Valid ()) {
                 return false;
             }
-            if (lhs.GetStyle_Condensed_Valid () and (lhs.GetStyle_Condensed () != rhs.GetStyle_Condensed ())) {
+            if (GetStyle_Shadow_Valid () and (GetStyle_Shadow () != rhs.GetStyle_Shadow ())) {
                 return false;
             }
         }
         {
-            if (lhs.GetStyle_Extended_Valid () != rhs.GetStyle_Extended_Valid ()) {
+            if (GetStyle_Condensed_Valid () != rhs.GetStyle_Condensed_Valid ()) {
                 return false;
             }
-            if (lhs.GetStyle_Extended_Valid () and (lhs.GetStyle_Extended () != rhs.GetStyle_Extended ())) {
+            if (GetStyle_Condensed_Valid () and (GetStyle_Condensed () != rhs.GetStyle_Condensed ())) {
+                return false;
+            }
+        }
+        {
+            if (GetStyle_Extended_Valid () != rhs.GetStyle_Extended_Valid ()) {
+                return false;
+            }
+            if (GetStyle_Extended_Valid () and (GetStyle_Extended () != rhs.GetStyle_Extended ())) {
                 return false;
             }
         }
 #elif qPlatform_Windows
         {
-            if (lhs.GetStyle_Strikeout_Valid () != rhs.GetStyle_Strikeout_Valid ()) {
+            if (GetStyle_Strikeout_Valid () != rhs.GetStyle_Strikeout_Valid ()) {
                 return false;
             }
-            if (lhs.GetStyle_Strikeout_Valid () and (lhs.GetStyle_Strikeout () != rhs.GetStyle_Strikeout ())) {
+            if (GetStyle_Strikeout_Valid () and (GetStyle_Strikeout () != rhs.GetStyle_Strikeout ())) {
                 return false;
             }
         }
@@ -2885,41 +2778,41 @@ namespace Stroika::Frameworks::Led {
 
         // Font Color Info
         {
-            if (lhs.GetTextColor_Valid () != rhs.GetTextColor_Valid ()) {
+            if (GetTextColor_Valid () != rhs.GetTextColor_Valid ()) {
                 return false;
             }
-            if (lhs.GetTextColor_Valid () and (lhs.GetTextColor () != rhs.GetTextColor ())) {
+            if (GetTextColor_Valid () and (GetTextColor () != rhs.GetTextColor ())) {
                 return false;
             }
         }
 
         // Size Info
         {
-            if (lhs.GetPointSizeIncrement_Valid () != rhs.GetPointSizeIncrement_Valid ()) {
+            if (GetPointSizeIncrement_Valid () != rhs.GetPointSizeIncrement_Valid ()) {
                 return false;
             }
-            if (lhs.GetPointSizeIncrement_Valid () and (lhs.GetPointSizeIncrement () != rhs.GetPointSizeIncrement ())) {
+            if (GetPointSizeIncrement_Valid () and (GetPointSizeIncrement () != rhs.GetPointSizeIncrement ())) {
                 return false;
             }
         }
         {
-            if (lhs.GetPointSize_Valid () != rhs.GetPointSize_Valid ()) {
+            if (GetPointSize_Valid () != rhs.GetPointSize_Valid ()) {
                 return false;
             }
-            if (lhs.GetPointSize_Valid ()) {
+            if (GetPointSize_Valid ()) {
 #if qPlatform_Windows
                 // Speed tweek to avoid divide and getdevicecaps crap...
-                if (lhs.PeekAtTMHeight () == rhs.PeekAtTMHeight ()) {
+                if (PeekAtTMHeight () == rhs.PeekAtTMHeight ()) {
                     return true;
                 }
-                else if ((lhs.PeekAtTMHeight () > 0) == (rhs.PeekAtTMHeight () > 0)) {
+                else if ((PeekAtTMHeight () > 0) == (rhs.PeekAtTMHeight () > 0)) {
                     return false; // if same sign, we can just compare for equality, and since they
                     // ABOVE didn't compare equal, they must be different point sizes
                     // (or at least very close depending a little on resoution...)
                     // If their signs DIFFER, we must fall through into the scaling crap (GetPointSize).
                 }
 #endif
-                if (lhs.GetPointSize () != rhs.GetPointSize ()) {
+                if (GetPointSize () != rhs.GetPointSize ()) {
                     return false;
                 }
             }
@@ -2927,6 +2820,7 @@ namespace Stroika::Frameworks::Led {
 
         return true;
     }
+#if __cpp_impl_three_way_comparison < 201907
     inline bool operator!= (const Led_IncrementalFontSpecification& lhs, const Led_IncrementalFontSpecification& rhs)
     {
         return not(lhs == rhs);
@@ -2939,6 +2833,11 @@ namespace Stroika::Frameworks::Led {
         return fFontNames;
     }
 
+    /*
+     ********************************************************************************
+     ******************************** Led_GetTextColor ******************************
+     ********************************************************************************
+     */
     inline Led_Color Led_GetTextColor ()
     {
 #if qPlatform_MacOS
@@ -2949,6 +2848,12 @@ namespace Stroika::Frameworks::Led {
         return (Led_Color::kBlack);
 #endif
     }
+
+    /*
+     ********************************************************************************
+     ************************** Led_GetTextBackgroundColor **************************
+     ********************************************************************************
+     */
     inline Led_Color Led_GetTextBackgroundColor ()
     {
 #if qPlatform_MacOS
@@ -2959,6 +2864,12 @@ namespace Stroika::Frameworks::Led {
         return (Led_Color::kWhite);
 #endif
     }
+
+    /*
+     ********************************************************************************
+     **************************** Led_GetSelectedTextColor **************************
+     ********************************************************************************
+     */
     inline Led_Color Led_GetSelectedTextColor ()
     {
 #if qPlatform_MacOS
@@ -2996,7 +2907,11 @@ namespace Stroika::Frameworks::Led {
 #endif
     }
 
-    //  class   Led_Tablet_::ClipNarrowAndRestore
+    /*
+     ********************************************************************************
+     ************************ Led_Tablet_::ClipNarrowAndRestore *********************
+     ********************************************************************************
+     */
     inline Led_Tablet_::ClipNarrowAndRestore::ClipNarrowAndRestore (Led_Tablet_* tablet)
         : fTablet (tablet)
         , fHasOldClip (false)
@@ -3063,6 +2978,11 @@ namespace Stroika::Frameworks::Led {
         }
     }
 
+    /*
+     ********************************************************************************
+     ************************* Led_MacPortAndClipRegionEtcSaver *********************
+     ********************************************************************************
+     */
 #if qPlatform_MacOS
     inline Led_MacPortAndClipRegionEtcSaver::Led_MacPortAndClipRegionEtcSaver ()
         : fSavedPort (Led_GetCurrentGDIPort ())
@@ -3102,7 +3022,11 @@ namespace Stroika::Frameworks::Led {
     }
 #endif
 
-//  class   Led_GDI_Obj_Selector
+    /*
+     ********************************************************************************
+     ******************************* Led_GDI_Obj_Selector ***************************
+     ********************************************************************************
+     */
 #if qPlatform_Windows
     inline Led_GDI_Obj_Selector::Led_GDI_Obj_Selector (Led_Tablet tablet, HGDIOBJ objToSelect)
         : fTablet (tablet)
@@ -3268,6 +3192,11 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #if qProvideIMESupport
+    /*
+     ********************************************************************************
+     *********************************** Led_IME ************************************
+     ********************************************************************************
+     */
     DISABLE_COMPILER_MSC_WARNING_START (6011)
     inline Led_IME& Led_IME::Get ()
     {

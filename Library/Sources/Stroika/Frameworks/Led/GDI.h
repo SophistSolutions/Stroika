@@ -7,13 +7,11 @@
 #include "../StroikaPreComp.h"
 
 /*
-@MODULE:    LedGDI
-@DESCRIPTION:
-        <p>Graphix Library support. This code encapsulates access to underlying GDI for modularity sake.
-    For historical reasons - as of Led 3.0 - there is still some direct access to underlying GDI in parts of Led
-    but that will gradually (hopefully right after 3.0) be eliminated.</p>
-        <p>Also - no class library dependencies (ie no MFC dependencies). So we can build MFC-Free Win32 apps more
-    easily.</p>
+ * Graphix Library support. This code encapsulates access to underlying GDI for modularity sake.
+ *  For historical reasons - as of Led 3.0 - there is still some direct access to underlying GDI in parts of Led
+ *  but that will gradually (hopefully right after 3.0) be eliminated.</p>
+ *     Also - no class library dependencies (ie no MFC dependencies). So we can build MFC-Free Win32 apps more
+ *  easily.
  */
 
 #if defined(__cpp_impl_three_way_comparison)
@@ -38,12 +36,11 @@
 
 namespace Stroika::Frameworks::Led {
 
-    /*
-    @CLASS:         Led_Coordinate
-    @DESCRIPTION:   <p><code>Led_Coordinate</code> is the <code>signed</code> analog of @'Led_Distance'.
-        @'Led_Point' is a tuple of <code>Led_Coordinates</code>s
-        (vertical and horizontal).</p>
-    */
+    /**
+     * <code>Led_Coordinate</code> is the <code>signed</code> analog of @'Led_Distance'.
+     *    @'Led_Point' is a tuple of <code>Led_Coordinates</code>s
+     *     (vertical and horizontal).</p>
+     */
     using Led_Coordinate = long;
 
     /*
@@ -136,7 +133,6 @@ namespace Stroika::Frameworks::Led {
     };
 
 #if qPlatform_MacOS
-
     inline GrafPtr Led_GetCurrentGDIPort ()
     {
 #if qPeekAtQuickDrawGlobals
@@ -149,13 +145,14 @@ namespace Stroika::Frameworks::Led {
         EnsureNotNull (t);
         return t;
     }
+#endif
 
-#elif qPlatform_Windows
+#if qPlatform_Windows
 
     class Led_FontObject {
     public:
         Led_FontObject ()
-            : m_hObject (nullptr)
+            : m_hObject{nullptr}
         {
         }
         ~Led_FontObject ()
@@ -199,7 +196,7 @@ namespace Stroika::Frameworks::Led {
     class Led_Brush {
     public:
         Led_Brush (COLORREF crColor)
-            : m_hObject (nullptr)
+            : m_hObject{nullptr}
         {
             if (!Attach (::CreateSolidBrush (crColor)))
                 Led_ThrowOutOfMemoryException ();
@@ -232,13 +229,10 @@ namespace Stroika::Frameworks::Led {
     private:
         HBRUSH m_hObject;
     };
-
 #endif
 
-    /*
-    @CLASS:         Point_Base<COORD_TYPE>
-    @DESCRIPTION:
-    */
+    /**
+     */
     template <typename COORD_TYPE>
     struct Point_Base {
     public:
@@ -247,14 +241,12 @@ namespace Stroika::Frameworks::Led {
     public:
         Point_Base ();
         Point_Base (COORD_TYPE newV, COORD_TYPE newH);
-#if !qNestedTemplateCTORInTemplateBug
         template <typename OTHER_POINT_BASE_TYPE>
         explicit Point_Base (OTHER_POINT_BASE_TYPE o)
             : v (COORD_TYPE (o.v))
             , h (COORD_TYPE (o.h))
         {
         }
-#endif
 
     public:
         COORD_TYPE v;
@@ -287,7 +279,7 @@ namespace Stroika::Frameworks::Led {
     /*
      *  \note <a href="Coding Conventions.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
-    */
+     */
     template <typename POINT_TYPE, typename SIZE_TYPE>
     struct Rect_Base {
     public:
@@ -348,64 +340,17 @@ namespace Stroika::Frameworks::Led {
     bool operator!= (const Rect_Base<POINT_TYPE, SIZE_TYPE>& lhs, const Rect_Base<POINT_TYPE, SIZE_TYPE>& rhs);
 #endif
 
-#if qNestedTemplateCTORInTemplateBug
-    struct Led_Point;
-    struct Led_Size : public Point_Base<Led_Distance> {
-        using inherited = Point_Base<Led_Distance>;
-        inline Led_Size ()
-            : inherited ()
-        {
-        }
-        inline Led_Size (inherited i)
-            : inherited (i)
-        {
-        }
-        inline Led_Size (Led_Distance newV, Led_Distance newH)
-            : inherited (newV, newH)
-        {
-        }
-        Led_Size (Led_Point p);
-    };
-#else
     /*
     @CLASS:         Led_Size
     @DESCRIPTION:   <p>Simple typedef of @'Point_Base<COORD_TYPE>' using @'Led_Distance'.</p>
     */
     using Led_Size = Point_Base<Led_Distance>;
-#endif
 
-/*
+    /*
     @CLASS:         Led_Point
     @DESCRIPTION:   <p>Simple typedef of @'Point_Base<COORD_TYPE>' using @'Led_Coordinate'.</p>
     */
-#if qNestedTemplateCTORInTemplateBug
-    struct Led_Point : public Point_Base<Led_Coordinate> {
-        using inherited = Point_Base<Led_Coordinate>;
-        inline Led_Point ()
-            : inherited ()
-        {
-        }
-        inline Led_Point (inherited i)
-            : inherited (i)
-        {
-        }
-        inline Led_Point (Led_Coordinate newV, Led_Coordinate newH)
-            : inherited (newV, newH)
-        {
-        }
-        Led_Point (Led_Size p);
-    };
-    inline Led_Size::Led_Size (Led_Point p)
-        : inherited (p.v, p.h)
-    {
-    }
-    inline Led_Point::Led_Point (Led_Size p)
-        : inherited (p.v, p.h)
-    {
-    }
-#else
     using Led_Point = Point_Base<Led_Coordinate>;
-#endif
     Led_Point operator- (const Led_Point& lhs, const Led_Point& rhs);
 
     /*
@@ -425,24 +370,6 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>Simple typedef of @'Rect_Base<POINT_TYPE,SIZE_TYPE>' using @'Led_TWIPS_Point'.</p>
     */
     using Led_TWIPS_Rect = Rect_Base<Led_TWIPS_Point, Led_TWIPS_Point>;
-
-#if qPlatform_Windows
-    /*
-    @CLASS:         auto_gdi_ptr
-    @DESCRIPTION:       <p>Like auto_ptr<> - except to just assure a Win32 GDI object is deleted. NB: We cannot
-                    use a template specialization of auto_ptr<> because HGDIOBJ is really just a simple typedef
-                    (void*) - and so we would be specializing the deletion of any void* typedef (more than
-                    really desired and less than safe).</p>
-    */
-    class auto_gdi_ptr {
-    public:
-        auto_gdi_ptr (HGDIOBJ gdiObj);
-        ~auto_gdi_ptr ();
-
-    private:
-        HGDIOBJ fGDIObj;
-    };
-#endif
 
     /*
     @CLASS:         Led_Region
@@ -518,7 +445,6 @@ namespace Stroika::Frameworks::Led {
         HRGN fRgn;
 #endif
     };
-
     Led_Region operator* (const Led_Region& lhs, const Led_Region& rhs);
     Led_Region operator+ (const Led_Region& lhs, const Led_Region& rhs);
 
@@ -615,7 +541,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_Windows
     public:
         Led_Pen (int nPenStyle, int nWidth, COLORREF crColor)
-            : m_hObject (nullptr)
+            : m_hObject{nullptr}
         {
             if (!Attach (::CreatePen (nPenStyle, nWidth, crColor)))
                 Led_ThrowOutOfMemoryException ();
@@ -749,30 +675,25 @@ namespace Stroika::Frameworks::Led {
             eExactTWIPSSpacing,
             eExactLinesSpacing
         };
-        Rule     fRule;
-        unsigned fArg;
+        Rule     fRule{eSingleSpace};
+        unsigned fArg{0};
 
     public:
-        Led_LineSpacing ()
-            : fRule (eSingleSpace)
-            , fArg (0)
-        {
-        }
+        Led_LineSpacing () = default;
         Led_LineSpacing (Rule rule)
-            : fRule (rule)
-            , fArg (0)
+            : fRule{rule}
         {
             Require (rule == eSingleSpace or rule == eOnePointFiveSpace or rule == eDoubleSpace);
         }
         Led_LineSpacing (Rule rule, Led_TWIPS twips)
-            : fRule (rule)
-            , fArg (twips)
+            : fRule{rule}
+            , fArg{static_cast<unsigned> (twips)}
         {
             Require (rule == eAtLeastTWIPSSpacing or rule == eExactTWIPSSpacing);
         }
         Led_LineSpacing (Rule rule, unsigned lineCount)
-            : fRule (rule)
-            , fArg (lineCount)
+            : fRule{rule}
+            , fArg{lineCount}
         {
             Require (rule == eExactLinesSpacing);
             switch (lineCount) {
@@ -851,17 +772,15 @@ namespace Stroika::Frameworks::Led {
             FontNameSpecifier ();
             FontNameSpecifier (const Led_SDK_Char* from);
             Led_SDK_Char fName[LF_FACESIZE];
-#if qPlatform_Windows
-            bool operator== (const Led_FontSpecification::FontNameSpecifier& rhs) const
+            bool         operator== (const FontNameSpecifier& rhs) const
             {
                 return (::_tcscmp (fName, rhs.fName) == 0);
             }
 #if __cpp_impl_three_way_comparison < 201907
-            bool operator!= (const Led_FontSpecification::FontNameSpecifier& rhs) const
+            bool operator!= (const FontNameSpecifier& rhs) const
             {
                 return not(*this == rhs);
             }
-#endif
 #endif
         };
 #elif qStroika_FeatureSupported_XWindows
@@ -909,8 +828,8 @@ namespace Stroika::Frameworks::Led {
         nonvirtual bool GetStyle_Extended () const;
         nonvirtual void SetStyle_Extended (bool isExtended);
 #elif qPlatform_Windows
-        nonvirtual bool GetStyle_Strikeout () const;
-        nonvirtual void SetStyle_Strikeout (bool isStrikeout);
+        nonvirtual bool    GetStyle_Strikeout () const;
+        nonvirtual void    SetStyle_Strikeout (bool isStrikeout);
 #endif
 
         using FontSize = uint16_t;
@@ -945,12 +864,11 @@ namespace Stroika::Frameworks::Led {
         /**
          */
         strong_ordering operator<=> (const Led_FontSpecification& rhs) const;
-
+#endif
     public:
         /**
          */
         bool operator== (const Led_FontSpecification& rhs) const;
-#endif
 
     public:
         nonvirtual void MergeIn (const Led_IncrementalFontSpecification& addInTheseAttributes);
@@ -962,7 +880,7 @@ namespace Stroika::Frameworks::Led {
         short fFontSize;
         Style fFontStyle;
 #elif qPlatform_Windows
-        LOGFONT fFontInfo; // Could make this MUCH smaller on windows - do for future release!
+        LOGFONT            fFontInfo; // Could make this MUCH smaller on windows - do for future release!
 #elif qStroika_FeatureSupported_XWindows
         FontNameSpecifier fFontFamily;
         bool              fBold : 1;
@@ -973,15 +891,6 @@ namespace Stroika::Frameworks::Led {
         SubOrSuperScript fSubOrSuperScript;
         Led_Color        fTextColor;
     };
-#if __cpp_impl_three_way_comparison < 201907
-#if qPlatform_Windows
-    bool operator== (const Led_FontSpecification::FontNameSpecifier& lhs, const Led_FontSpecification::FontNameSpecifier& rhs);
-    bool operator!= (const Led_FontSpecification::FontNameSpecifier& lhs, const Led_FontSpecification::FontNameSpecifier& rhs);
-#endif
-
-    bool operator== (const Led_FontSpecification& lhs, const Led_FontSpecification& rhs);
-    bool operator!= (const Led_FontSpecification& lhs, const Led_FontSpecification& rhs);
-#endif
 
     /*
     @CLASS:         Led_IncrementalFontSpecification
@@ -1073,10 +982,10 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void InvalidateStyle_Extended ();
         nonvirtual void SetStyle_Extended (bool isExtended);
 #elif qPlatform_Windows
-        nonvirtual bool GetStyle_Strikeout () const;
-        nonvirtual bool GetStyle_Strikeout_Valid () const;
-        nonvirtual void InvalidateStyle_Strikeout ();
-        nonvirtual void SetStyle_Strikeout (bool isStrikeout);
+        nonvirtual bool    GetStyle_Strikeout () const;
+        nonvirtual bool    GetStyle_Strikeout_Valid () const;
+        nonvirtual void    InvalidateStyle_Strikeout ();
+        nonvirtual void    SetStyle_Strikeout (bool isStrikeout);
 #endif
 
         /*
@@ -1119,8 +1028,8 @@ namespace Stroika::Frameworks::Led {
 
 #if __cpp_impl_three_way_comparison >= 201907
         bool operator<=> (const Led_IncrementalFontSpecification& rhs) = delete;
-        bool operator== (const Led_IncrementalFontSpecification& rhs);
 #endif
+        bool operator== (const Led_IncrementalFontSpecification& rhs) const;
 
     public:
         nonvirtual void MergeIn (const Led_IncrementalFontSpecification& addInTheseAttributes);
@@ -1146,7 +1055,6 @@ namespace Stroika::Frameworks::Led {
     };
 
 #if __cpp_impl_three_way_comparison < 201907
-    bool operator== (const Led_IncrementalFontSpecification& lhs, const Led_IncrementalFontSpecification& rhs);
     bool operator!= (const Led_IncrementalFontSpecification& lhs, const Led_IncrementalFontSpecification& rhs);
 #endif
 
@@ -1250,11 +1158,11 @@ namespace Stroika::Frameworks::Led {
     short     GetRectWidth (const Rect& r);
 #elif qPlatform_Windows
     Led_Point AsLedPoint (POINT p);
-    POINT     AsPOINT (Led_Point p);
-    Led_Rect  AsLedRect (RECT r);
-    RECT      AsRECT (Led_Rect p);
-    SIZE      AsSIZE (Led_Size s);
-    Led_Size  AsLedSize (SIZE s);
+    POINT AsPOINT (Led_Point p);
+    Led_Rect AsLedRect (RECT r);
+    RECT AsRECT (Led_Rect p);
+    SIZE AsSIZE (Led_Size s);
+    Led_Size AsLedSize (SIZE s);
 #elif qStroika_FeatureSupported_XWindows
     Led_Rect AsLedRect (const XRectangle& r);
     XRectangle AsXRect (const Led_Rect& r);
@@ -1388,29 +1296,29 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         nonvirtual void SetPort ();
 #elif qPlatform_Windows
-        nonvirtual BOOL     BitBlt (int x, int y, int nWidth, int nHeight, Led_Tablet_* pSrcDC, int xSrc, int ySrc, DWORD dwRop);
-        nonvirtual BOOL     CreateCompatibleDC (Led_Tablet_* pDC);
+        nonvirtual BOOL BitBlt (int x, int y, int nWidth, int nHeight, Led_Tablet_* pSrcDC, int xSrc, int ySrc, DWORD dwRop);
+        nonvirtual BOOL CreateCompatibleDC (Led_Tablet_* pDC);
         nonvirtual COLORREF SetTextColor (COLORREF crColor);
         nonvirtual COLORREF SetBkColor (COLORREF crColor);
-        nonvirtual BOOL     IsPrinting () const;
-        nonvirtual BOOL     RoundRect (int x1, int y1, int x2, int y2, int x3, int y3);
-        nonvirtual BOOL     TextOut (int x, int y, LPCTSTR lpszString, int nCount);
+        nonvirtual BOOL IsPrinting () const;
+        nonvirtual BOOL RoundRect (int x1, int y1, int x2, int y2, int x3, int y3);
+        nonvirtual BOOL TextOut (int x, int y, LPCTSTR lpszString, int nCount);
         //      nonvirtual  SIZE    GetTextExtent (LPCTSTR lpszString, int nCount) const;
-        nonvirtual int     SetBkMode (int nBkMode);
-        nonvirtual SIZE    GetWindowExt () const;
-        nonvirtual SIZE    GetViewportExt () const;
-        nonvirtual BOOL    Rectangle (int x1, int y1, int x2, int y2);
-        nonvirtual BOOL    Rectangle (const RECT& r);
-        nonvirtual BOOL    Rectangle (LPCRECT lpRect);
-        nonvirtual BOOL    GetTextMetrics (LPTEXTMETRIC lpMetrics) const;
+        nonvirtual int SetBkMode (int nBkMode);
+        nonvirtual SIZE GetWindowExt () const;
+        nonvirtual SIZE GetViewportExt () const;
+        nonvirtual BOOL Rectangle (int x1, int y1, int x2, int y2);
+        nonvirtual BOOL Rectangle (const RECT& r);
+        nonvirtual BOOL Rectangle (LPCRECT lpRect);
+        nonvirtual BOOL GetTextMetrics (LPTEXTMETRIC lpMetrics) const;
         nonvirtual HBITMAP SelectObject (HBITMAP hBitmap);
 #if defined(STRICT)
         nonvirtual HFONT SelectObject (HFONT hFont);
 #endif
         nonvirtual POINT SetWindowOrg (int x, int y);
-        nonvirtual int   GetDeviceCaps (int nIndex) const;
-        nonvirtual BOOL  Attach (HDC hDC, OwnDCControl ownsDC = eOwnsDC);
-        nonvirtual HDC   Detach ();
+        nonvirtual int GetDeviceCaps (int nIndex) const;
+        nonvirtual BOOL Attach (HDC hDC, OwnDCControl ownsDC = eOwnsDC);
+        nonvirtual HDC Detach ();
 #elif qStroika_FeatureSupported_XWindows
     public:
         nonvirtual void SetFont (const Led_FontSpecification& fontSpec);
@@ -1497,9 +1405,9 @@ namespace Stroika::Frameworks::Led {
         GrafPtr fGrafPort;
 #elif qPlatform_Windows
     public:
-        HDC          m_hDC;       // The output DC (must be first data member)
-        HDC          m_hAttribDC; // The Attribute DC
-        BOOL         m_bPrinting;
+        HDC m_hDC;       // The output DC (must be first data member)
+        HDC m_hAttribDC; // The Attribute DC
+        BOOL m_bPrinting;
         OwnDCControl fOwnsDC;
 
     private:
@@ -1647,7 +1555,7 @@ namespace Stroika::Frameworks::Led {
         CGrafPtr  fOrigPort;
         GWorldPtr fOffscreenGWorld;
 #elif qPlatform_Windows
-        OT         fMemDC;
+        OT fMemDC;
         Led_Bitmap fMemoryBitmap; // only can create / select inside loop cuz there is where we know the size.
         // but decare outside, so stays around for successive rows which are the same size.
         HBITMAP fOldBitmapInDC; // used for save/restore of bitmap associated with the DC.

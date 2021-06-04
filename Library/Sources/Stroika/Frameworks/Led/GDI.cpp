@@ -68,11 +68,6 @@ using namespace Stroika::Frameworks::Led;
 #endif
 #endif
 
-#if 0
-//Hack to occasionally have some reliable test to display in Arabic
-static  const wchar_t   kHiInArabic[]   =   L"\xfe7d\xfe8d\xfe91\xfea3\xfead\xfedb";    // IN DISPLAY ORDER - NOT LOGICAL ORDER
-#endif
-
 #if qPlatform_Windows
 inline bool operator== (PALETTEENTRY lhs, COLORREF rhs)
 {
