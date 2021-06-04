@@ -28,7 +28,8 @@
     "variant": "cpp",
     "optional": "cpp",
     "mutex": "cpp",
-    "shared_mutex": "cpp"
+    "shared_mutex": "cpp",
+    "thread": "cpp"
   },
   "files.watcherExclude": {
     "Archive/**": true,
