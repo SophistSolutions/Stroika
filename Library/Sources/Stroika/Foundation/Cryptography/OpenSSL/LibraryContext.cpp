@@ -163,7 +163,11 @@ LibraryContext::LibraryContext ()
             &digestNames);
 #else
         ::EVP_MD_do_all_sorted (
+#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
+            [] (const ::EVP_MD* md, const char*, const char*, void* arg) { AccumulateIntoSetOfDigestNames_ (md, reinterpret_cast<Set<String>*> (arg)); },
+#else
             [] (const ::EVP_MD* md, [[maybe_unused]] const char* from, [[maybe_unused]] const char* to, void* arg) { AccumulateIntoSetOfDigestNames_ (md, reinterpret_cast<Set<String>*> (arg)); },
+#endif
             &digestNames);
 #endif
         DbgTrace (L"Found pAvailableDigestAlgorithms-FIRST-PASS (cnt=%d): %s", digestNames.size (), Characters::ToString (digestNames).c_str ());
