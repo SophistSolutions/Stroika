@@ -154,7 +154,15 @@ namespace Stroika::Foundation::Debug {
             {
                 lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
                 size_t            i = 0;
-                for ([[maybe_unused]] const auto& x : fSharedLockThreads_) {
+                // 
+                for (
+                    #if !qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop2_Buggy
+                    [[maybe_unused]] 
+                    #endif
+                    const auto& x : fSharedLockThreads_) {
+                        #if qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop2_Buggy
+                        &x;
+                        #endif
                     i++;
                 }
                 return i;

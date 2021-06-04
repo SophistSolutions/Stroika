@@ -326,6 +326,33 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 
 #endif
 
+
+/*
+  Building Stroika Foundation Objs:
+      Compiling Library/Sources/Stroika/Foundation/Configuration/Version.cpp ... 
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\debug\assertexternallysynchronizedlock.h(158): fatal error C1001: An internal error has occurred in the compiler.
+(compiler file 'd:\agent\_work\4\s\src\vctools\compiler\cxxfe\sl\p1\cxx\grammar.y', line 12721)
+ To work around this problem, try simplifying or changing the program near the locations listed above.
+Please choose the Technical Support command on the Visual C++
+ Help menu, or open the Technical Support help file for more information
+      Compiling Library/Sources/Stroika/Foundation/Configuration/Platform/Windows/Registry.cpp ... 
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\debug\assertexternallysynchronizedlock.h(158): fatal error C1001: An internal error has occurred in the compiler.
+(compiler file 'd:\agent\_work\4\s\src\vctools\compiler\cxxfe\sl\p1\cxx\grammar.y', line 12721)
+ To work around this problem, try simplifying or changing the program near the locations listed above.
+Please choose the Technical Support command on the Visual C++
+ Help menu, or open the Technical Support help file for more information
+       */
+#ifndef qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop2_Buggy
+
+#if defined(_MSC_VER)
+#define qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop2_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
+#else
+#define qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop2_Buggy 0
+#endif
+
+#endif
+
+
 /**
  *
  Sent email to MSFT - can reproduce with ASAN and -- https://developercommunity.visualstudio.com/t/initializer-list-lifetime-buggy-maybe-just-asan-is/1439352
