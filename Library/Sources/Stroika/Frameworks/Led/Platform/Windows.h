@@ -830,20 +830,20 @@ namespace Stroika::Frameworks::Led::Platform {
         bool controlPressed = !!(::GetKeyState (VK_CONTROL) & 0x8000);
 
 #if qCompilerAndStdLib_usingOfEnumFailsToBringIntoScope_Buggy
-        static constexpr auto eDefaultUpdate = TextInteractor::eDefaultUpdate;
-        static constexpr auto eImmediateUpdate =  TextInteractor::eImmediateUpdate;
+        static constexpr auto eDefaultUpdate   = TextInteractor::eDefaultUpdate;
+        static constexpr auto eImmediateUpdate = TextInteractor::eImmediateUpdate;
 
-        static constexpr auto eCursorBack =  TextInteractor::eCursorBack;
-        static constexpr auto eCursorByBuffer =  TextInteractor::eCursorByBuffer;
-        static constexpr auto eCursorByChar =  TextInteractor::eCursorByChar;
-        static constexpr auto eCursorByLine =  TextInteractor::eCursorByLine;
-        static constexpr auto eCursorByRow =  TextInteractor::eCursorByRow;
-        static constexpr auto eCursorByWord =  TextInteractor::eCursorByWord;
-        static constexpr auto eCursorExtendingSelection =  TextInteractor::eCursorExtendingSelection;
-        static constexpr auto eCursorForward =  TextInteractor::eCursorForward;
-        static constexpr auto eCursorMoving =  TextInteractor::eCursorMoving;
-        static constexpr auto eCursorToEnd =  TextInteractor::eCursorToEnd;
-        static constexpr auto eCursorToStart =  TextInteractor::eCursorToStart;
+        static constexpr auto eCursorBack               = TextInteractor::eCursorBack;
+        static constexpr auto eCursorByBuffer           = TextInteractor::eCursorByBuffer;
+        static constexpr auto eCursorByChar             = TextInteractor::eCursorByChar;
+        static constexpr auto eCursorByLine             = TextInteractor::eCursorByLine;
+        static constexpr auto eCursorByRow              = TextInteractor::eCursorByRow;
+        static constexpr auto eCursorByWord             = TextInteractor::eCursorByWord;
+        static constexpr auto eCursorExtendingSelection = TextInteractor::eCursorExtendingSelection;
+        static constexpr auto eCursorForward            = TextInteractor::eCursorForward;
+        static constexpr auto eCursorMoving             = TextInteractor::eCursorMoving;
+        static constexpr auto eCursorToEnd              = TextInteractor::eCursorToEnd;
+        static constexpr auto eCursorToStart            = TextInteractor::eCursorToStart;
 #else
         using TextInteractor::eDefaultUpdate;
         using TextInteractor::eImmediateUpdate;
@@ -1178,7 +1178,7 @@ namespace Stroika::Frameworks::Led::Platform {
 #if qSupportWindowsSDKCallbacks
         // Notify the parent window...
         HWND hWnd = this->GetValidatedHWND ();
-        (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, (WPARAM)MAKELONG (GetWindowID (), EN_SETFOCUS), (LPARAM) (hWnd));
+        (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, (WPARAM)MAKELONG (GetWindowID (), EN_SETFOCUS), (LPARAM)(hWnd));
 #endif
     }
     template <typename BASE_INTERACTOR>
@@ -1204,7 +1204,7 @@ namespace Stroika::Frameworks::Led::Platform {
 #if qSupportWindowsSDKCallbacks
         // Notify the parent window...
         HWND hWnd = this->GetValidatedHWND ();
-        (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, (WPARAM)MAKELONG (GetWindowID (), EN_KILLFOCUS), (LPARAM) (hWnd));
+        (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, (WPARAM)MAKELONG (GetWindowID (), EN_KILLFOCUS), (LPARAM)(hWnd));
 #endif
     }
     template <typename BASE_INTERACTOR>
@@ -1279,8 +1279,13 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         DbgTrace (Led_SDK_TCHAROF ("Led_Win32_Helper<BASE_INTERACTOR>::OnVScroll_Msg (nSBCode=%d,...)\n"), nSBCode);
 
+#if qCompilerAndStdLib_usingOfEnumFailsToBringIntoScope_Buggy
+        static constexpr auto eDefaultUpdate   = TextInteractor::eDefaultUpdate;
+        static constexpr auto eImmediateUpdate = TextInteractor::eImmediateUpdate;
+#else
         using TextInteractor::eDefaultUpdate;
         using TextInteractor::eImmediateUpdate;
+#endif
 
         /*
          *  NB: the nPos is a 16-bit value - and we could have a 32-bit offset - so use GetScrollInfo  () to get the POS - rather
@@ -1667,8 +1672,13 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASE_INTERACTOR>
     void Led_Win32_Helper<BASE_INTERACTOR>::RefreshWindowRect_ (const Led_Rect& windowRectArea, UpdateMode updateMode) const
     {
+#if qCompilerAndStdLib_usingOfEnumFailsToBringIntoScope_Buggy
+        static constexpr auto eDefaultUpdate   = TextInteractor::eDefaultUpdate;
+        static constexpr auto eImmediateUpdate = TextInteractor::eImmediateUpdate;
+#else
         using TextInteractor::eDelayedUpdate;
         using TextInteractor::eImmediateUpdate;
+#endif
         HWND hWnd = GetHWND ();
         if (hWnd != nullptr) {
             Assert (::IsWindow (hWnd));
@@ -2805,8 +2815,13 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASECLASS>
     LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgSetFont (WPARAM wParam, LPARAM lParam)
     {
+#if qCompilerAndStdLib_usingOfEnumFailsToBringIntoScope_Buggy
+        static constexpr auto eDefaultUpdate   = TextInteractor::eDefaultUpdate;
+        static constexpr auto eImmediateUpdate = TextInteractor::eImmediateUpdate;
+#else
         using TextInteractor::eDefaultUpdate;
         using TextInteractor::eNoUpdate;
+#endif
         Led_IncrementalFontSpecification fontSpec;
         {
             HFONT fontToUse = reinterpret_cast<HFONT> (wParam);
