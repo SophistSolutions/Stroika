@@ -260,7 +260,11 @@ namespace Stroika::Foundation::Time {
     {
         return Date{kMinJulianRep};
     }
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+    constexpr Date Date::kMax{UINT_MAX - 1};
+#else
     inline constexpr Date Date::kMax{UINT_MAX - 1};
+#endif
     inline constexpr Date Date::max ()
     {
         return Date{UINT_MAX - 1};

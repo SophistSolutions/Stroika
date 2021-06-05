@@ -62,6 +62,10 @@ Date::FormatException::FormatException ()
  *********************************** Date ***************************************
  ********************************************************************************
  */
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+Date Date::kMax;
+#endif
+
 Date Date::Parse (const String& rep, ParseFormat pf)
 {
     // NB: if rep.empty() this will always throw, but handled in each case below
