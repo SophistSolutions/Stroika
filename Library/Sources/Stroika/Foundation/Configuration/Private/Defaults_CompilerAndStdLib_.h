@@ -381,6 +381,16 @@ Please choose the Technical Support command on the Visual C++
 
 #endif
 
+#ifndef qCompilerAndStdLib_uniformInitializationsFailsOnIntSize_t_Buggy
+
+#if defined(_MSC_VER)
+#define qCompilerAndStdLib_uniformInitializationsFailsOnIntSize_t_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
+#else
+#define qCompilerAndStdLib_uniformInitializationsFailsOnIntSize_t_Buggy 0
+#endif
+
+#endif
+
 /*
 Building Stroika Foundation Objs:
       Compiling Library/Sources/Stroika/Foundation/IO/Network/HTTP/CacheControl.cpp ... 
