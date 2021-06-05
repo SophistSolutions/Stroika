@@ -1192,7 +1192,8 @@ STILL:
 #if defined(_MSC_VER)
 // assume broken in _MS_VS_2k17_15Pt7Pt3_
 // verified fixed in _MS_VS_2k17_15Pt7Pt4_
-#define qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy (_MSC_FULL_VER <= _MS_VS_2k17_15Pt7Pt3_)
+//#define qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy (_MSC_FULL_VER <= _MS_VS_2k17_15Pt7Pt3_)
+#define qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
 #else
 #define qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy 0
 #endif
