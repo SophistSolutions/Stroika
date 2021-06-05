@@ -775,7 +775,7 @@ namespace Stroika::Frameworks::Led::Platform {
         static constexpr auto eDefaultUpdate = TextInteractor::eDefaultUpdate;
 #else
         using TextInteractor::eDefaultUpdate;
-        #endif
+#endif
 
         if (this->GetStyle () & WS_DISABLED) {
             return;
