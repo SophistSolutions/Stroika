@@ -828,8 +828,8 @@ namespace Stroika::Frameworks::Led {
         nonvirtual bool GetStyle_Extended () const;
         nonvirtual void SetStyle_Extended (bool isExtended);
 #elif qPlatform_Windows
-        nonvirtual bool    GetStyle_Strikeout () const;
-        nonvirtual void    SetStyle_Strikeout (bool isStrikeout);
+        nonvirtual bool GetStyle_Strikeout () const;
+        nonvirtual void SetStyle_Strikeout (bool isStrikeout);
 #endif
 
         using FontSize = uint16_t;
@@ -880,7 +880,7 @@ namespace Stroika::Frameworks::Led {
         short fFontSize;
         Style fFontStyle;
 #elif qPlatform_Windows
-        LOGFONT            fFontInfo; // Could make this MUCH smaller on windows - do for future release!
+        LOGFONT fFontInfo; // Could make this MUCH smaller on windows - do for future release!
 #elif qStroika_FeatureSupported_XWindows
         FontNameSpecifier fFontFamily;
         bool              fBold : 1;
@@ -982,10 +982,10 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void InvalidateStyle_Extended ();
         nonvirtual void SetStyle_Extended (bool isExtended);
 #elif qPlatform_Windows
-        nonvirtual bool    GetStyle_Strikeout () const;
-        nonvirtual bool    GetStyle_Strikeout_Valid () const;
-        nonvirtual void    InvalidateStyle_Strikeout ();
-        nonvirtual void    SetStyle_Strikeout (bool isStrikeout);
+        nonvirtual bool GetStyle_Strikeout () const;
+        nonvirtual bool GetStyle_Strikeout_Valid () const;
+        nonvirtual void InvalidateStyle_Strikeout ();
+        nonvirtual void SetStyle_Strikeout (bool isStrikeout);
 #endif
 
         /*
