@@ -331,14 +331,14 @@ namespace Stroika::Frameworks::Led {
          */
         constexpr strong_ordering operator<=> (const Rect_Base& rhs) const = default;
 #endif
-    };
-
+        bool operator== (const Rect_Base& rhs) const;
 #if __cpp_impl_three_way_comparison < 201907
-    template <typename POINT_TYPE, typename SIZE_TYPE>
-    bool operator== (const Rect_Base<POINT_TYPE, SIZE_TYPE>& lhs, const Rect_Base<POINT_TYPE, SIZE_TYPE>& rhs);
-    template <typename POINT_TYPE, typename SIZE_TYPE>
-    bool operator!= (const Rect_Base<POINT_TYPE, SIZE_TYPE>& lhs, const Rect_Base<POINT_TYPE, SIZE_TYPE>& rhs);
+        inline bool operator!= (const Rect_Base& rhs) const
+        {
+            return not(*this == rhs);
+        }
 #endif
+    };
 
     /*
     @CLASS:         Led_Size
@@ -371,10 +371,9 @@ namespace Stroika::Frameworks::Led {
     */
     using Led_TWIPS_Rect = Rect_Base<Led_TWIPS_Point, Led_TWIPS_Point>;
 
-    /*
-    @CLASS:         Led_Region
-    @DESCRIPTION:   <p>Portable GDI abstraction for 'Region' object.</p>
-    */
+    /**
+     * \brief Portable GDI abstraction for 'Region' object.
+     */
     class Led_Region {
     public:
         Led_Region ();
@@ -448,11 +447,10 @@ namespace Stroika::Frameworks::Led {
     Led_Region operator* (const Led_Region& lhs, const Led_Region& rhs);
     Led_Region operator+ (const Led_Region& lhs, const Led_Region& rhs);
 
-    /*
-    @CLASS:         Led_Color
-    @DESCRIPTION:   <p>This class is a portable representation of a color. It can be constructed either
-                from its basic RGB componets, or from the native color representations on a particular platform.</p>
-    */
+    /**
+     * This class is a portable representation of a color. It can be constructed either
+     * from its basic RGB componets, or from the native color representations on a particular platform.
+     */
     class Led_Color {
     public:
         // regardless of Mac or Windows, we use the same size ColorValue so we can write
@@ -531,13 +529,34 @@ namespace Stroika::Frameworks::Led {
     unsigned int Distance_Squared (COLORREF lhs, COLORREF rhs);
 #endif
 
-    /*
-    @CLASS:         Led_Pen
-    @DESCRIPTION:   <p>Helper class to keep track of GDI information used for drawing.
-                Very different implementations befween Mac and Windows.</p>
-                    <p>Note - this class is used in conjunction with @'Led_GDI_Obj_Selector'.</p>
-    */
+    /**
+     *  Helper class to keep track of GDI information used for drawing.
+     *  Very different implementations befween Mac and Windows.
+     *
+     *  Note - this class is used in conjunction with @'Led_GDI_Obj_Selector'.
+     */
     class Led_Pen {
+#if qPlatform_MacOS
+    public:
+        static const Pattern kWhitePattern;
+        static const Pattern kLightGrayPattern;
+        static const Pattern kGrayPattern;
+        static const Pattern kDarkGrayPattern;
+        static const Pattern kBlackPattern;
+
+    public:
+        Led_Pen (short penStyle = srcCopy, const Pattern* penPat = &kBlackPattern, const Led_Color& color = Led_Color::kBlack)
+            : fPenStyle (penStyle)
+            , fPenPat (*penPat)
+            , fPenColor (color)
+        {
+        }
+
+    public:
+        short     fPenStyle;
+        Pattern   fPenPat;
+        Led_Color fPenColor;
+#endif
 #if qPlatform_Windows
     public:
         Led_Pen (int nPenStyle, int nWidth, COLORREF crColor)
@@ -574,30 +593,9 @@ namespace Stroika::Frameworks::Led {
     private:
         HPEN m_hObject;
 #endif
-#if qPlatform_MacOS
-    public:
-        static const Pattern kWhitePattern;
-        static const Pattern kLightGrayPattern;
-        static const Pattern kGrayPattern;
-        static const Pattern kDarkGrayPattern;
-        static const Pattern kBlackPattern;
-
-    public:
-        Led_Pen (short penStyle = srcCopy, const Pattern* penPat = &kBlackPattern, const Led_Color& color = Led_Color::kBlack)
-            : fPenStyle (penStyle)
-            , fPenPat (*penPat)
-            , fPenColor (color)
-        {
-        }
-
-    public:
-        short     fPenStyle;
-        Pattern   fPenPat;
-        Led_Color fPenColor;
-#endif
 #if qStroika_FeatureSupported_XWindows
     public:
-        Led_Pen () {}
+        Led_Pen () = default;
 #endif
     };
 
@@ -741,7 +739,9 @@ namespace Stroika::Frameworks::Led {
         return not(lhs == rhs);
     }
 #endif
+
     class Led_IncrementalFontSpecification;
+
     /*
     @CLASS:         Led_FontSpecification
     @DESCRIPTION:   <p><code>Led_FontSpecification</code> is a utility class which portably represents
@@ -828,8 +828,8 @@ namespace Stroika::Frameworks::Led {
         nonvirtual bool GetStyle_Extended () const;
         nonvirtual void SetStyle_Extended (bool isExtended);
 #elif qPlatform_Windows
-        nonvirtual bool GetStyle_Strikeout () const;
-        nonvirtual void SetStyle_Strikeout (bool isStrikeout);
+        nonvirtual bool    GetStyle_Strikeout () const;
+        nonvirtual void    SetStyle_Strikeout (bool isStrikeout);
 #endif
 
         using FontSize = uint16_t;
@@ -880,7 +880,7 @@ namespace Stroika::Frameworks::Led {
         short fFontSize;
         Style fFontStyle;
 #elif qPlatform_Windows
-        LOGFONT fFontInfo; // Could make this MUCH smaller on windows - do for future release!
+        LOGFONT            fFontInfo; // Could make this MUCH smaller on windows - do for future release!
 #elif qStroika_FeatureSupported_XWindows
         FontNameSpecifier fFontFamily;
         bool              fBold : 1;
@@ -982,18 +982,18 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void InvalidateStyle_Extended ();
         nonvirtual void SetStyle_Extended (bool isExtended);
 #elif qPlatform_Windows
-        nonvirtual bool GetStyle_Strikeout () const;
-        nonvirtual bool GetStyle_Strikeout_Valid () const;
-        nonvirtual void InvalidateStyle_Strikeout ();
-        nonvirtual void SetStyle_Strikeout (bool isStrikeout);
+        nonvirtual bool    GetStyle_Strikeout () const;
+        nonvirtual bool    GetStyle_Strikeout_Valid () const;
+        nonvirtual void    InvalidateStyle_Strikeout ();
+        nonvirtual void    SetStyle_Strikeout (bool isStrikeout);
 #endif
 
         /*
-            *  Note the closely related nature of PointSize and PointSizeIncement.
-            *  If one is set, that automatically unsets the other. You cannot set both
-            *  at the same time. The former is used to specify the point size exactly.
-            *  The latter is used to specify an ajdustment to the pointsize.
-            */
+         *  Note the closely related nature of PointSize and PointSizeIncement.
+         *  If one is set, that automatically unsets the other. You cannot set both
+         *  at the same time. The former is used to specify the point size exactly.
+         *  The latter is used to specify an ajdustment to the pointsize.
+         */
         nonvirtual unsigned short GetPointSize () const;
         nonvirtual bool           GetPointSize_Valid () const;
         nonvirtual void           InvalidatePointSize ();
@@ -1242,14 +1242,15 @@ namespace Stroika::Frameworks::Led {
 
     class OffscreenTablet;
 
-    /*
-    @CLASS:         Led_Tablet_
-    @DESCRIPTION:   <p>See also @'Led_Tablet' - since that is what Led tends to make use of directly.</p>
-            <p>This class is used to wrap a low level graphics drawing device. On Windows - this is an HDC.
-        On the Mac - a GrafPtr (also CGrafPtr and GWorldPtr). On X-Windows - a drawable and display, and GC.</p>
-            <p>This class right now is a very thin wrapper on those drawing prodedures (mostly for backward compatability reasons.
-        Eventually - it may do a better job of wrapping those concepts/APIs genericly.</p>
-    */
+    /**
+     *  See also @'Led_Tablet' - since that is what Led tends to make use of directly.</p>
+     *      
+     *  This class is used to wrap a low level graphics drawing device. On Windows - this is an HDC.
+     *  On the Mac - a GrafPtr (also CGrafPtr and GWorldPtr). On X-Windows - a drawable and display, and GC.</p>
+     * 
+     *  This class right now is a very thin wrapper on those drawing prodedures (mostly for backward compatability reasons.
+     *  Eventually - it may do a better job of wrapping those concepts/APIs genericly.</p>
+     */
     class Led_Tablet_ {
     public:
 #if qPlatform_MacOS

@@ -282,18 +282,11 @@ namespace Stroika::Frameworks::Led {
         }
         return *this;
     }
-#if __cpp_impl_three_way_comparison < 201907
     template <typename POINT_TYPE, typename SIZE_TYPE>
-    inline bool operator== (const Rect_Base<POINT_TYPE, SIZE_TYPE>& lhs, const Rect_Base<POINT_TYPE, SIZE_TYPE>& rhs)
+    inline bool Rect_Base<POINT_TYPE, SIZE_TYPE>::operator== (const Rect_Base<POINT_TYPE, SIZE_TYPE>& rhs) const
     {
-        return ((lhs.GetLeft () == rhs.GetLeft ()) and (lhs.GetRight () == rhs.GetRight ()) and (lhs.GetTop () == rhs.GetTop ()) and (lhs.GetBottom () == rhs.GetBottom ()));
+        return ((GetLeft () == rhs.GetLeft ()) and (GetRight () == rhs.GetRight ()) and (GetTop () == rhs.GetTop ()) and (GetBottom () == rhs.GetBottom ()));
     }
-    template <typename POINT_TYPE, typename SIZE_TYPE>
-    inline bool operator!= (const Rect_Base<POINT_TYPE, SIZE_TYPE>& lhs, const Rect_Base<POINT_TYPE, SIZE_TYPE>& rhs)
-    {
-        return ((lhs.GetLeft () != rhs.GetLeft ()) or (lhs.GetRight () != rhs.GetRight ()) or (lhs.GetTop () != rhs.GetTop ()) or (lhs.GetBottom () != rhs.GetBottom ()));
-    }
-#endif
 
     /*
      ********************************************************************************
