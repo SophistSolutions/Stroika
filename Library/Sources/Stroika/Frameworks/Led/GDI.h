@@ -79,7 +79,6 @@ namespace Stroika::Frameworks::Led {
         static const Led_TWIPS kInch;
         static const Led_TWIPS kOneInch;
     };
-
     Led_TWIPS operator+ (const Led_TWIPS& lhs, const Led_TWIPS& rhs);
     Led_TWIPS operator- (const Led_TWIPS& lhs, const Led_TWIPS& rhs);
 
@@ -1458,22 +1457,21 @@ namespace Stroika::Frameworks::Led {
     class Led_WindowDC : public Led_Tablet_ {
     public:
         Led_WindowDC (HWND hWnd)
-            : m_hWnd (hWnd)
+            : fHWnd_{hWnd}
         {
-            Require (m_hWnd == nullptr or ::IsWindow (m_hWnd));
-            if (!Attach (::GetWindowDC (m_hWnd))) {
+            Require (fHWnd_ == nullptr or ::IsWindow (fHWnd_));
+            if (!Attach (::GetWindowDC (fHWnd_))) {
                 Led_ThrowOutOfMemoryException ();
             }
         }
-
         ~Led_WindowDC ()
         {
             AssertNotNull (m_hDC);
-            ::ReleaseDC (m_hWnd, Detach ());
+            ::ReleaseDC (fHWnd_, Detach ());
         }
 
     private:
-        HWND m_hWnd;
+        HWND fHWnd_;
     };
 #endif
 
