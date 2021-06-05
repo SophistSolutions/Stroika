@@ -771,7 +771,11 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         const Foundation::Time::DurationSecondsType kTimeEnoughToRestoreSelection = 0.3f;
 
+#if qCompilerAndStdLib_usingOfEnumFailsToBringIntoScope_Buggy
+        static constexpr auto eDefaultUpdate = TextInteractor::eDefaultUpdate;
+#else
         using TextInteractor::eDefaultUpdate;
+        #endif
 
         if (this->GetStyle () & WS_DISABLED) {
             return;
@@ -868,7 +872,11 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASECLASS>
     void Led_MFC_DragAndDropWindow<BASECLASS>::HandleSharedDragOverUpdateSelCode ()
     {
+#if qCompilerAndStdLib_usingOfEnumFailsToBringIntoScope_Buggy
+        static constexpr auto eImmediateUpdate = TextInteractor::eImmediateUpdate;
+#else
         using TextInteractor::eImmediateUpdate;
+#endif
         CClientDC dc (this);
         if (fPrevDropEffect != DROPEFFECT_NONE) {
             // erase previous focus rect
@@ -907,7 +915,11 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASECLASS>
     DROPEFFECT Led_MFC_DragAndDropWindow<BASECLASS>::HelperDragOver (COleDataObject* /*pDataObject*/, DWORD dwKeyState, CPoint point)
     {
+#if qCompilerAndStdLib_usingOfEnumFailsToBringIntoScope_Buggy
+        static constexpr auto eImmediateUpdate = TextInteractor::eImmediateUpdate;
+#else
         using TextInteractor::eImmediateUpdate;
+#endif
         point -= fDragOffset; //  adjust target rect by cursor offset
 
         // See  See page 444 of MSVC4.0 Visual C++ Tutorial for hints on how to check if we accept...
