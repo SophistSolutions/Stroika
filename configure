@@ -642,14 +642,6 @@ sub	SetInitialDefaults_
 		}
 	}
 
-	# Deal with static inline constexpr definitions - which dont really work right with vs2k17
-	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017") {
-		if (not ($EXTRA_SUFFIX_LINKER_ARGS eq "")) {
-			$EXTRA_SUFFIX_LINKER_ARGS .= " ";
-		}
-		$EXTRA_SUFFIX_LINKER_ARGS .= "/FORCE:MULTIPLE";
-	}
-
 	if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 		$FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_UseStaticTPP;
 	}
@@ -2052,6 +2044,14 @@ sub PostProcessOptions_ ()
 		# Default to true for visual studio, because debug symbols go in separate file, and don't balloon the exe size (.pdb)
 		if ($INCLUDE_SYMBOLS_EXE == DEFAULT_BOOL_OPTIONS) {
 			$INCLUDE_SYMBOLS_EXE = true;
+		}
+
+		# Deal with static inline constexpr definitions - which dont really work right with vs2k17
+		if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017") {
+			if (not ($EXTRA_SUFFIX_LINKER_ARGS eq "")) {
+				$EXTRA_SUFFIX_LINKER_ARGS .= " ";
+			}
+			$EXTRA_SUFFIX_LINKER_ARGS .= "/FORCE:MULTIPLE";
 		}
 	}
 
