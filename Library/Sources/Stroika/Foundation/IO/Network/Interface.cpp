@@ -566,6 +566,18 @@ namespace {
             Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (sWlanAPI_->fWlanEnumInterfaces (hClient, nullptr, &pIfList));
             [[maybe_unused]] auto&& cleanup2 = Execution::Finally ([&] () noexcept { if (pIfList !=nullptr) {sWlanAPI_->fWlanFreeMemory (pIfList);} });
 
+            //
+            // makes more sense for pConnectionInfo to be scoped inside loop, but the example docs in:
+            //      https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlanqueryinterface
+            // keep it out here (so gets re-used in each QueryInterface call) and just deleted once
+            // at the end.
+            //
+            // Scoped inside the loop, we get ASAN errors under windows, so presume the docs / example was right
+            // any my intuitions wrong.
+            //
+            PWLAN_CONNECTION_ATTRIBUTES pConnectInfo{};
+            [[maybe_unused]] auto&&     cleanup3 = Execution::Finally ([&] () noexcept { if (pConnectInfo != nullptr) {sWlanAPI_->fWlanFreeMemory (pConnectInfo);} });
+
             for (DWORD i = 0; i < pIfList->dwNumberOfItems; i++) {
                 PWLAN_INTERFACE_INFO pIfInfo = (WLAN_INTERFACE_INFO*)&pIfList->InterfaceInfo[i];
                 WirelessInfoPlus_    wInfo;
@@ -600,7 +612,6 @@ namespace {
                 // If interface state is connected, call WlanQueryInterface
                 // to get current connection attributes
                 if (pIfInfo->isState == wlan_interface_state_connected) {
-                    PWLAN_CONNECTION_ATTRIBUTES pConnectInfo{};
                     {
                         DWORD                  connectInfoSize = sizeof (WLAN_CONNECTION_ATTRIBUTES);
                         WLAN_OPCODE_VALUE_TYPE opCode          = wlan_opcode_value_type_invalid;
@@ -608,7 +619,6 @@ namespace {
                             sWlanAPI_->fWlanQueryInterface (hClient, &pIfInfo->InterfaceGuid, wlan_intf_opcode_current_connection,
                                                             nullptr, &connectInfoSize, (PVOID*)&pConnectInfo, &opCode));
                     }
-                    [[maybe_unused]] auto&& cleanup3 = Execution::Finally ([&] () noexcept { if (pConnectInfo != nullptr) {sWlanAPI_->fWlanFreeMemory (pConnectInfo);} });
 
                     if (pConnectInfo->isState != pIfInfo->isState) {
                         DbgTrace (L"Not sure how these can differ (except for race condition) - but if they do, maybe worth looking into");
