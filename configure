@@ -642,6 +642,14 @@ sub	SetInitialDefaults_
 		}
 	}
 
+	# Deal with static inline constexpr definitions - which dont really work right with vs2k17
+	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017") {
+		if (not ($EXTRA_SUFFIX_LINKER_ARGS eq "")) {
+			$EXTRA_SUFFIX_LINKER_ARGS .= " ";
+		}
+		$EXTRA_SUFFIX_LINKER_ARGS .= "/FORCE:MULTIPLE";
+	}
+
 	if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 		$FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_UseStaticTPP;
 	}
