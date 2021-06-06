@@ -344,7 +344,7 @@ namespace Stroika::Foundation::Time {
         /**
          * Date::kMax is the last date this Date class supports representing.
          */
-        static  const Date kMax; // defined constexpr
+        static const Date kMax; // defined constexpr
 
     public:
         /**
@@ -532,7 +532,7 @@ namespace Stroika::Foundation::Time {
          */
         static const FormatException kThe;
     };
-    #if !qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if !qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
     inline const Date::FormatException       Date::FormatException::kThe;
     inline const Traversal::Iterable<String> Date::kDefaultParseFormats{
         kLocaleStandardFormat,          // x (kLocaleStandardFormat) parses the locale's standard date representation
@@ -540,7 +540,7 @@ namespace Stroika::Foundation::Time {
         kMonthDayYearFormat,            // Before Stroika 2.1b10, this was L"%D" (=="%m/%d/%y) which is hte 2-digit year
         kISO8601Format,
     };
-    #endif
+#endif
 
 #if __cpp_impl_three_way_comparison < 201907
     constexpr bool operator< (const Date& lhs, const Date& rhs);

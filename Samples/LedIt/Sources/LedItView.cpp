@@ -321,7 +321,7 @@ public:
 #endif
     }
 #if qSupportOtherFontSizeDlg
-    virtual Led_Distance PickOtherFontHeight (Led_Distance origHeight) override
+    virtual DistanceType PickOtherFontHeight (DistanceType origHeight) override
     {
 #if qPlatform_MacOS
         Led_StdDialogHelper_OtherFontSizeDialog dlg;
@@ -338,7 +338,7 @@ public:
     }
 #endif
 #if qSupportParagraphSpacingDlg
-    virtual bool PickNewParagraphLineSpacing (Led_TWIPS* spaceBefore, bool* spaceBeforeValid, Led_TWIPS* spaceAfter, bool* spaceAfterValid, Led_LineSpacing* lineSpacing, bool* lineSpacingValid) override
+    virtual bool PickNewParagraphLineSpacing (TWIPS* spaceBefore, bool* spaceBeforeValid, TWIPS* spaceAfter, bool* spaceAfterValid, Led_LineSpacing* lineSpacing, bool* lineSpacingValid) override
     {
 #if qPlatform_MacOS
         Led_StdDialogHelper_ParagraphSpacingDialog dlg;
@@ -368,7 +368,7 @@ public:
     }
 #endif
 #if qSupportParagraphIndentsDlg
-    virtual bool PickNewParagraphMarginsAndFirstIndent (Led_TWIPS* leftMargin, bool* leftMarginValid, Led_TWIPS* rightMargin, bool* rightMarginValid, Led_TWIPS* firstIndent, bool* firstIndentValid) override
+    virtual bool PickNewParagraphMarginsAndFirstIndent (TWIPS* leftMargin, bool* leftMarginValid, TWIPS* rightMargin, bool* rightMarginValid, TWIPS* firstIndent, bool* firstIndentValid) override
     {
 #if qPlatform_MacOS
         Led_StdDialogHelper_ParagraphIndentsDialog dlg;
@@ -594,7 +594,7 @@ LedItView::LedItView (
 #endif
 #if qPlatform_Windows
     // SHOULD be supported on other platforms, but only Win32 for now...
-    SetDefaultWindowMargins (Led_TWIPS_Rect (kLedItViewTopMargin, kLedItViewLHSMargin, kLedItViewBottomMargin - kLedItViewTopMargin, kLedItViewRHSMargin - kLedItViewLHSMargin));
+    SetDefaultWindowMargins (TWIPS_Rect (kLedItViewTopMargin, kLedItViewLHSMargin, kLedItViewBottomMargin - kLedItViewTopMargin, kLedItViewRHSMargin - kLedItViewLHSMargin));
 #endif
 }
 
@@ -667,7 +667,7 @@ void LedItView::SetWrapToWindow (bool wrapToWindow)
     }
 }
 
-void LedItView::GetLayoutMargins (RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const
+void LedItView::GetLayoutMargins (RowReference row, Coordinate* lhs, Coordinate* rhs) const
 {
     inherited::GetLayoutMargins (row, lhs, rhs);
     if (fWrapToWindow) {
@@ -675,7 +675,7 @@ void LedItView::GetLayoutMargins (RowReference row, Led_Coordinate* lhs, Led_Coo
         // edge of the window. NB: because of this choice, we must 'InvalidateAllCaches' when the
         // WindowRect changes in our SetWindowRect() override.
         if (rhs != NULL) {
-            *rhs = (max (GetWindowRect ().GetWidth (), Led_Distance (1)));
+            *rhs = (max (GetWindowRect ().GetWidth (), DistanceType (1)));
         }
     }
 }
@@ -755,12 +755,12 @@ WordProcessor::IncrementalParagraphInfo LedItView::GetParaFormatSelection ()
     if (GetStandardTabStopList (GetSelectionStart (), GetSelectionEnd (), &tabstops)) {
         ipi.SetTabStopList (tabstops);
     }
-    Led_TWIPS lhsMargin = Led_TWIPS (0);
-    Led_TWIPS rhsMargin = Led_TWIPS (0);
+    TWIPS lhsMargin = TWIPS (0);
+    TWIPS rhsMargin = TWIPS (0);
     if (GetMargins (GetSelectionStart (), GetSelectionEnd (), &lhsMargin, &rhsMargin)) {
         ipi.SetMargins (lhsMargin, rhsMargin);
     }
-    Led_TWIPS firstIndent = Led_TWIPS (0);
+    TWIPS firstIndent = TWIPS (0);
     if (GetFirstIndent (GetSelectionStart (), GetSelectionEnd (), &firstIndent)) {
         ipi.SetFirstIndent (firstIndent);
     }

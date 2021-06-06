@@ -81,7 +81,7 @@ private:
     bool fWrapToWindow;
 
 public:
-    virtual void GetLayoutMargins (RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const override;
+    virtual void GetLayoutMargins (RowReference row, Coordinate* lhs, Coordinate* rhs) const override;
     virtual void SetWindowRect (const Led_Rect& windowRect) override;
 
 #if qPlatform_Windows

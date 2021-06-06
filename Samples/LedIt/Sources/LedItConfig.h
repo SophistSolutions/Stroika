@@ -57,10 +57,10 @@ const unsigned int kMaxNumUndoLevels = 512;
 #endif
 
 #if defined(__cplusplus)
-const Led_TWIPS kLedItViewTopMargin    = Led_TWIPS (120);
-const Led_TWIPS kLedItViewBottomMargin = Led_TWIPS (0);
-const Led_TWIPS kLedItViewLHSMargin    = Led_TWIPS (150);
-const Led_TWIPS kLedItViewRHSMargin    = Led_TWIPS (0);
+const TWIPS kLedItViewTopMargin    = TWIPS (120);
+const TWIPS kLedItViewBottomMargin = TWIPS (0);
+const TWIPS kLedItViewLHSMargin    = TWIPS (150);
+const TWIPS kLedItViewRHSMargin    = TWIPS (0);
 #endif
 
 // Eventually make it a runtime choice based on a user-config dialog (on mac - already chooseable for PC).

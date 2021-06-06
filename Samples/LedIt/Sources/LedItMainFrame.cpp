@@ -86,9 +86,9 @@ int LedItMainFrame::OnCreate (LPCREATESTRUCT lpCreateStruct)
     }
 
     Led_Size desiredSize = Led_Size (
-        Led_CvtScreenPixelsFromTWIPSV (Led_TWIPS (1440 * 11)),
-        //Led_CvtScreenPixelsFromTWIPSH (Led_TWIPS (1440 * 8.5))
-        Led_CvtScreenPixelsFromTWIPSH (Led_TWIPS (static_cast<long> (1440 * 7.5))));
+        Led_CvtScreenPixelsFromTWIPSV (TWIPS (1440 * 11)),
+        //Led_CvtScreenPixelsFromTWIPSH (TWIPS (1440 * 8.5))
+        Led_CvtScreenPixelsFromTWIPSH (TWIPS (static_cast<long> (1440 * 7.5))));
     Led_Rect newBounds = Led_Rect (lpCreateStruct->y, lpCreateStruct->x, desiredSize.v, desiredSize.h);
     newBounds          = EnsureRectOnScreen (newBounds);
     MoveWindow (CRect (AsRECT (newBounds)));

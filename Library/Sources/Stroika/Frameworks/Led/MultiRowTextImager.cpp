@@ -579,9 +579,9 @@ void MultiRowTextImager::DrawPartitionElement (PartitionMarker* pm, size_t start
     for (size_t subRow = startSubRow; subRow <= endSubRow; ++subRow) {
         Led_Rect currentRowRect     = *remainingDrawArea;
         currentRowRect.bottom       = currentRowRect.top + pmCacheInfo.GetRowHeight (subRow);
-        Led_Distance interlineSpace = (subRow == pmCacheInfo.GetLastRow ()) ? pmCacheInfo.GetInterLineSpace () : 0;
+        DistanceType interlineSpace = (subRow == pmCacheInfo.GetLastRow ()) ? pmCacheInfo.GetInterLineSpace () : 0;
         if (
-            (currentRowRect.bottom + Led_Coordinate (interlineSpace) > subsetToDraw.top) and
+            (currentRowRect.bottom + Coordinate (interlineSpace) > subsetToDraw.top) and
             (currentRowRect.top < subsetToDraw.bottom)) {
 
             /*
@@ -818,7 +818,7 @@ Led_Rect MultiRowTextImager::GetCharLocationRowRelativeByPosition (size_t afterP
     return GetCharLocationRowRelative (afterPosition, GetRowReferenceContainingPosition (positionOfTopRow), maxRowsToCheck);
 }
 
-Led_Distance MultiRowTextImager::GetRowHeight (size_t rowNumber) const
+DistanceType MultiRowTextImager::GetRowHeight (size_t rowNumber) const
 {
     // NB: Use of routines using rowNumbers force word-wrap, and so can be quite slow.
     // Routines using RowReferences often perform MUCH better
@@ -829,7 +829,7 @@ Led_Distance MultiRowTextImager::GetRowHeight (size_t rowNumber) const
     @METHOD:        MultiRowTextImager::GetRowRelativeBaselineOfRowContainingPosition
     @DESCRIPTION:   <p>Override/implement @'TextImager::GetRowRelativeBaselineOfRowContainingPosition'.</p>
     */
-Led_Distance MultiRowTextImager::GetRowRelativeBaselineOfRowContainingPosition (size_t charPosition) const
+DistanceType MultiRowTextImager::GetRowRelativeBaselineOfRowContainingPosition (size_t charPosition) const
 {
     RowReference thisRow    = GetRowReferenceContainingPosition (charPosition);
     size_t       startOfRow = GetStartOfRow (thisRow);
@@ -892,14 +892,14 @@ void MultiRowTextImager::GetStableTypingRegionContaingMarkerRange (size_t fromMa
     (*expandedToMarkerPos)   = GetEnd ();
 }
 
-Led_Distance MultiRowTextImager::GetHeightOfRows (size_t startingRow, size_t rowCount) const
+DistanceType MultiRowTextImager::GetHeightOfRows (size_t startingRow, size_t rowCount) const
 {
     return (GetHeightOfRows (GetIthRowReference (startingRow), rowCount));
 }
 
-Led_Distance MultiRowTextImager::GetHeightOfRows (RowReference startingRow, size_t rowCount) const
+DistanceType MultiRowTextImager::GetHeightOfRows (RowReference startingRow, size_t rowCount) const
 {
-    Led_Distance height = 0;
+    DistanceType height = 0;
     for (RowReference curRow = startingRow; rowCount > 0; rowCount--) {
         PartitionMarker*          curPM       = curRow.GetPartitionMarker ();
         PartitionElementCacheInfo pmCacheInfo = GetPartitionElementCacheInfo (curPM);
@@ -988,8 +988,8 @@ MultiRowTextImager::RowReference MultiRowTextImager::AdjustPotentialTopRowRefere
         return potentialTopRow;
     }
 
-    Led_Coordinate windowHeight = GetWindowRect ().GetHeight ();
-    Led_Coordinate heightUsed   = 0;
+    Coordinate windowHeight = GetWindowRect ().GetHeight ();
+    Coordinate heightUsed   = 0;
 
     for (RowReference curRow = potentialTopRow;;) {
         PartitionMarker*          curPM       = curRow.GetPartitionMarker ();
@@ -1058,7 +1058,7 @@ void MultiRowTextImager::ReValidateSubRowInTopLineInWindow ()
             fSubRowInTopLineInWindow = lastRow;
         }
 #else
-        bool   pmNotWrapped = (fTopLinePartitionMarkerInWindow->fPixelHeightCache == Led_Distance (-1));
+        bool   pmNotWrapped = (fTopLinePartitionMarkerInWindow->fPixelHeightCache == DistanceType (-1));
         size_t lastRow      = GetPartitionElementCacheInfo (fTopLinePartitionMarkerInWindow).GetLastRow ();
         if (fSubRowInTopLineInWindow > lastRow) {
             fSubRowInTopLineInWindow = lastRow;
@@ -1082,14 +1082,14 @@ size_t MultiRowTextImager::ComputeRowsThatWouldFitInWindowWithTopRow (const RowR
             *  For now, we don't show partial rows at the bottom. We
             *  might want to reconsider this.
             */
-    Led_Coordinate windowHeight = GetWindowRect ().GetHeight ();
+    Coordinate windowHeight = GetWindowRect ().GetHeight ();
 
     /*
             *  Wind out way to the bottom of the window from our current position,
             *  and count rows.
             */
-    size_t         rowCount   = 0;
-    Led_Coordinate heightUsed = 0;
+    size_t     rowCount   = 0;
+    Coordinate heightUsed = 0;
     for (RowReference curRow = newTopRow;;) {
         rowCount++;
         PartitionMarker*          curPM       = curRow.GetPartitionMarker ();
@@ -1139,9 +1139,9 @@ Led_Rect MultiRowTextImager::GetCharLocationRowRelative (size_t afterPosition, R
         return (kMagicBeforeRect);
     }
 
-    RowReference   curRow                     = topRow;
-    size_t         curTopRowRelativeRowNumber = 0;
-    Led_Coordinate topVPos                    = 0;
+    RowReference curRow                     = topRow;
+    size_t       curTopRowRelativeRowNumber = 0;
+    Coordinate   topVPos                    = 0;
     do {
         PartitionMarker* cur    = curRow.GetPartitionMarker ();
         size_t           subRow = curRow.GetSubRow ();
@@ -1169,8 +1169,8 @@ Led_Rect MultiRowTextImager::GetCharLocationRowRelative (size_t afterPosition, R
                 */
         if (afterPosition >= start and afterPosition < end) {
             Assert (start <= afterPosition);
-            Led_Distance hStart = 0;
-            Led_Distance hEnd   = 0;
+            DistanceType hStart = 0;
+            DistanceType hEnd   = 0;
             GetRowRelativeCharLoc (afterPosition, &hStart, &hEnd);
             Assert (hStart <= hEnd);
             return (Led_Rect (topVPos, hStart, pmCacheInfo.GetRowHeight (subRow), hEnd - hStart));
@@ -1205,9 +1205,9 @@ size_t MultiRowTextImager::GetCharAtLocationRowRelative (const Led_Point& where,
         return (0);
     }
 
-    RowReference   curRow                     = topRow;
-    size_t         curTopRowRelativeRowNumber = 0;
-    Led_Coordinate topVPos                    = 0;
+    RowReference curRow                     = topRow;
+    size_t       curTopRowRelativeRowNumber = 0;
+    Coordinate   topVPos                    = 0;
     do {
         PartitionMarker* cur    = curRow.GetPartitionMarker ();
         size_t           subRow = curRow.GetSubRow ();
@@ -1228,12 +1228,12 @@ size_t MultiRowTextImager::GetCharAtLocationRowRelative (const Led_Point& where,
 #endif
 
         /*
-                *  Count the interline space as part of the last row of the line for the purpose of hit-testing.
-                */
-        Led_Distance interLineSpaceIfAny = (pmCacheInfo.GetLastRow () == subRow) ? pmCacheInfo.GetInterLineSpace () : 0;
+         *  Count the interline space as part of the last row of the line for the purpose of hit-testing.
+         */
+        DistanceType interLineSpaceIfAny = (pmCacheInfo.GetLastRow () == subRow) ? pmCacheInfo.GetInterLineSpace () : 0;
 
         curTopRowRelativeRowNumber++;
-        if (where.v >= topVPos and where.v < topVPos + Led_Coordinate (pmCacheInfo.GetRowHeight (subRow) + interLineSpaceIfAny)) {
+        if (where.v >= topVPos and where.v < topVPos + Coordinate (pmCacheInfo.GetRowHeight (subRow) + interLineSpaceIfAny)) {
             return GetRowRelativeCharAtLoc (where.h, start);
         }
 
@@ -1250,7 +1250,7 @@ size_t MultiRowTextImager::GetCharAtLocationRowRelative (const Led_Point& where,
     return (GetEnd ());
 }
 
-Led_Distance MultiRowTextImager::CalculateInterLineSpace (const PartitionMarker* /*pm*/) const
+DistanceType MultiRowTextImager::CalculateInterLineSpace (const PartitionMarker* /*pm*/) const
 {
     return (0); // no interline space by default
 }
@@ -1290,7 +1290,7 @@ void MultiRowTextImager::PartitionElementCacheInfo::Clear ()
     fRep = make_shared<Rep> ();
 }
 
-void MultiRowTextImager::PartitionElementCacheInfo::IncrementRowCountAndFixCacheBuffers (size_t newStart, Led_Distance newRowsHeight)
+void MultiRowTextImager::PartitionElementCacheInfo::IncrementRowCountAndFixCacheBuffers (size_t newStart, DistanceType newRowsHeight)
 {
     fRep->fRowCountCache++;
 

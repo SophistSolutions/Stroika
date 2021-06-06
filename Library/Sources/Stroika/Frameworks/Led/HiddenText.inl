@@ -80,8 +80,8 @@ namespace Stroika::Frameworks::Led {
     template <typename BASECLASS>
     void HidableTextMarkerHelper<BASECLASS>::DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
                                                           size_t from, size_t to, const TextLayoutBlock& text,
-                                                          const Led_Rect& drawInto, const Led_Rect& invalidRect, Led_Coordinate useBaseLine,
-                                                          Led_Distance* pixelsDrawn)
+                                                          const Led_Rect& drawInto, const Led_Rect& invalidRect, Coordinate useBaseLine,
+                                                          DistanceType* pixelsDrawn)
     {
         if (this->IsShown ()) {
             inherited::DrawSegment (imager, runElement, tablet, from, to, text, drawInto, invalidRect, useBaseLine, pixelsDrawn);
@@ -92,7 +92,7 @@ namespace Stroika::Frameworks::Led {
     }
     template <typename BASECLASS>
     void HidableTextMarkerHelper<BASECLASS>::MeasureSegmentWidth (const StyledTextImager* imager, const StyledTextImager::RunElement& runElement, size_t from, size_t to, const Led_tChar* text,
-                                                                  Led_Distance* distanceResults) const
+                                                                  DistanceType* distanceResults) const
     {
         if (this->IsShown ()) {
             inherited::MeasureSegmentWidth (imager, runElement, from, to, text, distanceResults);
@@ -105,7 +105,7 @@ namespace Stroika::Frameworks::Led {
         }
     }
     template <typename BASECLASS>
-    Led_Distance HidableTextMarkerHelper<BASECLASS>::MeasureSegmentHeight (const StyledTextImager* imager, const StyledTextImager::RunElement& runElement, size_t from, size_t to) const
+    DistanceType HidableTextMarkerHelper<BASECLASS>::MeasureSegmentHeight (const StyledTextImager* imager, const StyledTextImager::RunElement& runElement, size_t from, size_t to) const
     {
         if (this->IsShown ()) {
             return inherited::MeasureSegmentHeight (imager, runElement, from, to);
@@ -115,7 +115,7 @@ namespace Stroika::Frameworks::Led {
         }
     }
     template <typename BASECLASS>
-    Led_Distance HidableTextMarkerHelper<BASECLASS>::MeasureSegmentBaseLine (const StyledTextImager* imager, const StyledTextImager::RunElement& runElement, size_t from, size_t to) const
+    DistanceType HidableTextMarkerHelper<BASECLASS>::MeasureSegmentBaseLine (const StyledTextImager* imager, const StyledTextImager::RunElement& runElement, size_t from, size_t to) const
     {
         if (this->IsShown ()) {
             return inherited::MeasureSegmentBaseLine (imager, runElement, from, to);

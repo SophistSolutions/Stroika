@@ -577,7 +577,7 @@ static bool Win9x_Workaround_GetCharPlacementFunction (HDC hdc, const wchar_t* s
  ************************************ Led_Bitmap ********************************
  ********************************************************************************
  */
-BOOL Led_Bitmap::CreateCompatibleBitmap (HDC hdc, Led_Distance nWidth, Led_Distance nHeight)
+BOOL Led_Bitmap::CreateCompatibleBitmap (HDC hdc, DistanceType nWidth, DistanceType nHeight)
 {
     Assert (m_hObject == nullptr);
     m_hObject  = ::CreateCompatibleBitmap (hdc, nWidth, nHeight);
@@ -585,7 +585,7 @@ BOOL Led_Bitmap::CreateCompatibleBitmap (HDC hdc, Led_Distance nWidth, Led_Dista
     return (m_hObject != nullptr); // return value backward compat hack...
 }
 
-BOOL Led_Bitmap::CreateCompatibleDIBSection (HDC hdc, Led_Distance nWidth, Led_Distance nHeight)
+BOOL Led_Bitmap::CreateCompatibleDIBSection (HDC hdc, DistanceType nWidth, DistanceType nHeight)
 {
     RequireNotNull (hdc);
     Require (m_hObject == nullptr);
@@ -632,12 +632,12 @@ void Led_Bitmap::LoadBitmap (HINSTANCE hInstance, LPCTSTR lpBitmapName)
 
 /*
  ********************************************************************************
- ************************************ Led_TWIPS *********************************
+ ************************************ TWIPS *********************************
  ********************************************************************************
  */
-const Led_TWIPS Led_TWIPS::kPoint   = Led_TWIPS (20); // a printers 'point' (1/72 of an inch)
-const Led_TWIPS Led_TWIPS::kInch    = Led_TWIPS (1440);
-const Led_TWIPS Led_TWIPS::kOneInch = Led_TWIPS (1440);
+const TWIPS TWIPS::kPoint   = TWIPS (20); // a printers 'point' (1/72 of an inch)
+const TWIPS TWIPS::kInch    = TWIPS (1440);
+const TWIPS TWIPS::kOneInch = TWIPS (1440);
 
 /*
  ********************************************************************************
@@ -1271,7 +1271,7 @@ Led_Tablet_::~Led_Tablet_ ()
 @DESCRIPTION:   <p>Utility routine to convert from TWIPS to logical coordinates (usually pixels).</p>
     <p>See also @'Led_Tablet_::CvtFromTWIPSV', @'Led_Tablet_::CvtFromTWIPSH', @'Led_Tablet_::CvtToTWIPSV', @'Led_Tablet_::CvtToTWIPSH'.</p>
 */
-Led_Point Led_Tablet_::CvtFromTWIPS (Led_TWIPS_Point from) const
+Led_Point Led_Tablet_::CvtFromTWIPS (TWIPS_Point from) const
 {
     return Led_Point (CvtFromTWIPSV (from.v), CvtFromTWIPSH (from.h));
 }
@@ -1281,9 +1281,9 @@ Led_Point Led_Tablet_::CvtFromTWIPS (Led_TWIPS_Point from) const
 @DESCRIPTION:   <p>Utility routine to convert from logical coordinates (usually pixels) to TWIPS.</p>
     <p>See also @'Led_Tablet_::CvtFromTWIPSV', @'Led_Tablet_::CvtFromTWIPSH', @'Led_Tablet_::CvtToTWIPSV', @'Led_Tablet_::CvtToTWIPSH'.</p>
 */
-Led_TWIPS_Point Led_Tablet_::CvtToTWIPS (Led_Point from) const
+TWIPS_Point Led_Tablet_::CvtToTWIPS (Led_Point from) const
 {
-    return Led_TWIPS_Point (CvtToTWIPSV (from.v), CvtToTWIPSH (from.h));
+    return TWIPS_Point (CvtToTWIPSV (from.v), CvtToTWIPSH (from.h));
 }
 
 /*
@@ -1291,7 +1291,7 @@ Led_TWIPS_Point Led_Tablet_::CvtToTWIPS (Led_Point from) const
 @DESCRIPTION:   <p>Utility routine to convert from TWIPS to logical coordinates (usually pixels).</p>
     <p>See also @'Led_Tablet_::CvtFromTWIPSV', @'Led_Tablet_::CvtFromTWIPSH', @'Led_Tablet_::CvtToTWIPSV', @'Led_Tablet_::CvtToTWIPSH'.</p>
 */
-Led_Rect Led_Tablet_::CvtFromTWIPS (Led_TWIPS_Rect from) const
+Led_Rect Led_Tablet_::CvtFromTWIPS (TWIPS_Rect from) const
 {
     return Led_Rect (CvtFromTWIPS (from.GetOrigin ()), Led_Size (CvtFromTWIPS (from.GetSize ())));
 }
@@ -1301,9 +1301,9 @@ Led_Rect Led_Tablet_::CvtFromTWIPS (Led_TWIPS_Rect from) const
 @DESCRIPTION:   <p>Utility routine to convert from logical coordinates (usually pixels) to TWIPS.</p>
     <p>See also @'Led_Tablet_::CvtFromTWIPSV', @'Led_Tablet_::CvtFromTWIPSH', @'Led_Tablet_::CvtToTWIPSV', @'Led_Tablet_::CvtToTWIPSH'.</p>
 */
-Led_TWIPS_Rect Led_Tablet_::CvtToTWIPS (Led_Rect from) const
+TWIPS_Rect Led_Tablet_::CvtToTWIPS (Led_Rect from) const
 {
-    return Led_TWIPS_Rect (CvtToTWIPS (from.GetOrigin ()), CvtToTWIPS (Led_Point (from.GetSize ())));
+    return TWIPS_Rect (CvtToTWIPS (from.GetOrigin ()), CvtToTWIPS (Led_Point (from.GetSize ())));
 }
 
 /*
@@ -1311,7 +1311,7 @@ Led_TWIPS_Rect Led_Tablet_::CvtToTWIPS (Led_Rect from) const
 @DESCRIPTION:   <p>Scroll the given 'windowRect' by 'scrollVBy localical units. The area of the window exposed by this
             action is invalidated (so a later update event will fix it).</p>
 */
-void Led_Tablet_::ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, Led_Coordinate scrollVBy)
+void Led_Tablet_::ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, Coordinate scrollVBy)
 {
 #if qPlatform_MacOS
     Rect      qdMoveRect = AsQDRect (windowRect);
@@ -1425,7 +1425,7 @@ void Led_Tablet_::FrameRegion (const Led_Region& r, const Led_Color& c)
             by 'r'.
                 </p>
 */
-void Led_Tablet_::FrameRectangle (const Led_Rect& r, Led_Color c, Led_Distance borderWidth)
+void Led_Tablet_::FrameRectangle (const Led_Rect& r, Led_Color c, DistanceType borderWidth)
 {
     /*
      *  Almost certainly can implement much more efficiently, but leave like this for now to assure pixel-for-pixel
@@ -1448,7 +1448,7 @@ void Led_Tablet_::FrameRectangle (const Led_Rect& r, Led_Color c, Led_Distance b
             character widths, but never negative).</p>
 */
 void Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
-                               const Led_tChar* text, size_t nTChars, Led_Distance* charLocations)
+                               const Led_tChar* text, size_t nTChars, DistanceType* charLocations)
 {
     RequireNotNull (text);
     RequireNotNull (charLocations);
@@ -1457,9 +1457,9 @@ void Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
 #endif
 
 #if qPlatform_MacOS
-    const Led_Distance kMaxTextWidthResult = 0x7fff;
+    const DistanceType kMaxTextWidthResult = 0x7fff;
 #elif qPlatform_Windows
-    Led_Distance kMaxTextWidthResult = kRunning32BitGDI ? 0x7fffffff : 0x7fff;
+    DistanceType kMaxTextWidthResult = kRunning32BitGDI ? 0x7fffffff : 0x7fff;
     if (IsPrinting ()) {
         // See SPR#0435
         SIZE ve = GetViewportExt ();
@@ -1467,7 +1467,7 @@ void Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
         kMaxTextWidthResult = ::MulDiv (kMaxTextWidthResult, we.cx, ve.cx) - 1;
     }
 #elif qStroika_FeatureSupported_XWindows
-    const Led_Distance kMaxTextWidthResult = 0x7fff; //X-TMP-HACK-LGP991213
+    const DistanceType kMaxTextWidthResult = 0x7fff; //X-TMP-HACK-LGP991213
 #endif
     size_t kMaxChars = kMaxTextWidthResult / precomputedFontMetrics.GetMaxCharacterWidth ();
 #if qUseUniscribeToImage
@@ -1477,7 +1477,7 @@ void Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
 #endif
     Assert (kMaxChars > 1);
 
-    Led_Distance runningCharCount = 0;
+    DistanceType runningCharCount = 0;
     for (size_t charsToGo = nTChars; charsToGo > 0;) {
         size_t i = nTChars - charsToGo;
         Assert (i < nTChars);
@@ -1523,7 +1523,7 @@ void Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
         }
 #elif qPlatform_Windows
         SIZE size;
-        Assert (sizeof (int) == sizeof (Led_Distance));
+        Assert (sizeof (int) == sizeof (DistanceType));
 #if qUseUniscribeToImage && qWideCharacters
         {
             if (sUniscribeDLL.IsAvail ()) {
@@ -1627,7 +1627,7 @@ void Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
 #if qDebug
     {
         // Assure charLocations are in non-decreasing order (OK to have some zero width - but never negative).
-        Led_Distance d = 0;
+        DistanceType d = 0;
         for (size_t i = 0; i < nTChars; ++i) {
             Ensure (d <= charLocations[i]);
             d = charLocations[i];
@@ -1649,14 +1649,14 @@ void Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
 */
 void Led_Tablet_::TabbedTextOut ([[maybe_unused]] const Led_FontMetrics& precomputedFontMetrics, const Led_tChar* text, size_t nBytes,
                                  [[maybe_unused]] TextDirection direction,
-                                 Led_Point outputAt, Led_Coordinate hTabOrigin, const Led_TabStopList& tabStopList,
-                                 Led_Distance* amountDrawn, Led_Coordinate hScrollOffset)
+                                 Led_Point outputAt, Coordinate hTabOrigin, const TabStopList& tabStopList,
+                                 DistanceType* amountDrawn, Coordinate hScrollOffset)
 {
 #if qPlatform_MacOS
     SetPort ();
 #endif
 
-    Led_Distance     widthSoFar = 0;
+    DistanceType     widthSoFar = 0;
     const Led_tChar* textCursor = text;
     const Led_tChar* textEnd    = text + nBytes;
     while (textCursor < textEnd) {
@@ -1854,10 +1854,10 @@ void Led_Tablet_::TabbedTextOut ([[maybe_unused]] const Led_FontMetrics& precomp
 
         // Now see if nextTab really pointing at a tab (otherwise at end of buffer)
         if (nextTabAt < textEnd) {
-            Led_Distance thisTabWidth;
+            DistanceType thisTabWidth;
             {
-                Led_Distance curOutputAtZeroBased = (outputAt.h - hTabOrigin) + widthSoFar;
-                Led_Distance tabStop              = tabStopList.ComputeTabStopAfterPosition (this, curOutputAtZeroBased);
+                DistanceType curOutputAtZeroBased = (outputAt.h - hTabOrigin) + widthSoFar;
+                DistanceType tabStop              = tabStopList.ComputeTabStopAfterPosition (this, curOutputAtZeroBased);
                 thisTabWidth                      = tabStop - curOutputAtZeroBased;
                 Assert (thisTabWidth >= 0);
             }
@@ -2447,7 +2447,7 @@ void OffscreenTablet::Setup (Led_Tablet origTablet)
             after the call to @'OffscreenTablet::Setup' - but can be called multiple times. Note that calls to this
             will typically 'destroy' the bits in the offscreen tablet.</p>
 */
-Led_Tablet OffscreenTablet::PrepareRect (const Led_Rect& currentRowRect, Led_Distance extraToAddToBottomOfRect)
+Led_Tablet OffscreenTablet::PrepareRect (const Led_Rect& currentRowRect, DistanceType extraToAddToBottomOfRect)
 {
     Led_Tablet result = fOrigTablet;
 #if qPlatform_MacOS
@@ -3168,8 +3168,8 @@ wstring Led_IME::GetCompositionResultStringW (HWND hWnd)
 
 Led_Rect Led::CenterRectInRect (const Led_Rect& r, const Led_Rect& centerIn)
 {
-    Led_Coordinate xLeft = (centerIn.left + centerIn.right) / 2 - r.GetWidth () / 2;
-    Led_Coordinate yTop  = (centerIn.top + centerIn.bottom) / 2 - r.GetHeight () / 2;
+    Coordinate xLeft = (centerIn.left + centerIn.right) / 2 - r.GetWidth () / 2;
+    Coordinate yTop  = (centerIn.top + centerIn.bottom) / 2 - r.GetHeight () / 2;
     return Led_Rect (yTop, xLeft, r.GetHeight (), r.GetWidth ());
 }
 

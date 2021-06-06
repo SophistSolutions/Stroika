@@ -560,10 +560,10 @@ void LedLineItApplication::OnAppAbout ()
 
             // Cuz of fact that dlog sizes specified in dlog units, and that doesn't work well for bitmaps
             // we must resize our dlog on the fly based on pict resource size...
-            const Led_Coordinate kPictWidth  = 437; // must agree with ACTUAL bitmap size
-            const Led_Coordinate kPictHeight = 273;
-            const Led_Coordinate kButHSluff  = 17;
-            const Led_Coordinate kButVSluff  = 19;
+            const Coordinate kPictWidth  = 437; // must agree with ACTUAL bitmap size
+            const Coordinate kPictHeight = 273;
+            const Coordinate kButHSluff  = 17;
+            const Coordinate kButVSluff  = 19;
             {
                 RECT windowRect;
                 ::GetWindowRect (GetHWND (), &windowRect);

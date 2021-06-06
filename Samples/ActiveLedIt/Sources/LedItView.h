@@ -107,11 +107,11 @@ private:
     long fMaxLength;
 
 public:
-    virtual void GetLayoutMargins (RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const override;
+    virtual void GetLayoutMargins (RowReference row, Coordinate* lhs, Coordinate* rhs) const override;
     virtual void SetWindowRect (const Led_Rect& windowRect) override;
 
 public:
-    nonvirtual Led_Distance CalculateFarthestRightMarginInWindow () const;
+    nonvirtual DistanceType CalculateFarthestRightMarginInWindow () const;
 
 protected:
     afx_msg int OnMouseActivate (CWnd* pDesktopWnd, UINT nHitTest, UINT message);

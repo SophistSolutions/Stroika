@@ -478,7 +478,7 @@ void RulerBar::Update (const WordProcessor::IncrementalParagraphInfo& pf)
 {
     if (pf.GetTabStopList_Valid ()) {
         TextImager::StandardTabStopList tabStops = pf.GetTabStopList ();
-        Led_Distance                    tabSoFar = 0;
+        DistanceType                    tabSoFar = 0;
         Require (tabStops.fTabStops.size () <= MAX_TAB_STOPS);
         size_t i = 0;
         for (; i < tabStops.fTabStops.size (); ++i) {
@@ -526,9 +526,9 @@ void RulerBar::FillInParaFormat (WordProcessor::IncrementalParagraphInfo& pf)
     pf = IncrementalParagraphInfo ();
     //we don't set the justification - just the tabstops (AND SOON THE START/RIGHT INDENT).
     SortTabs ();
-    int               nPos = 0;
-    vector<Led_TWIPS> v;
-    int               soFar = 0;
+    int           nPos = 0;
+    vector<TWIPS> v;
+    int           soFar = 0;
     for (size_t i = 0; i < MAX_TAB_STOPS; i++) {
         // get rid of zeroes and multiples
         // i.e. if we have 0,0,0,1,2,3,4,4,5
@@ -537,14 +537,14 @@ void RulerBar::FillInParaFormat (WordProcessor::IncrementalParagraphInfo& pf)
             nPos = m_pTabItems[i].GetHorzPosTwips ();
             Assert (nPos > soFar);
             //pf.rgxTabs[pf.cTabCount++] = nPos;
-            v.push_back (Led_TWIPS (nPos - soFar));
+            v.push_back (TWIPS (nPos - soFar));
             soFar = nPos;
         }
     }
     pf.SetTabStopList (TextImager::StandardTabStopList (v));
 
-    pf.SetMargins (Led_TWIPS (m_leftmargin.GetHorzPosTwips ()), Led_TWIPS (m_rightmargin.GetHorzPosTwips ()));
-    pf.SetFirstIndent (Led_TWIPS (m_indent.GetHorzPosTwips () - m_leftmargin.GetHorzPosTwips ()));
+    pf.SetMargins (TWIPS (m_leftmargin.GetHorzPosTwips ()), TWIPS (m_rightmargin.GetHorzPosTwips ()));
+    pf.SetFirstIndent (TWIPS (m_indent.GetHorzPosTwips () - m_leftmargin.GetHorzPosTwips ()));
 }
 
 // simple bubble sort is adequate for small number of tabs

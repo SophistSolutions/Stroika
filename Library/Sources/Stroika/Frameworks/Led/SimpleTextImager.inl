@@ -65,14 +65,14 @@ namespace Stroika::Frameworks::Led {
                 the value to be recomputed, call @'SimpleTextImager::InvalidateRowHeight' (). This is automatically done for you
                 from </p>
     */
-    inline Led_Distance SimpleTextImager::GetRowHeight () const
+    inline DistanceType SimpleTextImager::GetRowHeight () const
     {
-        if (fRowHeight == Led_Distance (-1)) {
+        if (fRowHeight == DistanceType (-1)) {
             // use mutable when available
             const_cast<SimpleTextImager*> (this)->fRowHeight = ReCalcRowHeight ();
         }
         Ensure (fRowHeight > 0);
-        Ensure (fRowHeight != Led_Distance (-1));
+        Ensure (fRowHeight != DistanceType (-1));
         return fRowHeight;
     }
     /*
@@ -82,7 +82,7 @@ namespace Stroika::Frameworks::Led {
     */
     inline void SimpleTextImager::InvalidateRowHeight ()
     {
-        fRowHeight = Led_Distance (-1);
+        fRowHeight = DistanceType (-1);
     }
     /*
     @METHOD:        SimpleTextImager::GetNextRowReference
@@ -201,7 +201,7 @@ namespace Stroika::Frameworks::Led {
                     <p>NB: There is also a one-arg version of @'SimpleTextImager::GetInterLineSpace' which takes a PM
                 as arg. See its docs, or @'SimpleTextImager::ChangedInterLineSpace' for more details.</p>
     */
-    inline Led_Distance SimpleTextImager::GetInterLineSpace () const
+    inline DistanceType SimpleTextImager::GetInterLineSpace () const
     {
         return (fInterlineSpace);
     }

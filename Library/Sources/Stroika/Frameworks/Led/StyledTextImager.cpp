@@ -305,7 +305,7 @@ vector<RunElement> StyledTextImager::SummarizeStyleMarkers (size_t from, size_t 
 void StyledTextImager::DrawSegment (Led_Tablet tablet,
                                     size_t from, size_t to, const TextLayoutBlock& text,
                                     const Led_Rect& drawInto, const Led_Rect& invalidRect,
-                                    Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn)
+                                    Coordinate useBaseLine, DistanceType* pixelsDrawn)
 {
     /*
      *  Note that SummarizeStyleMarkers assures 'outputSummary' comes out in VIRTUAL order.
@@ -348,10 +348,10 @@ void StyledTextImager::DrawSegment (Led_Tablet tablet,
          *  So simply (as a temp hack) use some fixed number of pixels to optimize by.
          *
          */
-        const Led_Coordinate kSluffToLeaveRoomForOverhangs = 20; // cannot imagine more pixel overhang than this,
+        const Coordinate kSluffToLeaveRoomForOverhangs = 20; // cannot imagine more pixel overhang than this,
         // and its a tmp hack anyhow - LGP 960516
         if (tmpDrawInto.left - GetHScrollPos () < invalidRect.right + kSluffToLeaveRoomForOverhangs) {
-            Led_Distance pixelsDrawnHere = 0;
+            DistanceType pixelsDrawnHere = 0;
 
             /*
              *  This is a BIT of a kludge. No time to throughly clean this up right now. This is vaguely
@@ -387,7 +387,7 @@ void StyledTextImager::DrawSegment (Led_Tablet tablet,
 }
 
 void StyledTextImager::MeasureSegmentWidth (size_t from, size_t to, const Led_tChar* text,
-                                            Led_Distance* distanceResults) const
+                                            DistanceType* distanceResults) const
 {
     // See SPR#1293 - may want to pass in TextLayoutBlock here - instead of just plain text...
     vector<RunElement> outputSummary = SummarizeStyleMarkers (from, to);
@@ -407,7 +407,7 @@ void StyledTextImager::MeasureSegmentWidth (size_t from, size_t to, const Led_tC
             re.fMarker->MeasureSegmentWidth (this, re, reFrom, reTo, &text[indexIntoText], &distanceResults[indexIntoText]);
         }
         if (indexIntoText != 0) {
-            Led_Distance addX = distanceResults[indexIntoText - 1];
+            DistanceType addX = distanceResults[indexIntoText - 1];
             for (size_t j = 0; j < reLength; j++) {
                 distanceResults[indexIntoText + j] += addX;
             }
@@ -416,7 +416,7 @@ void StyledTextImager::MeasureSegmentWidth (size_t from, size_t to, const Led_tC
     }
 }
 
-Led_Distance StyledTextImager::MeasureSegmentHeight (size_t from, size_t to) const
+DistanceType StyledTextImager::MeasureSegmentHeight (size_t from, size_t to) const
 {
     // See SPR#1293 - may want to pass in TextLayoutBlock here ... and then pass that to SummarizeStyleMarkers ()
     Require (from <= to);
@@ -442,8 +442,8 @@ Led_Distance StyledTextImager::MeasureSegmentHeight (size_t from, size_t to) con
      */
     size_t outputSummaryLength = outputSummary.size ();
     Assert (outputSummaryLength != 0);
-    Led_Distance maxHeightAbove = 0;
-    Led_Distance maxHeightBelow = 0;
+    DistanceType maxHeightAbove = 0;
+    DistanceType maxHeightBelow = 0;
     size_t       indexIntoText  = 0;
     for (size_t i = 0; i < outputSummaryLength; i++) {
         const RunElement& re       = outputSummary[i];
@@ -451,8 +451,8 @@ Led_Distance StyledTextImager::MeasureSegmentHeight (size_t from, size_t to) con
         size_t            reLength = re.fLength;
         size_t            reTo     = reFrom + reLength;
         Assert (indexIntoText <= to - from);
-        Led_Distance itsBaseline;
-        Led_Distance itsHeight;
+        DistanceType itsBaseline;
+        DistanceType itsHeight;
         if (re.fMarker == nullptr) {
             itsBaseline = MeasureSegmentBaseLine_ (GetDefaultFont (), reFrom, reTo);
             itsHeight   = MeasureSegmentHeight_ (GetDefaultFont (), reFrom, reTo);
@@ -468,7 +468,7 @@ Led_Distance StyledTextImager::MeasureSegmentHeight (size_t from, size_t to) con
     return maxHeightAbove + maxHeightBelow;
 }
 
-Led_Distance StyledTextImager::MeasureSegmentBaseLine (size_t from, size_t to) const
+DistanceType StyledTextImager::MeasureSegmentBaseLine (size_t from, size_t to) const
 {
     // See SPR#1293 - may want to pass in TextLayoutBlock here ... and then pass that to SummarizeStyleMarkers ()
     Require (from <= to);
@@ -479,7 +479,7 @@ Led_Distance StyledTextImager::MeasureSegmentBaseLine (size_t from, size_t to) c
     vector<RunElement> outputSummary       = SummarizeStyleMarkers (from, to);
     size_t             outputSummaryLength = outputSummary.size ();
     Assert (outputSummaryLength != 0);
-    Led_Distance maxHeight     = 0;
+    DistanceType maxHeight     = 0;
     size_t       indexIntoText = 0;
     for (size_t i = 0; i < outputSummaryLength; i++) {
         const RunElement& re       = outputSummary[i];

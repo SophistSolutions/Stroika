@@ -234,7 +234,7 @@ namespace Stroika::Frameworks::Led {
             virtual LRESULT WndProc (UINT message, WPARAM wParam, LPARAM lParam) override;
             nonvirtual void UpdatePopupItems ();
             nonvirtual void MadeSelection ();
-            nonvirtual void ComputePreferedHeight (Led_Distance* prefHeight, size_t* nEltsShown) const;
+            nonvirtual void ComputePreferedHeight (DistanceType* prefHeight, size_t* nEltsShown) const;
 
             LedComboBoxWidget* fComboBox;
         };
@@ -866,7 +866,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
     public:
-        virtual void InitValues (Led_TWIPS leftMargin, bool leftMarginValid, Led_TWIPS rightMargin, bool rightMarginValid, Led_TWIPS firstIndent, bool firstIndentValid);
+        virtual void InitValues (TWIPS leftMargin, bool leftMarginValid, TWIPS rightMargin, bool rightMarginValid, TWIPS firstIndent, bool firstIndentValid);
 
     protected:
         virtual void PreDoModalHook () override;
@@ -875,15 +875,15 @@ namespace Stroika::Frameworks::Led {
         virtual void OnOK () override;
 
     public:
-        bool      fLeftMargin_Valid;
-        Led_TWIPS fLeftMargin_Orig;
-        Led_TWIPS fLeftMargin_Result;
-        bool      fRightMargin_Valid;
-        Led_TWIPS fRightMargin_Orig;
-        Led_TWIPS fRightMargin_Result;
-        bool      fFirstIndent_Valid;
-        Led_TWIPS fFirstIndent_Orig;
-        Led_TWIPS fFirstIndent_Result;
+        bool  fLeftMargin_Valid;
+        TWIPS fLeftMargin_Orig;
+        TWIPS fLeftMargin_Result;
+        bool  fRightMargin_Valid;
+        TWIPS fRightMargin_Orig;
+        TWIPS fRightMargin_Result;
+        bool  fFirstIndent_Valid;
+        TWIPS fFirstIndent_Orig;
+        TWIPS fFirstIndent_Result;
     };
 #endif
 #endif
@@ -921,7 +921,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
     public:
-        virtual void InitValues (Led_TWIPS spaceBefore, bool spaceBeforeValid, Led_TWIPS spaceAfter, bool spaceAfterValid, Led_LineSpacing lineSpacing, bool lineSpacingValid);
+        virtual void InitValues (TWIPS spaceBefore, bool spaceBeforeValid, TWIPS spaceAfter, bool spaceAfterValid, Led_LineSpacing lineSpacing, bool lineSpacingValid);
 
     protected:
         virtual void PreDoModalHook () override;
@@ -931,11 +931,11 @@ namespace Stroika::Frameworks::Led {
 
     public:
         bool            fSpaceBefore_Valid;
-        Led_TWIPS       fSpaceBefore_Orig;
-        Led_TWIPS       fSpaceBefore_Result;
+        TWIPS           fSpaceBefore_Orig;
+        TWIPS           fSpaceBefore_Result;
         bool            fSpaceAfter_Valid;
-        Led_TWIPS       fSpaceAfter_Orig;
-        Led_TWIPS       fSpaceAfter_Result;
+        TWIPS           fSpaceAfter_Orig;
+        TWIPS           fSpaceAfter_Result;
         bool            fLineSpacing_Valid;
         Led_LineSpacing fLineSpacing_Orig;
         Led_LineSpacing fLineSpacing_Result;
@@ -968,7 +968,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
     public:
-        virtual void InitValues (Led_Distance origFontSize);
+        virtual void InitValues (DistanceType origFontSize);
 
     protected:
         virtual void PreDoModalHook () override;
@@ -977,8 +977,8 @@ namespace Stroika::Frameworks::Led {
         virtual void OnOK () override;
 
     public:
-        Led_Distance fFontSize_Orig;
-        Led_Distance fFontSize_Result;
+        DistanceType fFontSize_Orig;
+        DistanceType fFontSize_Result;
     };
 #endif
 #endif
@@ -1196,14 +1196,14 @@ namespace Stroika::Frameworks::Led {
         struct Info {
             Info ();
 
-            Led_TWIPS fTableBorderWidth;
+            TWIPS     fTableBorderWidth;
             Led_Color fTableBorderColor;
 
-            Led_TWIPS_Rect fDefaultCellMargins;
-            Led_TWIPS      fCellSpacing;
+            TWIPS_Rect fDefaultCellMargins;
+            TWIPS      fCellSpacing;
 
-            bool      fCellWidth_Common;
-            Led_TWIPS fCellWidth;
+            bool  fCellWidth_Common;
+            TWIPS fCellWidth;
 
             bool      fCellBackgroundColor_Common;
             Led_Color fCellBackgroundColor;
@@ -1259,12 +1259,12 @@ namespace Stroika::Frameworks::Led {
     }
 #endif
     inline Led_StdDialogHelper_EditTablePropertiesDialog::Info::Info ()
-        : fTableBorderWidth (Led_TWIPS (0))
+        : fTableBorderWidth (TWIPS (0))
         , fTableBorderColor (Led_Color::kWhite)
         , fDefaultCellMargins ()
-        , fCellSpacing (Led_TWIPS (0))
+        , fCellSpacing (TWIPS (0))
         , fCellWidth_Common (false)
-        , fCellWidth (Led_TWIPS (0))
+        , fCellWidth (TWIPS (0))
         , fCellBackgroundColor_Common (false)
         , fCellBackgroundColor (Led_Color::kWhite)
     {

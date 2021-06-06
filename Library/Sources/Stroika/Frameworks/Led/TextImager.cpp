@@ -192,7 +192,7 @@ TextImager::TextImager ()
     , fImageUsingOffscreenBitmaps (qUseOffscreenBitmapsToReduceFlicker)
     , fHScrollPos (0)
     , fSuppressGoalColumnRecompute (false)
-    , fSelectionGoalColumn (Led_TWIPS (0))
+    , fSelectionGoalColumn (TWIPS (0))
     , fUseEOLBOLRowHilightStyle (true)
     , fSelectionShown (false)
     , fWindowRect (Led_Rect (0, 0, 0, 0))
@@ -552,7 +552,7 @@ void TextImager::SetSelectionShown (bool shown)
 const TextImager::TabStopList& TextImager::GetTabStopList (size_t /*containingPos*/) const
 {
     // 1/3 inch tabstops by default (roughly 4 chars wide on Mac in Courier 10-point)
-    static SimpleTabStopList sDefaultTabStopList = SimpleTabStopList (Led_TWIPS (1440 / 3));
+    static SimpleTabStopList sDefaultTabStopList = SimpleTabStopList (TWIPS (1440 / 3));
     return sDefaultTabStopList;
 }
 
@@ -572,8 +572,8 @@ void TextImager::SetWindowRect (const Led_Rect& windowRect)
 */
 void TextImager::ScrollSoShowingHHelper (size_t markerPos, size_t andTryToShowMarkerPos)
 {
-    Led_Coordinate maxHScrollPos = ComputeMaxHScrollPos ();
-    Led_Coordinate hsp           = GetHScrollPos ();
+    Coordinate maxHScrollPos = ComputeMaxHScrollPos ();
+    Coordinate hsp           = GetHScrollPos ();
 
     /*
      *  Speed tweek - avoid alot of computations which are unneeded if this is true.
@@ -589,14 +589,14 @@ void TextImager::ScrollSoShowingHHelper (size_t markerPos, size_t andTryToShowMa
 
     {
         // Try to see if we can accomodate the 'andTryToShowMarkerPos'.
-        Led_Rect       andTryRRR             = GetCharWindowLocation (andTryToShowMarkerPos);
-        Led_Coordinate whereAtInGlobalCoords = windowRect.left - andTryRRR.left;
+        Led_Rect   andTryRRR             = GetCharWindowLocation (andTryToShowMarkerPos);
+        Coordinate whereAtInGlobalCoords = windowRect.left - andTryRRR.left;
         if (andTryRRR.left < windowRect.left) {
             Assert (hsp >= whereAtInGlobalCoords);
             hsp -= whereAtInGlobalCoords;
         }
         else if (andTryRRR.right > windowRect.right) {
-            Led_Coordinate howFarOffRight = andTryRRR.right - windowRect.right;
+            Coordinate howFarOffRight = andTryRRR.right - windowRect.right;
             hsp += howFarOffRight; // now the char should be just barely showing.
             hsp = min (hsp, maxHScrollPos);
         }
@@ -609,17 +609,17 @@ void TextImager::ScrollSoShowingHHelper (size_t markerPos, size_t andTryToShowMa
         Led_Rect rrr = GetCharWindowLocation (markerPos);
 
         {
-            Led_Coordinate adjustRRRBy = GetHScrollPos () - hsp;
+            Coordinate adjustRRRBy = GetHScrollPos () - hsp;
             rrr += Led_Point (0, adjustRRRBy);
         }
 
-        Led_Coordinate whereAtInGlobalCoords = windowRect.GetLeft () - rrr.GetLeft ();
+        Coordinate whereAtInGlobalCoords = windowRect.GetLeft () - rrr.GetLeft ();
         if (rrr.GetLeft () < windowRect.GetLeft ()) {
             Assert (hsp >= whereAtInGlobalCoords);
             hsp -= whereAtInGlobalCoords;
         }
         else if (rrr.GetRight () > windowRect.GetRight ()) {
-            Led_Coordinate howFarOffRight = rrr.GetRight () - windowRect.GetRight ();
+            Coordinate howFarOffRight = rrr.GetRight () - windowRect.GetRight ();
             hsp += howFarOffRight; // now the char should be just barely showing.
             hsp = min (hsp, maxHScrollPos);
         }
@@ -630,7 +630,7 @@ void TextImager::ScrollSoShowingHHelper (size_t markerPos, size_t andTryToShowMa
     SetHScrollPos (hsp);
 }
 
-void TextImager::SetHScrollPos (Led_Coordinate hScrollPos)
+void TextImager::SetHScrollPos (Coordinate hScrollPos)
 {
     if (hScrollPos != GetHScrollPos ()) {
         SetHScrollPos_ (hScrollPos);
@@ -655,7 +655,7 @@ void TextImager::SetHScrollPos (Led_Coordinate hScrollPos)
             (@'WordProcessor::ComputeMaxHScrollPos').
             </p>
 */
-Led_Distance TextImager::ComputeMaxHScrollPos () const
+DistanceType TextImager::ComputeMaxHScrollPos () const
 {
     return 0;
 }
@@ -665,14 +665,14 @@ Led_Distance TextImager::ComputeMaxHScrollPos () const
 @DESCRIPTION:   <p>This is a utility methods, very handy for implementing horizontal scrolling.
     It can (and should be) overriden in certain subclasses for efficiency. But the default implementation will work.</p>
 */
-Led_Distance TextImager::CalculateLongestRowInWindowPixelWidth () const
+DistanceType TextImager::CalculateLongestRowInWindowPixelWidth () const
 {
     size_t startOfWindow = GetMarkerPositionOfStartOfWindow ();
     size_t endOfWindow   = GetMarkerPositionOfEndOfWindow ();
 
-    Led_Distance longestRowWidth = 0;
+    DistanceType longestRowWidth = 0;
     for (size_t curOffset = startOfWindow; curOffset < endOfWindow;) {
-        Led_Distance thisRowWidth = CalcSegmentSize (curOffset, GetEndOfRowContainingPosition (curOffset));
+        DistanceType thisRowWidth = CalcSegmentSize (curOffset, GetEndOfRowContainingPosition (curOffset));
         longestRowWidth           = max (longestRowWidth, thisRowWidth);
         {
             size_t newOffset = GetStartOfNextRowFromRowContainingPosition (curOffset);
@@ -784,8 +784,8 @@ void TextImager::RecomputeSelectionGoalColumn ()
         // We now maintain a goal-column-target using pixel offsets within the row, rather than
         // character offsets, cuz thats what LEC/Alan Pollack prefers, and I think most
         // Texteditors seem todo likewise - LedSPR#0315
-        Led_Distance lhs = 0;
-        Led_Distance rhs = 0;
+        DistanceType lhs = 0;
+        DistanceType rhs = 0;
         GetRowRelativeCharLoc (GetSelectionStart (), &lhs, &rhs);
         SetSelectionGoalColumn (Tablet_Acquirer (this)->CvtToTWIPSH (lhs + (rhs - lhs) / 2));
     }
@@ -1310,7 +1310,7 @@ vector<Led_Rect> TextImager::GetSelectionWindowRects (size_t from, size_t to) co
         bottomRow--;
     }
 
-    Led_Coordinate lastRowBottom = 0; // Keep track of last row's bottom for interline-space support
+    Coordinate lastRowBottom = 0; // Keep track of last row's bottom for interline-space support
     for (size_t curRow = topRow;;) {
         size_t firstCharInRow = from;
         if (topRow != curRow) {
@@ -1329,8 +1329,8 @@ vector<Led_Rect> TextImager::GetSelectionWindowRects (size_t from, size_t to) co
 #endif
 
         vector<Led_Rect> hilightRects = GetRowHilightRects (text, startOfRow, endOfRow, GetSelectionStart (), GetSelectionEnd ());
-        Led_Coordinate   newMinTop    = lastRowBottom;
-        Led_Coordinate   newMaxBottom = lastRowBottom;
+        Coordinate       newMinTop    = lastRowBottom;
+        Coordinate       newMaxBottom = lastRowBottom;
         for (auto i = hilightRects.begin (); i != hilightRects.end (); ++i) {
             Led_Rect hilightRect = *i;
             Require (hilightRect.GetWidth () >= 0);
@@ -1522,8 +1522,8 @@ void TextImager::DrawRowSegments (Led_Tablet tablet, const Led_Rect& currentRowR
      *  with this is that in SOME languages (e.g. Japanese) the character used as a wrap-char
      *  may be a real useful (Japanese) character!
      */
-    size_t         segEnd   = rowEnd;
-    Led_Coordinate baseLine = currentRowRect.top + MeasureSegmentBaseLine (rowStart, segEnd);
+    size_t     segEnd   = rowEnd;
+    Coordinate baseLine = currentRowRect.top + MeasureSegmentBaseLine (rowStart, segEnd);
 
     /*
      *  Its OK for the baseline to be outside of the currentRowRect. But the text display of this
@@ -1574,7 +1574,7 @@ void TextImager::DrawRowHilight (Led_Tablet tablet, [[maybe_unused]] const Led_R
             paragraphs (as in LECs LVEJ side-by-side mode).</p>
                 <p>Renamed to @'TextImager::DrawInterLineSpace' from MutliRowTextImager::DrawInterLineSpace for Led 3.1a3 release.</p>
 */
-void TextImager::DrawInterLineSpace (Led_Distance interlineSpace, Led_Tablet tablet, Led_Coordinate vPosOfTopOfInterlineSpace, bool segmentHilighted, bool printing)
+void TextImager::DrawInterLineSpace (DistanceType interlineSpace, Led_Tablet tablet, Coordinate vPosOfTopOfInterlineSpace, bool segmentHilighted, bool printing)
 {
     // This code not been checked/tested since I rewrote the erasing code etc.. Maybe wrong - probably wrong? No matter, anybody
     // ever using interline space would probably OVERRIDE this anyhow..
@@ -1654,7 +1654,7 @@ size_t TextImager::RemoveMappedDisplayCharacters (Led_tChar* /*copyText*/, size_
     to do most of the work.</p>
         <p>See also @'TextImager::ContainsMappedDisplayCharacters'.</p>
 */
-void TextImager::PatchWidthRemoveMappedDisplayCharacters (const Led_tChar* /*srcText*/, Led_Distance* /*distanceResults*/, size_t /*nTChars*/) const
+void TextImager::PatchWidthRemoveMappedDisplayCharacters (const Led_tChar* /*srcText*/, DistanceType* /*distanceResults*/, size_t /*nTChars*/) const
 {
 }
 
@@ -1720,17 +1720,17 @@ size_t TextImager::RemoveMappedDisplayCharacters_HelperForChar (Led_tChar* copyT
     Just specify the special character you are looking to remove.</p>
         <p>See also @'TextImager::ContainsMappedDisplayCharacters'.</p>
 */
-void TextImager::PatchWidthRemoveMappedDisplayCharacters_HelperForChar (const Led_tChar* srcText, Led_Distance* distanceResults, size_t nTChars, Led_tChar charToRemove)
+void TextImager::PatchWidthRemoveMappedDisplayCharacters_HelperForChar (const Led_tChar* srcText, DistanceType* distanceResults, size_t nTChars, Led_tChar charToRemove)
 {
     // Each of these kSoftLineBreakChar will be mapped to ZERO-WIDTH. So walk text (and distanceResults) and when
     // I see a softlinebreak - zero its size, and subtrace from start point total amount of zero-ed softlinebreaks.
-    Led_Distance     cumSubtract = 0;
+    DistanceType     cumSubtract = 0;
     const Led_tChar* end         = srcText + nTChars;
     for (const Led_tChar* cur = srcText; cur < end; cur = Led_NextChar (cur)) {
         size_t i = cur - srcText;
         Assert (i < nTChars);
         if (*cur == charToRemove) {
-            Led_Distance thisSoftBreakWidth = i == 0 ? distanceResults[0] : (distanceResults[i] - distanceResults[i - 1]);
+            DistanceType thisSoftBreakWidth = i == 0 ? distanceResults[0] : (distanceResults[i] - distanceResults[i - 1]);
             cumSubtract                     = thisSoftBreakWidth;
         }
         distanceResults[i] -= cumSubtract;
@@ -1752,7 +1752,7 @@ void TextImager::PatchWidthRemoveMappedDisplayCharacters_HelperForChar (const Le
 */
 void TextImager::DrawSegment (Led_Tablet tablet,
                               size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                              Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn)
+                              Coordinate useBaseLine, DistanceType* pixelsDrawn)
 {
     DrawSegment_ (tablet, GetDefaultFont (), from, to, text, drawInto, useBaseLine, pixelsDrawn);
 }
@@ -1769,7 +1769,7 @@ void TextImager::DrawSegment (Led_Tablet tablet,
 */
 void TextImager::DrawSegment_ (Led_Tablet tablet, const Led_FontSpecification& fontSpec,
                                size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto,
-                               Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) const
+                               Coordinate useBaseLine, DistanceType* pixelsDrawn) const
 {
     RequireNotNull (tablet);
     Assert (from <= to);
@@ -1794,11 +1794,11 @@ void TextImager::DrawSegment_ (Led_Tablet tablet, const Led_FontSpecification& f
 
     FontCacheInfoUpdater fontCacheUpdater (this, tablet, fontSpec);
 
-    Led_Distance ascent = fCachedFontInfo.GetAscent ();
+    DistanceType ascent = fCachedFontInfo.GetAscent ();
     Assert (useBaseLine >= drawInto.top);
 
     //Assert (useBaseLine <= drawInto.bottom);      Now allowed... LGP 2000-06-12 - see SPR#0760 - and using EXACT-height of a small height, and use a large font
-    Led_Coordinate drawCharTop = useBaseLine - ascent; // our PortableGDI_TabbedTextOut() assumes draw in topLeft
+    Coordinate drawCharTop = useBaseLine - ascent; // our PortableGDI_TabbedTextOut() assumes draw in topLeft
     //Require (drawCharTop >= drawInto.top);        // Same deal as for useBaseLine - LGP 2000-06-12
 
     if (fontSpec.GetStyle_SubOrSuperScript () == Led_FontSpecification::eSuperscript) {
@@ -1854,7 +1854,7 @@ void TextImager::DrawSegment_ (Led_Tablet tablet, const Led_FontSpecification& f
         /*
          *  Actually draw the text.
          */
-        Led_Distance amountDrawn = 0;
+        DistanceType amountDrawn = 0;
         tablet->TabbedTextOut (fCachedFontInfo, drawText, drawTextLen, se.fDirection, outputAt, GetWindowRect ().left, GetTabStopList (from), &amountDrawn, GetHScrollPos ());
         outputAt.h += amountDrawn;
         if (pixelsDrawn != nullptr) {
@@ -1864,7 +1864,7 @@ void TextImager::DrawSegment_ (Led_Tablet tablet, const Led_FontSpecification& f
 }
 
 void TextImager::MeasureSegmentWidth (size_t from, size_t to, const Led_tChar* text,
-                                      Led_Distance* distanceResults) const
+                                      DistanceType* distanceResults) const
 {
     MeasureSegmentWidth_ (GetDefaultFont (), from, to, text, distanceResults);
 }
@@ -1878,7 +1878,7 @@ void TextImager::MeasureSegmentWidth (size_t from, size_t to, const Led_tChar* t
 */
 void TextImager::MeasureSegmentWidth_ (const Led_FontSpecification& fontSpec, size_t from, size_t to,
                                        const Led_tChar* text,
-                                       Led_Distance*    distanceResults) const
+                                       DistanceType*    distanceResults) const
 {
     Require (to > from);
 
@@ -1906,12 +1906,12 @@ void TextImager::MeasureSegmentWidth_ (const Led_FontSpecification& fontSpec, si
     }
 }
 
-Led_Distance TextImager::MeasureSegmentHeight (size_t from, size_t to) const
+DistanceType TextImager::MeasureSegmentHeight (size_t from, size_t to) const
 {
     return (MeasureSegmentHeight_ (GetDefaultFont (), from, to));
 }
 
-Led_Distance TextImager::MeasureSegmentHeight_ (const Led_FontSpecification& fontSpec, size_t /*from*/, size_t /*to*/) const
+DistanceType TextImager::MeasureSegmentHeight_ (const Led_FontSpecification& fontSpec, size_t /*from*/, size_t /*to*/) const
 {
     Tablet_Acquirer tablet (this);
     AssertNotNull (static_cast<Led_Tablet> (tablet));
@@ -1919,12 +1919,12 @@ Led_Distance TextImager::MeasureSegmentHeight_ (const Led_FontSpecification& fon
     return (fCachedFontInfo.GetLineHeight ());
 }
 
-Led_Distance TextImager::MeasureSegmentBaseLine (size_t from, size_t to) const
+DistanceType TextImager::MeasureSegmentBaseLine (size_t from, size_t to) const
 {
     return (MeasureSegmentBaseLine_ (GetDefaultFont (), from, to));
 }
 
-Led_Distance TextImager::MeasureSegmentBaseLine_ (const Led_FontSpecification& fontSpec, size_t /*from*/, size_t /*to*/) const
+DistanceType TextImager::MeasureSegmentBaseLine_ (const Led_FontSpecification& fontSpec, size_t /*from*/, size_t /*to*/) const
 {
     Tablet_Acquirer tablet (this);
     AssertNotNull (static_cast<Led_Tablet> (tablet));

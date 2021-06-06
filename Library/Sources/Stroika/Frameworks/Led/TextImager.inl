@@ -18,21 +18,21 @@ namespace Stroika::Frameworks::Led {
         */
 
     // class TextImager::SimpleTabStopList
-    inline TextImager::SimpleTabStopList::SimpleTabStopList (Led_TWIPS twipsPerTabStop)
+    inline TextImager::SimpleTabStopList::SimpleTabStopList (TWIPS twipsPerTabStop)
         : TabStopList ()
         , fTWIPSPerTabStop (twipsPerTabStop)
     {
         Require (twipsPerTabStop > 0);
     }
-    inline Led_TWIPS TextImager::SimpleTabStopList::ComputeIthTab (size_t i) const
+    inline TWIPS TextImager::SimpleTabStopList::ComputeIthTab (size_t i) const
     {
-        return Led_TWIPS (static_cast<long> ((i + 1) * fTWIPSPerTabStop));
+        return TWIPS (static_cast<long> ((i + 1) * fTWIPSPerTabStop));
     }
-    inline Led_TWIPS TextImager::SimpleTabStopList::ComputeTabStopAfterPosition (Led_TWIPS afterPos) const
+    inline TWIPS TextImager::SimpleTabStopList::ComputeTabStopAfterPosition (TWIPS afterPos) const
     {
         Assert (fTWIPSPerTabStop > 0);
-        size_t    idx    = afterPos / fTWIPSPerTabStop;
-        Led_TWIPS result = Led_TWIPS (static_cast<long> ((idx + 1) * fTWIPSPerTabStop));
+        size_t idx    = afterPos / fTWIPSPerTabStop;
+        TWIPS  result = TWIPS (static_cast<long> ((idx + 1) * fTWIPSPerTabStop));
         Ensure (result % fTWIPSPerTabStop == 0);
         Ensure (result > afterPos);
         return result;
@@ -59,14 +59,14 @@ namespace Stroika::Frameworks::Led {
     {
         Assert (fDefaultTabWidth > 0);
     }
-    inline TextImager::StandardTabStopList::StandardTabStopList (Led_TWIPS eachWidth)
+    inline TextImager::StandardTabStopList::StandardTabStopList (TWIPS eachWidth)
         : TabStopList ()
         , fDefaultTabWidth (eachWidth)
         , fTabStops ()
     {
         Require (fDefaultTabWidth > 0);
     }
-    inline TextImager::StandardTabStopList::StandardTabStopList (const vector<Led_TWIPS>& tabstops)
+    inline TextImager::StandardTabStopList::StandardTabStopList (const vector<TWIPS>& tabstops)
         : TabStopList ()
         , fDefaultTabWidth (720)
         , //  default to 1/2 inch - RTF spec default
@@ -74,31 +74,31 @@ namespace Stroika::Frameworks::Led {
     {
         Assert (fDefaultTabWidth > 0);
     }
-    inline TextImager::StandardTabStopList::StandardTabStopList (const vector<Led_TWIPS>& tabstops, Led_TWIPS afterTabsWidth)
+    inline TextImager::StandardTabStopList::StandardTabStopList (const vector<TWIPS>& tabstops, TWIPS afterTabsWidth)
         : TabStopList ()
         , fDefaultTabWidth (afterTabsWidth)
         , fTabStops (tabstops)
     {
         Require (fDefaultTabWidth > 0);
     }
-    inline Led_TWIPS TextImager::StandardTabStopList::ComputeIthTab (size_t i) const
+    inline TWIPS TextImager::StandardTabStopList::ComputeIthTab (size_t i) const
     {
-        Led_TWIPS r      = Led_TWIPS (0);
-        size_t    smallI = min (i + 1, fTabStops.size ());
+        TWIPS  r      = TWIPS (0);
+        size_t smallI = min (i + 1, fTabStops.size ());
         for (size_t j = 0; j < smallI; ++j) {
             r += fTabStops[j];
         }
         if (smallI <= i) {
-            r = Led_TWIPS (static_cast<long> ((r / fDefaultTabWidth + (i - smallI + 1)) * fDefaultTabWidth));
+            r = TWIPS (static_cast<long> ((r / fDefaultTabWidth + (i - smallI + 1)) * fDefaultTabWidth));
         }
         return r;
     }
-    inline Led_TWIPS TextImager::StandardTabStopList::ComputeTabStopAfterPosition (Led_TWIPS afterPos) const
+    inline TWIPS TextImager::StandardTabStopList::ComputeTabStopAfterPosition (TWIPS afterPos) const
     {
         // Instead if walking all tabstops til we find the right one - GUESS where the right one is (division) and then
         // walk back and forth if/as needed to narrow it down. This will guess perfectly if there are no user-defined tabstops.
-        size_t    guessIdx = afterPos / fDefaultTabWidth;
-        Led_TWIPS guessVal = ComputeIthTab (guessIdx);
+        size_t guessIdx = afterPos / fDefaultTabWidth;
+        TWIPS  guessVal = ComputeIthTab (guessIdx);
 
         // Go back first to assure we've gotten the FIRST one after 'afterPos' - not just 'A' tabstop after 'afterPos'.
         while (guessIdx > 0 and guessVal > afterPos) {
@@ -111,7 +111,7 @@ namespace Stroika::Frameworks::Led {
         Assert (guessIdx == 0 or guessVal <= afterPos);
         for (;; ++guessIdx) {
             Assert (guessIdx == 0 or ComputeIthTab (guessIdx - 1) < ComputeIthTab (guessIdx)); // assure monotonicly increasing so this will complete!
-            Led_TWIPS d = ComputeIthTab (guessIdx);
+            TWIPS d = ComputeIthTab (guessIdx);
             if (d > afterPos) {
                 return d;
             }
@@ -190,11 +190,11 @@ namespace Stroika::Frameworks::Led {
                 no horizontal scrolling has taken place. Call @'TextImager::SetHScrollPos ()' to set where you have
                 horizontally scrolled to.</p>
     */
-    inline Led_Coordinate TextImager::GetHScrollPos () const
+    inline Coordinate TextImager::GetHScrollPos () const
     {
         return (fHScrollPos);
     }
-    inline void TextImager::SetHScrollPos_ (Led_Coordinate hScrollPos)
+    inline void TextImager::SetHScrollPos_ (Coordinate hScrollPos)
     {
         fHScrollPos = hScrollPos;
     }
@@ -202,7 +202,7 @@ namespace Stroika::Frameworks::Led {
     @METHOD:        TextImager::GetSelectionGoalColumn
     @DESCRIPTION:   <p></p>
     */
-    inline Led_TWIPS TextImager::GetSelectionGoalColumn () const
+    inline TWIPS TextImager::GetSelectionGoalColumn () const
     {
         return (fSelectionGoalColumn);
     }
@@ -210,7 +210,7 @@ namespace Stroika::Frameworks::Led {
     @METHOD:        TextImager::SetSelectionGoalColumn
     @DESCRIPTION:   <p></p>
     */
-    inline void TextImager::SetSelectionGoalColumn (Led_TWIPS selectionGoalColumn)
+    inline void TextImager::SetSelectionGoalColumn (TWIPS selectionGoalColumn)
     {
         fSelectionGoalColumn = selectionGoalColumn;
     }

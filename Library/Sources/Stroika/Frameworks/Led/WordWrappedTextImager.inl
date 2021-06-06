@@ -38,7 +38,7 @@ namespace Stroika::Frameworks::Led {
         this->GetTextStore ().Replace (0, 0, initialText.c_str (), initialText.length ());
     }
     template <typename TEXTSTORE, typename IMAGER>
-    void TrivialWordWrappedImager<TEXTSTORE, IMAGER>::GetLayoutMargins (MultiRowTextImager::RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const
+    void TrivialWordWrappedImager<TEXTSTORE, IMAGER>::GetLayoutMargins (MultiRowTextImager::RowReference row, Coordinate* lhs, Coordinate* rhs) const
     {
         Ensure (this->GetWindowRect ().GetWidth () >= 1);
         if (lhs != nullptr) {
@@ -58,7 +58,7 @@ namespace Stroika::Frameworks::Led {
     @METHOD:        TrivialWordWrappedImager<TEXTSTORE,IMAGER>::GetHeight
     @DESCRIPTION:   <p>Returns the height - in pixels - of the text in the imager.</p>
     */
-    inline Led_Distance TrivialWordWrappedImager<TEXTSTORE, IMAGER>::GetHeight () const
+    inline DistanceType TrivialWordWrappedImager<TEXTSTORE, IMAGER>::GetHeight () const
     {
         return this->GetHeightOfRows (0, this->GetRowCount ());
     }

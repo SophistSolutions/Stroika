@@ -450,14 +450,14 @@ TextDirection PartitioningTextImager::GetTextDirection (size_t charPosition) con
             the start of the row. So - we just always goto the starts and ends of rows. Since
             @'PartitioningTextImager::CalcSegmentSize_CACHING' caches these values - this isn't a great cost.</p>
 */
-Led_Distance PartitioningTextImager::CalcSegmentSize (size_t from, size_t to) const
+DistanceType PartitioningTextImager::CalcSegmentSize (size_t from, size_t to) const
 {
 #if !qCacheTextMeasurementsForPM || qDebug
-    Led_Distance referenceValue = CalcSegmentSize_REFERENCE (from, to);
+    DistanceType referenceValue = CalcSegmentSize_REFERENCE (from, to);
 #endif
 
 #if qCacheTextMeasurementsForPM
-    Led_Distance value = CalcSegmentSize_CACHING (from, to);
+    DistanceType value = CalcSegmentSize_CACHING (from, to);
     Assert (value == referenceValue);
     return value;
 #else
@@ -472,7 +472,7 @@ Led_Distance PartitioningTextImager::CalcSegmentSize (size_t from, size_t to) co
             each time as a check that the cache has not somehow (undetected) become invalid (say cuz a font changed
             and we weren't notified?).</p>
 */
-Led_Distance PartitioningTextImager::CalcSegmentSize_REFERENCE (size_t from, size_t to) const
+DistanceType PartitioningTextImager::CalcSegmentSize_REFERENCE (size_t from, size_t to) const
 {
     Require (from <= to);
 
@@ -485,11 +485,11 @@ Led_Distance PartitioningTextImager::CalcSegmentSize_REFERENCE (size_t from, siz
         Require (startOfRow <= from); //  WE REQUIRE from/to be contained within a single row!!!
         Require (to <= rowEnd);       //  ''
         size_t                                 rowLen = rowEnd - startOfRow;
-        Memory::SmallStackBuffer<Led_Distance> distanceVector (rowLen);
+        Memory::SmallStackBuffer<DistanceType> distanceVector (rowLen);
         CalcSegmentSize_FillIn (startOfRow, rowEnd, distanceVector);
         Assert (to > startOfRow);                                                                 // but from could be == startOfRow, so must be careful of that...
         Assert (to - startOfRow - 1 < (GetEndOfRowContainingPosition (startOfRow) - startOfRow)); // now buffer overflows!
-        Led_Distance result = distanceVector[to - startOfRow - 1];
+        DistanceType result = distanceVector[to - startOfRow - 1];
         if (from != startOfRow) {
             result -= distanceVector[from - startOfRow - 1];
         }
@@ -504,7 +504,7 @@ Led_Distance PartitioningTextImager::CalcSegmentSize_REFERENCE (size_t from, siz
 @DESCRIPTION:   <p>Caching implementation of @'PartitioningTextImager::CalcSegmentSize'. Values checked by
             calls to related @'PartitioningTextImager::CalcSegmentSize_REFERENCE'.</p>
 */
-Led_Distance PartitioningTextImager::CalcSegmentSize_CACHING (size_t from, size_t to) const
+DistanceType PartitioningTextImager::CalcSegmentSize_CACHING (size_t from, size_t to) const
 {
     Require (from <= to);
 
@@ -525,11 +525,11 @@ Led_Distance PartitioningTextImager::CalcSegmentSize_CACHING (size_t from, size_
         CalcSegmentSize_FillIn (startOfRow, rowEnd, newCE.fMeasurementsCache);
         return newCE;
     });
-    const Led_Distance*        measurementsCache = ce.fMeasurementsCache;
+    const DistanceType*        measurementsCache = ce.fMeasurementsCache;
 
     Assert (to > startOfRow);                                                                 // but from could be == startOfRow, so must be careful of that...
     Assert (to - startOfRow - 1 < (GetEndOfRowContainingPosition (startOfRow) - startOfRow)); // now buffer overflows!
-    Led_Distance result = measurementsCache[to - startOfRow - 1];
+    DistanceType result = measurementsCache[to - startOfRow - 1];
     if (from != startOfRow) {
         result -= measurementsCache[from - startOfRow - 1];
     }
@@ -543,7 +543,7 @@ Led_Distance PartitioningTextImager::CalcSegmentSize_CACHING (size_t from, size_
 @DESCRIPTION:   <p>The 'rowStart' argument MUST start a row, and rowEnd must END that same row. 'distanceVector' must be a
             non-null array whose  size is set to at least (rowEnd-rowStart) elements.</p>
 */
-void PartitioningTextImager::CalcSegmentSize_FillIn (size_t rowStart, size_t rowEnd, Led_Distance* distanceVector) const
+void PartitioningTextImager::CalcSegmentSize_FillIn (size_t rowStart, size_t rowEnd, DistanceType* distanceVector) const
 {
     Require (rowStart == GetStartOfRowContainingPosition (rowStart)); // must already be a rowstart
     Require (rowEnd == GetEndOfRowContainingPosition (rowStart));     // ""
@@ -564,7 +564,7 @@ void PartitioningTextImager::CalcSegmentSize_FillIn (size_t rowStart, size_t row
 @METHOD:        PartitioningTextImager::GetRowRelativeCharLoc
 @DESCRIPTION:   <p>Implementation of abstract interface @'TextImager::GetRowRelativeCharLoc'</p>
 */
-void PartitioningTextImager::GetRowRelativeCharLoc (size_t charLoc, Led_Distance* lhs, Led_Distance* rhs) const
+void PartitioningTextImager::GetRowRelativeCharLoc (size_t charLoc, DistanceType* lhs, DistanceType* rhs) const
 {
     Require (charLoc <= GetEnd ());
     RequireNotNull (lhs);
@@ -592,7 +592,7 @@ void PartitioningTextImager::GetRowRelativeCharLoc (size_t charLoc, Led_Distance
         sort (runs.begin (), runs.end (), TextLayoutBlock::LessThanVirtualStart ());
     }
     size_t       rowRelCharLoc = charLoc - rowStart;
-    Led_Distance spannedSoFar  = 0;
+    DistanceType spannedSoFar  = 0;
     for (auto i = runs.begin (); i != runs.end (); ++i) {
         const ScriptRunElt& se        = *i;
         size_t              runLength = se.fRealEnd - se.fRealStart;
@@ -622,8 +622,8 @@ void PartitioningTextImager::GetRowRelativeCharLoc (size_t charLoc, Led_Distance
                 }
             }
             else {
-                Led_Coordinate segRHS = spannedSoFar + CalcSegmentSize (absoluteSegStart, absoluteSegStart + runLength);
-                *rhs                  = segRHS - CalcSegmentSize (absoluteSegStart, absoluteSegStart + subSegLen);
+                Coordinate segRHS = spannedSoFar + CalcSegmentSize (absoluteSegStart, absoluteSegStart + runLength);
+                *rhs              = segRHS - CalcSegmentSize (absoluteSegStart, absoluteSegStart + subSegLen);
                 if (emptyChar) {
                     *lhs = *rhs;
                 }
@@ -644,7 +644,7 @@ void PartitioningTextImager::GetRowRelativeCharLoc (size_t charLoc, Led_Distance
 @METHOD:        PartitioningTextImager::GetRowRelativeCharAtLoc
 @DESCRIPTION:   <p>Implementation of abstract interface @'TextImager::GetRowRelativeCharAtLoc'</p>
 */
-size_t PartitioningTextImager::GetRowRelativeCharAtLoc (Led_Coordinate hOffset, size_t rowStart) const
+size_t PartitioningTextImager::GetRowRelativeCharAtLoc (Coordinate hOffset, size_t rowStart) const
 {
     Require (rowStart == GetStartOfRowContainingPosition (rowStart));
 
@@ -668,17 +668,17 @@ size_t PartitioningTextImager::GetRowRelativeCharAtLoc (Led_Coordinate hOffset, 
         // sort by virtual start
         sort (runs.begin (), runs.end (), TextLayoutBlock::LessThanVirtualStart ());
     }
-    Led_Distance  spannedSoFar = 0;
+    DistanceType  spannedSoFar = 0;
     TextDirection lastRunDir   = eLeftToRight;
     for (auto i = runs.begin (); i != runs.end (); ++i) {
         const ScriptRunElt& se            = *i;
-        Led_Distance        thisSpanWidth = CalcSegmentSize (rowStart + se.fRealStart, rowStart + se.fRealEnd);
-        Led_Distance        segVisStart   = spannedSoFar;
-        Led_Distance        segVisEnd     = segVisStart + thisSpanWidth;
+        DistanceType        thisSpanWidth = CalcSegmentSize (rowStart + se.fRealStart, rowStart + se.fRealEnd);
+        DistanceType        segVisStart   = spannedSoFar;
+        DistanceType        segVisEnd     = segVisStart + thisSpanWidth;
 
         lastRunDir = se.fDirection;
 
-        if (hOffset < static_cast<Led_Coordinate> (segVisEnd)) {
+        if (hOffset < static_cast<Coordinate> (segVisEnd)) {
             /*
              *  Must be this segment. NB: this takes care of special case where mouseLoc is BEFORE first segment in which case
              *  we treat as at the start of that segment...
@@ -692,9 +692,9 @@ size_t PartitioningTextImager::GetRowRelativeCharAtLoc (Led_Coordinate hOffset, 
             size_t prevEnd = rowStart + se.fRealStart;
             size_t segEnd  = rowStart + se.fRealEnd;
             for (size_t curEnd = FindNextCharacter (prevEnd); curEnd < segEnd; (prevEnd = curEnd), (curEnd = FindNextCharacter (curEnd))) {
-                Led_Distance hSize = CalcSegmentSize (absoluteSegStart, curEnd);
+                DistanceType hSize = CalcSegmentSize (absoluteSegStart, curEnd);
                 if (se.fDirection == eLeftToRight) {
-                    if (static_cast<Led_Coordinate> (hSize + spannedSoFar) > hOffset) {
+                    if (static_cast<Coordinate> (hSize + spannedSoFar) > hOffset) {
 #if qMultiByteCharacters
                         Assert_CharPosDoesNotSplitCharacter (prevEnd);
 #endif
@@ -703,7 +703,7 @@ size_t PartitioningTextImager::GetRowRelativeCharAtLoc (Led_Coordinate hOffset, 
                     }
                 }
                 else {
-                    if (static_cast<Led_Coordinate> (segVisEnd) - static_cast<Led_Coordinate> (hSize) < hOffset) {
+                    if (static_cast<Coordinate> (segVisEnd) - static_cast<Coordinate> (hSize) < hOffset) {
 #if qMultiByteCharacters
                         Assert_CharPosDoesNotSplitCharacter (prevEnd);
 #endif
@@ -745,15 +745,15 @@ size_t PartitioningTextImager::GetRowRelativeCharAtLoc (Led_Coordinate hOffset, 
     So, if startSoFar==0, then it is assumed we are starting at the beginning of the charLocations array, but if startSoFar != 0,
     we assume we can (and must) snag our starting width from what is already in the array at charLocations[startSoFar-1].</p>
 */
-size_t PartitioningTextImager::ResetTabStops (size_t from, const Led_tChar* text, size_t nTChars, Led_Distance* charLocations, size_t startSoFar) const
+size_t PartitioningTextImager::ResetTabStops (size_t from, const Led_tChar* text, size_t nTChars, DistanceType* charLocations, size_t startSoFar) const
 {
     RequireNotNull (charLocations);
-    size_t         lastTabIndex = 0;
-    Led_Coordinate tabAdjust    = 0;
-    Led_Distance   widthAtStart = (startSoFar == 0 ? 0 : charLocations[startSoFar - 1]);
+    size_t       lastTabIndex = 0;
+    Coordinate   tabAdjust    = 0;
+    DistanceType widthAtStart = (startSoFar == 0 ? 0 : charLocations[startSoFar - 1]);
     for (size_t i = startSoFar; i < startSoFar + nTChars; i++) {
         if (text[i] == '\t') {
-            Led_Distance widthSoFar = (i == 0 ? 0 : charLocations[i - 1]);
+            DistanceType widthSoFar = (i == 0 ? 0 : charLocations[i - 1]);
             tabAdjust               = widthAtStart + GetTabStopList (from).ComputeTabStopAfterPosition (Tablet_Acquirer (this), widthSoFar - widthAtStart) - charLocations[i];
             lastTabIndex            = i;
         }

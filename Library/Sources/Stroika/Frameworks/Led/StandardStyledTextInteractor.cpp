@@ -285,7 +285,7 @@ bool StandardStyledTextInteractor::ProcessSimpleClick (Led_Point clickedAt, unsi
     // cuz then its hard to click and make an insertion point in between two embeddings.
     // So only do this click-selects somewhere near the middle of the embedding.
     Led_Rect           tstClickRect = charRect;
-    const Led_Distance kHMargin     = 3;
+    const DistanceType kHMargin     = 3;
     tstClickRect.left += kHMargin;
     tstClickRect.right -= kHMargin;
 

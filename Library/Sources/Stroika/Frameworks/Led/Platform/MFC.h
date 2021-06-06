@@ -488,11 +488,11 @@ namespace Stroika::Frameworks::Led::Platform {
         afx_msg void OnHScroll (UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 
     public:
-        nonvirtual Led_TWIPS_Rect GetPrintMargins () const;
-        nonvirtual void           SetPrintMargins (const Led_TWIPS_Rect& printMargins);
+        nonvirtual TWIPS_Rect GetPrintMargins () const;
+        nonvirtual void       SetPrintMargins (const TWIPS_Rect& printMargins);
 
     private:
-        Led_TWIPS_Rect fPrintMargins;
+        TWIPS_Rect fPrintMargins;
 
     protected:
         virtual BOOL OnPreparePrinting (CPrintInfo* pInfo) override;

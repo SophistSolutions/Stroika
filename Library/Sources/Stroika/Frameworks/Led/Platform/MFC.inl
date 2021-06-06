@@ -1166,8 +1166,8 @@ namespace Stroika::Frameworks::Led::Platform {
     Led_MFC_CViewHelper<BASECLASS>::Led_MFC_CViewHelper ()
         : inherited ()
         ,
-        // NB: CTOR for Led_TWIPS_Rect is TOP/LEFT/HEIGHT/WIDTH, so we set height/width to zero to get same TLBR.
-        fPrintMargins (Led_TWIPS_Rect (Led_TWIPS (1440), Led_TWIPS (1440), Led_TWIPS (0), Led_TWIPS (0)))
+        // NB: CTOR for TWIPS_Rect is TOP/LEFT/HEIGHT/WIDTH, so we set height/width to zero to get same TLBR.
+        fPrintMargins (TWIPS_Rect (TWIPS (1440), TWIPS (1440), TWIPS (0), TWIPS (0)))
         , fPrintInfo (NULL)
     {
     }
@@ -1182,7 +1182,7 @@ namespace Stroika::Frameworks::Led::Platform {
     @DESCRIPTION:   <p>Return the print margins. These are used by @'Led_MFC_CViewHelper<BASECLASS>::CalculatePrintingRect'.
                 See also @'Led_MFC_CViewHelper<BASECLASS>::SetPrintMargins'.
     */
-    Led_TWIPS_Rect
+    TWIPS_Rect
     Led_MFC_CViewHelper<BASECLASS>::GetPrintMargins () const
     {
         return fPrintMargins;
@@ -1193,7 +1193,7 @@ namespace Stroika::Frameworks::Led::Platform {
     @DESCRIPTION:   <p>See also @'Led_MFC_CViewHelper<BASECLASS>::GetPrintMargins'.
     */
     void
-    Led_MFC_CViewHelper<BASECLASS>::SetPrintMargins (const Led_TWIPS_Rect& printMargins)
+    Led_MFC_CViewHelper<BASECLASS>::SetPrintMargins (const TWIPS_Rect& printMargins)
     {
         fPrintMargins = printMargins;
     }

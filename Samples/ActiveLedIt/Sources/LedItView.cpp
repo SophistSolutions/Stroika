@@ -314,7 +314,7 @@ public:
         return ::CmdNumToFontName (MFC_CommandNumberMapping::Get ().ReverseLookup (cmdNum)).c_str ();
     }
 #if qSupportOtherFontSizeDlg
-    virtual Led_Distance PickOtherFontHeight (Led_Distance origHeight) override
+    virtual DistanceType PickOtherFontHeight (DistanceType origHeight) override
     {
 #if qPlatform_MacOS
         Led_StdDialogHelper_OtherFontSizeDialog dlg;
@@ -331,7 +331,7 @@ public:
     }
 #endif
 #if qSupportParagraphSpacingDlg
-    virtual bool PickNewParagraphLineSpacing (Led_TWIPS* spaceBefore, bool* spaceBeforeValid, Led_TWIPS* spaceAfter, bool* spaceAfterValid, Led_LineSpacing* lineSpacing, bool* lineSpacingValid) override
+    virtual bool PickNewParagraphLineSpacing (TWIPS* spaceBefore, bool* spaceBeforeValid, TWIPS* spaceAfter, bool* spaceAfterValid, Led_LineSpacing* lineSpacing, bool* lineSpacingValid) override
     {
 #if qPlatform_MacOS
         Led_StdDialogHelper_ParagraphSpacingDialog dlg;
@@ -361,7 +361,7 @@ public:
     }
 #endif
 #if qSupportParagraphIndentsDlg
-    virtual bool PickNewParagraphMarginsAndFirstIndent (Led_TWIPS* leftMargin, bool* leftMarginValid, Led_TWIPS* rightMargin, bool* rightMarginValid, Led_TWIPS* firstIndent, bool* firstIndentValid) override
+    virtual bool PickNewParagraphMarginsAndFirstIndent (TWIPS* leftMargin, bool* leftMarginValid, TWIPS* rightMargin, bool* rightMarginValid, TWIPS* firstIndent, bool* firstIndentValid) override
     {
 #if qPlatform_MacOS
         Led_StdDialogHelper_ParagraphIndentsDialog dlg;
@@ -547,11 +547,11 @@ LedItView::LedItView ()
         SetUseBitmapScrollingOptimization (false);
     }
     SetUseSecondaryHilight (true); // default to TRUE since I think this looks better and maybe a differentiator with other controls
-    const Led_TWIPS kLedItViewTopMargin    = Led_TWIPS (120);
-    const Led_TWIPS kLedItViewBottomMargin = Led_TWIPS (0);
-    const Led_TWIPS kLedItViewLHSMargin    = Led_TWIPS (150);
-    const Led_TWIPS kLedItViewRHSMargin    = Led_TWIPS (0);
-    SetDefaultWindowMargins (Led_TWIPS_Rect (kLedItViewTopMargin, kLedItViewLHSMargin, kLedItViewBottomMargin - kLedItViewTopMargin, kLedItViewRHSMargin - kLedItViewLHSMargin));
+    const TWIPS kLedItViewTopMargin    = TWIPS (120);
+    const TWIPS kLedItViewBottomMargin = TWIPS (0);
+    const TWIPS kLedItViewLHSMargin    = TWIPS (150);
+    const TWIPS kLedItViewRHSMargin    = TWIPS (0);
+    SetDefaultWindowMargins (TWIPS_Rect (kLedItViewTopMargin, kLedItViewLHSMargin, kLedItViewBottomMargin - kLedItViewTopMargin, kLedItViewRHSMargin - kLedItViewLHSMargin));
 }
 
 LedItView::~LedItView ()
@@ -598,16 +598,16 @@ void LedItView::SetMaxLength (long maxLength)
     fMaxLength = maxLength;
 }
 
-void LedItView::GetLayoutMargins (RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const
+void LedItView::GetLayoutMargins (RowReference row, Coordinate* lhs, Coordinate* rhs) const
 {
     if (GetWrapToWindow ()) {
         // Make the layout right margin of each line (paragraph) equal to the windowrect. Ie, wrap to the
         // edge of the window. NB: because of this choice, we must 'InvalidateAllCaches' when the
         // WindowRect changes in our SetWindowRect() override.
-        Led_Coordinate l = 0;
-        Led_Coordinate r = 0;
+        Coordinate l = 0;
+        Coordinate r = 0;
         inherited::GetLayoutMargins (row, &l, &r);
-        r = max (static_cast<Led_Coordinate> (GetWindowRect ().GetWidth ()), l + 1);
+        r = max (static_cast<Coordinate> (GetWindowRect ().GetWidth ()), l + 1);
         Ensure (r > l);
         if (lhs != NULL) {
             *lhs = l;
@@ -633,7 +633,7 @@ void LedItView::SetWindowRect (const Led_Rect& windowRect)
     }
 }
 
-Led_Distance LedItView::CalculateFarthestRightMarginInWindow () const
+DistanceType LedItView::CalculateFarthestRightMarginInWindow () const
 {
     if (fWrapToWindow) {
         return GetWindowRect ().GetWidth ();
@@ -918,14 +918,14 @@ void LedItView::EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw
         Led_Rect designModeRect = Led_Rect (0, 0, 20, 150);
         Led_Rect wr             = GetWindowRect ();
         {
-            if (static_cast<Led_Distance> (designModeRect.bottom) > wr.GetHeight ()) {
+            if (static_cast<DistanceType> (designModeRect.bottom) > wr.GetHeight ()) {
                 designModeRect.bottom = wr.GetHeight ();
             }
-            if (static_cast<Led_Distance> (designModeRect.right) > wr.GetWidth ()) {
+            if (static_cast<DistanceType> (designModeRect.right) > wr.GetWidth ()) {
                 designModeRect.right = wr.GetWidth ();
             }
             designModeRect        = CenterRectInRect (designModeRect, wr);
-            Led_Distance h        = designModeRect.GetHeight ();
+            DistanceType h        = designModeRect.GetHeight ();
             designModeRect.bottom = wr.bottom;
             designModeRect.top    = designModeRect.bottom - h;
         }

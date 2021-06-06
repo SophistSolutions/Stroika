@@ -246,23 +246,23 @@ namespace Stroika::Frameworks::Led {
         virtual TextDirection GetTextDirection (size_t charPosition) const override;
 
     public:
-        virtual Led_Distance CalcSegmentSize (size_t from, size_t to) const override;
+        virtual DistanceType CalcSegmentSize (size_t from, size_t to) const override;
 
     public:
-        virtual void   GetRowRelativeCharLoc (size_t charLoc, Led_Distance* lhs, Led_Distance* rhs) const override;
-        virtual size_t GetRowRelativeCharAtLoc (Led_Coordinate hOffset, size_t rowStart) const override;
+        virtual void   GetRowRelativeCharLoc (size_t charLoc, DistanceType* lhs, DistanceType* rhs) const override;
+        virtual size_t GetRowRelativeCharAtLoc (Coordinate hOffset, size_t rowStart) const override;
 
     private:
-        nonvirtual Led_Distance CalcSegmentSize_REFERENCE (size_t from, size_t to) const;
+        nonvirtual DistanceType CalcSegmentSize_REFERENCE (size_t from, size_t to) const;
 #if qCacheTextMeasurementsForPM
-        nonvirtual Led_Distance CalcSegmentSize_CACHING (size_t from, size_t to) const;
+        nonvirtual DistanceType CalcSegmentSize_CACHING (size_t from, size_t to) const;
 #endif
 
     private:
-        nonvirtual void CalcSegmentSize_FillIn (size_t rowStart, size_t rowEnd, Led_Distance* distanceVector) const;
+        nonvirtual void CalcSegmentSize_FillIn (size_t rowStart, size_t rowEnd, DistanceType* distanceVector) const;
 
     protected:
-        virtual size_t ResetTabStops (size_t from, const Led_tChar* text, size_t nTChars, Led_Distance* charLocations, size_t startSoFar) const;
+        virtual size_t ResetTabStops (size_t from, const Led_tChar* text, size_t nTChars, DistanceType* charLocations, size_t startSoFar) const;
 
         // Debug support
     public:
@@ -322,7 +322,7 @@ namespace Stroika::Frameworks::Led {
             COMPARE_ITEM fValidFor;
 
         public:
-            Foundation::Memory::SmallStackBuffer<Led_Distance> fMeasurementsCache; // for just the given PM
+            Foundation::Memory::SmallStackBuffer<DistanceType> fMeasurementsCache; // for just the given PM
 
         private:
             friend struct CacheEltLRUCacheTraits;

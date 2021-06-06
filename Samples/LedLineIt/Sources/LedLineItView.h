@@ -23,11 +23,11 @@ DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
 #if qSupportSyntaxColoring
 struct LedLineItMFCBaseClass : public Led_MFC_X<SimpleTextInteractor>, public StyledTextImager {
 protected:
-    virtual Led_Distance MeasureSegmentHeight (size_t from, size_t to) const override
+    virtual DistanceType MeasureSegmentHeight (size_t from, size_t to) const override
     {
         return Led_MFC_X<SimpleTextInteractor>::MeasureSegmentHeight (from, to);
     }
-    virtual Led_Distance MeasureSegmentBaseLine (size_t from, size_t to) const override
+    virtual DistanceType MeasureSegmentBaseLine (size_t from, size_t to) const override
     {
         return Led_MFC_X<SimpleTextInteractor>::MeasureSegmentBaseLine (from, to);
     }
@@ -76,10 +76,10 @@ public:
     virtual void UpdateScrollBars () override;
 
 public:
-    virtual Led_Distance ComputeMaxHScrollPos () const override;
+    virtual DistanceType ComputeMaxHScrollPos () const override;
 
 private:
-    mutable Led_Distance fCachedLayoutWidth;
+    mutable DistanceType fCachedLayoutWidth;
 
 public:
     virtual void OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed, bool controlPressed, bool altKeyPressed) override;
@@ -110,7 +110,7 @@ public:
     afx_msg void OnFontNameChangeCommand (UINT cmdNum);
 
 private:
-    Led_Distance PickOtherFontHeight (Led_Distance origHeight);
+    DistanceType PickOtherFontHeight (DistanceType origHeight);
 
 public:
     afx_msg void OnUpdateFontSizeChangeCommand (CCmdUI* pCmdUI);

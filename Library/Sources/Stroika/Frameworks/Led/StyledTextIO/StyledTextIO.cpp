@@ -111,17 +111,17 @@ void StyledTextIOReader::SinkStream::SetStandardTabStopList (const TextImager::S
     // OVERRIDE, and ignore, since that feature isn't supported by this class
 }
 
-void StyledTextIOReader::SinkStream::SetFirstIndent (Led_TWIPS /*tx*/)
+void StyledTextIOReader::SinkStream::SetFirstIndent (TWIPS /*tx*/)
 {
     // OVERRIDE, and ignore, since that feature isn't supported by this class
 }
 
-void StyledTextIOReader::SinkStream::SetLeftMargin (Led_TWIPS /*lhs*/)
+void StyledTextIOReader::SinkStream::SetLeftMargin (TWIPS /*lhs*/)
 {
     // OVERRIDE, and ignore, since that feature isn't supported by this class
 }
 
-void StyledTextIOReader::SinkStream::SetRightMargin (Led_TWIPS /*rhs*/)
+void StyledTextIOReader::SinkStream::SetRightMargin (TWIPS /*rhs*/)
 {
     // OVERRIDE, and ignore, since that feature isn't supported by this class
 }
@@ -130,7 +130,7 @@ void StyledTextIOReader::SinkStream::SetRightMargin (Led_TWIPS /*rhs*/)
 @METHOD:        StyledTextIOReader::SinkStream::SetSpaceBefore
 @DESCRIPTION:
 */
-void StyledTextIOReader::SinkStream::SetSpaceBefore (Led_TWIPS /*sb*/)
+void StyledTextIOReader::SinkStream::SetSpaceBefore (TWIPS /*sb*/)
 {
     // OVERRIDE, and ignore, since that feature isn't supported by this class
 }
@@ -139,7 +139,7 @@ void StyledTextIOReader::SinkStream::SetSpaceBefore (Led_TWIPS /*sb*/)
 @METHOD:        StyledTextIOReader::SinkStream::SetSpaceAfter
 @DESCRIPTION:
 */
-void StyledTextIOReader::SinkStream::SetSpaceAfter (Led_TWIPS /*sa*/)
+void StyledTextIOReader::SinkStream::SetSpaceAfter (TWIPS /*sa*/)
 {
     // OVERRIDE, and ignore, since that feature isn't supported by this class
 }
@@ -193,7 +193,7 @@ void StyledTextIOReader::SinkStream::SetTableBorderColor (Led_Color /*c*/)
 @METHOD:        StyledTextIOReader::SinkStream::SetTableBorderWidth
 @DESCRIPTION:
 */
-void StyledTextIOReader::SinkStream::SetTableBorderWidth (Led_TWIPS /*bWidth*/)
+void StyledTextIOReader::SinkStream::SetTableBorderWidth (TWIPS /*bWidth*/)
 {
     // OVERRIDE, and ignore, since that feature isn't supported by this class
 }
@@ -209,7 +209,7 @@ void StyledTextIOReader::SinkStream::SetTableBorderWidth (Led_TWIPS /*bWidth*/)
             @'StyledTextIOReader::SinkStream::StartTableCell' call).
             </p>
 */
-void StyledTextIOReader::SinkStream::SetCellWidths (const vector<Led_TWIPS>& /*cellWidths*/)
+void StyledTextIOReader::SinkStream::SetCellWidths (const vector<TWIPS>& /*cellWidths*/)
 {
     // OVERRIDE, and ignore, since that feature isn't supported by this class
 }
@@ -227,7 +227,7 @@ void StyledTextIOReader::SinkStream::SetCellBackColor (const Led_Color /*c*/)
 @METHOD:        StyledTextIOReader::SinkStream::SetDefaultCellMarginsForCurrentRow
 @DESCRIPTION:   <p>Default is to do ignore. Override to implement tables.</p>
 */
-void StyledTextIOReader::SinkStream::SetDefaultCellMarginsForCurrentRow (Led_TWIPS /*top*/, Led_TWIPS /*left*/, Led_TWIPS /*bottom*/, Led_TWIPS /*right*/)
+void StyledTextIOReader::SinkStream::SetDefaultCellMarginsForCurrentRow (TWIPS /*top*/, TWIPS /*left*/, TWIPS /*bottom*/, TWIPS /*right*/)
 {
     // OVERRIDE, and ignore, since that feature isn't supported by this class
 }
@@ -236,7 +236,7 @@ void StyledTextIOReader::SinkStream::SetDefaultCellMarginsForCurrentRow (Led_TWI
 @METHOD:        StyledTextIOReader::SinkStream::SetDefaultCellSpacingForCurrentRow
 @DESCRIPTION:   <p>Default is to do ignore. Override to implement tables.</p>
 */
-void StyledTextIOReader::SinkStream::SetDefaultCellSpacingForCurrentRow (Led_TWIPS /*top*/, Led_TWIPS /*left*/, Led_TWIPS /*bottom*/, Led_TWIPS /*right*/)
+void StyledTextIOReader::SinkStream::SetDefaultCellSpacingForCurrentRow (TWIPS /*top*/, TWIPS /*left*/, TWIPS /*bottom*/, TWIPS /*right*/)
 {
     // OVERRIDE, and ignore, since that feature isn't supported by this class
 }
@@ -291,39 +291,39 @@ TextImager::StandardTabStopList StyledTextIOWriter::SrcStream::GetStandardTabSto
 @METHOD:        StyledTextIOWriter::SrcStream::GetFirstIndent
 @DESCRIPTION:
 */
-Led_TWIPS StyledTextIOWriter::SrcStream::GetFirstIndent () const
+TWIPS StyledTextIOWriter::SrcStream::GetFirstIndent () const
 {
-    return Led_TWIPS (0);
+    return TWIPS (0);
 }
 
 /*
 @METHOD:        StyledTextIOWriter::SrcStream::GetMargins
 @DESCRIPTION:
 */
-void StyledTextIOWriter::SrcStream::GetMargins (Led_TWIPS* lhs, Led_TWIPS* rhs) const
+void StyledTextIOWriter::SrcStream::GetMargins (TWIPS* lhs, TWIPS* rhs) const
 {
     RequireNotNull (lhs);
     RequireNotNull (rhs);
-    *lhs = Led_TWIPS (0);
-    *rhs = Led_TWIPS (6 * 1440); // Not sure what I should return here??? maybe special case and not write anything to output file if returns zero? LGP-990221
+    *lhs = TWIPS (0);
+    *rhs = TWIPS (6 * 1440); // Not sure what I should return here??? maybe special case and not write anything to output file if returns zero? LGP-990221
 }
 
 /*
 @METHOD:        StyledTextIOWriter::SrcStream::GetSpaceBefore
 @DESCRIPTION:
 */
-Led_TWIPS StyledTextIOWriter::SrcStream::GetSpaceBefore () const
+TWIPS StyledTextIOWriter::SrcStream::GetSpaceBefore () const
 {
-    return Led_TWIPS (0);
+    return TWIPS (0);
 }
 
 /*
 @METHOD:        StyledTextIOWriter::SrcStream::GetSpaceAfter
 @DESCRIPTION:
 */
-Led_TWIPS StyledTextIOWriter::SrcStream::GetSpaceAfter () const
+TWIPS StyledTextIOWriter::SrcStream::GetSpaceAfter () const
 {
-    return Led_TWIPS (0);
+    return TWIPS (0);
 }
 
 /*

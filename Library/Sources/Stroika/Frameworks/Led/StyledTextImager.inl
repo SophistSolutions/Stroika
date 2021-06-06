@@ -50,7 +50,7 @@ namespace Stroika::Frameworks::Led {
     template <class BASECLASS>
     void SimpleStyleMarkerByFontSpec<BASECLASS>::DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
                                                               size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                                                              Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn)
+                                                              Coordinate useBaseLine, DistanceType* pixelsDrawn)
     {
         RequireNotNull (imager);
         imager->DrawSegment_ (tablet, MakeFontSpec (imager, runElement), from, to, text, drawInto, useBaseLine, pixelsDrawn);
@@ -58,19 +58,19 @@ namespace Stroika::Frameworks::Led {
     template <class BASECLASS>
     void SimpleStyleMarkerByFontSpec<BASECLASS>::MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
                                                                       const Led_tChar* text,
-                                                                      Led_Distance*    distanceResults) const
+                                                                      DistanceType*    distanceResults) const
     {
         RequireNotNull (imager);
         imager->MeasureSegmentWidth_ (this->MakeFontSpec (imager, runElement), from, to, text, distanceResults);
     }
     template <class BASECLASS>
-    Led_Distance SimpleStyleMarkerByFontSpec<BASECLASS>::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
+    DistanceType SimpleStyleMarkerByFontSpec<BASECLASS>::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
     {
         RequireNotNull (imager);
         return (imager->MeasureSegmentHeight_ (this->MakeFontSpec (imager, runElement), from, to));
     }
     template <class BASECLASS>
-    Led_Distance SimpleStyleMarkerByFontSpec<BASECLASS>::MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
+    DistanceType SimpleStyleMarkerByFontSpec<BASECLASS>::MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
     {
         RequireNotNull (imager);
         return (imager->MeasureSegmentBaseLine_ (this->MakeFontSpec (imager, runElement), from, to));
@@ -119,7 +119,7 @@ namespace Stroika::Frameworks::Led {
     template <class BASECLASS>
     void SimpleStyleMarkerWithExtraDraw<BASECLASS>::DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
                                                                  size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
-                                                                 Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn)
+                                                                 Coordinate useBaseLine, DistanceType* pixelsDrawn)
     {
         RequireNotNull (imager);
         AssertNotNull (pixelsDrawn); // if allowed to pass nullptr - I must pass my  own value so I can pass along to DrawExtra - see if anyone does this - LGP 2000-07-08
@@ -136,7 +136,7 @@ namespace Stroika::Frameworks::Led {
     template <class BASECLASS>
     void SimpleStyleMarkerWithExtraDraw<BASECLASS>::MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
                                                                          const Led_tChar* text,
-                                                                         Led_Distance*    distanceResults) const
+                                                                         DistanceType*    distanceResults) const
     {
         RequireNotNull (imager);
         RunElement re = MungeRunElement (runElement);
@@ -148,7 +148,7 @@ namespace Stroika::Frameworks::Led {
         }
     }
     template <class BASECLASS>
-    Led_Distance SimpleStyleMarkerWithExtraDraw<BASECLASS>::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
+    DistanceType SimpleStyleMarkerWithExtraDraw<BASECLASS>::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
     {
         RequireNotNull (imager);
         RunElement re = MungeRunElement (runElement);
@@ -160,7 +160,7 @@ namespace Stroika::Frameworks::Led {
         }
     }
     template <class BASECLASS>
-    Led_Distance SimpleStyleMarkerWithExtraDraw<BASECLASS>::MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
+    DistanceType SimpleStyleMarkerWithExtraDraw<BASECLASS>::MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
     {
         RequireNotNull (imager);
         RunElement re = MungeRunElement (runElement);
@@ -181,7 +181,7 @@ namespace Stroika::Frameworks::Led {
     template <typename BASECLASS>
     void SimpleStyleMarkerWithLightUnderline<BASECLASS>::DrawExtra (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, Led_Tablet tablet,
                                                                     size_t /*from*/, size_t /*to*/, const TextLayoutBlock& /*text*/, const Led_Rect& drawInto,
-                                                                    Led_Coordinate useBaseLine, Led_Distance pixelsDrawn)
+                                                                    Coordinate useBaseLine, DistanceType pixelsDrawn)
     {
         Led_Color lightColor = Led_Color::kWhite / 2 + GetUnderlineBaseColor () / 2; // (white - baseColor)/2 + baseColor, but careful to avoid int overflow...
 #if qPlatform_Windows
@@ -192,7 +192,7 @@ namespace Stroika::Frameworks::Led {
         Led_Pen pen;
 #endif
         Led_GDI_Obj_Selector penWrapper (tablet, pen);
-        Led_Coordinate       underlineAt = useBaseLine;
+        Coordinate           underlineAt = useBaseLine;
         if (underlineAt + 1 < drawInto.bottom) {
             underlineAt += 1;
         }

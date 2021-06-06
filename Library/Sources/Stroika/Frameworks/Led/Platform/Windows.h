@@ -179,11 +179,11 @@ namespace Stroika::Frameworks::Led::Platform {
         short fAccumulatedWheelDelta;
 
     public:
-        nonvirtual Led_TWIPS_Rect GetDefaultWindowMargins () const;
-        nonvirtual void           SetDefaultWindowMargins (const Led_TWIPS_Rect& defaultWindowMargins);
+        nonvirtual TWIPS_Rect GetDefaultWindowMargins () const;
+        nonvirtual void       SetDefaultWindowMargins (const TWIPS_Rect& defaultWindowMargins);
 
     private:
-        Led_TWIPS_Rect fDefaultWindowMargins;
+        TWIPS_Rect fDefaultWindowMargins;
 
     public:
         nonvirtual bool GetControlArrowsScroll () const;
@@ -573,10 +573,10 @@ namespace Stroika::Frameworks::Led::Platform {
 #endif
         , fAutoScrollTimerID (0)
     {
-        fDefaultWindowMargins.top    = Led_TWIPS (2 * Led_TWIPS::kPoint);
-        fDefaultWindowMargins.left   = Led_TWIPS (2 * Led_TWIPS::kPoint);
-        fDefaultWindowMargins.bottom = Led_TWIPS (2 * Led_TWIPS::kPoint);
-        fDefaultWindowMargins.right  = Led_TWIPS (2 * Led_TWIPS::kPoint);
+        fDefaultWindowMargins.top    = TWIPS (2 * TWIPS::kPoint);
+        fDefaultWindowMargins.left   = TWIPS (2 * TWIPS::kPoint);
+        fDefaultWindowMargins.bottom = TWIPS (2 * TWIPS::kPoint);
+        fDefaultWindowMargins.right  = TWIPS (2 * TWIPS::kPoint);
     }
     template <typename BASE_INTERACTOR>
     Led_Win32_Helper<BASE_INTERACTOR>::~Led_Win32_Helper ()
@@ -1434,22 +1434,22 @@ namespace Stroika::Frameworks::Led::Platform {
             } break;
 
             case SB_LINEDOWN: {
-                this->SetHScrollPos (min<Led_Coordinate> (this->GetHScrollPos () + increment, this->ComputeMaxHScrollPos ()));
+                this->SetHScrollPos (min<Coordinate> (this->GetHScrollPos () + increment, this->ComputeMaxHScrollPos ()));
             } break;
 
             case SB_LINEUP: {
                 if (this->GetHScrollPos () > 0) {
-                    this->SetHScrollPos (max<Led_Coordinate> (0, int (this->GetHScrollPos ()) - increment));
+                    this->SetHScrollPos (max<Coordinate> (0, int (this->GetHScrollPos ()) - increment));
                 }
             } break;
 
             case SB_PAGEDOWN: {
-                const Led_Coordinate kPixelsAtATime = this->GetWindowRect ().GetWidth () / 2;
-                this->SetHScrollPos (min<Led_Coordinate> (this->GetHScrollPos () + kPixelsAtATime, this->ComputeMaxHScrollPos ()));
+                const Coordinate kPixelsAtATime = this->GetWindowRect ().GetWidth () / 2;
+                this->SetHScrollPos (min<Coordinate> (this->GetHScrollPos () + kPixelsAtATime, this->ComputeMaxHScrollPos ()));
             } break;
 
             case SB_PAGEUP: {
-                const Led_Coordinate kPixelsAtATime = this->GetWindowRect ().GetWidth () / 2;
+                const Coordinate kPixelsAtATime = this->GetWindowRect ().GetWidth () / 2;
                 if (this->GetHScrollPos () > kPixelsAtATime) {
                     this->SetHScrollPos (this->GetHScrollPos () - kPixelsAtATime);
                 }
@@ -1494,7 +1494,7 @@ namespace Stroika::Frameworks::Led::Platform {
                                                         // things really get recomputed
 #endif
 
-                this->SetHScrollPos (min<Led_Coordinate> (static_cast<Led_Coordinate> (newPos), this->ComputeMaxHScrollPos ()));
+                this->SetHScrollPos (min<Coordinate> (static_cast<Coordinate> (newPos), this->ComputeMaxHScrollPos ()));
             } break;
 
             case SB_TOP: {
@@ -1555,7 +1555,7 @@ namespace Stroika::Frameworks::Led::Platform {
     @DESCRIPTION:   <p>Arguments can be nullptr, and only non-nullptr pointers filled in.</p>
                 <p>See @'Led_Win32_Helper<BASE_INTERACTOR>::SetDefaultWindowMargins'.</p>
     */
-    inline Led_TWIPS_Rect
+    inline TWIPS_Rect
     Led_Win32_Helper<BASE_INTERACTOR>::GetDefaultWindowMargins () const
     {
         return fDefaultWindowMargins;
@@ -1570,10 +1570,10 @@ namespace Stroika::Frameworks::Led::Platform {
                 in the WM_SIZE message (handler) so that there is a border around this control. The WindowRect is simply
                 inset by the amount given (and the borders automatically erased in this classes WM_ERASEBKGND method).</p>
                     <p>Margins default to zero, and so its as if this feature simply defaults to being off.</p>
-                    <p>Margins are specified in @'Led_TWIPS'.</p>
+                    <p>Margins are specified in @'TWIPS'.</p>
     */
     void
-    Led_Win32_Helper<BASE_INTERACTOR>::SetDefaultWindowMargins (const Led_TWIPS_Rect& defaultWindowMargins)
+    Led_Win32_Helper<BASE_INTERACTOR>::SetDefaultWindowMargins (const TWIPS_Rect& defaultWindowMargins)
     {
         if (fDefaultWindowMargins != defaultWindowMargins) {
             fDefaultWindowMargins = defaultWindowMargins;
@@ -1783,8 +1783,8 @@ namespace Stroika::Frameworks::Led::Platform {
          *  The user specified a DefaultWindowMargin - lies outside of our WindowRect, and so
          *  won't get drawn by the normal Led draw mechanism. Make sure it gets erased here.
          */
-        Led_Rect       wr = this->GetWindowRect ();
-        Led_TWIPS_Rect wm = this->GetDefaultWindowMargins ();
+        Led_Rect   wr = this->GetWindowRect ();
+        TWIPS_Rect wm = this->GetDefaultWindowMargins ();
         if (wm.GetTop () != 0 or wm.GetLeft () != 0 or wm.GetBottom () != 0 or wm.GetRight () != 0) {
             Led_Rect wmr = tablet->CvtFromTWIPS (wm);
             // Erase our TOP margin

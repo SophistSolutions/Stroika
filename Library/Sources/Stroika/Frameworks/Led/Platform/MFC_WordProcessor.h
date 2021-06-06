@@ -165,11 +165,11 @@ namespace Stroika::Frameworks::Led::Platform {
     public:
         virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
                                           size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                                          Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) override;
+                                          Coordinate useBaseLine, DistanceType* pixelsDrawn) override;
         virtual void         MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
                                                   const Led_tChar* text,
-                                                  Led_Distance*    distanceResults) const override;
-        virtual Led_Distance MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
+                                                  DistanceType*    distanceResults) const override;
+        virtual DistanceType MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
         virtual void         DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) noexcept override;
         virtual bool         HandleOpen () override;
 
@@ -182,7 +182,7 @@ namespace Stroika::Frameworks::Led::Platform {
 
         // Support RTFIO::RTFOLEEmbedding API
     public:
-        virtual void           PostCreateSpecifyExtraInfo (Led_TWIPS_Point size) override;
+        virtual void           PostCreateSpecifyExtraInfo (TWIPS_Point size) override;
         virtual Led_SDK_String GetObjClassName () const override;
         virtual void           DoWriteToOLE1Stream (size_t* nBytes, byte** resultData) override;
         virtual Led_Size       GetSize () override;

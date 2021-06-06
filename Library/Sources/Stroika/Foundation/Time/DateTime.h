@@ -603,7 +603,7 @@ namespace Stroika::Foundation::Time {
         L"%D%t%R"sv,            // no obvious reference for this so maybe not a good idea
         L"%a %b %e %T %Y"sv,    // no obvious reference for this so maybe not a good idea
     };
-    #endif
+#endif
 
     /**
      */

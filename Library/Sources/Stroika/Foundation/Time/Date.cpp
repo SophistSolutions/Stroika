@@ -63,8 +63,8 @@ Date::FormatException::FormatException ()
  ********************************************************************************
  */
 #if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
-const Date::FormatException Date::FormatException::kThe;
-const Traversal::Iterable<String>  Date::kDefaultParseFormats{
+const Date::FormatException       Date::FormatException::kThe;
+const Traversal::Iterable<String> Date::kDefaultParseFormats{
     kLocaleStandardFormat,          // x (kLocaleStandardFormat) parses the locale's standard date representation
     kLocaleStandardAlternateFormat, // Ex (kLocaleStandardAlternateFormat) parses the locale's alternative date representation, e.g. expecting 平成23年 (year Heisei 23) instead of 2011年 (year 2011) in ja_JP locale
     kMonthDayYearFormat,            // Before Stroika 2.1b10, this was L"%D" (=="%m/%d/%y) which is hte 2-digit year

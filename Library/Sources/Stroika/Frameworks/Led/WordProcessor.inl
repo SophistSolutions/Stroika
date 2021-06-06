@@ -63,25 +63,25 @@ namespace Stroika::Frameworks::Led {
     {
         fTabStops = tabStops;
     }
-    inline Led_TWIPS WordProcessor::ParagraphInfo::GetLeftMargin () const
+    inline TWIPS WordProcessor::ParagraphInfo::GetLeftMargin () const
     {
         return fLeftMargin;
     }
-    inline Led_TWIPS WordProcessor::ParagraphInfo::GetRightMargin () const
+    inline TWIPS WordProcessor::ParagraphInfo::GetRightMargin () const
     {
         return fRightMargin;
     }
-    inline void WordProcessor::ParagraphInfo::SetMargins (Led_TWIPS lhs, Led_TWIPS rhs)
+    inline void WordProcessor::ParagraphInfo::SetMargins (TWIPS lhs, TWIPS rhs)
     {
         Require (lhs < rhs);
         fLeftMargin  = lhs;
         fRightMargin = rhs;
     }
-    inline Led_TWIPS WordProcessor::ParagraphInfo::GetFirstIndent () const
+    inline TWIPS WordProcessor::ParagraphInfo::GetFirstIndent () const
     {
         return fFirstIndent;
     }
-    inline void WordProcessor::ParagraphInfo::SetFirstIndent (Led_TWIPS firstIndent)
+    inline void WordProcessor::ParagraphInfo::SetFirstIndent (TWIPS firstIndent)
     {
         fFirstIndent = firstIndent;
     }
@@ -92,7 +92,7 @@ namespace Stroika::Frameworks::Led {
                 the paragraph - and defaults to zero. See the RTF \sb tag.</p>
                     <p>See also @'WordProcessor::ParagraphInfo::SetSpaceBefore'.</p>
     */
-    inline Led_TWIPS WordProcessor::ParagraphInfo::GetSpaceBefore () const
+    inline TWIPS WordProcessor::ParagraphInfo::GetSpaceBefore () const
     {
         return fSpaceBefore;
     }
@@ -101,7 +101,7 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:
             <p>See also @'WordProcessor::ParagraphInfo::GetSpaceBefore'.</p>
     */
-    inline void WordProcessor::ParagraphInfo::SetSpaceBefore (Led_TWIPS sb)
+    inline void WordProcessor::ParagraphInfo::SetSpaceBefore (TWIPS sb)
     {
         fSpaceBefore = sb;
     }
@@ -112,7 +112,7 @@ namespace Stroika::Frameworks::Led {
         the paragraph - and defaults to zero. See the RTF \sa tag.</p>
             <p>See also @'WordProcessor::ParagraphInfo::SetSpaceAfter'.</p>
     */
-    inline Led_TWIPS WordProcessor::ParagraphInfo::GetSpaceAfter () const
+    inline TWIPS WordProcessor::ParagraphInfo::GetSpaceAfter () const
     {
         return fSpaceAfter;
     }
@@ -121,7 +121,7 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:
             <p>See also @'WordProcessor::ParagraphInfo::GetSpaceAfter'.</p>
     */
-    inline void WordProcessor::ParagraphInfo::SetSpaceAfter (Led_TWIPS sa)
+    inline void WordProcessor::ParagraphInfo::SetSpaceAfter (TWIPS sa)
     {
         fSpaceAfter = sa;
     }
@@ -308,17 +308,17 @@ namespace Stroika::Frameworks::Led {
     {
         fTabStopListValid = false;
     }
-    inline Led_TWIPS WordProcessor::IncrementalParagraphInfo::GetLeftMargin () const
+    inline TWIPS WordProcessor::IncrementalParagraphInfo::GetLeftMargin () const
     {
         Require (fMarginsValid);
         return inherited::GetLeftMargin ();
     }
-    inline Led_TWIPS WordProcessor::IncrementalParagraphInfo::GetRightMargin () const
+    inline TWIPS WordProcessor::IncrementalParagraphInfo::GetRightMargin () const
     {
         Require (fMarginsValid);
         return inherited::GetRightMargin ();
     }
-    inline void WordProcessor::IncrementalParagraphInfo::SetMargins (Led_TWIPS lhs, Led_TWIPS rhs)
+    inline void WordProcessor::IncrementalParagraphInfo::SetMargins (TWIPS lhs, TWIPS rhs)
     {
         fMarginsValid = true;
         inherited::SetMargins (lhs, rhs);
@@ -331,12 +331,12 @@ namespace Stroika::Frameworks::Led {
     {
         fMarginsValid = false;
     }
-    inline Led_TWIPS WordProcessor::IncrementalParagraphInfo::GetFirstIndent () const
+    inline TWIPS WordProcessor::IncrementalParagraphInfo::GetFirstIndent () const
     {
         Require (fFirstIndentValid);
         return inherited::GetFirstIndent ();
     }
-    inline void WordProcessor::IncrementalParagraphInfo::SetFirstIndent (Led_TWIPS firstIndent)
+    inline void WordProcessor::IncrementalParagraphInfo::SetFirstIndent (TWIPS firstIndent)
     {
         fFirstIndentValid = true;
         inherited::SetFirstIndent (firstIndent);
@@ -349,12 +349,12 @@ namespace Stroika::Frameworks::Led {
     {
         fFirstIndentValid = false;
     }
-    inline Led_TWIPS WordProcessor::IncrementalParagraphInfo::GetSpaceBefore () const
+    inline TWIPS WordProcessor::IncrementalParagraphInfo::GetSpaceBefore () const
     {
         Require (fSpaceBeforeValid);
         return inherited::GetSpaceBefore ();
     }
-    inline void WordProcessor::IncrementalParagraphInfo::SetSpaceBefore (Led_TWIPS sb)
+    inline void WordProcessor::IncrementalParagraphInfo::SetSpaceBefore (TWIPS sb)
     {
         fSpaceBeforeValid = true;
         inherited::SetSpaceBefore (sb);
@@ -367,12 +367,12 @@ namespace Stroika::Frameworks::Led {
     {
         fSpaceBeforeValid = false;
     }
-    inline Led_TWIPS WordProcessor::IncrementalParagraphInfo::GetSpaceAfter () const
+    inline TWIPS WordProcessor::IncrementalParagraphInfo::GetSpaceAfter () const
     {
         Require (fSpaceAfterValid);
         return inherited::GetSpaceAfter ();
     }
-    inline void WordProcessor::IncrementalParagraphInfo::SetSpaceAfter (Led_TWIPS sa)
+    inline void WordProcessor::IncrementalParagraphInfo::SetSpaceAfter (TWIPS sa)
     {
         fSpaceAfterValid = true;
         inherited::SetSpaceAfter (sa);
@@ -720,11 +720,11 @@ namespace Stroika::Frameworks::Led {
     {
         return fCellMergeFlags;
     }
-    inline Led_TWIPS WordProcessor::Table::Cell::GetCellXWidth () const
+    inline TWIPS WordProcessor::Table::Cell::GetCellXWidth () const
     {
         return fCellRep->fCellXWidth;
     }
-    inline void WordProcessor::Table::Cell::SetCellXWidth (Led_TWIPS width)
+    inline void WordProcessor::Table::Cell::SetCellXWidth (TWIPS width)
     {
         fCellRep->fCellXWidth = width;
     }
@@ -776,18 +776,18 @@ namespace Stroika::Frameworks::Led {
     }
 
     //class WordProcessor::Table
-    inline Led_TWIPS WordProcessor::Table::GetCellSpacing () const
+    inline TWIPS WordProcessor::Table::GetCellSpacing () const
     {
         return fCellSpacing;
     }
-    inline void WordProcessor::Table::SetCellSpacing (Led_TWIPS cellSpacing)
+    inline void WordProcessor::Table::SetCellSpacing (TWIPS cellSpacing)
     {
         if (fCellSpacing != cellSpacing) {
             fCellSpacing = cellSpacing;
             InvalidateLayout ();
         }
     }
-    inline void WordProcessor::Table::GetDefaultCellMargins (Led_TWIPS* top, Led_TWIPS* left, Led_TWIPS* bottom, Led_TWIPS* right) const
+    inline void WordProcessor::Table::GetDefaultCellMargins (TWIPS* top, TWIPS* left, TWIPS* bottom, TWIPS* right) const
     {
         if (top != nullptr) {
             *top = fDefaultCellMargins.GetTop ();
@@ -802,7 +802,7 @@ namespace Stroika::Frameworks::Led {
             *right = fDefaultCellMargins.GetRight ();
         }
     }
-    inline void WordProcessor::Table::SetDefaultCellMargins (Led_TWIPS top, Led_TWIPS left, Led_TWIPS bottom, Led_TWIPS right)
+    inline void WordProcessor::Table::SetDefaultCellMargins (TWIPS top, TWIPS left, TWIPS bottom, TWIPS right)
     {
         if (top != fDefaultCellMargins.GetTop () or
             left != fDefaultCellMargins.GetLeft () or
@@ -1104,12 +1104,12 @@ namespace Stroika::Frameworks::Led {
      ********************************************************************************
      */
     inline WordProcessor::DialogSupport::TableSelectionPropertiesInfo::TableSelectionPropertiesInfo ()
-        : fTableBorderWidth (Led_TWIPS (0))
+        : fTableBorderWidth (TWIPS (0))
         , fTableBorderColor (Led_Color::kWhite)
         , fDefaultCellMargins ()
-        , fCellSpacing (Led_TWIPS (0))
+        , fCellSpacing (TWIPS (0))
         , fCellWidth_Common (false)
-        , fCellWidth (Led_TWIPS (0))
+        , fCellWidth (TWIPS (0))
         , fCellBackgroundColor_Common (false)
         , fCellBackgroundColor (Led_Color::kWhite)
     {

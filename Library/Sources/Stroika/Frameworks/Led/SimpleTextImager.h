@@ -89,18 +89,18 @@ namespace Stroika::Frameworks::Led {
         MyPartitionWatcher fMyPartitionWatcher;
 
     public:
-        nonvirtual Led_Distance GetRowHeight () const;
+        nonvirtual DistanceType GetRowHeight () const;
 
     protected:
         nonvirtual void      InvalidateRowHeight ();
-        virtual Led_Distance ReCalcRowHeight () const;
+        virtual DistanceType ReCalcRowHeight () const;
 
     private:
-        Led_Distance fRowHeight;
+        DistanceType fRowHeight;
 
     protected:
-        virtual Led_Distance MeasureSegmentHeight (size_t from, size_t to) const override;
-        virtual Led_Distance MeasureSegmentBaseLine (size_t from, size_t to) const override;
+        virtual DistanceType MeasureSegmentHeight (size_t from, size_t to) const override;
+        virtual DistanceType MeasureSegmentBaseLine (size_t from, size_t to) const override;
 
     protected:
         using PartitionMarker = Partition::PartitionMarker;
@@ -186,7 +186,7 @@ namespace Stroika::Frameworks::Led {
         virtual void AssureWholeWindowUsedIfNeeded () override;
 
     public:
-        virtual Led_Distance ComputeMaxHScrollPos () const override;
+        virtual DistanceType ComputeMaxHScrollPos () const override;
 
     public:
         virtual Led_Rect GetCharLocation (size_t afterPosition) const override;
@@ -213,14 +213,14 @@ namespace Stroika::Frameworks::Led {
         nonvirtual size_t       GetRowLength (RowReference row) const;
 
     public:
-        virtual Led_Distance GetRowHeight (size_t rowNumber) const override;
+        virtual DistanceType GetRowHeight (size_t rowNumber) const override;
 
     public:
-        virtual Led_Distance GetRowRelativeBaselineOfRowContainingPosition (size_t charPosition) const override;
+        virtual DistanceType GetRowRelativeBaselineOfRowContainingPosition (size_t charPosition) const override;
 
     public:
-        nonvirtual Led_Distance GetHeightOfRows (size_t startingRow, size_t rowCount) const;
-        nonvirtual Led_Distance GetHeightOfRows (RowReference startingRow, size_t rowCount) const;
+        nonvirtual DistanceType GetHeightOfRows (size_t startingRow, size_t rowCount) const;
+        nonvirtual DistanceType GetHeightOfRows (RowReference startingRow, size_t rowCount) const;
 
     public:
         virtual void GetStableTypingRegionContaingMarkerRange (size_t fromMarkerPos, size_t toMarkerPos,
@@ -237,14 +237,14 @@ namespace Stroika::Frameworks::Led {
         virtual size_t   GetCharAtLocationRowRelative (const Led_Point& where, RowReference topRow, size_t maxRowsToCheck = UINT_MAX) const;
 
     public:
-        nonvirtual Led_Distance GetInterLineSpace () const;
-        nonvirtual void         SetInterLineSpace (Led_Distance interlineSpace);
+        nonvirtual DistanceType GetInterLineSpace () const;
+        nonvirtual void         SetInterLineSpace (DistanceType interlineSpace);
 
     private:
-        Led_Distance fInterlineSpace;
+        DistanceType fInterlineSpace;
 
     public:
-        virtual Led_Distance GetInterLineSpace (PartitionMarker* pm) const;
+        virtual DistanceType GetInterLineSpace (PartitionMarker* pm) const;
         virtual void         ChangedInterLineSpace (PartitionMarker* pm);
 
         // Hook to invalidate cached info based on fontmetrics

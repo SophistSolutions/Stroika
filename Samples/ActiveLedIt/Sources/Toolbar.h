@@ -172,7 +172,7 @@ public:
 
     // Specify elements
 private:
-    Led_Distance fPreferredWidth;
+    DistanceType fPreferredWidth;
 
 public:
     HRESULT FinalConstruct ();

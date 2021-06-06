@@ -273,11 +273,11 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     public:
         virtual void SetJustification (Led_Justification justification);
         virtual void SetStandardTabStopList (const TextImager::StandardTabStopList& tabStops);
-        virtual void SetFirstIndent (Led_TWIPS tx);
-        virtual void SetLeftMargin (Led_TWIPS lhs);
-        virtual void SetRightMargin (Led_TWIPS rhs);
-        virtual void SetSpaceBefore (Led_TWIPS sb);
-        virtual void SetSpaceAfter (Led_TWIPS sa);
+        virtual void SetFirstIndent (TWIPS tx);
+        virtual void SetLeftMargin (TWIPS lhs);
+        virtual void SetRightMargin (TWIPS rhs);
+        virtual void SetSpaceBefore (TWIPS sb);
+        virtual void SetSpaceAfter (TWIPS sa);
         virtual void SetLineSpacing (Led_LineSpacing sl);
         virtual void SetTextHidden (bool hidden);
         virtual void SetListStyle (ListStyle listStyle);
@@ -285,11 +285,11 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
 
     public:
         virtual void SetTableBorderColor (Led_Color c);
-        virtual void SetTableBorderWidth (Led_TWIPS bWidth);
-        virtual void SetCellWidths (const vector<Led_TWIPS>& cellWidths);
+        virtual void SetTableBorderWidth (TWIPS bWidth);
+        virtual void SetCellWidths (const vector<TWIPS>& cellWidths);
         virtual void SetCellBackColor (const Led_Color c);
-        virtual void SetDefaultCellMarginsForCurrentRow (Led_TWIPS top, Led_TWIPS left, Led_TWIPS bottom, Led_TWIPS right);
-        virtual void SetDefaultCellSpacingForCurrentRow (Led_TWIPS top, Led_TWIPS left, Led_TWIPS bottom, Led_TWIPS right);
+        virtual void SetDefaultCellMarginsForCurrentRow (TWIPS top, TWIPS left, TWIPS bottom, TWIPS right);
+        virtual void SetDefaultCellSpacingForCurrentRow (TWIPS top, TWIPS left, TWIPS bottom, TWIPS right);
 
     public:
         /*
@@ -441,10 +441,10 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     public:
         virtual Led_Justification      GetJustification () const;
         virtual StandardTabStopList    GetStandardTabStopList () const;
-        virtual Led_TWIPS              GetFirstIndent () const;
-        virtual void                   GetMargins (Led_TWIPS* lhs, Led_TWIPS* rhs) const;
-        virtual Led_TWIPS              GetSpaceBefore () const;
-        virtual Led_TWIPS              GetSpaceAfter () const;
+        virtual TWIPS                  GetFirstIndent () const;
+        virtual void                   GetMargins (TWIPS* lhs, TWIPS* rhs) const;
+        virtual TWIPS                  GetSpaceBefore () const;
+        virtual TWIPS                  GetSpaceAfter () const;
         virtual Led_LineSpacing        GetLineSpacing () const;
         virtual void                   GetListStyleInfo (ListStyle* listStyle, unsigned char* indentLevel) const;
         virtual Led_tChar              GetSoftLineBreakCharacter () const;
@@ -462,7 +462,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     public:
         struct CellInfo {
             CellInfo ();
-            Led_TWIPS f_cellx;
+            TWIPS     f_cellx;
             Led_Color f_clcbpat; // cell background color
         };
 
@@ -500,16 +500,16 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         virtual size_t GetOffsetEnd () const = 0;
         /*
         @METHOD:        StyledTextIOWriter::SrcStream::Table::GetDefaultCellMarginsForRow
-        @DESCRIPTION:   <p>Return the default cell margins for the given row. Note that the @'Led_TWIPS_Rect'
+        @DESCRIPTION:   <p>Return the default cell margins for the given row. Note that the @'TWIPS_Rect'
                     is not a true rectangle, but just a handy way to return 4 values - a top/left/bottom/right.</p>
         */
-        virtual Led_TWIPS_Rect GetDefaultCellMarginsForRow (size_t row) const = 0;
+        virtual TWIPS_Rect GetDefaultCellMarginsForRow (size_t row) const = 0;
         /*
         @METHOD:        StyledTextIOWriter::SrcStream::Table::GetDefaultCellSpacingForRow
-        @DESCRIPTION:   <p>Return the default cell spacing for the given row. Note that the @'Led_TWIPS_Rect'
+        @DESCRIPTION:   <p>Return the default cell spacing for the given row. Note that the @'TWIPS_Rect'
                     is not a true rectangle, but just a handy way to return 4 values - a top/left/bottom/right.</p>
         */
-        virtual Led_TWIPS_Rect GetDefaultCellSpacingForRow (size_t row) const = 0;
+        virtual TWIPS_Rect GetDefaultCellSpacingForRow (size_t row) const = 0;
     };
 
     /*
@@ -990,7 +990,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
 
     // class StyledTextIOWriter::SrcStream::Table::CellInfo
     inline StyledTextIOWriter::SrcStream::Table::CellInfo::CellInfo ()
-        : f_cellx (Led_TWIPS (0))
+        : f_cellx (TWIPS (0))
         , f_clcbpat (Led_Color::kWhite)
     {
     }

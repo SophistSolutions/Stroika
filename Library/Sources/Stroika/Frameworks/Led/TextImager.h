@@ -226,9 +226,9 @@ namespace Stroika::Frameworks::Led {
         //class TabStopList;
         /*
         @CLASS:         TextImager::TabStopList
-        @DESCRIPTION:   <p>See @'Led_TabStopList'</p>
+        @DESCRIPTION:   <p>See @'TabStopList'</p>
         */
-        using TabStopList = Led_TabStopList;
+        using TabStopList = TabStopList;
         class SimpleTabStopList;
         class StandardTabStopList;
 
@@ -392,24 +392,24 @@ namespace Stroika::Frameworks::Led {
             *
             */
     public:
-        nonvirtual Led_Coordinate GetHScrollPos () const;
-        virtual void              SetHScrollPos (Led_Coordinate hScrollPos);
+        nonvirtual Coordinate GetHScrollPos () const;
+        virtual void          SetHScrollPos (Coordinate hScrollPos);
 
     protected:
-        nonvirtual void SetHScrollPos_ (Led_Coordinate hScrollPos);
+        nonvirtual void SetHScrollPos_ (Coordinate hScrollPos);
 
     public:
-        virtual Led_Distance ComputeMaxHScrollPos () const;
+        virtual DistanceType ComputeMaxHScrollPos () const;
 
     private:
-        Led_Coordinate fHScrollPos;
+        Coordinate fHScrollPos;
 
         /*
             *  Some utility methods, very handy for implementing horizontal scrolling. Can (and should be) overriden
             *  in certain subclasses for efficiency. But the default implementation will work.
             */
     public:
-        virtual Led_Distance CalculateLongestRowInWindowPixelWidth () const;
+        virtual DistanceType CalculateLongestRowInWindowPixelWidth () const;
 
     public:
         enum CursorMovementDirection { eCursorBack,
@@ -432,11 +432,11 @@ namespace Stroika::Frameworks::Led {
         bool fSuppressGoalColumnRecompute;
 
     public:
-        nonvirtual Led_TWIPS GetSelectionGoalColumn () const;
-        nonvirtual void      SetSelectionGoalColumn (Led_TWIPS selectionGoalColumn);
+        nonvirtual TWIPS GetSelectionGoalColumn () const;
+        nonvirtual void  SetSelectionGoalColumn (TWIPS selectionGoalColumn);
 
     private:
-        Led_TWIPS fSelectionGoalColumn;
+        TWIPS fSelectionGoalColumn;
 
     public:
         /*
@@ -627,7 +627,7 @@ namespace Stroika::Frameworks::Led {
         @DESCRIPTION:   <p>This API is redundent, but can be much more efficient to get at this information
                     than GetCharLocation() - especially in subclasses like MultiRowImager using RowRefernces.</p>
         */
-        virtual Led_Distance GetRowHeight (size_t rowNumber) const = 0;
+        virtual DistanceType GetRowHeight (size_t rowNumber) const = 0;
 
     public:
         /*
@@ -635,7 +635,7 @@ namespace Stroika::Frameworks::Led {
         @DESCRIPTION:   <p>Returns the number of pixels from the top of the given row, to the baseline.
             The 'charPosition' is a markerPosition just before any character in the row.</p>
         */
-        virtual Led_Distance GetRowRelativeBaselineOfRowContainingPosition (size_t charPosition) const = 0;
+        virtual DistanceType GetRowRelativeBaselineOfRowContainingPosition (size_t charPosition) const = 0;
 
     public:
         /*
@@ -726,29 +726,29 @@ namespace Stroika::Frameworks::Led {
                                       const TextLayoutBlock& text, size_t rowStart, size_t rowEnd);
         virtual void DrawRowHilight (Led_Tablet tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect,
                                      const TextLayoutBlock& text, size_t rowStart, size_t rowEnd);
-        virtual void DrawInterLineSpace (Led_Distance interlineSpace, Led_Tablet tablet, Led_Coordinate vPosOfTopOfInterlineSpace, bool segmentHilighted, bool printing);
+        virtual void DrawInterLineSpace (DistanceType interlineSpace, Led_Tablet tablet, Coordinate vPosOfTopOfInterlineSpace, bool segmentHilighted, bool printing);
 
     protected:
         virtual bool   ContainsMappedDisplayCharacters (const Led_tChar* text, size_t nTChars) const;
         virtual void   ReplaceMappedDisplayCharacters (const Led_tChar* srcText, Led_tChar* copyText, size_t nTChars) const;
         virtual size_t RemoveMappedDisplayCharacters (Led_tChar* copyText, size_t nTChars) const;
-        virtual void   PatchWidthRemoveMappedDisplayCharacters (const Led_tChar* srcText, Led_Distance* distanceResults, size_t nTChars) const;
+        virtual void   PatchWidthRemoveMappedDisplayCharacters (const Led_tChar* srcText, DistanceType* distanceResults, size_t nTChars) const;
 
     protected:
         static bool   ContainsMappedDisplayCharacters_HelperForChar (const Led_tChar* text, size_t nTChars, Led_tChar charToMap);
         static void   ReplaceMappedDisplayCharacters_HelperForChar (Led_tChar* copyText, size_t nTChars, Led_tChar charToMap, Led_tChar charToMapTo);
         static size_t RemoveMappedDisplayCharacters_HelperForChar (Led_tChar* copyText, size_t nTChars, Led_tChar charToRemove);
-        static void   PatchWidthRemoveMappedDisplayCharacters_HelperForChar (const Led_tChar* srcText, Led_Distance* distanceResults, size_t nTChars, Led_tChar charToRemove);
+        static void   PatchWidthRemoveMappedDisplayCharacters_HelperForChar (const Led_tChar* srcText, DistanceType* distanceResults, size_t nTChars, Led_tChar charToRemove);
 
     protected:
         virtual void DrawSegment (Led_Tablet tablet,
                                   size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
-                                  Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn);
+                                  Coordinate useBaseLine, DistanceType* pixelsDrawn);
 
     public:
         // Note we REQUIRE that useBaseLine be contained within drawInto
         nonvirtual void DrawSegment_ (Led_Tablet tablet, const Led_FontSpecification& fontSpec,
-                                      size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) const;
+                                      size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, Coordinate useBaseLine, DistanceType* pixelsDrawn) const;
 
     protected:
         // distanceResults must be an array of (to-from) elements - which is filled in with the widths
@@ -759,24 +759,24 @@ namespace Stroika::Frameworks::Led {
         // is distanceResults[b-from-1] - and of course ZERO if b == from
         //
         virtual void MeasureSegmentWidth (size_t from, size_t to, const Led_tChar* text,
-                                          Led_Distance* distanceResults) const;
+                                          DistanceType* distanceResults) const;
 
     public:
         nonvirtual void MeasureSegmentWidth_ (const Led_FontSpecification& fontSpec, size_t from, size_t to,
                                               const Led_tChar* text,
-                                              Led_Distance*    distanceResults) const;
+                                              DistanceType*    distanceResults) const;
 
     protected:
-        virtual Led_Distance MeasureSegmentHeight (size_t from, size_t to) const;
+        virtual DistanceType MeasureSegmentHeight (size_t from, size_t to) const;
 
     public:
-        nonvirtual Led_Distance MeasureSegmentHeight_ (const Led_FontSpecification& fontSpec, size_t from, size_t to) const;
+        nonvirtual DistanceType MeasureSegmentHeight_ (const Led_FontSpecification& fontSpec, size_t from, size_t to) const;
 
     protected:
-        virtual Led_Distance MeasureSegmentBaseLine (size_t from, size_t to) const;
+        virtual DistanceType MeasureSegmentBaseLine (size_t from, size_t to) const;
 
     public:
-        nonvirtual Led_Distance MeasureSegmentBaseLine_ (const Led_FontSpecification& fontSpec, size_t from, size_t to) const;
+        nonvirtual DistanceType MeasureSegmentBaseLine_ (const Led_FontSpecification& fontSpec, size_t from, size_t to) const;
 
     public:
         /*
@@ -798,7 +798,7 @@ namespace Stroika::Frameworks::Led {
                     directionality runs.
                         </P>
         */
-        virtual Led_Distance CalcSegmentSize (size_t from, size_t to) const = 0;
+        virtual DistanceType CalcSegmentSize (size_t from, size_t to) const = 0;
 
     public:
         /*
@@ -814,7 +814,7 @@ namespace Stroika::Frameworks::Led {
                     if charLoc==GetEnd() - you will get the same results as in the @'TextImager::RemoveMappedDisplayCharacters' case.</p>
                         <p>See also @'TextImager::GetRowRelativeCharLoc'</p>
         */
-        virtual void GetRowRelativeCharLoc (size_t charLoc, Led_Distance* lhs, Led_Distance* rhs) const = 0;
+        virtual void GetRowRelativeCharLoc (size_t charLoc, DistanceType* lhs, DistanceType* rhs) const = 0;
 
     public:
         /*
@@ -826,7 +826,7 @@ namespace Stroika::Frameworks::Led {
                     character) if the point passed in is past the end of the last character in the row.
                         </p>
             */
-        virtual size_t GetRowRelativeCharAtLoc (Led_Coordinate hOffset, size_t rowStart) const = 0;
+        virtual size_t GetRowRelativeCharAtLoc (Coordinate hOffset, size_t rowStart) const = 0;
 
         // Font info caches...
     private:
@@ -904,14 +904,14 @@ namespace Stroika::Frameworks::Led {
     */
     class TextImager::SimpleTabStopList : public TextImager::TabStopList {
     public:
-        SimpleTabStopList (Led_TWIPS twipsPerTabStop);
+        SimpleTabStopList (TWIPS twipsPerTabStop);
 
     public:
-        virtual Led_TWIPS ComputeIthTab (size_t i) const override;
-        virtual Led_TWIPS ComputeTabStopAfterPosition (Led_TWIPS afterPos) const override;
+        virtual TWIPS ComputeIthTab (size_t i) const override;
+        virtual TWIPS ComputeTabStopAfterPosition (TWIPS afterPos) const override;
 
     public:
-        Led_TWIPS fTWIPSPerTabStop;
+        TWIPS fTWIPSPerTabStop;
     };
 
     /*
@@ -923,17 +923,17 @@ namespace Stroika::Frameworks::Led {
     class TextImager::StandardTabStopList : public TextImager::TabStopList {
     public:
         StandardTabStopList (); // default to 1/2 inch
-        StandardTabStopList (Led_TWIPS eachWidth);
-        StandardTabStopList (const vector<Led_TWIPS>& tabstops);
-        StandardTabStopList (const vector<Led_TWIPS>& tabstops, Led_TWIPS afterTabsWidth);
+        StandardTabStopList (TWIPS eachWidth);
+        StandardTabStopList (const vector<TWIPS>& tabstops);
+        StandardTabStopList (const vector<TWIPS>& tabstops, TWIPS afterTabsWidth);
 
     public:
-        virtual Led_TWIPS ComputeIthTab (size_t i) const override;
-        virtual Led_TWIPS ComputeTabStopAfterPosition (Led_TWIPS afterPos) const override;
+        virtual TWIPS ComputeIthTab (size_t i) const override;
+        virtual TWIPS ComputeTabStopAfterPosition (TWIPS afterPos) const override;
 
     public:
-        Led_TWIPS         fDefaultTabWidth; //  for tabs PAST the ones specified in the fTabStops list
-        vector<Led_TWIPS> fTabStops;
+        TWIPS         fDefaultTabWidth; //  for tabs PAST the ones specified in the fTabStops list
+        vector<TWIPS> fTabStops;
 
     public:
         nonvirtual bool operator== (const StandardTabStopList& rhs) const;

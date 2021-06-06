@@ -283,7 +283,7 @@ LRESULT ActiveLedIt_IconButtonToolbarElement::OnMouseMove ([[maybe_unused]] UINT
 
 STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::get_PreferredHeight (UINT* pVal)
 {
-    const Led_Distance kBorderSize = 3;
+    const DistanceType kBorderSize = 3;
     try {
         if (pVal == NULL) {
             return E_INVALIDARG;
@@ -308,7 +308,7 @@ STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::get_PreferredHeight (UINT* pV
 
 STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::get_PreferredWidth (UINT* pVal)
 {
-    const Led_Distance kBorderSize = 3;
+    const DistanceType kBorderSize = 3;
     try {
         if (pVal == NULL) {
             return E_INVALIDARG;
@@ -677,7 +677,7 @@ STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::get_PreferredHeight (UINT* pVal
         if (pVal == NULL) {
             return E_INVALIDARG;
         }
-        const Led_Distance kWhiteSluff = 4;
+        const DistanceType kWhiteSluff = 4;
         *pVal                          = ::GetSystemMetrics (SM_CYVSCROLL) + kWhiteSluff;
         return S_OK;
     }
@@ -890,7 +890,7 @@ void ActiveLedIt_ComboBoxToolbarElement::UpdatePopupObj ()
             HDC     hdc     = GetWindowDC ();
             HGDIOBJ oldFont = ::SelectObject (hdc, ::GetStockObject (DEFAULT_GUI_FONT));
             try {
-                Led_Distance maxItemWidth = 0;
+                DistanceType maxItemWidth = 0;
                 for (long i = 0; i < cmdCount; ++i) {
                     CComPtr<IDispatch> e;
                     Led_ThrowIfErrorHRESULT (cmdList->get_Item (i, &e));
@@ -907,13 +907,13 @@ void ActiveLedIt_ComboBoxToolbarElement::UpdatePopupObj ()
                     SIZE sz;
                     memset (&sz, 0, sizeof (sz));
                     ::GetTextExtentPoint32 (hdc, itemPrintName.c_str (), static_cast<int> (itemPrintName.length ()), &sz);
-                    maxItemWidth = max (maxItemWidth, static_cast<Led_Distance> (sz.cx));
+                    maxItemWidth = max (maxItemWidth, static_cast<DistanceType> (sz.cx));
                 }
                 ::SelectObject (hdc, oldFont);
                 ReleaseDC (hdc);
-                const Led_Distance kMaxMax     = 200; // don't make any wider than this - even if really long text...
+                const DistanceType kMaxMax     = 200; // don't make any wider than this - even if really long text...
                 maxItemWidth                   = min (maxItemWidth, kMaxMax);
-                const Led_Distance kWhiteSluff = 6;
+                const DistanceType kWhiteSluff = 6;
                 fPreferredWidth                = 2 * ::GetSystemMetrics (SM_CXEDGE) + ::GetSystemMetrics (SM_CXVSCROLL) + maxItemWidth + kWhiteSluff;
             }
             catch (...) {
@@ -1125,8 +1125,8 @@ void ActiveLedIt_Toolbar::DoLayout ()
     Led_Rect clientBounds = Led_Rect (0, 0, fBounds.GetHeight (), fBounds.GetWidth ());
 #else
     Led_Rect clientBounds = Led_Rect (0, 0,
-                                      max (static_cast<Led_Coordinate> (fBounds.GetHeight ()) - 2 * ::GetSystemMetrics (SM_CYEDGE), 0),
-                                      max (static_cast<Led_Coordinate> (fBounds.GetHeight ()) - 2 * ::GetSystemMetrics (SM_CXEDGE), 0));
+                                      max (static_cast<Coordinate> (fBounds.GetHeight ()) - 2 * ::GetSystemMetrics (SM_CYEDGE), 0),
+                                      max (static_cast<Coordinate> (fBounds.GetHeight ()) - 2 * ::GetSystemMetrics (SM_CXEDGE), 0));
 #endif
 
     // MAYBE NOT NEEDED ANYMORE???
@@ -1149,7 +1149,7 @@ void ActiveLedIt_Toolbar::DoLayout ()
         UINT preferredHeight = 0;
         Led_ThrowIfErrorHRESULT (tbi->get_PreferredHeight (&preferredHeight));
 
-        Led_Distance useHeight  = min (Led_Distance (preferredHeight), itemBoundsCursor.GetHeight ());
+        DistanceType useHeight  = min (DistanceType (preferredHeight), itemBoundsCursor.GetHeight ());
         Led_Rect     itemBounds = itemBoundsCursor;
         itemBounds.right        = itemBounds.left + preferredWidth;
         itemBoundsCursor.right  = itemBounds.right;
@@ -1700,8 +1700,8 @@ STDMETHODIMP ActiveLedIt_ToolbarList::SetRectangle (int X, int Y, UINT width, UI
 void ActiveLedIt_ToolbarList::DoLayout ()
 {
     Led_Rect clientBounds = Led_Rect (0, 0,
-                                      max (static_cast<Led_Coordinate> (fBounds.GetHeight ()) - 2 * ::GetSystemMetrics (SM_CYEDGE), Led_Coordinate (0)),
-                                      max (static_cast<Led_Coordinate> (fBounds.GetWidth ()) - 2 * ::GetSystemMetrics (SM_CXEDGE), Led_Coordinate (0)));
+                                      max (static_cast<Coordinate> (fBounds.GetHeight ()) - 2 * ::GetSystemMetrics (SM_CYEDGE), Coordinate (0)),
+                                      max (static_cast<Coordinate> (fBounds.GetWidth ()) - 2 * ::GetSystemMetrics (SM_CXEDGE), Coordinate (0)));
     if (m_hWnd != NULL) { // probbaly not really needed anymore - now that I subtract out the SM_CXYEDGE - but what the heck... Just in case...
         RECT cr;
         ::GetClientRect (m_hWnd, &cr);

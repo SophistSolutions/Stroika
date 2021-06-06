@@ -182,15 +182,15 @@ namespace Stroika::Frameworks::Led {
         nonvirtual size_t       GetRowLength (RowReference row) const;
 
     public:
-        virtual Led_Distance    GetRowHeight (size_t rowNumber) const override;
-        nonvirtual Led_Distance GetRowHeight (RowReference row) const;
+        virtual DistanceType    GetRowHeight (size_t rowNumber) const override;
+        nonvirtual DistanceType GetRowHeight (RowReference row) const;
 
     public:
-        virtual Led_Distance GetRowRelativeBaselineOfRowContainingPosition (size_t charPosition) const override;
+        virtual DistanceType GetRowRelativeBaselineOfRowContainingPosition (size_t charPosition) const override;
 
     public:
-        nonvirtual Led_Distance GetHeightOfRows (size_t startingRow, size_t rowCount) const;
-        nonvirtual Led_Distance GetHeightOfRows (RowReference startingRow, size_t rowCount) const;
+        nonvirtual DistanceType GetHeightOfRows (size_t startingRow, size_t rowCount) const;
+        nonvirtual DistanceType GetHeightOfRows (RowReference startingRow, size_t rowCount) const;
 
     public:
         virtual void GetStableTypingRegionContaingMarkerRange (size_t fromMarkerPos, size_t toMarkerPos,
@@ -208,7 +208,7 @@ namespace Stroika::Frameworks::Led {
 
     protected:
         virtual void         FillCache (PartitionMarker* pm, PartitionElementCacheInfo& cacheInfo) = 0;
-        virtual Led_Distance CalculateInterLineSpace (const PartitionMarker* pm) const;
+        virtual DistanceType CalculateInterLineSpace (const PartitionMarker* pm) const;
 
     protected:
         virtual bool   ContainsMappedDisplayCharacters (const Led_tChar* text, size_t nTChars) const;
@@ -269,31 +269,31 @@ namespace Stroika::Frameworks::Led {
         PartitionElementCacheInfo ();
 
     public:
-        nonvirtual Led_Distance GetPixelHeight () const;
+        nonvirtual DistanceType GetPixelHeight () const;
         nonvirtual size_t       GetRowCount () const;
         nonvirtual size_t       PeekRowCount () const;
         nonvirtual size_t       GetLastRow () const;
-        nonvirtual Led_Distance GetRowHeight (size_t ithRow) const;
+        nonvirtual DistanceType GetRowHeight (size_t ithRow) const;
         nonvirtual size_t       GetLineRelativeRowStartPosition (size_t ithRow) const;
         nonvirtual size_t       LineRelativePositionInWhichRow (size_t charPos) const; // ZERO based charPos - ie zero is just before first byte in first row
 
     public:
-        nonvirtual Led_Distance GetInterLineSpace () const;
-        nonvirtual void         SetInterLineSpace (Led_Distance interlineSpace);
+        nonvirtual DistanceType GetInterLineSpace () const;
+        nonvirtual void         SetInterLineSpace (DistanceType interlineSpace);
 
         /*
      *  Word wrapping helper routine.
      */
     public:
         nonvirtual void Clear ();
-        nonvirtual void IncrementRowCountAndFixCacheBuffers (size_t newStart, Led_Distance newRowsHeight);
+        nonvirtual void IncrementRowCountAndFixCacheBuffers (size_t newStart, DistanceType newRowsHeight);
 
         // These should only be modifed in the FillCache () routine (or its overrides in subclasses)....
     public:
         // Note - calling these routines we assert i >= 0, <= fRowCountCache - to increase size of cache
         // call IncrementRowCountAndFixCacheBuffers ()
-        nonvirtual Led_Distance PeekAtRowHeight (size_t ithRow) const;
-        nonvirtual void         SetRowHeight (size_t i, Led_Distance rowHeight);
+        nonvirtual DistanceType PeekAtRowHeight (size_t ithRow) const;
+        nonvirtual void         SetRowHeight (size_t i, DistanceType rowHeight);
 
         nonvirtual size_t PeekAtRowStart (size_t i) const;
         nonvirtual void   SetRowStart (size_t i, size_t rowStart); // NB: rowStart[1] MUST BE ZERO!!!!
@@ -318,8 +318,8 @@ namespace Stroika::Frameworks::Led {
             ~Rep ();
 
         public:
-            Led_Distance fInterlineSpace;
-            Led_Distance fPixelHeightCache;
+            DistanceType fInterlineSpace;
+            DistanceType fPixelHeightCache;
             size_t       fRowCountCache;
             RowStart_*   fRowStartArray;
             RowHeight_*  fRowHeightArray;

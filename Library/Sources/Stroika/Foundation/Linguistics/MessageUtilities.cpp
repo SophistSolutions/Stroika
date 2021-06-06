@@ -102,9 +102,12 @@ String MessageUtilities_en::MakeNounSingular (const String& s) const
 
 /*
  ********************************************************************************
- ************************ MessageUtiltiesManager ********************************
+ ************************** MessageUtiltiesManager ******************************
  ********************************************************************************
  */
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+Execution::Synchronized<shared_ptr<const MessageUtiltiesManager>> MessageUtiltiesManager::sTheMessageUtiltiesManager_;
+#endif
 shared_ptr<const MessageUtilities> MessageUtiltiesManager::LookupHandler (const locale& l) const
 {
     optional<Common::KeyValuePair<locale, shared_ptr<const MessageUtilities>>> cachedVal = fCached_.load ();

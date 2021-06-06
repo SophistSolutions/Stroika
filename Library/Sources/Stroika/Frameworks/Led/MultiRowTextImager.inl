@@ -44,7 +44,7 @@ namespace Stroika::Frameworks::Led {
      ********************************************************************************
      */
     inline MultiRowTextImager::PartitionElementCacheInfo::Rep::Rep ()
-        : fPixelHeightCache (Led_Distance (-1))
+        : fPixelHeightCache (DistanceType (-1))
         , fInterlineSpace (0)
         , fRowCountCache (0)
         , fRowStartArray (nullptr)
@@ -77,14 +77,14 @@ namespace Stroika::Frameworks::Led {
         MultiRowTextImager::CalculateInterLineSpace () method. They are not set directly.
         </p>
     */
-    inline Led_Distance MultiRowTextImager::PartitionElementCacheInfo::GetInterLineSpace () const
+    inline DistanceType MultiRowTextImager::PartitionElementCacheInfo::GetInterLineSpace () const
     {
-        Assert (fRep->fInterlineSpace != Led_Distance (-1));
+        Assert (fRep->fInterlineSpace != DistanceType (-1));
         return (fRep->fInterlineSpace);
     }
-    inline void MultiRowTextImager::PartitionElementCacheInfo::SetInterLineSpace (Led_Distance interlineSpace)
+    inline void MultiRowTextImager::PartitionElementCacheInfo::SetInterLineSpace (DistanceType interlineSpace)
     {
-        Assert (interlineSpace != Led_Distance (-1));
+        Assert (interlineSpace != DistanceType (-1));
         fRep->fInterlineSpace = interlineSpace;
     }
     /*
@@ -92,7 +92,7 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>Return the cached height of the given partition element. This is the sum of the
         pixel height computed in FillCache () for the actual text, and the interline space (see GetInterLineSpace ()).</p>
     */
-    inline Led_Distance MultiRowTextImager::PartitionElementCacheInfo::GetPixelHeight () const
+    inline DistanceType MultiRowTextImager::PartitionElementCacheInfo::GetPixelHeight () const
     {
         return (fRep->fPixelHeightCache + GetInterLineSpace ());
     }
@@ -132,7 +132,7 @@ namespace Stroika::Frameworks::Led {
         The internal representation of these things is somewhat obscure for data size reasons, so there is some
         unpacking to be done.</p>
     */
-    inline Led_Distance MultiRowTextImager::PartitionElementCacheInfo::PeekAtRowHeight (size_t i) const
+    inline DistanceType MultiRowTextImager::PartitionElementCacheInfo::PeekAtRowHeight (size_t i) const
     {
         Assert (i < fRep->fRowCountCache); // MFC Hint - when this assert fails, look closely at your
         // stack-trace - often its cuz some other assert failed in the context
@@ -153,7 +153,7 @@ namespace Stroika::Frameworks::Led {
     @METHOD:        MultiRowTextImager::PartitionElementCacheInfo::SetRowHeight
     @DESCRIPTION:   <p>Set the height of a given row. This is typically just done within FillCache().</p>
     */
-    inline void MultiRowTextImager::PartitionElementCacheInfo::SetRowHeight (size_t i, Led_Distance rowHeight)
+    inline void MultiRowTextImager::PartitionElementCacheInfo::SetRowHeight (size_t i, DistanceType rowHeight)
     {
         Assert (i < fRep->fRowCountCache);
         Assert (sizeof (RowHeight_) > 1 or rowHeight <= 0xff);   // be sure value fits..
@@ -231,7 +231,7 @@ namespace Stroika::Frameworks::Led {
     {
         return (PeekAtRowStart (ithRow));
     }
-    inline Led_Distance MultiRowTextImager::PartitionElementCacheInfo::GetRowHeight (size_t ithRow) const
+    inline DistanceType MultiRowTextImager::PartitionElementCacheInfo::GetRowHeight (size_t ithRow) const
     {
         return (PeekAtRowHeight (ithRow));
     }
@@ -400,7 +400,7 @@ namespace Stroika::Frameworks::Led {
     @METHOD:        MultiRowTextImager::GetRowHeight
     @DESCRIPTION:   <p>Returns the height (in standard GDI units, usually pixels) of the given row reference.</p>
     */
-    inline Led_Distance MultiRowTextImager::GetRowHeight (RowReference row) const
+    inline DistanceType MultiRowTextImager::GetRowHeight (RowReference row) const
     {
         AssertNotNull (row.GetPartitionMarker ());
         return GetPartitionElementCacheInfo (row.GetPartitionMarker ()).GetRowHeight (row.GetSubRow ());

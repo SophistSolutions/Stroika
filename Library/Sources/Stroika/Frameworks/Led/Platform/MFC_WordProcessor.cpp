@@ -337,7 +337,7 @@ void Led_MFC_ControlItem::OnDeactivateUI (BOOL bUndoable)
 
 void Led_MFC_ControlItem::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Led_Tablet tablet,
                                        [[maybe_unused]] size_t from, [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                                       Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn)
+                                       Coordinate useBaseLine, DistanceType* pixelsDrawn)
 {
     Require (to - from == 1);
     Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
@@ -349,10 +349,10 @@ void Led_MFC_ControlItem::DrawSegment (const StyledTextImager* imager, const Run
     tablet->SetTextColor (foreColor.GetOSRep ());
     tablet->SetBkColor (backColor.GetOSRep ());
 
-    Led_Rect ourBoundsRect     = drawInto;
-    ourBoundsRect.right        = ourBoundsRect.left + fSize.h + 2 * kDefaultEmbeddingMargin.h;
-    Led_Coordinate embedBottom = useBaseLine;
-    Led_Coordinate embedTop    = embedBottom - fSize.v;
+    Led_Rect ourBoundsRect = drawInto;
+    ourBoundsRect.right    = ourBoundsRect.left + fSize.h + 2 * kDefaultEmbeddingMargin.h;
+    Coordinate embedBottom = useBaseLine;
+    Coordinate embedTop    = embedBottom - fSize.v;
     Assert (embedTop >= drawInto.top);
     Assert (embedBottom <= drawInto.bottom);
     Led_Rect innerBoundsRect = Led_Rect (Led_Point (embedTop, drawInto.left + kDefaultEmbeddingMargin.h), fSize);
@@ -365,14 +365,14 @@ void Led_MFC_ControlItem::DrawSegment (const StyledTextImager* imager, const Run
 }
 
 void Led_MFC_ControlItem::MeasureSegmentWidth ([[maybe_unused]] const StyledTextImager* imager, [[maybe_unused]] const RunElement& runElement, [[maybe_unused]] size_t from, [[maybe_unused]] size_t to,
-                                               [[maybe_unused]] const Led_tChar* text, Led_Distance* distanceResults) const
+                                               [[maybe_unused]] const Led_tChar* text, DistanceType* distanceResults) const
 {
     Assert (from + 1 == to);
     Assert (text[0] == kEmbeddingSentinalChar);
     distanceResults[0] = fSize.h + 2 * kDefaultEmbeddingMargin.h;
 }
 
-Led_Distance Led_MFC_ControlItem::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, [[maybe_unused]] size_t from, [[maybe_unused]] size_t to) const
+DistanceType Led_MFC_ControlItem::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, [[maybe_unused]] size_t from, [[maybe_unused]] size_t to) const
 {
     Assert (from + 1 == to);
     return fSize.v + 2 * kDefaultEmbeddingMargin.v;
@@ -446,7 +446,7 @@ void Led_MFC_ControlItem::DidUpdateText (const MarkerOwner::UpdateInfo& updateIn
     }
 }
 
-void Led_MFC_ControlItem::PostCreateSpecifyExtraInfo (Led_TWIPS_Point size)
+void Led_MFC_ControlItem::PostCreateSpecifyExtraInfo (TWIPS_Point size)
 {
     //                  SetExtent (DPtoHIMETRIC (AsSIZE (size)));
     // Cannot call SetExtent() here. Only after we've called Run () - otherwise exception.

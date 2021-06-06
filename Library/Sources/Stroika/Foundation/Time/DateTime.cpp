@@ -167,17 +167,17 @@ DateTime::FormatException::FormatException ()
  ********************************************************************************
  */
 #if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
-     const Traversal::Iterable<String> DateTime::kDefaultParseFormats{
-        kLocaleStandardFormat,
-        kLocaleStandardAlternateFormat,
-        L"%x %X"sv,
-        L"%Ex %EX"sv,
-        L"%Y-%b-%d %H:%M:%S"sv, // no obvious reference for this so maybe not a good idea
-        L"%D%t%T"sv,            // no obvious reference for this so maybe not a good idea
-        L"%D%t%r"sv,            // no obvious reference for this so maybe not a good idea
-        L"%D%t%R"sv,            // no obvious reference for this so maybe not a good idea
-        L"%a %b %e %T %Y"sv,    // no obvious reference for this so maybe not a good idea
-    };
+const Traversal::Iterable<String> DateTime::kDefaultParseFormats{
+    kLocaleStandardFormat,
+    kLocaleStandardAlternateFormat,
+    L"%x %X"sv,
+    L"%Ex %EX"sv,
+    L"%Y-%b-%d %H:%M:%S"sv, // no obvious reference for this so maybe not a good idea
+    L"%D%t%T"sv,            // no obvious reference for this so maybe not a good idea
+    L"%D%t%r"sv,            // no obvious reference for this so maybe not a good idea
+    L"%D%t%R"sv,            // no obvious reference for this so maybe not a good idea
+    L"%a %b %e %T %Y"sv,    // no obvious reference for this so maybe not a good idea
+};
 #endif
 DateTime::DateTime (time_t unixEpochTime) noexcept
     : fTimezone_{Timezone::kUTC}

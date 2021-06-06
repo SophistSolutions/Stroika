@@ -376,8 +376,8 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void ScrollSoShowing (size_t markerPos, size_t andTryToShowMarkerPos = 0, UpdateMode updateMode = eDefaultUpdate);
         nonvirtual void SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont, UpdateMode updateMode = eDefaultUpdate);
         nonvirtual void SetWindowRect (const Led_Rect& windowRect, UpdateMode updateMode = eDefaultUpdate);
-        virtual void    SetHScrollPos (Led_Coordinate hScrollPos) override;
-        nonvirtual void SetHScrollPos (Led_Coordinate hScrollPos, UpdateMode updateMode);
+        virtual void    SetHScrollPos (Coordinate hScrollPos) override;
+        nonvirtual void SetHScrollPos (Coordinate hScrollPos, UpdateMode updateMode);
 
         /*
          *  Same as SetTopRowInWindow, but uses a marker position instead of a row#. This can be MUCH
@@ -463,8 +463,8 @@ namespace Stroika::Frameworks::Led {
             size_t          fTo;
             size_t          fWithWhatCharCount;
             Marker          fBoundingUpdateMarker;
-            Led_Distance    fBoundingUpdateHeight;
-            Led_Distance    fStableTypingRegionHeight;
+            DistanceType    fBoundingUpdateHeight;
+            DistanceType    fStableTypingRegionHeight;
 
         private:
             friend void TextInteractor::PreReplace (size_t from, size_t to, size_t withWhatCharCount, UpdateMode updateMode, PreReplaceInfo* preReplaceInfo);
@@ -933,11 +933,11 @@ namespace Stroika::Frameworks::Led {
         PreScrollInfo ();
 
     private:
-        UpdateMode     fUpdateMode;
-        size_t         fOldWindowStart;
-        Led_Coordinate fOldHScrollPos;
-        bool           fTryTodoScrollbits;
-        size_t         fOldLastRowStart;
+        UpdateMode fUpdateMode;
+        size_t     fOldWindowStart;
+        Coordinate fOldHScrollPos;
+        bool       fTryTodoScrollbits;
+        size_t     fOldLastRowStart;
 
     private:
         friend void TextInteractor::PreScrollHelper (UpdateMode updateMode, PreScrollInfo* preScrollInfo);

@@ -80,7 +80,7 @@ namespace {
     }
 
     // RTF / Led_LineSpacing support
-    inline static Led_LineSpacing mkLineSpacing_From_RTFValues_ (Led_Coordinate sl, bool multi)
+    inline static Led_LineSpacing mkLineSpacing_From_RTFValues_ (Coordinate sl, bool multi)
     {
         Led_LineSpacing result; // defaults to single line...
         if (sl != 1000) {
@@ -98,21 +98,21 @@ namespace {
             }
             else {
                 if (sl < 0) {
-                    result = Led_LineSpacing (Led_LineSpacing::eExactTWIPSSpacing, Led_TWIPS (-sl));
+                    result = Led_LineSpacing (Led_LineSpacing::eExactTWIPSSpacing, TWIPS (-sl));
                 }
                 else {
-                    result = Led_LineSpacing (Led_LineSpacing::eAtLeastTWIPSSpacing, Led_TWIPS (sl));
+                    result = Led_LineSpacing (Led_LineSpacing::eAtLeastTWIPSSpacing, TWIPS (sl));
                 }
             }
         }
         return result;
     }
-    inline static void mkRTFValues_From_LineSpacing (Led_LineSpacing inLS, Led_Coordinate* sl, bool* multi)
+    inline static void mkRTFValues_From_LineSpacing (Led_LineSpacing inLS, Coordinate* sl, bool* multi)
     {
         const int kOneLinesWorth = 240;
         switch (inLS.fRule) {
             case Led_LineSpacing::eOnePointFiveSpace:
-                *sl    = static_cast<Led_Coordinate> (kOneLinesWorth * 1.5);
+                *sl    = static_cast<Coordinate> (kOneLinesWorth * 1.5);
                 *multi = true;
                 break;
             case Led_LineSpacing::eDoubleSpace:
@@ -124,7 +124,7 @@ namespace {
                 *multi = false;
                 break;
             case Led_LineSpacing::eExactTWIPSSpacing:
-                *sl    = -static_cast<Led_Coordinate> (inLS.fArg);
+                *sl    = -static_cast<Coordinate> (inLS.fArg);
                 *multi = false;
                 break;
             case Led_LineSpacing::eExactLinesSpacing:
@@ -789,7 +789,7 @@ void SinkStreamDestination::SetTabStops (const TextImager::StandardTabStopList& 
     }
 }
 
-void SinkStreamDestination::SetFirstIndent (Led_TWIPS tx)
+void SinkStreamDestination::SetFirstIndent (TWIPS tx)
 {
     AboutToChange ();
     if (fCurrentContext.fFirstIndent != tx) {
@@ -798,7 +798,7 @@ void SinkStreamDestination::SetFirstIndent (Led_TWIPS tx)
     }
 }
 
-void SinkStreamDestination::SetLeftMargin (Led_TWIPS lhs)
+void SinkStreamDestination::SetLeftMargin (TWIPS lhs)
 {
     AboutToChange ();
     if (fCurrentContext.fLeftMargin != lhs) {
@@ -807,20 +807,20 @@ void SinkStreamDestination::SetLeftMargin (Led_TWIPS lhs)
     }
 }
 
-void SinkStreamDestination::SetRightMargin (Led_TWIPS rhs)
+void SinkStreamDestination::SetRightMargin (TWIPS rhs)
 {
     AboutToChange ();
     Flush ();
 
-    Led_TWIPS effectivePaperSize = fRTFInfo.GetEffectiveDrawingWidth ();
-    Led_TWIPS realMargin         = Led_TWIPS (effectivePaperSize - rhs);
+    TWIPS effectivePaperSize = fRTFInfo.GetEffectiveDrawingWidth ();
+    TWIPS realMargin         = TWIPS (effectivePaperSize - rhs);
     if (realMargin < 0) {
-        realMargin = Led_TWIPS (1);
+        realMargin = TWIPS (1);
     }
     fSinkStream.SetRightMargin (fCurrentContext.fRightMargin = realMargin);
 }
 
-void SinkStreamDestination::SetSpaceBefore (Led_TWIPS tx)
+void SinkStreamDestination::SetSpaceBefore (TWIPS tx)
 {
     AboutToChange ();
     if (fCurrentContext.fSpaceBefore != tx) {
@@ -829,7 +829,7 @@ void SinkStreamDestination::SetSpaceBefore (Led_TWIPS tx)
     }
 }
 
-void SinkStreamDestination::SetSpaceAfter (Led_TWIPS tx)
+void SinkStreamDestination::SetSpaceAfter (TWIPS tx)
 {
     AboutToChange ();
     if (fCurrentContext.fSpaceAfter != tx) {
@@ -838,7 +838,7 @@ void SinkStreamDestination::SetSpaceAfter (Led_TWIPS tx)
     }
 }
 
-void SinkStreamDestination::SetSpaceBetweenLines (Led_Coordinate sl)
+void SinkStreamDestination::SetSpaceBetweenLines (Coordinate sl)
 {
     AboutToChange ();
     if (fCurrentContext.fSpaceBetweenLines != sl) {
@@ -940,7 +940,7 @@ void SinkStreamDestination::SetTableBorderColor (Led_Color c)
     fSinkStream.SetTableBorderColor (c);
 }
 
-void SinkStreamDestination::SetCellX (Led_TWIPS cellx)
+void SinkStreamDestination::SetCellX (TWIPS cellx)
 {
     AboutToChange ();
     /*
@@ -950,7 +950,7 @@ void SinkStreamDestination::SetCellX (Led_TWIPS cellx)
         /*
          *  The cellx value specifies the ENDPOINT of the cell, and we prefer to keep track of the WIDTH of each cell.
          */
-        Led_TWIPS sub = Led_TWIPS (0);
+        TWIPS sub = TWIPS (0);
         for (auto i = fThisRow.fCellInfosForThisRow.begin (); i != fThisRow.fCellInfosForThisRow.end (); ++i) {
             sub += (*i).f_cellx;
         }
@@ -974,53 +974,53 @@ void SinkStreamDestination::Call_trowd ()
     fThisRow      = RowInfo ();  // ditto
 }
 
-void SinkStreamDestination::Set_trleft (Led_TWIPS t)
+void SinkStreamDestination::Set_trleft (TWIPS t)
 {
     fThisRow.f_trleft = t;
 }
 
-void SinkStreamDestination::SetDefaultCellMarginsForRow_top (Led_TWIPS t)
+void SinkStreamDestination::SetDefaultCellMarginsForRow_top (TWIPS t)
 {
     fThisRow.fDefaultCellMargins.top = t;
 }
 
-void SinkStreamDestination::SetDefaultCellMarginsForRow_left (Led_TWIPS t)
+void SinkStreamDestination::SetDefaultCellMarginsForRow_left (TWIPS t)
 {
     fThisRow.fDefaultCellMargins.left = t;
 }
 
-void SinkStreamDestination::SetDefaultCellMarginsForRow_bottom (Led_TWIPS t)
+void SinkStreamDestination::SetDefaultCellMarginsForRow_bottom (TWIPS t)
 {
     fThisRow.fDefaultCellMargins.bottom = t;
 }
 
-void SinkStreamDestination::SetDefaultCellMarginsForRow_right (Led_TWIPS t)
+void SinkStreamDestination::SetDefaultCellMarginsForRow_right (TWIPS t)
 {
     fThisRow.fDefaultCellMargins.right = t;
 }
 
-void SinkStreamDestination::SetDefaultCellSpacingForRow_top (Led_TWIPS t)
+void SinkStreamDestination::SetDefaultCellSpacingForRow_top (TWIPS t)
 {
     // Because value written is only half real spacing - See RTF 1.7 spec
-    fThisRow.fDefaultCellSpacing.top = Led_TWIPS (t * 2);
+    fThisRow.fDefaultCellSpacing.top = TWIPS (t * 2);
 }
 
-void SinkStreamDestination::SetDefaultCellSpacingForRow_left (Led_TWIPS t)
+void SinkStreamDestination::SetDefaultCellSpacingForRow_left (TWIPS t)
 {
     // Because value written is only half real spacing - See RTF 1.7 spec
-    fThisRow.fDefaultCellSpacing.left = Led_TWIPS (t * 2);
+    fThisRow.fDefaultCellSpacing.left = TWIPS (t * 2);
 }
 
-void SinkStreamDestination::SetDefaultCellSpacingForRow_bottom (Led_TWIPS t)
+void SinkStreamDestination::SetDefaultCellSpacingForRow_bottom (TWIPS t)
 {
     // Because value written is only half real spacing - See RTF 1.7 spec
-    fThisRow.fDefaultCellSpacing.bottom = Led_TWIPS (t * 2);
+    fThisRow.fDefaultCellSpacing.bottom = TWIPS (t * 2);
 }
 
-void SinkStreamDestination::SetDefaultCellSpacingForRow_right (Led_TWIPS t)
+void SinkStreamDestination::SetDefaultCellSpacingForRow_right (TWIPS t)
 {
     // Because value written is only half real spacing - See RTF 1.7 spec
-    fThisRow.fDefaultCellSpacing.right = Led_TWIPS (t * 2);
+    fThisRow.fDefaultCellSpacing.right = TWIPS (t * 2);
 }
 
 void SinkStreamDestination::AssureTableOpen ()
@@ -1035,10 +1035,10 @@ void SinkStreamDestination::DoStartRow ()
 {
     fSinkStream.StartTableRow ();
     {
-        vector<Led_TWIPS> cellWidths;
+        vector<TWIPS> cellWidths;
         for (auto i = fThisRow.fCellInfosForThisRow.begin (); i != fThisRow.fCellInfosForThisRow.end (); ++i) {
-            const Led_TWIPS kMinWidth = Led_TWIPS (0);
-            Led_TWIPS       thisCellW = (*i).f_cellx;
+            const TWIPS kMinWidth = TWIPS (0);
+            TWIPS       thisCellW = (*i).f_cellx;
             if (i == fThisRow.fCellInfosForThisRow.begin ()) {
                 thisCellW -= fThisRow.f_trleft;
             }
@@ -1046,7 +1046,7 @@ void SinkStreamDestination::DoStartRow ()
             // This value of 3/2 * LHS is somewhat empirically derived from the output of MS Word XP. Its really quite
             // hadly documented - the relationship between cell spacing and cellx values.
             //      LGP 2003-05-01 - SPR#1396 (now corresponding change in writer)
-            thisCellW -= Led_TWIPS (3 * fThisRow.fDefaultCellSpacing.left / 2);
+            thisCellW -= TWIPS (3 * fThisRow.fDefaultCellSpacing.left / 2);
 
             if (thisCellW < kMinWidth) {
                 thisCellW = kMinWidth;
@@ -1242,7 +1242,7 @@ void SinkStreamDestination::FlushParaEndings () const
  ********************************************************************************
  */
 SinkStreamDestination::CellInfo::CellInfo ()
-    : f_cellx (Led_TWIPS (0))
+    : f_cellx (TWIPS (0))
     , f_clcbpat (Led_Color::kWhite)
     , fColSpan (1)
 {
@@ -1254,10 +1254,10 @@ SinkStreamDestination::CellInfo::CellInfo ()
  ********************************************************************************
  */
 SinkStreamDestination::RowInfo::RowInfo ()
-    : f_trrh (Led_TWIPS (0))
-    , f_trleft (Led_TWIPS (0))
-    , fDefaultCellMargins (Led_TWIPS (0), Led_TWIPS (0), Led_TWIPS (0), Led_TWIPS (0))
-    , fDefaultCellSpacing (Led_TWIPS (0), Led_TWIPS (0), Led_TWIPS (0), Led_TWIPS (0))
+    : f_trrh (TWIPS (0))
+    , f_trleft (TWIPS (0))
+    , fDefaultCellMargins (TWIPS (0), TWIPS (0), TWIPS (0), TWIPS (0))
+    , fDefaultCellSpacing (TWIPS (0), TWIPS (0), TWIPS (0), TWIPS (0))
     , fCellInfosForThisRow ()
 {
 }
@@ -2011,7 +2011,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_cellx (ReaderContext& readerConte
     if (not controlWord.fHasArg) {
         HandleBadlyFormattedInput (true); // must have a numeric code page argument
     }
-    readerContext.GetDestination ().SetCellX (Led_TWIPS (controlWord.fValue));
+    readerContext.GetDestination ().SetCellX (TWIPS (controlWord.fValue));
     return false;
 }
 
@@ -2222,7 +2222,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_deftab (ReaderContext& /*readerCo
         HandleBadlyFormattedInput ();
         return false;
     }
-    Led_TWIPS tsl = Led_TWIPS (controlWord.fValue);
+    TWIPS tsl = TWIPS (controlWord.fValue);
     if (tsl == 0) {
         HandleBadlyFormattedInput ();
         return false;
@@ -2269,7 +2269,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_fi (ReaderContext& readerContext,
         HandleBadlyFormattedInput (); // must have a numeric argument
     }
     else {
-        readerContext.GetDestination ().SetFirstIndent (readerContext.GetCurrentGroupContext ()->fDestinationContext.fFirstIndent = Led_TWIPS (controlWord.fValue));
+        readerContext.GetDestination ().SetFirstIndent (readerContext.GetCurrentGroupContext ()->fDestinationContext.fFirstIndent = TWIPS (controlWord.fValue));
     }
     return false;
 }
@@ -2387,7 +2387,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_li (ReaderContext& readerContext,
         HandleBadlyFormattedInput (); // must have a numeric argument
     }
     else {
-        readerContext.GetDestination ().SetLeftMargin (readerContext.GetCurrentGroupContext ()->fDestinationContext.fLeftMargin = Led_TWIPS (controlWord.fValue));
+        readerContext.GetDestination ().SetLeftMargin (readerContext.GetCurrentGroupContext ()->fDestinationContext.fLeftMargin = TWIPS (controlWord.fValue));
     }
     return false;
 }
@@ -2435,16 +2435,16 @@ bool StyledTextIOReader_RTF::HandleControlWord_margX (ReaderContext& /*readerCon
     AssertNotNull (fRTFInfo);
     switch (controlWord.fWord) {
         case RTFIO::eControlAtom_margt: {
-            fRTFInfo->fDefaultMarginTop = Led_TWIPS (controlWord.fValue);
+            fRTFInfo->fDefaultMarginTop = TWIPS (controlWord.fValue);
         } break;
         case RTFIO::eControlAtom_margb: {
-            fRTFInfo->fDefaultMarginBottom = Led_TWIPS (controlWord.fValue);
+            fRTFInfo->fDefaultMarginBottom = TWIPS (controlWord.fValue);
         } break;
         case RTFIO::eControlAtom_margl: {
-            fRTFInfo->fDefaultMarginLeft = Led_TWIPS (controlWord.fValue);
+            fRTFInfo->fDefaultMarginLeft = TWIPS (controlWord.fValue);
         } break;
         case RTFIO::eControlAtom_margr: {
-            fRTFInfo->fDefaultMarginRight = Led_TWIPS (controlWord.fValue);
+            fRTFInfo->fDefaultMarginRight = TWIPS (controlWord.fValue);
         } break;
         default: {
             Assert (false);
@@ -2468,10 +2468,10 @@ bool StyledTextIOReader_RTF::HandleControlWord_paperX (ReaderContext& /*readerCo
     AssertNotNull (fRTFInfo);
     switch (controlWord.fWord) {
         case RTFIO::eControlAtom_paperh: {
-            fRTFInfo->fDefaultPaperSize.v = Led_TWIPS (controlWord.fValue);
+            fRTFInfo->fDefaultPaperSize.v = TWIPS (controlWord.fValue);
         } break;
         case RTFIO::eControlAtom_paperw: {
-            fRTFInfo->fDefaultPaperSize.h = Led_TWIPS (controlWord.fValue);
+            fRTFInfo->fDefaultPaperSize.h = TWIPS (controlWord.fValue);
         } break;
         default: {
             Assert (false);
@@ -2498,13 +2498,13 @@ bool StyledTextIOReader_RTF::HandleControlWord_object (ReaderContext& readerCont
      *  that in. If its \ledprivateobjectembeddingformat, then we will try to read that. Anything else, we don't understand, and
      *  we will try to read it is an 'UnknownRTFEmbedding'.
      */
-    bool            isOLEEmbedding        = false;
-    bool            isPrivateLedEmbedding = false;
-    Led_TWIPS_Point shownSize             = Led_TWIPS_Point (Led_TWIPS (0), Led_TWIPS (0));
-    vector<char>    objData;
-    float           scaleX        = 1.0f;
-    float           scaleY        = 1.0f;
-    size_t          resultFoundAt = size_t (-1);
+    bool         isOLEEmbedding        = false;
+    bool         isPrivateLedEmbedding = false;
+    TWIPS_Point  shownSize             = TWIPS_Point (TWIPS (0), TWIPS (0));
+    vector<char> objData;
+    float        scaleX        = 1.0f;
+    float        scaleY        = 1.0f;
+    size_t       resultFoundAt = size_t (-1);
 
     while (true) {
         // Look for either control words, or groups
@@ -2526,14 +2526,14 @@ bool StyledTextIOReader_RTF::HandleControlWord_object (ReaderContext& readerCont
                             HandleBadlyFormattedInput ();
                             break;
                         };
-                        shownSize.v = Led_TWIPS (cw.fValue);
+                        shownSize.v = TWIPS (cw.fValue);
                         break;
                     case RTFIO::eControlAtom_objw:
                         if (not cw.fHasArg) {
                             HandleBadlyFormattedInput ();
                             break;
                         };
-                        shownSize.h = Led_TWIPS (cw.fValue);
+                        shownSize.h = TWIPS (cw.fValue);
                         break;
                     case RTFIO::eControlAtom_objscalex:
                         if (not cw.fHasArg) {
@@ -2612,9 +2612,9 @@ bool StyledTextIOReader_RTF::HandleControlWord_object (ReaderContext& readerCont
                         if (SearchForwardFor ("\\pict", s.length ())) {
                             ControlWord cw = ReadControlWord ();
                             if (cw.fWord == RTFIO::eControlAtom_pict) {
-                                Led_TWIPS_Point bmSize = Led_TWIPS_Point (Led_TWIPS (0), Led_TWIPS (0));
-                                vector<char>    pictureData;
-                                ImageFormat     imageFormat = eDefaultImageFormat;
+                                TWIPS_Point  bmSize = TWIPS_Point (TWIPS (0), TWIPS (0));
+                                vector<char> pictureData;
+                                ImageFormat  imageFormat = eDefaultImageFormat;
                                 ReadTopLevelPictData (&shownSize, &imageFormat, &bmSize, &pictureData);
                                 /*
                                  *  For now - simply convert whatever sort of data it is to DIB data, and then create a DIB embedding.
@@ -2675,11 +2675,11 @@ bool StyledTextIOReader_RTF::HandleControlWord_pard (ReaderContext& readerContex
     // Assign to current context AND destination at the same time...
     readerContext.GetDestination ().SetTabStops (readerContext.GetCurrentGroupContext ()->fDestinationContext.fTabStops = TextImager::StandardTabStopList (GetRTFInfo ().GetDefaultTabStop ()));
     readerContext.GetDestination ().SetJustification (readerContext.GetCurrentGroupContext ()->fDestinationContext.fJustification = eLeftJustify);
-    readerContext.GetDestination ().SetFirstIndent (readerContext.GetCurrentGroupContext ()->fDestinationContext.fFirstIndent = Led_TWIPS (0));
-    readerContext.GetDestination ().SetLeftMargin (readerContext.GetCurrentGroupContext ()->fDestinationContext.fLeftMargin = Led_TWIPS (0));
-    readerContext.GetDestination ().SetRightMargin (readerContext.GetCurrentGroupContext ()->fDestinationContext.fRightMargin = Led_TWIPS (0));
-    readerContext.GetDestination ().SetSpaceBefore (readerContext.GetCurrentGroupContext ()->fDestinationContext.fSpaceBefore = Led_TWIPS (0));
-    readerContext.GetDestination ().SetSpaceAfter (readerContext.GetCurrentGroupContext ()->fDestinationContext.fSpaceAfter = Led_TWIPS (0));
+    readerContext.GetDestination ().SetFirstIndent (readerContext.GetCurrentGroupContext ()->fDestinationContext.fFirstIndent = TWIPS (0));
+    readerContext.GetDestination ().SetLeftMargin (readerContext.GetCurrentGroupContext ()->fDestinationContext.fLeftMargin = TWIPS (0));
+    readerContext.GetDestination ().SetRightMargin (readerContext.GetCurrentGroupContext ()->fDestinationContext.fRightMargin = TWIPS (0));
+    readerContext.GetDestination ().SetSpaceBefore (readerContext.GetCurrentGroupContext ()->fDestinationContext.fSpaceBefore = TWIPS (0));
+    readerContext.GetDestination ().SetSpaceAfter (readerContext.GetCurrentGroupContext ()->fDestinationContext.fSpaceAfter = TWIPS (0));
     readerContext.GetDestination ().SetSpaceBetweenLines (readerContext.GetCurrentGroupContext ()->fDestinationContext.fSpaceBetweenLines = 1000);
     readerContext.GetDestination ().SetSpaceBetweenLinesMult (readerContext.GetCurrentGroupContext ()->fDestinationContext.fSpaceBetweenLinesMult = true);
     readerContext.GetDestination ().SetListStyle (readerContext.GetCurrentGroupContext ()->fDestinationContext.fListStyle = eListStyle_None);
@@ -2709,10 +2709,10 @@ bool StyledTextIOReader_RTF::HandleControlWord_pict (ReaderContext& readerContex
 {
     CheckIfAboutToStartBody (readerContext);
 
-    Led_TWIPS_Point shownSize = Led_TWIPS_Point (Led_TWIPS (0), Led_TWIPS (0));
-    Led_TWIPS_Point bmSize    = Led_TWIPS_Point (Led_TWIPS (0), Led_TWIPS (0));
-    vector<char>    objData;
-    ImageFormat     imageFormat = eDefaultImageFormat;
+    TWIPS_Point  shownSize = TWIPS_Point (TWIPS (0), TWIPS (0));
+    TWIPS_Point  bmSize    = TWIPS_Point (TWIPS (0), TWIPS (0));
+    vector<char> objData;
+    ImageFormat  imageFormat = eDefaultImageFormat;
     ReadTopLevelPictData (&shownSize, &imageFormat, &bmSize, &objData);
 
     /*
@@ -2789,7 +2789,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_ri (ReaderContext& readerContext,
         HandleBadlyFormattedInput (); // must have a numeric argument
     }
     else {
-        readerContext.GetDestination ().SetRightMargin (readerContext.GetCurrentGroupContext ()->fDestinationContext.fRightMargin = Led_TWIPS (controlWord.fValue));
+        readerContext.GetDestination ().SetRightMargin (readerContext.GetCurrentGroupContext ()->fDestinationContext.fRightMargin = TWIPS (controlWord.fValue));
     }
     return false;
 }
@@ -2813,7 +2813,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_sa (ReaderContext& readerContext,
         HandleBadlyFormattedInput (); // must have a numeric argument
     }
     else {
-        readerContext.GetDestination ().SetSpaceAfter (readerContext.GetCurrentGroupContext ()->fDestinationContext.fSpaceAfter = Led_TWIPS (controlWord.fValue));
+        readerContext.GetDestination ().SetSpaceAfter (readerContext.GetCurrentGroupContext ()->fDestinationContext.fSpaceAfter = TWIPS (controlWord.fValue));
     }
     return false;
 }
@@ -2824,7 +2824,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_sb (ReaderContext& readerContext,
         HandleBadlyFormattedInput (); // must have a numeric argument
     }
     else {
-        readerContext.GetDestination ().SetSpaceBefore (readerContext.GetCurrentGroupContext ()->fDestinationContext.fSpaceBefore = Led_TWIPS (controlWord.fValue));
+        readerContext.GetDestination ().SetSpaceBefore (readerContext.GetCurrentGroupContext ()->fDestinationContext.fSpaceBefore = TWIPS (controlWord.fValue));
     }
     return false;
 }
@@ -2887,7 +2887,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_trleft (ReaderContext& readerCont
     if (not controlWord.fHasArg) {
         HandleBadlyFormattedInput (); // must have a numeric color-number argument
     }
-    readerContext.GetDestination ().Set_trleft (Led_TWIPS (controlWord.fValue));
+    readerContext.GetDestination ().Set_trleft (TWIPS (controlWord.fValue));
     return false;
 }
 
@@ -2897,7 +2897,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_trgaph (ReaderContext& readerCont
     if (not controlWord.fHasArg) {
         HandleBadlyFormattedInput (); // must have a numeric color-number argument
     }
-    Led_TWIPS margins = Led_TWIPS (controlWord.fValue);
+    TWIPS margins = TWIPS (controlWord.fValue);
     readerContext.GetDestination ().SetDefaultCellMarginsForRow_top (margins);
     readerContext.GetDestination ().SetDefaultCellMarginsForRow_left (margins);
     readerContext.GetDestination ().SetDefaultCellMarginsForRow_bottom (margins);
@@ -2918,7 +2918,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_trpaddX (ReaderContext& readerCon
     if (not controlWord.fHasArg) {
         HandleBadlyFormattedInput (); // must have a numeric color-number argument
     }
-    Led_TWIPS margin = Led_TWIPS (controlWord.fValue);
+    TWIPS margin = TWIPS (controlWord.fValue);
     switch (controlWord.fWord) {
         case RTFIO::eControlAtom_trpaddb:
             readerContext.GetDestination ().SetDefaultCellMarginsForRow_bottom (margin);
@@ -2944,7 +2944,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_trspdX (ReaderContext& readerCont
     if (not controlWord.fHasArg) {
         HandleBadlyFormattedInput (); // must have a numeric color-number argument
     }
-    Led_TWIPS margin = Led_TWIPS (controlWord.fValue);
+    TWIPS margin = TWIPS (controlWord.fValue);
     switch (controlWord.fWord) {
         case RTFIO::eControlAtom_trspdb:
             readerContext.GetDestination ().SetDefaultCellSpacingForRow_bottom (margin);
@@ -2971,17 +2971,17 @@ bool StyledTextIOReader_RTF::HandleControlWord_tx (ReaderContext& readerContext,
     }
     else {
         TextImager::StandardTabStopList* curTabs  = &readerContext.GetCurrentGroupContext ()->fDestinationContext.fTabStops;
-        Led_Coordinate                   lastStop = 0;
+        Coordinate                       lastStop = 0;
         for (auto i = curTabs->fTabStops.begin (); i != curTabs->fTabStops.end (); ++i) {
             lastStop += *i;
         }
-        Led_TWIPS newStop = Led_TWIPS (controlWord.fValue);
+        TWIPS newStop = TWIPS (controlWord.fValue);
         if (newStop <= lastStop) {
             HandleBadlyFormattedInput ();
             return false; // Allow this to be a recoverable error by ignoring it... LGP 2000-09-20
         }
         Assert (newStop > lastStop);
-        curTabs->fTabStops.push_back (Led_TWIPS (newStop - lastStop));
+        curTabs->fTabStops.push_back (TWIPS (newStop - lastStop));
         readerContext.GetDestination ().SetTabStops (*curTabs);
     }
     return false;
@@ -3439,7 +3439,7 @@ void StyledTextIOReader_RTF::ReadObjData (vector<char>* data)
     ConsumeNextChar (); // Eat terminating brace
 }
 
-void StyledTextIOReader_RTF::ConstructOLEEmebddingFromRTFInfo ([[maybe_unused]] ReaderContext& readerContext, [[maybe_unused]] Led_TWIPS_Point size, [[maybe_unused]] size_t nBytes, [[maybe_unused]] const void* data)
+void StyledTextIOReader_RTF::ConstructOLEEmebddingFromRTFInfo ([[maybe_unused]] ReaderContext& readerContext, [[maybe_unused]] TWIPS_Point size, [[maybe_unused]] size_t nBytes, [[maybe_unused]] const void* data)
 {
 #if qPlatform_Windows
     using RTFOLEEmbedding                                                   = RTFIO::RTFOLEEmbedding;
@@ -3517,19 +3517,19 @@ void StyledTextIOReader_RTF::ReadPictData (vector<char>* data)
 @METHOD:        StyledTextIOReader_RTF::ReadTopLevelPictData
 @DESCRIPTION:   <p>Read in the data from a \pict group.</p>
 */
-void StyledTextIOReader_RTF::ReadTopLevelPictData (Led_TWIPS_Point* shownSize, ImageFormat* imageFormat, Led_TWIPS_Point* bmSize, vector<char>* objData)
+void StyledTextIOReader_RTF::ReadTopLevelPictData (TWIPS_Point* shownSize, ImageFormat* imageFormat, TWIPS_Point* bmSize, vector<char>* objData)
 {
     using UnknownRTFEmbedding = RTFIO::UnknownRTFEmbedding;
     using ControlWord         = RTFIO::ControlWord;
 
-    *imageFormat     = eDefaultImageFormat;
-    *shownSize       = Led_TWIPS_Point (Led_TWIPS (0), Led_TWIPS (0));
-    *bmSize          = Led_TWIPS_Point (Led_TWIPS (0), Led_TWIPS (0));
-    *objData         = vector<char> ();
-    float     scaleX = 1.0f;
-    float     scaleY = 1.0f;
-    Led_TWIPS picH   = Led_TWIPS (0);
-    Led_TWIPS picV   = Led_TWIPS (0);
+    *imageFormat = eDefaultImageFormat;
+    *shownSize   = TWIPS_Point (TWIPS (0), TWIPS (0));
+    *bmSize      = TWIPS_Point (TWIPS (0), TWIPS (0));
+    *objData     = vector<char> ();
+    float scaleX = 1.0f;
+    float scaleY = 1.0f;
+    TWIPS picH   = TWIPS (0);
+    TWIPS picV   = TWIPS (0);
 
     while (true) {
         switch (PeekNextChar ()) {
@@ -3565,28 +3565,28 @@ void StyledTextIOReader_RTF::ReadTopLevelPictData (Led_TWIPS_Point* shownSize, I
                             HandleBadlyFormattedInput ();
                             break;
                         };
-                        bmSize->h = Led_TWIPS (cw.fValue);
+                        bmSize->h = TWIPS (cw.fValue);
                         break;
                     case RTFIO::eControlAtom_pich:
                         if (not cw.fHasArg) {
                             HandleBadlyFormattedInput ();
                             break;
                         };
-                        bmSize->v = Led_TWIPS (cw.fValue);
+                        bmSize->v = TWIPS (cw.fValue);
                         break;
                     case RTFIO::eControlAtom_picwgoal:
                         if (not cw.fHasArg) {
                             HandleBadlyFormattedInput ();
                             break;
                         };
-                        shownSize->h = Led_TWIPS (cw.fValue);
+                        shownSize->h = TWIPS (cw.fValue);
                         break;
                     case RTFIO::eControlAtom_pichgoal:
                         if (not cw.fHasArg) {
                             HandleBadlyFormattedInput ();
                             break;
                         };
-                        shownSize->v = Led_TWIPS (cw.fValue);
+                        shownSize->v = TWIPS (cw.fValue);
                         break;
                     case RTFIO::eControlAtom_picscalex:
                         if (not cw.fHasArg) {
@@ -3643,7 +3643,7 @@ void StyledTextIOReader_RTF::ReadTopLevelPictData (Led_TWIPS_Point* shownSize, I
 @DESCRIPTION:   <p>Take the given size and data parameters, and consturct a new Led_DIB (which must be freed by caller using delete()). Returns nullptr
     if unable to convert the given format.</p>
 */
-Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromData ([[maybe_unused]] Led_TWIPS_Point shownSize, ImageFormat imageFormat, [[maybe_unused]] Led_TWIPS_Point bmSize, size_t nBytes, const void* data)
+Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromData ([[maybe_unused]] TWIPS_Point shownSize, ImageFormat imageFormat, [[maybe_unused]] TWIPS_Point bmSize, size_t nBytes, const void* data)
 {
     if (data == nullptr) {
         HandleBadlyFormattedInput ();
@@ -3697,7 +3697,7 @@ Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromData ([[maybe_unused]] Led_TWIP
             size specified in the metafile itself.</p>
                 <p>This routine is only available if @'qPlatform_Windows'.</p>
 */
-Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromEMFHelper (Led_TWIPS_Point shownSize, [[maybe_unused]] Led_TWIPS_Point bmSize, const HENHMETAFILE hMF)
+Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromEMFHelper (TWIPS_Point shownSize, [[maybe_unused]] TWIPS_Point bmSize, const HENHMETAFILE hMF)
 {
     RequireNotNull (hMF);
 
@@ -3707,8 +3707,8 @@ Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromEMFHelper (Led_TWIPS_Point show
     // Don't know best way to get a DIB from a metafile - but this way I HOPE will at least WORK!
     Led_Tablet_ screenDC = (::GetWindowDC (nullptr)); // not sure what DC to use to convert MetaFile to DIB - but this seems like a decent guess
 
-    Led_Distance hSize     = screenDC.CvtFromTWIPSH (shownSize.h);
-    Led_Distance vSize     = screenDC.CvtFromTWIPSV (shownSize.v);
+    DistanceType hSize     = screenDC.CvtFromTWIPSH (shownSize.h);
+    DistanceType vSize     = screenDC.CvtFromTWIPSV (shownSize.v);
     Led_Rect     imageRect = Led_Rect (0, 0, vSize, hSize);
 
     Led_Tablet_ memDC;
@@ -4448,42 +4448,42 @@ void StyledTextIOWriter_RTF::WriteStartParagraph (WriterContext& writerContext)
     TextImager::StandardTabStopList tabStops = writerContext.GetSrcStream ().GetStandardTabStopList ();
     // assume we only save the specified tabstops, and that the default is already saved per-doc
     // since RTF1.4 doesn't seem to have a per-para 'deftabstop' value
-    Led_TWIPS tabSoFar = Led_TWIPS (0);
+    TWIPS tabSoFar = TWIPS (0);
     for (size_t i = 0; i < tabStops.fTabStops.size (); ++i) {
         tabSoFar += tabStops.fTabStops[i];
         WriteTagNValue ("tx", tabSoFar);
     }
 
     {
-        Led_TWIPS fi = writerContext.GetSrcStream ().GetFirstIndent ();
+        TWIPS fi = writerContext.GetSrcStream ().GetFirstIndent ();
         if (fi != 0) { // don't bother writing if default value
             WriteTagNValue ("fi", fi);
         }
     }
 
     {
-        Led_TWIPS lhs = Led_TWIPS (0);
-        Led_TWIPS rhs = Led_TWIPS (0);
+        TWIPS lhs = TWIPS (0);
+        TWIPS rhs = TWIPS (0);
         writerContext.GetSrcStream ().GetMargins (&lhs, &rhs);
         if (lhs != 0) { // don't bother writing if default value
             WriteTagNValue ("li", lhs);
         }
 
-        Led_TWIPS effectiveDrawingWidth = fRTFInfo == nullptr ? RTFInfo ().GetEffectiveDrawingWidth () : fRTFInfo->GetEffectiveDrawingWidth ();
-        Led_TWIPS rhsRTFMarginInTWIPS   = Led_TWIPS (effectiveDrawingWidth - rhs);
+        TWIPS effectiveDrawingWidth = fRTFInfo == nullptr ? RTFInfo ().GetEffectiveDrawingWidth () : fRTFInfo->GetEffectiveDrawingWidth ();
+        TWIPS rhsRTFMarginInTWIPS   = TWIPS (effectiveDrawingWidth - rhs);
         if (rhsRTFMarginInTWIPS != 0) { // don't bother writing if default value
             WriteTagNValue ("ri", rhsRTFMarginInTWIPS);
         }
     }
 
     {
-        Led_TWIPS sb = writerContext.GetSrcStream ().GetSpaceBefore ();
+        TWIPS sb = writerContext.GetSrcStream ().GetSpaceBefore ();
         if (sb != 0) {
             WriteTagNValue ("sb", sb);
         }
     }
     {
-        Led_TWIPS sa = writerContext.GetSrcStream ().GetSpaceAfter ();
+        TWIPS sa = writerContext.GetSrcStream ().GetSpaceAfter ();
         if (sa != 0) {
             WriteTagNValue ("sa", sa);
         }
@@ -4491,8 +4491,8 @@ void StyledTextIOWriter_RTF::WriteStartParagraph (WriterContext& writerContext)
     {
         Led_LineSpacing sl = writerContext.GetSrcStream ().GetLineSpacing ();
         if (sl.fRule != Led_LineSpacing::eSingleSpace) {
-            Led_Coordinate rtfsl = 1000;
-            bool           multi = true;
+            Coordinate rtfsl = 1000;
+            bool       multi = true;
             mkRTFValues_From_LineSpacing (sl, &rtfsl, &multi);
             if (rtfsl != 1000) {
                 WriteTagNValue ("sl", rtfsl);
@@ -4534,8 +4534,8 @@ void StyledTextIOWriter_RTF::WriteTable (WriterContext& writerContext, Table* ta
     for (size_t r = 0; r < rows; ++r) {
         WriteTag ("trowd");
 
-        Led_TWIPS_Rect cellMargins = table->GetDefaultCellMarginsForRow (r);
-        Led_TWIPS_Rect cellSpacing = table->GetDefaultCellSpacingForRow (r);
+        TWIPS_Rect cellMargins = table->GetDefaultCellMarginsForRow (r);
+        TWIPS_Rect cellSpacing = table->GetDefaultCellSpacingForRow (r);
         {
             WriteTagNValue ("trgaph", (cellMargins.top + cellMargins.left + cellMargins.bottom + cellMargins.right) / 4);
         }
@@ -4582,14 +4582,14 @@ void StyledTextIOWriter_RTF::WriteTable (WriterContext& writerContext, Table* ta
         size_t columns = cellInfos.size ();
         //<celldef>s
         {
-            Led_TWIPS cellxSoFar = Led_TWIPS (0);
+            TWIPS cellxSoFar = TWIPS (0);
             for (vector<CellInfo>::const_iterator i = cellInfos.begin (); i != cellInfos.end (); ++i) {
                 WriteTagNValue ("clcbpat", static_cast<int> (fColorTable->LookupColor (i->f_clcbpat)));
 
                 // This value of 3/2 * LHS is somewhat empirically derived from the output of MS Word XP. Its really quite
                 // hadly documented - the relationship between cell spacing and cellx values.
                 //      LGP 2003-05-01 - SPR#1396 (now corresponding change in reader)
-                Led_TWIPS cellWidthIncludingSpacing = (*i).f_cellx + Led_TWIPS (3 * cellSpacing.left / 2);
+                TWIPS cellWidthIncludingSpacing = (*i).f_cellx + TWIPS (3 * cellSpacing.left / 2);
 
                 cellxSoFar += cellWidthIncludingSpacing;
                 WriteTagNValue ("cellx", cellxSoFar); // NB: cellx marks the END of a <celldef> in the RTF 1.7 spec

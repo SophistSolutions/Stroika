@@ -1703,7 +1703,7 @@ void ActiveLedItControl::Layout ()
 {
     IdleManager::NonIdleContext nonIdleContext;
     if (m_hWnd != NULL) {
-        Led_Distance toolbarHeightUsed = 0;
+        DistanceType toolbarHeightUsed = 0;
 
         CRect cr;
         GetClientRect (&cr);
@@ -1881,8 +1881,8 @@ int ActiveLedItControl::OLE_GetWindowMarginTop ()
 void ActiveLedItControl::OLE_SetWindowMarginTop (int windowMarginTop)
 {
     try {
-        Led_TWIPS_Rect margRect = fEditor.GetDefaultWindowMargins ();
-        margRect.top            = Led_TWIPS (windowMarginTop);
+        TWIPS_Rect margRect = fEditor.GetDefaultWindowMargins ();
+        margRect.top        = TWIPS (windowMarginTop);
         fEditor.SetDefaultWindowMargins (margRect);
         Invalidate ();
         fEditor.Invalidate ();
@@ -1898,8 +1898,8 @@ int ActiveLedItControl::OLE_GetWindowMarginLeft ()
 void ActiveLedItControl::OLE_SetWindowMarginLeft (int windowMarginLeft)
 {
     try {
-        Led_TWIPS_Rect margRect = fEditor.GetDefaultWindowMargins ();
-        margRect.left           = Led_TWIPS (windowMarginLeft);
+        TWIPS_Rect margRect = fEditor.GetDefaultWindowMargins ();
+        margRect.left       = TWIPS (windowMarginLeft);
         fEditor.SetDefaultWindowMargins (margRect);
         Invalidate ();
         fEditor.Invalidate ();
@@ -1915,8 +1915,8 @@ int ActiveLedItControl::OLE_GetWindowMarginBottom ()
 void ActiveLedItControl::OLE_SetWindowMarginBottom (int windowMarginBottom)
 {
     try {
-        Led_TWIPS_Rect margRect = fEditor.GetDefaultWindowMargins ();
-        margRect.SetBottom (Led_TWIPS (windowMarginBottom));
+        TWIPS_Rect margRect = fEditor.GetDefaultWindowMargins ();
+        margRect.SetBottom (TWIPS (windowMarginBottom));
         fEditor.SetDefaultWindowMargins (margRect);
         Invalidate ();
         fEditor.Invalidate ();
@@ -1932,8 +1932,8 @@ int ActiveLedItControl::OLE_GetWindowMarginRight ()
 void ActiveLedItControl::OLE_SetWindowMarginRight (int windowMarginRight)
 {
     try {
-        Led_TWIPS_Rect margRect = fEditor.GetDefaultWindowMargins ();
-        margRect.SetRight (Led_TWIPS (windowMarginRight));
+        TWIPS_Rect margRect = fEditor.GetDefaultWindowMargins ();
+        margRect.SetRight (TWIPS (windowMarginRight));
         fEditor.SetDefaultWindowMargins (margRect);
         Invalidate ();
         fEditor.Invalidate ();
@@ -1949,8 +1949,8 @@ int ActiveLedItControl::OLE_GetPrintMarginTop ()
 void ActiveLedItControl::OLE_SetPrintMarginTop (int printMarginTop)
 {
     try {
-        Led_TWIPS_Rect margRect = fEditor.GetPrintMargins ();
-        margRect.SetTop (Led_TWIPS (printMarginTop));
+        TWIPS_Rect margRect = fEditor.GetPrintMargins ();
+        margRect.SetTop (TWIPS (printMarginTop));
         fEditor.SetPrintMargins (margRect);
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
@@ -1964,8 +1964,8 @@ int ActiveLedItControl::OLE_GetPrintMarginLeft ()
 void ActiveLedItControl::OLE_SetPrintMarginLeft (int printMarginLeft)
 {
     try {
-        Led_TWIPS_Rect margRect = fEditor.GetPrintMargins ();
-        margRect.SetLeft (Led_TWIPS (printMarginLeft));
+        TWIPS_Rect margRect = fEditor.GetPrintMargins ();
+        margRect.SetLeft (TWIPS (printMarginLeft));
         fEditor.SetPrintMargins (margRect);
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
@@ -1979,8 +1979,8 @@ int ActiveLedItControl::OLE_GetPrintMarginBottom ()
 void ActiveLedItControl::OLE_SetPrintMarginBottom (int printMarginBottom)
 {
     try {
-        Led_TWIPS_Rect margRect = fEditor.GetPrintMargins ();
-        margRect.SetBottom (Led_TWIPS (printMarginBottom));
+        TWIPS_Rect margRect = fEditor.GetPrintMargins ();
+        margRect.SetBottom (TWIPS (printMarginBottom));
         fEditor.SetPrintMargins (margRect);
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
@@ -1994,8 +1994,8 @@ int ActiveLedItControl::OLE_GetPrintMarginRight ()
 void ActiveLedItControl::OLE_SetPrintMarginRight (int printMarginRight)
 {
     try {
-        Led_TWIPS_Rect margRect = fEditor.GetPrintMargins ();
-        margRect.SetRight (Led_TWIPS (printMarginRight));
+        TWIPS_Rect margRect = fEditor.GetPrintMargins ();
+        margRect.SetRight (TWIPS (printMarginRight));
         fEditor.SetPrintMargins (margRect);
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
@@ -2226,10 +2226,10 @@ VARIANT ActiveLedItControl::GetBufferTextAsDIB ()
     Led_MFC_TabletFromCDC tabFromDC (&windowDC);
     Led_Tablet            tablet = tabFromDC;
 
-    Led_Distance rhsMargin = 0;
+    DistanceType rhsMargin = 0;
     {
         const int kRTF_SPEC_DefaultInches = 6; // HACK - see comments in SinkStreamDestination::SetRightMargin ()
-        Led_TWIPS rhsTWIPS                = Led_TWIPS (kRTF_SPEC_DefaultInches * 1440);
+        TWIPS     rhsTWIPS                = TWIPS (kRTF_SPEC_DefaultInches * 1440);
         rhsMargin                         = Led_CvtScreenPixelsFromTWIPSH (rhsTWIPS);
     }
 
@@ -2246,8 +2246,8 @@ VARIANT ActiveLedItControl::GetBufferTextAsDIB ()
             offscreenRect.bottom = fEditor.GetHeightOfRows (0, fEditor.GetRowCount ()); // make sure extends far enuf down - and then reset the WindowRect accordingly...
             fEditor.SetWindowRect (offscreenRect);
 
-            Led_Distance farthestRHSMargin = fEditor.CalculateFarthestRightMarginInWindow ();
-            if (farthestRHSMargin != static_cast<Led_Distance> (offscreenRect.GetRight ()) and farthestRHSMargin > 10) {
+            DistanceType farthestRHSMargin = fEditor.CalculateFarthestRightMarginInWindow ();
+            if (farthestRHSMargin != static_cast<DistanceType> (offscreenRect.GetRight ()) and farthestRHSMargin > 10) {
                 offscreenRect.right = farthestRHSMargin;
                 if (++nTimes > 5) {
                     // don't think this can ever happen - but in case...

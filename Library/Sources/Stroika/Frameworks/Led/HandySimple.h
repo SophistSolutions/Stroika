@@ -90,14 +90,14 @@ namespace Stroika::Frameworks::Led {
                 // Note - its CRITICAL that we shutoff offscreen bitmaps for this imager so that we don't get garbage bits
                 // from that offscreen bitmap being copied back to the original tablet.
             }
-            virtual void GetLayoutMargins (typename WORDPROCESSOR::RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const override
+            virtual void GetLayoutMargins (typename WORDPROCESSOR::RowReference row, Coordinate* lhs, Coordinate* rhs) const override
             {
                 // Make the layout right margin of each line (paragraph) equal to the windowrect. Ie, wrap to the
                 // edge of the window.
-                Led_Coordinate l = 0;
-                Led_Coordinate r = 0;
+                Coordinate l = 0;
+                Coordinate r = 0;
                 inherited::GetLayoutMargins (row, &l, &r);
-                r = max (static_cast<Led_Coordinate> (this->GetWindowRect ().GetWidth ()), l + 1);
+                r = max (static_cast<Coordinate> (this->GetWindowRect ().GetWidth ()), l + 1);
                 Ensure (r > l);
                 if (lhs != NULL) {
                     *lhs = l;

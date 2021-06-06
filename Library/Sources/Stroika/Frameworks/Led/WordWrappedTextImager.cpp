@@ -26,13 +26,13 @@ inline AdjustToValidCharIndex (const Led_tChar* text, size_t index)
 }
 #endif
 
-inline Led_Distance LookupLengthInVector (const Led_Distance* widthsVector, size_t startSoFar, size_t i)
+inline DistanceType LookupLengthInVector (const DistanceType* widthsVector, size_t startSoFar, size_t i)
 {
     AssertNotNull (widthsVector);
     if (i == 0) {
         return 0;
     }
-    Led_Distance startPointCorrection = (startSoFar == 0) ? 0 : widthsVector[startSoFar - 1];
+    DistanceType startPointCorrection = (startSoFar == 0) ? 0 : widthsVector[startSoFar - 1];
     Assert (i + startSoFar >= 1);
     return (widthsVector[i + startSoFar - 1] - startPointCorrection);
 }
@@ -78,7 +78,7 @@ void WordWrappedTextImager::FillCache (PartitionMarker* pm, PartitionElementCach
     cacheInfo.Clear ();
 
     try {
-        Memory::SmallStackBuffer<Led_Distance> distanceVector (len);
+        Memory::SmallStackBuffer<DistanceType> distanceVector (len);
         if (start != end) {
             MeasureSegmentWidth (start, end, buf, distanceVector);
         }
@@ -101,11 +101,11 @@ void WordWrappedTextImager::FillCache (PartitionMarker* pm, PartitionElementCach
                 lastTabIndex = ResetTabStops (start, buf, leftToGo, distanceVector, startSoFar);
             }
 
-            Led_Distance wrapWidth;
+            DistanceType wrapWidth;
             {
                 // NOT RIGHT - doesn't properly interpret tabstops!!! with respect to left margins!!! LGP 980908
-                Led_Coordinate lhsMargin;
-                Led_Coordinate rhsMargin;
+                Coordinate lhsMargin;
+                Coordinate rhsMargin;
                 GetLayoutMargins (RowReference (pm, cacheInfo.GetRowCount () - 1), &lhsMargin, &rhsMargin);
                 Assert (lhsMargin < rhsMargin);
                 wrapWidth = rhsMargin - lhsMargin;
@@ -124,7 +124,7 @@ void WordWrappedTextImager::FillCache (PartitionMarker* pm, PartitionElementCach
                 Assert (bestRowLength > 0);
             }
 
-            Led_Distance newRowHeight = MeasureSegmentHeight (start + startSoFar, start + startSoFar + bestRowLength);
+            DistanceType newRowHeight = MeasureSegmentHeight (start + startSoFar, start + startSoFar + bestRowLength);
             cacheInfo.SetRowHeight (cacheInfo.GetRowCount () - 1, newRowHeight);
 
             startSoFar += bestRowLength;
@@ -210,7 +210,7 @@ size_t WordWrappedTextImager::RemoveMappedDisplayCharacters (Led_tChar* copyText
 @METHOD:        WordWrappedTextImager::PatchWidthRemoveMappedDisplayCharacters
 @DESCRIPTION:   <p>Override @'TextImager::PatchWidthRemoveMappedDisplayCharacters' to hide kSoftLineBreakChar characters.</p>
 */
-void WordWrappedTextImager::PatchWidthRemoveMappedDisplayCharacters (const Led_tChar* srcText, Led_Distance* distanceResults, size_t nTChars) const
+void WordWrappedTextImager::PatchWidthRemoveMappedDisplayCharacters (const Led_tChar* srcText, DistanceType* distanceResults, size_t nTChars) const
 {
     inherited::PatchWidthRemoveMappedDisplayCharacters (srcText, distanceResults, nTChars);
     PatchWidthRemoveMappedDisplayCharacters_HelperForChar (srcText, distanceResults, nTChars, kSoftLineBreakChar);
@@ -222,8 +222,8 @@ void WordWrappedTextImager::PatchWidthRemoveMappedDisplayCharacters (const Led_t
     width of each character (Led_tChar, more accurately). Before calling this, the offsets have been adjused for tabstops.
     This just computes the appropriate place to break the line into rows (just first row).</p>
 */
-size_t WordWrappedTextImager::FindWrapPointForMeasuredText (const Led_tChar* text, size_t length, Led_Distance wrapWidth,
-                                                            size_t offsetToMarkerCoords, const Led_Distance* widthsVector, size_t startSoFar)
+size_t WordWrappedTextImager::FindWrapPointForMeasuredText (const Led_tChar* text, size_t length, DistanceType wrapWidth,
+                                                            size_t offsetToMarkerCoords, const DistanceType* widthsVector, size_t startSoFar)
 {
     RequireNotNull (widthsVector);
     Require (wrapWidth >= 1);
@@ -268,7 +268,7 @@ size_t WordWrappedTextImager::FindWrapPointForMeasuredText (const Led_tChar* tex
     const size_t kCharsFromEndToSearchFrom = 5; // should be half of average word size (or so)
     size_t       bestBreakPointIndex       = 1;
     for (; bestBreakPointIndex <= length; bestBreakPointIndex++) {
-        Led_Distance guessWidth = LookupLengthInVector (widthsVector, startSoFar, bestBreakPointIndex);
+        DistanceType guessWidth = LookupLengthInVector (widthsVector, startSoFar, bestBreakPointIndex);
         if (guessWidth > wrapWidth) {
             if (bestBreakPointIndex > 1) {
                 bestBreakPointIndex--; // because overshot above
@@ -332,13 +332,13 @@ size_t WordWrappedTextImager::FindWrapPointForMeasuredText (const Led_tChar* tex
     return (bestRowLength);
 }
 
-size_t WordWrappedTextImager::TryToFindWrapPointForMeasuredText1 (const Led_tChar* text, size_t length, Led_Distance wrapWidth,
+size_t WordWrappedTextImager::TryToFindWrapPointForMeasuredText1 (const Led_tChar* text, size_t length, DistanceType wrapWidth,
 #if qMultiByteCharacters
                                                                   size_t offsetToMarkerCoords,
 #else
                                                                   size_t /*offsetToMarkerCoords*/,
 #endif
-                                                                  const Led_Distance* widthsVector, size_t startSoFar,
+                                                                  const DistanceType* widthsVector, size_t startSoFar,
                                                                   size_t searchStart, size_t wrapLength)
 {
     AssertNotNull (widthsVector);
@@ -358,7 +358,7 @@ size_t WordWrappedTextImager::TryToFindWrapPointForMeasuredText1 (const Led_tCha
      */
     AssertNotNull (text);
     size_t       bestRowLength = 0;
-    Led_Distance width         = 0;
+    DistanceType width         = 0;
     size_t       wordEnd       = 0;
     bool         wordReal      = false;
     size_t       lastLineTest  = 0;
@@ -408,9 +408,9 @@ size_t WordWrappedTextImager::FindWrapPointForOneLongWordForMeasuredText (
 #else
     const Led_tChar* /*text*/,
 #endif
-    size_t length, Led_Distance wrapWidth,
+    size_t length, DistanceType wrapWidth,
     size_t              offsetToMarkerCoords,
-    const Led_Distance* widthsVector, size_t startSoFar)
+    const DistanceType* widthsVector, size_t startSoFar)
 {
     size_t bestRowLength = 0;
 
@@ -420,7 +420,7 @@ size_t WordWrappedTextImager::FindWrapPointForOneLongWordForMeasuredText (
     // right length...
     [[maybe_unused]] size_t secondCharIdx = FindNextCharacter (offsetToMarkerCoords + 0);
     Assert (secondCharIdx >= offsetToMarkerCoords);
-    Led_Distance fullWordWidth = LookupLengthInVector (widthsVector, startSoFar, length);
+    DistanceType fullWordWidth = LookupLengthInVector (widthsVector, startSoFar, length);
 
     Assert (length >= 1);
     size_t guessIdx = size_t ((length - 1) * (float (wrapWidth) / float (fullWordWidth)));
@@ -438,14 +438,14 @@ size_t WordWrappedTextImager::FindWrapPointForOneLongWordForMeasuredText (
 #endif
     Assert (guessIdx < length);
 
-    Led_Distance guessWidth = LookupLengthInVector (widthsVector, startSoFar, guessIdx);
+    DistanceType guessWidth = LookupLengthInVector (widthsVector, startSoFar, guessIdx);
     bestRowLength           = guessIdx;
 
     if (guessWidth > wrapWidth) {
         // keeping going down til we are fit.
         for (size_t j = guessIdx; j >= 1; j = FindPreviousCharacter (offsetToMarkerCoords + j) - offsetToMarkerCoords) {
             Assert (j < length); // no wrap
-            Led_Distance smallerWidth = LookupLengthInVector (widthsVector, startSoFar, j);
+            DistanceType smallerWidth = LookupLengthInVector (widthsVector, startSoFar, j);
             bestRowLength             = j;
             if (smallerWidth <= wrapWidth) {
                 break;
@@ -456,7 +456,7 @@ size_t WordWrappedTextImager::FindWrapPointForOneLongWordForMeasuredText (
         // keeping going down til we are fit.
         for (size_t j = guessIdx; j < length; j = FindNextCharacter (offsetToMarkerCoords + j) - offsetToMarkerCoords) {
             Assert (j < length); // no wrap
-            Led_Distance smallerWidth = LookupLengthInVector (widthsVector, startSoFar, j);
+            DistanceType smallerWidth = LookupLengthInVector (widthsVector, startSoFar, j);
             if (smallerWidth > wrapWidth) {
                 break;
             }

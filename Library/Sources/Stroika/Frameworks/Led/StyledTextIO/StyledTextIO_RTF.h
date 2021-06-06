@@ -403,7 +403,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         public:
             static const Led_PrivateEmbeddingTag kEmbeddingTag;
 
-            virtual void           PostCreateSpecifyExtraInfo (Led_TWIPS_Point size)       = 0;
+            virtual void           PostCreateSpecifyExtraInfo (TWIPS_Point size)           = 0;
             virtual Led_SDK_String GetObjClassName () const                                = 0;
             virtual void           DoWriteToOLE1Stream (size_t* nBytes, byte** resultData) = 0;
             virtual Led_Size       GetSize ()                                              = 0;
@@ -424,31 +424,31 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         RTFInfo ();
 
     public:
-        static Led_TWIPS GetStaticDefaultTabStopWidth ();
+        static TWIPS GetStaticDefaultTabStopWidth ();
 
     public:
-        Led_TWIPS fDefaultTabStop;
+        TWIPS fDefaultTabStop;
 
     public:
-        nonvirtual Led_TWIPS GetDefaultTabStop () const;
+        nonvirtual TWIPS GetDefaultTabStop () const;
 
     public:
-        static Led_TWIPS_Point GetStaticDefaultPaperSize ();
+        static TWIPS_Point GetStaticDefaultPaperSize ();
 
     public:
-        Led_TWIPS_Point fDefaultPaperSize;
+        TWIPS_Point fDefaultPaperSize;
 
     public:
-        static void GetStaticDefaultMargins (Led_TWIPS* t, Led_TWIPS* l, Led_TWIPS* b, Led_TWIPS* r);
+        static void GetStaticDefaultMargins (TWIPS* t, TWIPS* l, TWIPS* b, TWIPS* r);
 
     public:
-        Led_TWIPS fDefaultMarginTop;
-        Led_TWIPS fDefaultMarginLeft;
-        Led_TWIPS fDefaultMarginBottom;
-        Led_TWIPS fDefaultMarginRight;
+        TWIPS fDefaultMarginTop;
+        TWIPS fDefaultMarginLeft;
+        TWIPS fDefaultMarginBottom;
+        TWIPS fDefaultMarginRight;
 
     public:
-        nonvirtual Led_TWIPS GetEffectiveDrawingWidth () const;
+        nonvirtual TWIPS GetEffectiveDrawingWidth () const;
     };
 
     /*
@@ -588,7 +588,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         virtual RTFIO::FontTableEntry ReadInFontTablesEntry ();
         virtual void                  ReadInObjectSubGroupEntry (ReaderContext& readerContext, vector<char>* data, size_t* resultFoundAt);
         virtual void                  ReadObjData (vector<char>* data);
-        virtual void                  ConstructOLEEmebddingFromRTFInfo (ReaderContext& readerContext, Led_TWIPS_Point size, size_t nBytes, const void* data);
+        virtual void                  ConstructOLEEmebddingFromRTFInfo (ReaderContext& readerContext, TWIPS_Point size, size_t nBytes, const void* data);
         virtual void                  ConstructLedEmebddingFromRTFInfo (ReaderContext& readerContext, size_t nBytes, const void* data);
 
     protected:
@@ -604,10 +604,10 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
             eDefaultImageFormat = eBITMAP //  according to RTF 1.5 spec - "The \wbitmap control word is optional. If no other picture type is specified, the picture is assumed to be a Windows bitmap"
         };
         virtual void     ReadPictData (vector<char>* data);
-        virtual void     ReadTopLevelPictData (Led_TWIPS_Point* shownSize, ImageFormat* imageFormat, Led_TWIPS_Point* bmSize, vector<char>* objData);
-        virtual Led_DIB* ConstructDIBFromData (Led_TWIPS_Point shownSize, ImageFormat imageFormat, Led_TWIPS_Point bmSize, size_t nBytes, const void* data);
+        virtual void     ReadTopLevelPictData (TWIPS_Point* shownSize, ImageFormat* imageFormat, TWIPS_Point* bmSize, vector<char>* objData);
+        virtual Led_DIB* ConstructDIBFromData (TWIPS_Point shownSize, ImageFormat imageFormat, TWIPS_Point bmSize, size_t nBytes, const void* data);
 #if qPlatform_Windows
-        virtual Led_DIB* ConstructDIBFromEMFHelper (Led_TWIPS_Point shownSize, Led_TWIPS_Point bmSize, const HENHMETAFILE hMF);
+        virtual Led_DIB* ConstructDIBFromEMFHelper (TWIPS_Point shownSize, TWIPS_Point bmSize, const HENHMETAFILE hMF);
 #endif
 
     protected:
@@ -751,15 +751,15 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
             Led_IncrementalFontSpecification fFontSpec;
             TextImager::StandardTabStopList  fTabStops;
             Led_Justification                fJustification;
-            Led_TWIPS                        fSpaceBefore;
-            Led_TWIPS                        fSpaceAfter;
-            Led_Coordinate                   fSpaceBetweenLines;
+            TWIPS                            fSpaceBefore;
+            TWIPS                            fSpaceAfter;
+            Coordinate                       fSpaceBetweenLines;
             bool                             fSpaceBetweenLinesMult;
             ListStyle                        fListStyle;
             unsigned char                    fListIndentLevel;
-            Led_TWIPS                        fFirstIndent;
-            Led_TWIPS                        fLeftMargin;
-            Led_TWIPS                        fRightMargin;
+            TWIPS                            fFirstIndent;
+            TWIPS                            fLeftMargin;
+            TWIPS                            fRightMargin;
             bool                             fTextHidden;
         };
 
@@ -771,12 +771,12 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         virtual void UseFont (const Led_IncrementalFontSpecification& fontSpec)    = 0;
         virtual void SetJustification (Led_Justification justification)            = 0;
         virtual void SetTabStops (const TextImager::StandardTabStopList& tabStops) = 0;
-        virtual void SetFirstIndent (Led_TWIPS tx)                                 = 0;
-        virtual void SetLeftMargin (Led_TWIPS lhs)                                 = 0;
-        virtual void SetRightMargin (Led_TWIPS rhs)                                = 0;
-        virtual void SetSpaceBefore (Led_TWIPS tx)                                 = 0;
-        virtual void SetSpaceAfter (Led_TWIPS tx)                                  = 0;
-        virtual void SetSpaceBetweenLines (Led_Coordinate tx)                      = 0;
+        virtual void SetFirstIndent (TWIPS tx)                                     = 0;
+        virtual void SetLeftMargin (TWIPS lhs)                                     = 0;
+        virtual void SetRightMargin (TWIPS rhs)                                    = 0;
+        virtual void SetSpaceBefore (TWIPS tx)                                     = 0;
+        virtual void SetSpaceAfter (TWIPS tx)                                      = 0;
+        virtual void SetSpaceBetweenLines (Coordinate tx)                          = 0;
         virtual void SetSpaceBetweenLinesMult (bool multipleLineSpacing)           = 0;
         virtual void SetTextHidden (bool hidden)                                   = 0;
         virtual void SetInTable (bool inTable)                                     = 0;
@@ -785,18 +785,18 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         virtual void SetListStyle (ListStyle listStyle)                            = 0;
         virtual void SetListIndentLevel (unsigned char indentLevel)                = 0;
         virtual void SetTableBorderColor (Led_Color c)                             = 0;
-        virtual void SetCellX (Led_TWIPS cellx)                                    = 0;
+        virtual void SetCellX (TWIPS cellx)                                        = 0;
         virtual void SetCellBackColor (const Led_Color& c)                         = 0;
         virtual void Call_trowd ()                                                 = 0;
-        virtual void Set_trleft (Led_TWIPS t)                                      = 0;
-        virtual void SetDefaultCellMarginsForRow_top (Led_TWIPS t)                 = 0;
-        virtual void SetDefaultCellMarginsForRow_left (Led_TWIPS t)                = 0;
-        virtual void SetDefaultCellMarginsForRow_bottom (Led_TWIPS t)              = 0;
-        virtual void SetDefaultCellMarginsForRow_right (Led_TWIPS t)               = 0;
-        virtual void SetDefaultCellSpacingForRow_top (Led_TWIPS t)                 = 0;
-        virtual void SetDefaultCellSpacingForRow_left (Led_TWIPS t)                = 0;
-        virtual void SetDefaultCellSpacingForRow_bottom (Led_TWIPS t)              = 0;
-        virtual void SetDefaultCellSpacingForRow_right (Led_TWIPS t)               = 0;
+        virtual void Set_trleft (TWIPS t)                                          = 0;
+        virtual void SetDefaultCellMarginsForRow_top (TWIPS t)                     = 0;
+        virtual void SetDefaultCellMarginsForRow_left (TWIPS t)                    = 0;
+        virtual void SetDefaultCellMarginsForRow_bottom (TWIPS t)                  = 0;
+        virtual void SetDefaultCellMarginsForRow_right (TWIPS t)                   = 0;
+        virtual void SetDefaultCellSpacingForRow_top (TWIPS t)                     = 0;
+        virtual void SetDefaultCellSpacingForRow_left (TWIPS t)                    = 0;
+        virtual void SetDefaultCellSpacingForRow_bottom (TWIPS t)                  = 0;
+        virtual void SetDefaultCellSpacingForRow_right (TWIPS t)                   = 0;
 
     public:
         virtual void Flush () = 0;
@@ -828,12 +828,12 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         virtual void UseFont (const Led_IncrementalFontSpecification& fontSpec) override;
         virtual void SetJustification (Led_Justification justification) override;
         virtual void SetTabStops (const TextImager::StandardTabStopList& tabStops) override;
-        virtual void SetFirstIndent (Led_TWIPS tx) override;
-        virtual void SetLeftMargin (Led_TWIPS lhs) override;
-        virtual void SetRightMargin (Led_TWIPS rhs) override;
-        virtual void SetSpaceBefore (Led_TWIPS tx) override;
-        virtual void SetSpaceAfter (Led_TWIPS tx) override;
-        virtual void SetSpaceBetweenLines (Led_Coordinate tx) override;
+        virtual void SetFirstIndent (TWIPS tx) override;
+        virtual void SetLeftMargin (TWIPS lhs) override;
+        virtual void SetRightMargin (TWIPS rhs) override;
+        virtual void SetSpaceBefore (TWIPS tx) override;
+        virtual void SetSpaceAfter (TWIPS tx) override;
+        virtual void SetSpaceBetweenLines (Coordinate tx) override;
         virtual void SetSpaceBetweenLinesMult (bool multipleLineSpacing) override;
         virtual void SetTextHidden (bool hidden) override;
         virtual void SetInTable (bool inTable) override;
@@ -842,18 +842,18 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         virtual void SetListStyle (ListStyle listStyle) override;
         virtual void SetListIndentLevel (unsigned char indentLevel) override;
         virtual void SetTableBorderColor (Led_Color c) override;
-        virtual void SetCellX (Led_TWIPS cellx) override;
+        virtual void SetCellX (TWIPS cellx) override;
         virtual void SetCellBackColor (const Led_Color& c) override;
         virtual void Call_trowd () override;
-        virtual void Set_trleft (Led_TWIPS t) override;
-        virtual void SetDefaultCellMarginsForRow_top (Led_TWIPS t) override;
-        virtual void SetDefaultCellMarginsForRow_left (Led_TWIPS t) override;
-        virtual void SetDefaultCellMarginsForRow_bottom (Led_TWIPS t) override;
-        virtual void SetDefaultCellMarginsForRow_right (Led_TWIPS t) override;
-        virtual void SetDefaultCellSpacingForRow_top (Led_TWIPS t) override;
-        virtual void SetDefaultCellSpacingForRow_left (Led_TWIPS t) override;
-        virtual void SetDefaultCellSpacingForRow_bottom (Led_TWIPS t) override;
-        virtual void SetDefaultCellSpacingForRow_right (Led_TWIPS t) override;
+        virtual void Set_trleft (TWIPS t) override;
+        virtual void SetDefaultCellMarginsForRow_top (TWIPS t) override;
+        virtual void SetDefaultCellMarginsForRow_left (TWIPS t) override;
+        virtual void SetDefaultCellMarginsForRow_bottom (TWIPS t) override;
+        virtual void SetDefaultCellMarginsForRow_right (TWIPS t) override;
+        virtual void SetDefaultCellSpacingForRow_top (TWIPS t) override;
+        virtual void SetDefaultCellSpacingForRow_left (TWIPS t) override;
+        virtual void SetDefaultCellSpacingForRow_bottom (TWIPS t) override;
+        virtual void SetDefaultCellSpacingForRow_right (TWIPS t) override;
 
     private:
         nonvirtual void AssureTableOpen ();
@@ -907,7 +907,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     private:
         struct CellInfo {
             CellInfo ();
-            Led_TWIPS f_cellx;
+            TWIPS     f_cellx;
             Led_Color f_clcbpat;
             size_t    fColSpan;
         };
@@ -915,10 +915,10 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     private:
         struct RowInfo {
             RowInfo ();
-            Led_TWIPS        f_trrh;
-            Led_TWIPS        f_trleft;
-            Led_TWIPS_Rect   fDefaultCellMargins; // Not REALLY a rect - just a handy way to store 4 values... and OK since its private - not part of API
-            Led_TWIPS_Rect   fDefaultCellSpacing; // ''
+            TWIPS            f_trrh;
+            TWIPS            f_trleft;
+            TWIPS_Rect       fDefaultCellMargins; // Not REALLY a rect - just a handy way to store 4 values... and OK since its private - not part of API
+            TWIPS_Rect       fDefaultCellSpacing; // ''
             vector<CellInfo> fCellInfosForThisRow;
         };
         RowInfo fThisRow;
@@ -1121,29 +1121,29 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     }
 
     //  class   RTFInfo
-    inline Led_TWIPS RTFInfo::GetStaticDefaultTabStopWidth ()
+    inline TWIPS RTFInfo::GetStaticDefaultTabStopWidth ()
     {
-        return Led_TWIPS (720); //  default to 1/2 inch - RTF spec default
+        return TWIPS (720); //  default to 1/2 inch - RTF spec default
     }
-    inline Led_TWIPS RTFInfo::GetDefaultTabStop () const
+    inline TWIPS RTFInfo::GetDefaultTabStop () const
     {
         return fDefaultTabStop;
     }
-    inline Led_TWIPS_Point RTFInfo::GetStaticDefaultPaperSize ()
+    inline TWIPS_Point RTFInfo::GetStaticDefaultPaperSize ()
     {
         // From RTFSpec 1.4
-        return Led_TWIPS_Point (Led_TWIPS (11 * 1440), Led_TWIPS (static_cast<long> (8.5 * 1440)));
+        return TWIPS_Point (TWIPS (11 * 1440), TWIPS (static_cast<long> (8.5 * 1440)));
     }
-    inline void RTFInfo::GetStaticDefaultMargins (Led_TWIPS* t, Led_TWIPS* l, Led_TWIPS* b, Led_TWIPS* r)
+    inline void RTFInfo::GetStaticDefaultMargins (TWIPS* t, TWIPS* l, TWIPS* b, TWIPS* r)
     {
         RequireNotNull (t);
         RequireNotNull (l);
         RequireNotNull (b);
         RequireNotNull (r);
-        *t = Led_TWIPS (1440);
-        *l = Led_TWIPS (1800);
-        *b = Led_TWIPS (1440);
-        *r = Led_TWIPS (1800);
+        *t = TWIPS (1440);
+        *l = TWIPS (1800);
+        *b = TWIPS (1440);
+        *r = TWIPS (1800);
     }
     inline RTFInfo::RTFInfo ()
         : fDefaultTabStop (GetStaticDefaultTabStopWidth ())
@@ -1155,11 +1155,11 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     {
         GetStaticDefaultMargins (&fDefaultMarginTop, &fDefaultMarginLeft, &fDefaultMarginBottom, &fDefaultMarginRight);
     }
-    inline Led_TWIPS RTFInfo::GetEffectiveDrawingWidth () const
+    inline TWIPS RTFInfo::GetEffectiveDrawingWidth () const
     {
-        Led_TWIPS subtract = Led_TWIPS (fDefaultMarginLeft + fDefaultMarginRight);
+        TWIPS subtract = TWIPS (fDefaultMarginLeft + fDefaultMarginRight);
         Ensure (fDefaultPaperSize.h > subtract);
-        return Led_TWIPS (fDefaultPaperSize.h - subtract);
+        return TWIPS (fDefaultPaperSize.h - subtract);
     }
 
     //  class   StyledTextIOReader_RTF
@@ -1216,15 +1216,15 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         : fFontSpec ()
         , fTabStops (TextImager::StandardTabStopList (RTFInfo::GetStaticDefaultTabStopWidth ()))
         , fJustification (eLeftJustify)
-        , fSpaceBefore (Led_TWIPS (0))
-        , fSpaceAfter (Led_TWIPS (0))
+        , fSpaceBefore (TWIPS (0))
+        , fSpaceAfter (TWIPS (0))
         , fSpaceBetweenLines (1000)
         , fSpaceBetweenLinesMult (true)
         , fListStyle (eListStyle_None)
         , fListIndentLevel (0)
-        , fFirstIndent (Led_TWIPS (0))
-        , fLeftMargin (Led_TWIPS (0))
-        , fRightMargin (Led_TWIPS (0))
+        , fFirstIndent (TWIPS (0))
+        , fLeftMargin (TWIPS (0))
+        , fRightMargin (TWIPS (0))
         , fTextHidden (false)
     {
     }

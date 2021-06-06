@@ -62,7 +62,7 @@ namespace {
             return false;
         }
         else {
-            *t = Led_TWIPS (l);
+            *t = TWIPS (l);
             return true;
         }
 #else
@@ -70,23 +70,23 @@ namespace {
             return false;
         }
         else {
-            *t = Led_TWIPS (l);
+            *t = TWIPS (l);
             return true;
         }
 #endif
 #endif
     }
     // Later revise these so they take into account UNITS - like CM, or IN, or TWIPS, or pt, etc...
-    Led_SDK_String FormatTWIPSAsString (Led_TWIPS t)
+    Led_SDK_String FormatTWIPSAsString (TWIPS t)
     {
         return FormatINTAsString (t);
     }
-    bool ParseStringToTWIPS (const Led_SDK_String& s, Led_TWIPS* t)
+    bool ParseStringToTWIPS (const Led_SDK_String& s, TWIPS* t)
     {
         int  i = 0;
         bool r = ParseStringToINT (s, &i);
         if (r) {
-            *t = Led_TWIPS (i);
+            *t = TWIPS (i);
         }
         return r;
     }
@@ -366,7 +366,7 @@ LedDialogWidget::LedDialogWidget ()
     : inherited ()
     , fTextStore ()
 {
-    SetDefaultWindowMargins (Led_TWIPS_Rect (Led_TWIPS::kPoint, Led_TWIPS::kPoint, Led_TWIPS::kPoint, Led_TWIPS::kPoint));
+    SetDefaultWindowMargins (TWIPS_Rect (TWIPS::kPoint, TWIPS::kPoint, TWIPS::kPoint, TWIPS::kPoint));
     SpecifyTextStore (&fTextStore);
     SetCommandHandler (&fCommandHandler);
 }
@@ -375,7 +375,7 @@ LedDialogWidget::LedDialogWidget (TS_SET_OUTSIDE_BWA)
     : inherited ()
     , fTextStore ()
 {
-    SetDefaultWindowMargins (Led_TWIPS_Rect (Led_TWIPS::kPoint, Led_TWIPS::kPoint, Led_TWIPS::kPoint, Led_TWIPS::kPoint));
+    SetDefaultWindowMargins (TWIPS_Rect (TWIPS::kPoint, TWIPS::kPoint, TWIPS::kPoint, TWIPS::kPoint));
     SetCommandHandler (&fCommandHandler);
 }
 
@@ -597,7 +597,7 @@ void LedComboBoxWidget::MyComboListBoxPopup::MadeSelection ()
     fComboBox->HidePopup ();
 }
 
-void LedComboBoxWidget::MyComboListBoxPopup::ComputePreferedHeight (Led_Distance* prefHeight, size_t* nEltsShown) const
+void LedComboBoxWidget::MyComboListBoxPopup::ComputePreferedHeight (DistanceType* prefHeight, size_t* nEltsShown) const
 {
     RequireNotNull (prefHeight);
     RequireNotNull (nEltsShown);
@@ -611,9 +611,9 @@ void LedComboBoxWidget::MyComboListBoxPopup::ComputePreferedHeight (Led_Distance
     if (nElts >= kMaxElts) {
         nElts = kMaxElts;
     }
-    Led_Distance           singleEltHeight  = static_cast<Led_Distance> (::SendMessage (GetHWND (), LB_GETITEMHEIGHT, 0, 0));
-    constexpr Led_Distance kEmpiricalKludge = 2; // LGP 2003-12-28
-    *prefHeight                             = static_cast<Led_Distance> (nElts * singleEltHeight + kEmpiricalKludge);
+    DistanceType           singleEltHeight  = static_cast<DistanceType> (::SendMessage (GetHWND (), LB_GETITEMHEIGHT, 0, 0));
+    constexpr DistanceType kEmpiricalKludge = 2; // LGP 2003-12-28
+    *prefHeight                             = static_cast<DistanceType> (nElts * singleEltHeight + kEmpiricalKludge);
     *nEltsShown                             = nElts;
 }
 #endif
@@ -857,7 +857,7 @@ LRESULT LedComboBoxWidget::OnCreate_Msg (WPARAM wParam, LPARAM lParam)
 
 LRESULT LedComboBoxWidget::OnSize_Msg (WPARAM wParam, LPARAM lParam)
 {
-    const Led_Distance kPopupIconWidth = fPopupButton.fDropDownArrow.GetImageSize ().h + 4;
+    const DistanceType kPopupIconWidth = fPopupButton.fDropDownArrow.GetImageSize ().h + 4;
 
     Led_Rect clientRect;
     {
@@ -905,7 +905,7 @@ void LedComboBoxWidget::ShowPopup ()
             ::GetClientRect (GetHWND (), &cr);
             clientRect = AsLedRect (cr);
         }
-        Led_Distance prefHeight = 0;
+        DistanceType prefHeight = 0;
         size_t       nEltsShown = 0;
         fComboListBoxPopup.ComputePreferedHeight (&prefHeight, &nEltsShown);
 
@@ -2378,33 +2378,33 @@ void Led_StdDialogHelper_UpdateWin32FileAssocsDialog::OnCancel ()
 Led_StdDialogHelper_ParagraphIndentsDialog::Led_StdDialogHelper_ParagraphIndentsDialog (int resID)
     : inherited (resID)
     , fLeftMargin_Valid (false)
-    , fLeftMargin_Orig (Led_TWIPS (0))
-    , fLeftMargin_Result (Led_TWIPS (0))
+    , fLeftMargin_Orig (TWIPS (0))
+    , fLeftMargin_Result (TWIPS (0))
     , fRightMargin_Valid (false)
-    , fRightMargin_Orig (Led_TWIPS (0))
-    , fRightMargin_Result (Led_TWIPS (0))
+    , fRightMargin_Orig (TWIPS (0))
+    , fRightMargin_Result (TWIPS (0))
     , fFirstIndent_Valid (false)
-    , fFirstIndent_Orig (Led_TWIPS (0))
-    , fFirstIndent_Result (Led_TWIPS (0))
+    , fFirstIndent_Orig (TWIPS (0))
+    , fFirstIndent_Result (TWIPS (0))
 {
 }
 #elif qPlatform_Windows
 Led_StdDialogHelper_ParagraphIndentsDialog::Led_StdDialogHelper_ParagraphIndentsDialog (HINSTANCE hInstance, HWND parentWnd, const Led_SDK_Char* resID)
     : inherited (hInstance, resID, parentWnd)
     , fLeftMargin_Valid (false)
-    , fLeftMargin_Orig (Led_TWIPS (0))
-    , fLeftMargin_Result (Led_TWIPS (0))
+    , fLeftMargin_Orig (TWIPS (0))
+    , fLeftMargin_Result (TWIPS (0))
     , fRightMargin_Valid (false)
-    , fRightMargin_Orig (Led_TWIPS (0))
-    , fRightMargin_Result (Led_TWIPS (0))
+    , fRightMargin_Orig (TWIPS (0))
+    , fRightMargin_Result (TWIPS (0))
     , fFirstIndent_Valid (false)
-    , fFirstIndent_Orig (Led_TWIPS (0))
-    , fFirstIndent_Result (Led_TWIPS (0))
+    , fFirstIndent_Orig (TWIPS (0))
+    , fFirstIndent_Result (TWIPS (0))
 {
 }
 #endif
 
-void Led_StdDialogHelper_ParagraphIndentsDialog::InitValues (Led_TWIPS leftMargin, bool leftMarginValid, Led_TWIPS rightMargin, bool rightMarginValid, Led_TWIPS firstIndent, bool firstIndentValid)
+void Led_StdDialogHelper_ParagraphIndentsDialog::InitValues (TWIPS leftMargin, bool leftMarginValid, TWIPS rightMargin, bool rightMarginValid, TWIPS firstIndent, bool firstIndentValid)
 {
     fLeftMargin_Valid   = leftMarginValid;
     fLeftMargin_Orig    = leftMargin;
@@ -2470,11 +2470,11 @@ DISABLE_COMPILER_MSC_WARNING_END (4706)
 Led_StdDialogHelper_ParagraphSpacingDialog::Led_StdDialogHelper_ParagraphSpacingDialog (int resID)
     : inherited (resID)
     , fSpaceBefore_Valid (false)
-    , fSpaceBefore_Orig (Led_TWIPS (0))
-    , fSpaceBefore_Result (Led_TWIPS (0))
+    , fSpaceBefore_Orig (TWIPS (0))
+    , fSpaceBefore_Result (TWIPS (0))
     , fSpaceAfter_Valid (false)
-    , fSpaceAfter_Orig (Led_TWIPS (0))
-    , fSpaceAfter_Result (Led_TWIPS (0))
+    , fSpaceAfter_Orig (TWIPS (0))
+    , fSpaceAfter_Result (TWIPS (0))
     , fLineSpacing_Valid (false)
     , fLineSpacing_Orig ()
     , fLineSpacing_Result ()
@@ -2484,11 +2484,11 @@ Led_StdDialogHelper_ParagraphSpacingDialog::Led_StdDialogHelper_ParagraphSpacing
 Led_StdDialogHelper_ParagraphSpacingDialog::Led_StdDialogHelper_ParagraphSpacingDialog (HINSTANCE hInstance, HWND parentWnd, const Led_SDK_Char* resID)
     : inherited (hInstance, resID, parentWnd)
     , fSpaceBefore_Valid (false)
-    , fSpaceBefore_Orig (Led_TWIPS (0))
-    , fSpaceBefore_Result (Led_TWIPS (0))
+    , fSpaceBefore_Orig (TWIPS (0))
+    , fSpaceBefore_Result (TWIPS (0))
     , fSpaceAfter_Valid (false)
-    , fSpaceAfter_Orig (Led_TWIPS (0))
-    , fSpaceAfter_Result (Led_TWIPS (0))
+    , fSpaceAfter_Orig (TWIPS (0))
+    , fSpaceAfter_Result (TWIPS (0))
     , fLineSpacing_Valid (false)
     , fLineSpacing_Orig ()
     , fLineSpacing_Result ()
@@ -2496,7 +2496,7 @@ Led_StdDialogHelper_ParagraphSpacingDialog::Led_StdDialogHelper_ParagraphSpacing
 }
 #endif
 
-void Led_StdDialogHelper_ParagraphSpacingDialog::InitValues (Led_TWIPS spaceBefore, bool spaceBeforeValid, Led_TWIPS spaceAfter, bool spaceAfterValid, Led_LineSpacing lineSpacing, bool lineSpacingValid)
+void Led_StdDialogHelper_ParagraphSpacingDialog::InitValues (TWIPS spaceBefore, bool spaceBeforeValid, TWIPS spaceAfter, bool spaceAfterValid, Led_LineSpacing lineSpacing, bool lineSpacingValid)
 {
     fSpaceBefore_Valid  = spaceBeforeValid;
     fSpaceBefore_Orig   = spaceBefore;
@@ -2550,7 +2550,7 @@ void Led_StdDialogHelper_ParagraphSpacingDialog::PreDoModalHook ()
         Verify (::SendMessage (popup, CB_SETCURSEL, fLineSpacing_Orig.fRule, 0) != CB_ERR);
 #endif
         if (fLineSpacing_Orig.fRule == Led_LineSpacing::eAtLeastTWIPSSpacing or fLineSpacing_Orig.fRule == Led_LineSpacing::eExactTWIPSSpacing or fLineSpacing_Orig.fRule == Led_LineSpacing::eExactLinesSpacing) {
-            SetItemText (kParagraphSpacing_Dialog_LineSpaceArgFieldID, FormatTWIPSAsString (Led_TWIPS (fLineSpacing_Orig.fArg)));
+            SetItemText (kParagraphSpacing_Dialog_LineSpaceArgFieldID, FormatTWIPSAsString (TWIPS (fLineSpacing_Orig.fArg)));
         }
     }
 #if qPlatform_MacOS
@@ -2589,7 +2589,7 @@ void Led_StdDialogHelper_ParagraphSpacingDialog::OnOK ()
         fLineSpacing_Valid = true;
         if (r == Led_LineSpacing::eAtLeastTWIPSSpacing or r == Led_LineSpacing::eExactTWIPSSpacing) {
             Led_SDK_String arg  = GetItemText (kParagraphSpacing_Dialog_SpaceAfterFieldID);
-            Led_TWIPS      argT = Led_TWIPS (0);
+            TWIPS          argT = TWIPS (0);
             if (ParseStringToTWIPS (arg, &argT)) {
                 fLineSpacing_Result = Led_LineSpacing (Led_LineSpacing::Rule (r), argT);
             }
@@ -2640,7 +2640,7 @@ Led_StdDialogHelper_OtherFontSizeDialog::Led_StdDialogHelper_OtherFontSizeDialog
 }
 #endif
 
-void Led_StdDialogHelper_OtherFontSizeDialog::InitValues (Led_Distance origFontSize)
+void Led_StdDialogHelper_OtherFontSizeDialog::InitValues (DistanceType origFontSize)
 {
     fFontSize_Orig   = origFontSize;
     fFontSize_Result = origFontSize;

@@ -1510,12 +1510,12 @@ bool TextInteractor::ClickTimesAreCloseForDoubleClick (Time::DurationSecondsType
 */
 bool TextInteractor::PointsAreCloseForDoubleClick (const Led_Point& p)
 {
-    const Led_Coordinate kMultiClickDistance = 4;
-    Led_Coordinate       hDelta              = p.h - fLastMouseDownAt.h;
+    const Coordinate kMultiClickDistance = 4;
+    Coordinate       hDelta              = p.h - fLastMouseDownAt.h;
     if (hDelta < 0) {
         hDelta = -hDelta;
     }
-    Led_Coordinate vDelta = p.v - fLastMouseDownAt.v;
+    Coordinate vDelta = p.v - fLastMouseDownAt.v;
     if (vDelta < 0) {
         vDelta = -vDelta;
     }
@@ -1568,7 +1568,7 @@ void TextInteractor::WhileSimpleMouseTracking (Led_Point newMousePos, size_t dra
         }
     }
     else if (newMousePos.h > GetWindowRect ().right) {
-        SetHScrollPos (min (static_cast<Led_Coordinate> (GetHScrollPos () + increment * kHScrollIncrementFactor), static_cast<Led_Coordinate> (ComputeMaxHScrollPos ())));
+        SetHScrollPos (min (static_cast<Coordinate> (GetHScrollPos () + increment * kHScrollIncrementFactor), static_cast<Coordinate> (ComputeMaxHScrollPos ())));
     }
 
     size_t newSelStart = min (rhsPos, dragAnchor);
@@ -1703,7 +1703,7 @@ size_t TextInteractor::GetCharAtClickLocation (const Led_Point& where) const
 
     if (clickedOnChar < endOfClickedRow) { // Don't wrap cuz click past end - LGP 950424
         Led_Rect charRect           = GetCharWindowLocation (clickedOnChar);
-        bool     clickedToLHSOfChar = (where.h <= charRect.left + Led_Coordinate (charRect.GetWidth ()) / 2 and charRect.GetWidth () != 0);
+        bool     clickedToLHSOfChar = (where.h <= charRect.left + Coordinate (charRect.GetWidth ()) / 2 and charRect.GetWidth () != 0);
         if (GetTextDirection (clickedOnChar) == eLeftToRight) {
             if (not clickedToLHSOfChar) {
                 clickedOnChar = FindNextCharacter (clickedOnChar);
@@ -1780,7 +1780,7 @@ void TextInteractor::SetWindowRect (const Led_Rect& windowRect, UpdateMode updat
     tim->SetWindowRect (windowRect);
 }
 
-void TextInteractor::SetHScrollPos (Led_Coordinate hScrollPos)
+void TextInteractor::SetHScrollPos (Coordinate hScrollPos)
 {
     PreScrollInfo preScrollInfo;
     PreScrollHelper (eDefaultUpdate, &preScrollInfo);
@@ -1788,7 +1788,7 @@ void TextInteractor::SetHScrollPos (Led_Coordinate hScrollPos)
     PostScrollHelper (preScrollInfo);
 }
 
-void TextInteractor::SetHScrollPos (Led_Coordinate hScrollPos, UpdateMode updateMode)
+void TextInteractor::SetHScrollPos (Coordinate hScrollPos, UpdateMode updateMode)
 {
     TemporarilySetUpdateMode updateModeSetter (*this, updateMode);
     TextImager*              tim = this; // Dynamicly bind to 1-arg version. Direct call would select overloaded version from this class!
@@ -1839,7 +1839,7 @@ void TextInteractor::PostScrollHelper (PreScrollInfo preScrollInfo)
                  *                                    |
                  *                                    |
                  */
-                Led_Coordinate newPos = GetCharWindowLocation (GetStartOfRowContainingPosition (preScrollInfo.fOldWindowStart)).top;
+                Coordinate newPos = GetCharWindowLocation (GetStartOfRowContainingPosition (preScrollInfo.fOldWindowStart)).top;
                 if (newPos > 0) {
                     try {
                         tablet->ScrollBitsAndInvalRevealed (windowRect, newPos - windowRect.top);
@@ -1867,9 +1867,9 @@ void TextInteractor::PostScrollHelper (PreScrollInfo preScrollInfo)
 
                     // Now we may not want to allow the partial line to be displayed. Leave that choice to the
                     // logic in the imager, and repaint the area past the end of the last row
-                    Led_Coordinate lastRowBottom = GetCharWindowLocation (GetMarkerPositionOfStartOfLastRowOfWindow ()).bottom;
-                    Led_Rect       eraser        = windowRect;
-                    eraser.top                   = lastRowBottom;
+                    Coordinate lastRowBottom = GetCharWindowLocation (GetMarkerPositionOfStartOfLastRowOfWindow ()).bottom;
+                    Led_Rect   eraser        = windowRect;
+                    eraser.top               = lastRowBottom;
                     RefreshWindowRect (eraser, preScrollInfo.fUpdateMode);
                 }
             }
@@ -1880,7 +1880,7 @@ void TextInteractor::PostScrollHelper (PreScrollInfo preScrollInfo)
                  *                                  \|/
                  *                                   *
                  */
-                Led_Coordinate newPos = GetCharLocationRowRelativeByPosition (newStartOfWindow, preScrollInfo.fOldWindowStart, 5).top;
+                Coordinate newPos = GetCharLocationRowRelativeByPosition (newStartOfWindow, preScrollInfo.fOldWindowStart, 5).top;
 
                 if (newPos > 0) {
                     try {
@@ -1899,9 +1899,9 @@ void TextInteractor::PostScrollHelper (PreScrollInfo preScrollInfo)
                     // now refresh the exposed portion at the bottom. Note that much of it may have been exposed
                     // already by the InvalRgn/ScrollWindow calls. But we may have to invalidate even more cuz we don't
                     // show entire bottom lines.
-                    Led_Coordinate lastRowBottom = GetCharWindowLocation (preScrollInfo.fOldLastRowStart).bottom;
-                    Led_Rect       eraser        = windowRect;
-                    eraser.top                   = lastRowBottom;
+                    Coordinate lastRowBottom = GetCharWindowLocation (preScrollInfo.fOldLastRowStart).bottom;
+                    Led_Rect   eraser        = windowRect;
+                    eraser.top               = lastRowBottom;
                     RefreshWindowRect (eraser, eDelayedUpdate);
                 }
 
@@ -3177,8 +3177,8 @@ Led_Rect TextInteractor::CalculateCaretRect () const
         Led_FontMetrics fontMetrics   = GetFontMetricsAt (charAfterPos);
 
         // WE NEED THE WHOLE ROW BASELINE!!! THEN CAN COMPUTE caretrect from that!!!
-        Led_Distance   baseLineFromTop = GetRowRelativeBaselineOfRowContainingPosition (charAfterPos);
-        Led_Coordinate realBaseLine    = baseLineFromTop + caretRect.top;
+        DistanceType baseLineFromTop = GetRowRelativeBaselineOfRowContainingPosition (charAfterPos);
+        Coordinate   realBaseLine    = baseLineFromTop + caretRect.top;
 
         // now adjust caretrect to be font-metrics from the base line
         caretRect.top    = realBaseLine - fontMetrics.GetAscent ();
@@ -3188,7 +3188,7 @@ Led_Rect TextInteractor::CalculateCaretRect () const
         // It can come outside the rowRect if the baseLineFromTop is zero - for example - when
         // the preceeding text is hidden.
         if (caretRect.top < origCaretRect.top) {
-            Led_Distance diff = origCaretRect.GetTop () - caretRect.GetTop ();
+            DistanceType diff = origCaretRect.GetTop () - caretRect.GetTop ();
             caretRect += Led_Point (diff, 0);
         }
 
@@ -3205,9 +3205,9 @@ Led_Rect TextInteractor::CalculateCaretRect () const
             caretRect.left = caretRect.right;
         }
 
-        const Led_Coordinate kCaretWidth = 1;
+        const Coordinate kCaretWidth = 1;
         // quickie hack to be sure caret doesn't go off right side of window!!!
-        const Led_Coordinate kSluff = kCaretWidth + 1;
+        const Coordinate kSluff = kCaretWidth + 1;
         if (caretRect.GetLeft () + kSluff > GetWindowRect ().GetRight ()) {
             caretRect.SetLeft (GetWindowRect ().GetRight () - kSluff);
         }

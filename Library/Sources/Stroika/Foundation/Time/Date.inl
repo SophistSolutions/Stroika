@@ -256,7 +256,7 @@ namespace Stroika::Foundation::Time {
         return this->AddDays (-daysOffset);
     }
 #if Compiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
-     constexpr Date Date::kMin{Date::kMinJulianRep};
+    constexpr Date Date::kMin{Date::kMinJulianRep};
 #else
     inline constexpr Date Date::kMin{Date::kMinJulianRep};
 #endif
@@ -265,7 +265,7 @@ namespace Stroika::Foundation::Time {
         return Date{kMinJulianRep};
     }
 #if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
-     constexpr Date Date::kMax{UINT_MAX - 1};
+    constexpr Date Date::kMax{UINT_MAX - 1};
 #else
     inline constexpr Date Date::kMax{UINT_MAX - 1};
 #endif

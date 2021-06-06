@@ -64,7 +64,7 @@ public:
 public:
     virtual void DisplayFindDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative, bool* pressedOK) override
     {
-        Led_StdDialogHelper_FindDialog findDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
+        Led_StdDialogHelper_FindDialog findDialog{::AfxGetResourceHandle (), ::GetActiveWindow ()};
 
         findDialog.fFindText              = *findText;
         findDialog.fRecentFindTextStrings = recentFindSuggestions;
@@ -85,7 +85,7 @@ public:
 public:
     virtual ReplaceButtonPressed DisplayReplaceDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, Led_tString* replaceText, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative) override
     {
-        Led_StdDialogHelper_ReplaceDialog replaceDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
+        Led_StdDialogHelper_ReplaceDialog replaceDialog{::AfxGetResourceHandle (), ::GetActiveWindow ()};
 
         replaceDialog.fFindText              = *findText;
         replaceDialog.fRecentFindTextStrings = recentFindSuggestions;
@@ -203,7 +203,7 @@ inline bool IsASCIISpace (int c)
 // Perhaps replace this with a user-configuration option in the options dialog?
 const unsigned int kCharsPerTab = 4;
 
-const Led_Distance kBadDistance = Led_Distance (-1);
+const DistanceType kBadDistance = DistanceType (-1);
 
 class GotoLineDialog : public CDialog {
 public:
@@ -287,7 +287,7 @@ DISABLE_COMPILER_MSC_WARNING_END (4407)
 
 LedLineItView::LedLineItView ()
     : inherited ()
-    , fTabStopList (Led_TWIPS (1440 / 3))
+    , fTabStopList (TWIPS (1440 / 3))
     , fCachedLayoutWidth (kBadDistance)
 #if qSupportSyntaxColoring
     , fSyntaxColoringMarkerOwner (NULL)
@@ -304,13 +304,13 @@ LedLineItView::LedLineItView ()
      *  No logic to picking these margins (I know of). Just picked them based on what looked good.
      *  You can comment this out entirely to get the default (zero margins).
      */
-    const Led_TWIPS kLedItViewTopMargin    = Led_TWIPS (60);
-    const Led_TWIPS kLedItViewBottomMargin = Led_TWIPS (0);
-    const Led_TWIPS kLedItViewLHSMargin    = Led_TWIPS (60);
-    const Led_TWIPS kLedItViewRHSMargin    = Led_TWIPS (60);
+    const TWIPS kLedItViewTopMargin    = TWIPS (60);
+    const TWIPS kLedItViewBottomMargin = TWIPS (0);
+    const TWIPS kLedItViewLHSMargin    = TWIPS (60);
+    const TWIPS kLedItViewRHSMargin    = TWIPS (60);
 #if qPlatform_Windows
     // This SHOULD be available on other platforms, but only now done for WIN32
-    SetDefaultWindowMargins (Led_TWIPS_Rect (kLedItViewTopMargin, kLedItViewLHSMargin, kLedItViewBottomMargin - kLedItViewTopMargin, kLedItViewRHSMargin - kLedItViewLHSMargin));
+    SetDefaultWindowMargins (TWIPS_Rect (kLedItViewTopMargin, kLedItViewLHSMargin, kLedItViewBottomMargin - kLedItViewTopMargin, kLedItViewRHSMargin - kLedItViewLHSMargin));
 #endif
 
 #if qPlatform_MacOS || qPlatform_Windows
@@ -468,7 +468,7 @@ void LedLineItView::UpdateScrollBars ()
 #endif
 }
 
-Led_Distance LedLineItView::ComputeMaxHScrollPos () const
+DistanceType LedLineItView::ComputeMaxHScrollPos () const
 {
     if (fCachedLayoutWidth == kBadDistance) {
         /*
@@ -477,13 +477,13 @@ Led_Distance LedLineItView::ComputeMaxHScrollPos () const
          *  scroll amount. Always leave at least as much layout-width as needed to
          *  preserve the current scroll-to position.
          */
-        Led_Distance width = CalculateLongestRowInWindowPixelWidth ();
+        DistanceType width = CalculateLongestRowInWindowPixelWidth ();
         if (GetHScrollPos () != 0) {
             width = max (width, GetHScrollPos () + GetWindowRect ().GetWidth ());
         }
-        fCachedLayoutWidth = max (width, Led_Distance (1));
+        fCachedLayoutWidth = max (width, DistanceType (1));
     }
-    Led_Distance wWidth = GetWindowRect ().GetWidth ();
+    DistanceType wWidth = GetWindowRect ().GetWidth ();
     if (fCachedLayoutWidth > wWidth) {
         return (fCachedLayoutWidth - wWidth);
     }
@@ -655,7 +655,7 @@ void LedLineItView::OnFontSizeChangeCommand (UINT cmdNum)
                 return;
             } break;
             case kFontSizeOtherCmdID: {
-                Led_Distance oldSize = GetDefaultFont ().GetPointSize ();
+                DistanceType oldSize = GetDefaultFont ().GetPointSize ();
                 chosenFontSize       = static_cast<Led_FontSpecification::FontSize> (PickOtherFontHeight (oldSize));
             } break;
         }
@@ -667,7 +667,7 @@ void LedLineItView::OnFontSizeChangeCommand (UINT cmdNum)
     }
 }
 
-Led_Distance LedLineItView::PickOtherFontHeight (Led_Distance origHeight)
+DistanceType LedLineItView::PickOtherFontHeight (DistanceType origHeight)
 {
 #if qPlatform_MacOS
     Led_StdDialogHelper_OtherFontSizeDialog dlg;

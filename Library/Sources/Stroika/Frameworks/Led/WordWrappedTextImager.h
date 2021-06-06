@@ -73,7 +73,7 @@ namespace Stroika::Frameworks::Led {
             REWRITE THE ABOVE DOCS SO CLEARER ABOUT THIS CHOICE. FROM NOW ON, RETURNS VALUES RELATIVE TO LHS OF WINDOW RECT - LGP 2002-10-25
             </p>
         */
-        virtual void GetLayoutMargins (RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const = 0;
+        virtual void GetLayoutMargins (RowReference row, Coordinate* lhs, Coordinate* rhs) const = 0;
 
     public:
         virtual void FillCache (PartitionMarker* pm, PartitionElementCacheInfo& cacheInfo) override;
@@ -84,20 +84,20 @@ namespace Stroika::Frameworks::Led {
     protected:
         virtual bool   ContainsMappedDisplayCharacters (const Led_tChar* text, size_t nTChars) const override;
         virtual size_t RemoveMappedDisplayCharacters (Led_tChar* copyText, size_t nTChars) const override;
-        virtual void   PatchWidthRemoveMappedDisplayCharacters (const Led_tChar* srcText, Led_Distance* distanceResults, size_t nTChars) const override;
+        virtual void   PatchWidthRemoveMappedDisplayCharacters (const Led_tChar* srcText, DistanceType* distanceResults, size_t nTChars) const override;
 
         /*
          * Word wrapping helpers.
          */
     private:
-        nonvirtual size_t FindWrapPointForMeasuredText (const Led_tChar* text, size_t length, Led_Distance wrapWidth,
-                                                        size_t offsetToMarkerCoords, const Led_Distance* widthsVector, size_t startSoFar);
-        nonvirtual size_t TryToFindWrapPointForMeasuredText1 (const Led_tChar* text, size_t length, Led_Distance wrapWidth,
-                                                              size_t offsetToMarkerCoords, const Led_Distance* widthsVector, size_t startSoFar,
+        nonvirtual size_t FindWrapPointForMeasuredText (const Led_tChar* text, size_t length, DistanceType wrapWidth,
+                                                        size_t offsetToMarkerCoords, const DistanceType* widthsVector, size_t startSoFar);
+        nonvirtual size_t TryToFindWrapPointForMeasuredText1 (const Led_tChar* text, size_t length, DistanceType wrapWidth,
+                                                              size_t offsetToMarkerCoords, const DistanceType* widthsVector, size_t startSoFar,
                                                               size_t searchStart, size_t wrapLength);
-        nonvirtual size_t FindWrapPointForOneLongWordForMeasuredText (const Led_tChar* text, size_t length, Led_Distance wrapWidth,
+        nonvirtual size_t FindWrapPointForOneLongWordForMeasuredText (const Led_tChar* text, size_t length, DistanceType wrapWidth,
                                                                       size_t              offsetToMarkerCoords,
-                                                                      const Led_Distance* widthsVector, size_t startSoFar);
+                                                                      const DistanceType* widthsVector, size_t startSoFar);
     };
 
     /*
@@ -124,8 +124,8 @@ namespace Stroika::Frameworks::Led {
         TrivialWordWrappedImager (Led_Tablet t, Led_Rect bounds, const Led_tString& initialText = LED_TCHAR_OF (""));
 
     public:
-        virtual void            GetLayoutMargins (MultiRowTextImager::RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const override;
-        nonvirtual Led_Distance GetHeight () const;
+        virtual void            GetLayoutMargins (MultiRowTextImager::RowReference row, Coordinate* lhs, Coordinate* rhs) const override;
+        nonvirtual DistanceType GetHeight () const;
     };
 
 }

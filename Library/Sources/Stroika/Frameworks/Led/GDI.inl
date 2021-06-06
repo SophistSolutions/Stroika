@@ -290,39 +290,39 @@ namespace Stroika::Frameworks::Led {
 
     /*
      ********************************************************************************
-     ************************************ Led_TWIPS *********************************
+     ************************************ TWIPS *************************************
      ********************************************************************************
      */
-    inline Led_TWIPS::Led_TWIPS (long v)
+    inline TWIPS::TWIPS (long v)
         : fValue (v)
     {
     }
-    inline Led_TWIPS::operator long () const
+    inline TWIPS::operator long () const
     {
         return fValue;
     }
-    inline Led_TWIPS& Led_TWIPS::operator+= (const Led_TWIPS& rhs)
+    inline TWIPS& TWIPS::operator+= (const TWIPS& rhs)
     {
         fValue += rhs.fValue;
         return *this;
     }
-    inline Led_TWIPS& Led_TWIPS::operator-= (const Led_TWIPS& rhs)
+    inline TWIPS& TWIPS::operator-= (const TWIPS& rhs)
     {
         fValue -= rhs.fValue;
         return *this;
     }
-    inline Led_TWIPS& Led_TWIPS::operator*= (double rhs)
+    inline TWIPS& TWIPS::operator*= (double rhs)
     {
         fValue = static_cast<long> (fValue * rhs);
         return *this;
     }
-    inline Led_TWIPS operator+ (const Led_TWIPS& lhs, const Led_TWIPS& rhs)
+    inline TWIPS operator+ (const TWIPS& lhs, const TWIPS& rhs)
     {
-        return Led_TWIPS (static_cast<long> (lhs) + static_cast<long> (rhs));
+        return TWIPS (static_cast<long> (lhs) + static_cast<long> (rhs));
     }
-    inline Led_TWIPS operator- (const Led_TWIPS& lhs, const Led_TWIPS& rhs)
+    inline TWIPS operator- (const TWIPS& lhs, const TWIPS& rhs)
     {
-        return Led_TWIPS (static_cast<long> (lhs) - static_cast<long> (rhs));
+        return TWIPS (static_cast<long> (lhs) - static_cast<long> (rhs));
     }
 
     /*
@@ -477,10 +477,10 @@ namespace Stroika::Frameworks::Led {
 
     /*
      ********************************************************************************
-     ************************************ Led_TabStopList ***************************
+     ************************************ TabStopList *******************************
      ********************************************************************************
      */
-    inline Led_Distance Led_TabStopList::ComputeTabStopAfterPosition (Led_Tablet tablet, Led_Distance afterPos) const
+    inline DistanceType TabStopList::ComputeTabStopAfterPosition (Led_Tablet tablet, DistanceType afterPos) const
     {
         RequireNotNull (tablet);
         return tablet->CvtFromTWIPSH (ComputeTabStopAfterPosition (tablet->CvtToTWIPSH (afterPos)));
@@ -492,11 +492,6 @@ namespace Stroika::Frameworks::Led {
      ************************************ Led_Bitmap ********************************
      ********************************************************************************
      */
-    inline Led_Bitmap::Led_Bitmap ()
-        : m_hObject (nullptr)
-        , fImageSize (Led_Size (0, 0))
-    {
-    }
     inline Led_Bitmap::~Led_Bitmap ()
     {
         if (m_hObject != nullptr) {
@@ -543,7 +538,7 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:
         <p>See also @'Led_Tablet_::CvtFromTWIPSH', @'Led_Tablet_::CvtToTWIPSV', @'Led_Tablet_::CvtToTWIPSH'.</p>
     */
-    inline Led_Coordinate Led_Tablet_::CvtFromTWIPSV (Led_TWIPS from) const
+    inline Coordinate Led_Tablet_::CvtFromTWIPSV (TWIPS from) const
     {
 #if qPlatform_Windows
         if (fLogPixelsV == 0) {
@@ -570,7 +565,7 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:
         <p>See also @'Led_Tablet_::CvtFromTWIPSV', @'Led_Tablet_::CvtToTWIPSV', @'Led_Tablet_::CvtToTWIPSH'.</p>
     */
-    inline Led_Coordinate Led_Tablet_::CvtFromTWIPSH (Led_TWIPS from) const
+    inline Coordinate Led_Tablet_::CvtFromTWIPSH (TWIPS from) const
     {
 #if qPlatform_Windows
         if (fLogPixelsH == 0) {
@@ -597,7 +592,7 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>Utility routine to convert from logical coordinates (usually pixels) to TWIPS.</p>
         <p>See also @'Led_Tablet_::CvtFromTWIPSV', @'Led_Tablet_::CvtFromTWIPSH', @'Led_Tablet_::CvtToTWIPSH'.</p>
     */
-    inline Led_TWIPS Led_Tablet_::CvtToTWIPSV (Led_Coordinate from) const
+    inline TWIPS Led_Tablet_::CvtToTWIPSV (Coordinate from) const
     {
 #if qPlatform_Windows
         if (fLogPixelsV == 0) {
@@ -612,10 +607,10 @@ namespace Stroika::Frameworks::Led {
         Verify (::LPtoDP (m_hAttribDC, &x, 1));
         x.y -= vpOrg.y;
         Assert (x.x == wOrg.x);
-        return Led_TWIPS (::MulDiv (x.y, 1440, fLogPixelsV));
+        return TWIPS (::MulDiv (x.y, 1440, fLogPixelsV));
 #else
-        return Led_TWIPS (from * 1440 / Led_GDIGlobals::Get ().GetMainScreenLogPixelsV ());
-//              return Led_TWIPS (from * 20);   // assume 72dpi on mac
+        return TWIPS (from * 1440 / Led_GDIGlobals::Get ().GetMainScreenLogPixelsV ());
+//              return TWIPS (from * 20);   // assume 72dpi on mac
 #endif
     }
     /*
@@ -623,7 +618,7 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>Utility routine to convert from logical coordinates (usually pixels) to TWIPS.</p>
         <p>See also @'Led_Tablet_::CvtFromTWIPSV', @'Led_Tablet_::CvtFromTWIPSH', @'Led_Tablet_::CvtToTWIPSV'.</p>
     */
-    inline Led_TWIPS Led_Tablet_::CvtToTWIPSH (Led_Coordinate from) const
+    inline TWIPS Led_Tablet_::CvtToTWIPSH (Coordinate from) const
     {
 #if qPlatform_Windows
         if (fLogPixelsH == 0) {
@@ -638,10 +633,10 @@ namespace Stroika::Frameworks::Led {
         Verify (::LPtoDP (m_hAttribDC, &x, 1));
         x.x -= vpOrg.x;
         Assert (x.y == vpOrg.y);
-        return Led_TWIPS (::MulDiv (x.x, 1440, fLogPixelsH));
+        return TWIPS (::MulDiv (x.x, 1440, fLogPixelsH));
 #else
-        return Led_TWIPS (from * 1440 / Led_GDIGlobals::Get ().GetMainScreenLogPixelsH ());
-//              return Led_TWIPS (from * 20);   // assume 72dpi on mac
+        return TWIPS (from * 1440 / Led_GDIGlobals::Get ().GetMainScreenLogPixelsH ());
+//              return TWIPS (from * 20);   // assume 72dpi on mac
 #endif
     }
 #if qPlatform_MacOS
@@ -930,6 +925,26 @@ namespace Stroika::Frameworks::Led {
 #endif
     }
 
+#if qPlatform_MacOS
+    /*
+     ********************************************************************************
+     *********************************** Led_GetCurrentGDIPort *****************************
+     ********************************************************************************
+     */
+    inline GrafPtr Led_GetCurrentGDIPort ()
+    {
+#if qPeekAtQuickDrawGlobals
+        GrafPtr t = qd.thePort;
+#else
+        // This used to (and perhaps could in ifdefs) return qd.thePort -
+        GrafPtr t = nullptr;
+        ::GetPort (&t);
+#endif
+        EnsureNotNull (t);
+        return t;
+    }
+#endif
+
     /*
      ********************************************************************************
      *********************************** Led_GDIGlobals *****************************
@@ -942,11 +957,11 @@ namespace Stroika::Frameworks::Led {
         }
         return *sThe;
     }
-    inline Led_Distance Led_GDIGlobals::GetMainScreenLogPixelsH () const
+    inline DistanceType Led_GDIGlobals::GetMainScreenLogPixelsH () const
     {
         return fLogPixelsH;
     }
-    inline Led_Distance Led_GDIGlobals::GetMainScreenLogPixelsV () const
+    inline DistanceType Led_GDIGlobals::GetMainScreenLogPixelsV () const
     {
         return fLogPixelsV;
     }
@@ -1108,7 +1123,7 @@ namespace Stroika::Frameworks::Led {
     inline Led_Rect InsetRect (const Led_Rect& r, int vBy, int hBy)
     {
         return Led_Rect (r.GetTop () + vBy, r.GetLeft () + hBy,
-                         max (0L, Led_Coordinate (r.GetHeight ()) - 2 * vBy), max (0L, Led_Coordinate (r.GetWidth ()) - 2 * hBy));
+                         max (0L, Coordinate (r.GetHeight ()) - 2 * vBy), max (0L, Coordinate (r.GetWidth ()) - 2 * hBy));
     }
 
     /*
@@ -1123,10 +1138,10 @@ namespace Stroika::Frameworks::Led {
     */
     inline Led_Rect EnsureRectInRect (const Led_Rect& r, Led_Rect enlosingR)
     {
-        Led_Distance   winWidth  = min (r.GetWidth (), enlosingR.GetWidth ());
-        Led_Distance   winHeight = min (r.GetHeight (), enlosingR.GetHeight ());
-        Led_Coordinate winLeft   = max (r.GetLeft (), enlosingR.GetLeft ());
-        Led_Coordinate winTop    = max (r.GetTop (), enlosingR.GetTop ());
+        DistanceType winWidth  = min (r.GetWidth (), enlosingR.GetWidth ());
+        DistanceType winHeight = min (r.GetHeight (), enlosingR.GetHeight ());
+        Coordinate   winLeft   = max (r.GetLeft (), enlosingR.GetLeft ());
+        Coordinate   winTop    = max (r.GetTop (), enlosingR.GetTop ());
 
         DISABLE_COMPILER_MSC_WARNING_START (4018) //signed/unsigned mismatch
         if ((winLeft + winWidth) > enlosingR.GetRight ()) {
@@ -1289,12 +1304,12 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>Utility routine to convert from logical coordinates (usually pixels) to TWIPS.
         <p>See also @'Led_CvtScreenPixelsToTWIPSH'.</p>
     */
-    inline Led_TWIPS Led_CvtScreenPixelsToTWIPSV (Led_Coordinate from)
+    inline TWIPS Led_CvtScreenPixelsToTWIPSV (Coordinate from)
     {
 #if qPlatform_Windows
-        return Led_TWIPS (::MulDiv (from, 1440, Led_GDIGlobals::Get ().GetMainScreenLogPixelsV ()));
+        return TWIPS (::MulDiv (from, 1440, Led_GDIGlobals::Get ().GetMainScreenLogPixelsV ()));
 #else
-        return Led_TWIPS (from * 1440 / Led_GDIGlobals::Get ().GetMainScreenLogPixelsV ());
+        return TWIPS (from * 1440 / Led_GDIGlobals::Get ().GetMainScreenLogPixelsV ());
 #endif
     }
     /*
@@ -1302,12 +1317,12 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>Utility routine to convert from logical coordinates (usually pixels) to TWIPS.
         <p>See also @'Led_CvtScreenPixelsToTWIPSV'.</p>
     */
-    inline Led_TWIPS Led_CvtScreenPixelsToTWIPSH (Led_Coordinate from)
+    inline TWIPS Led_CvtScreenPixelsToTWIPSH (Coordinate from)
     {
 #if qPlatform_Windows
-        return Led_TWIPS (::MulDiv (from, 1440, Led_GDIGlobals::Get ().GetMainScreenLogPixelsH ()));
+        return TWIPS (::MulDiv (from, 1440, Led_GDIGlobals::Get ().GetMainScreenLogPixelsH ()));
 #else
-        return Led_TWIPS (from * 1440 / Led_GDIGlobals::Get ().GetMainScreenLogPixelsH ());
+        return TWIPS (from * 1440 / Led_GDIGlobals::Get ().GetMainScreenLogPixelsH ());
 #endif
     }
     /*
@@ -1315,12 +1330,12 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>Utility routine to convert from TWIPS to logical coordinates (usually pixels).
         <p>See also @'Led_CvtScreenPixelsFromTWIPSH'.</p>
     */
-    inline Led_Coordinate Led_CvtScreenPixelsFromTWIPSV (Led_TWIPS from)
+    inline Coordinate Led_CvtScreenPixelsFromTWIPSV (TWIPS from)
     {
 #if qPlatform_Windows
         return ::MulDiv (from, Led_GDIGlobals::Get ().GetMainScreenLogPixelsV (), 1440);
 #else
-        return Led_TWIPS (from * Led_GDIGlobals::Get ().GetMainScreenLogPixelsV () / 1440);
+        return TWIPS (from * Led_GDIGlobals::Get ().GetMainScreenLogPixelsV () / 1440);
 #endif
     }
     /*
@@ -1328,12 +1343,12 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>Utility routine to convert from TWIPS to logical coordinates (usually pixels).
         <p>See also @'Led_CvtScreenPixelsFromTWIPSV'.</p>
     */
-    inline Led_Coordinate Led_CvtScreenPixelsFromTWIPSH (Led_TWIPS from)
+    inline Coordinate Led_CvtScreenPixelsFromTWIPSH (TWIPS from)
     {
 #if qPlatform_Windows
         return ::MulDiv (from, Led_GDIGlobals::Get ().GetMainScreenLogPixelsH (), 1440);
 #else
-        return Led_TWIPS (from * Led_GDIGlobals::Get ().GetMainScreenLogPixelsH () / 1440);
+        return TWIPS (from * Led_GDIGlobals::Get ().GetMainScreenLogPixelsH () / 1440);
 #endif
     }
 
@@ -1372,7 +1387,7 @@ namespace Stroika::Frameworks::Led {
         fPlatformSpecific = rhs.fPlatformSpecific;
         return *this;
     }
-    inline Led_Distance Led_FontMetrics::GetAscent () const
+    inline DistanceType Led_FontMetrics::GetAscent () const
     {
 #if qPlatform_MacOS
         return (fPlatformSpecific.ascent);
@@ -1382,7 +1397,7 @@ namespace Stroika::Frameworks::Led {
         return fPlatformSpecific.fAscent;
 #endif
     }
-    inline Led_Distance Led_FontMetrics::GetDescent () const
+    inline DistanceType Led_FontMetrics::GetDescent () const
     {
 #if qPlatform_MacOS
         return (fPlatformSpecific.descent);
@@ -1392,7 +1407,7 @@ namespace Stroika::Frameworks::Led {
         return fPlatformSpecific.fDescent;
 #endif
     }
-    inline Led_Distance Led_FontMetrics::GetLeading () const
+    inline DistanceType Led_FontMetrics::GetLeading () const
     {
 #if qPlatform_MacOS
         return (fPlatformSpecific.leading);
@@ -1402,38 +1417,38 @@ namespace Stroika::Frameworks::Led {
         return (fPlatformSpecific.fLeading);
 #endif
     }
-    inline Led_Distance Led_FontMetrics::GetHeight () const
+    inline DistanceType Led_FontMetrics::GetHeight () const
     {
 #if qPlatform_Windows
         Assert (fPlatformSpecific.tmHeight >= 0);
-        Assert (GetAscent () + GetDescent () == Led_Distance (fPlatformSpecific.tmHeight));
+        Assert (GetAscent () + GetDescent () == DistanceType (fPlatformSpecific.tmHeight));
 #endif
         return (GetAscent () + GetDescent ());
     }
-    inline Led_Distance Led_FontMetrics::GetLineHeight () const
+    inline DistanceType Led_FontMetrics::GetLineHeight () const
     {
         return (GetAscent () + GetDescent () + GetLeading ());
     }
-    inline nonvirtual Led_Distance Led_FontMetrics::GetMaxCharacterWidth () const
+    inline nonvirtual DistanceType Led_FontMetrics::GetMaxCharacterWidth () const
     {
 #if qPlatform_MacOS
-        return (fPlatformSpecific.widMax);
+        return fPlatformSpecific.widMax;
 #elif qPlatform_Windows
-        return (fPlatformSpecific.tmMaxCharWidth);
+        return fPlatformSpecific.tmMaxCharWidth;
 #elif qStroika_FeatureSupported_XWindows
-        return (fPlatformSpecific.fMaxCharWidth);
+        return fPlatformSpecific.fMaxCharWidth;
 #endif
     }
 #if qPlatform_Windows
-    inline nonvirtual Led_Distance Led_FontMetrics::GetAveCharacterWidth () const
+    inline nonvirtual DistanceType Led_FontMetrics::GetAveCharacterWidth () const
     {
-        return (fPlatformSpecific.tmAveCharWidth);
+        return fPlatformSpecific.tmAveCharWidth;
     }
 #endif
 #if qPlatform_MacOS
     inline Led_FontMetrics::operator const FontInfo* () const
     {
-        return (&fPlatformSpecific);
+        return &fPlatformSpecific;
     }
     inline Led_FontMetrics::operator FontInfo* ()
     {
@@ -1442,11 +1457,11 @@ namespace Stroika::Frameworks::Led {
 #elif qPlatform_Windows
     inline Led_FontMetrics::operator const TEXTMETRIC* () const
     {
-        return (&fPlatformSpecific);
+        return &fPlatformSpecific;
     }
     inline Led_FontMetrics::operator TEXTMETRIC* ()
     {
-        return (&fPlatformSpecific);
+        return &fPlatformSpecific;
     }
 #endif
 

@@ -22,7 +22,7 @@ using StandardStyleMarker = StandardStyledTextImager::StandardStyleMarker;
 
 void StandardStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Led_Tablet tablet,
                                        size_t from, size_t to, const TextLayoutBlock& text,
-                                       const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn)
+                                       const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Coordinate useBaseLine, DistanceType* pixelsDrawn)
 {
     RequireNotNull (imager);
     imager->DrawSegment_ (tablet, fFontSpecification, from, to, text, drawInto, useBaseLine, pixelsDrawn);
@@ -30,19 +30,19 @@ void StandardStyleMarker::DrawSegment (const StyledTextImager* imager, const Run
 
 void StandardStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& /*runElement*/, size_t from, size_t to,
                                                const Led_tChar* text,
-                                               Led_Distance*    distanceResults) const
+                                               DistanceType*    distanceResults) const
 {
     RequireNotNull (imager);
     imager->MeasureSegmentWidth_ (fFontSpecification, from, to, text, distanceResults);
 }
 
-Led_Distance StandardStyleMarker::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& /*runElement*/, size_t from, size_t to) const
+DistanceType StandardStyleMarker::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& /*runElement*/, size_t from, size_t to) const
 {
     RequireNotNull (imager);
     return (imager->MeasureSegmentHeight_ (fFontSpecification, from, to));
 }
 
-Led_Distance StandardStyleMarker::MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& /*runElement*/, size_t from, size_t to) const
+DistanceType StandardStyleMarker::MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& /*runElement*/, size_t from, size_t to) const
 {
     RequireNotNull (imager);
     return (imager->MeasureSegmentBaseLine_ (fFontSpecification, from, to));

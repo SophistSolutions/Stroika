@@ -160,7 +160,7 @@ namespace Stroika::Frameworks::Led {
                 (like in reading RTF files which contain size annotations), we select an appropriate size.</p>
                     <p>See @'StandardUnknownTypeStyleMarker::SetShownSize'
     */
-    inline Led_TWIPS_Point StandardUnknownTypeStyleMarker::GetShownSize () const
+    inline TWIPS_Point StandardUnknownTypeStyleMarker::GetShownSize () const
     {
         return fShownSize;
     }

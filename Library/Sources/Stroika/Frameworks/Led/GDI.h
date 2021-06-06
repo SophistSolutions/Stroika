@@ -37,22 +37,22 @@
 namespace Stroika::Frameworks::Led {
 
     /**
-     * <code>Led_Coordinate</code> is the <code>signed</code> analog of @'Led_Distance'.
-     *    @'Led_Point' is a tuple of <code>Led_Coordinates</code>s
+     * <code>Coordinate</code> is the <code>signed</code> analog of @'DistanceType'.
+     *    @'Led_Point' is a tuple of <code>Coordinates</code>s
      *     (vertical and horizontal).</p>
      */
-    using Led_Coordinate = long;
+    using Coordinate = long;
 
     /*
-    @CLASS:         Led_Distance
-    @DESCRIPTION:   <p><code>Led_Distance</code> is an unsigned type, specifying the distance (always non-negative)
-        between two graphics locations. @'Led_Size' is a tuple of <code>Led_Distance</code>s
+    @CLASS:         DistanceType
+    @DESCRIPTION:   <p><code>DistanceType</code> is an unsigned type, specifying the distance (always non-negative)
+        between two graphics locations. @'Led_Size' is a tuple of <code>DistanceType</code>s
         (vertical and horizontal).</p>
     */
-    using Led_Distance = unsigned long;
+    using DistanceType = unsigned long;
 
     /*
-    @CLASS:         Led_TWIPS
+    @CLASS:         TWIPS
     @DESCRIPTION:   <p>Many distances are specified in Led in TWIPS - 1/20 of a printers point.
         This means - 1/1440 of an inch.</p>
             <p>This size refers to the size when printed on a page. So it can be scaled - depnding on screen resolution.
@@ -61,53 +61,50 @@ namespace Stroika::Frameworks::Led {
             <p>NB: declard as a class instead of a typedef so we get better type checking. Shouldn't affect sizes or code
         generation - I would hope!</p>
     */
-    class Led_TWIPS {
+    class TWIPS {
     public:
-        explicit Led_TWIPS (long v);
+        explicit TWIPS (long v);
         operator long () const;
 
     private:
         long fValue;
 
     public:
-        nonvirtual Led_TWIPS& operator+= (const Led_TWIPS& rhs);
-        nonvirtual Led_TWIPS& operator-= (const Led_TWIPS& rhs);
-        nonvirtual Led_TWIPS& operator*= (double rhs);
+        nonvirtual TWIPS& operator+= (const TWIPS& rhs);
+        nonvirtual TWIPS& operator-= (const TWIPS& rhs);
+        nonvirtual TWIPS& operator*= (double rhs);
 
     public:
-        static const Led_TWIPS kPoint;
-        static const Led_TWIPS kInch;
-        static const Led_TWIPS kOneInch;
+        static const TWIPS kPoint;
+        static const TWIPS kInch;
+        static const TWIPS kOneInch;
     };
-    Led_TWIPS operator+ (const Led_TWIPS& lhs, const Led_TWIPS& rhs);
-    Led_TWIPS operator- (const Led_TWIPS& lhs, const Led_TWIPS& rhs);
+    TWIPS operator+ (const TWIPS& lhs, const TWIPS& rhs);
+    TWIPS operator- (const TWIPS& lhs, const TWIPS& rhs);
 
     class Led_Tablet_;
 
     /*
-    @CLASS:         Led_TabStopList
-    @DESCRIPTION:   <p>Even though WinSDK supports GetTabbedTextExtent/TabbedTextOut () - they do a bad job.
-        In particular, they offer no (obvious) way to specify the tab origin for
-        GetTabbedTextExtent(). This makes proper text display nearly impossible.</p>
-            <p>Also, the Mac provides NO tab support at all. Because of the Mac - we NEED
-        to implement our own tab support. Given we are doing that anyhow, may as
-        well use our portable support on both platforms.</p>
-            <p>For both calculating widths, and doing imaging, we follow essentially
-        the same algorithm.
-        <ul>
-            <li>    Walk the text looking for a tab or EOL.
-            <li>    Take the tab-free initial segment and image(calculate) it.
-            <li>    if now on a tab, image (calculate) that.
-            <li>    Advance indexes over what we've imaged (calculated) and repeat.
-        </ul>
-        </p>
-    */
-    class Led_TabStopList {
+     *      Even though WinSDK supports GetTabbedTextExtent/TabbedTextOut () - they do a bad job.
+     *  In particular, they offer no (obvious) way to specify the tab origin for
+     *  GetTabbedTextExtent(). This makes proper text display nearly impossible.
+     *
+     *      Also, the Mac provides NO tab support at all. Because of the Mac - we NEED
+     *  to implement our own tab support. Given we are doing that anyhow, may as
+     *  well use our portable support on both platforms.
+     *      For both calculating widths, and doing imaging, we follow essentially
+     *  the same algorithm.
+     *      o    Walk the text looking for a tab or EOL.
+     *      o    Take the tab-free initial segment and image(calculate) it.
+     *      o    if now on a tab, image (calculate) that.
+     *      o    Advance indexes over what we've imaged (calculated) and repeat.
+     */
+    class TabStopList {
     protected:
-        Led_TabStopList () = default;
+        TabStopList () = default;
 
     public:
-        virtual ~Led_TabStopList () = default;
+        virtual ~TabStopList () = default;
 
     public:
         /*
@@ -115,45 +112,26 @@ namespace Stroika::Frameworks::Led {
         @DESCRIPTION:   <p>Compute where the 'ith' tabstop lies (i >= 0, and can be arbitrarily high).
             Note that though tabstop <code>i=0</code> is the first tabstop (which by convention is usually NOT
             at the left margin - but is really the logically 'first' one).</p>
-                <p>Note - this used to return Led_Distance - but in Led 3.0 - it changed to returning TWIPS (see SPR#0767);</p>
+                <p>Note - this used to return Distance - but in Led 3.0 - it changed to returning TWIPS (see SPR#0767);</p>
         */
-        virtual Led_TWIPS ComputeIthTab (size_t i) const = 0;
+        virtual TWIPS ComputeIthTab (size_t i) const = 0;
         /*
         @METHOD:        TextImager::TabStopList::ComputeTabStopAfterPosition
         @DESCRIPTION:   <p>Given a distance from the left margin, find the immediately following tabstops position.
             This is what is actaully used in the imagers to compute where to draw text. It can logically
             be implemented by walking the tabstoplist and calling @'TextImager::TabStopList::ComputeIthTab', and
             returning the next one after the one past(or equal to) <code>afterPos</code>.</p>
-                <p>Note - this used to take/return Led_Distance - but in Led 3.0 - it changed to take/return TWIPS (see SPR#0767);</p>
-                <p>Now there is an overloaded version using Led_Distance that takes a Led_Tablet as argument.</p>
+                <p>Note - this used to take/return Distance - but in Led 3.0 - it changed to take/return TWIPS (see SPR#0767);</p>
+                <p>Now there is an overloaded version using Distance that takes a Led_Tablet as argument.</p>
         */
-        virtual Led_TWIPS       ComputeTabStopAfterPosition (Led_TWIPS afterPos) const = 0;
-        nonvirtual Led_Distance ComputeTabStopAfterPosition (Led_Tablet_* tablet, Led_Distance afterPos) const;
+        virtual TWIPS           ComputeTabStopAfterPosition (TWIPS afterPos) const = 0;
+        nonvirtual DistanceType ComputeTabStopAfterPosition (Led_Tablet_* tablet, DistanceType afterPos) const;
     };
 
-#if qPlatform_MacOS
-    inline GrafPtr Led_GetCurrentGDIPort ()
-    {
-#if qPeekAtQuickDrawGlobals
-        GrafPtr t = qd.thePort;
-#else
-        // This used to (and perhaps could in ifdefs) return qd.thePort -
-        GrafPtr t = nullptr;
-        ::GetPort (&t);
-#endif
-        EnsureNotNull (t);
-        return t;
-    }
-#endif
-
 #if qPlatform_Windows
-
     class Led_FontObject {
     public:
-        Led_FontObject ()
-            : m_hObject{nullptr}
-        {
-        }
+        Led_FontObject () = default;
         ~Led_FontObject ()
         {
             (void)DeleteObject ();
@@ -189,7 +167,7 @@ namespace Stroika::Frameworks::Led {
         }
 
     public:
-        HFONT m_hObject;
+        HFONT m_hObject{nullptr};
     };
 
     class Led_Brush {
@@ -226,7 +204,7 @@ namespace Stroika::Frameworks::Led {
         }
 
     private:
-        HBRUSH m_hObject;
+        HBRUSH m_hObject{nullptr};
     };
 #endif
 
@@ -341,22 +319,22 @@ namespace Stroika::Frameworks::Led {
 
     /*
     @CLASS:         Led_Size
-    @DESCRIPTION:   <p>Simple typedef of @'Point_Base<COORD_TYPE>' using @'Led_Distance'.</p>
+    @DESCRIPTION:   <p>Simple typedef of @'Point_Base<COORD_TYPE>' using @'Distance'.</p>
     */
-    using Led_Size = Point_Base<Led_Distance>;
+    using Led_Size = Point_Base<DistanceType>;
 
     /*
     @CLASS:         Led_Point
-    @DESCRIPTION:   <p>Simple typedef of @'Point_Base<COORD_TYPE>' using @'Led_Coordinate'.</p>
+    @DESCRIPTION:   <p>Simple typedef of @'Point_Base<COORD_TYPE>' using @'Coordinate'.</p>
     */
-    using Led_Point = Point_Base<Led_Coordinate>;
+    using Led_Point = Point_Base<Coordinate>;
     Led_Point operator- (const Led_Point& lhs, const Led_Point& rhs);
 
     /*
-    @CLASS:         Led_TWIPS_Point
-    @DESCRIPTION:   <p>Simple typedef of @'Point_Base<COORD_TYPE>' using @'Led_TWIPS'.</p>
+    @CLASS:         TWIPS_Point
+    @DESCRIPTION:   <p>Simple typedef of @'Point_Base<COORD_TYPE>' using @'TWIPS'.</p>
     */
-    using Led_TWIPS_Point = Point_Base<Led_TWIPS>;
+    using TWIPS_Point = Point_Base<TWIPS>;
 
     /*
     @CLASS:         Led_Rect
@@ -365,10 +343,10 @@ namespace Stroika::Frameworks::Led {
     using Led_Rect = Rect_Base<Led_Point, Led_Size>;
 
     /*
-    @CLASS:         Led_TWIPS_Rect
-    @DESCRIPTION:   <p>Simple typedef of @'Rect_Base<POINT_TYPE,SIZE_TYPE>' using @'Led_TWIPS_Point'.</p>
+    @CLASS:         TWIPS_Rect
+    @DESCRIPTION:   <p>Simple typedef of @'Rect_Base<POINT_TYPE,SIZE_TYPE>' using @'TWIPS_Point'.</p>
     */
-    using Led_TWIPS_Rect = Rect_Base<Led_TWIPS_Point, Led_TWIPS_Point>;
+    using TWIPS_Rect = Rect_Base<TWIPS_Point, TWIPS_Point>;
 
     /**
      * \brief Portable GDI abstraction for 'Region' object.
@@ -682,7 +660,7 @@ namespace Stroika::Frameworks::Led {
         {
             Require (rule == eSingleSpace or rule == eOnePointFiveSpace or rule == eDoubleSpace);
         }
-        Led_LineSpacing (Rule rule, Led_TWIPS twips)
+        Led_LineSpacing (Rule rule, TWIPS twips)
             : fRule{rule}
             , fArg{static_cast<unsigned> (twips)}
         {
@@ -1115,12 +1093,12 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void InvalidateGlobals ();
 
     public:
-        nonvirtual Led_Distance GetMainScreenLogPixelsH () const;
-        nonvirtual Led_Distance GetMainScreenLogPixelsV () const;
+        nonvirtual DistanceType GetMainScreenLogPixelsH () const;
+        nonvirtual DistanceType GetMainScreenLogPixelsV () const;
 
     public:
-        Led_Distance fLogPixelsH;
-        Led_Distance fLogPixelsV;
+        DistanceType fLogPixelsH;
+        DistanceType fLogPixelsV;
 
     private:
         class _Global_DESTRUCTOR_;
@@ -1167,10 +1145,10 @@ namespace Stroika::Frameworks::Led {
     XRectangle AsXRect (const Led_Rect& r);
 #endif
 
-    Led_TWIPS      Led_CvtScreenPixelsToTWIPSV (Led_Coordinate from);
-    Led_TWIPS      Led_CvtScreenPixelsToTWIPSH (Led_Coordinate from);
-    Led_Coordinate Led_CvtScreenPixelsFromTWIPSV (Led_TWIPS from);
-    Led_Coordinate Led_CvtScreenPixelsFromTWIPSH (Led_TWIPS from);
+    TWIPS      Led_CvtScreenPixelsToTWIPSV (Coordinate from);
+    TWIPS      Led_CvtScreenPixelsToTWIPSH (Coordinate from);
+    Coordinate Led_CvtScreenPixelsFromTWIPSV (TWIPS from);
+    Coordinate Led_CvtScreenPixelsFromTWIPSH (TWIPS from);
 
     /*
     @CLASS:         Led_FontMetrics
@@ -1182,10 +1160,10 @@ namespace Stroika::Frameworks::Led {
 #if qStroika_FeatureSupported_XWindows
     public:
         struct PlatformSpecific {
-            Led_Distance fAscent;
-            Led_Distance fDescent;
-            Led_Distance fLeading;
-            Led_Distance fMaxCharWidth;
+            DistanceType fAscent;
+            DistanceType fDescent;
+            DistanceType fLeading;
+            DistanceType fMaxCharWidth;
         };
 #endif
     public:
@@ -1201,16 +1179,16 @@ namespace Stroika::Frameworks::Led {
         const Led_FontMetrics& operator= (const Led_FontMetrics& rhs);
 
     public:
-        nonvirtual Led_Distance GetAscent () const;
-        nonvirtual Led_Distance GetDescent () const;
-        nonvirtual Led_Distance GetLeading () const;
-        nonvirtual Led_Distance GetHeight () const;     // does NOT include leading
-        nonvirtual Led_Distance GetLineHeight () const; // includes leading
+        nonvirtual DistanceType GetAscent () const;
+        nonvirtual DistanceType GetDescent () const;
+        nonvirtual DistanceType GetLeading () const;
+        nonvirtual DistanceType GetHeight () const;     // does NOT include leading
+        nonvirtual DistanceType GetLineHeight () const; // includes leading
 
     public:
-        nonvirtual Led_Distance GetMaxCharacterWidth () const;
+        nonvirtual DistanceType GetMaxCharacterWidth () const;
 #if qPlatform_Windows
-        nonvirtual Led_Distance GetAveCharacterWidth () const;
+        nonvirtual DistanceType GetAveCharacterWidth () const;
 #endif
 
         // Convertion operator to make it easier to make GDI calls with one of our guys on a
@@ -1274,23 +1252,23 @@ namespace Stroika::Frameworks::Led {
 #endif
 
     public:
-        nonvirtual Led_Coordinate CvtFromTWIPSV (Led_TWIPS from) const;
-        nonvirtual Led_Coordinate CvtFromTWIPSH (Led_TWIPS from) const;
-        nonvirtual Led_TWIPS      CvtToTWIPSV (Led_Coordinate from) const;
-        nonvirtual Led_TWIPS      CvtToTWIPSH (Led_Coordinate from) const;
+        nonvirtual Coordinate CvtFromTWIPSV (TWIPS from) const;
+        nonvirtual Coordinate CvtFromTWIPSH (TWIPS from) const;
+        nonvirtual TWIPS      CvtToTWIPSV (Coordinate from) const;
+        nonvirtual TWIPS      CvtToTWIPSH (Coordinate from) const;
 
     public:
-        nonvirtual Led_Point       CvtFromTWIPS (Led_TWIPS_Point from) const;
-        nonvirtual Led_TWIPS_Point CvtToTWIPS (Led_Point from) const;
-        nonvirtual Led_Rect        CvtFromTWIPS (Led_TWIPS_Rect from) const;
-        nonvirtual Led_TWIPS_Rect  CvtToTWIPS (Led_Rect from) const;
+        nonvirtual Led_Point   CvtFromTWIPS (TWIPS_Point from) const;
+        nonvirtual TWIPS_Point CvtToTWIPS (Led_Point from) const;
+        nonvirtual Led_Rect    CvtFromTWIPS (TWIPS_Rect from) const;
+        nonvirtual TWIPS_Rect  CvtToTWIPS (Led_Rect from) const;
 
     public:
-        nonvirtual void ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, Led_Coordinate scrollBy);
+        nonvirtual void ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, Coordinate scrollBy);
         nonvirtual void FrameRegion (const Led_Region& r, const Led_Color& c);
 
     public:
-        nonvirtual void FrameRectangle (const Led_Rect& r, Led_Color c, Led_Distance borderWidth);
+        nonvirtual void FrameRectangle (const Led_Rect& r, Led_Color c, DistanceType borderWidth);
 
     public:
 #if qPlatform_MacOS
@@ -1364,11 +1342,11 @@ namespace Stroika::Frameworks::Led {
 
     public:
         nonvirtual void MeasureText (const Led_FontMetrics& precomputedFontMetrics,
-                                     const Led_tChar* text, size_t nTChars, Led_Distance* charLocations);
+                                     const Led_tChar* text, size_t nTChars, DistanceType* charLocations);
         nonvirtual void TabbedTextOut (const Led_FontMetrics& precomputedFontMetrics, const Led_tChar* text, size_t nBytes,
                                        TextDirection direction,
-                                       Led_Point outputAt, Led_Coordinate hTabOrigin, const Led_TabStopList& tabStopList,
-                                       Led_Distance* amountDrawn, Led_Coordinate hScrollOffset);
+                                       Led_Point outputAt, Coordinate hTabOrigin, const TabStopList& tabStopList,
+                                       DistanceType* amountDrawn, Coordinate hScrollOffset);
 
     public:
         nonvirtual void SetBackColor (const Led_Color& backColor);
@@ -1411,8 +1389,8 @@ namespace Stroika::Frameworks::Led {
         OwnDCControl fOwnsDC;
 
     private:
-        mutable Led_Distance fLogPixelsV;
-        mutable Led_Distance fLogPixelsH;
+        mutable DistanceType fLogPixelsV;
+        mutable DistanceType fLogPixelsH;
 #elif qStroika_FeatureSupported_XWindows
     private:
         Display* fDisplay;
@@ -1445,12 +1423,19 @@ namespace Stroika::Frameworks::Led {
         Led_Region   fOldClip;
     };
 
+#if qPlatform_MacOS
+    /**
+     */
+    GrafPtr Led_GetCurrentGDIPort ();
+#endif
+
     /*
-    @CLASS:         Led_Tablet
-    @DESCRIPTION:   <p>A pointer to a @'Led_Tablet_' structure. These pointers are used throughout Led.</p>
-        <p>In versions of Led prior to Led 3.0 - this typedef refered directly to a Mac GrafPort or MFC CDC.</p>
-        <p>Now it refers to a structure which wraps those lower level concepts (and doesn't depend on MFC anymore).</p>
-    */
+     *      A pointer to a @'Led_Tablet_' structure. These pointers are used throughout Led.
+     * 
+     *      In versions of Led prior to Led 3.0 - this typedef refered directly to a Mac GrafPort or MFC CDC
+     * 
+     *      Now it refers to a structure which wraps those lower level concepts (and doesn't depend on MFC anymore).
+     */
     using Led_Tablet = Led_Tablet_*;
 
 #if qPlatform_Windows
@@ -1494,7 +1479,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_Windows
     class Led_Bitmap {
     public:
-        Led_Bitmap ();
+        Led_Bitmap () = default;
         ~Led_Bitmap ();
 
     public:
@@ -1503,13 +1488,13 @@ namespace Stroika::Frameworks::Led {
 
     public:
         nonvirtual Led_Size GetImageSize () const;
-        nonvirtual BOOL     CreateCompatibleBitmap (HDC hdc, Led_Distance nWidth, Led_Distance nHeight);
-        nonvirtual BOOL     CreateCompatibleDIBSection (HDC hdc, Led_Distance nWidth, Led_Distance nHeight);
+        nonvirtual BOOL     CreateCompatibleBitmap (HDC hdc, DistanceType nWidth, DistanceType nHeight);
+        nonvirtual BOOL     CreateCompatibleDIBSection (HDC hdc, DistanceType nWidth, DistanceType nHeight);
         nonvirtual void     LoadBitmap (HINSTANCE hInstance, LPCTSTR lpBitmapName);
 
     private:
-        HBITMAP  m_hObject;
-        Led_Size fImageSize;
+        HBITMAP  m_hObject{nullptr};
+        Led_Size fImageSize{};
     };
 #endif
 
@@ -1527,7 +1512,7 @@ namespace Stroika::Frameworks::Led {
 
     public:
         nonvirtual void       Setup (Led_Tablet origTablet);
-        nonvirtual Led_Tablet PrepareRect (const Led_Rect& currentRowRect, Led_Distance extraToAddToBottomOfRect = 0);
+        nonvirtual Led_Tablet PrepareRect (const Led_Rect& currentRowRect, DistanceType extraToAddToBottomOfRect = 0);
         nonvirtual void       BlastBitmapToOrigTablet ();
 
     private:
@@ -1602,13 +1587,13 @@ namespace Stroika::Frameworks::Led {
     using Led_Win_Obj_Selector = Led_GDI_Obj_Selector;
 #endif
 
-/*
-        *  Trap Caching support
-        *
-        *      This is a groty hack - but can be quite a big speed improvment for
-        *  the Mac (at least 68K - I've never tried on PowerPC). For now
-        *  (and perhaps always) we only support this for the 68K code.
-        */
+    /*
+     *  Trap Caching support
+     *
+     *      This is a groty hack - but can be quite a big speed improvment for
+     *  the Mac (at least 68K - I've never tried on PowerPC). For now
+     *  (and perhaps always) we only support this for the 68K code.
+     */
 #if qPlatform_MacOS
     void     GDI_RGBForeColor (const RGBColor& color);
     void     GDI_RGBBackColor (const RGBColor& color);
@@ -1784,6 +1769,12 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_Windows
     void Led_CenterWindowInParent (HWND w);
 #endif
+
+    // LEGACY NAMES
+    using Led_TWIPS [[deprecated ("Since Stroika 2.1b12 use TWIPS")]]             = TWIPS;
+    using Led_Coordinate [[deprecated ("Since Stroika 2.1b12 use Coordinate")]]   = Coordinate;
+    using Led_Distance [[deprecated ("Since Stroika 2.1b12 use DistanceType")]]   = DistanceType;
+    using Led_TabStopList [[deprecated ("Since Stroika 2.1b12 use TabStopList")]] = TabStopList;
 
 }
 

@@ -94,7 +94,7 @@ void SimpleTextImager::MyPartitionWatcher::DidCoalece (void* infoRecord) const n
 SimpleTextImager::SimpleTextImager ()
     : fICreatedPartition (false)
     , fMyPartitionWatcher ()
-    , fRowHeight (Led_Distance (-1))
+    , fRowHeight (DistanceType (-1))
     , fInterlineSpace (0)
     , fTopLinePartitionMarkerInWindow (NULL)
     , fTotalRowsInWindow (0) // value must be computed
@@ -171,24 +171,24 @@ PartitioningTextImager::PartitionPtr SimpleTextImager::MakeDefaultPartition () c
             By default this simple uses MeasureSegmentHeight_ (GetDefaultFont (), 0, 0) to establish the per-row
             height. You can override this to provide whatever height you wish. But anything smaller will look cut-off.</p>
 */
-Led_Distance SimpleTextImager::ReCalcRowHeight () const
+DistanceType SimpleTextImager::ReCalcRowHeight () const
 {
     return MeasureSegmentHeight_ (GetDefaultFont (), 0, 0);
 }
 
-Led_Distance SimpleTextImager::MeasureSegmentHeight (size_t /*from*/, size_t /*to*/) const
+DistanceType SimpleTextImager::MeasureSegmentHeight (size_t /*from*/, size_t /*to*/) const
 {
     //return (MeasureSegmentHeight_ (GetDefaultFont (), from, to));
     return GetRowHeight ();
 }
 
-Led_Distance SimpleTextImager::MeasureSegmentBaseLine (size_t /*from*/, size_t /*to*/) const
+DistanceType SimpleTextImager::MeasureSegmentBaseLine (size_t /*from*/, size_t /*to*/) const
 {
     // If the user specifies an unusually large row-height, by default make this whitespace become above the
     // baseline, and not below.
-    Led_Distance rh   = GetRowHeight ();
-    Led_Distance sbrh = MeasureSegmentHeight_ (GetDefaultFont (), 0, 0);
-    Led_Distance bl   = MeasureSegmentBaseLine_ (GetDefaultFont (), 0, 0);
+    DistanceType rh   = GetRowHeight ();
+    DistanceType sbrh = MeasureSegmentHeight_ (GetDefaultFont (), 0, 0);
+    DistanceType bl   = MeasureSegmentBaseLine_ (GetDefaultFont (), 0, 0);
     if (rh > sbrh) {
         bl += (rh - sbrh);
     }
@@ -623,9 +623,9 @@ void SimpleTextImager::DrawPartitionElement (PartitionMarker* pm, size_t startSu
     for (size_t subRow = startSubRow; subRow <= endSubRow; ++subRow) {
         Led_Rect currentRowRect     = *remainingDrawArea;
         currentRowRect.bottom       = currentRowRect.top + GetRowHeight ();
-        Led_Distance interlineSpace = GetInterLineSpace ();
+        DistanceType interlineSpace = GetInterLineSpace ();
         if (
-            (currentRowRect.bottom + Led_Coordinate (interlineSpace) > subsetToDraw.top) and
+            (currentRowRect.bottom + Coordinate (interlineSpace) > subsetToDraw.top) and
             (currentRowRect.top < subsetToDraw.bottom)) {
 
             /*
@@ -691,9 +691,9 @@ void SimpleTextImager::DrawPartitionElement (PartitionMarker* pm, size_t startSu
     }
 }
 
-Led_Distance SimpleTextImager::ComputeMaxHScrollPos () const
+DistanceType SimpleTextImager::ComputeMaxHScrollPos () const
 {
-    Led_Distance maxHWidth = 0;
+    DistanceType maxHWidth = 0;
     {
         /*
          *  Figure the largest amount we might need to scroll given the current windows contents.
@@ -701,13 +701,13 @@ Led_Distance SimpleTextImager::ComputeMaxHScrollPos () const
          *  scroll amount. Always leave at least as much layout-width as needed to
          *  preserve the current scroll-to position.
          */
-        Led_Distance width = CalculateLongestRowInWindowPixelWidth ();
+        DistanceType width = CalculateLongestRowInWindowPixelWidth ();
         if (GetHScrollPos () != 0) {
             width = max (width, GetHScrollPos () + GetWindowRect ().GetWidth ());
         }
-        maxHWidth = max<Led_Distance> (width, 1);
+        maxHWidth = max<DistanceType> (width, 1);
     }
-    Led_Distance wWidth = GetWindowRect ().GetWidth ();
+    DistanceType wWidth = GetWindowRect ().GetWidth ();
     if (maxHWidth > wWidth) {
         return (maxHWidth - wWidth);
     }
@@ -847,7 +847,7 @@ Led_Rect SimpleTextImager::GetCharLocationRowRelativeByPosition (size_t afterPos
     return GetCharLocationRowRelative (afterPosition, GetRowReferenceContainingPosition (positionOfTopRow), maxRowsToCheck);
 }
 
-Led_Distance SimpleTextImager::GetRowHeight (size_t /*rowNumber*/) const
+DistanceType SimpleTextImager::GetRowHeight (size_t /*rowNumber*/) const
 {
     return (GetRowHeight ());
 }
@@ -856,7 +856,7 @@ Led_Distance SimpleTextImager::GetRowHeight (size_t /*rowNumber*/) const
 @METHOD:        SimpleTextImager::GetRowRelativeBaselineOfRowContainingPosition
 @DESCRIPTION:   <p>Override/implement @'TextImager::GetRowRelativeBaselineOfRowContainingPosition'.</p>
 */
-Led_Distance SimpleTextImager::GetRowRelativeBaselineOfRowContainingPosition (size_t charPosition) const
+DistanceType SimpleTextImager::GetRowRelativeBaselineOfRowContainingPosition (size_t charPosition) const
 {
     RowReference thisRow    = GetRowReferenceContainingPosition (charPosition);
     size_t       startOfRow = GetStartOfRow (thisRow);
@@ -923,14 +923,14 @@ void SimpleTextImager::GetStableTypingRegionContaingMarkerRange (size_t fromMark
     (*expandedToMarkerPos)   = GetEnd ();
 }
 
-Led_Distance SimpleTextImager::GetHeightOfRows (size_t startingRow, size_t rowCount) const
+DistanceType SimpleTextImager::GetHeightOfRows (size_t startingRow, size_t rowCount) const
 {
     return (GetHeightOfRows (GetIthRowReference (startingRow), rowCount));
 }
 
-Led_Distance SimpleTextImager::GetHeightOfRows (RowReference startingRow, size_t rowCount) const
+DistanceType SimpleTextImager::GetHeightOfRows (RowReference startingRow, size_t rowCount) const
 {
-    Led_Distance height = 0;
+    DistanceType height = 0;
     for (RowReference curRow = startingRow; rowCount > 0; rowCount--) {
         PartitionMarker* curPM = curRow.GetPartitionMarker ();
         height += GetRowHeight ();
@@ -945,7 +945,7 @@ Led_Distance SimpleTextImager::GetHeightOfRows (RowReference startingRow, size_t
 @DESCRIPTION:   <p>Set the interline space associated for the entire text buffer. Call the
             no-arg version of @'SimpleTextImager::GetInterLineSpace' to get the currently set value.</p>
 */
-void SimpleTextImager::SetInterLineSpace (Led_Distance interlineSpace)
+void SimpleTextImager::SetInterLineSpace (DistanceType interlineSpace)
 {
     fInterlineSpace = interlineSpace;
 }
@@ -958,7 +958,7 @@ void SimpleTextImager::SetInterLineSpace (Led_Distance interlineSpace)
             @'SimpleTextImager::SetInterLineSpace' and returned by the no-arg version of
             @'SimpleTextImager::GetInterLineSpace'.</p>
 */
-Led_Distance SimpleTextImager::GetInterLineSpace (PartitionMarker* /*pm*/) const
+DistanceType SimpleTextImager::GetInterLineSpace (PartitionMarker* /*pm*/) const
 {
     return GetInterLineSpace ();
 }
@@ -1034,8 +1034,8 @@ SimpleTextImager::RowReference SimpleTextImager::AdjustPotentialTopRowReferenceS
         return potentialTopRow;
     }
 
-    Led_Coordinate windowHeight = GetWindowRect ().GetHeight ();
-    Led_Coordinate heightUsed   = 0;
+    Coordinate windowHeight = GetWindowRect ().GetHeight ();
+    Coordinate heightUsed   = 0;
 
     for (RowReference curRow = potentialTopRow;;) {
         PartitionMarker* curPM = curRow.GetPartitionMarker ();
@@ -1092,14 +1092,14 @@ size_t SimpleTextImager::ComputeRowsThatWouldFitInWindowWithTopRow (const RowRef
      *  For now, we don't show partial rows at the bottom. We
      *  might want to reconsider this.
      */
-    Led_Coordinate windowHeight = GetWindowRect ().GetHeight ();
+    Coordinate windowHeight = GetWindowRect ().GetHeight ();
 
     /*
      *  Wind out way to the bottom of the window from our current position,
      *  and count rows.
      */
-    size_t         rowCount   = 0;
-    Led_Coordinate heightUsed = 0;
+    size_t     rowCount   = 0;
+    Coordinate heightUsed = 0;
     for (RowReference curRow = newTopRow;;) {
         rowCount++;
         PartitionMarker* curPM = curRow.GetPartitionMarker ();
@@ -1141,9 +1141,9 @@ Led_Rect SimpleTextImager::GetCharLocationRowRelative (size_t afterPosition, Row
         return (kMagicBeforeRect);
     }
 
-    RowReference   curRow                     = topRow;
-    size_t         curTopRowRelativeRowNumber = 0;
-    Led_Coordinate topVPos                    = 0;
+    RowReference curRow                     = topRow;
+    size_t       curTopRowRelativeRowNumber = 0;
+    Coordinate   topVPos                    = 0;
     do {
         PartitionMarker* cur = curRow.GetPartitionMarker ();
         AssertNotNull (cur);
@@ -1156,8 +1156,8 @@ Led_Rect SimpleTextImager::GetCharLocationRowRelative (size_t afterPosition, Row
 
         if (afterPosition >= start and afterPosition < end) {
             Assert (start <= afterPosition);
-            Led_Distance hStart = 0;
-            Led_Distance hEnd   = 0;
+            DistanceType hStart = 0;
+            DistanceType hEnd   = 0;
             GetRowRelativeCharLoc (afterPosition, &hStart, &hEnd);
             Assert (hStart <= hEnd);
             return (Led_Rect (topVPos, hStart, GetRowHeight (), hEnd - hStart));
@@ -1189,9 +1189,9 @@ size_t SimpleTextImager::GetCharAtLocationRowRelative (const Led_Point& where, R
         return (0);
     }
 
-    RowReference   curRow                     = topRow;
-    size_t         curTopRowRelativeRowNumber = 0;
-    Led_Coordinate topVPos                    = 0;
+    RowReference curRow                     = topRow;
+    size_t       curTopRowRelativeRowNumber = 0;
+    Coordinate   topVPos                    = 0;
     do {
         PartitionMarker* cur = curRow.GetPartitionMarker ();
 
@@ -1204,10 +1204,10 @@ size_t SimpleTextImager::GetCharAtLocationRowRelative (const Led_Point& where, R
         /*
          *  Count the interline space as part of the last row of the line for the purpose of hit-testing.
          */
-        Led_Distance interLineSpace = GetInterLineSpace (cur);
+        DistanceType interLineSpace = GetInterLineSpace (cur);
 
         curTopRowRelativeRowNumber++;
-        if (where.v >= topVPos and where.v < topVPos + Led_Coordinate (GetRowHeight () + interLineSpace)) {
+        if (where.v >= topVPos and where.v < topVPos + Coordinate (GetRowHeight () + interLineSpace)) {
             return GetRowRelativeCharAtLoc (where.h, start);
         }
 

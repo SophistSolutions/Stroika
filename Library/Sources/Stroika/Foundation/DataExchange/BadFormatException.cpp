@@ -70,7 +70,7 @@ namespace {
     }
 }
 #if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
-   const DataExchange::BadFormatException DataExchange::BadFormatException::kThe;
+const DataExchange::BadFormatException DataExchange::BadFormatException::kThe;
 #endif
 
 DataExchange::BadFormatException::BadFormatException ()

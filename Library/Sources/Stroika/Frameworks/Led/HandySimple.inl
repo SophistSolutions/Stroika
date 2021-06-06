@@ -141,7 +141,7 @@ namespace Stroika::Frameworks::Led {
                 fCachedImager->SetJustification (0, fCachedImager->GetLength (), eCenterJustify);
 
                 // Now center vertically
-                Led_Distance rowHeight = fCachedImager->GetHeightOfRows (0, 1);
+                DistanceType rowHeight = fCachedImager->GetHeightOfRows (0, 1);
                 Led_Rect     wr        = fCachedImager->GetWindowRect ();
                 wr.top += (wr.GetHeight () - rowHeight) / 2;
                 wr.bottom = wr.top + rowHeight;
