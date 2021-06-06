@@ -591,6 +591,7 @@ namespace Stroika::Foundation::Time {
     template <>
     Date DateTime::As () const;
 
+#if !qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
     inline const Traversal::Iterable<String> DateTime::kDefaultParseFormats{
         kLocaleStandardFormat,
         kLocaleStandardAlternateFormat,
@@ -602,6 +603,7 @@ namespace Stroika::Foundation::Time {
         L"%D%t%R"sv,            // no obvious reference for this so maybe not a good idea
         L"%a %b %e %T %Y"sv,    // no obvious reference for this so maybe not a good idea
     };
+    #endif
 
     /**
      */

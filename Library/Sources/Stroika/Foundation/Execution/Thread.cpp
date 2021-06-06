@@ -213,6 +213,9 @@ Thread::SuppressInterruptionInContext::~SuppressInterruptionInContext ()
  ********************** Thread::InterruptException ******************************
  ********************************************************************************
  */
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+const Thread::InterruptException Thread::InterruptException::kThe;
+#endif
 Thread::InterruptException::InterruptException ()
     : InterruptException{L"Thread Interrupt"sv}
 {
@@ -228,6 +231,9 @@ Thread::InterruptException::InterruptException (const Characters::String& msg)
  ************************** Thread::AbortException ******************************
  ********************************************************************************
  */
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+inline const Thread::AbortException Thread::AbortException::kThe;
+#endif
 Thread::AbortException::AbortException ()
     : InterruptException{L"Thread Abort"sv}
 {

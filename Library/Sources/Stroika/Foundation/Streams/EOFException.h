@@ -40,7 +40,9 @@ namespace Stroika::Foundation::Streams {
     private:
         bool fPartialReadCompleted_{false};
     };
+#if !qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
     inline const EOFException EOFException::kThe;
+#endif
 
 }
 
