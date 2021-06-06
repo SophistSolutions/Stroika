@@ -268,7 +268,7 @@ namespace Stroika::Frameworks::Led {
         MyButton            fPopupButton;
         MyComboListBoxPopup fComboListBoxPopup;
         MyTextWidget        fTextWidget;
-        Led_FontObject*     fUseWidgetFont;
+        FontObject*         fUseWidgetFont;
 #endif
     };
 #endif

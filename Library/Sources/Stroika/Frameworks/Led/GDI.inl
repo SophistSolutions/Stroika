@@ -325,6 +325,86 @@ namespace Stroika::Frameworks::Led {
         return TWIPS (static_cast<long> (lhs) - static_cast<long> (rhs));
     }
 
+#if qPlatform_Windows
+    /*
+     ********************************************************************************
+     ******************************** FontObject ************************************
+     ********************************************************************************
+     */
+    inline FontObject::~FontObject ()
+    {
+        (void)DeleteObject ();
+    }
+    inline FontObject ::operator HFONT () const
+    {
+        return m_hObject;
+    }
+    inline int FontObject ::GetObject (int nCount, LPVOID lpObject) const
+    {
+        Assert (m_hObject != nullptr);
+        return ::GetObject (m_hObject, nCount, lpObject);
+    }
+    inline BOOL FontObject ::DeleteObject ()
+    {
+        if (m_hObject == nullptr)
+            return FALSE;
+        HFONT h   = m_hObject;
+        m_hObject = nullptr;
+        return ::DeleteObject (h);
+    }
+    inline BOOL FontObject ::CreateFontIndirect (const LOGFONT* lpLogFont)
+    {
+        return Attach (::CreateFontIndirect (lpLogFont));
+    }
+    inline BOOL FontObject ::Attach (HFONT hObject)
+    {
+        Assert (m_hObject == nullptr); // only attach once, detach on destroy
+        if (hObject == nullptr)
+            return FALSE;
+        m_hObject = hObject;
+        return TRUE;
+    }
+#endif
+
+#if qPlatform_Windows
+    /*
+     ********************************************************************************
+     ******************************** Brush ************************************
+     ********************************************************************************
+     */
+
+    inline Brush::Brush (COLORREF crColor)
+        : m_hObject{nullptr}
+    {
+        if (!Attach (::CreateSolidBrush (crColor)))
+            Led_ThrowOutOfMemoryException ();
+    }
+    inline Brush::~Brush ()
+    {
+        (void)DeleteObject ();
+    }
+    inline Brush::operator HBRUSH () const
+    {
+        return m_hObject;
+    }
+    inline BOOL Brush::Attach (HBRUSH hObject)
+    {
+        Assert (m_hObject == nullptr); // only attach once, detach on destroy
+        if (hObject == nullptr)
+            return FALSE;
+        m_hObject = hObject;
+        return TRUE;
+    }
+    inline BOOL Brush::DeleteObject ()
+    {
+        if (m_hObject == nullptr)
+            return FALSE;
+        HBRUSH h  = m_hObject;
+        m_hObject = nullptr;
+        return ::DeleteObject (h);
+    }
+#endif
+
     /*
      ********************************************************************************
      ************************************ Led_Region ********************************
@@ -1889,8 +1969,8 @@ namespace Stroika::Frameworks::Led {
             // I probably should be doing some magic here with subtracing internal leading, or something like that from this value -
             // See TextImager::GetStaticDefaultFont () and Win32 SDK docs for LOGFONT
             // LGP 960222
-            Led_WindowDC   screenDC (nullptr);
-            Led_FontObject font;
+            Led_WindowDC screenDC (nullptr);
+            FontObject   font;
             Verify (font.CreateFontIndirect (&fFontInfo));
             HFONT      oldFont = screenDC.SelectObject (font);
             TEXTMETRIC tms;
@@ -2235,7 +2315,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         isValid = isValid and fStyleValid_Outline and fStyleValid_Shadow and fStyleValid_Condensed and fStyleValid_Extended;
 #elif qPlatform_Windows
-        isValid = isValid and fStyleValid_Strikeout;
+        isValid               = isValid and fStyleValid_Strikeout;
 #endif
         return isValid;
     }
@@ -2455,14 +2535,14 @@ namespace Stroika::Frameworks::Led {
     {
         fStyleValid_Strikeout = false;
 #if qPlatform_Windows
-        fDidSetOSRepCallFlag = false;
+        fDidSetOSRepCallFlag  = false;
 #endif
     }
     inline void Led_IncrementalFontSpecification::SetStyle_Strikeout (bool isStrikeout)
     {
         fStyleValid_Strikeout = true;
 #if qPlatform_Windows
-        fDidSetOSRepCallFlag = false;
+        fDidSetOSRepCallFlag  = false;
 #endif
         inherited::SetStyle_Strikeout (isStrikeout);
     }

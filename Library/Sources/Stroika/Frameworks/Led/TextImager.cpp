@@ -133,7 +133,7 @@ TextImager::FontCacheInfoUpdater::FontCacheInfoUpdater (const TextImager* imager
         changed = true;
         delete imager->fCachedFont;
         imager->fCachedFont = nullptr;
-        imager->fCachedFont = new Led_FontObject ();
+        imager->fCachedFont = new FontObject ();
         LOGFONT lf;
         fontSpec.GetOSRep (&lf);
         if (fontSpec.GetStyle_SubOrSuperScript () != Led_FontSpecification::eNoSubOrSuperscript) {

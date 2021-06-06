@@ -833,7 +833,7 @@ namespace Stroika::Frameworks::Led {
         mutable Led_FontSpecification fCachedFontSpec;
         mutable Led_FontMetrics       fCachedFontInfo;
 #if qPlatform_Windows
-        mutable Led_FontObject* fCachedFont;
+        mutable FontObject* fCachedFont;
 #else
         mutable bool fCachedFontValid;
 #endif

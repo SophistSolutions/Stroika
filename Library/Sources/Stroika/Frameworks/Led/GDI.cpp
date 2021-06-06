@@ -172,16 +172,16 @@ struct UniscribeDLL {
         , fScriptStringCPtoX (nullptr)
     {
         if (fDLL != nullptr) {
-            fScriptItemize                = (HRESULT (WINAPI*) (const WCHAR*, int, int, const SCRIPT_CONTROL*, const SCRIPT_STATE*, SCRIPT_ITEM*, int*)) (::GetProcAddress (fDLL, "ScriptItemize"));
-            fScriptShape                  = (HRESULT (WINAPI*) (HDC, SCRIPT_CACHE*, const WCHAR*, int, int, SCRIPT_ANALYSIS*, WORD*, WORD*, SCRIPT_VISATTR*, int*)) (::GetProcAddress (fDLL, "ScriptShape"));
-            fScriptPlace                  = (HRESULT (WINAPI*) (HDC, SCRIPT_CACHE*, const WORD*, int, const SCRIPT_VISATTR*, SCRIPT_ANALYSIS*, int*, GOFFSET*, ABC*)) (::GetProcAddress (fDLL, "ScriptPlace"));
-            fScriptStringAnalyse          = (HRESULT (WINAPI*) (HDC, const void*, int, int, int, DWORD, int, SCRIPT_CONTROL*, SCRIPT_STATE*, const int*, SCRIPT_TABDEF*, const BYTE*, SCRIPT_STRING_ANALYSIS*)) (::GetProcAddress (fDLL, "ScriptStringAnalyse"));
-            fScriptStringOut              = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS, int, int, UINT, const RECT*, int, int, BOOL)) (::GetProcAddress (fDLL, "ScriptStringOut"));
-            fScriptStringFree             = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS*)) (::GetProcAddress (fDLL, "ScriptStringFree"));
-            fScriptStringGetLogicalWidths = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS, int*)) (::GetProcAddress (fDLL, "ScriptStringGetLogicalWidths"));
-            fScriptString_pcOutChars      = (const int*(WINAPI*)(SCRIPT_STRING_ANALYSIS)) (::GetProcAddress (fDLL, "ScriptString_pcOutChars"));
-            fScriptString_pSize           = (const SIZE*(WINAPI*)(SCRIPT_STRING_ANALYSIS)) (::GetProcAddress (fDLL, "ScriptString_pSize"));
-            fScriptStringCPtoX            = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS, int, BOOL, int*)) (::GetProcAddress (fDLL, "ScriptStringCPtoX"));
+            fScriptItemize                = (HRESULT (WINAPI*) (const WCHAR*, int, int, const SCRIPT_CONTROL*, const SCRIPT_STATE*, SCRIPT_ITEM*, int*))(::GetProcAddress (fDLL, "ScriptItemize"));
+            fScriptShape                  = (HRESULT (WINAPI*) (HDC, SCRIPT_CACHE*, const WCHAR*, int, int, SCRIPT_ANALYSIS*, WORD*, WORD*, SCRIPT_VISATTR*, int*))(::GetProcAddress (fDLL, "ScriptShape"));
+            fScriptPlace                  = (HRESULT (WINAPI*) (HDC, SCRIPT_CACHE*, const WORD*, int, const SCRIPT_VISATTR*, SCRIPT_ANALYSIS*, int*, GOFFSET*, ABC*))(::GetProcAddress (fDLL, "ScriptPlace"));
+            fScriptStringAnalyse          = (HRESULT (WINAPI*) (HDC, const void*, int, int, int, DWORD, int, SCRIPT_CONTROL*, SCRIPT_STATE*, const int*, SCRIPT_TABDEF*, const BYTE*, SCRIPT_STRING_ANALYSIS*))(::GetProcAddress (fDLL, "ScriptStringAnalyse"));
+            fScriptStringOut              = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS, int, int, UINT, const RECT*, int, int, BOOL))(::GetProcAddress (fDLL, "ScriptStringOut"));
+            fScriptStringFree             = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS*))(::GetProcAddress (fDLL, "ScriptStringFree"));
+            fScriptStringGetLogicalWidths = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS, int*))(::GetProcAddress (fDLL, "ScriptStringGetLogicalWidths"));
+            fScriptString_pcOutChars      = (const int*(WINAPI*)(SCRIPT_STRING_ANALYSIS))(::GetProcAddress (fDLL, "ScriptString_pcOutChars"));
+            fScriptString_pSize           = (const SIZE*(WINAPI*)(SCRIPT_STRING_ANALYSIS))(::GetProcAddress (fDLL, "ScriptString_pSize"));
+            fScriptStringCPtoX            = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS, int, BOOL, int*))(::GetProcAddress (fDLL, "ScriptStringCPtoX"));
         }
     }
     ~UniscribeDLL ()
@@ -530,7 +530,7 @@ namespace {
         {
             // if it's 16bpp, fill in the masks and OVERRIDE the compression
             // these are the default masks - you could change them if needed
-            LPDWORD pMasks                = (LPDWORD) (pbmi->bmiColors);
+            LPDWORD pMasks                = (LPDWORD)(pbmi->bmiColors);
             pMasks[0]                     = 0x00007c00;
             pMasks[1]                     = 0x000003e0;
             pMasks[2]                     = 0x0000001f;
@@ -555,7 +555,7 @@ namespace {
         {
             // if it's 32bpp, fill in the masks and OVERRIDE the compression
             // these are the default masks - you could change them if needed
-            LPDWORD pMasks                = (LPDWORD) (pbmi->bmiColors);
+            LPDWORD pMasks                = (LPDWORD)(pbmi->bmiColors);
             pMasks[0]                     = 0x00ff0000;
             pMasks[1]                     = 0x0000ff00;
             pMasks[2]                     = 0x000000ff;
@@ -1138,7 +1138,7 @@ void Led_Tablet_::RecolorHelper::DoRecolor_SimplePATINVERT (const Led_Rect& hili
     // doesn't look very good (not enough contrast).
     Led_Color useColor = Led_Color::kWhite - Led_Color (fHilightBackColor);
     HGDIOBJ   oldPen   = ::SelectObject (fBaseDC, ::GetStockObject (NULL_PEN));
-    Led_Brush backgroundBrush (useColor.GetOSRep ());
+    Brush     backgroundBrush (useColor.GetOSRep ());
     HGDIOBJ   oldBrush = ::SelectObject (fBaseDC, backgroundBrush);
     ::BitBlt (fBaseDC, hilightArea.left, hilightArea.top, hilightArea.GetWidth (), hilightArea.GetHeight (),
               fBaseDC, hilightArea.left, hilightArea.top, PATINVERT);
@@ -1410,10 +1410,10 @@ void Led_Tablet_::FrameRegion (const Led_Region& r, const Led_Color& c)
     GDI_RGBForeColor (c.GetOSRep ());
     ::FrameRgn (r.GetOSRep ());
 #elif qPlatform_Windows
-    Led_Brush brush = Led_Brush (c.GetOSRep ());
+    Brush brush = Brush (c.GetOSRep ());
     (void)::FrameRgn (*this, r, brush, 1, 1);
 #else
-    Assert (false); // NYI
+    Assert (false);                                  // NYI
 #endif
 }
 
@@ -1687,7 +1687,7 @@ void Led_Tablet_::TabbedTextOut ([[maybe_unused]] const Led_FontMetrics& precomp
             widthSoFar = ::GetPortPenLocation (Led_GetCurrentGDIPort (), &junk)->h - cursor.h;
         }
 #else
-        widthSoFar = Led_GetCurrentGDIPort ()->pnLoc.h - cursor.h;
+        widthSoFar                      = Led_GetCurrentGDIPort ()->pnLoc.h - cursor.h;
 #endif
 #elif qPlatform_Windows
         int oldBkMode = SetBkMode (TRANSPARENT);
@@ -1951,7 +1951,7 @@ void Led_Tablet_::EraseBackground_SolidHelper (const Led_Rect& eraseRect, const 
         ::FillRect (&qdEraser, &Led_Pen::kBlackPattern);
 #elif qPlatform_Windows
         Led_Rect eraser = eraseRect;
-        Led_Brush backgroundBrush (eraseColor.GetOSRep ());
+        Brush backgroundBrush (eraseColor.GetOSRep ());
         Led_Win_Obj_Selector pen (this, ::GetStockObject (NULL_PEN));
         Led_Win_Obj_Selector brush (this, backgroundBrush);
         eraser.right++; // lovely - windows doesn't count last pixel... See Docs for Rectangle() and rephrase!!!
@@ -3258,10 +3258,10 @@ struct CMAPENCODING {
 
 // Macro to pack a TrueType table name into a DWORD
 #define MAKETABLENAME(ch1, ch2, ch3, ch4) ( \
-    (((DWORD) (ch4)) << 24) |               \
-    (((DWORD) (ch3)) << 16) |               \
-    (((DWORD) (ch2)) << 8) |                \
-    ((DWORD) (ch1)))
+    (((DWORD)(ch4)) << 24) |                \
+    (((DWORD)(ch3)) << 16) |                \
+    (((DWORD)(ch2)) << 8) |                 \
+    ((DWORD)(ch1)))
 
 /* public functions */
 static USHORT GetTTUnicodeGlyphIndex (HDC hdc, USHORT ch);

@@ -3449,7 +3449,7 @@ void StyledTextIOReader_RTF::ConstructOLEEmebddingFromRTFInfo ([[maybe_unused]] 
         EmbeddedObjectCreatorRegistry::Assoc assoc = types[i];
         if (memcmp (assoc.fEmbeddingTag, RTFIO::RTFOLEEmbedding::kEmbeddingTag, sizeof (RTFIO::RTFOLEEmbedding::kEmbeddingTag)) == 0) {
             AssertNotNull (assoc.fReadFromMemory);
-            SimpleEmbeddedObjectStyleMarker* embedding = (assoc.fReadFromMemory) (RTFIO::RTFOLEEmbedding::kEmbeddingTag, data, nBytes);
+            SimpleEmbeddedObjectStyleMarker* embedding = (assoc.fReadFromMemory)(RTFIO::RTFOLEEmbedding::kEmbeddingTag, data, nBytes);
             RTFOLEEmbedding*                 rtfe      = dynamic_cast<RTFOLEEmbedding*> (embedding);
             if (rtfe != nullptr) {
                 rtfe->PostCreateSpecifyExtraInfo (size);
@@ -3483,7 +3483,7 @@ void StyledTextIOReader_RTF::ConstructLedEmebddingFromRTFInfo (ReaderContext& re
         EmbeddedObjectCreatorRegistry::Assoc assoc = types[i];
         if (memcmp (assoc.fEmbeddingTag, tag, sizeof (assoc.fEmbeddingTag)) == 0) {
             AssertNotNull (assoc.fReadFromMemory);
-            SimpleEmbeddedObjectStyleMarker* embedding = (assoc.fReadFromMemory) (tag, theData, theDataNBytes);
+            SimpleEmbeddedObjectStyleMarker* embedding = (assoc.fReadFromMemory)(tag, theData, theDataNBytes);
             try {
                 readerContext.GetDestination ().AppendEmbedding (embedding);
                 return;
@@ -3723,7 +3723,7 @@ Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromEMFHelper (TWIPS_Point shownSiz
         {
             Led_Rect             eraser     = imageRect;
             Led_Color            eraseColor = Led_GetTextBackgroundColor ();
-            Led_Brush            backgroundBrush (eraseColor.GetOSRep ());
+            Brush                backgroundBrush (eraseColor.GetOSRep ());
             Led_Win_Obj_Selector pen (&memDC, ::GetStockObject (NULL_PEN));
             Led_Win_Obj_Selector brush (&memDC, backgroundBrush);
             eraser.right++; // lovely - windows doesn't count last pixel... See Docs for Rectangle() and rephrase!!!

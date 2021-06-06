@@ -354,7 +354,7 @@ const Led_ClipFormat StandardDIBStyleMarker::kClipFormat = 'DIB ';
 #elif qPlatform_Windows
 const Led_ClipFormat StandardDIBStyleMarker::kClipFormat = CF_DIB;
 #elif qStroika_FeatureSupported_XWindows
-const Led_ClipFormat StandardDIBStyleMarker::kClipFormat = 666; // X-TMP-HACK-LGP991214
+const Led_ClipFormat StandardDIBStyleMarker::kClipFormat     = 666;    // X-TMP-HACK-LGP991214
 #endif
 const Led_PrivateEmbeddingTag StandardDIBStyleMarker::kEmbeddingTag = "DIB";
 
@@ -636,7 +636,7 @@ void StandardURLStyleMarker::DrawSegment (const StyledTextImager* imager, const 
     //const char*               lpBits      =   ((const char*)sURLPict) + Led_ByteSwapFromWindows (hdr.biSize) + Led_GetDIBPalletByteCount (sURLPict);
     ::StretchDIBits (tablet->m_hDC, iconRect.left, iconRect.top, iconRect.GetWidth (), iconRect.GetHeight (), 0, 0, dibImageSize.h, dibImageSize.v, lpBits, sURLPict, DIB_RGB_COLORS, SRCCOPY);
 
-    Led_FontObject font1;
+    FontObject font1;
     {
         LOGFONT lf;
         memset (&lf, 0, sizeof lf);
@@ -648,7 +648,7 @@ void StandardURLStyleMarker::DrawSegment (const StyledTextImager* imager, const 
         ::TextOutA (*tablet, iconRect.right + 3, iconRect.top + 2, name, nameStrLen);
     }
 
-    Led_FontObject font2;
+    FontObject font2;
     {
         LOGFONT lf;
         memset (&lf, 0, sizeof lf);
@@ -741,7 +741,7 @@ void StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager
     distanceResults[0] += 2 * 3; // leave room for spacing around text
 
     // Leave room for text - largest of two strings
-    Led_FontObject font1;
+    FontObject font1;
     {
         LOGFONT lf;
         memset (&lf, 0, sizeof lf);
@@ -751,7 +751,7 @@ void StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager
     Led_Win_Obj_Selector font1Selector (tablet, font1);
     DistanceType         string1Width = name == nullptr ? 0 : dc->GetTextExtent (Led_ANSI2SDKString (name).c_str (), nameStrLen).cx;
 
-    Led_FontObject font2;
+    FontObject font2;
     {
         LOGFONT lf;
         memset (&lf, 0, sizeof lf);
@@ -1350,7 +1350,7 @@ TWIPS_Point StandardUnknownTypeStyleMarker::CalcStaticDefaultShownSize ()
     RequireNotNull (sUnknownPict);
     Led_Size pixelSize = Led_GetDIBImageSize (sUnknownPict);
 #elif qStroika_FeatureSupported_XWindows
-    Led_Size pixelSize = Led_Size (10, 10); //  X-TMP-HACK-LGP2000-06-13
+    Led_Size pixelSize = Led_Size (10, 10);                            //  X-TMP-HACK-LGP2000-06-13
 #endif
 
     return TWIPS_Point (Led_CvtScreenPixelsToTWIPSV (pixelSize.v), Led_CvtScreenPixelsToTWIPSH (pixelSize.h));
@@ -1529,7 +1529,7 @@ static void MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHandle 
     };
     static QTIniter      sIniter;
     RECT                 rr = AsRECT (innerBoundsRect);
-    Led_Brush            eraseBrush (backColor.GetOSRep ());
+    Brush                eraseBrush (backColor.GetOSRep ());
     Led_Win_Obj_Selector brush (dc, eraseBrush);
     bool                 displaySuccessful = false;
     if (sIniter.fGood) {

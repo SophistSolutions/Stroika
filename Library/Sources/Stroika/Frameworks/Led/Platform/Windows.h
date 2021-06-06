@@ -390,7 +390,7 @@ namespace Stroika::Frameworks::Led::Platform {
         virtual LRESULT OnMsgSetFont (WPARAM wParam, LPARAM lParam);
 
     private:
-        Led_FontObject fDefaultFontCache; // used to be able to answer WM_GETFONT calls...
+        FontObject fDefaultFontCache; // used to be able to answer WM_GETFONT calls...
     };
     DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 
@@ -1178,7 +1178,7 @@ namespace Stroika::Frameworks::Led::Platform {
 #if qSupportWindowsSDKCallbacks
         // Notify the parent window...
         HWND hWnd = this->GetValidatedHWND ();
-        (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, (WPARAM)MAKELONG (GetWindowID (), EN_SETFOCUS), (LPARAM) (hWnd));
+        (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, (WPARAM)MAKELONG (GetWindowID (), EN_SETFOCUS), (LPARAM)(hWnd));
 #endif
     }
     template <typename BASE_INTERACTOR>
@@ -1204,7 +1204,7 @@ namespace Stroika::Frameworks::Led::Platform {
 #if qSupportWindowsSDKCallbacks
         // Notify the parent window...
         HWND hWnd = this->GetValidatedHWND ();
-        (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, (WPARAM)MAKELONG (GetWindowID (), EN_KILLFOCUS), (LPARAM) (hWnd));
+        (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, (WPARAM)MAKELONG (GetWindowID (), EN_KILLFOCUS), (LPARAM)(hWnd));
 #endif
     }
     template <typename BASE_INTERACTOR>
@@ -2796,7 +2796,7 @@ namespace Stroika::Frameworks::Led::Platform {
         defaultFont.GetOSRep (&defaultFontLF);
 
         if (fDefaultFontCache.m_hObject != nullptr) { // Seeing if font changed...
-            Led_FontObject tmpHackToTestFont;
+            FontObject tmpHackToTestFont;
             Verify (tmpHackToTestFont.CreateFontIndirect (&defaultFontLF));
 
             ::LOGFONT tmpHackToTestFontLF{};
@@ -3134,7 +3134,7 @@ namespace Stroika::Frameworks::Led::Platform {
             *  Copy the font value from the original widget and set it into the replaced one.
             */
         {
-            Led_FontObject fontToUse;
+            FontObject fontToUse;
             if (not justUseSystemFont) {
                 Verify (fontToUse.CreateFontIndirect (&useFont));
             }

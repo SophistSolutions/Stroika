@@ -709,8 +709,8 @@ bool LedComboBoxWidget::ReplaceWindow (HWND hWnd)
 
     // Save (clone since we destory HWND before we use the set it into the new object) HFONT object,
     // so we can set it into our new control at the end of this procedure.
-    bool           useNonSysFont = false;
-    Led_FontObject nonSysFont;
+    bool       useNonSysFont = false;
+    FontObject nonSysFont;
     {
         HFONT hFont = NULL;
         if ((hFont = (HFONT)::SendMessage (hWnd, WM_GETFONT, 0, 0L)) != NULL) {
@@ -776,7 +776,7 @@ LRESULT LedComboBoxWidget::WndProc (UINT message, WPARAM wParam, LPARAM lParam)
                 LOGFONT useFont;
                 if (::GetObject (copyFont, sizeof (LOGFONT), &useFont) != 0) {
                     Assert (fUseWidgetFont == NULL);
-                    fUseWidgetFont = new Led_FontObject ();
+                    fUseWidgetFont = new FontObject ();
                     Verify (fUseWidgetFont->CreateFontIndirect (&useFont));
                 }
             }

@@ -52,15 +52,18 @@ namespace Stroika::Frameworks::Led {
     using DistanceType = unsigned long;
 
     /*
-    @CLASS:         TWIPS
-    @DESCRIPTION:   <p>Many distances are specified in Led in TWIPS - 1/20 of a printers point.
-        This means - 1/1440 of an inch.</p>
-            <p>This size refers to the size when printed on a page. So it can be scaled - depnding on screen resolution.
-        Led will often save this internally - and scale it at the last minute to the resolution of the @'Led_Tablet' being printed on.</p>
-            <p>NB: This marks a change from Led 2.3 and earlier - where most distances were stored in pixels (still many are).</p>
-            <p>NB: declard as a class instead of a typedef so we get better type checking. Shouldn't affect sizes or code
-        generation - I would hope!</p>
-    */
+     *  Many distances are specified in Led in TWIPS - 1/20 of a printers point.
+     * 
+     *  This means - 1/1440 of an inch.</p>
+     *
+     *      This size refers to the size when printed on a page. So it can be scaled - depnding on screen resolution.
+     *  Led will often save this internally - and scale it at the last minute to the resolution of the @'Led_Tablet' being printed on.
+     *      
+     *      NB: This marks a change from Led 2.3 and earlier - where most distances were stored in pixels (still many are).
+     *      
+     *      NB: declard as a class instead of a typedef so we get better type checking. Shouldn't affect sizes or code
+     *  generation - I would hope!
+     */
     class TWIPS {
     public:
         explicit TWIPS (long v);
@@ -108,7 +111,6 @@ namespace Stroika::Frameworks::Led {
 
     public:
         /*
-        @METHOD:        TextImager::TabStopList::ComputeIthTab
         @DESCRIPTION:   <p>Compute where the 'ith' tabstop lies (i >= 0, and can be arbitrarily high).
             Note that though tabstop <code>i=0</code> is the first tabstop (which by convention is usually NOT
             at the left margin - but is really the logically 'first' one).</p>
@@ -116,7 +118,6 @@ namespace Stroika::Frameworks::Led {
         */
         virtual TWIPS ComputeIthTab (size_t i) const = 0;
         /*
-        @METHOD:        TextImager::TabStopList::ComputeTabStopAfterPosition
         @DESCRIPTION:   <p>Given a distance from the left margin, find the immediately following tabstops position.
             This is what is actaully used in the imagers to compute where to draw text. It can logically
             be implemented by walking the tabstoplist and calling @'TextImager::TabStopList::ComputeIthTab', and
@@ -129,79 +130,33 @@ namespace Stroika::Frameworks::Led {
     };
 
 #if qPlatform_Windows
-    class Led_FontObject {
+    /**
+     */
+    class FontObject {
     public:
-        Led_FontObject () = default;
-        ~Led_FontObject ()
-        {
-            (void)DeleteObject ();
-        }
-        nonvirtual operator HFONT () const
-        {
-            return m_hObject;
-        }
-        nonvirtual int GetObject (int nCount, LPVOID lpObject) const
-        {
-            Assert (m_hObject != nullptr);
-            return ::GetObject (m_hObject, nCount, lpObject);
-        }
-        nonvirtual BOOL DeleteObject ()
-        {
-            if (m_hObject == nullptr)
-                return FALSE;
-            HFONT h   = m_hObject;
-            m_hObject = nullptr;
-            return ::DeleteObject (h);
-        }
-        nonvirtual BOOL CreateFontIndirect (const LOGFONT* lpLogFont)
-        {
-            return Attach (::CreateFontIndirect (lpLogFont));
-        }
-        nonvirtual BOOL Attach (HFONT hObject)
-        {
-            Assert (m_hObject == nullptr); // only attach once, detach on destroy
-            if (hObject == nullptr)
-                return FALSE;
-            m_hObject = hObject;
-            return TRUE;
-        }
+        FontObject () = default;
+        ~FontObject ();
+        nonvirtual      operator HFONT () const;
+        nonvirtual int  GetObject (int nCount, LPVOID lpObject) const;
+        nonvirtual BOOL DeleteObject ();
+        nonvirtual BOOL CreateFontIndirect (const LOGFONT* lpLogFont);
+        nonvirtual BOOL Attach (HFONT hObject);
 
     public:
         HFONT m_hObject{nullptr};
     };
+#endif
 
-    class Led_Brush {
+#if qPlatform_Windows
+    /**
+     */
+    class Brush {
     public:
-        Led_Brush (COLORREF crColor)
-            : m_hObject{nullptr}
-        {
-            if (!Attach (::CreateSolidBrush (crColor)))
-                Led_ThrowOutOfMemoryException ();
-        }
-        ~Led_Brush ()
-        {
-            (void)DeleteObject ();
-        }
-        nonvirtual operator HBRUSH () const
-        {
-            return m_hObject;
-        }
-        nonvirtual BOOL Attach (HBRUSH hObject)
-        {
-            Assert (m_hObject == nullptr); // only attach once, detach on destroy
-            if (hObject == nullptr)
-                return FALSE;
-            m_hObject = hObject;
-            return TRUE;
-        }
-        nonvirtual BOOL DeleteObject ()
-        {
-            if (m_hObject == nullptr)
-                return FALSE;
-            HBRUSH h  = m_hObject;
-            m_hObject = nullptr;
-            return ::DeleteObject (h);
-        }
+        Brush (COLORREF crColor);
+        ~Brush ();
+        nonvirtual      operator HBRUSH () const;
+        nonvirtual BOOL Attach (HBRUSH hObject);
+        nonvirtual BOOL DeleteObject ();
 
     private:
         HBRUSH m_hObject{nullptr};
@@ -317,33 +272,28 @@ namespace Stroika::Frameworks::Led {
 #endif
     };
 
-    /*
-    @CLASS:         Led_Size
-    @DESCRIPTION:   <p>Simple typedef of @'Point_Base<COORD_TYPE>' using @'Distance'.</p>
-    */
+    /**
+     *  Simple typedef of @'Point_Base<COORD_TYPE>' using @'Distance'.
+     */
     using Led_Size = Point_Base<DistanceType>;
 
-    /*
-    @CLASS:         Led_Point
-    @DESCRIPTION:   <p>Simple typedef of @'Point_Base<COORD_TYPE>' using @'Coordinate'.</p>
-    */
+    /**
+     *  Simple typedef of @'Point_Base<COORD_TYPE>' using @'Coordinate'.
+     */
     using Led_Point = Point_Base<Coordinate>;
     Led_Point operator- (const Led_Point& lhs, const Led_Point& rhs);
 
     /*
-    @CLASS:         TWIPS_Point
     @DESCRIPTION:   <p>Simple typedef of @'Point_Base<COORD_TYPE>' using @'TWIPS'.</p>
     */
     using TWIPS_Point = Point_Base<TWIPS>;
 
     /*
-    @CLASS:         Led_Rect
     @DESCRIPTION:   <p>Simple typedef of @'Rect_Base<POINT_TYPE,SIZE_TYPE>' using @'Led_Point' and @'Led_Size'.</p>
     */
     using Led_Rect = Rect_Base<Led_Point, Led_Size>;
 
     /*
-    @CLASS:         TWIPS_Rect
     @DESCRIPTION:   <p>Simple typedef of @'Rect_Base<POINT_TYPE,SIZE_TYPE>' using @'TWIPS_Point'.</p>
     */
     using TWIPS_Rect = Rect_Base<TWIPS_Point, TWIPS_Point>;
@@ -479,6 +429,7 @@ namespace Stroika::Frameworks::Led {
 #elif qPlatform_Windows
         nonvirtual COLORREF GetOSRep () const;
 #endif
+
     private:
         ColorValue fRed;
         ColorValue fGreen;
@@ -621,7 +572,6 @@ namespace Stroika::Frameworks::Led {
     };
 
     /*
-    @CLASS:         Led_LineSpacing
     @DESCRIPTION:   <p>Support at least all the crazy formats/options in the Win32 PARAFORMAT2 structure, and
         the ill-documented RTF 1.5 SPEC \sl options.
             <ul>
@@ -719,16 +669,15 @@ namespace Stroika::Frameworks::Led {
 
     class Led_IncrementalFontSpecification;
 
-    /*
-    @CLASS:         Led_FontSpecification
-    @DESCRIPTION:   <p><code>Led_FontSpecification</code> is a utility class which portably represents
-        a user font choice. This largely corresponds to the MS-Windows <code>LOGFONT</code> structure
-        or the Macintosh <code>txFace, txSize, txStyle</code>.</p>
-            <p>In addition to being a portable represenation of this information, it
-        also contains handy wrapper accessors, and extra information like subscript,
-        superscript, and font color.</p>
-            <p>See also, @'Led_IncrementalFontSpecification'</p>
-    */
+    /**
+     *      <code>Led_FontSpecification</code> is a utility class which portably represents
+     *  a user font choice. This largely corresponds to the MS-Windows <code>LOGFONT</code> structure
+     *  or the Macintosh <code>txFace, txSize, txStyle</code>.</p>
+     *      In addition to being a portable represenation of this information, it
+     *  also contains handy wrapper accessors, and extra information like subscript,
+     *  superscript, and font color.</p>
+     *      See also, @'Led_IncrementalFontSpecification'</p>
+     */
     class Led_FontSpecification {
     public:
         Led_FontSpecification ();
@@ -751,7 +700,7 @@ namespace Stroika::Frameworks::Led {
             Led_SDK_Char fName[LF_FACESIZE];
             bool         operator== (const FontNameSpecifier& rhs) const
             {
-                return (::_tcscmp (fName, rhs.fName) == 0);
+                return ::_tcscmp (fName, rhs.fName) == 0;
             }
 #if __cpp_impl_three_way_comparison < 201907
             bool operator!= (const FontNameSpecifier& rhs) const
@@ -805,8 +754,8 @@ namespace Stroika::Frameworks::Led {
         nonvirtual bool GetStyle_Extended () const;
         nonvirtual void SetStyle_Extended (bool isExtended);
 #elif qPlatform_Windows
-        nonvirtual bool GetStyle_Strikeout () const;
-        nonvirtual void SetStyle_Strikeout (bool isStrikeout);
+        nonvirtual bool    GetStyle_Strikeout () const;
+        nonvirtual void    SetStyle_Strikeout (bool isStrikeout);
 #endif
 
         using FontSize = uint16_t;
@@ -857,7 +806,7 @@ namespace Stroika::Frameworks::Led {
         short fFontSize;
         Style fFontStyle;
 #elif qPlatform_Windows
-        LOGFONT fFontInfo; // Could make this MUCH smaller on windows - do for future release!
+        LOGFONT            fFontInfo; // Could make this MUCH smaller on windows - do for future release!
 #elif qStroika_FeatureSupported_XWindows
         FontNameSpecifier fFontFamily;
         bool              fBold : 1;
@@ -959,10 +908,10 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void InvalidateStyle_Extended ();
         nonvirtual void SetStyle_Extended (bool isExtended);
 #elif qPlatform_Windows
-        nonvirtual bool GetStyle_Strikeout () const;
-        nonvirtual bool GetStyle_Strikeout_Valid () const;
-        nonvirtual void InvalidateStyle_Strikeout ();
-        nonvirtual void SetStyle_Strikeout (bool isStrikeout);
+        nonvirtual bool    GetStyle_Strikeout () const;
+        nonvirtual bool    GetStyle_Strikeout_Valid () const;
+        nonvirtual void    InvalidateStyle_Strikeout ();
+        nonvirtual void    SetStyle_Strikeout (bool isStrikeout);
 #endif
 
         /*
