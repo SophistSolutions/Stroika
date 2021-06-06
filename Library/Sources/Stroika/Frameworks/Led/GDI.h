@@ -66,7 +66,7 @@ namespace Stroika::Frameworks::Led {
      */
     class TWIPS {
     public:
-        explicit TWIPS (long v);
+        constexpr explicit TWIPS (long v);
         operator long () const;
 
     private:
@@ -84,6 +84,16 @@ namespace Stroika::Frameworks::Led {
     };
     TWIPS operator+ (const TWIPS& lhs, const TWIPS& rhs);
     TWIPS operator- (const TWIPS& lhs, const TWIPS& rhs);
+
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+    constexpr TWIPS TWIPS::kPoint   = TWIPS{20}; // a printers 'point' (1/72 of an inch)
+    constexpr TWIPS TWIPS::kInch    = TWIPS{1440};
+    constexpr TWIPS TWIPS::kOneInch = TWIPS{1440};
+#else
+    inline constexpr TWIPS TWIPS::kPoint   = TWIPS{20}; // a printers 'point' (1/72 of an inch)
+    inline constexpr TWIPS TWIPS::kInch    = TWIPS{1440};
+    inline constexpr TWIPS TWIPS::kOneInch = TWIPS{1440};
+#endif
 
     class Led_Tablet_;
 
@@ -315,54 +325,20 @@ namespace Stroika::Frameworks::Led {
 
     public:
 #if qPlatform_MacOS
-        Led_Region (RgnHandle rgn)
-            : fRgn (rgn)
-            , fOwned (false)
-        {
-        }
-        RgnHandle GetOSRep () const
-        {
-            return fRgn;
-        }
-        RgnHandle GetOSRep ()
-        {
-            return fRgn;
-        }
+        Led_Region (RgnHandle rgn);
+        RgnHandle GetOSRep () const;
+        RgnHandle GetOSRep ();
 
     private:
         bool fOwned;
 #elif qPlatform_Windows
-        operator HRGN () const
-        {
-            return fRgn;
-        }
-        int CombineRgn (Led_Region* pRgn1, Led_Region* pRgn2, int nCombineMode)
-        {
-            Require (pRgn1 != nullptr);
-            Require (pRgn2 != nullptr);
-            Require (fRgn != nullptr);
-            return ::CombineRgn (fRgn, pRgn1->fRgn, pRgn2->fRgn, nCombineMode);
-        }
-        BOOL PtInRegion (int x, int y) const
-        {
-            Require (fRgn != nullptr);
-            return ::PtInRegion (fRgn, x, y);
-        }
-        BOOL PtInRegion (POINT point) const
-        {
-            Require (fRgn != nullptr);
-            return ::PtInRegion (fRgn, point.x, point.y);
-        }
+             operator HRGN () const;
+        int  CombineRgn (Led_Region* pRgn1, Led_Region* pRgn2, int nCombineMode);
+        BOOL PtInRegion (int x, int y) const;
+        BOOL PtInRegion (POINT point) const;
 
     private:
-        BOOL DeleteObject ()
-        {
-            if (fRgn == nullptr)
-                return FALSE;
-            HRGN r = fRgn;
-            fRgn   = nullptr;
-            return ::DeleteObject (r);
-        }
+        BOOL DeleteObject ();
 #endif
     private:
 #if qPlatform_MacOS
@@ -378,7 +354,7 @@ namespace Stroika::Frameworks::Led {
      * This class is a portable representation of a color. It can be constructed either
      * from its basic RGB componets, or from the native color representations on a particular platform.
      */
-    class Led_Color {
+    class Color {
     public:
         // regardless of Mac or Windows, we use the same size ColorValue so we can write
         // portable code more easily...
@@ -387,11 +363,12 @@ namespace Stroika::Frameworks::Led {
                kColorValueMax = USHRT_MAX };
 
     public:
-        explicit Led_Color (ColorValue redValue, ColorValue greenValue, ColorValue blueValue);
+        constexpr Color (const Color&) = default;
+        constexpr Color (ColorValue redValue, ColorValue greenValue, ColorValue blueValue);
 #if qPlatform_MacOS
-        explicit Led_Color (const RGBColor& rgbColor);
+        explicit Color (const RGBColor& rgbColor);
 #elif qPlatform_Windows
-        explicit Led_Color (COLORREF colorRef);
+        explicit Color (COLORREF colorRef);
 #endif
 
     public:
@@ -403,25 +380,25 @@ namespace Stroika::Frameworks::Led {
      *  Some useful predefined values.
      */
     public:
-        static const Led_Color kBlack;
-        static const Led_Color kWhite;
-        static const Led_Color kRed;
-        static const Led_Color kGreen;
-        static const Led_Color kBlue;
-        static const Led_Color kCyan;
-        static const Led_Color kMagenta;
-        static const Led_Color kYellow;
-        static const Led_Color kMaroon;
-        static const Led_Color kOlive;
-        static const Led_Color kNavyBlue;
-        static const Led_Color kPurple;
-        static const Led_Color kTeal;
-        static const Led_Color kGray;
-        static const Led_Color kSilver; // aka 'light gray'
-        static const Led_Color kDarkGreen;
-        static const Led_Color kLimeGreen;
-        static const Led_Color kFuchsia;
-        static const Led_Color kAqua;
+        static const Color kBlack;
+        static const Color kWhite;
+        static const Color kRed;
+        static const Color kGreen;
+        static const Color kBlue;
+        static const Color kCyan;
+        static const Color kMagenta;
+        static const Color kYellow;
+        static const Color kMaroon;
+        static const Color kOlive;
+        static const Color kNavyBlue;
+        static const Color kPurple;
+        static const Color kTeal;
+        static const Color kGray;
+        static const Color kSilver; // aka 'light gray'
+        static const Color kDarkGreen;
+        static const Color kLimeGreen;
+        static const Color kFuchsia;
+        static const Color kAqua;
 
     public:
 #if qPlatform_MacOS
@@ -438,21 +415,22 @@ namespace Stroika::Frameworks::Led {
     public:
         /**
          */
-        constexpr strong_ordering operator<=> (const Led_Color& rhs) const = default;
+        constexpr strong_ordering operator<=> (const Color& rhs) const = default;
+        constexpr bool            operator== (const Color& rhs) const  = default;
 #endif
     };
 #if __cpp_impl_three_way_comparison < 201907
-    bool operator== (Led_Color lhs, Led_Color rhs);
-    bool operator!= (Led_Color lhs, Led_Color rhs);
+    bool operator== (Color lhs, Color rhs);
+    bool operator!= (Color lhs, Color rhs);
 #endif
 
-    Led_Color operator* (Led_Color lhs, float factor);
-    Led_Color operator/ (Led_Color lhs, float divBy);
-    Led_Color operator+ (Led_Color lhs, Led_Color rhs);
-    Led_Color operator- (Led_Color lhs, Led_Color rhs);
+    Color operator* (Color lhs, float factor);
+    Color operator/ (Color lhs, float divBy);
+    Color operator+ (Color lhs, Color rhs);
+    Color operator- (Color lhs, Color rhs);
 
-    unsigned int Distance (Led_Color lhs, Led_Color rhs);
-    unsigned int Distance_Squared (Led_Color lhs, Led_Color rhs);
+    unsigned int Distance (Color lhs, Color rhs);
+    unsigned int Distance_Squared (Color lhs, Color rhs);
 #if qPlatform_Windows
     unsigned int Distance_Squared (COLORREF lhs, COLORREF rhs);
 #endif
@@ -463,7 +441,7 @@ namespace Stroika::Frameworks::Led {
      *
      *  Note - this class is used in conjunction with @'Led_GDI_Obj_Selector'.
      */
-    class Led_Pen {
+    class Pen {
 #if qPlatform_MacOS
     public:
         static const Pattern kWhitePattern;
@@ -473,62 +451,27 @@ namespace Stroika::Frameworks::Led {
         static const Pattern kBlackPattern;
 
     public:
-        Led_Pen (short penStyle = srcCopy, const Pattern* penPat = &kBlackPattern, const Led_Color& color = Led_Color::kBlack)
-            : fPenStyle (penStyle)
-            , fPenPat (*penPat)
-            , fPenColor (color)
-        {
-        }
+        Pen (short penStyle = srcCopy, const Pattern* penPat = &kBlackPattern, const Color& color = Color::kBlack);
 
     public:
-        short     fPenStyle;
-        Pattern   fPenPat;
-        Led_Color fPenColor;
+        short   fPenStyle;
+        Pattern fPenPat;
+        Color   fPenColor;
 #endif
 #if qPlatform_Windows
     public:
-        Led_Pen (int nPenStyle, int nWidth, COLORREF crColor)
-            : m_hObject{nullptr}
-        {
-            if (!Attach (::CreatePen (nPenStyle, nWidth, crColor)))
-                Led_ThrowOutOfMemoryException ();
-        }
-        ~Led_Pen ()
-        {
-            (void)DeleteObject ();
-        }
-        nonvirtual operator HPEN () const
-        {
-            return m_hObject;
-        }
-        nonvirtual BOOL Attach (HPEN hObject)
-        {
-            Assert (m_hObject == nullptr); // only attach once, detach on destroy
-            if (hObject == nullptr)
-                return FALSE;
-            m_hObject = hObject;
-            return TRUE;
-        }
-        nonvirtual BOOL DeleteObject ()
-        {
-            if (m_hObject == nullptr)
-                return FALSE;
-            HPEN h    = m_hObject;
-            m_hObject = nullptr;
-            return ::DeleteObject (h);
-        }
+        Pen (int nPenStyle, int nWidth, COLORREF crColor);
+        ~Pen ();
+        nonvirtual      operator HPEN () const;
+        nonvirtual BOOL Attach (HPEN hObject);
+        nonvirtual BOOL DeleteObject ();
 
     private:
         HPEN m_hObject;
 #endif
-#if qStroika_FeatureSupported_XWindows
-    public:
-        Led_Pen () = default;
-#endif
     };
 
     /*
-    @CLASS:         Led_Justification
     @DESCRIPTION:   <p>Led defines several kinds of justification, but doesn't implement all of them.
         <ul>
             <li><em>eLeftJustify</em></li>
@@ -542,30 +485,27 @@ namespace Stroika::Frameworks::Led {
         etc which keep track of this information, and even show the styles in the UI. They just aren't reflected
         in how the text is drawn yet. That should come in the next major Led release.</p>
     */
-    enum Led_Justification { eLeftJustify,
-                             eRightJustify,
-                             eCenterJustify,
-                             eFullyJustify,
-                             eDefaultForScriptJustify };
+    enum Justification { eLeftJustify,
+                         eRightJustify,
+                         eCenterJustify,
+                         eFullyJustify,
+                         eDefaultForScriptJustify };
 
-    /*
-    @CLASS:         TextDirection
-    @DESCRIPTION:   <p>There are two defined text directions:
-        <ul>
-            <li><em>eLeftToRight</em></li>
-            <li><em>eRightToLeft</em></li>
-        </ul>
-        </p>
-    */
-    enum TextDirection { eLeftToRight,
-                         eRightToLeft };
+    /**
+     *  There are two defined text directions:
+     *      <li><em>eLeftToRight</em></li>
+     *      <li><em>eRightToLeft</em></li>
+     */
+    enum TextDirection {
+        eLeftToRight,
+        eRightToLeft
+    };
 
-    /*
-    @CLASS:         ListStyle
-    @DESCRIPTION:   <p>Different styles of bullet / list markers for list items in the WordProcessor.</p>
-
-            <p>Numeric values come from RTF 1.5 Spec \levelnfc (except for eListStyle_None which is special)</p>
-    */
+    /**
+     *      Different styles of bullet / list markers for list items in the WordProcessor.</p>
+     *
+     *       Numeric values come from RTF 1.5 Spec \levelnfc (except for eListStyle_None which is special)</p>
+     */
     enum ListStyle {
         eListStyle_None   = 9999,
         eListStyle_Bullet = 23
@@ -590,7 +530,7 @@ namespace Stroika::Frameworks::Led {
             </ul>
             </p>
     */
-    class Led_LineSpacing {
+    class LineSpacing {
     public:
         enum Rule {
             eSingleSpace,
@@ -604,91 +544,36 @@ namespace Stroika::Frameworks::Led {
         unsigned fArg{0};
 
     public:
-        Led_LineSpacing () = default;
-        Led_LineSpacing (Rule rule)
-            : fRule{rule}
-        {
-            Require (rule == eSingleSpace or rule == eOnePointFiveSpace or rule == eDoubleSpace);
-        }
-        Led_LineSpacing (Rule rule, TWIPS twips)
-            : fRule{rule}
-            , fArg{static_cast<unsigned> (twips)}
-        {
-            Require (rule == eAtLeastTWIPSSpacing or rule == eExactTWIPSSpacing);
-        }
-        Led_LineSpacing (Rule rule, unsigned lineCount)
-            : fRule{rule}
-            , fArg{lineCount}
-        {
-            Require (rule == eExactLinesSpacing);
-            switch (lineCount) {
-                case 20:
-                    fRule = eSingleSpace;
-                    break;
-                case 30:
-                    fRule = eOnePointFiveSpace;
-                    break;
-                case 40:
-                    fRule = eDoubleSpace;
-                    break;
-            }
-        }
-#if __cpp_impl_three_way_comparison >= 201907
-        inline bool operator== (Led_LineSpacing rhs) const
-        {
-            if (this->fRule != rhs.fRule) {
-                return false;
-            }
-            if (this->fRule == Led_LineSpacing::eAtLeastTWIPSSpacing or this->fRule == Led_LineSpacing::eExactTWIPSSpacing or this->fRule == Led_LineSpacing::eExactLinesSpacing) {
-                if (this->fArg != rhs.fArg) {
-                    return false;
-                }
-            }
-            return true;
-        }
+        LineSpacing () = default;
+        LineSpacing (Rule rule);
+        LineSpacing (Rule rule, TWIPS twips);
+        LineSpacing (Rule rule, unsigned lineCount);
+        bool operator== (LineSpacing rhs) const;
+#if __cpp_impl_three_way_comparison < 201907
+        bool operator!= (LineSpacing rhs) const;
 #endif
     };
-#if __cpp_impl_three_way_comparison < 201907
-    inline bool operator== (Led_LineSpacing lhs, Led_LineSpacing rhs)
-    {
-        if (lhs.fRule != rhs.fRule) {
-            return false;
-        }
-        if (lhs.fRule == Led_LineSpacing::eAtLeastTWIPSSpacing or lhs.fRule == Led_LineSpacing::eExactTWIPSSpacing or lhs.fRule == Led_LineSpacing::eExactLinesSpacing) {
-            if (lhs.fArg != rhs.fArg) {
-                return false;
-            }
-        }
-        return true;
-    }
-    inline bool operator!= (Led_LineSpacing lhs, Led_LineSpacing rhs)
-    {
-        return not(lhs == rhs);
-    }
-#endif
 
-    class Led_IncrementalFontSpecification;
+    class IncrementalFontSpecification;
 
     /**
-     *      <code>Led_FontSpecification</code> is a utility class which portably represents
+     *      <code>FontSpecification</code> is a utility class which portably represents
      *  a user font choice. This largely corresponds to the MS-Windows <code>LOGFONT</code> structure
      *  or the Macintosh <code>txFace, txSize, txStyle</code>.</p>
      *      In addition to being a portable represenation of this information, it
      *  also contains handy wrapper accessors, and extra information like subscript,
      *  superscript, and font color.</p>
-     *      See also, @'Led_IncrementalFontSpecification'</p>
+     *      See also, @'IncrementalFontSpecification'</p>
      */
-    class Led_FontSpecification {
+    class FontSpecification {
     public:
-        Led_FontSpecification ();
-#if qPlatform_Windows
-        explicit Led_FontSpecification (const LOGFONT& logFont);
-#endif
-
         // Force users to be EXPLICIT about this object-slicing, since many of the fields
         // maybe invalid... Will the compiler REALLY do this check???? We'll see - LGP 970314
-    public:
-        explicit Led_FontSpecification (const Led_IncrementalFontSpecification& from);
+        FontSpecification ();
+#if qPlatform_Windows
+        explicit FontSpecification (const LOGFONT& logFont);
+#endif
+        explicit FontSpecification (const IncrementalFontSpecification& from);
 
     public:
 #if qPlatform_MacOS
@@ -754,8 +639,8 @@ namespace Stroika::Frameworks::Led {
         nonvirtual bool GetStyle_Extended () const;
         nonvirtual void SetStyle_Extended (bool isExtended);
 #elif qPlatform_Windows
-        nonvirtual bool    GetStyle_Strikeout () const;
-        nonvirtual void    SetStyle_Strikeout (bool isStrikeout);
+        nonvirtual bool GetStyle_Strikeout () const;
+        nonvirtual void SetStyle_Strikeout (bool isStrikeout);
 #endif
 
         using FontSize = uint16_t;
@@ -767,8 +652,8 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void PokeAtTMHeight (long tmHeight); // ditto
 #endif
 
-        nonvirtual Led_Color GetTextColor () const;
-        nonvirtual void      SetTextColor (const Led_Color& textColor);
+        nonvirtual Color GetTextColor () const;
+        nonvirtual void  SetTextColor (const Color& textColor);
 
     public:
 #if qPlatform_MacOS
@@ -789,24 +674,23 @@ namespace Stroika::Frameworks::Led {
     public:
         /**
          */
-        strong_ordering operator<=> (const Led_FontSpecification& rhs) const;
+        strong_ordering operator<=> (const FontSpecification& rhs) const;
 #endif
     public:
         /**
          */
-        bool operator== (const Led_FontSpecification& rhs) const;
+        bool operator== (const FontSpecification& rhs) const;
 
     public:
-        nonvirtual void MergeIn (const Led_IncrementalFontSpecification& addInTheseAttributes);
+        nonvirtual void MergeIn (const IncrementalFontSpecification& addInTheseAttributes);
 
-        // OSRep.
     private:
 #if qPlatform_MacOS
         short fFontSpecifier;
         short fFontSize;
         Style fFontStyle;
 #elif qPlatform_Windows
-        LOGFONT            fFontInfo; // Could make this MUCH smaller on windows - do for future release!
+        LOGFONT fFontInfo; // Could make this MUCH smaller on windows - do for future release!
 #elif qStroika_FeatureSupported_XWindows
         FontNameSpecifier fFontFamily;
         bool              fBold : 1;
@@ -815,30 +699,29 @@ namespace Stroika::Frameworks::Led {
         short             fFontSize;
 #endif
         SubOrSuperScript fSubOrSuperScript;
-        Led_Color        fTextColor;
+        Color            fTextColor;
     };
 
     /*
-    @CLASS:         Led_IncrementalFontSpecification
-    @DESCRIPTION:   <p><code>Led_IncrementalFontSpecification</code> is a simple subclass of
-        @'Led_FontSpecification' which adds a bool flag for each
-        font attribute indicating whether or not it is really specified.
-        With this, and the @'Led_FontSpecification::MergeIn' method,
-        you can specify just one or two changes to a font record, pass them around,
-        and apply them to an existing font choice.</p>
-            <p>See also, @'Led_FontSpecification'</p>
-    */
-    class Led_IncrementalFontSpecification : public Led_FontSpecification {
+     *      <code>IncrementalFontSpecification</code> is a simple subclass of
+     *  @'FontSpecification' which adds a bool flag for each
+     *  font attribute indicating whether or not it is really specified.
+     *  With this, and the @'FontSpecification::MergeIn' method,
+     *  you can specify just one or two changes to a font record, pass them around,
+     *  and apply them to an existing font choice.</p>
+     *      See also, @'FontSpecification'
+     */
+    class IncrementalFontSpecification : public FontSpecification {
     private:
-        using inherited = Led_FontSpecification;
+        using inherited = FontSpecification;
 
     public:
-        Led_IncrementalFontSpecification ();
+        IncrementalFontSpecification ();
 
         // I may end up regretting this, for all the confusion it
         // can cause, but it sure makes a number of things simpler
         // and clearer-- LGP 960520
-        Led_IncrementalFontSpecification (const Led_FontSpecification& fontSpec);
+        IncrementalFontSpecification (const FontSpecification& fontSpec);
 
         /*
          *  Basic form of this API. For a feature of a font, say its size, there is a
@@ -908,10 +791,10 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void InvalidateStyle_Extended ();
         nonvirtual void SetStyle_Extended (bool isExtended);
 #elif qPlatform_Windows
-        nonvirtual bool    GetStyle_Strikeout () const;
-        nonvirtual bool    GetStyle_Strikeout_Valid () const;
-        nonvirtual void    InvalidateStyle_Strikeout ();
-        nonvirtual void    SetStyle_Strikeout (bool isStrikeout);
+        nonvirtual bool GetStyle_Strikeout () const;
+        nonvirtual bool GetStyle_Strikeout_Valid () const;
+        nonvirtual void InvalidateStyle_Strikeout ();
+        nonvirtual void SetStyle_Strikeout (bool isStrikeout);
 #endif
 
         /*
@@ -933,10 +816,10 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void  InvalidatePointSizeIncrement ();
         nonvirtual void  SetPointSizeIncrement (short pointSizeIncrement);
 
-        nonvirtual Led_Color GetTextColor () const;
-        nonvirtual bool      GetTextColor_Valid () const;
-        nonvirtual void      InvalidateTextColor ();
-        nonvirtual void      SetTextColor (const Led_Color& textColor);
+        nonvirtual Color GetTextColor () const;
+        nonvirtual bool  GetTextColor_Valid () const;
+        nonvirtual void  InvalidateTextColor ();
+        nonvirtual void  SetTextColor (const Color& textColor);
 
     public:
 #if qPlatform_MacOS
@@ -953,12 +836,12 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #if __cpp_impl_three_way_comparison >= 201907
-        bool operator<=> (const Led_IncrementalFontSpecification& rhs) = delete;
+        bool operator<=> (const IncrementalFontSpecification& rhs) = delete;
 #endif
-        bool operator== (const Led_IncrementalFontSpecification& rhs) const;
+        bool operator== (const IncrementalFontSpecification& rhs) const;
 
     public:
-        nonvirtual void MergeIn (const Led_IncrementalFontSpecification& addInTheseAttributes);
+        nonvirtual void MergeIn (const IncrementalFontSpecification& addInTheseAttributes);
 
     private:
         bool fFontSpecifierValid : 1;
@@ -981,10 +864,10 @@ namespace Stroika::Frameworks::Led {
     };
 
 #if __cpp_impl_three_way_comparison < 201907
-    bool operator!= (const Led_IncrementalFontSpecification& lhs, const Led_IncrementalFontSpecification& rhs);
+    bool operator!= (const IncrementalFontSpecification& lhs, const IncrementalFontSpecification& rhs);
 #endif
 
-    Led_IncrementalFontSpecification Intersection (const Led_IncrementalFontSpecification& lhs, const Led_IncrementalFontSpecification& rhs);
+    IncrementalFontSpecification Intersection (const IncrementalFontSpecification& lhs, const IncrementalFontSpecification& rhs);
 
     // Must support for other Platforms - but not done yet... Also - should have OPTIONS specified to this class (CTOR) picking various filter
     // options...
@@ -1021,13 +904,12 @@ namespace Stroika::Frameworks::Led {
 #endif
     };
 
-    /*
-    @CLASS:         Led_GDIGlobals
-    @DESCRIPTION:   <p>Something of a hack version of GDI global variables. We want to keep certain GDI global variables
-        computed ONCE, for speed reasons. And yet - if we get a certain windows message, we must refresh our cached global
-        variables. The compromise is that all these globals are associated with this class, so that there is one place to
-        call to refresh those globals.</p>
-    */
+    /**
+     *  Something of a hack version of GDI global variables. We want to keep certain GDI global variables
+     *  computed ONCE, for speed reasons. And yet - if we get a certain windows message, we must refresh our cached global
+     *  variables. The compromise is that all these globals are associated with this class, so that there is one place to
+     *   call to refresh those globals.
+     */
     class Led_GDIGlobals {
     public:
         Led_GDIGlobals ();
@@ -1084,11 +966,11 @@ namespace Stroika::Frameworks::Led {
     short     GetRectWidth (const Rect& r);
 #elif qPlatform_Windows
     Led_Point AsLedPoint (POINT p);
-    POINT AsPOINT (Led_Point p);
-    Led_Rect AsLedRect (RECT r);
-    RECT AsRECT (Led_Rect p);
-    SIZE AsSIZE (Led_Size s);
-    Led_Size AsLedSize (SIZE s);
+    POINT     AsPOINT (Led_Point p);
+    Led_Rect  AsLedRect (RECT r);
+    RECT      AsRECT (Led_Rect p);
+    SIZE      AsSIZE (Led_Size s);
+    Led_Size  AsLedSize (SIZE s);
 #elif qStroika_FeatureSupported_XWindows
     Led_Rect AsLedRect (const XRectangle& r);
     XRectangle AsXRect (const Led_Rect& r);
@@ -1161,10 +1043,10 @@ namespace Stroika::Frameworks::Led {
 #endif
     };
 
-    Led_Color Led_GetTextColor ();
-    Led_Color Led_GetTextBackgroundColor ();
-    Led_Color Led_GetSelectedTextColor ();
-    Led_Color Led_GetSelectedTextBackgroundColor ();
+    Color Led_GetTextColor ();
+    Color Led_GetTextBackgroundColor ();
+    Color Led_GetSelectedTextColor ();
+    Color Led_GetSelectedTextBackgroundColor ();
 
     class OffscreenTablet;
 
@@ -1214,41 +1096,41 @@ namespace Stroika::Frameworks::Led {
 
     public:
         nonvirtual void ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, Coordinate scrollBy);
-        nonvirtual void FrameRegion (const Led_Region& r, const Led_Color& c);
+        nonvirtual void FrameRegion (const Led_Region& r, const Color& c);
 
     public:
-        nonvirtual void FrameRectangle (const Led_Rect& r, Led_Color c, DistanceType borderWidth);
+        nonvirtual void FrameRectangle (const Led_Rect& r, Color c, DistanceType borderWidth);
 
     public:
 #if qPlatform_MacOS
         nonvirtual void SetPort ();
 #elif qPlatform_Windows
-        nonvirtual BOOL BitBlt (int x, int y, int nWidth, int nHeight, Led_Tablet_* pSrcDC, int xSrc, int ySrc, DWORD dwRop);
-        nonvirtual BOOL CreateCompatibleDC (Led_Tablet_* pDC);
+        nonvirtual BOOL     BitBlt (int x, int y, int nWidth, int nHeight, Led_Tablet_* pSrcDC, int xSrc, int ySrc, DWORD dwRop);
+        nonvirtual BOOL     CreateCompatibleDC (Led_Tablet_* pDC);
         nonvirtual COLORREF SetTextColor (COLORREF crColor);
         nonvirtual COLORREF SetBkColor (COLORREF crColor);
-        nonvirtual BOOL IsPrinting () const;
-        nonvirtual BOOL RoundRect (int x1, int y1, int x2, int y2, int x3, int y3);
-        nonvirtual BOOL TextOut (int x, int y, LPCTSTR lpszString, int nCount);
+        nonvirtual BOOL     IsPrinting () const;
+        nonvirtual BOOL     RoundRect (int x1, int y1, int x2, int y2, int x3, int y3);
+        nonvirtual BOOL     TextOut (int x, int y, LPCTSTR lpszString, int nCount);
         //      nonvirtual  SIZE    GetTextExtent (LPCTSTR lpszString, int nCount) const;
-        nonvirtual int SetBkMode (int nBkMode);
-        nonvirtual SIZE GetWindowExt () const;
-        nonvirtual SIZE GetViewportExt () const;
-        nonvirtual BOOL Rectangle (int x1, int y1, int x2, int y2);
-        nonvirtual BOOL Rectangle (const RECT& r);
-        nonvirtual BOOL Rectangle (LPCRECT lpRect);
-        nonvirtual BOOL GetTextMetrics (LPTEXTMETRIC lpMetrics) const;
+        nonvirtual int     SetBkMode (int nBkMode);
+        nonvirtual SIZE    GetWindowExt () const;
+        nonvirtual SIZE    GetViewportExt () const;
+        nonvirtual BOOL    Rectangle (int x1, int y1, int x2, int y2);
+        nonvirtual BOOL    Rectangle (const RECT& r);
+        nonvirtual BOOL    Rectangle (LPCRECT lpRect);
+        nonvirtual BOOL    GetTextMetrics (LPTEXTMETRIC lpMetrics) const;
         nonvirtual HBITMAP SelectObject (HBITMAP hBitmap);
 #if defined(STRICT)
         nonvirtual HFONT SelectObject (HFONT hFont);
 #endif
         nonvirtual POINT SetWindowOrg (int x, int y);
-        nonvirtual int GetDeviceCaps (int nIndex) const;
-        nonvirtual BOOL Attach (HDC hDC, OwnDCControl ownsDC = eOwnsDC);
-        nonvirtual HDC Detach ();
+        nonvirtual int   GetDeviceCaps (int nIndex) const;
+        nonvirtual BOOL  Attach (HDC hDC, OwnDCControl ownsDC = eOwnsDC);
+        nonvirtual HDC   Detach ();
 #elif qStroika_FeatureSupported_XWindows
     public:
-        nonvirtual void SetFont (const Led_FontSpecification& fontSpec);
+        nonvirtual void SetFont (const FontSpecification& fontSpec);
 
     private:
         map<string, XFontStruct*> fFontCache;
@@ -1274,7 +1156,7 @@ namespace Stroika::Frameworks::Led {
 
 #if qStroika_FeatureSupported_XWindows
     private:
-        nonvirtual Led_SDK_String BestMatchFont (const Led_FontSpecification& fsp, const vector<Led_SDK_String>& fontsList);
+        nonvirtual Led_SDK_String BestMatchFont (const FontSpecification& fsp, const vector<Led_SDK_String>& fontsList);
 
     public:
         static void ParseFontName (const Led_SDK_String& fontName, Led_SDK_String* familyName, Led_SDK_String* fontSize, Led_SDK_String* fontWeight, Led_SDK_String* fontSlant);
@@ -1298,13 +1180,13 @@ namespace Stroika::Frameworks::Led {
                                        DistanceType* amountDrawn, Coordinate hScrollOffset);
 
     public:
-        nonvirtual void SetBackColor (const Led_Color& backColor);
-        nonvirtual void SetForeColor (const Led_Color& foreColor);
+        nonvirtual void SetBackColor (const Color& backColor);
+        nonvirtual void SetForeColor (const Color& foreColor);
 
     public:
-        nonvirtual void EraseBackground_SolidHelper (const Led_Rect& eraseRect, const Led_Color& eraseColor);
-        nonvirtual void HilightArea_SolidHelper (const Led_Rect& hilightArea, Led_Color hilightBackColor, Led_Color hilightForeColor, Led_Color oldBackColor, Led_Color oldForeColor);
-        nonvirtual void HilightArea_SolidHelper (const Led_Region& hilightArea, Led_Color hilightBackColor, Led_Color hilightForeColor, Led_Color oldBackColor, Led_Color oldForeColor);
+        nonvirtual void EraseBackground_SolidHelper (const Led_Rect& eraseRect, const Color& eraseColor);
+        nonvirtual void HilightArea_SolidHelper (const Led_Rect& hilightArea, Color hilightBackColor, Color hilightForeColor, Color oldBackColor, Color oldForeColor);
+        nonvirtual void HilightArea_SolidHelper (const Led_Region& hilightArea, Color hilightBackColor, Color hilightForeColor, Color oldBackColor, Color oldForeColor);
 
 #if qPlatform_Windows
     private:
@@ -1332,9 +1214,9 @@ namespace Stroika::Frameworks::Led {
         GrafPtr fGrafPort;
 #elif qPlatform_Windows
     public:
-        HDC m_hDC;       // The output DC (must be first data member)
-        HDC m_hAttribDC; // The Attribute DC
-        BOOL m_bPrinting;
+        HDC          m_hDC;       // The output DC (must be first data member)
+        HDC          m_hAttribDC; // The Attribute DC
+        BOOL         m_bPrinting;
         OwnDCControl fOwnsDC;
 
     private:
@@ -1388,21 +1270,10 @@ namespace Stroika::Frameworks::Led {
     using Led_Tablet = Led_Tablet_*;
 
 #if qPlatform_Windows
-    class Led_WindowDC : public Led_Tablet_ {
+    class WindowDC : public Led_Tablet_ {
     public:
-        Led_WindowDC (HWND hWnd)
-            : fHWnd_{hWnd}
-        {
-            Require (fHWnd_ == nullptr or ::IsWindow (fHWnd_));
-            if (!Attach (::GetWindowDC (fHWnd_))) {
-                Led_ThrowOutOfMemoryException ();
-            }
-        }
-        ~Led_WindowDC ()
-        {
-            AssertNotNull (m_hDC);
-            ::ReleaseDC (fHWnd_, Detach ());
-        }
+        WindowDC (HWND hWnd);
+        ~WindowDC ();
 
     private:
         HWND fHWnd_;
@@ -1448,7 +1319,6 @@ namespace Stroika::Frameworks::Led {
 #endif
 
     /*
-    @CLASS:         OffscreenTablet
     @DESCRIPTION:   <p>An offscreen tablet is a helper object used to do offscreen imaging. This is useful in
                 avoidance of flicker. Also, by encapsulating this procedure into a class, it becomes easier
                 to add the functionality to several places in Led, yet with very different underlying implementations
@@ -1488,7 +1358,7 @@ namespace Stroika::Frameworks::Led {
         CGrafPtr  fOrigPort;
         GWorldPtr fOffscreenGWorld;
 #elif qPlatform_Windows
-        OT fMemDC;
+        OT         fMemDC;
         Led_Bitmap fMemoryBitmap; // only can create / select inside loop cuz there is where we know the size.
         // but decare outside, so stays around for successive rows which are the same size.
         HBITMAP fOldBitmapInDC; // used for save/restore of bitmap associated with the DC.
@@ -1513,7 +1383,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_Windows
         Led_GDI_Obj_Selector (Led_Tablet tablet, HGDIOBJ objToSelect);
 #elif qPlatform_MacOS || qStroika_FeatureSupported_XWindows
-        Led_GDI_Obj_Selector (Led_Tablet tablet, const Led_Pen& pen);
+        Led_GDI_Obj_Selector (Led_Tablet tablet, const Pen& pen);
 #endif
     public:
         ~Led_GDI_Obj_Selector ();
@@ -1524,7 +1394,7 @@ namespace Stroika::Frameworks::Led {
         HGDIOBJ fRestoreObject;
         HGDIOBJ fRestoreAttribObject;
 #elif qPlatform_MacOS
-        Led_Pen fRestorePen;
+        Pen fRestorePen;
 #endif
     };
 
@@ -1661,15 +1531,15 @@ namespace Stroika::Frameworks::Led {
     void AddRectangleToRegion (Led_Rect addRect, Led_Region* toRgn);
 
 #if qProvideIMESupport
-    class Led_IME {
+    class IME {
     public:
-        Led_IME ();
+        IME ();
 
     public:
-        static Led_IME& Get ();
+        static IME& Get ();
 
     private:
-        static Led_IME* sThe;
+        static IME* sThe;
 
     private:
         nonvirtual bool Available () const; //tmphack - don't think this is ever used
@@ -1720,10 +1590,18 @@ namespace Stroika::Frameworks::Led {
 #endif
 
     // LEGACY NAMES
-    using Led_TWIPS [[deprecated ("Since Stroika 2.1b12 use TWIPS")]]             = TWIPS;
-    using Led_Coordinate [[deprecated ("Since Stroika 2.1b12 use Coordinate")]]   = Coordinate;
-    using Led_Distance [[deprecated ("Since Stroika 2.1b12 use DistanceType")]]   = DistanceType;
-    using Led_TabStopList [[deprecated ("Since Stroika 2.1b12 use TabStopList")]] = TabStopList;
+    using Led_TWIPS [[deprecated ("Since Stroika 2.1b12 use TWIPS")]]                                               = TWIPS;
+    using Led_Coordinate [[deprecated ("Since Stroika 2.1b12 use Coordinate")]]                                     = Coordinate;
+    using Led_Distance [[deprecated ("Since Stroika 2.1b12 use DistanceType")]]                                     = DistanceType;
+    using Led_TabStopList [[deprecated ("Since Stroika 2.1b12 use TabStopList")]]                                   = TabStopList;
+    using Led_IncrementalFontSpecification [[deprecated ("Since Stroika 2.1b12 use IncrementalFontSpecification")]] = IncrementalFontSpecification;
+    using Led_FontSpecification [[deprecated ("Since Stroika 2.1b12 use FontSpecification")]]                       = FontSpecification;
+    using Led_WindowDC [[deprecated ("Since Stroika 2.1b12 use WindowDC")]]                                         = WindowDC;
+    using Led_Color [[deprecated ("Since Stroika 2.1b12 use Color")]]                                               = Color;
+    using Led_Pen [[deprecated ("Since Stroika 2.1b12 use Pen")]]                                                   = Pen;
+    using Led_LineSpacing [[deprecated ("Since Stroika 2.1b12 use LineSpacing")]]                                   = LineSpacing;
+    using Led_Justification [[deprecated ("Since Stroika 2.1b12 use Justification")]]                               = Justification;
+    using Led_IME [[deprecated ("Since Stroika 2.1b12 use IME")]]                                                   = IME;
 
 }
 

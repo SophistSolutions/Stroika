@@ -17,7 +17,7 @@ namespace Stroika::Frameworks::Led {
      ********************* SyntaxColoringMarkerOwner::ColoredStyleMarker ************
      ********************************************************************************
      */
-    inline SyntaxColoringMarkerOwner::ColoredStyleMarker::ColoredStyleMarker (const Led_Color& color)
+    inline SyntaxColoringMarkerOwner::ColoredStyleMarker::ColoredStyleMarker (const Color& color)
         : fColor{color}
     {
     }

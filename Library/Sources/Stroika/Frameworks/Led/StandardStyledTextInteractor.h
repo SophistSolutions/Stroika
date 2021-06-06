@@ -99,13 +99,13 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void HookGainedNewTextStore_ ();
 
     public:
-        virtual void SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont) override;
+        virtual void SetDefaultFont (const IncrementalFontSpecification& defaultFont) override;
 
     public:
-        virtual void InteractiveSetFont (const Led_IncrementalFontSpecification& defaultFont);
+        virtual void InteractiveSetFont (const IncrementalFontSpecification& defaultFont);
 
     public:
-        virtual Led_IncrementalFontSpecification GetContinuousStyleInfo (size_t from, size_t nTChars) const override;
+        virtual IncrementalFontSpecification GetContinuousStyleInfo (size_t from, size_t nTChars) const override;
 
     public:
         virtual void DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
@@ -148,13 +148,13 @@ namespace Stroika::Frameworks::Led {
         virtual bool    InteractiveReplaceEarlyPostReplaceHook (size_t withWhatCharCount) override;
         nonvirtual void SetSelection_ (size_t start, size_t end); // simply refills fEmptySelectionStyle
     private:
-        bool                  fEmptySelectionStyleSuppressMode;
-        Led_FontSpecification fEmptySelectionStyle;
+        bool              fEmptySelectionStyleSuppressMode;
+        FontSpecification fEmptySelectionStyle;
 
     public:
-        nonvirtual Led_FontSpecification GetEmptySelectionStyle () const;
-        nonvirtual void                  SetEmptySelectionStyle ();
-        nonvirtual void                  SetEmptySelectionStyle (Led_FontSpecification newEmptyFontSpec);
+        nonvirtual FontSpecification GetEmptySelectionStyle () const;
+        nonvirtual void              SetEmptySelectionStyle ();
+        nonvirtual void              SetEmptySelectionStyle (FontSpecification newEmptyFontSpec);
 
     public:
         nonvirtual vector<SimpleEmbeddedObjectStyleMarker*> CollectAllEmbeddingMarkersInRange (size_t from, size_t to) const;
@@ -203,15 +203,15 @@ namespace Stroika::Frameworks::Led {
     public:
         // if fontSpec is nullptr, use default. Probably later we will return and update the fontspec with
         // ApplyStyle
-        virtual size_t                current_offset () const override;
-        virtual void                  AppendText (const Led_tChar* text, size_t nTChars, const Led_FontSpecification* fontSpec) override;
-        virtual void                  ApplyStyle (size_t from, size_t to, const vector<StandardStyledTextImager::InfoSummaryRecord>& styleRuns) override;
-        virtual Led_FontSpecification GetDefaultFontSpec () const override;
-        virtual void                  InsertEmbeddingForExistingSentinal (SimpleEmbeddedObjectStyleMarker* embedding, size_t at) override;
-        virtual void                  AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding) override;
-        virtual void                  AppendSoftLineBreak () override;
-        virtual void                  InsertMarker (Marker* m, size_t at, size_t length, MarkerOwner* markerOwner) override;
-        virtual void                  Flush () override;
+        virtual size_t            current_offset () const override;
+        virtual void              AppendText (const Led_tChar* text, size_t nTChars, const FontSpecification* fontSpec) override;
+        virtual void              ApplyStyle (size_t from, size_t to, const vector<StandardStyledTextImager::InfoSummaryRecord>& styleRuns) override;
+        virtual FontSpecification GetDefaultFontSpec () const override;
+        virtual void              InsertEmbeddingForExistingSentinal (SimpleEmbeddedObjectStyleMarker* embedding, size_t at) override;
+        virtual void              AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding) override;
+        virtual void              AppendSoftLineBreak () override;
+        virtual void              InsertMarker (Marker* m, size_t at, size_t length, MarkerOwner* markerOwner) override;
+        virtual void              Flush () override;
 
     public:
         nonvirtual size_t GetInsertionStart () const;
@@ -275,7 +275,7 @@ namespace Stroika::Frameworks::Led {
         virtual vector<InfoSummaryRecord>                GetStyleInfo (size_t from, size_t len) const override;
         virtual vector<SimpleEmbeddedObjectStyleMarker*> CollectAllEmbeddingMarkersInRange (size_t from, size_t to) const override;
         virtual Table*                                   GetTableAt (size_t at) const override;
-        virtual void                                     SummarizeFontAndColorTable (set<Led_SDK_String>* fontNames, set<Led_Color>* colorsUsed) const override;
+        virtual void                                     SummarizeFontAndColorTable (set<Led_SDK_String>* fontNames, set<Color>* colorsUsed) const override;
         virtual size_t                                   GetEmbeddingMarkerPosOffset () const override;
 
     public:
@@ -389,7 +389,7 @@ namespace Stroika::Frameworks::Led {
         virtual void   InsertSelf (TextInteractor* interactor, size_t at, size_t nBytesToOverwrite) override;
 
     private:
-        Led_FontSpecification fSavedStyle;
+        FontSpecification fSavedStyle;
     };
 
 }

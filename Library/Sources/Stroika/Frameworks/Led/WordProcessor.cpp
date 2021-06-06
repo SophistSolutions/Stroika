@@ -99,7 +99,7 @@ void InteractiveWPHelper1 (WordProcessor* wp, T1 arg1)
     wp->BreakInGroupedCommands ();
 }
 struct DoIt_SetJustification {
-    static void DoIt (WordProcessor* wp, size_t selStart, size_t selEnd, Led_Justification justification)
+    static void DoIt (WordProcessor* wp, size_t selStart, size_t selEnd, Justification justification)
     {
         wp->SetJustification (selStart, selEnd, justification);
     }
@@ -156,11 +156,11 @@ struct DoIt_SetMarginsAndFirstIndent {
 };
 struct DoIt_SetParagraphSpacing {
     struct AllSpacingArgs {
-        TWIPS           fSpaceBefore;
-        TWIPS           fSpaceAfter;
-        Led_LineSpacing fLineSpacing;
-        bool            fSBValid, fSAValid, fSLValid;
-        AllSpacingArgs (TWIPS sb, bool sbValid, TWIPS sa, bool saValid, Led_LineSpacing sl, bool slValid)
+        TWIPS       fSpaceBefore;
+        TWIPS       fSpaceAfter;
+        LineSpacing fLineSpacing;
+        bool        fSBValid, fSAValid, fSLValid;
+        AllSpacingArgs (TWIPS sb, bool sbValid, TWIPS sa, bool saValid, LineSpacing sl, bool slValid)
             : fSpaceBefore (sb)
             , fSBValid (sbValid)
             , fSpaceAfter (sa)
@@ -609,7 +609,7 @@ DistanceType WordProcessor::DialogSupport::PickOtherFontHeight (DistanceType /*o
     return 0;
 }
 
-bool WordProcessor::DialogSupport::PickNewParagraphLineSpacing (TWIPS* /*spaceBefore*/, bool* /*spaceBeforeValid*/, TWIPS* /*spaceAfter*/, bool* /*spaceAfterValid*/, Led_LineSpacing* /*lineSpacing*/, bool* /*lineSpacingValid*/)
+bool WordProcessor::DialogSupport::PickNewParagraphLineSpacing (TWIPS* /*spaceBefore*/, bool* /*spaceBeforeValid*/, TWIPS* /*spaceAfter*/, bool* /*spaceAfterValid*/, LineSpacing* /*lineSpacing*/, bool* /*lineSpacingValid*/)
 {
     Assert (false); // You must implement this yourself in your own subclass - or don't enable commands that call it.
     return false;
@@ -621,94 +621,94 @@ bool WordProcessor::DialogSupport::PickNewParagraphMarginsAndFirstIndent (TWIPS*
     return false;
 }
 
-Led_Color WordProcessor::DialogSupport::FontCmdToColor (CommandNumber cmd)
+Color WordProcessor::DialogSupport::FontCmdToColor (CommandNumber cmd)
 {
     switch (cmd) {
         case kFontColorBlack_CmdID:
-            return Led_Color::kBlack;
+            return Color::kBlack;
         case kFontColorMaroon_CmdID:
-            return Led_Color::kMaroon;
+            return Color::kMaroon;
         case kFontColorGreen_CmdID:
-            return Led_Color::kGreen;
+            return Color::kGreen;
         case kFontColorOlive_CmdID:
-            return Led_Color::kOlive;
+            return Color::kOlive;
         case kFontColorNavy_CmdID:
-            return Led_Color::kNavyBlue;
+            return Color::kNavyBlue;
         case kFontColorPurple_CmdID:
-            return Led_Color::kPurple;
+            return Color::kPurple;
         case kFontColorTeal_CmdID:
-            return Led_Color::kTeal;
+            return Color::kTeal;
         case kFontColorGray_CmdID:
-            return Led_Color::kGray;
+            return Color::kGray;
         case kFontColorSilver_CmdID:
-            return Led_Color::kSilver;
+            return Color::kSilver;
         case kFontColorRed_CmdID:
-            return Led_Color::kRed;
+            return Color::kRed;
         case kFontColorLime_CmdID:
-            return Led_Color::kLimeGreen;
+            return Color::kLimeGreen;
         case kFontColorYellow_CmdID:
-            return Led_Color::kYellow;
+            return Color::kYellow;
         case kFontColorBlue_CmdID:
-            return Led_Color::kBlue;
+            return Color::kBlue;
         case kFontColorFuchsia_CmdID:
-            return Led_Color::kFuchsia;
+            return Color::kFuchsia;
         case kFontColorAqua_CmdID:
-            return Led_Color::kAqua;
+            return Color::kAqua;
         case kFontColorWhite_CmdID:
-            return Led_Color::kWhite;
+            return Color::kWhite;
     }
     Assert (false);
-    return Led_Color::kBlack;
+    return Color::kBlack;
 }
 
-WordProcessor::DialogSupport::CommandNumber WordProcessor::DialogSupport::FontColorToCmd (Led_Color color)
+WordProcessor::DialogSupport::CommandNumber WordProcessor::DialogSupport::FontColorToCmd (Color color)
 {
-    if (color == Led_Color::kBlack) {
+    if (color == Color::kBlack) {
         return kFontColorBlack_CmdID;
     }
-    else if (color == Led_Color::kMaroon) {
+    else if (color == Color::kMaroon) {
         return kFontColorMaroon_CmdID;
     }
-    else if (color == Led_Color::kGreen) {
+    else if (color == Color::kGreen) {
         return kFontColorGreen_CmdID;
     }
-    else if (color == Led_Color::kOlive) {
+    else if (color == Color::kOlive) {
         return kFontColorOlive_CmdID;
     }
-    else if (color == Led_Color::kNavyBlue) {
+    else if (color == Color::kNavyBlue) {
         return kFontColorNavy_CmdID;
     }
-    else if (color == Led_Color::kPurple) {
+    else if (color == Color::kPurple) {
         return kFontColorPurple_CmdID;
     }
-    else if (color == Led_Color::kTeal) {
+    else if (color == Color::kTeal) {
         return kFontColorTeal_CmdID;
     }
-    else if (color == Led_Color::kGray) {
+    else if (color == Color::kGray) {
         return kFontColorGray_CmdID;
     }
-    else if (color == Led_Color::kSilver) {
+    else if (color == Color::kSilver) {
         return kFontColorSilver_CmdID;
     }
-    else if (color == Led_Color::kRed) {
+    else if (color == Color::kRed) {
         return kFontColorRed_CmdID;
     }
-    else if (color == Led_Color::kGreen) {
+    else if (color == Color::kGreen) {
         return kFontColorLime_CmdID;
     }
-    else if (color == Led_Color::kYellow) {
+    else if (color == Color::kYellow) {
         return kFontColorYellow_CmdID;
     }
-    else if (color == Led_Color::kBlue) {
+    else if (color == Color::kBlue) {
         return kFontColorBlue_CmdID;
     }
-    else if (color == Led_Color::kFuchsia) {
+    else if (color == Color::kFuchsia) {
         return kFontColorFuchsia_CmdID;
     }
-    else if (color == Led_Color::kAqua) {
+    else if (color == Color::kAqua) {
         return kFontColorAqua_CmdID;
     }
-    else if (color == Led_Color::kWhite) {
+    else if (color == Color::kWhite) {
         return kFontColorWhite_CmdID;
     }
     else {
@@ -723,7 +723,7 @@ WordProcessor::DialogSupport::CommandNumber WordProcessor::DialogSupport::FontCo
     }
 }
 
-bool WordProcessor::DialogSupport::PickOtherFontColor (Led_Color* color)
+bool WordProcessor::DialogSupport::PickOtherFontColor (Color* color)
 {
     RequireNotNull (color);
 
@@ -732,7 +732,7 @@ bool WordProcessor::DialogSupport::PickOtherFontColor (Led_Color* color)
     RGBColor newColor = oldColor;
     Point    where    = {0, 0};
     if (::GetColor (where, "\pPick new color", &oldColor, &newColor)) {
-        *color = Led_Color (newColor);
+        *color = Color (newColor);
         return true;
     }
 #elif qPlatform_Windows
@@ -753,7 +753,7 @@ bool WordProcessor::DialogSupport::PickOtherFontColor (Led_Color* color)
     cc.hwndOwner = ::GetActiveWindow (); // Not a great choice - but the best I can come up with from here...
 
     if (::ChooseColor (&cc)) {
-        *color = Led_Color (cc.rgbResult);
+        *color = Color (cc.rgbResult);
         return true;
     }
 #endif
@@ -770,7 +770,7 @@ UINT_PTR CALLBACK WordProcessor::DialogSupport::ColorPickerINITPROC (HWND hWnd, 
 }
 #endif
 
-bool WordProcessor::DialogSupport::ChooseFont ([[maybe_unused]] Led_IncrementalFontSpecification* font)
+bool WordProcessor::DialogSupport::ChooseFont ([[maybe_unused]] IncrementalFontSpecification* font)
 {
     RequireNotNull (font);
 
@@ -806,8 +806,8 @@ bool WordProcessor::DialogSupport::ChooseFont ([[maybe_unused]] Led_IncrementalF
     }
 
     if (::ChooseFont (&cc)) {
-        *font = Led_FontSpecification (*cc.lpLogFont);
-        font->SetTextColor (Led_Color (cc.rgbColors));
+        *font = FontSpecification (*cc.lpLogFont);
+        font->SetTextColor (Color (cc.rgbColors));
         return true;
     }
 #endif
@@ -879,7 +879,7 @@ bool CheckForCommonParaValue (EXTRACTOR /*IGNORED_BUT_HERE_FOR_OVERLOADING*/, co
     }
 }
 struct JustificationExtractor {
-    Led_Justification operator() (const WordProcessor::ParagraphInfo& from)
+    Justification operator() (const WordProcessor::ParagraphInfo& from)
     {
         return from.GetJustification ();
     }
@@ -932,7 +932,7 @@ struct SpaceAfterExtractor {
     }
 };
 struct LineSpacingExtractor {
-    Led_LineSpacing operator() (const WordProcessor::ParagraphInfo& from)
+    LineSpacing operator() (const WordProcessor::ParagraphInfo& from)
     {
         return from.GetLineSpacing ();
     }
@@ -1297,9 +1297,9 @@ void WordProcessor::InterectiveSetRegionHidable (bool hidable)
 /*
 @METHOD:        WordProcessor::GetJustification
 @DESCRIPTION:
-    <p>Return the @'Led_Justification' setting for the paragraph containing the character characterPos</p>
+    <p>Return the @'Justification' setting for the paragraph containing the character characterPos</p>
 */
-Led_Justification WordProcessor::GetJustification (size_t characterPos) const
+Justification WordProcessor::GetJustification (size_t characterPos) const
 {
     if (fParagraphDatabase.get () == nullptr) {
         throw NoParagraphDatabaseAvailable ();
@@ -1310,9 +1310,9 @@ Led_Justification WordProcessor::GetJustification (size_t characterPos) const
 /*
 @METHOD:        WordProcessor::GetJustification
 @DESCRIPTION:
-    <p>Return true iff there is a unique answer, and only then to we set out justification param (@'Led_Justification').</p>
+    <p>Return true iff there is a unique answer, and only then to we set out justification param (@'Justification').</p>
 */
-bool WordProcessor::GetJustification (size_t from, size_t to, Led_Justification* justification) const
+bool WordProcessor::GetJustification (size_t from, size_t to, Justification* justification) const
 {
     RequireNotNull (justification);
     return CheckForCommonParaValue (JustificationExtractor (), fParagraphDatabase, from, to, justification);
@@ -1323,7 +1323,7 @@ bool WordProcessor::GetJustification (size_t from, size_t to, Led_Justification*
 @DESCRIPTION:   <p>Set the justification to <code>justification</code> for all paragraphs
     between <code>from</code> and <code>to</code>.</p>
 */
-void WordProcessor::SetJustification (size_t from, size_t to, Led_Justification justification)
+void WordProcessor::SetJustification (size_t from, size_t to, Justification justification)
 {
     Require (from <= to);
     IncrementalParagraphInfo pi;
@@ -1528,7 +1528,7 @@ void WordProcessor::SetSpaceAfter (size_t from, size_t to, TWIPS sa)
 @DESCRIPTION:
     <p>See @'WordProcessor::ParagraphInfo::GetLineSpacing'</p>
 */
-Led_LineSpacing WordProcessor::GetLineSpacing (size_t characterPos) const
+LineSpacing WordProcessor::GetLineSpacing (size_t characterPos) const
 {
     if (fParagraphDatabase.get () == nullptr) {
         throw NoParagraphDatabaseAvailable ();
@@ -1541,7 +1541,7 @@ Led_LineSpacing WordProcessor::GetLineSpacing (size_t characterPos) const
 @DESCRIPTION:
     <p>See @'WordProcessor::ParagraphInfo::GetLineSpacing'</p>
 */
-bool WordProcessor::GetLineSpacing (size_t from, size_t to, Led_LineSpacing* sl) const
+bool WordProcessor::GetLineSpacing (size_t from, size_t to, LineSpacing* sl) const
 {
     RequireNotNull (sl);
     return CheckForCommonParaValue (LineSpacingExtractor (), fParagraphDatabase, from, to, sl);
@@ -1552,7 +1552,7 @@ bool WordProcessor::GetLineSpacing (size_t from, size_t to, Led_LineSpacing* sl)
 @DESCRIPTION:
     <p>See @'WordProcessor::ParagraphInfo::SetLineSpacing'</p>
 */
-void WordProcessor::SetLineSpacing (size_t from, size_t to, Led_LineSpacing sl)
+void WordProcessor::SetLineSpacing (size_t from, size_t to, LineSpacing sl)
 {
     Require (from <= to);
     IncrementalParagraphInfo pi;
@@ -2533,7 +2533,7 @@ void WordProcessor::OnSelectAllCommand ()
 void WordProcessor::OnUpdateFontNameChangeCommand (CommandUpdater* enabler)
 {
     RequireNotNull (enabler);
-    Led_IncrementalFontSpecification fontSpec = GetCurSelFontSpec ();
+    IncrementalFontSpecification fontSpec = GetCurSelFontSpec ();
     // check the item iff it is the currently selected font.
     // But always enable them...
     enabler->SetChecked (fontSpec.GetFontNameSpecifier_Valid () and
@@ -2543,7 +2543,7 @@ void WordProcessor::OnUpdateFontNameChangeCommand (CommandUpdater* enabler)
 
 void WordProcessor::OnFontNameChangeCommand (CommandNumber cmdNum)
 {
-    Led_IncrementalFontSpecification applyFontSpec;
+    IncrementalFontSpecification applyFontSpec;
     applyFontSpec.SetFontNameSpecifier (GetDialogSupport ().CmdNumToFontName (cmdNum));
     InteractiveSetFont (applyFontSpec);
 }
@@ -2551,14 +2551,14 @@ void WordProcessor::OnFontNameChangeCommand (CommandNumber cmdNum)
 void WordProcessor::OnUpdateFontStylePlainCommand (CommandUpdater* enabler)
 {
     RequireNotNull (enabler);
-    Led_IncrementalFontSpecification fontSpec = GetCurSelFontSpec ();
+    IncrementalFontSpecification fontSpec = GetCurSelFontSpec ();
     enabler->SetChecked (fontSpec.GetStyle_Plain_Valid () and fontSpec.GetStyle_Plain ());
     enabler->SetEnabled (true);
 }
 
 void WordProcessor::OnFontStylePlainCommand ()
 {
-    Led_IncrementalFontSpecification applyFontSpec;
+    IncrementalFontSpecification applyFontSpec;
     applyFontSpec.SetStyle_Plain ();
     InteractiveSetFont (applyFontSpec);
 }
@@ -2566,15 +2566,15 @@ void WordProcessor::OnFontStylePlainCommand ()
 void WordProcessor::OnUpdateFontStyleBoldCommand (CommandUpdater* enabler)
 {
     RequireNotNull (enabler);
-    Led_IncrementalFontSpecification fontSpec = GetCurSelFontSpec ();
+    IncrementalFontSpecification fontSpec = GetCurSelFontSpec ();
     enabler->SetChecked (fontSpec.GetStyle_Bold_Valid () and fontSpec.GetStyle_Bold ());
     enabler->SetEnabled (true);
 }
 
 void WordProcessor::OnFontStyleBoldCommand ()
 {
-    Led_IncrementalFontSpecification applyFontSpec;
-    Led_IncrementalFontSpecification fontSpec = GetCurSelFontSpec ();
+    IncrementalFontSpecification applyFontSpec;
+    IncrementalFontSpecification fontSpec = GetCurSelFontSpec ();
     applyFontSpec.SetStyle_Bold (not(fontSpec.GetStyle_Bold_Valid () and fontSpec.GetStyle_Bold ()));
     InteractiveSetFont (applyFontSpec);
 }
@@ -2582,15 +2582,15 @@ void WordProcessor::OnFontStyleBoldCommand ()
 void WordProcessor::OnUpdateFontStyleItalicCommand (CommandUpdater* enabler)
 {
     RequireNotNull (enabler);
-    Led_IncrementalFontSpecification fontSpec = GetCurSelFontSpec ();
+    IncrementalFontSpecification fontSpec = GetCurSelFontSpec ();
     enabler->SetChecked (fontSpec.GetStyle_Italic_Valid () and fontSpec.GetStyle_Italic ());
     enabler->SetEnabled (true);
 }
 
 void WordProcessor::OnFontStyleItalicCommand ()
 {
-    Led_IncrementalFontSpecification applyFontSpec;
-    Led_IncrementalFontSpecification fontSpec = GetCurSelFontSpec ();
+    IncrementalFontSpecification applyFontSpec;
+    IncrementalFontSpecification fontSpec = GetCurSelFontSpec ();
     applyFontSpec.SetStyle_Italic (not(fontSpec.GetStyle_Italic_Valid () and fontSpec.GetStyle_Italic ()));
     InteractiveSetFont (applyFontSpec);
 }
@@ -2606,7 +2606,7 @@ void WordProcessor::OnUpdateFontStyleUnderlineCommand (CommandUpdater* enabler)
 void WordProcessor::OnFontStyleUnderlineCommand ()
 {
     AssureCurSelFontCacheValid ();
-    Led_IncrementalFontSpecification applyFontSpec;
+    IncrementalFontSpecification applyFontSpec;
     applyFontSpec.SetStyle_Underline (not(fCachedCurSelFontSpec.GetStyle_Underline_Valid () and fCachedCurSelFontSpec.GetStyle_Underline ()));
     InteractiveSetFont (applyFontSpec);
 }
@@ -2623,7 +2623,7 @@ void WordProcessor::OnUpdateFontStyleOutlineCommand (CommandUpdater* enabler)
 void WordProcessor::OnFontStyleOutlineCommand ()
 {
     AssureCurSelFontCacheValid ();
-    Led_IncrementalFontSpecification applyFontSpec;
+    IncrementalFontSpecification applyFontSpec;
     applyFontSpec.SetStyle_Outline (not(fCachedCurSelFontSpec.GetStyle_Outline_Valid () and fCachedCurSelFontSpec.GetStyle_Outline ()));
     InteractiveSetFont (applyFontSpec);
 }
@@ -2639,7 +2639,7 @@ void WordProcessor::OnUpdateFontStyleShadowCommand (CommandUpdater* enabler)
 void WordProcessor::OnFontStyleShadowCommand ()
 {
     AssureCurSelFontCacheValid ();
-    Led_IncrementalFontSpecification applyFontSpec;
+    IncrementalFontSpecification applyFontSpec;
     applyFontSpec.SetStyle_Shadow (not(fCachedCurSelFontSpec.GetStyle_Shadow_Valid () and fCachedCurSelFontSpec.GetStyle_Shadow ()));
     InteractiveSetFont (applyFontSpec);
 }
@@ -2655,7 +2655,7 @@ void WordProcessor::OnUpdateFontStyleCondensedCommand (CommandUpdater* enabler)
 void WordProcessor::OnFontStyleCondensedCommand ()
 {
     AssureCurSelFontCacheValid ();
-    Led_IncrementalFontSpecification applyFontSpec;
+    IncrementalFontSpecification applyFontSpec;
     applyFontSpec.SetStyle_Condensed (not(fCachedCurSelFontSpec.GetStyle_Condensed_Valid () and fCachedCurSelFontSpec.GetStyle_Condensed ()));
     InteractiveSetFont (applyFontSpec);
 }
@@ -2671,7 +2671,7 @@ void WordProcessor::OnUpdateFontStyleExtendedCommand (CommandUpdater* enabler)
 void WordProcessor::OnFontStyleExtendedCommand ()
 {
     AssureCurSelFontCacheValid ();
-    Led_IncrementalFontSpecification applyFontSpec;
+    IncrementalFontSpecification applyFontSpec;
     applyFontSpec.SetStyle_Extended (not(fCachedCurSelFontSpec.GetStyle_Extended_Valid () and fCachedCurSelFontSpec.GetStyle_Extended ()));
     InteractiveSetFont (applyFontSpec);
 }
@@ -2689,7 +2689,7 @@ void WordProcessor::OnUpdateFontStyleStrikeoutCommand (CommandUpdater* enabler)
 void WordProcessor::OnFontStyleStrikeoutCommand ()
 {
     AssureCurSelFontCacheValid ();
-    Led_IncrementalFontSpecification applyFontSpec;
+    IncrementalFontSpecification applyFontSpec;
     applyFontSpec.SetStyle_Strikeout (not(fCachedCurSelFontSpec.GetStyle_Strikeout_Valid () and fCachedCurSelFontSpec.GetStyle_Strikeout ()));
     InteractiveSetFont (applyFontSpec);
 }
@@ -2700,19 +2700,19 @@ void WordProcessor::OnUpdateFontStyleSubscriptCommand (CommandUpdater* enabler)
 {
     RequireNotNull (enabler);
     AssureCurSelFontCacheValid ();
-    enabler->SetChecked (fCachedCurSelFontSpec.GetStyle_SubOrSuperScript_Valid () and fCachedCurSelFontSpec.GetStyle_SubOrSuperScript () == Led_FontSpecification::eSubscript);
+    enabler->SetChecked (fCachedCurSelFontSpec.GetStyle_SubOrSuperScript_Valid () and fCachedCurSelFontSpec.GetStyle_SubOrSuperScript () == FontSpecification::eSubscript);
     enabler->SetEnabled (true);
 }
 
 void WordProcessor::OnFontStyleSubscriptCommand ()
 {
     AssureCurSelFontCacheValid ();
-    Led_IncrementalFontSpecification applyFontSpec;
+    IncrementalFontSpecification applyFontSpec;
     applyFontSpec.SetStyle_SubOrSuperScript (
         (fCachedCurSelFontSpec.GetStyle_SubOrSuperScript_Valid () and
-         fCachedCurSelFontSpec.GetStyle_SubOrSuperScript () == Led_FontSpecification::eSubscript)
-            ? Led_FontSpecification::eNoSubOrSuperscript
-            : Led_FontSpecification::eSubscript);
+         fCachedCurSelFontSpec.GetStyle_SubOrSuperScript () == FontSpecification::eSubscript)
+            ? FontSpecification::eNoSubOrSuperscript
+            : FontSpecification::eSubscript);
     InteractiveSetFont (applyFontSpec);
 }
 
@@ -2720,19 +2720,19 @@ void WordProcessor::OnUpdateFontStyleSuperscriptCommand (CommandUpdater* enabler
 {
     RequireNotNull (enabler);
     AssureCurSelFontCacheValid ();
-    enabler->SetChecked (fCachedCurSelFontSpec.GetStyle_SubOrSuperScript_Valid () and fCachedCurSelFontSpec.GetStyle_SubOrSuperScript () == Led_FontSpecification::eSuperscript);
+    enabler->SetChecked (fCachedCurSelFontSpec.GetStyle_SubOrSuperScript_Valid () and fCachedCurSelFontSpec.GetStyle_SubOrSuperScript () == FontSpecification::eSuperscript);
     enabler->SetEnabled (true);
 }
 
 void WordProcessor::OnFontStyleSuperscriptCommand ()
 {
     AssureCurSelFontCacheValid ();
-    Led_IncrementalFontSpecification applyFontSpec;
+    IncrementalFontSpecification applyFontSpec;
     applyFontSpec.SetStyle_SubOrSuperScript (
         (fCachedCurSelFontSpec.GetStyle_SubOrSuperScript_Valid () and
-         fCachedCurSelFontSpec.GetStyle_SubOrSuperScript () == Led_FontSpecification::eSuperscript)
-            ? Led_FontSpecification::eNoSubOrSuperscript
-            : Led_FontSpecification::eSuperscript);
+         fCachedCurSelFontSpec.GetStyle_SubOrSuperScript () == FontSpecification::eSuperscript)
+            ? FontSpecification::eNoSubOrSuperscript
+            : FontSpecification::eSuperscript);
     InteractiveSetFont (applyFontSpec);
 }
 
@@ -2744,7 +2744,7 @@ void WordProcessor::OnUpdateChooseFontCommand (CommandUpdater* enabler)
 
 void WordProcessor::OnChooseFontCommand ()
 {
-    Led_IncrementalFontSpecification curSelFontSpec = GetCurSelFontSpec ();
+    IncrementalFontSpecification curSelFontSpec = GetCurSelFontSpec ();
     if (GetDialogSupport ().ChooseFont (&curSelFontSpec)) {
         InteractiveSetFont (curSelFontSpec);
     }
@@ -2790,13 +2790,13 @@ void WordProcessor::OnFontSizeChangeCommand (CommandNumber cmdNum)
     if (chosenFontSize == 0) {
         switch (cmdNum) {
             case kFontSizeSmaller_CmdID: {
-                Led_IncrementalFontSpecification applyFontSpec;
+                IncrementalFontSpecification applyFontSpec;
                 applyFontSpec.SetPointSizeIncrement (-1);
                 InteractiveSetFont (applyFontSpec);
                 return;
             } break;
             case kFontSizeLarger_CmdID: {
-                Led_IncrementalFontSpecification applyFontSpec;
+                IncrementalFontSpecification applyFontSpec;
                 applyFontSpec.SetPointSizeIncrement (1);
                 InteractiveSetFont (applyFontSpec);
                 return;
@@ -2808,7 +2808,7 @@ void WordProcessor::OnFontSizeChangeCommand (CommandNumber cmdNum)
         }
     }
     if (chosenFontSize != 0) {
-        Led_IncrementalFontSpecification applyFontSpec;
+        IncrementalFontSpecification applyFontSpec;
         applyFontSpec.SetPointSize (static_cast<unsigned short> (chosenFontSize));
         InteractiveSetFont (applyFontSpec);
     }
@@ -2839,13 +2839,13 @@ void WordProcessor::OnFontColorChangeCommand (CommandNumber cmdNum)
     Require (cmdNum >= kBaseFontColor_CmdID and cmdNum <= kLastFontColor_CmdID);
 
     AssureCurSelFontCacheValid ();
-    Led_IncrementalFontSpecification applyFontSpec;
+    IncrementalFontSpecification applyFontSpec;
     if (cmdNum == kFontColorOther_CmdID) {
-        Led_Color originalColor = GetDefaultFont ().GetTextColor ();
+        Color originalColor = GetDefaultFont ().GetTextColor ();
         if (fCachedCurSelFontSpec.GetTextColor_Valid ()) {
             originalColor = fCachedCurSelFontSpec.GetTextColor ();
         }
-        Led_Color chosenColor = originalColor;
+        Color chosenColor = originalColor;
         if (GetDialogSupport ().PickOtherFontColor (&chosenColor)) {
             applyFontSpec.SetTextColor (chosenColor);
         }
@@ -2854,9 +2854,9 @@ void WordProcessor::OnFontColorChangeCommand (CommandNumber cmdNum)
         // Treat color selection like style selection. That is, if text is already red, and you select
         // Red, then treat that as 'turning off red' (ie go to black). Otherwise - just treat the command
         // as setting the whole wange to that color.
-        Led_Color chosenColor = GetDialogSupport ().FontCmdToColor (cmdNum);
+        Color chosenColor = GetDialogSupport ().FontCmdToColor (cmdNum);
         if (fCachedCurSelFontSpec.GetTextColor_Valid () and fCachedCurSelFontSpec.GetTextColor () == chosenColor) {
-            applyFontSpec.SetTextColor (Led_Color::kBlack);
+            applyFontSpec.SetTextColor (Color::kBlack);
         }
         else {
             applyFontSpec.SetTextColor (chosenColor);
@@ -3047,8 +3047,8 @@ void WordProcessor::OnEditTablePropertiesDialog ()
         for (size_t r = rowSelStart; r < rowSelEnd; ++r) {
             for (size_t c = colSelStart; c < colSelEnd; ++c) {
                 if (c < t->GetColumnCount (r)) {
-                    TWIPS     cellWidth  = t->GetColumnWidth (r, c);
-                    Led_Color cellBkgrnd = t->GetCellColor (r, c);
+                    TWIPS cellWidth  = t->GetColumnWidth (r, c);
+                    Color cellBkgrnd = t->GetCellColor (r, c);
                     if (r == rowSelStart and c == colSelStart) {
                         info.fCellWidth_Common           = true;
                         info.fCellWidth                  = cellWidth;
@@ -3180,9 +3180,9 @@ void WordProcessor::OnUpdateParagraphSpacingChangeCommand (CommandUpdater* enabl
 
 void WordProcessor::OnParagraphSpacingChangeCommand ()
 {
-    TWIPS           spaceBefore = TWIPS (0);
-    TWIPS           spaceAfter  = TWIPS (0);
-    Led_LineSpacing lineSpacing;
+    TWIPS       spaceBefore = TWIPS (0);
+    TWIPS       spaceAfter  = TWIPS (0);
+    LineSpacing lineSpacing;
 
     bool spaceBeforeValid = GetSpaceBefore (GetSelectionStart (), GetSelectionEnd (), &spaceBefore);
     bool spaceAfterValid  = GetSpaceAfter (GetSelectionStart (), GetSelectionEnd (), &spaceAfter);
@@ -3418,8 +3418,8 @@ DistanceType WordProcessor::GetListLeaderLength (size_t paragraphMarkerPos) cons
     }
     else {
         Memory::SmallStackBuffer<DistanceType> distanceResults (len);
-        Led_FontSpecification                  nextCharsFontStyle = GetStyleInfo (paragraphMarkerPos);
-        Led_FontSpecification                  useBulletFont      = GetStaticDefaultFont ();
+        FontSpecification                      nextCharsFontStyle = GetStyleInfo (paragraphMarkerPos);
+        FontSpecification                      useBulletFont      = GetStaticDefaultFont ();
         useBulletFont.SetPointSize (max (static_cast<unsigned short> (14), nextCharsFontStyle.GetPointSize ()));
         MeasureSegmentWidth_ (useBulletFont, paragraphMarkerPos, paragraphMarkerPos + len,
                               leader.c_str (), distanceResults);
@@ -3449,7 +3449,7 @@ InteractiveReplaceCommand::SavedTextRep* WordProcessor::InteractiveUndoHelperMak
 @METHOD:        WordProcessor::InteractiveSetFont
 @DESCRIPTION:   <p>Override @'StandardStyledTextInteractor::InteractiveSetFont' to handle embedded tables.</p>
 */
-void WordProcessor::InteractiveSetFont (const Led_IncrementalFontSpecification& defaultFont)
+void WordProcessor::InteractiveSetFont (const IncrementalFontSpecification& defaultFont)
 {
     Table* aT = GetActiveTable ();
     if (aT != nullptr) {
@@ -3464,9 +3464,9 @@ void WordProcessor::InteractiveSetFont (const Led_IncrementalFontSpecification& 
 @METHOD:        WordProcessor::InteractiveSetJustification
 @DESCRIPTION:
 */
-void WordProcessor::InteractiveSetJustification (Led_Justification justification)
+void WordProcessor::InteractiveSetJustification (Justification justification)
 {
-    Led_Justification oldJustification;
+    Justification oldJustification;
     if (not GetJustification (GetSelectionStart (), GetSelectionEnd (), &oldJustification) or
         (oldJustification != justification)) {
         InteractiveWPHelper1<DoIt_SetJustification> (this, justification);
@@ -3535,14 +3535,14 @@ void WordProcessor::InteractiveSetMarginsAndFirstIndent (TWIPS leftMargin, TWIPS
 @METHOD:        WordProcessor::InteractiveSetParagraphSpacing
 @DESCRIPTION:
 */
-void WordProcessor::InteractiveSetParagraphSpacing (TWIPS spaceBefore, bool spaceBeforeValid, TWIPS spaceAfter, bool spaceAfterValid, Led_LineSpacing lineSpacing, bool lineSpacingValid)
+void WordProcessor::InteractiveSetParagraphSpacing (TWIPS spaceBefore, bool spaceBeforeValid, TWIPS spaceAfter, bool spaceAfterValid, LineSpacing lineSpacing, bool lineSpacingValid)
 {
     /*
      *  If any of these things have changed - do the command.
      */
-    TWIPS           oldSpaceBefore = TWIPS (0);
-    TWIPS           oldSpaceAfter  = TWIPS (0);
-    Led_LineSpacing oldLineSpacing;
+    TWIPS       oldSpaceBefore = TWIPS (0);
+    TWIPS       oldSpaceAfter  = TWIPS (0);
+    LineSpacing oldLineSpacing;
     if (
         not GetSpaceBefore (GetSelectionStart (), GetSelectionEnd (), &oldSpaceBefore) or
         (oldSpaceBefore != spaceBefore) or
@@ -3645,8 +3645,8 @@ void WordProcessor::DrawRowSegments (Led_Tablet tablet, const Led_Rect& currentR
                     Led_Rect    xxx        = adjustedDrawInto;
                     Led_tString listLeader = GetListLeader (rowStart);
                     xxx.SetLeft (xxx.GetLeft () - GetListLeaderLength (rowStart));
-                    Led_FontSpecification nextCharsFontStyle = GetStyleInfo (rowStart);
-                    Led_FontSpecification useBulletFont      = GetStaticDefaultFont ();
+                    FontSpecification nextCharsFontStyle = GetStyleInfo (rowStart);
+                    FontSpecification useBulletFont      = GetStaticDefaultFont ();
                     useBulletFont.SetPointSize (max (static_cast<unsigned short> (14), nextCharsFontStyle.GetPointSize ()));
                     Coordinate baseLine = xxx.GetTop () + MeasureSegmentBaseLine (rowStart, rowStart);
                     DrawSegment_ (tablet, useBulletFont,
@@ -3672,11 +3672,11 @@ void WordProcessor::DrawRowSegments (Led_Tablet tablet, const Led_Rect& currentR
             // check for the last row of a partitionelement, and if we hit it - patch the text and rowEnd guys..
             PartitionElementCacheInfo pmCacheInfo = GetPartitionElementCacheInfo (GetPartitionMarkerContainingPosition (rowStart));
             if (row.GetSubRow () + 1 == pmCacheInfo.GetRowCount () and rowEnd < GetEnd ()) {
-                const Led_tChar       newline            = '\n';
-                Led_FontSpecification nextCharsFontStyle = GetStyleInfo (rowEnd);
-                Led_FontSpecification useFont            = GetStaticDefaultFont ();
+                const Led_tChar   newline            = '\n';
+                FontSpecification nextCharsFontStyle = GetStyleInfo (rowEnd);
+                FontSpecification useFont            = GetStaticDefaultFont ();
                 useFont.SetPointSize (max (static_cast<unsigned short> (14), nextCharsFontStyle.GetPointSize ()));
-                useFont.SetTextColor (Led_Color::kGray);
+                useFont.SetTextColor (Color::kGray);
                 Led_Rect     yyy          = adjustedDrawInto;
                 DistanceType segmentWidth = CalcSegmentSize (rowStart, rowEnd);
                 yyy.left += segmentWidth;
@@ -3737,7 +3737,7 @@ void WordProcessor::DrawSegment (Led_Tablet tablet,
                 Assert (tabRect.GetLeft () < tabRect.GetRight ());
 #if 1
                 {
-                    Led_Color arrowColor = GetEffectiveDefaultTextColor (eDefaultTextColor);
+                    Color arrowColor = GetEffectiveDefaultTextColor (eDefaultTextColor);
                     // Draw a line down the middle (with a couple pixel sluff on either side)
                     Led_Rect arrowBody = tabRect;
                     arrowBody.left += 2;
@@ -3773,7 +3773,7 @@ void WordProcessor::DrawSegment (Led_Tablet tablet,
                     if (ph != nullptr) {
                         Assert (*tablet == Led_GetCurrentGDIPort ());
                         GDI_RGBForeColor (arrowColor.GetOSRep ());
-                        ::FillPoly (ph, &Led_Pen::kBlackPattern);
+                        ::FillPoly (ph, &Pen::kBlackPattern);
                         ::KillPoly (ph);
                     }
 #else
@@ -3782,7 +3782,7 @@ void WordProcessor::DrawSegment (Led_Tablet tablet,
                 }
 #else
                 //TMPHACK SO WE CAN SEE WEVE GOT RIGHT AREA:
-                tablet->EraseBackground_SolidHelper (tabRect, Led_Color::kRed);
+                tablet->EraseBackground_SolidHelper (tabRect, Color::kRed);
 #endif
             }
         }
@@ -3829,28 +3829,28 @@ DistanceType WordProcessor::MeasureSegmentHeight (size_t from, size_t to) const
 
     ParagraphInfo pi = fParagraphDatabase->GetParagraphInfo (from);
     {
-        Led_LineSpacing sl = pi.GetLineSpacing ();
+        LineSpacing sl = pi.GetLineSpacing ();
         switch (sl.fRule) {
-            case Led_LineSpacing::eOnePointFiveSpace:
+            case LineSpacing::eOnePointFiveSpace:
                 d *= 3;
                 d /= 2;
                 break;
-            case Led_LineSpacing::eDoubleSpace:
+            case LineSpacing::eDoubleSpace:
                 d *= 2;
                 break;
-            case Led_LineSpacing::eAtLeastTWIPSSpacing:
+            case LineSpacing::eAtLeastTWIPSSpacing:
                 d = max (DistanceType (tablet->CvtFromTWIPSV (TWIPS (sl.fArg))), d);
                 break;
-            case Led_LineSpacing::eExactTWIPSSpacing:
+            case LineSpacing::eExactTWIPSSpacing:
                 d = tablet->CvtFromTWIPSV (TWIPS (sl.fArg));
                 break;
-            case Led_LineSpacing::eExactLinesSpacing:
+            case LineSpacing::eExactLinesSpacing:
                 d *= sl.fArg;
                 d /= 20;
                 break;
 
             default: // Treat as Single space
-            case Led_LineSpacing::eSingleSpace:
+            case LineSpacing::eSingleSpace:
                 break;
         }
     }
@@ -3984,21 +3984,21 @@ DistanceType WordProcessor::MeasureSegmentBaseLine (size_t from, size_t to) cons
      *  text - not the bottom).
      *      The question is exactly how? Where do we steal the pixels from.
      *      Again - following what MSWord 2000 does - it seems to compute the MINIMAL decent for all the text in the region. And use that.
-     *      Then - it takes what height it has been allowed (by the Led_LineSpacing::eExactTWIPSSpacing or whatever) - and then computes
+     *      Then - it takes what height it has been allowed (by the LineSpacing::eExactTWIPSSpacing or whatever) - and then computes
      *  the baseline based on the given height and the MINIMAL (rather than the normal maximal) decent.
      */
     ParagraphInfo pi = fParagraphDatabase->GetParagraphInfo (from);
     {
-        Led_LineSpacing sl = pi.GetLineSpacing ();
+        LineSpacing sl = pi.GetLineSpacing ();
         switch (sl.fRule) {
-            case Led_LineSpacing::eExactTWIPSSpacing: {
+            case LineSpacing::eExactTWIPSSpacing: {
                 Tablet_Acquirer tablet_ (this);
                 Led_Tablet      tablet           = tablet_;
                 DistanceType    revisedSegHeight = tablet->CvtFromTWIPSV (TWIPS (sl.fArg));
                 DistanceType    mhb              = MeasureMinSegDescent (from, to); // aka decent
                 d                                = revisedSegHeight - mhb;
             } break;
-            case Led_LineSpacing::eExactLinesSpacing: {
+            case LineSpacing::eExactLinesSpacing: {
                 if (sl.fArg < 20) {
                     Tablet_Acquirer tablet_ (this);
                     DistanceType    normalSegHeight  = inherited::MeasureSegmentHeight (from, to);
@@ -4174,7 +4174,7 @@ Led_Rect WordProcessor::GetCharLocationRowRelative (size_t afterPosition, RowRef
         r.right += lhsMargin;
     }
 
-    Led_Justification justification = GetJustification (afterPosition);
+    Justification justification = GetJustification (afterPosition);
     if (justification == eCenterJustify or justification == eRightJustify) {
         switch (justification) {
             case eCenterJustify: {
@@ -4208,7 +4208,7 @@ size_t WordProcessor::GetCharAtLocationRowRelative (const Led_Point& where, RowR
         GetLayoutMargins (row, &lhsMargin, nullptr);
         adjustedWhere.h -= lhsMargin;
     }
-    Led_Justification justification = GetJustification (posInRow);
+    Justification justification = GetJustification (posInRow);
     switch (justification) {
         case eCenterJustify: {
             adjustedWhere.h -= CalcSpaceToEat (posInRow) / 2;
@@ -4308,7 +4308,7 @@ void WordProcessor::ExpandedFromAndToInPostReplace (size_t from, size_t newTo,
                                                     size_t startPositionOfRowWhereReplaceBegins, size_t startPositionOfRowAfterReplaceEnds,
                                                     size_t* expandedFrom, size_t* expandedTo)
 {
-    Led_Justification justification = GetJustification (from);
+    Justification justification = GetJustification (from);
     if (justification != eLeftJustify) {
         from = GetStartOfRowContainingPosition (from);
     }
@@ -4416,7 +4416,7 @@ WordProcessorTextIOSinkStream::WordProcessorTextIOSinkStream (TextStore*        
     , fIgnoreLastParaAttributes (false)
     , fCurrentTable (nullptr)
     , fCurrentTableCellWidths ()
-    , fCurrentTableCellColor (Led_Color::kWhite)
+    , fCurrentTableCellColor (Color::kWhite)
     , fCurrentTableColSpanArray ()
     , fTableStack ()
     , fNextTableRow (0)
@@ -4450,7 +4450,7 @@ WordProcessorTextIOSinkStream::WordProcessorTextIOSinkStream (WordProcessor* wp,
     , fIgnoreLastParaAttributes (false)
     , fCurrentTable (nullptr)
     , fCurrentTableCellWidths ()
-    , fCurrentTableCellColor (Led_Color::kWhite)
+    , fCurrentTableCellColor (Color::kWhite)
     , fCurrentTableColSpanArray ()
     , fTableStack ()
     , fNextTableRow (0)
@@ -4491,7 +4491,7 @@ void WordProcessorTextIOSinkStream::CTOR_COMMON ()
     fNewParagraphInfo.SetSpaceAfter (TWIPS (0));
 }
 
-void WordProcessorTextIOSinkStream::AppendText (const Led_tChar* text, size_t nTChars, const Led_FontSpecification* fontSpec)
+void WordProcessorTextIOSinkStream::AppendText (const Led_tChar* text, size_t nTChars, const FontSpecification* fontSpec)
 {
     RequireNotNull (text);
     inherited::AppendText (text, nTChars, fontSpec);
@@ -4530,7 +4530,7 @@ void WordProcessorTextIOSinkStream::AppendSoftLineBreak ()
     AppendText (&WordWrappedTextImager::kSoftLineBreakChar, 1, nullptr);
 }
 
-void WordProcessorTextIOSinkStream::SetJustification (Led_Justification justification)
+void WordProcessorTextIOSinkStream::SetJustification (Justification justification)
 {
     fNewParagraphInfo.SetJustification (justification);
 }
@@ -4565,7 +4565,7 @@ void WordProcessorTextIOSinkStream::SetSpaceAfter (TWIPS sa)
     fNewParagraphInfo.SetSpaceAfter (sa);
 }
 
-void WordProcessorTextIOSinkStream::SetLineSpacing (Led_LineSpacing sl)
+void WordProcessorTextIOSinkStream::SetLineSpacing (LineSpacing sl)
 {
     fNewParagraphInfo.SetLineSpacing (sl);
 }
@@ -4843,7 +4843,7 @@ void WordProcessorTextIOSinkStream::SetIgnoreLastParaAttributes (bool ignoreLast
     fIgnoreLastParaAttributes = ignoreLastParaAttributes;
 }
 
-void WordProcessorTextIOSinkStream::SetTableBorderColor (Led_Color c)
+void WordProcessorTextIOSinkStream::SetTableBorderColor (Color c)
 {
     if (fCurrentTable != nullptr) {
         fCurrentTable->SetTableBorderColor (c);
@@ -4864,7 +4864,7 @@ void WordProcessorTextIOSinkStream::SetCellWidths (const vector<TWIPS>& cellWidt
     }
 }
 
-void WordProcessorTextIOSinkStream::SetCellBackColor (const Led_Color c)
+void WordProcessorTextIOSinkStream::SetCellBackColor (const Color c)
 {
     if (fCurrentTable != nullptr) {
         fCurrentTableCellColor = c;
@@ -5041,7 +5041,7 @@ WordProcessorTextIOSrcStream::WordProcessorTextIOSrcStream (WordProcessor* textI
     }
 }
 
-Led_Justification WordProcessorTextIOSrcStream::GetJustification () const
+Justification WordProcessorTextIOSrcStream::GetJustification () const
 {
     if (fParagraphDatabase.get () == nullptr) {
         return inherited::GetJustification ();
@@ -5119,7 +5119,7 @@ TWIPS WordProcessorTextIOSrcStream::GetSpaceAfter () const
 @METHOD:        WordProcessor::WordProcessorTextIOSrcStream::GetLineSpacing
 @DESCRIPTION:
 */
-Led_LineSpacing WordProcessorTextIOSrcStream::GetLineSpacing () const
+LineSpacing WordProcessorTextIOSrcStream::GetLineSpacing () const
 {
     if (fParagraphDatabase.get () == nullptr) {
         return inherited::GetLineSpacing ();
@@ -5189,7 +5189,7 @@ WordProcessorTextIOSrcStream::Table* WordProcessorTextIOSrcStream::GetTableAt (s
     }
 }
 
-void WordProcessorTextIOSrcStream::SummarizeFontAndColorTable (set<Led_SDK_String>* fontNames, set<Led_Color>* colorsUsed) const
+void WordProcessorTextIOSrcStream::SummarizeFontAndColorTable (set<Led_SDK_String>* fontNames, set<Color>* colorsUsed) const
 {
     inherited::SummarizeFontAndColorTable (fontNames, colorsUsed);
 
@@ -5712,7 +5712,7 @@ Table::Table (WordProcessor::AbstractParagraphDatabaseRep* tableOwner, size_t ad
     , fNeedLayout (eNeedFullLayout)
     , fRows ()
     , fBorderWidth (Led_CvtScreenPixelsToTWIPSH (1))
-    , fBorderColor (Led_Color::kSilver)
+    , fBorderColor (Color::kSilver)
     , fTotalWidth (0)
     , fTotalHeight (0)
 {
@@ -6636,7 +6636,7 @@ void Table::OnPerformTablePartsCommand (TextInteractor::CommandNumber commandNum
     }
 }
 
-void Table::AssureCurSelFontCacheValid (Led_IncrementalFontSpecification* curSelFontSpec)
+void Table::AssureCurSelFontCacheValid (IncrementalFontSpecification* curSelFontSpec)
 {
     RequireNotNull (curSelFontSpec);
     {
@@ -6659,7 +6659,7 @@ void Table::AssureCurSelFontCacheValid (Led_IncrementalFontSpecification* curSel
         for (size_t ci = colSelStart; ci < thisRowEnd; ++ci) {
             TemporarilyAllocateCellWithTablet wp (*this, ri, ci);
             wp->SetSelection (0, wp->GetEnd (), TextInteractor::eNoUpdate);
-            Led_IncrementalFontSpecification iSpec = wp->GetCurSelFontSpec ();
+            IncrementalFontSpecification iSpec = wp->GetCurSelFontSpec ();
             if (ri == rowSelStart and ci == colSelStart) {
                 *curSelFontSpec = iSpec;
             }
@@ -6674,7 +6674,7 @@ void Table::AssureCurSelFontCacheValid (Led_IncrementalFontSpecification* curSel
 @METHOD:        WordProcessor::Table::InteractiveSetFont
 @DESCRIPTION:   <p>Apply the given font specification to the selectable table cells.</p>
 */
-void Table::InteractiveSetFont (const Led_IncrementalFontSpecification& defaultFont)
+void Table::InteractiveSetFont (const IncrementalFontSpecification& defaultFont)
 {
     Led_Require_CurrentOwningWP ();
 
@@ -6877,12 +6877,12 @@ void Table::WhileSimpleMouseTracking (Led_Point newMousePos)
 #endif
 }
 
-Led_Color Table::GetTableBorderColor () const
+Color Table::GetTableBorderColor () const
 {
     return fBorderColor;
 }
 
-void Table::SetTableBorderColor (Led_Color c)
+void Table::SetTableBorderColor (Color c)
 {
     fBorderColor = c;
 }
@@ -6912,12 +6912,12 @@ void Table::SetColumnWidth (size_t row, size_t column, TWIPS colWidth)
     InvalidateLayout ();
 }
 
-Led_Color Table::GetCellColor (size_t row, size_t column) const
+Color Table::GetCellColor (size_t row, size_t column) const
 {
     return GetCell (row, column).GetBackColor ();
 }
 
-void Table::SetCellColor (size_t row, size_t column, const Led_Color& c)
+void Table::SetCellColor (size_t row, size_t column, const Color& c)
 {
     Cell cell = GetCell (row, column);
     cell.SetBackColor (c);
@@ -7656,13 +7656,13 @@ WordProcessor::HidableTextDatabasePtr WordProcessor::Table::Cell::GetHidableText
     return fCellRep->fHidableTextDatabase;
 }
 
-Led_Color WordProcessor::Table::Cell::GetBackColor () const
+Color WordProcessor::Table::Cell::GetBackColor () const
 {
     Require (fCellMergeFlags == ePlainCell);
     return fCellRep->fBackColor;
 }
 
-void WordProcessor::Table::Cell::SetBackColor (Led_Color c)
+void WordProcessor::Table::Cell::SetBackColor (Color c)
 {
     Require (fCellMergeFlags == ePlainCell);
     fCellRep->fBackColor = c;
@@ -7679,7 +7679,7 @@ WordProcessor::Table::CellRep::CellRep (Table& forTable)
     , fStyleDatabase ()
     , fParagraphDatabase ()
     , fHidableTextDatabase ()
-    , fBackColor (Led_Color::kWhite)
+    , fBackColor (Color::kWhite)
     , fCachedBoundsRect (Led_Rect (0, 0, 0, 0))
     , fCellXWidth (Led_CvtScreenPixelsToTWIPSH (75)) // This should be overridden someplace - depending on how the table is constructed - but
 // in case its not, and until it is, leave in a vaguely reasonable number - LGP 2003-04-17
@@ -7788,8 +7788,8 @@ void WordProcessor::Table::EmbeddedTableWordProcessor::RestoreMiscActiveFocusInf
         DisableRefreshContext                DFR (*this);
         SuppressCellUpdatePropagationContext SCUP (fOwningTable);
 
-        Led_FontSpecification emptySelFont;
-        bool                  leftSideOfSelectionInteresting = false;
+        FontSpecification emptySelFont;
+        bool              leftSideOfSelectionInteresting = false;
         if (fOwningTable.RestoreIntraCellContextInfo (&leftSideOfSelectionInteresting, &emptySelFont)) {
             size_t intraCellSelStart = 0;
             size_t intraCellSelEnd   = 0;

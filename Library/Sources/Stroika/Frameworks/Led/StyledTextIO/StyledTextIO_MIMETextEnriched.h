@@ -34,7 +34,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         nonvirtual bool LookingAt (const char* matchMe, bool ignoreCase = true);
 
     private:
-        nonvirtual Led_FontSpecification GetAdjustedCurrentFontSpec () const;
+        nonvirtual FontSpecification GetAdjustedCurrentFontSpec () const;
 
         int fBoldMode;       // non-zero means YES - can be nested
         int fItalicMode;     // ""

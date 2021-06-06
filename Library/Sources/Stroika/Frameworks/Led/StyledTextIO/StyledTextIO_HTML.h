@@ -59,8 +59,8 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         // HTMLFontSizes are numbers from 1..7, and the default/normal is 3.
         // Eventually, these could become virtual methods, and be hooked into stylesheets.
     public:
-        static Led_FontSpecification::FontSize HTMLFontSizeToRealFontSize (int size);
-        static int                             RealFontSizeToHTMLFontSize (Led_FontSpecification::FontSize size);
+        static FontSpecification::FontSize HTMLFontSizeToRealFontSize (int size);
+        static int                         RealFontSizeToHTMLFontSize (FontSpecification::FontSize size);
 
     public:
         string         fDocTypeTag;
@@ -118,9 +118,9 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         nonvirtual void ExtractHTMLTagIntoTagNameBuf (const char* text, size_t nBytes, char* tagBuf, size_t tagBufSize, bool* isStartTag);
 
     protected:
-        nonvirtual Led_IncrementalFontSpecification ExtractFontSpecFromCSSStyleAttribute (const char* text, size_t nBytes);
-        nonvirtual void                             ApplyCSSStyleAttributeToCurrentFontStack (const char* text, size_t nBytes);
-        nonvirtual void                             GrabAndApplyCSSStyleFromTagText (const char* text, size_t nBytes);
+        nonvirtual IncrementalFontSpecification ExtractFontSpecFromCSSStyleAttribute (const char* text, size_t nBytes);
+        nonvirtual void                         ApplyCSSStyleAttributeToCurrentFontStack (const char* text, size_t nBytes);
+        nonvirtual void                         GrabAndApplyCSSStyleFromTagText (const char* text, size_t nBytes);
 
     protected:
         virtual void HandleHTMLThingyTag_BANG_doctype (bool start, const char* text, size_t nBytes);
@@ -194,21 +194,21 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         int fHTMLFontSize;
 
     protected:
-        HTMLInfo*                     fSaveHTMLInfoInto;
-        bool                          fReadingBody;
-        vector<Led_FontSpecification> fFontStack;
-        bool                          fComingTextIsTitle;
-        bool                          fNormalizeInputWhitespace;
-        bool                          fLastCharSpace;
-        bool                          fHiddenTextMode;
-        Led_tString                   fHiddenTextAccumulation;
-        size_t                        fCurAHRefStart;
-        string                        fCurAHRefText;
-        unsigned int                  fULNestingCount;
-        bool                          fLIOpen;
-        unsigned int                  fTableOpenCount;
-        bool                          fTableRowOpen;
-        bool                          fTableCellOpen;
+        HTMLInfo*                 fSaveHTMLInfoInto;
+        bool                      fReadingBody;
+        vector<FontSpecification> fFontStack;
+        bool                      fComingTextIsTitle;
+        bool                      fNormalizeInputWhitespace;
+        bool                      fLastCharSpace;
+        bool                      fHiddenTextMode;
+        Led_tString               fHiddenTextAccumulation;
+        size_t                    fCurAHRefStart;
+        string                    fCurAHRefText;
+        unsigned int              fULNestingCount;
+        bool                      fLIOpen;
+        unsigned int              fTableOpenCount;
+        bool                      fTableRowOpen;
+        bool                      fTableCellOpen;
     };
 
     /*
@@ -247,7 +247,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         nonvirtual void   WriteCloseTag (WriterContext& writerContext, const string& tagName);
         nonvirtual void   WriteOpenCloseTag (WriterContext& writerContext, const string& tagName, const string& tagExtras = string{});
         nonvirtual bool   IsTagOnStack (WriterContext& writerContext, const string& tagName);
-        nonvirtual void   EmitBodyFontInfoChange (WriterContext& writerContext, const Led_FontSpecification& newOne, bool skipDoingOpenTags);
+        nonvirtual void   EmitBodyFontInfoChange (WriterContext& writerContext, const FontSpecification& newOne, bool skipDoingOpenTags);
         nonvirtual void   AssureStyleRunSummaryBuilt (WriterContext& writerContext);
         nonvirtual string MapOutputTextFromWString (const wstring& text);
         nonvirtual string MapOutputTextFromTString (const Led_tString& text);
@@ -318,7 +318,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     inline StyledTextIOWriter_HTML::WriterContext::WriterContext (StyledTextIOWriter_HTML& writer)
         : fWriter (writer)
         , fSrcStream (fWriter.GetSrcStream ())
-        , fLastEmittedISR (Led_IncrementalFontSpecification (), 0)
+        , fLastEmittedISR (IncrementalFontSpecification (), 0)
         , fLastStyleChangeAt (0)
         , fIthStyleRun (0)
         , fLastForcedNLAt (0)
@@ -332,7 +332,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     inline StyledTextIOWriter_HTML::WriterContext::WriterContext (WriterContext& parentContext, SrcStream& srcStream)
         : fWriter (parentContext.fWriter)
         , fSrcStream (srcStream)
-        , fLastEmittedISR (Led_IncrementalFontSpecification (), 0)
+        , fLastEmittedISR (IncrementalFontSpecification (), 0)
         , fLastStyleChangeAt (0)
         , fIthStyleRun (0)
         , fLastForcedNLAt (0)

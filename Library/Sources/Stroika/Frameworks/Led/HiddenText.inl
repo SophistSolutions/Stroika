@@ -126,7 +126,7 @@ namespace Stroika::Frameworks::Led {
     }
 
     //  class   FontSpecHidableTextMarkerOwner::FontSpecHidableTextMarker
-    inline HidableTextMarkerOwner::FontSpecHidableTextMarker::FontSpecHidableTextMarker (const Led_IncrementalFontSpecification& styleInfo)
+    inline HidableTextMarkerOwner::FontSpecHidableTextMarker::FontSpecHidableTextMarker (const IncrementalFontSpecification& styleInfo)
         : inherited{}
         , fFontSpecification{styleInfo}
     {
@@ -141,15 +141,15 @@ namespace Stroika::Frameworks::Led {
     //  class   ColoredUniformHidableTextMarkerOwner
     inline ColoredUniformHidableTextMarkerOwner::ColoredUniformHidableTextMarkerOwner (TextStore& textStore)
         : inherited{textStore}
-        , fColor{Led_Color::kRed}
+        , fColor{Color::kRed}
         , fColored{false}
     {
     }
-    inline Led_Color ColoredUniformHidableTextMarkerOwner::GetColor () const
+    inline Color ColoredUniformHidableTextMarkerOwner::GetColor () const
     {
         return fColor;
     }
-    inline void ColoredUniformHidableTextMarkerOwner::SetColor (const Led_Color& color)
+    inline void ColoredUniformHidableTextMarkerOwner::SetColor (const Color& color)
     {
         fColor = color;
         FixupSubMarkers ();

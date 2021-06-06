@@ -60,36 +60,36 @@ namespace Stroika::Frameworks::Led {
     public:
         /*
         @CLASS:         StandardStyledTextImager::InfoSummaryRecord
-        @BASES:         @'Led_FontSpecification'
-        @DESCRIPTION:   <p>Add a length attribute to @'Led_FontSpecification'. Used in specifying style runs by
+        @BASES:         @'FontSpecification'
+        @DESCRIPTION:   <p>Add a length attribute to @'FontSpecification'. Used in specifying style runs by
             @'StandardStyledTextImager'.</p>
         */
-        struct InfoSummaryRecord : public Led_FontSpecification {
+        struct InfoSummaryRecord : public FontSpecification {
         public:
-            InfoSummaryRecord (const Led_FontSpecification& fontSpec, size_t length);
+            InfoSummaryRecord (const FontSpecification& fontSpec, size_t length);
 
         public:
             size_t fLength;
         };
 
-        nonvirtual Led_FontSpecification GetStyleInfo (size_t charAfterPos) const;
-        nonvirtual                       vector<InfoSummaryRecord>
-                                         GetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing) const;
-        nonvirtual void                  SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const Led_IncrementalFontSpecification& styleInfo);
-        nonvirtual void                  SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const vector<InfoSummaryRecord>& styleInfos);
-        nonvirtual void                  SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, size_t nStyleInfos, const InfoSummaryRecord* styleInfos);
+        nonvirtual FontSpecification GetStyleInfo (size_t charAfterPos) const;
+        nonvirtual                   vector<InfoSummaryRecord>
+                                     GetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing) const;
+        nonvirtual void              SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalFontSpecification& styleInfo);
+        nonvirtual void              SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const vector<InfoSummaryRecord>& styleInfos);
+        nonvirtual void              SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, size_t nStyleInfos, const InfoSummaryRecord* styleInfos);
 
     public:
         virtual Led_FontMetrics GetFontMetricsAt (size_t charAfterPos) const override;
 
     public:
-        virtual Led_FontSpecification GetDefaultSelectionFont () const override;
+        virtual FontSpecification GetDefaultSelectionFont () const override;
 
         // Do macstyle lookalike routines (DoSetStyle, DoContinuous etc)
     public:
-        virtual Led_IncrementalFontSpecification GetContinuousStyleInfo (size_t from, size_t nTChars) const; // was DoContinuousStyle()
+        virtual IncrementalFontSpecification GetContinuousStyleInfo (size_t from, size_t nTChars) const; // was DoContinuousStyle()
     protected:
-        nonvirtual Led_IncrementalFontSpecification GetContinuousStyleInfo_ (const vector<InfoSummaryRecord>& summaryInfo) const;
+        nonvirtual IncrementalFontSpecification GetContinuousStyleInfo_ (const vector<InfoSummaryRecord>& summaryInfo) const;
 
 #if qPlatform_MacOS
     public:
@@ -150,7 +150,7 @@ namespace Stroika::Frameworks::Led {
         using inherited = StyledTextImager::StyleMarker;
 
     public:
-        StandardStyleMarker (const Led_FontSpecification& styleInfo = TextImager::GetStaticDefaultFont ());
+        StandardStyleMarker (const FontSpecification& styleInfo = TextImager::GetStaticDefaultFont ());
 
     public:
         virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
@@ -163,11 +163,11 @@ namespace Stroika::Frameworks::Led {
         virtual DistanceType MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
 
     public:
-        nonvirtual Led_FontSpecification GetInfo () const;
-        nonvirtual void                  SetInfo (const Led_FontSpecification& fsp);
+        nonvirtual FontSpecification GetInfo () const;
+        nonvirtual void              SetInfo (const FontSpecification& fsp);
 
     public:
-        Led_FontSpecification fFontSpecification;
+        FontSpecification fFontSpecification;
     };
 
     /*
@@ -180,8 +180,8 @@ namespace Stroika::Frameworks::Led {
         using inherited = MarkerOwner;
 
     public:
-        virtual vector<InfoSummaryRecord> GetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing) const                                              = 0;
-        virtual void                      SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const Led_IncrementalFontSpecification& styleInfo) = 0;
+        virtual vector<InfoSummaryRecord> GetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing) const                                          = 0;
+        virtual void                      SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalFontSpecification& styleInfo) = 0;
         nonvirtual void                   SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const vector<InfoSummaryRecord>& styleInfos);
         virtual void                      SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, size_t nStyleInfos, const InfoSummaryRecord* styleInfos) = 0;
 
@@ -197,23 +197,23 @@ namespace Stroika::Frameworks::Led {
     DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
     /*
     @CLASS:         StandardStyledTextImager::StyleDatabaseRep
-    @BASES:         @'MarkerCover'<@'StandardStyleMarker',@'Led_FontSpecification',@'Led_IncrementalFontSpecification'>
+    @BASES:         @'MarkerCover'<@'StandardStyleMarker',@'FontSpecification',@'IncrementalFontSpecification'>
     @DESCRIPTION:   <p>Reference counted object which stores all the style runs objects for a
         @'StandardStyledTextImager'. An explicit storage object like this is used, instead of using
         the @'StandardStyledTextImager' itself, so as too allow you to have either multiple views onto the
         same text which use the SAME database of style runs, or to allow using different style info databases,
         all live on the same text.</p>
     */
-    class StandardStyledTextImager::StyleDatabaseRep : public StandardStyledTextImager::AbstractStyleDatabaseRep, private MarkerCover<StandardStyledTextImager::StandardStyleMarker, Led_FontSpecification, Led_IncrementalFontSpecification> {
+    class StandardStyledTextImager::StyleDatabaseRep : public StandardStyledTextImager::AbstractStyleDatabaseRep, private MarkerCover<StandardStyledTextImager::StandardStyleMarker, FontSpecification, IncrementalFontSpecification> {
     private:
-        using inheritedMC = MarkerCover<StandardStyledTextImager::StandardStyleMarker, Led_FontSpecification, Led_IncrementalFontSpecification>;
+        using inheritedMC = MarkerCover<StandardStyledTextImager::StandardStyleMarker, FontSpecification, IncrementalFontSpecification>;
 
     public:
         StyleDatabaseRep (TextStore& textStore);
 
     public:
         virtual vector<InfoSummaryRecord> GetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing) const override;
-        virtual void                      SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const Led_IncrementalFontSpecification& styleInfo) override;
+        virtual void                      SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalFontSpecification& styleInfo) override;
         virtual void                      SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, size_t nStyleInfos, const InfoSummaryRecord* styleInfos) override;
 
 #if qDebug
@@ -228,7 +228,7 @@ namespace Stroika::Frameworks::Led {
     @CLASS:         SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper
     @BASES:         BASECLASS
     @DESCRIPTION:   <p>Simple helper class so that @'SimpleStyleMarkerByIncrementalFontSpec<BASECLASS>' will use the font specification of any
-                embedded @'StandardStyledTextImager::StandardStyleMarker' will have its associated @'Led_FontSpecification' copied out and used
+                embedded @'StandardStyledTextImager::StandardStyleMarker' will have its associated @'FontSpecification' copied out and used
                 in the FontSpec.</p>
                     <p>As a kludge - this class depends on the user ALSO using the template @'SimpleStyleMarkerWithExtraDraw<BASECLASS>'. We override
                 its @'SimpleStyleMarkerWithExtraDraw<BASECLASS>::MungeRunElement' () method. This isn't strictly necesary, but it saves us alot of code.
@@ -248,10 +248,10 @@ namespace Stroika::Frameworks::Led {
         virtual RunElement MungeRunElement (const RunElement& inRunElt) const override;
 
     protected:
-        virtual Led_FontSpecification MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const override;
+        virtual FontSpecification MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const override;
 
     private:
-        mutable Led_FontSpecification fFSP;
+        mutable FontSpecification fFSP;
     };
 
 }

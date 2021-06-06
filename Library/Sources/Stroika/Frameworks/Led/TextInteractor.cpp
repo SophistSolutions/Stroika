@@ -1765,7 +1765,7 @@ void TextInteractor::ScrollSoShowing (size_t markerPos, size_t andTryToShowMarke
     tim->ScrollSoShowing (markerPos, andTryToShowMarkerPos);
 }
 
-void TextInteractor::SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont, UpdateMode updateMode)
+void TextInteractor::SetDefaultFont (const IncrementalFontSpecification& defaultFont, UpdateMode updateMode)
 {
     TemporarilySetUpdateMode updateModeSetter{*this, updateMode};
     TextImager*              tim = this; // Dynamicly bind to 1-arg version. Direct call would select overloaded version from this class!

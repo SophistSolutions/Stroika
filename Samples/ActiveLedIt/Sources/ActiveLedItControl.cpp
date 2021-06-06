@@ -545,7 +545,7 @@ void ActiveLedItControl::OnDraw (CDC* pdc, const CRect& rcBounds, const CRect& r
                  *  This can occur occasionally, when called from places like MSWord XP, and wordpad.
                  *  This MAYBE because these apps don't respect OLEMISC_SETCLIENTSITEFIRST?
                  */
-            fEditor.SetDefaultTextColor (TextImager::eDefaultBackgroundColor, Led_Color (TranslateColor (GetBackColor ())));
+            fEditor.SetDefaultTextColor (TextImager::eDefaultBackgroundColor, Color (TranslateColor (GetBackColor ())));
 
             Led_Size controlSize = Led_Size (0, 0);
             {
@@ -660,7 +660,7 @@ void ActiveLedItControl::DoPropExchange (CPropExchange* pPX)
             CString aProp;
             PX_String (pPX, _T("DefaultFontFace"), aProp, _T(""));
             if (not aProp.IsEmpty ()) {
-                Led_IncrementalFontSpecification applyFontSpec;
+                IncrementalFontSpecification applyFontSpec;
                 applyFontSpec.SetFontName ((const TCHAR*)aProp);
                 fEditor.SetDefaultFont (applyFontSpec);
             }
@@ -673,8 +673,8 @@ void ActiveLedItControl::DoPropExchange (CPropExchange* pPX)
             CString aProp;
             PX_String (pPX, _T("DefaultFontSize"), aProp, _T(""));
             if (not aProp.IsEmpty ()) {
-                Led_IncrementalFontSpecification applyFontSpec;
-                applyFontSpec.SetPointSize (static_cast<Led_FontSpecification::FontSize> (_ttoi ((const TCHAR*)aProp)));
+                IncrementalFontSpecification applyFontSpec;
+                applyFontSpec.SetPointSize (static_cast<FontSpecification::FontSize> (_ttoi ((const TCHAR*)aProp)));
                 fEditor.SetDefaultFont (applyFontSpec);
             }
         }
@@ -1649,7 +1649,7 @@ int ActiveLedItControl::OnCreate (LPCREATESTRUCT lpCreateStruct)
         return -1;
     }
 
-    fEditor.SetDefaultTextColor (TextImager::eDefaultBackgroundColor, Led_Color (TranslateColor (GetBackColor ())));
+    fEditor.SetDefaultTextColor (TextImager::eDefaultBackgroundColor, Color (TranslateColor (GetBackColor ())));
 
     CRect clientRect;
     GetClientRect (&clientRect);
@@ -1748,7 +1748,7 @@ void ActiveLedItControl::OnBackColorChanged ()
 {
     COleControl::OnBackColorChanged ();
 
-    Led_Color c = Led_Color (TranslateColor (GetBackColor ()));
+    Color c = Color (TranslateColor (GetBackColor ()));
     if (fEditor.GetDefaultTextColor (TextImager::eDefaultBackgroundColor) == NULL or
         *fEditor.GetDefaultTextColor (TextImager::eDefaultBackgroundColor) != c) {
         fEditor.SetDefaultTextColor (TextImager::eDefaultBackgroundColor, c);
@@ -2490,7 +2490,7 @@ void ActiveLedItControl::OLE_SetHidableTextColor (OLE_COLOR color)
     try {
         ColoredUniformHidableTextMarkerOwner* uhtmo = dynamic_cast<ColoredUniformHidableTextMarkerOwner*> (static_cast<HidableTextMarkerOwner*> (fEditor.GetHidableTextDatabase ().get ()));
         AssertNotNull (uhtmo);
-        uhtmo->SetColor (Led_Color (TranslateColor (color)));
+        uhtmo->SetColor (Color (TranslateColor (color)));
         fEditor.Refresh ();
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
@@ -2650,7 +2650,7 @@ void ActiveLedItControl::OLE_SetToolbarList (VARIANT& newValue)
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
             CComQIPtr<IALToolbarList> tbl = (IDispatch*)fToolbarList;
 #else
-            CComQIPtr<IALToolbarList> tbl = fToolbarList;
+            CComQIPtr<IALToolbarList>      tbl        = fToolbarList;
 #endif
             if (tbl.p != NULL) {
                 tbl->NotifyOfOwningActiveLedIt (NULL, NULL);
@@ -2670,7 +2670,7 @@ void ActiveLedItControl::OLE_SetToolbarList (VARIANT& newValue)
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
             CComQIPtr<IALToolbarList> tbl = (IDispatch*)fToolbarList;
 #else
-            CComQIPtr<IALToolbarList> tbl = fToolbarList;
+            CComQIPtr<IALToolbarList>      tbl        = fToolbarList;
 #endif
             if (tbl.p != NULL) {
                 tbl->NotifyOfOwningActiveLedIt (CComQIPtr<IDispatch> (GetControllingUnknown ()), m_hWnd);
@@ -3566,7 +3566,7 @@ CComPtr<IDispatch> ActiveLedItControl::mkIconElement (const ToolBarIconSpec& s)
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
     CComQIPtr<IALIconButtonToolbarElement> iconButton = (IDispatch*)item;
 #else
-    CComQIPtr<IALIconButtonToolbarElement> iconButton = item;
+    CComQIPtr<IALIconButtonToolbarElement> iconButton    = item;
 #endif
 
     Led_ThrowIfErrorHRESULT (iconButton->put_Command (CComVariant (s.fCmdName)));
@@ -3580,7 +3580,7 @@ CComPtr<IDispatch> ActiveLedItControl::mkIconElement (int iconResID, CComPtr<IDi
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
     CComQIPtr<IALIconButtonToolbarElement> iconButton = (IDispatch*)item;
 #else
-    CComQIPtr<IALIconButtonToolbarElement> iconButton = item;
+    CComQIPtr<IALIconButtonToolbarElement> iconButton    = item;
 #endif
 
     Led_ThrowIfErrorHRESULT (iconButton->put_Command (CComVariant (cmdList)));
@@ -3766,8 +3766,8 @@ OLE_COLOR ActiveLedItControl::GetSelColor ()
 {
     try {
         Assert (fEditor.GetSelectionEnd () >= fEditor.GetSelectionStart ());
-        size_t                           selectionLength = fEditor.GetSelectionEnd () - fEditor.GetSelectionStart ();
-        Led_IncrementalFontSpecification fsp             = fEditor.GetContinuousStyleInfo (fEditor.GetSelectionStart (), selectionLength);
+        size_t                       selectionLength = fEditor.GetSelectionEnd () - fEditor.GetSelectionStart ();
+        IncrementalFontSpecification fsp             = fEditor.GetContinuousStyleInfo (fEditor.GetSelectionStart (), selectionLength);
         //HOW DO YOU SAY RETURNS ERROR??? LIKE YOU CAN WITH ATL???
         if (not fsp.GetTextColor_Valid ()) {
             //HACK!!!
@@ -3786,8 +3786,8 @@ void ActiveLedItControl::SetSelColor (OLE_COLOR color)
     try {
         IdleManager::NonIdleContext nonIdleContext;
         fCommandHandler.Commit ();
-        Led_IncrementalFontSpecification applyFontSpec;
-        applyFontSpec.SetTextColor (Led_Color (TranslateColor (color)));
+        IncrementalFontSpecification applyFontSpec;
+        applyFontSpec.SetTextColor (Color (TranslateColor (color)));
         fEditor.InteractiveSetFont (applyFontSpec);
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
@@ -3797,8 +3797,8 @@ BSTR ActiveLedItControl::GetSelFontFace ()
 {
     try {
         Assert (fEditor.GetSelectionEnd () >= fEditor.GetSelectionStart ());
-        size_t                           selectionLength = fEditor.GetSelectionEnd () - fEditor.GetSelectionStart ();
-        Led_IncrementalFontSpecification fsp             = fEditor.GetContinuousStyleInfo (fEditor.GetSelectionStart (), selectionLength);
+        size_t                       selectionLength = fEditor.GetSelectionEnd () - fEditor.GetSelectionStart ();
+        IncrementalFontSpecification fsp             = fEditor.GetContinuousStyleInfo (fEditor.GetSelectionStart (), selectionLength);
         if (not fsp.GetFontNameSpecifier_Valid ()) {
             return CString ().AllocSysString ();
         }
@@ -3814,7 +3814,7 @@ void ActiveLedItControl::SetSelFontFace (LPCTSTR fontFace)
     try {
         IdleManager::NonIdleContext nonIdleContext;
         fCommandHandler.Commit ();
-        Led_IncrementalFontSpecification applyFontSpec;
+        IncrementalFontSpecification applyFontSpec;
         applyFontSpec.SetFontName (fontFace);
         fEditor.InteractiveSetFont (applyFontSpec);
     }
@@ -3825,8 +3825,8 @@ long ActiveLedItControl::GetSelFontSize ()
 {
     try {
         Assert (fEditor.GetSelectionEnd () >= fEditor.GetSelectionStart ());
-        size_t                           selectionLength = fEditor.GetSelectionEnd () - fEditor.GetSelectionStart ();
-        Led_IncrementalFontSpecification fsp             = fEditor.GetContinuousStyleInfo (fEditor.GetSelectionStart (), selectionLength);
+        size_t                       selectionLength = fEditor.GetSelectionEnd () - fEditor.GetSelectionStart ();
+        IncrementalFontSpecification fsp             = fEditor.GetContinuousStyleInfo (fEditor.GetSelectionStart (), selectionLength);
         if (not fsp.GetPointSize_Valid ()) {
             return 0;
         }
@@ -3842,7 +3842,7 @@ void ActiveLedItControl::SetSelFontSize (long size)
     try {
         IdleManager::NonIdleContext nonIdleContext;
         fCommandHandler.Commit ();
-        Led_IncrementalFontSpecification applyFontSpec;
+        IncrementalFontSpecification applyFontSpec;
         if (size <= 0) {
             size = 2; // minsize?
         }
@@ -3862,8 +3862,8 @@ long ActiveLedItControl::GetSelBold ()
         size_t selEnd;
         fEditor.GetSelection (&selStart, &selEnd);
         Assert (selStart <= selEnd);
-        size_t                           selectionLength = selEnd - selStart;
-        Led_IncrementalFontSpecification fsp             = fEditor.GetContinuousStyleInfo (selStart, selectionLength);
+        size_t                       selectionLength = selEnd - selStart;
+        IncrementalFontSpecification fsp             = fEditor.GetContinuousStyleInfo (selStart, selectionLength);
         if (not fsp.GetStyle_Bold_Valid ()) {
             return 2;
         }
@@ -3879,7 +3879,7 @@ void ActiveLedItControl::SetSelBold (long bold)
     try {
         IdleManager::NonIdleContext nonIdleContext;
         fCommandHandler.Commit ();
-        Led_IncrementalFontSpecification applyFontSpec;
+        IncrementalFontSpecification applyFontSpec;
         applyFontSpec.SetStyle_Bold (!!bold);
         fEditor.InteractiveSetFont (applyFontSpec);
     }
@@ -3893,8 +3893,8 @@ long ActiveLedItControl::GetSelItalic ()
         size_t selEnd;
         fEditor.GetSelection (&selStart, &selEnd);
         Assert (selStart <= selEnd);
-        size_t                           selectionLength = selEnd - selStart;
-        Led_IncrementalFontSpecification fsp             = fEditor.GetContinuousStyleInfo (selStart, selectionLength);
+        size_t                       selectionLength = selEnd - selStart;
+        IncrementalFontSpecification fsp             = fEditor.GetContinuousStyleInfo (selStart, selectionLength);
         if (not fsp.GetStyle_Italic_Valid ()) {
             return 2;
         }
@@ -3910,7 +3910,7 @@ void ActiveLedItControl::SetSelItalic (long italic)
     try {
         IdleManager::NonIdleContext nonIdleContext;
         fCommandHandler.Commit ();
-        Led_IncrementalFontSpecification applyFontSpec;
+        IncrementalFontSpecification applyFontSpec;
         applyFontSpec.SetStyle_Italic (!!italic);
         fEditor.InteractiveSetFont (applyFontSpec);
     }
@@ -3924,8 +3924,8 @@ long ActiveLedItControl::GetSelStrikeThru ()
         size_t selEnd;
         fEditor.GetSelection (&selStart, &selEnd);
         Assert (selStart <= selEnd);
-        size_t                           selectionLength = selEnd - selStart;
-        Led_IncrementalFontSpecification fsp             = fEditor.GetContinuousStyleInfo (selStart, selectionLength);
+        size_t                       selectionLength = selEnd - selStart;
+        IncrementalFontSpecification fsp             = fEditor.GetContinuousStyleInfo (selStart, selectionLength);
         if (not fsp.GetStyle_Strikeout_Valid ()) {
             return 2;
         }
@@ -3941,7 +3941,7 @@ void ActiveLedItControl::SetSelStrikeThru (long strikeThru)
     try {
         IdleManager::NonIdleContext nonIdleContext;
         fCommandHandler.Commit ();
-        Led_IncrementalFontSpecification applyFontSpec;
+        IncrementalFontSpecification applyFontSpec;
         applyFontSpec.SetStyle_Strikeout (!!strikeThru);
         fEditor.InteractiveSetFont (applyFontSpec);
     }
@@ -3955,8 +3955,8 @@ long ActiveLedItControl::GetSelUnderline ()
         size_t selEnd;
         fEditor.GetSelection (&selStart, &selEnd);
         Assert (selStart <= selEnd);
-        size_t                           selectionLength = selEnd - selStart;
-        Led_IncrementalFontSpecification fsp             = fEditor.GetContinuousStyleInfo (selStart, selectionLength);
+        size_t                       selectionLength = selEnd - selStart;
+        IncrementalFontSpecification fsp             = fEditor.GetContinuousStyleInfo (selStart, selectionLength);
         if (not fsp.GetStyle_Underline_Valid ()) {
             return 2;
         }
@@ -3972,7 +3972,7 @@ void ActiveLedItControl::SetSelUnderline (long underline)
     try {
         IdleManager::NonIdleContext nonIdleContext;
         fCommandHandler.Commit ();
-        Led_IncrementalFontSpecification applyFontSpec;
+        IncrementalFontSpecification applyFontSpec;
         applyFontSpec.SetStyle_Underline (!!underline);
         fEditor.InteractiveSetFont (applyFontSpec);
     }
@@ -3982,9 +3982,9 @@ void ActiveLedItControl::SetSelUnderline (long underline)
 UINT ActiveLedItControl::OLE_GetSelJustification ()
 {
     try {
-        Led_Justification justification = eLeftJustify;
-        size_t            selStart;
-        size_t            selEnd;
+        Justification justification = eLeftJustify;
+        size_t        selStart;
+        size_t        selEnd;
         fEditor.GetSelection (&selStart, &selEnd);
         Assert (selStart <= selEnd);
         if (fEditor.GetJustification (selStart, selEnd, &justification)) {
@@ -4014,7 +4014,7 @@ void ActiveLedItControl::OLE_SetSelJustification (UINT justification)
 {
     try {
         IdleManager::NonIdleContext nonIdleContext;
-        Led_Justification           lh = eLeftJustify;
+        Justification               lh = eLeftJustify;
         switch (justification) {
             case eLeftJustification:
                 lh = eLeftJustify;

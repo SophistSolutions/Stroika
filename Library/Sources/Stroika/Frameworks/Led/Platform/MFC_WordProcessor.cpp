@@ -342,9 +342,9 @@ void Led_MFC_ControlItem::DrawSegment (const StyledTextImager* imager, const Run
     Require (to - from == 1);
     Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
 
-    Led_Color foreColor = imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor);
+    Color foreColor = imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor);
     ;
-    Led_Color            backColor = imager->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor);
+    Color                backColor = imager->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor);
     Led_Win_Obj_Selector pen (tablet, ::GetStockObject (WHITE_PEN));
     tablet->SetTextColor (foreColor.GetOSRep ());
     tablet->SetBkColor (backColor.GetOSRep ());

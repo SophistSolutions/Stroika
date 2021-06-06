@@ -72,7 +72,7 @@ inline bool LogFontsEqual (LOGFONT lhs, LOGFONT rhs)
     Require (bytesToCompare <= sizeof (LOGFONT)); // else we were passed bogus LogFont (and we should validate them before here!)
     return ::memcmp (&lhs, &rhs, bytesToCompare) == 0;
 }
-inline bool LogFontsEqual (const Led_FontSpecification& lhs, const Led_FontSpecification& rhs)
+inline bool LogFontsEqual (const FontSpecification& lhs, const FontSpecification& rhs)
 {
     if (lhs.GetStyle_SubOrSuperScript () == rhs.GetStyle_SubOrSuperScript ()) {
         LOGFONT lhslf;
@@ -86,7 +86,7 @@ inline bool LogFontsEqual (const Led_FontSpecification& lhs, const Led_FontSpeci
     }
 }
 #endif
-TextImager::FontCacheInfoUpdater::FontCacheInfoUpdater (const TextImager* imager, Led_Tablet tablet, const Led_FontSpecification& fontSpec)
+TextImager::FontCacheInfoUpdater::FontCacheInfoUpdater (const TextImager* imager, Led_Tablet tablet, const FontSpecification& fontSpec)
     : fImager (imager)
 #if qPlatform_Windows
     , fTablet (tablet)
@@ -108,7 +108,7 @@ TextImager::FontCacheInfoUpdater::FontCacheInfoUpdater (const TextImager* imager
     fontSpec.GetOSRep (&fontID, &fontSize, &fontStyle);
     tablet->SetPort ();
     GDI_TextFont (fontID);
-    if (fontSpec.GetStyle_SubOrSuperScript () != Led_FontSpecification::eNoSubOrSuperscript) {
+    if (fontSpec.GetStyle_SubOrSuperScript () != FontSpecification::eNoSubOrSuperscript) {
         // See SPR#1523- was 'max (fontSize/2, 1);'
         // Careful to sync this with TextImager::DrawSegment_ () 'drawTop' adjustment
         fontSize = max (fontSize * 2 / 3, 1);
@@ -136,7 +136,7 @@ TextImager::FontCacheInfoUpdater::FontCacheInfoUpdater (const TextImager* imager
         imager->fCachedFont = new FontObject ();
         LOGFONT lf;
         fontSpec.GetOSRep (&lf);
-        if (fontSpec.GetStyle_SubOrSuperScript () != Led_FontSpecification::eNoSubOrSuperscript) {
+        if (fontSpec.GetStyle_SubOrSuperScript () != FontSpecification::eNoSubOrSuperscript) {
             // See SPR#1523- was 'lf.lfHeight /= 2'
             // Careful to sync this with TextImager::DrawSegment_ () 'drawTop' adjustment
             lf.lfHeight = lf.lfHeight * 2 / 3;
@@ -209,7 +209,7 @@ TextImager::TextImager ()
     fCachedFontValid (false)
 #endif
 {
-    for (Led_Color** i = &fDefaultColorIndex[0]; i < &fDefaultColorIndex[eMaxDefaultColorIndex]; ++i) {
+    for (Color** i = &fDefaultColorIndex[0]; i < &fDefaultColorIndex[eMaxDefaultColorIndex]; ++i) {
         *i = nullptr;
     }
 }
@@ -218,7 +218,7 @@ TextImager::~TextImager ()
 {
     Require (fTextStore == nullptr);
     Require (fHiliteMarker == nullptr);
-    for (Led_Color** i = &fDefaultColorIndex[0]; i < &fDefaultColorIndex[eMaxDefaultColorIndex]; ++i) {
+    for (Color** i = &fDefaultColorIndex[0]; i < &fDefaultColorIndex[eMaxDefaultColorIndex]; ++i) {
         delete *i;
         *i = nullptr;
     }
@@ -325,12 +325,12 @@ void TextImager::InvalidateAllCaches ()
             use @'StandardStyledTextInteractor::InteractiveSetFont'.
             </p>
 */
-void TextImager::SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont)
+void TextImager::SetDefaultFont (const IncrementalFontSpecification& defaultFont)
 {
     SetDefaultFont_ (defaultFont);
 }
 
-void TextImager::SetDefaultFont_ (const Led_IncrementalFontSpecification& defaultFont)
+void TextImager::SetDefaultFont_ (const IncrementalFontSpecification& defaultFont)
 {
     if (PeekAtTextStore () != nullptr) {
         TextStore::SimpleUpdater u (GetTextStore (), 0, GetTextStore ().GetEnd (), false); // update buffer so cached measurement values refreshed
@@ -450,12 +450,12 @@ static int FAR PASCAL EnumFontCallback (const LOGFONT* lplf, const TEXTMETRIC* /
     return 1;
 }
 #endif
-Led_FontSpecification TextImager::GetStaticDefaultFont ()
+FontSpecification TextImager::GetStaticDefaultFont ()
 {
     //  Since this can be called alot, and since its value shouldn't change during the lifetime
     //  of Led running, cache the result (and since on windows - at least - it is expensive to compute)
-    static bool                  sDefaultFontValid = false;
-    static Led_FontSpecification sDefaultFont;
+    static bool              sDefaultFontValid = false;
+    static FontSpecification sDefaultFont;
     if (not sDefaultFontValid) {
 #if qPlatform_MacOS
         sDefaultFont.SetFontNameSpecifier (::GetScriptVariable (smCurrentScript, smScriptAppFond));
@@ -476,9 +476,9 @@ Led_FontSpecification TextImager::GetStaticDefaultFont ()
 }
 
 #if qPlatform_Windows
-Led_FontSpecification TextImager::GetStaticDefaultFont (BYTE charSet)
+FontSpecification TextImager::GetStaticDefaultFont (BYTE charSet)
 {
-    Led_FontSpecification defaultFont;
+    FontSpecification defaultFont;
     //nb: import to go through the intermediary font so we don't set into the
     // LOGFONT lots of fields which are part of the chosen font but are
     // extraneous, and then mess up later choices to change to face name.
@@ -490,9 +490,9 @@ Led_FontSpecification TextImager::GetStaticDefaultFont (BYTE charSet)
     // up in our choice lists, and yet gets caried along even after you change face names.
     //
     // See spr# 0426 for more details.
-    Led_FontSpecification fooo;
-    FontSelectionInfo     selectedFont (charSet);
-    Led_WindowDC          screenDC (nullptr);
+    FontSpecification fooo;
+    FontSelectionInfo selectedFont (charSet);
+    WindowDC          screenDC (nullptr);
 #if defined(STRICT)
     ::EnumFontFamilies (screenDC.m_hDC, nullptr, EnumFontCallback, reinterpret_cast<LPARAM> (&selectedFont));
 #else
@@ -508,7 +508,7 @@ Led_FontSpecification TextImager::GetStaticDefaultFont (BYTE charSet)
             HFONT xxx = HFONT (::GetStockObject (ANSI_VAR_FONT));
             Verify (::GetObject (xxx, sizeof theANSILogFont, &theANSILogFont));
         }
-        fooo.SetPointSize (min (max (Led_FontSpecification (theANSILogFont).GetPointSize (), static_cast<unsigned short> (8)), static_cast<unsigned short> (14)));
+        fooo.SetPointSize (min (max (FontSpecification (theANSILogFont).GetPointSize (), static_cast<unsigned short> (8)), static_cast<unsigned short> (14)));
     }
 
     defaultFont.MergeIn (fooo);
@@ -531,7 +531,7 @@ Led_FontSpecification TextImager::GetStaticDefaultFont (BYTE charSet)
             the selection's current font.
             </p>
 */
-Led_FontSpecification TextImager::GetDefaultSelectionFont () const
+FontSpecification TextImager::GetDefaultSelectionFont () const
 {
     return GetDefaultFont ();
 }
@@ -1767,7 +1767,7 @@ void TextImager::DrawSegment (Led_Tablet tablet,
             text in 'text' argument need not match the REAL text in the TextStore buffer.
         <p>See also @'TextImager::MeasureSegmentWidth_'.</p>
 */
-void TextImager::DrawSegment_ (Led_Tablet tablet, const Led_FontSpecification& fontSpec,
+void TextImager::DrawSegment_ (Led_Tablet tablet, const FontSpecification& fontSpec,
                                size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto,
                                Coordinate useBaseLine, DistanceType* pixelsDrawn) const
 {
@@ -1787,8 +1787,8 @@ void TextImager::DrawSegment_ (Led_Tablet tablet, const Led_FontSpecification& f
     /*
      *  Setup the colors to be drawn.
      */
-    Led_Color foreColor = fontSpec.GetTextColor ();
-    Led_Color backColor = GetEffectiveDefaultTextColor (eDefaultBackgroundColor);
+    Color foreColor = fontSpec.GetTextColor ();
+    Color backColor = GetEffectiveDefaultTextColor (eDefaultBackgroundColor);
     tablet->SetBackColor (backColor);
     tablet->SetForeColor (foreColor);
 
@@ -1801,7 +1801,7 @@ void TextImager::DrawSegment_ (Led_Tablet tablet, const Led_FontSpecification& f
     Coordinate drawCharTop = useBaseLine - ascent; // our PortableGDI_TabbedTextOut() assumes draw in topLeft
     //Require (drawCharTop >= drawInto.top);        // Same deal as for useBaseLine - LGP 2000-06-12
 
-    if (fontSpec.GetStyle_SubOrSuperScript () == Led_FontSpecification::eSuperscript) {
+    if (fontSpec.GetStyle_SubOrSuperScript () == FontSpecification::eSuperscript) {
         // See SPR#1523- was 'drawCharTop -= fCachedFontInfo.GetAscent ()'
         // Careful to sync this with FontCacheInfoUpdater::CTOR () height adjustment
         // get back to (roughly - round down) original ascent. If we did TIMES 2/3 now
@@ -1809,7 +1809,7 @@ void TextImager::DrawSegment_ (Led_Tablet tablet, const Led_FontSpecification& f
         // up too high).
         drawCharTop = useBaseLine - ascent * 3 / 2;
     }
-    else if (fontSpec.GetStyle_SubOrSuperScript () == Led_FontSpecification::eSubscript) {
+    else if (fontSpec.GetStyle_SubOrSuperScript () == FontSpecification::eSubscript) {
         drawCharTop += fCachedFontInfo.GetDescent ();
     }
 
@@ -1876,7 +1876,7 @@ void TextImager::MeasureSegmentWidth (size_t from, size_t to, const Led_tChar* t
             requirement that the 'text' argument refer to the same text as that stored in the TextStore object.
         <p>See also @'TextImager::DrawSegment_'.</p>
 */
-void TextImager::MeasureSegmentWidth_ (const Led_FontSpecification& fontSpec, size_t from, size_t to,
+void TextImager::MeasureSegmentWidth_ (const FontSpecification& fontSpec, size_t from, size_t to,
                                        const Led_tChar* text,
                                        DistanceType*    distanceResults) const
 {
@@ -1911,7 +1911,7 @@ DistanceType TextImager::MeasureSegmentHeight (size_t from, size_t to) const
     return (MeasureSegmentHeight_ (GetDefaultFont (), from, to));
 }
 
-DistanceType TextImager::MeasureSegmentHeight_ (const Led_FontSpecification& fontSpec, size_t /*from*/, size_t /*to*/) const
+DistanceType TextImager::MeasureSegmentHeight_ (const FontSpecification& fontSpec, size_t /*from*/, size_t /*to*/) const
 {
     Tablet_Acquirer tablet (this);
     AssertNotNull (static_cast<Led_Tablet> (tablet));
@@ -1924,7 +1924,7 @@ DistanceType TextImager::MeasureSegmentBaseLine (size_t from, size_t to) const
     return (MeasureSegmentBaseLine_ (GetDefaultFont (), from, to));
 }
 
-DistanceType TextImager::MeasureSegmentBaseLine_ (const Led_FontSpecification& fontSpec, size_t /*from*/, size_t /*to*/) const
+DistanceType TextImager::MeasureSegmentBaseLine_ (const FontSpecification& fontSpec, size_t /*from*/, size_t /*to*/) const
 {
     Tablet_Acquirer tablet (this);
     AssertNotNull (static_cast<Led_Tablet> (tablet));
@@ -1947,7 +1947,7 @@ Led_FontMetrics TextImager::GetFontMetricsAt (
     Assert_CharPosDoesNotSplitCharacter (charAfterPos);
 #endif
 
-    Led_FontSpecification fontSpec = GetDefaultFont ();
+    FontSpecification fontSpec = GetDefaultFont ();
 
     FontCacheInfoUpdater fontCacheUpdater (this, tablet, fontSpec);
     return (fCachedFontInfo);

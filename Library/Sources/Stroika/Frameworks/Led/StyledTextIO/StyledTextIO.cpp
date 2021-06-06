@@ -101,7 +101,7 @@ void StyledTextIOReader::SinkStream::EndTableCell ()
 {
 }
 
-void StyledTextIOReader::SinkStream::SetJustification (Led_Justification /*justification*/)
+void StyledTextIOReader::SinkStream::SetJustification (Justification /*justification*/)
 {
     // OVERRIDE, and ignore, since that feature isn't supported by this class
 }
@@ -148,7 +148,7 @@ void StyledTextIOReader::SinkStream::SetSpaceAfter (TWIPS /*sa*/)
 @METHOD:        StyledTextIOReader::SinkStream::SetLineSpacing
 @DESCRIPTION:
 */
-void StyledTextIOReader::SinkStream::SetLineSpacing (Led_LineSpacing /*sl*/)
+void StyledTextIOReader::SinkStream::SetLineSpacing (LineSpacing /*sl*/)
 {
     // OVERRIDE, and ignore, since that feature isn't supported by this class
 }
@@ -184,7 +184,7 @@ void StyledTextIOReader::SinkStream::SetListIndentLevel (unsigned char /*indentL
 @METHOD:        StyledTextIOReader::SinkStream::SetTableBorderColor
 @DESCRIPTION:
 */
-void StyledTextIOReader::SinkStream::SetTableBorderColor (Led_Color /*c*/)
+void StyledTextIOReader::SinkStream::SetTableBorderColor (Color /*c*/)
 {
     // OVERRIDE, and ignore, since that feature isn't supported by this class
 }
@@ -218,7 +218,7 @@ void StyledTextIOReader::SinkStream::SetCellWidths (const vector<TWIPS>& /*cellW
 @METHOD:        StyledTextIOReader::SinkStream::SetCellBackColor
 @DESCRIPTION:   <p>Default is to do ignore. Override to implement tables.</p>
 */
-void StyledTextIOReader::SinkStream::SetCellBackColor (const Led_Color /*c*/)
+void StyledTextIOReader::SinkStream::SetCellBackColor (const Color /*c*/)
 {
     // OVERRIDE, and ignore, since that feature isn't supported by this class
 }
@@ -273,7 +273,7 @@ void StyledTextIOReader::BadInputHandler::HandleBadlyFormattedInput (const Style
 @METHOD:        StyledTextIOWriter::SrcStream::GetJustification
 @DESCRIPTION:
 */
-Led_Justification StyledTextIOWriter::SrcStream::GetJustification () const
+Justification StyledTextIOWriter::SrcStream::GetJustification () const
 {
     return eLeftJustify;
 }
@@ -330,9 +330,9 @@ TWIPS StyledTextIOWriter::SrcStream::GetSpaceAfter () const
 @METHOD:        StyledTextIOWriter::SrcStream::GetLineSpacing
 @DESCRIPTION:
 */
-Led_LineSpacing StyledTextIOWriter::SrcStream::GetLineSpacing () const
+LineSpacing StyledTextIOWriter::SrcStream::GetLineSpacing () const
 {
-    return Led_LineSpacing ();
+    return LineSpacing ();
 }
 
 /*
@@ -588,7 +588,7 @@ void StyledTextIOSrcStream_FileDescriptor::ReadInWindow ([[maybe_unused]] size_t
     fBufferWindowStart = startAt;
     fBufferWindowEnd   = startAt + count;
 #else
-    Assert (false); // NYI
+    Assert (false);     // NYI
 #endif
 }
 

@@ -389,8 +389,8 @@ namespace Stroika::Frameworks::Led {
         Led_URLD fURLData;
 
     protected:
-        nonvirtual Led_tString           GetDisplayString () const;
-        nonvirtual Led_FontSpecification GetDisplayFont (const RunElement& runElement) const;
+        nonvirtual Led_tString       GetDisplayString () const;
+        nonvirtual FontSpecification GetDisplayFont (const RunElement& runElement) const;
     };
 
 #if qPlatform_MacOS || qPlatform_Windows

@@ -743,7 +743,7 @@ void LedLineItApplication::OnSyntaxColoringOptionUpdateCommandUI (CCmdUI* pCmdUI
 
 void LedLineItApplication::OnChooseDefaultFontCommand ()
 {
-    Led_FontSpecification fsp = Options{}.GetDefaultNewDocFont ();
+    FontSpecification fsp = Options{}.GetDefaultNewDocFont ();
 
     LOGFONT lf;
     (void)::memset (&lf, 0, sizeof (lf));
@@ -760,7 +760,7 @@ void LedLineItApplication::OnChooseDefaultFontCommand ()
 
     FontDlgWithNoColorNoStyles dlog (&lf);
     if (dlog.DoModal () == IDOK) {
-        Options{}.SetDefaultNewDocFont (Led_FontSpecification (*dlog.m_cf.lpLogFont));
+        Options{}.SetDefaultNewDocFont (FontSpecification (*dlog.m_cf.lpLogFont));
     }
 }
 

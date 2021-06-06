@@ -18,7 +18,7 @@ namespace Stroika::Frameworks::Led {
      ********************************************************************************
      */
     //  class   SimpleTextInteractor
-    inline void SimpleTextInteractor::SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont, TextInteractor::UpdateMode updateMode)
+    inline void SimpleTextInteractor::SetDefaultFont (const IncrementalFontSpecification& defaultFont, TextInteractor::UpdateMode updateMode)
     {
         TextInteractor::SetDefaultFont (defaultFont, updateMode);
     }

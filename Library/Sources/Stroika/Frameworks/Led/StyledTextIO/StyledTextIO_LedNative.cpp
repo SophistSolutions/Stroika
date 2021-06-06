@@ -97,7 +97,7 @@ inline void _DO_ALIGN_ASSERTS_Version4_ ()
 inline StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortData (const PortableStyleRunData_Version4& srcData)
 {
     _DO_ALIGN_ASSERTS_Version4_ ();
-    Led_FontSpecification fsp;
+    FontSpecification fsp;
     fsp.SetStyle_Plain (); // so all style valid bits set...
     fsp.SetStyle_Bold (srcData.fBoldWeight >= PortableStyleRunData_Version4::eBoldnessBold);
     fsp.SetStyle_Italic (!!srcData.fItalic);
@@ -195,7 +195,7 @@ inline PortableStyleRunData_Version5 mkPortableStyleRunData_Version5 (const Stan
 inline StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortData (const PortableStyleRunData_Version5& srcData)
 {
     _DO_ALIGN_ASSERTS_Version5_ ();
-    Led_FontSpecification fsp;
+    FontSpecification fsp;
     fsp.SetStyle_Plain (); // so all style valid bits set...
     fsp.SetStyle_Bold (!!(srcData.fStyleSet & (1 << srcData.eBold)));
     fsp.SetStyle_Italic (!!(srcData.fStyleSet & (1 << srcData.eItalic)));
@@ -299,8 +299,8 @@ inline PortableStyleRunData_Version6 mkPortableStyleRunData_Version6 (const Stan
 #elif qPlatform_Windows
     data.fStyleSet |= isr.GetStyle_Strikeout () ? (1 << data.eStrikeout) : 0;
 #endif
-    data.fStyleSet |= (isr.GetStyle_SubOrSuperScript () == Led_FontSpecification::eSubscript) ? (1 << data.eSubscript) : 0;
-    data.fStyleSet |= (isr.GetStyle_SubOrSuperScript () == Led_FontSpecification::eSuperscript) ? (1 << data.eSuperscript) : 0;
+    data.fStyleSet |= (isr.GetStyle_SubOrSuperScript () == FontSpecification::eSubscript) ? (1 << data.eSubscript) : 0;
+    data.fStyleSet |= (isr.GetStyle_SubOrSuperScript () == FontSpecification::eSuperscript) ? (1 << data.eSuperscript) : 0;
     UInt16ToBuf (isr.GetTextColor ().GetRed (), &data.fColor[0]);
     UInt16ToBuf (isr.GetTextColor ().GetGreen (), &data.fColor[1]);
     UInt16ToBuf (isr.GetTextColor ().GetBlue (), &data.fColor[2]);
@@ -311,7 +311,7 @@ inline PortableStyleRunData_Version6 mkPortableStyleRunData_Version6 (const Stan
 inline StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortData (const PortableStyleRunData_Version6& srcData)
 {
     _DO_ALIGN_ASSERTS_Version6_ ();
-    Led_FontSpecification fsp;
+    FontSpecification fsp;
     fsp.SetStyle_Plain (); // so all style valid bits set...
     fsp.SetStyle_Bold (!!(srcData.fStyleSet & (1 << srcData.eBold)));
     fsp.SetStyle_Italic (!!(srcData.fStyleSet & (1 << srcData.eItalic)));
@@ -325,13 +325,13 @@ inline StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortDa
     fsp.SetStyle_Strikeout (!!(srcData.fStyleSet & (1 << srcData.eStrikeout)));
 #endif
     if (srcData.fStyleSet & (1 << srcData.eSubscript)) {
-        fsp.SetStyle_SubOrSuperScript (Led_FontSpecification::eSubscript);
+        fsp.SetStyle_SubOrSuperScript (FontSpecification::eSubscript);
     }
     if (srcData.fStyleSet & (1 << srcData.eSuperscript)) {
-        fsp.SetStyle_SubOrSuperScript (Led_FontSpecification::eSuperscript);
+        fsp.SetStyle_SubOrSuperScript (FontSpecification::eSuperscript);
     }
 
-    fsp.SetTextColor (Led_Color (BufToUInt16 (&srcData.fColor[0]), BufToUInt16 (&srcData.fColor[1]), BufToUInt16 (&srcData.fColor[2])));
+    fsp.SetTextColor (Color (BufToUInt16 (&srcData.fColor[0]), BufToUInt16 (&srcData.fColor[1]), BufToUInt16 (&srcData.fColor[2])));
 
     short fontSize = BufToUInt16 (&srcData.fPointSize);
     if (fontSize < 3 or fontSize > 128) {
@@ -758,7 +758,7 @@ SimpleEmbeddedObjectStyleMarker* StyledTextIOReader_LedNativeFileFormat::Interna
         EmbeddedObjectCreatorRegistry::Assoc assoc = types[i];
         if (memcmp (assoc.fEmbeddingTag, tag, sizeof (assoc.fEmbeddingTag)) == 0) {
             AssertNotNull (assoc.fReadFromMemory);
-            return (assoc.fReadFromMemory) (tag, dataBuf, howManyBytes);
+            return (assoc.fReadFromMemory)(tag, dataBuf, howManyBytes);
         }
     }
     return (new StandardUnknownTypeStyleMarker (0, tag, dataBuf, howManyBytes));

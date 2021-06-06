@@ -266,7 +266,7 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>Returns the default font used to image new text. The exact meaning and use of this
         default font will depend some on the particular TextImager subclass you are using.</p>
     */
-    inline Led_FontSpecification TextImager::GetDefaultFont () const
+    inline FontSpecification TextImager::GetDefaultFont () const
     {
         return (fDefaultFont);
     }
@@ -291,7 +291,7 @@ namespace Stroika::Frameworks::Led {
                         </ul>
                     </p>
     */
-    inline Led_Color* TextImager::GetDefaultTextColor (DefaultColorIndex dci) const
+    inline Color* TextImager::GetDefaultTextColor (DefaultColorIndex dci) const
     {
         Require (dci < eMaxDefaultColorIndex);
         return fDefaultColorIndex[dci];
@@ -308,7 +308,7 @@ namespace Stroika::Frameworks::Led {
                         </ul>
                     </p>
     */
-    inline Led_Color TextImager::GetEffectiveDefaultTextColor (DefaultColorIndex dci) const
+    inline Color TextImager::GetEffectiveDefaultTextColor (DefaultColorIndex dci) const
     {
         Require (dci < eMaxDefaultColorIndex);
         if (fDefaultColorIndex[dci] == nullptr) {
@@ -323,7 +323,7 @@ namespace Stroika::Frameworks::Led {
                     return Led_GetSelectedTextBackgroundColor ();
                 default:
                     Assert (false); /*NOTREACHED*/
-                    return Led_Color::kBlack;
+                    return Color::kBlack;
             }
         }
         else {
@@ -363,14 +363,14 @@ namespace Stroika::Frameworks::Led {
                         </ul>
                     </p>
     */
-    inline void TextImager::SetDefaultTextColor (DefaultColorIndex dci, const Led_Color& textColor)
+    inline void TextImager::SetDefaultTextColor (DefaultColorIndex dci, const Color& textColor)
     {
         Require (dci < eMaxDefaultColorIndex);
         ClearDefaultTextColor (dci);
         if (dci == eDefaultTextColor) {
             fDefaultFont.SetTextColor (textColor);
         }
-        fDefaultColorIndex[dci] = new Led_Color (textColor);
+        fDefaultColorIndex[dci] = new Color (textColor);
     }
     /*
     @METHOD:        TextImager::GetStartOfNextRowFromRowContainingPosition
@@ -495,8 +495,8 @@ namespace Stroika::Frameworks::Led {
         Verify (hFont != nullptr);
         LOGFONT lf;
         Verify (::GetObject (hFont, sizeof (LOGFONT), &lf));
-        this->SetDefaultFont (Led_FontSpecification (lf));
-        this->SetDefaultTextColor (TextImager::eDefaultBackgroundColor, Led_Color (::GetBkColor (fTablet->m_hAttribDC)));
+        this->SetDefaultFont (FontSpecification (lf));
+        this->SetDefaultTextColor (TextImager::eDefaultBackgroundColor, Color (::GetBkColor (fTablet->m_hAttribDC)));
         if (::GetBkMode (fTablet->m_hAttribDC) == TRANSPARENT) {
             SetBackgroundTransparent (true);
         }
@@ -507,7 +507,7 @@ namespace Stroika::Frameworks::Led {
     @METHOD:        TrivialImager<TEXTSTORE,IMAGER>::GetBackgroundColor
     @DESCRIPTION:   <p>See also @'TrivialImager<TEXTSTORE,IMAGER>::SetBackgroundColor'.</p>
     */
-    inline Led_Color
+    inline Color
     TrivialImager<TEXTSTORE, IMAGER>::GetBackgroundColor () const
     {
         return this->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor);
@@ -520,7 +520,7 @@ namespace Stroika::Frameworks::Led {
                 @'TrivialImager<TEXTSTORE,IMAGER>::GetBackgroundColor'.</p>
     */
     inline void
-    TrivialImager<TEXTSTORE, IMAGER>::SetBackgroundColor (Led_Color c)
+    TrivialImager<TEXTSTORE, IMAGER>::SetBackgroundColor (Color c)
     {
         this->SetDefaultTextColor (TextImager::eDefaultBackgroundColor, c);
     }

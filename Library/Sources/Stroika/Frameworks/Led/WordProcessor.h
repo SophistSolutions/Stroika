@@ -159,9 +159,9 @@ namespace Stroika::Frameworks::Led {
         virtual void InterectiveSetRegionHidable (bool hidable);
 
     public:
-        nonvirtual Led_Justification GetJustification (size_t characterPos) const;
-        nonvirtual bool              GetJustification (size_t from, size_t to, Led_Justification* justification) const;
-        nonvirtual void              SetJustification (size_t from, size_t to, Led_Justification justification);
+        nonvirtual Justification GetJustification (size_t characterPos) const;
+        nonvirtual bool          GetJustification (size_t from, size_t to, Justification* justification) const;
+        nonvirtual void          SetJustification (size_t from, size_t to, Justification justification);
 
     public:
         static StandardTabStopList     GetDefaultStandardTabStopList ();
@@ -180,21 +180,21 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void  SetFirstIndent (size_t from, size_t to, TWIPS firstIndent);
 
     public:
-        nonvirtual TWIPS           GetSpaceBefore (size_t characterPos) const;
-        nonvirtual bool            GetSpaceBefore (size_t from, size_t to, TWIPS* sb) const;
-        nonvirtual void            SetSpaceBefore (size_t from, size_t to, TWIPS sb);
-        nonvirtual TWIPS           GetSpaceAfter (size_t characterPos) const;
-        nonvirtual bool            GetSpaceAfter (size_t from, size_t to, TWIPS* sa) const;
-        nonvirtual void            SetSpaceAfter (size_t from, size_t to, TWIPS sa);
-        nonvirtual Led_LineSpacing GetLineSpacing (size_t characterPos) const;
-        nonvirtual bool            GetLineSpacing (size_t from, size_t to, Led_LineSpacing* sl) const;
-        nonvirtual void            SetLineSpacing (size_t from, size_t to, Led_LineSpacing sl);
-        nonvirtual ListStyle       GetListStyle (size_t characterPos) const;
-        nonvirtual bool            GetListStyle (size_t from, size_t to, ListStyle* listStyle) const;
-        nonvirtual void            SetListStyle (size_t from, size_t to, ListStyle listStyle, bool autoFormat = false);
-        nonvirtual unsigned char   GetListIndentLevel (size_t characterPos) const;
-        nonvirtual bool            GetListIndentLevel (size_t from, size_t to, unsigned char* indentLevel) const;
-        nonvirtual void            SetListIndentLevel (size_t from, size_t to, unsigned char indentLevel, bool autoFormat = false);
+        nonvirtual TWIPS         GetSpaceBefore (size_t characterPos) const;
+        nonvirtual bool          GetSpaceBefore (size_t from, size_t to, TWIPS* sb) const;
+        nonvirtual void          SetSpaceBefore (size_t from, size_t to, TWIPS sb);
+        nonvirtual TWIPS         GetSpaceAfter (size_t characterPos) const;
+        nonvirtual bool          GetSpaceAfter (size_t from, size_t to, TWIPS* sa) const;
+        nonvirtual void          SetSpaceAfter (size_t from, size_t to, TWIPS sa);
+        nonvirtual LineSpacing   GetLineSpacing (size_t characterPos) const;
+        nonvirtual bool          GetLineSpacing (size_t from, size_t to, LineSpacing* sl) const;
+        nonvirtual void          SetLineSpacing (size_t from, size_t to, LineSpacing sl);
+        nonvirtual ListStyle     GetListStyle (size_t characterPos) const;
+        nonvirtual bool          GetListStyle (size_t from, size_t to, ListStyle* listStyle) const;
+        nonvirtual void          SetListStyle (size_t from, size_t to, ListStyle listStyle, bool autoFormat = false);
+        nonvirtual unsigned char GetListIndentLevel (size_t characterPos) const;
+        nonvirtual bool          GetListIndentLevel (size_t from, size_t to, unsigned char* indentLevel) const;
+        nonvirtual void          SetListIndentLevel (size_t from, size_t to, unsigned char indentLevel, bool autoFormat = false);
 
     protected:
         virtual Led_tString  GetListLeader (size_t paragraphMarkerPos) const;
@@ -400,13 +400,13 @@ namespace Stroika::Frameworks::Led {
         virtual void DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
 
     public:
-        nonvirtual Led_IncrementalFontSpecification GetCurSelFontSpec () const;
+        nonvirtual IncrementalFontSpecification GetCurSelFontSpec () const;
 
     private:
-        mutable Led_IncrementalFontSpecification fCachedCurSelFontSpec;
-        mutable Led_Justification                fCachedCurSelJustification;
-        mutable bool                             fCachedCurSelJustificationUnique;
-        mutable bool                             fCachedCurSelFontSpecValid;
+        mutable IncrementalFontSpecification fCachedCurSelFontSpec;
+        mutable Justification                fCachedCurSelJustification;
+        mutable bool                         fCachedCurSelJustificationUnique;
+        mutable bool                         fCachedCurSelFontSpecValid;
 
         nonvirtual void AssureCurSelFontCacheValid () const;
 
@@ -497,15 +497,15 @@ namespace Stroika::Frameworks::Led {
         virtual InteractiveReplaceCommand::SavedTextRep* InteractiveUndoHelperMakeTextRep (size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd) override;
 
     public:
-        virtual void InteractiveSetFont (const Led_IncrementalFontSpecification& defaultFont) override;
+        virtual void InteractiveSetFont (const IncrementalFontSpecification& defaultFont) override;
 
     public:
-        nonvirtual void InteractiveSetJustification (Led_Justification justification);
+        nonvirtual void InteractiveSetJustification (Justification justification);
         nonvirtual void InteractiveSetStandardTabStopList (StandardTabStopList tabStops);
         nonvirtual void InteractiveSetMargins (TWIPS leftMargin, TWIPS rightMargin);
         nonvirtual void InteractiveSetFirstIndent (TWIPS firstIndent);
         nonvirtual void InteractiveSetMarginsAndFirstIndent (TWIPS leftMargin, TWIPS rightMargin, TWIPS firstIndent);
-        nonvirtual void InteractiveSetParagraphSpacing (TWIPS spaceBefore, bool spaceBeforeValid, TWIPS spaceAfter, bool spaceAfterValid, Led_LineSpacing lineSpacing, bool lineSpacingValid);
+        nonvirtual void InteractiveSetParagraphSpacing (TWIPS spaceBefore, bool spaceBeforeValid, TWIPS spaceAfter, bool spaceAfterValid, LineSpacing lineSpacing, bool lineSpacingValid);
         nonvirtual void InteractiveSetListStyle (ListStyle listStyle);
         nonvirtual void InteractiveDoIndentChange (bool increase);
 
@@ -614,11 +614,11 @@ namespace Stroika::Frameworks::Led {
         ParagraphInfo ();
 
     public:
-        nonvirtual Led_Justification GetJustification () const;
-        nonvirtual void              SetJustification (Led_Justification justification);
+        nonvirtual Justification GetJustification () const;
+        nonvirtual void          SetJustification (Justification justification);
 
     private:
-        Led_Justification fJustification;
+        Justification fJustification;
 
     public:
         nonvirtual const StandardTabStopList& GetTabStopList () const;
@@ -644,17 +644,17 @@ namespace Stroika::Frameworks::Led {
         TWIPS fFirstIndent;
 
     public:
-        nonvirtual TWIPS           GetSpaceBefore () const;
-        nonvirtual void            SetSpaceBefore (TWIPS sb);
-        nonvirtual TWIPS           GetSpaceAfter () const;
-        nonvirtual void            SetSpaceAfter (TWIPS sa);
-        nonvirtual Led_LineSpacing GetLineSpacing () const;
-        nonvirtual void            SetLineSpacing (Led_LineSpacing sl);
+        nonvirtual TWIPS       GetSpaceBefore () const;
+        nonvirtual void        SetSpaceBefore (TWIPS sb);
+        nonvirtual TWIPS       GetSpaceAfter () const;
+        nonvirtual void        SetSpaceAfter (TWIPS sa);
+        nonvirtual LineSpacing GetLineSpacing () const;
+        nonvirtual void        SetLineSpacing (LineSpacing sl);
 
     private:
-        TWIPS           fSpaceBefore;
-        TWIPS           fSpaceAfter;
-        Led_LineSpacing fLineSpacing;
+        TWIPS       fSpaceBefore;
+        TWIPS       fSpaceAfter;
+        LineSpacing fLineSpacing;
 
     public:
         nonvirtual ListStyle GetListStyle () const;
@@ -697,10 +697,10 @@ namespace Stroika::Frameworks::Led {
         explicit IncrementalParagraphInfo (const ParagraphInfo& pi);
 
     public:
-        nonvirtual Led_Justification GetJustification () const;
-        nonvirtual void              SetJustification (Led_Justification justification);
-        nonvirtual bool              GetJustification_Valid () const;
-        nonvirtual void              InvalidateJustification ();
+        nonvirtual Justification GetJustification () const;
+        nonvirtual void          SetJustification (Justification justification);
+        nonvirtual bool          GetJustification_Valid () const;
+        nonvirtual void          InvalidateJustification ();
 
     private:
         bool fJustificationValid;
@@ -734,18 +734,18 @@ namespace Stroika::Frameworks::Led {
         bool fFirstIndentValid;
 
     public:
-        nonvirtual TWIPS           GetSpaceBefore () const;
-        nonvirtual void            SetSpaceBefore (TWIPS sb);
-        nonvirtual bool            GetSpaceBefore_Valid () const;
-        nonvirtual void            InvalidateSpaceBefore ();
-        nonvirtual TWIPS           GetSpaceAfter () const;
-        nonvirtual void            SetSpaceAfter (TWIPS sa);
-        nonvirtual bool            GetSpaceAfter_Valid () const;
-        nonvirtual void            InvalidateSpaceAfter ();
-        nonvirtual Led_LineSpacing GetLineSpacing () const;
-        nonvirtual void            SetLineSpacing (Led_LineSpacing sl);
-        nonvirtual bool            GetLineSpacing_Valid () const;
-        nonvirtual void            InvalidateLineSpacing ();
+        nonvirtual TWIPS       GetSpaceBefore () const;
+        nonvirtual void        SetSpaceBefore (TWIPS sb);
+        nonvirtual bool        GetSpaceBefore_Valid () const;
+        nonvirtual void        InvalidateSpaceBefore ();
+        nonvirtual TWIPS       GetSpaceAfter () const;
+        nonvirtual void        SetSpaceAfter (TWIPS sa);
+        nonvirtual bool        GetSpaceAfter_Valid () const;
+        nonvirtual void        InvalidateSpaceAfter ();
+        nonvirtual LineSpacing GetLineSpacing () const;
+        nonvirtual void        SetLineSpacing (LineSpacing sl);
+        nonvirtual bool        GetLineSpacing_Valid () const;
+        nonvirtual void        InvalidateLineSpacing ();
 
         nonvirtual ListStyle GetListStyle () const;
         nonvirtual void      SetListStyle (ListStyle listStyle);
@@ -914,17 +914,17 @@ namespace Stroika::Frameworks::Led {
 #endif
 
     public:
-        virtual void AppendText (const Led_tChar* text, size_t nTChars, const Led_FontSpecification* fontSpec) override;
+        virtual void AppendText (const Led_tChar* text, size_t nTChars, const FontSpecification* fontSpec) override;
         virtual void AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding) override;
         virtual void AppendSoftLineBreak () override;
-        virtual void SetJustification (Led_Justification justification) override;
+        virtual void SetJustification (Justification justification) override;
         virtual void SetStandardTabStopList (const TextImager::StandardTabStopList& tabStops) override;
         virtual void SetFirstIndent (TWIPS tx) override;
         virtual void SetLeftMargin (TWIPS lhs) override;
         virtual void SetRightMargin (TWIPS rhs) override;
         virtual void SetSpaceBefore (TWIPS sb) override;
         virtual void SetSpaceAfter (TWIPS sa) override;
-        virtual void SetLineSpacing (Led_LineSpacing sl) override;
+        virtual void SetLineSpacing (LineSpacing sl) override;
         virtual void SetTextHidden (bool hidden) override;
         virtual void StartTable () override;
         virtual void EndTable () override;
@@ -934,10 +934,10 @@ namespace Stroika::Frameworks::Led {
         virtual void EndTableCell () override;
         virtual void SetListStyle (ListStyle listStyle) override;
         virtual void SetListIndentLevel (unsigned char indentLevel) override;
-        virtual void SetTableBorderColor (Led_Color c) override;
+        virtual void SetTableBorderColor (Color c) override;
         virtual void SetTableBorderWidth (TWIPS bWidth) override;
         virtual void SetCellWidths (const vector<TWIPS>& cellWidths) override;
-        virtual void SetCellBackColor (const Led_Color c) override;
+        virtual void SetCellBackColor (const Color c) override;
         virtual void SetDefaultCellMarginsForCurrentRow (TWIPS top, TWIPS left, TWIPS bottom, TWIPS right) override;
         virtual void SetDefaultCellSpacingForCurrentRow (TWIPS top, TWIPS left, TWIPS bottom, TWIPS right) override;
         virtual void EndOfBuffer () override;
@@ -973,7 +973,7 @@ namespace Stroika::Frameworks::Led {
         bool                                  fIgnoreLastParaAttributes;
         WordProcessor::Table*                 fCurrentTable;
         vector<TWIPS>                         fCurrentTableCellWidths;
-        Led_Color                             fCurrentTableCellColor;
+        Color                                 fCurrentTableCellColor;
         vector<size_t>                        fCurrentTableColSpanArray;
         vector<WordProcessor::Table*>         fTableStack; // for nesting
         size_t                                fNextTableRow;
@@ -1014,18 +1014,18 @@ namespace Stroika::Frameworks::Led {
         bool fUseTableSelection;
 
     public:
-        virtual Led_Justification      GetJustification () const override;
+        virtual Justification          GetJustification () const override;
         virtual StandardTabStopList    GetStandardTabStopList () const override;
         virtual TWIPS                  GetFirstIndent () const override;
         virtual void                   GetMargins (TWIPS* lhs, TWIPS* rhs) const override;
         virtual TWIPS                  GetSpaceBefore () const override;
         virtual TWIPS                  GetSpaceAfter () const override;
-        virtual Led_LineSpacing        GetLineSpacing () const override;
+        virtual LineSpacing            GetLineSpacing () const override;
         virtual void                   GetListStyleInfo (ListStyle* listStyle, unsigned char* indentLevel) const override;
         virtual Led_tChar              GetSoftLineBreakCharacter () const override;
         virtual DiscontiguousRun<bool> GetHidableTextRuns () const override;
         virtual Table*                 GetTableAt (size_t at) const override;
-        virtual void                   SummarizeFontAndColorTable (set<Led_SDK_String>* fontNames, set<Led_Color>* colorsUsed) const override;
+        virtual void                   SummarizeFontAndColorTable (set<Led_SDK_String>* fontNames, set<Color>* colorsUsed) const override;
 
     protected:
         class TableIOMapper;
@@ -1308,10 +1308,10 @@ namespace Stroika::Frameworks::Led {
         virtual void OnPerformTablePartsCommand (CommandNumber commandNumber);
 
     protected:
-        nonvirtual void AssureCurSelFontCacheValid (Led_IncrementalFontSpecification* curSelFontSpec);
+        nonvirtual void AssureCurSelFontCacheValid (IncrementalFontSpecification* curSelFontSpec);
 
     public:
-        nonvirtual void InteractiveSetFont (const Led_IncrementalFontSpecification& defaultFont);
+        nonvirtual void InteractiveSetFont (const IncrementalFontSpecification& defaultFont);
 
         // SimpleEmbeddedObjectStyleMarker overrides
     public:
@@ -1324,8 +1324,8 @@ namespace Stroika::Frameworks::Led {
         virtual void WhileSimpleMouseTracking (Led_Point newMousePos);
 
     public:
-        nonvirtual Led_Color GetTableBorderColor () const;
-        nonvirtual void      SetTableBorderColor (Led_Color c);
+        nonvirtual Color GetTableBorderColor () const;
+        nonvirtual void  SetTableBorderColor (Color c);
 
     public:
         nonvirtual TWIPS GetTableBorderWidth () const;
@@ -1336,8 +1336,8 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void  SetColumnWidth (size_t row, size_t column, TWIPS colWidth);
 
     public:
-        nonvirtual Led_Color GetCellColor (size_t row, size_t column) const;
-        nonvirtual void      SetCellColor (size_t row, size_t column, const Led_Color& c);
+        nonvirtual Color GetCellColor (size_t row, size_t column) const;
+        nonvirtual void  SetCellColor (size_t row, size_t column, const Color& c);
 
     public:
         nonvirtual Cell& GetCell (size_t row, size_t column);
@@ -1384,17 +1384,17 @@ namespace Stroika::Frameworks::Led {
 
     protected:
         nonvirtual void SaveIntraCellContextInfo (
-            bool                         leftSideOfSelectionInteresting,
-            const Led_FontSpecification& intraCellSelectionEmptySelFontSpecification);
+            bool                     leftSideOfSelectionInteresting,
+            const FontSpecification& intraCellSelectionEmptySelFontSpecification);
         nonvirtual bool RestoreIntraCellContextInfo (
-            bool*                  leftSideOfSelectionInteresting,
-            Led_FontSpecification* intraCellSelectionEmptySelFontSpecification);
+            bool*              leftSideOfSelectionInteresting,
+            FontSpecification* intraCellSelectionEmptySelFontSpecification);
         nonvirtual void InvalidateIntraCellContextInfo ();
 
     private:
-        bool                  fSavedLeftSideOfSelectionInteresting;
-        Led_FontSpecification fSavedIntraCellSelectionEmptySelFontSpecification;
-        bool                  fSavedIntraCellInfoValid;
+        bool              fSavedLeftSideOfSelectionInteresting;
+        FontSpecification fSavedIntraCellSelectionEmptySelFontSpecification;
+        bool              fSavedIntraCellInfoValid;
 
     private:
         size_t fTrackingAnchor_Row;
@@ -1485,7 +1485,7 @@ namespace Stroika::Frameworks::Led {
 
     private:
         TWIPS        fBorderWidth;
-        Led_Color    fBorderColor;
+        Color        fBorderColor;
         DistanceType fTotalWidth;
         DistanceType fTotalHeight;
 
@@ -1538,8 +1538,8 @@ namespace Stroika::Frameworks::Led {
         nonvirtual WordProcessor::ParagraphDatabasePtr GetParagraphDatabase () const;
         nonvirtual WordProcessor::HidableTextDatabasePtr GetHidableTextDatabase () const;
 
-        nonvirtual Led_Color GetBackColor () const;
-        nonvirtual void      SetBackColor (Led_Color c);
+        nonvirtual Color GetBackColor () const;
+        nonvirtual void  SetBackColor (Color c);
 
         nonvirtual TWIPS GetCellXWidth () const;
         nonvirtual void  SetCellXWidth (TWIPS width);
@@ -1574,7 +1574,7 @@ namespace Stroika::Frameworks::Led {
         StandardStyledTextImager::StyleDatabasePtr fStyleDatabase;
         WordProcessor::ParagraphDatabasePtr        fParagraphDatabase;
         WordProcessor::HidableTextDatabasePtr      fHidableTextDatabase;
-        Led_Color                                  fBackColor;
+        Color                                      fBackColor;
         Led_Rect                                   fCachedBoundsRect;
         TWIPS                                      fCellXWidth;
     };
@@ -1893,19 +1893,19 @@ namespace Stroika::Frameworks::Led {
     class WordProcessor::DialogSupport {
     public:
         using CommandNumber     = TextInteractor::CommandNumber;
-        using FontNameSpecifier = Led_FontSpecification::FontNameSpecifier;
+        using FontNameSpecifier = FontSpecification::FontNameSpecifier;
 
     public:
         virtual FontNameSpecifier CmdNumToFontName (CommandNumber cmdNum);
         virtual bool              IsPredefinedFontSize (DistanceType fontSize); // return true iff the arg fontSize is one of the predefined ones from the menu
         virtual DistanceType      FontCmdToSize (CommandNumber commandNum);
         virtual DistanceType      PickOtherFontHeight (DistanceType origHeight); // display UI (dialog box) and query user for new height)
-        virtual bool              PickNewParagraphLineSpacing (TWIPS* spaceBefore, bool* spaceBeforeValid, TWIPS* spaceAfter, bool* spaceAfterValid, Led_LineSpacing* lineSpacing, bool* lineSpacingValid);
+        virtual bool              PickNewParagraphLineSpacing (TWIPS* spaceBefore, bool* spaceBeforeValid, TWIPS* spaceAfter, bool* spaceAfterValid, LineSpacing* lineSpacing, bool* lineSpacingValid);
         virtual bool              PickNewParagraphMarginsAndFirstIndent (TWIPS* leftMargin, bool* leftMarginValid, TWIPS* rightMargin, bool* rightMarginValid, TWIPS* firstIndent, bool* firstIndentValid);
-        virtual Led_Color         FontCmdToColor (CommandNumber cmd);
-        virtual CommandNumber     FontColorToCmd (Led_Color color);
-        virtual bool              PickOtherFontColor (Led_Color* color);
-        virtual bool              ChooseFont (Led_IncrementalFontSpecification* font); // display UI (e.g. CFontDialog) to pick a new font/color
+        virtual Color             FontCmdToColor (CommandNumber cmd);
+        virtual CommandNumber     FontColorToCmd (Color color);
+        virtual bool              PickOtherFontColor (Color* color);
+        virtual bool              ChooseFont (IncrementalFontSpecification* font); // display UI (e.g. CFontDialog) to pick a new font/color
         virtual void              ShowSimpleEmbeddingInfoDialog (const Led_SDK_String& embeddingTypeName);
         virtual bool              ShowURLEmbeddingInfoDialog (const Led_SDK_String& embeddingTypeName, Led_SDK_String* urlTitle, Led_SDK_String* urlValue);
         virtual bool              ShowAddURLEmbeddingInfoDialog (Led_SDK_String* urlTitle, Led_SDK_String* urlValue);
@@ -1926,8 +1926,8 @@ namespace Stroika::Frameworks::Led {
     struct WordProcessor::DialogSupport::TableSelectionPropertiesInfo {
         TableSelectionPropertiesInfo ();
 
-        TWIPS     fTableBorderWidth;
-        Led_Color fTableBorderColor;
+        TWIPS fTableBorderWidth;
+        Color fTableBorderColor;
 
         TWIPS_Rect fDefaultCellMargins;
         TWIPS      fCellSpacing;
@@ -1935,8 +1935,8 @@ namespace Stroika::Frameworks::Led {
         bool  fCellWidth_Common;
         TWIPS fCellWidth;
 
-        bool      fCellBackgroundColor_Common;
-        Led_Color fCellBackgroundColor;
+        bool  fCellBackgroundColor_Common;
+        Color fCellBackgroundColor;
     };
 
     /*

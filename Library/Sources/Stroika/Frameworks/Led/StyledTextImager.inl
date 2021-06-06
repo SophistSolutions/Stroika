@@ -42,7 +42,7 @@ namespace Stroika::Frameworks::Led {
     {
     }
     template <class BASECLASS>
-    Led_FontSpecification SimpleStyleMarkerByFontSpec<BASECLASS>::MakeFontSpec (const StyledTextImager* imager, const RunElement& /*runElement*/) const
+    FontSpecification SimpleStyleMarkerByFontSpec<BASECLASS>::MakeFontSpec (const StyledTextImager* imager, const RunElement& /*runElement*/) const
     {
         RequireNotNull (imager);
         return imager->GetDefaultFont ();
@@ -78,21 +78,21 @@ namespace Stroika::Frameworks::Led {
 
     // class SimpleStyleMarkerByIncrementalFontSpec<BASECLASS>
     template <class BASECLASS>
-    inline SimpleStyleMarkerByIncrementalFontSpec<BASECLASS>::SimpleStyleMarkerByIncrementalFontSpec (const Led_IncrementalFontSpecification& styleInfo)
+    inline SimpleStyleMarkerByIncrementalFontSpec<BASECLASS>::SimpleStyleMarkerByIncrementalFontSpec (const IncrementalFontSpecification& styleInfo)
         : fFontSpecification (styleInfo)
     {
     }
     template <class BASECLASS>
-    Led_FontSpecification SimpleStyleMarkerByIncrementalFontSpec<BASECLASS>::MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const
+    FontSpecification SimpleStyleMarkerByIncrementalFontSpec<BASECLASS>::MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const
     {
         RequireNotNull (imager);
-        Led_FontSpecification fsp = inherited::MakeFontSpec (imager, runElement);
+        FontSpecification fsp = inherited::MakeFontSpec (imager, runElement);
         fsp.MergeIn (fFontSpecification);
         return fsp;
     }
 
     // class TrivialFontSpecStyleMarker
-    inline TrivialFontSpecStyleMarker::TrivialFontSpecStyleMarker (const Led_IncrementalFontSpecification& styleInfo)
+    inline TrivialFontSpecStyleMarker::TrivialFontSpecStyleMarker (const IncrementalFontSpecification& styleInfo)
         : inherited (styleInfo)
     {
     }
@@ -183,13 +183,13 @@ namespace Stroika::Frameworks::Led {
                                                                     size_t /*from*/, size_t /*to*/, const TextLayoutBlock& /*text*/, const Led_Rect& drawInto,
                                                                     Coordinate useBaseLine, DistanceType pixelsDrawn)
     {
-        Led_Color lightColor = Led_Color::kWhite / 2 + GetUnderlineBaseColor () / 2; // (white - baseColor)/2 + baseColor, but careful to avoid int overflow...
+        Color lightColor = Color::kWhite / 2 + GetUnderlineBaseColor () / 2; // (white - baseColor)/2 + baseColor, but careful to avoid int overflow...
 #if qPlatform_Windows
-        Led_Pen pen (PS_DOT, 1, lightColor.GetOSRep ());
+        Pen pen (PS_DOT, 1, lightColor.GetOSRep ());
 #elif qPlatform_MacOS
-        Led_Pen pen (patCopy, &Led_Pen::kGrayPattern, lightColor);
+        Pen pen (patCopy, &Pen::kGrayPattern, lightColor);
 #elif qStroika_FeatureSupported_XWindows
-        Led_Pen pen;
+        Pen pen;
 #endif
         Led_GDI_Obj_Selector penWrapper (tablet, pen);
         Coordinate           underlineAt = useBaseLine;
@@ -200,9 +200,9 @@ namespace Stroika::Frameworks::Led {
         tablet->LineTo (Led_Point (underlineAt, drawInto.left + pixelsDrawn));
     }
     template <typename BASECLASS>
-    Led_Color SimpleStyleMarkerWithLightUnderline<BASECLASS>::GetUnderlineBaseColor () const
+    Color SimpleStyleMarkerWithLightUnderline<BASECLASS>::GetUnderlineBaseColor () const
     {
-        return Led_Color::kBlack;
+        return Color::kBlack;
     }
 
 }

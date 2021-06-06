@@ -37,21 +37,21 @@ void TrivialRGBSyntaxAnalyzer::AddMarkers (TextStore* ts, TextInteractor* /*inte
     for (size_t i = 0; i < len; ++i) {
         Led_tChar c = buf[i];
         if (c == 'r' or c == 'R') {
-            Marker* m = new ColoredStyleMarker (Led_Color::kRed);
+            Marker* m = new ColoredStyleMarker (Color::kRed);
             ts->AddMarker (m, i + lookBackStart, 1, owner);
             if (appendNewMarkersToList != NULL) {
                 appendNewMarkersToList->push_back (m);
             }
         }
         if (c == 'g' or c == 'G') {
-            Marker* m = new ColoredStyleMarker (Led_Color::kGreen);
+            Marker* m = new ColoredStyleMarker (Color::kGreen);
             ts->AddMarker (m, i + lookBackStart, 1, owner);
             if (appendNewMarkersToList != NULL) {
                 appendNewMarkersToList->push_back (m);
             }
         }
         if (c == 'b' or c == 'B') {
-            Marker* m = new ColoredStyleMarker (Led_Color::kBlue);
+            Marker* m = new ColoredStyleMarker (Color::kBlue);
             ts->AddMarker (m, i + lookBackStart, 1, owner);
             if (appendNewMarkersToList != NULL) {
                 appendNewMarkersToList->push_back (m);
@@ -430,7 +430,7 @@ void TableDrivenKeywordSyntaxAnalyzer::AddMarkers (TextStore* ts, TextInteractor
                 }
             }
 
-            Marker* m = new ColoredStyleMarker (Led_Color::kBlue);
+            Marker* m = new ColoredStyleMarker (Color::kBlue);
             ts->AddMarker (m, i + lookBackStart, kwl, owner);
             // could be far more efficient, and keep markers in sorted order, but this is easier
             if (appendNewMarkersToList != NULL) {
@@ -681,10 +681,10 @@ void WindowedSyntaxColoringMarkerOwner::RecheckRange (size_t updateFrom, size_t 
  ******************************** ColoredStyleMarker ****************************
  ********************************************************************************
  */
-Led_FontSpecification ColoredStyleMarker::MakeFontSpec (const StyledTextImager* imager, const RunElement& /*runElement*/) const
+FontSpecification ColoredStyleMarker::MakeFontSpec (const StyledTextImager* imager, const RunElement& /*runElement*/) const
 {
     RequireNotNull (imager);
-    Led_FontSpecification fsp = imager->GetDefaultFont ();
+    FontSpecification fsp = imager->GetDefaultFont ();
     fsp.SetTextColor (fColor);
     return fsp;
 }

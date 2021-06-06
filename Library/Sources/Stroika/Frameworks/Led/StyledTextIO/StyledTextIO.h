@@ -218,7 +218,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
             of API is defined cuz some format readers give us a bunch of text at once, and then later (elsewhere) store the style
             information. And still others provide them together, hand-in-hand.</p>
         */
-        virtual void AppendText (const Led_tChar* text, size_t nTChars, const Led_FontSpecification* fontSpec) = 0;
+        virtual void AppendText (const Led_tChar* text, size_t nTChars, const FontSpecification* fontSpec) = 0;
 
     public:
         /*
@@ -232,7 +232,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         @METHOD:        StyledTextIOReader::SinkStream::GetDefaultFontSpec
         @DESCRIPTION:
         */
-        virtual Led_FontSpecification GetDefaultFontSpec () const = 0;
+        virtual FontSpecification GetDefaultFontSpec () const = 0;
 
     public:
         /*
@@ -271,23 +271,23 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         virtual void InsertMarker (Marker* m, size_t at, size_t length, MarkerOwner* markerOwner) = 0;
 
     public:
-        virtual void SetJustification (Led_Justification justification);
+        virtual void SetJustification (Justification justification);
         virtual void SetStandardTabStopList (const TextImager::StandardTabStopList& tabStops);
         virtual void SetFirstIndent (TWIPS tx);
         virtual void SetLeftMargin (TWIPS lhs);
         virtual void SetRightMargin (TWIPS rhs);
         virtual void SetSpaceBefore (TWIPS sb);
         virtual void SetSpaceAfter (TWIPS sa);
-        virtual void SetLineSpacing (Led_LineSpacing sl);
+        virtual void SetLineSpacing (LineSpacing sl);
         virtual void SetTextHidden (bool hidden);
         virtual void SetListStyle (ListStyle listStyle);
         virtual void SetListIndentLevel (unsigned char indentLevel);
 
     public:
-        virtual void SetTableBorderColor (Led_Color c);
+        virtual void SetTableBorderColor (Color c);
         virtual void SetTableBorderWidth (TWIPS bWidth);
         virtual void SetCellWidths (const vector<TWIPS>& cellWidths);
-        virtual void SetCellBackColor (const Led_Color c);
+        virtual void SetCellBackColor (const Color c);
         virtual void SetDefaultCellMarginsForCurrentRow (TWIPS top, TWIPS left, TWIPS bottom, TWIPS right);
         virtual void SetDefaultCellSpacingForCurrentRow (TWIPS top, TWIPS left, TWIPS bottom, TWIPS right);
 
@@ -428,7 +428,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         @DESCRIPTION:   <p>Produce a list of all fontnames and colors used in the document. This is needed for some formats
                     like RTF which require a list of all font names and colors before writing any of the rest of the document.</p>
         */
-        virtual void SummarizeFontAndColorTable (set<Led_SDK_String>* fontNames, set<Led_Color>* colorsUsed) const = 0;
+        virtual void SummarizeFontAndColorTable (set<Led_SDK_String>* fontNames, set<Color>* colorsUsed) const = 0;
 
     public:
         /*
@@ -439,13 +439,13 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         virtual size_t GetEmbeddingMarkerPosOffset () const = 0;
 
     public:
-        virtual Led_Justification      GetJustification () const;
+        virtual Justification          GetJustification () const;
         virtual StandardTabStopList    GetStandardTabStopList () const;
         virtual TWIPS                  GetFirstIndent () const;
         virtual void                   GetMargins (TWIPS* lhs, TWIPS* rhs) const;
         virtual TWIPS                  GetSpaceBefore () const;
         virtual TWIPS                  GetSpaceAfter () const;
-        virtual Led_LineSpacing        GetLineSpacing () const;
+        virtual LineSpacing            GetLineSpacing () const;
         virtual void                   GetListStyleInfo (ListStyle* listStyle, unsigned char* indentLevel) const;
         virtual Led_tChar              GetSoftLineBreakCharacter () const;
         virtual DiscontiguousRun<bool> GetHidableTextRuns () const;
@@ -462,8 +462,8 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     public:
         struct CellInfo {
             CellInfo ();
-            TWIPS     f_cellx;
-            Led_Color f_clcbpat; // cell background color
+            TWIPS f_cellx;
+            Color f_clcbpat; // cell background color
         };
 
     public:
@@ -991,7 +991,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     // class StyledTextIOWriter::SrcStream::Table::CellInfo
     inline StyledTextIOWriter::SrcStream::Table::CellInfo::CellInfo ()
         : f_cellx (TWIPS (0))
-        , f_clcbpat (Led_Color::kWhite)
+        , f_clcbpat (Color::kWhite)
     {
     }
 

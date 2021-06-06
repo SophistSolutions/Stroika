@@ -41,8 +41,8 @@ namespace Stroika::Frameworks::Led {
          *  Must combine behaviors of different mixins.
          */
     public:
-        virtual void    SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont) override;
-        nonvirtual void SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont, UpdateMode updateMode);
+        virtual void    SetDefaultFont (const IncrementalFontSpecification& defaultFont) override;
+        nonvirtual void SetDefaultFont (const IncrementalFontSpecification& defaultFont, UpdateMode updateMode);
         virtual void    SetTopRowInWindow (size_t newTopRow) override;
         nonvirtual void SetTopRowInWindow (size_t newTopRow, UpdateMode updateMode);
         virtual void    SetTopRowInWindow (RowReference row) override;

@@ -79,10 +79,10 @@ namespace {
         }
     }
 
-    // RTF / Led_LineSpacing support
-    inline static Led_LineSpacing mkLineSpacing_From_RTFValues_ (Coordinate sl, bool multi)
+    // RTF / LineSpacing support
+    inline static LineSpacing mkLineSpacing_From_RTFValues_ (Coordinate sl, bool multi)
     {
-        Led_LineSpacing result; // defaults to single line...
+        LineSpacing result; // defaults to single line...
         if (sl != 1000) {
             if (multi) {
                 /*
@@ -94,46 +94,46 @@ namespace {
                 if (sl < 0 or sl > 2000) {
                     sl = 240; // will work out to single line - don't let bogus values in the RTF file make trouble for us...
                 }
-                result = Led_LineSpacing (Led_LineSpacing::eExactLinesSpacing, sl / 12);
+                result = LineSpacing (LineSpacing::eExactLinesSpacing, sl / 12);
             }
             else {
                 if (sl < 0) {
-                    result = Led_LineSpacing (Led_LineSpacing::eExactTWIPSSpacing, TWIPS (-sl));
+                    result = LineSpacing (LineSpacing::eExactTWIPSSpacing, TWIPS (-sl));
                 }
                 else {
-                    result = Led_LineSpacing (Led_LineSpacing::eAtLeastTWIPSSpacing, TWIPS (sl));
+                    result = LineSpacing (LineSpacing::eAtLeastTWIPSSpacing, TWIPS (sl));
                 }
             }
         }
         return result;
     }
-    inline static void mkRTFValues_From_LineSpacing (Led_LineSpacing inLS, Coordinate* sl, bool* multi)
+    inline static void mkRTFValues_From_LineSpacing (LineSpacing inLS, Coordinate* sl, bool* multi)
     {
         const int kOneLinesWorth = 240;
         switch (inLS.fRule) {
-            case Led_LineSpacing::eOnePointFiveSpace:
+            case LineSpacing::eOnePointFiveSpace:
                 *sl    = static_cast<Coordinate> (kOneLinesWorth * 1.5);
                 *multi = true;
                 break;
-            case Led_LineSpacing::eDoubleSpace:
+            case LineSpacing::eDoubleSpace:
                 *sl    = kOneLinesWorth * 2;
                 *multi = true;
                 break;
-            case Led_LineSpacing::eAtLeastTWIPSSpacing:
+            case LineSpacing::eAtLeastTWIPSSpacing:
                 *sl    = inLS.fArg;
                 *multi = false;
                 break;
-            case Led_LineSpacing::eExactTWIPSSpacing:
+            case LineSpacing::eExactTWIPSSpacing:
                 *sl    = -static_cast<Coordinate> (inLS.fArg);
                 *multi = false;
                 break;
-            case Led_LineSpacing::eExactLinesSpacing:
+            case LineSpacing::eExactLinesSpacing:
                 *sl    = inLS.fArg * 12;
                 *multi = true;
                 break;
 
             default: // Treat as Single space
-            case Led_LineSpacing::eSingleSpace:
+            case LineSpacing::eSingleSpace:
                 *sl    = 1000;
                 *multi = true;
                 break;
@@ -218,14 +218,14 @@ FontTable::FontTable (const vector<FontTableEntry>& fontTable)
 {
 }
 
-Led_IncrementalFontSpecification FontTable::GetFontSpec (int fontNumber)
+IncrementalFontSpecification FontTable::GetFontSpec (int fontNumber)
 {
     const FontTableEntry* ftep = LookupEntryByNumber (fontNumber);
     if (ftep == nullptr) {
-        return Led_IncrementalFontSpecification (); // See spr#0696 0 some docs leave bad \font#s - so don't blow up - just no font spec!
+        return IncrementalFontSpecification (); // See spr#0696 0 some docs leave bad \font#s - so don't blow up - just no font spec!
     }
-    const FontTableEntry&            fte = *ftep;
-    Led_IncrementalFontSpecification fontSpec;
+    const FontTableEntry&        fte = *ftep;
+    IncrementalFontSpecification fontSpec;
 #if qPlatform_MacOS
     Str255 fontName;
     fontName[0] = fte.fFontName.length ();
@@ -340,12 +340,12 @@ RTFIO::ColorTable::ColorTable ()
 {
 }
 
-RTFIO::ColorTable::ColorTable (const vector<Led_Color>& colorTable)
+RTFIO::ColorTable::ColorTable (const vector<Color>& colorTable)
     : fEntries (colorTable)
 {
 }
 
-Led_Color RTFIO::ColorTable::LookupColor (size_t colorNumber) const
+Color RTFIO::ColorTable::LookupColor (size_t colorNumber) const
 {
     if (colorNumber < 0 or colorNumber >= fEntries.size ()) {
         Led_ThrowBadFormatDataException (); // font number not found!
@@ -353,10 +353,10 @@ Led_Color RTFIO::ColorTable::LookupColor (size_t colorNumber) const
     return fEntries[colorNumber];
 }
 
-size_t RTFIO::ColorTable::LookupColor (const Led_Color& color) const
+size_t RTFIO::ColorTable::LookupColor (const Color& color) const
 {
     for (size_t i = 0; i < fEntries.size (); i++) {
-        const Led_Color& c = fEntries[i];
+        const Color& c = fEntries[i];
         if (c == color) {
             return i;
         }
@@ -365,10 +365,10 @@ size_t RTFIO::ColorTable::LookupColor (const Led_Color& color) const
     return 0;
 }
 
-size_t RTFIO::ColorTable::EnterColor (const Led_Color& color)
+size_t RTFIO::ColorTable::EnterColor (const Color& color)
 {
     for (size_t i = 0; i < fEntries.size (); i++) {
-        const Led_Color& c = fEntries[i];
+        const Color& c = fEntries[i];
         if (c == color) {
             return i;
         }
@@ -762,7 +762,7 @@ void SinkStreamDestination::EndParagraph ()
     fParaEndedFlag = true;
 }
 
-void SinkStreamDestination::UseFont (const Led_IncrementalFontSpecification& fontSpec)
+void SinkStreamDestination::UseFont (const IncrementalFontSpecification& fontSpec)
 {
     AboutToChange ();
     if (fCurrentContext.fFontSpec != fontSpec) {
@@ -771,7 +771,7 @@ void SinkStreamDestination::UseFont (const Led_IncrementalFontSpecification& fon
     }
 }
 
-void SinkStreamDestination::SetJustification (Led_Justification justification)
+void SinkStreamDestination::SetJustification (Justification justification)
 {
     AboutToChange ();
     if (fCurrentContext.fJustification != justification) {
@@ -933,7 +933,7 @@ void SinkStreamDestination::SetListIndentLevel (unsigned char indentLevel)
     }
 }
 
-void SinkStreamDestination::SetTableBorderColor (Led_Color c)
+void SinkStreamDestination::SetTableBorderColor (Color c)
 {
     AboutToChange ();
     Flush ();
@@ -962,7 +962,7 @@ void SinkStreamDestination::SetCellX (TWIPS cellx)
     fNextCellInfo = CellInfo (); // clear out to default values
 }
 
-void SinkStreamDestination::SetCellBackColor (const Led_Color& c)
+void SinkStreamDestination::SetCellBackColor (const Color& c)
 {
     AboutToChange ();
     fNextCellInfo.f_clcbpat = c;
@@ -1094,7 +1094,7 @@ void SinkStreamDestination::Flush ()
 {
     FlushParaEndings ();
     if (fTCharsInSmallBuffer != 0) {
-        Led_FontSpecification fsp = fSinkStream.GetDefaultFontSpec ();
+        FontSpecification fsp = fSinkStream.GetDefaultFontSpec ();
         fsp.MergeIn (fCurrentContext.fFontSpec);
         fSinkStream.AppendText (fSmallBuffer, fTCharsInSmallBuffer, &fsp);
         fTCharsInSmallBuffer = 0;
@@ -1197,7 +1197,7 @@ void SinkStreamDestination::AppendText_ (const Led_tChar* text, size_t nTChars)
         }
         else {
             // doesn't fit in our buffer, so write it directly...
-            Led_FontSpecification fsp = fSinkStream.GetDefaultFontSpec ();
+            FontSpecification fsp = fSinkStream.GetDefaultFontSpec ();
             fsp.MergeIn (fCurrentContext.fFontSpec);
             fSinkStream.AppendText (text, nTChars, &fsp);
         }
@@ -1243,7 +1243,7 @@ void SinkStreamDestination::FlushParaEndings () const
  */
 SinkStreamDestination::CellInfo::CellInfo ()
     : f_cellx (TWIPS (0))
-    , f_clcbpat (Led_Color::kWhite)
+    , f_clcbpat (Color::kWhite)
     , fColSpan (1)
 {
 }
@@ -2069,9 +2069,9 @@ bool StyledTextIOReader_RTF::HandleControlWord_colortbl (ReaderContext& readerCo
         }
     }
 
-    vector<Led_Color> colorTable;
+    vector<Color> colorTable;
     while (true) {
-        Led_Color curColor = Led_Color::kBlack;
+        Color curColor = Color::kBlack;
 
     // Read \\redN
     ReadRed:
@@ -2091,7 +2091,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_colortbl (ReaderContext& readerCo
                         HandleBadlyFormattedInput ();
                     }
                     else {
-                        curColor = Led_Color (static_cast<Led_Color::ColorValue> (unsigned (cword.fValue) << 8), 0, 0);
+                        curColor = Color (static_cast<Color::ColorValue> (unsigned (cword.fValue) << 8), 0, 0);
                     }
                 }
                 else {
@@ -2123,7 +2123,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_colortbl (ReaderContext& readerCo
                         HandleBadlyFormattedInput ();
                     }
                     else {
-                        curColor = Led_Color (curColor.GetRed (), static_cast<Led_Color::ColorValue> (unsigned (cword.fValue) << 8), 0);
+                        curColor = Color (curColor.GetRed (), static_cast<Color::ColorValue> (unsigned (cword.fValue) << 8), 0);
                     }
                 }
                 else {
@@ -2155,7 +2155,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_colortbl (ReaderContext& readerCo
                         HandleBadlyFormattedInput ();
                     }
                     else {
-                        curColor = Led_Color (curColor.GetRed (), curColor.GetGreen (), static_cast<Led_Color::ColorValue> (unsigned (cword.fValue) << 8));
+                        curColor = Color (curColor.GetRed (), curColor.GetGreen (), static_cast<Color::ColorValue> (unsigned (cword.fValue) << 8));
                     }
                 }
                 else {
@@ -3267,16 +3267,16 @@ void StyledTextIOReader_RTF::AboutToStartBody (ReaderContext& readerContext)
     if (readerContext.fDefaultFontNumber != size_t (-1)) {
         // Set the initial font of our destination to this font spec.
         RequireNotNull (readerContext.GetCurrentGroupContext ());
-        Led_IncrementalFontSpecification fontSpec = readerContext.GetCurrentGroupContext ()->fDestinationContext.fFontSpec;
+        IncrementalFontSpecification fontSpec = readerContext.GetCurrentGroupContext ()->fDestinationContext.fFontSpec;
 
         // We probably SHOULD do a Led_ThrowBadFormatDataException () here, but on pastes from MS Word 5.1, this sometimes happens
         // with no font-table. Go figure!
         if (readerContext.fFontTable != nullptr) {
-            Led_IncrementalFontSpecification a = readerContext.fFontTable->GetFontSpec (readerContext.fDefaultFontNumber);
+            IncrementalFontSpecification a = readerContext.fFontTable->GetFontSpec (readerContext.fDefaultFontNumber);
             if (a.GetFontNameSpecifier_Valid ()) {
                 fontSpec.SetFontNameSpecifier (a.GetFontNameSpecifier ());
 
-                Led_FontSpecification newPlain = GetPlainFont ();
+                FontSpecification newPlain = GetPlainFont ();
                 newPlain.SetFontNameSpecifier (a.GetFontNameSpecifier ());
                 SetPlainFont (newPlain);
             }
@@ -3722,7 +3722,7 @@ Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromEMFHelper (TWIPS_Point shownSiz
         // Erase the background of the image
         {
             Led_Rect             eraser     = imageRect;
-            Led_Color            eraseColor = Led_GetTextBackgroundColor ();
+            Color                eraseColor = Led_GetTextBackgroundColor ();
             Brush                backgroundBrush (eraseColor.GetOSRep ());
             Led_Win_Obj_Selector pen (&memDC, ::GetStockObject (NULL_PEN));
             Led_Win_Obj_Selector brush (&memDC, backgroundBrush);
@@ -3785,7 +3785,7 @@ void StyledTextIOReader_RTF::ApplyFontSpec (ReaderContext& readerContext, const 
     if (readerContext.GetCurrentGroupContext () == nullptr) {
         HandleBadlyFormattedInput (true); // cannot set font name without a current group!
     }
-    Led_IncrementalFontSpecification fontSpec = readerContext.GetCurrentGroupContext ()->fDestinationContext.fFontSpec;
+    IncrementalFontSpecification fontSpec = readerContext.GetCurrentGroupContext ()->fDestinationContext.fFontSpec;
 
     switch (cw.fWord) {
         case RTFIO::eControlAtom_plain: {
@@ -3811,7 +3811,7 @@ void StyledTextIOReader_RTF::ApplyFontSpec (ReaderContext& readerContext, const 
             if (not cw.fHasArg) {
                 HandleBadlyFormattedInput (true); // must have a numeric font-number argument
             }
-            Led_IncrementalFontSpecification a = readerContext.fFontTable->GetFontSpec (cw.fValue);
+            IncrementalFontSpecification a = readerContext.fFontTable->GetFontSpec (cw.fValue);
             if (a.GetFontNameSpecifier_Valid ()) {
                 fontSpec.SetFontNameSpecifier (a.GetFontNameSpecifier ());
             }
@@ -3852,9 +3852,9 @@ void StyledTextIOReader_RTF::ApplyFontSpec (ReaderContext& readerContext, const 
                 break;
             }
 #endif
-            fontSpec.SetPointSize (static_cast<Led_FontSpecification::FontSize> (newSize)); //pinned above 4..128
+            fontSpec.SetPointSize (static_cast<FontSpecification::FontSize> (newSize)); //pinned above 4..128
 #if qPlatform_Windows
-            fCachedFontSize         = static_cast<Led_FontSpecification::FontSize> (newSize);
+            fCachedFontSize         = static_cast<FontSpecification::FontSize> (newSize);
             fCachedFontSizeTMHeight = fontSpec.PeekAtTMHeight ();
 #endif
         } break;
@@ -3893,10 +3893,10 @@ void StyledTextIOReader_RTF::ApplyFontSpec (ReaderContext& readerContext, const 
         } break;
 #endif
         case RTFIO::eControlAtom_sub: {
-            fontSpec.SetStyle_SubOrSuperScript (Led_FontSpecification::eSubscript);
+            fontSpec.SetStyle_SubOrSuperScript (FontSpecification::eSubscript);
         } break;
         case RTFIO::eControlAtom_super: {
-            fontSpec.SetStyle_SubOrSuperScript (Led_FontSpecification::eSuperscript);
+            fontSpec.SetStyle_SubOrSuperScript (FontSpecification::eSuperscript);
         } break;
         case RTFIO::eControlAtom_strike: {
             bool turnStyleOn = true; // no arg means ON
@@ -4243,7 +4243,7 @@ void StyledTextIOWriter_RTF::WriteBody (WriterContext& writerContext)
     AssureStyleRunSummaryBuilt (writerContext);
 
     WriteStartParagraph (writerContext);
-    writerContext.fLastEmittedISR    = StandardStyledTextImager::InfoSummaryRecord (Led_IncrementalFontSpecification (), 0);
+    writerContext.fLastEmittedISR    = StandardStyledTextImager::InfoSummaryRecord (IncrementalFontSpecification (), 0);
     writerContext.fNextStyleChangeAt = 0;
     writerContext.fIthStyleRun       = 0;
     if (not fHidableTextRuns.empty ()) {
@@ -4489,8 +4489,8 @@ void StyledTextIOWriter_RTF::WriteStartParagraph (WriterContext& writerContext)
         }
     }
     {
-        Led_LineSpacing sl = writerContext.GetSrcStream ().GetLineSpacing ();
-        if (sl.fRule != Led_LineSpacing::eSingleSpace) {
+        LineSpacing sl = writerContext.GetSrcStream ().GetLineSpacing ();
+        if (sl.fRule != LineSpacing::eSingleSpace) {
             Coordinate rtfsl = 1000;
             bool       multi = true;
             mkRTFValues_From_LineSpacing (sl, &rtfsl, &multi);
@@ -4986,8 +4986,8 @@ void StyledTextIOWriter_RTF::WriteColorTable (WriterContext& writerContext)
 
     size_t entryCount = fColorTable->fEntries.size ();
     for (size_t i = 0; i < entryCount; i++) {
-        Led_Color c = fColorTable->LookupColor (i);
-        char      buf[1024];
+        Color c = fColorTable->LookupColor (i);
+        char  buf[1024];
         (void)snprintf (buf, NEltsOf (buf), "\\red%d\\green%d\\blue%d;", c.GetRed () >> 8, c.GetGreen () >> 8, c.GetBlue () >> 8);
         write (buf);
     }
@@ -5071,7 +5071,7 @@ void StyledTextIOWriter_RTF::WriteGenerator ()
     write ("}");
 }
 
-void StyledTextIOWriter_RTF::EmitBodyFontInfoChange (WriterContext& writerContext, const Led_FontSpecification& newOne)
+void StyledTextIOWriter_RTF::EmitBodyFontInfoChange (WriterContext& writerContext, const FontSpecification& newOne)
 {
     RequireNotNull (fFontTable);
 
@@ -5103,10 +5103,10 @@ void StyledTextIOWriter_RTF::EmitBodyFontInfoChange (WriterContext& writerContex
         WriteTag ("ul");
     }
     switch (newOne.GetStyle_SubOrSuperScript ()) {
-        case Led_FontSpecification::eSubscript:
+        case FontSpecification::eSubscript:
             WriteTag ("sub");
             break;
-        case Led_FontSpecification::eSuperscript:
+        case FontSpecification::eSuperscript:
             WriteTag ("super");
             break;
     }
@@ -5119,7 +5119,7 @@ void StyledTextIOWriter_RTF::EmitBodyFontInfoChange (WriterContext& writerContex
     WriteTagNValue ("cf", static_cast<int> (fColorTable->LookupColor (newOne.GetTextColor ())));
 }
 
-void StyledTextIOWriter_RTF::EmitBodyFontInfoChange (WriterContext& writerContext, const Led_FontSpecification& newOne, const Led_FontSpecification& /*oldOne*/)
+void StyledTextIOWriter_RTF::EmitBodyFontInfoChange (WriterContext& writerContext, const FontSpecification& newOne, const FontSpecification& /*oldOne*/)
 {
     // lets be simplistic to start with...
     EmitBodyFontInfoChange (writerContext, newOne);
@@ -5129,9 +5129,9 @@ void StyledTextIOWriter_RTF::AssureColorTableBuilt (WriterContext& writerContext
 {
     if (fColorTable == nullptr) {
         fColorTable = new RTFIO::ColorTable ();
-        set<Led_Color> colorsUsed;
+        set<Color> colorsUsed;
         writerContext.GetSrcStream ().SummarizeFontAndColorTable (nullptr, &colorsUsed);
-        for (set<Led_Color>::const_iterator i = colorsUsed.begin (); i != colorsUsed.end (); i++) {
+        for (set<Color>::const_iterator i = colorsUsed.begin (); i != colorsUsed.end (); i++) {
             (void)fColorTable->EnterColor (*i);
         }
     }
@@ -5156,7 +5156,7 @@ void StyledTextIOWriter_RTF::AssureFontTableBuilt (WriterContext& writerContext)
         set<Led_SDK_String> fontNames;
         writerContext.GetSrcStream ().SummarizeFontAndColorTable (&fontNames, nullptr);
 #if qPlatform_Windows
-        Led_WindowDC screenDC (nullptr);
+        WindowDC screenDC (nullptr);
 #endif
         for (set<Led_SDK_String>::const_iterator i = fontNames.begin (); i != fontNames.end (); i++) {
             const Led_SDK_String& name = *i;

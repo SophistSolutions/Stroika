@@ -62,8 +62,8 @@ public:
 #endif
 
 public:
-    nonvirtual Led_FontSpecification GetDefaultNewDocFont () const;
-    nonvirtual void                  SetDefaultNewDocFont (const Led_FontSpecification& defaultNewDocFont);
+    nonvirtual FontSpecification GetDefaultNewDocFont () const;
+    nonvirtual void              SetDefaultNewDocFont (const FontSpecification& defaultNewDocFont);
 };
 
 /*

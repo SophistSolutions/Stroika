@@ -78,7 +78,7 @@ void FormatToolbar::OnUpdateCmdUI (CFrameWnd* pTarget, BOOL bDisableIfNoHndler)
 
 void FormatToolbar::SyncToView ()
 {
-    Led_IncrementalFontSpecification fsp = fOwner.GetCurFont ();
+    IncrementalFontSpecification fsp = fOwner.GetCurFont ();
     if (fsp.GetFontNameSpecifier_Valid ()) {
         m_comboFontName.MatchFont (fsp.GetFontName ().c_str ());
     }
@@ -146,8 +146,8 @@ void FormatToolbar::OnFontNameKillFocus ()
 
     // if font name box is not empty
     if (not str.IsEmpty ()) {
-        Led_IncrementalFontSpecification fsp;
-        int                              nIndex = m_comboFontName.FindStringExact (-1, str);
+        IncrementalFontSpecification fsp;
+        int                          nIndex = m_comboFontName.FindStringExact (-1, str);
         if (nIndex != CB_ERR) {
             CString name;
             m_comboFontName.GetLBText (nIndex, name);
@@ -185,8 +185,8 @@ void FormatToolbar::OnFontSizeKillFocus ()
         cf.yHeight = nSize;
         SetCharFormat(cf);
 #endif
-        Led_IncrementalFontSpecification fsp;
-        fsp.SetPointSize (static_cast<Led_IncrementalFontSpecification::FontSize> (nSize / 20));
+        IncrementalFontSpecification fsp;
+        fsp.SetPointSize (static_cast<IncrementalFontSpecification::FontSize> (nSize / 20));
         fOwner.SetCurFont (fsp);
     }
 }

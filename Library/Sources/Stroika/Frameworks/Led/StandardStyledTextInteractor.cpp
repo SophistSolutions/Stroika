@@ -28,12 +28,12 @@ const Led_ClipFormat Led::kLedPrivateClipFormat = 'LedP';
 const Led_ClipFormat Led::kRTFClipFormat        = 'RTF ';
 const Led_ClipFormat Led::kHTMLClipFormat       = 'HTML';
 #elif qPlatform_Windows
-const TCHAR          kLedPrivateClipTypeName[]  = _T ("Led Rich Text Format");
-const Led_ClipFormat Led::kLedPrivateClipFormat = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (kLedPrivateClipTypeName));
-const TCHAR          kRTFClipTypeName[]         = _T ("Rich Text Format");
-const Led_ClipFormat Led::kRTFClipFormat        = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (kRTFClipTypeName));
-const TCHAR          kHTMLClipTypeName[]        = _T ("HTML"); /// MAYBE A BAD NAME - SEE IF ANY WINDOWS STANDARD NAME???
-const Led_ClipFormat Led::kHTMLClipFormat       = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (kHTMLClipTypeName));
+const TCHAR                                kLedPrivateClipTypeName[]                   = _T ("Led Rich Text Format");
+const Led_ClipFormat                       Led::kLedPrivateClipFormat                  = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (kLedPrivateClipTypeName));
+const TCHAR                                kRTFClipTypeName[]                          = _T ("Rich Text Format");
+const Led_ClipFormat                       Led::kRTFClipFormat                         = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (kRTFClipTypeName));
+const TCHAR                                kHTMLClipTypeName[]                         = _T ("HTML"); /// MAYBE A BAD NAME - SEE IF ANY WINDOWS STANDARD NAME???
+const Led_ClipFormat                       Led::kHTMLClipFormat                        = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (kHTMLClipTypeName));
 #elif qStroika_FeatureSupported_XWindows
 // Toolkit-specific code (e.g. Led_Gtk<>) must reset these to good values. Cannot be constants
 // and cannot be filled in here, cuz we require a DISPLAY object to register the contants on.
@@ -111,13 +111,13 @@ void StandardStyledTextInteractor::HookGainedNewTextStore_ ()
                 <p>Note that this definition is significantly different than in Led 3.0. To get
             the Led 3.0 behavior, you should call InteractiveSetFont ()</p>
  */
-void StandardStyledTextInteractor::SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont)
+void StandardStyledTextInteractor::SetDefaultFont (const IncrementalFontSpecification& defaultFont)
 {
     size_t selStart = GetSelectionStart ();
     size_t selEnd   = GetSelectionEnd ();
     if (selStart == selEnd) {
-        size_t                selLength              = selEnd - selStart;
-        Led_FontSpecification newEmptySelectionStyle = fEmptySelectionStyle;
+        size_t            selLength              = selEnd - selStart;
+        FontSpecification newEmptySelectionStyle = fEmptySelectionStyle;
         newEmptySelectionStyle.MergeIn (defaultFont);
         SetStyleInfo (selStart, selLength, defaultFont);
         SetEmptySelectionStyle (newEmptySelectionStyle);
@@ -140,7 +140,7 @@ void StandardStyledTextInteractor::SetDefaultFont (const Led_IncrementalFontSpec
             (before Led 3.1a4) - but that is now obsolete. @'TextImager::SetDefaultFont' just sets a default font
             object associated with the imager, and that has little or no effect when used with this class.
  */
-void StandardStyledTextInteractor::InteractiveSetFont (const Led_IncrementalFontSpecification& defaultFont)
+void StandardStyledTextInteractor::InteractiveSetFont (const IncrementalFontSpecification& defaultFont)
 {
     InteractiveModeUpdater iuMode (*this);
     RequireNotNull (PeekAtTextStore ()); // Must specify TextStore before calling this, or any routine that calls it.
@@ -156,8 +156,8 @@ void StandardStyledTextInteractor::InteractiveSetFont (const Led_IncrementalFont
          *  Similarly, if there is no selection, SetEmptySelectionStyle () will take care of the notification
          *  of change.
          */
-        size_t                selLength              = undoContext.GetUndoRegionEnd () - undoContext.GetUndoRegionStart ();
-        Led_FontSpecification newEmptySelectionStyle = fEmptySelectionStyle;
+        size_t            selLength              = undoContext.GetUndoRegionEnd () - undoContext.GetUndoRegionStart ();
+        FontSpecification newEmptySelectionStyle = fEmptySelectionStyle;
         newEmptySelectionStyle.MergeIn (defaultFont);
         SetStyleInfo (undoContext.GetUndoRegionStart (), selLength, defaultFont);
         SetEmptySelectionStyle (newEmptySelectionStyle);
@@ -166,7 +166,7 @@ void StandardStyledTextInteractor::InteractiveSetFont (const Led_IncrementalFont
     undoContext.CommandComplete ();
 }
 
-Led_IncrementalFontSpecification StandardStyledTextInteractor::GetContinuousStyleInfo (size_t from, size_t nTChars) const
+IncrementalFontSpecification StandardStyledTextInteractor::GetContinuousStyleInfo (size_t from, size_t nTChars) const
 {
     if (nTChars == 0 and from == GetSelectionStart ()) {
         vector<InfoSummaryRecord> summaryInfo;
@@ -400,7 +400,7 @@ void StandardStyledTextInteractor::SetSelection_ ([[maybe_unused]] size_t start,
     in order to implement the usual semantics of a font / style menu.</p>
         <p>See @'StandardStyledTextInteractor::SetEmptySelectionStyle'.</p>
 */
-Led_FontSpecification StandardStyledTextInteractor::GetEmptySelectionStyle () const
+FontSpecification StandardStyledTextInteractor::GetEmptySelectionStyle () const
 {
     return fEmptySelectionStyle;
 }
@@ -431,14 +431,14 @@ void StandardStyledTextInteractor::SetEmptySelectionStyle ()
 
 /*
 @METHOD:        StandardStyledTextInteractor::SetEmptySelectionStyle
-@DESCRIPTION:   <p>Set the @'Led_FontSpecification' applied to newly typed text (or interactively entered text) at the current
+@DESCRIPTION:   <p>Set the @'FontSpecification' applied to newly typed text (or interactively entered text) at the current
     selection. This font defaults to the same as the surrounding text. But can be changed under user-control,
     in order to implement the usual semantics of a font / style menu.</p>
         <p>Note: if the selection is currently empty, this routine will make appropriate AboutToUpdate/DidUpdate calls to
     notifie anyone interested of the change (so - for example - the cached font metrics of text can change).</p>
         <p>See @'StandardStyledTextInteractor::GetEmptySelectionStyle'.</p>
 */
-void StandardStyledTextInteractor::SetEmptySelectionStyle (Led_FontSpecification newEmptyFontSpec)
+void StandardStyledTextInteractor::SetEmptySelectionStyle (FontSpecification newEmptyFontSpec)
 {
     if (fEmptySelectionStyle != newEmptyFontSpec) {
         /*
@@ -470,10 +470,10 @@ bool StandardStyledTextInteractor::InteractiveReplaceEarlyPostReplaceHook (size_
     if (withWhatCharCount == 1) {
         // If we just typed a single extra char - apply our fEmptySelectionStyle to that extra char typed. Return true iff
         // that caused a font-style change.
-        size_t                charAt    = FindPreviousCharacter (GetSelectionStart ()); // start of char we just added
-        Led_FontSpecification prevStyle = GetStyleInfo (charAt);
+        size_t            charAt    = FindPreviousCharacter (GetSelectionStart ()); // start of char we just added
+        FontSpecification prevStyle = GetStyleInfo (charAt);
         if (prevStyle != fEmptySelectionStyle) {
-            SetStyleInfo (charAt, withWhatCharCount, Led_IncrementalFontSpecification (fEmptySelectionStyle));
+            SetStyleInfo (charAt, withWhatCharCount, IncrementalFontSpecification (fEmptySelectionStyle));
             return true;
         }
     }
@@ -543,7 +543,7 @@ size_t StandardStyledTextIOSinkStream::current_offset () const
     return (fInsertionStart - fOriginalStart);
 }
 
-void StandardStyledTextIOSinkStream::AppendText (const Led_tChar* text, size_t nTChars, const Led_FontSpecification* fontSpec)
+void StandardStyledTextIOSinkStream::AppendText (const Led_tChar* text, size_t nTChars, const FontSpecification* fontSpec)
 {
     RequireNotNull (text);
     AssertNotNull (fTextStore);
@@ -581,7 +581,7 @@ void StandardStyledTextIOSinkStream::ApplyStyle (size_t from, size_t to, const v
     fStyleRunDatabase->SetStyleInfo (fOriginalStart + from, to - from, styleRuns);
 }
 
-Led_FontSpecification StandardStyledTextIOSinkStream::GetDefaultFontSpec () const
+FontSpecification StandardStyledTextIOSinkStream::GetDefaultFontSpec () const
 {
     return TextImager::GetStaticDefaultFont ();
 }
@@ -783,7 +783,7 @@ StandardStyledTextIOSrcStream::Table* StandardStyledTextIOSrcStream::GetTableAt 
     return nullptr;
 }
 
-void StandardStyledTextIOSrcStream::SummarizeFontAndColorTable (set<Led_SDK_String>* fontNames, set<Led_Color>* colorsUsed) const
+void StandardStyledTextIOSrcStream::SummarizeFontAndColorTable (set<Led_SDK_String>* fontNames, set<Color>* colorsUsed) const
 {
     using InfoSummaryRecord = StandardStyledTextImager::InfoSummaryRecord;
     if (fontNames != nullptr or colorsUsed != nullptr) {
@@ -1073,7 +1073,7 @@ bool StyledTextFlavorPackageInternalizer::InternalizeFlavor_OtherRegisteredEmbed
             }
         }
         if (clipAvailForAll) {
-            SimpleEmbeddedObjectStyleMarker* objMarker = (assoc.fReadFromFlavorPackage) (flavorPackage);
+            SimpleEmbeddedObjectStyleMarker* objMarker = (assoc.fReadFromFlavorPackage)(flavorPackage);
             {
                 size_t pasteStart = from;
                 size_t pasteEnd   = to;
@@ -1180,7 +1180,7 @@ void StyledTextFlavorPackageExternalizer::ExternalizeFlavor_STYL (WriterFlavorPa
 
     size_t                         nBytes = sizeof (short) + nStyleRuns * sizeof (ScrpSTElement);
     Memory::SmallStackBuffer<char> buf (nBytes);
-    StScrpPtr                      stylePtr = (StScrpPtr) (char*)buf;
+    StScrpPtr                      stylePtr = (StScrpPtr)(char*)buf;
 
     stylePtr->scrpNStyles = nStyleRuns;
     StandardStyledTextImager::Convert (ledStyleRuns, stylePtr->scrpStyleTab);

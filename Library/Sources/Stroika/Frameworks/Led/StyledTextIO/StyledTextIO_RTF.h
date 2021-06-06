@@ -325,7 +325,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
             FontTable (const vector<FontTableEntry>& fontTable);
 
         public:
-            nonvirtual Led_IncrementalFontSpecification GetFontSpec (int fontNumber);        // throws if not present
+            nonvirtual IncrementalFontSpecification GetFontSpec (int fontNumber);            // throws if not present
             nonvirtual const FontTableEntry* LookupEntryByNumber (int fontNumber);           // return nullptr if not present
             nonvirtual const FontTableEntry* LookupEntryByName (const Led_SDK_String& name); // return nullptr if not present
             nonvirtual FontTableEntry        Add (const FontTableEntry& newEntry);           // ignores the fFNum, and supplies its own! - returns same entry but with revised fFNum
@@ -338,15 +338,15 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         class ColorTable {
         public:
             ColorTable ();
-            ColorTable (const vector<Led_Color>& colorTable);
+            ColorTable (const vector<Color>& colorTable);
 
         public:
-            nonvirtual Led_Color LookupColor (size_t colorNumber) const;     // throws if not present
-            nonvirtual size_t    LookupColor (const Led_Color& color) const; // asserts if not present
-            nonvirtual size_t    EnterColor (const Led_Color& color);        // LookupColor, and if not present, add it. Either way, return index
+            nonvirtual Color  LookupColor (size_t colorNumber) const; // throws if not present
+            nonvirtual size_t LookupColor (const Color& color) const; // asserts if not present
+            nonvirtual size_t EnterColor (const Color& color);        // LookupColor, and if not present, add it. Either way, return index
 
         public:
-            vector<Led_Color> fEntries;
+            vector<Color> fEntries;
         };
 
         /*
@@ -472,11 +472,11 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         virtual bool QuickLookAppearsToBeRightFormat () override;
 
     public:
-        nonvirtual Led_FontSpecification GetPlainFont () const;
-        nonvirtual void                  SetPlainFont (const Led_FontSpecification& fsp);
+        nonvirtual FontSpecification GetPlainFont () const;
+        nonvirtual void              SetPlainFont (const FontSpecification& fsp);
 
     private:
-        Led_FontSpecification fPlainFont;
+        FontSpecification fPlainFont;
 
     public:
         class ReaderContext;
@@ -624,7 +624,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         nonvirtual bool SearchForwardFor (const char* searchFor, size_t maxCharsToExamine = size_t (-1));
 
     protected:
-        nonvirtual Led_Color LookupColor (ReaderContext& readerContext, size_t index) const;
+        nonvirtual Color LookupColor (ReaderContext& readerContext, size_t index) const;
 
     public:
         nonvirtual RTFInfo& GetRTFInfo () const;
@@ -635,8 +635,8 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
 
 #if qPlatform_Windows
     private:
-        Led_FontSpecification::FontSize fCachedFontSize; // Keep these as a speedtweek - SetPointSize() expensive on WIN32
-        long                            fCachedFontSizeTMHeight;
+        FontSpecification::FontSize fCachedFontSize; // Keep these as a speedtweek - SetPointSize() expensive on WIN32
+        long                        fCachedFontSizeTMHeight;
 #endif
     };
 
@@ -748,19 +748,19 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         struct Context {
             Context ();
 
-            Led_IncrementalFontSpecification fFontSpec;
-            TextImager::StandardTabStopList  fTabStops;
-            Led_Justification                fJustification;
-            TWIPS                            fSpaceBefore;
-            TWIPS                            fSpaceAfter;
-            Coordinate                       fSpaceBetweenLines;
-            bool                             fSpaceBetweenLinesMult;
-            ListStyle                        fListStyle;
-            unsigned char                    fListIndentLevel;
-            TWIPS                            fFirstIndent;
-            TWIPS                            fLeftMargin;
-            TWIPS                            fRightMargin;
-            bool                             fTextHidden;
+            IncrementalFontSpecification    fFontSpec;
+            TextImager::StandardTabStopList fTabStops;
+            Justification                   fJustification;
+            TWIPS                           fSpaceBefore;
+            TWIPS                           fSpaceAfter;
+            Coordinate                      fSpaceBetweenLines;
+            bool                            fSpaceBetweenLinesMult;
+            ListStyle                       fListStyle;
+            unsigned char                   fListIndentLevel;
+            TWIPS                           fFirstIndent;
+            TWIPS                           fLeftMargin;
+            TWIPS                           fRightMargin;
+            bool                            fTextHidden;
         };
 
     public:
@@ -768,8 +768,8 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         virtual void AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding)  = 0;
         virtual void AppendSoftLineBreak ()                                        = 0;
         virtual void EndParagraph ()                                               = 0;
-        virtual void UseFont (const Led_IncrementalFontSpecification& fontSpec)    = 0;
-        virtual void SetJustification (Led_Justification justification)            = 0;
+        virtual void UseFont (const IncrementalFontSpecification& fontSpec)        = 0;
+        virtual void SetJustification (Justification justification)                = 0;
         virtual void SetTabStops (const TextImager::StandardTabStopList& tabStops) = 0;
         virtual void SetFirstIndent (TWIPS tx)                                     = 0;
         virtual void SetLeftMargin (TWIPS lhs)                                     = 0;
@@ -784,9 +784,9 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         virtual void EndCell (bool forceEmit = false)                              = 0;
         virtual void SetListStyle (ListStyle listStyle)                            = 0;
         virtual void SetListIndentLevel (unsigned char indentLevel)                = 0;
-        virtual void SetTableBorderColor (Led_Color c)                             = 0;
+        virtual void SetTableBorderColor (Color c)                                 = 0;
         virtual void SetCellX (TWIPS cellx)                                        = 0;
-        virtual void SetCellBackColor (const Led_Color& c)                         = 0;
+        virtual void SetCellBackColor (const Color& c)                             = 0;
         virtual void Call_trowd ()                                                 = 0;
         virtual void Set_trleft (TWIPS t)                                          = 0;
         virtual void SetDefaultCellMarginsForRow_top (TWIPS t)                     = 0;
@@ -825,8 +825,8 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         virtual void AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding) override;
         virtual void AppendSoftLineBreak () override;
         virtual void EndParagraph () override;
-        virtual void UseFont (const Led_IncrementalFontSpecification& fontSpec) override;
-        virtual void SetJustification (Led_Justification justification) override;
+        virtual void UseFont (const IncrementalFontSpecification& fontSpec) override;
+        virtual void SetJustification (Justification justification) override;
         virtual void SetTabStops (const TextImager::StandardTabStopList& tabStops) override;
         virtual void SetFirstIndent (TWIPS tx) override;
         virtual void SetLeftMargin (TWIPS lhs) override;
@@ -841,9 +841,9 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         virtual void EndCell (bool forceEmit = false) override;
         virtual void SetListStyle (ListStyle listStyle) override;
         virtual void SetListIndentLevel (unsigned char indentLevel) override;
-        virtual void SetTableBorderColor (Led_Color c) override;
+        virtual void SetTableBorderColor (Color c) override;
         virtual void SetCellX (TWIPS cellx) override;
-        virtual void SetCellBackColor (const Led_Color& c) override;
+        virtual void SetCellBackColor (const Color& c) override;
         virtual void Call_trowd () override;
         virtual void Set_trleft (TWIPS t) override;
         virtual void SetDefaultCellMarginsForRow_top (TWIPS t) override;
@@ -907,9 +907,9 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     private:
         struct CellInfo {
             CellInfo ();
-            TWIPS     f_cellx;
-            Led_Color f_clcbpat;
-            size_t    fColSpan;
+            TWIPS  f_cellx;
+            Color  f_clcbpat;
+            size_t fColSpan;
         };
         CellInfo fNextCellInfo; // place to store up info (like clcbpat) til we get the terminating \cellx
     private:
@@ -1029,8 +1029,8 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         virtual void WriteGenerator ();
 
     protected:
-        virtual void EmitBodyFontInfoChange (WriterContext& writerContext, const Led_FontSpecification& newOne);
-        virtual void EmitBodyFontInfoChange (WriterContext& writerContext, const Led_FontSpecification& newOne, const Led_FontSpecification& oldOne);
+        virtual void EmitBodyFontInfoChange (WriterContext& writerContext, const FontSpecification& newOne);
+        virtual void EmitBodyFontInfoChange (WriterContext& writerContext, const FontSpecification& newOne, const FontSpecification& oldOne);
 
     protected:
         virtual void AssureColorTableBuilt (WriterContext& writerContext);
@@ -1238,7 +1238,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     @DESCRIPTION:   <p>Get the font which is used for RTF \plain directives. This can be set
         via @'StyledTextIOReader_RTF::SetPlainFont'</p>
     */
-    inline Led_FontSpecification StyledTextIOReader_RTF::GetPlainFont () const
+    inline FontSpecification StyledTextIOReader_RTF::GetPlainFont () const
     {
         return fPlainFont;
     }
@@ -1247,7 +1247,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     @DESCRIPTION:   <p>Set the font which is used for RTF \plain directives. See
         @'StyledTextIOReader_RTF::GetPlainFont'</p>
     */
-    inline void StyledTextIOReader_RTF::SetPlainFont (const Led_FontSpecification& fsp)
+    inline void StyledTextIOReader_RTF::SetPlainFont (const FontSpecification& fsp)
     {
         fPlainFont = fsp;
     }
@@ -1262,18 +1262,18 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     @METHOD:        StyledTextIOReader_RTF::LookupColor
     @DESCRIPTION:   <p>Lookup the given font index in the color table. Deal moderately gracefully with error conditions.</p>
     */
-    inline Led_Color StyledTextIOReader_RTF::LookupColor (ReaderContext& readerContext, size_t index) const
+    inline Color StyledTextIOReader_RTF::LookupColor (ReaderContext& readerContext, size_t index) const
     {
         if (readerContext.fColorTable == nullptr) {
             HandleBadlyFormattedInput (); // Cannot have a \cfN without having specified a color table
-            return Led_Color::kBlack;
+            return Color::kBlack;
         }
         else {
             try {
                 return (readerContext.fColorTable->LookupColor (static_cast<size_t> (index)));
             }
             catch (...) {
-                return Led_Color::kBlack;
+                return Color::kBlack;
             }
         }
     }
@@ -1283,7 +1283,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         : fWriter (writer)
         , fInTable (false)
         , fSrcStream (writer.GetSrcStream ())
-        , fLastEmittedISR (Led_IncrementalFontSpecification (), 0)
+        , fLastEmittedISR (IncrementalFontSpecification (), 0)
         , fNextStyleChangeAt (0)
         , fIthStyleRun (0)
         , fNextHidableTextChangeAt (size_t (-1))
@@ -1296,7 +1296,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         : fWriter (parentContext.fWriter)
         , fInTable (true)
         , fSrcStream (srcStream)
-        , fLastEmittedISR (Led_IncrementalFontSpecification (), 0)
+        , fLastEmittedISR (IncrementalFontSpecification (), 0)
         , fNextStyleChangeAt (0)
         , fIthStyleRun (0)
         , fNextHidableTextChangeAt (size_t (-1))

@@ -761,7 +761,7 @@ namespace Stroika::Frameworks::Led::Platform {
         }
 #if !qSDK_UNICODE
         else {
-            wstring tmpIMEBugWorkaroundCompString = Led_IME::Get ().GetCompositionResultStringW (this->GetValidatedHWND ());
+            wstring tmpIMEBugWorkaroundCompString = IME::Get ().GetCompositionResultStringW (this->GetValidatedHWND ());
             if (fIMECurCharIdx < tmpIMEBugWorkaroundCompString.length ()) {
                 nChar = tmpIMEBugWorkaroundCompString[fIMECurCharIdx];
                 fIMECurCharIdx++;
@@ -1168,8 +1168,8 @@ namespace Stroika::Frameworks::Led::Platform {
     void Led_Win32_Helper<BASE_INTERACTOR>::OnSetFocus_Msg (HWND /*oldWnd*/)
     {
 #if qProvideIMESupport
-        Led_IME::Get ().ForgetPosition ();
-        Led_IME::Get ().Enable ();
+        IME::Get ().ForgetPosition ();
+        IME::Get ().Enable ();
 #endif
 
         this->SetCaretShown (true);
@@ -1178,7 +1178,7 @@ namespace Stroika::Frameworks::Led::Platform {
 #if qSupportWindowsSDKCallbacks
         // Notify the parent window...
         HWND hWnd = this->GetValidatedHWND ();
-        (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, (WPARAM)MAKELONG (GetWindowID (), EN_SETFOCUS), (LPARAM)(hWnd));
+        (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, (WPARAM)MAKELONG (GetWindowID (), EN_SETFOCUS), (LPARAM) (hWnd));
 #endif
     }
     template <typename BASE_INTERACTOR>
@@ -1204,7 +1204,7 @@ namespace Stroika::Frameworks::Led::Platform {
 #if qSupportWindowsSDKCallbacks
         // Notify the parent window...
         HWND hWnd = this->GetValidatedHWND ();
-        (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, (WPARAM)MAKELONG (GetWindowID (), EN_KILLFOCUS), (LPARAM)(hWnd));
+        (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, (WPARAM)MAKELONG (GetWindowID (), EN_KILLFOCUS), (LPARAM) (hWnd));
 #endif
     }
     template <typename BASE_INTERACTOR>
@@ -1833,9 +1833,9 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         DWORD dwStyle = GetStyle ();
         if (((dwStyle & WS_DISABLED) or (dwStyle & ES_READONLY)) and (not printing)) {
-            //const Led_Color   kReadOnlyBackground =   Led_Color (RGB (0xc0,0xc0,0xc0));
-            //const Led_Color   kReadOnlyBackground =   Led_Color (::GetSysColor (COLOR_SCROLLBAR));
-            const Led_Color kReadOnlyBackground = Led_Color (::GetSysColor (COLOR_BTNFACE));
+            //const Color   kReadOnlyBackground =   Color (RGB (0xc0,0xc0,0xc0));
+            //const Color   kReadOnlyBackground =   Color (::GetSysColor (COLOR_SCROLLBAR));
+            const Color kReadOnlyBackground = Color (::GetSysColor (COLOR_BTNFACE));
             tablet->EraseBackground_SolidHelper (subsetToDraw, kReadOnlyBackground);
         }
         else {
@@ -2134,7 +2134,7 @@ namespace Stroika::Frameworks::Led::Platform {
                     // if caret is to be invisible, then make sure the IME is moved
                     // offscreen (maybe should be hidden?) - SPR#1359
                     Led_Rect wr = this->GetWindowRect ();
-                    Led_IME::Get ().NotifyPosition (hWnd, (SHORT)wr.GetLeft (), (SHORT)wr.GetBottom () + 1000);
+                    IME::Get ().NotifyPosition (hWnd, (SHORT)wr.GetLeft (), (SHORT)wr.GetBottom () + 1000);
 #endif
                 }
                 else {
@@ -2162,7 +2162,7 @@ namespace Stroika::Frameworks::Led::Platform {
 
 // When we support the IME - it probably needs to be notified here!!!
 #if qProvideIMESupport
-                    Led_IME::Get ().NotifyPosition (hWnd, (SHORT)caretRect.GetLeft (), (SHORT)caretRect.GetTop ());
+                    IME::Get ().NotifyPosition (hWnd, (SHORT)caretRect.GetLeft (), (SHORT)caretRect.GetTop ());
 #endif
                 }
             }
@@ -2791,8 +2791,8 @@ namespace Stroika::Frameworks::Led::Platform {
          *  way of knowing who kept refernces to the HFONT we return. So we delete it only
          *  when we change fonts, and someone asks again - and on DTOR of this object.
          */
-        Led_FontSpecification defaultFont = this->GetDefaultSelectionFont ();
-        LOGFONT               defaultFontLF;
+        FontSpecification defaultFont = this->GetDefaultSelectionFont ();
+        LOGFONT           defaultFontLF;
         defaultFont.GetOSRep (&defaultFontLF);
 
         if (fDefaultFontCache.m_hObject != nullptr) { // Seeing if font changed...
@@ -2826,7 +2826,7 @@ namespace Stroika::Frameworks::Led::Platform {
         using TextInteractor::eDefaultUpdate;
         using TextInteractor::eNoUpdate;
 #endif
-        Led_IncrementalFontSpecification fontSpec;
+        IncrementalFontSpecification fontSpec;
         {
             HFONT fontToUse = reinterpret_cast<HFONT> (wParam);
             if (fontToUse == nullptr) {

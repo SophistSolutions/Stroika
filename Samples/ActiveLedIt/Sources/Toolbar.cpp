@@ -1091,7 +1091,7 @@ LRESULT ActiveLedIt_Toolbar::OnCommand ([[maybe_unused]] UINT uMsg, WPARAM wPara
         if (hdc != NULL) {
             try {
                 Led_Tablet_             tablet (hdc, Led_Tablet_::eDoesntOwnDC);
-                Led_Pen                 usePen (PS_SOLID, 1, Led_Color::kBlack.GetOSRep ());
+                Pen                 usePen (PS_SOLID, 1, Color::kBlack.GetOSRep ());
                 Led_GDI_Obj_Selector    penSelector (&tablet, usePen);
                 Led_Rect                drawRect    =   Led_Rect  (0, 0, fBounds.GetHeight (), fBounds.GetWidth ());
                 if (m_hWnd != NULL) {       // probbaly not really needed anymore - now that I subtract out the SM_CXYEDGE - but what the heck... Just in case...
@@ -1466,7 +1466,7 @@ LRESULT ActiveLedIt_ToolbarList::OnPaint ([[maybe_unused]] UINT uMsg, [[maybe_un
     if (hdc != NULL) {
         try {
             Led_Tablet_          tablet (hdc, Led_Tablet_::eDoesntOwnDC);
-            Led_Pen              usePen (PS_SOLID, 1, Led_Color::kBlack.GetOSRep ());
+            Pen                  usePen (PS_SOLID, 1, Color::kBlack.GetOSRep ());
             Led_GDI_Obj_Selector penSelector (&tablet, usePen);
             Led_Rect             drawRect = Led_Rect (0, 0, fBounds.GetHeight (), fBounds.GetWidth ());
             if (m_hWnd != NULL) { // probbaly not really needed anymore - now that I subtract out the SM_CXYEDGE - but what the heck... Just in case...

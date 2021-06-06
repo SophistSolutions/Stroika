@@ -34,14 +34,14 @@ static struct FooBarBlatzRegistryCleanupHack {
 #if qPlatform_MacOS || qPlatform_Windows
 static void MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHandle pictureHandle,
                                    Led_Tablet                                   tablet,
-                                   Led_Color foreColor, Led_Color backColor,
+                                   Color foreColor, Color backColor,
                                    const Led_Rect& drawInto, Coordinate useBaseLine, DistanceType* pixelsDrawn,
                                    const Led_Size& imageSize,
                                    const Led_Size& margin = kDefaultEmbeddingMargin) noexcept;
 #endif
 static void DIBDrawSegment (const Led_DIB* dib,
                             Led_Tablet     tablet,
-                            Led_Color foreColor, Led_Color backColor,
+                            Color foreColor, Color backColor,
                             const Led_Rect& drawInto, Coordinate useBaseLine, DistanceType* pixelsDrawn,
                             const Led_Size& imageSize,
                             const Led_Size& margin = kDefaultEmbeddingMargin) noexcept;
@@ -550,8 +550,8 @@ void StandardURLStyleMarker::DrawSegment (const StyledTextImager* imager, const 
     RequireNotNull (imager);
 
 #if qURLStyleMarkerNewDisplayMode
-    Led_FontSpecification fsp         = GetDisplayFont (runElement);
-    Led_tString           displayText = GetDisplayString ();
+    FontSpecification fsp         = GetDisplayFont (runElement);
+    Led_tString       displayText = GetDisplayString ();
     imager->DrawSegment_ (tablet, fsp, from, from + displayText.length (), TextLayoutBlock_Basic (displayText.c_str (), displayText.c_str () + displayText.length ()),
                           drawInto, useBaseLine, pixelsDrawn);
 #else
@@ -568,8 +568,8 @@ void StandardURLStyleMarker::DrawSegment (const StyledTextImager* imager, const 
     Assert (embedBottom <= drawInto.bottom);
     Led_Rect innerBoundsRect = Led_Rect (Led_Point (embedTop, ourBoundsRects.left + kDefaultEmbeddingMargin.h), Led_Size (height, width));
 
-    Led_Color foreColor = imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor);
-    Led_Color backColor = imager->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor);
+    Color foreColor = imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor);
+    Color backColor = imager->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor);
 
 #if qPlatform_MacOS
     tablet->SetPort ();
@@ -622,7 +622,7 @@ void StandardURLStyleMarker::DrawSegment (const StyledTextImager* imager, const 
     ::TextSize (9);
     ::DrawText (url, 0, urlStrLen);
 #elif qPlatform_Windows
-    Led_Pen              pen (PS_SOLID, 2, RGB (0, 0, 0));
+    Pen                  pen (PS_SOLID, 2, RGB (0, 0, 0));
     Led_Win_Obj_Selector penWrapper (tablet, pen);
     Led_Win_Obj_Selector brush (tablet, ::GetStockObject (NULL_BRUSH));
     tablet->RoundRect (innerBoundsRect.left, innerBoundsRect.top, innerBoundsRect.right, innerBoundsRect.bottom, 2, 2);
@@ -686,8 +686,8 @@ void StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager
      */
 
 #if qURLStyleMarkerNewDisplayMode
-    Led_FontSpecification fsp         = GetDisplayFont (runElement);
-    Led_tString           displayText = GetDisplayString ();
+    FontSpecification fsp         = GetDisplayFont (runElement);
+    Led_tString       displayText = GetDisplayString ();
     if (displayText.empty ()) {
         distanceResults[0] = 0;
     }
@@ -772,8 +772,8 @@ DistanceType StandardURLStyleMarker::MeasureSegmentHeight (const StyledTextImage
     Assert (from + 1 == to);
 
 #if qURLStyleMarkerNewDisplayMode
-    Led_FontSpecification fsp         = GetDisplayFont (runElement);
-    Led_tString           displayText = GetDisplayString ();
+    FontSpecification fsp         = GetDisplayFont (runElement);
+    Led_tString       displayText = GetDisplayString ();
     return imager->MeasureSegmentHeight_ (fsp, from, from + displayText.length ());
 #else
 // this '36' is something of a hack. Really we should set the font into a grafport, and measure font metrics etc.
@@ -861,9 +861,9 @@ Led_tString StandardURLStyleMarker::GetDisplayString () const
     return Led_ANSIString2tString (displayText);
 }
 
-Led_FontSpecification StandardURLStyleMarker::GetDisplayFont (const RunElement& runElement) const
+FontSpecification StandardURLStyleMarker::GetDisplayFont (const RunElement& runElement) const
 {
-    Led_FontSpecification fsp;
+    FontSpecification fsp;
     if (dynamic_cast<StandardStyledTextImager::StandardStyleMarker*> (runElement.fMarker) != nullptr) {
         StandardStyledTextImager::StandardStyleMarker* sm = dynamic_cast<StandardStyledTextImager::StandardStyleMarker*> (runElement.fMarker);
         fsp                                               = sm->fFontSpecification;
@@ -878,7 +878,7 @@ Led_FontSpecification StandardURLStyleMarker::GetDisplayFont (const RunElement& 
         }
     }
     fsp.SetPointSize (static_cast<unsigned short> (fsp.GetPointSize () * 1.05));
-    fsp.SetTextColor (Led_Color::kBlue);
+    fsp.SetTextColor (Color::kBlue);
     fsp.SetStyle_Underline (true);
     return fsp;
 }
@@ -1465,7 +1465,7 @@ void Led::AddEmbedding (SimpleEmbeddedObjectStyleMarker* embedding, TextStore& t
  ********************************************************************************
  */
 static void MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHandle pictureHandle,
-                                   Led_Tablet tablet, Led_Color foreColor, Led_Color backColor, const Led_Rect& drawInto, Coordinate useBaseLine, DistanceType* pixelsDrawn,
+                                   Led_Tablet tablet, Color foreColor, Color backColor, const Led_Rect& drawInto, Coordinate useBaseLine, DistanceType* pixelsDrawn,
                                    const Led_Size& imageSize,
                                    const Led_Size& margin) noexcept
 {
@@ -1554,9 +1554,9 @@ static void MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHandle 
 }
 #endif
 
-static void DIBDrawSegment (const Led_DIB*             dib,
-                            Led_Tablet                 tablet,
-                            [[maybe_unused]] Led_Color foreColor, [[maybe_unused]] Led_Color backColor,
+static void DIBDrawSegment (const Led_DIB*         dib,
+                            Led_Tablet             tablet,
+                            [[maybe_unused]] Color foreColor, [[maybe_unused]] Color backColor,
                             const Led_Rect& drawInto, Coordinate useBaseLine, DistanceType* pixelsDrawn,
                             const Led_Size& imageSize,
                             const Led_Size& margin) noexcept
@@ -1586,8 +1586,8 @@ static void DIBDrawSegment (const Led_DIB*             dib,
 
 #if qPlatform_MacOS
 #if 1
-    GDI_RGBForeColor (Led_Color::kBlack.GetOSRep ());
-    GDI_RGBBackColor (Led_Color::kWhite.GetOSRep ());
+    GDI_RGBForeColor (Color::kBlack.GetOSRep ());
+    GDI_RGBBackColor (Color::kWhite.GetOSRep ());
 #else
     GDI_RGBForeColor (foreColor.GetOSRep ());
     GDI_RGBBackColor (backColor.GetOSRep ());

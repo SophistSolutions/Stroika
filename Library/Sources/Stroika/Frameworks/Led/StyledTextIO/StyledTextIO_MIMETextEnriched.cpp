@@ -62,7 +62,7 @@ void StyledTextIOReader_MIMETextEnriched::Read ()
             currentOffset--; // backup over <
         }
 
-        Led_FontSpecification fontSpec = GetAdjustedCurrentFontSpec ();
+        FontSpecification fontSpec = GetAdjustedCurrentFontSpec ();
 
         // Handle text before <
         {
@@ -256,9 +256,9 @@ bool StyledTextIOReader_MIMETextEnriched::LookingAt (const char* matchMe, bool i
     return false;
 }
 
-Led_FontSpecification StyledTextIOReader_MIMETextEnriched::GetAdjustedCurrentFontSpec () const
+FontSpecification StyledTextIOReader_MIMETextEnriched::GetAdjustedCurrentFontSpec () const
 {
-    Led_FontSpecification fsp = GetSinkStream ().GetDefaultFontSpec ();
+    FontSpecification fsp = GetSinkStream ().GetDefaultFontSpec ();
     if (fBoldMode > 0) {
         fsp.SetStyle_Bold (true);
     }

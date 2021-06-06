@@ -19,8 +19,8 @@
 // abstract callback API
 class FormatToolbarOwner {
 public:
-    virtual Led_IncrementalFontSpecification GetCurFont () const                                      = 0;
-    virtual void                             SetCurFont (const Led_IncrementalFontSpecification& fsp) = 0;
+    virtual IncrementalFontSpecification GetCurFont () const                                  = 0;
+    virtual void                         SetCurFont (const IncrementalFontSpecification& fsp) = 0;
 };
 
 class FormatToolbar : public CToolBar {

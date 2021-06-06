@@ -155,17 +155,17 @@ BOOL LedItMainFrame::PreCreateWindow (CREATESTRUCT& cs)
     return inherited::PreCreateWindow (cs);
 }
 
-Led_IncrementalFontSpecification LedItMainFrame::GetCurFont () const
+IncrementalFontSpecification LedItMainFrame::GetCurFont () const
 {
-    Led_IncrementalFontSpecification ifsp;
-    LedItView*                       liv = GetActiveLedItView ();
+    IncrementalFontSpecification ifsp;
+    LedItView*                   liv = GetActiveLedItView ();
     if (liv != NULL) {
         ifsp = liv->GetCurSelFontSpec ();
     }
     return ifsp;
 }
 
-void LedItMainFrame::SetCurFont (const Led_IncrementalFontSpecification& fsp)
+void LedItMainFrame::SetCurFont (const IncrementalFontSpecification& fsp)
 {
     LedItView* liv = GetActiveLedItView ();
     if (liv != NULL) {

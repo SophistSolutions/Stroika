@@ -293,7 +293,7 @@ namespace Stroika::Frameworks::Led {
      ************************************ TWIPS *************************************
      ********************************************************************************
      */
-    inline TWIPS::TWIPS (long v)
+    constexpr inline TWIPS::TWIPS (long v)
         : fValue (v)
     {
     }
@@ -554,6 +554,52 @@ namespace Stroika::Frameworks::Led {
         Led_Rect tmp = lhs;
         return tmp *= rhs;
     }
+#if qPlatform_MacOS
+    inline Led_Region::Led_Region (RgnHandle rgn)
+        : fRgn (rgn)
+        , fOwned (false)
+    {
+    }
+    inline RgnHandle Led_Region::GetOSRep () const
+    {
+        return fRgn;
+    }
+    inline RgnHandle Led_Region::GetOSRep ()
+    {
+        return fRgn;
+    }
+#elif qPlatform_Windows
+    inline Led_Region::operator HRGN () const
+    {
+        return fRgn;
+    }
+    inline int Led_Region::CombineRgn (Led_Region* pRgn1, Led_Region* pRgn2, int nCombineMode)
+    {
+        Require (pRgn1 != nullptr);
+        Require (pRgn2 != nullptr);
+        Require (fRgn != nullptr);
+        return ::CombineRgn (fRgn, pRgn1->fRgn, pRgn2->fRgn, nCombineMode);
+    }
+    inline BOOL Led_Region::PtInRegion (int x, int y) const
+    {
+        Require (fRgn != nullptr);
+        return ::PtInRegion (fRgn, x, y);
+    }
+    inline BOOL Led_Region::PtInRegion (POINT point) const
+    {
+        Require (fRgn != nullptr);
+        return ::PtInRegion (fRgn, point.x, point.y);
+    }
+
+    inline BOOL Led_Region::DeleteObject ()
+    {
+        if (fRgn == nullptr)
+            return FALSE;
+        HRGN r = fRgn;
+        fRgn   = nullptr;
+        return ::DeleteObject (r);
+    }
+#endif
 
     /*
      ********************************************************************************
@@ -1547,44 +1593,44 @@ namespace Stroika::Frameworks::Led {
 
     /*
      ********************************************************************************
-     ************************************* Led_Color ********************************
+     ************************************* Color ************************************
      ********************************************************************************
      */
-    inline Led_Color::Led_Color (ColorValue redValue, ColorValue greenValue, ColorValue blueValue)
+    constexpr inline Color::Color (ColorValue redValue, ColorValue greenValue, ColorValue blueValue)
         : fRed{redValue}
         , fGreen{greenValue}
         , fBlue{blueValue}
     {
     }
 #if qPlatform_MacOS
-    inline Led_Color::Led_Color (const RGBColor& rgbColor)
+    inline Color::Color (const RGBColor& rgbColor)
         : fRed (rgbColor.red)
         , fGreen (rgbColor.green)
         , fBlue (rgbColor.blue)
     {
     }
 #elif qPlatform_Windows
-    inline Led_Color::Led_Color (COLORREF colorRef)
+    inline Color::Color (COLORREF colorRef)
         : fRed (static_cast<ColorValue> (GetRValue (colorRef)) << 8)
         , fGreen (static_cast<ColorValue> (GetGValue (colorRef)) << 8)
         , fBlue (static_cast<ColorValue> (GetBValue (colorRef)) << 8)
     {
     }
 #endif
-    inline Led_Color::ColorValue Led_Color::GetRed () const
+    inline Color::ColorValue Color::GetRed () const
     {
         return fRed;
     }
-    inline Led_Color::ColorValue Led_Color::GetGreen () const
+    inline Color::ColorValue Color::GetGreen () const
     {
         return fGreen;
     }
-    inline Led_Color::ColorValue Led_Color::GetBlue () const
+    inline Color::ColorValue Color::GetBlue () const
     {
         return fBlue;
     }
 #if qPlatform_MacOS
-    inline RGBColor Led_Color::GetOSRep () const
+    inline RGBColor Color::GetOSRep () const
     {
         RGBColor r;
         r.red   = fRed;
@@ -1593,42 +1639,42 @@ namespace Stroika::Frameworks::Led {
         return r;
     }
 #elif qPlatform_Windows
-    inline COLORREF Led_Color::GetOSRep () const
+    inline COLORREF Color::GetOSRep () const
     {
         return RGB (fRed >> 8, fGreen >> 8, fBlue >> 8);
     }
 #endif
 #if __cpp_impl_three_way_comparison < 201907
-    inline bool operator== (Led_Color lhs, Led_Color rhs)
+    inline bool operator== (Color lhs, Color rhs)
     {
         return (lhs.GetRed () == rhs.GetRed () and lhs.GetGreen () == rhs.GetGreen () and lhs.GetBlue () == rhs.GetBlue ());
     }
-    inline bool operator!= (Led_Color lhs, Led_Color rhs)
+    inline bool operator!= (Color lhs, Color rhs)
     {
         return not(lhs == rhs);
     }
 #endif
-    inline Led_Color operator* (Led_Color lhs, float factor)
+    inline Color operator* (Color lhs, float factor)
     {
-        using CV = Led_Color::ColorValue;
-        return Led_Color (
+        using CV = Color::ColorValue;
+        return Color (
             static_cast<CV> (lhs.GetRed () * factor),
             static_cast<CV> (lhs.GetGreen () * factor),
             static_cast<CV> (lhs.GetBlue () * factor));
     }
-    inline Led_Color operator/ (Led_Color lhs, float divBy)
+    inline Color operator/ (Color lhs, float divBy)
     {
-        return Led_Color (static_cast<Led_Color::ColorValue> (lhs.GetRed () / divBy), static_cast<Led_Color::ColorValue> (lhs.GetGreen () / divBy), static_cast<Led_Color::ColorValue> (lhs.GetBlue () / divBy));
+        return Color (static_cast<Color::ColorValue> (lhs.GetRed () / divBy), static_cast<Color::ColorValue> (lhs.GetGreen () / divBy), static_cast<Color::ColorValue> (lhs.GetBlue () / divBy));
     }
-    inline Led_Color operator+ (Led_Color lhs, Led_Color rhs)
+    inline Color operator+ (Color lhs, Color rhs)
     {
-        return Led_Color (lhs.GetRed () + rhs.GetRed (), lhs.GetGreen () + rhs.GetGreen (), lhs.GetBlue () + rhs.GetBlue ());
+        return Color (lhs.GetRed () + rhs.GetRed (), lhs.GetGreen () + rhs.GetGreen (), lhs.GetBlue () + rhs.GetBlue ());
     }
-    inline Led_Color operator- (Led_Color lhs, Led_Color rhs)
+    inline Color operator- (Color lhs, Color rhs)
     {
-        return Led_Color (lhs.GetRed () - rhs.GetRed (), lhs.GetGreen () - rhs.GetGreen (), lhs.GetBlue () - rhs.GetBlue ());
+        return Color (lhs.GetRed () - rhs.GetRed (), lhs.GetGreen () - rhs.GetGreen (), lhs.GetBlue () - rhs.GetBlue ());
     }
-    inline unsigned int Distance_Squared (Led_Color lhs, Led_Color rhs)
+    inline unsigned int Distance_Squared (Color lhs, Color rhs)
     {
         int          rDiff = static_cast<int> (lhs.GetRed ()) - static_cast<int> (rhs.GetRed ());
         int          gDiff = static_cast<int> (lhs.GetGreen ()) - static_cast<int> (rhs.GetGreen ());
@@ -1636,7 +1682,7 @@ namespace Stroika::Frameworks::Led {
         unsigned int sum   = rDiff * rDiff + gDiff * gDiff + bDiff * bDiff;
         return sum;
     }
-    inline unsigned int Distance (Led_Color lhs, Led_Color rhs)
+    inline unsigned int Distance (Color lhs, Color rhs)
     {
         return static_cast<unsigned int> (::sqrt (static_cast<float> (Distance_Squared (lhs, rhs))));
     }
@@ -1654,8 +1700,8 @@ namespace Stroika::Frameworks::Led {
 
 namespace std {
     template <>
-    struct less<Stroika::Frameworks::Led::Led_Color> {
-        bool operator() (const Stroika::Frameworks::Led::Led_Color& _Left, const Stroika::Frameworks::Led::Led_Color& _Right) const
+    struct less<Stroika::Frameworks::Led::Color> {
+        bool operator() (const Stroika::Frameworks::Led::Color& _Left, const Stroika::Frameworks::Led::Color& _Right) const
         {
             if (_Left.GetRed () < _Right.GetRed ()) {
                 return true;
@@ -1674,14 +1720,110 @@ namespace std {
 }
 
 namespace Stroika::Frameworks::Led {
+#if qPlatform_MacOS
+    inline Pen::Pen (short penStyle = srcCopy, const Pattern* penPat = &kBlackPattern, const Color& color = Color::kBlack)
+        : fPenStyle (penStyle)
+        , fPenPat (*penPat)
+        , fPenColor (color)
+    {
+    }
+#endif
+#if qPlatform_Windows
+    inline Pen::Pen (int nPenStyle, int nWidth, COLORREF crColor)
+        : m_hObject{nullptr}
+    {
+        if (!Attach (::CreatePen (nPenStyle, nWidth, crColor)))
+            Led_ThrowOutOfMemoryException ();
+    }
+    inline Pen::~Pen ()
+    {
+        (void)DeleteObject ();
+    }
+    inline Pen::operator HPEN () const
+    {
+        return m_hObject;
+    }
+    inline BOOL Pen::Attach (HPEN hObject)
+    {
+        Assert (m_hObject == nullptr); // only attach once, detach on destroy
+        if (hObject == nullptr)
+            return FALSE;
+        m_hObject = hObject;
+        return TRUE;
+    }
+    inline BOOL Pen::DeleteObject ()
+    {
+        if (m_hObject == nullptr)
+            return FALSE;
+        HPEN h    = m_hObject;
+        m_hObject = nullptr;
+        return ::DeleteObject (h);
+    }
+}
+#endif
+
+namespace Stroika::Frameworks::Led {
 
     /*
      ********************************************************************************
-     ****************** Led_FontSpecification::FontNameSpecifier ********************
+     ************************************* LineSpacing ******************************
+     ********************************************************************************
+     */
+    inline    LineSpacing::LineSpacing (Rule rule)
+            : fRule{rule}
+        {
+            Require (rule == eSingleSpace or rule == eOnePointFiveSpace or rule == eDoubleSpace);
+        }
+     inline   LineSpacing::LineSpacing (Rule rule, TWIPS twips)
+            : fRule{rule}
+            , fArg{static_cast<unsigned> (twips)}
+        {
+            Require (rule == eAtLeastTWIPSSpacing or rule == eExactTWIPSSpacing);
+        }
+      inline  LineSpacing::LineSpacing (Rule rule, unsigned lineCount)
+            : fRule{rule}
+            , fArg{lineCount}
+        {
+            Require (rule == eExactLinesSpacing);
+            switch (lineCount) {
+                case 20:
+                    fRule = eSingleSpace;
+                    break;
+                case 30:
+                    fRule = eOnePointFiveSpace;
+                    break;
+                case 40:
+                    fRule = eDoubleSpace;
+                    break;
+            }
+        }
+        inline bool LineSpacing::operator== (LineSpacing rhs) const
+        {
+            if (fRule != rhs.fRule) {
+                return false;
+            }
+            if (fRule == LineSpacing::eAtLeastTWIPSSpacing or fRule == LineSpacing::eExactTWIPSSpacing or fRule == LineSpacing::eExactLinesSpacing) {
+                if (fArg != rhs.fArg) {
+                    return false;
+                }
+            }
+            return true;
+        }
+#if __cpp_impl_three_way_comparison < 201907
+        inline bool LineSpacing::operator!= (LineSpacing rhs) const
+        {
+            return not(*this == rhs);
+        }
+#endif
+
+
+    /*
+     ********************************************************************************
+     ****************** FontSpecification::FontNameSpecifier ********************
      ********************************************************************************
      */
 #if qPlatform_Windows
-    inline Led_FontSpecification::FontNameSpecifier::FontNameSpecifier ()
+    inline FontSpecification::FontNameSpecifier::FontNameSpecifier ()
     {
         fName[0] = '\0';
     }
@@ -1689,10 +1831,10 @@ namespace Stroika::Frameworks::Led {
 
     /*
      ********************************************************************************
-     ****************************** Led_FontSpecification ***************************
+     ****************************** FontSpecification ***************************
      ********************************************************************************
      */
-    inline Led_FontSpecification::Led_FontSpecification ()
+    inline FontSpecification::FontSpecification ()
         :
 #if qPlatform_MacOS
         fFontSpecifier (0)
@@ -1700,51 +1842,51 @@ namespace Stroika::Frameworks::Led {
         , fFontStyle (0)
         ,
 #elif qPlatform_Windows
-        fFontInfo ()
-        ,
+            fFontInfo ()
+            ,
 #elif qStroika_FeatureSupported_XWindows
-        fFontFamily ()
-        , fBold (false)
-        , fItalics (false)
-        , fUnderline (false)
-        , fFontSize (0)
-        ,
+            fFontFamily ()
+            , fBold (false)
+            , fItalics (false)
+            , fUnderline (false)
+            , fFontSize (0)
+            ,
 #endif
         fSubOrSuperScript (eNoSubOrSuperscript)
-        , fTextColor (Led_Color::kBlack)
+        , fTextColor (Color::kBlack)
     {
 #if qPlatform_Windows
         (void)::memset (&fFontInfo, 0, sizeof (fFontInfo));
 #endif
     }
-    inline Led_FontSpecification::Led_FontSpecification (const Led_IncrementalFontSpecification& from)
+    inline FontSpecification::FontSpecification (const IncrementalFontSpecification& from)
         :
 #if qPlatform_MacOS
-        fFontSpecifier (((const Led_FontSpecification&)from).fFontSpecifier)
-        , fFontSize (((const Led_FontSpecification&)from).fFontSize)
-        , fFontStyle (((const Led_FontSpecification&)from).fFontStyle)
+        fFontSpecifier (((const FontSpecification&)from).fFontSpecifier)
+        , fFontSize (((const FontSpecification&)from).fFontSize)
+        , fFontStyle (((const FontSpecification&)from).fFontStyle)
         ,
 #elif qPlatform_Windows
-        fFontInfo (((const Led_FontSpecification&)from).fFontInfo)
-        ,
+            fFontInfo (((const FontSpecification&)from).fFontInfo)
+            ,
 #elif qStroika_FeatureSupported_XWindows
-        fFontFamily (from.fFontFamily)
-        , fBold (from.fBold)
-        , fItalics (from.fItalics)
-        , fUnderline (from.fUnderline)
-        , fFontSize (from.fFontSize)
-        ,
+            fFontFamily (from.fFontFamily)
+            , fBold (from.fBold)
+            , fItalics (from.fItalics)
+            , fUnderline (from.fUnderline)
+            , fFontSize (from.fFontSize)
+            ,
 #endif
-        fSubOrSuperScript (((const Led_FontSpecification&)from).fSubOrSuperScript)
-        , fTextColor (((const Led_FontSpecification&)from).fTextColor)
+        fSubOrSuperScript (((const FontSpecification&)from).fSubOrSuperScript)
+        , fTextColor (((const FontSpecification&)from).fTextColor)
     {
     }
     /*
-    @METHOD:        Led_FontSpecification::GetFontName
+    @METHOD:        FontSpecification::GetFontName
     @DESCRIPTION:   <p>Retrieve the 'FontName' attribute of the given font specification. This name is a string, and corresponds to the font family name.</p>
-                    <p>See also @'Led_FontSpecification::SetFontName'.</p>
+                    <p>See also @'FontSpecification::SetFontName'.</p>
     */
-    inline Led_SDK_String Led_FontSpecification::GetFontName () const
+    inline Led_SDK_String FontSpecification::GetFontName () const
     {
 #if qPlatform_MacOS
         Str255 fontName;
@@ -1752,30 +1894,30 @@ namespace Stroika::Frameworks::Led {
         size_t len = fontName[0];
         return string ((const char*)&fontName[1], len);
 #elif qPlatform_Windows
-        return fFontInfo.lfFaceName;
+            return fFontInfo.lfFaceName;
 #elif qStroika_FeatureSupported_XWindows
-        return fFontFamily;
+            return fFontFamily;
 #endif
     }
     // FontName info
-    inline Led_FontSpecification::FontNameSpecifier Led_FontSpecification::GetFontNameSpecifier () const
+    inline FontSpecification::FontNameSpecifier FontSpecification::GetFontNameSpecifier () const
     {
 #if qPlatform_MacOS
         return fFontSpecifier;
 #elif qPlatform_Windows
-        return fFontInfo.lfFaceName;
+            return fFontInfo.lfFaceName;
 #elif qStroika_FeatureSupported_XWindows
-        return fFontFamily;
+            return fFontFamily;
 #endif
     }
     // Style info
     /*
-    @METHOD:        Led_FontSpecification::GetStyle_Plain
+    @METHOD:        FontSpecification::GetStyle_Plain
     @DESCRIPTION:   <p>Checks all the various font 'style' attributes, such as 'bold', or 'italic'. Returns true iff all
                 of these styles are not set.</p>
-                <p>See also @'Led_FontSpecification::SetStyle_Plain'.</p>
+                <p>See also @'FontSpecification::SetStyle_Plain'.</p>
     */
-    inline bool Led_FontSpecification::GetStyle_Plain () const
+    inline bool FontSpecification::GetStyle_Plain () const
     {
         if (fSubOrSuperScript != eNoSubOrSuperscript) {
             return false;
@@ -1783,47 +1925,47 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         return (fFontStyle == 0);
 #elif qPlatform_Windows
-        return (
-            fFontInfo.lfItalic == false and
-            fFontInfo.lfWeight <= FW_NORMAL and
-            fFontInfo.lfUnderline == false and
-            fFontInfo.lfStrikeOut == false);
+            return (
+                fFontInfo.lfItalic == false and
+                fFontInfo.lfWeight <= FW_NORMAL and
+                fFontInfo.lfUnderline == false and
+                fFontInfo.lfStrikeOut == false);
 #elif qStroika_FeatureSupported_XWindows
-        return not fBold and not fItalics and not fUnderline;
+            return not fBold and not fItalics and not fUnderline;
 #endif
     }
     /*
-    @METHOD:        Led_FontSpecification::SetStyle_Plain
+    @METHOD:        FontSpecification::SetStyle_Plain
     @DESCRIPTION:   <p>Clears all 'style' attributes, such as 'bold', or 'italic'.</p>
-                <p>See also @'Led_FontSpecification::GetStyle_Plain'.</p>
+                <p>See also @'FontSpecification::GetStyle_Plain'.</p>
     */
-    inline void Led_FontSpecification::SetStyle_Plain ()
+    inline void FontSpecification::SetStyle_Plain ()
     {
         fSubOrSuperScript = eNoSubOrSuperscript;
 #if qPlatform_MacOS
         fFontStyle = 0;
 #elif qPlatform_Windows
-        fFontInfo.lfItalic    = false;
-        fFontInfo.lfWeight    = FW_NORMAL;
-        fFontInfo.lfUnderline = false;
-        fFontInfo.lfStrikeOut = false;
+            fFontInfo.lfItalic    = false;
+            fFontInfo.lfWeight    = FW_NORMAL;
+            fFontInfo.lfUnderline = false;
+            fFontInfo.lfStrikeOut = false;
 #elif qStroika_FeatureSupported_XWindows
-        fBold = false;
-        fItalics = false;
-        fUnderline = false;
+            fBold = false;
+            fItalics = false;
+            fUnderline = false;
 #endif
     }
-    inline bool Led_FontSpecification::GetStyle_Bold () const
+    inline bool FontSpecification::GetStyle_Bold () const
     {
 #if qPlatform_MacOS
         return (fFontStyle & bold);
 #elif qPlatform_Windows
-        return (fFontInfo.lfWeight > FW_NORMAL);
+            return (fFontInfo.lfWeight > FW_NORMAL);
 #elif qStroika_FeatureSupported_XWindows
-        return fBold;
+            return fBold;
 #endif
     }
-    inline void Led_FontSpecification::SetStyle_Bold (bool isBold)
+    inline void FontSpecification::SetStyle_Bold (bool isBold)
     {
 #if qPlatform_MacOS
         if (isBold) {
@@ -1833,22 +1975,22 @@ namespace Stroika::Frameworks::Led {
             fFontStyle &= ~bold;
         }
 #elif qPlatform_Windows
-        fFontInfo.lfWeight = isBold ? FW_BOLD : FW_NORMAL;
+            fFontInfo.lfWeight = isBold ? FW_BOLD : FW_NORMAL;
 #elif qStroika_FeatureSupported_XWindows
-        fBold = isBold;
+            fBold = isBold;
 #endif
     }
-    inline bool Led_FontSpecification::GetStyle_Italic () const
+    inline bool FontSpecification::GetStyle_Italic () const
     {
 #if qPlatform_MacOS
         return (fFontStyle & italic);
 #elif qPlatform_Windows
-        return !!fFontInfo.lfItalic;
+            return !!fFontInfo.lfItalic;
 #elif qStroika_FeatureSupported_XWindows
-        return fItalics;
+            return fItalics;
 #endif
     }
-    inline void Led_FontSpecification::SetStyle_Italic (bool isItalic)
+    inline void FontSpecification::SetStyle_Italic (bool isItalic)
     {
 #if qPlatform_MacOS
         if (isItalic) {
@@ -1858,22 +2000,22 @@ namespace Stroika::Frameworks::Led {
             fFontStyle &= ~italic;
         }
 #elif qPlatform_Windows
-        fFontInfo.lfItalic = isItalic;
+            fFontInfo.lfItalic = isItalic;
 #elif qStroika_FeatureSupported_XWindows
-        fItalics = isItalic;
+            fItalics = isItalic;
 #endif
     }
-    inline bool Led_FontSpecification::GetStyle_Underline () const
+    inline bool FontSpecification::GetStyle_Underline () const
     {
 #if qPlatform_MacOS
         return (fFontStyle & underline);
 #elif qPlatform_Windows
-        return !!fFontInfo.lfUnderline;
+            return !!fFontInfo.lfUnderline;
 #elif qStroika_FeatureSupported_XWindows
-        return fUnderline;
+            return fUnderline;
 #endif
     }
-    inline void Led_FontSpecification::SetStyle_Underline (bool isUnderline)
+    inline void FontSpecification::SetStyle_Underline (bool isUnderline)
     {
 #if qPlatform_MacOS
         if (isUnderline) {
@@ -1883,25 +2025,25 @@ namespace Stroika::Frameworks::Led {
             fFontStyle &= ~underline;
         }
 #elif qPlatform_Windows
-        fFontInfo.lfUnderline = isUnderline;
+            fFontInfo.lfUnderline = isUnderline;
 #elif qStroika_FeatureSupported_XWindows
-        fUnderline = isUnderline;
+            fUnderline = isUnderline;
 #endif
     }
-    inline Led_FontSpecification::SubOrSuperScript Led_FontSpecification::GetStyle_SubOrSuperScript () const
+    inline FontSpecification::SubOrSuperScript FontSpecification::GetStyle_SubOrSuperScript () const
     {
         return fSubOrSuperScript;
     }
-    inline void Led_FontSpecification::SetStyle_SubOrSuperScript (SubOrSuperScript subOrSuperScript)
+    inline void FontSpecification::SetStyle_SubOrSuperScript (SubOrSuperScript subOrSuperScript)
     {
         fSubOrSuperScript = subOrSuperScript;
     }
 #if qPlatform_MacOS
-    inline bool Led_FontSpecification::GetStyle_Outline () const
+    inline bool FontSpecification::GetStyle_Outline () const
     {
         return (fFontStyle & outline);
     }
-    inline void Led_FontSpecification::SetStyle_Outline (bool isOutline)
+    inline void FontSpecification::SetStyle_Outline (bool isOutline)
     {
         if (isOutline) {
             fFontStyle |= outline;
@@ -1910,11 +2052,11 @@ namespace Stroika::Frameworks::Led {
             fFontStyle &= ~outline;
         }
     }
-    inline bool Led_FontSpecification::GetStyle_Shadow () const
+    inline bool FontSpecification::GetStyle_Shadow () const
     {
         return (fFontStyle & shadow);
     }
-    inline void Led_FontSpecification::SetStyle_Shadow (bool isShadow)
+    inline void FontSpecification::SetStyle_Shadow (bool isShadow)
     {
         if (isShadow) {
             fFontStyle |= shadow;
@@ -1923,11 +2065,11 @@ namespace Stroika::Frameworks::Led {
             fFontStyle &= ~shadow;
         }
     }
-    inline bool Led_FontSpecification::GetStyle_Condensed () const
+    inline bool FontSpecification::GetStyle_Condensed () const
     {
         return (fFontStyle & condense);
     }
-    inline void Led_FontSpecification::SetStyle_Condensed (bool isCondensed)
+    inline void FontSpecification::SetStyle_Condensed (bool isCondensed)
     {
         if (isCondensed) {
             fFontStyle |= condense;
@@ -1936,11 +2078,11 @@ namespace Stroika::Frameworks::Led {
             fFontStyle &= ~condense;
         }
     }
-    inline bool Led_FontSpecification::GetStyle_Extended () const
+    inline bool FontSpecification::GetStyle_Extended () const
     {
         return (fFontStyle & extend);
     }
-    inline void Led_FontSpecification::SetStyle_Extended (bool isExtended)
+    inline void FontSpecification::SetStyle_Extended (bool isExtended)
     {
         if (isExtended) {
             fFontStyle |= extend;
@@ -1950,71 +2092,71 @@ namespace Stroika::Frameworks::Led {
         }
     }
 #elif qPlatform_Windows
-    inline bool Led_FontSpecification::GetStyle_Strikeout () const
-    {
-        return !!fFontInfo.lfStrikeOut;
-    }
-    inline void Led_FontSpecification::SetStyle_Strikeout (bool isStrikeout)
-    {
-        fFontInfo.lfStrikeOut = isStrikeout;
-    }
+        inline bool FontSpecification::GetStyle_Strikeout () const
+        {
+            return !!fFontInfo.lfStrikeOut;
+        }
+        inline void FontSpecification::SetStyle_Strikeout (bool isStrikeout)
+        {
+            fFontInfo.lfStrikeOut = isStrikeout;
+        }
 #endif
     // FontSize info
-    inline Led_FontSpecification::FontSize Led_FontSpecification::GetPointSize () const
+    inline FontSpecification::FontSize FontSpecification::GetPointSize () const
     {
 #if qPlatform_MacOS
         return fFontSize;
 #elif qPlatform_Windows
-        if (fFontInfo.lfHeight >= 0) {
-            // I probably should be doing some magic here with subtracing internal leading, or something like that from this value -
-            // See TextImager::GetStaticDefaultFont () and Win32 SDK docs for LOGFONT
-            // LGP 960222
-            Led_WindowDC screenDC (nullptr);
-            FontObject   font;
-            Verify (font.CreateFontIndirect (&fFontInfo));
-            HFONT      oldFont = screenDC.SelectObject (font);
-            TEXTMETRIC tms;
-            screenDC.GetTextMetrics (&tms);
-            screenDC.SelectObject (oldFont);
-            return (unsigned short)::MulDiv (tms.tmHeight, 72, Led_GDIGlobals::Get ().GetMainScreenLogPixelsV ());
-        }
-        else {
-            return static_cast<unsigned short> (::MulDiv (-fFontInfo.lfHeight, 72, Led_GDIGlobals::Get ().GetMainScreenLogPixelsV ()));
-        }
+            if (fFontInfo.lfHeight >= 0) {
+                // I probably should be doing some magic here with subtracing internal leading, or something like that from this value -
+                // See TextImager::GetStaticDefaultFont () and Win32 SDK docs for LOGFONT
+                // LGP 960222
+                WindowDC   screenDC (nullptr);
+                FontObject font;
+                Verify (font.CreateFontIndirect (&fFontInfo));
+                HFONT      oldFont = screenDC.SelectObject (font);
+                TEXTMETRIC tms;
+                screenDC.GetTextMetrics (&tms);
+                screenDC.SelectObject (oldFont);
+                return (unsigned short)::MulDiv (tms.tmHeight, 72, Led_GDIGlobals::Get ().GetMainScreenLogPixelsV ());
+            }
+            else {
+                return static_cast<unsigned short> (::MulDiv (-fFontInfo.lfHeight, 72, Led_GDIGlobals::Get ().GetMainScreenLogPixelsV ()));
+            }
 #elif qStroika_FeatureSupported_XWindows
-        return fFontSize;
+            return fFontSize;
 #endif
     }
-    inline void Led_FontSpecification::SetPointSize (FontSize pointSize)
+    inline void FontSpecification::SetPointSize (FontSize pointSize)
     {
 #if qPlatform_MacOS
         fFontSize = pointSize;
 #elif qPlatform_Windows
-        fFontInfo.lfHeight = ::MulDiv (-long (pointSize), Led_GDIGlobals::Get ().GetMainScreenLogPixelsV (), 72);
+            fFontInfo.lfHeight = ::MulDiv (-long (pointSize), Led_GDIGlobals::Get ().GetMainScreenLogPixelsV (), 72);
 #elif qStroika_FeatureSupported_XWindows
-        fFontSize = pointSize;
+            fFontSize = pointSize;
 #endif
     }
 #if qPlatform_Windows
-    inline long Led_FontSpecification::PeekAtTMHeight () const
+    inline long FontSpecification::PeekAtTMHeight () const
     {
         return fFontInfo.lfHeight;
     }
-    inline void Led_FontSpecification::PokeAtTMHeight (long tmHeight)
+    inline void FontSpecification::PokeAtTMHeight (long tmHeight)
     {
         fFontInfo.lfHeight = tmHeight;
     }
 #endif
-    inline Led_Color Led_FontSpecification::GetTextColor () const
+    inline Color FontSpecification::GetTextColor () const
     {
         return fTextColor;
     }
-    inline void Led_FontSpecification::SetTextColor (const Led_Color& textColor)
+    inline void FontSpecification::SetTextColor (const Color& textColor)
     {
         fTextColor = textColor;
     }
 #if qPlatform_MacOS
-    inline void Led_FontSpecification::GetOSRep (short* fontID, short* fontSize, Style* fontStyle) const
+    inline void FontSpecification::GetOSRep (short* fontID, short* fontSize, Style* fontStyle) const
     {
         if (fontID != nullptr) {
             *fontID = fFontSpecifier;
@@ -2026,51 +2168,51 @@ namespace Stroika::Frameworks::Led {
             *fontStyle = fFontStyle;
         }
     }
-    inline void Led_FontSpecification::SetOSRep (short fontID, short fontSize, Style fontStyle)
+    inline void FontSpecification::SetOSRep (short fontID, short fontSize, Style fontStyle)
     {
         fFontSpecifier = fontID;
         fFontSize      = fontSize;
         fFontStyle     = fontStyle;
     }
 #elif qPlatform_Windows
-    inline LOGFONT Led_FontSpecification::GetOSRep () const
-    {
-        return fFontInfo;
-    }
-    inline void Led_FontSpecification::GetOSRep (LOGFONT* logFont) const
-    {
-        RequireNotNull (logFont);
-        *logFont = fFontInfo;
-    }
-    inline void Led_FontSpecification::SetOSRep (LOGFONT logFont)
-    {
-        fFontInfo = logFont;
-    }
-    inline void Led_FontSpecification::LightSetOSRep (LOGFONT logFont)
-    {
-        fFontInfo                  = logFont;
-        fFontInfo.lfWidth          = 0;
-        fFontInfo.lfEscapement     = 0;
-        fFontInfo.lfOrientation    = 0;
-        fFontInfo.lfCharSet        = DEFAULT_CHARSET;
-        fFontInfo.lfOutPrecision   = 0;
-        fFontInfo.lfClipPrecision  = 0;
-        fFontInfo.lfQuality        = 0;
-        fFontInfo.lfPitchAndFamily = 0;
-    }
+        inline LOGFONT FontSpecification::GetOSRep () const
+        {
+            return fFontInfo;
+        }
+        inline void FontSpecification::GetOSRep (LOGFONT* logFont) const
+        {
+            RequireNotNull (logFont);
+            *logFont = fFontInfo;
+        }
+        inline void FontSpecification::SetOSRep (LOGFONT logFont)
+        {
+            fFontInfo = logFont;
+        }
+        inline void FontSpecification::LightSetOSRep (LOGFONT logFont)
+        {
+            fFontInfo                  = logFont;
+            fFontInfo.lfWidth          = 0;
+            fFontInfo.lfEscapement     = 0;
+            fFontInfo.lfOrientation    = 0;
+            fFontInfo.lfCharSet        = DEFAULT_CHARSET;
+            fFontInfo.lfOutPrecision   = 0;
+            fFontInfo.lfClipPrecision  = 0;
+            fFontInfo.lfQuality        = 0;
+            fFontInfo.lfPitchAndFamily = 0;
+        }
 #endif
 #if qPlatform_Windows
-    inline Led_FontSpecification::Led_FontSpecification (const LOGFONT& logFont)
+    inline FontSpecification::FontSpecification (const LOGFONT& logFont)
         : fFontInfo ()
         , fSubOrSuperScript (eNoSubOrSuperscript)
-        , fTextColor (Led_Color::kBlack)
+        , fTextColor (Color::kBlack)
     {
         LightSetOSRep (logFont);
     }
 #endif
-    inline bool Led_FontSpecification::operator== (const Led_FontSpecification& rhs) const
+    inline bool FontSpecification::operator== (const FontSpecification& rhs) const
     {
-        const Led_FontSpecification& lhs = *this;
+        const FontSpecification& lhs = *this;
         // FontName Info
         if (lhs.GetFontNameSpecifier () != rhs.GetFontNameSpecifier ()) {
             return false;
@@ -2086,28 +2228,28 @@ namespace Stroika::Frameworks::Led {
             return false;
         }
 #elif qPlatform_Windows
-        if (lhs.GetStyle_Bold () != rhs.GetStyle_Bold ()) {
-            return false;
-        }
-        if (lhs.GetStyle_Italic () != rhs.GetStyle_Italic ()) {
-            return false;
-        }
-        if (lhs.GetStyle_Underline () != rhs.GetStyle_Underline ()) {
-            return false;
-        }
-        if (lhs.GetStyle_Strikeout () != rhs.GetStyle_Strikeout ()) {
-            return false;
-        }
+            if (lhs.GetStyle_Bold () != rhs.GetStyle_Bold ()) {
+                return false;
+            }
+            if (lhs.GetStyle_Italic () != rhs.GetStyle_Italic ()) {
+                return false;
+            }
+            if (lhs.GetStyle_Underline () != rhs.GetStyle_Underline ()) {
+                return false;
+            }
+            if (lhs.GetStyle_Strikeout () != rhs.GetStyle_Strikeout ()) {
+                return false;
+            }
 #elif qStroika_FeatureSupported_XWindows
-        if (lhs.GetStyle_Bold () != rhs.GetStyle_Bold ()) {
-            return false;
-        }
-        if (lhs.GetStyle_Italic () != rhs.GetStyle_Italic ()) {
-            return false;
-        }
-        if (lhs.GetStyle_Underline () != rhs.GetStyle_Underline ()) {
-            return false;
-        }
+            if (lhs.GetStyle_Bold () != rhs.GetStyle_Bold ()) {
+                return false;
+            }
+            if (lhs.GetStyle_Italic () != rhs.GetStyle_Italic ()) {
+                return false;
+            }
+            if (lhs.GetStyle_Underline () != rhs.GetStyle_Underline ()) {
+                return false;
+            }
 #endif
         if (lhs.GetStyle_SubOrSuperScript () != rhs.GetStyle_SubOrSuperScript ()) {
             return false;
@@ -2137,7 +2279,7 @@ namespace Stroika::Frameworks::Led {
 
         return true;
     }
-    inline void Led_FontSpecification::MergeIn (const Led_IncrementalFontSpecification& addInTheseAttributes)
+    inline void FontSpecification::MergeIn (const IncrementalFontSpecification& addInTheseAttributes)
     {
         // Font Name
         if (addInTheseAttributes.GetFontNameSpecifier_Valid ()) {
@@ -2171,9 +2313,9 @@ namespace Stroika::Frameworks::Led {
             SetStyle_Extended (addInTheseAttributes.GetStyle_Extended ());
         }
 #elif qPlatform_Windows
-        if (addInTheseAttributes.GetStyle_Strikeout_Valid ()) {
-            SetStyle_Strikeout (addInTheseAttributes.GetStyle_Strikeout ());
-        }
+            if (addInTheseAttributes.GetStyle_Strikeout_Valid ()) {
+                SetStyle_Strikeout (addInTheseAttributes.GetStyle_Strikeout ());
+            }
 #endif
 
         // Font Size
@@ -2182,7 +2324,7 @@ namespace Stroika::Frameworks::Led {
             // speed tweek - avoid costly conversion to 'points'. All we want todo is copy the tmHeight field!
             PokeAtTMHeight (addInTheseAttributes.PeekAtTMHeight ());
 #else
-            SetPointSize (addInTheseAttributes.GetPointSize ());
+                SetPointSize (addInTheseAttributes.GetPointSize ());
 #endif
         }
         if (addInTheseAttributes.GetPointSizeIncrement_Valid ()) {
@@ -2211,10 +2353,10 @@ namespace Stroika::Frameworks::Led {
 
     /*
      ********************************************************************************
-     ********************** Led_IncrementalFontSpecification ************************
+     ********************** IncrementalFontSpecification ************************
      ********************************************************************************
      */
-    inline Led_IncrementalFontSpecification::Led_IncrementalFontSpecification ()
+    inline IncrementalFontSpecification::IncrementalFontSpecification ()
         : fFontSpecifierValid (false)
         , fStyleValid_Bold (false)
         , fStyleValid_Italic (false)
@@ -2228,17 +2370,17 @@ namespace Stroika::Frameworks::Led {
         , fStyleValid_Extended (false)
         ,
 #elif qPlatform_Windows
-        fStyleValid_Strikeout (false)
-        , fDidSetOSRepCallFlag (false)
-        ,
+            fStyleValid_Strikeout (false)
+            , fDidSetOSRepCallFlag (false)
+            ,
 #endif
         fFontSizeValid (false)
         , fFontSizeIncrementValid (false)
         , fTextColorValid (false)
     {
     }
-    inline Led_IncrementalFontSpecification::Led_IncrementalFontSpecification (const Led_FontSpecification& fontSpec)
-        : Led_FontSpecification{fontSpec}
+    inline IncrementalFontSpecification::IncrementalFontSpecification (const FontSpecification& fontSpec)
+        : FontSpecification{fontSpec}
         , fFontSpecifierValid (true)
         , fStyleValid_Bold (true)
         , fStyleValid_Italic (true)
@@ -2252,32 +2394,32 @@ namespace Stroika::Frameworks::Led {
         , fStyleValid_Extended (true)
         ,
 #elif qPlatform_Windows
-        fStyleValid_Strikeout (true)
-        , fDidSetOSRepCallFlag (true)
-        ,
+            fStyleValid_Strikeout (true)
+            , fDidSetOSRepCallFlag (true)
+            ,
 #endif
         fFontSizeValid (true)
         , fFontSizeIncrementValid (false)
         , fTextColorValid (true)
     {
     }
-    inline Led_FontSpecification::FontNameSpecifier Led_IncrementalFontSpecification::GetFontNameSpecifier () const
+    inline FontSpecification::FontNameSpecifier IncrementalFontSpecification::GetFontNameSpecifier () const
     {
         Require (fFontSpecifierValid);
         return inherited::GetFontNameSpecifier ();
     }
-    inline bool Led_IncrementalFontSpecification::GetFontNameSpecifier_Valid () const
+    inline bool IncrementalFontSpecification::GetFontNameSpecifier_Valid () const
     {
         return (fFontSpecifierValid);
     }
-    inline void Led_IncrementalFontSpecification::InvalidateFontNameSpecifier ()
+    inline void IncrementalFontSpecification::InvalidateFontNameSpecifier ()
     {
         fFontSpecifierValid = false;
 #if qPlatform_Windows
         fDidSetOSRepCallFlag = false;
 #endif
     }
-    inline void Led_IncrementalFontSpecification::SetFontNameSpecifier (FontNameSpecifier fontNameSpecifier)
+    inline void IncrementalFontSpecification::SetFontNameSpecifier (FontNameSpecifier fontNameSpecifier)
     {
         fFontSpecifierValid = true;
 #if qPlatform_Windows
@@ -2285,7 +2427,7 @@ namespace Stroika::Frameworks::Led {
 #endif
         inherited::SetFontNameSpecifier (fontNameSpecifier);
     }
-    inline void Led_IncrementalFontSpecification::SetFontName (const Led_SDK_String& fontName)
+    inline void IncrementalFontSpecification::SetFontName (const Led_SDK_String& fontName)
     {
         fFontSpecifierValid = true;
 #if qPlatform_Windows
@@ -2293,7 +2435,7 @@ namespace Stroika::Frameworks::Led {
 #endif
         inherited::SetFontName (fontName);
     }
-    inline bool Led_IncrementalFontSpecification::GetStyle_Plain () const
+    inline bool IncrementalFontSpecification::GetStyle_Plain () const
     {
         Require (fStyleValid_Bold);
         Require (fStyleValid_Italic);
@@ -2305,21 +2447,21 @@ namespace Stroika::Frameworks::Led {
         Require (fStyleValid_Condensed);
         Require (fStyleValid_Extended);
 #elif qPlatform_Windows
-        Require (fStyleValid_Strikeout);
+            Require (fStyleValid_Strikeout);
 #endif
         return inherited::GetStyle_Plain ();
     }
-    inline bool Led_IncrementalFontSpecification::GetStyle_Plain_Valid () const
+    inline bool IncrementalFontSpecification::GetStyle_Plain_Valid () const
     {
         bool isValid = fStyleValid_Bold and fStyleValid_Italic and fStyleValid_Underline and fStyleValid_SubOrSuperScript;
 #if qPlatform_MacOS
         isValid = isValid and fStyleValid_Outline and fStyleValid_Shadow and fStyleValid_Condensed and fStyleValid_Extended;
 #elif qPlatform_Windows
-        isValid               = isValid and fStyleValid_Strikeout;
+            isValid               = isValid and fStyleValid_Strikeout;
 #endif
         return isValid;
     }
-    inline void Led_IncrementalFontSpecification::InvalidateStyles ()
+    inline void IncrementalFontSpecification::InvalidateStyles ()
     {
         fStyleValid_Bold             = false;
         fStyleValid_Italic           = false;
@@ -2331,11 +2473,11 @@ namespace Stroika::Frameworks::Led {
         fStyleValid_Condensed = false;
         fStyleValid_Extended  = false;
 #elif qPlatform_Windows
-        fStyleValid_Strikeout = false;
-        fDidSetOSRepCallFlag  = false;
+            fStyleValid_Strikeout = false;
+            fDidSetOSRepCallFlag  = false;
 #endif
     }
-    inline void Led_IncrementalFontSpecification::SetStyle_Plain ()
+    inline void IncrementalFontSpecification::SetStyle_Plain ()
     {
         fStyleValid_Bold             = true;
         fStyleValid_Italic           = true;
@@ -2347,28 +2489,28 @@ namespace Stroika::Frameworks::Led {
         fStyleValid_Condensed = true;
         fStyleValid_Extended  = true;
 #elif qPlatform_Windows
-        fStyleValid_Strikeout = true;
-        fDidSetOSRepCallFlag  = false;
+            fStyleValid_Strikeout = true;
+            fDidSetOSRepCallFlag  = false;
 #endif
         inherited::SetStyle_Plain ();
     }
-    inline bool Led_IncrementalFontSpecification::GetStyle_Bold () const
+    inline bool IncrementalFontSpecification::GetStyle_Bold () const
     {
         Require (fStyleValid_Bold);
         return inherited::GetStyle_Bold ();
     }
-    inline bool Led_IncrementalFontSpecification::GetStyle_Bold_Valid () const
+    inline bool IncrementalFontSpecification::GetStyle_Bold_Valid () const
     {
         return (fStyleValid_Bold);
     }
-    inline void Led_IncrementalFontSpecification::InvalidateStyle_Bold ()
+    inline void IncrementalFontSpecification::InvalidateStyle_Bold ()
     {
         fStyleValid_Bold = false;
 #if qPlatform_Windows
         fDidSetOSRepCallFlag = false;
 #endif
     }
-    inline void Led_IncrementalFontSpecification::SetStyle_Bold (bool isBold)
+    inline void IncrementalFontSpecification::SetStyle_Bold (bool isBold)
     {
         fStyleValid_Bold = true;
 #if qPlatform_Windows
@@ -2376,23 +2518,23 @@ namespace Stroika::Frameworks::Led {
 #endif
         inherited::SetStyle_Bold (isBold);
     }
-    inline bool Led_IncrementalFontSpecification::GetStyle_Italic () const
+    inline bool IncrementalFontSpecification::GetStyle_Italic () const
     {
         Require (fStyleValid_Italic);
         return inherited::GetStyle_Italic ();
     }
-    inline bool Led_IncrementalFontSpecification::GetStyle_Italic_Valid () const
+    inline bool IncrementalFontSpecification::GetStyle_Italic_Valid () const
     {
         return (fStyleValid_Italic);
     }
-    inline void Led_IncrementalFontSpecification::InvalidateStyle_Italic ()
+    inline void IncrementalFontSpecification::InvalidateStyle_Italic ()
     {
         fStyleValid_Italic = false;
 #if qPlatform_Windows
         fDidSetOSRepCallFlag = false;
 #endif
     }
-    inline void Led_IncrementalFontSpecification::SetStyle_Italic (bool isItalic)
+    inline void IncrementalFontSpecification::SetStyle_Italic (bool isItalic)
     {
         fStyleValid_Italic = true;
 #if qPlatform_Windows
@@ -2400,23 +2542,23 @@ namespace Stroika::Frameworks::Led {
 #endif
         inherited::SetStyle_Italic (isItalic);
     }
-    inline bool Led_IncrementalFontSpecification::GetStyle_Underline () const
+    inline bool IncrementalFontSpecification::GetStyle_Underline () const
     {
         Require (fStyleValid_Underline);
         return inherited::GetStyle_Underline ();
     }
-    inline bool Led_IncrementalFontSpecification::GetStyle_Underline_Valid () const
+    inline bool IncrementalFontSpecification::GetStyle_Underline_Valid () const
     {
         return (fStyleValid_Underline);
     }
-    inline void Led_IncrementalFontSpecification::InvalidateStyle_Underline ()
+    inline void IncrementalFontSpecification::InvalidateStyle_Underline ()
     {
         fStyleValid_Underline = false;
 #if qPlatform_Windows
         fDidSetOSRepCallFlag = false;
 #endif
     }
-    inline void Led_IncrementalFontSpecification::SetStyle_Underline (bool isUnderline)
+    inline void IncrementalFontSpecification::SetStyle_Underline (bool isUnderline)
     {
         fStyleValid_Underline = true;
 #if qPlatform_Windows
@@ -2424,23 +2566,23 @@ namespace Stroika::Frameworks::Led {
 #endif
         inherited::SetStyle_Underline (isUnderline);
     }
-    inline Led_FontSpecification::SubOrSuperScript Led_IncrementalFontSpecification::GetStyle_SubOrSuperScript () const
+    inline FontSpecification::SubOrSuperScript IncrementalFontSpecification::GetStyle_SubOrSuperScript () const
     {
         Require (fStyleValid_SubOrSuperScript);
         return inherited::GetStyle_SubOrSuperScript ();
     }
-    inline bool Led_IncrementalFontSpecification::GetStyle_SubOrSuperScript_Valid () const
+    inline bool IncrementalFontSpecification::GetStyle_SubOrSuperScript_Valid () const
     {
         return (fStyleValid_SubOrSuperScript);
     }
-    inline void Led_IncrementalFontSpecification::InvalidateStyle_SubOrSuperScript ()
+    inline void IncrementalFontSpecification::InvalidateStyle_SubOrSuperScript ()
     {
         fStyleValid_SubOrSuperScript = false;
 #if qPlatform_Windows
         fDidSetOSRepCallFlag = false;
 #endif
     }
-    inline void Led_IncrementalFontSpecification::SetStyle_SubOrSuperScript (SubOrSuperScript subOrSuperScript)
+    inline void IncrementalFontSpecification::SetStyle_SubOrSuperScript (SubOrSuperScript subOrSuperScript)
     {
         fStyleValid_SubOrSuperScript = true;
 #if qPlatform_Windows
@@ -2449,116 +2591,116 @@ namespace Stroika::Frameworks::Led {
         inherited::SetStyle_SubOrSuperScript (subOrSuperScript);
     }
 #if qPlatform_MacOS
-    inline bool Led_IncrementalFontSpecification::GetStyle_Outline () const
+    inline bool IncrementalFontSpecification::GetStyle_Outline () const
     {
         Require (fStyleValid_Outline);
         return (inherited::GetStyle_Outline ());
     }
-    inline bool Led_IncrementalFontSpecification::GetStyle_Outline_Valid () const
+    inline bool IncrementalFontSpecification::GetStyle_Outline_Valid () const
     {
         return (fStyleValid_Outline);
     }
-    inline void Led_IncrementalFontSpecification::InvalidateStyle_Outline ()
+    inline void IncrementalFontSpecification::InvalidateStyle_Outline ()
     {
         fStyleValid_Outline = false;
     }
-    inline void Led_IncrementalFontSpecification::SetStyle_Outline (bool isOutline)
+    inline void IncrementalFontSpecification::SetStyle_Outline (bool isOutline)
     {
         fStyleValid_Outline = true;
         inherited::SetStyle_Outline (isOutline);
     }
-    inline bool Led_IncrementalFontSpecification::GetStyle_Shadow () const
+    inline bool IncrementalFontSpecification::GetStyle_Shadow () const
     {
         Require (fStyleValid_Shadow);
         return (inherited::GetStyle_Shadow ());
     }
-    inline bool Led_IncrementalFontSpecification::GetStyle_Shadow_Valid () const
+    inline bool IncrementalFontSpecification::GetStyle_Shadow_Valid () const
     {
         return (fStyleValid_Shadow);
     }
-    inline void Led_IncrementalFontSpecification::InvalidateStyle_Shadow ()
+    inline void IncrementalFontSpecification::InvalidateStyle_Shadow ()
     {
         fStyleValid_Shadow = false;
     }
-    inline void Led_IncrementalFontSpecification::SetStyle_Shadow (bool isShadow)
+    inline void IncrementalFontSpecification::SetStyle_Shadow (bool isShadow)
     {
         fStyleValid_Shadow = true;
         inherited::SetStyle_Shadow (isShadow);
     }
-    inline bool Led_IncrementalFontSpecification::GetStyle_Condensed () const
+    inline bool IncrementalFontSpecification::GetStyle_Condensed () const
     {
         Require (fStyleValid_Condensed);
         return (inherited::GetStyle_Condensed ());
     }
-    inline bool Led_IncrementalFontSpecification::GetStyle_Condensed_Valid () const
+    inline bool IncrementalFontSpecification::GetStyle_Condensed_Valid () const
     {
         return (fStyleValid_Condensed);
     }
-    inline void Led_IncrementalFontSpecification::InvalidateStyle_Condensed ()
+    inline void IncrementalFontSpecification::InvalidateStyle_Condensed ()
     {
         fStyleValid_Condensed = false;
     }
-    inline void Led_IncrementalFontSpecification::SetStyle_Condensed (bool isCondensed)
+    inline void IncrementalFontSpecification::SetStyle_Condensed (bool isCondensed)
     {
         fStyleValid_Condensed = true;
         inherited::SetStyle_Condensed (isCondensed);
     }
-    inline bool Led_IncrementalFontSpecification::GetStyle_Extended () const
+    inline bool IncrementalFontSpecification::GetStyle_Extended () const
     {
         Require (fStyleValid_Extended);
         return (inherited::GetStyle_Extended ());
     }
-    inline bool Led_IncrementalFontSpecification::GetStyle_Extended_Valid () const
+    inline bool IncrementalFontSpecification::GetStyle_Extended_Valid () const
     {
         return (fStyleValid_Extended);
     }
-    inline void Led_IncrementalFontSpecification::InvalidateStyle_Extended ()
+    inline void IncrementalFontSpecification::InvalidateStyle_Extended ()
     {
         fStyleValid_Extended = false;
     }
-    inline void Led_IncrementalFontSpecification::SetStyle_Extended (bool isExtended)
+    inline void IncrementalFontSpecification::SetStyle_Extended (bool isExtended)
     {
         fStyleValid_Extended = true;
         inherited::SetStyle_Extended (isExtended);
     }
 #elif qPlatform_Windows
-    inline bool Led_IncrementalFontSpecification::GetStyle_Strikeout () const
-    {
-        Require (fStyleValid_Strikeout);
-        return (inherited::GetStyle_Strikeout ());
-    }
-    inline bool Led_IncrementalFontSpecification::GetStyle_Strikeout_Valid () const
-    {
-        return (fStyleValid_Strikeout);
-    }
-    inline void Led_IncrementalFontSpecification::InvalidateStyle_Strikeout ()
-    {
-        fStyleValid_Strikeout = false;
+        inline bool IncrementalFontSpecification::GetStyle_Strikeout () const
+        {
+            Require (fStyleValid_Strikeout);
+            return (inherited::GetStyle_Strikeout ());
+        }
+        inline bool IncrementalFontSpecification::GetStyle_Strikeout_Valid () const
+        {
+            return (fStyleValid_Strikeout);
+        }
+        inline void IncrementalFontSpecification::InvalidateStyle_Strikeout ()
+        {
+            fStyleValid_Strikeout = false;
 #if qPlatform_Windows
-        fDidSetOSRepCallFlag  = false;
+            fDidSetOSRepCallFlag  = false;
 #endif
-    }
-    inline void Led_IncrementalFontSpecification::SetStyle_Strikeout (bool isStrikeout)
-    {
-        fStyleValid_Strikeout = true;
+        }
+        inline void IncrementalFontSpecification::SetStyle_Strikeout (bool isStrikeout)
+        {
+            fStyleValid_Strikeout = true;
 #if qPlatform_Windows
-        fDidSetOSRepCallFlag  = false;
+            fDidSetOSRepCallFlag  = false;
 #endif
-        inherited::SetStyle_Strikeout (isStrikeout);
-    }
+            inherited::SetStyle_Strikeout (isStrikeout);
+        }
 #endif
     // FontSize info
-    inline unsigned short Led_IncrementalFontSpecification::GetPointSize () const
+    inline unsigned short IncrementalFontSpecification::GetPointSize () const
     {
         Require (fFontSizeValid);
         Require (not fFontSizeIncrementValid);
         return inherited::GetPointSize ();
     }
-    inline bool Led_IncrementalFontSpecification::GetPointSize_Valid () const
+    inline bool IncrementalFontSpecification::GetPointSize_Valid () const
     {
         return (fFontSizeValid);
     }
-    inline void Led_IncrementalFontSpecification::InvalidatePointSize ()
+    inline void IncrementalFontSpecification::InvalidatePointSize ()
     {
         fFontSizeValid          = false;
         fFontSizeIncrementValid = false;
@@ -2566,7 +2708,7 @@ namespace Stroika::Frameworks::Led {
         fDidSetOSRepCallFlag = false;
 #endif
     }
-    inline void Led_IncrementalFontSpecification::SetPointSize (FontSize pointSize)
+    inline void IncrementalFontSpecification::SetPointSize (FontSize pointSize)
     {
         fFontSizeValid = true;
 #if qPlatform_Windows
@@ -2576,7 +2718,7 @@ namespace Stroika::Frameworks::Led {
         fFontSizeIncrementValid = false;
     }
 #if qPlatform_Windows
-    inline void Led_IncrementalFontSpecification::PokeAtTMHeight (long tmHeight)
+    inline void IncrementalFontSpecification::PokeAtTMHeight (long tmHeight)
     {
         fFontSizeValid          = true;
         fDidSetOSRepCallFlag    = false;
@@ -2584,17 +2726,17 @@ namespace Stroika::Frameworks::Led {
         inherited::PokeAtTMHeight (tmHeight);
     }
 #endif
-    inline short Led_IncrementalFontSpecification::GetPointSizeIncrement () const
+    inline short IncrementalFontSpecification::GetPointSizeIncrement () const
     {
         Require (not fFontSizeValid);
         Require (fFontSizeIncrementValid);
         return (short)inherited::GetPointSize ();
     }
-    inline bool Led_IncrementalFontSpecification::GetPointSizeIncrement_Valid () const
+    inline bool IncrementalFontSpecification::GetPointSizeIncrement_Valid () const
     {
         return (fFontSizeIncrementValid);
     }
-    inline void Led_IncrementalFontSpecification::InvalidatePointSizeIncrement ()
+    inline void IncrementalFontSpecification::InvalidatePointSizeIncrement ()
     {
         fFontSizeValid          = false;
         fFontSizeIncrementValid = false;
@@ -2602,7 +2744,7 @@ namespace Stroika::Frameworks::Led {
         fDidSetOSRepCallFlag = false;
 #endif
     }
-    inline void Led_IncrementalFontSpecification::SetPointSizeIncrement (short pointSizeIncrement)
+    inline void IncrementalFontSpecification::SetPointSizeIncrement (short pointSizeIncrement)
     {
         fFontSizeValid = false;
 #if qPlatform_Windows
@@ -2612,26 +2754,26 @@ namespace Stroika::Frameworks::Led {
         fFontSizeIncrementValid = true;
     }
     // FontFaceColor info
-    inline Led_Color Led_IncrementalFontSpecification::GetTextColor () const
+    inline Color IncrementalFontSpecification::GetTextColor () const
     {
         Require (fTextColorValid);
         return inherited::GetTextColor ();
     }
-    inline bool Led_IncrementalFontSpecification::GetTextColor_Valid () const
+    inline bool IncrementalFontSpecification::GetTextColor_Valid () const
     {
         return (fTextColorValid);
     }
-    inline void Led_IncrementalFontSpecification::InvalidateTextColor ()
+    inline void IncrementalFontSpecification::InvalidateTextColor ()
     {
         fTextColorValid = false;
     }
-    inline void Led_IncrementalFontSpecification::SetTextColor (const Led_Color& textColor)
+    inline void IncrementalFontSpecification::SetTextColor (const Color& textColor)
     {
         fTextColorValid = true;
         inherited::SetTextColor (textColor);
     }
 #if qPlatform_MacOS
-    inline void Led_IncrementalFontSpecification::GetOSRep (short* fontID, short* fontSize, Style* fontStyle) const
+    inline void IncrementalFontSpecification::GetOSRep (short* fontID, short* fontSize, Style* fontStyle) const
     {
         Require (fFontSpecifierValid and
                  fStyleValid_Bold and
@@ -2644,7 +2786,7 @@ namespace Stroika::Frameworks::Led {
                  fStyleValid_Extended);
         inherited::GetOSRep (fontID, fontSize, fontStyle);
     }
-    inline void Led_IncrementalFontSpecification::SetOSRep (short fontID, short fontSize, Style fontStyle)
+    inline void IncrementalFontSpecification::SetOSRep (short fontID, short fontSize, Style fontStyle)
     {
         fFontSpecifierValid     = true;
         fStyleValid_Bold        = true;
@@ -2659,57 +2801,57 @@ namespace Stroika::Frameworks::Led {
         inherited::SetOSRep (fontID, fontSize, fontStyle);
     }
 #elif qPlatform_Windows
-    inline LOGFONT Led_IncrementalFontSpecification::GetOSRep () const
-    {
-        Require (fFontSpecifierValid and
-                 fStyleValid_Bold and
-                 fStyleValid_Italic and
-                 fStyleValid_Underline and
-                 fFontSizeValid);
-        Require (fStyleValid_Strikeout);
-        return inherited::GetOSRep ();
-    }
-    inline void Led_IncrementalFontSpecification::GetOSRep (LOGFONT* logFont) const
-    {
-        RequireNotNull (logFont);
-        Require (fFontSpecifierValid and
-                 fStyleValid_Bold and
-                 fStyleValid_Italic and
-                 fStyleValid_Underline and
-                 fFontSizeValid);
-        Require (fStyleValid_Strikeout);
-        inherited::GetOSRep (logFont);
-    }
-    inline void Led_IncrementalFontSpecification::SetOSRep (LOGFONT logFont)
-    {
-        fFontSpecifierValid     = true;
-        fStyleValid_Bold        = true;
-        fStyleValid_Italic      = true;
-        fStyleValid_Underline   = true;
-        fStyleValid_Strikeout   = true;
-        fFontSizeValid          = true;
-        fFontSizeIncrementValid = false;
-        fDidSetOSRepCallFlag    = true;
-        inherited::SetOSRep (logFont);
-    }
-    inline void Led_IncrementalFontSpecification::LightSetOSRep (LOGFONT logFont)
-    {
-        fFontSpecifierValid     = true;
-        fStyleValid_Bold        = true;
-        fStyleValid_Italic      = true;
-        fStyleValid_Underline   = true;
-        fStyleValid_Strikeout   = true;
-        fFontSizeValid          = true;
-        fFontSizeIncrementValid = false;
-        fDidSetOSRepCallFlag    = true;
-        inherited::LightSetOSRep (logFont);
-    }
-    inline bool Led_IncrementalFontSpecification::GetDidSetOSRepCallFlag () const
-    {
-        return fDidSetOSRepCallFlag;
-    }
+        inline LOGFONT IncrementalFontSpecification::GetOSRep () const
+        {
+            Require (fFontSpecifierValid and
+                     fStyleValid_Bold and
+                     fStyleValid_Italic and
+                     fStyleValid_Underline and
+                     fFontSizeValid);
+            Require (fStyleValid_Strikeout);
+            return inherited::GetOSRep ();
+        }
+        inline void IncrementalFontSpecification::GetOSRep (LOGFONT* logFont) const
+        {
+            RequireNotNull (logFont);
+            Require (fFontSpecifierValid and
+                     fStyleValid_Bold and
+                     fStyleValid_Italic and
+                     fStyleValid_Underline and
+                     fFontSizeValid);
+            Require (fStyleValid_Strikeout);
+            inherited::GetOSRep (logFont);
+        }
+        inline void IncrementalFontSpecification::SetOSRep (LOGFONT logFont)
+        {
+            fFontSpecifierValid     = true;
+            fStyleValid_Bold        = true;
+            fStyleValid_Italic      = true;
+            fStyleValid_Underline   = true;
+            fStyleValid_Strikeout   = true;
+            fFontSizeValid          = true;
+            fFontSizeIncrementValid = false;
+            fDidSetOSRepCallFlag    = true;
+            inherited::SetOSRep (logFont);
+        }
+        inline void IncrementalFontSpecification::LightSetOSRep (LOGFONT logFont)
+        {
+            fFontSpecifierValid     = true;
+            fStyleValid_Bold        = true;
+            fStyleValid_Italic      = true;
+            fStyleValid_Underline   = true;
+            fStyleValid_Strikeout   = true;
+            fFontSizeValid          = true;
+            fFontSizeIncrementValid = false;
+            fDidSetOSRepCallFlag    = true;
+            inherited::LightSetOSRep (logFont);
+        }
+        inline bool IncrementalFontSpecification::GetDidSetOSRepCallFlag () const
+        {
+            return fDidSetOSRepCallFlag;
+        }
 #endif
-    inline void Led_IncrementalFontSpecification::MergeIn (const Led_IncrementalFontSpecification& addInTheseAttributes)
+    inline void IncrementalFontSpecification::MergeIn (const IncrementalFontSpecification& addInTheseAttributes)
     {
         // Font Name
         if (addInTheseAttributes.GetFontNameSpecifier_Valid ()) {
@@ -2740,9 +2882,9 @@ namespace Stroika::Frameworks::Led {
             SetStyle_Extended (addInTheseAttributes.GetStyle_Extended ());
         }
 #elif qPlatform_Windows
-        if (addInTheseAttributes.GetStyle_Strikeout_Valid ()) {
-            SetStyle_Strikeout (addInTheseAttributes.GetStyle_Strikeout ());
-        }
+            if (addInTheseAttributes.GetStyle_Strikeout_Valid ()) {
+                SetStyle_Strikeout (addInTheseAttributes.GetStyle_Strikeout ());
+            }
 #endif
 
         // Font Size
@@ -2751,7 +2893,7 @@ namespace Stroika::Frameworks::Led {
             // speed tweek - avoid costly conversion to 'points'. All we want todo is copy the tmHeight field!
             PokeAtTMHeight (addInTheseAttributes.PeekAtTMHeight ());
 #else
-            SetPointSize (addInTheseAttributes.GetPointSize ());
+                SetPointSize (addInTheseAttributes.GetPointSize ());
 #endif
         }
         if (addInTheseAttributes.GetPointSizeIncrement_Valid ()) {
@@ -2772,7 +2914,7 @@ namespace Stroika::Frameworks::Led {
         fDidSetOSRepCallFlag = addInTheseAttributes.GetDidSetOSRepCallFlag ();
 #endif
     }
-    inline bool Led_IncrementalFontSpecification::operator== (const Led_IncrementalFontSpecification& rhs) const
+    inline bool IncrementalFontSpecification::operator== (const IncrementalFontSpecification& rhs) const
     {
         // Either make this non-portable, or somehow do some hack to make this test FASTER than it looks like
         // it may be currently - profile??? - LGP 960517
@@ -2854,14 +2996,14 @@ namespace Stroika::Frameworks::Led {
             }
         }
 #elif qPlatform_Windows
-        {
-            if (GetStyle_Strikeout_Valid () != rhs.GetStyle_Strikeout_Valid ()) {
-                return false;
+            {
+                if (GetStyle_Strikeout_Valid () != rhs.GetStyle_Strikeout_Valid ()) {
+                    return false;
+                }
+                if (GetStyle_Strikeout_Valid () and (GetStyle_Strikeout () != rhs.GetStyle_Strikeout ())) {
+                    return false;
+                }
             }
-            if (GetStyle_Strikeout_Valid () and (GetStyle_Strikeout () != rhs.GetStyle_Strikeout ())) {
-                return false;
-            }
-        }
 #endif
 
         // Font Color Info
@@ -2909,7 +3051,7 @@ namespace Stroika::Frameworks::Led {
         return true;
     }
 #if __cpp_impl_three_way_comparison < 201907
-    inline bool operator!= (const Led_IncrementalFontSpecification& lhs, const Led_IncrementalFontSpecification& rhs)
+    inline bool operator!= (const IncrementalFontSpecification& lhs, const IncrementalFontSpecification& rhs)
     {
         return not(lhs == rhs);
     }
@@ -2926,14 +3068,14 @@ namespace Stroika::Frameworks::Led {
      ******************************** Led_GetTextColor ******************************
      ********************************************************************************
      */
-    inline Led_Color Led_GetTextColor ()
+    inline Color Led_GetTextColor ()
     {
 #if qPlatform_MacOS
-        return (Led_Color::kBlack);
+        return (Color::kBlack);
 #elif qPlatform_Windows
-        return Led_Color (::GetSysColor (COLOR_WINDOWTEXT));
+            return Color (::GetSysColor (COLOR_WINDOWTEXT));
 #elif qStroika_FeatureSupported_XWindows
-        return (Led_Color::kBlack);
+            return (Color::kBlack);
 #endif
     }
 
@@ -2942,14 +3084,14 @@ namespace Stroika::Frameworks::Led {
      ************************** Led_GetTextBackgroundColor **************************
      ********************************************************************************
      */
-    inline Led_Color Led_GetTextBackgroundColor ()
+    inline Color Led_GetTextBackgroundColor ()
     {
 #if qPlatform_MacOS
-        return (Led_Color::kWhite);
+        return (Color::kWhite);
 #elif qPlatform_Windows
-        return Led_Color (::GetSysColor (COLOR_WINDOW));
+            return Color (::GetSysColor (COLOR_WINDOW));
 #elif qStroika_FeatureSupported_XWindows
-        return (Led_Color::kWhite);
+            return (Color::kWhite);
 #endif
     }
 
@@ -2958,7 +3100,7 @@ namespace Stroika::Frameworks::Led {
      **************************** Led_GetSelectedTextColor **************************
      ********************************************************************************
      */
-    inline Led_Color Led_GetSelectedTextColor ()
+    inline Color Led_GetSelectedTextColor ()
     {
 #if qPlatform_MacOS
         RGBColor hiliteRGBValue;
@@ -2968,30 +3110,30 @@ namespace Stroika::Frameworks::Led {
             *  that comes with system 7.5. I REALLY should probably do something with color intensity
             *  matching -- LGP 950531
             */
-        if (Led_Color (hiliteRGBValue) == Led_Color::kBlack) {
-            return (Led_Color::kWhite);
+        if (Color (hiliteRGBValue) == Color::kBlack) {
+            return (Color::kWhite);
         }
         else {
-            return (Led_Color::kBlack);
+            return (Color::kBlack);
         }
 #elif qPlatform_Windows
-        //          return Led_Color (::GetSysColor (COLOR_CAPTIONTEXT));
-        return Led_Color (::GetSysColor (COLOR_HIGHLIGHTTEXT));
+            //          return Color (::GetSysColor (COLOR_CAPTIONTEXT));
+            return Color (::GetSysColor (COLOR_HIGHLIGHTTEXT));
 #elif qStroika_FeatureSupported_XWindows
-        return (Led_Color::kWhite);
+            return (Color::kWhite);
 #endif
     }
-    inline Led_Color Led_GetSelectedTextBackgroundColor ()
+    inline Color Led_GetSelectedTextBackgroundColor ()
     {
 #if qPlatform_MacOS
         RGBColor hiliteRGBValue;
         LMGetHiliteRGB (&hiliteRGBValue);
-        return Led_Color (hiliteRGBValue);
+        return Color (hiliteRGBValue);
 #elif qPlatform_Windows
-        //return Led_Color (::GetSysColor (COLOR_ACTIVECAPTION));
-        return Led_Color (::GetSysColor (COLOR_HIGHLIGHT));
+            //return Color (::GetSysColor (COLOR_ACTIVECAPTION));
+            return Color (::GetSysColor (COLOR_HIGHLIGHT));
 #elif qStroika_FeatureSupported_XWindows
-        return (Led_Color::kBlack);
+            return (Color::kBlack);
 #endif
     }
 
@@ -3024,14 +3166,14 @@ namespace Stroika::Frameworks::Led {
         Assert (fHasOldClip);
         tablet->SetClip (fOldClip * clipFurtherTo);
 #elif qPlatform_Windows
-        /*
+            /*
             *  NB: We must use IntersectClipRect instead of the above SetClip () call because the CLIP on Win32 is in
             *  device rather than logical coordinates.
             */
-        if (::GetDeviceCaps (tablet->m_hDC, TECHNOLOGY) == DT_METAFILE) {
-            return;
-        }
-        Verify (::IntersectClipRect (*tablet, clipFurtherTo.GetLeft (), clipFurtherTo.GetTop (), clipFurtherTo.GetRight (), clipFurtherTo.GetBottom ()) != ERROR);
+            if (::GetDeviceCaps (tablet->m_hDC, TECHNOLOGY) == DT_METAFILE) {
+                return;
+            }
+            Verify (::IntersectClipRect (*tablet, clipFurtherTo.GetLeft (), clipFurtherTo.GetTop (), clipFurtherTo.GetRight (), clipFurtherTo.GetBottom ()) != ERROR);
 #endif
     }
     inline Led_Tablet_::ClipNarrowAndRestore::ClipNarrowAndRestore (Led_Tablet_* tablet, [[maybe_unused]] const Led_Region& clipFurtherTo)
@@ -3045,9 +3187,9 @@ namespace Stroika::Frameworks::Led {
         Assert (fHasOldClip);
         tablet->SetClip (fOldClip * clipFurtherTo);
 #elif qPlatform_Windows
-        Assert (false); // NYI - see SPR#????
+            Assert (false); // NYI - see SPR#????
 #else
-        Assert (false); // NYI
+            Assert (false); // NYI
 #endif
     }
     inline Led_Tablet_::ClipNarrowAndRestore::~ClipNarrowAndRestore ()
@@ -3065,6 +3207,28 @@ namespace Stroika::Frameworks::Led {
             fTablet->SetClip ();
         }
     }
+
+#if qPlatform_Windows
+    /*
+     ********************************************************************************
+     ********************************** WindowDC ************************************
+     ********************************************************************************
+     */
+    inline WindowDC::WindowDC (HWND hWnd)
+        : fHWnd_{hWnd}
+    {
+        Require (fHWnd_ == nullptr or ::IsWindow (fHWnd_));
+        if (!Attach (::GetWindowDC (fHWnd_))) {
+            Led_ThrowOutOfMemoryException ();
+        }
+    }
+    inline WindowDC::~WindowDC ()
+    {
+        AssertNotNull (m_hDC);
+        ::ReleaseDC (fHWnd_, Detach ());
+    }
+
+#endif
 
     /*
      ********************************************************************************
@@ -3133,26 +3297,26 @@ namespace Stroika::Frameworks::Led {
         }
     }
 #elif qPlatform_MacOS
-    inline Led_GDI_Obj_Selector::Led_GDI_Obj_Selector (Led_Tablet tablet, const Led_Pen& pen)
-        : fTablet (tablet)
-        ,
+        inline Led_GDI_Obj_Selector::Led_GDI_Obj_Selector (Led_Tablet tablet, const Pen& pen)
+            : fTablet (tablet)
+            ,
 #if TARGET_CARBON
-        fRestorePen (Led_Pen (::GetPortPenMode (Led_GetCurrentGDIPort ()), &Led_Pen::kBlackPattern, Led_Color (GDI_GetForeColor ())))
+            fRestorePen (Pen (::GetPortPenMode (Led_GetCurrentGDIPort ()), &Pen::kBlackPattern, Color (GDI_GetForeColor ())))
 #else
-        fRestorePen (Led_Pen (Led_GetCurrentGDIPort ()->pnMode, &Led_GetCurrentGDIPort ()->pnPat, Led_Color (GDI_GetForeColor ())))
+            fRestorePen (Pen (Led_GetCurrentGDIPort ()->pnMode, &Led_GetCurrentGDIPort ()->pnPat, Color (GDI_GetForeColor ())))
 #endif
-    {
+        {
 #if qDebug
-        Assert (Led_GetCurrentGDIPort () == *tablet);
+            Assert (Led_GetCurrentGDIPort () == *tablet);
 #endif
-        GDI_RGBForeColor (pen.fPenColor.GetOSRep ());
-        ::PenMode (pen.fPenStyle);
-        ::PenPat (&pen.fPenPat);
-    }
+            GDI_RGBForeColor (pen.fPenColor.GetOSRep ());
+            ::PenMode (pen.fPenStyle);
+            ::PenPat (&pen.fPenPat);
+        }
 #elif qStroika_FeatureSupported_XWindows
-    inline Led_GDI_Obj_Selector::Led_GDI_Obj_Selector (Led_Tablet tablet, const Led_Pen& pen)
-    {
-    }
+        inline Led_GDI_Obj_Selector::Led_GDI_Obj_Selector (Led_Tablet tablet, const Pen& pen)
+        {
+        }
 #endif
     inline Led_GDI_Obj_Selector::~Led_GDI_Obj_Selector ()
     {
@@ -3165,9 +3329,9 @@ namespace Stroika::Frameworks::Led {
             Verify (::SelectObject (fTablet->m_hAttribDC, fRestoreAttribObject));
         }
 #elif qPlatform_MacOS
-        GDI_RGBForeColor (fRestorePen.fPenColor.GetOSRep ());
-        ::PenMode (fRestorePen.fPenStyle);
-        ::PenPat (&fRestorePen.fPenPat);
+            GDI_RGBForeColor (fRestorePen.fPenColor.GetOSRep ());
+            ::PenMode (fRestorePen.fPenStyle);
+            ::PenPat (&fRestorePen.fPenPat);
 #endif
     }
 
@@ -3200,7 +3364,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         return picture->picFrame.top;
 #elif qPlatform_Windows
-        return Led_ByteSwapFromMac (picture->picFrameTop);
+            return Led_ByteSwapFromMac (picture->picFrameTop);
 #endif
     }
     inline short Led_GetMacPictLeft (const Led_Picture* picture)
@@ -3209,7 +3373,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         return picture->picFrame.left;
 #elif qPlatform_Windows
-        return Led_ByteSwapFromMac (picture->picFrameLeft);
+            return Led_ByteSwapFromMac (picture->picFrameLeft);
 #endif
     }
     inline short Led_GetMacPictBottom (const Led_Picture* picture)
@@ -3218,7 +3382,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         return picture->picFrame.bottom;
 #elif qPlatform_Windows
-        return Led_ByteSwapFromMac (picture->picFrameBottom);
+            return Led_ByteSwapFromMac (picture->picFrameBottom);
 #endif
     }
     inline short Led_GetMacPictRight (const Led_Picture* picture)
@@ -3227,7 +3391,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         return picture->picFrame.right;
 #elif qPlatform_Windows
-        return Led_ByteSwapFromMac (picture->picFrameRight);
+            return Led_ByteSwapFromMac (picture->picFrameRight);
 #endif
     }
     inline short Led_GetMacPictWidth (const Led_Picture* picture)
@@ -3282,36 +3446,36 @@ namespace Stroika::Frameworks::Led {
 #if qProvideIMESupport
     /*
      ********************************************************************************
-     *********************************** Led_IME ************************************
+     *********************************** IME ************************************
      ********************************************************************************
      */
     DISABLE_COMPILER_MSC_WARNING_START (6011)
-    inline Led_IME& Led_IME::Get ()
+    inline IME& IME::Get ()
     {
         if (sThe == nullptr) {
-            new Led_IME ();
+            new IME ();
         }
         AssertNotNull (sThe);
         return *sThe;
     }
     DISABLE_COMPILER_MSC_WARNING_END (6011)
-    inline void Led_IME::Enable ()
+    inline void IME::Enable ()
     {
         if (fIMEEnableProc != nullptr) {
             fIMEEnableProc (nullptr, true);
         }
     }
-    inline void Led_IME::Disable ()
+    inline void IME::Disable ()
     {
         if (fIMEEnableProc != nullptr) {
             fIMEEnableProc (nullptr, false);
         }
     }
-    inline bool Led_IME::Available () const
+    inline bool IME::Available () const
     {
         return fWinNlsAvailable;
     }
-    inline void Led_IME::ForgetPosition ()
+    inline void IME::ForgetPosition ()
     {
         fLastX = -1;
         fLastY = -1;

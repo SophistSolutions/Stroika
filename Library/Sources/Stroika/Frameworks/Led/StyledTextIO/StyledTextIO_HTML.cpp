@@ -114,7 +114,7 @@ namespace {
             return 0;
         }
     }
-    static inline bool ParseColorString (string colorStr, Led_Color* color)
+    static inline bool ParseColorString (string colorStr, Color* color)
     {
 #if qStaticInitializerOfPairOfStringStringInternalCompilerBug
         for (auto i = kColorNameTable.begin (); i != kColorNameTable.end (); ++i) {
@@ -136,7 +136,7 @@ namespace {
             unsigned short red   = HexCharToNum (colorStr[0]) * 16 + HexCharToNum (colorStr[1]);
             unsigned short green = HexCharToNum (colorStr[2]) * 16 + HexCharToNum (colorStr[3]);
             unsigned short blue  = HexCharToNum (colorStr[4]) * 16 + HexCharToNum (colorStr[5]);
-            *color               = Led_Color (red == 255 ? 0xffff : red << 8, green == 255 ? 0xffff : green << 8, blue == 255 ? 0xffff : blue << 8);
+            *color               = Color (red == 255 ? 0xffff : red << 8, green == 255 ? 0xffff : green << 8, blue == 255 ? 0xffff : blue << 8);
             return true;
         }
         return false;
@@ -456,7 +456,7 @@ HTMLInfo::EntityRefMapEntry HTMLInfo::sDefaultEntityRefMapTable[] = {
 };
 const size_t HTMLInfo::kDefaultEntityRefMapTable_Count = NEltsOf (HTMLInfo::sDefaultEntityRefMapTable);
 
-Led_FontSpecification::FontSize HTMLInfo::HTMLFontSizeToRealFontSize (int size)
+FontSpecification::FontSize HTMLInfo::HTMLFontSizeToRealFontSize (int size)
 {
     size = min (size, 7);
     size = max (size, 1);
@@ -482,7 +482,7 @@ Led_FontSpecification::FontSize HTMLInfo::HTMLFontSizeToRealFontSize (int size)
     return 12;
 }
 
-int HTMLInfo::RealFontSizeToHTMLFontSize (Led_FontSpecification::FontSize size)
+int HTMLInfo::RealFontSizeToHTMLFontSize (FontSpecification::FontSize size)
 {
     if (size <= 7) {
         return 1;
@@ -1097,11 +1097,11 @@ void StyledTextIOReader_HTML::ExtractHTMLTagIntoTagNameBuf (const char* text, si
     }
 }
 
-Led_IncrementalFontSpecification StyledTextIOReader_HTML::ExtractFontSpecFromCSSStyleAttribute (const char* text, size_t nBytes)
+IncrementalFontSpecification StyledTextIOReader_HTML::ExtractFontSpecFromCSSStyleAttribute (const char* text, size_t nBytes)
 {
-    Led_IncrementalFontSpecification f;
-    string                           fullCSSString (text, text + nBytes);
-    string                           itemValue;
+    IncrementalFontSpecification f;
+    string                       fullCSSString (text, text + nBytes);
+    string                       itemValue;
     if (ParseCSSTagArgOut (fullCSSString, "font-family", &itemValue)) {
         // really not right - could be comma separated list - just grab first and ignore the rest, and map
         // predefined generic family items (serif => Times, etc... -- see http://www.w3.org/TR/1999/REC-CSS1-19990111
@@ -1141,7 +1141,7 @@ Led_IncrementalFontSpecification StyledTextIOReader_HTML::ExtractFontSpecFromCSS
         }
     }
     if (ParseCSSTagArgOut (fullCSSString, "color", &itemValue)) {
-        Led_Color clr = Led_Color::kBlack;
+        Color clr = Color::kBlack;
         if (ParseColorString (itemValue, &clr)) {
             f.SetTextColor (clr);
         }
@@ -1200,7 +1200,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_a (bool start, const char* tex
 #else
                 Led_URLD urld = Led_URLD (tagValue.c_str (), fHiddenTextAccumulation.c_str ());
 #endif
-                GetSinkStream ().AppendEmbedding ((assoc.fReadFromMemory) (StandardURLStyleMarker::kEmbeddingTag, urld.PeekAtURLD (), urld.GetURLDLength ()));
+                GetSinkStream ().AppendEmbedding ((assoc.fReadFromMemory)(StandardURLStyleMarker::kEmbeddingTag, urld.PeekAtURLD (), urld.GetURLDLength ()));
             }
         }
         fCurAHRefStart          = size_t (-1);
@@ -1218,7 +1218,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_b (bool start, const char* /*t
 {
     BasicFontStackOperation (start);
     if (start) {
-        Led_FontSpecification fsp = fFontStack.back ();
+        FontSpecification fsp = fFontStack.back ();
         fsp.SetStyle_Bold (true);
         fFontStack.back () = fsp;
     }
@@ -1354,7 +1354,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_font (bool start, const char* 
         string tagText (text, nBytes);
         string tagValue;
         if (ParseHTMLTagArgOut (tagText, "face", &tagValue)) {
-            Led_FontSpecification fsp = fFontStack.back ();
+            FontSpecification fsp = fFontStack.back ();
             if (tagValue.find (',') != string::npos) {
                 tagValue = tagValue.substr (0, tagValue.find (','));
             }
@@ -1375,9 +1375,9 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_font (bool start, const char* 
             fFontStack.back () = fsp;
         }
         if (ParseHTMLTagArgOut (tagText, "color", &tagValue)) {
-            Led_Color newColor = Led_Color::kBlack;
+            Color newColor = Color::kBlack;
             if (ParseColorString (tagValue, &newColor)) {
-                Led_FontSpecification fsp = fFontStack.back ();
+                FontSpecification fsp = fFontStack.back ();
                 fsp.SetTextColor (newColor);
                 fFontStack.back () = fsp;
             }
@@ -1452,7 +1452,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_hN (bool start, const char* te
 #if qThrowAwayMostUnknownHTMLTags
     BasicFontStackOperation (start);
     if (start) {
-        Led_FontSpecification fsp = fFontStack.back ();
+        FontSpecification fsp = fFontStack.back ();
         fsp.SetStyle_Bold (true);
         fFontStack.back () = fsp;
         if (nBytes > 3 and isdigit (text[2])) {
@@ -1495,7 +1495,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_i (bool start, const char* /*t
 {
     BasicFontStackOperation (start);
     if (start) {
-        Led_FontSpecification fsp = fFontStack.back ();
+        FontSpecification fsp = fFontStack.back ();
         fsp.SetStyle_Italic (true);
         fFontStack.back () = fsp;
     }
@@ -1624,7 +1624,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_strike ([[maybe_unused]] bool 
 #if qPlatform_Windows
     BasicFontStackOperation (start);
     if (start) {
-        Led_FontSpecification fsp = fFontStack.back ();
+        FontSpecification fsp = fFontStack.back ();
         fsp.SetStyle_Strikeout (true);
         fFontStack.back () = fsp;
     }
@@ -1641,8 +1641,8 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_sub (bool start, const char* /
 {
     BasicFontStackOperation (start);
     if (start) {
-        Led_FontSpecification fsp = fFontStack.back ();
-        fsp.SetStyle_SubOrSuperScript (Led_FontSpecification::eSubscript);
+        FontSpecification fsp = fFontStack.back ();
+        fsp.SetStyle_SubOrSuperScript (FontSpecification::eSubscript);
         fFontStack.back () = fsp;
     }
 }
@@ -1651,8 +1651,8 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_sup (bool start, const char* /
 {
     BasicFontStackOperation (start);
     if (start) {
-        Led_FontSpecification fsp = fFontStack.back ();
-        fsp.SetStyle_SubOrSuperScript (Led_FontSpecification::eSuperscript);
+        FontSpecification fsp = fFontStack.back ();
+        fsp.SetStyle_SubOrSuperScript (FontSpecification::eSuperscript);
         fFontStack.back () = fsp;
     }
 }
@@ -1776,7 +1776,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_tt (bool start, const char* te
 {
     BasicFontStackOperation (start);
     if (start) {
-        Led_FontSpecification fsp = fFontStack.back ();
+        FontSpecification fsp = fFontStack.back ();
         fsp.SetFontName (Led_SDK_TCHAROF ("courier")); // will this work on mac and PC? - want teletype, monospace font here! - LGP 961003
         fFontStack.back () = fsp;
         GrabAndApplyCSSStyleFromTagText (text, nBytes);
@@ -1787,7 +1787,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_u (bool start, const char* /*t
 {
     BasicFontStackOperation (start);
     if (start) {
-        Led_FontSpecification fsp = fFontStack.back ();
+        FontSpecification fsp = fFontStack.back ();
         fsp.SetStyle_Underline (true);
         fFontStack.back () = fsp;
     }
@@ -2025,9 +2025,9 @@ void StyledTextIOReader_HTML::EndParaIfOpen ()
 
 void StyledTextIOReader_HTML::SetHTMLFontSize (int to)
 {
-    fHTMLFontSize             = min (to, 7);
-    fHTMLFontSize             = max (fHTMLFontSize, 1);
-    Led_FontSpecification fsp = fFontStack.back ();
+    fHTMLFontSize         = min (to, 7);
+    fHTMLFontSize         = max (fHTMLFontSize, 1);
+    FontSpecification fsp = fFontStack.back ();
     fsp.SetPointSize (HTMLInfo::HTMLFontSizeToRealFontSize (fHTMLFontSize));
     fFontStack.back () = fsp;
 }
@@ -2183,7 +2183,7 @@ void StyledTextIOWriter_HTML::WriteInnerBody (WriterContext& writerContext)
      *  SIMULTANEOUSLY through the style run information, and output new controlling
      *  tags on the fly.
      */
-    writerContext.fLastEmittedISR    = StandardStyledTextImager::InfoSummaryRecord (Led_IncrementalFontSpecification (), 0);
+    writerContext.fLastEmittedISR    = StandardStyledTextImager::InfoSummaryRecord (IncrementalFontSpecification (), 0);
     writerContext.fLastStyleChangeAt = 0;
     writerContext.fIthStyleRun       = 0;
     Led_tChar c                      = '\0';
@@ -2494,7 +2494,7 @@ bool StyledTextIOWriter_HTML::IsTagOnStack (WriterContext& writerContext, const 
     return false;
 }
 
-static inline string PrintColorString (Led_Color color)
+static inline string PrintColorString (Color color)
 {
     unsigned short red    = color.GetRed () >> 8;
     unsigned short greeen = color.GetGreen () >> 8;
@@ -2530,7 +2530,7 @@ static inline string PrintColorString (Led_Color color)
     return result;
 }
 
-void StyledTextIOWriter_HTML::EmitBodyFontInfoChange (WriterContext& writerContext, const Led_FontSpecification& newOne, bool skipDoingOpenTags)
+void StyledTextIOWriter_HTML::EmitBodyFontInfoChange (WriterContext& writerContext, const FontSpecification& newOne, bool skipDoingOpenTags)
 {
     // Close off old
     bool fontTagChanged = newOne.GetFontName () != writerContext.fLastEmittedISR.GetFontName () or newOne.GetPointSize () != writerContext.fLastEmittedISR.GetPointSize () or newOne.GetTextColor () != writerContext.fLastEmittedISR.GetTextColor ();
@@ -2546,10 +2546,10 @@ void StyledTextIOWriter_HTML::EmitBodyFontInfoChange (WriterContext& writerConte
     if (not newOne.GetStyle_Underline () and IsTagOnStack (writerContext, "u")) {
         WriteCloseTag (writerContext, "u");
     }
-    if (newOne.GetStyle_SubOrSuperScript () != Led_FontSpecification::eSubscript and IsTagOnStack (writerContext, "sub")) {
+    if (newOne.GetStyle_SubOrSuperScript () != FontSpecification::eSubscript and IsTagOnStack (writerContext, "sub")) {
         WriteCloseTag (writerContext, "sub");
     }
-    if (newOne.GetStyle_SubOrSuperScript () != Led_FontSpecification::eSuperscript and IsTagOnStack (writerContext, "sup")) {
+    if (newOne.GetStyle_SubOrSuperScript () != FontSpecification::eSuperscript and IsTagOnStack (writerContext, "sup")) {
         WriteCloseTag (writerContext, "sup");
     }
 #if qPlatform_Windows
@@ -2561,7 +2561,7 @@ void StyledTextIOWriter_HTML::EmitBodyFontInfoChange (WriterContext& writerConte
     // Open new tags
     if (skipDoingOpenTags) {
         // Set to a BLANK record - cuz we aren't actually emitting any open-tags - so make sure gets done later after the new <p> tag
-        writerContext.fLastEmittedISR = StandardStyledTextImager::InfoSummaryRecord (Led_IncrementalFontSpecification (), fStyleRunSummary[writerContext.fIthStyleRun].fLength);
+        writerContext.fLastEmittedISR = StandardStyledTextImager::InfoSummaryRecord (IncrementalFontSpecification (), fStyleRunSummary[writerContext.fIthStyleRun].fLength);
     }
     else {
         if (not IsTagOnStack (writerContext, "span")) {
@@ -2592,12 +2592,12 @@ void StyledTextIOWriter_HTML::EmitBodyFontInfoChange (WriterContext& writerConte
         }
 
         switch (newOne.GetStyle_SubOrSuperScript ()) {
-            case Led_FontSpecification::eSubscript: {
+            case FontSpecification::eSubscript: {
                 if (not IsTagOnStack (writerContext, "sub")) {
                     WriteOpenTag (writerContext, "sub");
                 }
             } break;
-            case Led_FontSpecification::eSuperscript: {
+            case FontSpecification::eSuperscript: {
                 if (not IsTagOnStack (writerContext, "sup")) {
                     WriteOpenTag (writerContext, "sup");
                 }

@@ -235,9 +235,9 @@ namespace Stroika::Frameworks::Led {
     /*
     @CLASS:         SimpleStyleMarkerByFontSpec<BASECLASS>
     @BASES:         BASECLASS = @'StyledTextImager::StyleMarker'
-    @DESCRIPTION:   <p>Very frequently, you will want to implement a style-marker which just uses some @'Led_FontSpecification'</p>
+    @DESCRIPTION:   <p>Very frequently, you will want to implement a style-marker which just uses some @'FontSpecification'</p>
                 and applies that to the given text, in a maner vaguely similar to what @'StandardStyledTextImager::StandardStyleMarker' does.
-                    <p>This class is an abstract class, where you must specify the particular @'Led_FontSpecification' by overriding
+                    <p>This class is an abstract class, where you must specify the particular @'FontSpecification' by overriding
                 the pure-virtual @'SimpleStyleMarkerByFontSpec::MakeFontSpec'. That font-spec is then used in the various
                 DrawSegemnt () etc overrides.</p>
                     <p>This class is not intended to be an abstract interface one programs to, but rather a helper class for subclasses
@@ -261,11 +261,11 @@ namespace Stroika::Frameworks::Led {
         @METHOD:        SimpleStyleMarkerByFontSpec<BASECLASS>::MakeFontSpec
         @DESCRIPTION:   <p>Virtual method which subclasses override to specify how <em>they</em> want to have the given text displayed.
                     Hopefully enough context is passed into this function to make this helper class widely applicable. All it must do is return
-                    a simple @'Led_FontSpecification' result, and that will be used for all measurements and
+                    a simple @'FontSpecification' result, and that will be used for all measurements and
                     display of this marker.</p>
                         <p>By default, it just returns the default font associated with the imager.</p>
         */
-        virtual Led_FontSpecification MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const;
+        virtual FontSpecification MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const;
 
     public:
         virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
@@ -282,7 +282,7 @@ namespace Stroika::Frameworks::Led {
     @CLASS:         SimpleStyleMarkerByIncrementalFontSpec<BASECLASS>
     @BASES:         BASECLASS (which should be a subclass of @'SimpleStyleMarkerByFontSpec<BASECLASS>')
     @DESCRIPTION:   <p>This helper can be used to avoid manually subclassing @'SimpleStyleMarkerByFontSpec<BASECLASS>'
-                and instead, just takes an @'Led_IncrementalFontSpecification' and does the right thing - mapping
+                and instead, just takes an @'IncrementalFontSpecification' and does the right thing - mapping
                 that into what is displayed.</p>
     */
     template <class BASECLASS>
@@ -294,19 +294,19 @@ namespace Stroika::Frameworks::Led {
         using RunElement = StyledTextImager::RunElement;
 
     public:
-        SimpleStyleMarkerByIncrementalFontSpec (const Led_IncrementalFontSpecification& styleInfo = Led_IncrementalFontSpecification ());
+        SimpleStyleMarkerByIncrementalFontSpec (const IncrementalFontSpecification& styleInfo = IncrementalFontSpecification ());
 
     protected:
-        virtual Led_FontSpecification MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const override;
+        virtual FontSpecification MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const override;
 
     public:
-        Led_IncrementalFontSpecification fFontSpecification;
+        IncrementalFontSpecification fFontSpecification;
     };
 
     /*
     @CLASS:         TrivialFontSpecStyleMarker
     @BASES:         @'SimpleStyleMarkerByIncrementalFontSpec<BASECLASS>' with BASECLASS = @'SimpleStyleMarkerByFontSpec<BASECLASS>'.
-    @DESCRIPTION:   <p>This class just adds to @'SimpleStyleMarkerByFontSpec' a field which is the @'Led_IncrementalFontSpecification'.
+    @DESCRIPTION:   <p>This class just adds to @'SimpleStyleMarkerByFontSpec' a field which is the @'IncrementalFontSpecification'.
                 This is <em>not</em> intended to be subclassed. If you do subclass - beware the overload of operator new () and
                 block-allocation usage. Or better yet, subclass @'SimpleStyleMarkerByIncrementalFontSpec<BASECLASS>' instead.</p>
     */
@@ -315,7 +315,7 @@ namespace Stroika::Frameworks::Led {
         using inherited = SimpleStyleMarkerByIncrementalFontSpec<SimpleStyleMarkerByFontSpec<>>;
 
     public:
-        TrivialFontSpecStyleMarker (const Led_IncrementalFontSpecification& styleInfo);
+        TrivialFontSpecStyleMarker (const IncrementalFontSpecification& styleInfo);
 
     public:
         virtual int GetPriority () const override;
@@ -389,7 +389,7 @@ namespace Stroika::Frameworks::Led {
                                 Coordinate useBaseLine, DistanceType pixelsDrawn) override;
 
     public:
-        virtual Led_Color GetUnderlineBaseColor () const;
+        virtual Color GetUnderlineBaseColor () const;
     };
 
 }

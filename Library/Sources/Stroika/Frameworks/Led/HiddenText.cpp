@@ -408,13 +408,13 @@ HidableTextMarkerOwner::HidableTextMarker* HidableTextMarkerOwner::MakeHidableTe
      *  Some alternates you may want to consider in your overrides...
      *
 
-                Led_IncrementalFontSpecification    fontSpec;
-                fontSpec.SetTextColor (Led_Color::kRed);
+                IncrementalFontSpecification    fontSpec;
+                fontSpec.SetTextColor (Color::kRed);
                 return new LightUnderlineHidableTextMarker (fontSpec);
 
         or:
-                Led_IncrementalFontSpecification    fontSpec;
-                fontSpec.SetTextColor (Led_Color::kRed);
+                IncrementalFontSpecification    fontSpec;
+                fontSpec.SetTextColor (Color::kRed);
                 #if     qPlatform_Windows
                 fontSpec.SetStyle_Strikeout (true);
                 #endif
@@ -535,9 +535,9 @@ void UniformHidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to)
  ************* HidableTextMarkerOwner::FontSpecHidableTextMarker ****************
  ********************************************************************************
  */
-Led_FontSpecification HidableTextMarkerOwner::FontSpecHidableTextMarker::MakeFontSpec (const StyledTextImager* /*imager*/, const RunElement& runElement) const
+FontSpecification HidableTextMarkerOwner::FontSpecHidableTextMarker::MakeFontSpec (const StyledTextImager* /*imager*/, const RunElement& runElement) const
 {
-    Led_FontSpecification fsp;
+    FontSpecification fsp;
     for (auto i = runElement.fSupercededMarkers.begin (); i != runElement.fSupercededMarkers.end (); ++i) {
         if (StandardStyledTextImager::StandardStyleMarker* m = dynamic_cast<StandardStyledTextImager::StandardStyleMarker*> (*i)) {
             fsp.MergeIn (m->fFontSpecification);
@@ -552,12 +552,12 @@ Led_FontSpecification HidableTextMarkerOwner::FontSpecHidableTextMarker::MakeFon
  ********* HidableTextMarkerOwner::LightUnderlineHidableTextMarker **************
  ********************************************************************************
  */
-HidableTextMarkerOwner::LightUnderlineHidableTextMarker::LightUnderlineHidableTextMarker (const Led_IncrementalFontSpecification& fsp)
+HidableTextMarkerOwner::LightUnderlineHidableTextMarker::LightUnderlineHidableTextMarker (const IncrementalFontSpecification& fsp)
 {
     fFontSpecification = fsp;
 }
 
-Led_Color HidableTextMarkerOwner::LightUnderlineHidableTextMarker::GetUnderlineBaseColor () const
+Color HidableTextMarkerOwner::LightUnderlineHidableTextMarker::GetUnderlineBaseColor () const
 {
     if (fFontSpecification.GetTextColor_Valid ()) {
         return fFontSpecification.GetTextColor ();
@@ -590,7 +590,7 @@ void ColoredUniformHidableTextMarkerOwner::FixupSubMarkers ()
 
 ColoredUniformHidableTextMarkerOwner::HidableTextMarker* ColoredUniformHidableTextMarkerOwner::MakeHidableTextMarker ()
 {
-    Led_IncrementalFontSpecification fontSpec;
+    IncrementalFontSpecification fontSpec;
     if (fColored) {
         fontSpec.SetTextColor (fColor);
     }

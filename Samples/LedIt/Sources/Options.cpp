@@ -238,13 +238,13 @@ void Options::SetCheckFileAssocsAtStartup (bool checkFileAssocsAtStartup)
 }
 #endif
 
-Led_FontSpecification Options::GetDefaultNewDocFont () const
+FontSpecification Options::GetDefaultNewDocFont () const
 {
 #if qPlatform_Windows
     BLOB bytes = sOptions_.Get ().fDefaultNewDocFont;
     if (not bytes.empty ()) {
         if (bytes.size () == sizeof (LOGFONT)) {
-            Led_FontSpecification fsp;
+            FontSpecification fsp;
             fsp.SetOSRep (bytes.As<LOGFONT> ());
             return fsp;
         }
@@ -253,7 +253,7 @@ Led_FontSpecification Options::GetDefaultNewDocFont () const
     return TextImager::GetStaticDefaultFont ();
 }
 
-void Options::SetDefaultNewDocFont ([[maybe_unused]] const Led_FontSpecification& defaultNewDocFont)
+void Options::SetDefaultNewDocFont ([[maybe_unused]] const FontSpecification& defaultNewDocFont)
 {
 #if qPlatform_Windows
     sOptions_.Update ([&] (Options_ d) { d.fDefaultNewDocFont = BLOB::Raw (defaultNewDocFont.GetOSRep ()); return d; });

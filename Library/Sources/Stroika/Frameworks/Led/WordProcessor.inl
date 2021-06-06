@@ -40,18 +40,18 @@ namespace Stroika::Frameworks::Led {
     /*
     @METHOD:        WordProcessor::ParagraphInfo::GetJustification
     @DESCRIPTION:
-        <p>Return the @'Led_Justification' setting.</p>
+        <p>Return the @'Justification' setting.</p>
     */
-    inline Led_Justification WordProcessor::ParagraphInfo::GetJustification () const
+    inline Justification WordProcessor::ParagraphInfo::GetJustification () const
     {
         return fJustification;
     }
     /*
     @METHOD:        WordProcessor::ParagraphInfo::SetJustification
     @DESCRIPTION:
-        <p>Set the @'Led_Justification' setting.</p>
+        <p>Set the @'Justification' setting.</p>
     */
-    inline void WordProcessor::ParagraphInfo::SetJustification (Led_Justification justification)
+    inline void WordProcessor::ParagraphInfo::SetJustification (Justification justification)
     {
         fJustification = justification;
     }
@@ -140,7 +140,7 @@ namespace Stroika::Frameworks::Led {
             <p>See the RTF docs for \slN and \slmultN</p>
             <p>See also @'WordProcessor::ParagraphInfo::SetLineSpacing'.</p>
     */
-    inline Led_LineSpacing WordProcessor::ParagraphInfo::GetLineSpacing () const
+    inline LineSpacing WordProcessor::ParagraphInfo::GetLineSpacing () const
     {
         return fLineSpacing;
     }
@@ -149,7 +149,7 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:
             <p>See also @'WordProcessor::ParagraphInfo::GetLineSpacing'.</p>
     */
-    inline void WordProcessor::ParagraphInfo::SetLineSpacing (Led_LineSpacing sl)
+    inline void WordProcessor::ParagraphInfo::SetLineSpacing (LineSpacing sl)
     {
         fLineSpacing = sl;
     }
@@ -272,12 +272,12 @@ namespace Stroika::Frameworks::Led {
         , fListIndentLevelValid (true)
     {
     }
-    inline Led_Justification WordProcessor::IncrementalParagraphInfo::GetJustification () const
+    inline Justification WordProcessor::IncrementalParagraphInfo::GetJustification () const
     {
         Require (fJustificationValid);
         return inherited::GetJustification ();
     }
-    inline void WordProcessor::IncrementalParagraphInfo::SetJustification (Led_Justification justification)
+    inline void WordProcessor::IncrementalParagraphInfo::SetJustification (Justification justification)
     {
         fJustificationValid = true;
         inherited::SetJustification (justification);
@@ -385,12 +385,12 @@ namespace Stroika::Frameworks::Led {
     {
         fSpaceAfterValid = false;
     }
-    inline Led_LineSpacing WordProcessor::IncrementalParagraphInfo::GetLineSpacing () const
+    inline LineSpacing WordProcessor::IncrementalParagraphInfo::GetLineSpacing () const
     {
         Require (fLineSpacingValid);
         return inherited::GetLineSpacing ();
     }
-    inline void WordProcessor::IncrementalParagraphInfo::SetLineSpacing (Led_LineSpacing sl)
+    inline void WordProcessor::IncrementalParagraphInfo::SetLineSpacing (LineSpacing sl)
     {
         fLineSpacingValid = true;
         inherited::SetLineSpacing (sl);
@@ -693,7 +693,7 @@ namespace Stroika::Frameworks::Led {
     {
         sDialogSupport = ds;
     }
-    inline Led_IncrementalFontSpecification WordProcessor::GetCurSelFontSpec () const
+    inline IncrementalFontSpecification WordProcessor::GetCurSelFontSpec () const
     {
         if (not fCachedCurSelFontSpecValid) {
             AssureCurSelFontCacheValid ();
@@ -924,16 +924,16 @@ namespace Stroika::Frameworks::Led {
         *selEnd   = fIntraSelEnd;
     }
     inline void WordProcessor::Table::SaveIntraCellContextInfo (
-        bool                         leftSideOfSelectionInteresting,
-        const Led_FontSpecification& intraCellSelectionEmptySelFontSpecification)
+        bool                     leftSideOfSelectionInteresting,
+        const FontSpecification& intraCellSelectionEmptySelFontSpecification)
     {
         fSavedIntraCellInfoValid                          = true;
         fSavedLeftSideOfSelectionInteresting              = leftSideOfSelectionInteresting;
         fSavedIntraCellSelectionEmptySelFontSpecification = intraCellSelectionEmptySelFontSpecification;
     }
     inline bool WordProcessor::Table::RestoreIntraCellContextInfo (
-        bool*                  leftSideOfSelectionInteresting,
-        Led_FontSpecification* intraCellSelectionEmptySelFontSpecification)
+        bool*              leftSideOfSelectionInteresting,
+        FontSpecification* intraCellSelectionEmptySelFontSpecification)
     {
         RequireNotNull (leftSideOfSelectionInteresting);
         RequireNotNull (intraCellSelectionEmptySelFontSpecification);
@@ -1105,13 +1105,13 @@ namespace Stroika::Frameworks::Led {
      */
     inline WordProcessor::DialogSupport::TableSelectionPropertiesInfo::TableSelectionPropertiesInfo ()
         : fTableBorderWidth (TWIPS (0))
-        , fTableBorderColor (Led_Color::kWhite)
+        , fTableBorderColor (Color::kWhite)
         , fDefaultCellMargins ()
         , fCellSpacing (TWIPS (0))
         , fCellWidth_Common (false)
         , fCellWidth (TWIPS (0))
         , fCellBackgroundColor_Common (false)
-        , fCellBackgroundColor (Led_Color::kWhite)
+        , fCellBackgroundColor (Color::kWhite)
     {
     }
 

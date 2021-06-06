@@ -136,24 +136,24 @@ namespace Stroika::Frameworks::Led {
             *  DefaultFont defaults to GetStaticDefaultFont () (really - no puns intended :-))
             */
     public:
-        nonvirtual Led_FontSpecification GetDefaultFont () const;
-        virtual void                     SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont);
+        nonvirtual FontSpecification GetDefaultFont () const;
+        virtual void                 SetDefaultFont (const IncrementalFontSpecification& defaultFont);
 
     protected:
-        nonvirtual void SetDefaultFont_ (const Led_IncrementalFontSpecification& defaultFont);
+        nonvirtual void SetDefaultFont_ (const IncrementalFontSpecification& defaultFont);
 
     private:
-        Led_FontSpecification fDefaultFont;
+        FontSpecification fDefaultFont;
 
         // Query the OS for the default font that should be used for new text windows
     public:
-        static Led_FontSpecification GetStaticDefaultFont ();
+        static FontSpecification GetStaticDefaultFont ();
 #if qPlatform_Windows
-        static Led_FontSpecification GetStaticDefaultFont (BYTE charSet);
+        static FontSpecification GetStaticDefaultFont (BYTE charSet);
 #endif
 
     public:
-        virtual Led_FontSpecification GetDefaultSelectionFont () const;
+        virtual FontSpecification GetDefaultSelectionFont () const;
 
     public:
         /*
@@ -704,13 +704,13 @@ namespace Stroika::Frameworks::Led {
                                  eDefaultSelectedTextColor,
                                  eDefaultSelectedTextBackgroundColor,
                                  eMaxDefaultColorIndex };
-        nonvirtual Led_Color* GetDefaultTextColor (DefaultColorIndex dci) const;
-        nonvirtual Led_Color  GetEffectiveDefaultTextColor (DefaultColorIndex dci) const;
-        nonvirtual void       ClearDefaultTextColor (DefaultColorIndex dci);
-        nonvirtual void       SetDefaultTextColor (DefaultColorIndex dci, const Led_Color& textColor);
+        nonvirtual Color* GetDefaultTextColor (DefaultColorIndex dci) const;
+        nonvirtual Color  GetEffectiveDefaultTextColor (DefaultColorIndex dci) const;
+        nonvirtual void   ClearDefaultTextColor (DefaultColorIndex dci);
+        nonvirtual void   SetDefaultTextColor (DefaultColorIndex dci, const Color& textColor);
 
     private:
-        Led_Color* fDefaultColorIndex[eMaxDefaultColorIndex];
+        Color* fDefaultColorIndex[eMaxDefaultColorIndex];
 
     public:
         virtual void EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing);
@@ -747,7 +747,7 @@ namespace Stroika::Frameworks::Led {
 
     public:
         // Note we REQUIRE that useBaseLine be contained within drawInto
-        nonvirtual void DrawSegment_ (Led_Tablet tablet, const Led_FontSpecification& fontSpec,
+        nonvirtual void DrawSegment_ (Led_Tablet tablet, const FontSpecification& fontSpec,
                                       size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, Coordinate useBaseLine, DistanceType* pixelsDrawn) const;
 
     protected:
@@ -762,7 +762,7 @@ namespace Stroika::Frameworks::Led {
                                           DistanceType* distanceResults) const;
 
     public:
-        nonvirtual void MeasureSegmentWidth_ (const Led_FontSpecification& fontSpec, size_t from, size_t to,
+        nonvirtual void MeasureSegmentWidth_ (const FontSpecification& fontSpec, size_t from, size_t to,
                                               const Led_tChar* text,
                                               DistanceType*    distanceResults) const;
 
@@ -770,13 +770,13 @@ namespace Stroika::Frameworks::Led {
         virtual DistanceType MeasureSegmentHeight (size_t from, size_t to) const;
 
     public:
-        nonvirtual DistanceType MeasureSegmentHeight_ (const Led_FontSpecification& fontSpec, size_t from, size_t to) const;
+        nonvirtual DistanceType MeasureSegmentHeight_ (const FontSpecification& fontSpec, size_t from, size_t to) const;
 
     protected:
         virtual DistanceType MeasureSegmentBaseLine (size_t from, size_t to) const;
 
     public:
-        nonvirtual DistanceType MeasureSegmentBaseLine_ (const Led_FontSpecification& fontSpec, size_t from, size_t to) const;
+        nonvirtual DistanceType MeasureSegmentBaseLine_ (const FontSpecification& fontSpec, size_t from, size_t to) const;
 
     public:
         /*
@@ -830,8 +830,8 @@ namespace Stroika::Frameworks::Led {
 
         // Font info caches...
     private:
-        mutable Led_FontSpecification fCachedFontSpec;
-        mutable Led_FontMetrics       fCachedFontInfo;
+        mutable FontSpecification fCachedFontSpec;
+        mutable Led_FontMetrics   fCachedFontInfo;
 #if qPlatform_Windows
         mutable FontObject* fCachedFont;
 #else
@@ -841,7 +841,7 @@ namespace Stroika::Frameworks::Led {
     protected:
         class FontCacheInfoUpdater {
         public:
-            FontCacheInfoUpdater (const TextImager* imager, Led_Tablet tablet, const Led_FontSpecification& fontSpec);
+            FontCacheInfoUpdater (const TextImager* imager, Led_Tablet tablet, const FontSpecification& fontSpec);
             ~FontCacheInfoUpdater ();
 
         public:
@@ -992,10 +992,10 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void SnagAttributesFromTablet ();
 
     public:
-        nonvirtual Led_Color GetBackgroundColor () const;
-        nonvirtual void      SetBackgroundColor (Led_Color c);
-        nonvirtual bool      GetBackgroundTransparent () const;
-        nonvirtual void      SetBackgroundTransparent (bool transparent);
+        nonvirtual Color GetBackgroundColor () const;
+        nonvirtual void  SetBackgroundColor (Color c);
+        nonvirtual bool  GetBackgroundTransparent () const;
+        nonvirtual void  SetBackgroundTransparent (bool transparent);
 
     private:
         TEXTSTORE  fTextStore;

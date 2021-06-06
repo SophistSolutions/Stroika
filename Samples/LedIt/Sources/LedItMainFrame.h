@@ -30,8 +30,8 @@ public:
     virtual BOOL PreCreateWindow (CREATESTRUCT& cs) override;
 
 public:
-    virtual Led_IncrementalFontSpecification GetCurFont () const override;
-    virtual void                             SetCurFont (const Led_IncrementalFontSpecification& fsp) override;
+    virtual IncrementalFontSpecification GetCurFont () const override;
+    virtual void                         SetCurFont (const IncrementalFontSpecification& fsp) override;
 
 protected:
     afx_msg void OnCharColor ();

@@ -296,7 +296,7 @@ public:
 #if qPlatform_MacOS
         Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator);
 #elif qPlatform_Windows
-        Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator, ::AfxGetResourceHandle (), ::GetActiveWindow ());
+        Led_StdDialogHelper_SpellCheckDialog       spellCheckDialog (delegator, ::AfxGetResourceHandle (), ::GetActiveWindow ());
 #elif qStroika_FeatureSupported_XWindows
         Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator, GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()));
 #endif
@@ -319,7 +319,7 @@ public:
 #if qPlatform_MacOS
         Led_StdDialogHelper_OtherFontSizeDialog dlg;
 #elif qPlatform_Windows
-        Led_StdDialogHelper_OtherFontSizeDialog dlg (::AfxGetResourceHandle (), ::GetActiveWindow ());
+        Led_StdDialogHelper_OtherFontSizeDialog    dlg (::AfxGetResourceHandle (), ::GetActiveWindow ());
 #endif
         dlg.InitValues (origHeight);
         if (dlg.DoModal ()) {
@@ -331,7 +331,7 @@ public:
     }
 #endif
 #if qSupportParagraphSpacingDlg
-    virtual bool PickNewParagraphLineSpacing (TWIPS* spaceBefore, bool* spaceBeforeValid, TWIPS* spaceAfter, bool* spaceAfterValid, Led_LineSpacing* lineSpacing, bool* lineSpacingValid) override
+    virtual bool PickNewParagraphLineSpacing (TWIPS* spaceBefore, bool* spaceBeforeValid, TWIPS* spaceAfter, bool* spaceAfterValid, LineSpacing* lineSpacing, bool* lineSpacingValid) override
     {
 #if qPlatform_MacOS
         Led_StdDialogHelper_ParagraphSpacingDialog dlg;
@@ -452,7 +452,7 @@ public:
 #if qPlatform_MacOS
         DLGTYPE infoDialog;
 #elif qPlatform_Windows
-        DLGTYPE infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
+        DLGTYPE                                    infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 #endif
         DLGTYPE::cvt<DLGTYPE::Info, TableSelectionPropertiesInfo> (&infoDialog.fInfo, *tableProperties);
         if (infoDialog.DoModal ()) {
@@ -914,7 +914,7 @@ void LedItView::EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw
     if (fController->IsInDesignMode ()) {
         Led_tString              message = LED_TCHAR_OF ("Design Mode");
         static WaterMarkHelper<> waterMarkerImager (message); // make this static - just as a performance hack. Also could be an instance variable of 'this'.
-        waterMarkerImager.SetWatermarkColor (Led_Color::kYellow);
+        waterMarkerImager.SetWatermarkColor (Color::kYellow);
         Led_Rect designModeRect = Led_Rect (0, 0, 20, 150);
         Led_Rect wr             = GetWindowRect ();
         {
@@ -931,17 +931,17 @@ void LedItView::EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw
         }
         waterMarkerImager.DrawWatermark (tablet, designModeRect, subsetToDraw);
         if (fController->DrawExtraDesignModeBorder ()) {
-            Led_Color useBorderColor = Led_Color::kBlack;
+            Color useBorderColor = Color::kBlack;
             {
-                Led_Color defBackgrndColor = Led_GetTextBackgroundColor ();
+                Color defBackgrndColor = Led_GetTextBackgroundColor ();
                 if (GetHWND () != NULL) {
                     DWORD dwStyle = GetStyle ();
                     if (((dwStyle & WS_DISABLED) or (dwStyle & ES_READONLY)) and (not printing)) {
-                        defBackgrndColor = Led_Color (::GetSysColor (COLOR_BTNFACE));
+                        defBackgrndColor = Color (::GetSysColor (COLOR_BTNFACE));
                     }
                 }
                 // opposite of background color
-                useBorderColor = Led_Color (~defBackgrndColor.GetRed (), ~defBackgrndColor.GetGreen (), ~defBackgrndColor.GetBlue ());
+                useBorderColor = Color (~defBackgrndColor.GetRed (), ~defBackgrndColor.GetGreen (), ~defBackgrndColor.GetBlue ());
             }
 
             Led_Rect wmr = tablet->CvtFromTWIPS (GetDefaultWindowMargins ());

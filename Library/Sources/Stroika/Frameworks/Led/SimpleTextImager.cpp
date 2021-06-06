@@ -975,7 +975,7 @@ void SimpleTextImager::ChangedInterLineSpace (PartitionMarker* /*pm*/)
     // for now - we do nothing. Not sure there are any caches - at this point.
 }
 
-void SimpleTextImager::SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont)
+void SimpleTextImager::SetDefaultFont (const IncrementalFontSpecification& defaultFont)
 {
     //  TextImager::SetDefaultFont_ (defaultFont);
     inherited::SetDefaultFont (defaultFont);

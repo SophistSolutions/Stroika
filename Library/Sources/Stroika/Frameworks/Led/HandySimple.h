@@ -63,11 +63,11 @@ namespace Stroika::Frameworks::Led {
         ~WaterMarkHelper ();
 
     public:
-        nonvirtual Led_Color GetWatermarkColor () const;
-        nonvirtual void      SetWatermarkColor (const Led_Color& c);
+        nonvirtual Color GetWatermarkColor () const;
+        nonvirtual void  SetWatermarkColor (const Color& c);
 
     private:
-        Led_Color fWatermarkColor;
+        Color fWatermarkColor;
 
     public:
         nonvirtual void DrawWatermark (Led_Tablet tablet, const Led_Rect& intoRect, const Led_Rect& subsetToDraw);

@@ -131,7 +131,7 @@ namespace Stroika::Frameworks::Led {
         @CLASS:         SyntaxColoringMarkerOwner::FontChangeStyleMarker
         @BASES:         @'TrivialFontSpecStyleMarker'
         @DESCRIPTION:   <p>This is used internally by the syntax coloring code, and is exposed only in case you want to write your own
-            Syntax Analyzer code. This simply takes a @'Led_FontSpecification' object and applies that to the given text.</p>
+            Syntax Analyzer code. This simply takes a @'FontSpecification' object and applies that to the given text.</p>
         */
         using FontChangeStyleMarker = TrivialFontSpecStyleMarker;
 
@@ -213,20 +213,20 @@ namespace Stroika::Frameworks::Led {
     @CLASS:         SyntaxColoringMarkerOwner::ColoredStyleMarker
     @BASES:         @'SimpleStyleMarkerByFontSpec'
     @DESCRIPTION:   <p>This is used internally by the syntax coloring code, and is exposed only in case you want to write your own
-                Syntax Analyzer code. This simply takes a @'Led_Color' object and uses that to color the given text.</p>
+                Syntax Analyzer code. This simply takes a @'Color' object and uses that to color the given text.</p>
     */
     class SyntaxColoringMarkerOwner::ColoredStyleMarker : public SimpleStyleMarkerByFontSpec<>, public Foundation::Memory::UseBlockAllocationIfAppropriate<ColoredStyleMarker> {
     private:
         using inherited = SimpleStyleMarkerByFontSpec<>;
 
     public:
-        ColoredStyleMarker (const Led_Color& color);
+        ColoredStyleMarker (const Color& color);
 
     protected:
-        virtual Led_FontSpecification MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const override;
+        virtual FontSpecification MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const override;
 
     public:
-        Led_Color fColor;
+        Color fColor;
     };
 
 }

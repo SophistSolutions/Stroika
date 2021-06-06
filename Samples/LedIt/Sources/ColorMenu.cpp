@@ -38,50 +38,50 @@ COLORREF ColorMenu::GetColor (UINT id)
     return FontCmdToColor (id).GetOSRep ();
 }
 
-Led_Color ColorMenu::FontCmdToColor (UINT cmd)
+Color ColorMenu::FontCmdToColor (UINT cmd)
 {
     ASSERT (cmd >= kBaseFontColorCmd);
     ASSERT (cmd <= kLastFontNamedColorCmd);
     switch (cmd) {
         case kBlackColorCmd:
-            return Led_Color::kBlack;
+            return Color::kBlack;
         case kMaroonColorCmd:
-            return Led_Color::kMaroon;
+            return Color::kMaroon;
         case kGreenColorCmd:
-            return Led_Color::kDarkGreen;
+            return Color::kDarkGreen;
         case kOliveColorCmd:
-            return Led_Color::kOlive;
+            return Color::kOlive;
         case kNavyColorCmd:
-            return Led_Color::kNavyBlue;
+            return Color::kNavyBlue;
         case kPurpleColorCmd:
-            return Led_Color::kPurple;
+            return Color::kPurple;
         case kTealColorCmd:
-            return Led_Color::kTeal;
+            return Color::kTeal;
         case kGrayColorCmd:
-            return Led_Color::kGray;
+            return Color::kGray;
         case kSilverColorCmd:
-            return Led_Color::kSilver;
+            return Color::kSilver;
         case kRedColorCmd:
-            return Led_Color::kRed;
+            return Color::kRed;
         case kLimeColorCmd:
-            return Led_Color::kGreen;
+            return Color::kGreen;
         case kYellowColorCmd:
-            return Led_Color::kYellow;
+            return Color::kYellow;
         case kBlueColorCmd:
-            return Led_Color::kBlue;
+            return Color::kBlue;
         case kFuchsiaColorCmd:
-            return Led_Color::kMagenta;
+            return Color::kMagenta;
         case kAquaColorCmd:
-            return Led_Color::kCyan;
+            return Color::kCyan;
         case kWhiteColorCmd:
-            return Led_Color::kWhite;
+            return Color::kWhite;
         default: /*Led_Assert (false);*/
-            return Led_Color::kBlack;
+            return Color::kBlack;
     }
-    //  return Led_Color (GetColor (cmd));
+    //  return Color (GetColor (cmd));
 }
 
-UINT ColorMenu::FontColorToCmd (Led_Color color)
+UINT ColorMenu::FontColorToCmd (Color color)
 {
     for (UINT i = kBaseFontColorCmd; i <= kLastFontNamedColorCmd; ++i) {
         if (FontCmdToColor (i) == color) {
@@ -94,7 +94,7 @@ UINT ColorMenu::FontColorToCmd (Led_Color color)
 void ColorMenu::DrawItem (LPDRAWITEMSTRUCT lpDIS)
 {
     ASSERT (lpDIS->CtlType == ODT_MENU);
-    UINT id = (UINT) (WORD)lpDIS->itemID;
+    UINT id = (UINT)(WORD)lpDIS->itemID;
     ASSERT (id == lpDIS->itemData);
     ASSERT (id >= kBaseFontColorCmd);
     ASSERT (id <= kLastFontNamedColorCmd);
@@ -139,7 +139,7 @@ void ColorMenu::DrawItem (LPDRAWITEMSTRUCT lpDIS)
 void ColorMenu::MeasureItem (LPMEASUREITEMSTRUCT lpMIS)
 {
     ASSERT (lpMIS->CtlType == ODT_MENU);
-    UINT id = (UINT) (WORD)lpMIS->itemID;
+    UINT id = (UINT)(WORD)lpMIS->itemID;
     ASSERT (id == lpMIS->itemData);
     ASSERT (id >= kBaseFontColorCmd);
     ASSERT (id <= kLastFontNamedColorCmd);

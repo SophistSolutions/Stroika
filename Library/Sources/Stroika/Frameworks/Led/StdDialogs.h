@@ -84,17 +84,17 @@ namespace Stroika::Frameworks::Led {
         ~StdColorPopupHelper ();
 
     public:
-        nonvirtual bool GetSelectedColor (Led_Color* c) const;
-        nonvirtual void SetSelectedColor (const Led_Color& c);
+        nonvirtual bool GetSelectedColor (Color* c) const;
+        nonvirtual void SetSelectedColor (const Color& c);
         nonvirtual void SetNoSelectedColor ();
 
     private:
-        bool      fIsSelectedColor;
-        Led_Color fSelectedColor;
+        bool  fIsSelectedColor;
+        Color fSelectedColor;
 
     private:
-        nonvirtual size_t    MapColorIdx (const Led_Color& c) const;
-        nonvirtual Led_Color MapColorIdx (size_t i) const;
+        nonvirtual size_t MapColorIdx (const Color& c) const;
+        nonvirtual Color  MapColorIdx (size_t i) const;
 
     private:
         bool fAllowNone;
@@ -693,7 +693,7 @@ namespace Stroika::Frameworks::Led {
         using inherited = Led_StdDialogHelper;
 
     public:
-        StdFontPickBox (GtkWindow* modalParentWindow, const Led_FontSpecification& initialFont);
+        StdFontPickBox (GtkWindow* modalParentWindow, const FontSpecification& initialFont);
 
     public:
         virtual GtkWidget* MakeWindow () override;
@@ -703,7 +703,7 @@ namespace Stroika::Frameworks::Led {
         virtual void OnOK () override;
 
     public:
-        Led_FontSpecification fFont;
+        FontSpecification fFont;
     };
 #endif
 
@@ -733,12 +733,12 @@ namespace Stroika::Frameworks::Led {
 
     public:
 #if qPlatform_MacOS
-        StdColorPickBox (const Led_Color& initialColor);
+        StdColorPickBox (const Color& initialColor);
 #elif qPlatform_Windows
-        StdColorPickBox (const Led_Color& initialColor);
-        StdColorPickBox (HINSTANCE hInstance, HWND parentWnd, const Led_Color& initialColor);
+        StdColorPickBox (const Color& initialColor);
+        StdColorPickBox (HINSTANCE hInstance, HWND parentWnd, const Color& initialColor);
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-        StdColorPickBox (GtkWindow* modalParentWindow, const Led_Color& initialColor);
+        StdColorPickBox (GtkWindow* modalParentWindow, const Color& initialColor);
 #endif
 
 #if qPlatform_Windows
@@ -766,7 +766,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
     public:
-        Led_Color fColor;
+        Color fColor;
     };
 #endif
 
@@ -921,7 +921,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
     public:
-        virtual void InitValues (TWIPS spaceBefore, bool spaceBeforeValid, TWIPS spaceAfter, bool spaceAfterValid, Led_LineSpacing lineSpacing, bool lineSpacingValid);
+        virtual void InitValues (TWIPS spaceBefore, bool spaceBeforeValid, TWIPS spaceAfter, bool spaceAfterValid, LineSpacing lineSpacing, bool lineSpacingValid);
 
     protected:
         virtual void PreDoModalHook () override;
@@ -930,15 +930,15 @@ namespace Stroika::Frameworks::Led {
         virtual void OnOK () override;
 
     public:
-        bool            fSpaceBefore_Valid;
-        TWIPS           fSpaceBefore_Orig;
-        TWIPS           fSpaceBefore_Result;
-        bool            fSpaceAfter_Valid;
-        TWIPS           fSpaceAfter_Orig;
-        TWIPS           fSpaceAfter_Result;
-        bool            fLineSpacing_Valid;
-        Led_LineSpacing fLineSpacing_Orig;
-        Led_LineSpacing fLineSpacing_Result;
+        bool        fSpaceBefore_Valid;
+        TWIPS       fSpaceBefore_Orig;
+        TWIPS       fSpaceBefore_Result;
+        bool        fSpaceAfter_Valid;
+        TWIPS       fSpaceAfter_Orig;
+        TWIPS       fSpaceAfter_Result;
+        bool        fLineSpacing_Valid;
+        LineSpacing fLineSpacing_Orig;
+        LineSpacing fLineSpacing_Result;
     };
 #endif
 #endif
@@ -1196,8 +1196,8 @@ namespace Stroika::Frameworks::Led {
         struct Info {
             Info ();
 
-            TWIPS     fTableBorderWidth;
-            Led_Color fTableBorderColor;
+            TWIPS fTableBorderWidth;
+            Color fTableBorderColor;
 
             TWIPS_Rect fDefaultCellMargins;
             TWIPS      fCellSpacing;
@@ -1205,8 +1205,8 @@ namespace Stroika::Frameworks::Led {
             bool  fCellWidth_Common;
             TWIPS fCellWidth;
 
-            bool      fCellBackgroundColor_Common;
-            Led_Color fCellBackgroundColor;
+            bool  fCellBackgroundColor_Common;
+            Color fCellBackgroundColor;
         };
         Info fInfo;
 
@@ -1260,13 +1260,13 @@ namespace Stroika::Frameworks::Led {
 #endif
     inline Led_StdDialogHelper_EditTablePropertiesDialog::Info::Info ()
         : fTableBorderWidth (TWIPS (0))
-        , fTableBorderColor (Led_Color::kWhite)
+        , fTableBorderColor (Color::kWhite)
         , fDefaultCellMargins ()
         , fCellSpacing (TWIPS (0))
         , fCellWidth_Common (false)
         , fCellWidth (TWIPS (0))
         , fCellBackgroundColor_Common (false)
-        , fCellBackgroundColor (Led_Color::kWhite)
+        , fCellBackgroundColor (Color::kWhite)
     {
     }
 #endif

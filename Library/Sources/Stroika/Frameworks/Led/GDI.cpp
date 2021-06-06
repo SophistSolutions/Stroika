@@ -632,48 +632,50 @@ void Led_Bitmap::LoadBitmap (HINSTANCE hInstance, LPCTSTR lpBitmapName)
 
 /*
  ********************************************************************************
- ************************************ TWIPS *********************************
+ ************************************ TWIPS *************************************
  ********************************************************************************
  */
-const TWIPS TWIPS::kPoint   = TWIPS (20); // a printers 'point' (1/72 of an inch)
-const TWIPS TWIPS::kInch    = TWIPS (1440);
-const TWIPS TWIPS::kOneInch = TWIPS (1440);
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+constexpr TWIPS TWIPS::kPoint   = TWIPS{20}; // a printers 'point' (1/72 of an inch)
+constexpr TWIPS TWIPS::kInch    = TWIPS{1440};
+constexpr TWIPS TWIPS::kOneInch = TWIPS{1440};
+#endif
 
 /*
  ********************************************************************************
- ************************************ Led_Color *********************************
+ ************************************ Color *********************************
  ********************************************************************************
  */
 /*
  *  Color name values from page 79 of Web Design in a Nutshell, O'Reilly, table 5-2.
  */
-const Led_Color Led_Color::kBlack     = Led_Color (0, 0, 0);
-const Led_Color Led_Color::kWhite     = Led_Color (Led_Color::kColorValueMax, Led_Color::kColorValueMax, Led_Color::kColorValueMax);
-const Led_Color Led_Color::kRed       = Led_Color (Led_Color::kColorValueMax, 0, 0);
-const Led_Color Led_Color::kGreen     = Led_Color (0, Led_Color::kColorValueMax / 2, 0);
-const Led_Color Led_Color::kBlue      = Led_Color (0, 0, Led_Color::kColorValueMax);
-const Led_Color Led_Color::kCyan      = Led_Color (0, Led_Color::kColorValueMax, Led_Color::kColorValueMax);
-const Led_Color Led_Color::kMagenta   = Led_Color (Led_Color::kColorValueMax, 0, Led_Color::kColorValueMax);
-const Led_Color Led_Color::kYellow    = Led_Color (Led_Color::kColorValueMax, Led_Color::kColorValueMax, 0);
-const Led_Color Led_Color::kMaroon    = Led_Color (Led_Color::kColorValueMax / 2, 0, 0);
-const Led_Color Led_Color::kOlive     = Led_Color (Led_Color::kColorValueMax / 2, Led_Color::kColorValueMax / 2, 0);
-const Led_Color Led_Color::kNavyBlue  = Led_Color (0, 0, Led_Color::kColorValueMax / 2);
-const Led_Color Led_Color::kPurple    = Led_Color (Led_Color::kColorValueMax / 2, 0, Led_Color::kColorValueMax / 2);
-const Led_Color Led_Color::kTeal      = Led_Color (0, Led_Color::kColorValueMax / 2, Led_Color::kColorValueMax / 2);
-const Led_Color Led_Color::kGray      = Led_Color (Led_Color::kColorValueMax / 2, Led_Color::kColorValueMax / 2, Led_Color::kColorValueMax / 2);
-const Led_Color Led_Color::kSilver    = Led_Color (Led_Color::kColorValueMax * 3 / 4, Led_Color::kColorValueMax * 3 / 4, Led_Color::kColorValueMax * 3 / 4);
-const Led_Color Led_Color::kDarkGreen = Led_Color (0, (Led_Color::kColorValueMax / 256) * 100, 0);
-const Led_Color Led_Color::kLimeGreen = Led_Color (0, Led_Color::kColorValueMax, 0);
-const Led_Color Led_Color::kFuchsia   = Led_Color::kMagenta; // same according to that table
-const Led_Color Led_Color::kAqua      = Led_Color::kCyan;    // same according to that table
+const Color Color::kBlack     = Color (0, 0, 0);
+const Color Color::kWhite     = Color (Color::kColorValueMax, Color::kColorValueMax, Color::kColorValueMax);
+const Color Color::kRed       = Color (Color::kColorValueMax, 0, 0);
+const Color Color::kGreen     = Color (0, Color::kColorValueMax / 2, 0);
+const Color Color::kBlue      = Color (0, 0, Color::kColorValueMax);
+const Color Color::kCyan      = Color (0, Color::kColorValueMax, Color::kColorValueMax);
+const Color Color::kMagenta   = Color (Color::kColorValueMax, 0, Color::kColorValueMax);
+const Color Color::kYellow    = Color (Color::kColorValueMax, Color::kColorValueMax, 0);
+const Color Color::kMaroon    = Color (Color::kColorValueMax / 2, 0, 0);
+const Color Color::kOlive     = Color (Color::kColorValueMax / 2, Color::kColorValueMax / 2, 0);
+const Color Color::kNavyBlue  = Color (0, 0, Color::kColorValueMax / 2);
+const Color Color::kPurple    = Color (Color::kColorValueMax / 2, 0, Color::kColorValueMax / 2);
+const Color Color::kTeal      = Color (0, Color::kColorValueMax / 2, Color::kColorValueMax / 2);
+const Color Color::kGray      = Color (Color::kColorValueMax / 2, Color::kColorValueMax / 2, Color::kColorValueMax / 2);
+const Color Color::kSilver    = Color (Color::kColorValueMax * 3 / 4, Color::kColorValueMax * 3 / 4, Color::kColorValueMax * 3 / 4);
+const Color Color::kDarkGreen = Color (0, (Color::kColorValueMax / 256) * 100, 0);
+const Color Color::kLimeGreen = Color (0, Color::kColorValueMax, 0);
+const Color Color::kFuchsia   = Color::kMagenta; // same according to that table
+const Color Color::kAqua      = Color::kCyan;    // same according to that table
 
 /*
  ********************************************************************************
- ************************************** Led_Pen *********************************
+ ************************************** Pen *********************************
  ********************************************************************************
  */
 #if qPlatform_MacOS
-const Pattern Led_Pen::kWhitePattern = {
+const Pattern Pen::kWhitePattern = {
     0x00,
     0x00,
     0x00,
@@ -683,7 +685,7 @@ const Pattern Led_Pen::kWhitePattern = {
     0x00,
     0x00,
 };
-const Pattern Led_Pen::kLightGrayPattern = {
+const Pattern Pen::kLightGrayPattern = {
     0x88,
     0x22,
     0x88,
@@ -693,7 +695,7 @@ const Pattern Led_Pen::kLightGrayPattern = {
     0x88,
     0x22,
 };
-const Pattern Led_Pen::kGrayPattern = {
+const Pattern Pen::kGrayPattern = {
     0xaa,
     0x55,
     0xaa,
@@ -703,7 +705,7 @@ const Pattern Led_Pen::kGrayPattern = {
     0xaa,
     0x55,
 };
-const Pattern Led_Pen::kDarkGrayPattern = {
+const Pattern Pen::kDarkGrayPattern = {
     0x77,
     0xdd,
     0x77,
@@ -713,7 +715,7 @@ const Pattern Led_Pen::kDarkGrayPattern = {
     0x77,
     0xdd,
 };
-const Pattern Led_Pen::kBlackPattern = {
+const Pattern Pen::kBlackPattern = {
     0xff,
     0xff,
     0xff,
@@ -727,11 +729,11 @@ const Pattern Led_Pen::kBlackPattern = {
 
 /*
  ********************************************************************************
- ****************************** Led_FontSpecification ***************************
+ ****************************** FontSpecification ***************************
  ********************************************************************************
  */
 #if qStroika_FeatureSupported_XWindows
-string Led_FontSpecification::mkOSRep (const string& foundry, const string& family, const string& weight, const string& slant, const string& pointSize)
+string FontSpecification::mkOSRep (const string& foundry, const string& family, const string& weight, const string& slant, const string& pointSize)
 {
     char hRes[1024];
     (void)::sprintf (hRes, "%d", Led_GDIGlobals::Get ().GetMainScreenLogPixelsH ());
@@ -741,7 +743,7 @@ string Led_FontSpecification::mkOSRep (const string& foundry, const string& fami
     return result;
 }
 
-string Led_FontSpecification::GetOSRep () const
+string FontSpecification::GetOSRep () const
 {
     string foundry = "*";
     string weight  = fBold ? "bold" : "medium";
@@ -751,7 +753,7 @@ string Led_FontSpecification::GetOSRep () const
     return mkOSRep (foundry, fFontFamily, weight, slant, pointSize);
 }
 
-void Led_FontSpecification::SetFromOSRep (const string& osRep)
+void FontSpecification::SetFromOSRep (const string& osRep)
 {
     Led_SDK_String familyName;
     Led_SDK_String fontSize;
@@ -786,10 +788,10 @@ void Led_FontSpecification::SetFromOSRep (const string& osRep)
 #endif
 
 /*
-@METHOD:        Led_FontSpecification::SetFontName
-@DESCRIPTION:   <p>See also @'Led_FontSpecification::GetFontName'.</p>
+@METHOD:        FontSpecification::SetFontName
+@DESCRIPTION:   <p>See also @'FontSpecification::GetFontName'.</p>
 */
-void Led_FontSpecification::SetFontName (const Led_SDK_String& fontName)
+void FontSpecification::SetFontName (const Led_SDK_String& fontName)
 {
 #if qPlatform_MacOS
     Str255 pFontName;
@@ -809,13 +811,13 @@ void Led_FontSpecification::SetFontName (const Led_SDK_String& fontName)
 }
 
 #if qPlatform_Windows
-Led_FontSpecification::FontNameSpecifier::FontNameSpecifier (const Led_SDK_Char* from)
+FontSpecification::FontNameSpecifier::FontNameSpecifier (const Led_SDK_Char* from)
 {
     Characters::CString::Copy (fName, NEltsOf (fName), from);
 }
 #endif
 
-void Led_FontSpecification::SetFontNameSpecifier (FontNameSpecifier fontNameSpecifier)
+void FontSpecification::SetFontNameSpecifier (FontNameSpecifier fontNameSpecifier)
 {
 #if qPlatform_MacOS
     fFontSpecifier = fontNameSpecifier;
@@ -829,18 +831,18 @@ void Led_FontSpecification::SetFontNameSpecifier (FontNameSpecifier fontNameSpec
 
 /*
  ********************************************************************************
- ************************ Led_IncrementalFontSpecification **********************
+ ************************ IncrementalFontSpecification **********************
  ********************************************************************************
  */
 
 /*
 @METHOD:        Intersection
-@DESCRIPTION:   <p>Compute the subset of the two @'Led_IncrementalFontSpecification' arguments where both parts
+@DESCRIPTION:   <p>Compute the subset of the two @'IncrementalFontSpecification' arguments where both parts
             are valid and identical.</p>
 */
-Led_IncrementalFontSpecification Led::Intersection (const Led_IncrementalFontSpecification& lhs, const Led_IncrementalFontSpecification& rhs)
+IncrementalFontSpecification Led::Intersection (const IncrementalFontSpecification& lhs, const IncrementalFontSpecification& rhs)
 {
-    Led_IncrementalFontSpecification result = lhs;
+    IncrementalFontSpecification result = lhs;
 
     // FontName Info
     {
@@ -947,11 +949,11 @@ Led_IncrementalFontSpecification Led::Intersection (const Led_IncrementalFontSpe
  */
 class Led_Tablet_::RecolorHelper {
 public:
-    RecolorHelper (HDC baseHDC, Led_Size size, Led_Color hilightBackColor, Led_Color hilightForeColor, Led_Color oldBackColor, Led_Color oldForeColor);
+    RecolorHelper (HDC baseHDC, Led_Size size, Color hilightBackColor, Color hilightForeColor, Color oldBackColor, Color oldForeColor);
     ~RecolorHelper ();
 
 public:
-    static RecolorHelper* CheckCacheAndReconstructIfNeeded (RecolorHelper* _THIS_, HDC baseHDC, Led_Size size, Led_Color hilightBackColor, Led_Color hilightForeColor, Led_Color oldBackColor, Led_Color oldForeColor);
+    static RecolorHelper* CheckCacheAndReconstructIfNeeded (RecolorHelper* _THIS_, HDC baseHDC, Led_Size size, Color hilightBackColor, Color hilightForeColor, Color oldBackColor, Color oldForeColor);
 
 public:
     nonvirtual void DoRecolor (const Led_Rect& hilightArea);
@@ -1017,7 +1019,7 @@ inline COLORREF Led_Tablet_::RecolorHelper::MapColor (RGBQUAD c) const
     return MapColor (RGB (c.rgbRed, c.rgbGreen, c.rgbBlue));
 }
 
-Led_Tablet_::RecolorHelper::RecolorHelper (HDC baseHDC, Led_Size size, Led_Color hilightBackColor, Led_Color hilightForeColor, Led_Color oldBackColor, Led_Color oldForeColor)
+Led_Tablet_::RecolorHelper::RecolorHelper (HDC baseHDC, Led_Size size, Color hilightBackColor, Color hilightForeColor, Color oldBackColor, Color oldForeColor)
     : fDibData (nullptr)
     //fMappingTable ()
     , fDibDataByteCount (0)
@@ -1051,7 +1053,7 @@ Led_Tablet_::RecolorHelper::~RecolorHelper ()
     }
 }
 
-Led_Tablet_::RecolorHelper* Led_Tablet_::RecolorHelper::CheckCacheAndReconstructIfNeeded (RecolorHelper* _THIS_, HDC baseHDC, Led_Size size, Led_Color hilightBackColor, Led_Color hilightForeColor, Led_Color oldBackColor, Led_Color oldForeColor)
+Led_Tablet_::RecolorHelper* Led_Tablet_::RecolorHelper::CheckCacheAndReconstructIfNeeded (RecolorHelper* _THIS_, HDC baseHDC, Led_Size size, Color hilightBackColor, Color hilightForeColor, Color oldBackColor, Color oldForeColor)
 {
     if (_THIS_ == nullptr or
         size.h > _THIS_->fSize.h or
@@ -1136,10 +1138,10 @@ void Led_Tablet_::RecolorHelper::DoRecolor_SimplePATINVERT (const Led_Rect& hili
 {
     // Attempt at solving SPR#1271. Works decently - producing the right background - but the text is colored YELLOW instead of WHITE - and so
     // doesn't look very good (not enough contrast).
-    Led_Color useColor = Led_Color::kWhite - Led_Color (fHilightBackColor);
-    HGDIOBJ   oldPen   = ::SelectObject (fBaseDC, ::GetStockObject (NULL_PEN));
-    Brush     backgroundBrush (useColor.GetOSRep ());
-    HGDIOBJ   oldBrush = ::SelectObject (fBaseDC, backgroundBrush);
+    Color   useColor = Color::kWhite - Color (fHilightBackColor);
+    HGDIOBJ oldPen   = ::SelectObject (fBaseDC, ::GetStockObject (NULL_PEN));
+    Brush   backgroundBrush (useColor.GetOSRep ());
+    HGDIOBJ oldBrush = ::SelectObject (fBaseDC, backgroundBrush);
     ::BitBlt (fBaseDC, hilightArea.left, hilightArea.top, hilightArea.GetWidth (), hilightArea.GetHeight (),
               fBaseDC, hilightArea.left, hilightArea.top, PATINVERT);
     (void)::SelectObject (fBaseDC, oldPen);
@@ -1401,7 +1403,7 @@ void Led_Tablet_::ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, Coordi
 @METHOD:        Led_Tablet_::FrameRegion
 @DESCRIPTION:   <p>Draw the outline of the given region 'r' in color 'c'.</p>
 */
-void Led_Tablet_::FrameRegion (const Led_Region& r, const Led_Color& c)
+void Led_Tablet_::FrameRegion (const Led_Region& r, const Color& c)
 {
 #if qPlatform_MacOS
     Led_MacPortAndClipRegionEtcSaver saver; // unclear if this is useful/needed?
@@ -1425,7 +1427,7 @@ void Led_Tablet_::FrameRegion (const Led_Region& r, const Led_Color& c)
             by 'r'.
                 </p>
 */
-void Led_Tablet_::FrameRectangle (const Led_Rect& r, Led_Color c, DistanceType borderWidth)
+void Led_Tablet_::FrameRectangle (const Led_Rect& r, Color c, DistanceType borderWidth)
 {
     /*
      *  Almost certainly can implement much more efficiently, but leave like this for now to assure pixel-for-pixel
@@ -1872,7 +1874,7 @@ void Led_Tablet_::TabbedTextOut ([[maybe_unused]] const Led_FontMetrics& precomp
     }
 }
 
-void Led_Tablet_::SetBackColor (const Led_Color& backColor)
+void Led_Tablet_::SetBackColor (const Color& backColor)
 {
 #if qPlatform_MacOS
     SetPort ();
@@ -1880,10 +1882,10 @@ void Led_Tablet_::SetBackColor (const Led_Color& backColor)
 #elif qPlatform_Windows
     SetBkColor (backColor.GetOSRep ());
 #elif qStroika_FeatureSupported_XWindows
-    if (backColor == Led_Color::kWhite) {
+    if (backColor == Color::kWhite) {
         ::XSetBackground (fDisplay, fGC, WhitePixel (fDisplay, DefaultScreen (fDisplay)));
     }
-    else if (backColor == Led_Color::kBlack) {
+    else if (backColor == Color::kBlack) {
         ::XSetBackground (fDisplay, fGC, BlackPixel (fDisplay, DefaultScreen (fDisplay)));
     }
     else {
@@ -1904,7 +1906,7 @@ void Led_Tablet_::SetBackColor (const Led_Color& backColor)
 #endif
 }
 
-void Led_Tablet_::SetForeColor (const Led_Color& foreColor)
+void Led_Tablet_::SetForeColor (const Color& foreColor)
 {
 #if qPlatform_MacOS
     SetPort ();
@@ -1912,10 +1914,10 @@ void Led_Tablet_::SetForeColor (const Led_Color& foreColor)
 #elif qPlatform_Windows
     SetTextColor (foreColor.GetOSRep ());
 #elif qStroika_FeatureSupported_XWindows
-    if (foreColor == Led_Color::kWhite) {
+    if (foreColor == Color::kWhite) {
         ::XSetForeground (fDisplay, fGC, WhitePixel (fDisplay, DefaultScreen (fDisplay)));
     }
-    else if (foreColor == Led_Color::kBlack) {
+    else if (foreColor == Color::kBlack) {
         ::XSetForeground (fDisplay, fGC, BlackPixel (fDisplay, DefaultScreen (fDisplay)));
     }
     else {
@@ -1941,14 +1943,14 @@ void Led_Tablet_::SetForeColor (const Led_Color& foreColor)
 @DESCRIPTION:   <p>EraseBackground_SolidHelper () is simple helper function - usually called from subclasses which OVERRIDE
     @'TextImager::EraseBackground'.</p>
 */
-void Led_Tablet_::EraseBackground_SolidHelper (const Led_Rect& eraseRect, const Led_Color& eraseColor)
+void Led_Tablet_::EraseBackground_SolidHelper (const Led_Rect& eraseRect, const Color& eraseColor)
 {
     if (not eraseRect.IsEmpty ()) {
 #if qPlatform_MacOS
         SetPort ();
         Rect qdEraser = AsQDRect (eraseRect);
         GDI_RGBForeColor (eraseColor.GetOSRep ());
-        ::FillRect (&qdEraser, &Led_Pen::kBlackPattern);
+        ::FillRect (&qdEraser, &Pen::kBlackPattern);
 #elif qPlatform_Windows
         Led_Rect eraser = eraseRect;
         Brush backgroundBrush (eraseColor.GetOSRep ());
@@ -1988,7 +1990,7 @@ void Led_Tablet_::EraseBackground_SolidHelper (const Led_Rect& eraseRect, const 
             the background color to while, and the hilight colors the reverse of this (fore=black/back=white), this code will revert
             to the old algorithm, and run much faster.</p>
 */
-void Led_Tablet_::HilightArea_SolidHelper (const Led_Rect& hilightArea, [[maybe_unused]] Led_Color hilightBackColor, [[maybe_unused]] Led_Color hilightForeColor, Led_Color oldBackColor, [[maybe_unused]] Led_Color oldForeColor)
+void Led_Tablet_::HilightArea_SolidHelper (const Led_Rect& hilightArea, [[maybe_unused]] Color hilightBackColor, [[maybe_unused]] Color hilightForeColor, Color oldBackColor, [[maybe_unused]] Color oldForeColor)
 {
     if (not hilightArea.IsEmpty ()) {
 #if qPlatform_MacOS
@@ -2002,10 +2004,10 @@ void Led_Tablet_::HilightArea_SolidHelper (const Led_Rect& hilightArea, [[maybe_
         /*
          *  SPR#1271 - major reworking using DIB sections etc, to get much better display of hilighted text.
          */
-        if (hilightBackColor.GetOSRep () == Led_Color::kBlack.GetOSRep () and
-            hilightForeColor.GetOSRep () == Led_Color::kWhite.GetOSRep () and
-            oldBackColor.GetOSRep () == Led_Color::kWhite.GetOSRep () and
-            oldForeColor.GetOSRep () == Led_Color::kBlack.GetOSRep ()) {
+        if (hilightBackColor.GetOSRep () == Color::kBlack.GetOSRep () and
+            hilightForeColor.GetOSRep () == Color::kWhite.GetOSRep () and
+            oldBackColor.GetOSRep () == Color::kWhite.GetOSRep () and
+            oldForeColor.GetOSRep () == Color::kBlack.GetOSRep ()) {
             // This is much faster (on some/most hardware) than the RecolorHelper algorithms. For this special case of of B&W fore/back/hilight
             // colors - this code is MUCH faster as well. So - for people for whom the default algorithm is too slow - they can just specify
             // these colors for hilight and back/fore-color, and they'll get the faster hilight.
@@ -2055,7 +2057,7 @@ void Led_Tablet_::HilightArea_SolidHelper (const Led_Rect& hilightArea, [[maybe_
                 <p>Note the backColor and foreColor are advisory - and maybe ignored if the GDI better supports (or the
             platform UI conventionally calls for) inverting the text via a simple XOR.</p>
 */
-void Led_Tablet_::HilightArea_SolidHelper (const Led_Region& hilightArea, [[maybe_unused]] Led_Color hilightBackColor, [[maybe_unused]] Led_Color hilightForeColor, [[maybe_unused]] Led_Color oldBackColor, [[maybe_unused]] Led_Color oldForeColor)
+void Led_Tablet_::HilightArea_SolidHelper (const Led_Region& hilightArea, [[maybe_unused]] Color hilightBackColor, [[maybe_unused]] Color hilightForeColor, [[maybe_unused]] Color oldBackColor, [[maybe_unused]] Color oldForeColor)
 {
     if (not hilightArea.IsEmpty ()) {
 #if qPlatform_MacOS
@@ -2100,7 +2102,7 @@ Led_FontMetrics Led_Tablet_::GetFontMetrics () const
 }
 
 #if qStroika_FeatureSupported_XWindows
-void Led_Tablet_::SetFont (const Led_FontSpecification& fontSpec)
+void Led_Tablet_::SetFont (const FontSpecification& fontSpec)
 {
     /*
      * First, see if the XFontStruct* is already cached. If so - all we need todo is (maybe) an XSetFont call.
@@ -2221,7 +2223,7 @@ static bool FontNamesEqual (const string& lhs, const string& rhs)
     }
     return true;
 }
-Led_SDK_String Led_Tablet_::BestMatchFont (const Led_FontSpecification& fsp, const vector<Led_SDK_String>& fontsList)
+Led_SDK_String Led_Tablet_::BestMatchFont (const FontSpecification& fsp, const vector<Led_SDK_String>& fontsList)
 {
     Led_SDK_String bestAnswer;
     float          bestScore    = 0.0f;
@@ -2258,7 +2260,7 @@ Led_SDK_String Led_Tablet_::BestMatchFont (const Led_FontSpecification& fsp, con
 
         if (thisScore > bestScore) {
             bestScore  = thisScore;
-            bestAnswer = Led_FontSpecification::mkOSRep (kMatchAny, name, weight, slant, size);
+            bestAnswer = FontSpecification::mkOSRep (kMatchAny, name, weight, slant, size);
         }
     }
     return bestAnswer;
@@ -2589,8 +2591,8 @@ void OffscreenTablet::BlastBitmapToOrigTablet ()
 #if qPlatform_MacOS
         Rect bounds = AsQDRect (fOffscreenRect);
         ::SetGWorld (fOrigPort, fOrigDevice); // restore gworld
-        GDI_RGBForeColor (Led_Color::kBlack.GetOSRep ());
-        GDI_RGBBackColor (Led_Color::kWhite.GetOSRep ());
+        GDI_RGBForeColor (Color::kBlack.GetOSRep ());
+        GDI_RGBBackColor (Color::kWhite.GetOSRep ());
         GrafPtr tabletGrafPort = *fOffscreenTablet;
 #if TARGET_CARBON
         {
@@ -2632,7 +2634,7 @@ Led_InstalledFonts::Led_InstalledFonts (
     LOGFONT lf;
     memset (&lf, 0, sizeof (LOGFONT));
     lf.lfCharSet = DEFAULT_CHARSET;
-    Led_WindowDC screenDC (nullptr);
+    WindowDC screenDC (nullptr);
     ::EnumFontFamiliesEx (screenDC.m_hDC, &lf, (FONTENUMPROC)FontFamilyAdderProc, reinterpret_cast<LPARAM> (this), 0);
     sort (fFontNames.begin (), fFontNames.end ());
     vector<Led_SDK_String>::iterator rest = unique (fFontNames.begin (), fFontNames.end ());
@@ -2717,7 +2719,7 @@ void Led_GDIGlobals::InvalidateGlobals ()
     fLogPixelsH = 72;
     fLogPixelsV = 72;
 #elif qPlatform_Windows
-    Led_WindowDC screenDC (nullptr);
+    WindowDC screenDC (nullptr);
     fLogPixelsH = ::GetDeviceCaps (screenDC, LOGPIXELSX);
     fLogPixelsV = ::GetDeviceCaps (screenDC, LOGPIXELSY);
 #elif qStroika_FeatureSupported_XWindows
@@ -2935,26 +2937,26 @@ Led_DIB* Led::Led_DIBFromHBITMAP (HDC hDC, HBITMAP hbm)
 
 /*
  ********************************************************************************
- ************************************** Led_IME *********************************
+ ************************************** IME *********************************
  ********************************************************************************
  */
-Led_IME* Led_IME::sThe = nullptr;
+IME* IME::sThe = nullptr;
 
 #ifndef qUseNewIMECode
 #define qUseNewIMECode 1
 #endif
 
-// Somewhat silly hack so Led_IME gets destroyed at end of application execution. Helpful for quitting memleak detectors.
-class Led_IME::_Global_DESTRUCTOR_ {
+// Somewhat silly hack so IME gets destroyed at end of application execution. Helpful for quitting memleak detectors.
+class IME::_Global_DESTRUCTOR_ {
 public:
     ~_Global_DESTRUCTOR_ ()
     {
-        delete (Led_IME::sThe);
-        Led_IME::sThe = nullptr;
+        delete (IME::sThe);
+        IME::sThe = nullptr;
     }
-} sTheLed_IME_DESTRUCTOR_;
+} sTheIME_DESTRUCTOR_;
 
-Led_IME::Led_IME ()
+IME::IME ()
     : fSendIMEMessageProc (nullptr)
     , fIMEEnableProc (nullptr)
     , fImmGetContext (nullptr)
@@ -2998,14 +3000,14 @@ Led_IME::Led_IME ()
     }
 }
 
-void Led_IME::NotifyPosition (HWND hWnd, const SHORT x, const SHORT y)
+void IME::NotifyPosition (HWND hWnd, const SHORT x, const SHORT y)
 {
     if (x != fLastX || y != fLastY) {
         UpdatePosition (hWnd, x, y);
     }
 }
 
-void Led_IME::NotifyOfFontChange (HWND hWnd, const LOGFONT& lf)
+void IME::NotifyOfFontChange (HWND hWnd, const LOGFONT& lf)
 {
     if (fImmGetContext != nullptr and fImmSetCompositionFont != nullptr and fImmReleaseContext != nullptr) {
         HIMC hImc = NULL;
@@ -3017,7 +3019,7 @@ void Led_IME::NotifyOfFontChange (HWND hWnd, const LOGFONT& lf)
 }
 
 #if !qUseNewIMECode
-void Led_IME::SendSimpleMessage (HWND hWnd, UINT fnc, WPARAM wParam)
+void IME::SendSimpleMessage (HWND hWnd, UINT fnc, WPARAM wParam)
 {
     if (fSendIMEMessageProc != nullptr) {
         HANDLE      hime = ::GlobalAlloc (GMEM_MOVEABLE | GMEM_LOWER | GMEM_DDESHARE, (DWORD)sizeof (IMESTRUCT));
@@ -3041,7 +3043,7 @@ void Led_IME::SendSimpleMessage (HWND hWnd, UINT fnc, WPARAM wParam)
 }
 #endif
 
-void Led_IME::IMEOn (HWND hWnd)
+void IME::IMEOn (HWND hWnd)
 {
 #if qUseNewIMECode
     if (fImmGetContext != nullptr and fImmSetOpenStatus != nullptr and fImmReleaseContext != nullptr) {
@@ -3056,7 +3058,7 @@ void Led_IME::IMEOn (HWND hWnd)
 #endif
 }
 
-void Led_IME::IMEOff (HWND hWnd)
+void IME::IMEOff (HWND hWnd)
 {
 #if qUseNewIMECode
     if (fImmGetContext != nullptr and fImmSetOpenStatus != nullptr and fImmReleaseContext != nullptr) {
@@ -3071,7 +3073,7 @@ void Led_IME::IMEOff (HWND hWnd)
 #endif
 }
 
-void Led_IME::UpdatePosition (const HWND hWnd, const SHORT x, const SHORT y)
+void IME::UpdatePosition (const HWND hWnd, const SHORT x, const SHORT y)
 {
     if (fSendIMEMessageProc != nullptr) {
 #if qUseNewIMECode
@@ -3125,7 +3127,7 @@ void Led_IME::UpdatePosition (const HWND hWnd, const SHORT x, const SHORT y)
         }
 #endif
 
-        // Should I redo this taking the LOGFONT as an arg to Led_IME::UpdatePosition ()??? LGP 980714
+        // Should I redo this taking the LOGFONT as an arg to IME::UpdatePosition ()??? LGP 980714
         if (fImmGetContext != nullptr and fImmSetCompositionFont != nullptr and fImmReleaseContext != nullptr) {
             HFONT hFont = nullptr;
             if ((hFont = (HFONT)::SendMessage (hWnd, WM_GETFONT, 0, 0L)) != nullptr) {
@@ -3142,7 +3144,7 @@ void Led_IME::UpdatePosition (const HWND hWnd, const SHORT x, const SHORT y)
     }
 }
 
-wstring Led_IME::GetCompositionResultStringW (HWND hWnd)
+wstring IME::GetCompositionResultStringW (HWND hWnd)
 {
     wstring result;
     if (fImmGetCompositionStringW != nullptr and fImmGetContext != nullptr and fImmReleaseContext != nullptr) {

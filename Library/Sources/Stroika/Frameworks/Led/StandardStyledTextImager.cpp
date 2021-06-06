@@ -130,7 +130,7 @@ Led_FontMetrics StandardStyledTextImager::GetFontMetricsAt (size_t charAfterPos)
 @METHOD:        StandardStyledTextImager::GetDefaultSelectionFont
 @DESCRIPTION:   <p>Override @'TextImager::GetDefaultSelectionFont'.</p>
 */
-Led_FontSpecification StandardStyledTextImager::GetDefaultSelectionFont () const
+FontSpecification StandardStyledTextImager::GetDefaultSelectionFont () const
 {
     vector<InfoSummaryRecord> summaryInfo = GetStyleInfo (GetSelectionEnd (), 0);
     Assert (summaryInfo.size () == 1);
@@ -139,21 +139,21 @@ Led_FontSpecification StandardStyledTextImager::GetDefaultSelectionFont () const
 
 /*
 @METHOD:        StandardStyledTextImager::GetContinuousStyleInfo
-@DESCRIPTION:   <p>Create a @'Led_IncrementalFontSpecification' with set as valid all attributes which apply to all of the text from
+@DESCRIPTION:   <p>Create a @'IncrementalFontSpecification' with set as valid all attributes which apply to all of the text from
     <code>'from'</code> for <code>'nTChars'</code>.</p>
         <p>So for example - if all text in that range has the same face, but different font sizes, then the face attribute will be
     valid (and set to that common face) and the font size attribute will be set invalid.</p>
         <p>This is useful for setting menus checked or unchecked in a typical word processor font menu.</p>
 */
-Led_IncrementalFontSpecification StandardStyledTextImager::GetContinuousStyleInfo (size_t from, size_t nTChars) const
+IncrementalFontSpecification StandardStyledTextImager::GetContinuousStyleInfo (size_t from, size_t nTChars) const
 {
     vector<InfoSummaryRecord> summaryInfo = GetStyleInfo (from, nTChars);
     return (GetContinuousStyleInfo_ (summaryInfo));
 }
 
-Led_IncrementalFontSpecification StandardStyledTextImager::GetContinuousStyleInfo_ (const vector<InfoSummaryRecord>& summaryInfo) const
+IncrementalFontSpecification StandardStyledTextImager::GetContinuousStyleInfo_ (const vector<InfoSummaryRecord>& summaryInfo) const
 {
-    Led_IncrementalFontSpecification fontSpec;
+    IncrementalFontSpecification fontSpec;
 
     // There are only a certain number of font attributes which can be shared among these InfoSummaryRecords.
     // Each time we note one which cannot be shared - we decrement this count. That way - when we know there can be
@@ -177,7 +177,7 @@ Led_IncrementalFontSpecification StandardStyledTextImager::GetContinuousStyleInf
 
     for (size_t i = 0; i < summaryInfo.size (); i++) {
         if (i == 0) {
-            fontSpec = Led_IncrementalFontSpecification (summaryInfo[0]);
+            fontSpec = IncrementalFontSpecification (summaryInfo[0]);
         }
         else {
             // check each attribute (if not already different) and see if NOW different...
@@ -280,8 +280,8 @@ bool StandardStyledTextImager::DoContinuousStyle_Mac (size_t from, size_t nTChar
     Require ((*mode & addSize) == 0);
     RequireNotNull (theStyle);
 
-    unsigned int                     resultMode = *mode;
-    Led_IncrementalFontSpecification resultSpec = GetContinuousStyleInfo (from, nTChars);
+    unsigned int                 resultMode = *mode;
+    IncrementalFontSpecification resultSpec = GetContinuousStyleInfo (from, nTChars);
     if (resultMode & doFont) {
         resultSpec.GetOSRep (&theStyle->tsFont, nullptr, nullptr);
     }
@@ -301,7 +301,7 @@ vector<StandardStyledTextImager::InfoSummaryRecord> StandardStyledTextImager::Co
 {
     vector<InfoSummaryRecord> result;
     for (size_t i = 0; i < nElts; i++) {
-        Led_IncrementalFontSpecification fsp;
+        IncrementalFontSpecification fsp;
         fsp.SetOSRep (teScrapFmt[i].scrpFont, teScrapFmt[i].scrpSize, teScrapFmt[i].scrpFace);
         size_t            length = (i < (nElts - 1)) ? (teScrapFmt[i + 1].scrpStartChar - teScrapFmt[i].scrpStartChar) : 9999999;
         InfoSummaryRecord isr (fsp, length);
@@ -420,7 +420,7 @@ vector<StandardStyledTextImager::InfoSummaryRecord> StyleDatabaseRep::GetStyleIn
     return result;
 }
 
-void StyleDatabaseRep::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const Led_IncrementalFontSpecification& styleInfo)
+void StyleDatabaseRep::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalFontSpecification& styleInfo)
 {
     SetInfo (charAfterPos, nTCharsFollowing, styleInfo);
 }
@@ -439,7 +439,7 @@ void StyleDatabaseRep::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowin
         size_t            length = isr.fLength;
         Assert (nTCharsFollowing >= lengthUsedSoFar);
         length = min (nTCharsFollowing - lengthUsedSoFar, length);
-        SetStyleInfo (setAt, length, Led_IncrementalFontSpecification (isr));
+        SetStyleInfo (setAt, length, IncrementalFontSpecification (isr));
         setAt += length;
         lengthUsedSoFar += length;
     }

@@ -217,9 +217,9 @@ namespace Stroika::Frameworks::Led {
 #if 0
         // Hook to invalidate cached info based on fontmetrics
     public:
-        virtual     void    SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont);
+        virtual     void    SetDefaultFont (const IncrementalFontSpecification& defaultFont);
     protected:
-        nonvirtual  void    SetDefaultFont_ (const Led_IncrementalFontSpecification& /*defaultFont*/);  // Merely invalidates font metrics
+        nonvirtual  void    SetDefaultFont_ (const IncrementalFontSpecification& /*defaultFont*/);  // Merely invalidates font metrics
 #endif
 
         // To assure our top-line scroll info not left corrupt...

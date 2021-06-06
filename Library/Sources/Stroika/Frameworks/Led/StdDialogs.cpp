@@ -108,7 +108,7 @@ namespace {
 StdColorPopupHelper::StdColorPopupHelper (bool allowNone)
     : fAllowNone (allowNone)
     , fIsSelectedColor (allowNone)
-    , fSelectedColor (Led_Color::kBlack)
+    , fSelectedColor (Color::kBlack)
 #if qPlatform_MacOS
     , fControl (NULL)
 #endif
@@ -127,7 +127,7 @@ StdColorPopupHelper::~StdColorPopupHelper ()
 {
 }
 
-bool StdColorPopupHelper::GetSelectedColor (Led_Color* c) const
+bool StdColorPopupHelper::GetSelectedColor (Color* c) const
 {
     if (fIsSelectedColor and c != NULL) {
         *c = fSelectedColor;
@@ -135,7 +135,7 @@ bool StdColorPopupHelper::GetSelectedColor (Led_Color* c) const
     return fIsSelectedColor;
 }
 
-void StdColorPopupHelper::SetSelectedColor (const Led_Color& c)
+void StdColorPopupHelper::SetSelectedColor (const Color& c)
 {
     fSelectedColor   = c;
     fIsSelectedColor = true;
@@ -165,99 +165,99 @@ void StdColorPopupHelper::SetNoSelectedColor ()
 #endif
 }
 
-size_t StdColorPopupHelper::MapColorIdx (const Led_Color& c) const
+size_t StdColorPopupHelper::MapColorIdx (const Color& c) const
 {
     size_t offset = fAllowNone ? 1 : 0;
-    if (c == Led_Color::kBlack) {
+    if (c == Color::kBlack) {
         return offset + 0;
     };
-    if (c == Led_Color::kMaroon) {
+    if (c == Color::kMaroon) {
         return offset + 1;
     };
-    if (c == Led_Color::kGreen) {
+    if (c == Color::kGreen) {
         return offset + 2;
     };
-    if (c == Led_Color::kOlive) {
+    if (c == Color::kOlive) {
         return offset + 3;
     };
-    if (c == Led_Color::kNavyBlue) {
+    if (c == Color::kNavyBlue) {
         return offset + 4;
     };
-    if (c == Led_Color::kPurple) {
+    if (c == Color::kPurple) {
         return offset + 5;
     };
-    if (c == Led_Color::kTeal) {
+    if (c == Color::kTeal) {
         return offset + 6;
     };
-    if (c == Led_Color::kGray) {
+    if (c == Color::kGray) {
         return offset + 7;
     };
-    if (c == Led_Color::kSilver) {
+    if (c == Color::kSilver) {
         return offset + 8;
     };
-    if (c == Led_Color::kRed) {
+    if (c == Color::kRed) {
         return offset + 9;
     };
-    if (c == Led_Color::kLimeGreen) {
+    if (c == Color::kLimeGreen) {
         return offset + 10;
     };
-    if (c == Led_Color::kYellow) {
+    if (c == Color::kYellow) {
         return offset + 11;
     };
-    if (c == Led_Color::kBlue) {
+    if (c == Color::kBlue) {
         return offset + 12;
     };
-    if (c == Led_Color::kFuchsia) {
+    if (c == Color::kFuchsia) {
         return offset + 13;
     };
-    if (c == Led_Color::kAqua) {
+    if (c == Color::kAqua) {
         return offset + 14;
     };
-    if (c == Led_Color::kWhite) {
+    if (c == Color::kWhite) {
         return offset + 15;
     };
     return offset + 16; // OTHER
 }
 
-Led_Color StdColorPopupHelper::MapColorIdx (size_t i) const
+Color StdColorPopupHelper::MapColorIdx (size_t i) const
 {
     size_t offset = fAllowNone ? 1 : 0;
     switch (i - offset) {
         case 0:
-            return Led_Color::kBlack;
+            return Color::kBlack;
         case 1:
-            return Led_Color::kMaroon;
+            return Color::kMaroon;
         case 2:
-            return Led_Color::kGreen;
+            return Color::kGreen;
         case 3:
-            return Led_Color::kOlive;
+            return Color::kOlive;
         case 4:
-            return Led_Color::kNavyBlue;
+            return Color::kNavyBlue;
         case 5:
-            return Led_Color::kPurple;
+            return Color::kPurple;
         case 6:
-            return Led_Color::kTeal;
+            return Color::kTeal;
         case 7:
-            return Led_Color::kGray;
+            return Color::kGray;
         case 8:
-            return Led_Color::kSilver;
+            return Color::kSilver;
         case 9:
-            return Led_Color::kRed;
+            return Color::kRed;
         case 10:
-            return Led_Color::kLimeGreen;
+            return Color::kLimeGreen;
         case 11:
-            return Led_Color::kYellow;
+            return Color::kYellow;
         case 12:
-            return Led_Color::kBlue;
+            return Color::kBlue;
         case 13:
-            return Led_Color::kFuchsia;
+            return Color::kFuchsia;
         case 14:
-            return Led_Color::kAqua;
+            return Color::kAqua;
         case 15:
-            return Led_Color::kWhite;
+            return Color::kWhite;
         default:
             Assert (false);
-            return Led_Color::kBlack;
+            return Color::kBlack;
     }
 }
 
@@ -307,7 +307,7 @@ void StdColorPopupHelper::OnSelChange ()
         }
     }
     else {
-        Led_Color c = MapColorIdx (r);
+        Color c = MapColorIdx (r);
         SetSelectedColor (c);
     }
 }
@@ -2123,7 +2123,7 @@ void Led_StdDialogHelper_ReplaceDialog::Static_OnReplaceAllInSelectionButtonClic
  ********************************** StdFontPickBox ******************************
  ********************************************************************************
  */
-StdFontPickBox::StdFontPickBox (GtkWindow* modalParentWindow, const Led_FontSpecification& initialFont)
+StdFontPickBox::StdFontPickBox (GtkWindow* modalParentWindow, const FontSpecification& initialFont)
     : inherited (modalParentWindow)
     , fFont (initialFont)
 {
@@ -2160,24 +2160,24 @@ void StdFontPickBox::OnOK ()
  ********************************************************************************
  */
 #if qPlatform_MacOS
-StdColorPickBox::StdColorPickBox (const Led_Color& initialColor)
+StdColorPickBox::StdColorPickBox (const Color& initialColor)
     : fColor (initialColor)
 {
 }
 #elif qPlatform_Windows
-StdColorPickBox::StdColorPickBox (const Led_Color& initialColor)
+StdColorPickBox::StdColorPickBox (const Color& initialColor)
     : fColor (initialColor)
     , fParentWnd (::GetActiveWindow ()) // a good default...
 {
 }
 
-StdColorPickBox::StdColorPickBox ([[maybe_unused]] HINSTANCE hInstance, HWND parentWnd, const Led_Color& initialColor)
+StdColorPickBox::StdColorPickBox ([[maybe_unused]] HINSTANCE hInstance, HWND parentWnd, const Color& initialColor)
     : fColor (initialColor)
     , fParentWnd (parentWnd)
 {
 }
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-StdColorPickBox::StdColorPickBox (GtkWindow* modalParentWindow, const Led_Color& initialColor)
+StdColorPickBox::StdColorPickBox (GtkWindow* modalParentWindow, const Color& initialColor)
     : inherited (modalParentWindow)
     , fColor (initialColor)
 {
@@ -2192,7 +2192,7 @@ bool StdColorPickBox::DoModal ()
     RGBColor newColor = oldColor;
     Point    where    = {0, 0};
     if (::GetColor (where, "\pPick new color", &oldColor, &newColor)) {
-        fColor = Led_Color (newColor);
+        fColor = Color (newColor);
         return true;
     }
 #elif qPlatform_Windows
@@ -2213,7 +2213,7 @@ bool StdColorPickBox::DoModal ()
     cc.hwndOwner = fParentWnd;
 
     if (::ChooseColor (&cc)) {
-        fColor = Led_Color (cc.rgbResult);
+        fColor = Color (cc.rgbResult);
         return true;
     }
 #endif
@@ -2243,9 +2243,9 @@ void StdColorPickBox::PreDoModalHook ()
     SetOKButton (GTK_COLOR_SELECTION_DIALOG (GetWindow ())->ok_button);
     SetCancelButton (GTK_COLOR_SELECTION_DIALOG (GetWindow ())->cancel_button);
     gdouble colors[4];
-    colors[0] = static_cast<double> (fColor.GetRed ()) / Led_Color::kColorValueMax;
-    colors[1] = static_cast<double> (fColor.GetGreen ()) / Led_Color::kColorValueMax;
-    colors[2] = static_cast<double> (fColor.GetBlue ()) / Led_Color::kColorValueMax;
+    colors[0] = static_cast<double> (fColor.GetRed ()) / Color::kColorValueMax;
+    colors[1] = static_cast<double> (fColor.GetGreen ()) / Color::kColorValueMax;
+    colors[2] = static_cast<double> (fColor.GetBlue ()) / Color::kColorValueMax;
     colors[3] = 0;
     gtk_color_selection_set_color (GTK_COLOR_SELECTION (GTK_COLOR_SELECTION_DIALOG (GetWindow ())->colorsel), colors);
 }
@@ -2255,10 +2255,10 @@ void StdColorPickBox::OnOK ()
     inherited::OnOK ();
     gdouble colors[4];
     gtk_color_selection_get_color (GTK_COLOR_SELECTION (GTK_COLOR_SELECTION_DIALOG (GetWindow ())->colorsel), colors);
-    using CV = Led_Color::ColorValue;
-    fColor   = Led_Color (static_cast<CV> (colors[0] * Led_Color::kColorValueMax),
-                        static_cast<CV> (colors[1] * Led_Color::kColorValueMax),
-                        static_cast<CV> (colors[2] * Led_Color::kColorValueMax));
+    using CV = Color::ColorValue;
+    fColor   = Color (static_cast<CV> (colors[0] * Color::kColorValueMax),
+                    static_cast<CV> (colors[1] * Color::kColorValueMax),
+                    static_cast<CV> (colors[2] * Color::kColorValueMax));
 }
 #endif
 #endif
@@ -2496,7 +2496,7 @@ Led_StdDialogHelper_ParagraphSpacingDialog::Led_StdDialogHelper_ParagraphSpacing
 }
 #endif
 
-void Led_StdDialogHelper_ParagraphSpacingDialog::InitValues (TWIPS spaceBefore, bool spaceBeforeValid, TWIPS spaceAfter, bool spaceAfterValid, Led_LineSpacing lineSpacing, bool lineSpacingValid)
+void Led_StdDialogHelper_ParagraphSpacingDialog::InitValues (TWIPS spaceBefore, bool spaceBeforeValid, TWIPS spaceAfter, bool spaceAfterValid, LineSpacing lineSpacing, bool lineSpacingValid)
 {
     fSpaceBefore_Valid  = spaceBeforeValid;
     fSpaceBefore_Orig   = spaceBefore;
@@ -2549,7 +2549,7 @@ void Led_StdDialogHelper_ParagraphSpacingDialog::PreDoModalHook ()
 #elif qPlatform_Windows
         Verify (::SendMessage (popup, CB_SETCURSEL, fLineSpacing_Orig.fRule, 0) != CB_ERR);
 #endif
-        if (fLineSpacing_Orig.fRule == Led_LineSpacing::eAtLeastTWIPSSpacing or fLineSpacing_Orig.fRule == Led_LineSpacing::eExactTWIPSSpacing or fLineSpacing_Orig.fRule == Led_LineSpacing::eExactLinesSpacing) {
+        if (fLineSpacing_Orig.fRule == LineSpacing::eAtLeastTWIPSSpacing or fLineSpacing_Orig.fRule == LineSpacing::eExactTWIPSSpacing or fLineSpacing_Orig.fRule == LineSpacing::eExactLinesSpacing) {
             SetItemText (kParagraphSpacing_Dialog_LineSpaceArgFieldID, FormatTWIPSAsString (TWIPS (fLineSpacing_Orig.fArg)));
         }
     }
@@ -2587,28 +2587,28 @@ void Led_StdDialogHelper_ParagraphSpacingDialog::OnOK ()
 #endif
     if (r >= 0 and r <= 5) {
         fLineSpacing_Valid = true;
-        if (r == Led_LineSpacing::eAtLeastTWIPSSpacing or r == Led_LineSpacing::eExactTWIPSSpacing) {
+        if (r == LineSpacing::eAtLeastTWIPSSpacing or r == LineSpacing::eExactTWIPSSpacing) {
             Led_SDK_String arg  = GetItemText (kParagraphSpacing_Dialog_SpaceAfterFieldID);
             TWIPS          argT = TWIPS (0);
             if (ParseStringToTWIPS (arg, &argT)) {
-                fLineSpacing_Result = Led_LineSpacing (Led_LineSpacing::Rule (r), argT);
+                fLineSpacing_Result = LineSpacing (LineSpacing::Rule (r), argT);
             }
             else {
                 fLineSpacing_Valid = false;
             }
         }
-        else if (r == Led_LineSpacing::eExactLinesSpacing) {
+        else if (r == LineSpacing::eExactLinesSpacing) {
             Led_SDK_String arg  = GetItemText (kParagraphSpacing_Dialog_LineSpaceArgFieldID);
             int            argI = 0;
             if (ParseStringToINT (arg, &argI)) {
-                fLineSpacing_Result = Led_LineSpacing (Led_LineSpacing::Rule (r), argI);
+                fLineSpacing_Result = LineSpacing (LineSpacing::Rule (r), argI);
             }
             else {
                 fLineSpacing_Valid = false;
             }
         }
         else {
-            fLineSpacing_Result = Led_LineSpacing::Rule (r);
+            fLineSpacing_Result = LineSpacing::Rule (r);
         }
     }
 

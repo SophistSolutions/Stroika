@@ -228,13 +228,13 @@ namespace Stroika::Frameworks::Led {
         using inherited = HidableTextMarkerHelper<SimpleStyleMarkerByFontSpec<HidableTextMarkerOwner::HidableTextMarker>>;
 
     public:
-        FontSpecHidableTextMarker (const Led_IncrementalFontSpecification& styleInfo);
+        FontSpecHidableTextMarker (const IncrementalFontSpecification& styleInfo);
 
     protected:
-        virtual Led_FontSpecification MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const override;
+        virtual FontSpecification MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const override;
 
     public:
-        Led_IncrementalFontSpecification fFontSpecification;
+        IncrementalFontSpecification fFontSpecification;
     };
 
     /*
@@ -250,9 +250,9 @@ namespace Stroika::Frameworks::Led {
         using inherited = HidableTextMarkerHelper<SimpleStyleMarkerWithLightUnderline<SimpleStyleMarkerByIncrementalFontSpec<SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper<SimpleStyleMarkerWithExtraDraw<HidableTextMarkerOwner::HidableTextMarker>>>>>;
 
     public:
-        LightUnderlineHidableTextMarker (const Led_IncrementalFontSpecification& fsp = Led_IncrementalFontSpecification ());
+        LightUnderlineHidableTextMarker (const IncrementalFontSpecification& fsp = IncrementalFontSpecification ());
 
-        virtual Led_Color GetUnderlineBaseColor () const override;
+        virtual Color GetUnderlineBaseColor () const override;
     };
 
     /*
@@ -269,10 +269,10 @@ namespace Stroika::Frameworks::Led {
         ColoredUniformHidableTextMarkerOwner (TextStore& textStore);
 
     public:
-        nonvirtual Led_Color GetColor () const;
-        nonvirtual void      SetColor (const Led_Color& color);
-        nonvirtual bool      GetColored () const;
-        nonvirtual void      SetColored (bool colored);
+        nonvirtual Color GetColor () const;
+        nonvirtual void  SetColor (const Color& color);
+        nonvirtual bool  GetColored () const;
+        nonvirtual void  SetColored (bool colored);
 
     protected:
         nonvirtual void FixupSubMarkers ();
@@ -281,8 +281,8 @@ namespace Stroika::Frameworks::Led {
         virtual HidableTextMarker* MakeHidableTextMarker () override;
 
     private:
-        Led_Color fColor;
-        bool      fColored;
+        Color fColor;
+        bool  fColored;
     };
 
 }

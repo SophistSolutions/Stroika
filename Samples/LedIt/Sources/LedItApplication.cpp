@@ -586,7 +586,7 @@ protected:
         // what a long ugly line of code
         GtkWidget* activeItem = gtk_menu_get_active (GTK_MENU (gtk_option_menu_get_menu (fFileTypeChoice)));
         AssertNotNull (activeItem);
-        fFileFormat = (FileFormat) (reinterpret_cast<int> (gtk_object_get_user_data (GTK_OBJECT (activeItem))));
+        fFileFormat = (FileFormat)(reinterpret_cast<int> (gtk_object_get_user_data (GTK_OBJECT (activeItem))));
     }
 
 public:
@@ -1584,7 +1584,7 @@ void LedItApplication::OnToggleShowHiddenTextOptionUpdateCommandUI (CCmdUI* pCmd
 void LedItApplication::OnChooseDefaultFontCommand ()
 {
 #if qPlatform_Windows
-    Led_FontSpecification fsp = Options{}.GetDefaultNewDocFont ();
+    FontSpecification fsp = Options{}.GetDefaultNewDocFont ();
 
     LOGFONT lf;
     (void)::memset (&lf, 0, sizeof (lf));
@@ -1601,7 +1601,7 @@ void LedItApplication::OnChooseDefaultFontCommand ()
 
     CFontDialog dlog (&lf);
     if (dlog.DoModal () == IDOK) {
-        Options{}.SetDefaultNewDocFont (Led_FontSpecification (*dlog.m_cf.lpLogFont));
+        Options{}.SetDefaultNewDocFont (FontSpecification (*dlog.m_cf.lpLogFont));
     }
 #else
     Led_Assert (false); // NYI

@@ -17,23 +17,23 @@ namespace Stroika::Frameworks::Led {
      *************************** StandardStyledTextImager ***************************
      ********************************************************************************
      */
-    inline StandardStyledTextImager::StandardStyleMarker::StandardStyleMarker (const Led_FontSpecification& styleInfo)
+    inline StandardStyledTextImager::StandardStyleMarker::StandardStyleMarker (const FontSpecification& styleInfo)
         : StyleMarker ()
         , fFontSpecification (styleInfo)
     {
     }
-    inline Led_FontSpecification StandardStyledTextImager::StandardStyleMarker::GetInfo () const
+    inline FontSpecification StandardStyledTextImager::StandardStyleMarker::GetInfo () const
     {
         return fFontSpecification;
     }
-    inline void StandardStyledTextImager::StandardStyleMarker::SetInfo (const Led_FontSpecification& fsp)
+    inline void StandardStyledTextImager::StandardStyleMarker::SetInfo (const FontSpecification& fsp)
     {
         fFontSpecification = fsp;
     }
 
     // class StandardStyledTextImager::InfoSummaryRecord
-    inline StandardStyledTextImager::InfoSummaryRecord::InfoSummaryRecord (const Led_FontSpecification& fontSpec, size_t length)
-        : Led_FontSpecification (fontSpec)
+    inline StandardStyledTextImager::InfoSummaryRecord::InfoSummaryRecord (const FontSpecification& fontSpec, size_t length)
+        : FontSpecification (fontSpec)
         , fLength (length)
     {
     }
@@ -43,7 +43,7 @@ namespace Stroika::Frameworks::Led {
     {
         return fStyleDatabase;
     }
-    inline Led_FontSpecification StandardStyledTextImager::GetStyleInfo (size_t charAfterPos) const
+    inline FontSpecification StandardStyledTextImager::GetStyleInfo (size_t charAfterPos) const
     {
         vector<StandardStyledTextImager::InfoSummaryRecord> result = fStyleDatabase->GetStyleInfo (charAfterPos, 1);
         Assert (result.size () == 1);
@@ -53,7 +53,7 @@ namespace Stroika::Frameworks::Led {
     {
         return (fStyleDatabase->GetStyleInfo (charAfterPos, nTCharsFollowing));
     }
-    inline void StandardStyledTextImager::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const Led_IncrementalFontSpecification& styleInfo)
+    inline void StandardStyledTextImager::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalFontSpecification& styleInfo)
     {
         fStyleDatabase->SetStyleInfo (charAfterPos, nTCharsFollowing, styleInfo);
     }
@@ -85,7 +85,7 @@ namespace Stroika::Frameworks::Led {
         using StyleMarker = StyledTextImager::StyleMarker;
         using SSM         = StandardStyledTextImager::StandardStyleMarker;
 
-        fFSP              = Led_FontSpecification ();
+        fFSP              = FontSpecification ();
         RunElement result = inherited::MungeRunElement (inRunElt);
         for (auto i = result.fSupercededMarkers.begin (); i != result.fSupercededMarkers.end (); ++i) {
             if (SSM* ssm = dynamic_cast<SSM*> (*i)) {
@@ -99,7 +99,7 @@ namespace Stroika::Frameworks::Led {
         return result;
     }
     template <class BASECLASS>
-    Led_FontSpecification SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper<BASECLASS>::MakeFontSpec (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/) const
+    FontSpecification SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper<BASECLASS>::MakeFontSpec (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/) const
     {
         return fFSP;
     }

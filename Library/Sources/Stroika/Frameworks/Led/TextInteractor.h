@@ -374,7 +374,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void SetTopRowInWindow (size_t newTopRow, UpdateMode updateMode = eDefaultUpdate);
         nonvirtual void ScrollByIfRoom (ptrdiff_t downBy, UpdateMode updateMode = eDefaultUpdate);
         nonvirtual void ScrollSoShowing (size_t markerPos, size_t andTryToShowMarkerPos = 0, UpdateMode updateMode = eDefaultUpdate);
-        nonvirtual void SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont, UpdateMode updateMode = eDefaultUpdate);
+        nonvirtual void SetDefaultFont (const IncrementalFontSpecification& defaultFont, UpdateMode updateMode = eDefaultUpdate);
         nonvirtual void SetWindowRect (const Led_Rect& windowRect, UpdateMode updateMode = eDefaultUpdate);
         virtual void    SetHScrollPos (Coordinate hScrollPos) override;
         nonvirtual void SetHScrollPos (Coordinate hScrollPos, UpdateMode updateMode);

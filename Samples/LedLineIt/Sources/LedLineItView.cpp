@@ -137,7 +137,7 @@ public:
 };
 static LedLineIt_DialogSupport sLedLineIt_DialogSupport;
 
-inline Led_IncrementalFontSpecification::FontSize FontCmdToSize (UINT cmd)
+inline IncrementalFontSpecification::FontSize FontCmdToSize (UINT cmd)
 {
     switch (cmd) {
         case kFontSize9CmdID:
@@ -591,8 +591,8 @@ void LedLineItView::OnUpdateFontNameChangeCommand (CCmdUI* pCmdUI)
 
 void LedLineItView::OnFontNameChangeCommand (UINT cmdNum)
 {
-    Led_SDK_String                   fontName = CmdNumToFontName (cmdNum);
-    Led_IncrementalFontSpecification applyFontSpec;
+    Led_SDK_String               fontName = CmdNumToFontName (cmdNum);
+    IncrementalFontSpecification applyFontSpec;
     applyFontSpec.SetFontName (fontName);
     SetDefaultFont (applyFontSpec);
 }
@@ -639,29 +639,29 @@ void LedLineItView::OnUpdateFontSizeChangeCommand (CCmdUI* pCmdUI)
 
 void LedLineItView::OnFontSizeChangeCommand (UINT cmdNum)
 {
-    Led_FontSpecification::FontSize chosenFontSize = FontCmdToSize (cmdNum);
+    FontSpecification::FontSize chosenFontSize = FontCmdToSize (cmdNum);
     if (chosenFontSize == 0) {
         switch (cmdNum) {
             case kFontSizeSmallerCmdID: {
-                Led_IncrementalFontSpecification applyFontSpec;
+                IncrementalFontSpecification applyFontSpec;
                 applyFontSpec.SetPointSizeIncrement (-1);
                 SetDefaultFont (applyFontSpec);
                 return;
             } break;
             case kFontSizeLargerCmdID: {
-                Led_IncrementalFontSpecification applyFontSpec;
+                IncrementalFontSpecification applyFontSpec;
                 applyFontSpec.SetPointSizeIncrement (1);
                 SetDefaultFont (applyFontSpec);
                 return;
             } break;
             case kFontSizeOtherCmdID: {
                 DistanceType oldSize = GetDefaultFont ().GetPointSize ();
-                chosenFontSize       = static_cast<Led_FontSpecification::FontSize> (PickOtherFontHeight (oldSize));
+                chosenFontSize       = static_cast<FontSpecification::FontSize> (PickOtherFontHeight (oldSize));
             } break;
         }
     }
     if (chosenFontSize != 0) {
-        Led_IncrementalFontSpecification applyFontSpec;
+        IncrementalFontSpecification applyFontSpec;
         applyFontSpec.SetPointSize (chosenFontSize);
         SetDefaultFont (applyFontSpec);
     }
@@ -894,7 +894,7 @@ void LedLineItView::OnChooseFontCommand ()
 
     FontDlgWithNoColorNoStyles dlog (&lf);
     if (dlog.DoModal () == IDOK) {
-        SetDefaultFont (Led_FontSpecification (*dlog.m_cf.lpLogFont));
+        SetDefaultFont (FontSpecification (*dlog.m_cf.lpLogFont));
     }
 }
 

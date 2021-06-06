@@ -19,7 +19,7 @@ SimpleTextInteractor::SimpleTextInteractor ()
 {
 }
 
-void SimpleTextInteractor::SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont)
+void SimpleTextInteractor::SetDefaultFont (const IncrementalFontSpecification& defaultFont)
 {
     SimpleTextImager::SetDefaultFont (defaultFont);
 }

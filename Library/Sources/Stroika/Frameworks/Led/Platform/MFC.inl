@@ -593,7 +593,7 @@ namespace Stroika::Frameworks::Led::Platform {
         Assert (false); // though THIS code is fine - we haven't yet hooked the callback, so this call will
         // produce poor results... LGP 941129
         Assert (::IsWindow (this->m_hWnd));
-        return (BOOL)::SendMessage (this->m_hWnd, EM_SETTABSTOPS, 1, (LPARAM) (LPINT)&cxEachStop);
+        return (BOOL)::SendMessage (this->m_hWnd, EM_SETTABSTOPS, 1, (LPARAM)(LPINT)&cxEachStop);
     }
     template <typename BASECLASS>
     inline BOOL Led_MFC_MimicMFCAPIHelper<BASECLASS>::Undo ()
@@ -1260,7 +1260,7 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         if (pInfo != NULL and pDC->IsPrinting ()) { // For some STUPID reason, MFC calls this even if we aren't printing...
             {
-                Led_WindowDC screenDC (NULL);
+                WindowDC screenDC (NULL);
                 (void)pDC->SetMapMode (MM_ANISOTROPIC);
                 (void)pDC->SetWindowExt (screenDC.GetDeviceCaps (LOGPIXELSX), screenDC.GetDeviceCaps (LOGPIXELSY));
                 (void)pDC->SetViewportExt (pDC->GetDeviceCaps (LOGPIXELSX), pDC->GetDeviceCaps (LOGPIXELSY));

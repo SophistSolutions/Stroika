@@ -69,7 +69,7 @@ namespace Stroika::Frameworks::Led {
     //  class   WaterMarkHelper<TEXTSTORE,WORDPROCESSOR>
     template <typename TEXTSTORE, typename WORDPROCESSOR>
     WaterMarkHelper<TEXTSTORE, WORDPROCESSOR>::WaterMarkHelper (const Led_tString& watermMarkText)
-        : fWatermarkColor (Led_Color::kYellow)
+        : fWatermarkColor (Color::kYellow)
         , fWatermarkText (watermMarkText)
         , fCachedImager (NULL)
         , fCachedIntoRect (Led_Rect (0, 0, 0, 0))
@@ -82,12 +82,12 @@ namespace Stroika::Frameworks::Led {
         delete fCachedImager;
     }
     template <typename TEXTSTORE, typename WORDPROCESSOR>
-    Led_Color WaterMarkHelper<TEXTSTORE, WORDPROCESSOR>::GetWatermarkColor () const
+    Color WaterMarkHelper<TEXTSTORE, WORDPROCESSOR>::GetWatermarkColor () const
     {
         return fWatermarkColor;
     }
     template <typename TEXTSTORE, typename WORDPROCESSOR>
-    void WaterMarkHelper<TEXTSTORE, WORDPROCESSOR>::SetWatermarkColor (const Led_Color& c)
+    void WaterMarkHelper<TEXTSTORE, WORDPROCESSOR>::SetWatermarkColor (const Color& c)
     {
         fWatermarkColor = c;
     }
@@ -117,10 +117,10 @@ namespace Stroika::Frameworks::Led {
             centeredRect.right = centeredRect.left + 1;
         }
         if (fCachedImager == NULL) {
-            fCachedImager                                = new MyTrivImager (tablet, centeredRect, fWatermarkText);
-            fCachedIntoRect                              = centeredRect;
-            fCachedIntoTablet                            = tablet;
-            Led_IncrementalFontSpecification extraStyles = TextImager::GetStaticDefaultFont ();
+            fCachedImager                            = new MyTrivImager (tablet, centeredRect, fWatermarkText);
+            fCachedIntoRect                          = centeredRect;
+            fCachedIntoTablet                        = tablet;
+            IncrementalFontSpecification extraStyles = TextImager::GetStaticDefaultFont ();
             extraStyles.SetTextColor (GetWatermarkColor ());
             fCachedImager->SetStyleInfo (0, fCachedImager->GetLength (), extraStyles);
 
