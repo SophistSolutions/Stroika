@@ -14,6 +14,7 @@ DISABLE_COMPILER_MSC_WARNING_START (5054)
 #include <afxole.h>
 DISABLE_COMPILER_MSC_WARNING_END (5054)
 
+#include "../../../Foundation/DataExchange/BadFormatException.h"
 #include "../../../Foundation/Memory/SmallStackBuffer.h"
 
 #include "MFC_WordProcessor.h"
@@ -221,7 +222,7 @@ SimpleEmbeddedObjectStyleMarker* Led_MFC_ControlItem::mkLed_MFC_ControlItemStyle
         AssertNotNull (dndfp); // if not from clip, must be from Drag and Drop!
         DISABLE_COMPILER_MSC_WARNING_START (28182)
         if (e->CreateFromData (dndfp->GetOleDataObject ()) == 0) {
-            Led_ThrowBadFormatDataException ();
+            Execution::Throw (DataExchange::BadFormatException::kThe);
         }
         DISABLE_COMPILER_MSC_WARNING_END (28182)
     }

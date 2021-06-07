@@ -1178,7 +1178,7 @@ namespace Stroika::Frameworks::Led::Platform {
 #if qSupportWindowsSDKCallbacks
         // Notify the parent window...
         HWND hWnd = this->GetValidatedHWND ();
-        (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, (WPARAM)MAKELONG (GetWindowID (), EN_SETFOCUS), (LPARAM)(hWnd));
+        (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, (WPARAM)MAKELONG (GetWindowID (), EN_SETFOCUS), (LPARAM) (hWnd));
 #endif
     }
     template <typename BASE_INTERACTOR>
@@ -1204,7 +1204,7 @@ namespace Stroika::Frameworks::Led::Platform {
 #if qSupportWindowsSDKCallbacks
         // Notify the parent window...
         HWND hWnd = this->GetValidatedHWND ();
-        (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, (WPARAM)MAKELONG (GetWindowID (), EN_KILLFOCUS), (LPARAM)(hWnd));
+        (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, (WPARAM)MAKELONG (GetWindowID (), EN_KILLFOCUS), (LPARAM) (hWnd));
 #endif
     }
     template <typename BASE_INTERACTOR>

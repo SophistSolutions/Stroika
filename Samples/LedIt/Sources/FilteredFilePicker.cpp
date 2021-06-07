@@ -45,7 +45,7 @@ namespace {
         NavTypeListHandle list = (NavTypeListHandle)::NewHandleClear (
             (sizeof (NavTypeList) - sizeof (OSType)) +
             (inNumTypes * sizeof (OSType)));
-        Led_ThrowIfNull (list);
+        Execution::ThrowIfNull (list);
         (*list)->componentSignature = kNavGenericSignature;
         (*list)->osTypeCount        = inNumTypes;
         memcpy ((*list)->osType, inSFTypeList, inNumTypes * sizeof (OSType));

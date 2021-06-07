@@ -3,6 +3,7 @@
  */
 #include "../../Foundation/StroikaPreComp.h"
 
+#include "../../Foundation/DataExchange/BadFormatException.h"
 #include "../../Foundation/Traversal/Iterator.h"
 
 #include "StyledTextEmbeddedObjects.h"
@@ -597,7 +598,7 @@ void StandardStyledTextIOSinkStream::InsertEmbeddingForExistingSentinal (SimpleE
     AssertNotNull (fTextStore);
     fTextStore->CopyOut (effectiveFrom, 1, &testSentinal);
     if (testSentinal != kEmbeddingSentinalChar) {
-        Led_ThrowBadFormatDataException ();
+        Execution::Throw (DataExchange::BadFormatException::kThe);
     }
     Stroika::Frameworks::Led::InsertEmbeddingForExistingSentinal (embedding, *fTextStore, effectiveFrom, fStyleRunDatabase.get ());
 }

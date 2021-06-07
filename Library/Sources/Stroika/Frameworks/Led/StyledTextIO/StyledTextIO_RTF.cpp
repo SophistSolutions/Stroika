@@ -3,6 +3,7 @@
  */
 #include "../../../Foundation/StroikaPreComp.h"
 
+#include <bitset>
 #include <cctype>
 #include <climits>
 #include <cstdio> // for a couple sprintf() calls - could pretty easily be avoided
@@ -13,6 +14,7 @@
 #endif
 #include "../../../Foundation/Characters/CString/Utilities.h"
 #include "../../../Foundation/Characters/String.h"
+#include "../../../Foundation/DataExchange/BadFormatException.h"
 #if qPlatform_Windows
 #include "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #endif
@@ -23,10 +25,6 @@
 
 #include "StyledTextIO_RTF.h"
 
-// Include moved down here cuz of GCC lib bug...
-#if qBitSetTemplateAvailable
-#include <bitset>
-#endif
 
 #ifndef qUseCompiledSetHack
 #if qBitSetTemplateAvailable
@@ -62,7 +60,7 @@ namespace {
             return 10 + (digit - 'a');
         }
         else {
-            Led_ThrowBadFormatDataException ();
+            Execution::Throw (DataExchange::BadFormatException::kThe);
             Assert (false);
             return 0; // not reached
         }
@@ -348,7 +346,7 @@ RTFIO::ColorTable::ColorTable (const vector<Color>& colorTable)
 Color RTFIO::ColorTable::LookupColor (size_t colorNumber) const
 {
     if (colorNumber < 0 or colorNumber >= fEntries.size ()) {
-        Led_ThrowBadFormatDataException (); // font number not found!
+        Execution::Throw (DataExchange::BadFormatException::kThe); // font number not found!
     }
     return fEntries[colorNumber];
 }
@@ -3465,7 +3463,7 @@ void StyledTextIOReader_RTF::ConstructOLEEmebddingFromRTFInfo ([[maybe_unused]] 
         }
     }
 #endif
-    Led_ThrowBadFormatDataException (); // Will be caught by caller, and use "unknown embedding object"
+        Execution::Throw (DataExchange::BadFormatException::kThe);  // Will be caught by caller, and use "unknown embedding object"
 }
 
 void StyledTextIOReader_RTF::ConstructLedEmebddingFromRTFInfo (ReaderContext& readerContext, size_t nBytes, const void* data)
@@ -3473,7 +3471,7 @@ void StyledTextIOReader_RTF::ConstructLedEmebddingFromRTFInfo (ReaderContext& re
     // The first sizeof (Led_PrivateEmbeddingTag) bytes are the type tag, and the rest is standard
     // internalize/externalize data.
     if (nBytes < sizeof (Led_PrivateEmbeddingTag)) {
-        Led_ThrowBadFormatDataException (); // Will be caught by caller, and use "unknown embedding object"
+        Execution::Throw (DataExchange::BadFormatException::kThe);   // Will be caught by caller, and use "unknown embedding object"
     }
     const char*                                         tag           = (const char*)data;
     const char*                                         theData       = tag + sizeof (Led_PrivateEmbeddingTag);
@@ -3494,7 +3492,7 @@ void StyledTextIOReader_RTF::ConstructLedEmebddingFromRTFInfo (ReaderContext& re
             }
         }
     }
-    Led_ThrowBadFormatDataException (); // Will be caught by caller, and use "unknown embedding object"
+    Execution::Throw (DataExchange::BadFormatException::kThe);    // Will be caught by caller, and use "unknown embedding object"
 }
 
 void StyledTextIOReader_RTF::ReadPictData (vector<char>* data)

@@ -172,16 +172,16 @@ struct UniscribeDLL {
         , fScriptStringCPtoX (nullptr)
     {
         if (fDLL != nullptr) {
-            fScriptItemize                = (HRESULT (WINAPI*) (const WCHAR*, int, int, const SCRIPT_CONTROL*, const SCRIPT_STATE*, SCRIPT_ITEM*, int*))(::GetProcAddress (fDLL, "ScriptItemize"));
-            fScriptShape                  = (HRESULT (WINAPI*) (HDC, SCRIPT_CACHE*, const WCHAR*, int, int, SCRIPT_ANALYSIS*, WORD*, WORD*, SCRIPT_VISATTR*, int*))(::GetProcAddress (fDLL, "ScriptShape"));
-            fScriptPlace                  = (HRESULT (WINAPI*) (HDC, SCRIPT_CACHE*, const WORD*, int, const SCRIPT_VISATTR*, SCRIPT_ANALYSIS*, int*, GOFFSET*, ABC*))(::GetProcAddress (fDLL, "ScriptPlace"));
-            fScriptStringAnalyse          = (HRESULT (WINAPI*) (HDC, const void*, int, int, int, DWORD, int, SCRIPT_CONTROL*, SCRIPT_STATE*, const int*, SCRIPT_TABDEF*, const BYTE*, SCRIPT_STRING_ANALYSIS*))(::GetProcAddress (fDLL, "ScriptStringAnalyse"));
-            fScriptStringOut              = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS, int, int, UINT, const RECT*, int, int, BOOL))(::GetProcAddress (fDLL, "ScriptStringOut"));
-            fScriptStringFree             = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS*))(::GetProcAddress (fDLL, "ScriptStringFree"));
-            fScriptStringGetLogicalWidths = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS, int*))(::GetProcAddress (fDLL, "ScriptStringGetLogicalWidths"));
-            fScriptString_pcOutChars      = (const int*(WINAPI*)(SCRIPT_STRING_ANALYSIS))(::GetProcAddress (fDLL, "ScriptString_pcOutChars"));
-            fScriptString_pSize           = (const SIZE*(WINAPI*)(SCRIPT_STRING_ANALYSIS))(::GetProcAddress (fDLL, "ScriptString_pSize"));
-            fScriptStringCPtoX            = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS, int, BOOL, int*))(::GetProcAddress (fDLL, "ScriptStringCPtoX"));
+            fScriptItemize                = (HRESULT (WINAPI*) (const WCHAR*, int, int, const SCRIPT_CONTROL*, const SCRIPT_STATE*, SCRIPT_ITEM*, int*)) (::GetProcAddress (fDLL, "ScriptItemize"));
+            fScriptShape                  = (HRESULT (WINAPI*) (HDC, SCRIPT_CACHE*, const WCHAR*, int, int, SCRIPT_ANALYSIS*, WORD*, WORD*, SCRIPT_VISATTR*, int*)) (::GetProcAddress (fDLL, "ScriptShape"));
+            fScriptPlace                  = (HRESULT (WINAPI*) (HDC, SCRIPT_CACHE*, const WORD*, int, const SCRIPT_VISATTR*, SCRIPT_ANALYSIS*, int*, GOFFSET*, ABC*)) (::GetProcAddress (fDLL, "ScriptPlace"));
+            fScriptStringAnalyse          = (HRESULT (WINAPI*) (HDC, const void*, int, int, int, DWORD, int, SCRIPT_CONTROL*, SCRIPT_STATE*, const int*, SCRIPT_TABDEF*, const BYTE*, SCRIPT_STRING_ANALYSIS*)) (::GetProcAddress (fDLL, "ScriptStringAnalyse"));
+            fScriptStringOut              = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS, int, int, UINT, const RECT*, int, int, BOOL)) (::GetProcAddress (fDLL, "ScriptStringOut"));
+            fScriptStringFree             = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS*)) (::GetProcAddress (fDLL, "ScriptStringFree"));
+            fScriptStringGetLogicalWidths = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS, int*)) (::GetProcAddress (fDLL, "ScriptStringGetLogicalWidths"));
+            fScriptString_pcOutChars      = (const int*(WINAPI*)(SCRIPT_STRING_ANALYSIS)) (::GetProcAddress (fDLL, "ScriptString_pcOutChars"));
+            fScriptString_pSize           = (const SIZE*(WINAPI*)(SCRIPT_STRING_ANALYSIS)) (::GetProcAddress (fDLL, "ScriptString_pSize"));
+            fScriptStringCPtoX            = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS, int, BOOL, int*)) (::GetProcAddress (fDLL, "ScriptStringCPtoX"));
         }
     }
     ~UniscribeDLL ()
@@ -530,7 +530,7 @@ namespace {
         {
             // if it's 16bpp, fill in the masks and OVERRIDE the compression
             // these are the default masks - you could change them if needed
-            LPDWORD pMasks                = (LPDWORD)(pbmi->bmiColors);
+            LPDWORD pMasks                = (LPDWORD) (pbmi->bmiColors);
             pMasks[0]                     = 0x00007c00;
             pMasks[1]                     = 0x000003e0;
             pMasks[2]                     = 0x0000001f;
@@ -555,7 +555,7 @@ namespace {
         {
             // if it's 32bpp, fill in the masks and OVERRIDE the compression
             // these are the default masks - you could change them if needed
-            LPDWORD pMasks                = (LPDWORD)(pbmi->bmiColors);
+            LPDWORD pMasks                = (LPDWORD) (pbmi->bmiColors);
             pMasks[0]                     = 0x00ff0000;
             pMasks[1]                     = 0x0000ff00;
             pMasks[2]                     = 0x000000ff;
@@ -620,7 +620,7 @@ void Bitmap::LoadBitmap (HINSTANCE hInstance, LPCTSTR lpBitmapName)
 {
     Require (m_hObject == nullptr);
     m_hObject = ::LoadBitmap (hInstance, lpBitmapName);
-    Led_ThrowIfNull (m_hObject);
+    Execution::ThrowIfNull (m_hObject);
     {
         BITMAP bm{};
         Verify (::GetObject (m_hObject, sizeof (BITMAP), (LPVOID)&bm));
@@ -1317,7 +1317,7 @@ void Tablet::ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, CoordinateT
 #if qPlatform_MacOS
     Rect      qdMoveRect = AsQDRect (windowRect);
     RgnHandle updateRgn  = ::NewRgn ();
-    Led_ThrowIfNull (updateRgn);
+    Execution::ThrowIfNull (updateRgn);
     SetPort ();
     ::ScrollRect (&qdMoveRect, 0, scrollVBy, updateRgn);
 #if TARGET_CARBON
@@ -1331,7 +1331,7 @@ void Tablet::ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, CoordinateT
     // NB: I used to use ScrollDC (Led 2.1 and earlier). But that code appeared to sometimes leave
     // little bits of crufy around. I never understood why. But I assume it was a windows bug.
     HWND w = GetWindow ();
-    Led_ThrowIfNull (w);
+    Execution::ThrowIfNull (w);
     ::ScrollWindow (w, 0, scrollVBy, &gdiMoveRect, &gdiMoveRect);
 #elif qStroika_FeatureSupported_XWindows
     if (scrollVBy != 0) {
@@ -1346,7 +1346,7 @@ void Tablet::ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, CoordinateT
             XEvent e;
             if (::XCheckTypedEvent (fDisplay, Expose, &e) or ::XCheckTypedEvent (fDisplay, GraphicsExpose, &e)) {
                 ::XPutBackEvent (fDisplay, &e);
-                Led_ThrowIfNull (0);
+                Execution::ThrowIfNull (nullptr);
             }
         }
         Led_Rect srcMoveRect = windowRect;
@@ -1414,7 +1414,7 @@ void Tablet::FrameRegion (const Region& r, const Color& c)
     Brush brush = Brush (c.GetOSRep ());
     (void)::FrameRgn (*this, r, brush, 1, 1);
 #else
-    Assert (false);                                  // NYI
+    Assert (false); // NYI
 #endif
 }
 
@@ -1590,7 +1590,7 @@ void Tablet::MeasureText (const FontMetrics& precomputedFontMetrics,
     Succeeded:
 #endif
 #elif qStroika_FeatureSupported_XWindows
-        Led_ThrowIfNull (fCachedFontInfo);
+        Execution::ThrowIfNull (fCachedFontInfo);
         // Gross hack - sloppy implementation (SLOW). But I'm not sure what in the X SDK allows this to be done faster! -- LGP 2000-09-05
         // Actually - not TOO bad since whole computation is done client-side. Seems to be working OK - at least for now - LGP 2001-05-05
         for (size_t j = 0; j < charsThisTime; ++j) {
@@ -1687,7 +1687,7 @@ void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontM
             widthSoFar = ::GetPortPenLocation (Led_GetCurrentGDIPort (), &junk)->h - cursor.h;
         }
 #else
-        widthSoFar                      = Led_GetCurrentGDIPort ()->pnLoc.h - cursor.h;
+        widthSoFar = Led_GetCurrentGDIPort ()->pnLoc.h - cursor.h;
 #endif
 #elif qPlatform_Windows
         int oldBkMode = SetBkMode (TRANSPARENT);
@@ -1848,7 +1848,7 @@ void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontM
         item.delta = 0;
         item.font = None;
         ::XDrawText (fDisplay, fDrawable, fGC, cursor.h + widthSoFar, cursor.v, &item, 1);
-        Led_ThrowIfNull (fCachedFontInfo);
+        Execution::ThrowIfNull (fCachedFontInfo);
         widthSoFar += ::XTextWidth (const_cast<XFontStruct*> (fCachedFontInfo), item.chars, item.nchars);
 #endif
 
@@ -2090,7 +2090,7 @@ FontMetrics Tablet::GetFontMetrics () const
 #elif qStroika_FeatureSupported_XWindows
     FontMetrics::PlatformSpecific result;
     memset (&result, 0, sizeof (result));
-    Led_ThrowIfNull (fCachedFontInfo);
+    Execution::ThrowIfNull (fCachedFontInfo);
     result.fAscent = fCachedFontInfo->ascent;
     result.fDescent = fCachedFontInfo->descent;
     result.fLeading = 0; // NOT SURE WHAT THIS IS in X-terminology. Maybe just not supported in XFonts? - LGP 2001-05-07
@@ -2171,7 +2171,7 @@ void Tablet::SetFont (const FontSpecification& fontSpec)
                 tryFontRep = fontSpec.mkOSRep (kMatchAny, kMatchAny, kMatchAny, kMatchAny, kMatchAny);
                 fontList   = ::XListFonts (fDisplay, tryFontRep.c_str (), 100000, &nFonts);
             }
-            Led_ThrowIfNull (fontList);
+            Execution::ThrowIfNull (fontList);
             vector<string> vFontList;
             {
                 vFontList.reserve (nFonts);
@@ -2195,7 +2195,7 @@ void Tablet::SetFont (const FontSpecification& fontSpec)
             fFontMappingCache.insert (map<string, string>::value_type (fontSpec.GetOSRep (), useFontName));
         }
         fCachedFontInfo = ::XLoadQueryFont (fDisplay, useFontName.c_str ());
-        Led_ThrowIfNull (fCachedFontInfo);
+        Execution::ThrowIfNull (fCachedFontInfo);
     }
     fFontCache.insert (map<string, XFontStruct*>::value_type (fontSpec.GetOSRep (), fCachedFontInfo));
     AssertNotNull (fCachedFontInfo);
@@ -3258,10 +3258,10 @@ struct CMAPENCODING {
 
 // Macro to pack a TrueType table name into a DWORD
 #define MAKETABLENAME(ch1, ch2, ch3, ch4) ( \
-    (((DWORD)(ch4)) << 24) |                \
-    (((DWORD)(ch3)) << 16) |                \
-    (((DWORD)(ch2)) << 8) |                 \
-    ((DWORD)(ch1)))
+    (((DWORD) (ch4)) << 24) |               \
+    (((DWORD) (ch3)) << 16) |               \
+    (((DWORD) (ch2)) << 8) |                \
+    ((DWORD) (ch1)))
 
 /* public functions */
 static USHORT GetTTUnicodeGlyphIndex (HDC hdc, USHORT ch);

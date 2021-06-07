@@ -333,14 +333,14 @@ void LedItDocument::LoadFromFile (const string& fileName, FileFormat fileFormat)
     SmallStackBuffer<char> fileData (fileLen);
     int                    fd = ::open (fPathName.c_str (), O_RDONLY);
     if (fd == -1) {
-        Led_ThrowOutOfMemoryException (); // WRONG EXCEPTION
+        Execution::Throw (bad_alloc{});
     }
     fileLen = ::lseek (fd, 0, SEEK_END);
     fileData.GrowToSize (fileLen);
     try {
         ::lseek (fd, 0, SEEK_SET);
         if (::read (fd, fileData, fileLen) != int (fileLen)) {
-            Led_ThrowOutOfMemoryException (); // WRONG EXCEPTION
+            Execution::Throw (bad_alloc{});
         }
     }
     catch (...) {
@@ -486,12 +486,12 @@ void LedItDocument::Save ()
     }
     int fd = ::open (fPathName.c_str (), O_RDWR | O_CREAT, 0666);
     if (fd == -1) {
-        Led_ThrowOutOfMemoryException (); // WRONG EXCEPTION
+        Execution::Throw (bad_alloc{});
     }
     try {
         ::lseek (fd, 0, SEEK_SET);
         if (::write (fd, sink.PeekAtData (), sink.GetLength ()) != int (sink.GetLength ())) {
-            Led_ThrowOutOfMemoryException (); // WRONG EXCEPTION
+            Execution::Throw (bad_alloc{});
         }
     }
     catch (...) {
@@ -513,8 +513,8 @@ void LedItDocument::DoSaveHelper ()
     Led_BusyCursor busyCursor;
 
     //  write text
-    ThrowIfNULL_ (mFile);
-    ThrowIfNULL_ (mWindow);
+    Execution::ThrowIfNull (mFile);
+    Execution::ThrowIfNull (mWindow);
 
     mWindow->PostAction (NULL);
 

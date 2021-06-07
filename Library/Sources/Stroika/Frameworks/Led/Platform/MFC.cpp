@@ -43,23 +43,6 @@ public:
 
 CompileTimeFlagChecker_SOURCE (Stroika::Frameworks::Led::Platform, qMFCRequiresCWndLeftmostBaseClass, qMFCRequiresCWndLeftmostBaseClass);
 
-/*
- ********************************************************************************
- *********************** LedSupport class lib support ***************************
- ********************************************************************************
- */
-#if qGenerateStandardMFCExceptions
-static struct MFC_MODULE_INIT {
-    static void DoThrowAfxThrowMemoryException () { AfxThrowMemoryException (); }
-    static void DoThrowAfxThrowArchiveException () { AfxThrowArchiveException (CArchiveException::badIndex); /* best guess/message/exception I could think of*/ }
-    MFC_MODULE_INIT ()
-    {
-        Led_Set_OutOfMemoryException_Handler (&DoThrowAfxThrowMemoryException);
-        Led_Set_BadFormatDataException_Handler (&DoThrowAfxThrowArchiveException);
-    }
-} sMFC_MODULE_INIT;
-#endif
-
 #if qProvideLedStubsForOLEACCDLL
 /*
  ********************************************************************************
@@ -206,7 +189,7 @@ Led_MFCWriterDAndDFlavorPackage::Led_MFCWriterDAndDFlavorPackage (COleDataSource
 void Led_MFCWriterDAndDFlavorPackage::AddFlavorData (Led_ClipFormat clipFormat, size_t bufSize, const void* buf)
 {
     HGLOBAL dataHandle = ::GlobalAlloc (GMEM_DDESHARE, bufSize);
-    Led_ThrowIfNull (dataHandle);
+    Execution::ThrowIfNull (dataHandle);
     char* lockedMem = (char*)::GlobalLock (dataHandle);
     AssertNotNull (lockedMem);
     (void)::memcpy (lockedMem, buf, bufSize);

@@ -8,6 +8,8 @@
 #include <TextEdit.h> // for Apple TE scrap format and TEContinuous etc compatability
 #endif
 
+#include "../../Foundation/DataExchange/BadFormatException.h"
+
 #include "StandardStyledTextImager.h"
 
 #include "StyledTextEmbeddedObjects.h"
@@ -254,7 +256,7 @@ StandardMacPictureStyleMarker::StandardMacPictureStyleMarker (const Led_Picture*
 #elif qPlatform_Windows
     fPictureSize   = picSize;
     fPictureHandle = ::GlobalAlloc (GMEM_MOVEABLE, picSize);
-    Led_ThrowIfNull (fPictureHandle);
+    Execution::ThrowIfNull (fPictureHandle);
 #endif
     Led_StackBasedHandleLocker locker ((Led_StackBasedHandleLocker::GenericHandle)GetPictureHandle ());
     memcpy (locker.GetPointer (), pictData, picSize);
@@ -384,7 +386,7 @@ SimpleEmbeddedObjectStyleMarker* StandardDIBStyleMarker::mk ([[maybe_unused]] co
     Require (memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0);
     if (len < 40) {
         // This is less than we need to peek and see size of DIB...
-        Led_ThrowBadFormatDataException ();
+        Execution::Throw (DataExchange::BadFormatException::kThe);
     }
 
     size_t picSize = Led_GetDIBImageByteCount ((Led_DIB*)data);
@@ -395,7 +397,7 @@ SimpleEmbeddedObjectStyleMarker* StandardDIBStyleMarker::mk ([[maybe_unused]] co
         // Set a breakpoint here if this worries you...
         if (len < picSize) {
             // This is definitely bad!!!
-            Led_ThrowBadFormatDataException ();
+            Execution::Throw (DataExchange::BadFormatException::kThe);
         }
         else {
             // we'll just ignore the stuff off the end... Hope thats OK - LGP 960429
@@ -538,7 +540,7 @@ SimpleEmbeddedObjectStyleMarker* StandardURLStyleMarker::mk (ReaderFlavorPackage
         return (mk (kEmbeddingTag, buf, length));
     }
 #endif
-    Led_ThrowBadFormatDataException ();
+    Execution::Throw (DataExchange::BadFormatException::kThe);
     Assert (false);
     return nullptr;
 }
@@ -912,7 +914,7 @@ StandardMacPictureWithURLStyleMarker::StandardMacPictureWithURLStyleMarker (cons
 #elif qPlatform_Windows
     fPictureSize   = picSize;
     fPictureHandle = ::GlobalAlloc (GMEM_MOVEABLE, picSize);
-    Led_ThrowIfNull (fPictureHandle);
+    Execution::ThrowIfNull (fPictureHandle);
 #endif
     {
         Led_StackBasedHandleLocker locker ((Led_StackBasedHandleLocker::GenericHandle)GetPictureHandle ());
@@ -939,7 +941,7 @@ SimpleEmbeddedObjectStyleMarker* StandardMacPictureWithURLStyleMarker::mk (const
         size_t       picSize = Led_ByteSwapFromMac (picBuf->picSize);
 
         if (picSize >= len) {
-            Led_ThrowBadFormatDataException ();
+            Execution::Throw (DataExchange::BadFormatException::kThe);
         }
         const char* url     = ((char*)data) + picSize;
         size_t      urlSize = len - picSize;
@@ -949,7 +951,7 @@ SimpleEmbeddedObjectStyleMarker* StandardMacPictureWithURLStyleMarker::mk (const
     }
     else {
         if (len < 4 + 1 + sizeof (Led_Picture)) {
-            Led_ThrowBadFormatDataException ();
+            Execution::Throw (DataExchange::BadFormatException::kThe);
         }
 
         uint32_t picSize = *(uint32_t*)data;
@@ -958,7 +960,7 @@ SimpleEmbeddedObjectStyleMarker* StandardMacPictureWithURLStyleMarker::mk (const
         Led_Picture* picBuf = (Led_Picture*)((char*)data + 4);
 
         if (picSize + 4 >= len) { // must leave room for ULRD.
-            Led_ThrowBadFormatDataException ();
+            Execution::Throw (DataExchange::BadFormatException::kThe);
         }
         const char* url     = ((char*)picBuf) + picSize;
         size_t      urlSize = len - 4 - picSize;
@@ -1115,7 +1117,7 @@ SimpleEmbeddedObjectStyleMarker* StandardDIBWithURLStyleMarker::mk ([[maybe_unus
 
     if (len < 4 + 40) {
         // This is less than we need to peek and see size of DIB...
-        Led_ThrowBadFormatDataException ();
+        Execution::Throw (DataExchange::BadFormatException::kThe);
     }
 
     uint32_t picSize = *(uint32_t*)data;
@@ -1124,11 +1126,11 @@ SimpleEmbeddedObjectStyleMarker* StandardDIBWithURLStyleMarker::mk ([[maybe_unus
     Led_DIB* picBuf = (Led_DIB*)((char*)data + 4);
 
     if (len < picSize) {
-        Led_ThrowBadFormatDataException ();
+        Execution::Throw (DataExchange::BadFormatException::kThe);
     }
 
     if (picSize + 4 >= len) { // must leave room for ULRD.
-        Led_ThrowBadFormatDataException ();
+        Execution::Throw (DataExchange::BadFormatException::kThe);
     }
     const char* url     = ((char*)picBuf) + picSize;
     size_t      urlSize = len - 4 - picSize;
@@ -1144,7 +1146,7 @@ SimpleEmbeddedObjectStyleMarker* StandardDIBWithURLStyleMarker::mk (ReaderFlavor
     length = flavorPackage.ReadFlavorData (StandardDIBStyleMarker::kClipFormat, length, buf);
     if (length < 40) {
         // This is less than we need to peek and see size of DIB...
-        Led_ThrowBadFormatDataException ();
+        Execution::Throw (DataExchange::BadFormatException::kThe);
     }
 
     size_t picSize = Led_GetDIBImageByteCount ((Led_DIB*)(char*)buf);
@@ -1155,7 +1157,7 @@ SimpleEmbeddedObjectStyleMarker* StandardDIBWithURLStyleMarker::mk (ReaderFlavor
         // Set a breakpoint here if this worries you...
         if (length < picSize) {
             // This is definitely bad!!!
-            Led_ThrowBadFormatDataException ();
+            Execution::Throw (DataExchange::BadFormatException::kThe);
         }
         else {
             // we'll just ignore the stuff off the end... Hope thats OK - LGP 960429
@@ -1674,7 +1676,7 @@ static PixMap** MakePixMapFromDIB (const Led_DIB* dib)
     PixMap** result = ::NewPixMap ();
     if (result == nullptr) {
         delete[](char*) newImageData;
-        Led_ThrowOutOfMemoryException ();
+        Execution::Throw (bad_alloc{});
     }
     (*result)->bounds.top    = 0;
     (*result)->bounds.left   = 0;
@@ -1719,7 +1721,7 @@ static PixMap** MakePixMapFromDIB (const Led_DIB* dib)
         if (newCLUT == nullptr) {
             delete[](char*) newImageData;
             ::DisposePixMap (result);
-            Led_ThrowOutOfMemoryException ();
+            Execution::Throw (bad_alloc{});
         }
         (*newCLUT)->ctSeed  = ::GetCTSeed ();
         (*newCLUT)->ctFlags = 0;

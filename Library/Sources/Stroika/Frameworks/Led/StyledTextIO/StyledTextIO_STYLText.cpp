@@ -55,7 +55,7 @@ void StyledTextIOReader_STYLText::Read ()
         size_t                 len = endPos - oldPos;
         SmallStackBuffer<char> buf (len);
         if ((totalRead = GetSrcStream ().read (buf, len)) != len) {
-            Led_ThrowBadFormatDataException ();
+            Execution::Throw (DataExchange::BadFormatException::kThe);
         }
 #endif
 #if qWideCharacters

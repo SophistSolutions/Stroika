@@ -91,10 +91,6 @@
 // #error "One of these should be defined - right now thats all we support"
 // #endif
 
-/// MAY THIS A COMMENTED DEFINE - AND FIXUP THE ABOVE __GNUC__ STUFF LIKE OTHER COMPILER SETTINGS - LGP 991214
-#ifndef qBitSetTemplateAvailable
-#define qBitSetTemplateAvailable 1
-#endif
 
 /*
  *  Do things like memcpy () get inlined by the compiler, or should we do so ourselves

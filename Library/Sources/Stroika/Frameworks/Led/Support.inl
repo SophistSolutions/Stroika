@@ -202,12 +202,6 @@ namespace Stroika::Frameworks::Led {
         }
     }
 #endif
-    inline void Led_ThrowIfNull (void* p)
-    {
-        if (p == nullptr) {
-            Led_ThrowOutOfMemoryException ();
-        }
-    }
 
     inline unsigned short Led_ByteSwapFromMac (unsigned short src)
     {
@@ -302,13 +296,13 @@ namespace Stroika::Frameworks::Led {
 #else
         Handle h = ::NewHandle (n);
 #endif
-        Led_ThrowIfNull (h);
+        Execution::ThrowIfNull (h);
         return h;
     }
     inline void Led_CheckSomeLocalHeapRAMAvailable (size_t n)
     {
         Handle h = ::NewHandle (n);
-        Led_ThrowIfNull (h);
+        Execution::ThrowIfNull (h);
         ::DisposeHandle (h);
     }
 #endif

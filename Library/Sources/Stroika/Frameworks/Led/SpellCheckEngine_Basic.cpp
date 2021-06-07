@@ -1071,7 +1071,7 @@ bool SpellCheckEngine_Basic_Simple::AddWordToUserDictionarySupported () const
 
 void SpellCheckEngine_Basic_Simple::AddWordToUserDictionary (const Led_tString& word)
 {
-    Led_ThrowIfNull (fUD);
+    Execution::ThrowIfNull (fUD);
     fUD->AddWordToUserDictionary (word);
     WriteToUD ();
 }
@@ -1144,7 +1144,7 @@ void SpellCheckEngine_Basic_Simple::ReadFromUD ()
 
 void SpellCheckEngine_Basic_Simple::WriteToUD ()
 {
-    Led_ThrowIfNull (fUD);
+    Execution::ThrowIfNull (fUD);
     vector<Led_tChar> data = fUD->SaveToBuffer ();
 
     IO::FileSystem::FileOutputStream::Ptr writer = IO::FileSystem::FileOutputStream::New (filesystem::path (fUDName));

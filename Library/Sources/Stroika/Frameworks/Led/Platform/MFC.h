@@ -71,18 +71,6 @@ namespace Stroika::Frameworks::Led::Platform {
 #endif
 
 /*
-    @CONFIGVAR:     qGenerateStandardMFCExceptions
-    @DESCRIPTION:
-            <p>MFC apps generally throw AfxMemoryException () etc for internal exceptions. And there are standard MFC catchers for
-        these types. To make Led utilize the @'Led_Set_OutOfMemoryException_Handler' etc mechanism to use the MFC exception types -
-        define this to TRUE. To use more standard Standard C++ or your own types - you may wish to shut this off.</p>
-            <p>Defaults to ON.</p>
-        */
-#ifndef qGenerateStandardMFCExceptions
-#define qGenerateStandardMFCExceptions 1
-#endif
-
-/*
     @CONFIGVAR:     qProvideLedStubsForOLEACCDLL
     @DESCRIPTION:
             <p>Windows 98 has a problem with OLEACC.DLL. Though it is <em>supposed</em> to be included with Win98-

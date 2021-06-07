@@ -190,7 +190,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILE (ReaderFlavorPackage& fla
         TCHAR realFileName[_MAX_PATH + 1];
         {
             HDROP hdrop = (HDROP)::GlobalAlloc (GMEM_FIXED, fileSpecBufferLength);
-            Led_ThrowIfNull (hdrop);
+            Execution::ThrowIfNull (hdrop);
             (void)::memcpy (hdrop, fileSpecBuffer, fileSpecBufferLength);
             size_t nChars = ::DragQueryFile (hdrop, 0, nullptr, 0);
             Verify (::DragQueryFile (hdrop, 0, realFileName, static_cast<UINT> (nChars + 1)) == nChars);
@@ -413,12 +413,12 @@ void WriterClipboardFlavorPackage::AddFlavorData (Led_ClipFormat clipFormat, siz
     // NOTE: FOR THE PC - it is assumed all this happens  in the context of an open/close clipboard
     // done in the Led_MFC class overrides of OnCopyCommand_Before/OnCopyCommand_After
     HANDLE h = ::GlobalAlloc (GHND | GMEM_MOVEABLE, bufSize);
-    Led_ThrowIfNull (h);
+    Execution::ThrowIfNull (h);
     {
         char* clipBuf = (char*)::GlobalLock (h);
         if (clipBuf == nullptr) {
             ::GlobalFree (h);
-            Led_ThrowOutOfMemoryException ();
+            Execution::Throw (bad_alloc{});
         }
         memcpy (clipBuf, buf, bufSize);
         ::GlobalUnlock (h);

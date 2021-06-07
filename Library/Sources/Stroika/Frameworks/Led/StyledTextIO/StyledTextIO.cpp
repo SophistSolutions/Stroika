@@ -3,6 +3,7 @@
  */
 #include "../../../Foundation/StroikaPreComp.h"
 
+#include <bitset>
 #include <cctype>
 #include <climits>
 #include <cstdio> // for a couple sprintf() calls - could pretty easily be avoided
@@ -13,6 +14,7 @@
 #include <TextEdit.h> // for Apple TE scrap format and TEContinuous etc compatability
 #endif
 
+#include "../../../Foundation/DataExchange/BadFormatException.h"
 #include "../../../Foundation/Memory/SmallStackBuffer.h"
 
 #include "../StyledTextEmbeddedObjects.h"
@@ -20,10 +22,6 @@
 
 #include "StyledTextIO.h"
 
-// Include moved down here cuz of GCC lib bug...
-#if qBitSetTemplateAvailable
-#include <bitset>
-#endif
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
@@ -259,7 +257,7 @@ void StyledTextIOReader::SinkStream::SetDefaultCellSpacingForCurrentRow (TWIPS /
 void StyledTextIOReader::BadInputHandler::HandleBadlyFormattedInput (const StyledTextIOReader& /*reader*/, bool unrecoverable)
 {
     if (unrecoverable) {
-        Led_ThrowBadFormatDataException ();
+        Execution::Throw (DataExchange::BadFormatException::kThe);
     }
 }
 

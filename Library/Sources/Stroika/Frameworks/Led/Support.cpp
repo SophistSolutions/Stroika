@@ -283,34 +283,6 @@ Time::DurationSecondsType Led::Led_GetDoubleClickTime ()
 #endif
 }
 
-/*
- ********************************************************************************
- *********************** Led_ThrowOutOfMemoryException **************************
- ********************************************************************************
- */
-static void (*sLedOutOfMemoryExceptionCallback) () = nullptr;
-
-void Led::Led_ThrowOutOfMemoryException ()
-{
-    if (sLedOutOfMemoryExceptionCallback == nullptr) {
-        throw bad_alloc ();
-    }
-    else {
-        (sLedOutOfMemoryExceptionCallback) ();
-    }
-    Assert (false); // should never get here!
-}
-
-void (*Led::Led_Get_OutOfMemoryException_Handler ()) ()
-{
-    return sLedOutOfMemoryExceptionCallback;
-}
-
-void Led::Led_Set_OutOfMemoryException_Handler (void (*outOfMemoryHandler) ())
-{
-    sLedOutOfMemoryExceptionCallback = outOfMemoryHandler;
-}
-
 int Led::Led_tStrniCmp (const Led_tChar* l, const Led_tChar* r, size_t n)
 {
     RequireNotNull (l);
@@ -337,34 +309,7 @@ int Led::Led_tStriCmp (const Led_tChar* l, const Led_tChar* r)
 #endif
 }
 
-/*
- ********************************************************************************
- *********************** Led_ThrowBadFormatDataException ************************
- ********************************************************************************
- */
-static void (*sLedBadFormatDataExceptionCallback) () = nullptr;
 
-void Led::Led_ThrowBadFormatDataException ()
-{
-    if (sLedBadFormatDataExceptionCallback == nullptr) {
-        // not sure what this should throw by default?
-        Execution::Throw (bad_alloc ());
-    }
-    else {
-        (sLedBadFormatDataExceptionCallback) ();
-    }
-    Assert (false); // should never get here!
-}
-
-void (*Led::Led_Get_BadFormatDataException_Handler ()) ()
-{
-    return sLedBadFormatDataExceptionCallback;
-}
-
-void Led::Led_Set_BadFormatDataException_Handler (void (*badFormatDataExceptionCallback) ())
-{
-    sLedBadFormatDataExceptionCallback = badFormatDataExceptionCallback;
-}
 
 #if qPlatform_MacOS
 /*
@@ -465,7 +410,7 @@ Led_ClipboardObjectAcquire::Led_ClipboardObjectAcquire (Led_ClipFormat clipType)
     OSStatus status    = ::GetScrapFlavorSize (scrap, clipType, &byteCount);
     if (status != noTypeErr) {
         fOSClipHandle = Led_DoNewHandle (byteCount);
-        Led_ThrowIfNull (fOSClipHandle);
+        Execution::ThrowIfNull (fOSClipHandle);
         Assert (::GetHandleSize (fOSClipHandle) == byteCount);
         ::HLock (fOSClipHandle);
         fLockedData = *fOSClipHandle;
@@ -474,7 +419,7 @@ Led_ClipboardObjectAcquire::Led_ClipboardObjectAcquire (Led_ClipFormat clipType)
 #else
     long scrapOffset = 0;
     fOSClipHandle    = Led_DoNewHandle (0);
-    Led_ThrowIfNull (fOSClipHandle);
+    Execution::ThrowIfNull (fOSClipHandle);
     long result = ::GetScrap (fOSClipHandle, clipType, &scrapOffset);
     if (result < 0) {
         ::DisposeHandle (fOSClipHandle);
@@ -512,7 +457,7 @@ VariantArrayPacker::VariantArrayPacker (VARIANT* v, VARTYPE vt, size_t nElts)
     // assumes passed in variant is CONSTRUCTED (initied) - but not necesarily having the right type
     ::VariantClear (fSafeArrayVariant);
     fSafeArrayVariant->parray = ::SafeArrayCreateVector (vt, 0, static_cast<ULONG> (nElts));
-    Led_ThrowIfNull (fSafeArrayVariant->parray);
+    Execution::ThrowIfNull (fSafeArrayVariant->parray);
     fSafeArrayVariant->vt = VT_ARRAY | vt;
     Led_ThrowIfErrorHRESULT (::SafeArrayAccessData (fSafeArrayVariant->parray, &fPtr));
 }
@@ -603,7 +548,7 @@ VARIANT Led::CreateSafeArrayOfBSTR (const wchar_t* const* strsStart, const wchar
             VARIANT*           vptr = reinterpret_cast<VARIANT*> (packer.PokeAtData ());
             for (size_t i = 0; i < nElts; ++i) {
                 ::VariantInit (&vptr[i]);
-                Led_ThrowIfNull (vptr[i].bstrVal = ::SysAllocString (strsStart[i]));
+                Execution::ThrowIfNull (vptr[i].bstrVal = ::SysAllocString (strsStart[i]));
                 vptr[i].vt = VT_VARIANT;
             }
         }
@@ -611,7 +556,7 @@ VARIANT Led::CreateSafeArrayOfBSTR (const wchar_t* const* strsStart, const wchar
             VariantArrayPacker packer (&result, VT_BSTR, nElts);
             BSTR*              bptr = reinterpret_cast<BSTR*> (packer.PokeAtData ());
             for (size_t i = 0; i < nElts; ++i) {
-                Led_ThrowIfNull (bptr[i] = ::SysAllocString (strsStart[i]));
+                Execution::ThrowIfNull (bptr[i] = ::SysAllocString (strsStart[i]));
             }
         }
     }
@@ -1117,12 +1062,12 @@ void Led_URLManager::Open_ActiveX (const string& url)
 #if 1
     static HINSTANCE urlmonLibrary = ::LoadLibrary (_T ("urlmon"));
     if (urlmonLibrary == nullptr) {
-        Led_ThrowOutOfMemoryException (); // not sure what else to throw?
+        Execution::Throw (bad_alloc{});
     }
     static HRESULT (WINAPI * hlinkNavigateString) (IUnknown*, LPCWSTR) =
         (HRESULT (WINAPI*) (IUnknown*, LPCWSTR))::GetProcAddress (urlmonLibrary, "HlinkNavigateString");
     if (hlinkNavigateString == nullptr) {
-        Led_ThrowOutOfMemoryException (); // not sure what else to throw?
+        Execution::Throw (bad_alloc{});
     }
     HRESULT result = (*hlinkNavigateString) (pUnk, wideURLBuf);
 #else

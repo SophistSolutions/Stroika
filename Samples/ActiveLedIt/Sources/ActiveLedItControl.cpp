@@ -2203,7 +2203,7 @@ inline void PackBytesIntoVariantSAFEARRAY (const void* bytes, size_t nBytes, VAR
     rgsaBounds[0].lLbound   = 0;
     rgsaBounds[0].cElements = static_cast<ULONG> (nBytes);
     SAFEARRAY* ar           = ::SafeArrayCreate (VT_I1, 1, rgsaBounds);
-    Led_ThrowIfNull (ar);
+    Execution::ThrowIfNull (ar);
     Led_ThrowIfErrorHRESULT (::SafeArrayAllocData (ar));
     void* ptr = NULL;
     Led_ThrowIfErrorHRESULT (::SafeArrayAccessData (ar, &ptr));

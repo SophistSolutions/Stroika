@@ -59,7 +59,7 @@ void StyledTextIOReader_PlainText::Read ()
     Memory::SmallStackBuffer<char> buf (len);
     size_t                         bytesRead = 0;
     if ((bytesRead = GetSrcStream ().read (buf, len)) != len) {
-        Led_ThrowBadFormatDataException ();
+        Execution::Throw (DataExchange::BadFormatException::kThe);
     }
 #endif
 #if qWideCharacters

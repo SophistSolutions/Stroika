@@ -24,6 +24,8 @@ DISABLE_COMPILER_MSC_WARNING_START (5054)
 DISABLE_COMPILER_MSC_WARNING_END (5054)
 #endif
 
+#include "Stroika/Foundation/DataExchange/BadFormatException.h"
+
 #include "Stroika/Frameworks/Led/StdDialogs.h"
 
 #include "ColorMenu.h"
@@ -837,7 +839,7 @@ void LedItView::OnInsertObject ()
         dlg.m_io.dwFlags |= IOF_SELECTCREATENEW;
         // Initialize the item from the dialog data.
         if (!dlg.CreateItem (pItem)) {
-            Led_ThrowBadFormatDataException ();
+            Execution::Throw (DataExchange::BadFormatException::kThe);
         }
         ASSERT_VALID (pItem);
 

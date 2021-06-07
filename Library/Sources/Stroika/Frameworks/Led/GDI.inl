@@ -10,6 +10,8 @@
  ********************************************************************************
  */
 
+#include "../../Foundation/Execution/Exceptions.h"
+
 namespace Stroika::Frameworks::Led {
 
     /*
@@ -369,15 +371,14 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_Windows
     /*
      ********************************************************************************
-     ******************************** Brush ************************************
+     *********************************** Brush **************************************
      ********************************************************************************
      */
-
     inline Brush::Brush (COLORREF crColor)
         : m_hObject{nullptr}
     {
         if (!Attach (::CreateSolidBrush (crColor)))
-            Led_ThrowOutOfMemoryException ();
+            Foundation::Execution::Throw (bad_alloc{});
     }
     inline Brush::~Brush ()
     {
@@ -425,7 +426,7 @@ namespace Stroika::Frameworks::Led {
 #endif
     {
 #if qPlatform_MacOS || qPlatform_Windows
-        Led_ThrowIfNull (fRgn);
+        Foundation::Execution::ThrowIfNull (fRgn);
 #endif
     }
     inline Region::Region (const Led_Rect& r)
@@ -439,7 +440,7 @@ namespace Stroika::Frameworks::Led {
         Require (r.GetHeight () >= 0);
         Require (r.GetWidth () >= 0);
 #if qPlatform_MacOS || qPlatform_Windows
-        Led_ThrowIfNull (fRgn);
+        Foundation::Execution::ThrowIfNull (fRgn);
 #endif
 #if qPlatform_MacOS
         ::SetRectRgn (fRgn, (short)r.left, (short)r.top, (short)r.right, (short)r.bottom);
@@ -455,7 +456,7 @@ namespace Stroika::Frameworks::Led {
 #endif
     {
 #if qPlatform_MacOS || qPlatform_Windows
-        Led_ThrowIfNull (fRgn);
+        Foundation::Execution::ThrowIfNull (fRgn);
 #endif
 #if qPlatform_MacOS
         ::CopyRgn (from.GetOSRep (), fRgn);
@@ -476,7 +477,7 @@ namespace Stroika::Frameworks::Led {
         Verify (::CombineRgn (fRgn, rhs, rhs, RGN_COPY) != ERROR);
 #endif
 #if qPlatform_MacOS || qPlatform_Windows
-        Led_ThrowIfNull (fRgn);
+        Foundation::Execution::ThrowIfNull (fRgn);
 #endif
         return *this;
     }
@@ -1723,7 +1724,7 @@ namespace Stroika::Frameworks::Led {
         : m_hObject{nullptr}
     {
         if (!Attach (::CreatePen (nPenStyle, nWidth, crColor)))
-            Led_ThrowOutOfMemoryException ();
+            Foundation::Execution::Throw (bad_alloc{});
     }
     inline Pen::~Pen ()
     {
@@ -2446,7 +2447,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         isValid = isValid and fStyleValid_Outline and fStyleValid_Shadow and fStyleValid_Condensed and fStyleValid_Extended;
 #elif qPlatform_Windows
-            isValid               = isValid and fStyleValid_Strikeout;
+            isValid = isValid and fStyleValid_Strikeout;
 #endif
         return isValid;
     }
@@ -2666,14 +2667,14 @@ namespace Stroika::Frameworks::Led {
         {
             fStyleValid_Strikeout = false;
 #if qPlatform_Windows
-            fDidSetOSRepCallFlag  = false;
+            fDidSetOSRepCallFlag = false;
 #endif
         }
         inline void IncrementalFontSpecification::SetStyle_Strikeout (bool isStrikeout)
         {
             fStyleValid_Strikeout = true;
 #if qPlatform_Windows
-            fDidSetOSRepCallFlag  = false;
+            fDidSetOSRepCallFlag = false;
 #endif
             inherited::SetStyle_Strikeout (isStrikeout);
         }
@@ -3208,7 +3209,7 @@ namespace Stroika::Frameworks::Led {
     {
         Require (fHWnd_ == nullptr or ::IsWindow (fHWnd_));
         if (!Attach (::GetWindowDC (fHWnd_))) {
-            Led_ThrowOutOfMemoryException ();
+            Foundation::Execution::Throw (bad_alloc{});
         }
     }
     inline WindowDC::~WindowDC ()

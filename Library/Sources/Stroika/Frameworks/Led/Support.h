@@ -268,54 +268,6 @@ namespace Stroika::Frameworks::Led {
     */
     wstring Led_tString2WideString (const Led_tString& s);
 
-    /*
-    @METHOD:        Led_ThrowOutOfMemoryException
-    @DESCRIPTION:   <p>Even though Standard C++ defines how this SHOULD behave, many class libraries (e.g. MFC and
-        PowerPlant) expect non-C++-Standard things to get thrown when you run out of memory.</p>
-            <p>So - Led internally calls this routine for out of memory exceptions.</p>
-            <p>The behavior of this routine detaults to the C++ standard, unless you are using some class library, like
-        PowerPlant or MFC. Then those modules may call @'Led_Set_OutOfMemoryException_Handler'. You can call @'Led_Get_OutOfMemoryException_Handler'
-        or @'Led_Set_OutOfMemoryException_Handler' to get/set the handler.</p>
-            <p>Note - this method never returns - it always throws.</p>
-    */
-    void Led_ThrowOutOfMemoryException ();
-
-    /*
-    @METHOD:        Led_Get_OutOfMemoryException_Handler
-    @DESCRIPTION:   <p>Get the handler used in @'Led_ThrowOutOfMemoryException'.</p>
-    */
-    void (*Led_Get_OutOfMemoryException_Handler ()) ();
-
-    /*
-    @METHOD:        Led_Set_OutOfMemoryException_Handler
-    @DESCRIPTION:   <p>Set the handler used in @'Led_ThrowOutOfMemoryException'.</p>
-            <p>Note - any handler supplied must never return - it must always throw.</p>
-    */
-    void Led_Set_OutOfMemoryException_Handler (void (*outOfMemoryHandler) ());
-
-    /*
-    @METHOD:        Led_ThrowBadFormatDataException
-    @DESCRIPTION:   <p>This is called internally by Led (or your code) when some data is found to be in a bad format.</p>
-            <p>Either your class library will call this to specify a class-lib specific exception type for this kind of
-        error, or you can in your application. Or just leave it todo the default.</p>
-            <p>Note - this method never returns - it always throws.</p>
-            <p>See also @'Led_ThrowOutOfMemoryException'.</p>
-    */
-    void Led_ThrowBadFormatDataException ();
-
-    /*
-    @METHOD:        Led_Get_BadFormatDatException_Handler
-    @DESCRIPTION:   <p>Get the handler used in @'Led_ThrowBadFormatDataException'.</p>
-    */
-    void (*Led_Get_BadFormatDataException_Handler ()) ();
-
-    /*
-    @METHOD:        Led_Set_BadFormatDatException_Handler
-    @DESCRIPTION:   <p>Set the handler used in @'Led_ThrowBadFormatDataException'.</p>
-            <p>Note - any handler supplied must never return - it must always throw.</p>
-    */
-    void Led_Set_BadFormatDataException_Handler (void (*badFormatDataExceptionCallback) ());
-
 #if qPlatform_MacOS
     /*
     @METHOD:        Led_ThrowOSErr
@@ -377,12 +329,6 @@ namespace Stroika::Frameworks::Led {
     void Led_ThrowIfOSErr (OSErr err);
     void Led_ThrowIfOSStatus (OSStatus err);
 #endif
-
-    /*
-    @METHOD:        Led_ThrowIfNull
-    @DESCRIPTION:   <p>If p == nullptr, then @'Led_ThrowOutOfMemoryException'.</p>
-    */
-    void Led_ThrowIfNull (void* p);
 
     short          Led_ByteSwapFromMac (short src);
     unsigned short Led_ByteSwapFromMac (unsigned short src);

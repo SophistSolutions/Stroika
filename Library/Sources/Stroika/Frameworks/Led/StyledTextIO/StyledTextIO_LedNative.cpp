@@ -17,6 +17,7 @@
 #include "../../../Foundation/Characters/CodePage.h"
 #include "../../../Foundation/Characters/LineEndings.h"
 #include "../../../Foundation/Characters/String.h"
+#include "../../../Foundation/DataExchange/BadFormatException.h"
 #include "../../../Foundation/Execution/Exceptions.h"
 
 #include "../StyledTextEmbeddedObjects.h"
@@ -50,7 +51,7 @@ namespace {
     {
         uint32_t buf;
         if (srcStream.read (&buf, sizeof (buf)) != sizeof (buf)) {
-            Led_ThrowBadFormatDataException ();
+            Execution::Throw (DataExchange::BadFormatException::kThe);
         }
         return (BufToUInt32 (&buf));
     }
@@ -362,14 +363,14 @@ void StyledTextIOReader_LedNativeFileFormat::Read ()
 
     LedFormatMagicCookie cookie;
     if (GetSrcStream ().read (cookie, sizeof (cookie)) != sizeof (cookie)) {
-        Led_ThrowBadFormatDataException ();
+        Execution::Throw (DataExchange::BadFormatException::kThe);
     }
     bool isVersion4   = memcmp (cookie, kLedPartFormatVersion_4_MagicNumber, sizeof (kLedPartFormatVersion_4_MagicNumber)) == 0;
     bool isVersion5   = memcmp (cookie, kLedPartFormatVersion_5_MagicNumber, sizeof (kLedPartFormatVersion_5_MagicNumber)) == 0;
     bool isVersion6   = memcmp (cookie, kLedPartFormatVersion_6_MagicNumber, sizeof (kLedPartFormatVersion_6_MagicNumber)) == 0;
     bool isFormatGood = isVersion4 or isVersion5 or isVersion6;
     if (not isFormatGood) {
-        Led_ThrowBadFormatDataException ();
+        Execution::Throw (DataExchange::BadFormatException::kThe);
     }
     if (isVersion4) {
         Read_Version4 (cookie);
@@ -407,7 +408,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version4 (const char* cookie)
     {
         uint32_t lenAsBuf;
         if (GetSrcStream ().read (&lenAsBuf, sizeof (lenAsBuf)) != sizeof (lenAsBuf)) {
-            Led_ThrowBadFormatDataException ();
+            Execution::Throw (DataExchange::BadFormatException::kThe);
         }
         totalTextLength = BufToUInt32 (&lenAsBuf);
     }
@@ -415,12 +416,12 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version4 (const char* cookie)
     // and so we don't get errors from our malloc for asking for huge number
     // (OpenDoc 1.0 does this).
     if (totalTextLength > kMaxBufSize) {
-        Led_ThrowBadFormatDataException ();
+        Execution::Throw (DataExchange::BadFormatException::kThe);
     }
     {
         SmallStackBuffer<char> buf (totalTextLength);
         if (GetSrcStream ().read (buf, totalTextLength) != totalTextLength) {
-            Led_ThrowBadFormatDataException ();
+            Execution::Throw (DataExchange::BadFormatException::kThe);
         }
 #if qWideCharacters
         size_t                      nChars = totalTextLength;
@@ -441,13 +442,13 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version4 (const char* cookie)
     {
         size_t nStyleRuns = InputStandardFromSrcStream_ULONG (GetSrcStream ());
         if (nStyleRuns > totalTextLength + 1) {
-            Led_ThrowBadFormatDataException ();
+            Execution::Throw (DataExchange::BadFormatException::kThe);
         }
         vector<StandardStyledTextImager::InfoSummaryRecord> styleRunInfo;
         {
             SmallStackBuffer<PortableStyleRunData_Version4> portableStyleRuns (nStyleRuns);
             if (GetSrcStream ().read (portableStyleRuns, nStyleRuns * sizeof (PortableStyleRunData_Version4)) != nStyleRuns * sizeof (PortableStyleRunData_Version4)) {
-                Led_ThrowBadFormatDataException ();
+                Execution::Throw (DataExchange::BadFormatException::kThe);
             }
             for (size_t i = 0; i < nStyleRuns; i++) {
                 styleRunInfo.push_back (mkInfoSummaryRecordFromPortData (portableStyleRuns[i]));
@@ -460,7 +461,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version4 (const char* cookie)
     {
         size_t nEmbeddings = InputStandardFromSrcStream_ULONG (GetSrcStream ());
         if (nEmbeddings > totalTextLength) { // sanity check
-            Led_ThrowBadFormatDataException ();
+            Execution::Throw (DataExchange::BadFormatException::kThe);
         }
 
         for (size_t i = 0; i < nEmbeddings; i++) {
@@ -471,10 +472,10 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version4 (const char* cookie)
 
             Led_PrivateEmbeddingTag tag;
             if (howManyBytes < sizeof (tag)) {
-                Led_ThrowBadFormatDataException ();
+                Execution::Throw (DataExchange::BadFormatException::kThe);
             }
             if (GetSrcStream ().read (tag, sizeof (tag)) != sizeof (tag)) {
-                Led_ThrowBadFormatDataException ();
+                Execution::Throw (DataExchange::BadFormatException::kThe);
             }
             SimpleEmbeddedObjectStyleMarker* embedding = InternalizeEmbedding (tag, howManyBytes - sizeof (tag));
             if (embedding == NULL) {
@@ -492,12 +493,12 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version4 (const char* cookie)
     // check for extra cookie at the end...
     LedFormatMagicCookie endCookie;
     if (GetSrcStream ().read (endCookie, sizeof (endCookie)) != sizeof (endCookie)) {
-        Led_ThrowBadFormatDataException ();
+        Execution::Throw (DataExchange::BadFormatException::kThe);
     }
     if (memcmp (endCookie, cookie, sizeof (endCookie)) != 0) {
         // maybe should warn - maybe an error? Who knows - we've read so much - its a shame to fail to open
         // just cuz of this...
-        Led_ThrowBadFormatDataException ();
+        Execution::Throw (DataExchange::BadFormatException::kThe);
     }
 }
 
@@ -510,7 +511,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version5 (const char* cookie)
     {
         uint32_t lenAsBuf;
         if (GetSrcStream ().read (&lenAsBuf, sizeof (lenAsBuf)) != sizeof (lenAsBuf)) {
-            Led_ThrowBadFormatDataException ();
+            Execution::Throw (DataExchange::BadFormatException::kThe);
         }
         totalTextLength = BufToUInt32 (&lenAsBuf);
     }
@@ -518,12 +519,12 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version5 (const char* cookie)
     // and so we don't get errors from our malloc for asking for huge number
     // (OpenDoc 1.0 does this).
     if (totalTextLength > kMaxBufSize) {
-        Led_ThrowBadFormatDataException ();
+        Execution::Throw (DataExchange::BadFormatException::kThe);
     }
     {
         SmallStackBuffer<char> buf (totalTextLength);
         if (GetSrcStream ().read (buf, totalTextLength) != totalTextLength) {
-            Led_ThrowBadFormatDataException ();
+            Execution::Throw (DataExchange::BadFormatException::kThe);
         }
 #if qWideCharacters
         size_t                      nChars = totalTextLength;
@@ -545,7 +546,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version5 (const char* cookie)
         size_t                 howManyBytesOfStyleInfo = InputStandardFromSrcStream_ULONG (GetSrcStream ());
         SmallStackBuffer<char> portableStyleRunsBuffer (howManyBytesOfStyleInfo);
         if (GetSrcStream ().read (portableStyleRunsBuffer, howManyBytesOfStyleInfo) != howManyBytesOfStyleInfo) {
-            Led_ThrowBadFormatDataException ();
+            Execution::Throw (DataExchange::BadFormatException::kThe);
         }
 
         size_t nStyleRuns   = 0;
@@ -554,7 +555,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version5 (const char* cookie)
         for (; i < howManyBytesOfStyleInfo;) {
             const PortableStyleRunData_Version5* thisBucket = (PortableStyleRunData_Version5*)(((char*)portableStyleRunsBuffer) + i);
             if (i + thisBucket->fThisRecordLength > howManyBytesOfStyleInfo) {
-                Led_ThrowBadFormatDataException ();
+                Execution::Throw (DataExchange::BadFormatException::kThe);
             }
             StandardStyledTextImager::InfoSummaryRecord isr = mkInfoSummaryRecordFromPortData (*thisBucket);
 
@@ -567,7 +568,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version5 (const char* cookie)
             i += thisBucket->fThisRecordLength;
         }
         if (i != howManyBytesOfStyleInfo) {
-            Led_ThrowBadFormatDataException ();
+            Execution::Throw (DataExchange::BadFormatException::kThe);
         }
     }
 
@@ -575,7 +576,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version5 (const char* cookie)
     {
         size_t nEmbeddings = InputStandardFromSrcStream_ULONG (GetSrcStream ());
         if (nEmbeddings > totalTextLength) { // sanity check
-            Led_ThrowBadFormatDataException ();
+            Execution::Throw (DataExchange::BadFormatException::kThe);
         }
 
         for (size_t i = 0; i < nEmbeddings; i++) {
@@ -586,10 +587,10 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version5 (const char* cookie)
 
             Led_PrivateEmbeddingTag tag;
             if (howManyBytes < sizeof (tag)) {
-                Led_ThrowBadFormatDataException ();
+                Execution::Throw (DataExchange::BadFormatException::kThe);
             }
             if (GetSrcStream ().read (tag, sizeof (tag)) != sizeof (tag)) {
-                Led_ThrowBadFormatDataException ();
+                Execution::Throw (DataExchange::BadFormatException::kThe);
             }
             SimpleEmbeddedObjectStyleMarker* embedding = InternalizeEmbedding (tag, howManyBytes - sizeof (tag));
             if (embedding == NULL) {
@@ -607,12 +608,12 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version5 (const char* cookie)
     // check for extra cookie at the end...
     LedFormatMagicCookie endCookie;
     if (GetSrcStream ().read (endCookie, sizeof (endCookie)) != sizeof (endCookie)) {
-        Led_ThrowBadFormatDataException ();
+        Execution::Throw (DataExchange::BadFormatException::kThe);
     }
     if (memcmp (endCookie, cookie, sizeof (endCookie)) != 0) {
         // maybe should warn - maybe an error? Who knows - we've read so much - its a shame to fail to open
         // just cuz of this...
-        Led_ThrowBadFormatDataException ();
+        Execution::Throw (DataExchange::BadFormatException::kThe);
     }
 }
 
@@ -625,7 +626,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version6 (const char* cookie)
     {
         uint32_t lenAsBuf;
         if (GetSrcStream ().read (&lenAsBuf, sizeof (lenAsBuf)) != sizeof (lenAsBuf)) {
-            Led_ThrowBadFormatDataException ();
+            Execution::Throw (DataExchange::BadFormatException::kThe);
         }
         totalTextLength = BufToUInt32 (&lenAsBuf);
     }
@@ -633,12 +634,12 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version6 (const char* cookie)
     // and so we don't get errors from our malloc for asking for huge number
     // (OpenDoc 1.0 does this).
     if (totalTextLength > kMaxBufSize) {
-        Led_ThrowBadFormatDataException ();
+        Execution::Throw (DataExchange::BadFormatException::kThe);
     }
     {
         SmallStackBuffer<char> buf (totalTextLength);
         if (GetSrcStream ().read (buf, totalTextLength) != totalTextLength) {
-            Led_ThrowBadFormatDataException ();
+            Execution::Throw (DataExchange::BadFormatException::kThe);
         }
 #if qWideCharacters
         size_t                      nChars = totalTextLength;
@@ -660,7 +661,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version6 (const char* cookie)
         size_t                 howManyBytesOfStyleInfo = InputStandardFromSrcStream_ULONG (GetSrcStream ());
         SmallStackBuffer<char> portableStyleRunsBuffer (howManyBytesOfStyleInfo);
         if (GetSrcStream ().read (portableStyleRunsBuffer, howManyBytesOfStyleInfo) != howManyBytesOfStyleInfo) {
-            Led_ThrowBadFormatDataException ();
+            Execution::Throw (DataExchange::BadFormatException::kThe);
         }
 
         size_t nStyleRuns   = 0;
@@ -669,7 +670,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version6 (const char* cookie)
         for (; i < howManyBytesOfStyleInfo;) {
             const PortableStyleRunData_Version6* thisBucket = (PortableStyleRunData_Version6*)(((char*)portableStyleRunsBuffer) + i);
             if (i + thisBucket->fThisRecordLength > howManyBytesOfStyleInfo) {
-                Led_ThrowBadFormatDataException ();
+                Execution::Throw (DataExchange::BadFormatException::kThe);
             }
             StandardStyledTextImager::InfoSummaryRecord isr = mkInfoSummaryRecordFromPortData (*thisBucket);
 
@@ -682,7 +683,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version6 (const char* cookie)
             i += thisBucket->fThisRecordLength;
         }
         if (i != howManyBytesOfStyleInfo) {
-            Led_ThrowBadFormatDataException ();
+            Execution::Throw (DataExchange::BadFormatException::kThe);
         }
     }
 
@@ -690,7 +691,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version6 (const char* cookie)
     {
         size_t nEmbeddings = InputStandardFromSrcStream_ULONG (GetSrcStream ());
         if (nEmbeddings > totalTextLength) { // sanity check
-            Led_ThrowBadFormatDataException ();
+            Execution::Throw (DataExchange::BadFormatException::kThe);
         }
 
         for (size_t i = 0; i < nEmbeddings; i++) {
@@ -701,10 +702,10 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version6 (const char* cookie)
 
             Led_PrivateEmbeddingTag tag;
             if (howManyBytes < sizeof (tag)) {
-                Led_ThrowBadFormatDataException ();
+                Execution::Throw (DataExchange::BadFormatException::kThe);
             }
             if (GetSrcStream ().read (tag, sizeof (tag)) != sizeof (tag)) {
-                Led_ThrowBadFormatDataException ();
+                Execution::Throw (DataExchange::BadFormatException::kThe);
             }
             SimpleEmbeddedObjectStyleMarker* embedding = InternalizeEmbedding (tag, howManyBytes - sizeof (tag));
             if (embedding == NULL) {
@@ -722,12 +723,12 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version6 (const char* cookie)
     // check for extra cookie at the end...
     LedFormatMagicCookie endCookie;
     if (GetSrcStream ().read (endCookie, sizeof (endCookie)) != sizeof (endCookie)) {
-        Led_ThrowBadFormatDataException ();
+        Execution::Throw (DataExchange::BadFormatException::kThe);
     }
     if (memcmp (endCookie, cookie, sizeof (endCookie)) != 0) {
         // maybe should warn - maybe an error? Who knows - we've read so much - its a shame to fail to open
         // just cuz of this...
-        Led_ThrowBadFormatDataException ();
+        Execution::Throw (DataExchange::BadFormatException::kThe);
     }
 }
 
@@ -738,11 +739,11 @@ SimpleEmbeddedObjectStyleMarker* StyledTextIOReader_LedNativeFileFormat::Interna
     if (strcmp (tag, kPictTag_V1) == 0) {
         size_t howManyBytes = 0;
         if (GetSrcStream ().read (&howManyBytes, sizeof (howManyBytes)) != sizeof (howManyBytes)) {
-            Led_ThrowBadFormatDataException ();
+            Execution::Throw (DataExchange::BadFormatException::kThe);
         }
         SmallStackBuffer<char> pictBuf (howManyBytes);
         if (GetSrcStream ().read (pictBuf, howManyBytes) != howManyBytes) {
-            Led_ThrowBadFormatDataException ();
+            Execution::Throw (DataExchange::BadFormatException::kThe);
         }
         return new StandardMacPictureStyleMarker ((Picture*)(char*)pictBuf, howManyBytes);
     }
@@ -750,7 +751,7 @@ SimpleEmbeddedObjectStyleMarker* StyledTextIOReader_LedNativeFileFormat::Interna
 
     SmallStackBuffer<char> dataBuf (howManyBytes);
     if (GetSrcStream ().read (dataBuf, howManyBytes) != howManyBytes) {
-        Led_ThrowBadFormatDataException ();
+        Execution::Throw (DataExchange::BadFormatException::kThe);
     }
 
     const vector<EmbeddedObjectCreatorRegistry::Assoc>& types = EmbeddedObjectCreatorRegistry::Get ().GetAssocList ();
@@ -876,7 +877,7 @@ void StyledTextIOWriter_LedNativeFileFormat::Write_Version6 ()
         // write a length-of-text count, and then the text
         SmallStackBuffer<Led_tChar> buf (totalTextLength);
         if (GetSrcStream ().readNTChars (buf, totalTextLength) != totalTextLength) {
-            Led_ThrowBadFormatDataException ();
+            Execution::Throw (DataExchange::BadFormatException::kThe);
         }
 #if qWideCharacters
         size_t                 nChars = totalTextLength * sizeof (wchar_t);
