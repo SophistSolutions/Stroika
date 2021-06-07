@@ -107,7 +107,7 @@ namespace Stroika::Frameworks::Led {
         you can directly use it (no setup), and it images and wraps the text into the given box.</p>
             <p>The usuage can be as simple as:
             <code>
-                void    SomeAppDrawCall (Led_Tablet t, const Led_Rect& r, bool printing)
+                void    SomeAppDrawCall (Tablet* t, const Led_Rect& r, bool printing)
                 {
                     TrivialWordWrappedImager<ChunkedArrayTextStore> (t, r, LED_TCHAR_OF ("Hi mom")).Draw ();
                 }
@@ -118,10 +118,10 @@ namespace Stroika::Frameworks::Led {
     template <typename TEXTSTORE, typename IMAGER = WordWrappedTextImager>
     class TrivialWordWrappedImager : public TrivialImager<TEXTSTORE, IMAGER> {
     protected:
-        TrivialWordWrappedImager (Led_Tablet t);
+        TrivialWordWrappedImager (Tablet* t);
 
     public:
-        TrivialWordWrappedImager (Led_Tablet t, Led_Rect bounds, const Led_tString& initialText = LED_TCHAR_OF (""));
+        TrivialWordWrappedImager (Tablet* t, Led_Rect bounds, const Led_tString& initialText = LED_TCHAR_OF (""));
 
     public:
         virtual void            GetLayoutMargins (MultiRowTextImager::RowReference row, Coordinate* lhs, Coordinate* rhs) const override;

@@ -440,7 +440,7 @@ void LedLineItView::TabletChangedMetrics ()
     inherited::TabletChangedMetrics ();
 
     Tablet_Acquirer tablet_ (this);
-    Led_Tablet      tablet        = tablet_;
+    Tablet*         tablet        = tablet_;
     fTabStopList.fTWIPSPerTabStop = tablet->CvtToTWIPSH (kCharsPerTab * GetFontMetricsAt (0).GetMaxCharacterWidth ());
     fCachedLayoutWidth            = kBadDistance;
 #if qSupportSyntaxColoring

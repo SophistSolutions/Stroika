@@ -48,7 +48,7 @@ namespace Stroika::Frameworks::Led {
         return imager->GetDefaultFont ();
     }
     template <class BASECLASS>
-    void SimpleStyleMarkerByFontSpec<BASECLASS>::DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
+    void SimpleStyleMarkerByFontSpec<BASECLASS>::DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
                                                               size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
                                                               Coordinate useBaseLine, DistanceType* pixelsDrawn)
     {
@@ -117,7 +117,7 @@ namespace Stroika::Frameworks::Led {
         return newRunElement;
     }
     template <class BASECLASS>
-    void SimpleStyleMarkerWithExtraDraw<BASECLASS>::DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
+    void SimpleStyleMarkerWithExtraDraw<BASECLASS>::DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
                                                                  size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
                                                                  Coordinate useBaseLine, DistanceType* pixelsDrawn)
     {
@@ -179,7 +179,7 @@ namespace Stroika::Frameworks::Led {
     {
     }
     template <typename BASECLASS>
-    void SimpleStyleMarkerWithLightUnderline<BASECLASS>::DrawExtra (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, Led_Tablet tablet,
+    void SimpleStyleMarkerWithLightUnderline<BASECLASS>::DrawExtra (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, Tablet* tablet,
                                                                     size_t /*from*/, size_t /*to*/, const TextLayoutBlock& /*text*/, const Led_Rect& drawInto,
                                                                     Coordinate useBaseLine, DistanceType pixelsDrawn)
     {

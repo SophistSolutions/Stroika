@@ -1200,7 +1200,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_a (bool start, const char* tex
 #else
                 Led_URLD urld = Led_URLD (tagValue.c_str (), fHiddenTextAccumulation.c_str ());
 #endif
-                GetSinkStream ().AppendEmbedding ((assoc.fReadFromMemory)(StandardURLStyleMarker::kEmbeddingTag, urld.PeekAtURLD (), urld.GetURLDLength ()));
+                GetSinkStream ().AppendEmbedding ((assoc.fReadFromMemory) (StandardURLStyleMarker::kEmbeddingTag, urld.PeekAtURLD (), urld.GetURLDLength ()));
             }
         }
         fCurAHRefStart          = size_t (-1);

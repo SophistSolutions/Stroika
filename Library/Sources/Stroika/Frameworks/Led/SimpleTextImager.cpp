@@ -491,7 +491,7 @@ void SimpleTextImager::Draw (const Led_Rect& subsetToDraw, bool printing)
     Led_Rect rowsLeftToDrawRect = GetWindowRect ();
 
     Tablet_Acquirer tablet_ (this);
-    Led_Tablet      tablet = tablet_;
+    Tablet*         tablet = tablet_;
     AssertNotNull (tablet);
 
 /*
@@ -504,8 +504,8 @@ void SimpleTextImager::Draw (const Led_Rect& subsetToDraw, bool printing)
     RGBColor oldForeColor = GDI_GetForeColor ();
     RGBColor oldBackColor = GDI_GetBackColor ();
 #elif qPlatform_Windows
-    Led_Win_Obj_Selector pen (tablet, ::GetStockObject (NULL_PEN));
-    Led_Win_Obj_Selector brush (tablet, ::GetStockObject (NULL_BRUSH));
+    Led_GDI_Obj_Selector pen (tablet, ::GetStockObject (NULL_PEN));
+    Led_GDI_Obj_Selector brush (tablet, ::GetStockObject (NULL_BRUSH));
 #endif
 
     /*
@@ -602,7 +602,7 @@ void SimpleTextImager::Draw (const Led_Rect& subsetToDraw, bool printing)
 @METHOD:        SimpleTextImager::DrawPartitionElement
 @DESCRIPTION:   <p></p>
 */
-void SimpleTextImager::DrawPartitionElement (PartitionMarker* pm, size_t startSubRow, size_t /*maxSubRow*/, Led_Tablet tablet, OffscreenTablet* offscreenTablet, bool printing, const Led_Rect& subsetToDraw, Led_Rect* remainingDrawArea, size_t* rowsDrawn)
+void SimpleTextImager::DrawPartitionElement (PartitionMarker* pm, size_t startSubRow, size_t /*maxSubRow*/, Tablet* tablet, OffscreenTablet* offscreenTablet, bool printing, const Led_Rect& subsetToDraw, Led_Rect* remainingDrawArea, size_t* rowsDrawn)
 {
     RequireNotNull (pm);
     RequireNotNull (remainingDrawArea);
@@ -616,9 +616,9 @@ void SimpleTextImager::DrawPartitionElement (PartitionMarker* pm, size_t startSu
         end--; // don't include bogus char at end of buffer
     }
 
-    Led_Tablet savedTablet = tablet;
-    size_t     endSubRow   = 0;
-    *rowsDrawn             = 0;
+    Tablet* savedTablet = tablet;
+    size_t  endSubRow   = 0;
+    *rowsDrawn          = 0;
 
     for (size_t subRow = startSubRow; subRow <= endSubRow; ++subRow) {
         Led_Rect currentRowRect     = *remainingDrawArea;

@@ -29,10 +29,10 @@
 namespace Stroika::Frameworks::Led {
 
     template <typename WORDWRAPPEDTEXTIMAGER, typename SIMPLETEXTIMAGER, typename TEXTSTORE>
-    Led_Size GetTextExtent (Led_Tablet tablet, const Led_tString& text, const Led_Rect& r, bool wordWrap);
+    Led_Size GetTextExtent (Tablet* tablet, const Led_tString& text, const Led_Rect& r, bool wordWrap);
 
     template <typename WORDWRAPPEDTEXTIMAGER, typename SIMPLETEXTIMAGER, typename TEXTSTORE>
-    void DrawTextBox (Led_Tablet tablet, const Led_tString& text, const Led_Rect& r, bool wordWrap);
+    void DrawTextBox (Tablet* tablet, const Led_tString& text, const Led_Rect& r, bool wordWrap);
 
     DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
     /*
@@ -41,7 +41,7 @@ namespace Stroika::Frameworks::Led {
                     <p>This can be used to draw a bit of styled (or other) as a watermark background. For example, you can
                 override @'TextImager::EraseBackground' () like this:
         <code><pre>
-        void    MyLedBasedView::EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing)
+        void    MyLedBasedView::EraseBackground (Tablet* tablet, const Led_Rect& subsetToDraw, bool printing)
         {
             inherited::EraseBackground (tablet, subsetToDraw, printing);
             static  WaterMarkHelper<>   waterMarkerImager (LED_TCHAR_OF ("Demo Mode")); // make this static - just as a performance hack. Also could be an instance variable of 'this'.
@@ -70,12 +70,12 @@ namespace Stroika::Frameworks::Led {
         Color fWatermarkColor;
 
     public:
-        nonvirtual void DrawWatermark (Led_Tablet tablet, const Led_Rect& intoRect, const Led_Rect& subsetToDraw);
+        nonvirtual void DrawWatermark (Tablet* tablet, const Led_Rect& intoRect, const Led_Rect& subsetToDraw);
 
     private:
         struct MyTrivImager : public TrivialImager_Interactor<TEXTSTORE, WORDPROCESSOR> {
             using inherited = TrivialImager_Interactor<TEXTSTORE, WORDPROCESSOR>;
-            MyTrivImager (Led_Tablet t, Led_Rect bounds, const Led_tString& initialText)
+            MyTrivImager (Tablet* t, Led_Rect bounds, const Led_tString& initialText)
                 : inherited (t, bounds, initialText)
             {
                 /*
@@ -84,7 +84,7 @@ namespace Stroika::Frameworks::Led {
                  */
                 this->SetImageUsingOffscreenBitmaps (false);
             }
-            virtual void EraseBackground ([[maybe_unused]] Led_Tablet tablet, [[maybe_unused]] const Led_Rect& subsetToDraw, [[maybe_unused]] bool printing) override
+            virtual void EraseBackground ([[maybe_unused]] Tablet* tablet, [[maybe_unused]] const Led_Rect& subsetToDraw, [[maybe_unused]] bool printing) override
             {
                 // Do no erasing - just draw the text...
                 // Note - its CRITICAL that we shutoff offscreen bitmaps for this imager so that we don't get garbage bits
@@ -112,7 +112,7 @@ namespace Stroika::Frameworks::Led {
         Led_tString   fWatermarkText;
         MyTrivImager* fCachedImager;
         Led_Rect      fCachedIntoRect;
-        Led_Tablet    fCachedIntoTablet;
+        Tablet*       fCachedIntoTablet;
     };
     DISABLE_COMPILER_MSC_WARNING_END (4250)
 

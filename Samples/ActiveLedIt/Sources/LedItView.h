@@ -156,7 +156,7 @@ protected:
     virtual void AboutToUpdateText (const UpdateInfo& updateInfo) override;
 
 public:
-    virtual void EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing) override;
+    virtual void EraseBackground (Tablet* tablet, const Led_Rect& subsetToDraw, bool printing) override;
 
 public:
     bool fEnableAutoChangesBackgroundColor;

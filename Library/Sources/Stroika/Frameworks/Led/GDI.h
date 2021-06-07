@@ -57,7 +57,7 @@ namespace Stroika::Frameworks::Led {
      *  This means - 1/1440 of an inch.</p>
      *
      *      This size refers to the size when printed on a page. So it can be scaled - depnding on screen resolution.
-     *  Led will often save this internally - and scale it at the last minute to the resolution of the @'Led_Tablet' being printed on.
+     *  Led will often save this internally - and scale it at the last minute to the resolution of the @'Tablet*' being printed on.
      *      
      *      NB: This marks a change from Led 2.3 and earlier - where most distances were stored in pixels (still many are).
      *      
@@ -95,7 +95,7 @@ namespace Stroika::Frameworks::Led {
     inline constexpr TWIPS TWIPS::kOneInch = TWIPS{1440};
 #endif
 
-    class Led_Tablet_;
+    class Tablet;
 
     /*
      *      Even though WinSDK supports GetTabbedTextExtent/TabbedTextOut () - they do a bad job.
@@ -133,10 +133,10 @@ namespace Stroika::Frameworks::Led {
             be implemented by walking the tabstoplist and calling @'TextImager::TabStopList::ComputeIthTab', and
             returning the next one after the one past(or equal to) <code>afterPos</code>.</p>
                 <p>Note - this used to take/return Distance - but in Led 3.0 - it changed to take/return TWIPS (see SPR#0767);</p>
-                <p>Now there is an overloaded version using Distance that takes a Led_Tablet as argument.</p>
+                <p>Now there is an overloaded version using Distance that takes a Tablet* as argument.</p>
         */
         virtual TWIPS           ComputeTabStopAfterPosition (TWIPS afterPos) const = 0;
-        nonvirtual DistanceType ComputeTabStopAfterPosition (Led_Tablet_* tablet, DistanceType afterPos) const;
+        nonvirtual DistanceType ComputeTabStopAfterPosition (Tablet* tablet, DistanceType afterPos) const;
     };
 
 #if qPlatform_Windows
@@ -417,12 +417,17 @@ namespace Stroika::Frameworks::Led {
          */
         constexpr strong_ordering operator<=> (const Color& rhs) const = default;
         constexpr bool            operator== (const Color& rhs) const  = default;
+#else
+        bool operator== (Color rhs) const
+        {
+            return (GetRed () == rhs.GetRed () and GetGreen () == rhs.GetGreen () and GetBlue () == rhs.GetBlue ());
+        }
+        bool operator!= (Color rhs) const
+        {
+            return not(*this == rhs);
+        }
 #endif
     };
-#if __cpp_impl_three_way_comparison < 201907
-    bool operator== (Color lhs, Color rhs);
-    bool operator!= (Color lhs, Color rhs);
-#endif
 
     Color operator* (Color lhs, float factor);
     Color operator/ (Color lhs, float divBy);
@@ -1051,29 +1056,27 @@ namespace Stroika::Frameworks::Led {
     class OffscreenTablet;
 
     /**
-     *  See also @'Led_Tablet' - since that is what Led tends to make use of directly.</p>
-     *      
      *  This class is used to wrap a low level graphics drawing device. On Windows - this is an HDC.
      *  On the Mac - a GrafPtr (also CGrafPtr and GWorldPtr). On X-Windows - a drawable and display, and GC.</p>
      * 
      *  This class right now is a very thin wrapper on those drawing prodedures (mostly for backward compatability reasons.
      *  Eventually - it may do a better job of wrapping those concepts/APIs genericly.</p>
      */
-    class Led_Tablet_ {
+    class Tablet {
     public:
 #if qPlatform_MacOS
-        Led_Tablet_ (GrafPtr gp);
+        Tablet (GrafPtr gp);
 #elif qPlatform_Windows
         enum OwnDCControl { eOwnsDC,
                             eDoesntOwnDC };
 
-        Led_Tablet_ (HDC hdc = nullptr, OwnDCControl ownsDC = eOwnsDC);
+        Tablet (HDC hdc = nullptr, OwnDCControl ownsDC = eOwnsDC);
 #elif qStroika_FeatureSupported_XWindows
-        Led_Tablet_ (Display* display, Drawable drawable);
+        Tablet (Display* display, Drawable drawable);
 #endif
 
     public:
-        virtual ~Led_Tablet_ ();
+        virtual ~Tablet ();
 
     public:
 #if qPlatform_MacOS
@@ -1105,8 +1108,8 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         nonvirtual void SetPort ();
 #elif qPlatform_Windows
-        nonvirtual BOOL     BitBlt (int x, int y, int nWidth, int nHeight, Led_Tablet_* pSrcDC, int xSrc, int ySrc, DWORD dwRop);
-        nonvirtual BOOL     CreateCompatibleDC (Led_Tablet_* pDC);
+        nonvirtual BOOL     BitBlt (int x, int y, int nWidth, int nHeight, Tablet* pSrcDC, int xSrc, int ySrc, DWORD dwRop);
+        nonvirtual BOOL     CreateCompatibleDC (Tablet* pDC);
         nonvirtual COLORREF SetTextColor (COLORREF crColor);
         nonvirtual COLORREF SetBkColor (COLORREF crColor);
         nonvirtual BOOL     IsPrinting () const;
@@ -1237,21 +1240,21 @@ namespace Stroika::Frameworks::Led {
     };
 
     /*
-    @CLASS:         Led_Tablet_::ClipNarrowAndRestore
+    @CLASS:         Tablet::ClipNarrowAndRestore
     @DESCRIPTION:   <p>Further narrow the existing clip region in the given tablet to the constructor. Then
                 restore the clip region for the tablet to what it was when the contructor was called.</p>
     */
-    class Led_Tablet_::ClipNarrowAndRestore {
+    class Tablet::ClipNarrowAndRestore {
     public:
-        ClipNarrowAndRestore (Led_Tablet_* tablet);
-        ClipNarrowAndRestore (Led_Tablet_* tablet, const Led_Rect& clipFurtherTo);
-        ClipNarrowAndRestore (Led_Tablet_* tablet, const Led_Region& clipFurtherTo);
+        ClipNarrowAndRestore (Tablet* tablet);
+        ClipNarrowAndRestore (Tablet* tablet, const Led_Rect& clipFurtherTo);
+        ClipNarrowAndRestore (Tablet* tablet, const Led_Region& clipFurtherTo);
         ~ClipNarrowAndRestore ();
 
     private:
-        Led_Tablet_* fTablet;
-        bool         fHasOldClip;
-        Led_Region   fOldClip;
+        Tablet*    fTablet;
+        bool       fHasOldClip;
+        Led_Region fOldClip;
     };
 
 #if qPlatform_MacOS
@@ -1260,17 +1263,8 @@ namespace Stroika::Frameworks::Led {
     GrafPtr Led_GetCurrentGDIPort ();
 #endif
 
-    /*
-     *      A pointer to a @'Led_Tablet_' structure. These pointers are used throughout Led.
-     * 
-     *      In versions of Led prior to Led 3.0 - this typedef refered directly to a Mac GrafPort or MFC CDC
-     * 
-     *      Now it refers to a structure which wraps those lower level concepts (and doesn't depend on MFC anymore).
-     */
-    using Led_Tablet = Led_Tablet_*;
-
 #if qPlatform_Windows
-    class WindowDC : public Led_Tablet_ {
+    class WindowDC : public Tablet {
     public:
         WindowDC (HWND hWnd);
         ~WindowDC ();
@@ -1297,10 +1291,10 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #if qPlatform_Windows
-    class Led_Bitmap {
+    class Bitmap {
     public:
-        Led_Bitmap () = default;
-        ~Led_Bitmap ();
+        Bitmap () = default;
+        ~Bitmap ();
 
     public:
         nonvirtual void DeleteObject ();
@@ -1330,14 +1324,14 @@ namespace Stroika::Frameworks::Led {
         ~OffscreenTablet ();
 
     public:
-        nonvirtual void       Setup (Led_Tablet origTablet);
-        nonvirtual Led_Tablet PrepareRect (const Led_Rect& currentRowRect, DistanceType extraToAddToBottomOfRect = 0);
-        nonvirtual void       BlastBitmapToOrigTablet ();
+        nonvirtual void Setup (Tablet* origTablet);
+        nonvirtual Tablet* PrepareRect (const Led_Rect& currentRowRect, DistanceType extraToAddToBottomOfRect = 0);
+        nonvirtual void    BlastBitmapToOrigTablet ();
 
     private:
-        class OT : public Led_Tablet_ {
+        class OT : public Tablet {
         private:
-            using inherited = Led_Tablet_;
+            using inherited = Tablet;
 
         public:
 #if qPlatform_MacOS
@@ -1350,16 +1344,16 @@ namespace Stroika::Frameworks::Led {
         };
 
     private:
-        Led_Tablet fOrigTablet;
-        Led_Rect   fOffscreenRect;
-        Led_Tablet fOffscreenTablet;
+        Tablet*  fOrigTablet;
+        Led_Rect fOffscreenRect;
+        Tablet*  fOffscreenTablet;
 #if qPlatform_MacOS
         GDHandle  fOrigDevice;
         CGrafPtr  fOrigPort;
         GWorldPtr fOffscreenGWorld;
 #elif qPlatform_Windows
-        OT         fMemDC;
-        Led_Bitmap fMemoryBitmap; // only can create / select inside loop cuz there is where we know the size.
+        OT     fMemDC;
+        Bitmap fMemoryBitmap; // only can create / select inside loop cuz there is where we know the size.
         // but decare outside, so stays around for successive rows which are the same size.
         HBITMAP fOldBitmapInDC; // used for save/restore of bitmap associated with the DC.
 #elif qStroika_FeatureSupported_XWindows
@@ -1370,7 +1364,7 @@ namespace Stroika::Frameworks::Led {
     /*
     @CLASS:         Led_GDI_Obj_Selector
     @DESCRIPTION:   <p><code>Led_GDI_Obj_Selector</code> is a stack-based class designed to help
-        out selecting objects into a Led_Tablet (windows DC, grafport, etc).
+        out selecting objects into a Tablet* (windows DC, grafport, etc).
             <p>The constructor takes a tablet, and object to select into it (HGDIObject, etc),
         and selects it into the tablet. It saves gthe results of the SelectObject calls (old values).
         And on its destructor, it restores the old values.</p>
@@ -1381,15 +1375,15 @@ namespace Stroika::Frameworks::Led {
     class Led_GDI_Obj_Selector {
     public:
 #if qPlatform_Windows
-        Led_GDI_Obj_Selector (Led_Tablet tablet, HGDIOBJ objToSelect);
+        Led_GDI_Obj_Selector (Tablet* tablet, HGDIOBJ objToSelect);
 #elif qPlatform_MacOS || qStroika_FeatureSupported_XWindows
-        Led_GDI_Obj_Selector (Led_Tablet tablet, const Pen& pen);
+        Led_GDI_Obj_Selector (Tablet* tablet, const Pen& pen);
 #endif
     public:
         ~Led_GDI_Obj_Selector ();
 
     private:
-        Led_Tablet fTablet;
+        Tablet* fTablet;
 #if qPlatform_Windows
         HGDIOBJ fRestoreObject;
         HGDIOBJ fRestoreAttribObject;
@@ -1397,14 +1391,6 @@ namespace Stroika::Frameworks::Led {
         Pen fRestorePen;
 #endif
     };
-
-#if qPlatform_Windows
-    /*
-    @CLASS:         Led_Win_Obj_Selector
-    @DESCRIPTION:   <p>Alias for newer @'Led_GDI_Obj_Selector'.</p>
-    */
-    using Led_Win_Obj_Selector = Led_GDI_Obj_Selector;
-#endif
 
     /*
      *  Trap Caching support
@@ -1602,6 +1588,8 @@ namespace Stroika::Frameworks::Led {
     using Led_LineSpacing [[deprecated ("Since Stroika 2.1b12 use LineSpacing")]]                                   = LineSpacing;
     using Led_Justification [[deprecated ("Since Stroika 2.1b12 use Justification")]]                               = Justification;
     using Led_IME [[deprecated ("Since Stroika 2.1b12 use IME")]]                                                   = IME;
+    using Led_Bitmap [[deprecated ("Since Stroika 2.1b12 use Bitmap")]]                                             = Bitmap;
+    using Led_Tablet [[deprecated ("Since Stroika 2.1b12 use Tablet*")]]                                            = Tablet*;
 
 }
 

@@ -988,7 +988,7 @@ namespace Stroika::Frameworks::Led {
      *** WordProcessor::Table::EmbeddedTableWordProcessor::TemporarilyUseTablet *****
      ********************************************************************************
      */
-    inline WordProcessor::Table::EmbeddedTableWordProcessor::TemporarilyUseTablet::TemporarilyUseTablet (WordProcessor::Table::EmbeddedTableWordProcessor& editor, Led_Tablet t, DoTextMetricsChangedCall tmChanged)
+    inline WordProcessor::Table::EmbeddedTableWordProcessor::TemporarilyUseTablet::TemporarilyUseTablet (WordProcessor::Table::EmbeddedTableWordProcessor& editor, Tablet* t, DoTextMetricsChangedCall tmChanged)
         : fEditor (editor)
         , fOldTablet (editor.fUpdateTablet)
         , fDoTextMetricsChangedCall (tmChanged)

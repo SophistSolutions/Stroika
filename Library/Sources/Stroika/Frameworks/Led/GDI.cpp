@@ -172,16 +172,16 @@ struct UniscribeDLL {
         , fScriptStringCPtoX (nullptr)
     {
         if (fDLL != nullptr) {
-            fScriptItemize                = (HRESULT (WINAPI*) (const WCHAR*, int, int, const SCRIPT_CONTROL*, const SCRIPT_STATE*, SCRIPT_ITEM*, int*))(::GetProcAddress (fDLL, "ScriptItemize"));
-            fScriptShape                  = (HRESULT (WINAPI*) (HDC, SCRIPT_CACHE*, const WCHAR*, int, int, SCRIPT_ANALYSIS*, WORD*, WORD*, SCRIPT_VISATTR*, int*))(::GetProcAddress (fDLL, "ScriptShape"));
-            fScriptPlace                  = (HRESULT (WINAPI*) (HDC, SCRIPT_CACHE*, const WORD*, int, const SCRIPT_VISATTR*, SCRIPT_ANALYSIS*, int*, GOFFSET*, ABC*))(::GetProcAddress (fDLL, "ScriptPlace"));
-            fScriptStringAnalyse          = (HRESULT (WINAPI*) (HDC, const void*, int, int, int, DWORD, int, SCRIPT_CONTROL*, SCRIPT_STATE*, const int*, SCRIPT_TABDEF*, const BYTE*, SCRIPT_STRING_ANALYSIS*))(::GetProcAddress (fDLL, "ScriptStringAnalyse"));
-            fScriptStringOut              = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS, int, int, UINT, const RECT*, int, int, BOOL))(::GetProcAddress (fDLL, "ScriptStringOut"));
-            fScriptStringFree             = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS*))(::GetProcAddress (fDLL, "ScriptStringFree"));
-            fScriptStringGetLogicalWidths = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS, int*))(::GetProcAddress (fDLL, "ScriptStringGetLogicalWidths"));
-            fScriptString_pcOutChars      = (const int*(WINAPI*)(SCRIPT_STRING_ANALYSIS))(::GetProcAddress (fDLL, "ScriptString_pcOutChars"));
-            fScriptString_pSize           = (const SIZE*(WINAPI*)(SCRIPT_STRING_ANALYSIS))(::GetProcAddress (fDLL, "ScriptString_pSize"));
-            fScriptStringCPtoX            = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS, int, BOOL, int*))(::GetProcAddress (fDLL, "ScriptStringCPtoX"));
+            fScriptItemize                = (HRESULT (WINAPI*) (const WCHAR*, int, int, const SCRIPT_CONTROL*, const SCRIPT_STATE*, SCRIPT_ITEM*, int*)) (::GetProcAddress (fDLL, "ScriptItemize"));
+            fScriptShape                  = (HRESULT (WINAPI*) (HDC, SCRIPT_CACHE*, const WCHAR*, int, int, SCRIPT_ANALYSIS*, WORD*, WORD*, SCRIPT_VISATTR*, int*)) (::GetProcAddress (fDLL, "ScriptShape"));
+            fScriptPlace                  = (HRESULT (WINAPI*) (HDC, SCRIPT_CACHE*, const WORD*, int, const SCRIPT_VISATTR*, SCRIPT_ANALYSIS*, int*, GOFFSET*, ABC*)) (::GetProcAddress (fDLL, "ScriptPlace"));
+            fScriptStringAnalyse          = (HRESULT (WINAPI*) (HDC, const void*, int, int, int, DWORD, int, SCRIPT_CONTROL*, SCRIPT_STATE*, const int*, SCRIPT_TABDEF*, const BYTE*, SCRIPT_STRING_ANALYSIS*)) (::GetProcAddress (fDLL, "ScriptStringAnalyse"));
+            fScriptStringOut              = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS, int, int, UINT, const RECT*, int, int, BOOL)) (::GetProcAddress (fDLL, "ScriptStringOut"));
+            fScriptStringFree             = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS*)) (::GetProcAddress (fDLL, "ScriptStringFree"));
+            fScriptStringGetLogicalWidths = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS, int*)) (::GetProcAddress (fDLL, "ScriptStringGetLogicalWidths"));
+            fScriptString_pcOutChars      = (const int*(WINAPI*)(SCRIPT_STRING_ANALYSIS)) (::GetProcAddress (fDLL, "ScriptString_pcOutChars"));
+            fScriptString_pSize           = (const SIZE*(WINAPI*)(SCRIPT_STRING_ANALYSIS)) (::GetProcAddress (fDLL, "ScriptString_pSize"));
+            fScriptStringCPtoX            = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS, int, BOOL, int*)) (::GetProcAddress (fDLL, "ScriptStringCPtoX"));
         }
     }
     ~UniscribeDLL ()
@@ -530,7 +530,7 @@ namespace {
         {
             // if it's 16bpp, fill in the masks and OVERRIDE the compression
             // these are the default masks - you could change them if needed
-            LPDWORD pMasks                = (LPDWORD)(pbmi->bmiColors);
+            LPDWORD pMasks                = (LPDWORD) (pbmi->bmiColors);
             pMasks[0]                     = 0x00007c00;
             pMasks[1]                     = 0x000003e0;
             pMasks[2]                     = 0x0000001f;
@@ -555,7 +555,7 @@ namespace {
         {
             // if it's 32bpp, fill in the masks and OVERRIDE the compression
             // these are the default masks - you could change them if needed
-            LPDWORD pMasks                = (LPDWORD)(pbmi->bmiColors);
+            LPDWORD pMasks                = (LPDWORD) (pbmi->bmiColors);
             pMasks[0]                     = 0x00ff0000;
             pMasks[1]                     = 0x0000ff00;
             pMasks[2]                     = 0x000000ff;
@@ -574,10 +574,10 @@ static bool Win9x_Workaround_GetCharPlacementFunction (HDC hdc, const wchar_t* s
 #if qPlatform_Windows
 /*
  ********************************************************************************
- ************************************ Led_Bitmap ********************************
+ ************************************ Bitmap ********************************
  ********************************************************************************
  */
-BOOL Led_Bitmap::CreateCompatibleBitmap (HDC hdc, DistanceType nWidth, DistanceType nHeight)
+BOOL Bitmap::CreateCompatibleBitmap (HDC hdc, DistanceType nWidth, DistanceType nHeight)
 {
     Assert (m_hObject == nullptr);
     m_hObject  = ::CreateCompatibleBitmap (hdc, nWidth, nHeight);
@@ -585,7 +585,7 @@ BOOL Led_Bitmap::CreateCompatibleBitmap (HDC hdc, DistanceType nWidth, DistanceT
     return (m_hObject != nullptr); // return value backward compat hack...
 }
 
-BOOL Led_Bitmap::CreateCompatibleDIBSection (HDC hdc, DistanceType nWidth, DistanceType nHeight)
+BOOL Bitmap::CreateCompatibleDIBSection (HDC hdc, DistanceType nWidth, DistanceType nHeight)
 {
     RequireNotNull (hdc);
     Require (m_hObject == nullptr);
@@ -613,17 +613,16 @@ BOOL Led_Bitmap::CreateCompatibleDIBSection (HDC hdc, DistanceType nWidth, Dista
         default:
             Assert (false); //NotReached
     }
-    return (m_hObject != nullptr); // return value backward compat hack...
+    return m_hObject != nullptr; // return value backward compat hack...
 }
 
-void Led_Bitmap::LoadBitmap (HINSTANCE hInstance, LPCTSTR lpBitmapName)
+void Bitmap::LoadBitmap (HINSTANCE hInstance, LPCTSTR lpBitmapName)
 {
     Require (m_hObject == nullptr);
     m_hObject = ::LoadBitmap (hInstance, lpBitmapName);
     Led_ThrowIfNull (m_hObject);
     {
-        BITMAP bm;
-        (void)::memset (&bm, 0, sizeof (bm));
+        BITMAP bm{};
         Verify (::GetObject (m_hObject, sizeof (BITMAP), (LPVOID)&bm));
         fImageSize = Led_Size (bm.bmHeight, bm.bmWidth);
     }
@@ -759,7 +758,7 @@ void FontSpecification::SetFromOSRep (const string& osRep)
     Led_SDK_String fontSize;
     Led_SDK_String fontWeight;
     Led_SDK_String fontSlant;
-    Led_Tablet_::ParseFontName (osRep, &familyName, &fontSize, &fontWeight, &fontSlant);
+    Tablet::ParseFontName (osRep, &familyName, &fontSize, &fontWeight, &fontSlant);
     SetFontName (familyName);
     if (fontSlant == "i") {
         SetStyle_Italic (true);
@@ -831,7 +830,7 @@ void FontSpecification::SetFontNameSpecifier (FontNameSpecifier fontNameSpecifie
 
 /*
  ********************************************************************************
- ************************ IncrementalFontSpecification **********************
+ ************************ IncrementalFontSpecification **************************
  ********************************************************************************
  */
 
@@ -944,10 +943,10 @@ IncrementalFontSpecification Led::Intersection (const IncrementalFontSpecificati
 #if qPlatform_Windows
 /*
  ********************************************************************************
- *************************** Led_Tablet_::RecolorHelper *************************
+ ******************************** Tablet::RecolorHelper *************************
  ********************************************************************************
  */
-class Led_Tablet_::RecolorHelper {
+class Tablet::RecolorHelper {
 public:
     RecolorHelper (HDC baseHDC, Led_Size size, Color hilightBackColor, Color hilightForeColor, Color oldBackColor, Color oldForeColor);
     ~RecolorHelper ();
@@ -992,7 +991,7 @@ private:
     COLORREF fOldBackColor;
     COLORREF fOldForeColor;
 };
-inline COLORREF Led_Tablet_::RecolorHelper::MapColor (COLORREF c) const
+COLORREF Tablet::RecolorHelper::MapColor (COLORREF c) const
 {
     float fIntrp;
     fIntrp   = (float)(255 - GetRValue (c)) / 256.0f;
@@ -1014,12 +1013,12 @@ inline COLORREF Led_Tablet_::RecolorHelper::MapColor (COLORREF c) const
         fIntrp * GetBValue (fHilightBackColor));
     return RGB (red, green, blue);
 }
-inline COLORREF Led_Tablet_::RecolorHelper::MapColor (RGBQUAD c) const
+inline COLORREF Tablet::RecolorHelper::MapColor (RGBQUAD c) const
 {
     return MapColor (RGB (c.rgbRed, c.rgbGreen, c.rgbBlue));
 }
 
-Led_Tablet_::RecolorHelper::RecolorHelper (HDC baseHDC, Led_Size size, Color hilightBackColor, Color hilightForeColor, Color oldBackColor, Color oldForeColor)
+Tablet::RecolorHelper::RecolorHelper (HDC baseHDC, Led_Size size, Color hilightBackColor, Color hilightForeColor, Color oldBackColor, Color oldForeColor)
     : fDibData (nullptr)
     //fMappingTable ()
     , fDibDataByteCount (0)
@@ -1044,7 +1043,7 @@ Led_Tablet_::RecolorHelper::RecolorHelper (HDC baseHDC, Led_Size size, Color hil
     MakeMappingTable ();
 }
 
-Led_Tablet_::RecolorHelper::~RecolorHelper ()
+Tablet::RecolorHelper::~RecolorHelper ()
 {
     if (fDibSection != nullptr) {
         ::SelectObject (fHMemDC, fOldBitmap);
@@ -1053,7 +1052,7 @@ Led_Tablet_::RecolorHelper::~RecolorHelper ()
     }
 }
 
-Led_Tablet_::RecolorHelper* Led_Tablet_::RecolorHelper::CheckCacheAndReconstructIfNeeded (RecolorHelper* _THIS_, HDC baseHDC, Led_Size size, Color hilightBackColor, Color hilightForeColor, Color oldBackColor, Color oldForeColor)
+Tablet::RecolorHelper* Tablet::RecolorHelper::CheckCacheAndReconstructIfNeeded (RecolorHelper* _THIS_, HDC baseHDC, Led_Size size, Color hilightBackColor, Color hilightForeColor, Color oldBackColor, Color oldForeColor)
 {
     if (_THIS_ == nullptr or
         size.h > _THIS_->fSize.h or
@@ -1075,14 +1074,14 @@ Led_Tablet_::RecolorHelper* Led_Tablet_::RecolorHelper::CheckCacheAndReconstruct
     return _THIS_;
 }
 
-void Led_Tablet_::RecolorHelper::MakeMappingTable ()
+void Tablet::RecolorHelper::MakeMappingTable ()
 {
     for (size_t i = 0; i < 256; ++i) {
         fMappingTable[i] = FindClosestColorInColorTable_ (MapColor (fColorTable[i]));
     }
 }
 
-uint8_t Led_Tablet_::RecolorHelper::FindClosestColorInColorTable_ (COLORREF c) const
+uint8_t Tablet::RecolorHelper::FindClosestColorInColorTable_ (COLORREF c) const
 {
     // walk through the color table and see which color is closest to 'c'
     uint8_t      closest         = 0;
@@ -1100,7 +1099,7 @@ uint8_t Led_Tablet_::RecolorHelper::FindClosestColorInColorTable_ (COLORREF c) c
     return closest;
 }
 
-void Led_Tablet_::RecolorHelper::DoRecolor (const Led_Rect& hilightArea)
+void Tablet::RecolorHelper::DoRecolor (const Led_Rect& hilightArea)
 {
     HPALETTE hPal            = nullptr;
     HPALETTE hOldPal         = nullptr;
@@ -1125,7 +1124,7 @@ void Led_Tablet_::RecolorHelper::DoRecolor (const Led_Rect& hilightArea)
     }
 }
 
-void Led_Tablet_::RecolorHelper::DoRecolor_SimpleDSTINVERT (const Led_Rect& hilightArea)
+void Tablet::RecolorHelper::DoRecolor_SimpleDSTINVERT (const Led_Rect& hilightArea)
 {
     // Does proper inverse video, but seems to ignore the TextColor/BkColor/Pen/Brush colors.
     // Really should fix this to behave like Mac - replacing the background color with the text hilight color.
@@ -1134,7 +1133,7 @@ void Led_Tablet_::RecolorHelper::DoRecolor_SimpleDSTINVERT (const Led_Rect& hili
               fBaseDC, hilightArea.left, hilightArea.top, DSTINVERT);
 }
 
-void Led_Tablet_::RecolorHelper::DoRecolor_SimplePATINVERT (const Led_Rect& hilightArea)
+void Tablet::RecolorHelper::DoRecolor_SimplePATINVERT (const Led_Rect& hilightArea)
 {
     // Attempt at solving SPR#1271. Works decently - producing the right background - but the text is colored YELLOW instead of WHITE - and so
     // doesn't look very good (not enough contrast).
@@ -1148,7 +1147,7 @@ void Led_Tablet_::RecolorHelper::DoRecolor_SimplePATINVERT (const Led_Rect& hili
     (void)::SelectObject (fBaseDC, oldBrush);
 }
 
-void Led_Tablet_::RecolorHelper::DoRecolor_CopyTo8BitManualMungePixAndBack (const Led_Rect& hilightArea)
+void Tablet::RecolorHelper::DoRecolor_CopyTo8BitManualMungePixAndBack (const Led_Rect& hilightArea)
 {
     // By commenting stuff in and out - I determined that virtuall ALL the time is spent in this first
     // BitBlt () - LGP 2003-03-11
@@ -1194,17 +1193,17 @@ void Led_Tablet_::RecolorHelper::DoRecolor_CopyTo8BitManualMungePixAndBack (cons
 
 /*
  ********************************************************************************
- *********************************** Led_Tablet_ ********************************
+ *********************************** Tablet *************************************
  ********************************************************************************
  */
 #if qPlatform_MacOS
-Led_Tablet_::Led_Tablet_ (GrafPtr gp)
+Tablet::Tablet (GrafPtr gp)
     : fGrafPort (gp)
 {
     RequireNotNull (gp);
 }
 #elif qPlatform_Windows
-Led_Tablet_::Led_Tablet_ (HDC hdc, Led_Tablet_::OwnDCControl ownsDC)
+Tablet::Tablet (HDC hdc, Tablet::OwnDCControl ownsDC)
     : m_hDC (hdc)
     , fRecolorHelper (nullptr)
     , m_hAttribDC (hdc)
@@ -1215,7 +1214,7 @@ Led_Tablet_::Led_Tablet_ (HDC hdc, Led_Tablet_::OwnDCControl ownsDC)
 {
 }
 #elif qStroika_FeatureSupported_XWindows
-Led_Tablet_::Led_Tablet_ (Display* display, Drawable drawable)
+Tablet::Tablet (Display* display, Drawable drawable)
     : fDrawableOrigin (Led_Point (0, 0))
     , fFontCache ()
     , fCurDrawLineLoc (Led_Point (0, 0))
@@ -1253,7 +1252,7 @@ Led_Tablet_::Led_Tablet_ (Display* display, Drawable drawable)
 }
 #endif
 
-Led_Tablet_::~Led_Tablet_ ()
+Tablet::~Tablet ()
 {
 #if qPlatform_Windows
     delete fRecolorHelper;
@@ -1269,51 +1268,51 @@ Led_Tablet_::~Led_Tablet_ ()
 }
 
 /*
-@METHOD:        Led_Tablet_::CvtFromTWIPS
+@METHOD:        Tablet::CvtFromTWIPS
 @DESCRIPTION:   <p>Utility routine to convert from TWIPS to logical coordinates (usually pixels).</p>
-    <p>See also @'Led_Tablet_::CvtFromTWIPSV', @'Led_Tablet_::CvtFromTWIPSH', @'Led_Tablet_::CvtToTWIPSV', @'Led_Tablet_::CvtToTWIPSH'.</p>
+    <p>See also @'Tablet::CvtFromTWIPSV', @'Tablet::CvtFromTWIPSH', @'Tablet::CvtToTWIPSV', @'Tablet::CvtToTWIPSH'.</p>
 */
-Led_Point Led_Tablet_::CvtFromTWIPS (TWIPS_Point from) const
+Led_Point Tablet::CvtFromTWIPS (TWIPS_Point from) const
 {
-    return Led_Point (CvtFromTWIPSV (from.v), CvtFromTWIPSH (from.h));
+    return Led_Point{CvtFromTWIPSV (from.v), CvtFromTWIPSH (from.h)};
 }
 
 /*
-@METHOD:        Led_Tablet_::CvtToTWIPS
+@METHOD:        Tablet::CvtToTWIPS
 @DESCRIPTION:   <p>Utility routine to convert from logical coordinates (usually pixels) to TWIPS.</p>
-    <p>See also @'Led_Tablet_::CvtFromTWIPSV', @'Led_Tablet_::CvtFromTWIPSH', @'Led_Tablet_::CvtToTWIPSV', @'Led_Tablet_::CvtToTWIPSH'.</p>
+    <p>See also @'Tablet::CvtFromTWIPSV', @'Tablet::CvtFromTWIPSH', @'Tablet::CvtToTWIPSV', @'Tablet::CvtToTWIPSH'.</p>
 */
-TWIPS_Point Led_Tablet_::CvtToTWIPS (Led_Point from) const
+TWIPS_Point Tablet::CvtToTWIPS (Led_Point from) const
 {
-    return TWIPS_Point (CvtToTWIPSV (from.v), CvtToTWIPSH (from.h));
+    return TWIPS_Point{CvtToTWIPSV (from.v), CvtToTWIPSH (from.h)};
 }
 
 /*
-@METHOD:        Led_Tablet_::CvtFromTWIPS
+@METHOD:        Tablet::CvtFromTWIPS
 @DESCRIPTION:   <p>Utility routine to convert from TWIPS to logical coordinates (usually pixels).</p>
-    <p>See also @'Led_Tablet_::CvtFromTWIPSV', @'Led_Tablet_::CvtFromTWIPSH', @'Led_Tablet_::CvtToTWIPSV', @'Led_Tablet_::CvtToTWIPSH'.</p>
+    <p>See also @'Tablet::CvtFromTWIPSV', @'Tablet::CvtFromTWIPSH', @'Tablet::CvtToTWIPSV', @'Tablet::CvtToTWIPSH'.</p>
 */
-Led_Rect Led_Tablet_::CvtFromTWIPS (TWIPS_Rect from) const
+Led_Rect Tablet::CvtFromTWIPS (TWIPS_Rect from) const
 {
-    return Led_Rect (CvtFromTWIPS (from.GetOrigin ()), Led_Size (CvtFromTWIPS (from.GetSize ())));
+    return Led_Rect{CvtFromTWIPS (from.GetOrigin ()), Led_Size (CvtFromTWIPS (from.GetSize ()))};
 }
 
 /*
-@METHOD:        Led_Tablet_::CvtToTWIPS
+@METHOD:        Tablet::CvtToTWIPS
 @DESCRIPTION:   <p>Utility routine to convert from logical coordinates (usually pixels) to TWIPS.</p>
-    <p>See also @'Led_Tablet_::CvtFromTWIPSV', @'Led_Tablet_::CvtFromTWIPSH', @'Led_Tablet_::CvtToTWIPSV', @'Led_Tablet_::CvtToTWIPSH'.</p>
+    <p>See also @'Tablet::CvtFromTWIPSV', @'Tablet::CvtFromTWIPSH', @'Tablet::CvtToTWIPSV', @'Tablet::CvtToTWIPSH'.</p>
 */
-TWIPS_Rect Led_Tablet_::CvtToTWIPS (Led_Rect from) const
+TWIPS_Rect Tablet::CvtToTWIPS (Led_Rect from) const
 {
-    return TWIPS_Rect (CvtToTWIPS (from.GetOrigin ()), CvtToTWIPS (Led_Point (from.GetSize ())));
+    return TWIPS_Rect{CvtToTWIPS (from.GetOrigin ()), CvtToTWIPS (Led_Point (from.GetSize ()))};
 }
 
 /*
-@METHOD:        Led_Tablet_::ScrollBitsAndInvalRevealed
+@METHOD:        Tablet::ScrollBitsAndInvalRevealed
 @DESCRIPTION:   <p>Scroll the given 'windowRect' by 'scrollVBy localical units. The area of the window exposed by this
             action is invalidated (so a later update event will fix it).</p>
 */
-void Led_Tablet_::ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, Coordinate scrollVBy)
+void Tablet::ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, Coordinate scrollVBy)
 {
 #if qPlatform_MacOS
     Rect      qdMoveRect = AsQDRect (windowRect);
@@ -1400,10 +1399,10 @@ void Led_Tablet_::ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, Coordi
 }
 
 /*
-@METHOD:        Led_Tablet_::FrameRegion
+@METHOD:        Tablet::FrameRegion
 @DESCRIPTION:   <p>Draw the outline of the given region 'r' in color 'c'.</p>
 */
-void Led_Tablet_::FrameRegion (const Led_Region& r, const Color& c)
+void Tablet::FrameRegion (const Led_Region& r, const Color& c)
 {
 #if qPlatform_MacOS
     Led_MacPortAndClipRegionEtcSaver saver; // unclear if this is useful/needed?
@@ -1415,19 +1414,19 @@ void Led_Tablet_::FrameRegion (const Led_Region& r, const Color& c)
     Brush brush = Brush (c.GetOSRep ());
     (void)::FrameRgn (*this, r, brush, 1, 1);
 #else
-    Assert (false);                                  // NYI
+    Assert (false); // NYI
 #endif
 }
 
 /*
-@METHOD:        Led_Tablet_::FrameRectangle
+@METHOD:        Tablet::FrameRectangle
 @DESCRIPTION:   <p>Draw the outline of the given rectangle 'r' in color 'c' and with
             borderWidth (pen width) 'borderWidth'. This function does NOT use the currently selected
             pen or brush, or anything like that. It draws a border just INSIDE the rectangle specified
             by 'r'.
                 </p>
 */
-void Led_Tablet_::FrameRectangle (const Led_Rect& r, Color c, DistanceType borderWidth)
+void Tablet::FrameRectangle (const Led_Rect& r, Color c, DistanceType borderWidth)
 {
     /*
      *  Almost certainly can implement much more efficiently, but leave like this for now to assure pixel-for-pixel
@@ -1442,15 +1441,15 @@ void Led_Tablet_::FrameRectangle (const Led_Rect& r, Color c, DistanceType borde
 }
 
 /*
-@METHOD:        Led_Tablet_::MeasureText
+@METHOD:        Tablet::MeasureText
 @DESCRIPTION:   <p>Measure the widths of the given argument @'Led_tChar's. Assign those widths into
             the array 'charLocations'. (EXPLAIN CAREFULLY REQUIREMENTS ABOUT BUFSIZE of charLocations and handling of
             zero case and offset rules, handling of tabs, etc)</p>
                 <p>Note that the resulting measured text must come out in non-descreasing order (there can be zero
             character widths, but never negative).</p>
 */
-void Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
-                               const Led_tChar* text, size_t nTChars, DistanceType* charLocations)
+void Tablet::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
+                          const Led_tChar* text, size_t nTChars, DistanceType* charLocations)
 {
     RequireNotNull (text);
     RequireNotNull (charLocations);
@@ -1639,7 +1638,6 @@ void Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
 }
 
 /*
-@METHOD:        Led_Tablet_::TabbedTextOut
 @DESCRIPTION:   <p>Draw the given text (@'Led_tChars') to this tablet object, at the given logical coordinates. Use the given
             tabstop origin, and tabStopList object to compute where tabs go. Return the amountDrawn (number of pixels used by draw).
             (EXPLAIN CAREFULLY REQUIREMENTS ABOUT BUFSIZE of charLocations and handling of
@@ -1649,10 +1647,10 @@ void Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
             re-ordered in the argument passed in, and any mirroring should have already been done. This routine WILL
             take care of any contextual shaping required (glyph selection based on context - as with Arabic).</p>
 */
-void Led_Tablet_::TabbedTextOut ([[maybe_unused]] const Led_FontMetrics& precomputedFontMetrics, const Led_tChar* text, size_t nBytes,
-                                 [[maybe_unused]] TextDirection direction,
-                                 Led_Point outputAt, Coordinate hTabOrigin, const TabStopList& tabStopList,
-                                 DistanceType* amountDrawn, Coordinate hScrollOffset)
+void Tablet::TabbedTextOut ([[maybe_unused]] const Led_FontMetrics& precomputedFontMetrics, const Led_tChar* text, size_t nBytes,
+                            [[maybe_unused]] TextDirection direction,
+                            Led_Point outputAt, Coordinate hTabOrigin, const TabStopList& tabStopList,
+                            DistanceType* amountDrawn, Coordinate hScrollOffset)
 {
 #if qPlatform_MacOS
     SetPort ();
@@ -1689,7 +1687,7 @@ void Led_Tablet_::TabbedTextOut ([[maybe_unused]] const Led_FontMetrics& precomp
             widthSoFar = ::GetPortPenLocation (Led_GetCurrentGDIPort (), &junk)->h - cursor.h;
         }
 #else
-        widthSoFar                      = Led_GetCurrentGDIPort ()->pnLoc.h - cursor.h;
+        widthSoFar = Led_GetCurrentGDIPort ()->pnLoc.h - cursor.h;
 #endif
 #elif qPlatform_Windows
         int oldBkMode = SetBkMode (TRANSPARENT);
@@ -1874,7 +1872,7 @@ void Led_Tablet_::TabbedTextOut ([[maybe_unused]] const Led_FontMetrics& precomp
     }
 }
 
-void Led_Tablet_::SetBackColor (const Color& backColor)
+void Tablet::SetBackColor (const Color& backColor)
 {
 #if qPlatform_MacOS
     SetPort ();
@@ -1906,7 +1904,7 @@ void Led_Tablet_::SetBackColor (const Color& backColor)
 #endif
 }
 
-void Led_Tablet_::SetForeColor (const Color& foreColor)
+void Tablet::SetForeColor (const Color& foreColor)
 {
 #if qPlatform_MacOS
     SetPort ();
@@ -1939,11 +1937,11 @@ void Led_Tablet_::SetForeColor (const Color& foreColor)
 }
 
 /*
-@METHOD:        Led_Tablet_::EraseBackground_SolidHelper
+@METHOD:        Tablet::EraseBackground_SolidHelper
 @DESCRIPTION:   <p>EraseBackground_SolidHelper () is simple helper function - usually called from subclasses which OVERRIDE
     @'TextImager::EraseBackground'.</p>
 */
-void Led_Tablet_::EraseBackground_SolidHelper (const Led_Rect& eraseRect, const Color& eraseColor)
+void Tablet::EraseBackground_SolidHelper (const Led_Rect& eraseRect, const Color& eraseColor)
 {
     if (not eraseRect.IsEmpty ()) {
 #if qPlatform_MacOS
@@ -1954,8 +1952,8 @@ void Led_Tablet_::EraseBackground_SolidHelper (const Led_Rect& eraseRect, const 
 #elif qPlatform_Windows
         Led_Rect eraser = eraseRect;
         Brush backgroundBrush (eraseColor.GetOSRep ());
-        Led_Win_Obj_Selector pen (this, ::GetStockObject (NULL_PEN));
-        Led_Win_Obj_Selector brush (this, backgroundBrush);
+        Led_GDI_Obj_Selector pen (this, ::GetStockObject (NULL_PEN));
+        Led_GDI_Obj_Selector brush (this, backgroundBrush);
         eraser.right++; // lovely - windows doesn't count last pixel... See Docs for Rectangle() and rephrase!!!
         eraser.bottom++;
         Rectangle (AsRECT (eraser));
@@ -1980,7 +1978,7 @@ void Led_Tablet_::EraseBackground_SolidHelper (const Led_Rect& eraseRect, const 
 }
 
 /*
-@METHOD:        Led_Tablet_::HilightArea_SolidHelper
+@METHOD:        Tablet::HilightArea_SolidHelper
 @DESCRIPTION:   <p>HilightArea_SolidHelper () is simple helper function - usually called from subclasses which OVERRIDE
             @'TextImager::HilightArea'.</p>
                 <p>Note the backColor and foreColor are advisory - and maybe ignored if the GDI better supports (or the
@@ -1990,7 +1988,7 @@ void Led_Tablet_::EraseBackground_SolidHelper (const Led_Rect& eraseRect, const 
             the background color to while, and the hilight colors the reverse of this (fore=black/back=white), this code will revert
             to the old algorithm, and run much faster.</p>
 */
-void Led_Tablet_::HilightArea_SolidHelper (const Led_Rect& hilightArea, [[maybe_unused]] Color hilightBackColor, [[maybe_unused]] Color hilightForeColor, Color oldBackColor, [[maybe_unused]] Color oldForeColor)
+void Tablet::HilightArea_SolidHelper (const Led_Rect& hilightArea, [[maybe_unused]] Color hilightBackColor, [[maybe_unused]] Color hilightForeColor, Color oldBackColor, [[maybe_unused]] Color oldForeColor)
 {
     if (not hilightArea.IsEmpty ()) {
 #if qPlatform_MacOS
@@ -2051,13 +2049,13 @@ void Led_Tablet_::HilightArea_SolidHelper (const Led_Rect& hilightArea, [[maybe_
 }
 
 /*
-@METHOD:        Led_Tablet_::HilightArea_SolidHelper
+@METHOD:        Tablet::HilightArea_SolidHelper
 @DESCRIPTION:   <p>HilightArea_SolidHelper () is simple helper function - usually called from subclasses which OVERRIDE
             @'TextImager::HilightArea'.</p>
                 <p>Note the backColor and foreColor are advisory - and maybe ignored if the GDI better supports (or the
             platform UI conventionally calls for) inverting the text via a simple XOR.</p>
 */
-void Led_Tablet_::HilightArea_SolidHelper (const Led_Region& hilightArea, [[maybe_unused]] Color hilightBackColor, [[maybe_unused]] Color hilightForeColor, [[maybe_unused]] Color oldBackColor, [[maybe_unused]] Color oldForeColor)
+void Tablet::HilightArea_SolidHelper (const Led_Region& hilightArea, [[maybe_unused]] Color hilightBackColor, [[maybe_unused]] Color hilightForeColor, [[maybe_unused]] Color oldBackColor, [[maybe_unused]] Color oldForeColor)
 {
     if (not hilightArea.IsEmpty ()) {
 #if qPlatform_MacOS
@@ -2075,10 +2073,10 @@ void Led_Tablet_::HilightArea_SolidHelper (const Led_Region& hilightArea, [[mayb
 }
 
 /*
-@METHOD:        Led_Tablet_::GetFontMetrics
+@METHOD:        Tablet::GetFontMetrics
 @DESCRIPTION:   <p>Retrieve the (@'Led_FontMetrics') associated with the current tablet (based on the last SetFont call).</p>
 */
-Led_FontMetrics Led_Tablet_::GetFontMetrics () const
+Led_FontMetrics Tablet::GetFontMetrics () const
 {
 #if qPlatform_MacOS
     FontInfo fontInfo;
@@ -2102,7 +2100,7 @@ Led_FontMetrics Led_Tablet_::GetFontMetrics () const
 }
 
 #if qStroika_FeatureSupported_XWindows
-void Led_Tablet_::SetFont (const FontSpecification& fontSpec)
+void Tablet::SetFont (const FontSpecification& fontSpec)
 {
     /*
      * First, see if the XFontStruct* is already cached. If so - all we need todo is (maybe) an XSetFont call.
@@ -2204,7 +2202,7 @@ void Led_Tablet_::SetFont (const FontSpecification& fontSpec)
     ::XSetFont (fDisplay, fGC, fCachedFontInfo->fid);
 }
 
-void Led_Tablet_::SetDrawableOrigin (const Led_Point& origin)
+void Tablet::SetDrawableOrigin (const Led_Point& origin)
 {
     fDrawableOrigin = origin;
 }
@@ -2223,7 +2221,7 @@ static bool FontNamesEqual (const string& lhs, const string& rhs)
     }
     return true;
 }
-Led_SDK_String Led_Tablet_::BestMatchFont (const FontSpecification& fsp, const vector<Led_SDK_String>& fontsList)
+Led_SDK_String Tablet::BestMatchFont (const FontSpecification& fsp, const vector<Led_SDK_String>& fontsList)
 {
     Led_SDK_String bestAnswer;
     float          bestScore    = 0.0f;
@@ -2266,12 +2264,12 @@ Led_SDK_String Led_Tablet_::BestMatchFont (const FontSpecification& fsp, const v
     return bestAnswer;
 }
 
-int Led_Tablet_::IgnoreXErrorHandler (Display* /*display*/, XErrorEvent* /*error*/)
+int Tablet::IgnoreXErrorHandler (Display* /*display*/, XErrorEvent* /*error*/)
 {
     return 0;
 }
 
-void Led_Tablet_::ParseFontName (const Led_SDK_String& fontName, Led_SDK_String* familyName, Led_SDK_String* fontSize, Led_SDK_String* fontWeight, Led_SDK_String* fontSlant)
+void Tablet::ParseFontName (const Led_SDK_String& fontName, Led_SDK_String* familyName, Led_SDK_String* fontSize, Led_SDK_String* fontWeight, Led_SDK_String* fontSlant)
 {
     RequireNotNull (familyName);
     RequireNotNull (fontSize);
@@ -2348,7 +2346,7 @@ OffscreenTablet::OT::OT (GrafPtr gp)
 {
 }
 #elif qPlatform_Windows
-OffscreenTablet::OT::OT (HDC hdc, Led_Tablet_::OwnDCControl ownsDC)
+OffscreenTablet::OT::OT (HDC hdc, Tablet::OwnDCControl ownsDC)
     : inherited (hdc, ownsDC)
 {
 }
@@ -2409,7 +2407,7 @@ OffscreenTablet::~OffscreenTablet ()
                 <p>Later call @'OffscreenTablet::PrepareRect' before any actual drawing can be done. This should be called once before
             calling @'OffscreenTablet::PrepareRect'.</p>
 */
-void OffscreenTablet::Setup (Led_Tablet origTablet)
+void OffscreenTablet::Setup (Tablet* origTablet)
 {
     Require (fOrigTablet == nullptr); // can only call once.
     RequireNotNull (origTablet);
@@ -2449,9 +2447,9 @@ void OffscreenTablet::Setup (Led_Tablet origTablet)
             after the call to @'OffscreenTablet::Setup' - but can be called multiple times. Note that calls to this
             will typically 'destroy' the bits in the offscreen tablet.</p>
 */
-Led_Tablet OffscreenTablet::PrepareRect (const Led_Rect& currentRowRect, DistanceType extraToAddToBottomOfRect)
+Tablet* OffscreenTablet::PrepareRect (const Led_Rect& currentRowRect, DistanceType extraToAddToBottomOfRect)
 {
-    Led_Tablet result = fOrigTablet;
+    Tablet* result = fOrigTablet;
 #if qPlatform_MacOS
     if (fOffscreenTablet != nullptr) {
         fOffscreenRect = currentRowRect;
@@ -2504,11 +2502,11 @@ Led_Tablet OffscreenTablet::PrepareRect (const Led_Rect& currentRowRect, Distanc
             }
             fMemoryBitmap.DeleteObject (); // lose previous contents, if any...
 #if qUseDIBSectionForOffscreenBitmap
-            if (fMemoryBitmap.CreateCompatibleDIBSection (Led_Tablet (fOrigTablet)->m_hDC, fOffscreenRect.GetWidth (), fOffscreenRect.GetHeight ()) == 0) {
+            if (fMemoryBitmap.CreateCompatibleDIBSection (fOrigTablet->m_hDC, fOffscreenRect.GetWidth (), fOffscreenRect.GetHeight ()) == 0) {
                 fOffscreenTablet = nullptr; // OK, just don't use...
             }
 #else
-            if (fMemoryBitmap.CreateCompatibleBitmap (Led_Tablet (fOrigTablet)->m_hDC, fOffscreenRect.GetWidth (), fOffscreenRect.GetHeight ()) == 0) {
+            if (fMemoryBitmap.CreateCompatibleBitmap (fOrigTablet->m_hDC, fOffscreenRect.GetWidth (), fOffscreenRect.GetHeight ()) == 0) {
                 fOffscreenTablet = nullptr; // OK, just don't use...
             }
 #endif
@@ -2547,7 +2545,7 @@ Led_Tablet OffscreenTablet::PrepareRect (const Led_Rect& currentRowRect, Distanc
              *  Since we don't know for sure the drawable is a window - catch the error and ignore it. Don't let
              *  XErrorHandler do anything bad.
              */
-            int (*oldErrHandler) (Display*, XErrorEvent*) = ::XSetErrorHandler (Led_Tablet_::IgnoreXErrorHandler);
+            int (*oldErrHandler) (Display*, XErrorEvent*) = ::XSetErrorHandler (Tablet::IgnoreXErrorHandler);
             Status s = ::XGetWindowAttributes (fOrigTablet->fDisplay, fOrigTablet->fDrawable, &winAttrs);
             ::XSetErrorHandler (oldErrHandler);
             if (s == 0) {
@@ -2604,7 +2602,7 @@ void OffscreenTablet::BlastBitmapToOrigTablet ()
 #endif
         ::UnlockPixels (::GetGWorldPixMap (fOffscreenGWorld));
 #elif qPlatform_Windows
-        Led_Tablet screenDC = fOrigTablet;
+        Tablet* screenDC = fOrigTablet;
         screenDC->BitBlt (fOffscreenRect.left, fOffscreenRect.top, fOffscreenRect.GetWidth (), fOffscreenRect.GetHeight (),
                           fOffscreenTablet, fOffscreenRect.left, fOffscreenRect.top, SRCCOPY);
 #elif qStroika_FeatureSupported_XWindows
@@ -3260,10 +3258,10 @@ struct CMAPENCODING {
 
 // Macro to pack a TrueType table name into a DWORD
 #define MAKETABLENAME(ch1, ch2, ch3, ch4) ( \
-    (((DWORD)(ch4)) << 24) |                \
-    (((DWORD)(ch3)) << 16) |                \
-    (((DWORD)(ch2)) << 8) |                 \
-    ((DWORD)(ch1)))
+    (((DWORD) (ch4)) << 24) |               \
+    (((DWORD) (ch3)) << 16) |               \
+    (((DWORD) (ch2)) << 8) |                \
+    ((DWORD) (ch1)))
 
 /* public functions */
 static USHORT GetTTUnicodeGlyphIndex (HDC hdc, USHORT ch);

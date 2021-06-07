@@ -516,14 +516,14 @@ namespace Stroika::Frameworks::Led {
         virtual void DrawBefore (const Led_Rect& subsetToDraw, bool printing) override;
 
     protected:
-        virtual void DrawRowSegments (Led_Tablet tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect,
+        virtual void DrawRowSegments (Tablet* tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect,
                                       const TextLayoutBlock& text, size_t rowStart, size_t rowEnd) override;
 
     protected:
         virtual vector<Led_Rect> GetRowHilightRects (const TextLayoutBlock& text, size_t rowStart, size_t rowEnd, size_t hilightStart, size_t hilightEnd) const override;
 
     public:
-        virtual void DrawSegment (Led_Tablet tablet,
+        virtual void DrawSegment (Tablet* tablet,
                                   size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
                                   Coordinate useBaseLine, DistanceType* pixelsDrawn) override;
 
@@ -1226,7 +1226,7 @@ namespace Stroika::Frameworks::Led {
         class CellRep;
 
     public:
-        virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
+        virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
                                           size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
                                           Coordinate useBaseLine, DistanceType* pixelsDrawn) override;
         virtual void         MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
@@ -1238,8 +1238,8 @@ namespace Stroika::Frameworks::Led {
         virtual vector<Led_Rect> GetRowHilightRects () const;
 
     protected:
-        virtual void DrawTableBorders (WordProcessor& owningWP, Led_Tablet tablet, const Led_Rect& drawInto);
-        virtual void DrawCellBorders (Led_Tablet tablet, size_t row, size_t column, const Led_Rect& cellBounds);
+        virtual void DrawTableBorders (WordProcessor& owningWP, Tablet* tablet, const Led_Rect& drawInto);
+        virtual void DrawCellBorders (Tablet* tablet, size_t row, size_t column, const Led_Rect& cellBounds);
 
     public:
         nonvirtual TWIPS GetCellSpacing () const;
@@ -1651,13 +1651,13 @@ namespace Stroika::Frameworks::Led {
         virtual void OnPasteCommand_After () override;
 
     protected:
-        virtual void DrawRowHilight (Led_Tablet tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect,
+        virtual void DrawRowHilight (Tablet* tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect,
                                      const TextLayoutBlock& text, size_t rowStart, size_t rowEnd) override;
 
         //pure virtual overrides to make this class compile..
     public:
-        virtual Led_Tablet AcquireTablet () const override;
-        virtual void       ReleaseTablet (Led_Tablet tablet) const override;
+        virtual Tablet* AcquireTablet () const override;
+        virtual void    ReleaseTablet (Tablet* tablet) const override;
 
     protected:
         virtual void RefreshWindowRect_ (const Led_Rect& windowRectArea, UpdateMode updateMode) const override;
@@ -1697,7 +1697,7 @@ namespace Stroika::Frameworks::Led {
         class TemporarilyUseTablet;
 
     private:
-        Led_Tablet fUpdateTablet; // assigned in stack-based fasion during update/draw calls.
+        Tablet* fUpdateTablet; // assigned in stack-based fasion during update/draw calls.
     private:
         friend class WordProcessor::Table;
         friend class WordProcessor::Table::EmbeddedTableWordProcessor::TemporarilyUseTablet;
@@ -1753,12 +1753,12 @@ namespace Stroika::Frameworks::Led {
     public:
         enum DoTextMetricsChangedCall { eDoTextMetricsChangedCall,
                                         eDontDoTextMetricsChangedCall };
-        TemporarilyUseTablet (EmbeddedTableWordProcessor& editor, Led_Tablet t, DoTextMetricsChangedCall tmChanged = eDoTextMetricsChangedCall);
+        TemporarilyUseTablet (EmbeddedTableWordProcessor& editor, Tablet* t, DoTextMetricsChangedCall tmChanged = eDoTextMetricsChangedCall);
         ~TemporarilyUseTablet ();
 
     private:
         EmbeddedTableWordProcessor& fEditor;
-        Led_Tablet                  fOldTablet;
+        Tablet*                     fOldTablet;
         DoTextMetricsChangedCall    fDoTextMetricsChangedCall;
     };
 

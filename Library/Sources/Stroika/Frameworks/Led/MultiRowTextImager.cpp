@@ -435,7 +435,7 @@ void MultiRowTextImager::Draw (const Led_Rect& subsetToDraw, bool printing)
     Led_Rect rowsLeftToDrawRect = GetWindowRect ();
 
     Tablet_Acquirer tablet_ (this);
-    Led_Tablet      tablet = tablet_;
+    Tablet*         tablet = tablet_;
     AssertNotNull (tablet);
 
 /*
@@ -448,8 +448,8 @@ void MultiRowTextImager::Draw (const Led_Rect& subsetToDraw, bool printing)
     RGBColor oldForeColor = GDI_GetForeColor ();
     RGBColor oldBackColor = GDI_GetBackColor ();
 #elif qPlatform_Windows
-    Led_Win_Obj_Selector pen (tablet, ::GetStockObject (NULL_PEN));
-    Led_Win_Obj_Selector brush (tablet, ::GetStockObject (NULL_BRUSH));
+    Led_GDI_Obj_Selector pen (tablet, ::GetStockObject (NULL_PEN));
+    Led_GDI_Obj_Selector brush (tablet, ::GetStockObject (NULL_BRUSH));
 #endif
 
     /*
@@ -553,7 +553,7 @@ void MultiRowTextImager::Draw (const Led_Rect& subsetToDraw, bool printing)
     @METHOD:        MultiRowTextImager::DrawPartitionElement
     @DESCRIPTION:   <p></p>
     */
-void MultiRowTextImager::DrawPartitionElement (PartitionMarker* pm, size_t startSubRow, size_t maxSubRow, Led_Tablet tablet, OffscreenTablet* offscreenTablet, bool printing, const Led_Rect& subsetToDraw, Led_Rect* remainingDrawArea, size_t* rowsDrawn)
+void MultiRowTextImager::DrawPartitionElement (PartitionMarker* pm, size_t startSubRow, size_t maxSubRow, Tablet* tablet, OffscreenTablet* offscreenTablet, bool printing, const Led_Rect& subsetToDraw, Led_Rect* remainingDrawArea, size_t* rowsDrawn)
 {
     RequireNotNull (pm);
     RequireNotNull (remainingDrawArea);
@@ -567,7 +567,7 @@ void MultiRowTextImager::DrawPartitionElement (PartitionMarker* pm, size_t start
         end--; // don't include bogus char at end of buffer
     }
 
-    Led_Tablet                savedTablet = tablet;
+    Tablet*                   savedTablet = tablet;
     PartitionElementCacheInfo pmCacheInfo = GetPartitionElementCacheInfo (pm);
     size_t                    endSubRow   = min (pmCacheInfo.GetRowCount () - 1, maxSubRow);
     *rowsDrawn                            = 0;

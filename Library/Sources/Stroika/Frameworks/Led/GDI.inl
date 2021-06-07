@@ -606,7 +606,7 @@ namespace Stroika::Frameworks::Led {
      ************************************ TabStopList *******************************
      ********************************************************************************
      */
-    inline DistanceType TabStopList::ComputeTabStopAfterPosition (Led_Tablet tablet, DistanceType afterPos) const
+    inline DistanceType TabStopList::ComputeTabStopAfterPosition (Tablet* tablet, DistanceType afterPos) const
     {
         RequireNotNull (tablet);
         return tablet->CvtFromTWIPSH (ComputeTabStopAfterPosition (tablet->CvtToTWIPSH (afterPos)));
@@ -615,27 +615,27 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_Windows
     /*
      ********************************************************************************
-     ************************************ Led_Bitmap ********************************
+     ************************************ Bitmap ********************************
      ********************************************************************************
      */
-    inline Led_Bitmap::~Led_Bitmap ()
+    inline Bitmap::~Bitmap ()
     {
         if (m_hObject != nullptr) {
             ::DeleteObject (m_hObject);
         }
     }
-    inline void Led_Bitmap::DeleteObject ()
+    inline void Bitmap::DeleteObject ()
     {
         if (m_hObject != nullptr) {
             ::DeleteObject (m_hObject);
             m_hObject = nullptr;
         }
     }
-    inline Led_Bitmap::operator HBITMAP () const
+    inline Bitmap::operator HBITMAP () const
     {
         return m_hObject;
     }
-    inline Led_Size Led_Bitmap::GetImageSize () const
+    inline Led_Size Bitmap::GetImageSize () const
     {
         // only valid if m_hObject != nullptr
         RequireNotNull (m_hObject);
@@ -645,26 +645,26 @@ namespace Stroika::Frameworks::Led {
 
     /*
      ********************************************************************************
-     *********************************** Led_Tablet_ ********************************
+     *********************************** Tablet ********************************
      ********************************************************************************
      */
 #if qPlatform_MacOS
-    inline Led_Tablet_::operator GrafPtr () const
+    inline Tablet::operator GrafPtr () const
     {
         return fGrafPort;
     }
 #elif qPlatform_Windows
-    inline Led_Tablet_::operator HDC () const
+    inline Tablet::operator HDC () const
     {
         return m_hDC;
     }
 #endif
     /*
-    @METHOD:        Led_Tablet_::CvtFromTWIPSV
+    @METHOD:        Tablet::CvtFromTWIPSV
     @DESCRIPTION:
-        <p>See also @'Led_Tablet_::CvtFromTWIPSH', @'Led_Tablet_::CvtToTWIPSV', @'Led_Tablet_::CvtToTWIPSH'.</p>
+        <p>See also @'Tablet::CvtFromTWIPSH', @'Tablet::CvtToTWIPSV', @'Tablet::CvtToTWIPSH'.</p>
     */
-    inline Coordinate Led_Tablet_::CvtFromTWIPSV (TWIPS from) const
+    inline Coordinate Tablet::CvtFromTWIPSV (TWIPS from) const
     {
 #if qPlatform_Windows
         if (fLogPixelsV == 0) {
@@ -687,11 +687,11 @@ namespace Stroika::Frameworks::Led {
 #endif
     }
     /*
-    @METHOD:        Led_Tablet_::CvtFromTWIPSH
+    @METHOD:        Tablet::CvtFromTWIPSH
     @DESCRIPTION:
-        <p>See also @'Led_Tablet_::CvtFromTWIPSV', @'Led_Tablet_::CvtToTWIPSV', @'Led_Tablet_::CvtToTWIPSH'.</p>
+        <p>See also @'Tablet::CvtFromTWIPSV', @'Tablet::CvtToTWIPSV', @'Tablet::CvtToTWIPSH'.</p>
     */
-    inline Coordinate Led_Tablet_::CvtFromTWIPSH (TWIPS from) const
+    inline Coordinate Tablet::CvtFromTWIPSH (TWIPS from) const
     {
 #if qPlatform_Windows
         if (fLogPixelsH == 0) {
@@ -714,11 +714,11 @@ namespace Stroika::Frameworks::Led {
 #endif
     }
     /*
-    @METHOD:        Led_Tablet_::CvtToTWIPSV
+    @METHOD:        Tablet::CvtToTWIPSV
     @DESCRIPTION:   <p>Utility routine to convert from logical coordinates (usually pixels) to TWIPS.</p>
-        <p>See also @'Led_Tablet_::CvtFromTWIPSV', @'Led_Tablet_::CvtFromTWIPSH', @'Led_Tablet_::CvtToTWIPSH'.</p>
+        <p>See also @'Tablet::CvtFromTWIPSV', @'Tablet::CvtFromTWIPSH', @'Tablet::CvtToTWIPSH'.</p>
     */
-    inline TWIPS Led_Tablet_::CvtToTWIPSV (Coordinate from) const
+    inline TWIPS Tablet::CvtToTWIPSV (Coordinate from) const
     {
 #if qPlatform_Windows
         if (fLogPixelsV == 0) {
@@ -740,11 +740,11 @@ namespace Stroika::Frameworks::Led {
 #endif
     }
     /*
-    @METHOD:        Led_Tablet_::CvtToTWIPSH
+    @METHOD:        Tablet::CvtToTWIPSH
     @DESCRIPTION:   <p>Utility routine to convert from logical coordinates (usually pixels) to TWIPS.</p>
-        <p>See also @'Led_Tablet_::CvtFromTWIPSV', @'Led_Tablet_::CvtFromTWIPSH', @'Led_Tablet_::CvtToTWIPSV'.</p>
+        <p>See also @'Tablet::CvtFromTWIPSV', @'Tablet::CvtFromTWIPSH', @'Tablet::CvtToTWIPSV'.</p>
     */
-    inline TWIPS Led_Tablet_::CvtToTWIPSH (Coordinate from) const
+    inline TWIPS Tablet::CvtToTWIPSH (Coordinate from) const
     {
 #if qPlatform_Windows
         if (fLogPixelsH == 0) {
@@ -766,17 +766,17 @@ namespace Stroika::Frameworks::Led {
 #endif
     }
 #if qPlatform_MacOS
-    inline void Led_Tablet_::SetPort ()
+    inline void Tablet::SetPort ()
     {
         ::SetPort (fGrafPort);
     }
 #elif qPlatform_Windows
-    inline BOOL Led_Tablet_::BitBlt (int x, int y, int nWidth, int nHeight, Led_Tablet_* pSrcDC, int xSrc, int ySrc, DWORD dwRop)
+    inline BOOL Tablet::BitBlt (int x, int y, int nWidth, int nHeight, Tablet* pSrcDC, int xSrc, int ySrc, DWORD dwRop)
     {
         AssertNotNull (m_hDC);
         return ::BitBlt (m_hDC, x, y, nWidth, nHeight, pSrcDC->m_hDC, xSrc, ySrc, dwRop);
     }
-    inline BOOL Led_Tablet_::CreateCompatibleDC (Led_Tablet_* pDC)
+    inline BOOL Tablet::CreateCompatibleDC (Tablet* pDC)
     {
         Assert (m_hDC == nullptr);       // only attach once, detach on destroy
         Assert (m_hAttribDC == nullptr); // only attach to an empty DC
@@ -789,7 +789,7 @@ namespace Stroika::Frameworks::Led {
         fOwnsDC     = eOwnsDC;
         return TRUE;
     }
-    inline COLORREF Led_Tablet_::SetTextColor (COLORREF crColor)
+    inline COLORREF Tablet::SetTextColor (COLORREF crColor)
     {
         Assert (m_hDC != nullptr);
         COLORREF crRetVal = CLR_INVALID;
@@ -800,7 +800,7 @@ namespace Stroika::Frameworks::Led {
             crRetVal = ::SetTextColor (m_hAttribDC, crColor);
         return crRetVal;
     }
-    inline COLORREF Led_Tablet_::SetBkColor (COLORREF crColor)
+    inline COLORREF Tablet::SetBkColor (COLORREF crColor)
     {
         Assert (m_hDC != nullptr);
         COLORREF crRetVal = CLR_INVALID;
@@ -811,27 +811,27 @@ namespace Stroika::Frameworks::Led {
             crRetVal = ::SetBkColor (m_hAttribDC, crColor);
         return crRetVal;
     }
-    inline HWND Led_Tablet_::GetWindow () const
+    inline HWND Tablet::GetWindow () const
     {
         Assert (m_hDC != nullptr);
         return ::WindowFromDC (m_hDC);
     }
-    inline BOOL Led_Tablet_::IsPrinting () const
+    inline BOOL Tablet::IsPrinting () const
     {
         return m_bPrinting;
     }
-    inline BOOL Led_Tablet_::RoundRect (int x1, int y1, int x2, int y2, int x3, int y3)
+    inline BOOL Tablet::RoundRect (int x1, int y1, int x2, int y2, int x3, int y3)
     {
         Assert (m_hDC != nullptr);
         return ::RoundRect (m_hDC, x1, y1, x2, y2, x3, y3);
     }
-    inline BOOL Led_Tablet_::TextOut (int x, int y, LPCTSTR lpszString, int nCount)
+    inline BOOL Tablet::TextOut (int x, int y, LPCTSTR lpszString, int nCount)
     {
         Assert (m_hDC != nullptr);
         return ::TextOut (m_hDC, x, y, lpszString, nCount);
     }
 #if 0
-    inline  SIZE    Led_Tablet_::GetTextExtent (LPCTSTR lpszString, int nCount) const
+    inline  SIZE    Tablet::GetTextExtent (LPCTSTR lpszString, int nCount) const
     {
         Assert(m_hAttribDC != nullptr);
         SIZE size;
@@ -839,7 +839,7 @@ namespace Stroika::Frameworks::Led {
         return size;
     }
 #endif
-    inline int Led_Tablet_::SetBkMode (int nBkMode)
+    inline int Tablet::SetBkMode (int nBkMode)
     {
         Assert (m_hDC != nullptr);
         int nRetVal = 0;
@@ -850,7 +850,7 @@ namespace Stroika::Frameworks::Led {
             nRetVal = ::SetBkMode (m_hAttribDC, nBkMode);
         return nRetVal;
     }
-    inline unsigned int Led_Tablet_::SetTextAlign (unsigned int nTextAlign)
+    inline unsigned int Tablet::SetTextAlign (unsigned int nTextAlign)
     {
         Assert (m_hDC != nullptr);
         unsigned int nRetVal = 0;
@@ -862,53 +862,53 @@ namespace Stroika::Frameworks::Led {
         return nRetVal;
     }
 
-    inline SIZE Led_Tablet_::GetWindowExt () const
+    inline SIZE Tablet::GetWindowExt () const
     {
         Assert (m_hAttribDC != nullptr);
         SIZE size;
         Verify (::GetWindowExtEx (m_hAttribDC, &size));
         return size;
     }
-    inline SIZE Led_Tablet_::GetViewportExt () const
+    inline SIZE Tablet::GetViewportExt () const
     {
         Assert (m_hAttribDC != nullptr);
         SIZE size;
         Verify (::GetViewportExtEx (m_hAttribDC, &size));
         return size;
     }
-    inline BOOL Led_Tablet_::Rectangle (int x1, int y1, int x2, int y2)
+    inline BOOL Tablet::Rectangle (int x1, int y1, int x2, int y2)
     {
         Assert (m_hDC != nullptr);
         return ::Rectangle (m_hDC, x1, y1, x2, y2);
     }
-    inline BOOL Led_Tablet_::Rectangle (const RECT& r)
+    inline BOOL Tablet::Rectangle (const RECT& r)
     {
         Assert (m_hDC != nullptr);
         return ::Rectangle (m_hDC, r.left, r.top, r.right, r.bottom);
     }
-    inline BOOL Led_Tablet_::Rectangle (LPCRECT lpRect)
+    inline BOOL Tablet::Rectangle (LPCRECT lpRect)
     {
         Assert (m_hDC != nullptr);
         return ::Rectangle (m_hDC, lpRect->left, lpRect->top, lpRect->right, lpRect->bottom);
     }
-    inline BOOL Led_Tablet_::GetTextMetrics (LPTEXTMETRIC lpMetrics) const
+    inline BOOL Tablet::GetTextMetrics (LPTEXTMETRIC lpMetrics) const
     {
         Assert (m_hAttribDC != nullptr);
         return ::GetTextMetrics (m_hAttribDC, lpMetrics);
     }
-    inline HBITMAP Led_Tablet_::SelectObject (HBITMAP hBitmap)
+    inline HBITMAP Tablet::SelectObject (HBITMAP hBitmap)
     {
         Assert (m_hDC != nullptr);
         return (HBITMAP)::SelectObject (m_hDC, hBitmap);
     }
 #if defined(STRICT)
-    inline HFONT Led_Tablet_::SelectObject (HFONT hFont)
+    inline HFONT Tablet::SelectObject (HFONT hFont)
     {
         Assert (m_hDC != nullptr);
         return (HFONT)::SelectObject (m_hDC, hFont);
     }
 #endif
-    inline POINT Led_Tablet_::SetWindowOrg (int x, int y)
+    inline POINT Tablet::SetWindowOrg (int x, int y)
     {
         Assert (m_hDC != nullptr);
         POINT point;
@@ -919,12 +919,12 @@ namespace Stroika::Frameworks::Led {
             Verify (::SetWindowOrgEx (m_hAttribDC, x, y, &point));
         return point;
     }
-    inline int Led_Tablet_::GetDeviceCaps (int nIndex) const
+    inline int Tablet::GetDeviceCaps (int nIndex) const
     {
         Assert (m_hAttribDC != nullptr);
         return ::GetDeviceCaps (m_hAttribDC, nIndex);
     }
-    inline BOOL Led_Tablet_::Attach (HDC hDC, Led_Tablet_::OwnDCControl ownsDC)
+    inline BOOL Tablet::Attach (HDC hDC, Tablet::OwnDCControl ownsDC)
     {
         Assert (m_hDC == nullptr);       // only attach once, detach on destroy
         Assert (m_hAttribDC == nullptr); // only attach to an empty DC
@@ -937,7 +937,7 @@ namespace Stroika::Frameworks::Led {
         fOwnsDC     = ownsDC;
         return TRUE;
     }
-    inline HDC Led_Tablet_::Detach ()
+    inline HDC Tablet::Detach ()
     {
         HDC hDC     = m_hDC;
         m_hAttribDC = nullptr;
@@ -945,7 +945,7 @@ namespace Stroika::Frameworks::Led {
         return hDC;
     }
 #endif
-    inline void Led_Tablet_::MoveTo (const Led_Point& to)
+    inline void Tablet::MoveTo (const Led_Point& to)
     {
 #if qPlatform_MacOS
         ::MoveTo (to.h, to.v);
@@ -956,7 +956,7 @@ namespace Stroika::Frameworks::Led {
         fCurDrawLineLoc = to;
 #endif
     }
-    inline void Led_Tablet_::LineTo (const Led_Point& to)
+    inline void Tablet::LineTo (const Led_Point& to)
     {
 #if qPlatform_MacOS
         ::LineTo (to.h, to.v);
@@ -968,11 +968,11 @@ namespace Stroika::Frameworks::Led {
         fCurDrawLineLoc = to;
 #endif
     }
-    inline Led_Region Led_Tablet_::GetClip () const
+    inline Led_Region Tablet::GetClip () const
     {
         Led_Region result;
 #if qPlatform_MacOS
-        const_cast<Led_Tablet_*> (this)->SetPort ();
+        const_cast<Tablet*> (this)->SetPort ();
         ::GetClip (result.GetOSRep ());
 #elif qPlatform_Windows
         int r = ::GetClipRgn (*this, result);
@@ -989,11 +989,11 @@ namespace Stroika::Frameworks::Led {
 #endif
         return result;
     }
-    inline bool Led_Tablet_::GetClip (Led_Region* r) const
+    inline bool Tablet::GetClip (Led_Region* r) const
     {
         RequireNotNull (r);
 #if qPlatform_MacOS
-        const_cast<Led_Tablet_*> (this)->SetPort ();
+        const_cast<Tablet*> (this)->SetPort ();
         ::GetClip (r->GetOSRep ());
         return true;
 #elif qPlatform_Windows
@@ -1008,7 +1008,7 @@ namespace Stroika::Frameworks::Led {
         return false;
 #endif
     }
-    inline void Led_Tablet_::SetClip ()
+    inline void Tablet::SetClip ()
     {
 #if qPlatform_MacOS
         SetPort ();
@@ -1024,7 +1024,7 @@ namespace Stroika::Frameworks::Led {
         Assert (false); // NYI
 #endif
     }
-    inline void Led_Tablet_::SetClip (const Led_Rect& clipTo)
+    inline void Tablet::SetClip (const Led_Rect& clipTo)
     {
 #if qPlatform_MacOS
         SetPort ();
@@ -1039,7 +1039,7 @@ namespace Stroika::Frameworks::Led {
         Assert (false); // NYI
 #endif
     }
-    inline void Led_Tablet_::SetClip (const Led_Region& clipTo)
+    inline void Tablet::SetClip (const Led_Region& clipTo)
     {
 #if qPlatform_MacOS
         SetPort ();
@@ -1644,16 +1644,6 @@ namespace Stroika::Frameworks::Led {
         return RGB (fRed >> 8, fGreen >> 8, fBlue >> 8);
     }
 #endif
-#if __cpp_impl_three_way_comparison < 201907
-    inline bool operator== (Color lhs, Color rhs)
-    {
-        return (lhs.GetRed () == rhs.GetRed () and lhs.GetGreen () == rhs.GetGreen () and lhs.GetBlue () == rhs.GetBlue ());
-    }
-    inline bool operator!= (Color lhs, Color rhs)
-    {
-        return not(lhs == rhs);
-    }
-#endif
     inline Color operator* (Color lhs, float factor)
     {
         using CV = Color::ColorValue;
@@ -1769,53 +1759,52 @@ namespace Stroika::Frameworks::Led {
      ************************************* LineSpacing ******************************
      ********************************************************************************
      */
-    inline    LineSpacing::LineSpacing (Rule rule)
-            : fRule{rule}
-        {
-            Require (rule == eSingleSpace or rule == eOnePointFiveSpace or rule == eDoubleSpace);
+    inline LineSpacing::LineSpacing (Rule rule)
+        : fRule{rule}
+    {
+        Require (rule == eSingleSpace or rule == eOnePointFiveSpace or rule == eDoubleSpace);
+    }
+    inline LineSpacing::LineSpacing (Rule rule, TWIPS twips)
+        : fRule{rule}
+        , fArg{static_cast<unsigned> (twips)}
+    {
+        Require (rule == eAtLeastTWIPSSpacing or rule == eExactTWIPSSpacing);
+    }
+    inline LineSpacing::LineSpacing (Rule rule, unsigned lineCount)
+        : fRule{rule}
+        , fArg{lineCount}
+    {
+        Require (rule == eExactLinesSpacing);
+        switch (lineCount) {
+            case 20:
+                fRule = eSingleSpace;
+                break;
+            case 30:
+                fRule = eOnePointFiveSpace;
+                break;
+            case 40:
+                fRule = eDoubleSpace;
+                break;
         }
-     inline   LineSpacing::LineSpacing (Rule rule, TWIPS twips)
-            : fRule{rule}
-            , fArg{static_cast<unsigned> (twips)}
-        {
-            Require (rule == eAtLeastTWIPSSpacing or rule == eExactTWIPSSpacing);
+    }
+    inline bool LineSpacing::operator== (LineSpacing rhs) const
+    {
+        if (fRule != rhs.fRule) {
+            return false;
         }
-      inline  LineSpacing::LineSpacing (Rule rule, unsigned lineCount)
-            : fRule{rule}
-            , fArg{lineCount}
-        {
-            Require (rule == eExactLinesSpacing);
-            switch (lineCount) {
-                case 20:
-                    fRule = eSingleSpace;
-                    break;
-                case 30:
-                    fRule = eOnePointFiveSpace;
-                    break;
-                case 40:
-                    fRule = eDoubleSpace;
-                    break;
-            }
-        }
-        inline bool LineSpacing::operator== (LineSpacing rhs) const
-        {
-            if (fRule != rhs.fRule) {
+        if (fRule == LineSpacing::eAtLeastTWIPSSpacing or fRule == LineSpacing::eExactTWIPSSpacing or fRule == LineSpacing::eExactLinesSpacing) {
+            if (fArg != rhs.fArg) {
                 return false;
             }
-            if (fRule == LineSpacing::eAtLeastTWIPSSpacing or fRule == LineSpacing::eExactTWIPSSpacing or fRule == LineSpacing::eExactLinesSpacing) {
-                if (fArg != rhs.fArg) {
-                    return false;
-                }
-            }
-            return true;
         }
+        return true;
+    }
 #if __cpp_impl_three_way_comparison < 201907
-        inline bool LineSpacing::operator!= (LineSpacing rhs) const
-        {
-            return not(*this == rhs);
-        }
+    inline bool LineSpacing::operator!= (LineSpacing rhs) const
+    {
+        return not(*this == rhs);
+    }
 #endif
-
 
     /*
      ********************************************************************************
@@ -2457,7 +2446,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         isValid = isValid and fStyleValid_Outline and fStyleValid_Shadow and fStyleValid_Condensed and fStyleValid_Extended;
 #elif qPlatform_Windows
-            isValid               = isValid and fStyleValid_Strikeout;
+            isValid = isValid and fStyleValid_Strikeout;
 #endif
         return isValid;
     }
@@ -2677,14 +2666,14 @@ namespace Stroika::Frameworks::Led {
         {
             fStyleValid_Strikeout = false;
 #if qPlatform_Windows
-            fDidSetOSRepCallFlag  = false;
+            fDidSetOSRepCallFlag = false;
 #endif
         }
         inline void IncrementalFontSpecification::SetStyle_Strikeout (bool isStrikeout)
         {
             fStyleValid_Strikeout = true;
 #if qPlatform_Windows
-            fDidSetOSRepCallFlag  = false;
+            fDidSetOSRepCallFlag = false;
 #endif
             inherited::SetStyle_Strikeout (isStrikeout);
         }
@@ -3139,10 +3128,10 @@ namespace Stroika::Frameworks::Led {
 
     /*
      ********************************************************************************
-     ************************ Led_Tablet_::ClipNarrowAndRestore *********************
+     ************************ Tablet::ClipNarrowAndRestore *********************
      ********************************************************************************
      */
-    inline Led_Tablet_::ClipNarrowAndRestore::ClipNarrowAndRestore (Led_Tablet_* tablet)
+    inline Tablet::ClipNarrowAndRestore::ClipNarrowAndRestore (Tablet* tablet)
         : fTablet (tablet)
         , fHasOldClip (false)
         , fOldClip ()
@@ -3155,7 +3144,7 @@ namespace Stroika::Frameworks::Led {
 #endif
         fHasOldClip = tablet->GetClip (&fOldClip);
     }
-    inline Led_Tablet_::ClipNarrowAndRestore::ClipNarrowAndRestore (Led_Tablet_* tablet, const Led_Rect& clipFurtherTo)
+    inline Tablet::ClipNarrowAndRestore::ClipNarrowAndRestore (Tablet* tablet, const Led_Rect& clipFurtherTo)
         : fTablet (tablet)
         , fHasOldClip (false)
         , fOldClip ()
@@ -3176,7 +3165,7 @@ namespace Stroika::Frameworks::Led {
             Verify (::IntersectClipRect (*tablet, clipFurtherTo.GetLeft (), clipFurtherTo.GetTop (), clipFurtherTo.GetRight (), clipFurtherTo.GetBottom ()) != ERROR);
 #endif
     }
-    inline Led_Tablet_::ClipNarrowAndRestore::ClipNarrowAndRestore (Led_Tablet_* tablet, [[maybe_unused]] const Led_Region& clipFurtherTo)
+    inline Tablet::ClipNarrowAndRestore::ClipNarrowAndRestore (Tablet* tablet, [[maybe_unused]] const Led_Region& clipFurtherTo)
         : fTablet (tablet)
         , fHasOldClip (false)
         , fOldClip ()
@@ -3192,7 +3181,7 @@ namespace Stroika::Frameworks::Led {
             Assert (false); // NYI
 #endif
     }
-    inline Led_Tablet_::ClipNarrowAndRestore::~ClipNarrowAndRestore ()
+    inline Tablet::ClipNarrowAndRestore::~ClipNarrowAndRestore ()
     {
         AssertNotNull (fTablet);
 #if qPlatform_Windows
@@ -3280,7 +3269,7 @@ namespace Stroika::Frameworks::Led {
      ********************************************************************************
      */
 #if qPlatform_Windows
-    inline Led_GDI_Obj_Selector::Led_GDI_Obj_Selector (Led_Tablet tablet, HGDIOBJ objToSelect)
+    inline Led_GDI_Obj_Selector::Led_GDI_Obj_Selector (Tablet* tablet, HGDIOBJ objToSelect)
         : fTablet (tablet)
         , fRestoreObject (nullptr)
         , fRestoreAttribObject (nullptr)
@@ -3297,7 +3286,7 @@ namespace Stroika::Frameworks::Led {
         }
     }
 #elif qPlatform_MacOS
-        inline Led_GDI_Obj_Selector::Led_GDI_Obj_Selector (Led_Tablet tablet, const Pen& pen)
+        inline Led_GDI_Obj_Selector::Led_GDI_Obj_Selector (Tablet* tablet, const Pen& pen)
             : fTablet (tablet)
             ,
 #if TARGET_CARBON
@@ -3314,7 +3303,7 @@ namespace Stroika::Frameworks::Led {
             ::PenPat (&pen.fPenPat);
         }
 #elif qStroika_FeatureSupported_XWindows
-        inline Led_GDI_Obj_Selector::Led_GDI_Obj_Selector (Led_Tablet tablet, const Pen& pen)
+        inline Led_GDI_Obj_Selector::Led_GDI_Obj_Selector (Tablet* tablet, const Pen& pen)
         {
         }
 #endif

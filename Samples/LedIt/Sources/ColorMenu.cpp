@@ -94,7 +94,7 @@ UINT ColorMenu::FontColorToCmd (Color color)
 void ColorMenu::DrawItem (LPDRAWITEMSTRUCT lpDIS)
 {
     ASSERT (lpDIS->CtlType == ODT_MENU);
-    UINT id = (UINT)(WORD)lpDIS->itemID;
+    UINT id = (UINT) (WORD)lpDIS->itemID;
     ASSERT (id == lpDIS->itemData);
     ASSERT (id >= kBaseFontColorCmd);
     ASSERT (id <= kLastFontNamedColorCmd);
@@ -139,7 +139,7 @@ void ColorMenu::DrawItem (LPDRAWITEMSTRUCT lpDIS)
 void ColorMenu::MeasureItem (LPMEASUREITEMSTRUCT lpMIS)
 {
     ASSERT (lpMIS->CtlType == ODT_MENU);
-    UINT id = (UINT)(WORD)lpMIS->itemID;
+    UINT id = (UINT) (WORD)lpMIS->itemID;
     ASSERT (id == lpMIS->itemData);
     ASSERT (id >= kBaseFontColorCmd);
     ASSERT (id <= kLastFontNamedColorCmd);

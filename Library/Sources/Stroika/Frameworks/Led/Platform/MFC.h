@@ -134,7 +134,7 @@ namespace Stroika::Frameworks::Led::Platform {
 
     /*
     @CLASS:         Led_MFC_TmpCDCFromTablet
-    @DESCRIPTION:   <p>Helper class to convert a @'Led_Tablet' to an MFC CDC. Just creates a temporary wrapper.</p>
+    @DESCRIPTION:   <p>Helper class to convert a @'Tablet*' to an MFC CDC. Just creates a temporary wrapper.</p>
         <p><strong>Caution</strong>:
         You must create a NAMED temporary.
         A named temporary has lifetime til the end of the enclosing scope.
@@ -142,7 +142,7 @@ namespace Stroika::Frameworks::Led::Platform {
     */
     class Led_MFC_CDCFromTablet {
     public:
-        Led_MFC_CDCFromTablet (Led_Tablet t);
+        Led_MFC_CDCFromTablet (Tablet* t);
         ~Led_MFC_CDCFromTablet ();
         operator CDC* ();
 
@@ -152,7 +152,7 @@ namespace Stroika::Frameworks::Led::Platform {
 
     /*
     @CLASS:         Led_MFC_TabletFromCDC
-    @DESCRIPTION:   <p>Helper class to convert an MFC CDC to a @'Led_Tablet'. Just creates a temporary wrapper.</p>
+    @DESCRIPTION:   <p>Helper class to convert an MFC CDC to a @'Tablet*'. Just creates a temporary wrapper.</p>
         <p><strong>Caution</strong>:
         You must create a NAMED temporary.
         A named temporary has lifetime til the end of the enclosing scope.
@@ -164,11 +164,11 @@ namespace Stroika::Frameworks::Led::Platform {
         ~Led_MFC_TabletFromCDC ();
 
     public:
-                   operator Led_Tablet ();
-        Led_Tablet operator-> ();
+                operator Tablet* ();
+        Tablet* operator-> ();
 
     private:
-        Led_Tablet_ fTablet;
+        Tablet fTablet;
     };
 
     /*

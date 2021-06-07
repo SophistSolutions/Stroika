@@ -1739,7 +1739,7 @@ void TextInteractor::DrawAfter (const Led_Rect& /*subsetToDraw*/, bool printing)
         Led_Region r;
         GetSelectionWindowRegion (&r, GetSelectionStart (), GetSelectionEnd ());
         Tablet_Acquirer tablet_ (this);
-        Led_Tablet      tablet = tablet_;
+        Tablet*         tablet = tablet_;
         tablet->FrameRegion (r, Led_GetSelectedTextBackgroundColor ());
     }
 }
@@ -1832,7 +1832,7 @@ void TextInteractor::PostScrollHelper (PreScrollInfo preScrollInfo)
             Led_Rect windowRect = GetWindowRect ();
 
             Tablet_Acquirer tablet_{this};
-            Led_Tablet      tablet = tablet_;
+            Tablet*         tablet = tablet_;
             if (preScrollInfo.fOldWindowStart > newStartOfWindow) {
                 /*                                    *
                  *  Move text (bits) DOWN screen (UP /|\ ARROW).

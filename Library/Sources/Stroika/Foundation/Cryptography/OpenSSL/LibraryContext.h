@@ -63,10 +63,10 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         static LibraryContext sDefault;
 
     public:
-        static inline const String kDefaultProvider = L"default"sv;
+        static inline constexpr wstring_view kDefaultProvider = L"default"sv;
 
     public:
-        static inline const String kLegacyProvider = L"legacy"sv;
+        static inline constexpr wstring_view kLegacyProvider = L"legacy"sv;
 
     public:
         /**

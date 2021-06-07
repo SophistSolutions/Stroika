@@ -335,7 +335,7 @@ void Led_MFC_ControlItem::OnDeactivateUI (BOOL bUndoable)
     }
 }
 
-void Led_MFC_ControlItem::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Led_Tablet tablet,
+void Led_MFC_ControlItem::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Tablet* tablet,
                                        [[maybe_unused]] size_t from, [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
                                        Coordinate useBaseLine, DistanceType* pixelsDrawn)
 {
@@ -345,7 +345,7 @@ void Led_MFC_ControlItem::DrawSegment (const StyledTextImager* imager, const Run
     Color foreColor = imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor);
     ;
     Color                backColor = imager->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor);
-    Led_Win_Obj_Selector pen (tablet, ::GetStockObject (WHITE_PEN));
+    Led_GDI_Obj_Selector pen (tablet, ::GetStockObject (WHITE_PEN));
     tablet->SetTextColor (foreColor.GetOSRep ());
     tablet->SetBkColor (backColor.GetOSRep ());
 

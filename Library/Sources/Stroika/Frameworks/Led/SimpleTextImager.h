@@ -230,7 +230,7 @@ namespace Stroika::Frameworks::Led {
         virtual void Draw (const Led_Rect& subsetToDraw, bool printing) override;
 
     public:
-        virtual void DrawPartitionElement (PartitionMarker* pm, size_t startSubRow, size_t maxSubRow, Led_Tablet tablet, OffscreenTablet* offscreenTablet, bool printing, const Led_Rect& subsetToDraw, Led_Rect* remainingDrawArea, size_t* rowsDrawn);
+        virtual void DrawPartitionElement (PartitionMarker* pm, size_t startSubRow, size_t maxSubRow, Tablet* tablet, OffscreenTablet* offscreenTablet, bool printing, const Led_Rect& subsetToDraw, Led_Rect* remainingDrawArea, size_t* rowsDrawn);
 
     protected:
         virtual Led_Rect GetCharLocationRowRelative (size_t afterPosition, RowReference topRow, size_t maxRowsToCheck = UINT_MAX) const;

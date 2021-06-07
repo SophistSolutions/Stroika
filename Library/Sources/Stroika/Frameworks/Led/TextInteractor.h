@@ -1017,7 +1017,7 @@ namespace Stroika::Frameworks::Led {
         in a localized, one-time fasion, say todo printing, or some such. Not for interactors.</p>
             <p>The usuage can be as simple as:
             <code>
-                void    SomeAppDrawCall (Led_Tablet t, const Led_Rect& r)
+                void    SomeAppDrawCall (Tablet* t, const Led_Rect& r)
                 {
                     TrivialImager_Interactor<ChunkedArrayTextStore, WordProcessor> (t, r, LED_TCHAR_OF ("Hi mom")).Draw ();
                 }
@@ -1031,11 +1031,11 @@ namespace Stroika::Frameworks::Led {
         using inherited = TrivialImager<TEXTSTORE, IMAGER>;
 
     public:
-        TrivialImager_Interactor (Led_Tablet t)
+        TrivialImager_Interactor (Tablet* t)
             : inherited (t)
         {
         }
-        TrivialImager_Interactor (Led_Tablet t, Led_Rect bounds, const Led_tString& initialText = LED_TCHAR_OF (""))
+        TrivialImager_Interactor (Tablet* t, Led_Rect bounds, const Led_tString& initialText = LED_TCHAR_OF (""))
             : inherited (t)
         {
             // Kooky I cannot just call base class CTOR that does all this - but then it invokes calls to RefreshWindowRect_ etc, before

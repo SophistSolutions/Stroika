@@ -25,7 +25,7 @@ namespace Stroika::Frameworks::Led {
     @CLASS:         TextImager
     @BASES:         virtual @'MarkerOwner'
     @DESCRIPTION:   <p>The @'TextImager' class is one of central importance in Led.
-                TextImagers are responsable for imaging to a @'Led_Tablet' the
+                TextImagers are responsable for imaging to a @'Tablet*' the
                 contents of a particular @'TextStore'. A TextImager (except in the degenerate case)
                 is always associated with one TextStore (though a single TextStore can have
                 multiple TextImagers displaying its contents). This long-term relationship allows
@@ -45,7 +45,7 @@ namespace Stroika::Frameworks::Led {
                 notion of user interaction, screen
                 updates, etc. It has no notion of style runs, paragraph formatting etc.
                 It is a generic API for getting text (in a @'TextStore') imaged onto
-                a some output @'Led_Tablet'.</p>
+                a some output @'Tablet*'.</p>
 
                         <p>Interesting subclasses of @'TextImager' include @'PartitioningTextImager', @'SimpleTextImager',
                 @'StyledTextImager', @'StandardStyledTextImager', and @'TextInteractor'.</p>
@@ -185,7 +185,7 @@ namespace Stroika::Frameworks::Led {
         /*
         @METHOD:        TextImager::AcquireTablet
         @DESCRIPTION:
-            <p>By "Tablet" I mean on the mac a grafport, or on windows a CDC (@'Led_Tablet'). Something
+            <p>By "Tablet" I mean on the mac a grafport, or on windows a CDC (@'Tablet*'). Something
         we can draw into, and calculate text metrics with.</p>
             <p>Sometimes Led is lucky enough to find itself in a position where it is
         handed a tabet (drawing). But sometimes it isn't so luck. Conisider if someone
@@ -206,14 +206,14 @@ namespace Stroika::Frameworks::Led {
         needs to be notified that all its text metrics are invalid. Call @'TextImager::TabletChangedMetrics ()'
         in this case.</p>
         */
-        virtual Led_Tablet AcquireTablet () const = 0;
+        virtual Tablet* AcquireTablet () const = 0;
         /*
         @METHOD:        TextImager::ReleaseTablet
         @DESCRIPTION:   <p>Tablet API</p>
                 <p>See @'TextImager::AcquireTablet'. Generally don't call this directly - but instead use the
             @'TextImager::Tablet_Acquirer' class.</p>
         */
-        virtual void ReleaseTablet (Led_Tablet tablet) const = 0;
+        virtual void ReleaseTablet (Tablet* tablet) const = 0;
 
     protected:
         virtual void TabletChangedMetrics ();
@@ -713,20 +713,20 @@ namespace Stroika::Frameworks::Led {
         Color* fDefaultColorIndex[eMaxDefaultColorIndex];
 
     public:
-        virtual void EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing);
+        virtual void EraseBackground (Tablet* tablet, const Led_Rect& subsetToDraw, bool printing);
 
     public:
-        virtual void HilightArea (Led_Tablet tablet, Led_Rect hiliteArea);
-        virtual void HilightArea (Led_Tablet tablet, const Led_Region& hiliteArea);
+        virtual void HilightArea (Tablet* tablet, Led_Rect hiliteArea);
+        virtual void HilightArea (Tablet* tablet, const Led_Region& hiliteArea);
 
     protected:
-        virtual void DrawRow (Led_Tablet tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect,
+        virtual void DrawRow (Tablet* tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect,
                               const TextLayoutBlock& text, size_t rowStart, size_t rowEnd, bool printing);
-        virtual void DrawRowSegments (Led_Tablet tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect,
+        virtual void DrawRowSegments (Tablet* tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect,
                                       const TextLayoutBlock& text, size_t rowStart, size_t rowEnd);
-        virtual void DrawRowHilight (Led_Tablet tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect,
+        virtual void DrawRowHilight (Tablet* tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect,
                                      const TextLayoutBlock& text, size_t rowStart, size_t rowEnd);
-        virtual void DrawInterLineSpace (DistanceType interlineSpace, Led_Tablet tablet, Coordinate vPosOfTopOfInterlineSpace, bool segmentHilighted, bool printing);
+        virtual void DrawInterLineSpace (DistanceType interlineSpace, Tablet* tablet, Coordinate vPosOfTopOfInterlineSpace, bool segmentHilighted, bool printing);
 
     protected:
         virtual bool   ContainsMappedDisplayCharacters (const Led_tChar* text, size_t nTChars) const;
@@ -741,13 +741,13 @@ namespace Stroika::Frameworks::Led {
         static void   PatchWidthRemoveMappedDisplayCharacters_HelperForChar (const Led_tChar* srcText, DistanceType* distanceResults, size_t nTChars, Led_tChar charToRemove);
 
     protected:
-        virtual void DrawSegment (Led_Tablet tablet,
+        virtual void DrawSegment (Tablet* tablet,
                                   size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
                                   Coordinate useBaseLine, DistanceType* pixelsDrawn);
 
     public:
         // Note we REQUIRE that useBaseLine be contained within drawInto
-        nonvirtual void DrawSegment_ (Led_Tablet tablet, const FontSpecification& fontSpec,
+        nonvirtual void DrawSegment_ (Tablet* tablet, const FontSpecification& fontSpec,
                                       size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, Coordinate useBaseLine, DistanceType* pixelsDrawn) const;
 
     protected:
@@ -841,7 +841,7 @@ namespace Stroika::Frameworks::Led {
     protected:
         class FontCacheInfoUpdater {
         public:
-            FontCacheInfoUpdater (const TextImager* imager, Led_Tablet tablet, const FontSpecification& fontSpec);
+            FontCacheInfoUpdater (const TextImager* imager, Tablet* tablet, const FontSpecification& fontSpec);
             ~FontCacheInfoUpdater ();
 
         public:
@@ -852,9 +852,9 @@ namespace Stroika::Frameworks::Led {
 
 #if qPlatform_Windows
         private:
-            Led_Tablet fTablet;
-            HGDIOBJ    fRestoreObject;
-            HGDIOBJ    fRestoreAttribObject;
+            Tablet* fTablet;
+            HGDIOBJ fRestoreObject;
+            HGDIOBJ fRestoreAttribObject;
 #endif
         };
         friend class FontCacheInfoUpdater;
@@ -875,12 +875,12 @@ namespace Stroika::Frameworks::Led {
             AssertNotNull (fTextImager);
             fTablet = fTextImager->AcquireTablet ();
         }
-        operator Led_Tablet ()
+        operator Tablet* ()
         {
             AssertNotNull (fTablet);
             return (fTablet);
         }
-        Led_Tablet operator-> ()
+        Tablet* operator-> ()
         {
             return fTablet;
         }
@@ -893,7 +893,7 @@ namespace Stroika::Frameworks::Led {
 
     private:
         const TextImager* fTextImager;
-        Led_Tablet        fTablet;
+        Tablet*           fTablet;
     };
 
     /*
@@ -971,10 +971,10 @@ namespace Stroika::Frameworks::Led {
         using inherited = IMAGER;
 
     protected:
-        TrivialImager (Led_Tablet t);
+        TrivialImager (Tablet* t);
 
     public:
-        TrivialImager (Led_Tablet t, Led_Rect bounds, const Led_tString& initialText = LED_TCHAR_OF (""));
+        TrivialImager (Tablet* t, Led_Rect bounds, const Led_tString& initialText = LED_TCHAR_OF (""));
         ~TrivialImager ();
 
     public:
@@ -982,11 +982,11 @@ namespace Stroika::Frameworks::Led {
         virtual void    Draw (const Led_Rect& subsetToDraw, bool printing) override;
 
     protected:
-        virtual Led_Tablet AcquireTablet () const override;
-        virtual void       ReleaseTablet (Led_Tablet /*tablet*/) const override;
+        virtual Tablet* AcquireTablet () const override;
+        virtual void    ReleaseTablet (Tablet* /*tablet*/) const override;
 
     protected:
-        virtual void EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing) override;
+        virtual void EraseBackground (Tablet* tablet, const Led_Rect& subsetToDraw, bool printing) override;
 
     protected:
         nonvirtual void SnagAttributesFromTablet ();
@@ -998,9 +998,9 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void  SetBackgroundTransparent (bool transparent);
 
     private:
-        TEXTSTORE  fTextStore;
-        Led_Tablet fTablet;
-        bool       fBackgroundTransparent;
+        TEXTSTORE fTextStore;
+        Tablet*   fTablet;
+        bool      fBackgroundTransparent;
     };
     DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 

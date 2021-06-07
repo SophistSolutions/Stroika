@@ -22,7 +22,7 @@ namespace Stroika::Frameworks::Led {
             <p>See also DrawTextBox<WORDWRAPPEDTEXTIMAGER,SIMPLETEXTIMAGER,TEXTSTORE></p>
     */
     template <typename WORDWRAPPEDTEXTIMAGER, typename SIMPLETEXTIMAGER, typename TEXTSTORE>
-    Led_Size GetTextExtent (Led_Tablet tablet, const Led_tString& text, const Led_Rect& r, bool wordWrap)
+    Led_Size GetTextExtent (Tablet* tablet, const Led_tString& text, const Led_Rect& r, bool wordWrap)
     {
         RequireNotNull (tablet);
         Led_Size textExtent (0, 0);
@@ -53,7 +53,7 @@ namespace Stroika::Frameworks::Led {
             <p>See also GetTextExtent<WORDWRAPPEDTEXTIMAGER,SIMPLETEXTIMAGER,TEXTSTORE></p>
     */
     template <typename WORDWRAPPEDTEXTIMAGER, typename SIMPLETEXTIMAGER, typename TEXTSTORE>
-    void DrawTextBox (Led_Tablet tablet, const Led_tString& text, const Led_Rect& r, bool wordWrap)
+    void DrawTextBox (Tablet* tablet, const Led_tString& text, const Led_Rect& r, bool wordWrap)
     {
         RequireNotNull (tablet);
         if (wordWrap) {
@@ -92,7 +92,7 @@ namespace Stroika::Frameworks::Led {
         fWatermarkColor = c;
     }
     template <typename TEXTSTORE, typename WORDPROCESSOR>
-    void WaterMarkHelper<TEXTSTORE, WORDPROCESSOR>::DrawWatermark (Led_Tablet tablet, const Led_Rect& intoRect, const Led_Rect& subsetToDraw)
+    void WaterMarkHelper<TEXTSTORE, WORDPROCESSOR>::DrawWatermark (Tablet* tablet, const Led_Rect& intoRect, const Led_Rect& subsetToDraw)
     {
         /*
          *  Draw a watermark static text label to indicate in DEMO MODE.
@@ -149,7 +149,7 @@ namespace Stroika::Frameworks::Led {
             }
         }
 
-        Led_Tablet_::ClipNarrowAndRestore clipFurtherTo (tablet, intoRect * subsetToDraw);
+        Tablet::ClipNarrowAndRestore clipFurtherTo (tablet, intoRect * subsetToDraw);
 
         bool printing = true; // not really printing - but set this to disable erase call
         fCachedImager->Draw (subsetToDraw, printing);

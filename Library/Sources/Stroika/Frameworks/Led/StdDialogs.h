@@ -220,7 +220,7 @@ namespace Stroika::Frameworks::Led {
             virtual LRESULT WndProc (UINT message, WPARAM wParam, LPARAM lParam) override;
 
             LedComboBoxWidget* fComboBox;
-            Led_Bitmap         fDropDownArrow;
+            Bitmap             fDropDownArrow;
         };
         friend struct MyButton;
 #endif

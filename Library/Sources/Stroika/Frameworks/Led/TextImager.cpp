@@ -86,7 +86,7 @@ inline bool LogFontsEqual (const FontSpecification& lhs, const FontSpecification
     }
 }
 #endif
-TextImager::FontCacheInfoUpdater::FontCacheInfoUpdater (const TextImager* imager, Led_Tablet tablet, const FontSpecification& fontSpec)
+TextImager::FontCacheInfoUpdater::FontCacheInfoUpdater (const TextImager* imager, Tablet* tablet, const FontSpecification& fontSpec)
     : fImager (imager)
 #if qPlatform_Windows
     , fTablet (tablet)
@@ -299,7 +299,7 @@ void TextImager::PurgeUnneededMemory ()
 /*
 @METHOD:        TextImager::InvalidateAllCaches
 @DESCRIPTION:   <p>This is called - for example - when you change the wrap width for the entire document, or font information
-            for the entire document, or maybe something about the @'Led_Tablet' metrics you are imaging to.
+            for the entire document, or maybe something about the @'Tablet*' metrics you are imaging to.
             TextImager::InvalidateAllCaches is called automatically from @'MultiRowTextImager::TabletChangedMetrics ()'
             </p>
 */
@@ -1410,11 +1410,11 @@ void TextImager::GetSelectionWindowRegion (Led_Region* r, size_t from, size_t to
         <p>NB: the argument 'subsetToDraw' can occasionally be outside of the WindowRect. If so - then DO draw where this
     function says to draw. This is because you maybe asked to erase window margins/borders outside the Led 'WindowRect' using
     the same color/algorithm as that used inside the Led WindowRect.</p>
-        <p>By default - this simply calls @'Led_Tablet_::EraseBackground_SolidHelper' with @'Led_GetTextBackgroundColor' ().</p>
+        <p>By default - this simply calls @'Tablet::EraseBackground_SolidHelper' with @'Led_GetTextBackgroundColor' ().</p>
         <p>Note - typically when you OVERRIDE this - you will want to OVERRIDE @'TextImager::HilightARectangle' to change
     its implementation to specify a new background color (so inverting works properly). Perhaps see SPR#0708 for details.</p>
 */
-void TextImager::EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing)
+void TextImager::EraseBackground (Tablet* tablet, const Led_Rect& subsetToDraw, bool printing)
 {
     RequireNotNull (tablet);
     // Don't erase when printing - at least by default. Tends to screw up most print drivers.
@@ -1426,11 +1426,11 @@ void TextImager::EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDra
 /*
 @METHOD:        TextImager::HilightArea
 @DESCRIPTION:   <p>Hilight the given rectangle of the screen, after its been drawn. This is typically done via
-    some sort of pixel or color invesion. The default implemtation uses @'Led_Tablet_::HilightArea_SolidHelper'.</p>
+    some sort of pixel or color invesion. The default implemtation uses @'Tablet::HilightArea_SolidHelper'.</p>
         <p>Override this mostly if you want different hilighting behavior, or if you want your hilighting behavior
     to remain in sync with other changes to the EraseBackground behavior.</p>
 */
-void TextImager::HilightArea (Led_Tablet tablet, Led_Rect hiliteArea)
+void TextImager::HilightArea (Tablet* tablet, Led_Rect hiliteArea)
 {
     RequireNotNull (tablet);
     tablet->HilightArea_SolidHelper (hiliteArea, GetEffectiveDefaultTextColor (eDefaultSelectedTextBackgroundColor), GetEffectiveDefaultTextColor (eDefaultSelectedTextColor), GetEffectiveDefaultTextColor (eDefaultBackgroundColor), GetEffectiveDefaultTextColor (eDefaultTextColor));
@@ -1439,11 +1439,11 @@ void TextImager::HilightArea (Led_Tablet tablet, Led_Rect hiliteArea)
 /*
 @METHOD:        TextImager::HilightArea
 @DESCRIPTION:   <p>Hilight the given region of the screen, after its been drawn. This is typically done via
-    some sort of pixel or color invesion. The default implemtation uses @'Led_Tablet_::HilightArea_SolidHelper'.</p>
+    some sort of pixel or color invesion. The default implemtation uses @'Tablet::HilightArea_SolidHelper'.</p>
         <p>Override this mostly if you want different hilighting behavior, or if you want your hilighting behavior
     to remain in sync with other changes to the EraseBackground behavior.</p>
 */
-void TextImager::HilightArea (Led_Tablet tablet, const Led_Region& hiliteArea)
+void TextImager::HilightArea (Tablet* tablet, const Led_Region& hiliteArea)
 {
     RequireNotNull (tablet);
     tablet->HilightArea_SolidHelper (hiliteArea, GetEffectiveDefaultTextColor (eDefaultSelectedTextBackgroundColor), GetEffectiveDefaultTextColor (eDefaultSelectedTextColor), GetEffectiveDefaultTextColor (eDefaultBackgroundColor), GetEffectiveDefaultTextColor (eDefaultTextColor));
@@ -1460,7 +1460,7 @@ void TextImager::HilightArea (Led_Tablet tablet, const Led_Region& hiliteArea)
                 <p>Note, only the invalidRect subset of currentRowRect need be drawn, though the rest CAN be.</p>
                 <p>Renamed to @'TextImager::DrawRowSegments' from MutliRowTextImager::DrawRowSegments for Led 3.1a3 release.</p>
 */
-void TextImager::DrawRow (Led_Tablet tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect,
+void TextImager::DrawRow (Tablet* tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect,
                           const TextLayoutBlock& text, size_t rowStart, size_t rowEnd, bool printing)
 {
     RequireNotNull (tablet);
@@ -1469,7 +1469,7 @@ void TextImager::DrawRow (Led_Tablet tablet, const Led_Rect& currentRowRect, con
     /*
      *  Could CONSIDER doing something like:
      *
-     *      Led_Tablet_::ClipNarrowAndRestore   clipFurtherTo (tablet, currentRowRect);
+     *      Tablet::ClipNarrowAndRestore   clipFurtherTo (tablet, currentRowRect);
      *
      *  here, but it might have too much of a performance cost. Perhaps I should test this. See SPR#?????
      */
@@ -1495,7 +1495,7 @@ void TextImager::DrawRow (Led_Tablet tablet, const Led_Rect& currentRowRect, con
                 <p>Note, only the invalidRect subset of currentRowRect need be drawn, though the rest CAN be.</p>
                 <p>Renamed to @'TextImager::DrawRowSegments' from MutliRowTextImager::DrawRowSegments for Led 3.1a3 release.</p>
 */
-void TextImager::DrawRowSegments (Led_Tablet tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect,
+void TextImager::DrawRowSegments (Tablet* tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect,
                                   const TextLayoutBlock& text, size_t rowStart, size_t rowEnd)
 {
     RequireNotNull (tablet);
@@ -1541,7 +1541,7 @@ void TextImager::DrawRowSegments (Led_Tablet tablet, const Led_Rect& currentRowR
                 <p>Note, only the invalidRect subset of currentRowRect need be drawn, though the rest CAN be.</p>
                 <p>Renamed/Moved to @'TextImager::DrawRowHilight' from MutliRowTextImager::DrawRowHilight for Led 3.1a3 release.</p>
 */
-void TextImager::DrawRowHilight (Led_Tablet tablet, [[maybe_unused]] const Led_Rect& currentRowRect, const Led_Rect& /*invalidRowRect*/,
+void TextImager::DrawRowHilight (Tablet* tablet, [[maybe_unused]] const Led_Rect& currentRowRect, const Led_Rect& /*invalidRowRect*/,
                                  const TextLayoutBlock& text, size_t rowStart, size_t rowEnd)
 {
     Require (rowEnd == GetEndOfRowContainingPosition (rowStart)); // passed in for performance reasons - so not computed multiple times
@@ -1574,7 +1574,7 @@ void TextImager::DrawRowHilight (Led_Tablet tablet, [[maybe_unused]] const Led_R
             paragraphs (as in LECs LVEJ side-by-side mode).</p>
                 <p>Renamed to @'TextImager::DrawInterLineSpace' from MutliRowTextImager::DrawInterLineSpace for Led 3.1a3 release.</p>
 */
-void TextImager::DrawInterLineSpace (DistanceType interlineSpace, Led_Tablet tablet, Coordinate vPosOfTopOfInterlineSpace, bool segmentHilighted, bool printing)
+void TextImager::DrawInterLineSpace (DistanceType interlineSpace, Tablet* tablet, Coordinate vPosOfTopOfInterlineSpace, bool segmentHilighted, bool printing)
 {
     // This code not been checked/tested since I rewrote the erasing code etc.. Maybe wrong - probably wrong? No matter, anybody
     // ever using interline space would probably OVERRIDE this anyhow..
@@ -1750,7 +1750,7 @@ void TextImager::PatchWidthRemoveMappedDisplayCharacters_HelperForChar (const Le
             (ie filled in if non-nullptr)</p>
                 <p>See also @'TextImager::DrawSegment_'.</p>
 */
-void TextImager::DrawSegment (Led_Tablet tablet,
+void TextImager::DrawSegment (Tablet* tablet,
                               size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
                               Coordinate useBaseLine, DistanceType* pixelsDrawn)
 {
@@ -1758,16 +1758,15 @@ void TextImager::DrawSegment (Led_Tablet tablet,
 }
 
 /*
-@METHOD:        TextImager::DrawSegment_
 @DESCRIPTION:   <p>Helper function to access tablet text drawing. This function takes care of setting the background/foreground colors,
-            and setting up a font object to be used in the Led_Tablet_::TabbedTextOut calls (maybe can go away if we do better integrating
-            font code into Led_Tablet/LedGDI and out of TextImager).</p>
+            and setting up a font object to be used in the Tablet::TabbedTextOut calls (maybe can go away if we do better integrating
+            font code into Tablet. LedGDI and out of TextImager).
                 <p>The 'from' marker position must be legit, since it is used to grab the tabstop list.
             The 'end' marker position is OK to fake (passing in other text), as it is just used to determine the string length. Note
             text in 'text' argument need not match the REAL text in the TextStore buffer.
         <p>See also @'TextImager::MeasureSegmentWidth_'.</p>
 */
-void TextImager::DrawSegment_ (Led_Tablet tablet, const FontSpecification& fontSpec,
+void TextImager::DrawSegment_ (Tablet* tablet, const FontSpecification& fontSpec,
                                size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto,
                                Coordinate useBaseLine, DistanceType* pixelsDrawn) const
 {
@@ -1914,7 +1913,7 @@ DistanceType TextImager::MeasureSegmentHeight (size_t from, size_t to) const
 DistanceType TextImager::MeasureSegmentHeight_ (const FontSpecification& fontSpec, size_t /*from*/, size_t /*to*/) const
 {
     Tablet_Acquirer tablet (this);
-    AssertNotNull (static_cast<Led_Tablet> (tablet));
+    AssertNotNull (static_cast<Tablet*> (tablet));
     FontCacheInfoUpdater fontCacheUpdater (this, tablet, fontSpec);
     return (fCachedFontInfo.GetLineHeight ());
 }
@@ -1927,7 +1926,7 @@ DistanceType TextImager::MeasureSegmentBaseLine (size_t from, size_t to) const
 DistanceType TextImager::MeasureSegmentBaseLine_ (const FontSpecification& fontSpec, size_t /*from*/, size_t /*to*/) const
 {
     Tablet_Acquirer tablet (this);
-    AssertNotNull (static_cast<Led_Tablet> (tablet));
+    AssertNotNull (static_cast<Tablet*> (tablet));
     FontCacheInfoUpdater fontCacheUpdater (this, tablet, fontSpec);
     return (fCachedFontInfo.GetAscent ());
 }
@@ -1941,7 +1940,7 @@ Led_FontMetrics TextImager::GetFontMetricsAt (
 ) const
 {
     Tablet_Acquirer tablet (this);
-    AssertNotNull (static_cast<Led_Tablet> (tablet));
+    AssertNotNull (static_cast<Tablet*> (tablet));
 
 #if qMultiByteCharacters
     Assert_CharPosDoesNotSplitCharacter (charAfterPos);

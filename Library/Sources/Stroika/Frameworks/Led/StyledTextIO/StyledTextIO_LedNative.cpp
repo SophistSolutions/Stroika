@@ -758,7 +758,7 @@ SimpleEmbeddedObjectStyleMarker* StyledTextIOReader_LedNativeFileFormat::Interna
         EmbeddedObjectCreatorRegistry::Assoc assoc = types[i];
         if (memcmp (assoc.fEmbeddingTag, tag, sizeof (assoc.fEmbeddingTag)) == 0) {
             AssertNotNull (assoc.fReadFromMemory);
-            return (assoc.fReadFromMemory)(tag, dataBuf, howManyBytes);
+            return (assoc.fReadFromMemory) (tag, dataBuf, howManyBytes);
         }
     }
     return (new StandardUnknownTypeStyleMarker (0, tag, dataBuf, howManyBytes));

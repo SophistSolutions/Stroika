@@ -1983,7 +1983,7 @@ DistanceType WordProcessor::ComputeMaxHScrollPos () const
          *  preserve the current scroll-to position.
          */
         TextInteractor::Tablet_Acquirer tablet_ (this);
-        Led_Tablet                      tablet = tablet_;
+        Tablet*                         tablet = tablet_;
         DistanceType                    width  = tablet->CvtFromTWIPSH (CalculateFarthestRightMargin ());
         if (GetHScrollPos () != 0) {
             width = max (width, GetHScrollPos () + GetWindowRect ().GetWidth ());
@@ -2017,7 +2017,7 @@ TWIPS WordProcessor::CalculateFarthestRightMarginInDocument () const
         longestRowWidth = max (longestRowWidth, rhsMargin);
     } while (GetNextRowReference (&curRow));
     Tablet_Acquirer tablet_ (this);
-    Led_Tablet      tablet = tablet_;
+    Tablet*         tablet = tablet_;
     return tablet->CvtToTWIPSH (longestRowWidth);
 }
 
@@ -2055,7 +2055,7 @@ TWIPS WordProcessor::CalculateFarthestRightMarginInWindow () const
         longestRowWidth = max (longestRowWidth, rhsMargin);
     } while (rowsLeftInWindow-- > 0 and GetNextRowReference (&curRow));
     Tablet_Acquirer tablet_ (this);
-    Led_Tablet      tablet = tablet_;
+    Tablet*         tablet = tablet_;
     return tablet->CvtToTWIPSH (longestRowWidth);
 }
 
@@ -3408,7 +3408,7 @@ DistanceType WordProcessor::GetListLeaderLength (size_t paragraphMarkerPos) cons
     lhsTWIPS += pi.GetFirstIndent ();
 
     Tablet_Acquirer tablet_ (this);
-    Led_Tablet      tablet = tablet_;
+    Tablet*         tablet = tablet_;
     Coordinate      lhs    = tablet->CvtFromTWIPSH (lhsTWIPS);
     Led_tString     leader = GetListLeader (paragraphMarkerPos);
 
@@ -3610,7 +3610,7 @@ void WordProcessor::DrawBefore (const Led_Rect& subsetToDraw, bool printing)
 @METHOD:        WordProcessor::DrawRowSegments
 @DESCRIPTION:   <p>Override @'TextImager::DrawRowSegments' to support things like indents, and justification.</p>
 */
-void WordProcessor::DrawRowSegments (Led_Tablet tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect,
+void WordProcessor::DrawRowSegments (Tablet* tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect,
                                      const TextLayoutBlock& text, size_t rowStart, size_t rowEnd)
 {
     if (fParagraphDatabase.get () == nullptr) {
@@ -3708,7 +3708,7 @@ vector<Led_Rect> WordProcessor::GetRowHilightRects (const TextLayoutBlock& text,
     return inherited::GetRowHilightRects (text, rowStart, rowEnd, hilightStart, hilightEnd);
 }
 
-void WordProcessor::DrawSegment (Led_Tablet tablet,
+void WordProcessor::DrawSegment (Tablet* tablet,
                                  size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
                                  Coordinate useBaseLine, DistanceType* pixelsDrawn)
 {
@@ -3756,8 +3756,8 @@ void WordProcessor::DrawSegment (Led_Tablet tablet,
                     Led_Point        botPt         = Led_Point (min (arrowBody.GetTop () + kArrowVSize / 2, tabRect.bottom), hTriangleBase);
 #if qPlatform_Windows
                     Brush                backgroundBrush (arrowColor.GetOSRep ());
-                    Led_Win_Obj_Selector pen (tablet, ::GetStockObject (NULL_PEN));
-                    Led_Win_Obj_Selector brush (tablet, backgroundBrush);
+                    Led_GDI_Obj_Selector pen (tablet, ::GetStockObject (NULL_PEN));
+                    Led_GDI_Obj_Selector brush (tablet, backgroundBrush);
                     POINT                pts[3];
                     pts[0] = AsPOINT (tip);
                     pts[1] = AsPOINT (topPt);
@@ -3792,7 +3792,7 @@ void WordProcessor::DrawSegment (Led_Tablet tablet,
 DistanceType WordProcessor::MeasureSegmentHeight (size_t from, size_t to) const
 {
     Tablet_Acquirer tablet_ (this);
-    Led_Tablet      tablet = tablet_;
+    Tablet*         tablet = tablet_;
     DistanceType    d      = inherited::MeasureSegmentHeight (from, to);
 
     if (d == 0) {
@@ -3993,7 +3993,7 @@ DistanceType WordProcessor::MeasureSegmentBaseLine (size_t from, size_t to) cons
         switch (sl.fRule) {
             case LineSpacing::eExactTWIPSSpacing: {
                 Tablet_Acquirer tablet_ (this);
-                Led_Tablet      tablet           = tablet_;
+                Tablet*         tablet           = tablet_;
                 DistanceType    revisedSegHeight = tablet->CvtFromTWIPSV (TWIPS (sl.fArg));
                 DistanceType    mhb              = MeasureMinSegDescent (from, to); // aka decent
                 d                                = revisedSegHeight - mhb;
@@ -4018,7 +4018,7 @@ DistanceType WordProcessor::MeasureSegmentBaseLine (size_t from, size_t to) cons
         TWIPS sb = pi.GetSpaceBefore ();
         if (sb != 0) {
             Tablet_Acquirer tablet_ (this);
-            Led_Tablet      tablet = tablet_;
+            Tablet*         tablet = tablet_;
             d += tablet->CvtFromTWIPSV (sb);
         }
     }
@@ -4269,7 +4269,7 @@ void WordProcessor::GetLayoutMargins (RowReference row, Coordinate* lhs, Coordin
     size_t           pmStart = pm->GetStart ();
 
     Tablet_Acquirer tablet_ (this);
-    Led_Tablet      tablet = tablet_;
+    Tablet*         tablet = tablet_;
 
     ParagraphInfo pi = fParagraphDatabase->GetParagraphInfo (pmStart);
     if (lhs != nullptr) {
@@ -5739,7 +5739,7 @@ void Table::FinalizeAddition (WordProcessor::AbstractParagraphDatabaseRep* o, si
     ts.AddMarker (this, addAt, 1, o);
 }
 
-void Table::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Led_Tablet tablet,
+void Table::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Tablet* tablet,
                          [[maybe_unused]] size_t from, [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
                          Coordinate /*useBaseLine*/, DistanceType* pixelsDrawn)
 {
@@ -5928,7 +5928,7 @@ vector<Led_Rect> Table::GetRowHilightRects () const
 @ACCESS:        protected
 @DESCRIPTION:   <p></p>
 */
-void Table::DrawTableBorders (WordProcessor& owningWP, Led_Tablet tablet, const Led_Rect& drawInto)
+void Table::DrawTableBorders (WordProcessor& owningWP, Tablet* tablet, const Led_Rect& drawInto)
 {
 #if 0
     //Don't delete this code - cuz we MAY want to display (somehow) the border for the table as
@@ -5954,7 +5954,7 @@ void Table::DrawTableBorders (WordProcessor& owningWP, Led_Tablet tablet, const 
             and the location of the table of the given cell). Note it is assumed the cellBounds argument does NOT take
             into account space for the border itself. We draw the border just OUTSIDE the cell.</p>
 */
-void Table::DrawCellBorders (Led_Tablet tablet, size_t /*row*/, size_t /*column*/, const Led_Rect& cellBounds)
+void Table::DrawCellBorders (Tablet* tablet, size_t /*row*/, size_t /*column*/, const Led_Rect& cellBounds)
 {
     Coordinate bw = Led_CvtScreenPixelsFromTWIPSH (fBorderWidth);
     // Draw outside of the frame of the cell.
@@ -7836,14 +7836,14 @@ void WordProcessor::Table::EmbeddedTableWordProcessor::OnPasteCommand_After ()
     fOwningWordProcessor.OnPasteCommand_After ();
 }
 
-void WordProcessor::Table::EmbeddedTableWordProcessor::DrawRowHilight (Led_Tablet /*tablet*/, const Led_Rect& /*currentRowRect*/, const Led_Rect& /*invalidRowRect*/,
+void WordProcessor::Table::EmbeddedTableWordProcessor::DrawRowHilight (Tablet* /*tablet*/, const Led_Rect& /*currentRowRect*/, const Led_Rect& /*invalidRowRect*/,
                                                                        const TextLayoutBlock& /*text*/, size_t /*rowStart*/, size_t /*rowEnd*/
 )
 {
     // Do nothing... - taken care if via owning Table and OVERRIDE of GetRowHilightRects
 }
 
-Led_Tablet WordProcessor::Table::EmbeddedTableWordProcessor::AcquireTablet () const
+Tablet* WordProcessor::Table::EmbeddedTableWordProcessor::AcquireTablet () const
 {
     if (fUpdateTablet != nullptr) {
         return fUpdateTablet;
@@ -7853,7 +7853,7 @@ Led_Tablet WordProcessor::Table::EmbeddedTableWordProcessor::AcquireTablet () co
     return fOwningWordProcessor.AcquireTablet ();
 }
 
-void WordProcessor::Table::EmbeddedTableWordProcessor::ReleaseTablet (Led_Tablet tablet) const
+void WordProcessor::Table::EmbeddedTableWordProcessor::ReleaseTablet (Tablet* tablet) const
 {
     if (tablet == fUpdateTablet) {
         return;

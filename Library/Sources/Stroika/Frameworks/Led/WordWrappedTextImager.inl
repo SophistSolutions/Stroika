@@ -25,12 +25,12 @@ namespace Stroika::Frameworks::Led {
                     <p>Most people will just call the public CTOR - as in the class documentation
                 (@'TrivialWordWrappedImager<TEXTSTORE,IMAGER>')</p>
     */
-    TrivialWordWrappedImager<TEXTSTORE, IMAGER>::TrivialWordWrappedImager (Led_Tablet t)
+    TrivialWordWrappedImager<TEXTSTORE, IMAGER>::TrivialWordWrappedImager (Tablet* t)
         : TrivialImager<TEXTSTORE, IMAGER> (t)
     {
     }
     template <typename TEXTSTORE, typename IMAGER>
-    TrivialWordWrappedImager<TEXTSTORE, IMAGER>::TrivialWordWrappedImager (Led_Tablet t, Led_Rect bounds, const Led_tString& initialText)
+    TrivialWordWrappedImager<TEXTSTORE, IMAGER>::TrivialWordWrappedImager (Tablet* t, Led_Rect bounds, const Led_tString& initialText)
         : TrivialImager<TEXTSTORE, IMAGER> (t)
     {
         this->SnagAttributesFromTablet ();

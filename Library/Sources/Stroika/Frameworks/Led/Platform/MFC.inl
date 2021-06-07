@@ -56,7 +56,7 @@ namespace Stroika::Frameworks::Led::Platform {
     }
 
     //  class   Led_MFC_CDCFromTablet
-    inline Led_MFC_CDCFromTablet::Led_MFC_CDCFromTablet (Led_Tablet t)
+    inline Led_MFC_CDCFromTablet::Led_MFC_CDCFromTablet (Tablet* t)
         : fCDC ()
     {
         RequireNotNull (t);
@@ -86,11 +86,11 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         fTablet.Detach ();
     }
-    inline Led_MFC_TabletFromCDC::operator Led_Tablet ()
+    inline Led_MFC_TabletFromCDC::operator Tablet* ()
     {
         return &fTablet;
     }
-    inline Led_Tablet Led_MFC_TabletFromCDC::operator-> ()
+    inline Tablet* Led_MFC_TabletFromCDC::operator-> ()
     {
         return &fTablet;
     }
@@ -593,7 +593,7 @@ namespace Stroika::Frameworks::Led::Platform {
         Assert (false); // though THIS code is fine - we haven't yet hooked the callback, so this call will
         // produce poor results... LGP 941129
         Assert (::IsWindow (this->m_hWnd));
-        return (BOOL)::SendMessage (this->m_hWnd, EM_SETTABSTOPS, 1, (LPARAM)(LPINT)&cxEachStop);
+        return (BOOL)::SendMessage (this->m_hWnd, EM_SETTABSTOPS, 1, (LPARAM) (LPINT)&cxEachStop);
     }
     template <typename BASECLASS>
     inline BOOL Led_MFC_MimicMFCAPIHelper<BASECLASS>::Undo ()

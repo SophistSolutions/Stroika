@@ -28,12 +28,12 @@ const Led_ClipFormat Led::kLedPrivateClipFormat = 'LedP';
 const Led_ClipFormat Led::kRTFClipFormat        = 'RTF ';
 const Led_ClipFormat Led::kHTMLClipFormat       = 'HTML';
 #elif qPlatform_Windows
-const TCHAR                                kLedPrivateClipTypeName[]                   = _T ("Led Rich Text Format");
-const Led_ClipFormat                       Led::kLedPrivateClipFormat                  = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (kLedPrivateClipTypeName));
-const TCHAR                                kRTFClipTypeName[]                          = _T ("Rich Text Format");
-const Led_ClipFormat                       Led::kRTFClipFormat                         = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (kRTFClipTypeName));
-const TCHAR                                kHTMLClipTypeName[]                         = _T ("HTML"); /// MAYBE A BAD NAME - SEE IF ANY WINDOWS STANDARD NAME???
-const Led_ClipFormat                       Led::kHTMLClipFormat                        = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (kHTMLClipTypeName));
+const TCHAR          kLedPrivateClipTypeName[]  = _T ("Led Rich Text Format");
+const Led_ClipFormat Led::kLedPrivateClipFormat = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (kLedPrivateClipTypeName));
+const TCHAR          kRTFClipTypeName[]         = _T ("Rich Text Format");
+const Led_ClipFormat Led::kRTFClipFormat        = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (kRTFClipTypeName));
+const TCHAR          kHTMLClipTypeName[]        = _T ("HTML"); /// MAYBE A BAD NAME - SEE IF ANY WINDOWS STANDARD NAME???
+const Led_ClipFormat Led::kHTMLClipFormat       = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (kHTMLClipTypeName));
 #elif qStroika_FeatureSupported_XWindows
 // Toolkit-specific code (e.g. Led_Gtk<>) must reset these to good values. Cannot be constants
 // and cannot be filled in here, cuz we require a DISPLAY object to register the contants on.
@@ -1073,7 +1073,7 @@ bool StyledTextFlavorPackageInternalizer::InternalizeFlavor_OtherRegisteredEmbed
             }
         }
         if (clipAvailForAll) {
-            SimpleEmbeddedObjectStyleMarker* objMarker = (assoc.fReadFromFlavorPackage)(flavorPackage);
+            SimpleEmbeddedObjectStyleMarker* objMarker = (assoc.fReadFromFlavorPackage) (flavorPackage);
             {
                 size_t pasteStart = from;
                 size_t pasteEnd   = to;
@@ -1180,7 +1180,7 @@ void StyledTextFlavorPackageExternalizer::ExternalizeFlavor_STYL (WriterFlavorPa
 
     size_t                         nBytes = sizeof (short) + nStyleRuns * sizeof (ScrpSTElement);
     Memory::SmallStackBuffer<char> buf (nBytes);
-    StScrpPtr                      stylePtr = (StScrpPtr)(char*)buf;
+    StScrpPtr                      stylePtr = (StScrpPtr) (char*)buf;
 
     stylePtr->scrpNStyles = nStyleRuns;
     StandardStyledTextImager::Convert (ledStyleRuns, stylePtr->scrpStyleTab);

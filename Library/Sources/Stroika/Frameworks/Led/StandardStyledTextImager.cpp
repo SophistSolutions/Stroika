@@ -20,7 +20,7 @@ using InfoSummaryRecord = StandardStyledTextImager::InfoSummaryRecord;
  */
 using StandardStyleMarker = StandardStyledTextImager::StandardStyleMarker;
 
-void StandardStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Led_Tablet tablet,
+void StandardStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Tablet* tablet,
                                        size_t from, size_t to, const TextLayoutBlock& text,
                                        const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Coordinate useBaseLine, DistanceType* pixelsDrawn)
 {
@@ -116,7 +116,7 @@ void StandardStyledTextImager::HookStyleDatabaseChanged ()
 Led_FontMetrics StandardStyledTextImager::GetFontMetricsAt (size_t charAfterPos) const
 {
     Tablet_Acquirer tablet (this);
-    AssertNotNull (static_cast<Led_Tablet> (tablet));
+    AssertNotNull (static_cast<Tablet*> (tablet));
 
 #if qMultiByteCharacters
     Assert_CharPosDoesNotSplitCharacter (charAfterPos);

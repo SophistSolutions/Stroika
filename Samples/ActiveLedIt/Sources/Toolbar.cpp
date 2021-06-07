@@ -1090,7 +1090,7 @@ LRESULT ActiveLedIt_Toolbar::OnCommand ([[maybe_unused]] UINT uMsg, WPARAM wPara
         HDC         hdc     =   ::BeginPaint (m_hWnd, &ps);
         if (hdc != NULL) {
             try {
-                Led_Tablet_             tablet (hdc, Led_Tablet_::eDoesntOwnDC);
+                Tablet             tablet (hdc, Tablet::eDoesntOwnDC);
                 Pen                 usePen (PS_SOLID, 1, Color::kBlack.GetOSRep ());
                 Led_GDI_Obj_Selector    penSelector (&tablet, usePen);
                 Led_Rect                drawRect    =   Led_Rect  (0, 0, fBounds.GetHeight (), fBounds.GetWidth ());
@@ -1465,7 +1465,7 @@ LRESULT ActiveLedIt_ToolbarList::OnPaint ([[maybe_unused]] UINT uMsg, [[maybe_un
     HDC         hdc = ::BeginPaint (m_hWnd, &ps);
     if (hdc != NULL) {
         try {
-            Led_Tablet_          tablet (hdc, Led_Tablet_::eDoesntOwnDC);
+            Tablet               tablet (hdc, Tablet::eDoesntOwnDC);
             Pen                  usePen (PS_SOLID, 1, Color::kBlack.GetOSRep ());
             Led_GDI_Obj_Selector penSelector (&tablet, usePen);
             Led_Rect             drawRect = Led_Rect (0, 0, fBounds.GetHeight (), fBounds.GetWidth ());

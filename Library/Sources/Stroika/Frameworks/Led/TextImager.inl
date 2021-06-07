@@ -428,7 +428,7 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>Two overloaded versions - one protected, and the other public. The protected one
                 does NOT call @'TrivialImager<TEXTSTORE,IMAGER>::SnagAttributesFromTablet' - so you must in your subclass.</p>
     */
-    TrivialImager<TEXTSTORE, IMAGER>::TrivialImager (Led_Tablet t)
+    TrivialImager<TEXTSTORE, IMAGER>::TrivialImager (Tablet* t)
         : IMAGER{}
         , fTablet{t}
         , fTextStore{}
@@ -437,7 +437,7 @@ namespace Stroika::Frameworks::Led {
         this->SpecifyTextStore (&fTextStore);
     }
     template <typename TEXTSTORE, typename IMAGER>
-    TrivialImager<TEXTSTORE, IMAGER>::TrivialImager (Led_Tablet t, Led_Rect bounds, const Led_tString& initialText)
+    TrivialImager<TEXTSTORE, IMAGER>::TrivialImager (Tablet* t, Led_Rect bounds, const Led_tString& initialText)
         : TrivialImager{t}
     {
         SnagAttributesFromTablet ();
@@ -460,16 +460,16 @@ namespace Stroika::Frameworks::Led {
         IMAGER::Draw (subsetToDraw, printing);
     }
     template <typename TEXTSTORE, typename IMAGER>
-    Led_Tablet TrivialImager<TEXTSTORE, IMAGER>::AcquireTablet () const
+    Tablet* TrivialImager<TEXTSTORE, IMAGER>::AcquireTablet () const
     {
         return fTablet;
     }
     template <typename TEXTSTORE, typename IMAGER>
-    void TrivialImager<TEXTSTORE, IMAGER>::ReleaseTablet (Led_Tablet /*tablet*/) const
+    void TrivialImager<TEXTSTORE, IMAGER>::ReleaseTablet (Tablet* /*tablet*/) const
     {
     }
     template <typename TEXTSTORE, typename IMAGER>
-    void TrivialImager<TEXTSTORE, IMAGER>::EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing)
+    void TrivialImager<TEXTSTORE, IMAGER>::EraseBackground (Tablet* tablet, const Led_Rect& subsetToDraw, bool printing)
     {
         if (not fBackgroundTransparent) {
             inherited::EraseBackground (tablet, subsetToDraw, printing);
@@ -541,7 +541,7 @@ namespace Stroika::Frameworks::Led {
                 you are drawing over an existing background which you don't want touched - you just want the TEXT imaged
                 and no 'erasing' to be done. When TRUE, it negates the effect of @'TrivialImager<TEXTSTORE,IMAGER>::SetBackgroundColor'</p>
                     <p>This defaults to off (except if overriden by @'TrivialImager<TEXTSTORE,IMAGER>::SnagAttributesFromTablet' if your
-                Led_Tablet's ::GetBkMode ()==TRANSPARENT)</p>
+                Tablet*'s ::GetBkMode ()==TRANSPARENT)</p>
                     <p>See also @'TrivialImager<TEXTSTORE,IMAGER>::GetBackgroundTransparent',
                 @'TrivialImager<TEXTSTORE,IMAGER>::SetBackgroundColor'.</p>
     */

@@ -79,7 +79,7 @@ namespace Stroika::Frameworks::Led {
     protected:
         // Must OVERRIDE Draw/Measure text routines so style runs get hooked in and have some effect
         // when this class is mixed in.
-        virtual void         DrawSegment (Led_Tablet tablet,
+        virtual void         DrawSegment (Tablet* tablet,
                                           size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
                                           Coordinate useBaseLine, DistanceType* pixelsDrawn) override;
         virtual void         MeasureSegmentWidth (size_t from, size_t to, const Led_tChar* text,
@@ -123,7 +123,7 @@ namespace Stroika::Frameworks::Led {
                         <p>NB: an extra 'invalidRect' argument was added to this method in Led 3.1a6. Note that
                     this is incompatible change.</p>
         */
-        virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
+        virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
                                   size_t from, size_t to, const TextLayoutBlock& text,
                                   const Led_Rect& drawInto, const Led_Rect& invalidRect, Coordinate useBaseLine,
                                   DistanceType* pixelsDrawn) = 0;
@@ -268,7 +268,7 @@ namespace Stroika::Frameworks::Led {
         virtual FontSpecification MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const;
 
     public:
-        virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
+        virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
                                           size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
                                           Coordinate useBaseLine, DistanceType* pixelsDrawn) override;
         virtual void         MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
@@ -347,7 +347,7 @@ namespace Stroika::Frameworks::Led {
         @DESCRIPTION:   <p>Pure virtual method which subclasses override to specify how <em>they</em> want to
             draw (some additional markup - e.g. an underline).</p>
         */
-        virtual void DrawExtra (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
+        virtual void DrawExtra (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
                                 size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto,
                                 Coordinate useBaseLine, DistanceType pixelsDrawn) = 0;
 
@@ -355,7 +355,7 @@ namespace Stroika::Frameworks::Led {
         virtual RunElement MungeRunElement (const RunElement& inRunElt) const;
 
     public:
-        virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
+        virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
                                           size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
                                           Coordinate useBaseLine, DistanceType* pixelsDrawn) override;
         virtual void         MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
@@ -384,7 +384,7 @@ namespace Stroika::Frameworks::Led {
         SimpleStyleMarkerWithLightUnderline ();
 
     protected:
-        virtual void DrawExtra (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
+        virtual void DrawExtra (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
                                 size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto,
                                 Coordinate useBaseLine, DistanceType pixelsDrawn) override;
 

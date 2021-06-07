@@ -3449,7 +3449,7 @@ void StyledTextIOReader_RTF::ConstructOLEEmebddingFromRTFInfo ([[maybe_unused]] 
         EmbeddedObjectCreatorRegistry::Assoc assoc = types[i];
         if (memcmp (assoc.fEmbeddingTag, RTFIO::RTFOLEEmbedding::kEmbeddingTag, sizeof (RTFIO::RTFOLEEmbedding::kEmbeddingTag)) == 0) {
             AssertNotNull (assoc.fReadFromMemory);
-            SimpleEmbeddedObjectStyleMarker* embedding = (assoc.fReadFromMemory)(RTFIO::RTFOLEEmbedding::kEmbeddingTag, data, nBytes);
+            SimpleEmbeddedObjectStyleMarker* embedding = (assoc.fReadFromMemory) (RTFIO::RTFOLEEmbedding::kEmbeddingTag, data, nBytes);
             RTFOLEEmbedding*                 rtfe      = dynamic_cast<RTFOLEEmbedding*> (embedding);
             if (rtfe != nullptr) {
                 rtfe->PostCreateSpecifyExtraInfo (size);
@@ -3483,7 +3483,7 @@ void StyledTextIOReader_RTF::ConstructLedEmebddingFromRTFInfo (ReaderContext& re
         EmbeddedObjectCreatorRegistry::Assoc assoc = types[i];
         if (memcmp (assoc.fEmbeddingTag, tag, sizeof (assoc.fEmbeddingTag)) == 0) {
             AssertNotNull (assoc.fReadFromMemory);
-            SimpleEmbeddedObjectStyleMarker* embedding = (assoc.fReadFromMemory)(tag, theData, theDataNBytes);
+            SimpleEmbeddedObjectStyleMarker* embedding = (assoc.fReadFromMemory) (tag, theData, theDataNBytes);
             try {
                 readerContext.GetDestination ().AppendEmbedding (embedding);
                 return;
@@ -3705,14 +3705,14 @@ Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromEMFHelper (TWIPS_Point shownSiz
     Verify (::GetEnhMetaFileHeader (hMF, sizeof (header), &header) == sizeof (header));
 
     // Don't know best way to get a DIB from a metafile - but this way I HOPE will at least WORK!
-    Led_Tablet_ screenDC = (::GetWindowDC (nullptr)); // not sure what DC to use to convert MetaFile to DIB - but this seems like a decent guess
+    Tablet screenDC = (::GetWindowDC (nullptr)); // not sure what DC to use to convert MetaFile to DIB - but this seems like a decent guess
 
     DistanceType hSize     = screenDC.CvtFromTWIPSH (shownSize.h);
     DistanceType vSize     = screenDC.CvtFromTWIPSV (shownSize.v);
     Led_Rect     imageRect = Led_Rect (0, 0, vSize, hSize);
 
-    Led_Tablet_ memDC;
-    Led_Bitmap  memoryBitmap;
+    Tablet memDC;
+    Bitmap memoryBitmap;
 
     {
         ThrowIfZeroGetLastError (memDC.CreateCompatibleDC (&screenDC));
@@ -3724,8 +3724,8 @@ Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromEMFHelper (TWIPS_Point shownSiz
             Led_Rect             eraser     = imageRect;
             Color                eraseColor = Led_GetTextBackgroundColor ();
             Brush                backgroundBrush (eraseColor.GetOSRep ());
-            Led_Win_Obj_Selector pen (&memDC, ::GetStockObject (NULL_PEN));
-            Led_Win_Obj_Selector brush (&memDC, backgroundBrush);
+            Led_GDI_Obj_Selector pen (&memDC, ::GetStockObject (NULL_PEN));
+            Led_GDI_Obj_Selector brush (&memDC, backgroundBrush);
             eraser.right++; // lovely - windows doesn't count last pixel... See Docs for Rectangle() and rephrase!!!
             eraser.bottom++;
             memDC.Rectangle (AsRECT (eraser));
@@ -4750,7 +4750,7 @@ bool StyledTextIOWriter_RTF::PossiblyWritePICTEmbedding (WriterContext& /*writer
         size_t nBytes = 0;
         unique_ptr<BYTE> theDataBytes_;
         {
-            Led_Tablet_ screenDC = (::GetWindowDC (nullptr)); // not sure what DC to use to convert MetaFile to DIB - but this seems like a decent guess
+            Tablet screenDC = (::GetWindowDC (nullptr)); // not sure what DC to use to convert MetaFile to DIB - but this seems like a decent guess
             UINT mapMode = MM_TEXT;
             //UINT          mapMode =   MM_TWIPS;
             HENHMETAFILE hMF = nullptr;

@@ -229,12 +229,12 @@ namespace Stroika::Frameworks::Led::Platform {
         public:
             enum DoTextMetricsChangedCall { eDoTextMetricsChangedCall,
                                             eDontDoTextMetricsChangedCall };
-            TemporarilyUseTablet (Led_Win32_Helper<BASE_INTERACTOR>& editor, Led_Tablet t, DoTextMetricsChangedCall tmChanged = eDoTextMetricsChangedCall);
+            TemporarilyUseTablet (Led_Win32_Helper<BASE_INTERACTOR>& editor, Tablet* t, DoTextMetricsChangedCall tmChanged = eDoTextMetricsChangedCall);
             ~TemporarilyUseTablet ();
 
         private:
             Led_Win32_Helper<BASE_INTERACTOR>& fEditor;
-            Led_Tablet                         fOldTablet;
+            Tablet*                            fOldTablet;
             DoTextMetricsChangedCall           fDoTextMetricsChangedCall;
         };
 
@@ -242,20 +242,20 @@ namespace Stroika::Frameworks::Led::Platform {
         friend class TemporarilyUseTablet;
 
     protected:
-        virtual Led_Tablet AcquireTablet () const override;
-        virtual void       ReleaseTablet (Led_Tablet tablet) const override;
+        virtual Tablet* AcquireTablet () const override;
+        virtual void    ReleaseTablet (Tablet* tablet) const override;
 
     private:
-        Led_Tablet          fUpdateTablet;    // assigned in stack-based fasion during update/draw calls.
-        mutable Led_Tablet_ fAllocatedTablet; // if we needed to allocate a tablet, store it here, and on the
+        Tablet*        fUpdateTablet;    // assigned in stack-based fasion during update/draw calls.
+        mutable Tablet fAllocatedTablet; // if we needed to allocate a tablet, store it here, and on the
         // last release of it, free it...
         mutable size_t fAcquireCount;
 
     public:
-        virtual void WindowDrawHelper (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing);
+        virtual void WindowDrawHelper (Tablet* tablet, const Led_Rect& subsetToDraw, bool printing);
 
     protected:
-        virtual void EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing) override;
+        virtual void EraseBackground (Tablet* tablet, const Led_Rect& subsetToDraw, bool printing) override;
 
         // Keyboard Processing:
     private:
@@ -613,7 +613,7 @@ namespace Stroika::Frameworks::Led::Platform {
         if (hdc != nullptr) {
             RECT boundsRect;
             Verify (::GetClipBox (hdc, &boundsRect) != ERROR);
-            Led_Tablet_ tablet (hdc, Led_Tablet_::eDoesntOwnDC);
+            Tablet tablet (hdc, Tablet::eDoesntOwnDC);
             try {
                 this->WindowDrawHelper (&tablet, AsLedRect (boundsRect), false);
             }
@@ -1723,7 +1723,7 @@ namespace Stroika::Frameworks::Led::Platform {
         return (!!::PeekMessage (&msg, GetValidatedHWND (), WM_KEYDOWN, WM_KEYDOWN, PM_NOREMOVE));
     }
     template <typename BASE_INTERACTOR>
-    Led_Tablet Led_Win32_Helper<BASE_INTERACTOR>::AcquireTablet () const
+    Tablet* Led_Win32_Helper<BASE_INTERACTOR>::AcquireTablet () const
     {
         Require (fAcquireCount < 100); // not really a requirement - but hard to see how this could happen in LEGIT usage...
         // almost certainly a bug...
@@ -1755,7 +1755,7 @@ namespace Stroika::Frameworks::Led::Platform {
         return (&fAllocatedTablet);
     }
     template <typename BASE_INTERACTOR>
-    void Led_Win32_Helper<BASE_INTERACTOR>::ReleaseTablet (Led_Tablet tablet) const
+    void Led_Win32_Helper<BASE_INTERACTOR>::ReleaseTablet (Tablet* tablet) const
     {
         AssertNotNull (tablet);
         Assert (fAcquireCount > 0);
@@ -1772,7 +1772,7 @@ namespace Stroika::Frameworks::Led::Platform {
         places like ActiveLedIt! where we don't get message WM_PAINT at all, but get from the control.</p>
     */
     void
-    Led_Win32_Helper<BASE_INTERACTOR>::WindowDrawHelper (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing)
+    Led_Win32_Helper<BASE_INTERACTOR>::WindowDrawHelper (Tablet* tablet, const Led_Rect& subsetToDraw, bool printing)
     {
         DbgTrace (Led_SDK_TCHAROF ("Led_Win32_Helper<>::WindowDrawHelper (subsetToDraw= (%d, %d, %d, %d))\n"),
                   subsetToDraw.top, subsetToDraw.left, subsetToDraw.bottom, subsetToDraw.right);
@@ -1829,7 +1829,7 @@ namespace Stroika::Frameworks::Led::Platform {
     @DESCRIPTION:
     */
     void
-    Led_Win32_Helper<BASE_INTERACTOR>::EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing)
+    Led_Win32_Helper<BASE_INTERACTOR>::EraseBackground (Tablet* tablet, const Led_Rect& subsetToDraw, bool printing)
     {
         DWORD dwStyle = GetStyle ();
         if (((dwStyle & WS_DISABLED) or (dwStyle & ES_READONLY)) and (not printing)) {
@@ -2390,7 +2390,7 @@ namespace Stroika::Frameworks::Led::Platform {
 //class Led_Win32_Helper<BASE_INTERACTOR>::TemporarilyUseTablet
 #if !qNestedClassesInTemplateClassesDontExpandCompilerBug
     template <typename BASE_INTERACTOR>
-    inline Led_Win32_Helper<BASE_INTERACTOR>::TemporarilyUseTablet::TemporarilyUseTablet (Led_Win32_Helper<BASE_INTERACTOR>& editor, Led_Tablet t, DoTextMetricsChangedCall tmChanged)
+    inline Led_Win32_Helper<BASE_INTERACTOR>::TemporarilyUseTablet::TemporarilyUseTablet (Led_Win32_Helper<BASE_INTERACTOR>& editor, Tablet* t, DoTextMetricsChangedCall tmChanged)
         : fEditor{editor}
         , fOldTablet{editor.fUpdateTablet}
         , fDoTextMetricsChangedCall{tmChanged}

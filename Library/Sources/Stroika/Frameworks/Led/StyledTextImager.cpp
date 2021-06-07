@@ -302,7 +302,7 @@ vector<RunElement> StyledTextImager::SummarizeStyleMarkers (size_t from, size_t 
             what @'StyledTextImager::StyleMarker' are present in the text. This breakup is done by
             @'StyledTextImager::SummarizeStyleMarkers'.</p>
 */
-void StyledTextImager::DrawSegment (Led_Tablet tablet,
+void StyledTextImager::DrawSegment (Tablet* tablet,
                                     size_t from, size_t to, const TextLayoutBlock& text,
                                     const Led_Rect& drawInto, const Led_Rect& invalidRect,
                                     Coordinate useBaseLine, DistanceType* pixelsDrawn)

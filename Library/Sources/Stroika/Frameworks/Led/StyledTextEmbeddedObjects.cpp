@@ -33,14 +33,14 @@ static struct FooBarBlatzRegistryCleanupHack {
 
 #if qPlatform_MacOS || qPlatform_Windows
 static void MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHandle pictureHandle,
-                                   Led_Tablet                                   tablet,
+                                   Tablet*                                      tablet,
                                    Color foreColor, Color backColor,
                                    const Led_Rect& drawInto, Coordinate useBaseLine, DistanceType* pixelsDrawn,
                                    const Led_Size& imageSize,
                                    const Led_Size& margin = kDefaultEmbeddingMargin) noexcept;
 #endif
 static void DIBDrawSegment (const Led_DIB* dib,
-                            Led_Tablet     tablet,
+                            Tablet*        tablet,
                             Color foreColor, Color backColor,
                             const Led_Rect& drawInto, Coordinate useBaseLine, DistanceType* pixelsDrawn,
                             const Led_Size& imageSize,
@@ -284,7 +284,7 @@ SimpleEmbeddedObjectStyleMarker* StandardMacPictureStyleMarker::mk (ReaderFlavor
     return (mk (kEmbeddingTag, buf, length));
 }
 
-void StandardMacPictureStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Led_Tablet tablet,
+void StandardMacPictureStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Tablet* tablet,
                                                  [[maybe_unused]] size_t from, [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text,
                                                  const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Coordinate useBaseLine, DistanceType* pixelsDrawn)
 {
@@ -354,7 +354,7 @@ const Led_ClipFormat StandardDIBStyleMarker::kClipFormat = 'DIB ';
 #elif qPlatform_Windows
 const Led_ClipFormat StandardDIBStyleMarker::kClipFormat = CF_DIB;
 #elif qStroika_FeatureSupported_XWindows
-const Led_ClipFormat StandardDIBStyleMarker::kClipFormat     = 666;    // X-TMP-HACK-LGP991214
+const Led_ClipFormat StandardDIBStyleMarker::kClipFormat = 666; // X-TMP-HACK-LGP991214
 #endif
 const Led_PrivateEmbeddingTag StandardDIBStyleMarker::kEmbeddingTag = "DIB";
 
@@ -412,7 +412,7 @@ SimpleEmbeddedObjectStyleMarker* StandardDIBStyleMarker::mk (ReaderFlavorPackage
     return (mk (kEmbeddingTag, buf, length));
 }
 
-void StandardDIBStyleMarker::DrawSegment (const StyledTextImager* imager, [[maybe_unused]] const RunElement& runElement, Led_Tablet tablet,
+void StandardDIBStyleMarker::DrawSegment (const StyledTextImager* imager, [[maybe_unused]] const RunElement& runElement, Tablet* tablet,
                                           [[maybe_unused]] size_t from, [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text,
                                           const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Coordinate useBaseLine, DistanceType* pixelsDrawn)
 {
@@ -543,7 +543,7 @@ SimpleEmbeddedObjectStyleMarker* StandardURLStyleMarker::mk (ReaderFlavorPackage
     return nullptr;
 }
 
-void StandardURLStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
+void StandardURLStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
                                           size_t from, [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text,
                                           const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Coordinate useBaseLine, DistanceType* pixelsDrawn)
 {
@@ -623,8 +623,8 @@ void StandardURLStyleMarker::DrawSegment (const StyledTextImager* imager, const 
     ::DrawText (url, 0, urlStrLen);
 #elif qPlatform_Windows
     Pen                  pen (PS_SOLID, 2, RGB (0, 0, 0));
-    Led_Win_Obj_Selector penWrapper (tablet, pen);
-    Led_Win_Obj_Selector brush (tablet, ::GetStockObject (NULL_BRUSH));
+    Led_GDI_Obj_Selector penWrapper (tablet, pen);
+    Led_GDI_Obj_Selector brush (tablet, ::GetStockObject (NULL_BRUSH));
     tablet->RoundRect (innerBoundsRect.left, innerBoundsRect.top, innerBoundsRect.right, innerBoundsRect.bottom, 2, 2);
 
     Led_Rect iconRect     = innerBoundsRect;
@@ -643,7 +643,7 @@ void StandardURLStyleMarker::DrawSegment (const StyledTextImager* imager, const 
         _tcscpy (lf.lfFaceName, _T ("System"));
         Verify (font1.CreateFontIndirect (&lf));
     }
-    Led_Win_Obj_Selector font1Selector (tablet, font1);
+    Led_GDI_Obj_Selector font1Selector (tablet, font1);
     if (nameStrLen != 0) {
         ::TextOutA (*tablet, iconRect.right + 3, iconRect.top + 2, name, nameStrLen);
     }
@@ -656,7 +656,7 @@ void StandardURLStyleMarker::DrawSegment (const StyledTextImager* imager, const 
         Verify (font2.CreateFontIndirect (&lf));
         lf.lfHeight = -8;
     }
-    Led_Win_Obj_Selector font2Selector (tablet, font2);
+    Led_GDI_Obj_Selector font2Selector (tablet, font2);
     if (urlStrLen != 0) {
         ::TextOutA (*tablet, iconRect.right + 3, iconRect.top + 16, url, urlStrLen);
     }
@@ -707,12 +707,12 @@ void StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager
     size_t nameStrLen = (name == nullptr) ? 0 : ::strlen (name);
 
     TextInteractor::Tablet_Acquirer tablet_ (imager);
-    Led_Tablet                      tablet = tablet_;
+    Tablet*                         tablet = tablet_;
 
 #if qPlatform_MacOS
     tablet->SetPort ();
 #elif qPlatform_Windows
-    Led_Tablet dc = tablet;
+    Tablet* dc = tablet;
 #endif
 
 #if qPlatform_MacOS
@@ -748,7 +748,7 @@ void StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager
         _tcscpy (lf.lfFaceName, _T ("System"));
         Verify (font1.CreateFontIndirect (&lf));
     }
-    Led_Win_Obj_Selector font1Selector (tablet, font1);
+    Led_GDI_Obj_Selector font1Selector (tablet, font1);
     DistanceType         string1Width = name == nullptr ? 0 : dc->GetTextExtent (Led_ANSI2SDKString (name).c_str (), nameStrLen).cx;
 
     FontObject font2;
@@ -759,7 +759,7 @@ void StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager
         Verify (font2.CreateFontIndirect (&lf));
         lf.lfHeight = -8;
     }
-    Led_Win_Obj_Selector font2Selector (tablet, font2);
+    Led_GDI_Obj_Selector font2Selector (tablet, font2);
     DistanceType         string2Width = dc->GetTextExtent (Led_ANSI2SDKString (url).c_str (), urlStrLen).cx;
 
     distanceResults[0] += max (string1Width, string2Width) + 2 * kDefaultEmbeddingMargin.h;
@@ -981,7 +981,7 @@ SimpleEmbeddedObjectStyleMarker* StandardMacPictureWithURLStyleMarker::mk (Reade
     return new StandardMacPictureWithURLStyleMarker (picBuf, pictLength, Led_URLD (buf2, urlSize));
 }
 
-void StandardMacPictureWithURLStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Led_Tablet tablet,
+void StandardMacPictureWithURLStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Tablet* tablet,
                                                         [[maybe_unused]] size_t from, [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text,
                                                         const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Coordinate useBaseLine, DistanceType* pixelsDrawn)
 {
@@ -1169,7 +1169,7 @@ SimpleEmbeddedObjectStyleMarker* StandardDIBWithURLStyleMarker::mk (ReaderFlavor
     return new StandardDIBWithURLStyleMarker ((const Led_DIB*)(char*)buf, Led_URLD (buf2, urlSize));
 }
 
-void StandardDIBWithURLStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Led_Tablet tablet,
+void StandardDIBWithURLStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Tablet* tablet,
                                                  [[maybe_unused]] size_t from, [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text,
                                                  const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Coordinate useBaseLine, DistanceType* pixelsDrawn)
 {
@@ -1350,13 +1350,13 @@ TWIPS_Point StandardUnknownTypeStyleMarker::CalcStaticDefaultShownSize ()
     RequireNotNull (sUnknownPict);
     Led_Size pixelSize = Led_GetDIBImageSize (sUnknownPict);
 #elif qStroika_FeatureSupported_XWindows
-    Led_Size pixelSize = Led_Size (10, 10);                            //  X-TMP-HACK-LGP2000-06-13
+    Led_Size pixelSize = Led_Size (10, 10); //  X-TMP-HACK-LGP2000-06-13
 #endif
 
     return TWIPS_Point (Led_CvtScreenPixelsToTWIPSV (pixelSize.v), Led_CvtScreenPixelsToTWIPSH (pixelSize.h));
 }
 
-void StandardUnknownTypeStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Led_Tablet tablet,
+void StandardUnknownTypeStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Tablet* tablet,
                                                   [[maybe_unused]] size_t from, [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text,
                                                   const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Coordinate useBaseLine, DistanceType* pixelsDrawn)
 {
@@ -1402,7 +1402,7 @@ void StandardUnknownTypeStyleMarker::MeasureSegmentWidth (const StyledTextImager
         return;
     }
     TextInteractor::Tablet_Acquirer tablet_ (imager);
-    Led_Tablet                      tablet = tablet_;
+    Tablet*                         tablet = tablet_;
     distanceResults[0]                     = tablet->CvtFromTWIPSH (fShownSize.h) + 2 * kDefaultEmbeddingMargin.h;
 }
 
@@ -1413,7 +1413,7 @@ DistanceType StandardUnknownTypeStyleMarker::MeasureSegmentHeight (const StyledT
         return (Led_GetDIBImageSize (fDisplayDIB.get ()).v + 2 * kDefaultEmbeddingMargin.v);
     }
     TextInteractor::Tablet_Acquirer tablet_ (imager);
-    Led_Tablet                      tablet = tablet_;
+    Tablet*                         tablet = tablet_;
     return tablet->CvtFromTWIPSV (fShownSize.v) + 2 * kDefaultEmbeddingMargin.v;
 }
 
@@ -1465,7 +1465,7 @@ void Led::AddEmbedding (SimpleEmbeddedObjectStyleMarker* embedding, TextStore& t
  ********************************************************************************
  */
 static void MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHandle pictureHandle,
-                                   Led_Tablet tablet, Color foreColor, Color backColor, const Led_Rect& drawInto, Coordinate useBaseLine, DistanceType* pixelsDrawn,
+                                   Tablet* tablet, Color foreColor, Color backColor, const Led_Rect& drawInto, Coordinate useBaseLine, DistanceType* pixelsDrawn,
                                    const Led_Size& imageSize,
                                    const Led_Size& margin) noexcept
 {
@@ -1476,7 +1476,7 @@ static void MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHandle 
 #if qPlatform_MacOS
     tablet->SetPort ();
 #elif qPlatform_Windows
-    Led_Tablet dc = tablet;
+    Tablet* dc = tablet;
 #endif
 
     Led_Size pictSize = imageSize;
@@ -1530,7 +1530,7 @@ static void MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHandle 
     static QTIniter      sIniter;
     RECT                 rr = AsRECT (innerBoundsRect);
     Brush                eraseBrush (backColor.GetOSRep ());
-    Led_Win_Obj_Selector brush (dc, eraseBrush);
+    Led_GDI_Obj_Selector brush (dc, eraseBrush);
     bool                 displaySuccessful = false;
     if (sIniter.fGood) {
         displaySuccessful = (::DrawPicture (dc->m_hDC, (PicHandle)pictureHandle, &rr, nullptr) == noErr);
@@ -1555,7 +1555,7 @@ static void MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHandle 
 #endif
 
 static void DIBDrawSegment (const Led_DIB*         dib,
-                            Led_Tablet             tablet,
+                            Tablet*                tablet,
                             [[maybe_unused]] Color foreColor, [[maybe_unused]] Color backColor,
                             const Led_Rect& drawInto, Coordinate useBaseLine, DistanceType* pixelsDrawn,
                             const Led_Size& imageSize,
@@ -1567,7 +1567,7 @@ static void DIBDrawSegment (const Led_DIB*         dib,
 #if qPlatform_MacOS
     tablet->SetPort ();
 #elif qPlatform_Windows
-    Led_Tablet dc = tablet;
+    Tablet* dc = tablet;
 #endif
 
     Led_Size dibImageSize = imageSize;
