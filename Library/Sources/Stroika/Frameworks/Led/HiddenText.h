@@ -21,7 +21,6 @@
 namespace Stroika::Frameworks::Led {
 
     /*
-    @CLASS:         HidableTextMarkerOwner
     @DESCRIPTION:   <p>HidableTextMarkerOwner is a @'MarkerOwner' class, collecting together a set of
         @'HidableTextMarkerOwner::HidableTextMarker' elements. Each of these hidden-text elements can contain
         either currently hidden text, or text which could potentially be hidden.</p>
@@ -120,7 +119,6 @@ namespace Stroika::Frameworks::Led {
     };
 
     /*
-    @CLASS:         UniformHidableTextMarkerOwner
     @DESCRIPTION:   <p>UniformHidableTextMarkerOwner is a @'HidableTextMarkerOwner' class, which has a notion of
         whether or not <em>all</em> the hidden text markers are hidden or not. You can manually change the hidden
         state of particular markers - if you wish (via @'HidableTextMarkerOwner::HideAll ()' commands with a from/to range).</p>
@@ -148,11 +146,8 @@ namespace Stroika::Frameworks::Led {
         bool fHidden;
     };
 
-    /*
-    @CLASS:         HidableTextMarkerOwner::HidableTextMarker
-    @BASES:         @'StyledTextImager::StyleMarker'
-    @DESCRIPTION:
-    */
+    /**
+     */
     class HidableTextMarkerOwner::HidableTextMarker : public StyledTextImager::StyleMarker {
     private:
         using inherited = StyledTextImager::StyleMarker;

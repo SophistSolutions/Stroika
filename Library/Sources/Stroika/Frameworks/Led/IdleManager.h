@@ -29,7 +29,7 @@ namespace Stroika::Frameworks::Led {
     */
     class Idler {
     protected:
-        Idler ();
+        Idler () = default;
 
     public:
         virtual void SpendIdleTime ();
@@ -41,7 +41,7 @@ namespace Stroika::Frameworks::Led {
     */
     class EnterIdler {
     protected:
-        EnterIdler ();
+        EnterIdler () = default;
 
     public:
         virtual void OnEnterIdle ();
@@ -59,9 +59,6 @@ namespace Stroika::Frameworks::Led {
     public:
         static IdleManager& Get ();
 
-    private:
-        static IdleManager* sThe;
-
     public:
         virtual void AddIdler (Idler* idler);
         virtual void RemoveIdler (Idler* idler);
@@ -75,7 +72,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void SetInIdleMode (bool inIdleMode);
 
     private:
-        bool fInIdleMode;
+        bool fInIdleMode_{false};
 
     public:
         static Foundation::Time::DurationSecondsType  kNeverCallIdler;
@@ -147,7 +144,7 @@ namespace Stroika::Frameworks::Led {
     */
     class IdleManager::IdleManagerOSImpl {
     protected:
-        IdleManagerOSImpl ();
+        IdleManagerOSImpl () = default;
 
     public:
         virtual void                                  StartSpendTimeCalls ()                                                           = 0;

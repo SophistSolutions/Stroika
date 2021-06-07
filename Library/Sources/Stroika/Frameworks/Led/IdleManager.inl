@@ -13,22 +13,10 @@
 namespace Stroika::Frameworks::Led {
 
     /*
-        ********************************************************************************
-        ***************************** Implementation Details ***************************
-        ********************************************************************************
-        */
-
-    //  class   Idler
-    inline Idler::Idler ()
-    {
-    }
-
-    //  class   EnterIdler
-    inline EnterIdler::EnterIdler ()
-    {
-    }
-
-    //  class   IdleManager::NonIdleContext
+     ********************************************************************************
+     ****************************** NonIdleContext **********************************
+     ********************************************************************************
+     */
     inline IdleManager::NonIdleContext::NonIdleContext ()
     {
         IdleManager::Get ().SetInIdleMode (false);
@@ -40,10 +28,13 @@ namespace Stroika::Frameworks::Led {
         IdleManager::Get ().fNonIdleContextCount--;
     }
 
-    //  class   IdleManager
+    /*
+     ********************************************************************************
+     ********************************* IdleManager **********************************
+     ********************************************************************************
+     */
     inline IdleManager::IdleManager ()
-        : fInIdleMode (false)
-        , fNonIdleContextCount (0)
+        : fNonIdleContextCount (0)
         , fIdleManagerOSImpl (nullptr)
         , fIdlers ()
         , fNeedMgrIdleCalls (false)
@@ -52,28 +43,21 @@ namespace Stroika::Frameworks::Led {
     }
     inline IdleManager& IdleManager::Get ()
     {
-        if (sThe == nullptr) {
-            sThe = new IdleManager ();
-        }
-        return *sThe;
+        static IdleManager sThe_;
+        return sThe_;
     }
     inline bool IdleManager::GetInIdleMode () const
     {
-        return fInIdleMode;
+        return fInIdleMode_;
     }
     inline void IdleManager::SetInIdleMode (bool inIdleMode)
     {
         bool effectiveInIdleMode = inIdleMode and fNonIdleContextCount == 0;
-        bool enteringIdle        = not fInIdleMode and effectiveInIdleMode;
-        fInIdleMode              = effectiveInIdleMode;
+        bool enteringIdle        = not fInIdleMode_ and effectiveInIdleMode;
+        fInIdleMode_             = effectiveInIdleMode;
         if (enteringIdle) {
             CallEnterIdle ();
         }
-    }
-
-    //  class   IdleManager::IdleManagerOSImpl
-    inline IdleManager::IdleManagerOSImpl::IdleManagerOSImpl ()
-    {
     }
 
 }

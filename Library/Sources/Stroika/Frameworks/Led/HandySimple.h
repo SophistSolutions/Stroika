@@ -15,12 +15,6 @@
     get fixed in a future release?</p>
  */
 
-#if _MSC_VER == 1200
-//A bit of a hack for MSVC60, cuz this needs to be done before including <vector> - otherwise we get
-// lots of needless warnings - regardless of what is done later -- LGP 980925
-#pragma warning(4 : 4786)
-#endif
-
 #include "GDI.h"
 
 #include "ChunkedArrayTextStore.h"

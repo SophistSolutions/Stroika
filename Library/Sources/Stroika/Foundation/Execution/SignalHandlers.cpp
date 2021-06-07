@@ -323,7 +323,7 @@ SignalHandlerRegistry::~SignalHandlerRegistry ()
 #if __cpp_lib_atomic_shared_ptr >= 201711
     Assert (SafeSignalsManager::sTheRep_.load () == nullptr); // must be cleared first
 #else
-    Assert (atomic_load (&SafeSignalsManager::sTheRep_) == nullptr); // must be cleared first
+    Assert (atomic_load (&SafeSignalsManager::sTheRep_) == nullptr);                         // must be cleared first
 #endif
 }
 
@@ -395,6 +395,9 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
     }
 
     auto sigSetHandler = [] (SignalID signal, [[maybe_unused]] void (*fun) (int)) {
+#if qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy
+        &fun;
+#endif
 #if qPlatform_POSIX
         struct sigaction sa {
         };
