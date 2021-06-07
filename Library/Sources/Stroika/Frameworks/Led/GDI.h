@@ -418,11 +418,11 @@ namespace Stroika::Frameworks::Led {
         constexpr strong_ordering operator<=> (const Color& rhs) const = default;
         constexpr bool            operator== (const Color& rhs) const  = default;
 #else
-        bool operator== (Color rhs) const
+        bool operator== (const Color& rhs) const
         {
-            return (GetRed () == rhs.GetRed () and GetGreen () == rhs.GetGreen () and GetBlue () == rhs.GetBlue ());
+            return (fRed == rhs.fRed and fGreen == rhs.fGreen and fBlue == rhs.fBlue);
         }
-        bool operator!= (Color rhs) const
+        bool operator!= (const Color& rhs) const
         {
             return not(*this == rhs);
         }
