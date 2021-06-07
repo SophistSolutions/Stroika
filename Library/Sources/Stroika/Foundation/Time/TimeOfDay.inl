@@ -28,12 +28,20 @@ namespace Stroika::Foundation::Time {
     {
         Assert (fTime_ < kMaxSecondsPerDay);
     }
+#if Compiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+    constexpr TimeOfDay TimeOfDay::kMin{0};
+#else
     inline constexpr TimeOfDay TimeOfDay::kMin{0};
+#endif
     inline constexpr TimeOfDay TimeOfDay::min ()
     {
         return TimeOfDay{0};
     }
+#if Compiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+    constexpr TimeOfDay TimeOfDay::kMax{TimeOfDay::kMaxSecondsPerDay - 1};
+#else
     inline constexpr TimeOfDay TimeOfDay::kMax{TimeOfDay::kMaxSecondsPerDay - 1};
+#endif
     inline constexpr TimeOfDay TimeOfDay::max ()
     {
         return TimeOfDay{kMaxSecondsPerDay - 1};

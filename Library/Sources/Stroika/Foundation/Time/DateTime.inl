@@ -46,12 +46,20 @@ namespace Stroika::Foundation::Time {
         , fTimeOfDay_{timeOfDay}
     {
     }
+#if Compiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+    constexpr DateTime DateTime::kMin{Date::kMin, optional<TimeOfDay>{TimeOfDay::kMin}, Timezone::kUnknown};
+#else
     inline constexpr DateTime DateTime::kMin{Date::kMin, optional<TimeOfDay>{TimeOfDay::kMin}, Timezone::kUnknown};
+#endif
     inline constexpr DateTime DateTime::min ()
     {
         return DateTime{Date::kMin, optional<TimeOfDay>{TimeOfDay::kMin}, Timezone::kUnknown};
     }
+#if Compiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+    constexpr DateTime DateTime::kMax{Date::kMax, optional<TimeOfDay>{TimeOfDay::kMax}, Timezone::kUnknown};
+#else
     inline constexpr DateTime DateTime::kMax{Date::kMax, optional<TimeOfDay>{TimeOfDay::kMax}, Timezone::kUnknown};
+#endif
     inline constexpr DateTime DateTime::max ()
     {
         return DateTime{Date::kMax, optional<TimeOfDay>{TimeOfDay::kMax}, Timezone::kUnknown};
