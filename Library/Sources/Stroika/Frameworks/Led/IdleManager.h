@@ -118,12 +118,6 @@ namespace Stroika::Frameworks::Led {
 
     private:
         vector<EnterIdler*> fEnterIdlers;
-
-    public:
-        class Cleanup;
-
-    private:
-        friend class Cleanup;
     };
 
     /*
@@ -154,11 +148,6 @@ namespace Stroika::Frameworks::Led {
 
     protected:
         virtual void CallSpendTime ();
-    };
-
-    class IdleManager::Cleanup {
-    public:
-        ~Cleanup ();
     };
 
 }

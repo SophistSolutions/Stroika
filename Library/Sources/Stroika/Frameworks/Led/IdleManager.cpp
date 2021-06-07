@@ -44,23 +44,9 @@ IdleManager::IdlerInfo::IdlerInfo ()
 
 /*
  ********************************************************************************
- **************************** IdleManager::Cleanup ******************************
- ********************************************************************************
- */
-IdleManager::Cleanup sCleanup;
-
-IdleManager::Cleanup::~Cleanup ()
-{
-    delete IdleManager::sThe;
-    IdleManager::sThe = nullptr;
-}
-
-/*
- ********************************************************************************
  ********************************** IdleManager *********************************
  ********************************************************************************
  */
-IdleManager*              IdleManager::sThe            = nullptr;
 Time::DurationSecondsType IdleManager::kNeverCallIdler = 100.0f;
 
 void IdleManager::AddIdler (Idler* idler)
@@ -182,9 +168,7 @@ void IdleManager::SetIdleManagerOSImpl (IdleManagerOSImpl* impl)
     // and forcing a create here could create an artificail memory block left over that looks
     // to the memory leak detector - like a memory leak.
     if (impl == nullptr) {
-        if (sThe != nullptr) {
-            sThe->fIdleManagerOSImpl = nullptr;
-        }
+        Get ().fIdleManagerOSImpl = nullptr;
     }
     else {
         Get ().fIdleManagerOSImpl = impl;
