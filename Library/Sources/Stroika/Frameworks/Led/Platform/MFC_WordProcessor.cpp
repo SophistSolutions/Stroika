@@ -344,8 +344,8 @@ void Led_MFC_ControlItem::DrawSegment (const StyledTextImager* imager, const Run
 
     Color foreColor = imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor);
     ;
-    Color                backColor = imager->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor);
-    Led_GDI_Obj_Selector pen (tablet, ::GetStockObject (WHITE_PEN));
+    Color            backColor = imager->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor);
+    GDI_Obj_Selector pen (tablet, ::GetStockObject (WHITE_PEN));
     tablet->SetTextColor (foreColor.GetOSRep ());
     tablet->SetBkColor (backColor.GetOSRep ());
 

@@ -3721,11 +3721,11 @@ Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromEMFHelper (TWIPS_Point shownSiz
 
         // Erase the background of the image
         {
-            Led_Rect             eraser     = imageRect;
-            Color                eraseColor = Led_GetTextBackgroundColor ();
-            Brush                backgroundBrush (eraseColor.GetOSRep ());
-            Led_GDI_Obj_Selector pen (&memDC, ::GetStockObject (NULL_PEN));
-            Led_GDI_Obj_Selector brush (&memDC, backgroundBrush);
+            Led_Rect         eraser     = imageRect;
+            Color            eraseColor = Led_GetTextBackgroundColor ();
+            Brush            backgroundBrush (eraseColor.GetOSRep ());
+            GDI_Obj_Selector pen (&memDC, ::GetStockObject (NULL_PEN));
+            GDI_Obj_Selector brush (&memDC, backgroundBrush);
             eraser.right++; // lovely - windows doesn't count last pixel... See Docs for Rectangle() and rephrase!!!
             eraser.bottom++;
             memDC.Rectangle (AsRECT (eraser));

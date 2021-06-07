@@ -407,10 +407,10 @@ namespace Stroika::Frameworks::Led {
 
     /*
      ********************************************************************************
-     ************************************ Led_Region ********************************
+     ************************************ Region ********************************
      ********************************************************************************
      */
-    inline Led_Region::Led_Region ()
+    inline Region::Region ()
 #if qPlatform_MacOS
         : fRgn{::NewRgn ()}
         , fOwned
@@ -428,7 +428,7 @@ namespace Stroika::Frameworks::Led {
         Led_ThrowIfNull (fRgn);
 #endif
     }
-    inline Led_Region::Led_Region (const Led_Rect& r)
+    inline Region::Region (const Led_Rect& r)
 #if qPlatform_MacOS
         : fRgn{::NewRgn ()}
         , fOwned (true)
@@ -446,7 +446,7 @@ namespace Stroika::Frameworks::Led {
 #endif
         Assert (GetBoundingRect () == r or (GetBoundingRect ().IsEmpty () and r.IsEmpty ()));
     }
-    inline Led_Region::Led_Region (const Led_Region& from)
+    inline Region::Region (const Region& from)
 #if qPlatform_MacOS
         : fRgn (::NewRgn ())
         , fOwned (true)
@@ -463,7 +463,7 @@ namespace Stroika::Frameworks::Led {
         Verify (::CombineRgn (fRgn, from, from, RGN_COPY) != ERROR);
 #endif
     }
-    inline const Led_Region& Led_Region::operator= (const Led_Region& rhs)
+    inline const Region& Region::operator= (const Region& rhs)
     {
 #if qPlatform_MacOS
         if (fOwned and fRgn != nullptr) {
@@ -480,7 +480,7 @@ namespace Stroika::Frameworks::Led {
 #endif
         return *this;
     }
-    inline Led_Region::~Led_Region ()
+    inline Region::~Region ()
     {
 #if qPlatform_MacOS
         if (fOwned and fRgn != nullptr) {
@@ -492,7 +492,7 @@ namespace Stroika::Frameworks::Led {
         }
 #endif
     }
-    inline bool Led_Region::IsEmpty () const
+    inline bool Region::IsEmpty () const
     {
 #if qPlatform_MacOS || qPlatform_Windows
         AssertNotNull (fRgn);
@@ -500,7 +500,7 @@ namespace Stroika::Frameworks::Led {
         Assert (false); //NYI - not used yet - so don't worry about this right now... LGP 2002-12-03
         return false;
     }
-    inline Led_Rect Led_Region::GetBoundingRect () const
+    inline Led_Rect Region::GetBoundingRect () const
     {
 #if qPlatform_MacOS || qPlatform_Windows
         AssertNotNull (fRgn);
@@ -529,9 +529,9 @@ namespace Stroika::Frameworks::Led {
         return Led_Rect (0, 0, 0, 0);
 #endif
     }
-    inline Led_Region operator* (const Led_Region& lhs, const Led_Region& rhs)
+    inline Region operator* (const Region& lhs, const Region& rhs)
     {
-        Led_Region result;
+        Region result;
 #if qPlatform_MacOS
         ::SectRgn (lhs.GetOSRep (), rhs.GetOSRep (), result.GetOSRep ());
 #elif qPlatform_Windows
@@ -539,9 +539,9 @@ namespace Stroika::Frameworks::Led {
 #endif
         return result;
     }
-    inline Led_Region operator+ (const Led_Region& lhs, const Led_Region& rhs)
+    inline Region operator+ (const Region& lhs, const Region& rhs)
     {
-        Led_Region result;
+        Region result;
 #if qPlatform_MacOS
         ::UnionRgn (lhs.GetOSRep (), rhs.GetOSRep (), result.GetOSRep ());
 #elif qPlatform_Windows
@@ -555,43 +555,43 @@ namespace Stroika::Frameworks::Led {
         return tmp *= rhs;
     }
 #if qPlatform_MacOS
-    inline Led_Region::Led_Region (RgnHandle rgn)
+    inline Region::Region (RgnHandle rgn)
         : fRgn (rgn)
         , fOwned (false)
     {
     }
-    inline RgnHandle Led_Region::GetOSRep () const
+    inline RgnHandle Region::GetOSRep () const
     {
         return fRgn;
     }
-    inline RgnHandle Led_Region::GetOSRep ()
+    inline RgnHandle Region::GetOSRep ()
     {
         return fRgn;
     }
 #elif qPlatform_Windows
-    inline Led_Region::operator HRGN () const
+    inline Region::operator HRGN () const
     {
         return fRgn;
     }
-    inline int Led_Region::CombineRgn (Led_Region* pRgn1, Led_Region* pRgn2, int nCombineMode)
+    inline int Region::CombineRgn (Region* pRgn1, Region* pRgn2, int nCombineMode)
     {
         Require (pRgn1 != nullptr);
         Require (pRgn2 != nullptr);
         Require (fRgn != nullptr);
         return ::CombineRgn (fRgn, pRgn1->fRgn, pRgn2->fRgn, nCombineMode);
     }
-    inline BOOL Led_Region::PtInRegion (int x, int y) const
+    inline BOOL Region::PtInRegion (int x, int y) const
     {
         Require (fRgn != nullptr);
         return ::PtInRegion (fRgn, x, y);
     }
-    inline BOOL Led_Region::PtInRegion (POINT point) const
+    inline BOOL Region::PtInRegion (POINT point) const
     {
         Require (fRgn != nullptr);
         return ::PtInRegion (fRgn, point.x, point.y);
     }
 
-    inline BOOL Led_Region::DeleteObject ()
+    inline BOOL Region::DeleteObject ()
     {
         if (fRgn == nullptr)
             return FALSE;
@@ -682,7 +682,7 @@ namespace Stroika::Frameworks::Led {
         return x.y;
 #else
         //TMPHACK - look at tablet resolution?
-        return from * Led_GDIGlobals::Get ().GetMainScreenLogPixelsV () / 1440;
+        return from * Globals::Get ().GetMainScreenLogPixelsV () / 1440;
 //              return from / 20;   // assume 72dpi on mac
 #endif
     }
@@ -709,7 +709,7 @@ namespace Stroika::Frameworks::Led {
         return x.x;
 #else
         //TMPHACK - look at tablet resolution?
-        return from * Led_GDIGlobals::Get ().GetMainScreenLogPixelsH () / 1440;
+        return from * Globals::Get ().GetMainScreenLogPixelsH () / 1440;
 //              return from / 20;   // assume 72dpi on mac
 #endif
     }
@@ -735,7 +735,7 @@ namespace Stroika::Frameworks::Led {
         Assert (x.x == wOrg.x);
         return TWIPS (::MulDiv (x.y, 1440, fLogPixelsV));
 #else
-        return TWIPS (from * 1440 / Led_GDIGlobals::Get ().GetMainScreenLogPixelsV ());
+        return TWIPS (from * 1440 / Globals::Get ().GetMainScreenLogPixelsV ());
 //              return TWIPS (from * 20);   // assume 72dpi on mac
 #endif
     }
@@ -761,7 +761,7 @@ namespace Stroika::Frameworks::Led {
         Assert (x.y == vpOrg.y);
         return TWIPS (::MulDiv (x.x, 1440, fLogPixelsH));
 #else
-        return TWIPS (from * 1440 / Led_GDIGlobals::Get ().GetMainScreenLogPixelsH ());
+        return TWIPS (from * 1440 / Globals::Get ().GetMainScreenLogPixelsH ());
 //              return TWIPS (from * 20);   // assume 72dpi on mac
 #endif
     }
@@ -968,9 +968,9 @@ namespace Stroika::Frameworks::Led {
         fCurDrawLineLoc = to;
 #endif
     }
-    inline Led_Region Tablet::GetClip () const
+    inline Region Tablet::GetClip () const
     {
-        Led_Region result;
+        Region result;
 #if qPlatform_MacOS
         const_cast<Tablet*> (this)->SetPort ();
         ::GetClip (result.GetOSRep ());
@@ -981,15 +981,15 @@ namespace Stroika::Frameworks::Led {
 #if !qInternalErrorWithStaticRegionDeclaredInFunction
             static
 #endif
-                Led_Region kWideOpened = Led_Region (Led_Rect (-10000, -10000, 20000, 20000));
-            result                     = kWideOpened;
+                Region kWideOpened = Region (Led_Rect (-10000, -10000, 20000, 20000));
+            result                 = kWideOpened;
         }
 #else
         Assert (false); // NYI
 #endif
         return result;
     }
-    inline bool Tablet::GetClip (Led_Region* r) const
+    inline bool Tablet::GetClip (Region* r) const
     {
         RequireNotNull (r);
 #if qPlatform_MacOS
@@ -1012,7 +1012,7 @@ namespace Stroika::Frameworks::Led {
     {
 #if qPlatform_MacOS
         SetPort ();
-        static Led_Region kWideOpened = Led_Region (Led_Rect (-10000, -10000, 20000, 20000));
+        static Region kWideOpened = Region (Led_Rect (-10000, -10000, 20000, 20000));
         ::SetClip (kWideOpened.GetOSRep ());
 #elif qPlatform_Windows
         Verify (::SelectClipRgn (*this, nullptr) != ERROR);
@@ -1028,9 +1028,9 @@ namespace Stroika::Frameworks::Led {
     {
 #if qPlatform_MacOS
         SetPort ();
-        ::SetClip (Led_Region (clipTo).GetOSRep ());
+        ::SetClip (Region (clipTo).GetOSRep ());
 #elif qPlatform_Windows
-        Verify (::SelectClipRgn (*this, Led_Region (clipTo)) != ERROR);
+        Verify (::SelectClipRgn (*this, Region (clipTo)) != ERROR);
         Ensure (GetClip ().GetBoundingRect () == clipTo);
 #elif qStroika_FeatureSupported_XWindows
         XRectangle xrectangle = AsXRect (clipTo);
@@ -1039,7 +1039,7 @@ namespace Stroika::Frameworks::Led {
         Assert (false); // NYI
 #endif
     }
-    inline void Tablet::SetClip (const Led_Region& clipTo)
+    inline void Tablet::SetClip (const Region& clipTo)
     {
 #if qPlatform_MacOS
         SetPort ();
@@ -1073,21 +1073,21 @@ namespace Stroika::Frameworks::Led {
 
     /*
      ********************************************************************************
-     *********************************** Led_GDIGlobals *****************************
+     *********************************** Globals *****************************
      ********************************************************************************
      */
-    inline Led_GDIGlobals& Led_GDIGlobals::Get ()
+    inline Globals& Globals::Get ()
     {
         if (sThe == nullptr) {
-            sThe = new Led_GDIGlobals ();
+            sThe = new Globals ();
         }
         return *sThe;
     }
-    inline DistanceType Led_GDIGlobals::GetMainScreenLogPixelsH () const
+    inline DistanceType Globals::GetMainScreenLogPixelsH () const
     {
         return fLogPixelsH;
     }
-    inline DistanceType Led_GDIGlobals::GetMainScreenLogPixelsV () const
+    inline DistanceType Globals::GetMainScreenLogPixelsV () const
     {
         return fLogPixelsV;
     }
@@ -1171,7 +1171,7 @@ namespace Stroika::Frameworks::Led {
 #endif
         return (true);
     }
-    inline bool Intersect (const Led_Rect& lhs, const Led_Region& rhs)
+    inline bool Intersect (const Led_Rect& lhs, const Region& rhs)
     {
 #if qPlatform_MacOS
         static RgnHandle result = ::NewRgn ();
@@ -1180,12 +1180,12 @@ namespace Stroika::Frameworks::Led {
         ::SectRgn (lhsRgn, rhs.GetOSRep (), result);
         return not ::EmptyRgn (result);
 #elif qPlatform_Windows
-        Led_Region lhsRgn = lhs;
-        Led_Region result;
-        return result.CombineRgn (&lhsRgn, const_cast<Led_Region*> (&rhs), RGN_AND) != NULLREGION;
+        Region lhsRgn = lhs;
+        Region result;
+        return result.CombineRgn (&lhsRgn, const_cast<Region*> (&rhs), RGN_AND) != NULLREGION;
 #endif
     }
-    inline bool Intersect (const Led_Region& lhs, const Led_Rect& rhs)
+    inline bool Intersect (const Region& lhs, const Led_Rect& rhs)
     {
 #if qPlatform_MacOS
         static RgnHandle result = ::NewRgn ();
@@ -1194,20 +1194,20 @@ namespace Stroika::Frameworks::Led {
         ::SectRgn (lhs.GetOSRep (), rhsRgn, result);
         return not ::EmptyRgn (result);
 #elif qPlatform_Windows
-        Led_Region rhsRgn = rhs;
-        Led_Region result;
-        return result.CombineRgn (const_cast<Led_Region*> (&lhs), &rhsRgn, RGN_AND) != NULLREGION;
+        Region rhsRgn = rhs;
+        Region result;
+        return result.CombineRgn (const_cast<Region*> (&lhs), &rhsRgn, RGN_AND) != NULLREGION;
 #endif
     }
-    inline bool Intersect (const Led_Region& lhs, const Led_Region& rhs)
+    inline bool Intersect (const Region& lhs, const Region& rhs)
     {
 #if qPlatform_MacOS
         static RgnHandle result = ::NewRgn ();
         ::SectRgn (lhs.GetOSRep (), rhs.GetOSRep (), result);
         return not ::EmptyRgn (result);
 #elif qPlatform_Windows
-        Led_Region result;
-        return result.CombineRgn (const_cast<Led_Region*> (&lhs), const_cast<Led_Region*> (&rhs), RGN_AND) != NULLREGION;
+        Region result;
+        return result.CombineRgn (const_cast<Region*> (&lhs), const_cast<Region*> (&rhs), RGN_AND) != NULLREGION;
 #endif
     }
 
@@ -1433,9 +1433,9 @@ namespace Stroika::Frameworks::Led {
     inline TWIPS Led_CvtScreenPixelsToTWIPSV (CoordinateType from)
     {
 #if qPlatform_Windows
-        return TWIPS (::MulDiv (from, 1440, Led_GDIGlobals::Get ().GetMainScreenLogPixelsV ()));
+        return TWIPS (::MulDiv (from, 1440, Globals::Get ().GetMainScreenLogPixelsV ()));
 #else
-        return TWIPS (from * 1440 / Led_GDIGlobals::Get ().GetMainScreenLogPixelsV ());
+        return TWIPS (from * 1440 / Globals::Get ().GetMainScreenLogPixelsV ());
 #endif
     }
     /*
@@ -1446,9 +1446,9 @@ namespace Stroika::Frameworks::Led {
     inline TWIPS Led_CvtScreenPixelsToTWIPSH (CoordinateType from)
     {
 #if qPlatform_Windows
-        return TWIPS (::MulDiv (from, 1440, Led_GDIGlobals::Get ().GetMainScreenLogPixelsH ()));
+        return TWIPS (::MulDiv (from, 1440, Globals::Get ().GetMainScreenLogPixelsH ()));
 #else
-        return TWIPS (from * 1440 / Led_GDIGlobals::Get ().GetMainScreenLogPixelsH ());
+        return TWIPS (from * 1440 / Globals::Get ().GetMainScreenLogPixelsH ());
 #endif
     }
     /*
@@ -1459,9 +1459,9 @@ namespace Stroika::Frameworks::Led {
     inline CoordinateType Led_CvtScreenPixelsFromTWIPSV (TWIPS from)
     {
 #if qPlatform_Windows
-        return ::MulDiv (from, Led_GDIGlobals::Get ().GetMainScreenLogPixelsV (), 1440);
+        return ::MulDiv (from, Globals::Get ().GetMainScreenLogPixelsV (), 1440);
 #else
-        return TWIPS (from * Led_GDIGlobals::Get ().GetMainScreenLogPixelsV () / 1440);
+        return TWIPS (from * Globals::Get ().GetMainScreenLogPixelsV () / 1440);
 #endif
     }
     /*
@@ -1472,48 +1472,48 @@ namespace Stroika::Frameworks::Led {
     inline CoordinateType Led_CvtScreenPixelsFromTWIPSH (TWIPS from)
     {
 #if qPlatform_Windows
-        return ::MulDiv (from, Led_GDIGlobals::Get ().GetMainScreenLogPixelsH (), 1440);
+        return ::MulDiv (from, Globals::Get ().GetMainScreenLogPixelsH (), 1440);
 #else
-        return TWIPS (from * Led_GDIGlobals::Get ().GetMainScreenLogPixelsH () / 1440);
+        return TWIPS (from * Globals::Get ().GetMainScreenLogPixelsH () / 1440);
 #endif
     }
 
     /*
      ********************************************************************************
-     ******************************* Led_FontMetrics ********************************
+     ******************************* FontMetrics ********************************
      ********************************************************************************
      */
-    inline Led_FontMetrics::Led_FontMetrics ()
+    inline FontMetrics::FontMetrics ()
         : fPlatformSpecific ()
     {
         (void)::memset (&fPlatformSpecific, 0, sizeof (fPlatformSpecific));
     }
 #if qPlatform_MacOS
-    inline Led_FontMetrics::Led_FontMetrics (const FontInfo& from)
+    inline FontMetrics::FontMetrics (const FontInfo& from)
         : fPlatformSpecific (from)
     {
     }
 #elif qPlatform_Windows
-    inline Led_FontMetrics::Led_FontMetrics (const TEXTMETRIC& from)
+    inline FontMetrics::FontMetrics (const TEXTMETRIC& from)
         : fPlatformSpecific (from)
     {
     }
 #elif qStroika_FeatureSupported_XWindows
-    inline Led_FontMetrics::Led_FontMetrics (const Led_FontMetrics::PlatformSpecific& from)
+    inline FontMetrics::FontMetrics (const FontMetrics::PlatformSpecific& from)
         : fPlatformSpecific (from)
     {
     }
 #endif
-    inline Led_FontMetrics::Led_FontMetrics (const Led_FontMetrics& from)
+    inline FontMetrics::FontMetrics (const FontMetrics& from)
         : fPlatformSpecific (from.fPlatformSpecific)
     {
     }
-    inline const Led_FontMetrics& Led_FontMetrics::operator= (const Led_FontMetrics& rhs)
+    inline const FontMetrics& FontMetrics::operator= (const FontMetrics& rhs)
     {
         fPlatformSpecific = rhs.fPlatformSpecific;
         return *this;
     }
-    inline DistanceType Led_FontMetrics::GetAscent () const
+    inline DistanceType FontMetrics::GetAscent () const
     {
 #if qPlatform_MacOS
         return (fPlatformSpecific.ascent);
@@ -1523,7 +1523,7 @@ namespace Stroika::Frameworks::Led {
         return fPlatformSpecific.fAscent;
 #endif
     }
-    inline DistanceType Led_FontMetrics::GetDescent () const
+    inline DistanceType FontMetrics::GetDescent () const
     {
 #if qPlatform_MacOS
         return (fPlatformSpecific.descent);
@@ -1533,7 +1533,7 @@ namespace Stroika::Frameworks::Led {
         return fPlatformSpecific.fDescent;
 #endif
     }
-    inline DistanceType Led_FontMetrics::GetLeading () const
+    inline DistanceType FontMetrics::GetLeading () const
     {
 #if qPlatform_MacOS
         return (fPlatformSpecific.leading);
@@ -1543,7 +1543,7 @@ namespace Stroika::Frameworks::Led {
         return (fPlatformSpecific.fLeading);
 #endif
     }
-    inline DistanceType Led_FontMetrics::GetHeight () const
+    inline DistanceType FontMetrics::GetHeight () const
     {
 #if qPlatform_Windows
         Assert (fPlatformSpecific.tmHeight >= 0);
@@ -1551,11 +1551,11 @@ namespace Stroika::Frameworks::Led {
 #endif
         return (GetAscent () + GetDescent ());
     }
-    inline DistanceType Led_FontMetrics::GetLineHeight () const
+    inline DistanceType FontMetrics::GetLineHeight () const
     {
         return (GetAscent () + GetDescent () + GetLeading ());
     }
-    inline nonvirtual DistanceType Led_FontMetrics::GetMaxCharacterWidth () const
+    inline nonvirtual DistanceType FontMetrics::GetMaxCharacterWidth () const
     {
 #if qPlatform_MacOS
         return fPlatformSpecific.widMax;
@@ -1566,26 +1566,26 @@ namespace Stroika::Frameworks::Led {
 #endif
     }
 #if qPlatform_Windows
-    inline nonvirtual DistanceType Led_FontMetrics::GetAveCharacterWidth () const
+    inline nonvirtual DistanceType FontMetrics::GetAveCharacterWidth () const
     {
         return fPlatformSpecific.tmAveCharWidth;
     }
 #endif
 #if qPlatform_MacOS
-    inline Led_FontMetrics::operator const FontInfo* () const
+    inline FontMetrics::operator const FontInfo* () const
     {
         return &fPlatformSpecific;
     }
-    inline Led_FontMetrics::operator FontInfo* ()
+    inline FontMetrics::operator FontInfo* ()
     {
         return (&fPlatformSpecific);
     }
 #elif qPlatform_Windows
-    inline Led_FontMetrics::operator const TEXTMETRIC* () const
+    inline FontMetrics::operator const TEXTMETRIC* () const
     {
         return &fPlatformSpecific;
     }
-    inline Led_FontMetrics::operator TEXTMETRIC* ()
+    inline FontMetrics::operator TEXTMETRIC* ()
     {
         return &fPlatformSpecific;
     }
@@ -2107,10 +2107,10 @@ namespace Stroika::Frameworks::Led {
                 TEXTMETRIC tms;
                 screenDC.GetTextMetrics (&tms);
                 screenDC.SelectObject (oldFont);
-                return (unsigned short)::MulDiv (tms.tmHeight, 72, Led_GDIGlobals::Get ().GetMainScreenLogPixelsV ());
+                return (unsigned short)::MulDiv (tms.tmHeight, 72, Globals::Get ().GetMainScreenLogPixelsV ());
             }
             else {
-                return static_cast<unsigned short> (::MulDiv (-fFontInfo.lfHeight, 72, Led_GDIGlobals::Get ().GetMainScreenLogPixelsV ()));
+                return static_cast<unsigned short> (::MulDiv (-fFontInfo.lfHeight, 72, Globals::Get ().GetMainScreenLogPixelsV ()));
             }
 #elif qStroika_FeatureSupported_XWindows
             return fFontSize;
@@ -2121,7 +2121,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         fFontSize = pointSize;
 #elif qPlatform_Windows
-            fFontInfo.lfHeight = ::MulDiv (-long (pointSize), Led_GDIGlobals::Get ().GetMainScreenLogPixelsV (), 72);
+            fFontInfo.lfHeight = ::MulDiv (-long (pointSize), Globals::Get ().GetMainScreenLogPixelsV (), 72);
 #elif qStroika_FeatureSupported_XWindows
             fFontSize = pointSize;
 #endif
@@ -3046,8 +3046,8 @@ namespace Stroika::Frameworks::Led {
     }
 #endif
 
-    //  class   Led_InstalledFonts
-    inline const vector<Led_SDK_String>& Led_InstalledFonts::GetUsableFontNames () const
+    //  class   InstalledFonts
+    inline const vector<Led_SDK_String>& InstalledFonts::GetUsableFontNames () const
     {
         return fFontNames;
     }
@@ -3165,7 +3165,7 @@ namespace Stroika::Frameworks::Led {
             Verify (::IntersectClipRect (*tablet, clipFurtherTo.GetLeft (), clipFurtherTo.GetTop (), clipFurtherTo.GetRight (), clipFurtherTo.GetBottom ()) != ERROR);
 #endif
     }
-    inline Tablet::ClipNarrowAndRestore::ClipNarrowAndRestore (Tablet* tablet, [[maybe_unused]] const Led_Region& clipFurtherTo)
+    inline Tablet::ClipNarrowAndRestore::ClipNarrowAndRestore (Tablet* tablet, [[maybe_unused]] const Region& clipFurtherTo)
         : fTablet (tablet)
         , fHasOldClip (false)
         , fOldClip ()
@@ -3221,11 +3221,11 @@ namespace Stroika::Frameworks::Led {
 
     /*
      ********************************************************************************
-     ************************* Led_MacPortAndClipRegionEtcSaver *********************
+     ************************* MacPortAndClipRegionEtcSaver *********************
      ********************************************************************************
      */
 #if qPlatform_MacOS
-    inline Led_MacPortAndClipRegionEtcSaver::Led_MacPortAndClipRegionEtcSaver ()
+    inline MacPortAndClipRegionEtcSaver::MacPortAndClipRegionEtcSaver ()
         : fSavedPort (Led_GetCurrentGDIPort ())
         ,
 #if !TARGET_CARBON
@@ -3250,7 +3250,7 @@ namespace Stroika::Frameworks::Led {
         ::GetForeColor (&fRGBFgColor);
         ::GetBackColor (&fRGBBkColor);
     }
-    inline Led_MacPortAndClipRegionEtcSaver::~Led_MacPortAndClipRegionEtcSaver ()
+    inline MacPortAndClipRegionEtcSaver::~MacPortAndClipRegionEtcSaver ()
     {
         ::SetPort (fSavedPort);
         ::SetOrigin (fOldLeft, fOldTop);
@@ -3265,11 +3265,11 @@ namespace Stroika::Frameworks::Led {
 
     /*
      ********************************************************************************
-     ******************************* Led_GDI_Obj_Selector ***************************
+     ******************************* GDI_Obj_Selector ***************************
      ********************************************************************************
      */
 #if qPlatform_Windows
-    inline Led_GDI_Obj_Selector::Led_GDI_Obj_Selector (Tablet* tablet, HGDIOBJ objToSelect)
+    inline GDI_Obj_Selector::GDI_Obj_Selector (Tablet* tablet, HGDIOBJ objToSelect)
         : fTablet (tablet)
         , fRestoreObject (nullptr)
         , fRestoreAttribObject (nullptr)
@@ -3286,7 +3286,7 @@ namespace Stroika::Frameworks::Led {
         }
     }
 #elif qPlatform_MacOS
-        inline Led_GDI_Obj_Selector::Led_GDI_Obj_Selector (Tablet* tablet, const Pen& pen)
+        inline GDI_Obj_Selector::GDI_Obj_Selector (Tablet* tablet, const Pen& pen)
             : fTablet (tablet)
             ,
 #if TARGET_CARBON
@@ -3303,11 +3303,11 @@ namespace Stroika::Frameworks::Led {
             ::PenPat (&pen.fPenPat);
         }
 #elif qStroika_FeatureSupported_XWindows
-        inline Led_GDI_Obj_Selector::Led_GDI_Obj_Selector (Tablet* tablet, const Pen& pen)
+        inline GDI_Obj_Selector::GDI_Obj_Selector (Tablet* tablet, const Pen& pen)
         {
         }
 #endif
-    inline Led_GDI_Obj_Selector::~Led_GDI_Obj_Selector ()
+    inline GDI_Obj_Selector::~GDI_Obj_Selector ()
     {
 #if qPlatform_Windows
         //NB: These restore objects CAN be nullptr, if no font (or whatever) selected into DC before we do... (aside from error cases)

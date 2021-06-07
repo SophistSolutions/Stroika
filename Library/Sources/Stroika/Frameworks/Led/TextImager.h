@@ -469,7 +469,7 @@ namespace Stroika::Frameworks::Led {
             *  on the text in subclases.
             */
     public:
-        virtual Led_FontMetrics GetFontMetricsAt (size_t charAfterPos) const;
+        virtual FontMetrics GetFontMetricsAt (size_t charAfterPos) const;
 
         // TextImagers don't really have a notion of a scrollbar. And yet for many different
         // subclasses of TextImager, certain things might be detected that would force
@@ -656,7 +656,7 @@ namespace Stroika::Frameworks::Led {
             */
     public:
         virtual vector<Led_Rect> GetSelectionWindowRects (size_t from, size_t to) const;
-        virtual void             GetSelectionWindowRegion (Led_Region* r, size_t from, size_t to) const;
+        virtual void             GetSelectionWindowRegion (Region* r, size_t from, size_t to) const;
 
     public:
         /*
@@ -717,7 +717,7 @@ namespace Stroika::Frameworks::Led {
 
     public:
         virtual void HilightArea (Tablet* tablet, Led_Rect hiliteArea);
-        virtual void HilightArea (Tablet* tablet, const Led_Region& hiliteArea);
+        virtual void HilightArea (Tablet* tablet, const Region& hiliteArea);
 
     protected:
         virtual void DrawRow (Tablet* tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect,
@@ -831,7 +831,7 @@ namespace Stroika::Frameworks::Led {
         // Font info caches...
     private:
         mutable FontSpecification fCachedFontSpec;
-        mutable Led_FontMetrics   fCachedFontInfo;
+        mutable FontMetrics       fCachedFontInfo;
 #if qPlatform_Windows
         mutable FontObject* fCachedFont;
 #else
@@ -845,7 +845,7 @@ namespace Stroika::Frameworks::Led {
             ~FontCacheInfoUpdater ();
 
         public:
-            nonvirtual Led_FontMetrics GetMetrics () const;
+            nonvirtual FontMetrics GetMetrics () const;
 
         private:
             const TextImager* fImager;

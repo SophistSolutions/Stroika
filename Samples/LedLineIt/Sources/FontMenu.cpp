@@ -17,7 +17,7 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks::Led;
 
-static Led_InstalledFonts sInstalledFonts; // Keep a static copy for speed, and so font#s are static throughout the life of the applet
+static InstalledFonts sInstalledFonts; // Keep a static copy for speed, and so font#s are static throughout the life of the applet
 
 /*
  ********************************************************************************

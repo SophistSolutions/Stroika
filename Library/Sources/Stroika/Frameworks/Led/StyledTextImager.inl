@@ -191,8 +191,8 @@ namespace Stroika::Frameworks::Led {
 #elif qStroika_FeatureSupported_XWindows
         Pen pen;
 #endif
-        Led_GDI_Obj_Selector penWrapper (tablet, pen);
-        CoordinateType       underlineAt = useBaseLine;
+        GDI_Obj_Selector penWrapper (tablet, pen);
+        CoordinateType   underlineAt = useBaseLine;
         if (underlineAt + 1 < drawInto.bottom) {
             underlineAt += 1;
         }

@@ -311,13 +311,13 @@ namespace Stroika::Frameworks::Led {
     /**
      * \brief Portable GDI abstraction for 'Region' object.
      */
-    class Led_Region {
+    class Region {
     public:
-        Led_Region ();
-        Led_Region (const Led_Rect& r);
-        Led_Region (const Led_Region& from);
-        virtual ~Led_Region ();
-        nonvirtual const Led_Region& operator= (const Led_Region& rhs);
+        Region ();
+        Region (const Led_Rect& r);
+        Region (const Region& from);
+        virtual ~Region ();
+        nonvirtual const Region& operator= (const Region& rhs);
 
     public:
         nonvirtual bool     IsEmpty () const;
@@ -325,7 +325,7 @@ namespace Stroika::Frameworks::Led {
 
     public:
 #if qPlatform_MacOS
-        Led_Region (RgnHandle rgn);
+        Region (RgnHandle rgn);
         RgnHandle GetOSRep () const;
         RgnHandle GetOSRep ();
 
@@ -333,7 +333,7 @@ namespace Stroika::Frameworks::Led {
         bool fOwned;
 #elif qPlatform_Windows
              operator HRGN () const;
-        int  CombineRgn (Led_Region* pRgn1, Led_Region* pRgn2, int nCombineMode);
+        int  CombineRgn (Region* pRgn1, Region* pRgn2, int nCombineMode);
         BOOL PtInRegion (int x, int y) const;
         BOOL PtInRegion (POINT point) const;
 
@@ -347,8 +347,8 @@ namespace Stroika::Frameworks::Led {
         HRGN fRgn;
 #endif
     };
-    Led_Region operator* (const Led_Region& lhs, const Led_Region& rhs);
-    Led_Region operator+ (const Led_Region& lhs, const Led_Region& rhs);
+    Region operator* (const Region& lhs, const Region& rhs);
+    Region operator+ (const Region& lhs, const Region& rhs);
 
     /**
      * This class is a portable representation of a color. It can be constructed either
@@ -444,7 +444,7 @@ namespace Stroika::Frameworks::Led {
      *  Helper class to keep track of GDI information used for drawing.
      *  Very different implementations befween Mac and Windows.
      *
-     *  Note - this class is used in conjunction with @'Led_GDI_Obj_Selector'.
+     *  Note - this class is used in conjunction with @'GDI_Obj_Selector'.
      */
     class Pen {
 #if qPlatform_MacOS
@@ -876,7 +876,7 @@ namespace Stroika::Frameworks::Led {
 
     // Must support for other Platforms - but not done yet... Also - should have OPTIONS specified to this class (CTOR) picking various filter
     // options...
-    class Led_InstalledFonts {
+    class InstalledFonts {
     public:
         enum FilterOptions {
 #if qPlatform_Windows
@@ -890,7 +890,7 @@ namespace Stroika::Frameworks::Led {
             eDefaultFilterOptions = 0
 #endif
         };
-        Led_InstalledFonts (
+        InstalledFonts (
 #if qStroika_FeatureSupported_XWindows
             Display* display,
 #endif
@@ -915,15 +915,15 @@ namespace Stroika::Frameworks::Led {
      *  variables. The compromise is that all these globals are associated with this class, so that there is one place to
      *   call to refresh those globals.
      */
-    class Led_GDIGlobals {
+    class Globals {
     public:
-        Led_GDIGlobals ();
+        Globals ();
 
     public:
-        static Led_GDIGlobals& Get ();
+        static Globals& Get ();
 
     private:
-        static Led_GDIGlobals* sThe;
+        static Globals* sThe;
 
     public:
         nonvirtual void InvalidateGlobals ();
@@ -945,9 +945,9 @@ namespace Stroika::Frameworks::Led {
     Led_Rect operator+ (Led_Point p, Led_Rect r);
     Led_Rect operator+ (Led_Rect r, Led_Point p);
     bool     Intersect (const Led_Rect& lhs, const Led_Rect& rhs);
-    bool     Intersect (const Led_Rect& lhs, const Led_Region& rhs);
-    bool     Intersect (const Led_Region& lhs, const Led_Rect& rhs);
-    bool     Intersect (const Led_Region& lhs, const Led_Region& rhs);
+    bool     Intersect (const Led_Rect& lhs, const Region& rhs);
+    bool     Intersect (const Region& lhs, const Led_Rect& rhs);
+    bool     Intersect (const Region& lhs, const Region& rhs);
 
     Led_Rect Intersection (const Led_Rect& lhs, const Led_Rect& rhs);
     Led_Rect operator* (const Led_Rect& lhs, const Led_Rect& rhs);
@@ -987,12 +987,12 @@ namespace Stroika::Frameworks::Led {
     CoordinateType Led_CvtScreenPixelsFromTWIPSH (TWIPS from);
 
     /*
-    @CLASS:         Led_FontMetrics
-    @DESCRIPTION:   <p><code>Led_FontMetrics</code> is a portable wrapper class on the Macintosh
+    @CLASS:         FontMetrics
+    @DESCRIPTION:   <p><code>FontMetrics</code> is a portable wrapper class on the Macintosh
         <em>FontInfo</em> structure, or the Windows <em>TEXTMETRIC</em> structure. It provides
         portable access to things like GetLineHeight (), and GetAscent (), etc...</p>
     */
-    class Led_FontMetrics {
+    class FontMetrics {
 #if qStroika_FeatureSupported_XWindows
     public:
         struct PlatformSpecific {
@@ -1003,16 +1003,16 @@ namespace Stroika::Frameworks::Led {
         };
 #endif
     public:
-        Led_FontMetrics ();
+        FontMetrics ();
 #if qPlatform_MacOS
-        Led_FontMetrics (const FontInfo& from);
+        FontMetrics (const FontInfo& from);
 #elif qPlatform_Windows
-        Led_FontMetrics (const TEXTMETRIC& from);
+        FontMetrics (const TEXTMETRIC& from);
 #elif qStroika_FeatureSupported_XWindows
-        Led_FontMetrics (const PlatformSpecific& from);
+        FontMetrics (const PlatformSpecific& from);
 #endif
-        Led_FontMetrics (const Led_FontMetrics& from);
-        const Led_FontMetrics& operator= (const Led_FontMetrics& rhs);
+        FontMetrics (const FontMetrics& from);
+        const FontMetrics& operator= (const FontMetrics& rhs);
 
     public:
         nonvirtual DistanceType GetAscent () const;
@@ -1099,7 +1099,7 @@ namespace Stroika::Frameworks::Led {
 
     public:
         nonvirtual void ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, CoordinateType scrollBy);
-        nonvirtual void FrameRegion (const Led_Region& r, const Color& c);
+        nonvirtual void FrameRegion (const Region& r, const Color& c);
 
     public:
         nonvirtual void FrameRectangle (const Led_Rect& r, Color c, DistanceType borderWidth);
@@ -1175,9 +1175,9 @@ namespace Stroika::Frameworks::Led {
 #endif
 
     public:
-        nonvirtual void MeasureText (const Led_FontMetrics& precomputedFontMetrics,
+        nonvirtual void MeasureText (const FontMetrics& precomputedFontMetrics,
                                      const Led_tChar* text, size_t nTChars, DistanceType* charLocations);
-        nonvirtual void TabbedTextOut (const Led_FontMetrics& precomputedFontMetrics, const Led_tChar* text, size_t nBytes,
+        nonvirtual void TabbedTextOut (const FontMetrics& precomputedFontMetrics, const Led_tChar* text, size_t nBytes,
                                        TextDirection direction,
                                        Led_Point outputAt, CoordinateType hTabOrigin, const TabStopList& tabStopList,
                                        DistanceType* amountDrawn, CoordinateType hScrollOffset);
@@ -1189,7 +1189,7 @@ namespace Stroika::Frameworks::Led {
     public:
         nonvirtual void EraseBackground_SolidHelper (const Led_Rect& eraseRect, const Color& eraseColor);
         nonvirtual void HilightArea_SolidHelper (const Led_Rect& hilightArea, Color hilightBackColor, Color hilightForeColor, Color oldBackColor, Color oldForeColor);
-        nonvirtual void HilightArea_SolidHelper (const Led_Region& hilightArea, Color hilightBackColor, Color hilightForeColor, Color oldBackColor, Color oldForeColor);
+        nonvirtual void HilightArea_SolidHelper (const Region& hilightArea, Color hilightBackColor, Color hilightForeColor, Color oldBackColor, Color oldForeColor);
 
 #if qPlatform_Windows
     private:
@@ -1203,14 +1203,14 @@ namespace Stroika::Frameworks::Led {
         class ClipNarrowAndRestore;
 
     public:
-        nonvirtual Led_Region GetClip () const;
-        nonvirtual bool       GetClip (Led_Region* r) const;
-        nonvirtual void       SetClip ();
-        nonvirtual void       SetClip (const Led_Rect& clipTo);
-        nonvirtual void       SetClip (const Led_Region& clipTo);
+        nonvirtual Region GetClip () const;
+        nonvirtual bool   GetClip (Region* r) const;
+        nonvirtual void   SetClip ();
+        nonvirtual void   SetClip (const Led_Rect& clipTo);
+        nonvirtual void   SetClip (const Region& clipTo);
 
     public:
-        nonvirtual Led_FontMetrics GetFontMetrics () const;
+        nonvirtual FontMetrics GetFontMetrics () const;
 
 #if qPlatform_MacOS
     private:
@@ -1248,13 +1248,13 @@ namespace Stroika::Frameworks::Led {
     public:
         ClipNarrowAndRestore (Tablet* tablet);
         ClipNarrowAndRestore (Tablet* tablet, const Led_Rect& clipFurtherTo);
-        ClipNarrowAndRestore (Tablet* tablet, const Led_Region& clipFurtherTo);
+        ClipNarrowAndRestore (Tablet* tablet, const Region& clipFurtherTo);
         ~ClipNarrowAndRestore ();
 
     private:
-        Tablet*    fTablet;
-        bool       fHasOldClip;
-        Led_Region fOldClip;
+        Tablet* fTablet;
+        bool    fHasOldClip;
+        Region  fOldClip;
     };
 
 #if qPlatform_MacOS
@@ -1275,10 +1275,10 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #if qPlatform_MacOS
-    class Led_MacPortAndClipRegionEtcSaver {
+    class MacPortAndClipRegionEtcSaver {
     public:
-        Led_MacPortAndClipRegionEtcSaver ();
-        ~Led_MacPortAndClipRegionEtcSaver ();
+        MacPortAndClipRegionEtcSaver ();
+        ~MacPortAndClipRegionEtcSaver ();
 
     private:
         GrafPtr   fSavedPort;
@@ -1362,8 +1362,7 @@ namespace Stroika::Frameworks::Led {
     };
 
     /*
-    @CLASS:         Led_GDI_Obj_Selector
-    @DESCRIPTION:   <p><code>Led_GDI_Obj_Selector</code> is a stack-based class designed to help
+    @DESCRIPTION:   <p><code>GDI_Obj_Selector</code> is a stack-based class designed to help
         out selecting objects into a Tablet* (windows DC, grafport, etc).
             <p>The constructor takes a tablet, and object to select into it (HGDIObject, etc),
         and selects it into the tablet. It saves gthe results of the SelectObject calls (old values).
@@ -1372,15 +1371,15 @@ namespace Stroika::Frameworks::Led {
         will be released, and restored to its original state through all paths through
         the code, including in the even of exceptions.</p>
     */
-    class Led_GDI_Obj_Selector {
+    class GDI_Obj_Selector {
     public:
 #if qPlatform_Windows
-        Led_GDI_Obj_Selector (Tablet* tablet, HGDIOBJ objToSelect);
+        GDI_Obj_Selector (Tablet* tablet, HGDIOBJ objToSelect);
 #elif qPlatform_MacOS || qStroika_FeatureSupported_XWindows
-        Led_GDI_Obj_Selector (Tablet* tablet, const Pen& pen);
+        GDI_Obj_Selector (Tablet* tablet, const Pen& pen);
 #endif
     public:
-        ~Led_GDI_Obj_Selector ();
+        ~GDI_Obj_Selector ();
 
     private:
         Tablet* fTablet;
@@ -1514,7 +1513,7 @@ namespace Stroika::Frameworks::Led {
     Led_DIB* Led_DIBFromHBITMAP (HDC hDC, HBITMAP hbm);
 #endif
 
-    void AddRectangleToRegion (Led_Rect addRect, Led_Region* toRgn);
+    void AddRectangleToRegion (Led_Rect addRect, Region* toRgn);
 
 #if qProvideIMESupport
     class IME {

@@ -735,9 +735,9 @@ const Pattern Pen::kBlackPattern = {
 string FontSpecification::mkOSRep (const string& foundry, const string& family, const string& weight, const string& slant, const string& pointSize)
 {
     char hRes[1024];
-    (void)::sprintf (hRes, "%d", Led_GDIGlobals::Get ().GetMainScreenLogPixelsH ());
+    (void)::sprintf (hRes, "%d", Globals::Get ().GetMainScreenLogPixelsH ());
     char vRes[1024];
-    (void)::sprintf (vRes, "%d", Led_GDIGlobals::Get ().GetMainScreenLogPixelsV ());
+    (void)::sprintf (vRes, "%d", Globals::Get ().GetMainScreenLogPixelsV ());
     string result = "-" + foundry + "-" + family + "-" + weight + "-" + slant + "-*-*-*-" + pointSize + "-" + hRes + "-" + vRes + "-*-*-*-*";
     return result;
 }
@@ -1402,10 +1402,10 @@ void Tablet::ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, CoordinateT
 @METHOD:        Tablet::FrameRegion
 @DESCRIPTION:   <p>Draw the outline of the given region 'r' in color 'c'.</p>
 */
-void Tablet::FrameRegion (const Led_Region& r, const Color& c)
+void Tablet::FrameRegion (const Region& r, const Color& c)
 {
 #if qPlatform_MacOS
-    Led_MacPortAndClipRegionEtcSaver saver; // unclear if this is useful/needed?
+    MacPortAndClipRegionEtcSaver saver; // unclear if this is useful/needed?
     SetPort ();
     PenMode (srcCopy); // ???
     GDI_RGBForeColor (c.GetOSRep ());
@@ -1448,7 +1448,7 @@ void Tablet::FrameRectangle (const Led_Rect& r, Color c, DistanceType borderWidt
                 <p>Note that the resulting measured text must come out in non-descreasing order (there can be zero
             character widths, but never negative).</p>
 */
-void Tablet::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
+void Tablet::MeasureText (const FontMetrics& precomputedFontMetrics,
                           const Led_tChar* text, size_t nTChars, DistanceType* charLocations)
 {
     RequireNotNull (text);
@@ -1647,7 +1647,7 @@ void Tablet::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
             re-ordered in the argument passed in, and any mirroring should have already been done. This routine WILL
             take care of any contextual shaping required (glyph selection based on context - as with Arabic).</p>
 */
-void Tablet::TabbedTextOut ([[maybe_unused]] const Led_FontMetrics& precomputedFontMetrics, const Led_tChar* text, size_t nBytes,
+void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontMetrics, const Led_tChar* text, size_t nBytes,
                             [[maybe_unused]] TextDirection direction,
                             Led_Point outputAt, CoordinateType hTabOrigin, const TabStopList& tabStopList,
                             DistanceType* amountDrawn, CoordinateType hScrollOffset)
@@ -1952,8 +1952,8 @@ void Tablet::EraseBackground_SolidHelper (const Led_Rect& eraseRect, const Color
 #elif qPlatform_Windows
         Led_Rect eraser = eraseRect;
         Brush backgroundBrush (eraseColor.GetOSRep ());
-        Led_GDI_Obj_Selector pen (this, ::GetStockObject (NULL_PEN));
-        Led_GDI_Obj_Selector brush (this, backgroundBrush);
+        GDI_Obj_Selector pen (this, ::GetStockObject (NULL_PEN));
+        GDI_Obj_Selector brush (this, backgroundBrush);
         eraser.right++; // lovely - windows doesn't count last pixel... See Docs for Rectangle() and rephrase!!!
         eraser.bottom++;
         Rectangle (AsRECT (eraser));
@@ -2055,7 +2055,7 @@ void Tablet::HilightArea_SolidHelper (const Led_Rect& hilightArea, [[maybe_unuse
                 <p>Note the backColor and foreColor are advisory - and maybe ignored if the GDI better supports (or the
             platform UI conventionally calls for) inverting the text via a simple XOR.</p>
 */
-void Tablet::HilightArea_SolidHelper (const Led_Region& hilightArea, [[maybe_unused]] Color hilightBackColor, [[maybe_unused]] Color hilightForeColor, [[maybe_unused]] Color oldBackColor, [[maybe_unused]] Color oldForeColor)
+void Tablet::HilightArea_SolidHelper (const Region& hilightArea, [[maybe_unused]] Color hilightBackColor, [[maybe_unused]] Color hilightForeColor, [[maybe_unused]] Color oldBackColor, [[maybe_unused]] Color oldForeColor)
 {
     if (not hilightArea.IsEmpty ()) {
 #if qPlatform_MacOS
@@ -2074,9 +2074,9 @@ void Tablet::HilightArea_SolidHelper (const Led_Region& hilightArea, [[maybe_unu
 
 /*
 @METHOD:        Tablet::GetFontMetrics
-@DESCRIPTION:   <p>Retrieve the (@'Led_FontMetrics') associated with the current tablet (based on the last SetFont call).</p>
+@DESCRIPTION:   <p>Retrieve the (@'FontMetrics') associated with the current tablet (based on the last SetFont call).</p>
 */
-Led_FontMetrics Tablet::GetFontMetrics () const
+FontMetrics Tablet::GetFontMetrics () const
 {
 #if qPlatform_MacOS
     FontInfo fontInfo;
@@ -2088,7 +2088,7 @@ Led_FontMetrics Tablet::GetFontMetrics () const
     Verify (::GetTextMetrics (m_hAttribDC, &tms) != 0);
     return tms;
 #elif qStroika_FeatureSupported_XWindows
-    Led_FontMetrics::PlatformSpecific result;
+    FontMetrics::PlatformSpecific result;
     memset (&result, 0, sizeof (result));
     Led_ThrowIfNull (fCachedFontInfo);
     result.fAscent = fCachedFontInfo->ascent;
@@ -2617,10 +2617,10 @@ void OffscreenTablet::BlastBitmapToOrigTablet ()
 
 /*
  ********************************************************************************
- ********************************* Led_InstalledFonts ***************************
+ ********************************* InstalledFonts ***************************
  ********************************************************************************
  */
-Led_InstalledFonts::Led_InstalledFonts (
+InstalledFonts::InstalledFonts (
 #if qStroika_FeatureSupported_XWindows
     Display* display,
 #endif
@@ -2665,9 +2665,9 @@ Led_InstalledFonts::Led_InstalledFonts (
 }
 
 #if qPlatform_Windows
-BOOL FAR PASCAL Led_InstalledFonts::FontFamilyAdderProc (ENUMLOGFONTEX* pelf, NEWTEXTMETRICEX* /*lpntm*/, int fontType, LPVOID pThis)
+BOOL FAR PASCAL InstalledFonts::FontFamilyAdderProc (ENUMLOGFONTEX* pelf, NEWTEXTMETRICEX* /*lpntm*/, int fontType, LPVOID pThis)
 {
-    Led_InstalledFonts* thisP = reinterpret_cast<Led_InstalledFonts*> (pThis);
+    InstalledFonts* thisP = reinterpret_cast<InstalledFonts*> (pThis);
 
     if (thisP->fFilterOptions & eSkipRasterFonts) {
         // don't put in non-printer raster fonts (cuz WordPad doesn't and CFontDialog doesn't appear to -
@@ -2686,30 +2686,30 @@ BOOL FAR PASCAL Led_InstalledFonts::FontFamilyAdderProc (ENUMLOGFONTEX* pelf, NE
 
 /*
  ********************************************************************************
- ********************************* Led_GDIGlobals *******************************
+ ********************************* Globals *******************************
  ********************************************************************************
  */
 
-Led_GDIGlobals* Led_GDIGlobals::sThe = nullptr;
+Globals* Globals::sThe = nullptr;
 
-// Somewhat silly hack so Led_GDIGlobals gets destroyed at end of application execution. Helpful for quitting memleak detectors.
-class Led_GDIGlobals::_Global_DESTRUCTOR_ {
+// Somewhat silly hack so Globals gets destroyed at end of application execution. Helpful for quitting memleak detectors.
+class Globals::_Global_DESTRUCTOR_ {
 public:
     ~_Global_DESTRUCTOR_ ()
     {
-        delete (Led_GDIGlobals::sThe);
-        Led_GDIGlobals::sThe = nullptr;
+        delete (Globals::sThe);
+        Globals::sThe = nullptr;
     }
 } sTheLed_GDIGlobalsDESTRUCTOR_;
 
-Led_GDIGlobals::Led_GDIGlobals ()
+Globals::Globals ()
     : fLogPixelsH (0)
     , fLogPixelsV (0)
 {
     InvalidateGlobals ();
 }
 
-void Led_GDIGlobals::InvalidateGlobals ()
+void Globals::InvalidateGlobals ()
 {
 // From the name, it would appear we invalidated, and re-validate later. But I think this implematnion is a bit
 // simpler, and should perform fine given its expected usage.
@@ -2740,10 +2740,10 @@ void Led_GDIGlobals::InvalidateGlobals ()
  ************************************ AddRectangleToRegion **********************
  ********************************************************************************
  */
-void Led::AddRectangleToRegion (Led_Rect addRect, Led_Region* toRgn)
+void Led::AddRectangleToRegion (Led_Rect addRect, Region* toRgn)
 {
     RequireNotNull (toRgn);
-    *toRgn = *toRgn + Led_Region (addRect);
+    *toRgn = *toRgn + Region (addRect);
 }
 
 /*

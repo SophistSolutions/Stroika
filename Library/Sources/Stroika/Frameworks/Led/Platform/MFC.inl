@@ -593,7 +593,7 @@ namespace Stroika::Frameworks::Led::Platform {
         Assert (false); // though THIS code is fine - we haven't yet hooked the callback, so this call will
         // produce poor results... LGP 941129
         Assert (::IsWindow (this->m_hWnd));
-        return (BOOL)::SendMessage (this->m_hWnd, EM_SETTABSTOPS, 1, (LPARAM) (LPINT)&cxEachStop);
+        return (BOOL)::SendMessage (this->m_hWnd, EM_SETTABSTOPS, 1, (LPARAM)(LPINT)&cxEachStop);
     }
     template <typename BASECLASS>
     inline BOOL Led_MFC_MimicMFCAPIHelper<BASECLASS>::Undo ()
@@ -762,7 +762,7 @@ namespace Stroika::Frameworks::Led::Platform {
          *
          *  For now though, just do it the simple way...
          */
-        Led_Region r;
+        Region r;
         this->GetSelectionWindowRegion (&r, this->GetSelectionStart (), this->GetSelectionEnd ());
         return !!r.PtInRegion (AsCPoint (clickedWhere));
     }
@@ -802,7 +802,7 @@ namespace Stroika::Frameworks::Led::Platform {
             Led_MFCWriterDAndDFlavorPackage flavorPackage (&dataSrc);
             this->ExternalizeFlavors (flavorPackage);
 
-            Led_Region selectionRegion;
+            Region selectionRegion;
             this->GetSelectionWindowRegion (&selectionRegion, this->GetSelectionStart (), this->GetSelectionEnd ());
 
             Foundation::Time::DurationSecondsType startDragSelectAt = Foundation::Time::GetTickCount (); // Grab it after the ExternalizeFlavors call in case thats slow (SPR#1498).

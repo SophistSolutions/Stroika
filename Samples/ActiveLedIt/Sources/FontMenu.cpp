@@ -15,7 +15,7 @@ DISABLE_COMPILER_MSC_WARNING_END (5054)
 
 namespace {
 
-    Led_InstalledFonts sInstalledFonts; // Keep a static copy for speed, and so font#s are static throughout the life of the applet
+    InstalledFonts sInstalledFonts; // Keep a static copy for speed, and so font#s are static throughout the life of the applet
 }
 
 /*

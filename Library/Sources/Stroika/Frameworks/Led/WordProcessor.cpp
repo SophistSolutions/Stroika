@@ -3755,10 +3755,10 @@ void WordProcessor::DrawSegment (Tablet* tablet,
                     Led_Point            topPt         = Led_Point (max (arrowBody.GetTop () - kArrowVSize / 2, tabRect.top), hTriangleBase);
                     Led_Point            botPt         = Led_Point (min (arrowBody.GetTop () + kArrowVSize / 2, tabRect.bottom), hTriangleBase);
 #if qPlatform_Windows
-                    Brush                backgroundBrush (arrowColor.GetOSRep ());
-                    Led_GDI_Obj_Selector pen (tablet, ::GetStockObject (NULL_PEN));
-                    Led_GDI_Obj_Selector brush (tablet, backgroundBrush);
-                    POINT                pts[3];
+                    Brush            backgroundBrush (arrowColor.GetOSRep ());
+                    GDI_Obj_Selector pen (tablet, ::GetStockObject (NULL_PEN));
+                    GDI_Obj_Selector brush (tablet, backgroundBrush);
+                    POINT            pts[3];
                     pts[0] = AsPOINT (tip);
                     pts[1] = AsPOINT (topPt);
                     pts[2] = AsPOINT (botPt);

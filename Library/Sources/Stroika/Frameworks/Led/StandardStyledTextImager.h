@@ -80,7 +80,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void              SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, size_t nStyleInfos, const InfoSummaryRecord* styleInfos);
 
     public:
-        virtual Led_FontMetrics GetFontMetricsAt (size_t charAfterPos) const override;
+        virtual FontMetrics GetFontMetricsAt (size_t charAfterPos) const override;
 
     public:
         virtual FontSpecification GetDefaultSelectionFont () const override;

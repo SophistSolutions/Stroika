@@ -1388,7 +1388,7 @@ vector<Led_Rect> TextImager::GetSelectionWindowRects (size_t from, size_t to) co
             cuz MFC's CRgn class doesn't support being copied.</p>
                 <p>This routine is a simple wrapper on @'TextImager::GetSelectionWindowRects'</p>
 */
-void TextImager::GetSelectionWindowRegion (Led_Region* r, size_t from, size_t to) const
+void TextImager::GetSelectionWindowRegion (Region* r, size_t from, size_t to) const
 {
     RequireNotNull (r);
     vector<Led_Rect> selRects = GetSelectionWindowRects (from, to);
@@ -1443,7 +1443,7 @@ void TextImager::HilightArea (Tablet* tablet, Led_Rect hiliteArea)
         <p>Override this mostly if you want different hilighting behavior, or if you want your hilighting behavior
     to remain in sync with other changes to the EraseBackground behavior.</p>
 */
-void TextImager::HilightArea (Tablet* tablet, const Led_Region& hiliteArea)
+void TextImager::HilightArea (Tablet* tablet, const Region& hiliteArea)
 {
     RequireNotNull (tablet);
     tablet->HilightArea_SolidHelper (hiliteArea, GetEffectiveDefaultTextColor (eDefaultSelectedTextBackgroundColor), GetEffectiveDefaultTextColor (eDefaultSelectedTextColor), GetEffectiveDefaultTextColor (eDefaultBackgroundColor), GetEffectiveDefaultTextColor (eDefaultTextColor));
@@ -1931,7 +1931,7 @@ DistanceType TextImager::MeasureSegmentBaseLine_ (const FontSpecification& fontS
     return (fCachedFontInfo.GetAscent ());
 }
 
-Led_FontMetrics TextImager::GetFontMetricsAt (
+FontMetrics TextImager::GetFontMetricsAt (
 #if qMultiByteCharacters
     size_t charAfterPos
 #else

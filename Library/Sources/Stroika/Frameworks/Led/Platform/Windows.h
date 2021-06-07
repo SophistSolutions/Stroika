@@ -1128,7 +1128,7 @@ namespace Stroika::Frameworks::Led::Platform {
             // Doug Stein says is according to Apple HIG guidelines - LGP 960804
             // SPR#0371
             if (this->GetSelectionStart () != this->GetSelectionEnd ()) {
-                Led_Region r;
+                Region r;
                 this->GetSelectionWindowRegion (&r, this->GetSelectionStart (), this->GetSelectionEnd ());
                 if (r.PtInRegion (AsPOINT (fMouseTrackingLastPoint))) {
                     ::SetCursor (::LoadCursor (nullptr, IDC_ARROW));

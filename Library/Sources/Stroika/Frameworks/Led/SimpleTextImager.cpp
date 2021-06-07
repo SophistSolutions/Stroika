@@ -504,8 +504,8 @@ void SimpleTextImager::Draw (const Led_Rect& subsetToDraw, bool printing)
     RGBColor oldForeColor = GDI_GetForeColor ();
     RGBColor oldBackColor = GDI_GetBackColor ();
 #elif qPlatform_Windows
-    Led_GDI_Obj_Selector pen (tablet, ::GetStockObject (NULL_PEN));
-    Led_GDI_Obj_Selector brush (tablet, ::GetStockObject (NULL_BRUSH));
+    GDI_Obj_Selector pen (tablet, ::GetStockObject (NULL_PEN));
+    GDI_Obj_Selector brush (tablet, ::GetStockObject (NULL_BRUSH));
 #endif
 
     /*

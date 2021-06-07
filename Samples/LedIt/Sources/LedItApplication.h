@@ -261,7 +261,7 @@ private:
 #endif
 #if qPlatform_Windows || qStroika_FeatureSupported_XWindows
 public:
-    Led_InstalledFonts fInstalledFonts; // Keep a static copy for speed, and so font#s are static throughout the life of the applet
+    InstalledFonts fInstalledFonts; // Keep a static copy for speed, and so font#s are static throughout the life of the applet
 #endif
 };
 

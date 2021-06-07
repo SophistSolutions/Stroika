@@ -1736,7 +1736,7 @@ void TextInteractor::DrawBefore (const Led_Rect& /*subsetToDraw*/, bool /*printi
 void TextInteractor::DrawAfter (const Led_Rect& /*subsetToDraw*/, bool printing)
 {
     if (GetUseSecondaryHilight () and not GetSelectionShown () and not printing) {
-        Led_Region r;
+        Region r;
         GetSelectionWindowRegion (&r, GetSelectionStart (), GetSelectionEnd ());
         Tablet_Acquirer tablet_ (this);
         Tablet*         tablet = tablet_;
@@ -3173,8 +3173,8 @@ Led_Rect TextInteractor::CalculateCaretRect () const
             return Led_Rect{0, 0, 0, 0};
         }
 
-        Led_Rect        origCaretRect = caretRect;
-        Led_FontMetrics fontMetrics   = GetFontMetricsAt (charAfterPos);
+        Led_Rect    origCaretRect = caretRect;
+        FontMetrics fontMetrics   = GetFontMetricsAt (charAfterPos);
 
         // WE NEED THE WHOLE ROW BASELINE!!! THEN CAN COMPUTE caretrect from that!!!
         DistanceType   baseLineFromTop = GetRowRelativeBaselineOfRowContainingPosition (charAfterPos);

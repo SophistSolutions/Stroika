@@ -622,9 +622,9 @@ void StandardURLStyleMarker::DrawSegment (const StyledTextImager* imager, const 
     ::TextSize (9);
     ::DrawText (url, 0, urlStrLen);
 #elif qPlatform_Windows
-    Pen                  pen (PS_SOLID, 2, RGB (0, 0, 0));
-    Led_GDI_Obj_Selector penWrapper (tablet, pen);
-    Led_GDI_Obj_Selector brush (tablet, ::GetStockObject (NULL_BRUSH));
+    Pen              pen (PS_SOLID, 2, RGB (0, 0, 0));
+    GDI_Obj_Selector penWrapper (tablet, pen);
+    GDI_Obj_Selector brush (tablet, ::GetStockObject (NULL_BRUSH));
     tablet->RoundRect (innerBoundsRect.left, innerBoundsRect.top, innerBoundsRect.right, innerBoundsRect.bottom, 2, 2);
 
     Led_Rect iconRect     = innerBoundsRect;
@@ -643,7 +643,7 @@ void StandardURLStyleMarker::DrawSegment (const StyledTextImager* imager, const 
         _tcscpy (lf.lfFaceName, _T ("System"));
         Verify (font1.CreateFontIndirect (&lf));
     }
-    Led_GDI_Obj_Selector font1Selector (tablet, font1);
+    GDI_Obj_Selector font1Selector (tablet, font1);
     if (nameStrLen != 0) {
         ::TextOutA (*tablet, iconRect.right + 3, iconRect.top + 2, name, nameStrLen);
     }
@@ -656,7 +656,7 @@ void StandardURLStyleMarker::DrawSegment (const StyledTextImager* imager, const 
         Verify (font2.CreateFontIndirect (&lf));
         lf.lfHeight = -8;
     }
-    Led_GDI_Obj_Selector font2Selector (tablet, font2);
+    GDI_Obj_Selector font2Selector (tablet, font2);
     if (urlStrLen != 0) {
         ::TextOutA (*tablet, iconRect.right + 3, iconRect.top + 16, url, urlStrLen);
     }
@@ -748,8 +748,8 @@ void StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager
         _tcscpy (lf.lfFaceName, _T ("System"));
         Verify (font1.CreateFontIndirect (&lf));
     }
-    Led_GDI_Obj_Selector font1Selector (tablet, font1);
-    DistanceType         string1Width = name == nullptr ? 0 : dc->GetTextExtent (Led_ANSI2SDKString (name).c_str (), nameStrLen).cx;
+    GDI_Obj_Selector font1Selector (tablet, font1);
+    DistanceType     string1Width = name == nullptr ? 0 : dc->GetTextExtent (Led_ANSI2SDKString (name).c_str (), nameStrLen).cx;
 
     FontObject font2;
     {
@@ -759,8 +759,8 @@ void StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager
         Verify (font2.CreateFontIndirect (&lf));
         lf.lfHeight = -8;
     }
-    Led_GDI_Obj_Selector font2Selector (tablet, font2);
-    DistanceType         string2Width = dc->GetTextExtent (Led_ANSI2SDKString (url).c_str (), urlStrLen).cx;
+    GDI_Obj_Selector font2Selector (tablet, font2);
+    DistanceType     string2Width = dc->GetTextExtent (Led_ANSI2SDKString (url).c_str (), urlStrLen).cx;
 
     distanceResults[0] += max (string1Width, string2Width) + 2 * kDefaultEmbeddingMargin.h;
 #endif
@@ -1527,11 +1527,11 @@ static void MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHandle 
         }
         bool fGood;
     };
-    static QTIniter      sIniter;
-    RECT                 rr = AsRECT (innerBoundsRect);
-    Brush                eraseBrush (backColor.GetOSRep ());
-    Led_GDI_Obj_Selector brush (dc, eraseBrush);
-    bool                 displaySuccessful = false;
+    static QTIniter  sIniter;
+    RECT             rr = AsRECT (innerBoundsRect);
+    Brush            eraseBrush (backColor.GetOSRep ());
+    GDI_Obj_Selector brush (dc, eraseBrush);
+    bool             displaySuccessful = false;
     if (sIniter.fGood) {
         displaySuccessful = (::DrawPicture (dc->m_hDC, (PicHandle)pictureHandle, &rr, nullptr) == noErr);
     }

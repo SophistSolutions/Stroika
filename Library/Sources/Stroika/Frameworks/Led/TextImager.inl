@@ -416,7 +416,7 @@ namespace Stroika::Frameworks::Led {
         }
 #endif
     }
-    inline Led_FontMetrics TextImager::FontCacheInfoUpdater::GetMetrics () const
+    inline FontMetrics TextImager::FontCacheInfoUpdater::GetMetrics () const
     {
         return fImager->fCachedFontInfo;
     }

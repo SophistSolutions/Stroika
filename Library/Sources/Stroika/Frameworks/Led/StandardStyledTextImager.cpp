@@ -113,7 +113,7 @@ void StandardStyledTextImager::HookStyleDatabaseChanged ()
 {
 }
 
-Led_FontMetrics StandardStyledTextImager::GetFontMetricsAt (size_t charAfterPos) const
+FontMetrics StandardStyledTextImager::GetFontMetricsAt (size_t charAfterPos) const
 {
     Tablet_Acquirer tablet (this);
     AssertNotNull (static_cast<Tablet*> (tablet));
