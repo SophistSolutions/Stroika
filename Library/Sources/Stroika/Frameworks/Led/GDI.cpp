@@ -634,7 +634,7 @@ void Bitmap::LoadBitmap (HINSTANCE hInstance, LPCTSTR lpBitmapName)
  ************************************ TWIPS *************************************
  ********************************************************************************
  */
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy && 0
 constexpr TWIPS TWIPS::kPoint   = TWIPS{20}; // a printers 'point' (1/72 of an inch)
 constexpr TWIPS TWIPS::kInch    = TWIPS{1440};
 constexpr TWIPS TWIPS::kOneInch = TWIPS{1440};

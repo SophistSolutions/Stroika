@@ -429,17 +429,6 @@ namespace Stroika::Frameworks::Led {
         ColorValue fBlue;
     };
 
-#if __cpp_impl_three_way_comparison < 201907
-    bool operator== (const Color& lhs, const Color& rhs)
-    {
-        return lhs.operator== (rhs);
-    }
-    bool operator!= (const Color& lhs, const Color& rhs)
-    {
-        return notlhs.operator== (rhs);
-    }
-#endif
-
     Color operator* (Color lhs, float factor);
     Color operator/ (Color lhs, float divBy);
     Color operator+ (Color lhs, Color rhs);
