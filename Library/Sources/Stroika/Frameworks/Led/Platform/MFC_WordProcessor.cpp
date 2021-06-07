@@ -337,7 +337,7 @@ void Led_MFC_ControlItem::OnDeactivateUI (BOOL bUndoable)
 
 void Led_MFC_ControlItem::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Tablet* tablet,
                                        [[maybe_unused]] size_t from, [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                                       Coordinate useBaseLine, DistanceType* pixelsDrawn)
+                                       CoordinateType useBaseLine, DistanceType* pixelsDrawn)
 {
     Require (to - from == 1);
     Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
@@ -349,10 +349,10 @@ void Led_MFC_ControlItem::DrawSegment (const StyledTextImager* imager, const Run
     tablet->SetTextColor (foreColor.GetOSRep ());
     tablet->SetBkColor (backColor.GetOSRep ());
 
-    Led_Rect ourBoundsRect = drawInto;
-    ourBoundsRect.right    = ourBoundsRect.left + fSize.h + 2 * kDefaultEmbeddingMargin.h;
-    Coordinate embedBottom = useBaseLine;
-    Coordinate embedTop    = embedBottom - fSize.v;
+    Led_Rect ourBoundsRect     = drawInto;
+    ourBoundsRect.right        = ourBoundsRect.left + fSize.h + 2 * kDefaultEmbeddingMargin.h;
+    CoordinateType embedBottom = useBaseLine;
+    CoordinateType embedTop    = embedBottom - fSize.v;
     Assert (embedTop >= drawInto.top);
     Assert (embedBottom <= drawInto.bottom);
     Led_Rect innerBoundsRect = Led_Rect (Led_Point (embedTop, drawInto.left + kDefaultEmbeddingMargin.h), fSize);

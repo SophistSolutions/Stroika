@@ -296,7 +296,7 @@ public:
 #if qPlatform_MacOS
         Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator);
 #elif qPlatform_Windows
-        Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator, ::AfxGetResourceHandle (), ::GetActiveWindow ());
+        Led_StdDialogHelper_SpellCheckDialog       spellCheckDialog (delegator, ::AfxGetResourceHandle (), ::GetActiveWindow ());
 #elif qStroika_FeatureSupported_XWindows
         Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator, GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()));
 #endif
@@ -319,7 +319,7 @@ public:
 #if qPlatform_MacOS
         Led_StdDialogHelper_OtherFontSizeDialog dlg;
 #elif qPlatform_Windows
-        Led_StdDialogHelper_OtherFontSizeDialog dlg (::AfxGetResourceHandle (), ::GetActiveWindow ());
+        Led_StdDialogHelper_OtherFontSizeDialog    dlg (::AfxGetResourceHandle (), ::GetActiveWindow ());
 #endif
         dlg.InitValues (origHeight);
         if (dlg.DoModal ()) {
@@ -452,7 +452,7 @@ public:
 #if qPlatform_MacOS
         DLGTYPE infoDialog;
 #elif qPlatform_Windows
-        DLGTYPE infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
+        DLGTYPE                                    infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 #endif
         DLGTYPE::cvt<DLGTYPE::Info, TableSelectionPropertiesInfo> (&infoDialog.fInfo, *tableProperties);
         if (infoDialog.DoModal ()) {
@@ -598,16 +598,16 @@ void LedItView::SetMaxLength (long maxLength)
     fMaxLength = maxLength;
 }
 
-void LedItView::GetLayoutMargins (RowReference row, Coordinate* lhs, Coordinate* rhs) const
+void LedItView::GetLayoutMargins (RowReference row, CoordinateType* lhs, CoordinateType* rhs) const
 {
     if (GetWrapToWindow ()) {
         // Make the layout right margin of each line (paragraph) equal to the windowrect. Ie, wrap to the
         // edge of the window. NB: because of this choice, we must 'InvalidateAllCaches' when the
         // WindowRect changes in our SetWindowRect() override.
-        Coordinate l = 0;
-        Coordinate r = 0;
+        CoordinateType l = 0;
+        CoordinateType r = 0;
         inherited::GetLayoutMargins (row, &l, &r);
-        r = max (static_cast<Coordinate> (GetWindowRect ().GetWidth ()), l + 1);
+        r = max (static_cast<CoordinateType> (GetWindowRect ().GetWidth ()), l + 1);
         Ensure (r > l);
         if (lhs != NULL) {
             *lhs = l;

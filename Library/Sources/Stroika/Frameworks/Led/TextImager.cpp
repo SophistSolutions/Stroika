@@ -572,8 +572,8 @@ void TextImager::SetWindowRect (const Led_Rect& windowRect)
 */
 void TextImager::ScrollSoShowingHHelper (size_t markerPos, size_t andTryToShowMarkerPos)
 {
-    Coordinate maxHScrollPos = ComputeMaxHScrollPos ();
-    Coordinate hsp           = GetHScrollPos ();
+    CoordinateType maxHScrollPos = ComputeMaxHScrollPos ();
+    CoordinateType hsp           = GetHScrollPos ();
 
     /*
      *  Speed tweek - avoid alot of computations which are unneeded if this is true.
@@ -589,14 +589,14 @@ void TextImager::ScrollSoShowingHHelper (size_t markerPos, size_t andTryToShowMa
 
     {
         // Try to see if we can accomodate the 'andTryToShowMarkerPos'.
-        Led_Rect   andTryRRR             = GetCharWindowLocation (andTryToShowMarkerPos);
-        Coordinate whereAtInGlobalCoords = windowRect.left - andTryRRR.left;
+        Led_Rect       andTryRRR             = GetCharWindowLocation (andTryToShowMarkerPos);
+        CoordinateType whereAtInGlobalCoords = windowRect.left - andTryRRR.left;
         if (andTryRRR.left < windowRect.left) {
             Assert (hsp >= whereAtInGlobalCoords);
             hsp -= whereAtInGlobalCoords;
         }
         else if (andTryRRR.right > windowRect.right) {
-            Coordinate howFarOffRight = andTryRRR.right - windowRect.right;
+            CoordinateType howFarOffRight = andTryRRR.right - windowRect.right;
             hsp += howFarOffRight; // now the char should be just barely showing.
             hsp = min (hsp, maxHScrollPos);
         }
@@ -609,17 +609,17 @@ void TextImager::ScrollSoShowingHHelper (size_t markerPos, size_t andTryToShowMa
         Led_Rect rrr = GetCharWindowLocation (markerPos);
 
         {
-            Coordinate adjustRRRBy = GetHScrollPos () - hsp;
+            CoordinateType adjustRRRBy = GetHScrollPos () - hsp;
             rrr += Led_Point (0, adjustRRRBy);
         }
 
-        Coordinate whereAtInGlobalCoords = windowRect.GetLeft () - rrr.GetLeft ();
+        CoordinateType whereAtInGlobalCoords = windowRect.GetLeft () - rrr.GetLeft ();
         if (rrr.GetLeft () < windowRect.GetLeft ()) {
             Assert (hsp >= whereAtInGlobalCoords);
             hsp -= whereAtInGlobalCoords;
         }
         else if (rrr.GetRight () > windowRect.GetRight ()) {
-            Coordinate howFarOffRight = rrr.GetRight () - windowRect.GetRight ();
+            CoordinateType howFarOffRight = rrr.GetRight () - windowRect.GetRight ();
             hsp += howFarOffRight; // now the char should be just barely showing.
             hsp = min (hsp, maxHScrollPos);
         }
@@ -630,7 +630,7 @@ void TextImager::ScrollSoShowingHHelper (size_t markerPos, size_t andTryToShowMa
     SetHScrollPos (hsp);
 }
 
-void TextImager::SetHScrollPos (Coordinate hScrollPos)
+void TextImager::SetHScrollPos (CoordinateType hScrollPos)
 {
     if (hScrollPos != GetHScrollPos ()) {
         SetHScrollPos_ (hScrollPos);
@@ -1310,7 +1310,7 @@ vector<Led_Rect> TextImager::GetSelectionWindowRects (size_t from, size_t to) co
         bottomRow--;
     }
 
-    Coordinate lastRowBottom = 0; // Keep track of last row's bottom for interline-space support
+    CoordinateType lastRowBottom = 0; // Keep track of last row's bottom for interline-space support
     for (size_t curRow = topRow;;) {
         size_t firstCharInRow = from;
         if (topRow != curRow) {
@@ -1329,8 +1329,8 @@ vector<Led_Rect> TextImager::GetSelectionWindowRects (size_t from, size_t to) co
 #endif
 
         vector<Led_Rect> hilightRects = GetRowHilightRects (text, startOfRow, endOfRow, GetSelectionStart (), GetSelectionEnd ());
-        Coordinate       newMinTop    = lastRowBottom;
-        Coordinate       newMaxBottom = lastRowBottom;
+        CoordinateType   newMinTop    = lastRowBottom;
+        CoordinateType   newMaxBottom = lastRowBottom;
         for (auto i = hilightRects.begin (); i != hilightRects.end (); ++i) {
             Led_Rect hilightRect = *i;
             Require (hilightRect.GetWidth () >= 0);
@@ -1522,8 +1522,8 @@ void TextImager::DrawRowSegments (Tablet* tablet, const Led_Rect& currentRowRect
      *  with this is that in SOME languages (e.g. Japanese) the character used as a wrap-char
      *  may be a real useful (Japanese) character!
      */
-    size_t     segEnd   = rowEnd;
-    Coordinate baseLine = currentRowRect.top + MeasureSegmentBaseLine (rowStart, segEnd);
+    size_t         segEnd   = rowEnd;
+    CoordinateType baseLine = currentRowRect.top + MeasureSegmentBaseLine (rowStart, segEnd);
 
     /*
      *  Its OK for the baseline to be outside of the currentRowRect. But the text display of this
@@ -1574,7 +1574,7 @@ void TextImager::DrawRowHilight (Tablet* tablet, [[maybe_unused]] const Led_Rect
             paragraphs (as in LECs LVEJ side-by-side mode).</p>
                 <p>Renamed to @'TextImager::DrawInterLineSpace' from MutliRowTextImager::DrawInterLineSpace for Led 3.1a3 release.</p>
 */
-void TextImager::DrawInterLineSpace (DistanceType interlineSpace, Tablet* tablet, Coordinate vPosOfTopOfInterlineSpace, bool segmentHilighted, bool printing)
+void TextImager::DrawInterLineSpace (DistanceType interlineSpace, Tablet* tablet, CoordinateType vPosOfTopOfInterlineSpace, bool segmentHilighted, bool printing)
 {
     // This code not been checked/tested since I rewrote the erasing code etc.. Maybe wrong - probably wrong? No matter, anybody
     // ever using interline space would probably OVERRIDE this anyhow..
@@ -1752,7 +1752,7 @@ void TextImager::PatchWidthRemoveMappedDisplayCharacters_HelperForChar (const Le
 */
 void TextImager::DrawSegment (Tablet* tablet,
                               size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                              Coordinate useBaseLine, DistanceType* pixelsDrawn)
+                              CoordinateType useBaseLine, DistanceType* pixelsDrawn)
 {
     DrawSegment_ (tablet, GetDefaultFont (), from, to, text, drawInto, useBaseLine, pixelsDrawn);
 }
@@ -1768,7 +1768,7 @@ void TextImager::DrawSegment (Tablet* tablet,
 */
 void TextImager::DrawSegment_ (Tablet* tablet, const FontSpecification& fontSpec,
                                size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto,
-                               Coordinate useBaseLine, DistanceType* pixelsDrawn) const
+                               CoordinateType useBaseLine, DistanceType* pixelsDrawn) const
 {
     RequireNotNull (tablet);
     Assert (from <= to);
@@ -1797,7 +1797,7 @@ void TextImager::DrawSegment_ (Tablet* tablet, const FontSpecification& fontSpec
     Assert (useBaseLine >= drawInto.top);
 
     //Assert (useBaseLine <= drawInto.bottom);      Now allowed... LGP 2000-06-12 - see SPR#0760 - and using EXACT-height of a small height, and use a large font
-    Coordinate drawCharTop = useBaseLine - ascent; // our PortableGDI_TabbedTextOut() assumes draw in topLeft
+    CoordinateType drawCharTop = useBaseLine - ascent; // our PortableGDI_TabbedTextOut() assumes draw in topLeft
     //Require (drawCharTop >= drawInto.top);        // Same deal as for useBaseLine - LGP 2000-06-12
 
     if (fontSpec.GetStyle_SubOrSuperScript () == FontSpecification::eSuperscript) {

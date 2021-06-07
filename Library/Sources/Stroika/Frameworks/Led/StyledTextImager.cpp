@@ -305,7 +305,7 @@ vector<RunElement> StyledTextImager::SummarizeStyleMarkers (size_t from, size_t 
 void StyledTextImager::DrawSegment (Tablet* tablet,
                                     size_t from, size_t to, const TextLayoutBlock& text,
                                     const Led_Rect& drawInto, const Led_Rect& invalidRect,
-                                    Coordinate useBaseLine, DistanceType* pixelsDrawn)
+                                    CoordinateType useBaseLine, DistanceType* pixelsDrawn)
 {
     /*
      *  Note that SummarizeStyleMarkers assures 'outputSummary' comes out in VIRTUAL order.
@@ -348,7 +348,7 @@ void StyledTextImager::DrawSegment (Tablet* tablet,
          *  So simply (as a temp hack) use some fixed number of pixels to optimize by.
          *
          */
-        const Coordinate kSluffToLeaveRoomForOverhangs = 20; // cannot imagine more pixel overhang than this,
+        const CoordinateType kSluffToLeaveRoomForOverhangs = 20; // cannot imagine more pixel overhang than this,
         // and its a tmp hack anyhow - LGP 960516
         if (tmpDrawInto.left - GetHScrollPos () < invalidRect.right + kSluffToLeaveRoomForOverhangs) {
             DistanceType pixelsDrawnHere = 0;

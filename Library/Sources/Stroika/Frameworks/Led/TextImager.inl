@@ -190,11 +190,11 @@ namespace Stroika::Frameworks::Led {
                 no horizontal scrolling has taken place. Call @'TextImager::SetHScrollPos ()' to set where you have
                 horizontally scrolled to.</p>
     */
-    inline Coordinate TextImager::GetHScrollPos () const
+    inline CoordinateType TextImager::GetHScrollPos () const
     {
         return (fHScrollPos);
     }
-    inline void TextImager::SetHScrollPos_ (Coordinate hScrollPos)
+    inline void TextImager::SetHScrollPos_ (CoordinateType hScrollPos)
     {
         fHScrollPos = hScrollPos;
     }

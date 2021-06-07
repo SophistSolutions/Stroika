@@ -2009,10 +2009,10 @@ DistanceType WordProcessor::ComputeMaxHScrollPos () const
 */
 TWIPS WordProcessor::CalculateFarthestRightMarginInDocument () const
 {
-    Coordinate   longestRowWidth = 0;
-    RowReference curRow          = RowReference (GetFirstPartitionMarker (), 0);
+    CoordinateType longestRowWidth = 0;
+    RowReference   curRow          = RowReference (GetFirstPartitionMarker (), 0);
     do {
-        Coordinate rhsMargin = 0;
+        CoordinateType rhsMargin = 0;
         GetLayoutMargins (curRow, nullptr, &rhsMargin);
         longestRowWidth = max (longestRowWidth, rhsMargin);
     } while (GetNextRowReference (&curRow));
@@ -2046,11 +2046,11 @@ TWIPS WordProcessor::GetFarthestRightMarginInDocument () const
 */
 TWIPS WordProcessor::CalculateFarthestRightMarginInWindow () const
 {
-    Coordinate   longestRowWidth  = 0;
-    size_t       rowsLeftInWindow = GetTotalRowsInWindow_ ();
-    RowReference curRow           = GetTopRowReferenceInWindow ();
+    CoordinateType longestRowWidth  = 0;
+    size_t         rowsLeftInWindow = GetTotalRowsInWindow_ ();
+    RowReference   curRow           = GetTopRowReferenceInWindow ();
     do {
-        Coordinate rhsMargin = 0;
+        CoordinateType rhsMargin = 0;
         GetLayoutMargins (curRow, nullptr, &rhsMargin);
         longestRowWidth = max (longestRowWidth, rhsMargin);
     } while (rowsLeftInWindow-- > 0 and GetNextRowReference (&curRow));
@@ -2900,8 +2900,8 @@ void WordProcessor::OnInsertTableCommand ()
                     for (size_t c = 0; c < cols; ++c) {
                         TWIPS targetWidth = TWIPS (0);
                         {
-                            Coordinate lhs = 0;
-                            Coordinate rhs = 0;
+                            CoordinateType lhs = 0;
+                            CoordinateType rhs = 0;
                             GetLayoutMargins (GetRowReferenceContainingPosition (t->GetStart ()), &lhs, &rhs);
                             Assert (lhs < rhs);
                             targetWidth = Led_CvtScreenPixelsToTWIPSH (rhs - lhs);
@@ -3409,7 +3409,7 @@ DistanceType WordProcessor::GetListLeaderLength (size_t paragraphMarkerPos) cons
 
     Tablet_Acquirer tablet_ (this);
     Tablet*         tablet = tablet_;
-    Coordinate      lhs    = tablet->CvtFromTWIPSH (lhsTWIPS);
+    CoordinateType  lhs    = tablet->CvtFromTWIPSH (lhsTWIPS);
     Led_tString     leader = GetListLeader (paragraphMarkerPos);
 
     size_t len = leader.length ();
@@ -3621,7 +3621,7 @@ void WordProcessor::DrawRowSegments (Tablet* tablet, const Led_Rect& currentRowR
 
     Led_Rect adjustedDrawInto = currentRowRect;
     {
-        Coordinate lhsMargin = 0;
+        CoordinateType lhsMargin = 0;
         GetLayoutMargins (row, &lhsMargin, nullptr);
         adjustedDrawInto += Led_Point (0, lhsMargin);
     }
@@ -3648,7 +3648,7 @@ void WordProcessor::DrawRowSegments (Tablet* tablet, const Led_Rect& currentRowR
                     FontSpecification nextCharsFontStyle = GetStyleInfo (rowStart);
                     FontSpecification useBulletFont      = GetStaticDefaultFont ();
                     useBulletFont.SetPointSize (max (static_cast<unsigned short> (14), nextCharsFontStyle.GetPointSize ()));
-                    Coordinate baseLine = xxx.GetTop () + MeasureSegmentBaseLine (rowStart, rowStart);
+                    CoordinateType baseLine = xxx.GetTop () + MeasureSegmentBaseLine (rowStart, rowStart);
                     DrawSegment_ (tablet, useBulletFont,
                                   rowStart, rowStart + listLeader.length (),
                                   TextLayoutBlock_Basic (listLeader.c_str (), listLeader.c_str () + listLeader.length ()),
@@ -3680,7 +3680,7 @@ void WordProcessor::DrawRowSegments (Tablet* tablet, const Led_Rect& currentRowR
                 Led_Rect     yyy          = adjustedDrawInto;
                 DistanceType segmentWidth = CalcSegmentSize (rowStart, rowEnd);
                 yyy.left += segmentWidth;
-                Coordinate baseLine = yyy.GetTop () + MeasureSegmentBaseLine (rowStart, rowStart);
+                CoordinateType baseLine = yyy.GetTop () + MeasureSegmentBaseLine (rowStart, rowStart);
                 DrawSegment_ (tablet, useFont, rowEnd, rowEnd + 1,
                               TextLayoutBlock_Basic (&newline, &newline + 1),
                               yyy, baseLine, nullptr);
@@ -3710,7 +3710,7 @@ vector<Led_Rect> WordProcessor::GetRowHilightRects (const TextLayoutBlock& text,
 
 void WordProcessor::DrawSegment (Tablet* tablet,
                                  size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
-                                 Coordinate useBaseLine, DistanceType* pixelsDrawn)
+                                 CoordinateType useBaseLine, DistanceType* pixelsDrawn)
 {
     DistanceType pixelsDrawn_;
     if (GetShowTabGlyphs ()) {
@@ -3748,12 +3748,12 @@ void WordProcessor::DrawSegment (Tablet* tablet,
                     tablet->EraseBackground_SolidHelper (arrowBody, arrowColor);
 
                     // Create the arrow head. Make a list of points. Then create a region from those points, and fill it.
-                    const Coordinate kArrowHSize   = 8;
-                    const Coordinate kArrowVSize   = 8;
-                    Led_Point        tip           = arrowBody.GetTopRight ();
-                    Coordinate       hTriangleBase = max (arrowBody.right - kArrowHSize, arrowBody.left);
-                    Led_Point        topPt         = Led_Point (max (arrowBody.GetTop () - kArrowVSize / 2, tabRect.top), hTriangleBase);
-                    Led_Point        botPt         = Led_Point (min (arrowBody.GetTop () + kArrowVSize / 2, tabRect.bottom), hTriangleBase);
+                    const CoordinateType kArrowHSize   = 8;
+                    const CoordinateType kArrowVSize   = 8;
+                    Led_Point            tip           = arrowBody.GetTopRight ();
+                    CoordinateType       hTriangleBase = max (arrowBody.right - kArrowHSize, arrowBody.left);
+                    Led_Point            topPt         = Led_Point (max (arrowBody.GetTop () - kArrowVSize / 2, tabRect.top), hTriangleBase);
+                    Led_Point            botPt         = Led_Point (min (arrowBody.GetTop () + kArrowVSize / 2, tabRect.bottom), hTriangleBase);
 #if qPlatform_Windows
                     Brush                backgroundBrush (arrowColor.GetOSRep ());
                     Led_GDI_Obj_Selector pen (tablet, ::GetStockObject (NULL_PEN));
@@ -4167,8 +4167,8 @@ Led_Rect WordProcessor::GetCharLocationRowRelative (size_t afterPosition, RowRef
     Led_Rect r = inherited::GetCharLocationRowRelative (afterPosition, topRow, maxRowsToCheck);
 
     {
-        Coordinate   lhsMargin = 0;
-        RowReference row       = GetRowReferenceContainingPosition (afterPosition);
+        CoordinateType lhsMargin = 0;
+        RowReference   row       = GetRowReferenceContainingPosition (afterPosition);
         GetLayoutMargins (row, &lhsMargin, nullptr);
         r.left += lhsMargin;
         r.right += lhsMargin;
@@ -4204,7 +4204,7 @@ size_t WordProcessor::GetCharAtLocationRowRelative (const Led_Point& where, RowR
     RowReference row           = GetRowReferenceContainingPosition (posInRow);
     Led_Point    adjustedWhere = where;
     {
-        Coordinate lhsMargin = 0;
+        CoordinateType lhsMargin = 0;
         GetLayoutMargins (row, &lhsMargin, nullptr);
         adjustedWhere.h -= lhsMargin;
     }
@@ -4229,7 +4229,7 @@ size_t WordProcessor::GetCharAtLocationRowRelative (const Led_Point& where, RowR
 */
 size_t WordProcessor::ResetTabStops (size_t from, const Led_tChar* text, size_t nTChars, DistanceType* charLocations, size_t startSoFar) const
 {
-    Coordinate lhsMargin = 0;
+    CoordinateType lhsMargin = 0;
     {
         RowReference row = GetRowReferenceContainingPosition (from);
         GetLayoutMargins (row, &lhsMargin, nullptr);
@@ -4240,9 +4240,9 @@ size_t WordProcessor::ResetTabStops (size_t from, const Led_tChar* text, size_t 
 size_t WordProcessor::ResetTabStopsWithMargin (DistanceType lhsMargin, size_t from, const Led_tChar* text, size_t nTChars, DistanceType* charLocations, size_t startSoFar) const
 {
     RequireNotNull (charLocations);
-    size_t       lastTabIndex = 0;
-    Coordinate   tabAdjust    = 0;
-    DistanceType widthAtStart = (startSoFar == 0 ? 0 : charLocations[startSoFar - 1]);
+    size_t         lastTabIndex = 0;
+    CoordinateType tabAdjust    = 0;
+    DistanceType   widthAtStart = (startSoFar == 0 ? 0 : charLocations[startSoFar - 1]);
     for (size_t i = startSoFar; i < startSoFar + nTChars; i++) {
         if (text[i] == '\t') {
             DistanceType widthSoFar = (i == 0 ? 0 : charLocations[i - 1]);
@@ -4259,7 +4259,7 @@ size_t WordProcessor::ResetTabStopsWithMargin (DistanceType lhsMargin, size_t fr
 @DESCRIPTION:   Override @'WordWrappedTextImager::GetLayoutMargins' to take into account paragraph info, like
     margins, etc.
 */
-void WordProcessor::GetLayoutMargins (RowReference row, Coordinate* lhs, Coordinate* rhs) const
+void WordProcessor::GetLayoutMargins (RowReference row, CoordinateType* lhs, CoordinateType* rhs) const
 {
     if (fParagraphDatabase.get () == nullptr) {
         throw NoParagraphDatabaseAvailable ();
@@ -4363,8 +4363,8 @@ DistanceType WordProcessor::CalcSpaceToEat (size_t rowContainingCharPos) const
     DistanceType segmentWidth = CalcSegmentSize (rowStart, rowEnd);
     DistanceType layoutWidth;
     {
-        Coordinate lhsMargin = 0;
-        Coordinate rhsMargin = 0;
+        CoordinateType lhsMargin = 0;
+        CoordinateType rhsMargin = 0;
         GetLayoutMargins (GetRowReferenceContainingPosition (rowStart), &lhsMargin, &rhsMargin);
         Assert (lhsMargin < rhsMargin);
         layoutWidth = rhsMargin - lhsMargin;
@@ -5741,7 +5741,7 @@ void Table::FinalizeAddition (WordProcessor::AbstractParagraphDatabaseRep* o, si
 
 void Table::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Tablet* tablet,
                          [[maybe_unused]] size_t from, [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
-                         Coordinate /*useBaseLine*/, DistanceType* pixelsDrawn)
+                         CoordinateType /*useBaseLine*/, DistanceType* pixelsDrawn)
 {
     RequireMember (const_cast<StyledTextImager*> (imager), WordProcessor);
     Assert (from + 1 == to);
@@ -5956,7 +5956,7 @@ void Table::DrawTableBorders (WordProcessor& owningWP, Tablet* tablet, const Led
 */
 void Table::DrawCellBorders (Tablet* tablet, size_t /*row*/, size_t /*column*/, const Led_Rect& cellBounds)
 {
-    Coordinate bw = Led_CvtScreenPixelsFromTWIPSH (fBorderWidth);
+    CoordinateType bw = Led_CvtScreenPixelsFromTWIPSH (fBorderWidth);
     // Draw outside of the frame of the cell.
     tablet->FrameRectangle (InsetRect (cellBounds, -bw, -bw), fBorderColor, bw);
 }
@@ -6014,11 +6014,11 @@ void Table::GetClosestCell (const Led_Point& p, size_t* row, size_t* col) const
     // find row...
     size_t rowCount = GetRowCount ();
     Assert (rowCount > 0);
-    Coordinate top = spacing + border.v;
-    size_t     ri  = 0;
+    CoordinateType top = spacing + border.v;
+    size_t         ri  = 0;
     for (; ri < rowCount; ri++) {
-        DistanceType h      = fRows[ri].fHeight;
-        Coordinate   bottom = top + h;
+        DistanceType   h      = fRows[ri].fHeight;
+        CoordinateType bottom = top + h;
         // Treat special case of above entire table as being row zero..
         if (p.v < bottom) {
             break;
@@ -7306,10 +7306,10 @@ void Table::PerformLayout ()
                         Cell     cell     = GetCell (r, c);
                         Led_Rect cellRect = Led_Rect (runningHeight - rowHeight, runningWidth, rowHeight, realCellWidths[c]);
 
-                        cellRect += Led_Point (static_cast<Coordinate> ((r + 1) * border.v), static_cast<Coordinate> ((c + 1) * border.h));
+                        cellRect += Led_Point (static_cast<CoordinateType> ((r + 1) * border.v), static_cast<CoordinateType> ((c + 1) * border.h));
 
                         // add in cell spacing
-                        cellRect += Led_Point (static_cast<Coordinate> ((r + 1) * spacing), static_cast<Coordinate> ((c + 1) * spacing));
+                        cellRect += Led_Point (static_cast<CoordinateType> ((r + 1) * spacing), static_cast<CoordinateType> ((c + 1) * spacing));
 
                         cell.SetCachedBoundsRect (cellRect);
                         lastRealCellIdx = c;
@@ -7897,7 +7897,7 @@ void WordProcessor::Table::EmbeddedTableWordProcessor::SetDefaultUpdateMode (Upd
     inherited::SetDefaultUpdateMode (defaultUpdateMode);
 }
 
-void WordProcessor::Table::EmbeddedTableWordProcessor::GetLayoutMargins (RowReference row, Coordinate* lhs, Coordinate* rhs) const
+void WordProcessor::Table::EmbeddedTableWordProcessor::GetLayoutMargins (RowReference row, CoordinateType* lhs, CoordinateType* rhs) const
 {
     if (rhs != nullptr) {
         inherited::GetLayoutMargins (row, lhs, nullptr);
@@ -7910,7 +7910,7 @@ void WordProcessor::Table::EmbeddedTableWordProcessor::GetLayoutMargins (RowRefe
     // edge of the window. NB: because of this choice, we must 'InvalidateAllCaches' when the
     // WindowRect changes in our SetWindowRect() OVERRIDE.
     if (rhs != nullptr) {
-        *rhs = (max (Coordinate (GetWindowRect ().GetWidth ()), Coordinate (1)));
+        *rhs = (max (CoordinateType (GetWindowRect ().GetWidth ()), CoordinateType (1)));
     }
 }
 

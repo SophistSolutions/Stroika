@@ -38,7 +38,7 @@ namespace Stroika::Frameworks::Led {
         this->GetTextStore ().Replace (0, 0, initialText.c_str (), initialText.length ());
     }
     template <typename TEXTSTORE, typename IMAGER>
-    void TrivialWordWrappedImager<TEXTSTORE, IMAGER>::GetLayoutMargins (MultiRowTextImager::RowReference row, Coordinate* lhs, Coordinate* rhs) const
+    void TrivialWordWrappedImager<TEXTSTORE, IMAGER>::GetLayoutMargins (MultiRowTextImager::RowReference row, CoordinateType* lhs, CoordinateType* rhs) const
     {
         Ensure (this->GetWindowRect ().GetWidth () >= 1);
         if (lhs != nullptr) {

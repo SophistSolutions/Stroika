@@ -392,17 +392,17 @@ namespace Stroika::Frameworks::Led {
             *
             */
     public:
-        nonvirtual Coordinate GetHScrollPos () const;
-        virtual void          SetHScrollPos (Coordinate hScrollPos);
+        nonvirtual CoordinateType GetHScrollPos () const;
+        virtual void              SetHScrollPos (CoordinateType hScrollPos);
 
     protected:
-        nonvirtual void SetHScrollPos_ (Coordinate hScrollPos);
+        nonvirtual void SetHScrollPos_ (CoordinateType hScrollPos);
 
     public:
         virtual DistanceType ComputeMaxHScrollPos () const;
 
     private:
-        Coordinate fHScrollPos;
+        CoordinateType fHScrollPos;
 
         /*
             *  Some utility methods, very handy for implementing horizontal scrolling. Can (and should be) overriden
@@ -726,7 +726,7 @@ namespace Stroika::Frameworks::Led {
                                       const TextLayoutBlock& text, size_t rowStart, size_t rowEnd);
         virtual void DrawRowHilight (Tablet* tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect,
                                      const TextLayoutBlock& text, size_t rowStart, size_t rowEnd);
-        virtual void DrawInterLineSpace (DistanceType interlineSpace, Tablet* tablet, Coordinate vPosOfTopOfInterlineSpace, bool segmentHilighted, bool printing);
+        virtual void DrawInterLineSpace (DistanceType interlineSpace, Tablet* tablet, CoordinateType vPosOfTopOfInterlineSpace, bool segmentHilighted, bool printing);
 
     protected:
         virtual bool   ContainsMappedDisplayCharacters (const Led_tChar* text, size_t nTChars) const;
@@ -743,12 +743,12 @@ namespace Stroika::Frameworks::Led {
     protected:
         virtual void DrawSegment (Tablet* tablet,
                                   size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
-                                  Coordinate useBaseLine, DistanceType* pixelsDrawn);
+                                  CoordinateType useBaseLine, DistanceType* pixelsDrawn);
 
     public:
         // Note we REQUIRE that useBaseLine be contained within drawInto
         nonvirtual void DrawSegment_ (Tablet* tablet, const FontSpecification& fontSpec,
-                                      size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, Coordinate useBaseLine, DistanceType* pixelsDrawn) const;
+                                      size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, CoordinateType useBaseLine, DistanceType* pixelsDrawn) const;
 
     protected:
         // distanceResults must be an array of (to-from) elements - which is filled in with the widths
@@ -826,7 +826,7 @@ namespace Stroika::Frameworks::Led {
                     character) if the point passed in is past the end of the last character in the row.
                         </p>
             */
-        virtual size_t GetRowRelativeCharAtLoc (Coordinate hOffset, size_t rowStart) const = 0;
+        virtual size_t GetRowRelativeCharAtLoc (CoordinateType hOffset, size_t rowStart) const = 0;
 
         // Font info caches...
     private:

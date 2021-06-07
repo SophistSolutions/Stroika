@@ -107,7 +107,7 @@ private:
     long fMaxLength;
 
 public:
-    virtual void GetLayoutMargins (RowReference row, Coordinate* lhs, Coordinate* rhs) const override;
+    virtual void GetLayoutMargins (RowReference row, CoordinateType* lhs, CoordinateType* rhs) const override;
     virtual void SetWindowRect (const Led_Rect& windowRect) override;
 
 public:

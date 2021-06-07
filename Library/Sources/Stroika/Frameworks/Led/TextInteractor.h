@@ -376,8 +376,8 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void ScrollSoShowing (size_t markerPos, size_t andTryToShowMarkerPos = 0, UpdateMode updateMode = eDefaultUpdate);
         nonvirtual void SetDefaultFont (const IncrementalFontSpecification& defaultFont, UpdateMode updateMode = eDefaultUpdate);
         nonvirtual void SetWindowRect (const Led_Rect& windowRect, UpdateMode updateMode = eDefaultUpdate);
-        virtual void    SetHScrollPos (Coordinate hScrollPos) override;
-        nonvirtual void SetHScrollPos (Coordinate hScrollPos, UpdateMode updateMode);
+        virtual void    SetHScrollPos (CoordinateType hScrollPos) override;
+        nonvirtual void SetHScrollPos (CoordinateType hScrollPos, UpdateMode updateMode);
 
         /*
          *  Same as SetTopRowInWindow, but uses a marker position instead of a row#. This can be MUCH
@@ -933,11 +933,11 @@ namespace Stroika::Frameworks::Led {
         PreScrollInfo ();
 
     private:
-        UpdateMode fUpdateMode;
-        size_t     fOldWindowStart;
-        Coordinate fOldHScrollPos;
-        bool       fTryTodoScrollbits;
-        size_t     fOldLastRowStart;
+        UpdateMode     fUpdateMode;
+        size_t         fOldWindowStart;
+        CoordinateType fOldHScrollPos;
+        bool           fTryTodoScrollbits;
+        size_t         fOldLastRowStart;
 
     private:
         friend void TextInteractor::PreScrollHelper (UpdateMode updateMode, PreScrollInfo* preScrollInfo);

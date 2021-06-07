@@ -664,7 +664,7 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:
         <p>See also @'Tablet::CvtFromTWIPSH', @'Tablet::CvtToTWIPSV', @'Tablet::CvtToTWIPSH'.</p>
     */
-    inline Coordinate Tablet::CvtFromTWIPSV (TWIPS from) const
+    inline CoordinateType Tablet::CvtFromTWIPSV (TWIPS from) const
     {
 #if qPlatform_Windows
         if (fLogPixelsV == 0) {
@@ -691,7 +691,7 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:
         <p>See also @'Tablet::CvtFromTWIPSV', @'Tablet::CvtToTWIPSV', @'Tablet::CvtToTWIPSH'.</p>
     */
-    inline Coordinate Tablet::CvtFromTWIPSH (TWIPS from) const
+    inline CoordinateType Tablet::CvtFromTWIPSH (TWIPS from) const
     {
 #if qPlatform_Windows
         if (fLogPixelsH == 0) {
@@ -718,7 +718,7 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>Utility routine to convert from logical coordinates (usually pixels) to TWIPS.</p>
         <p>See also @'Tablet::CvtFromTWIPSV', @'Tablet::CvtFromTWIPSH', @'Tablet::CvtToTWIPSH'.</p>
     */
-    inline TWIPS Tablet::CvtToTWIPSV (Coordinate from) const
+    inline TWIPS Tablet::CvtToTWIPSV (CoordinateType from) const
     {
 #if qPlatform_Windows
         if (fLogPixelsV == 0) {
@@ -744,7 +744,7 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>Utility routine to convert from logical coordinates (usually pixels) to TWIPS.</p>
         <p>See also @'Tablet::CvtFromTWIPSV', @'Tablet::CvtFromTWIPSH', @'Tablet::CvtToTWIPSV'.</p>
     */
-    inline TWIPS Tablet::CvtToTWIPSH (Coordinate from) const
+    inline TWIPS Tablet::CvtToTWIPSH (CoordinateType from) const
     {
 #if qPlatform_Windows
         if (fLogPixelsH == 0) {
@@ -1249,7 +1249,7 @@ namespace Stroika::Frameworks::Led {
     inline Led_Rect InsetRect (const Led_Rect& r, int vBy, int hBy)
     {
         return Led_Rect (r.GetTop () + vBy, r.GetLeft () + hBy,
-                         max (0L, Coordinate (r.GetHeight ()) - 2 * vBy), max (0L, Coordinate (r.GetWidth ()) - 2 * hBy));
+                         max (0L, CoordinateType (r.GetHeight ()) - 2 * vBy), max (0L, CoordinateType (r.GetWidth ()) - 2 * hBy));
     }
 
     /*
@@ -1264,10 +1264,10 @@ namespace Stroika::Frameworks::Led {
     */
     inline Led_Rect EnsureRectInRect (const Led_Rect& r, Led_Rect enlosingR)
     {
-        DistanceType winWidth  = min (r.GetWidth (), enlosingR.GetWidth ());
-        DistanceType winHeight = min (r.GetHeight (), enlosingR.GetHeight ());
-        Coordinate   winLeft   = max (r.GetLeft (), enlosingR.GetLeft ());
-        Coordinate   winTop    = max (r.GetTop (), enlosingR.GetTop ());
+        DistanceType   winWidth  = min (r.GetWidth (), enlosingR.GetWidth ());
+        DistanceType   winHeight = min (r.GetHeight (), enlosingR.GetHeight ());
+        CoordinateType winLeft   = max (r.GetLeft (), enlosingR.GetLeft ());
+        CoordinateType winTop    = max (r.GetTop (), enlosingR.GetTop ());
 
         DISABLE_COMPILER_MSC_WARNING_START (4018) //signed/unsigned mismatch
         if ((winLeft + winWidth) > enlosingR.GetRight ()) {
@@ -1430,7 +1430,7 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>Utility routine to convert from logical coordinates (usually pixels) to TWIPS.
         <p>See also @'Led_CvtScreenPixelsToTWIPSH'.</p>
     */
-    inline TWIPS Led_CvtScreenPixelsToTWIPSV (Coordinate from)
+    inline TWIPS Led_CvtScreenPixelsToTWIPSV (CoordinateType from)
     {
 #if qPlatform_Windows
         return TWIPS (::MulDiv (from, 1440, Led_GDIGlobals::Get ().GetMainScreenLogPixelsV ()));
@@ -1443,7 +1443,7 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>Utility routine to convert from logical coordinates (usually pixels) to TWIPS.
         <p>See also @'Led_CvtScreenPixelsToTWIPSV'.</p>
     */
-    inline TWIPS Led_CvtScreenPixelsToTWIPSH (Coordinate from)
+    inline TWIPS Led_CvtScreenPixelsToTWIPSH (CoordinateType from)
     {
 #if qPlatform_Windows
         return TWIPS (::MulDiv (from, 1440, Led_GDIGlobals::Get ().GetMainScreenLogPixelsH ()));
@@ -1456,7 +1456,7 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>Utility routine to convert from TWIPS to logical coordinates (usually pixels).
         <p>See also @'Led_CvtScreenPixelsFromTWIPSH'.</p>
     */
-    inline Coordinate Led_CvtScreenPixelsFromTWIPSV (TWIPS from)
+    inline CoordinateType Led_CvtScreenPixelsFromTWIPSV (TWIPS from)
     {
 #if qPlatform_Windows
         return ::MulDiv (from, Led_GDIGlobals::Get ().GetMainScreenLogPixelsV (), 1440);
@@ -1469,7 +1469,7 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>Utility routine to convert from TWIPS to logical coordinates (usually pixels).
         <p>See also @'Led_CvtScreenPixelsFromTWIPSV'.</p>
     */
-    inline Coordinate Led_CvtScreenPixelsFromTWIPSH (TWIPS from)
+    inline CoordinateType Led_CvtScreenPixelsFromTWIPSH (TWIPS from)
     {
 #if qPlatform_Windows
         return ::MulDiv (from, Led_GDIGlobals::Get ().GetMainScreenLogPixelsH (), 1440);
@@ -2446,7 +2446,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         isValid = isValid and fStyleValid_Outline and fStyleValid_Shadow and fStyleValid_Condensed and fStyleValid_Extended;
 #elif qPlatform_Windows
-            isValid = isValid and fStyleValid_Strikeout;
+            isValid               = isValid and fStyleValid_Strikeout;
 #endif
         return isValid;
     }
@@ -2666,14 +2666,14 @@ namespace Stroika::Frameworks::Led {
         {
             fStyleValid_Strikeout = false;
 #if qPlatform_Windows
-            fDidSetOSRepCallFlag = false;
+            fDidSetOSRepCallFlag  = false;
 #endif
         }
         inline void IncrementalFontSpecification::SetStyle_Strikeout (bool isStrikeout)
         {
             fStyleValid_Strikeout = true;
 #if qPlatform_Windows
-            fDidSetOSRepCallFlag = false;
+            fDidSetOSRepCallFlag  = false;
 #endif
             inherited::SetStyle_Strikeout (isStrikeout);
         }

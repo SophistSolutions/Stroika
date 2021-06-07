@@ -80,7 +80,7 @@ namespace {
     }
 
     // RTF / LineSpacing support
-    inline static LineSpacing mkLineSpacing_From_RTFValues_ (Coordinate sl, bool multi)
+    inline static LineSpacing mkLineSpacing_From_RTFValues_ (CoordinateType sl, bool multi)
     {
         LineSpacing result; // defaults to single line...
         if (sl != 1000) {
@@ -107,12 +107,12 @@ namespace {
         }
         return result;
     }
-    inline static void mkRTFValues_From_LineSpacing (LineSpacing inLS, Coordinate* sl, bool* multi)
+    inline static void mkRTFValues_From_LineSpacing (LineSpacing inLS, CoordinateType* sl, bool* multi)
     {
         const int kOneLinesWorth = 240;
         switch (inLS.fRule) {
             case LineSpacing::eOnePointFiveSpace:
-                *sl    = static_cast<Coordinate> (kOneLinesWorth * 1.5);
+                *sl    = static_cast<CoordinateType> (kOneLinesWorth * 1.5);
                 *multi = true;
                 break;
             case LineSpacing::eDoubleSpace:
@@ -124,7 +124,7 @@ namespace {
                 *multi = false;
                 break;
             case LineSpacing::eExactTWIPSSpacing:
-                *sl    = -static_cast<Coordinate> (inLS.fArg);
+                *sl    = -static_cast<CoordinateType> (inLS.fArg);
                 *multi = false;
                 break;
             case LineSpacing::eExactLinesSpacing:
@@ -838,7 +838,7 @@ void SinkStreamDestination::SetSpaceAfter (TWIPS tx)
     }
 }
 
-void SinkStreamDestination::SetSpaceBetweenLines (Coordinate sl)
+void SinkStreamDestination::SetSpaceBetweenLines (CoordinateType sl)
 {
     AboutToChange ();
     if (fCurrentContext.fSpaceBetweenLines != sl) {
@@ -2971,7 +2971,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_tx (ReaderContext& readerContext,
     }
     else {
         TextImager::StandardTabStopList* curTabs  = &readerContext.GetCurrentGroupContext ()->fDestinationContext.fTabStops;
-        Coordinate                       lastStop = 0;
+        CoordinateType                   lastStop = 0;
         for (auto i = curTabs->fTabStops.begin (); i != curTabs->fTabStops.end (); ++i) {
             lastStop += *i;
         }
@@ -3449,7 +3449,7 @@ void StyledTextIOReader_RTF::ConstructOLEEmebddingFromRTFInfo ([[maybe_unused]] 
         EmbeddedObjectCreatorRegistry::Assoc assoc = types[i];
         if (memcmp (assoc.fEmbeddingTag, RTFIO::RTFOLEEmbedding::kEmbeddingTag, sizeof (RTFIO::RTFOLEEmbedding::kEmbeddingTag)) == 0) {
             AssertNotNull (assoc.fReadFromMemory);
-            SimpleEmbeddedObjectStyleMarker* embedding = (assoc.fReadFromMemory) (RTFIO::RTFOLEEmbedding::kEmbeddingTag, data, nBytes);
+            SimpleEmbeddedObjectStyleMarker* embedding = (assoc.fReadFromMemory)(RTFIO::RTFOLEEmbedding::kEmbeddingTag, data, nBytes);
             RTFOLEEmbedding*                 rtfe      = dynamic_cast<RTFOLEEmbedding*> (embedding);
             if (rtfe != nullptr) {
                 rtfe->PostCreateSpecifyExtraInfo (size);
@@ -3483,7 +3483,7 @@ void StyledTextIOReader_RTF::ConstructLedEmebddingFromRTFInfo (ReaderContext& re
         EmbeddedObjectCreatorRegistry::Assoc assoc = types[i];
         if (memcmp (assoc.fEmbeddingTag, tag, sizeof (assoc.fEmbeddingTag)) == 0) {
             AssertNotNull (assoc.fReadFromMemory);
-            SimpleEmbeddedObjectStyleMarker* embedding = (assoc.fReadFromMemory) (tag, theData, theDataNBytes);
+            SimpleEmbeddedObjectStyleMarker* embedding = (assoc.fReadFromMemory)(tag, theData, theDataNBytes);
             try {
                 readerContext.GetDestination ().AppendEmbedding (embedding);
                 return;
@@ -4491,8 +4491,8 @@ void StyledTextIOWriter_RTF::WriteStartParagraph (WriterContext& writerContext)
     {
         LineSpacing sl = writerContext.GetSrcStream ().GetLineSpacing ();
         if (sl.fRule != LineSpacing::eSingleSpace) {
-            Coordinate rtfsl = 1000;
-            bool       multi = true;
+            CoordinateType rtfsl = 1000;
+            bool           multi = true;
             mkRTFValues_From_LineSpacing (sl, &rtfsl, &multi);
             if (rtfsl != 1000) {
                 WriteTagNValue ("sl", rtfsl);

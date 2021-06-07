@@ -250,7 +250,7 @@ namespace Stroika::Frameworks::Led {
 
     public:
         virtual void   GetRowRelativeCharLoc (size_t charLoc, DistanceType* lhs, DistanceType* rhs) const override;
-        virtual size_t GetRowRelativeCharAtLoc (Coordinate hOffset, size_t rowStart) const override;
+        virtual size_t GetRowRelativeCharAtLoc (CoordinateType hOffset, size_t rowStart) const override;
 
     private:
         nonvirtual DistanceType CalcSegmentSize_REFERENCE (size_t from, size_t to) const;

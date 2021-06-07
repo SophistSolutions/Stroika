@@ -37,11 +37,11 @@
 namespace Stroika::Frameworks::Led {
 
     /**
-     * <code>Coordinate</code> is the <code>signed</code> analog of @'DistanceType'.
+     * <code>CoordinateType</code> is the <code>signed</code> analog of @'DistanceType'.
      *    @'Led_Point' is a tuple of <code>Coordinates</code>s
      *     (vertical and horizontal).</p>
      */
-    using Coordinate = long;
+    using CoordinateType = long;
 
     /*
     @CLASS:         DistanceType
@@ -288,9 +288,9 @@ namespace Stroika::Frameworks::Led {
     using Led_Size = Point_Base<DistanceType>;
 
     /**
-     *  Simple typedef of @'Point_Base<COORD_TYPE>' using @'Coordinate'.
+     *  Simple typedef of @'Point_Base<COORD_TYPE>' using @'CoordinateType'.
      */
-    using Led_Point = Point_Base<Coordinate>;
+    using Led_Point = Point_Base<CoordinateType>;
     Led_Point operator- (const Led_Point& lhs, const Led_Point& rhs);
 
     /*
@@ -981,10 +981,10 @@ namespace Stroika::Frameworks::Led {
     XRectangle AsXRect (const Led_Rect& r);
 #endif
 
-    TWIPS      Led_CvtScreenPixelsToTWIPSV (Coordinate from);
-    TWIPS      Led_CvtScreenPixelsToTWIPSH (Coordinate from);
-    Coordinate Led_CvtScreenPixelsFromTWIPSV (TWIPS from);
-    Coordinate Led_CvtScreenPixelsFromTWIPSH (TWIPS from);
+    TWIPS          Led_CvtScreenPixelsToTWIPSV (CoordinateType from);
+    TWIPS          Led_CvtScreenPixelsToTWIPSH (CoordinateType from);
+    CoordinateType Led_CvtScreenPixelsFromTWIPSV (TWIPS from);
+    CoordinateType Led_CvtScreenPixelsFromTWIPSH (TWIPS from);
 
     /*
     @CLASS:         Led_FontMetrics
@@ -1086,10 +1086,10 @@ namespace Stroika::Frameworks::Led {
 #endif
 
     public:
-        nonvirtual Coordinate CvtFromTWIPSV (TWIPS from) const;
-        nonvirtual Coordinate CvtFromTWIPSH (TWIPS from) const;
-        nonvirtual TWIPS      CvtToTWIPSV (Coordinate from) const;
-        nonvirtual TWIPS      CvtToTWIPSH (Coordinate from) const;
+        nonvirtual CoordinateType CvtFromTWIPSV (TWIPS from) const;
+        nonvirtual CoordinateType CvtFromTWIPSH (TWIPS from) const;
+        nonvirtual TWIPS          CvtToTWIPSV (CoordinateType from) const;
+        nonvirtual TWIPS          CvtToTWIPSH (CoordinateType from) const;
 
     public:
         nonvirtual Led_Point   CvtFromTWIPS (TWIPS_Point from) const;
@@ -1098,7 +1098,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual TWIPS_Rect  CvtToTWIPS (Led_Rect from) const;
 
     public:
-        nonvirtual void ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, Coordinate scrollBy);
+        nonvirtual void ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, CoordinateType scrollBy);
         nonvirtual void FrameRegion (const Led_Region& r, const Color& c);
 
     public:
@@ -1179,8 +1179,8 @@ namespace Stroika::Frameworks::Led {
                                      const Led_tChar* text, size_t nTChars, DistanceType* charLocations);
         nonvirtual void TabbedTextOut (const Led_FontMetrics& precomputedFontMetrics, const Led_tChar* text, size_t nBytes,
                                        TextDirection direction,
-                                       Led_Point outputAt, Coordinate hTabOrigin, const TabStopList& tabStopList,
-                                       DistanceType* amountDrawn, Coordinate hScrollOffset);
+                                       Led_Point outputAt, CoordinateType hTabOrigin, const TabStopList& tabStopList,
+                                       DistanceType* amountDrawn, CoordinateType hScrollOffset);
 
     public:
         nonvirtual void SetBackColor (const Color& backColor);
@@ -1577,7 +1577,7 @@ namespace Stroika::Frameworks::Led {
 
     // LEGACY NAMES
     using Led_TWIPS [[deprecated ("Since Stroika 2.1b12 use TWIPS")]]                                               = TWIPS;
-    using Led_Coordinate [[deprecated ("Since Stroika 2.1b12 use Coordinate")]]                                     = Coordinate;
+    using Led_Coordinate [[deprecated ("Since Stroika 2.1b12 use CoordinateType")]]                                 = CoordinateType;
     using Led_Distance [[deprecated ("Since Stroika 2.1b12 use DistanceType")]]                                     = DistanceType;
     using Led_TabStopList [[deprecated ("Since Stroika 2.1b12 use TabStopList")]]                                   = TabStopList;
     using Led_IncrementalFontSpecification [[deprecated ("Since Stroika 2.1b12 use IncrementalFontSpecification")]] = IncrementalFontSpecification;

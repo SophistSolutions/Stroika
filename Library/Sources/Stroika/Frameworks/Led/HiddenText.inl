@@ -80,7 +80,7 @@ namespace Stroika::Frameworks::Led {
     template <typename BASECLASS>
     void HidableTextMarkerHelper<BASECLASS>::DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
                                                           size_t from, size_t to, const TextLayoutBlock& text,
-                                                          const Led_Rect& drawInto, const Led_Rect& invalidRect, Coordinate useBaseLine,
+                                                          const Led_Rect& drawInto, const Led_Rect& invalidRect, CoordinateType useBaseLine,
                                                           DistanceType* pixelsDrawn)
     {
         if (this->IsShown ()) {

@@ -73,7 +73,7 @@ namespace Stroika::Frameworks::Led {
             REWRITE THE ABOVE DOCS SO CLEARER ABOUT THIS CHOICE. FROM NOW ON, RETURNS VALUES RELATIVE TO LHS OF WINDOW RECT - LGP 2002-10-25
             </p>
         */
-        virtual void GetLayoutMargins (RowReference row, Coordinate* lhs, Coordinate* rhs) const = 0;
+        virtual void GetLayoutMargins (RowReference row, CoordinateType* lhs, CoordinateType* rhs) const = 0;
 
     public:
         virtual void FillCache (PartitionMarker* pm, PartitionElementCacheInfo& cacheInfo) override;
@@ -124,7 +124,7 @@ namespace Stroika::Frameworks::Led {
         TrivialWordWrappedImager (Tablet* t, Led_Rect bounds, const Led_tString& initialText = LED_TCHAR_OF (""));
 
     public:
-        virtual void            GetLayoutMargins (MultiRowTextImager::RowReference row, Coordinate* lhs, Coordinate* rhs) const override;
+        virtual void            GetLayoutMargins (MultiRowTextImager::RowReference row, CoordinateType* lhs, CoordinateType* rhs) const override;
         nonvirtual DistanceType GetHeight () const;
     };
 

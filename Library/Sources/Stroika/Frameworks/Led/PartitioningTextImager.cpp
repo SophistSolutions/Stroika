@@ -622,8 +622,8 @@ void PartitioningTextImager::GetRowRelativeCharLoc (size_t charLoc, DistanceType
                 }
             }
             else {
-                Coordinate segRHS = spannedSoFar + CalcSegmentSize (absoluteSegStart, absoluteSegStart + runLength);
-                *rhs              = segRHS - CalcSegmentSize (absoluteSegStart, absoluteSegStart + subSegLen);
+                CoordinateType segRHS = spannedSoFar + CalcSegmentSize (absoluteSegStart, absoluteSegStart + runLength);
+                *rhs                  = segRHS - CalcSegmentSize (absoluteSegStart, absoluteSegStart + subSegLen);
                 if (emptyChar) {
                     *lhs = *rhs;
                 }
@@ -644,7 +644,7 @@ void PartitioningTextImager::GetRowRelativeCharLoc (size_t charLoc, DistanceType
 @METHOD:        PartitioningTextImager::GetRowRelativeCharAtLoc
 @DESCRIPTION:   <p>Implementation of abstract interface @'TextImager::GetRowRelativeCharAtLoc'</p>
 */
-size_t PartitioningTextImager::GetRowRelativeCharAtLoc (Coordinate hOffset, size_t rowStart) const
+size_t PartitioningTextImager::GetRowRelativeCharAtLoc (CoordinateType hOffset, size_t rowStart) const
 {
     Require (rowStart == GetStartOfRowContainingPosition (rowStart));
 
@@ -678,7 +678,7 @@ size_t PartitioningTextImager::GetRowRelativeCharAtLoc (Coordinate hOffset, size
 
         lastRunDir = se.fDirection;
 
-        if (hOffset < static_cast<Coordinate> (segVisEnd)) {
+        if (hOffset < static_cast<CoordinateType> (segVisEnd)) {
             /*
              *  Must be this segment. NB: this takes care of special case where mouseLoc is BEFORE first segment in which case
              *  we treat as at the start of that segment...
@@ -694,7 +694,7 @@ size_t PartitioningTextImager::GetRowRelativeCharAtLoc (Coordinate hOffset, size
             for (size_t curEnd = FindNextCharacter (prevEnd); curEnd < segEnd; (prevEnd = curEnd), (curEnd = FindNextCharacter (curEnd))) {
                 DistanceType hSize = CalcSegmentSize (absoluteSegStart, curEnd);
                 if (se.fDirection == eLeftToRight) {
-                    if (static_cast<Coordinate> (hSize + spannedSoFar) > hOffset) {
+                    if (static_cast<CoordinateType> (hSize + spannedSoFar) > hOffset) {
 #if qMultiByteCharacters
                         Assert_CharPosDoesNotSplitCharacter (prevEnd);
 #endif
@@ -703,7 +703,7 @@ size_t PartitioningTextImager::GetRowRelativeCharAtLoc (Coordinate hOffset, size
                     }
                 }
                 else {
-                    if (static_cast<Coordinate> (segVisEnd) - static_cast<Coordinate> (hSize) < hOffset) {
+                    if (static_cast<CoordinateType> (segVisEnd) - static_cast<CoordinateType> (hSize) < hOffset) {
 #if qMultiByteCharacters
                         Assert_CharPosDoesNotSplitCharacter (prevEnd);
 #endif
@@ -748,9 +748,9 @@ size_t PartitioningTextImager::GetRowRelativeCharAtLoc (Coordinate hOffset, size
 size_t PartitioningTextImager::ResetTabStops (size_t from, const Led_tChar* text, size_t nTChars, DistanceType* charLocations, size_t startSoFar) const
 {
     RequireNotNull (charLocations);
-    size_t       lastTabIndex = 0;
-    Coordinate   tabAdjust    = 0;
-    DistanceType widthAtStart = (startSoFar == 0 ? 0 : charLocations[startSoFar - 1]);
+    size_t         lastTabIndex = 0;
+    CoordinateType tabAdjust    = 0;
+    DistanceType   widthAtStart = (startSoFar == 0 ? 0 : charLocations[startSoFar - 1]);
     for (size_t i = startSoFar; i < startSoFar + nTChars; i++) {
         if (text[i] == '\t') {
             DistanceType widthSoFar = (i == 0 ? 0 : charLocations[i - 1]);

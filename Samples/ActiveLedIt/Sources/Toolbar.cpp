@@ -1125,8 +1125,8 @@ void ActiveLedIt_Toolbar::DoLayout ()
     Led_Rect clientBounds = Led_Rect (0, 0, fBounds.GetHeight (), fBounds.GetWidth ());
 #else
     Led_Rect clientBounds = Led_Rect (0, 0,
-                                      max (static_cast<Coordinate> (fBounds.GetHeight ()) - 2 * ::GetSystemMetrics (SM_CYEDGE), 0),
-                                      max (static_cast<Coordinate> (fBounds.GetHeight ()) - 2 * ::GetSystemMetrics (SM_CXEDGE), 0));
+                                      max (static_cast<CoordinateType> (fBounds.GetHeight ()) - 2 * ::GetSystemMetrics (SM_CYEDGE), 0),
+                                      max (static_cast<CoordinateType> (fBounds.GetHeight ()) - 2 * ::GetSystemMetrics (SM_CXEDGE), 0));
 #endif
 
     // MAYBE NOT NEEDED ANYMORE???
@@ -1700,8 +1700,8 @@ STDMETHODIMP ActiveLedIt_ToolbarList::SetRectangle (int X, int Y, UINT width, UI
 void ActiveLedIt_ToolbarList::DoLayout ()
 {
     Led_Rect clientBounds = Led_Rect (0, 0,
-                                      max (static_cast<Coordinate> (fBounds.GetHeight ()) - 2 * ::GetSystemMetrics (SM_CYEDGE), Coordinate (0)),
-                                      max (static_cast<Coordinate> (fBounds.GetWidth ()) - 2 * ::GetSystemMetrics (SM_CXEDGE), Coordinate (0)));
+                                      max (static_cast<CoordinateType> (fBounds.GetHeight ()) - 2 * ::GetSystemMetrics (SM_CYEDGE), CoordinateType (0)),
+                                      max (static_cast<CoordinateType> (fBounds.GetWidth ()) - 2 * ::GetSystemMetrics (SM_CXEDGE), CoordinateType (0)));
     if (m_hWnd != NULL) { // probbaly not really needed anymore - now that I subtract out the SM_CXYEDGE - but what the heck... Just in case...
         RECT cr;
         ::GetClientRect (m_hWnd, &cr);

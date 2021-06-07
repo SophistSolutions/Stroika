@@ -165,7 +165,7 @@ namespace Stroika::Frameworks::Led::Platform {
     public:
         virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
                                           size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                                          Coordinate useBaseLine, DistanceType* pixelsDrawn) override;
+                                          CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
         virtual void         MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
                                                   const Led_tChar* text,
                                                   DistanceType*    distanceResults) const override;

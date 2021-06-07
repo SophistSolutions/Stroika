@@ -22,7 +22,7 @@ using StandardStyleMarker = StandardStyledTextImager::StandardStyleMarker;
 
 void StandardStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Tablet* tablet,
                                        size_t from, size_t to, const TextLayoutBlock& text,
-                                       const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Coordinate useBaseLine, DistanceType* pixelsDrawn)
+                                       const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, CoordinateType useBaseLine, DistanceType* pixelsDrawn)
 {
     RequireNotNull (imager);
     imager->DrawSegment_ (tablet, fFontSpecification, from, to, text, drawInto, useBaseLine, pixelsDrawn);

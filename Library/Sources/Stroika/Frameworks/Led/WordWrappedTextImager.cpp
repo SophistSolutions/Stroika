@@ -104,8 +104,8 @@ void WordWrappedTextImager::FillCache (PartitionMarker* pm, PartitionElementCach
             DistanceType wrapWidth;
             {
                 // NOT RIGHT - doesn't properly interpret tabstops!!! with respect to left margins!!! LGP 980908
-                Coordinate lhsMargin;
-                Coordinate rhsMargin;
+                CoordinateType lhsMargin;
+                CoordinateType rhsMargin;
                 GetLayoutMargins (RowReference (pm, cacheInfo.GetRowCount () - 1), &lhsMargin, &rhsMargin);
                 Assert (lhsMargin < rhsMargin);
                 wrapWidth = rhsMargin - lhsMargin;

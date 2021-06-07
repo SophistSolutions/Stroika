@@ -1178,7 +1178,7 @@ namespace Stroika::Frameworks::Led::Platform {
 #if qSupportWindowsSDKCallbacks
         // Notify the parent window...
         HWND hWnd = this->GetValidatedHWND ();
-        (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, (WPARAM)MAKELONG (GetWindowID (), EN_SETFOCUS), (LPARAM) (hWnd));
+        (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, (WPARAM)MAKELONG (GetWindowID (), EN_SETFOCUS), (LPARAM)(hWnd));
 #endif
     }
     template <typename BASE_INTERACTOR>
@@ -1204,7 +1204,7 @@ namespace Stroika::Frameworks::Led::Platform {
 #if qSupportWindowsSDKCallbacks
         // Notify the parent window...
         HWND hWnd = this->GetValidatedHWND ();
-        (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, (WPARAM)MAKELONG (GetWindowID (), EN_KILLFOCUS), (LPARAM) (hWnd));
+        (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, (WPARAM)MAKELONG (GetWindowID (), EN_KILLFOCUS), (LPARAM)(hWnd));
 #endif
     }
     template <typename BASE_INTERACTOR>
@@ -1434,22 +1434,22 @@ namespace Stroika::Frameworks::Led::Platform {
             } break;
 
             case SB_LINEDOWN: {
-                this->SetHScrollPos (min<Coordinate> (this->GetHScrollPos () + increment, this->ComputeMaxHScrollPos ()));
+                this->SetHScrollPos (min<CoordinateType> (this->GetHScrollPos () + increment, this->ComputeMaxHScrollPos ()));
             } break;
 
             case SB_LINEUP: {
                 if (this->GetHScrollPos () > 0) {
-                    this->SetHScrollPos (max<Coordinate> (0, int (this->GetHScrollPos ()) - increment));
+                    this->SetHScrollPos (max<CoordinateType> (0, int (this->GetHScrollPos ()) - increment));
                 }
             } break;
 
             case SB_PAGEDOWN: {
-                const Coordinate kPixelsAtATime = this->GetWindowRect ().GetWidth () / 2;
-                this->SetHScrollPos (min<Coordinate> (this->GetHScrollPos () + kPixelsAtATime, this->ComputeMaxHScrollPos ()));
+                const CoordinateType kPixelsAtATime = this->GetWindowRect ().GetWidth () / 2;
+                this->SetHScrollPos (min<CoordinateType> (this->GetHScrollPos () + kPixelsAtATime, this->ComputeMaxHScrollPos ()));
             } break;
 
             case SB_PAGEUP: {
-                const Coordinate kPixelsAtATime = this->GetWindowRect ().GetWidth () / 2;
+                const CoordinateType kPixelsAtATime = this->GetWindowRect ().GetWidth () / 2;
                 if (this->GetHScrollPos () > kPixelsAtATime) {
                     this->SetHScrollPos (this->GetHScrollPos () - kPixelsAtATime);
                 }
@@ -1494,7 +1494,7 @@ namespace Stroika::Frameworks::Led::Platform {
                                                         // things really get recomputed
 #endif
 
-                this->SetHScrollPos (min<Coordinate> (static_cast<Coordinate> (newPos), this->ComputeMaxHScrollPos ()));
+                this->SetHScrollPos (min<CoordinateType> (static_cast<CoordinateType> (newPos), this->ComputeMaxHScrollPos ()));
             } break;
 
             case SB_TOP: {

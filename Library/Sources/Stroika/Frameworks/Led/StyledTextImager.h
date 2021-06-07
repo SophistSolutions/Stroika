@@ -81,7 +81,7 @@ namespace Stroika::Frameworks::Led {
         // when this class is mixed in.
         virtual void         DrawSegment (Tablet* tablet,
                                           size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
-                                          Coordinate useBaseLine, DistanceType* pixelsDrawn) override;
+                                          CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
         virtual void         MeasureSegmentWidth (size_t from, size_t to, const Led_tChar* text,
                                                   DistanceType* distanceResults) const override;
         virtual DistanceType MeasureSegmentHeight (size_t from, size_t to) const override;
@@ -125,7 +125,7 @@ namespace Stroika::Frameworks::Led {
         */
         virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
                                   size_t from, size_t to, const TextLayoutBlock& text,
-                                  const Led_Rect& drawInto, const Led_Rect& invalidRect, Coordinate useBaseLine,
+                                  const Led_Rect& drawInto, const Led_Rect& invalidRect, CoordinateType useBaseLine,
                                   DistanceType* pixelsDrawn) = 0;
 
         /*
@@ -270,7 +270,7 @@ namespace Stroika::Frameworks::Led {
     public:
         virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
                                           size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                                          Coordinate useBaseLine, DistanceType* pixelsDrawn) override;
+                                          CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
         virtual void         MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
                                                   const Led_tChar* text,
                                                   DistanceType*    distanceResults) const override;
@@ -349,7 +349,7 @@ namespace Stroika::Frameworks::Led {
         */
         virtual void DrawExtra (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
                                 size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto,
-                                Coordinate useBaseLine, DistanceType pixelsDrawn) = 0;
+                                CoordinateType useBaseLine, DistanceType pixelsDrawn) = 0;
 
     protected:
         virtual RunElement MungeRunElement (const RunElement& inRunElt) const;
@@ -357,7 +357,7 @@ namespace Stroika::Frameworks::Led {
     public:
         virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
                                           size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                                          Coordinate useBaseLine, DistanceType* pixelsDrawn) override;
+                                          CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
         virtual void         MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
                                                   const Led_tChar* text,
                                                   DistanceType*    distanceResults) const override;
@@ -386,7 +386,7 @@ namespace Stroika::Frameworks::Led {
     protected:
         virtual void DrawExtra (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
                                 size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto,
-                                Coordinate useBaseLine, DistanceType pixelsDrawn) override;
+                                CoordinateType useBaseLine, DistanceType pixelsDrawn) override;
 
     public:
         virtual Color GetUnderlineBaseColor () const;

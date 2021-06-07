@@ -50,7 +50,7 @@ namespace Stroika::Frameworks::Led {
     template <class BASECLASS>
     void SimpleStyleMarkerByFontSpec<BASECLASS>::DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
                                                               size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                                                              Coordinate useBaseLine, DistanceType* pixelsDrawn)
+                                                              CoordinateType useBaseLine, DistanceType* pixelsDrawn)
     {
         RequireNotNull (imager);
         imager->DrawSegment_ (tablet, MakeFontSpec (imager, runElement), from, to, text, drawInto, useBaseLine, pixelsDrawn);
@@ -119,7 +119,7 @@ namespace Stroika::Frameworks::Led {
     template <class BASECLASS>
     void SimpleStyleMarkerWithExtraDraw<BASECLASS>::DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
                                                                  size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
-                                                                 Coordinate useBaseLine, DistanceType* pixelsDrawn)
+                                                                 CoordinateType useBaseLine, DistanceType* pixelsDrawn)
     {
         RequireNotNull (imager);
         AssertNotNull (pixelsDrawn); // if allowed to pass nullptr - I must pass my  own value so I can pass along to DrawExtra - see if anyone does this - LGP 2000-07-08
@@ -181,7 +181,7 @@ namespace Stroika::Frameworks::Led {
     template <typename BASECLASS>
     void SimpleStyleMarkerWithLightUnderline<BASECLASS>::DrawExtra (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, Tablet* tablet,
                                                                     size_t /*from*/, size_t /*to*/, const TextLayoutBlock& /*text*/, const Led_Rect& drawInto,
-                                                                    Coordinate useBaseLine, DistanceType pixelsDrawn)
+                                                                    CoordinateType useBaseLine, DistanceType pixelsDrawn)
     {
         Color lightColor = Color::kWhite / 2 + GetUnderlineBaseColor () / 2; // (white - baseColor)/2 + baseColor, but careful to avoid int overflow...
 #if qPlatform_Windows
@@ -192,7 +192,7 @@ namespace Stroika::Frameworks::Led {
         Pen pen;
 #endif
         Led_GDI_Obj_Selector penWrapper (tablet, pen);
-        Coordinate           underlineAt = useBaseLine;
+        CoordinateType       underlineAt = useBaseLine;
         if (underlineAt + 1 < drawInto.bottom) {
             underlineAt += 1;
         }

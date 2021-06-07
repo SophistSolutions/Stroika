@@ -753,7 +753,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
             Justification                   fJustification;
             TWIPS                           fSpaceBefore;
             TWIPS                           fSpaceAfter;
-            Coordinate                      fSpaceBetweenLines;
+            CoordinateType                  fSpaceBetweenLines;
             bool                            fSpaceBetweenLinesMult;
             ListStyle                       fListStyle;
             unsigned char                   fListIndentLevel;
@@ -776,7 +776,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         virtual void SetRightMargin (TWIPS rhs)                                    = 0;
         virtual void SetSpaceBefore (TWIPS tx)                                     = 0;
         virtual void SetSpaceAfter (TWIPS tx)                                      = 0;
-        virtual void SetSpaceBetweenLines (Coordinate tx)                          = 0;
+        virtual void SetSpaceBetweenLines (CoordinateType tx)                      = 0;
         virtual void SetSpaceBetweenLinesMult (bool multipleLineSpacing)           = 0;
         virtual void SetTextHidden (bool hidden)                                   = 0;
         virtual void SetInTable (bool inTable)                                     = 0;
@@ -833,7 +833,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         virtual void SetRightMargin (TWIPS rhs) override;
         virtual void SetSpaceBefore (TWIPS tx) override;
         virtual void SetSpaceAfter (TWIPS tx) override;
-        virtual void SetSpaceBetweenLines (Coordinate tx) override;
+        virtual void SetSpaceBetweenLines (CoordinateType tx) override;
         virtual void SetSpaceBetweenLinesMult (bool multipleLineSpacing) override;
         virtual void SetTextHidden (bool hidden) override;
         virtual void SetInTable (bool inTable) override;

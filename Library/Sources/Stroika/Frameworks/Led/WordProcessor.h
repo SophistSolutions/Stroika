@@ -525,7 +525,7 @@ namespace Stroika::Frameworks::Led {
     public:
         virtual void DrawSegment (Tablet* tablet,
                                   size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
-                                  Coordinate useBaseLine, DistanceType* pixelsDrawn) override;
+                                  CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
 
     protected:
         virtual DistanceType MeasureSegmentHeight (size_t from, size_t to) const override;
@@ -576,7 +576,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual size_t ResetTabStopsWithMargin (DistanceType lhsMargin, size_t from, const Led_tChar* text, size_t nTChars, DistanceType* charLocations, size_t startSoFar) const;
 
     public:
-        virtual void GetLayoutMargins (RowReference row, Coordinate* lhs, Coordinate* rhs) const override;
+        virtual void GetLayoutMargins (RowReference row, CoordinateType* lhs, CoordinateType* rhs) const override;
 
     protected:
         virtual void ExpandedFromAndToInPostReplace (size_t from, size_t newTo,
@@ -1228,7 +1228,7 @@ namespace Stroika::Frameworks::Led {
     public:
         virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
                                           size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
-                                          Coordinate useBaseLine, DistanceType* pixelsDrawn) override;
+                                          CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
         virtual void         MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
                                                   const Led_tChar* text,
                                                   DistanceType*    distanceResults) const override;
@@ -1668,7 +1668,7 @@ namespace Stroika::Frameworks::Led {
         virtual void SetDefaultUpdateMode (UpdateMode defaultUpdateMode) override;
 
     public:
-        virtual void GetLayoutMargins (RowReference row, Coordinate* lhs, Coordinate* rhs) const override;
+        virtual void GetLayoutMargins (RowReference row, CoordinateType* lhs, CoordinateType* rhs) const override;
 
     public:
         nonvirtual DistanceType GetDesiredHeight () const;

@@ -581,7 +581,7 @@ void MultiRowTextImager::DrawPartitionElement (PartitionMarker* pm, size_t start
         currentRowRect.bottom       = currentRowRect.top + pmCacheInfo.GetRowHeight (subRow);
         DistanceType interlineSpace = (subRow == pmCacheInfo.GetLastRow ()) ? pmCacheInfo.GetInterLineSpace () : 0;
         if (
-            (currentRowRect.bottom + Coordinate (interlineSpace) > subsetToDraw.top) and
+            (currentRowRect.bottom + CoordinateType (interlineSpace) > subsetToDraw.top) and
             (currentRowRect.top < subsetToDraw.bottom)) {
 
             /*
@@ -988,8 +988,8 @@ MultiRowTextImager::RowReference MultiRowTextImager::AdjustPotentialTopRowRefere
         return potentialTopRow;
     }
 
-    Coordinate windowHeight = GetWindowRect ().GetHeight ();
-    Coordinate heightUsed   = 0;
+    CoordinateType windowHeight = GetWindowRect ().GetHeight ();
+    CoordinateType heightUsed   = 0;
 
     for (RowReference curRow = potentialTopRow;;) {
         PartitionMarker*          curPM       = curRow.GetPartitionMarker ();
@@ -1082,14 +1082,14 @@ size_t MultiRowTextImager::ComputeRowsThatWouldFitInWindowWithTopRow (const RowR
             *  For now, we don't show partial rows at the bottom. We
             *  might want to reconsider this.
             */
-    Coordinate windowHeight = GetWindowRect ().GetHeight ();
+    CoordinateType windowHeight = GetWindowRect ().GetHeight ();
 
     /*
             *  Wind out way to the bottom of the window from our current position,
             *  and count rows.
             */
-    size_t     rowCount   = 0;
-    Coordinate heightUsed = 0;
+    size_t         rowCount   = 0;
+    CoordinateType heightUsed = 0;
     for (RowReference curRow = newTopRow;;) {
         rowCount++;
         PartitionMarker*          curPM       = curRow.GetPartitionMarker ();
@@ -1139,9 +1139,9 @@ Led_Rect MultiRowTextImager::GetCharLocationRowRelative (size_t afterPosition, R
         return (kMagicBeforeRect);
     }
 
-    RowReference curRow                     = topRow;
-    size_t       curTopRowRelativeRowNumber = 0;
-    Coordinate   topVPos                    = 0;
+    RowReference   curRow                     = topRow;
+    size_t         curTopRowRelativeRowNumber = 0;
+    CoordinateType topVPos                    = 0;
     do {
         PartitionMarker* cur    = curRow.GetPartitionMarker ();
         size_t           subRow = curRow.GetSubRow ();
@@ -1205,9 +1205,9 @@ size_t MultiRowTextImager::GetCharAtLocationRowRelative (const Led_Point& where,
         return (0);
     }
 
-    RowReference curRow                     = topRow;
-    size_t       curTopRowRelativeRowNumber = 0;
-    Coordinate   topVPos                    = 0;
+    RowReference   curRow                     = topRow;
+    size_t         curTopRowRelativeRowNumber = 0;
+    CoordinateType topVPos                    = 0;
     do {
         PartitionMarker* cur    = curRow.GetPartitionMarker ();
         size_t           subRow = curRow.GetSubRow ();
@@ -1233,7 +1233,7 @@ size_t MultiRowTextImager::GetCharAtLocationRowRelative (const Led_Point& where,
         DistanceType interLineSpaceIfAny = (pmCacheInfo.GetLastRow () == subRow) ? pmCacheInfo.GetInterLineSpace () : 0;
 
         curTopRowRelativeRowNumber++;
-        if (where.v >= topVPos and where.v < topVPos + Coordinate (pmCacheInfo.GetRowHeight (subRow) + interLineSpaceIfAny)) {
+        if (where.v >= topVPos and where.v < topVPos + CoordinateType (pmCacheInfo.GetRowHeight (subRow) + interLineSpaceIfAny)) {
             return GetRowRelativeCharAtLoc (where.h, start);
         }
 
