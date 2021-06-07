@@ -576,7 +576,9 @@ namespace Stroika::Foundation::Time {
          */
         static const FormatException kThe;
     };
+#if !qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
     inline const DateTime::FormatException DateTime::FormatException::kThe;
+#endif
 
     template <>
     time_t DateTime::As () const;

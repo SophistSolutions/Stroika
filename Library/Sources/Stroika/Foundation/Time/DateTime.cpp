@@ -160,6 +160,9 @@ DateTime::FormatException::FormatException ()
     : RuntimeErrorException<>{L"Invalid DateTime Format"sv}
 {
 }
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+const DateTime::FormatException DateTime::FormatException::kThe;
+#endif
 
 /*
  ********************************************************************************
