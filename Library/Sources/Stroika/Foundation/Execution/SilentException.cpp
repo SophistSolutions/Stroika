@@ -19,5 +19,5 @@ const char* SilentException::what () const noexcept
 }
 
 #if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
-    const SilentException SilentException::kThe;
+const SilentException SilentException::kThe;
 #endif

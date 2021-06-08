@@ -38,7 +38,7 @@ Duration::FormatException::FormatException ()
 {
 }
 #if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
-    const Duration::FormatException Duration::FormatException::kThe;
+const Duration::FormatException Duration::FormatException::kThe;
 #endif
 
 /*
@@ -641,7 +641,7 @@ namespace Stroika::Foundation::Math {
  ********************************************************************************
  */
 namespace Stroika::Foundation::Traversal::RangeTraits {
-     const Time::Duration Default<Time::Duration>::kLowerBound = Time::Duration::min ();
-     const Time::Duration Default<Time::Duration>::kUpperBound = Time::Duration::max ();
+    const Time::Duration Default<Time::Duration>::kLowerBound = Time::Duration::min ();
+    const Time::Duration Default<Time::Duration>::kUpperBound = Time::Duration::max ();
 }
 #endif
