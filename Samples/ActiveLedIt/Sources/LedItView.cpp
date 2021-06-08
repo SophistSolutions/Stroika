@@ -296,7 +296,7 @@ public:
 #if qPlatform_MacOS
         Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator);
 #elif qPlatform_Windows
-        Led_StdDialogHelper_SpellCheckDialog       spellCheckDialog (delegator, ::AfxGetResourceHandle (), ::GetActiveWindow ());
+        Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator, ::AfxGetResourceHandle (), ::GetActiveWindow ());
 #elif qStroika_FeatureSupported_XWindows
         Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator, GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()));
 #endif
@@ -319,7 +319,7 @@ public:
 #if qPlatform_MacOS
         Led_StdDialogHelper_OtherFontSizeDialog dlg;
 #elif qPlatform_Windows
-        Led_StdDialogHelper_OtherFontSizeDialog    dlg (::AfxGetResourceHandle (), ::GetActiveWindow ());
+        Led_StdDialogHelper_OtherFontSizeDialog dlg (::AfxGetResourceHandle (), ::GetActiveWindow ());
 #endif
         dlg.InitValues (origHeight);
         if (dlg.DoModal ()) {
@@ -452,7 +452,7 @@ public:
 #if qPlatform_MacOS
         DLGTYPE infoDialog;
 #elif qPlatform_Windows
-        DLGTYPE                                    infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
+        DLGTYPE infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 #endif
         DLGTYPE::cvt<DLGTYPE::Info, TableSelectionPropertiesInfo> (&infoDialog.fInfo, *tableProperties);
         if (infoDialog.DoModal ()) {

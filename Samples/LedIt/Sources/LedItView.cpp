@@ -212,9 +212,9 @@ public:
 #if qPlatform_MacOS
         Led_StdDialogHelper_FindDialog findDialog;
 #elif qPlatform_Windows
-        Led_StdDialogHelper_FindDialog                 findDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
+        Led_StdDialogHelper_FindDialog findDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 #elif qStroika_FeatureSupported_XWindows
-        Led_StdDialogHelper_FindDialog       findDialog (GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()));
+        Led_StdDialogHelper_FindDialog findDialog (GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()));
 #endif
 
         findDialog.fFindText              = *findText;
@@ -239,9 +239,9 @@ public:
 #if qPlatform_MacOS
         Led_StdDialogHelper_ReplaceDialog replaceDialog;
 #elif qPlatform_Windows
-        Led_StdDialogHelper_ReplaceDialog              replaceDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
+        Led_StdDialogHelper_ReplaceDialog replaceDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 #elif qStroika_FeatureSupported_XWindows
-        Led_StdDialogHelper_ReplaceDialog    replaceDialog (GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()));
+        Led_StdDialogHelper_ReplaceDialog replaceDialog (GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()));
 #endif
 
         replaceDialog.fFindText              = *findText;
@@ -283,7 +283,7 @@ public:
 #if qPlatform_MacOS
         Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator);
 #elif qPlatform_Windows
-        Led_StdDialogHelper_SpellCheckDialog           spellCheckDialog (delegator, ::AfxGetResourceHandle (), ::GetActiveWindow ());
+        Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator, ::AfxGetResourceHandle (), ::GetActiveWindow ());
 #elif qStroika_FeatureSupported_XWindows
         Led_StdDialogHelper_SpellCheckDialog spellCheckDialog (delegator, GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()));
 #endif
@@ -328,7 +328,7 @@ public:
 #if qPlatform_MacOS
         Led_StdDialogHelper_OtherFontSizeDialog dlg;
 #elif qPlatform_Windows
-        Led_StdDialogHelper_OtherFontSizeDialog        dlg (::AfxGetResourceHandle (), ::GetActiveWindow ());
+        Led_StdDialogHelper_OtherFontSizeDialog dlg (::AfxGetResourceHandle (), ::GetActiveWindow ());
 #endif
         dlg.InitValues (origHeight);
         if (dlg.DoModal ()) {
@@ -345,7 +345,7 @@ public:
 #if qPlatform_MacOS
         Led_StdDialogHelper_ParagraphSpacingDialog dlg;
 #elif qPlatform_Windows
-        Led_StdDialogHelper_ParagraphSpacingDialog     dlg (::AfxGetResourceHandle (), ::GetActiveWindow ());
+        Led_StdDialogHelper_ParagraphSpacingDialog dlg (::AfxGetResourceHandle (), ::GetActiveWindow ());
 #endif
         dlg.InitValues (*spaceBefore, *spaceBeforeValid, *spaceAfter, *spaceAfterValid, *lineSpacing, *lineSpacingValid);
 
@@ -375,7 +375,7 @@ public:
 #if qPlatform_MacOS
         Led_StdDialogHelper_ParagraphIndentsDialog dlg;
 #elif qPlatform_Windows
-        Led_StdDialogHelper_ParagraphIndentsDialog     dlg (::AfxGetResourceHandle (), ::GetActiveWindow ());
+        Led_StdDialogHelper_ParagraphIndentsDialog dlg (::AfxGetResourceHandle (), ::GetActiveWindow ());
 #endif
         dlg.InitValues (*leftMargin, *leftMarginValid, *rightMargin, *rightMarginValid, *firstIndent, *firstIndentValid);
         if (dlg.DoModal ()) {
@@ -443,7 +443,7 @@ public:
 #if qPlatform_MacOS
         Led_StdDialogHelper_URLXEmbeddingInfoDialog infoDialog;
 #elif qPlatform_Windows
-        Led_StdDialogHelper_URLXEmbeddingInfoDialog    infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
+        Led_StdDialogHelper_URLXEmbeddingInfoDialog infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 #endif
 #if qPlatform_MacOS || qPlatform_Windows
         infoDialog.fEmbeddingTypeName = embeddingTypeName;
@@ -517,7 +517,7 @@ public:
 #if qPlatform_MacOS
         DLGTYPE infoDialog;
 #elif qPlatform_Windows
-        DLGTYPE                               infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
+        DLGTYPE infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 #endif
 #if qTemplatedMemberFunctionsFailBug
         Led_StdDialogHelper_EditTablePropertiesDialog_cvt<DLGTYPE::Info, TableSelectionPropertiesInfo> (&infoDialog.fInfo, *tableProperties);

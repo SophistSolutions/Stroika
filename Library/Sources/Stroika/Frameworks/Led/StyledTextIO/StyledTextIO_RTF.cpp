@@ -25,7 +25,6 @@
 
 #include "StyledTextIO_RTF.h"
 
-
 #ifndef qUseCompiledSetHack
 #if qBitSetTemplateAvailable
 // Preliminary testing on Mac indicates this compiled set hack doesn't help. Test on PC, as well...
@@ -3447,7 +3446,7 @@ void StyledTextIOReader_RTF::ConstructOLEEmebddingFromRTFInfo ([[maybe_unused]] 
         EmbeddedObjectCreatorRegistry::Assoc assoc = types[i];
         if (memcmp (assoc.fEmbeddingTag, RTFIO::RTFOLEEmbedding::kEmbeddingTag, sizeof (RTFIO::RTFOLEEmbedding::kEmbeddingTag)) == 0) {
             AssertNotNull (assoc.fReadFromMemory);
-            SimpleEmbeddedObjectStyleMarker* embedding = (assoc.fReadFromMemory)(RTFIO::RTFOLEEmbedding::kEmbeddingTag, data, nBytes);
+            SimpleEmbeddedObjectStyleMarker* embedding = (assoc.fReadFromMemory) (RTFIO::RTFOLEEmbedding::kEmbeddingTag, data, nBytes);
             RTFOLEEmbedding*                 rtfe      = dynamic_cast<RTFOLEEmbedding*> (embedding);
             if (rtfe != nullptr) {
                 rtfe->PostCreateSpecifyExtraInfo (size);
@@ -3463,7 +3462,7 @@ void StyledTextIOReader_RTF::ConstructOLEEmebddingFromRTFInfo ([[maybe_unused]] 
         }
     }
 #endif
-        Execution::Throw (DataExchange::BadFormatException::kThe);  // Will be caught by caller, and use "unknown embedding object"
+    Execution::Throw (DataExchange::BadFormatException::kThe); // Will be caught by caller, and use "unknown embedding object"
 }
 
 void StyledTextIOReader_RTF::ConstructLedEmebddingFromRTFInfo (ReaderContext& readerContext, size_t nBytes, const void* data)
@@ -3471,7 +3470,7 @@ void StyledTextIOReader_RTF::ConstructLedEmebddingFromRTFInfo (ReaderContext& re
     // The first sizeof (Led_PrivateEmbeddingTag) bytes are the type tag, and the rest is standard
     // internalize/externalize data.
     if (nBytes < sizeof (Led_PrivateEmbeddingTag)) {
-        Execution::Throw (DataExchange::BadFormatException::kThe);   // Will be caught by caller, and use "unknown embedding object"
+        Execution::Throw (DataExchange::BadFormatException::kThe); // Will be caught by caller, and use "unknown embedding object"
     }
     const char*                                         tag           = (const char*)data;
     const char*                                         theData       = tag + sizeof (Led_PrivateEmbeddingTag);
@@ -3481,7 +3480,7 @@ void StyledTextIOReader_RTF::ConstructLedEmebddingFromRTFInfo (ReaderContext& re
         EmbeddedObjectCreatorRegistry::Assoc assoc = types[i];
         if (memcmp (assoc.fEmbeddingTag, tag, sizeof (assoc.fEmbeddingTag)) == 0) {
             AssertNotNull (assoc.fReadFromMemory);
-            SimpleEmbeddedObjectStyleMarker* embedding = (assoc.fReadFromMemory)(tag, theData, theDataNBytes);
+            SimpleEmbeddedObjectStyleMarker* embedding = (assoc.fReadFromMemory) (tag, theData, theDataNBytes);
             try {
                 readerContext.GetDestination ().AppendEmbedding (embedding);
                 return;
@@ -3492,7 +3491,7 @@ void StyledTextIOReader_RTF::ConstructLedEmebddingFromRTFInfo (ReaderContext& re
             }
         }
     }
-    Execution::Throw (DataExchange::BadFormatException::kThe);    // Will be caught by caller, and use "unknown embedding object"
+    Execution::Throw (DataExchange::BadFormatException::kThe); // Will be caught by caller, and use "unknown embedding object"
 }
 
 void StyledTextIOReader_RTF::ReadPictData (vector<char>* data)

@@ -309,8 +309,6 @@ int Led::Led_tStriCmp (const Led_tChar* l, const Led_tChar* r)
 #endif
 }
 
-
-
 #if qPlatform_MacOS
 /*
  ********************************************************************************

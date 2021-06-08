@@ -91,7 +91,6 @@
 // #error "One of these should be defined - right now thats all we support"
 // #endif
 
-
 /*
  *  Do things like memcpy () get inlined by the compiler, or should we do so ourselves
  *  manually for cases that matter.
