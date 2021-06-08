@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Execution {
             /**
              */
 #if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
-            static inline const TypeOfMonitorSet kDefaultTypeOfMonitor;
+            static const TypeOfMonitorSet kDefaultTypeOfMonitor;
 #else
             static inline const TypeOfMonitorSet kDefaultTypeOfMonitor{TypeOfMonitor::eRead};
 #endif
