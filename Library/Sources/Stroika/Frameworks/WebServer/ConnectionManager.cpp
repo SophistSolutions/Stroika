@@ -56,6 +56,19 @@ namespace {
     }
 }
 
+
+
+/*
+ ********************************************************************************
+ ******************* WebServer::ConnectionManager::Options **********************
+ ********************************************************************************
+ */
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+const Headers                              ConnectionManager::Options:: kDefault_Headers{Iterable<KeyValuePair<String, String>>{{IO::Network::HTTP::HeaderName::kServer, L"Stroika/2.1"sv}}};
+const Common::ConstantProperty<CORSOptions> ConnectionManager::Options::kDefault_CORS{[] () { return kDefault_CORSOptions; }};
+#endif
+
+
 /*
  ********************************************************************************
  ************************* WebServer::ConnectionManager *************************

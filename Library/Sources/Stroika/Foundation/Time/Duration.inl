@@ -313,11 +313,13 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
 
     /*
      ********************************************************************************
-     ************************* RangeTraits::Default **********************
+     ****************************** RangeTraits::Default ****************************
      ********************************************************************************
      */
+#if !qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
     inline const Time::Duration Default<Time::Duration>::kLowerBound = Time::Duration::min ();
     inline const Time::Duration Default<Time::Duration>::kUpperBound = Time::Duration::max ();
+#endif
     inline Time::Duration       Default<Time::Duration>::GetNext (Time::Duration i)
     {
         return Time::Duration{::nextafter (i.As<double> (), numeric_limits<double>::max ())};

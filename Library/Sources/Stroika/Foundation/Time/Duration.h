@@ -412,7 +412,9 @@ namespace Stroika::Foundation::Time {
     public:
         static const FormatException kThe;
     };
+#if !qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
     inline const Duration::FormatException Duration::FormatException::kThe;
+#endif
 
     /**
      *  \brief user defined literal for Duration, specified in ISO8601 format.

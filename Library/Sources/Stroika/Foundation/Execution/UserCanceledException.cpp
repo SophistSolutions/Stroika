@@ -13,5 +13,6 @@ using namespace Stroika::Foundation::Execution;
  *************************** UserCanceledException ******************************
  ********************************************************************************
  */
-const UserCanceledException UserCanceledException::kThe{};
-xx
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+    const UserCanceledException UserCanceledException::kThe;
+#endif

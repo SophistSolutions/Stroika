@@ -13,6 +13,9 @@ using namespace Stroika::Foundation::Execution;
  ********************************* TimeOutException *****************************
  ********************************************************************************
  */
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+    const TimeOutException TimeOutException::kThe;
+#endif
 TimeOutException::TimeOutException ()
     : TimeOutException{L"Timeout Expired"sv}
 {
