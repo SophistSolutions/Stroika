@@ -20,18 +20,9 @@ namespace Stroika::Foundation::DataExchange {
     inline InternetMediaType::InternetMediaType (AtomType type, AtomType subType, optional<AtomType> suffix, const Containers::Mapping<String, String>& parameters)
         : fType_{type}
         , fSubType_{subType}
-        // clang-format off
         , fSuffix_{suffix}
-// clang-format on
-#if 0
-        // workaround https://stroika.atlassian.net/browse/STK-738 - see #if below
-        , fParameters_{String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive}, parameters}
-#endif
+        , fParameters_ { String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive}, parameters }
     {
-#if 1
-        // workaround https://stroika.atlassian.net/browse/STK-738 - see #if in above
-        fParameters_ += parameters;
-#endif
         Require (type.empty () == subType.empty ());
         Require (not type.empty () or parameters.empty ()); // dont specify params without type
         Require (not type.empty () or suffix == nullopt);   // dont specify suffix without type
