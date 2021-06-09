@@ -47,7 +47,7 @@ namespace {
     using OverrideRecord = InternetMediaTypeRegistry::OverrideRecord;
     Mapping<InternetMediaType, OverrideRecord> mkDefaults_ ()
     {
-        static const Mapping<InternetMediaType, OverrideRecord> kDefaults_{initializer_list<KeyValuePair<InternetMediaType, OverrideRecord>>{
+        return Mapping<InternetMediaType, OverrideRecord>{initializer_list<KeyValuePair<InternetMediaType, OverrideRecord>>{
             {InternetMediaTypes::kText_PLAIN, OverrideRecord{nullopt, Containers::Set<String>{L".txt"sv}, L".txt"sv}},
             {InternetMediaTypes::kCSS, OverrideRecord{nullopt, Containers::Set<String>{L".css"sv}, L".css"sv}},
             {InternetMediaTypes::kHTML, OverrideRecord{nullopt, Containers::Set<String>{L".htm"sv, L".html"sv}, L".htm"sv}},
@@ -55,7 +55,6 @@ namespace {
             {InternetMediaTypes::kPNG, OverrideRecord{nullopt, Containers::Set<String>{L".png"sv}, L".png"sv}},
             {InternetMediaTypes::kXML, OverrideRecord{nullopt, Containers::Set<String>{L".xml"sv}, L".xml"sv}},
         }};
-        return kDefaults_;
     }
     Common::ConstantProperty<Mapping<InternetMediaType, OverrideRecord>> kDefaults_{mkDefaults_};
 }
