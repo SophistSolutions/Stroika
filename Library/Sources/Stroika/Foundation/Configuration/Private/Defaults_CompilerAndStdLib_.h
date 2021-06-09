@@ -351,6 +351,16 @@ Please choose the Technical Support command on the Visual C++
 
 #endif
 
+#ifndef qCompilerAndStdLib_initializer_list_sometimes_very_Buggy
+
+#if defined(_MSC_VER)
+#define qCompilerAndStdLib_initializer_list_sometimes_very_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
+#else
+#define qCompilerAndStdLib_initializer_list_sometimes_very_Buggy 0
+#endif
+
+#endif
+
 #ifndef qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
 
 #if defined(_MSC_VER)
