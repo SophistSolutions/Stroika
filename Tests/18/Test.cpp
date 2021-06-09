@@ -10,6 +10,7 @@
 
 #include "Stroika/Foundation/Containers/Collection.h"
 
+#include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_LinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_stdmap.h"
@@ -169,6 +170,29 @@ namespace {
     }
 }
 
+
+namespace {
+    namespace CTORWithComparerAndContainer_Test_10_ {
+        void DoAll ()
+        {
+            using namespace Characters;
+            {
+                Mapping<String, String> parameters{String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive}};
+
+                // https://stroika.atlassian.net/browse/STK-738 (and see other workarounds in other files)
+#if 0
+                19>C:\Sandbox\Stroika\DevRoot\Tests\18\Test.cpp(182): error C2440: 'initializing': cannot convert from 'initializer list' to 'Stroika::Foundation::Containers::Mapping<Stroika::Foundation::Characters::String,Stroika::Foundation::Characters::String>'
+19>C:\Sandbox\Stroika\DevRoot\Tests\18\Test.cpp(182): note: No constructor could take the source type, or constructor overload resolution was ambiguous
+19>C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.MakeFile.Targets(46,5): error MSB3073: The command "make --directory C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2019\18\\..\..\..\18\ CONFIGURATION=Debug-U-32 -j8 --silent all" exited with code -1.
+#endif
+#if 0
+                Mapping<String, String> parameters2{String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive}, parameters};
+#endif
+            }
+        }
+    }
+}
+
 namespace {
     void DoRegressionTests_ ()
     {
@@ -227,6 +251,7 @@ namespace {
         WithKeys_Test_7_::DoAll ();
         ClearBug_Test_8_::DoAll ();
         AddVsAddIf_Test_9_::DoAll ();
+        CTORWithComparerAndContainer_Test_10_::DoAll ();
     }
 }
 

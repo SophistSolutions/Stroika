@@ -21,8 +21,15 @@ namespace Stroika::Foundation::DataExchange {
         : fType_{type}
         , fSubType_{subType}
         , fSuffix_{suffix}
-        , fParameters_{parameters}
+#if 0
+        // workaround https://stroika.atlassian.net/browse/STK-738 - see #if below
+        , fParameters_{String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive}, parameters}
+#endif
     {
+#if 1
+        // workaround https://stroika.atlassian.net/browse/STK-738 - see #if in above
+        fParameters_ += parameters;
+#endif
         Require (type.empty () == subType.empty ());
         Require (not type.empty () or parameters.empty ()); // dont specify params without type
         Require (not type.empty () or suffix == nullopt);   // dont specify suffix without type
