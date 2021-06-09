@@ -855,21 +855,21 @@ bool InternetMediaTypeRegistry::IsA (const InternetMediaType& moreGeneralType, c
 
 
 #if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-        const InternetMediaType InternetMediaTypes::kOctetStream{Types::kApplication, L"octet-stream"sv};
-const InternetMediaType InternetMediaTypes::kPNG{Types::kImage, L"png"sv};
-        const InternetMediaType InternetMediaTypes::kGIF{Types::kImage, L"gif"sv};
-const InternetMediaType         InternetMediaTypes::kJPEG{Types::kImage, L"jpeg"sv};
-        const InternetMediaType InternetMediaTypes::kHTML{Types::kText, L"html"sv};
-const InternetMediaType         InternetMediaTypes::kCSS{Types::kText, L"css"sv};
-        const InternetMediaType InternetMediaTypes::kText_PLAIN{Types::kText, L"plain"sv};
-const InternetMediaType         InternetMediaTypes::kCSV{Types::kText, L"csv"sv};
-        const InternetMediaType InternetMediaTypes::kJSON{Types::kApplication, L"json"sv};
-const InternetMediaType         InternetMediaTypes::kPDF{Types::kApplication, L"pdf"sv};
-        const InternetMediaType InternetMediaTypes::kURL{Types::kText, L"uri-list"sv};
-const InternetMediaType         InternetMediaTypes::kXML{Types::kApplication, L"xml"sv};
-        const InternetMediaType InternetMediaTypes::kXSLT{Types::kApplication, L"x-xslt"sv};
-const InternetMediaType         InternetMediaTypes::kJavaArchive{Types::kApplication, L"java-archive"sv};
-        const InternetMediaType InternetMediaTypes::kRTF{Types::kApplication, L"rtf"sv};
-const InternetMediaType         InternetMediaTypes::kZip{Types::kApplication, L"zip"sv};
+        const InternetMediaType InternetMediaTypes::kOctetStream{InternetMediaTypes::Types::kApplication, L"octet-stream"sv};
+const InternetMediaType InternetMediaTypes::kPNG{InternetMediaTypes::Types::kImage, L"png"sv};
+        const InternetMediaType InternetMediaTypes::kGIF{InternetMediaTypes::Types::kImage, L"gif"sv};
+const InternetMediaType         InternetMediaTypes::kJPEG{InternetMediaTypes::Types::kImage, L"jpeg"sv};
+        const InternetMediaType InternetMediaTypes::kHTML{InternetMediaTypes::Types::kText, L"html"sv};
+const InternetMediaType         InternetMediaTypes::kCSS{InternetMediaTypes::Types::kText, L"css"sv};
+        const InternetMediaType InternetMediaTypes::kText_PLAIN{InternetMediaTypes::Types::kText, L"plain"sv};
+const InternetMediaType         InternetMediaTypes::kCSV{InternetMediaTypes::Types::kText, L"csv"sv};
+        const InternetMediaType InternetMediaTypes::kJSON{InternetMediaTypes::Types::kApplication, L"json"sv};
+const InternetMediaType         InternetMediaTypes::kPDF{InternetMediaTypes::Types::kApplication, L"pdf"sv};
+        const InternetMediaType InternetMediaTypes::kURL{InternetMediaTypes::Types::kText, L"uri-list"sv};
+const InternetMediaType         InternetMediaTypes::kXML{InternetMediaTypes::Types::kApplication, L"xml"sv};
+        const InternetMediaType InternetMediaTypes::kXSLT{InternetMediaTypes::Types::kApplication, L"x-xslt"sv};
+const InternetMediaType         InternetMediaTypes::kJavaArchive{InternetMediaTypes::Types::kApplication, L"java-archive"sv};
+        const InternetMediaType InternetMediaTypes::kRTF{InternetMediaTypes::Types::kApplication, L"rtf"sv};
+const InternetMediaType         InternetMediaTypes::kZip{InternetMediaTypes::Types::kApplication, L"zip"sv};
 
 #endif

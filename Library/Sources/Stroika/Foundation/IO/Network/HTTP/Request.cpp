@@ -150,6 +150,7 @@ String Request::ToString () const
 
 /// HACK putting in this file
 #if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
+#include "Methods.h"
     const RegularExpression MethodsRegEx::kGet = L"GET"_RegEx;
     const RegularExpression MethodsRegEx::kPut = L"PUT"_RegEx;
     const RegularExpression MethodsRegEx::kPatch = L"PATCH"_RegEx;
