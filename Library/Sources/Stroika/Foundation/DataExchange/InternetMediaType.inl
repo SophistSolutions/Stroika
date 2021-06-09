@@ -22,7 +22,7 @@ namespace Stroika::Foundation::DataExchange {
         , fSubType_{subType}
         // clang-format off
         , fSuffix_{suffix}
-        // clang-format on
+// clang-format on
 #if 0
         // workaround https://stroika.atlassian.net/browse/STK-738 - see #if below
         , fParameters_{String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive}, parameters}
