@@ -37,13 +37,23 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         using namespace Characters;
         // DIDNT DEFINE kANY nor kOptions because typically a mistake for users to be using them... Better to allow the system to handle autoamtically
         //inline const RegularExpression kANY       = L".*"_RegEx; /*RegularExpression::kAny*/
-        inline const RegularExpression kGet       = L"GET"_RegEx;
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
+        // HACK - DEF IN REQUEST.CPP
+         extern const RegularExpression kGet;
+        extern const RegularExpression kPut;
+         extern const RegularExpression kPatch;
+        extern const RegularExpression  kPost;
+         extern const RegularExpression kPostOrPut;
+        extern const RegularExpression  kDelete;
+#else
+        inline const RegularExpression kGet = L"GET"_RegEx;
         inline const RegularExpression kPut       = L"PUT"_RegEx;
         inline const RegularExpression kPatch     = L"PATCH"_RegEx;
         inline const RegularExpression kPost      = L"POST"_RegEx;
         inline const RegularExpression kPostOrPut = L"PUT|POST"_RegEx;
         inline const RegularExpression kDelete    = L"DELETE"_RegEx;
         //inline const RegularExpression kOptions   = L"OPTIONS"_RegEx;
+#endif
     }
 
 }
