@@ -170,7 +170,6 @@ namespace {
     }
 }
 
-
 namespace {
     namespace CTORWithComparerAndContainer_Test_10_ {
         void DoAll ()
