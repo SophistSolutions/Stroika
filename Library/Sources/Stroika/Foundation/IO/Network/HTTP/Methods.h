@@ -39,14 +39,14 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         //inline const RegularExpression kANY       = L".*"_RegEx; /*RegularExpression::kAny*/
 #if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
         // HACK - DEF IN REQUEST.CPP
-         extern const RegularExpression kGet;
+        extern const RegularExpression kGet;
         extern const RegularExpression kPut;
-         extern const RegularExpression kPatch;
-        extern const RegularExpression  kPost;
-         extern const RegularExpression kPostOrPut;
-        extern const RegularExpression  kDelete;
+        extern const RegularExpression kPatch;
+        extern const RegularExpression kPost;
+        extern const RegularExpression kPostOrPut;
+        extern const RegularExpression kDelete;
 #else
-        inline const RegularExpression kGet = L"GET"_RegEx;
+        inline const RegularExpression kGet       = L"GET"_RegEx;
         inline const RegularExpression kPut       = L"PUT"_RegEx;
         inline const RegularExpression kPatch     = L"PATCH"_RegEx;
         inline const RegularExpression kPost      = L"POST"_RegEx;

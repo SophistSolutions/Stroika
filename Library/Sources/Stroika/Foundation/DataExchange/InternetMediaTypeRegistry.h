@@ -373,24 +373,24 @@ namespace Stroika::Foundation::DataExchange {
 
     namespace InternetMediaTypes {
 
-        #if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-         extern const InternetMediaType kOctetStream;
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
+        extern const InternetMediaType kOctetStream;
         extern const InternetMediaType kPNG;
-         extern const InternetMediaType kGIF;
-        extern const InternetMediaType  kJPEG;
-         extern const InternetMediaType kHTML;
-        extern const InternetMediaType  kCSS;
-         extern const InternetMediaType kText_PLAIN;
-        extern const InternetMediaType  kCSV;
-         extern const InternetMediaType kJSON;
-        extern const InternetMediaType  kPDF;
-         extern const InternetMediaType kURL;
-        extern const InternetMediaType  kXML;
-         extern const InternetMediaType kXSLT;
-        extern const InternetMediaType  kJavaArchive;
-         extern const InternetMediaType kRTF;
-        extern const InternetMediaType  kZip;
-         #else
+        extern const InternetMediaType kGIF;
+        extern const InternetMediaType kJPEG;
+        extern const InternetMediaType kHTML;
+        extern const InternetMediaType kCSS;
+        extern const InternetMediaType kText_PLAIN;
+        extern const InternetMediaType kCSV;
+        extern const InternetMediaType kJSON;
+        extern const InternetMediaType kPDF;
+        extern const InternetMediaType kURL;
+        extern const InternetMediaType kXML;
+        extern const InternetMediaType kXSLT;
+        extern const InternetMediaType kJavaArchive;
+        extern const InternetMediaType kRTF;
+        extern const InternetMediaType kZip;
+#else
         /**
          *  \brief application/octet-stream
          */
@@ -473,7 +473,7 @@ namespace Stroika::Foundation::DataExchange {
          *  \brief application/zip
          */
         inline const InternetMediaType kZip{Types::kApplication, L"zip"sv};
-        #endif
+#endif
 
     }
 
