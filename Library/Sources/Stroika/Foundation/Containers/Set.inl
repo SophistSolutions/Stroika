@@ -24,7 +24,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>*>
     inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer)
-        : inherited (Factory::Set_Factory<T, EQUALS_COMPARER> (forward<EQUALS_COMPARER> (equalsComparer)) ())
+        : inherited{Factory::Set_Factory<T, EQUALS_COMPARER> (forward<EQUALS_COMPARER> (equalsComparer)) ()}
     {
         static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "Set constructor with EQUALS_COMPARER - comparer not valid EqualsComparer- see ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool(T, T)>");
         _AssertRepValidType ();
@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>*>
     inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, const initializer_list<T>& src)
-        : Set (forward<EQUALS_COMPARER> (equalsComparer))
+        : Set{forward<EQUALS_COMPARER> (equalsComparer)}
     {
         AddAll (src);
         _AssertRepValidType ();
@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <typename EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
     inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, const CONTAINER_OF_ADDABLE& src)
-        : Set (forward<EQUALS_COMPARER> (equalsComparer))
+        : Set{forward<EQUALS_COMPARER> (equalsComparer)}
     {
         AddAll (src);
         _AssertRepValidType ();
@@ -83,7 +83,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <typename EQUALS_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> () and Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>*>
     inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
-        : Set (forward<EQUALS_COMPARER> (equalsComparer))
+        : Set{forward<EQUALS_COMPARER> (equalsComparer)}
     {
         AddAll (start, end);
         _AssertRepValidType ();

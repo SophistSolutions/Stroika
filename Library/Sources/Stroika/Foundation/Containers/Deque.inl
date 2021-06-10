@@ -16,7 +16,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline Deque<T>::Deque ()
-        : inherited (Factory::Deque_Factory<T> () ())
+        : inherited{Factory::Deque_Factory<T> () ()}
     {
         _AssertRepValidType ();
     }

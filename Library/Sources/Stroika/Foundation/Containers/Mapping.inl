@@ -24,14 +24,14 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping ()
-        : inherited (Factory::Mapping_Factory<KEY_TYPE, MAPPED_VALUE_TYPE>{}())
+        : inherited{Factory::Mapping_Factory<KEY_TYPE, MAPPED_VALUE_TYPE>{}()}
     {
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> ()>*>
     inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer)
-        : inherited (Factory::Mapping_Factory<KEY_TYPE, MAPPED_VALUE_TYPE, KEY_EQUALS_COMPARER> (forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)) ())
+        : inherited{Factory::Mapping_Factory<KEY_TYPE, MAPPED_VALUE_TYPE, KEY_EQUALS_COMPARER>{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}()}
     {
         _AssertRepValidType ();
     }
@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> ()>*>
     inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
-        : Mapping (forward<KEY_EQUALS_COMPARER> (keyEqualsComparer))
+        : Mapping{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}
     {
         AddAll (src);
         _AssertRepValidType ();
@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> ()>*>
     inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
-        : Mapping (forward<KEY_EQUALS_COMPARER> (keyEqualsComparer))
+        : Mapping{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}
     {
         AddAll (src);
         _AssertRepValidType ();
@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename KEY_EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>>*>
     inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, const CONTAINER_OF_ADDABLE& src)
-        : Mapping (forward<KEY_EQUALS_COMPARER> (keyEqualsComparer))
+        : Mapping{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}
     {
         AddAll (src);
         _AssertRepValidType ();
@@ -102,21 +102,21 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename KEY_EQUALS_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>*>
     Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
-        : Mapping (forward<KEY_EQUALS_COMPARER> (keyEqualsComparer))
+        : Mapping{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}
     {
         AddAll (start, end);
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (const _MappingRepSharedPtr& rep) noexcept
-        : inherited (rep)
+        : inherited{rep}
     {
         RequireNotNull (rep);
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (_MappingRepSharedPtr&& rep) noexcept
-        : inherited ((RequireNotNull (rep), move (rep)))
+        : inherited{(RequireNotNull (rep), move (rep))}
     {
         _AssertRepValidType ();
     }
@@ -427,8 +427,7 @@ namespace Stroika::Foundation::Containers {
 
                 MyMapping_ fMapping_;
                 MyIterableRep_ (const MyMapping_& map)
-                    : inherited ()
-                    , fMapping_ (map)
+                    : fMapping_{map}
                 {
                 }
                 virtual Iterator<KEY_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
@@ -474,8 +473,7 @@ namespace Stroika::Foundation::Containers {
                 using _IterableRepSharedPtr = typename Iterable<MAPPED_VALUE_TYPE>::_IterableRepSharedPtr;
                 MyMapping_ fMapping_;
                 MyIterableRep_ (const MyMapping_& map)
-                    : inherited ()
-                    , fMapping_ (map)
+                    : fMapping_{map}
                 {
                 }
                 virtual Iterator<MAPPED_VALUE_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
@@ -500,7 +498,7 @@ namespace Stroika::Foundation::Containers {
                 }
             };
             MyIterable_ (const MyMapping_& m)
-                : Iterable<MAPPED_VALUE_TYPE> (Iterable<MAPPED_VALUE_TYPE>::template MakeSmartPtr<MyIterableRep_> (m))
+                : Iterable<MAPPED_VALUE_TYPE>{Iterable<MAPPED_VALUE_TYPE>::template MakeSmartPtr<MyIterableRep_> (m)}
             {
             }
         };
@@ -520,7 +518,7 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename VALUE_EQUALS_COMPARER>
     constexpr Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer<VALUE_EQUALS_COMPARER>::EqualsComparer (const VALUE_EQUALS_COMPARER& valueEqualsComparer)
-        : fValueEqualsComparer (valueEqualsComparer)
+        : fValueEqualsComparer{valueEqualsComparer}
     {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>

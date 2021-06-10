@@ -96,7 +96,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline Sequence<T>::Sequence ()
-        : inherited (Factory::Sequence_Factory<T> () ())
+        : inherited{Factory::Sequence_Factory<T> () ()}
     {
         _AssertRepValidType ();
     }
@@ -123,7 +123,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     inline Sequence<T>::Sequence (_SequenceRepSharedPtr&& rep) noexcept
-        : inherited ((RequireNotNull (rep), move (rep)))
+        : inherited{(RequireNotNull (rep), move (rep))}
     {
         _AssertRepValidType ();
     }

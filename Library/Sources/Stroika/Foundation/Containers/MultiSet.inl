@@ -44,8 +44,7 @@ namespace Stroika::Foundation::Containers {
             using inherited = typename Iterator<T>::IRep;
             ElementsIteratorHelperContext_ fContext;
             Rep (const ElementsIteratorHelperContext_& context)
-                : inherited{}
-                , fContext{context}
+                : fContext{context}
             {
                 if (not fContext.fMultiSetIterator.Done ()) {
                     fContext.fSaved2Return = fContext.fMultiSetIterator->fValue;
@@ -98,7 +97,7 @@ namespace Stroika::Foundation::Containers {
             }
         };
         ElementsIteratorHelper_ (const ElementsIteratorHelperContext_& context)
-            : Iterator<T> (Iterator<T>::template MakeSmartPtr<Rep> (context))
+            : Iterator<T>{Iterator<T>::template MakeSmartPtr<Rep> (context)}
         {
         }
     };
@@ -158,8 +157,7 @@ namespace Stroika::Foundation::Containers {
             using inherited = typename Iterator<T>::IRep;
             UniqueElementsIteratorHelperContext_ fContext;
             Rep (const UniqueElementsIteratorHelperContext_& context)
-                : inherited{}
-                , fContext{context}
+                : fContext{context}
             {
             }
             virtual void More (optional<T>* result, bool advance) override
@@ -192,7 +190,7 @@ namespace Stroika::Foundation::Containers {
             }
         };
         UniqueElementsIteratorHelper_ (const typename Iterable<CountedValue<T>>::_IterableRepSharedPtr& tally)
-            : Iterator<T> (Iterator<T>::template MakeSmartPtr<Rep> (UniqueElementsIteratorHelperContext_{tally, tally->MakeIterator (tally.get ())}))
+            : Iterator<T>{Iterator<T>::template MakeSmartPtr<Rep> (UniqueElementsIteratorHelperContext_{tally, tally->MakeIterator (tally.get ())})}
         {
         }
     };
@@ -278,7 +276,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>*>
     inline MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer)
-        : inherited (Factory::MultiSet_Factory<T, TRAITS, EQUALS_COMPARER> (forward<EQUALS_COMPARER> (equalsComparer)) ())
+        : inherited{Factory::MultiSet_Factory<T, TRAITS, EQUALS_COMPARER> (forward<EQUALS_COMPARER> (equalsComparer)) ()}
     {
         static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "MultiSet constructor with EQUALS_COMPARER - comparer not valid EqualsComparer- see ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool(T, T)>");
         _AssertRepValidType ();
@@ -294,20 +292,20 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     template <typename EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T>>*>
     inline MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, const CONTAINER_OF_ADDABLE& src)
-        : MultiSet (forward<EQUALS_COMPARER> (equalsComparer))
+        : MultiSet{forward<EQUALS_COMPARER> (equalsComparer)}
     {
         AddAll (src);
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
     inline MultiSet<T, TRAITS>::MultiSet (const _MultiSetRepSharedPtr& rep) noexcept
-        : inherited ((RequireNotNull (rep), rep))
+        : inherited{(RequireNotNull (rep), rep)}
     {
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
     inline MultiSet<T, TRAITS>::MultiSet (_MultiSetRepSharedPtr&& rep) noexcept
-        : inherited ((RequireNotNull (rep), move (rep)))
+        : inherited{(RequireNotNull (rep), move (rep))}
     {
         _AssertRepValidType ();
     }
@@ -321,7 +319,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>*>
     MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, const initializer_list<T>& src)
-        : MultiSet (forward<EQUALS_COMPARER> (equalsComparer))
+        : MultiSet{forward<EQUALS_COMPARER> (equalsComparer)}
     {
         AddAll (src);
         _AssertRepValidType ();
@@ -336,7 +334,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>*>
     MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, const initializer_list<CountedValue<T>>& src)
-        : MultiSet (forward<EQUALS_COMPARER> (equalsComparer))
+        : MultiSet{forward<EQUALS_COMPARER> (equalsComparer)}
     {
         AddAll (src);
         _AssertRepValidType ();
@@ -352,7 +350,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     template <typename EQUALS_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> () and Configuration::is_iterator_v<COPY_FROM_ITERATOR_OF_ADDABLE>>*>
     MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
-        : MultiSet (forward<EQUALS_COMPARER> (equalsComparer))
+        : MultiSet{forward<EQUALS_COMPARER> (equalsComparer)}
     {
         AddAll (start, end);
         _AssertRepValidType ();

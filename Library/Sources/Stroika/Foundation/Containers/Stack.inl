@@ -18,7 +18,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline Stack<T>::Stack ()
-        : inherited (Factory::Stack_Factory<T>{}())
+        : inherited{Factory::Stack_Factory<T>{}()}
     {
         _AssertRepValidType ();
     }
@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     inline Stack<T>::Stack (_StackRepSharedPtr&& src) noexcept
-        : inherited ((RequireNotNull (src), move (src)))
+        : inherited{(RequireNotNull (src), move (src))}
     {
         _AssertRepValidType ();
     }
