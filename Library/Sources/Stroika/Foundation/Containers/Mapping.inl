@@ -31,9 +31,8 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> ()>*>
     inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer)
-        // use static_cast<inherited&&> to force selection of proper Iterable<> CTOR - avoid accidentally combining
-        // with other implicit conversions to select another base class constructor
-        : inherited{static_cast<inherited&&> (Factory::Mapping_Factory<KEY_TYPE, MAPPED_VALUE_TYPE, KEY_EQUALS_COMPARER>{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}())}
+        // https://stroika.atlassian.net/browse/STK-739 - debug why {} fails and () works
+        : inherited (Factory::Mapping_Factory<KEY_TYPE, MAPPED_VALUE_TYPE, KEY_EQUALS_COMPARER>{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}())
     {
         _AssertRepValidType ();
     }
@@ -461,7 +460,7 @@ namespace Stroika::Foundation::Containers {
 #else
         auto rep = const_cast<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep*> (this)->shared_from_this ();
 #endif
-        return MyIterable_ (Mapping<KEY_TYPE, MAPPED_VALUE_TYPE> (rep));
+        return MyIterable_{Mapping<KEY_TYPE, MAPPED_VALUE_TYPE> (rep)};
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     Iterable<MAPPED_VALUE_TYPE> Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep::_Values_Reference_Implementation () const
@@ -498,11 +497,8 @@ namespace Stroika::Foundation::Containers {
             };
             // @todo debug if/why issue with using uninform initializaiton here - fails to compile on vs2k17 and gcc ASAN giving erorrs that maybe related???
             MyIterable_ (const MyMapping_& m)
-#if qCompilerAndStdLib_uniformInitializationInsteadOfParenInit_Buggy
+                // @todo DOCUMENT/UNDERSTNAD why {} instead of () works VERY badly...
                 : Iterable<MAPPED_VALUE_TYPE> (Iterable<MAPPED_VALUE_TYPE>::template MakeSmartPtr<MyIterableRep_> (m))
-#else
-                : Iterable<MAPPED_VALUE_TYPE>{Iterable<MAPPED_VALUE_TYPE>::template MakeSmartPtr<MyIterableRep_> (m)}
-#endif
             {
             }
         };

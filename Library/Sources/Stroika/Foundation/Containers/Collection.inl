@@ -23,9 +23,8 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline Collection<T>::Collection ()
-        // use static_cast<inherited&&> to force selection of proper Iterable<> CTOR - avoid accidentally combining
-        // with other implicit conversions to select another base class constructor
-        : inherited{static_cast<inherited&&> (Factory::Collection_Factory<T>{}())}
+        // https://stroika.atlassian.net/browse/STK-739 - debug why {} fails and () works
+        : inherited (Factory::Collection_Factory<T>{}())
     {
         _AssertRepValidType ();
     }
