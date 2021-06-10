@@ -96,7 +96,11 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline Sequence<T>::Sequence ()
+#if qCompilerAndStdLib_uniformInitializationInsteadOfParenInit_Buggy
+        : inherited(Factory::Sequence_Factory<T> () ())
+#else
         : inherited{Factory::Sequence_Factory<T> () ()}
+#endif
     {
         _AssertRepValidType ();
     }

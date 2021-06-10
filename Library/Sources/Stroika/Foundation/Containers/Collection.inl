@@ -23,7 +23,11 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline Collection<T>::Collection ()
-        : inherited{Factory::Collection_Factory<T>{}()}
+#if qCompilerAndStdLib_uniformInitializationInsteadOfParenInit_Buggy
+        : inherited(Factory::Collection_Factory <T>{}())
+#else
+        : inherited{Factory::Collection_Factory <T>{}()}
+#endif
     {
         _AssertRepValidType ();
     }
