@@ -91,6 +91,13 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         * 
+         *  \note Implementation note:
+         *        Reason for the not is_base_of_v<> restriction on CTOR/1(CONTAINER_OF_ADDABLE&&) is to prevent compiler from
+         *        instantiating that constructor template for argument subclasses of this container type, and having those take precedence over the
+         *        default X(const X&) CTOR.
+         * 
+         *        And also careful not to apply to non-iterables.
          */
         SortedMultiSet ();
         template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>* = nullptr>

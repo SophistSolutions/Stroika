@@ -105,10 +105,14 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  @todo   MUST WORK OUT DETAILS OF SEMANTICS FOR ITERATOR ADD cuz naive interpreation of above
-         *          rules owuld lead to having a copy reverse the stack (SEE FILE-TODO-NOTE)
+         *          rules would lead to having a copy reverse the stack (SEE FILE-TODO-NOTE)
          *
-         *  \note Don't apply (CONTAINER_OF_ADDABLE&& src) constructor to non-containers (non-iterables), 
-         *        and don't allow it to apply to SUBCLASSES of Stack (since then we want to select the Stack (const Stack& from) constructor)
+         *  \note Implementation note:
+         *        Reason for the not is_base_of_v<> restriction on CTOR/1(CONTAINER_OF_ADDABLE&&) is to prevent compiler from
+         *        instantiating that constructor template for argument subclasses of this container type, and having those take precedence over the
+         *        default X(const X&) CTOR.
+         * 
+         *        And also careful not to apply to non-iterables.
          */
         Stack ();
         Stack (const Stack& src) noexcept = default;

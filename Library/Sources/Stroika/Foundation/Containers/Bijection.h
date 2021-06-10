@@ -163,6 +163,13 @@ namespace Stroika::Foundation::Containers {
          *  values.
          *
          *  The underlying data structure of the Bijection is defined by @see Factory::Bijection_Factory<>
+         * 
+         *  \note Implementation note:
+         *        Reason for the not is_base_of_v<> restriction on CTOR/1(CONTAINER_OF_ADDABLE&&) is to prevent compiler from
+         *        instantiating that constructor template for argument subclasses of this container type, and having those take precedence over the
+         *        default X(const X&) CTOR.
+         * 
+         *        And also careful not to apply to non-iterables.
          */
         Bijection ();
         template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<DOMAIN_TYPE, DOMAIN_EQUALS_COMPARER> () and Common::IsPotentiallyComparerRelation<RANGE_TYPE, RANGE_EQUALS_COMPARER> ()>* = nullptr>

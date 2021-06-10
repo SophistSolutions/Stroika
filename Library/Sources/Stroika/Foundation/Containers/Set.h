@@ -162,8 +162,12 @@ namespace Stroika::Foundation::Containers {
          *        Set<int> s10 { Common::DeclareEqualsComparer ([](int l, int r) { return l == r; }), c };
          *      \endcode
          *
-         *  \note Don't apply (CONTAINER_OF_ADDABLE&& src) constructor to non-containers (non-iterables), 
-         *        and don't allow it to apply to SUBCLASSES of Set (since then we want to select the Set (const Set& from) constructor)
+         *  \note Implementation note:
+         *        Reason for the not is_base_of_v<> restriction on CTOR/1(CONTAINER_OF_ADDABLE&&) is to prevent compiler from
+         *        instantiating that constructor template for argument subclasses of this container type, and having those take precedence over the
+         *        default X(const X&) CTOR.
+         * 
+         *        And also careful not to apply to non-iterables.
          */
         Set ();
         template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>* = nullptr>

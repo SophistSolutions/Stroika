@@ -181,6 +181,13 @@ namespace Stroika::Foundation::Containers {
          *          MultiSet<int> s8  { move (s1) };
          *          MultiSet<int> s9  { Common::mkEqualsComparer([](int l, int r) { return l == r; }), c};
          *      \endcode
+         * 
+         *  \note Implementation note:
+         *        Reason for the not is_base_of_v<> restriction on CTOR/1(CONTAINER_OF_ADDABLE&&) is to prevent compiler from
+         *        instantiating that constructor template for argument subclasses of this container type, and having those take precedence over the
+         *        default X(const X&) CTOR.
+         * 
+         *        And also careful not to apply to non-iterables.
          */
         MultiSet ();
         template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>* = nullptr>

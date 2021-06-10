@@ -146,12 +146,16 @@ namespace Stroika::Foundation::Containers {
          *          Collection<int> c8  { move (c1) };
          *      \endcode
          *
-         *  \note   Don't apply (CONTAINER_OF_ADDABLE&& src) constructor to non-containers (non-iterables), 
-         *          and don't allow it to apply to SUBCLASSES of Collection (since then we want to select the Collection (const Collection& from) constructor)
-         *
          *  \note   Most other containers (e.g. Set<>, Sequence<>) have the 'CONTAINER_OF_ADDABLE&& src' CTOR be explicit, whereas Collection does not.
          *          This is because converting to a Set or Sequence has some semantics, and the programmer should be clear on this. But a Collection<>
          *          acts just like an interable (except that its modifyable). So allow this case to be non-explicit.
+         * 
+         *  \note Implementation note:
+         *        Reason for the not is_base_of_v<> restriction on CTOR/1(CONTAINER_OF_ADDABLE&&) is to prevent compiler from
+         *        instantiating that constructor template for argument subclasses of this container type, and having those take precedence over the
+         *        default X(const X&) CTOR.
+         * 
+         *        And also careful not to apply to non-iterables.
          */
         Collection ();
         Collection (const Collection& src) noexcept = default;
