@@ -501,7 +501,7 @@ namespace Stroika::Foundation::Containers {
 #if qCompilerAndStdLib_uniformInitializationInsteadOfParenInit_Buggy
                 : Iterable<MAPPED_VALUE_TYPE> (Iterable<MAPPED_VALUE_TYPE>::template MakeSmartPtr<MyIterableRep_> (m))
 #else
-                : Iterable<MAPPED_VALUE_TYPE>{ Iterable<MAPPED_VALUE_TYPE>::template MakeSmartPtr<MyIterableRep_> (m)}
+                : Iterable<MAPPED_VALUE_TYPE>{Iterable<MAPPED_VALUE_TYPE>::template MakeSmartPtr<MyIterableRep_> (m)}
 #endif
             {
             }
