@@ -231,33 +231,25 @@ InternetMediaTypeRegistry::InternetMediaTypeRegistry (const shared_ptr<IBackendR
 }
 
 namespace {
-#if qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy
+    //
+    // function used to wrap sThe value, so we can use from two differnt places in the code, still use
+    // magic inits, and use lazy create (so not get deadly embrace before main)
+    //
     Execution::Synchronized<InternetMediaTypeRegistry>& sThe_ ()
     {
         static Execution::Synchronized<InternetMediaTypeRegistry> sThe_;
         return sThe_;
     }
-#else
-    Execution::Synchronized<InternetMediaTypeRegistry> sThe_;
-#endif
 }
 
 InternetMediaTypeRegistry InternetMediaTypeRegistry::Get ()
 {
-#if qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy
     return sThe_ ().load ();
-#else
-    return sThe_.load ();
-#endif
 }
 
 void InternetMediaTypeRegistry::Set (const InternetMediaTypeRegistry& r)
 {
-#if qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy
     sThe_ ().store (r);
-#else
-    sThe_.store (r);
-#endif
 }
 
 auto InternetMediaTypeRegistry::GetOverrides () const -> Mapping<InternetMediaType, OverrideRecord>
