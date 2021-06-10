@@ -743,10 +743,16 @@ namespace Stroika::Foundation::DataExchange {
             RequireNotNull (fromObjOfTypeT);
             Assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE));
             Assert (static_cast<ENUM_TYPE> (static_cast<SerializeAsType> (*fromObjOfTypeT)) == *fromObjOfTypeT); // no round-trip loss
+#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
+            &mapper;
+#endif
             return VariantValue{*nameMap.Lookup (*fromObjOfTypeT)};
         };
         ToObjectMapperType<ENUM_TYPE> toObjectMapper = [nameMap] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, ENUM_TYPE* intoObjOfTypeT) -> void {
             RequireNotNull (intoObjOfTypeT);
+#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
+            &mapper;
+#endif
             auto optVal = nameMap.InverseLookup (d.As<String> ());
             if (not optVal.has_value ()) [[UNLIKELY_ATTR]] {
                 DbgTrace (L"Enumeration ('%s') value '%s' out of range", Characters::ToString (typeid (ENUM_TYPE)).c_str (), d.As<String> ().c_str ());
