@@ -361,6 +361,16 @@ Please choose the Technical Support command on the Visual C++
 
 #endif
 
+#ifndef qCompilerAndStdLib_uniformInitializationInsteadOfParenInit_Buggy
+
+#if defined(_MSC_VER)
+#define qCompilerAndStdLib_uniformInitializationInsteadOfParenInit_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt9_)
+#else
+#define qCompilerAndStdLib_uniformInitializationInsteadOfParenInit_Buggy 0
+#endif
+
+#endif
+
 #ifndef qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
 
 #if defined(_MSC_VER)
