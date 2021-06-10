@@ -496,7 +496,14 @@ namespace Stroika::Foundation::Containers {
             };
             // @todo debug if/why issue with using uninform initializaiton here - fails to compile on vs2k17 and gcc ASAN giving erorrs that maybe related???
             MyIterable_ (const MyMapping_& m)
+#if qCompilerAndStdLib_uniformInitializationInsteadOfParenInit_Buggy
                 : Iterable<MAPPED_VALUE_TYPE> (Iterable<MAPPED_VALUE_TYPE>::template MakeSmartPtr<MyIterableRep_> (m))
+#else
+                : Iterable<MAPPED_VALUE_TYPE>
+            {
+                Iterable<MAPPED_VALUE_TYPE>::template MakeSmartPtr<MyIterableRep_> (m)
+            }
+#endif
             {
             }
         };
