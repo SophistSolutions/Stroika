@@ -96,11 +96,9 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline Sequence<T>::Sequence ()
-#if qCompilerAndStdLib_uniformInitializationInsteadOfParenInit_Buggy
-        : inherited(Factory::Sequence_Factory<T> () ())
-#else
-        : inherited{Factory::Sequence_Factory<T> () ()}
-#endif
+        // use static_cast<inherited&&> to force selection of proper Iterable<> CTOR - avoid accidentally combining
+        // with other implicit conversions to select another base class constructor
+        : inherited{static_cast<inherited&&> (Factory::Sequence_Factory<T>{}())}
     {
         _AssertRepValidType ();
     }

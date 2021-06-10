@@ -23,11 +23,9 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline Collection<T>::Collection ()
-#if qCompilerAndStdLib_uniformInitializationInsteadOfParenInit_Buggy
-        : inherited(Factory::Collection_Factory <T>{}())
-#else
-        : inherited{Factory::Collection_Factory <T>{}()}
-#endif
+        // use static_cast<inherited&&> to force selection of proper Iterable<> CTOR - avoid accidentally combining
+        // with other implicit conversions to select another base class constructor
+        : inherited{static_cast<inherited&&> (Factory::Collection_Factory<T>{}())}
     {
         _AssertRepValidType ();
     }
