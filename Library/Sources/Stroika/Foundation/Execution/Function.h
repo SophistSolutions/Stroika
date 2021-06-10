@@ -69,12 +69,18 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
+         *  \note Implementation note:
+         *        Reason for the not is_base_of_v<> restriction on CTOR/1(CTOR_FUNC_SIG&&) is to prevent compiler from
+         *        instantiating that constructor template for argument subclasses of this Function type, and having those take precedence over the
+         *        default X(const X&) CTOR.
+         * 
+         *        And also careful not to apply to non-functions.
          */
         Function () = default;
         Function (nullptr_t);
         Function (const Function&) = default;
         Function (Function&&)      = default;
-        template <typename CTOR_FUNC_SIG>
+        template <typename CTOR_FUNC_SIG, enable_if_t<is_convertible_v<CTOR_FUNC_SIG, function<FUNCTION_SIGNATURE>> and not is_base_of_v<Function<FUNCTION_SIGNATURE>, Configuration::remove_cvref_t<CTOR_FUNC_SIG>>>* = nullptr>
         Function (const CTOR_FUNC_SIG& f);
 
     public:
