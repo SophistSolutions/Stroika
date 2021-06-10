@@ -307,6 +307,13 @@ namespace Stroika::Foundation::Traversal {
         explicit Iterable (CONTAINER_OF_T&& from);
 
     public:
+        /**
+         *  \note   Use of initializer_list<T> (@see https://stroika.atlassian.net/browse/STK-739)
+         *          Because of quirks of C++ overload resolution (https://en.cppreference.com/w/cpp/language/list_initialization)
+         *          use of mem-initializers with Iterable<T> constructor calls have the unintuitive behavior of
+         *          invoking the initializer_list<T> constructor preferatially (see docs above and 'Otherwise, the constructors of T are considered, in two phases'
+         * 
+         */
         Iterable (const initializer_list<T>& from);
 
     protected:

@@ -97,8 +97,8 @@ namespace Stroika::Foundation::Containers {
         using ArchetypeContainerType = PriorityQueue<T>;
 
     public:
-        /*
-            */
+        /**
+         */
         PriorityQueue ();
         PriorityQueue (const PriorityQueue& src) = default;
 

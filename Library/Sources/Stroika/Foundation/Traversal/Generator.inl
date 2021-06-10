@@ -87,7 +87,8 @@ namespace Stroika::Foundation::Traversal {
                 }
             };
             MyIterable_ (const function<optional<T> ()>& getNext)
-                : Iterable<T>{Iterable<T>::template MakeSmartPtr<MyIterableRep_> (getNext)}
+                // Use Iterable<>() to avoid matching Iterable<>(initializer_list<>... - see docs in Iterable::CTORs...
+                : Iterable<T> (Iterable<T>::template MakeSmartPtr<MyIterableRep_> (getNext))
             {
             }
         };

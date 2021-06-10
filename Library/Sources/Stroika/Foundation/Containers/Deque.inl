@@ -16,7 +16,8 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline Deque<T>::Deque ()
-        : inherited{Factory::Deque_Factory<T> () ()}
+        // Use inherited() to avoid matching inherited(initializer_list<>... - see docs in inherited::CTORs...
+        : inherited (Factory::Deque_Factory<T> () ())
     {
         _AssertRepValidType ();
     }

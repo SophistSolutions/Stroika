@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> ()>*>
     inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer)
-        // https://stroika.atlassian.net/browse/STK-739 - debug why {} fails and () works
+        // Use Iterable<>() to avoid matching Iterable<>(initializer_list<>... - see docs in Iterable::CTORs...
         : inherited (Factory::Mapping_Factory<KEY_TYPE, MAPPED_VALUE_TYPE, KEY_EQUALS_COMPARER>{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}())
     {
         _AssertRepValidType ();
@@ -451,7 +451,8 @@ namespace Stroika::Foundation::Containers {
                 }
             };
             MyIterable_ (const MyMapping_& m)
-                : Iterable<KEY_TYPE>{Iterable<KEY_TYPE>::template MakeSmartPtr<MyIterableRep_> (m)}
+                // Use Iterable<>() to avoid matching Iterable<>(initializer_list<>... - see docs in Iterable::CTORs...
+                : Iterable<KEY_TYPE> (Iterable<KEY_TYPE>::template MakeSmartPtr<MyIterableRep_> (m))
             {
             }
         };
@@ -497,7 +498,7 @@ namespace Stroika::Foundation::Containers {
             };
             // @todo debug if/why issue with using uninform initializaiton here - fails to compile on vs2k17 and gcc ASAN giving erorrs that maybe related???
             MyIterable_ (const MyMapping_& m)
-                // @todo DOCUMENT/UNDERSTNAD why {} instead of () works VERY badly...
+                // Use Iterable<>() to avoid matching Iterable<>(initializer_list<>... - see docs in Iterable::CTORs...
                 : Iterable<MAPPED_VALUE_TYPE> (Iterable<MAPPED_VALUE_TYPE>::template MakeSmartPtr<MyIterableRep_> (m))
             {
             }

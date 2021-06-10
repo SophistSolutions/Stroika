@@ -96,7 +96,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline Sequence<T>::Sequence ()
-        // https://stroika.atlassian.net/browse/STK-739 - debug why {} fails and () works
+        // Use inherited() to avoid matching inherited(initializer_list<>... - see docs in inherited::CTORs...
         : inherited (Factory::Sequence_Factory<T>{}())
     {
         _AssertRepValidType ();
