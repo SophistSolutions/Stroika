@@ -1533,44 +1533,6 @@ Test.cpp:173:31: error: template template argument has different template parame
 #endif
 
 /*
- * Only seen broken on Ubuntu 2004 clang++ 9 or 10, and with LTO enabled.
-
-Segmentation fault (core dumped)
-   []  (0  seconds)  [33]  Foundation::DataExchange::Other  (../Builds/clang++-10-release-libstdc++/Tests/Test33)
-
-
-lldb) bt
-* thread #1, name = 'Test33', stop reason = signal SIGSEGV: invalid address (fault address: 0x0)
-  * frame #0: 0x00000000004d8bbb Test33`Stroika::Foundation::DataExchange::InternetMediaTypeRegistry::FrontendRep_::SetOverrides(Stroika::Foundation::Containers::Mapping<Stroika::Foundation::DataExchange::InternetMediaType, Stroika::Foundation::DataExchange::InternetMediaTypeRegistry::OverrideRecord> const&) [inlined] Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Common::KeyValuePair<Stroika::Foundation::DataExchange::InternetMediaType, Stroika::Foundation::DataExchange::InternetMediaTypeRegistry::OverrideRecord> >::MakeIterator(this=0x00000000009caec0) const at Iterable.inl:272:61
-    frame #1: 0x00000000004d8bbb Test33`Stroika::Foundation::DataExchange::InternetMediaTypeRegistry::FrontendRep_::SetOverrides(Stroika::Foundation::Containers::Mapping<Stroika::Foundation::DataExchange::InternetMediaType, Stroika::Foundation::DataExchange::InternetMediaTypeRegistry::OverrideRecord> const&) [inlined] Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Common::KeyValuePair<Stroika::Foundation::DataExchange::InternetMediaType, Stroika::Foundation::DataExchange::InternetMediaTypeRegistry::OverrideRecord> >::begin(this=0x00000000009caec0) const at Iterable.inl:874
-    frame #2: 0x00000000004d8bbb Test33`Stroika::Foundation::DataExchange::InternetMediaTypeRegistry::FrontendRep_::SetOverrides(this=<unavailable>, overrides=<unavailable>) at InternetMediaTypeRegistry.cpp:95
-    frame #3: 0x00000000004cd0da Test33`Stroika::Foundation::DataExchange::InternetMediaTypeRegistry::FrontendRep_::FrontendRep_(this=0x00000000009cae70, backendRep=<unavailable>, overrides=0x0000000000947e18) at InternetMediaTypeRegistry.cpp:83:9
-    frame #4: 0x000000000046ceac Test33`_GLOBAL__sub_I_InternetMediaTypeRegistry.cpp [inlined] Stroika::Foundation::DataExchange::InternetMediaTypeRegistry::FrontendRep_::FrontendRep_(this=<unavailable>, backendRep=<unavailable>) at InternetMediaTypeRegistry.cpp:77:11
-    frame #5: 0x000000000046ce9b Test33`_GLOBAL__sub_I_InternetMediaTypeRegistry.cpp [inlined] void __gnu_cxx::new_allocator<Stroika::Foundation::DataExchange::InternetMediaTypeRegistry::FrontendRep_>::construct<Stroika::Foundation::DataExchange::InternetMediaTypeRegistry::FrontendRep_, std::shared_ptr<Stroika::Foundation::DataExchange::InternetMediaTypeRegistry::IBackendRep> const&>(this=<unavailable>, __p=<unavailable>, __args=<unavailable>) at new_allocator.h:151
-    frame #6: 0x000000000046ce9b Test33`_GLOBAL__sub_I_InternetMediaTypeRegistry.cpp [inlined] void std::allocator_traits<std::allocator<Stroika::Foundation::DataExchange::InternetMediaTypeRegistry::FrontendRep_> >::construct<Stroika::Foundation::DataExchange::InternetMediaTypeRegistry::FrontendRep_, std::shared_ptr<Stroika::Foundation::DataExchange::InternetMediaTypeRegistry::IBac
-
-
-or 
-   [Succeeded]  (0  seconds)  [42]  Foundation::IO::Network::HTTP  (../Builds/clang++-10-release-libstdc++/Tests/Test42)
-Segmentation fault (core dumped)
-   []  (0  seconds)  [43]  Foundation::IO::Network::Transfer  (../Builds/clang++-10-release-libstdc++/Tests/Test43)
-   [Succeeded]  (0  seconds)  [44]  Foundation::IO::Other  (../Builds/clang++-10-release-libstdc++/Tests/Test44)
-   [Succeeded]  (0  seconds)  [45]  Foundation::Math  (../Builds/clang++-10-release-libstdc++/Tests/Test45)
-
- */
-#ifndef qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy
-
-#if defined(__clang__) && !defined(__APPLE__)
-// This apears to be FIXED in XCODE 12
-// this appears still broken in clang++-12 on ubuntu 21.04
-#define qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((9 <= __clang_major__ && __clang_major__ <= 12))
-#else
-#define qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy 0
-#endif
-
-#endif
-
-/*
  *
  * 
 FAILED: RegressionTestFailure; replaced == L"abcdef";;Test.cpp: 753
