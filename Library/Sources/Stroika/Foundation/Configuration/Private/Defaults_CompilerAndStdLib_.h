@@ -351,6 +351,9 @@ Please choose the Technical Support command on the Visual C++
 
 #endif
 
+#if 0
+// not sure what is wrong here but some crasher in InternetMediaTypeRegistry::FrontendRep_ code...
+#endif
 #ifndef qCompilerAndStdLib_initializer_list_sometimes_very_Buggy
 
 #if defined(_MSC_VER)
