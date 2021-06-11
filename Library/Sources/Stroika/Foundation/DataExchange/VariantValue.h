@@ -192,6 +192,12 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
+         *  \brief construct a VariantValue from most any 'basic type' you would expect to find in a weakly typed language (e.g. lisp, javascript)
+         *
+         *  \note   Most constructors are not explicit to make it more easy to assign to (could do operator= for that)?
+         *          A few are marked as explicit, only because its too easy to accidentally invoke 
+         *          (as with https://stroika.atlassian.net/browse/STK-739) - Iterable<VariantValue> or Set<VariantValue> etc...
+         *          Roughly, explicit types can be used directly, and composite (aggregating) types are explicit.
          */
         VariantValue () = default;
         VariantValue (nullptr_t);
@@ -215,13 +221,13 @@ namespace Stroika::Foundation::DataExchange {
         VariantValue (const wstring& val);
         VariantValue (const wchar_t* val);
         VariantValue (const String& val);
-        VariantValue (const map<wstring, VariantValue>& val);
-        VariantValue (const Mapping<String, VariantValue>& val);
-        VariantValue (Mapping<String, VariantValue>&& val);
-        VariantValue (const vector<VariantValue>& val);
-        VariantValue (const Sequence<VariantValue>& val);
-        VariantValue (const Traversal::Iterable<VariantValue>& val);
-        VariantValue (Sequence<VariantValue>&& val);
+        explicit VariantValue (const map<wstring, VariantValue>& val);
+        explicit VariantValue (const Mapping<String, VariantValue>& val);
+        explicit VariantValue (Mapping<String, VariantValue>&& val);
+        explicit VariantValue (const vector<VariantValue>& val);
+        explicit VariantValue (const Sequence<VariantValue>& val);
+        explicit VariantValue (const Traversal::Iterable<VariantValue>& val);
+        explicit VariantValue (Sequence<VariantValue>&& val);
         VariantValue (const VariantValue& src) = default;
         VariantValue (VariantValue&& src) noexcept;
         template <typename T>

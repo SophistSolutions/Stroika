@@ -329,7 +329,8 @@ VariantValue VariantValue::ConvertTo (Type to) const
     switch (to) {
         case Type::eNull:
             // Only null (caught above) can translate to null...
-            Execution::Throw (DataExchange::BadFormatException{L"Cannot coerce VariantValue to null"sv});
+            static const DataExchange::BadFormatException kCannotCoerce2Null_ {L"Cannot coerce VariantValue to null"sv};
+            Execution::Throw (kCannotCoerce2Null_);
         case Type::eBLOB:
             return As<Memory::BLOB> ();
         case Type::eBoolean:
@@ -347,11 +348,12 @@ VariantValue VariantValue::ConvertTo (Type to) const
         case Type::eString:
             return As<String> ();
         case Type::eArray:
-            return As<Sequence<VariantValue>> ();
+            return VariantValue{As<Sequence<VariantValue>> ()};
         case Type::eMap:
-            return As<Mapping<String, VariantValue>> ();
+            return VariantValue{As<Mapping<String, VariantValue>> ()};
     }
-    Execution::Throw (DataExchange::BadFormatException{L"Cannot coerce VariantValue to that type"sv});
+    static const DataExchange::BadFormatException kCannotCoerce2ThatType_{L"Cannot coerce VariantValue to that type"sv};
+    Execution::Throw (kCannotCoerce2ThatType_);
 }
 
 Memory::BLOB VariantValue::AsBLOB_ () const
