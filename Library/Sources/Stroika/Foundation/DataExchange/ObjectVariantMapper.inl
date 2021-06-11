@@ -576,7 +576,7 @@ namespace Stroika::Foundation::DataExchange {
         return TypeMappingDetails{
             typeid (tuple<T1>),
             FromObjectMapperType<tuple<T1>>{[] (const ObjectVariantMapper& mapper, const tuple<T1>* fromObj) -> VariantValue {
-                return Sequence<VariantValue>{mapper.FromObject<T1> (std::get<0> (*fromObj))};
+                return VariantValue{Sequence<VariantValue>{mapper.FromObject<T1> (std::get<0> (*fromObj))}};
             }},
             ToObjectMapperType<tuple<T1>>{[] (const ObjectVariantMapper& mapper, const VariantValue& d, tuple<T1>* intoObj) -> void {
                 Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
@@ -593,7 +593,7 @@ namespace Stroika::Foundation::DataExchange {
         return TypeMappingDetails{
             typeid (tuple<T1, T2>),
             FromObjectMapperType<tuple<T1, T2>>{[] (const ObjectVariantMapper& mapper, const tuple<T1, T2>* fromObj) -> VariantValue {
-                return Sequence<VariantValue>{mapper.FromObject<T1> (std::get<0> (*fromObj)), mapper.FromObject<T2> (std::get<1> (*fromObj))};
+                return VariantValue{Sequence<VariantValue>{mapper.FromObject<T1> (std::get<0> (*fromObj)), mapper.FromObject<T2> (std::get<1> (*fromObj))}};
             }},
             ToObjectMapperType<tuple<T1, T2>>{[] (const ObjectVariantMapper& mapper, const VariantValue& d, tuple<T1, T2>* intoObj) -> void {
                 Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
