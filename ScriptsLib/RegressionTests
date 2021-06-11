@@ -116,6 +116,10 @@ command -v "sw_vers" 2>&1 > /dev/null
 if [ $? -eq 0 ] ; then
 	echo "$PREFIX_OUT_LABEL" "    MacOS-X: `sw_vers | tr '\n' ';'`" >>$TEST_OUT_FILE 2>&1
 fi
+command -v "xcodebuild" 2>&1 > /dev/null
+if [ $? -eq 0 ] ; then
+	echo "$PREFIX_OUT_LABEL" "    X-CODE: `xcodebuild -version | tr '\n' ';'`" >>$TEST_OUT_FILE 2>&1
+fi
 command -v "system_profiler SPSoftwareDataType" 2>&1 > /dev/null
 if [ $? -eq 0 ] ; then
 	echo "$PREFIX_OUT_LABEL" "    system_profiler=`system_profiler SPSoftwareDataType`" >>$TEST_OUT_FILE 2>&1
