@@ -61,7 +61,12 @@ namespace Stroika::Frameworks::WebServer {
          */
         optional<Set<String>> fAllowedHeaders;
     };
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+    //HACK - STORED in ConnectionManager.cpp
+    extern const CORSOptions kDefault_CORSOptions;
+#else
     inline const CORSOptions kDefault_CORSOptions{CORSOptions::kAllowCredentials_Default, CORSOptions::kAccessControlMaxAge_Default, Set<String>{CORSOptions::kAccessControlWildcard}, Set<String>{CORSOptions::kAccessControlWildcard}};
+#endif
 
 }
 
