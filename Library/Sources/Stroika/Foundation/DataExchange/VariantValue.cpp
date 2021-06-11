@@ -326,10 +326,10 @@ VariantValue VariantValue::ConvertTo (Type to) const
     if (GetType () == to) [[LIKELY_ATTR]] {
         return *this; // performance tweak
     }
+    static const DataExchange::BadFormatException kCannotCoerce2Null_{L"Cannot coerce VariantValue to null"sv};
     switch (to) {
         case Type::eNull:
             // Only null (caught above) can translate to null...
-            static const DataExchange::BadFormatException kCannotCoerce2Null_ {L"Cannot coerce VariantValue to null"sv};
             Execution::Throw (kCannotCoerce2Null_);
         case Type::eBLOB:
             return As<Memory::BLOB> ();
