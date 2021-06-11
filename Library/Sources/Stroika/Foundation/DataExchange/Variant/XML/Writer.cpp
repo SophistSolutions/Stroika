@@ -164,7 +164,7 @@ public:
         else {
             Containers::Mapping<String, VariantValue> v2;
             v2.Add (fDocumentElementName_, v);
-            PrettyPrint_ (v2, TextWriter::New (out, TextWriter::Format::eUTF8WithoutBOM), 0);
+            PrettyPrint_ (VariantValue{v2}, TextWriter::New (out, TextWriter::Format::eUTF8WithoutBOM), 0);
         }
     }
     virtual void Write (const VariantValue& v, const Streams::OutputStream<Character>::Ptr& out) override
@@ -176,7 +176,7 @@ public:
         else {
             Containers::Mapping<String, VariantValue> v2;
             v2.Add (fDocumentElementName_, v);
-            PrettyPrint_ (v2, out, 0);
+            PrettyPrint_ (VariantValue{v2}, out, 0);
         }
     }
     nonvirtual SerializationConfiguration GetConfiguration () const
