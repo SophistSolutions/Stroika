@@ -283,7 +283,7 @@ namespace Test_02_BasicReaderTests_ {
             v.push_back (3);
             v.push_back (7);
             v.push_back (L"cookie");
-            VariantValue v1 = v;
+            VariantValue v1 = VariantValue{v};
             CheckMatchesExpected_READER_ ("[\n    3,\n    7,\n    \"cookie\"\n]", v1);
         }
         {
@@ -292,7 +292,7 @@ namespace Test_02_BasicReaderTests_ {
             v[L"Arg1"]      = 32;
             v[L"Arg2"]      = L"Cookies";
             v[L"Arg3"]      = Containers::Sequence<VariantValue> ({19});
-            VariantValue v1 = v;
+            VariantValue v1 = VariantValue{v};
             CheckMatchesExpected_READER_ ("{\n    \"Arg1\" : 32,\n    \"Arg2\" : \"Cookies\",\n    \"Arg3\" : [\n        19\n    ]\n}", v1);
         }
         {
@@ -749,7 +749,7 @@ namespace {
 namespace {
     namespace Write2JSONSThenRead2JSONsWithSharedStream_ {
         namespace Private_ {
-            static VariantValue kTestVariant_ = Mapping<String, VariantValue>{pair<String, VariantValue>{L"a", 3}, pair<String, VariantValue>{L"b", 99}};
+            static VariantValue kTestVariant_{Mapping<String, VariantValue>{pair<String, VariantValue>{L"a", 3}, pair<String, VariantValue>{L"b", 99}}};
             void                WriteJSON_ (const Streams::OutputStream<byte>::Ptr& out)
             {
                 using namespace DataExchange::Variant::JSON;
