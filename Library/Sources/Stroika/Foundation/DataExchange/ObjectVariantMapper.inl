@@ -610,7 +610,7 @@ namespace Stroika::Foundation::DataExchange {
         return TypeMappingDetails{
             typeid (tuple<T1, T2, T3>),
             FromObjectMapperType<tuple<T1, T2, T3>>{[] (const ObjectVariantMapper& mapper, const tuple<T1, T2, T3>* fromObj) -> VariantValue {
-                return Sequence<VariantValue>{mapper.FromObject<T1> (std::get<0> (*fromObj)), mapper.FromObject<T2> (std::get<1> (*fromObj)), mapper.FromObject<T3> (std::get<2> (*fromObj))};
+                return VariantValue{Sequence<VariantValue>{mapper.FromObject<T1> (std::get<0> (*fromObj)), mapper.FromObject<T2> (std::get<1> (*fromObj)), mapper.FromObject<T3> (std::get<2> (*fromObj))}};
             }},
             ToObjectMapperType<tuple<T1, T2, T3>>{[] (const ObjectVariantMapper& mapper, const VariantValue& d, tuple<T1, T2, T3>* intoObj) -> void {
                 Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
