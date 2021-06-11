@@ -130,7 +130,7 @@ void Stroika::Samples::SQLite::ComputerNetworksModel (const Options& options)
     auto getAllDevices = [&] () -> Sequence<Device> {
         Statement getAllDevicesStatement{conn, StandardSQLStatements{kDeviceTableSchema_}.GetAllElements ()};
         return getAllDevicesStatement.GetAllRows ().Select<Device> ([] (const Statement::Row& r) {
-                                                       return Device::kMapper.ToObject<Device> (kDeviceTableSchema_.MapFromDB (r));
+                                                       return Device::kMapper.ToObject<Device> (VariantValue{kDeviceTableSchema_.MapFromDB (r)});
                                                    })
             .As<Sequence<Device>> ();
     };
