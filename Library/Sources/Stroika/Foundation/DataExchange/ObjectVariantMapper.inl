@@ -559,7 +559,7 @@ namespace Stroika::Foundation::DataExchange {
         return TypeMappingDetails{
             typeid (pair<T1, T2>),
             FromObjectMapperType<pair<T1, T2>>{[] (const ObjectVariantMapper& mapper, const pair<T1, T2>* fromObj) -> VariantValue {
-                return Sequence<VariantValue>{mapper.FromObject<T1> (fromObj->first), mapper.FromObject<T2> (fromObj->second)};
+                return VariantValue{Sequence<VariantValue>{mapper.FromObject<T1> (fromObj->first), mapper.FromObject<T2> (fromObj->second)}};
             }},
             ToObjectMapperType<pair<T1, T2>>{[] (const ObjectVariantMapper& mapper, const VariantValue& d, pair<T1, T2>* intoObj) -> void {
                 Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
