@@ -235,7 +235,7 @@ namespace {
             v.push_back (3);
             v.push_back (7);
             v.push_back (L"cookie");
-            VariantValue v1 = v;
+            VariantValue v1 = VariantValue{v};
             CheckMatchesExpected_WRITER_ (v1, "[\n    3,\n    7,\n    \"cookie\"\n]\n");
         }
         {
@@ -244,7 +244,7 @@ namespace {
             v[L"Arg1"]      = 32;
             v[L"Arg2"]      = L"Cookies";
             v[L"Arg3"]      = Containers::Sequence<VariantValue> ({19});
-            VariantValue v1 = v;
+            VariantValue v1 = VariantValue{v};
             CheckMatchesExpected_WRITER_ (v1, "{\n    \"Arg1\" : 32,\n    \"Arg2\" : \"Cookies\",\n    \"Arg3\" : [\n        19\n    ]\n}\n");
         }
     }

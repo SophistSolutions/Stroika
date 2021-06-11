@@ -68,7 +68,7 @@ namespace Stroika::Foundation::DataExchange {
         *this = VariantValue{val};
         return *this;
     }
-    inline VariantValue& VariantValue::operator= (const Sequence<VariantValue>& val) 
+    inline VariantValue& VariantValue::operator= (const Sequence<VariantValue>& val)
     {
         *this = VariantValue{val};
         return *this;
