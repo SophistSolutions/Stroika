@@ -41,7 +41,7 @@ namespace Stroika::Foundation::DataExchange {
     {
     }
     inline VariantValue::VariantValue (const vector<VariantValue>& val)
-        : VariantValue (Sequence<VariantValue> (val))
+        : VariantValue{Sequence<VariantValue> (val)}
     {
     }
     inline VariantValue::VariantValue (VariantValue&& src) noexcept
@@ -52,6 +52,31 @@ namespace Stroika::Foundation::DataExchange {
     inline VariantValue::VariantValue (const optional<T>& val)
         : VariantValue{val.has_value () ? VariantValue{*val} : VariantValue{}}
     {
+    }
+    inline VariantValue& VariantValue::operator= (const map<wstring, VariantValue>& val)
+    {
+        *this = VariantValue{val};
+        return *this;
+    }
+    inline VariantValue& VariantValue::operator= (const Mapping<String, VariantValue>& val)
+    {
+        *this = VariantValue{val};
+        return *this;
+    }
+    inline VariantValue& VariantValue::operator= (const vector<VariantValue>& val)
+    {
+        *this = VariantValue{val};
+        return *this;
+    }
+    inline VariantValue& VariantValue::operator= (const Sequence<VariantValue>& val) 
+    {
+        *this = VariantValue{val};
+        return *this;
+    }
+    inline VariantValue& VariantValue::operator= (const Traversal::Iterable<VariantValue>& val)
+    {
+        *this = VariantValue{val};
+        return *this;
     }
     inline VariantValue& VariantValue::operator= (VariantValue&& rhs) noexcept
     {
