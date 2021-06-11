@@ -69,6 +69,9 @@ namespace CommonTests {
                     }
 #else
                     for ([[maybe_unused]] CountedValue<T> i : s) {
+#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
+                        &i;
+#endif
                         VerifyTestResult (false);
                     }
 #endif
@@ -103,6 +106,9 @@ namespace CommonTests {
                             }
 #else
                             for ([[maybe_unused]] CountedValue<T> it : s) {
+#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
+                                &it;
+#endif
                                 for (size_t i = 1; i <= kTestSize; i++) {
                                     VerifyTestResult (s.Contains (i));
                                     VerifyTestResult (s.GetLength () == kTestSize - i + 1);
@@ -436,6 +442,9 @@ namespace CommonTests {
                     }
                     for (auto it = s.begin (); it != s.end (); ++it) {
                         for ([[maybe_unused]] auto it1 : s.Elements ()) {
+#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
+                            &it1;
+#endif
                             if (s.TotalOccurrences () < 25) {
                                 s.Add (1);
                             }
@@ -457,6 +466,9 @@ namespace CommonTests {
                     testingSchema.ApplyToContainerExtraTest (s);
                     for (auto it = s.begin (); it != s.end (); ++it) {
                         for ([[maybe_unused]] auto it1 : s.Elements ()) {
+#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
+                            &it1;
+#endif
                             if (s.TotalOccurrences () < 25) {
                                 s.Add (1);
                             }

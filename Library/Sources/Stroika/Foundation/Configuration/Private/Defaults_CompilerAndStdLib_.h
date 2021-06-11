@@ -351,8 +351,10 @@ Please choose the Technical Support command on the Visual C++
 
 #endif
 
-#if 0
-// not sure what is wrong here but some crasher in InternetMediaTypeRegistry::FrontendRep_ code...
+/**
+ *  not sure what is wrong here but some crasher in InternetMediaTypeRegistry::FrontendRep_ code...
+ *  ONLY VS2k17 problem and not going to support much longer
+ */
 #endif
 #ifndef qCompilerAndStdLib_initializer_list_sometimes_very_Buggy
 

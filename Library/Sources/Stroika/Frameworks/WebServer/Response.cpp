@@ -154,11 +154,17 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
     this->status.rwPropertyChangedHandlers ().push_front (
         [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
             Require (not this->responseStatusSent ());
+#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
+            &propertyChangedEvent;
+#endif
             return PropertyChangedEventResultType::eContinueProcessing;
         });
     this->statusAndOverrideReason.rwPropertyChangedHandlers ().push_front (
         [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
             Require (not this->responseStatusSent ());
+#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
+            &propertyChangedEvent;
+#endif
             return PropertyChangedEventResultType::eContinueProcessing;
         });
     this->rwHeaders.rwPropertyReadHandlers ().push_front (
@@ -169,6 +175,9 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
     this->rwHeaders.rwPropertyChangedHandlers ().push_front (
         [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
             Require (this->headersCanBeSet ());
+#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
+            &propertyChangedEvent;
+#endif
             return PropertyChangedEventResultType::eContinueProcessing;
         });
 #endif
@@ -217,6 +226,9 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
         });
     this->rwHeaders ().ETag.rwPropertyChangedHandlers ().push_front (
         [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
+#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
+            &propertyChangedEvent;
+#endif
             Require (this->headersCanBeSet ());
             lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
             // if someone explicitly sets the etag, then stop auto-computing it

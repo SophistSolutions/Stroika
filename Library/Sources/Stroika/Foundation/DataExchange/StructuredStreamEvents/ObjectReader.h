@@ -990,9 +990,13 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     private:
         ContainerType*                      fValuePtr_{};
         optional<ReaderFromVoidStarFactory> fReaderRactory_{}; // if missing, use Context::GetObjectReaderRegistry ().MakeContextReader ()
-        function<bool (Name)>               fReadThisName_{[] ([[maybe_unused]] const Name& n) { return true; }};
-        ElementType                         fProxyValue_{TRAITS::kDefaultValue};
-        shared_ptr<IElementConsumer>        fActiveSubReader_{};
+#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
+        function<bool (Name)> fReadThisName_{[] ([[maybe_unused]] const Name&) { return true; }};
+#else
+        function<bool (Name)> fReadThisName_{[] ([[maybe_unused]] const Name& n) { return true; }};
+#endif
+        ElementType                  fProxyValue_{TRAITS::kDefaultValue};
+        shared_ptr<IElementConsumer> fActiveSubReader_{};
     };
 
     /**

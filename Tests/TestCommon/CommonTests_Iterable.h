@@ -23,6 +23,9 @@ namespace CommonTests {
                 size_t l   = container.GetLength ();
                 size_t cnt = 0;
                 for ([[maybe_unused]] auto i : container) {
+#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
+            &i;
+#endif
                     cnt++;
                 }
                 VerifyTestResult (cnt == l);

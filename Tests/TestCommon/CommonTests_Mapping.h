@@ -112,6 +112,9 @@ namespace CommonTests {
                     m.Remove (1);
                     VerifyTestResult (m.size () == 0);
                     for ([[maybe_unused]] auto i : m) {
+#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
+                        &i;
+#endif
                         VerifyTestResult (false);
                     }
                     m.Add (1, 2);
@@ -119,6 +122,9 @@ namespace CommonTests {
                     m.Add (3, 4);
                     unsigned int cnt = 0;
                     for ([[maybe_unused]] auto i : m) {
+#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
+                        &i;
+#endif
                         cnt++;
                         if (cnt == 1) {
                             VerifyTestResult (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
@@ -236,6 +242,9 @@ namespace CommonTests {
                         VerifyTestResult (a == K);
                         a = 0;
                         for ([[maybe_unused]] auto i : keys) {
+#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
+                            &i;
+#endif
                             a++;
                         }
                         VerifyTestResult (a == K);
@@ -266,6 +275,9 @@ namespace CommonTests {
                     m.Remove (1);
                     VerifyTestResult (m.size () == 0);
                     for ([[maybe_unused]] auto i : m) {
+#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
+                        &i;
+#endif
                         VerifyTestResult (false);
                     }
                     m.Add (1, 2);

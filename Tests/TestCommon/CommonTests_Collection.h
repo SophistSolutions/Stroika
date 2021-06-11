@@ -92,10 +92,19 @@ namespace CommonTests {
 
                 for (size_t i = 1; i <= s.GetLength (); i++) {
                     for ([[maybe_unused]] auto&& it : s) {
+#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
+                        &it;
+#endif
                     }
                 }
                 for ([[maybe_unused]] auto&& it : s) {
+#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
+                    &it;
+#endif
                     for ([[maybe_unused]] auto&& it1 : s) {
+#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
+                        &it1;
+#endif
                         s.RemoveAll ();
                     }
                 }
@@ -103,7 +112,13 @@ namespace CommonTests {
                 VerifyTestResult (s.GetLength () == 0);
 
                 for ([[maybe_unused]] auto&& it1 : s) {
+#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
+                    &it1;
+#endif
                     for ([[maybe_unused]] auto&& it2 : s) {
+#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
+                        &it2;
+#endif
                         VerifyTestResult (false);
                     }
                 }
@@ -164,7 +179,10 @@ namespace CommonTests {
             void DoAllTests_ (CONCRETE_CONTAINER_FACTORY factory, [[maybe_unused]] TEST_FUNCTION applyToContainer)
             {
                 Debug::TraceContextBumper ctx{L"CommonTests::CollectionTests::Test1_OldMiscBagTests_"};
-                CONCRETE_CONTAINER        s = factory ();
+#if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
+                &applyToContainer;
+#endif
+                CONCRETE_CONTAINER s = factory ();
                 On_Container_<CONCRETE_CONTAINER> (s);
             }
         }
