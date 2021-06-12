@@ -153,11 +153,17 @@ namespace {
         SetPrivilegeInContext_ (LPCTSTR privilege, IgnoreError)
             : fPrivilege_{privilege}
         {
+            bool failed{false};
             try {
                 setupToken_ ();
-                Execution::Platform::Windows::ThrowIfZeroGetLastError (SetPrivilege_ (fToken_, fPrivilege_.c_str (), true));
+                if (not SetPrivilege_ (fToken_, fPrivilege_.c_str (), true)) {
+                    DbgTrace (L"Failed to set privilege: error#: %d", ::GetLastError ()); // avoid through so we don't pollute log with throw/catch stuff
+                }
             }
             catch (...) {
+                failed = true; // IgnoreError
+            }
+            if (failed) {
                 if (fToken_ != INVALID_HANDLE_VALUE) {
                     ::CloseHandle (fToken_);
                     fToken_ = INVALID_HANDLE_VALUE; // do not double closed in DTOR
@@ -187,10 +193,10 @@ namespace {
                 }
             }
         }
-        bool SetPrivilege_ (HANDLE hToken, LPCTSTR Privilege, bool bEnablePrivilege)
+        bool SetPrivilege_ (HANDLE hToken, LPCTSTR privilege, bool bEnablePrivilege)
         {
             LUID luid;
-            if (::LookupPrivilegeValue (NULL, Privilege, &luid) == 0) {
+            if (::LookupPrivilegeValue (nullptr, privilege, &luid) == 0) {
                 return false;
             }
 
@@ -229,7 +235,6 @@ namespace {
                 // counts as failure...
                 return false;
             }
-
             return true;
         }
     };
