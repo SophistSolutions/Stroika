@@ -138,7 +138,7 @@ namespace Stroika::Foundation::Execution {
     inline void ThrowPOSIXErrNo (errno_t errNo)
     {
 #if Stroia_Foundation_Execution_Exceptions_USE_NOISY_TRACE_IN_THIS_MODULE_
-        TraceContenxtBumper tctx (L"Execution::ThrowPOSIXErrNo (%d)", errNo);
+        TraceContenxtBumper tctx{L"Execution::ThrowPOSIXErrNo (%d)", errNo};
 #endif
         Require (errNo != 0);
 #if qPlatform_POSIX
@@ -147,7 +147,7 @@ namespace Stroika::Foundation::Execution {
         error_code ec{errNo, generic_category ()};
 #endif
         Private_::SystemErrorExceptionPrivate_::TranslateException_ (ec);
-        Throw (SystemErrorException (ec));
+        Throw (SystemErrorException{ec});
     }
 
     /*
@@ -172,12 +172,12 @@ namespace Stroika::Foundation::Execution {
     inline void ThrowSystemErrNo (int sysErr)
     {
 #if Stroia_Foundation_Execution_Exceptions_USE_NOISY_TRACE_IN_THIS_MODULE_
-        TraceContenxtBumper tctx (L"Execution::ThrowSystemErrNo (%d)", sysErr);
+        TraceContenxtBumper tctx{L"Execution::ThrowSystemErrNo (%d)", sysErr};
 #endif
         Require (sysErr != 0);
         error_code ec{sysErr, system_category ()};
         Private_::SystemErrorExceptionPrivate_::TranslateException_ (ec);
-        Throw (SystemErrorException (ec));
+        Throw (SystemErrorException{ec});
     }
 #if qPlatform_POSIX or qPlatform_Windows
     [[noreturn]] inline void ThrowSystemErrNo ()
