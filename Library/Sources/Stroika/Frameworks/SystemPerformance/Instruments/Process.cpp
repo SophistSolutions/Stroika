@@ -158,6 +158,7 @@ namespace {
                 setupToken_ ();
                 if (not SetPrivilege_ (fToken_, fPrivilege_.c_str (), true)) {
                     DbgTrace (L"Failed to set privilege: error#: %d", ::GetLastError ()); // avoid through so we don't pollute log with throw/catch stuff
+                    failed = true;                                                        // IgnoreError
                 }
             }
             catch (...) {
