@@ -24,7 +24,7 @@ namespace CommonTests {
                 size_t cnt = 0;
                 for ([[maybe_unused]] auto i : container) {
 #if qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
-            &i;
+                    &i;
 #endif
                     cnt++;
                 }
