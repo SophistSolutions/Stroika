@@ -176,7 +176,7 @@ namespace {
         ~SetPrivilegeInContext_ ()
         {
             if (fToken_ != INVALID_HANDLE_VALUE) {
-                IgnoreExceptionsForCall (SetPrivilege_ (fToken_, fPrivilege_.c_str (), false));
+                SetPrivilege_ (fToken_, fPrivilege_.c_str (), false);
                 Verify (::CloseHandle (fToken_));
             }
         }
@@ -184,7 +184,7 @@ namespace {
     private:
         void setupToken_ ()
         {
-            if (not ::OpenThreadToken (::GetCurrentThread (), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, FALSE, &fToken_)) {
+            if (not ::OpenThreadToken (::GetCurrentThread (), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, false, &fToken_)) {
                 if (::GetLastError () == ERROR_NO_TOKEN) {
                     Execution::Platform::Windows::ThrowIfZeroGetLastError (::ImpersonateSelf (SecurityImpersonation));
                     Execution::Platform::Windows::ThrowIfZeroGetLastError (::OpenThreadToken (::GetCurrentThread (), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, FALSE, &fToken_));
@@ -194,7 +194,7 @@ namespace {
                 }
             }
         }
-        bool SetPrivilege_ (HANDLE hToken, LPCTSTR privilege, bool bEnablePrivilege)
+        bool SetPrivilege_ (HANDLE hToken, LPCTSTR privilege, bool bEnablePrivilege) noexcept
         {
             LUID luid;
             if (::LookupPrivilegeValue (nullptr, privilege, &luid) == 0) {
@@ -211,7 +211,7 @@ namespace {
 
             TOKEN_PRIVILEGES tpPrevious;
             DWORD            cbPrevious = sizeof (tpPrevious);
-            ::AdjustTokenPrivileges (hToken, FALSE, &tp, sizeof (tp), &tpPrevious, &cbPrevious);
+            ::AdjustTokenPrivileges (hToken, false, &tp, sizeof (tp), &tpPrevious, &cbPrevious);
             if (::GetLastError () != ERROR_SUCCESS) {
                 // wierd but docs for AdjustTokenPrivileges unclear if you can check for failure with return value - or rahter if not updating all privs
                 // counts as failure...
@@ -230,7 +230,7 @@ namespace {
             else {
                 tpPrevious.Privileges[0].Attributes ^= (SE_PRIVILEGE_ENABLED & tpPrevious.Privileges[0].Attributes);
             }
-            ::AdjustTokenPrivileges (hToken, FALSE, &tpPrevious, cbPrevious, NULL, NULL);
+            ::AdjustTokenPrivileges (hToken, false, &tpPrevious, cbPrevious, nullptr, nullptr);
             if (::GetLastError () != ERROR_SUCCESS) {
                 // wierd but docs for AdjustTokenPrivileges unclear if you can check for failure with return value - or rahter if not updating all privs
                 // counts as failure...
