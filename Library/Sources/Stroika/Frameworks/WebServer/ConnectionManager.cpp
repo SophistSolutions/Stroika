@@ -380,7 +380,7 @@ void ConnectionManager::RemoveInterceptor (const Interceptor& i)
     FixupInterceptorChain_ ();
 }
 
-#if !qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
 namespace Stroika::Frameworks::WebServer {
     const CORSOptions kDefault_CORSOptions{CORSOptions::kAllowCredentials_Default, CORSOptions::kAccessControlMaxAge_Default, Set<String>{CORSOptions::kAccessControlWildcard}, Set<String>{CORSOptions::kAccessControlWildcard}};
 }
