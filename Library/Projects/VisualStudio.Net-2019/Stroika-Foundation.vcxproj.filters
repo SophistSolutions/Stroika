@@ -657,9 +657,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedMasterSocket.cpp">
       <Filter>Sources\IO\Network</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileStream.cpp">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig.cpp">
       <Filter>Sources\Configuration</Filter>
     </ClCompile>

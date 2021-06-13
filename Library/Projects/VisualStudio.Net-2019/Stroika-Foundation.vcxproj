@@ -187,7 +187,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Exception.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileInputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileOutputStream.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileSystem.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\MemoryMappedFileReader.cpp" />

@@ -27,7 +27,6 @@ Objs	=	\
 	$(ObjDir)Exception${OBJ_SUFFIX}\
 	$(ObjDir)FileInputStream${OBJ_SUFFIX}\
 	$(ObjDir)FileOutputStream${OBJ_SUFFIX}\
-	$(ObjDir)FileStream${OBJ_SUFFIX}\
 	$(ObjDir)FileSystem${OBJ_SUFFIX}\
 	$(ObjDir)FileUtils${OBJ_SUFFIX}\
 	$(ObjDir)MemoryMappedFileReader${OBJ_SUFFIX}\
