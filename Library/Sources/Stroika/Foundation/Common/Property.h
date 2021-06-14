@@ -583,7 +583,7 @@ namespace Stroika::Foundation::Common {
 
     private:
         const function<T ()> fOneTimeGetter_;
-        mutable optional<T>  fCachedValue_;
+        mutable optional<T>  fCachedValue_; // @todo Could use array of bytes and manually construct/destruct - more work, but saves a few bytes
         mutable once_flag    fValueInitialized_;
         const T&             Getter_ () const;
     };
