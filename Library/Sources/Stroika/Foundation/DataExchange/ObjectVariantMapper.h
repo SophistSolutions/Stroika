@@ -777,6 +777,9 @@ namespace Stroika::Foundation::DataExchange {
             nonvirtual optional<TypeMappingDetails> Lookup (type_index t) const;
 
         public:
+            /**
+             *  \note Add () may update/replace an existing mapping, without prejudice.
+             */
             nonvirtual void Add (const TypeMappingDetails& typeMapDetails);
             nonvirtual void Add (const Traversal::Iterable<TypeMappingDetails>& typeMapDetails);
 
