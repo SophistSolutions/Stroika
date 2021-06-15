@@ -7,6 +7,2864 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+
+---
+
+### 2.1b12x {2021-06-16x}
+
+
+#if 0
+commit 2673a8eff4f642c9fc4fa05e3f55458cf0b10fed
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 23 09:28:48 2021 -0400
+
+    start dev 2.1b12x
+
+commit 521cdf9a910f6377ca3815a3694924ef9487c435
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Mar 24 11:42:36 2021 -0400
+
+    Removed Headers::CopyFlags (KLUDGE) - and intead always do deep copy. Then fixed real underlying problem which is that the frameowrks/response needed to have a property 'autoComputeContentLength' and watch sets to contentLength and auto-set autoCmpute to false if anyone calls setter on contentLength (and respect autocmpute values not whether there is is a set value for contentlength)
+
+commit be5fdb2b91ebbf3fb0012489f67a7e5eaa379efa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Mar 24 11:43:08 2021 -0400
+
+    tweaks to .vscode/launch.json
+
+commit ac6becc81e2f05900937808699f05d67889c7776
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Mar 24 13:10:08 2021 -0400
+
+    small fixes to recent webserver response code - no longer need to set contentLength to null when setting chunked mode, and added locks
+
+commit d816456e87bcd7271fb0bd59723064b9a81d9a8e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Mar 24 13:40:02 2021 -0400
+
+    updated gitignore
+
+commit 1325bef4539d7fbcbb1047940056c086769c4a5e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Mar 24 13:40:52 2021 -0400
+
+    gitignore
+
+commit 025f15daed94c7848f98915eab5bc6331e0b936d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Mar 24 13:46:02 2021 -0400
+
+    frameworks::Webserver::response watch ETag change, and if set, the automatically lear the autoComputeEtag property
+
+commit e7829e9298b4e031fd6064d3df12a21838e605ea
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Mar 27 22:14:00 2021 -0400
+
+    fixed bug with capturing context stats in performance framework process instrument (which was used to compute ave cpu)
+
+commit a1d85b6d323e7a4c3b31c5fe04f5c436413a6fa3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Mar 27 23:14:48 2021 -0400
+
+    cosmetic
+
+commit 8f6b2d865da566d66c6461d6fcc31dbe0d541056
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Mar 27 23:15:19 2021 -0400
+
+    cosmetic and docs cleanups to Frameworks/SystemPerformance/Instruments/Process
+
+commit 879d9f7b5021f558361bf5d0cfd96ce40ecd1f75
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 28 10:16:23 2021 -0400
+
+    minor cosmetic cleanups to Frameworks/SystemPerformance
+
+commit 0750be1850458e95048f16da1e97df03ca2a470f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 28 12:39:58 2021 -0400
+
+    Comments
+
+commit 77050cdc87176f46fef1237d11576a33dbb43853
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 28 12:41:26 2021 -0400
+
+    Added Frameworks/SystemPerofmrance::Instrument::fType2MeasurementTypes, whcih enabled Instrument::MeasurementAs () overloads
+
+commit 5d814816675224c0ef271217a43509718645b927
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 28 12:47:16 2021 -0400
+
+    more cleanups of SystemPerformance::Instrument code
+
+commit 5b59c17563c8ee006fe0c5f2ce4e33e8206528d3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 28 12:56:13 2021 -0400
+
+    more cleanups to Instruments API (not backward compat but should  be irrelevant)
+
+commit bf288248df7743cbc09ee291f2252c08403e2e9c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 28 15:18:59 2021 -0400
+
+    Frameworks/SystemPerformance
+
+commit afb36c3fa3ee9a4a5460d34153f0df96aa4764a3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 28 15:59:22 2021 -0400
+
+    fixed typeid typo
+
+commit bf77a4f7e90e7feb3657863916e5bdf8036cb201
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 28 16:22:10 2021 -0400
+
+    tweaked Instrument::MeasurementAs()
+
+commit 9d5af894fa11647765b23f7cf6be7b3d6c9f6d35
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 28 16:30:48 2021 -0400
+
+    more tweaks to SystemPErformance Capture ode
+
+commit 04ea8a354002180310040c32e49cab55963aa90e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 28 19:05:39 2021 -0400
+
+    Cosmetic
+
+commit cb2e3782dce3e2c4127d629ba8a63c2d96015fc3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 28 19:14:56 2021 -0400
+
+    In Frameworks/SystemPerformance::Capturer - if constructed wtih explicit capture sets, then run once immediately
+
+commit 4e33cfc6fa9579f7903f3e244064f580842fc029
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 28 20:55:56 2021 -0400
+
+    cleanups
+
+commit 2d7b68ba3e3c06bf18ca0ae3906e73ab10ff562b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 28 21:12:08 2021 -0400
+
+    modest fixes to Frameworks/SystemPerformance
+
+commit 500720be86076aaf59385916171aa0aa53d29bc6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 28 21:30:55 2021 -0400
+
+    minor progress merging measurementsets for frameworks/systemperformacne
+
+commit b3e852a0f794ac637f2303bd8031435344ad5980
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Mar 28 21:43:10 2021 -0400
+
+    fixed typo
+
+commit d88d04bdfcee3662ea05d50db8e0b256d9e00794
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Mar 28 21:43:30 2021 -0400
+
+    vscode settings
+
+commit 927f2b686c261590b6ac8afb0c620b9181908356
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 28 21:44:25 2021 -0400
+
+    cosmetic
+
+commit b3b7e756d48a84ddf102e2a40989a4aaa28fd622
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Mar 31 14:19:52 2021 -0400
+
+    vs2k 16.9.3 in docker image
+
+commit b5a0f3aec084f1e183f908dbcab4465e39318e8c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 2 10:38:41 2021 -0400
+
+    WaitableEvent::Wait overload
+
+commit 100e968998eed4d49f1cf031b1c202bb98d9ca99
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 2 10:44:24 2021 -0400
+
+    improved SystemPerformanceClient sample
+
+commit ced7bdfa7c98ba0c57461401a574456395559499
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 2 11:00:21 2021 -0400
+
+    cleanups/docs
+
+commit 22dcdaaa4c06150aff17e3bcb8c6d720c5eaebf3
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Apr 2 17:42:47 2021 -0400
+
+    fix small issues with recent Samples SystemPerformance
+
+commit 73e705093caec871bdeeab991f1553ee098a9c67
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Apr 2 17:43:02 2021 -0400
+
+    tweak vscode file
+
+commit d41db419cc20d540a07a9fb3c8a25246b5f03a71
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 2 18:11:17 2021 -0400
+
+    Small cleanups for Frameworks/SystemPerformance
+
+commit 247b8a327cc6d6f7b7ef928fb031c71752d308f6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 2 21:25:23 2021 -0400
+
+    docs/requires on a Queue Dequeue/RemoveHead
+
+commit a6e437cce3b6338b8355b2357ff704190d205e47
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 2 21:25:50 2021 -0400
+
+    Many improvements to Frameworks/SystemPerformance:
+       > Documented thread safety for various classes (and cleaned up sample/use of Captuere
+         cuz was already internally syncrhonized)
+       > MeasurementSet::MergeAdditions()
+       > Capturer now CORRECTLY handles multiple capturesets and sychonizes each appopriately (with
+         just one thread as well as you can).
+
+commit ec5def77cea3674ba3843390432d82b02f1a212d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 4 22:06:07 2021 -0400
+
+    Substantial change to Frameworks/SystemPerformance:
+      > Added property pContext to Instrument - a shared_ptr context object. This is handled
+        internally as internally synchronized.
+        Use property context api to control sharing of info across Instruments.
+
+commit cd1c1fa63c7a1ae1712118d461f01469ce7d5e39
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 6 21:51:26 2021 -0400
+
+    Frameworks/SystemPerformance/Instrument uses properties
+
+commit 9738eb8a4e1e4b7c381e4b6c13f4ed3554c37bf7
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Apr 6 22:01:34 2021 -0400
+
+    fixed to new sysmtemperofrmacne code for macos
+
+commit 29600c4884fb93b9c788336568bc028f5dce1a79
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 6 22:02:17 2021 -0400
+
+    tweaks for .vscode/launch.json
+
+commit 6cf682e7fcc66cc3dd5cd63fc6b58417bc41aa13
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 7 16:55:28 2021 -0400
+
+    docs improvements"
+
+commit 96d96b062007b5d6d47b0845dc78bf94bbe5edb2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 8 22:09:23 2021 -0400
+
+    Cleanups to SystemPerformance framework - using properties
+
+commit db46b747894da1853be970a3b2b96fa8592ac0de
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 8 22:11:55 2021 -0400
+
+    cosmetic
+
+commit 38ae3785a1a34997bedf595ed162f24a315b5ab3
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Apr 9 10:14:27 2021 -0400
+
+    fixed typo
+
+commit 40a7eead978e2ae64b1ab3236c2e19f35622f2e6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 9 10:21:32 2021 -0400
+
+    Frameworks/SystemPerformance cleanups
+
+commit de602c7c3d0ae4bf935a8049ebd86a1ab95780f8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 9 11:24:16 2021 -0400
+
+    Cosmetic
+
+commit 162309d0035ebfc5741dde99e4c258d9fd5803e4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 9 21:03:32 2021 -0400
+
+    Frameworks::SystemPerformance::Capturer cleanups - use properties
+
+commit 1951630ce679628ad3fd23f9566cf81b811ff2d7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 9 21:14:43 2021 -0400
+
+    Frameworks/SystemPerformance cleanups
+
+commit 3cd7535508f405d68faad1c36a4ec7f3bcd875d7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 9 22:12:35 2021 -0400
+
+    more cleanups to Frameworks/SystemPerformance
+
+commit dc06725964ddc4368355b1141bebb7b23b35c5f8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Apr 10 08:44:54 2021 -0400
+
+    Frameworks::SystemPerformance cleanups (no question about const anymore - cuz operator= supported
+
+commit 4d635faed9294a83b2a80b797d00b4d8e4273e7f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Apr 10 09:06:17 2021 -0400
+
+    Instrument : private Debug::AssertExternallySynchronizedLock
+
+commit d80065242c013dcb8d768891235540f450d7ab5a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Apr 10 22:01:44 2021 -0400
+
+    fixed serious bug in GetSystemConfiguration_CPU ()- check backwards and was never capturing CPU info for Linux
+
+commit 3c958434019c7308f8cfd8a3e5959436a0917303
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Apr 10 22:01:56 2021 -0400
+
+    Added assertion
+
+commit a509b90b34712db1156865d28baa273763da6027
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 11 19:07:26 2021 -0400
+
+    in SystemPerformance/Instruments/Process.cpp use direct open instead of open with throw-mode for ifstream (since throw not helpful in this case)
+
+commit 8337add4925b955dd8b80319f9bb0aa0dfc6ced7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 11 20:34:34 2021 -0400
+
+    minor tweaks of old deprecation
+
+commit b3679014b9c213ead74499126f3b7d2e432d166e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 11 21:42:12 2021 -0400
+
+    deprecation comments/warnings
+
+commit 2284ba88c1b26ce095296c6cac6e4772909a4842
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 11 21:42:59 2021 -0400
+
+    Fixed SystemPerformance/Instruments support for context/catpured-at support to respoect fMinimumAveragingInterval
+    (so far just ProcessInstrument)
+
+commit 282ab473cd13bbe528b8dff4cd54823e1278cd36
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 11 22:14:05 2021 -0400
+
+    warning deprecation suppression
+
+commit 29d04c829f5112b7df3c34d6c39dd187186879eb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 11 22:45:16 2021 -0400
+
+    Fixed SystemPerformance/Instruments support for context/catpured-at support to respoect fMinimumAveragingInterval for CPU instrument
+
+commit 87d55678b7fcf1d0dedb7924865a5644e2b468da
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 11 22:45:34 2021 -0400
+
+    suppress deprecation warning
+
+commit f6efcf233ac30a17d18660430a6e758fa106da54
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Apr 12 09:43:14 2021 -0400
+
+    vscode cange
+
+commit 6d1de193bf6f627a4263daaa7f43b9dc5df9b434
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Apr 12 22:35:51 2021 -0400
+
+    tweaks to SystemPerformanceFramework so works on macos again
+
+commit 3cb11f9eafc0a7f85ebcf9d13da4311f8dfdb013
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 15 20:59:18 2021 -0400
+
+    Cosmetic
+
+commit 0aabc2e31e5aba9aeb684ccf7da5fcbbb39bdf3e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 15 21:01:20 2021 -0400
+
+    More celanups to Frameworks::SystemPerformance::Instrument code
+
+commit 2abc922b616c4551c07197a63d069107ed6ad399
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 15 21:02:08 2021 -0400
+
+    typo
+
+commit 48d80dbc0df4af730f09a46bdba446001916582b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 16 09:04:57 2021 -0400
+
+    SystemPerformance::Instruments::CPU::... deprecated GetInstrument () - replaced with Instrument class, and deprecated GetObjectVariantMapper replaced with Instrument::kObjectVariantMapper
+
+commit 42fb7647380988d02df94117cce4dcd38919d4cb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 16 09:08:58 2021 -0400
+
+    fixed typo
+
+commit 2d880f33c117815ee7fe2fffb01531162453af21
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 16 09:45:12 2021 -0400
+
+    Cleanup SystemPerformance/Instruments/Filesystem (common base with shared_ptr context) so works
+    on mac again
+
+commit ba6036a5d181b4c917b393744cf454d2f972433d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 16 10:16:08 2021 -0400
+
+    Frameworks/SystemPerformance/Instruments/Filesystem cleanup:
+      dprecating GetInstrument() and GetObjectVariantMapper (like with CPU - use new Filesystem::Instrument class directly.
+
+commit 316630d13830cc52d4750916c8913f47cd35b3d9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 16 10:47:05 2021 -0400
+
+    same cleanup / deprecation for Frameworks/SystemPerformance/Instruments/Memory
+
+commit b4bac175d50f8898bfba145d6bd4a85e08dfec11
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Apr 16 11:07:11 2021 -0400
+
+    fixed small bug in last checkin
+
+commit ca9334d5abc635992c5d48ec55dbaa471e80744b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 16 11:10:54 2021 -0400
+
+    update docs for recent changes
+
+commit 0c61a3405261c1cbac5b8d42aef083592e077705
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 16 11:12:54 2021 -0400
+
+    update docs for recent changes
+
+commit e8184da8525783ce317c64d77cfa66fa9c17f01b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 16 15:46:14 2021 -0400
+
+    fixed process system performance regtest to not fail on macos (where process gather NYI)
+
+commit 77a5de2195279e2576820b4bffd1374f3e95f949
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 16 20:48:45 2021 -0400
+
+    deprecated ...// etc stuff like we did with others - for Instruments::Network
+
+commit 42fe0b65844206781962c6e3ee4f8edde9b2ca2d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 16 21:21:24 2021 -0400
+
+    updated SystemPerformance::Instruments::Process  to same re-org
+
+commit 90bfafab4b29e323d71580367577b7de00d24a17
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Apr 16 22:01:55 2021 -0400
+
+    fixed recent checkins to SystemPerformance for linux
+
+commit 936fb035d76715dd31bdfb20bed1b91ee6474d38
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Apr 16 22:02:08 2021 -0400
+
+    vscode settings
+
+commit d7b3c9fa846e6f486eeb02ff2c0714fe3d2101de
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Apr 17 10:20:45 2021 -0400
+
+    Frameworks/SystemPerformance/Support/InstrumentHelpers refactoring
+
+commit e6b2cf72818d495e4888835bc84e892d91a829aa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 19 10:59:44 2021 -0400
+
+    CapturerWithContext_COMMON<OPTIONS>::cContextPtr/rwContextPtr - helper to cleanup code in frameworks/instruments
+
+commit 118b0d837a7d2f7ad095c3a9976fbe5c8c8ebdf8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 19 11:09:00 2021 -0400
+
+    typo in recent checkin
+
+commit 61fd2b5366095b289ca4b38f6b58ec3cd775a5dd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 19 20:53:38 2021 -0400
+
+    more cleanups to /Frameworks/SystemPerformance/Support/InstrumentHelpers
+
+commit 5aff54569b0c6e9a7e7010e94d080020d6876ce8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 19 23:11:29 2021 -0400
+
+    more cleanup/refactoring of InstrumentHelpers code
+
+commit 8cea6d0b8624218c4e405bc4085048b5b22899cd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 20 11:06:47 2021 -0400
+
+    Big cleanup/refactoring of Frameworks/SystemPerformance/Instrument code - not backward compatible for users that created their own instruments but otherwise backward compatible
+
+commit ad30094217a65273a29a82dfe9704bcb73800599
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 20 11:55:44 2021 -0400
+
+    tweak InstrumentRep_COMMON<> utility template for macos
+
+commit 1e04bfebfe174a8b41eca39cc49d24a40f404ec9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 20 15:39:31 2021 -0400
+
+    Frameworks/SystemPerformance/Instrumnet/Process fStaticSuppressedAgain now in shared_ptr<_Context>
+
+commit 713508e008da556dfa26ad62d83466d526a9c73c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 21 13:42:53 2021 -0400
+
+    Frameworks/SystemPerformance docs
+
+commit 9892be64cb26386ad68b34cbde86e353637f965a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 21 13:43:17 2021 -0400
+
+    cosmetic
+
+commit 800500dde09a9394ab5d33123d15d272ddaa3a38
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 21 13:43:43 2021 -0400
+
+    big cleanup / simplification of Frameworks/SystemPerformance/Instruments/CPU
+
+commit c5c485ea7551b8d4a6aecf565124f98ee98e2e31
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 21 16:33:07 2021 -0400
+
+    FileSystem::GetAvailableDisks uses FILE_SHARE_READ not FILE_SHARE_WRITE | FILE_SHARE_READ, still seems to work, but still seems to require admin permissions
+
+commit 9fecb383c9d40d2b98efbcd9f8648ef00d6783fa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 21 16:34:03 2021 -0400
+
+    in SystemPerformance/Instruments Capture_Raw, pin before to 0,else defaults to min of range - -INF
+
+commit c5ed0354c0789fb95abb3d26fbb378ac8a0388ba
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 21 16:34:56 2021 -0400
+
+    Frameworks/SystemPerformance/Support/WMICollector has TimeOfLastCollection as optional - since returns nullopt first time before a collect call
+
+commit 38140b4fca00be5d2f55348c16ae5c0d05f301bd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 21 16:57:04 2021 -0400
+
+    refactored Frameworks/SystemPerformance/Instruments/Filesystem
+     - use static where appropriate
+     - _InternalCapture () rename/cleanup
+     - some cleanup to time usage, (for context stuff) - but incomplete on unix
+
+commit bdc16cc34b33508b0bb7bb69328b0f4551a2b83e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 21 16:58:40 2021 -0400
+
+    start cleanups to Library/Sources/Stroika/Frameworks/SystemPerformance/Instruments/Process.cpp
+
+commit 066e82b2ca5bec7da0292f2589a2f107be6fb08d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 21 17:43:47 2021 -0400
+
+    draft support for Ubuntu 2104
+
+commit 819bfd9fd5b1e8917ccd61af24ba472fdcc4472e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 21 21:13:04 2021 -0400
+
+    SystemPerformance/Support/InstrumentHelpers tweaks
+
+commit 9252bd12e48b6dc6040d941849bb13180b4fe0f5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 21 21:13:29 2021 -0400
+
+    SystemPerformance/Instruments/CPU use Do_Capture_Raw<Info>
+
+commit 6eeacf49facf573e937d7ab2a420e5f7debe2307
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 21 21:15:04 2021 -0400
+
+    Frameworks/SystemPerformance/Instruments/Filesystem cleanups/irmpvements, including
+    losing configuraiton option fMinimumAveragingInterval cuz not easy to support and not useful.
+
+commit 1ab7bc4bf864688dd8085a5174f09424b8b5aeff
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 22 13:49:10 2021 -0400
+
+    more cleanups of SystemPerformance frameowrk (and sample)
+
+commit 2159055cfd24f08eea7be86c226e9b2ee3840550
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 22 14:29:32 2021 -0400
+
+    another pass at cleaning up Frameworks/SystemPerformance instruments - mostly handling _fOptions.fMinimumAveragingInterval more simply and documenting; but a few other related cleanups
+
+commit 9b624e198d731954d5ba4bf67ee7e87a533ff459
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 22 14:30:30 2021 -0400
+
+    cosmetic
+
+commit 4433a10da00c166b5116602394ad625c91d7f91b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 22 14:55:08 2021 -0400
+
+    system performance framework cleanups - docs and samples
+
+commit 6c28c78ebd51192059083e1c3a4caeb3ff831500
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 22 21:11:02 2021 -0400
+
+    Memory::AccumulateIf () - added more overloads (return by value instead of modify in place)/docs; and in Memory namespace: optional operator+-*/ functions CHANGED SEMANTICS INCOMPATIBLY (**apichange**) - now if ither lhs or rhs is nullopt, returns nullopt
+
+commit bfb54c4c950b47ee99a6625eeaccbbed7fe2faeb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 22 21:11:32 2021 -0400
+
+    new utility Configuration::GetNumberOfLogicalCPUCores ()
+
+commit e94d39c05820a6d68f32a5c28b42d7513b08ce5d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 22 21:11:51 2021 -0400
+
+    Frameworks/SystemPerformance/Instruments/CPU
+            **incompatible change** - fAverageCPUTimeUsed now returns 1..#logical cores
+            and new field in returned data - # logical cores. (reason for change was to
+            be more comaprable with what we already did for process ave CPU Used field in same framework).
+
+commit 7d9c3ed480a837c28b1c1c2646c60b180d0b2f97
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 22 21:13:37 2021 -0400
+
+    assertion checks
+
+commit 35177c1d32f488ec14433ee55860bba9dafad4c6
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Apr 22 12:48:52 2021 -0400
+
+    tweaks to dockerfile for ubuntu 2104
+
+commit bed6d8bc03698e3870d72eb336bcca4a2b88ebc2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 22 22:18:05 2021 -0400
+
+    small fixes to recent checkins
+
+commit dbe75e22e5d2c6a63fddb586092ffe3869df6532
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 22 22:42:04 2021 -0400
+
+    curl 7.76.1
+
+commit a5f24a5c3c24b9023af03b9aa62aef0ad62cd62d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 23 11:06:05 2021 -0400
+
+    assertions
+
+commit ad62d7cde20a16f531e254ad29670726337406ed
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 23 11:31:56 2021 -0400
+
+    fixed typo in recent AccumulateIf changes
+
+commit ba2d196496a76ab31c2be11eb810221c02e053f3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 23 11:33:36 2021 -0400
+
+    fixed typo in recent AccumulateIf changes
+
+commit 4c673bd5a0078569ffaf2f98568d59b824f8e6bb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 23 11:34:44 2021 -0400
+
+    fixed typo in recent AccumulateIf changes
+
+commit 8004388f6c2437429b5a1b26cdf1312d5b5f9f65
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Apr 23 17:43:10 2021 -0400
+
+    docker updates for Ubuntu 21.04
+
+commit f63f7da2f5934836b14736b4ad9a5521d9417a33
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 26 17:23:57 2021 -0400
+
+    minor tweaks/docs/todo for Debug/AssertExternallySynchronizedLock
+
+commit f99b9847b23656106fc6f9707a0017ff3ef7b12e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 26 22:02:27 2021 -0400
+
+    **not backward compatible** reversed args for Memory::CopyToIf() - now assign right to left, so destinition always required and first argument (address of arg)
+
+commit 1f36b4eb68f0f7d181bab9728e665bd73346e741
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 26 22:12:53 2021 -0400
+
+    docs
+
+commit 2166624b3b2124b1bc32832ac765b91188e3e02b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 26 22:20:50 2021 -0400
+
+    cosmetic
+
+commit 5595820a4a57402e530c07b844b7b06f17a4c42d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 27 10:55:31 2021 -0400
+
+    modest cleanups to SQLite code, and draft SQLite sample
+
+commit 6803ab1b2245e33402dcc82edce19288fbc2dfae
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 27 14:05:43 2021 -0400
+
+    More improvements to SQLite support
+
+commit 14e61be92e697ca5e6b9df719566cdf2ab5d503c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 27 15:36:24 2021 -0400
+
+    more progress on SQLIte cleanups
+
+commit ac6706ab0216bb5182283b7b3a4b7e776d3bd958
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 28 13:02:52 2021 -0400
+
+    fixed calls to cygpath to use --ignore so they behave reasonably when you call with no path arguments (eg. when StroikaLibs is the empty string/list)
+
+commit a6fa6ba29caef0e14c2254cfa3323d278469b0d0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 28 15:34:55 2021 -0400
+
+    big changes to sqlite makefile: from the outside, the only obvious difference is that it now builds the sqlite commandline utility (helpful for testing).
+    
+    Also now includes SharedBuildRules-Default.mk and uses DEFAULT_CC_LINE and DEFAULT_LINK_LINE (patching approproriate config variables they reference).
+    
+    AND use SQLITE version 3.35.5
+
+commit e51db3964f69a17f2f672a81ca3ec33dec539711
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 28 15:37:21 2021 -0400
+
+    cosmetic
+
+commit d97abd7b11b5f55e485ec6a5563d474257b7fe22
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 28 15:37:42 2021 -0400
+
+    cosmetic
+
+commit 62e1a321bde44deec10b0f5cad18f32878de81ba
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 28 15:38:00 2021 -0400
+
+    cosmetic
+
+commit 33bd729ee6ea89acffdcb9c492a5e406f4724f77
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 28 16:31:31 2021 -0400
+
+    ScriptsLib/ApplyConfigurations now also sets NMakeIncludeSearchPath so we can find all the included libraries/headers from visual studio that are part of the stroika thirdpartycomponents too (and others); also had to update each project file to use inheirted vaileu
+
+commit 110e02eb586f92dcaedc23ce81978c18ee4f68c8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 28 16:47:06 2021 -0400
+
+    sqlite cleanups/docs/asserts
+
+commit f3aecae791db005a1d7703000c8cb91335528232
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 28 22:12:12 2021 -0400
+
+    cleanups to SQLIte wrapper code
+
+commit 25b5a2cb0f591ed25b92bca371acd7f15867cf4a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 29 11:17:44 2021 -0400
+
+    hopefully fix sqlite exe build issue for linux
+
+commit 005974a07d8e3c51d81cd17037b7529e3543e064
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 29 14:06:14 2021 -0400
+
+    More SQLite work: ToString() methods; Bind/GetColumns/GetParaemters methdos on statements; and a little more debugging output in regression test
+
+commit caa6b2ef757312a4eb8d58e91d1c706dc59fb6fb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 29 14:06:34 2021 -0400
+
+    cosmetic
+
+commit a614b7278114c70541c8089380eec4c0f7737b18
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 29 14:15:50 2021 -0400
+
+    todo comments
+
+commit de4fd4f67ce4dcb83fa50ec1737a98f3f2b9d1ba
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 29 16:02:07 2021 -0400
+
+    sqlite cleanups: Debug::AssertExternallySynchronizedLock use, docs, and fixed Statement::Statement () for case of multiple statements (now exception)
+
+commit d034e9e231cbab69c8cb0448e00af08a89774c00
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 29 16:06:09 2021 -0400
+
+    fixed SQLite column type declarations (now string)
+
+commit 0269c4d539357247ea9ab73fbe9485dbd55e710e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 29 17:42:45 2021 -0400
+
+    more cleanups to SQLite wrapper
+
+commit 2946986fcad746fd1ede676e98834c2db6534721
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 29 18:51:43 2021 -0400
+
+    Attemtp at CompiledOptions::kThe support for sqlite
+
+commit 7e41cc523f800e7d03251a115486a3e048e871e6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 29 19:39:52 2021 -0400
+
+    SQLite CompiledOptions::kThe tweaks
+
+commit ff3e1ed73b6b44f5d25e76be36ccb9a9d3b21323
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 29 19:42:35 2021 -0400
+
+    more SQLite tweaks
+
+commit ddcb5fc896c85eda7b984181d460abc2e3801989
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 29 19:46:07 2021 -0400
+
+    SQLite docs
+
+commit edc086e766d9a9493776c3d1b9a99ad67efa2a9d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 29 19:54:46 2021 -0400
+
+    comments
+
+commit 3b25584e54e76b7bcb1be60e3021037f42c3a263
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 29 21:56:07 2021 -0400
+
+    fixed sqlite regression
+
+commit 1fb280ad2de9b9fee6f9f49044f786b8470146a5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 30 10:05:30 2021 -0400
+
+    readme docs
+
+commit 017c4f66970c538f9de6fdccbfa92400a2a4ba80
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 30 10:44:59 2021 -0400
+
+    readme docs
+
+commit 6668188962fb14a030e739c8faa8ce89a7dad965
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 30 10:47:02 2021 -0400
+
+    readme docs
+
+commit eabf2ff3152d394e2c07eeebc0343901bc47e50f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 30 10:49:38 2021 -0400
+
+    readme docs
+
+commit 609379bca46a4d33842753c2b598f490085127b0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 30 12:02:02 2021 -0400
+
+    more cleanusp to SQLite code in preps for Connection being smartptr
+
+commit 7a594f96c52426446a0f90fc018b1bef76a7d4f5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 30 13:35:53 2021 -0400
+
+    fixed regression in last hceckin
+
+commit 65e3f369b19cb0d03de82cfcfa58e38a59bd78dc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 30 15:58:09 2021 -0400
+
+    minor tweaks to sqlite code
+
+commit 285bf045ded5a0a4683019a2ccd4752280f6b42a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 30 16:20:07 2021 -0400
+
+    added   THREADSAFE to SQLite CompiledOptions
+
+commit 57161b467b2fc0051a18265382c5eb007b4f7533
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 30 16:55:31 2021 -0400
+
+    more SQLite (Connection) cleanups
+
+commit 88b155cde12365e750a99b24be957aee35e5deba
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 30 18:21:38 2021 -0400
+
+    More SQLite Connection::Ptr cleanups
+
+commit b2e382727008b517f2b3a438b25b64b3a7cfeb23
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 30 19:50:48 2021 -0400
+
+    fixed use of operator!= __cpp_impl_three_way_comparison < 201907
+
+commit 5c04b6d9801d52effed420846ff3ab037856f55d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 1 15:04:38 2021 -0400
+
+    big cleanup to SQLite assert code
+
+commit b4fcb8e1de63417cebecf3f51627373452f5ea67
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 1 21:03:30 2021 -0400
+
+    SQLite exception handling cleanups
+
+commit 6c28b999a55d38f87bf7ee2c02f652a9329b53ba
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 1 21:42:14 2021 -0400
+
+    cosmetic
+
+commit 45e757dff1e3bb4a197f684b0909f4b9dcbc3cc2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 1 21:42:44 2021 -0400
+
+    cosmetic
+
+commit 4545be2a83304bb68fa33d467caa08fa75244d89
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 1 22:03:10 2021 -0400
+
+    helpful DbgTrace () in Statement::Bind() to print why bind failed (better assert)
+
+commit 63e16a4d0e2ca51d7e9f99a3f1a3b5933a99a3ad
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 1 22:13:30 2021 -0400
+
+    enhanced sqlite regtests to verify Bind() produces same result
+
+commit 4cc0970b47703f91a9e9da417293bf5ea40c288b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 2 17:10:31 2021 -0400
+
+    revised sqlite regression test to more use Bind()
+
+commit 4a63a139eb467b8c215e8738de008532ee7527f6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 2 20:43:33 2021 -0400
+
+    SQLIte support for Stateemnt::Execute/Statement::Reset
+
+commit 373eb7a6463a23bcfe1bfced32d1c181645466e4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 2 21:14:18 2021 -0400
+
+    Factored some SQLIte utilities into SQLUtils module; and SQLLite::Statement CTOR no longer allows format-string (to encourage use of Bind)
+
+commit 78fe9e541b8f1a060737aaf0acb07f40c555b61f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 2 22:01:03 2021 -0400
+
+    SQLite Connection::Ptr now declares Exec() as const
+
+commit 55a6ca99d5297281bc0d570edb40ce61eb16dc6e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 2 22:06:04 2021 -0400
+
+    Cosmetic
+
+commit 01254ff085369596a65681d98b54ec53a0e4bbda
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 3 11:22:37 2021 -0400
+
+    SQLite: improved error reporting and automation tests
+
+commit c4fc69622409e3df83fc4712fac59874fb9733c5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 3 16:15:48 2021 -0400
+
+    SQLite Statement::GetAllRows () overloads and tests
+
+commit ded790fd84dff36e19daaab7e900bca8f9b171f1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 3 17:40:52 2021 -0400
+
+    improved SQLIte sample code
+
+commit f481186246398befea8f89f979788978b4f7871c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 3 17:44:03 2021 -0400
+
+    SQLite Statement::GetAllRows() calls Reset () after fetching
+
+commit 129de1aa0401e8269bd19b45ec1da66dcf158842
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 4 16:46:48 2021 +0100
+
+    SQLite sample improvements
+
+commit d1a0162c6de9c47018fa0f2fcff94f3ad92fdecf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 4 16:56:05 2021 +0100
+
+    SQLite sample improvements - showing error detection
+
+commit baa1da346ecba1762d70a870b9d2111a7af16b2a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 4 17:55:13 2021 +0100
+
+    minor tweaks - use of class final and docs about final usage
+
+commit 1835a6aafd24c12addfe61c1eb0e1c8137473aa8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 5 16:15:45 2021 +0100
+
+    Silence warnings
+
+commit e66b11917b920ced7bb03996803476f38bb6b3ff
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 5 16:23:22 2021 +0100
+
+    cosmetic
+
+commit e833fbc9d927a91b51f524c3bffac097f50cfdf7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 5 20:21:51 2021 +0100
+
+    Boost 1.76.0
+
+commit a42ff3029d8283a268b881900ae7ee85c13222d2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 5 20:41:08 2021 +0100
+
+    Tweak sqlite sample
+
+commit b14110406d4b5f8c84c1296d5e17f00ca43ee69e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 5 20:43:47 2021 +0100
+
+    remote accidental checkin
+
+commit e9526ae0ef89c893f11fec48b4c3be34393bd002
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 6 15:17:34 2021 +0100
+
+    some cleanups to openssl wrapper code for 3.0.0-alpha15
+
+commit 6394d3637696ceaa084f3b29c49f4ce76476baea
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 6 16:09:42 2021 +0100
+
+    temporary IsAlgorithmSupported added for SSL3 testing (will come up with better way)
+
+commit 90c99020403352a5e39254f1c02c234d89196b65
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 6 21:28:18 2021 +0100
+
+    BLOB::Hex() overload added
+
+commit 8b63f93b36630e1a1a62f584704d0888857b23ef
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 6 21:33:48 2021 +0100
+
+    mostly cosmetic/start imporove /fix VirtualConstant
+
+commit 6a57f0bfbd3c50e9f69d59fd3467ac7b2755481f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 6 21:35:16 2021 +0100
+
+    extra(failing) test for VirtualConstant
+
+commit 3f40abe8e324f8b2dd51420ef95fe6234f8968d0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 6 22:41:51 2021 +0100
+
+    Fixed SERIOUS bug with VirtualConstant<> template (must not be using much!); was storing value in STATIC var, and must be instance variable! cannot using magic static inits!
+
+commit a431aa3a6c7961c03908f6c9ed25d56f51ad7991
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 6 23:17:57 2021 +0100
+
+    - new bug define qCompilerAndStdLib_const_extern_declare_then_const_define_namespace_Buggy
+    
+    - OpenSSL changes (inspired by testing openssl 3.0 alpha)
+      - **not backward compatible** - renamed (CipherAlgorithm::e* to CipherAlgorithms:k*, making
+          them VirtualConsants, instead of enums.
+      - CipherAlgorithm is now a using of the openssl type (may not be
+            where we end up on this).
+      - deprecated OpenSSL::Convert2OpenSSL
+      - Added kAllLoadedCiphers, AllCiphers, kDefaultProviderCiphers, kLegacyProviderCiphers (draft impl still must fix)
+
+commit ccd8451ff615a4f909b6045d38a1e4e350495e93
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 7 02:55:44 2021 +0100
+
+    OpenSSL LibraryContext support
+
+commit cd07f89ee33f10ffaa206f31acf4b71d91928259
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 7 03:11:03 2021 +0100
+
+    GetCipherByName () support and other openssl cleanups
+
+commit e639e60ffd42487a74d0bcdb2f059ce45ea6fe5c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 9 01:35:00 2021 +0100
+
+    Added a few static_asserts () to Iterator<T> and Iterable<T> to make clearer error messages
+
+commit 34b0ed90c523321f270789d226bf801a26c2a328
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 9 04:51:05 2021 +0100
+
+    openssl: wrap CipherAlgorithm as a class (instead of enum or string); giving it handy methods; LibraryContext::pAvailableAlgorithms property, and progress supporting openssl3 better
+
+commit 2b24386507bb1f0561ef96e126afc901eab7d766
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 9 04:53:07 2021 +0100
+
+    cleanup warning
+
+commit 02891c94c1230ff7f65b86aeb1f9c5a5256206fd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 9 14:31:32 2021 +0100
+
+    Tweaks to openssl code for non-ssl3
+
+commit 5a35ab39b02115cd11402f0cefb553805b2a168c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 9 15:47:24 2021 +0100
+
+    call EVP_CIPHER_do_all_provided in openssl 3 and EVP_CIPHER_do_all_sorted in openssl 1 (to avoid failures - not fully clear why)
+
+commit 9c78f5f1cc525867186496f57d08e164b5fea2e3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 9 15:48:57 2021 +0100
+
+    fixed typo
+
+commit 190666aecdc9ed6e5051f1991776be9a9cf014ad
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 9 18:03:14 2021 +0100
+
+    openssl 1.1.1k; and minor cleanups to openssl wrapper code
+
+commit 030f8e7be945cce5c31283b0a5b0bdecb2b3616c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 9 21:51:21 2021 +0100
+
+    minor cleanup of openssl cipheralgorithm code
+
+commit 92b14cdad8b25df19f9411ee9084788f83531711
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 9 22:06:30 2021 +0100
+
+    cosmetic
+
+commit 817d40025e1b679c4f14f9dfdafa75759ff8383a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 9 22:53:29 2021 +0100
+
+    OpenSSL LibraryContext now has pAvailableCipherAlgorithms and pStandardCipherAlgorithms and pAvailableDigestAlgorithms and pStandardDigestAlgorithms
+
+commit fd70ae0cbd6ff388b2648ac6eb42d370f7f5c768
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 9 22:59:44 2021 +0100
+
+    Cosmetic
+
+commit 82f398d0dc0bf6be66ee4707665b151b604e60fe
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 9 23:38:50 2021 +0100
+
+    openssl test code cleanups
+
+commit a974919f984d054f421a35c4820861cba80d16fe
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 10 01:16:39 2021 +0100
+
+    silence (to a degree) some warnings about failing openssl tests
+
+commit 8b349ae4f38c7defd7ecbbbf877ada12b149e7fb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 10 02:01:06 2021 +0100
+
+    OpenSSL - DigestAlgorithm now class and no longer enum, so reference **not backward compatoble** predefined ones as DigstAlgorithms::kMD5 instead of DigestAlgorithm::eMD5
+
+commit 3ef2fa9f55f52b5db3d7796828272905e992f5db
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 10 02:12:59 2021 +0100
+
+    openssl assertio checks
+
+commit b040ebcf89348ede73a8e3703e86eb671b609803
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 10 02:40:32 2021 +0100
+
+    Added Iterable<T>::operator bool ()
+
+commit 2f06270743236af3d7aee202851bd7902c433102
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 10 02:40:50 2021 +0100
+
+    more openssl regtests improvemnts
+
+commit 0024ed27c57ccfe7287070f0c4acd3e1d22ee772
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 10 20:39:46 2021 +0100
+
+    fixed regression due to recnet namechange
+
+commit 0e4b7c5e1c2660712dbef364049d87fa817e99e7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 10 20:57:29 2021 +0100
+
+    fixed typo
+
+commit e404aa3bfb01798fe80106a02806b82d35b52c07
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 10 22:49:08 2021 +0100
+
+    fixed recent change to Iterable<> - operator bool should be explicit
+
+commit 272b78aebefd63fbfe9c90031f6dbcf19168cada
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 11 14:22:22 2021 +0100
+
+    docs and todo docs
+
+commit 45b54706add3c6ecfbaf9ebe854b3db261344de1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 11 14:22:50 2021 +0100
+
+    fixed logic error (reversed) on Iterable<T>::operator bool () const
+
+commit d9fa30da1cb6354037f8a1f803100a705f642093
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 11 14:24:54 2021 +0100
+
+    cosmetic
+
+commit b3fbef2f10b449d48286431c22c3e1756fba3e06
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 11 14:28:35 2021 +0100
+
+    fixed typo in regression test
+
+commit 08dced53226d989c1eecf677ef5cab641407bcca
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 11 15:24:45 2021 +0100
+
+    based on https://stackoverflow.com/questions/26345175/correct-way-to-free-allocate-the-context-in-the-openssl and a quick look at the code, no longer call EVP_CIPHER_CTX_init nor EVP_CIPHER_CTX_cleanup
+
+commit d0ebfd77b3f9c623f376c44fd3c4316fc635c30c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 11 15:35:48 2021 +0100
+
+    be sure virtual ~InOutStrmCommon_ ()
+
+commit 1b8bc397ba433b917e6eb5ed48b4e64f0d5bf51a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 11 15:44:59 2021 +0100
+
+    fixed OpenSSLCryptoStream.cpp leak in InOutStrmCommon_ if failrue in cryptoParams.fInitializer
+
+commit 03ff2608c4a56d32aea4df8a98c927386f4df926
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 11 16:17:11 2021 +0100
+
+    Cosmetic
+
+commit 300057f8d6e8e1982b40c29b9daafd5ab000686e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 11 16:24:30 2021 +0100
+
+    cleanups, and added OpenSSL::GetDigestByName and OpenSSL::GetDigestByNameQuietly )_
+
+commit 8fca3a55c2f58e0f8bdd8babafbb379f12044032
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 11 17:44:13 2021 +0100
+
+    Cosmetic
+
+commit a3d7ce84740612b403339bcb621d2d9efd7a29ed
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 11 21:22:36 2021 +0100
+
+    Cosmetic/docs
+
+commit 610946c64d553160c2c0c528a0256bfe34d14cb4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 12 01:44:12 2021 +0100
+
+    added FETCHURLS for boost c++ download
+
+commit 290ae96b9955c045e1c062e720fc6673a522cc27
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue May 11 21:21:24 2021 -0400
+
+    minor tweaks to imrpvoe behavior when no thirdpartycomponents configuration chosen
+
+commit 4ca1ee08b8c91dc1ceca9686d590e314dad89ff0
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed May 12 10:47:10 2021 -0400
+
+    tweak bug defines for g++ - 10.3 (and GLIBCXX_10x_ and bug define comments)
+
+commit 77e16f43d327e302170ef3d0e886f6462ae62aae
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed May 12 10:54:41 2021 -0400
+
+    deprecated use of Ubuntu2010 and insetad use Ubuntu2104
+
+commit 59d4e5d6fcc6fc7ed3dfabaa08d4b9aa1cd29042
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 12 17:50:15 2021 +0100
+
+    Added  Set<T>::Contains (const Iterable<T>& items) overload
+
+commit b6f1b9df882b1be7d0119e2e352bdba158d3caa2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 12 17:52:08 2021 +0100
+
+    renamed OpenSSL::GetDigestByNameQuietly etc to be ntested in DigestAlgoruithm - and added similar named functions and for CipherAlgoriuthm; and implemnted the numerate-algorithms code and better documetned choices for standard algorithms (still could use work but good enuf for now)
+
+commit abf781e0d4dc45dff80defd0c90483206a71398c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 12 17:53:36 2021 +0100
+
+    docs
+
+commit 3bff5f1efbb1d1fc77542ee9c07346445207eadb
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed May 12 20:55:06 2021 -0400
+
+    more tweaks to OpenSSL3 support - closer to working fully - but still not perfrect
+
+commit 00e82fe7a092a87a647cb6356f9976ee7b549c3f
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed May 12 20:55:41 2021 -0400
+
+    git.ignoreLimitWarning on vscode
+
+commit 8590efd973517eb80ac09b81050fadcbeeba5776
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 13 16:46:00 2021 +0100
+
+    deprecated VirtualConstant class and replaced with ConstantProperty
+
+commit 4d95de4a53ebacf98783175c169b2fba1c670a9a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 13 20:31:34 2021 +0100
+
+    lose Ubuntu2010-Cross-Compile2RaspberryPi regtest since really does nothing (due to libc issue) and 2010 os almost rreprecated
+
+commit 359a61d8d878581cff1dfd1494d4fd4c353a4fe5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 14 12:14:38 2021 +0100
+
+    #https://stroika.atlassian.net/browse/STK-717 continued workaround
+
+commit 122b2b052d9071c5dcd3739fefb6ad7a80b068ea
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 15 03:46:03 2021 +0100
+
+    cosmetic
+
+commit ca2f1c8d67190bc2f46826c3183a98ceb7940ca0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 15 14:39:56 2021 +0100
+
+    cleanups to Samples/SQLite (factor first sample into separate file)
+
+commit 94b056d789cb606da14b006ac7a78440eb0de7af
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 15 14:40:18 2021 +0100
+
+    Cosmetic
+
+commit f96a3b78c6f7914f7c300f4841146abc6c60d975
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 15 14:46:17 2021 +0100
+
+    Cosmetic
+
+commit 5a79ebf4cf2a65524a38baa98d2cbc955ddc0b24
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 15 14:52:56 2021 +0100
+
+    sqlite sample cleanups/docs
+
+commit 1b7a79b318c94bfcbc8ecb1b427d97e1ed07dcf1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 16 01:42:44 2021 +0100
+
+    WaitableEvent::WaitQuietly overload
+
+commit 6d9b2ecb479824386e591aee6e99947c27aff075
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 16 17:38:39 2021 +0100
+
+    new threads test for SQLite demo app, and a few small cleanups to SQLIte code
+
+commit 04eb0922f98d294e36975ba0c2db08d7eee03330
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 17 16:19:21 2021 +0100
+
+    SQLite sample cleanups; SQLite support for handling BusyTimeouts (and configuring) and use of that in the sample app (thread test)
+
+commit fafd4d768f3957d77bc04e36bf9f15e07ef169ad
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 18 01:39:54 2021 +0100
+
+    Comments
+
+commit 4011b8484be49910d7c51956b7633a96b44ca88b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 18 01:41:55 2021 +0100
+
+    SQLite sample cleanups
+
+commit f5e541ea9f3a8d0f2a6f159ad8a8f0a0fd5544b0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 18 01:42:12 2021 +0100
+
+    SQLite regression test improvmenets
+
+commit b43a91b49f5fecd0b4cf1213e1d40fb0ba7e1a4d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 18 14:03:45 2021 +0100
+
+    cosmetic
+
+commit 8a9f4f3bd17744937893d11d4a3ddf5a26442406
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 18 14:12:47 2021 +0100
+
+    Cosmetic
+
+commit fc6d3a65f939c971cf37bc3317cdf2a4ad6cd948
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 18 15:50:48 2021 +0100
+
+    SQLite support named memory DBS
+
+commit 73910056af46d0fdc267e47a19122ebef96b335b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 18 15:51:50 2021 +0100
+
+    fixed typo in !__cpp_designated_initializers case
+
+commit e38bf2599f9434ba093b381c258a6cef4f359511
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue May 18 18:07:11 2021 -0400
+
+     https://stroika.atlassian.net/browse/STK-717 applies to ubuntu 21.04 as well
+
+commit a63682af910005ee7d3ce78893645c8e451f17d8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 19 13:44:07 2021 +0100
+
+    silence warning
+
+commit e1b8a73768ad0af3837442466d1e74d43feef602
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed May 19 10:13:04 2021 -0400
+
+    fix for libz.a issue on docker container for Ububntu 21.04
+
+commit 540ae0f048d3b02d468ae69d5062a487c3a26a90
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed May 19 11:24:20 2021 -0400
+
+    fixed missing include
+
+commit ea07e0270eaff5134190c18f94b53374219083e5
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed May 19 11:25:03 2021 -0400
+
+    cosmetic
+
+commit 4efbb0fe0adf26907fde061733556a1490d271e8
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed May 19 13:56:29 2021 -0400
+
+    prelim support for clang++12 and g++-11
+
+commit c187cb4b6346c0c5ce4fd59bd5696ec6912145c0
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed May 19 13:57:37 2021 -0400
+
+    silence crazy warnigns from g++11
+
+commit 7fed943b4b23d1e343eddc7dd5618edd7a03a321
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed May 19 13:58:04 2021 -0400
+
+    cosemtic
+
+commit 2a5bba323e6d0387c2b9d5868a56f6a0c1ba22f6
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed May 19 14:22:13 2021 -0400
+
+    new compiler bug workaround qCompilerAndStdLib_enum_with_bitLength_opequals_Buggy; and updates for gcc-11 bug defines
+
+commit eb333562a28667aefbf193a437ccdc61ea9f6258
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed May 19 14:33:23 2021 -0400
+
+    tweak basic-unix-test-configurations_valgrind_configs_ so uses valgrind on latest / default compiler, not specificialy g++8 (excpet on ububtu 1804 where that selection needed)
+
+commit 69990325c4d5ae2f473683ddc5b109db32b63145
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 19 20:57:52 2021 +0100
+
+    use 16.9.6 from docker windows
+
+commit 8a08df65d159645e8f0985cbde44d39f35c8a841
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 19 22:12:16 2021 +0100
+
+    docker readmes
+
+commit 6b6aefb412768a8404de9d532f33fc60e8be6ebe
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 20 15:03:01 2021 +0100
+
+    Comments
+
+commit 58368c13418307f6024821bd28227823d77af60d
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri May 21 09:41:00 2021 -0400
+
+    vscode settings
+
+commit 9f67ddb65948920f81868368298c9c3a2a102bf8
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri May 21 09:42:19 2021 -0400
+
+    Comment tweaks, and assertions and fixed thread args to ThreadTest
+
+commit 5100119cc0bf27bc8c60401193337df8bc302db9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 21 14:46:04 2021 +0100
+
+    tweak thread settings for sqlite thread test
+
+commit b4962a09a4a76a342a6b42f390f51617706c101d
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri May 21 10:02:45 2021 -0400
+
+    workaround/suppress for now: https://stroika.atlassian.net/browse/STK-736 (sqlite)
+
+commit 6ffaac2f648a0157bf5401337f11204132e42453
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri May 21 10:26:26 2021 -0400
+
+    added helgrind suppression for https://stroika.atlassian.net/browse/STK-736 (sqlite)
+
+commit 0ee054500b2d6ec4a3a692fa897a70642f4cf6cd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 22 03:06:07 2021 +0100
+
+    cleanup/fix trivial regression
+
+commit e4b60688553835b2b412b6cf07ebc06214ec2674
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri May 21 22:30:21 2021 -0400
+
+    fixed qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy define for clang++12
+
+commit 2b4ac217a689c7d903104f244342353afd6cc00d
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri May 21 22:47:54 2021 -0400
+
+    qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy already broken in clang12
+
+commit 177b0d2c94ff03d5ddb0254219f84ac52365806d
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri May 21 22:48:29 2021 -0400
+
+    https://stroika.atlassian.net/browse/STK-601 broken for clang++12 too
+
+commit 6a3f7f0b2f461d83c6340e3d69f0f97a0bfe417b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 23 03:14:21 2021 +0100
+
+    make format
+
+commit 787831d2efaa2e5c437140495a996ca31799329e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 23 03:17:56 2021 +0100
+
+    SQLite sample draft ComputerNetwork
+
+commit 369a389ac2801a112e9e99452cec4910fb98c1a9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 23 15:17:01 2021 +0100
+
+    cosmetic
+
+commit e855db4200a78f57fb548602235d72a0423cb876
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 23 15:17:36 2021 +0100
+
+    VERY early draft Database ORM support
+
+commit f7dbc486df75413610844a5592bc96133748a5fc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 23 15:35:29 2021 +0100
+
+    cosmetic
+
+commit c77259ca2f1a775431f31eee36efd3cabc545e29
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 23 19:21:05 2021 -0400
+
+    Silence c++ warning compiling sqlite code
+
+commit 350e7802e55dd13cf80c156159fc0a0b56a75bb1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 23 19:21:33 2021 -0400
+
+    up version tested flags to gcc 11.1
+
+commit 08bac75ef9dd147976dc6c8c486c50c8524eb5df
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 24 15:57:00 2021 +0100
+
+    define and use flag (qCompiler_HasNoMisleadingIndentation_Flag) for sqlite warning issue
+
+commit 0197ae7f61f75ed7e5e6b6c4f8d59e545dd3b7a0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 24 16:03:00 2021 +0100
+
+    fixed typo
+
+commit ad1863131e788722e3d4c7cb6c43688ecd4dc726
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 24 16:15:52 2021 +0100
+
+    lose clang++7/8/9 and g++-7 from Ubutnu 21.04
+
+commit d1beda64acc6e965879aa2e9c9a6aacfbd9b1793
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 24 16:18:53 2021 +0100
+
+    more fixes for deprecating 20.10 docker config
+
+commit 88d5050c9b52e3909afea8592ac123431f19ce4f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 24 16:25:17 2021 +0100
+
+    tweak docker readme
+
+commit 6579b8383335a2039737bac52004dde0e27a1ddf
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon May 24 11:56:04 2021 -0400
+
+    fixed typo
+
+commit 53da05a8e216df4cf9db62a3b8c36add006ed79e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 24 16:56:33 2021 +0100
+
+    readme on docker containers
+
+commit 6c834755032a3913a3488cee6be1e46d09aa8d77
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 25 09:48:21 2021 -0400
+
+    New methods: VariantValue::IsConvertibleTo and CheckConvertible
+
+commit cfd35089c3f2e915995828aad46def9f8e69fa3e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 25 09:48:59 2021 -0400
+
+    qCompilerAndStdLib_relaxedEnumClassInitializationRules_Buggy
+
+commit aa877dc658cb7d47614ba7868fd329fe5fa3c09e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 25 10:07:15 2021 -0400
+
+    cosmetic cleanups
+
+commit daeb6fdccfaa67bdabc2c7ab5ab29eb93cb5f304
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 25 10:08:03 2021 -0400
+
+    minor progress on Database::ORM code
+
+commit 22b40bf622921b5fbe6be9c5c79c3ba026d217ad
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue May 25 10:26:15 2021 -0400
+
+    fixes to qCompiler_HasNoMisleadingIndentation_Flag usage
+
+commit 5146e64b4ae2e74ffa25aaf3ae25701cd16cc6f0
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue May 25 10:34:54 2021 -0400
+
+    Silence compiler warning
+
+commit b617009cba067b15ec5d1605c17fbc56dc3eb014
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue May 25 10:51:28 2021 -0400
+
+    fixed bug defines for GLIBCXX_11x_
+
+commit cc16d3e64c2cb08f3df13702d36530d434fdeb32
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 25 10:54:29 2021 -0400
+
+    tiny progress on ORM code
+
+commit 1fe2b059c3160937aafe2785ac17e2c9eabff8e8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 25 15:58:20 2021 +0100
+
+    Added SQLite sample to regularly tested samples
+
+commit adca0cdd8ccc1a0e24c4777afb337d691bb2536f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 26 12:30:13 2021 +0100
+
+    more progress on ORM classes
+
+commit d1023769e4d6943acafdb0b02477364aaf874e36
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 26 17:58:18 2021 +0100
+
+    more tweaks to SQLite sample and ORM code
+
+commit b1f36bdf258372bdfbe4257ce77d1aa7cd514ef4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 27 14:59:21 2021 +0100
+
+    Comments
+
+commit 4f6d435a59798cbc9ef133dcd2ea6a49447d3ecb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 27 15:00:23 2021 +0100
+
+    Replaced new (unreleased) VariantValue::CheckConveritbleTo with ConvertTo (returning value)
+
+commit 3a7bf898b6433b2a85317d797641e7f896b0b844
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 27 15:01:17 2021 +0100
+
+    More progress on Database ORM code (and test case/sample)
+
+commit 84051c58ad509d4f7394211d19a4815f7d9fb798
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 27 16:28:25 2021 +0100
+
+    Draft of Memory::OffsetOf() (to replace std c++ macro offsetof())
+
+commit cabae35d4af98c02bb44ad1ba400de4212b73238
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 27 16:32:01 2021 +0100
+
+    cosmetic
+
+commit da1b1a52b4283a468dfd76227878d6426945ae74
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 27 19:10:11 2021 +0100
+
+    Tweak Memory::OffsetOf()
+
+commit 3923060747c4f70bbe7b90dbf22ac93cec0c17cb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 27 19:10:34 2021 +0100
+
+    cosmetic
+
+commit 2e40a56d69f792f07745db03e7d9423d0f1da6e0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 27 19:11:29 2021 +0100
+
+    new experimental CTOR for StructFieldMetaInfo, and change Stroika_Foundation_DataExchange_StructFieldMetaInfo() - experiemntally - to not use offsetof()
+
+commit bb8b60a51e9e8bc8d814b91668e76bf63e1fa68f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 27 19:29:34 2021 +0100
+
+    removed docs etc for deprecated VirtualConstant
+
+commit 080eb184712b956170385f4c1ae8d6c8ea77305d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 27 19:29:58 2021 +0100
+
+    docs
+
+commit e573c65932efe554b780ca94c8a41a402b38ebd8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 27 19:30:37 2021 +0100
+
+    fixed bug with SQLite bindings code (BLOB dangling ptr at sqlite code interface)
+
+commit 7191bf3a4832f10bf17a4c74fbd80414d010971c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 27 19:36:09 2021 +0100
+
+    lose obnsoelte ref to ..\..\Sources\Stroika\Foundation\Execution\VirtualConstant.inl
+
+commit 6536572bc8647fc0a022f46128105f0f30f227bf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 27 19:36:22 2021 +0100
+
+    cleanup warnings
+
+commit b4f2463e017622eedb94619a78ac7f67985e2eea
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 27 19:42:43 2021 +0100
+
+    another attempt at quieting warnings on Memory::OffsetOf ()
+
+commit a907fe54a9890a1cc8486152c31aa08ccd8b3dfa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 27 19:45:11 2021 +0100
+
+    Comments
+
+commit 38e69a61b9fc7dfd0660053a9841eb788d141408
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 27 19:56:08 2021 +0100
+
+    cosmetic
+
+commit 6dfa74b7750bd653f46b72554ebea631c237893a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 27 20:17:14 2021 +0100
+
+    cleanup OffsetOf
+
+commit bb164327f3966b5b332a19064b87625e917113ca
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 27 21:37:51 2021 +0100
+
+    cleanups
+
+commit dbed31b249c51dd0857f5c72f851caad377596cc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 27 21:38:15 2021 +0100
+
+    Memory::OffsetOf() cleanups and regression tests
+
+commit 078981ae0e60866133fc967d691d2dc988c3182f
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu May 27 17:00:39 2021 -0400
+
+    more tweaks to OffsetOf() code
+
+commit 89e95fec6e4d2de177f0bd0c78b2a9479fd2eb3b
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu May 27 17:01:07 2021 -0400
+
+    more offsetof tweaks
+
+commit ee980be3caf4f7ebc71f9ee75ad8da4e1956cb5c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 27 22:02:01 2021 +0100
+
+    cosmetic
+
+commit a7ccd4eb45a27ce39255285903d6ad2003920ab7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 27 22:17:35 2021 +0100
+
+    qCompilerAndStdLib_OffsetOf_Constexpr_Buggy reaction and bug define and improved regtests for OffsetOf()
+
+commit 565bd335490ee5f5accf050fb9bebdb71822f8d5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 27 22:45:11 2021 +0100
+
+    qCompilerAndStdLib_OffsetOf_Constexpr_Buggy broken for clang too
+
+commit a4108445c57749e70621ffe1afd18c4033a7e7bd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 28 03:20:33 2021 +0100
+
+    deprecated Stroika_Foundation_DataExchange_StructFieldMetaInfo; switcehd to using StructFieldMetaInfo directly; and lose many of the program suppression warnings needed for offsetof
+
+commit 980d71cca80df273fb82bbeb4318e86eaac85708
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 28 15:20:44 2021 +0100
+
+    cosmetic and more replacing Stroika_Foundation_DataExchange_StructFieldMetaInfo with StructFieldMetaInfo
+
+commit aab7e08b96839feb7cf0c60936b721509ebefab8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 28 15:35:55 2021 +0100
+
+    docs
+
+commit 7cb8f485cc5bb489d738a3a80195036fd7f580fa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 28 15:39:49 2021 +0100
+
+    workaround for new compiler issue qCompilerAndStdLib_default_constructor_initialization_issueWithExplicit_Buggy
+
+commit a5c42ce01e475dd7effa06b397edf223c537185c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 28 15:55:49 2021 +0100
+
+    cosmetic
+
+commit 46159cba5a930dfa40d5993f73c6f12d712b020c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 28 16:01:22 2021 +0100
+
+    todo notes
+
+commit 498278f1db620e2ed249979439276d1011bcd878
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 28 21:16:18 2021 -0400
+
+    qCompilerAndStdLib_OffsetOf_Constexpr_Buggy lose - just my code is buggy/wrong - doesnt work on any compiler - leave for now - I dont need this to be constexpr
+
+commit 4dc5c29915e2d09e6e726360df2251463bde5053
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 29 02:17:40 2021 +0100
+
+    qCompilerAndStdLib_OffsetOf_Constexpr_Buggy lose define
+
+commit 19e6fe3ae67712c7f8fd88955d9eedbab28505ed
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 29 14:38:11 2021 +0100
+
+    Comments and minore warning cleanups
+
+commit 03180e8fab8952a2c7a4842f84d196df8812e2a7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 29 15:24:31 2021 +0100
+
+    Common on regtest output
+
+commit 481eccef9ee066ed90685b84509431002dce8b18
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat May 29 20:20:02 2021 -0400
+
+    no longer include docker files for ubuntu 20.10
+
+commit 5e4726cfbbd1594b6c741d7fd4c95703a4b86145
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat May 29 21:05:40 2021 -0400
+
+    small dockerfile celanups/simplifations (lose DEBIGNA_FRONTEEND=nonointeractive doesnt seem needed anymore
+
+commit 625faead016554ecfe9ad24a7b1aec024554a098
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat May 29 21:11:44 2021 -0400
+
+    cleanup docker makefile
+
+commit 39b2ab4530a6e98e434914fbdbe64e72273a7fbb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 30 18:22:39 2021 +0100
+
+    re-enable constexpr stuff for constexpr test (not working) of OffsetOf
+
+commit eaaf0ea025a9d122ec754fdaa35a6b9e45e470ea
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 30 18:23:20 2021 +0100
+
+    Memory::Value(optional)
+
+commit 62b003ffc44ca71b6ce639396f817591ab6f11fb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 30 18:24:05 2021 +0100
+
+    deprecated Iterable::First/Last/1 overloads and replaced with a slightly better definition (templated)
+
+commit 44ab86a8602e0b7355c4dd416e3b3f0c73e348a7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 30 18:24:30 2021 +0100
+
+    fix missing dependnecy on new SQLIte sample
+
+commit c55fd4e58e46078b4f63c2cc757b60124d0c9620
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 30 18:25:08 2021 +0100
+
+    more clenaups of SQLite sample/ORM code
+
+commit 72c3542521432247d6381baf512f5f5634c9cc01
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 31 02:05:51 2021 +0100
+
+    GUID As<> template overloads, and docs
+
+commit b0a90551048252b9f94e70d9163089d0956dfa71
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 31 02:15:08 2021 +0100
+
+    regrssion tests for COmmon::GUID new APIs
+
+commit 5a39fe44ff1cb750bf4eab5c70b8643c6760d659
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 31 02:26:53 2021 +0100
+
+    cosmetic
+
+commit ed115ecffd0d43f685ab8552cea217b704d8a198
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 31 02:53:27 2021 +0100
+
+    slight improvement to TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Common::GUID> ()
+
+commit ea10ae0ab1b90fab8f75e282662b8931765b2ab4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 31 02:53:49 2021 +0100
+
+    todo commoents
+
+commit b67f264719512daa96b503fa5a94eb5eb88e71ec
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 31 14:43:10 2021 +0100
+
+    tweak regression tests for recent deprecation
+
+commit 21191fbcacf3501eea229726e7e3ca5e5743f61e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 1 01:43:50 2021 +0100
+
+    ObjectVariantMapper: AddCommonType now does forwarding of arguments, and MakeCommonSerializer for GUID now takes optional type arg for how to store (still sotres by default as string)
+
+commit d10c177cd2edb47b4d58a63e4c0ab0837d9ad274
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 1 01:46:02 2021 +0100
+
+    cosmetic
+
+commit d3ed414814a69e78c3662a285e33b457707bec0e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 1 01:47:15 2021 +0100
+
+    ORM::Schema::Table::GetIDField (), and ORM::Schema::StandardSQLStatements and further cleanups to samples
+
+commit a5397a194427b876b972304d02f50e4286c00dd4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 1 14:58:54 2021 +0100
+
+    ORM::Schema::CatchAllField::GetEffectiveRawToCombined etc
+
+commit a73fa3950fd0c8bee77bb52b5564a1009b3e1078
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 1 15:02:51 2021 +0100
+
+    fixed regression in recent change to Iterable<>::Last()
+
+commit 8b2b9b0c76107e91d5582a849876f40916d01484
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 2 01:25:10 2021 +0100
+
+    Support VisualStudio.Net 2k19 16.10.0 (and upped docker env to use that compiler)
+
+commit d11d9b2aa1a3f2c96b8ee1b2f99468439f3d3a32
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 2 01:25:40 2021 +0100
+
+    mostly cosmetic string changes
+
+commit be416829b7e8d3404ff2d6a6c22b15893d61cd74
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 2 01:26:00 2021 +0100
+
+    cosemetic
+
+commit 180740b5c2eb1ba44567f645958980618e3258d1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 2 01:26:19 2021 +0100
+
+    silence warning
+
+commit 3b12f66a2253bcd2a5d53025a12534d88a47beac
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 2 01:26:30 2021 +0100
+
+    cosmetic
+
+commit 715aff938371d421316463cf5159b13683f1e8b1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 2 01:26:56 2021 +0100
+
+    fixed vs2k19 SLN file for Tests (project dependencies)
+
+commit 78b9248c6ddee837db47e57b87ddc99ba89f6743
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 2 14:30:55 2021 +0100
+
+    fixed regrression in versions for qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy define (RECENT)
+
+commit 49e40d6d679e6a99bcbfe0b7f8afc49f043911c0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 2 15:26:13 2021 +0100
+
+    qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy bug workaround for visual studio ASAN
+
+commit ab3d39a1a08352bf349d15b6a10ff5a17e1da9bf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 2 15:49:33 2021 +0100
+
+    updated how we set COMPILER_DRIVER flag/var in configure script for msvc (so set eariler and checked better)
+
+commit a4aa6a7cf77950cfc2d9b4045160fd396367c10e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 2 16:04:55 2021 +0100
+
+    by default, on msvc > 16.10 msvc - and apply-default-flags- turn on asan by default
+
+commit 1b301519ef8c628dfed9907a546b149a34c8d2e3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 2 16:05:36 2021 +0100
+
+    I think fixed bug so configure properly sets ASAN enabled for clang builds on apply-default-debug-flags
+
+commit a4655787c76b99d9f5fb667c6186f65bbfb4fd8c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 2 16:38:58 2021 +0100
+
+    fixed small recent regression in bugdefine setting qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
+
+commit fb7486653d940f1316de98292df458a75d2b3571
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 3 02:13:48 2021 +0100
+
+    hopefully fixed configure support for ASAN/Windows (no -fsanitizer... flag to linker)
+
+commit 3cec8a9844ed7aafd0c011ab332195e42c950282
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 3 14:52:43 2021 +0100
+
+    workaround ASAN debug configuraiton linker erorr
+
+commit d266b4323dc921a76a251d8adb2bb2d490d83f77
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 3 14:59:17 2021 +0100
+
+    Commetns on https://developercommunity.visualstudio.com/t/please-re-open-httpsdevelopercommunityvisualstudio/1440675 bug workaround
+
+commit 5aec1d8ed3d170b297026ff61c1c0ca08cd0a324
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 3 15:03:19 2021 +0100
+
+    workspace ignore warnings flags
+
+commit 467aaf7cfd5873dd1d31dd31dbc10e4987805c59
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 4 00:48:24 2021 +0100
+
+    fixed serious bug in ScriptsLib/Configure-VisualStudio-Support.pl - was always using vs2k19 compilers - not vs2k17 - so havent been testing vs2k17 since I rewrote that script
+
+commit c0a2ec220eb2278d30ca62fc33ab1e38cb9bc7be
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 4 09:56:01 2021 -0400
+
+    qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop2_Buggy bug define and workaround
+
+commit 66feb954fac142c5d144cc7d72bcd2cd63e4df47
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 4 10:07:55 2021 -0400
+
+    qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy bug define/workaround (vs2k17)
+
+commit f0b7bc8c2493c745fec27b50562a8db577ae4011
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 4 10:08:56 2021 -0400
+
+    fixed typo in vs2k17 bug workaorund
+
+commit ad76f371c243117dceba131b196757129469e763
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 4 10:10:10 2021 -0400
+
+    .vscode
+
+commit 352a9bada7086afbd1a3690848960fe5eba08c32
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 4 10:21:43 2021 -0400
+
+    qCompilerAndStdLib_constexpr_call_constexpr_sometimes_internalError_Buggy vs2k17 BWA
+
+commit 7c0a97782b5b73beff4ca17c7d2e92de31c3c200
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 4 15:26:47 2021 +0100
+
+    cosmetic
+
+commit 1b4d135f58a01be428e197340025c9296e36431e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 4 15:28:23 2021 +0100
+
+    another qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy bwa
+
+commit 8324eb124277059cebbee3d9751911a1a0a247b4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 4 10:48:14 2021 -0400
+
+    some fixes to operator compare code in Led framework for VS2k17
+
+commit 10d41b350c8d3ae741052684ef7a96e7c44abc15
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 4 17:59:11 2021 -0400
+
+    various cleanups to Led Framework GDI code
+
+commit 073f0b08762e175685bc01295e5a7fb75810f407
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 4 17:59:40 2021 -0400
+
+    make format-code
+
+commit 70284ac6a742f4ef9bd0e2255468a57ed4679e5c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 4 23:22:51 2021 +0100
+
+    Cosmetic
+
+commit c87f267b806c3deae012b85dd504fee8cf5cc0a5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 4 23:28:27 2021 +0100
+
+    new vs2k17 bug workoaurnd qCompilerAndStdLib_MemInitializerWithBitfield_Buggy
+
+commit 40b170492247095a2a99ef99444178a7454e0bf4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 4 19:52:16 2021 -0400
+
+    bug defines qCompilerAndStdLib_usingOfEnumFailsToBringIntoScope_Buggy for vs 2k 17 compat
+
+commit 30cd4b3ecaf7c4fac361c09133f2a208f2dceb16
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 5 00:38:22 2021 +0100
+
+    cosmeitc
+
+commit 408fada97f786fefc141519108dd881a443db8b4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 5 00:38:45 2021 +0100
+
+    cosmetic
+
+commit 91ab5189ebcf183c5705b6630f27d09432b5988a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 5 00:55:00 2021 +0100
+
+    vs 2k17 bug workarounds
+
+commit b291a7b4679b9c020b8f0d327cb98b8cb67397cb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 5 00:59:46 2021 +0100
+
+    vs2k17
+
+commit fddeb5b70d45e08e5ff45aa191861ec8bfb55b36
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 4 20:09:42 2021 -0400
+
+    workaround vs2k17
+
+commit c0a394517168dde6008391c92804aa7afebbcf1a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 5 01:15:03 2021 +0100
+
+    cosmetic
+
+commit 561067e839babc06ae8f7414ac65c03e77d11143
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 4 22:16:27 2021 -0400
+
+    Led frameowrk cleanups for vsk217
+
+commit 5d16ce65b739732aa957803c694285b97307820f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 5 03:58:16 2021 +0100
+
+    Cosmetic
+
+commit 6708821d9c3504409ab98cea243980f2c77a6cad
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 5 04:14:12 2021 +0100
+
+    restructure IO::Netwowrk::Itnerface weindows code to get wirelessinfo based on feedback from ASAN: new code LOOKS worse, but corresponds more precseily to example docs
+
+commit be771959cf275ae76df77ff4b05af83ece092eaa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 5 04:31:07 2021 +0100
+
+    Deal with static inline constexpr definitions - which dont really work right with vs2k17: /FORCE:MULTIPLE
+
+commit 23e6ebdc2e78bf7e74ed1769ec8621eaa1bbaf45
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 4 23:57:24 2021 -0400
+
+    vs2k17 configure script fix for (MULTIPLE static constexpr issue)
+
+commit 85f5f96dd5f4c71653381a3c1984c21ade3572bb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 5 09:47:34 2021 -0400
+
+    qCompilerAndStdLib_uniformInitializationsFailsOnIntSize_t_Buggy bug define for vs2k17
+
+commit 34b5e576c53217c80e1bca5eae60873cd45222d3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 5 14:51:27 2021 +0100
+
+    Led frmaewokr cleanups
+
+commit 0d3ab79719ca5d8d122a673db2b9d76f16fdad10
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 5 14:57:43 2021 +0100
+
+     qCompilerAndStdLib_startupAppMagicStaticsNotWorkingFully_Buggy bug workaround for vs2k17
+
+commit 17686f69792e52ae3d3cfdea7b29ef428ce3c1e8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 5 18:36:46 2021 +0100
+
+    reset qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy to be broken again as was bad test indicating fixed (vs2k17)
+
+commit 114f32a2c8502915c397334d8a55089ca29944a8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 5 18:50:54 2021 +0100
+
+    more workarounds for qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+
+commit f69f023d47ee13ffa1cfb068dc935ccad12ae710
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 5 21:47:55 2021 -0400
+
+    more workarounds for qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+
+commit 77361c25186a21be0550ace767aa282999da770d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 6 17:29:57 2021 +0100
+
+    COsmetic; and various other naming cleanups for Led Framework
+
+commit 7eba1e9bb1659e4cbee534930a158bf05f42e464
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 6 18:33:33 2021 +0100
+
+    LEd framework costmetic cleanups
+
+commit 21e3c3f9849f507ab3566d5261c469bf3c462280
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 6 23:56:16 2021 +0100
+
+    more naming/cleanps for Led GDI code
+
+commit 4b2163a110b5fbfd7eab35b826208c038006dbcd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 6 20:43:31 2021 -0400
+
+    more Led clenaups; and a few vs2k17 workarounds
+
+commit b31a36513f008573ef6f51f7b0c5ca963be7fbd0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 7 02:14:22 2021 +0100
+
+    various Led cleanups, etc; qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy workaround
+
+commit 1dfde3e3b43de055e95e16979606d6e49ff2e540
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 7 02:18:16 2021 +0100
+
+    small cleanups
+
+commit d160a8739a8609d15903326fce9a351f1874ba71
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 7 02:20:32 2021 +0100
+
+    vs2k17 bwa
+
+commit 8c12c1c0661beb59219bac651b7bca160b919675
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 7 02:26:37 2021 +0100
+
+    vs2k17 bwa
+
+commit ef8883c474d955d28f8937b7bfe0443932591a02
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 7 02:45:10 2021 +0100
+
+    Compiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy workarounds
+
+commit 23d0451d9cb7653d3e771b7913b44e290ef94101
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 7 03:29:06 2021 +0100
+
+    qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+
+commit 659cf9c4ddbef614e8f0f014763e964fbed26d1a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 6 21:46:02 2021 -0400
+
+    vs2k17 compat
+
+commit ad227061a8405f8287c36f51385963143681e4c7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 6 22:31:37 2021 -0400
+
+    simplify idlemantger cleanup/singleton lifetime
+
+commit 01bdb156b3ad4608b792520a1318b128171772de
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 7 15:20:08 2021 +0100
+
+    more Led frameowrk GDI cleanups
+
+commit 66bef35d6970f931b104db10fc53f472a9b20140
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 7 15:46:31 2021 +0100
+
+    more naming cleanups of Led GDI code
+
+commit 749ca11492b144812bd8f5e067598f560529868b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 7 21:16:23 2021 +0100
+
+    More Led Framework cleanups
+
+commit 80f23bbb708c6c710cb677ac135041320d769844
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 8 01:38:25 2021 +0100
+
+    Cosmetic
+
+commit 3aa3f5dff60d17396ecc85fa2d3f3d38799c902d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 7 21:45:02 2021 -0400
+
+    a few more qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy workarounds - now vs2k17 passing regtests I think
+
+commit 81bdf8aa883ad94cb402499d0bea377b49cd1f7b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 8 16:07:54 2021 +0100
+
+    qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy / cosmetic cleanups
+
+commit e72dc752b3c09e4b2b8551232c8c7805813edddc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 8 18:23:55 2021 +0100
+
+    fixed typo in qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy workaround
+
+commit 0052115d34d26a858a2292b411901a0fe71d3afa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 9 14:02:20 2021 +0100
+
+    more qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy workarounds
+
+commit dd7b2f89ca0bc4777ec749aebefc59ffb004e7b2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 9 14:04:18 2021 +0100
+
+    cosmetic
+
+commit c8ad6ab23537dd9759ea5c904bd15693b244a72a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 9 09:15:31 2021 -0400
+
+    fixes for qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy workarounds
+
+commit 05858c8d5a40d147b4dcc6f61747f3234c4998ec
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 9 15:30:48 2021 +0100
+
+    Fixed bug with InternetMediaType CTOR where it could lose proper mapping comparer; todo had to workaround stroika bug 738 with mapping class, and added jira ticket for that bug, along with regression test case
+
+commit 0216cdeb82216c7e580b9f31cbb4d8ccfa7344c5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 9 15:31:12 2021 +0100
+
+    cosmetic
+
+commit 6ba8934fe5330a1d3f9ecab0efdcff7fd94aeaf6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 9 15:40:02 2021 +0100
+
+    simplify one worakround for qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy
+
+commit a0632d21358a49a15560249341a7189365940467
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 9 17:32:00 2021 +0100
+
+    qCompilerAndStdLib_initializer_list_sometimes_very_Buggy bug workaround vs2k17
+
+commit 1a3da6109ee2ba532ef7b3a3226263706fb59245
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 9 17:32:35 2021 +0100
+
+    cosmetic
+
+commit 949744af217ea282fb2bb3bc76cdff1c3ff08991
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 9 17:37:59 2021 +0100
+
+    cosmetic
+
+commit 5b5a9092b66fc9137202a2668515c99de256ece0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 9 18:25:46 2021 +0100
+
+    fixed https://stroika.atlassian.net/browse/STK-738 - bad enable_if in CTOR Mapping<> overloads
+
+commit 801363ccf64694f79baef160b0a5dc1e3fa54be6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 9 18:30:18 2021 +0100
+
+    Cosmetic
+
+commit 6ce33d32573dc5b59a91bbba1bf03f2c9a7aad98
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 10 11:55:31 2021 +0100
+
+    qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy BWA
+
+commit 3e4a2f0d8a27902a2cb60bdd47af149575c76132
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 10 12:22:03 2021 +0100
+
+    just like https://stroika.atlassian.net/browse/STK-738  - also dont restruct/prevent is_base_of for other containers like Set etc - to do comparer/otherset args
+
+commit 901d7dedf8273385dbc6652bbfd3e3abfd389d4e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 10 12:41:11 2021 +0100
+
+    docs
+
+commit cf718a0d2bf7530a330d2f181724cc24c7bf5d22
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 10 16:05:36 2021 +0100
+
+    more careful/restrictive CTOR template overload for Execution::Function class
+
+commit 1e80cb9e838d2089780d0fbfbc29a39b851c42f1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 10 11:33:17 2021 -0400
+
+    One worakround marked qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy really has nothing todo with LTO - want to avoid deadly startup (before main const ref) ordering bug - so use function / magic inits to lazy create instead of file scope global
+
+commit 7e32f3d0ffca66f3120cb4082de8b7cf210233b0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 10 16:35:09 2021 +0100
+
+    Containers cleanups: use more uniform initialization
+
+commit 81312d83ba85cef22e05e4764504c51e3409d307
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 10 17:09:34 2021 +0100
+
+    cosmetic clenaups
+
+commit 6b25f8ff6c8199481967da26fc9574e718912ea6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 10 17:18:28 2021 +0100
+
+    lose qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy bug define and workaround - I htink was a mistake and order of CTOR before main bug
+
+commit f1146f3d3c1c5f62f447dc63f2e4a38c115259a3
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Jun 10 12:36:51 2021 -0400
+
+    qCompilerAndStdLib_uniformInitializationInsteadOfParenInit_Buggy bug define
+
+commit dfc43aa9550db1293e7774206db18db261eec817
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 10 12:59:40 2021 -0400
+
+    revert one uniform initialzaiton change with comment/test
+
+commit efed4cc8229cab55f2db9eda5c02dd9ebaca66fc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 10 13:07:04 2021 -0400
+
+    qCompilerAndStdLib_uniformInitializationInsteadOfParenInit_Buggy
+
+commit 285668251714882f02b8784f93ec6808c83a6c1e
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Jun 10 13:10:44 2021 -0400
+
+    qCompilerAndStdLib_uniformInitializationInsteadOfParenInit_Buggy workaround
+
+commit 20528c3ab3433a68c56b73d269dd6a2794ed24d6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 10 18:58:10 2021 +0100
+
+    Lose qCompilerAndStdLib_uniformInitializationInsteadOfParenInit_Buggy in many places - was REGRESSION I introduced recently - documented ambugituy on subclasses of Iterable<> calling base class Iterable CTOR - be carefuly to select inherited&& CTOR - still more similar to review/test
+
+commit 5c35dc439f51e39f7aad8da77bf7e3488563c5c8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 10 19:01:00 2021 +0100
+
+    cosmetic
+
+commit 25768f887108373e9f100b82617ac420f3f50051
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 10 22:43:52 2021 +0100
+
+    rprogress workaring around https://stroika.atlassian.net/browse/STK-739
+
+commit 8a5b236bb3c61e4a999c8c6190f7526efe3cda88
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 11 00:56:27 2021 +0100
+
+    resolved (mostly) https://stroika.atlassian.net/browse/STK-739: documented in Iterable<T>::CTOR (initializer_list<>) issue and why often not safe/desirable (with templates) to use {} cuz interpretted as list-initialization
+
+commit b31b8fc7c07dd3c4c599910a57a605150c69524f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 11 01:35:00 2021 +0100
+
+    (**not backward compatible but minor**) - Several VariantValue CTORS now explicit, so you need to wrap calls with VariantValue{}; helps make less likely trouble with Iterable<T> or other types with initializer_list<T> that might be used with VariantValue (and cause issues like https://stroika.atlassian.net/browse/STK-739)
+
+commit 91a50144eb708adf917612857df5e896571f048d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 11 01:38:48 2021 +0100
+
+    Lose (never rleeased) qCompilerAndStdLib_uniformInitializationInsteadOfParenInit_Buggy bug define - not needed anymore - was really the initializer_list isue
+
+commit 9b73bc9c0236f860f625f3b0b8c71cba13d4eb45
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 11 01:46:45 2021 +0100
+
+    fixed typo
+
+commit d29df4a95e3beb3b453476b787a7dce5277a2352
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 11 01:47:26 2021 +0100
+
+    react to VariantValue change - some CTORs explicit
+
+commit 027364c8edeee034a87982afaeb0485631af8744
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 11 02:02:50 2021 +0100
+
+    VariantValue operator= overloads so the things I made explicit you can at least assign to a VariantValue (just no conversion problems)
+
+commit 01bac07b39da49f9db79042c9a96f25c54de1d54
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 11 02:06:17 2021 +0100
+
+    react to now explicit VariantValue ctors
+
+commit ab4b45411c644af90118b3eeb83b8a633b1d1fbc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 11 02:07:13 2021 +0100
+
+    react to now explicit VariantValue ctors
+
+commit 5360084dc19b133c1ffb44b5dc9ee540111b1a69
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Jun 10 21:09:16 2021 -0400
+
+    react to change in explicit VariantValue CTORS
+
+commit ba124a0dd2744752e6cf649b97cae8a18ca23afe
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 11 02:14:08 2021 +0100
+
+    react to Exicit VariantValue CTOR cahnge
+
+commit 7a670377478871f89038b78e13fddd27840e9ca3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 11 02:15:35 2021 +0100
+
+    react to Exicit VariantValue CTOR cahnge
+
+commit 33e41ac364bbff9546e04a0e0b86b6621507314a
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Jun 10 21:19:34 2021 -0400
+
+    react to cahnge in explicit VariantValue CTORs
+
+commit 577a6b1b506f7b7fb3966a53bd6028d1c68b8a29
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 10 21:36:40 2021 -0400
+
+    tested and verfied broken (didnt dig more) into qCompilerAndStdLib_initializer_list_sometimes_very_Buggy - since not supporting vs2k17 much longer or super well, not worth digging)
+
+commit 0a0fb878129364fcffd09691b19febc4f3068978
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 11 14:40:41 2021 +0100
+
+    vs2k17 qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy BWA ,and cosmetic
+
+commit 85f4a74bbb649aec78751922ee3c9aaa57b8fcf2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 11 15:00:12 2021 +0100
+
+    qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy vs2k17 BWA for CORSOptions
+
+commit de1c5d3c36b5616af2505ce1a9d7b047873cbf02
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 11 15:32:36 2021 +0100
+
+    in regressiontests - print version of XCode installed
+
+commit 4838c6bef255b67e901c7bccfaf1b0b293479457
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 11 15:34:27 2021 +0100
+
+    and in regressiontest script - print xcode install path
+
+commit 4da0c3e8e3351347e05bf6d5b1f7c1f3f10a123a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 11 15:39:55 2021 +0100
+
+    fixed typo in recent checkin
+
+commit 1a9685fd1e65f9e27986c33bf74ff0fd209b86f1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 12 02:15:09 2021 +0100
+
+    Cosmetic cleanups
+
+commit d3e1f6e02e81a04dc77ab1c381591e7ce3bd6997
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 12 02:20:47 2021 +0100
+
+    Cleanup logging (tracelog) in /SystemPerformance/Instruments/Process WINDOWS permsission code
+
+commit b3a8040a1c5afa6220c86386addfac7af77a0602
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 12 02:22:24 2021 +0100
+
+    fixed typo in last checkin
+
+commit 7c0aea85698dab9c6117d2d280f025904d402df3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 12 02:22:32 2021 +0100
+
+    cosemtic
+
+commit 8b78a46e9c7a7c01bb45fd160ce0ddc8f145901f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 11 21:30:29 2021 -0400
+
+    fixed link error with qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy vs2k17 BWA
+
+commit d00369ecace5bc33533a155681e9501380b35186
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 13 01:31:18 2021 +0100
+
+    fixed a qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy BWA
+
+commit 1829c5e705e59a570e44f85d6d091fc3ebf6f4b9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 13 01:41:11 2021 +0100
+
+    more minor cleanups to Frameworks/Instruments/... Process
+
+commit 9955cc18f692edd395786d1f1e488b1e1609d605
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 14 00:57:10 2021 +0100
+
+    Lose unused empty FileStream.cpp file
+
+commit a8abec4e39abfbc6e3334e34dc223cff862ec028
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 14 02:06:52 2021 +0100
+
+    Comments
+
+commit 6d0d3f5cc0dc6c98df19af724ebb65b7945291d2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 15 00:57:11 2021 +0100
+
+    todo comments
+
+commit 3d981dd79293e32be9ec18b3fd050a515f75353e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 15 01:06:23 2021 +0100
+
+    lose no longer needed bug define qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy (for vs2k17 but not referenced anymore)
+
+commit 2aee6dfe1d43c20c776ccc45ef21a17450681da9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 15 01:21:02 2021 +0100
+
+    lose no longer needed bug define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy (we only support vs2k17 back to 15.7.x (and maybe only back to 15.9.x); and lose most of the intermediate bug version defines for in between FULLVERSIONS
+
+commit 11f3ae99127ee3d2db6ea302c9629bc37b461c7e
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Jun 14 22:12:17 2021 -0400
+
+    tested alpha17 of openssl and minor cleanups
+
+commit e6a104284db5d358665d6f6f06739072d3f8a40d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 15 02:30:15 2021 +0100
+
+    cosmetic
+
+commit b9ce82a38e827341706b1d931e7d3d50093a5ece
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 15 02:30:44 2021 +0100
+
+    use libcurl 7.77.0
+
+commit ef6b7ae922e542c210234d09cd5536815db2d631
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 15 14:10:51 2021 +0100
+
+    minor cleanups (docs and static inline)
+
+commit 1377e328c395757da34fcd8d157a84052598d661
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 15 14:31:55 2021 +0100
+
+    ENABLE_JSON1 flag for SQLITE
+#endif
+
 ---
 
 ### 2.1b11 {2021-03-23}
