@@ -188,6 +188,7 @@ namespace Stroika::Foundation::Database::SQLite {
     };
 
     class Statement;
+    class Transaction;
 
     /**
      *  'Connection' is a quasi-namespace.
@@ -544,6 +545,86 @@ namespace Stroika::Foundation::Database::SQLite {
         vector<ColumnDescription>      fColumns_;
         Sequence<ParameterDescription> fParameters_;
     };
+
+    /**
+     *  \see https://www.sqlite.org/lang_transaction.html
+     * 
+     *  \note Transactions are not required. This is for explicit transactions. If you omit
+     *        using transactions, sqlite creates mini transactions automatically for each statement.
+     *
+     *  \note Nested transactions not supported
+     * 
+     *  \todo Consider supporting SQLITE SAVEPOINT (like nested transaction)
+     */
+    class Transaction : private Debug::AssertExternallySynchronizedLock {
+    public:
+        enum Flag {
+            /**
+                 *  Don't really start the transaction until the command to read/update the database
+                 */
+            eDeferred,
+            /**
+                 *  Start writing to the DB immediately (as of the transaction start); note this affects when you might
+                 *  get SQL_BUSY errors.
+                 */
+            eImmediate,
+
+            /**
+                 *  Depends on WAL mode, but generally prevents other database connections from reading the
+                 *  database while the transaction is underway
+                 */
+            eExclusive,
+
+            eDEFAULT = eDeferred
+        };
+
+    public:
+        /**
+         */
+        Transaction () = delete;
+        Transaction (const Connection::Ptr& db, Flag f = Flag::eDEFAULT);
+        Transaction (const Transaction&) = delete;
+
+    public:
+        /**
+         */
+        ~Transaction ();
+
+    public:
+        /**
+         */
+        nonvirtual Transaction& operator= (const Transaction&) = delete;
+
+    public:
+        /**
+         *  Cause the transaction to end successfully, flushing to the database.
+         *  It is (an assertion) error to call this multiple times. And calling OMITTING
+         *  a call before the destructor causes the transaction to Rollback.
+         */
+        nonvirtual void Commit ();
+
+    public:
+        /**
+         *  This cannot be called after a rollback or commit.
+         * 
+         *  This causes no data to be written for the commands already issued in the transaction.
+         * 
+         *  This is equivilent to just destroying this object, except that it can propagate
+         *  exceptions if needed, whereas a destructor cannot.
+         */
+        nonvirtual void Rollback ();
+
+    public:
+        /**
+         *  @see Characters::ToString ()
+         */
+        nonvirtual String ToString () const;
+
+    private:
+        Connection::Ptr fConnectionPtr_;
+        bool            fCompleted_{false};
+    };
+
 #endif
 
 }

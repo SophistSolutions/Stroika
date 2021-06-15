@@ -663,4 +663,59 @@ String Statement::ToString () const
     sb += L"}";
     return sb.str ();
 }
+
+/*
+ ********************************************************************************
+ ******************************* SQLite::Transaction ****************************
+ ********************************************************************************
+ */
+Transaction::Transaction (const Connection::Ptr& db, Flag f)
+    : fConnectionPtr_{db}
+{
+    switch (f) {
+        case Flag::eDeferred:
+            db->Exec (L"BEGIN DEFERRED"sv);
+            break;
+        case Flag::eExclusive:
+            db->Exec (L"BEGIN EXCLUSIVE"sv);
+            break;
+        case Flag::eImmediate:
+            db->Exec (L"BEGIN IMMEDIATE"sv);
+            break;
+        default:
+            RequireNotReached ();
+    }
+}
+
+Transaction::~Transaction ()
+{
+    if (not fCompleted_) {
+        try {
+            Rollback ();
+        }
+        catch (...) {
+            DbgTrace (L"Suppress rollback failure exception in SQLITE transaction: %s", Characters::ToString (current_exception ()).c_str ());
+            // intentially fall-thru
+        }
+    }
+}
+
+void Transaction::Commit ()
+{
+    Require (not fCompleted_);
+    fCompleted_ = true;
+    fConnectionPtr_->Exec (L"COMMIT;"sv);
+}
+
+void Transaction::Rollback ()
+{
+    Require (not fCompleted_);
+    fCompleted_ = true;
+    fConnectionPtr_->Exec (L"ROLLBACK;"sv);
+}
+
+String Transaction::ToString () const
+{
+    return String{};
+}
 #endif
