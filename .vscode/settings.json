@@ -29,7 +29,8 @@
     "optional": "cpp",
     "mutex": "cpp",
     "shared_mutex": "cpp",
-    "thread": "cpp"
+    "thread": "cpp",
+    "evp.h": "c"
   },
   "files.watcherExclude": {
     "Archive/**": true,

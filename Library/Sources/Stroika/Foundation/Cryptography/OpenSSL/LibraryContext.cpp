@@ -134,8 +134,8 @@ LibraryContext::LibraryContext ()
         results += CipherAlgorithms::kAES_256_CFB128;
 
     /*
-         * @todo mark these below as deprecated...??? in openssl3?
-         */
+     * @todo mark these below as deprecated...??? in openssl3?
+     */
 #if OPENSSL_VERSION_MAJOR < 3
         results += CipherAlgorithms::kBlowfish_CBC;
         results += CipherAlgorithms::kBlowfish_ECB;
