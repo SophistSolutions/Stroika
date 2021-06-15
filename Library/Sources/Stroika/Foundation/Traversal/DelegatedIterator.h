@@ -34,14 +34,7 @@ namespace Stroika::Foundation::Traversal {
             Iterator<T> fDelegateTo;
             EXTRA_DATA  fExtraData;
             Rep (const Iterator<T>& delegateTo, const EXTRA_DATA& extraData = EXTRA_DATA ());
-#if qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy
-            virtual RepSmartPtr Clone () const override
-            {
-                return RepSmartPtr (Iterator<T>::template MakeSmartPtr<Rep> (*this));
-            }
-#else
-            virtual RepSmartPtr Clone () const override;
-#endif
+            virtual RepSmartPtr     Clone () const override;
             virtual IteratorOwnerID GetOwner () const override;
             virtual void            More (optional<T>* result, bool advance) override;
             virtual bool            Equals (const IRep* rhs) const override;

@@ -90,49 +90,21 @@
 
 #elif defined(_MSC_VER)
 
-#define _MS_VS_2k17_VER_ 1910
-
-#define _MS_VS_2k17_15Pt1_ 191025019
-#define _MS_VS_2k17_15Pt3Pt2_ 191125507
-#define _MS_VS_2k17_15Pt5Pt0_ 191225830
-#define _MS_VS_2k17_15Pt5Pt2_ 191225831
-#define _MS_VS_2k17_15Pt5Pt3_ 191225834
-#define _MS_VS_2k17_15Pt5Pt5_ 191225835
-#define _MS_VS_2k17_15Pt6Pt0_ 191326198
-#define _MS_VS_2k17_15Pt7Pt1_ 191426428
-#define _MS_VS_2k17_15Pt7Pt2_ 191426429
-#define _MS_VS_2k17_15Pt7Pt3_ 191426430
-#define _MS_VS_2k17_15Pt7Pt4_ 191426431
-#define _MS_VS_2k17_15Pt7Pt5_ 191426433
 // _MSC_VER=1914
 #define _MS_VS_2k17_15Pt7Pt6_ 191426433
 #define _MSC_VER_2k17_15Pt7_ 1914
 
 // _MSC_VER=1915
 #define _MSC_VER_2k17_15Pt8_ 1915
-#define _MS_VS_2k17_15Pt8Pt0_ 191526726
-#define _MS_VS_2k17_15Pt8Pt4_ 191526729
-#define _MS_VS_2k17_15Pt8Pt5_ 191526730
-#define _MS_VS_2k17_15Pt8Pt8_ 191526732
 
+// This is the only one tested for the last couple years - from the VS2k17 vintage - 15.9.x or later... -- LGP 2021-06-14
 // _MSC_VER=1916
 #define _MSC_VER_2k17_15Pt9_ 1916
-#define _MS_VS_2k17_15Pt9Pt0_ 191627023
-#define _MS_VS_2k17_15Pt9Pt2_ 191627024
-#define _MS_VS_2k17_15Pt9Pt4_ 191627025
-#define _MS_VS_2k17_15Pt9Pt5_ 191627026
-#define _MS_VS_2k17_15Pt9Pt7_ 191627027
-#define _MS_VS_2k17_15Pt9Pt16_ 191627034
-#define _MS_VS_2k17_15Pt9Pt19_ 191627035
 
 // _MSC_VER=1920
 #define _MSC_VER_2k19_16Pt0_ 1920
-#define _MS_VS_2k19_16Pt0Pt0pre1_ 192027027
 #define _MS_VS_2k19_16Pt0Pt0pre2_ 192027305
-#define _MS_VS_2k19_16Pt0Pt0pre3_ 192027323
 #define _MS_VS_2k19_16Pt0Pt0pre4_ 192027404
-#define _MS_VS_2k19_16Pt0Pt0pre43_ 192027508
-#define _MS_VS_2k19_16Pt0Pt0_ 192027508
 
 // _MSC_VER=1921
 #define _MSC_VER_2k19_16Pt1_ 1921
@@ -144,16 +116,12 @@
 
 // _MSC_VER=1923
 #define _MSC_VER_2k19_16Pt3_ 1923
-#define _MS_VS_2k19_16Pt3Pt0_ 192328105
-#define _MS_VS_2k19_16Pt3Pt5_ 192328106
 
 // _MSC_VER=1924
 #define _MSC_VER_2k19_16Pt4_ 1924
-#define _MS_VS_2k19_16Pt4Pt2_ 192428314
 
 // _MSC_VER=1925
 #define _MSC_VER_2k19_16Pt5_ 1925
-//#define _MS_VS_2k19_16Pt5P0_ 192528610
 
 // _MSC_VER=1926
 #define _MSC_VER_2k19_16Pt6_ 1926
@@ -1605,32 +1573,6 @@ NOTE:
 
 #endif
 
-/*
-1>c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\delegatediterator.inl(32): error C2244: 'Stroika::Foundation::Traversal::DelegatedIterator<T,EXTRA_DATA>::Rep::Clone': unable to match function definition to an existing declaration
-1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\delegatediterator.inl(29): note: see declaration of 'Stroika::Foundation::Traversal::DelegatedIterator<T,EXTRA_DATA>::Rep::Clone'
-1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\delegatediterator.inl(32): note: definition
-1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\delegatediterator.inl(32): note: 'Iterator<T,std::iterator<std::forward_iterator_tag,T,ptrdiff_t,_Ty*,_Ty&>>::SharedIRepPtr Stroika::Foundation::Traversal::DelegatedIterator<T,EXTRA_DATA>::Rep::Clone(void) const'
-1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\delegatediterator.inl(32): note: existing declarations
-1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\delegatediterator.inl(32): note: 'std::shared_ptr<SHARED_T> Stroika::Foundation::Traversal::DelegatedIterator<T,EXTRA_DATA>::Rep::Clone(void) const'
-*/
-#ifndef qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy
-
-#if defined(_MSC_VER)
-// still broken in _MS_VS_2k17_15Pt1_
-// still broken in _MS_VS_2k17_15Pt3Pt2_
-// still broken in _MS_VS_2k17_15Pt5Pt0_
-// Assume broken in _MS_VS_2k17_15Pt5Pt2_
-// Assume broken in _MS_VS_2k17_15Pt5Pt3_
-// Assume broken in _MS_VS_2k17_15Pt5Pt5_
-// still broken in _MS_VS_2k17_15Pt6Pt0_
-// verfiied fixed with _MS_VS_2k17_15Pt7Pt1_
-#define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy (_MSC_FULL_VER <= _MS_VS_2k17_15Pt6Pt0_)
-#else
-#define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy 0
-#endif
-
-#endif
-
 #ifndef qCompilerAndStdLib_TemplateEqualsCompareOverload_Buggy
 
 #if defined(_MSC_VER)
@@ -1687,7 +1629,7 @@ NOTE:
 // verified still broken in _MSC_VER_2k19_16Pt0_ (.0 preview 1)
 // verified still broken in _MS_VS_2k19_16Pt0Pt0pre2_
 // verified FIXED in _MS_VS_2k19_16Pt0Pt0pre3_
-#define qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy (_MS_VS_2k17_15Pt7Pt1_ <= _MSC_FULL_VER && _MSC_FULL_VER <= _MS_VS_2k19_16Pt0Pt0pre2_)
+#define qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy (_MSC_FULL_VER <= _MS_VS_2k19_16Pt0Pt0pre2_)
 #else
 #define qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy 0
 #endif

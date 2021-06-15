@@ -19,13 +19,11 @@ namespace Stroika::Foundation::Traversal {
         , fExtraData (extraData)
     {
     }
-#if !qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy
     template <typename T, typename EXTRA_DATA>
     typename Iterator<T>::RepSmartPtr DelegatedIterator<T, EXTRA_DATA>::Rep::Clone () const
     {
         return RepSmartPtr (Iterator<T>::template MakeSmartPtr<Rep> (*this));
     }
-#endif
     template <typename T, typename EXTRA_DATA>
     IteratorOwnerID DelegatedIterator<T, EXTRA_DATA>::Rep::GetOwner () const
     {
