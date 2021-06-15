@@ -18,9 +18,11 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Early</a>
  *
  *  TODO
- *      @todo   NOTE - this 'scehma appropach of picking out important attributes and rolling rest into a
+ *      @todo   NOTE - this 'schema appropach of picking out important attributes and rolling rest into a
  *              BLOB might be used to turn a keystore DB into a JSON Document DB (not completely but a big
  *              step).
+ * 
+ *      @todo redo in light of JSON1 extension to sqlite
  */
 
 namespace Stroika::Foundation::Database::ORM {

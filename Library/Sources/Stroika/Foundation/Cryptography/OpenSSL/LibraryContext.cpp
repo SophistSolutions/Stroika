@@ -81,7 +81,9 @@ namespace {
  ******************* Cryptography::OpenSSL::LibraryContext **********************
  ********************************************************************************
  */
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
 LibraryContext LibraryContext::sDefault;
+#endif
 
 LibraryContext::LibraryContext ()
     : pAvailableCipherAlgorithms{

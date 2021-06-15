@@ -110,6 +110,9 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         Containers::Mapping<String, pair<::OSSL_PROVIDER*, unsigned int>> fLoadedProviders_;
 #endif
     };
+#if !qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
+    inline LibraryContext LibraryContext::sDefault;
+#endif
 
 }
 

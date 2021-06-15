@@ -1154,6 +1154,10 @@ STILL:
 #endif
 
 // You get double delete/shared_ptr failure on Test43 - IO:Transfer::Cache regression test
+// Issue is that static inline not implemented properly in vs2k17 and generates multiple definitions.
+// So you must add INGOREDUPDEFS linker flag, and then you get multiple construction (mostly harmless)
+// followed by multiple destructions (very harmful) - and this error. So must avoid static inline for anything
+// with a DTOR.
 #ifndef qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
 #if defined(_MSC_VER)
 // first broken in in _MS_VS_2k17_15Pt9Pt7_
