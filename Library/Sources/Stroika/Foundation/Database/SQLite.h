@@ -72,6 +72,11 @@ namespace Stroika::Foundation::Database::SQLite {
         uint8_t THREADSAFE;
 
         /**
+         *  SQLITE_ENABLE_JSON1 = true (for now required)
+         */
+        bool ENABLE_JSON1;
+
+        /**
          *  Defined constexpr
          */
         static const CompiledOptions kThe;

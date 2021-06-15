@@ -148,6 +148,8 @@ endif
 #
 
 CFLAGS	+= -DSQLITE_OMIT_LOAD_EXTENSION
+# Important - soon to be used in Stroika (at least experimentally) - https://www.sqlite.org/json1.html
+CFLAGS	+= -DSQLITE_ENABLE_JSON1
 
 ifeq (1,$(ENABLE_ASSERTIONS))
 CFLAGS	+= -DSQLITE_ENABLE_API_ARMOR
