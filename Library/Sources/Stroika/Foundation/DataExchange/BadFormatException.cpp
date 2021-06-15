@@ -75,18 +75,11 @@ const DataExchange::BadFormatException DataExchange::BadFormatException::kThe;
 
 DataExchange::BadFormatException::BadFormatException ()
     : inherited{mkMessage_ ()}
-    , fLineNumber_{}
-    , fColumnNumber_{}
-    , fFileOffset_{}
-    , fDetails_{}
 {
 }
 
 DataExchange::BadFormatException::BadFormatException (const String& details)
     : inherited{mkMessage_ (details)}
-    , fLineNumber_{}
-    , fColumnNumber_{}
-    , fFileOffset_{}
     , fDetails_{details}
 {
 }
