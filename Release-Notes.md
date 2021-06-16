@@ -27,8 +27,12 @@ especially those they need to be aware of when upgrading.
     - tweak bug defines for g++ - 10.3 (and GLIBCXX*10x* and bug define comments), fixed qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy define for clang++12, qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy already broken in clang12, <https://stroika.atlassian.net/browse/STK-601> broken for clang++12 too
     - new compiler bug workaround qCompilerAndStdLib_enum_with_bitLength_opequals_Buggy; and updates for gcc-11 bug defines
   - deprecated use of Ubuntu2010 and insetad use Ubuntu2104
+  - tweak basic-unix-test-configurations*valgrind_configs* so uses valgrind on latest / default compiler, not specificialy g++-8 (excpet on ububtu 1804 where that selection needed)
+  - qCompiler_HasNoMisleadingIndentation_Flag bug define for SQLITE
+  - new bug defines qCompilerAndStdLib_relaxedEnumClassInitializationRules_Buggy, qCompilerAndStdLib_default_constructor_initialization_issueWithExplicit_Buggy
 - Documentation
   - top level readme docs big improvement (especailly introduction)
+  - readme on docker containers improvements
 - Foundation Library
   - Common
     - new ConstantProperty\<> template replaces old **deprecated** VirtualConstant\<>, and lots of cleanups/improvements in the newly named class.
@@ -57,6 +61,10 @@ especially those they need to be aware of when upgrading.
       - Debug::AssertExternallySynchronizedLock
     - (DRAFT) ORM module (not really but functionally similar)
     - improved error reporting and automation tests
+    - ENABLE_JSON1 flag for SQLITE and begin exploring use of the extension
+  - DataExchange
+    - New method: VariantValue::ConvertTo
+    - CTOR for StructFieldMetaInfo (using new Memory::OffsetOf), and change Stroika_Foundation_DataExchange_StructFieldMetaInfo() - to not use offsetof() - with **Stroika_Foundation_DataExchange_StructFieldMetaInfo now deprecated**
   - Execution
     - WaitableEvent::Wait overload
   - IO::Network
@@ -65,6 +73,7 @@ especially those they need to be aware of when upgrading.
   - Memory
     - Memory::AccumulateIf () - more overloads/docs; and in Memory namespace: optional operator+-\*/ functions CHANGED SEMANTICS INCOMPATIBLY (**apichange**) - now if ither lhs or rhs is nullopt, returns nullopt
     - **not backward compatible** reversed args for Memory::CopyToIf() - now assign right to left, so destinition always required and first argument (address of arg)
+    - Memory::OffsetOf() (to replace std c++ macro offsetof())
   - Traversal
     - Added a few static_asserts () to Iterator\<T> and Iterable\<T> to make clearer error messages
     - Added Iterable\<T>::operator bool ()
@@ -114,7 +123,7 @@ especially those they need to be aware of when upgrading.
 - Compilers Tested/Supported
   - g++ { 8, 9, 10, 11 }
   - Clang++ { unix: 7, 8, 9, 10, 11, 12; XCode: 12 }
-  - MSVC: { 15.9.34, 16.9.3 }
+  - MSVC: { 15.9.34, 16.10.2 }
 - OS/Platforms Tested/Supported
   - Windows
     - version 21H1
@@ -137,104 +146,6 @@ especially those they need to be aware of when upgrading.
   - badssl.com site failed on raspberripi (havent investigated but seems minor)
 
 #if 0
-
-    tweak basic-unix-test-configurations_valgrind_configs_ so uses valgrind on latest / default compiler, not specificialy g++8 (excpet on ububtu 1804 where that selection needed)
-
-commit 69990325c4d5ae2f473683ddc5b109db32b63145
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed May 19 20:57:52 2021 +0100
-
-    use 16.9.6 from docker windows
-
-commit 08bac75ef9dd147976dc6c8c486c50c8524eb5df
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 24 15:57:00 2021 +0100
-
-    define and use flag (qCompiler_HasNoMisleadingIndentation_Flag) for sqlite warning issue
-
-commit 53da05a8e216df4cf9db62a3b8c36add006ed79e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 24 16:56:33 2021 +0100
-
-    readme on docker containers
-
-commit 6c834755032a3913a3488cee6be1e46d09aa8d77
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 25 09:48:21 2021 -0400
-
-    New methods: VariantValue::IsConvertibleTo and CheckConvertible
-
-commit cfd35089c3f2e915995828aad46def9f8e69fa3e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue May 25 09:48:59 2021 -0400
-
-    qCompilerAndStdLib_relaxedEnumClassInitializationRules_Buggy
-
-commit 22b40bf622921b5fbe6be9c5c79c3ba026d217ad
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date: Tue May 25 10:26:15 2021 -0400
-
-    fixes to qCompiler_HasNoMisleadingIndentation_Flag usage
-
-commit b617009cba067b15ec5d1605c17fbc56dc3eb014
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date: Tue May 25 10:51:28 2021 -0400
-
-    fixed bug defines for GLIBCXX_11x_
-
-commit 4f6d435a59798cbc9ef133dcd2ea6a49447d3ecb
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu May 27 15:00:23 2021 +0100
-
-    Replaced new (unreleased) VariantValue::CheckConveritbleTo with ConvertTo (returning value)
-
-commit 3a7bf898b6433b2a85317d797641e7f896b0b844
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu May 27 15:01:17 2021 +0100
-
-    More progress on Database ORM code (and test case/sample)
-
-commit 84051c58ad509d4f7394211d19a4815f7d9fb798
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu May 27 16:28:25 2021 +0100
-
-    Draft of Memory::OffsetOf() (to replace std c++ macro offsetof())
-
-commit 2e40a56d69f792f07745db03e7d9423d0f1da6e0
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu May 27 19:11:29 2021 +0100
-
-    new experimental CTOR for StructFieldMetaInfo, and change Stroika_Foundation_DataExchange_StructFieldMetaInfo() - experiemntally - to not use offsetof()
-
-commit a7ccd4eb45a27ce39255285903d6ad2003920ab7
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu May 27 22:17:35 2021 +0100
-
-    qCompilerAndStdLib_OffsetOf_Constexpr_Buggy reaction and bug define and improved regtests for OffsetOf()
-
-commit 565bd335490ee5f5accf050fb9bebdb71822f8d5
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu May 27 22:45:11 2021 +0100
-
-    qCompilerAndStdLib_OffsetOf_Constexpr_Buggy broken for clang too
-
-commit a4108445c57749e70621ffe1afd18c4033a7e7bd
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri May 28 03:20:33 2021 +0100
-
-    deprecated Stroika_Foundation_DataExchange_StructFieldMetaInfo; switcehd to using StructFieldMetaInfo directly; and lose many of the program suppression warnings needed for offsetof
-
-commit 980d71cca80df273fb82bbeb4318e86eaac85708
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri May 28 15:20:44 2021 +0100
-
-    cosmetic and more replacing Stroika_Foundation_DataExchange_StructFieldMetaInfo with StructFieldMetaInfo
-
-commit 7cb8f485cc5bb489d738a3a80195036fd7f580fa
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri May 28 15:39:49 2021 +0100
-
-    workaround for new compiler issue qCompilerAndStdLib_default_constructor_initialization_issueWithExplicit_Buggy
 
 commit 498278f1db620e2ed249979439276d1011bcd878
 Author: Lewis Pringle <lewis@sophists.com>
@@ -265,18 +176,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date: Sun May 30 18:24:05 2021 +0100
 
     deprecated Iterable::First/Last/1 overloads and replaced with a slightly better definition (templated)
-
-commit 44ab86a8602e0b7355c4dd416e3b3f0c73e348a7
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 30 18:24:30 2021 +0100
-
-    fix missing dependnecy on new SQLIte sample
-
-commit c55fd4e58e46078b4f63c2cc757b60124d0c9620
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 30 18:25:08 2021 +0100
-
-    more clenaups of SQLite sample/ORM code
 
 commit 72c3542521432247d6381baf512f5f5634c9cc01
 Author: Lewis Pringle <lewis@sophists.com>
@@ -313,24 +212,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date: Tue Jun 1 14:58:54 2021 +0100
 
     ORM::Schema::CatchAllField::GetEffectiveRawToCombined etc
-
-commit a73fa3950fd0c8bee77bb52b5564a1009b3e1078
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jun 1 15:02:51 2021 +0100
-
-    fixed regression in recent change to Iterable<>::Last()
-
-commit 8b2b9b0c76107e91d5582a849876f40916d01484
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jun 2 01:25:10 2021 +0100
-
-    Support VisualStudio.Net 2k19 16.10.0 (and upped docker env to use that compiler)
-
-commit 715aff938371d421316463cf5159b13683f1e8b1
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jun 2 01:26:56 2021 +0100
-
-    fixed vs2k19 SLN file for Tests (project dependencies)
 
 commit 78b9248c6ddee837db47e57b87ddc99ba89f6743
 Author: Lewis Pringle <lewis@sophists.com>
@@ -386,12 +267,6 @@ Date: Thu Jun 3 14:59:17 2021 +0100
 
     Commetns on https://developercommunity.visualstudio.com/t/please-re-open-httpsdevelopercommunityvisualstudio/1440675 bug workaround
 
-commit 5aec1d8ed3d170b297026ff61c1c0ca08cd0a324
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jun 3 15:03:19 2021 +0100
-
-    workspace ignore warnings flags
-
 commit 467aaf7cfd5873dd1d31dd31dbc10e4987805c59
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Fri Jun 4 00:48:24 2021 +0100
@@ -410,59 +285,17 @@ Date: Fri Jun 4 10:07:55 2021 -0400
 
     qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy bug define/workaround (vs2k17)
 
-commit f0b7bc8c2493c745fec27b50562a8db577ae4011
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 4 10:08:56 2021 -0400
-
-    fixed typo in vs2k17 bug workaorund
-
-commit ad76f371c243117dceba131b196757129469e763
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 4 10:10:10 2021 -0400
-
-    .vscode
-
 commit 352a9bada7086afbd1a3690848960fe5eba08c32
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Fri Jun 4 10:21:43 2021 -0400
 
     qCompilerAndStdLib_constexpr_call_constexpr_sometimes_internalError_Buggy vs2k17 BWA
 
-commit 7c0a97782b5b73beff4ca17c7d2e92de31c3c200
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 4 15:26:47 2021 +0100
-
-    cosmetic
-
 commit 1b4d135f58a01be428e197340025c9296e36431e
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Fri Jun 4 15:28:23 2021 +0100
 
     another qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy bwa
-
-commit 8324eb124277059cebbee3d9751911a1a0a247b4
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 4 10:48:14 2021 -0400
-
-    some fixes to operator compare code in Led framework for VS2k17
-
-commit 10d41b350c8d3ae741052684ef7a96e7c44abc15
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 4 17:59:11 2021 -0400
-
-    various cleanups to Led Framework GDI code
-
-commit 073f0b08762e175685bc01295e5a7fb75810f407
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 4 17:59:40 2021 -0400
-
-    make format-code
-
-commit 70284ac6a742f4ef9bd0e2255468a57ed4679e5c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 4 23:22:51 2021 +0100
-
-    Cosmetic
 
 commit c87f267b806c3deae012b85dd504fee8cf5cc0a5
 Author: Lewis Pringle <lewis@sophists.com>
@@ -475,54 +308,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date: Fri Jun 4 19:52:16 2021 -0400
 
     bug defines qCompilerAndStdLib_usingOfEnumFailsToBringIntoScope_Buggy for vs 2k 17 compat
-
-commit 30cd4b3ecaf7c4fac361c09133f2a208f2dceb16
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jun 5 00:38:22 2021 +0100
-
-    cosmeitc
-
-commit 408fada97f786fefc141519108dd881a443db8b4
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jun 5 00:38:45 2021 +0100
-
-    cosmetic
-
-commit 91ab5189ebcf183c5705b6630f27d09432b5988a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jun 5 00:55:00 2021 +0100
-
-    vs 2k17 bug workarounds
-
-commit b291a7b4679b9c020b8f0d327cb98b8cb67397cb
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jun 5 00:59:46 2021 +0100
-
-    vs2k17
-
-commit fddeb5b70d45e08e5ff45aa191861ec8bfb55b36
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 4 20:09:42 2021 -0400
-
-    workaround vs2k17
-
-commit c0a394517168dde6008391c92804aa7afebbcf1a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jun 5 01:15:03 2021 +0100
-
-    cosmetic
-
-commit 561067e839babc06ae8f7414ac65c03e77d11143
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 4 22:16:27 2021 -0400
-
-    Led frameowrk cleanups for vsk217
-
-commit 5d16ce65b739732aa957803c694285b97307820f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jun 5 03:58:16 2021 +0100
-
-    Cosmetic
 
 commit 6708821d9c3504409ab98cea243980f2c77a6cad
 Author: Lewis Pringle <lewis@sophists.com>
@@ -584,48 +369,6 @@ Date: Sun Jun 6 17:29:57 2021 +0100
 
     COsmetic; and various other naming cleanups for Led Framework
 
-commit 7eba1e9bb1659e4cbee534930a158bf05f42e464
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jun 6 18:33:33 2021 +0100
-
-    LEd framework costmetic cleanups
-
-commit 21e3c3f9849f507ab3566d5261c469bf3c462280
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jun 6 23:56:16 2021 +0100
-
-    more naming/cleanps for Led GDI code
-
-commit 4b2163a110b5fbfd7eab35b826208c038006dbcd
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jun 6 20:43:31 2021 -0400
-
-    more Led clenaups; and a few vs2k17 workarounds
-
-commit b31a36513f008573ef6f51f7b0c5ca963be7fbd0
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jun 7 02:14:22 2021 +0100
-
-    various Led cleanups, etc; qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy workaround
-
-commit 1dfde3e3b43de055e95e16979606d6e49ff2e540
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jun 7 02:18:16 2021 +0100
-
-    small cleanups
-
-commit d160a8739a8609d15903326fce9a351f1874ba71
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jun 7 02:20:32 2021 +0100
-
-    vs2k17 bwa
-
-commit 8c12c1c0661beb59219bac651b7bca160b919675
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jun 7 02:26:37 2021 +0100
-
-    vs2k17 bwa
-
 commit ef8883c474d955d28f8937b7bfe0443932591a02
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Mon Jun 7 02:45:10 2021 +0100
@@ -638,41 +381,11 @@ Date: Mon Jun 7 03:29:06 2021 +0100
 
     qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
 
-commit 659cf9c4ddbef614e8f0f014763e964fbed26d1a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jun 6 21:46:02 2021 -0400
-
-    vs2k17 compat
-
 commit ad227061a8405f8287c36f51385963143681e4c7
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Sun Jun 6 22:31:37 2021 -0400
 
     simplify idlemantger cleanup/singleton lifetime
-
-commit 01bdb156b3ad4608b792520a1318b128171772de
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jun 7 15:20:08 2021 +0100
-
-    more Led frameowrk GDI cleanups
-
-commit 66bef35d6970f931b104db10fc53f472a9b20140
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jun 7 15:46:31 2021 +0100
-
-    more naming cleanups of Led GDI code
-
-commit 749ca11492b144812bd8f5e067598f560529868b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jun 7 21:16:23 2021 +0100
-
-    More Led Framework cleanups
-
-commit 80f23bbb708c6c710cb677ac135041320d769844
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jun 8 01:38:25 2021 +0100
-
-    Cosmetic
 
 commit 3aa3f5dff60d17396ecc85fa2d3f3d38799c902d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -698,12 +411,6 @@ Date: Wed Jun 9 14:02:20 2021 +0100
 
     more qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy workarounds
 
-commit dd7b2f89ca0bc4777ec749aebefc59ffb004e7b2
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jun 9 14:04:18 2021 +0100
-
-    cosmetic
-
 commit c8ad6ab23537dd9759ea5c904bd15693b244a72a
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Wed Jun 9 09:15:31 2021 -0400
@@ -715,12 +422,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date: Wed Jun 9 15:30:48 2021 +0100
 
     Fixed bug with InternetMediaType CTOR where it could lose proper mapping comparer; todo had to workaround stroika bug 738 with mapping class, and added jira ticket for that bug, along with regression test case
-
-commit 0216cdeb82216c7e580b9f31cbb4d8ccfa7344c5
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jun 9 15:31:12 2021 +0100
-
-    cosmetic
 
 commit 6ba8934fe5330a1d3f9ecab0efdcff7fd94aeaf6
 Author: Lewis Pringle <lewis@sophists.com>
@@ -734,29 +435,11 @@ Date: Wed Jun 9 17:32:00 2021 +0100
 
     qCompilerAndStdLib_initializer_list_sometimes_very_Buggy bug workaround vs2k17
 
-commit 1a3da6109ee2ba532ef7b3a3226263706fb59245
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jun 9 17:32:35 2021 +0100
-
-    cosmetic
-
-commit 949744af217ea282fb2bb3bc76cdff1c3ff08991
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jun 9 17:37:59 2021 +0100
-
-    cosmetic
-
 commit 5b5a9092b66fc9137202a2668515c99de256ece0
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Wed Jun 9 18:25:46 2021 +0100
 
     fixed https://stroika.atlassian.net/browse/STK-738 - bad enable_if in CTOR Mapping<> overloads
-
-commit 801363ccf64694f79baef160b0a5dc1e3fa54be6
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jun 9 18:30:18 2021 +0100
-
-    Cosmetic
 
 commit 6ce33d32573dc5b59a91bbba1bf03f2c9a7aad98
 Author: Lewis Pringle <lewis@sophists.com>
@@ -769,12 +452,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date: Thu Jun 10 12:22:03 2021 +0100
 
     just like https://stroika.atlassian.net/browse/STK-738  - also dont restruct/prevent is_base_of for other containers like Set etc - to do comparer/otherset args
-
-commit 901d7dedf8273385dbc6652bbfd3e3abfd389d4e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jun 10 12:41:11 2021 +0100
-
-    docs
 
 commit cf718a0d2bf7530a330d2f181724cc24c7bf5d22
 Author: Lewis Pringle <lewis@sophists.com>
@@ -793,12 +470,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date: Thu Jun 10 16:35:09 2021 +0100
 
     Containers cleanups: use more uniform initialization
-
-commit 81312d83ba85cef22e05e4764504c51e3409d307
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jun 10 17:09:34 2021 +0100
-
-    cosmetic clenaups
 
 commit 6b25f8ff6c8199481967da26fc9574e718912ea6
 Author: Lewis Pringle <lewis@sophists.com>
@@ -836,12 +507,6 @@ Date: Thu Jun 10 18:58:10 2021 +0100
 
     Lose qCompilerAndStdLib_uniformInitializationInsteadOfParenInit_Buggy in many places - was REGRESSION I introduced recently - documented ambugituy on subclasses of Iterable<> calling base class Iterable CTOR - be carefuly to select inherited&& CTOR - still more similar to review/test
 
-commit 5c35dc439f51e39f7aad8da77bf7e3488563c5c8
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jun 10 19:01:00 2021 +0100
-
-    cosmetic
-
 commit 25768f887108373e9f100b82617ac420f3f50051
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Thu Jun 10 22:43:52 2021 +0100
@@ -865,18 +530,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date: Fri Jun 11 01:38:48 2021 +0100
 
     Lose (never rleeased) qCompilerAndStdLib_uniformInitializationInsteadOfParenInit_Buggy bug define - not needed anymore - was really the initializer_list isue
-
-commit 9b73bc9c0236f860f625f3b0b8c71cba13d4eb45
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 11 01:46:45 2021 +0100
-
-    fixed typo
-
-commit d29df4a95e3beb3b453476b787a7dce5277a2352
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 11 01:47:26 2021 +0100
-
-    react to VariantValue change - some CTORs explicit
 
 commit 027364c8edeee034a87982afaeb0485631af8744
 Author: Lewis Pringle <lewis@sophists.com>
@@ -950,36 +603,6 @@ Date: Fri Jun 11 15:34:27 2021 +0100
 
     and in regressiontest script - print xcode install path
 
-commit 4da0c3e8e3351347e05bf6d5b1f7c1f3f10a123a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 11 15:39:55 2021 +0100
-
-    fixed typo in recent checkin
-
-commit 1a9685fd1e65f9e27986c33bf74ff0fd209b86f1
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jun 12 02:15:09 2021 +0100
-
-    Cosmetic cleanups
-
-commit d3e1f6e02e81a04dc77ab1c381591e7ce3bd6997
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jun 12 02:20:47 2021 +0100
-
-    Cleanup logging (tracelog) in /SystemPerformance/Instruments/Process WINDOWS permsission code
-
-commit b3a8040a1c5afa6220c86386addfac7af77a0602
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jun 12 02:22:24 2021 +0100
-
-    fixed typo in last checkin
-
-commit 7c0aea85698dab9c6117d2d280f025904d402df3
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jun 12 02:22:32 2021 +0100
-
-    cosemtic
-
 commit 8b78a46e9c7a7c01bb45fd160ce0ddc8f145901f
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Fri Jun 11 21:30:29 2021 -0400
@@ -1019,8 +642,6 @@ Date: Tue Jun 15 14:10:51 2021 +0100
 commit 1377e328c395757da34fcd8d157a84052598d661
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Tue Jun 15 14:31:55 2021 +0100
-
-    ENABLE_JSON1 flag for SQLITE
 
 #endif
 
