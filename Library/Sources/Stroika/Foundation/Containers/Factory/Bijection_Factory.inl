@@ -20,7 +20,7 @@ namespace Stroika::Foundation::Containers::Factory {
      * Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER> *
      ********************************************************************************
      */
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER>
     atomic<Bijection<DOMAIN_TYPE, RANGE_TYPE> (*) (Bijection_Base::InjectivityViolationPolicy, const DOMAIN_EQUALS_COMPARER&, const RANGE_EQUALS_COMPARER&)> Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>::sFactory_ (nullptr);
 #endif

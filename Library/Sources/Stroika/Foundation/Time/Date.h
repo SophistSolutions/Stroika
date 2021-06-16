@@ -532,7 +532,7 @@ namespace Stroika::Foundation::Time {
          */
         static const FormatException kThe;
     };
-#if !qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if !qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     inline const Date::FormatException       Date::FormatException::kThe;
     inline const Traversal::Iterable<String> Date::kDefaultParseFormats{
         kLocaleStandardFormat,          // x (kLocaleStandardFormat) parses the locale's standard date representation

@@ -102,7 +102,7 @@ TimeOfDay::FormatException::FormatException ()
  *********************************** TimeOfDay **********************************
  ********************************************************************************
  */
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
 const TimeOfDay::FormatException TimeOfDay::FormatException::kThe;
 
 //%t        Any white space.

@@ -33,7 +33,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T, typename... INDEXES>
     class DenseDataHyperRectangle_Factory {
     private:
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
         static atomic<DenseDataHyperRectangle<T, INDEXES...> (*) (INDEXES...)> sFactory_;
 #else
         static inline atomic<DenseDataHyperRectangle<T, INDEXES...> (*) (INDEXES...)> sFactory_{nullptr};

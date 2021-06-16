@@ -19,6 +19,6 @@ EOFException::EOFException (bool partialReadCompleted)
     , fPartialReadCompleted_{partialReadCompleted}
 {
 }
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
 const EOFException EOFException::kThe;
 #endif

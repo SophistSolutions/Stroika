@@ -29,7 +29,7 @@ namespace {
  ********************** Characters::RegularExpression ***************************
  ********************************************************************************
  */
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
 const RegularExpression RegularExpression::kNONE{L"(?!)"sv};
 const RegularExpression RegularExpression::kAny{L".*"sv};
 #endif

@@ -288,7 +288,7 @@ namespace Stroika::Foundation::Time {
         static const FormatException kThe;
     };
 
-#if !qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if !qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     inline const TimeOfDay::FormatException TimeOfDay::FormatException::kThe;
 
     //%t        Any white space.

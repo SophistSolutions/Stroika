@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Execution {
      **************** ConditionVariable<MUTEX, CONDITION_VARIABLE> ******************
      ********************************************************************************
      */
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     template <typename MUTEX, typename CONDITION_VARIABLE>
     Time::DurationSecondsType ConditionVariable<MUTEX, CONDITION_VARIABLE>::sThreadAbortCheckFrequency_Default{2.5};
 #endif

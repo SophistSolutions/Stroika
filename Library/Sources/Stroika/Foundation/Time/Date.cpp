@@ -62,7 +62,7 @@ Date::FormatException::FormatException ()
  *********************************** Date ***************************************
  ********************************************************************************
  */
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
 const Date::FormatException       Date::FormatException::kThe;
 const Traversal::Iterable<String> Date::kDefaultParseFormats{
     kLocaleStandardFormat,          // x (kLocaleStandardFormat) parses the locale's standard date representation

@@ -85,7 +85,7 @@ namespace Stroika::Frameworks::Led {
     TWIPS operator+ (const TWIPS& lhs, const TWIPS& rhs);
     TWIPS operator- (const TWIPS& lhs, const TWIPS& rhs);
 
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     constexpr TWIPS TWIPS::kPoint   = TWIPS{20}; // a printers 'point' (1/72 of an inch)
     constexpr TWIPS TWIPS::kInch    = TWIPS{1440};
     constexpr TWIPS TWIPS::kOneInch = TWIPS{1440};

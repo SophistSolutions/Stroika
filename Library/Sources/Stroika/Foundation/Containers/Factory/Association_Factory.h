@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Containers {
         template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
         class Association_Factory {
         private:
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
             static atomic<Association<KEY_TYPE, VALUE_TYPE> (*) ()> sFactory_;
 #else
             static inline atomic<Association<KEY_TYPE, VALUE_TYPE> (*) ()> sFactory_{nullptr};
@@ -67,7 +67,7 @@ namespace Stroika::Foundation::Containers {
         template <typename KEY_TYPE, typename VALUE_TYPE>
         class Association_Factory<KEY_TYPE, VALUE_TYPE, false_type> {
         private:
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
             static atomic<Association<KEY_TYPE, VALUE_TYPE> (*) ()> sFactory_;
 #else
             static inline atomic<Association<KEY_TYPE, VALUE_TYPE> (*) ()> sFactory_{nullptr};

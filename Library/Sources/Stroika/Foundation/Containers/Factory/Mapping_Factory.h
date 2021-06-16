@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = void>
     class Mapping_Factory {
     private:
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
         static atomic<Mapping<KEY_TYPE, VALUE_TYPE> (*) (const KEY_EQUALS_COMPARER&)> sFactory_;
 #else
         static inline atomic<Mapping<KEY_TYPE, VALUE_TYPE> (*) (const KEY_EQUALS_COMPARER&)> sFactory_{nullptr};
@@ -76,10 +76,10 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename KEY_TYPE, typename VALUE_TYPE>
     class Mapping_Factory<KEY_TYPE, VALUE_TYPE, void> {
     private:
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
         static atomic<Mapping<KEY_TYPE, VALUE_TYPE> (*) ()> sFactory_;
 #else
-        static inline atomic<Mapping<KEY_TYPE, VALUE_TYPE> (*) ()> sFactory_{nullptr};
+        static inline atomic<Mapping<KEY_TYPE, VALUE_TYPE> (*) ()>                           sFactory_{nullptr};
 #endif
 
     public:

@@ -134,9 +134,9 @@ namespace Stroika::Foundation::Execution {
         nonvirtual strong_ordering operator<=> (const SignalHandler& rhs) const = default;
 #else
     public:
-        nonvirtual bool operator== (const SignalHandler& rhs) const;
-        nonvirtual bool operator!= (const SignalHandler& rhs) const;
-        nonvirtual bool operator< (const SignalHandler& rhs) const;
+        nonvirtual bool         operator== (const SignalHandler& rhs) const;
+        nonvirtual bool         operator!= (const SignalHandler& rhs) const;
+        nonvirtual bool         operator< (const SignalHandler& rhs) const;
 #endif
 
     private:
@@ -340,13 +340,13 @@ namespace Stroika::Foundation::Execution {
     private:
         class Rep_;
 #if __cpp_lib_atomic_shared_ptr >= 201711
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
         static atomic<shared_ptr<Rep_>> sTheRep_;
 #else
         static inline atomic<shared_ptr<Rep_>> sTheRep_{nullptr};
 #endif
 #else
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
         static shared_ptr<Rep_> sTheRep_;
 #else
         static inline shared_ptr<Rep_> sTheRep_{nullptr};

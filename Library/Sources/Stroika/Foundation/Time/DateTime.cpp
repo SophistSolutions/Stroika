@@ -160,7 +160,7 @@ DateTime::FormatException::FormatException ()
     : RuntimeErrorException<>{L"Invalid DateTime Format"sv}
 {
 }
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
 const DateTime::FormatException DateTime::FormatException::kThe;
 #endif
 
@@ -169,7 +169,7 @@ const DateTime::FormatException DateTime::FormatException::kThe;
  *********************************** DateTime ***********************************
  ********************************************************************************
  */
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
 const Traversal::Iterable<String> DateTime::kDefaultParseFormats{
     kLocaleStandardFormat,
     kLocaleStandardAlternateFormat,
@@ -216,7 +216,7 @@ DateTime::DateTime (const ::timespec& tmTime, const optional<Timezone>& tz) noex
     if (errno_t e = ::gmtime_s (&tmTimeDataBuf, &unixTime)) {
         ThrowPOSIXErrNo (e);
     };
-    ::tm* tmTimeData = &tmTimeDataBuf;
+    ::tm*        tmTimeData = &tmTimeDataBuf;
 #else
     ::tm* tmTimeData = ::gmtime (&unixTime); // not threadsafe
 #endif

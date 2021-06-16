@@ -824,7 +824,7 @@ namespace Stroika::Foundation::Execution {
              */
             static const InterruptException kThe;
         };
-#if !qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if !qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
         inline const InterruptException InterruptException::kThe;
 #endif
 
@@ -845,7 +845,7 @@ namespace Stroika::Foundation::Execution {
              */
             static const AbortException kThe;
         };
-#if !qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if !qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
         inline const AbortException AbortException::kThe;
 #endif
 

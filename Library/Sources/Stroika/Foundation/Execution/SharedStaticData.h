@@ -104,7 +104,7 @@ namespace Stroika::Foundation::Execution {
 
     private:
         // nb. use mutex instead of atomic<> because must lock sOnceObj_ at same time (block subsequent callers while constructing)
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
         static conditional_t<kSpinLock_IsFasterThan_mutex, SpinLock, mutex> sMutex_;
         static unsigned int                                                 sCountUses_;
         static T*                                                           sOnceObj_;

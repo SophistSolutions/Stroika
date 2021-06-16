@@ -20,7 +20,7 @@ namespace Stroika::Foundation::Containers::Factory {
      ********************* SortedMultiSet_Factory<T, TRAITS> ************************
      ********************************************************************************
      */
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     template <typename T, typename TRAITS, typename INORDER_COMPARER>
     atomic<SortedMultiSet<T, TRAITS> (*) (const INORDER_COMPARER&)> SortedMultiSet_Factory<T, TRAITS, INORDER_COMPARER>::sFactory_ (nullptr);
 #endif

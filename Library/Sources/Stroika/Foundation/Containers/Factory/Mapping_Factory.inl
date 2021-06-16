@@ -21,7 +21,7 @@ namespace Stroika::Foundation::Containers::Factory {
      ****** Mapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER> **************
      ********************************************************************************
      */
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
     atomic<Mapping<KEY_TYPE, VALUE_TYPE> (*) (const KEY_EQUALS_COMPARER&)> Mapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::sFactory_ (nullptr);
 #endif
@@ -66,7 +66,7 @@ namespace Stroika::Foundation::Containers::Factory {
         return Concrete::Mapping_LinkedList<KEY_TYPE, VALUE_TYPE> (keyEqualsComparer);
     }
 
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     template <typename KEY_TYPE, typename VALUE_TYPE>
     atomic<Mapping<KEY_TYPE, VALUE_TYPE> (*) ()> Mapping_Factory<KEY_TYPE, VALUE_TYPE, void>::sFactory_ (nullptr);
 #endif

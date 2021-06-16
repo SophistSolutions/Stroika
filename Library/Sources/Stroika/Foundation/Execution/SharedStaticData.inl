@@ -24,7 +24,7 @@ namespace Stroika::Foundation::Execution {
      ******************************** SharedStaticData<T> ***************************
      ********************************************************************************
      */
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     template <typename T>
     T* SharedStaticData<T>::sOnceObj_;
 

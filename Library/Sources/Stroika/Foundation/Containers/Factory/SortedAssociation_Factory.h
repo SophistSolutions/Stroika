@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = false_type>
     class SortedAssociation_Factory {
     private:
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
         static atomic<SortedAssociation<KEY_TYPE, VALUE_TYPE> (*) ()> sFactory_;
 #else
         static inline atomic<SortedAssociation<KEY_TYPE, VALUE_TYPE> (*) ()> sFactory_{nullptr};

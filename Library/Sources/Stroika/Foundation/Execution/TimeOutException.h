@@ -69,7 +69,7 @@ namespace Stroika::Foundation::Execution {
          */
         static const TimeOutException kThe;
     };
-#if !qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if !qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     inline const TimeOutException TimeOutException::kThe;
 #endif
 

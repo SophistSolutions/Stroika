@@ -161,7 +161,7 @@ namespace Stroika::Frameworks::WebServer {
 
             static constexpr unsigned int      kDefault_MaxConnections{25};
             static constexpr Socket::BindFlags kDefault_BindFlags{};
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
             static const Headers                               kDefault_Headers;
             static const Common::ConstantProperty<CORSOptions> kDefault_CORS;
 #else

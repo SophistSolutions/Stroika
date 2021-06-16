@@ -37,7 +37,7 @@ Duration::FormatException::FormatException ()
     : inherited{L"Invalid Duration Format"sv}
 {
 }
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
 const Duration::FormatException Duration::FormatException::kThe;
 #endif
 
@@ -634,7 +634,7 @@ namespace Stroika::Foundation::Math {
     }
 }
 
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
 /*
  ********************************************************************************
  ************************** Traversal::RangeTraits::Default *********************

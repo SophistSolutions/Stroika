@@ -69,7 +69,7 @@ namespace {
         return msg;
     }
 }
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
 const DataExchange::BadFormatException DataExchange::BadFormatException::kThe;
 #endif
 

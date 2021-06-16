@@ -316,7 +316,7 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
      ****************************** RangeTraits::Default ****************************
      ********************************************************************************
      */
-#if !qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if !qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     inline const Time::Duration Default<Time::Duration>::kLowerBound = Time::Duration::min ();
     inline const Time::Duration Default<Time::Duration>::kUpperBound = Time::Duration::max ();
 #endif

@@ -265,7 +265,7 @@ DISABLE_COMPILER_MSC_WARNING_END (4351)
  *********** Execution::SignalHandlerRegistry::SafeSignalsManager ***************
  ********************************************************************************
  */
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
 shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> SignalHandlerRegistry::SafeSignalsManager::sTheRep_;
 #endif
 
@@ -323,7 +323,7 @@ SignalHandlerRegistry::~SignalHandlerRegistry ()
 #if __cpp_lib_atomic_shared_ptr >= 201711
     Assert (SafeSignalsManager::sTheRep_.load () == nullptr); // must be cleared first
 #else
-    Assert (atomic_load (&SafeSignalsManager::sTheRep_) == nullptr); // must be cleared first
+    Assert (atomic_load (&SafeSignalsManager::sTheRep_) == nullptr);                         // must be cleared first
 #endif
 }
 

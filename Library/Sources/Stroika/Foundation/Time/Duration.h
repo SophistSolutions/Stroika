@@ -412,7 +412,7 @@ namespace Stroika::Foundation::Time {
     public:
         static const FormatException kThe;
     };
-#if !qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if !qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     inline const Duration::FormatException Duration::FormatException::kThe;
 #endif
 

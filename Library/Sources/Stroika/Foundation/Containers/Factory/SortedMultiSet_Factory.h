@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T, typename TRAITS, typename INORDER_COMPARER>
     class SortedMultiSet_Factory {
     private:
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
         static atomic<SortedMultiSet<T, TRAITS> (*) (const INORDER_COMPARER&)> sFactory_;
 #else
         static inline atomic<SortedMultiSet<T, TRAITS> (*) (const INORDER_COMPARER&)> sFactory_{nullptr};

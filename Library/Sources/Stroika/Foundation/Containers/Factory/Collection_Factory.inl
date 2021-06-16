@@ -20,7 +20,7 @@ namespace Stroika::Foundation::Containers::Factory {
      ****************************** Collection_Factory<T> ***************************
      ********************************************************************************
      */
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     template <typename T>
     atomic<Collection<T> (*) ()> Collection_Factory<T>::sFactory_ (nullptr);
 #endif

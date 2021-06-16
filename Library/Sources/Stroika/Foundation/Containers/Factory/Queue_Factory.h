@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T>
     class Queue_Factory {
     private:
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
         static atomic<Queue<T> (*) ()> sFactory_;
 #else
         static inline atomic<Queue<T> (*) ()> sFactory_{nullptr};

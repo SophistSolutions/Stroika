@@ -97,7 +97,7 @@ namespace Stroika::Foundation::Characters {
     private:
         wregex fCompiledRegExp_;
     };
-#if !qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if !qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     inline const RegularExpression RegularExpression::kNONE{L"(?!)"sv};
     inline const RegularExpression RegularExpression::kAny{L".*"sv};
 #endif

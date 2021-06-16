@@ -61,7 +61,7 @@ namespace {
  ******************* WebServer::ConnectionManager::Options **********************
  ********************************************************************************
  */
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
 const Headers                               ConnectionManager::Options::kDefault_Headers{Iterable<KeyValuePair<String, String>>{{IO::Network::HTTP::HeaderName::kServer, L"Stroika/2.1"sv}}};
 const Common::ConstantProperty<CORSOptions> ConnectionManager::Options::kDefault_CORS{[] () { return kDefault_CORSOptions; }};
 #endif
@@ -380,7 +380,7 @@ void ConnectionManager::RemoveInterceptor (const Interceptor& i)
     FixupInterceptorChain_ ();
 }
 
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
 namespace Stroika::Frameworks::WebServer {
     const CORSOptions kDefault_CORSOptions{CORSOptions::kAllowCredentials_Default, CORSOptions::kAccessControlMaxAge_Default, Set<String>{CORSOptions::kAccessControlWildcard}, Set<String>{CORSOptions::kAccessControlWildcard}};
 }

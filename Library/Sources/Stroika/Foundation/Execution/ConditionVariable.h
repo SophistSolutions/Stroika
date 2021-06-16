@@ -106,7 +106,7 @@ namespace Stroika::Foundation::Execution {
          *  for aborts. This 'feature' allows us to periodically check. You don't want to check too often, or you
          *  effecitvely busy wait, and this checking is ONLY needed for the special, rare case of thread abort.
          */
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
         static Time::DurationSecondsType sThreadAbortCheckFrequency_Default;
 #else
         static inline Time::DurationSecondsType sThreadAbortCheckFrequency_Default{2.5};

@@ -998,6 +998,7 @@ Date: Tue Jun 15 01:06:23 2021 +0100
 
     lose no longer needed bug define qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy (for vs2k17 but not referenced anymore)
     (((WRONG - UNDID!!!!) - REVERTED THIS COMMIT))
+    (((REDIDD - REPLACED IT WITH qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy)))
 
 commit 2aee6dfe1d43c20c776ccc45ef21a17450681da9
 Author: Lewis Pringle <lewis@sophists.com>

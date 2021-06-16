@@ -105,7 +105,7 @@ String MessageUtilities_en::MakeNounSingular (const String& s) const
  ************************** MessageUtiltiesManager ******************************
  ********************************************************************************
  */
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
 Execution::Synchronized<shared_ptr<const MessageUtiltiesManager>> MessageUtiltiesManager::sTheMessageUtiltiesManager_;
 #endif
 shared_ptr<const MessageUtilities> MessageUtiltiesManager::LookupHandler (const locale& l) const

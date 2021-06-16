@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T, typename INORDER_COMPARER = less<T>>
     class SortedSet_Factory {
     private:
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
         static atomic<SortedSet<T> (*) (const INORDER_COMPARER&)> sFactory_;
 #else
         static inline atomic<SortedSet<T> (*) (const INORDER_COMPARER&)> sFactory_{nullptr};

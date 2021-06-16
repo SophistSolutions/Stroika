@@ -576,7 +576,7 @@ namespace Stroika::Foundation::Time {
          */
         static const FormatException kThe;
     };
-#if !qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if !qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     inline const DateTime::FormatException DateTime::FormatException::kThe;
 #endif
 
@@ -593,7 +593,7 @@ namespace Stroika::Foundation::Time {
     template <>
     Date DateTime::As () const;
 
-#if !qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if !qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     inline const Traversal::Iterable<String> DateTime::kDefaultParseFormats{
         kLocaleStandardFormat,
         kLocaleStandardAlternateFormat,

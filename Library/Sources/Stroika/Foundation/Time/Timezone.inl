@@ -28,25 +28,25 @@ namespace Stroika::Foundation::Time {
     {
         Require (kBiasInMinutesFromUTCTypeValidRange.Contains (biasInMinutesFromUTC));
     }
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     constexpr Timezone Timezone::kUTC{TZ_::eUTC};
 #else
-    inline constexpr Timezone Timezone::kUTC{TZ_::eUTC};
+    inline constexpr Timezone           Timezone::kUTC{TZ_::eUTC};
 #endif
     inline constexpr Timezone Timezone::UTC ()
     {
         return Timezone{TZ_::eUTC};
     }
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     constexpr Timezone Timezone::kLocalTime{TZ_::eLocalTime};
 #else
-    inline constexpr Timezone Timezone::kLocalTime{TZ_::eLocalTime};
+    inline constexpr Timezone           Timezone::kLocalTime{TZ_::eLocalTime};
 #endif
     inline constexpr Timezone Timezone::LocalTime ()
     {
         return Timezone{TZ_::eLocalTime};
     }
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     constexpr optional<Timezone> Timezone::kUnknown{nullopt};
 #else
     inline constexpr optional<Timezone> Timezone::kUnknown{nullopt};

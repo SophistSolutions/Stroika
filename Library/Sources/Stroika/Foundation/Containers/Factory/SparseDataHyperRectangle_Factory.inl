@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Containers::Factory {
         ************************ SparseDataHyperRectangle_Factory<T> *******************
         ********************************************************************************
         */
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     template <typename T, typename... INDEXES>
     atomic<SparseDataHyperRectangle<T, INDEXES...> (*) (Configuration::ArgByValueType<T>)> SparseDataHyperRectangle_Factory<T, INDEXES...>::sFactory_ (nullptr);
 #endif

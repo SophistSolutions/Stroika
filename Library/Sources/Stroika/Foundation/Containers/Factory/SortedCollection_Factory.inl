@@ -20,7 +20,7 @@ namespace Stroika::Foundation::Containers::Factory {
      **************** SortedCollection_Factory<T, INORDER_COMPARER> *****************
      ********************************************************************************
      */
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     template <typename T, typename INORDER_COMPARER>
     atomic<SortedCollection<T> (*) (const INORDER_COMPARER&)> SortedCollection_Factory<T, INORDER_COMPARER>::sFactory_ (nullptr);
 #endif

@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T>
     class Deque_Factory {
     private:
-#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
         static atomic<Deque<T> (*) ()> sFactory_;
 #else
         static inline atomic<Deque<T> (*) ()> sFactory_{nullptr};
