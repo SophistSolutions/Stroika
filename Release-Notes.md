@@ -15,36 +15,59 @@ especially those they need to be aware of when upgrading.
 
 - Overall ReadMe docs improvements
 - SystemPerformance framework cleanups
+- new compilers (g++11, clang++12) and OSes (MacOS 11.4, Ubuntu 21.04)
+- Database infrastrucutre improvements (incomplete)
+- OpenSSL API wrapper improvements
+- Fixed horrible build-system issue - was not actually testing with VS2k17: fixed regression tests and all bug compatability logic to work wtih vs2k17 again
 
 #### Change Details
 
 - Build System And Tools
+
   - support for Ubuntu 21.04, g++11, clang++12
   - fixed calls to cygpath to use --ignore so they behave reasonably when you call with no path arguments (eg. when StroikaLibs is the empty string/list)
   - ScriptsLib/ApplyConfigurations now also sets NMakeIncludeSearchPath so we can find all the included libraries/headers from visual studio that are part of the stroika thirdpartycomponents too (and others); also had to update each project file to use inheirted values
   - compiler bug defines
+
     - new bug define qCompilerAndStdLib_const_extern_declare_then_const_define_namespace_Buggy
-    - tweak bug defines for g++ - 10.3 (and GLIBCXX*10x* and bug define comments), fixed qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy define for clang++12, qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy already broken in clang12, <https://stroika.atlassian.net/browse/STK-601> broken for clang++12 too
+    - new qCompilerAndStdLib_startupAppMagicStaticsNotWorkingFully_Buggy bug workaround for vs2k17
+    - tweak bug defines for g++ - 10.3 (and GLIBCXX*10x* and AND 11x bug define comments), fixed qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy define for clang++12, qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy already broken in clang12, <https://stroika.atlassian.net/browse/STK-601> broken for clang++12 too
     - new compiler bug workaround qCompilerAndStdLib_enum_with_bitLength_opequals_Buggy; and updates for gcc-11 bug defines
+    - qCompiler_HasNoMisleadingIndentation_Flag bug define for SQLITE
+    - One worakround marked qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy really has nothing todo with LTO - want to avoid deadly startup (before main const ref) ordering bug - so use function / magic inits to lazy create instead of file scope global
+    - lose no longer needed bug define qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy (for vs2k17 but not referenced anymore) replaced places still needed with better named bug define qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
+      - These instances of qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy where a PITA to find all of and workaround (and still cannot fully) - but enuf so it all works/runs (just lots of linker warnings still and ugly BWAs)
+      - Deal with static inline constexpr definitions - which dont really work right with vs2k17: /FORCE:MULTIPLE
+    - new bug defines qCompilerAndStdLib_relaxedEnumClassInitializationRules_Buggy, qCompilerAndStdLib_default_constructor_initialization_issueWithExplicit_Buggy
+
   - deprecated use of Ubuntu2010 and insetad use Ubuntu2104
+  - fixed serious bug in ScriptsLib/Configure-VisualStudio-Support.pl - was always using vs2k19 compilers - not vs2k17 - so havent been testing vs2k17 since I rewrote that script
   - tweak basic-unix-test-configurations*valgrind_configs* so uses valgrind on latest / default compiler, not specificialy g++-8 (excpet on ububtu 1804 where that selection needed)
-  - qCompiler_HasNoMisleadingIndentation_Flag bug define for SQLITE
-  - new bug defines qCompilerAndStdLib_relaxedEnumClassInitializationRules_Buggy, qCompilerAndStdLib_default_constructor_initialization_issueWithExplicit_Buggy
+  - Configure
+    - by default, on msvc > 16.10 msvc - and apply-default-flags- turn on asan by default
+  - Docker
+    - small dockerfile celanups/simplifations (lose DEBIGNA_FRONTEEND=nonointeractive doesnt seem needed anymore
+  - RegressionTests
+    - in regressiontests - print version of XCode installed, and where its installed
+
 - Documentation
   - top level readme docs big improvement (especailly introduction)
   - readme on docker containers improvements
 - Foundation Library
   - Common
     - new ConstantProperty\<> template replaces old **deprecated** VirtualConstant\<>, and lots of cleanups/improvements in the newly named class.
+    - new GUID As<> template overloads, and docs, and regression tests
   - Configuration
     - fixed **serious bug** in GetSystemConfiguration_CPU ()- check backwards and was never capturing CPU info for Linux
     - new utility Configuration::GetNumberOfLogicalCPUCores ()
   - Containers
     - docs/requires on a Queue Dequeue/RemoveHead
     - Added Set\<T>::Contains (const Iterable\<T>& items) overload
+    - use more uniform initialization
+    - fixed <https://stroika.atlassian.net/browse/STK-738> - bad enable_if in CTOR Mapping\<> overloads
   - Cryptography
     - OpenSSL changes (inspired by testing openssl 3.0 alpha)
-      - **not backward compatible** - renamed (CipherAlgorithm::e* to CipherAlgorithms:k*, making
+      - **not backward compatible** - renamed (CipherAlgorithm::e\* to CipherAlgorithms:k\*, making
         them VirtualConsants, instead of enums.
       - CipherAlgorithm is now a using of the openssl type (may not be
         where we end up on this).
@@ -64,6 +87,11 @@ especially those they need to be aware of when upgrading.
     - ENABLE_JSON1 flag for SQLITE and begin exploring use of the extension
   - DataExchange
     - New method: VariantValue::ConvertTo
+    - VariantValue
+      - Constructors now several of them explicit (to avoid confusing implicit conversions with containers)
+        - had to change several code calls to react to this
+        - added operator= overloads to compoensate, a bit
+        - (**not backward compatible but minor**) - Several VariantValue CTORS now explicit, so you need to wrap calls with VariantValue{}; helps make less likely trouble with Iterable\<T> or other types with initializer_list\<T> that might be used with VariantValue (and cause issues like <https://stroika.atlassian.net/browse/STK-739>)
     - CTOR for StructFieldMetaInfo (using new Memory::OffsetOf), and change Stroika_Foundation_DataExchange_StructFieldMetaInfo() - to not use offsetof() - with **Stroika_Foundation_DataExchange_StructFieldMetaInfo now deprecated**
   - Execution
     - WaitableEvent::Wait overload
@@ -74,10 +102,17 @@ especially those they need to be aware of when upgrading.
     - Memory::AccumulateIf () - more overloads/docs; and in Memory namespace: optional operator+-\*/ functions CHANGED SEMANTICS INCOMPATIBLY (**apichange**) - now if ither lhs or rhs is nullopt, returns nullopt
     - **not backward compatible** reversed args for Memory::CopyToIf() - now assign right to left, so destinition always required and first argument (address of arg)
     - Memory::OffsetOf() (to replace std c++ macro offsetof())
+    - new utility Memory::ValueOf(std::optional)
   - Traversal
-    - Added a few static_asserts () to Iterator\<T> and Iterable\<T> to make clearer error messages
-    - Added Iterable\<T>::operator bool ()
+    - Iterator\<T>
+      - Added a few static_asserts () to Iterator\<T> make clearer error messages
+    - Iterable\<T>
+      - Added a few static_asserts () to Iterable\<T> to make clearer error messages
+      - Added Iterable\<T>::operator bool ()
+      - deprecated Iterable::First/Last/1 overloads and replaced with a slightly better definition (templated)
 - Frameworks Library
+  - Led
+    - Lots of miscelaneous cleanups, especailly to GDI code, cleaning up names used etc (sb nothing functional changed)
   - SystemPerformance
     - Misc.
     - fixed bug with capturing context stats in performance framework process instrument (which was used to compute ave cpu)
@@ -95,7 +130,7 @@ especially those they need to be aware of when upgrading.
     - Thread safety checks (using private Debug::AssertExternallySynchronizedLock)
     - Serveral fixes - context/catpured - support to respoect fMinimumAveragingInterval
     - SystemPerformance::Instruments::CPU::... deprecated GetInstrument () - replaced with Instrument class, and deprecated GetObjectVariantMapper replaced with Instrument::kObjectVariantMapper
-    - Frameworks/SystemPerformance/Support/InstrumentHelpers: CapturerWithContext_COMMON<OPTIONS>::cContextPtr/rwContextPtr - helper to cleanup code in frameworks/instruments and lots of related refactoring
+    - Frameworks/SystemPerformance/Support/InstrumentHelpers: CapturerWithContext_COMMON\<OPTIONS>::cContextPtr/rwContextPtr - helper to cleanup code in frameworks/instruments and lots of related refactoring
     - FileSystem::GetAvailableDisks uses FILE_SHARE_READ not FILE_SHARE_WRITE | FILE_SHARE_READ, still seems to work, but still seems to require admin permissions
     - Frameworks/SystemPerformance/Instruments/CPU
       **incompatible change** - fAverageCPUTimeUsed now returns 1..#logical cores and new field in returned data - # logical cores.
@@ -147,54 +182,6 @@ especially those they need to be aware of when upgrading.
 
 #if 0
 
-commit 498278f1db620e2ed249979439276d1011bcd878
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri May 28 21:16:18 2021 -0400
-
-    qCompilerAndStdLib_OffsetOf_Constexpr_Buggy lose - just my code is buggy/wrong - doesnt work on any compiler - leave for now - I dont need this to be constexpr
-
-commit 4dc5c29915e2d09e6e726360df2251463bde5053
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat May 29 02:17:40 2021 +0100
-
-    qCompilerAndStdLib_OffsetOf_Constexpr_Buggy lose define
-
-commit 5e4726cfbbd1594b6c741d7fd4c95703a4b86145
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date: Sat May 29 21:05:40 2021 -0400
-
-    small dockerfile celanups/simplifations (lose DEBIGNA_FRONTEEND=nonointeractive doesnt seem needed anymore
-
-commit eaaf0ea025a9d122ec754fdaa35a6b9e45e470ea
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 30 18:23:20 2021 +0100
-
-    new utility Memory::ValueOf(std::optional)
-
-commit 62b003ffc44ca71b6ce639396f817591ab6f11fb
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun May 30 18:24:05 2021 +0100
-
-    deprecated Iterable::First/Last/1 overloads and replaced with a slightly better definition (templated)
-
-commit 72c3542521432247d6381baf512f5f5634c9cc01
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 31 02:05:51 2021 +0100
-
-    GUID As<> template overloads, and docs
-
-commit b0a90551048252b9f94e70d9163089d0956dfa71
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 31 02:15:08 2021 +0100
-
-    regrssion tests for COmmon::GUID new APIs
-
-commit ed115ecffd0d43f685ab8552cea217b704d8a198
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon May 31 02:53:27 2021 +0100
-
-    slight improvement to TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Common::GUID> ()
-
 commit 21191fbcacf3501eea229726e7e3ca5e5743f61e
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Tue Jun 1 01:43:50 2021 +0100
@@ -231,12 +218,6 @@ Date: Wed Jun 2 15:49:33 2021 +0100
 
     updated how we set COMPILER_DRIVER flag/var in configure script for msvc (so set eariler and checked better)
 
-commit a4aa6a7cf77950cfc2d9b4045160fd396367c10e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jun 2 16:04:55 2021 +0100
-
-    by default, on msvc > 16.10 msvc - and apply-default-flags- turn on asan by default
-
 commit 1b301519ef8c628dfed9907a546b149a34c8d2e3
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Wed Jun 2 16:05:36 2021 +0100
@@ -249,53 +230,22 @@ Date: Wed Jun 2 16:38:58 2021 +0100
 
     fixed small recent regression in bugdefine setting qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
 
-commit fb7486653d940f1316de98292df458a75d2b3571
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jun 3 02:13:48 2021 +0100
-
-    hopefully fixed configure support for ASAN/Windows (no -fsanitizer... flag to linker)
-
-commit 3cec8a9844ed7aafd0c011ab332195e42c950282
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jun 3 14:52:43 2021 +0100
-
-    workaround ASAN debug configuraiton linker erorr
-
 commit d266b4323dc921a76a251d8adb2bb2d490d83f77
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Thu Jun 3 14:59:17 2021 +0100
 
     Commetns on https://developercommunity.visualstudio.com/t/please-re-open-httpsdevelopercommunityvisualstudio/1440675 bug workaround
 
-commit 467aaf7cfd5873dd1d31dd31dbc10e4987805c59
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 4 00:48:24 2021 +0100
-
-    fixed serious bug in ScriptsLib/Configure-VisualStudio-Support.pl - was always using vs2k19 compilers - not vs2k17 - so havent been testing vs2k17 since I rewrote that script
-
-commit c0a2ec220eb2278d30ca62fc33ab1e38cb9bc7be
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Fri Jun 4 09:56:01 2021 -0400
 
     qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop2_Buggy bug define and workaround
-
-commit 66feb954fac142c5d144cc7d72bcd2cd63e4df47
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 4 10:07:55 2021 -0400
-
-    qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy bug define/workaround (vs2k17)
 
 commit 352a9bada7086afbd1a3690848960fe5eba08c32
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Fri Jun 4 10:21:43 2021 -0400
 
     qCompilerAndStdLib_constexpr_call_constexpr_sometimes_internalError_Buggy vs2k17 BWA
-
-commit 1b4d135f58a01be428e197340025c9296e36431e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 4 15:28:23 2021 +0100
-
-    another qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy bwa
 
 commit c87f267b806c3deae012b85dd504fee8cf5cc0a5
 Author: Lewis Pringle <lewis@sophists.com>
@@ -315,59 +265,10 @@ Date: Sat Jun 5 04:14:12 2021 +0100
 
     restructure IO::Netwowrk::Itnerface weindows code to get wirelessinfo based on feedback from ASAN: new code LOOKS worse, but corresponds more precseily to example docs
 
-commit be771959cf275ae76df77ff4b05af83ece092eaa
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jun 5 04:31:07 2021 +0100
-
-    Deal with static inline constexpr definitions - which dont really work right with vs2k17: /FORCE:MULTIPLE
-
-commit 23e6ebdc2e78bf7e74ed1769ec8621eaa1bbaf45
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 4 23:57:24 2021 -0400
-
-    vs2k17 configure script fix for (MULTIPLE static constexpr issue)
-
-commit 85f5f96dd5f4c71653381a3c1984c21ade3572bb
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Sat Jun 5 09:47:34 2021 -0400
 
     qCompilerAndStdLib_uniformInitializationsFailsOnIntSize_t_Buggy bug define for vs2k17
-
-commit 34b5e576c53217c80e1bca5eae60873cd45222d3
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jun 5 14:51:27 2021 +0100
-
-    Led frmaewokr cleanups
-
-commit 0d3ab79719ca5d8d122a673db2b9d76f16fdad10
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jun 5 14:57:43 2021 +0100
-
-     qCompilerAndStdLib_startupAppMagicStaticsNotWorkingFully_Buggy bug workaround for vs2k17
-
-commit 17686f69792e52ae3d3cfdea7b29ef428ce3c1e8
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jun 5 18:36:46 2021 +0100
-
-    reset qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy to be broken again as was bad test indicating fixed (vs2k17)
-
-commit 114f32a2c8502915c397334d8a55089ca29944a8
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jun 5 18:50:54 2021 +0100
-
-    more workarounds for qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
-
-commit f69f023d47ee13ffa1cfb068dc935ccad12ae710
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jun 5 21:47:55 2021 -0400
-
-    more workarounds for qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
-
-commit 77361c25186a21be0550ace767aa282999da770d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jun 6 17:29:57 2021 +0100
-
-    COsmetic; and various other naming cleanups for Led Framework
 
 commit ef8883c474d955d28f8937b7bfe0443932591a02
 Author: Lewis Pringle <lewis@sophists.com>
@@ -376,47 +277,6 @@ Date: Mon Jun 7 02:45:10 2021 +0100
     Compiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy workarounds
 
 commit 23d0451d9cb7653d3e771b7913b44e290ef94101
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jun 7 03:29:06 2021 +0100
-
-    qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
-
-commit ad227061a8405f8287c36f51385963143681e4c7
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jun 6 22:31:37 2021 -0400
-
-    simplify idlemantger cleanup/singleton lifetime
-
-commit 3aa3f5dff60d17396ecc85fa2d3f3d38799c902d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jun 7 21:45:02 2021 -0400
-
-    a few more qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy workarounds - now vs2k17 passing regtests I think
-
-commit 81bdf8aa883ad94cb402499d0bea377b49cd1f7b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jun 8 16:07:54 2021 +0100
-
-    qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy / cosmetic cleanups
-
-commit e72dc752b3c09e4b2b8551232c8c7805813edddc
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jun 8 18:23:55 2021 +0100
-
-    fixed typo in qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy workaround
-
-commit 0052115d34d26a858a2292b411901a0fe71d3afa
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jun 9 14:02:20 2021 +0100
-
-    more qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy workarounds
-
-commit c8ad6ab23537dd9759ea5c904bd15693b244a72a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jun 9 09:15:31 2021 -0400
-
-    fixes for qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy workarounds
-
 commit 05858c8d5a40d147b4dcc6f61747f3234c4998ec
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Wed Jun 9 15:30:48 2021 +0100
@@ -435,18 +295,6 @@ Date: Wed Jun 9 17:32:00 2021 +0100
 
     qCompilerAndStdLib_initializer_list_sometimes_very_Buggy bug workaround vs2k17
 
-commit 5b5a9092b66fc9137202a2668515c99de256ece0
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jun 9 18:25:46 2021 +0100
-
-    fixed https://stroika.atlassian.net/browse/STK-738 - bad enable_if in CTOR Mapping<> overloads
-
-commit 6ce33d32573dc5b59a91bbba1bf03f2c9a7aad98
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jun 10 11:55:31 2021 +0100
-
-    qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy BWA
-
 commit 3e4a2f0d8a27902a2cb60bdd47af149575c76132
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Thu Jun 10 12:22:03 2021 +0100
@@ -459,18 +307,6 @@ Date: Thu Jun 10 16:05:36 2021 +0100
 
     more careful/restrictive CTOR template overload for Execution::Function class
 
-commit 1e80cb9e838d2089780d0fbfbc29a39b851c42f1
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jun 10 11:33:17 2021 -0400
-
-    One worakround marked qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy really has nothing todo with LTO - want to avoid deadly startup (before main const ref) ordering bug - so use function / magic inits to lazy create instead of file scope global
-
-commit 7e32f3d0ffca66f3120cb4082de8b7cf210233b0
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jun 10 16:35:09 2021 +0100
-
-    Containers cleanups: use more uniform initialization
-
 commit 6b25f8ff6c8199481967da26fc9574e718912ea6
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Thu Jun 10 17:18:28 2021 +0100
@@ -482,12 +318,6 @@ Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date: Thu Jun 10 12:36:51 2021 -0400
 
     qCompilerAndStdLib_uniformInitializationInsteadOfParenInit_Buggy bug define
-
-commit dfc43aa9550db1293e7774206db18db261eec817
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jun 10 12:59:40 2021 -0400
-
-    revert one uniform initialzaiton change with comment/test
 
 commit efed4cc8229cab55f2db9eda5c02dd9ebaca66fc
 Author: Lewis Pringle <lewis@sophists.com>
@@ -519,59 +349,11 @@ Date: Fri Jun 11 00:56:27 2021 +0100
 
     resolved (mostly) https://stroika.atlassian.net/browse/STK-739: documented in Iterable<T>::CTOR (initializer_list<>) issue and why often not safe/desirable (with templates) to use {} cuz interpretted as list-initialization
 
-commit b31b8fc7c07dd3c4c599910a57a605150c69524f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 11 01:35:00 2021 +0100
-
-    (**not backward compatible but minor**) - Several VariantValue CTORS now explicit, so you need to wrap calls with VariantValue{}; helps make less likely trouble with Iterable<T> or other types with initializer_list<T> that might be used with VariantValue (and cause issues like https://stroika.atlassian.net/browse/STK-739)
-
 commit 91a50144eb708adf917612857df5e896571f048d
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Fri Jun 11 01:38:48 2021 +0100
 
     Lose (never rleeased) qCompilerAndStdLib_uniformInitializationInsteadOfParenInit_Buggy bug define - not needed anymore - was really the initializer_list isue
-
-commit 027364c8edeee034a87982afaeb0485631af8744
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 11 02:02:50 2021 +0100
-
-    VariantValue operator= overloads so the things I made explicit you can at least assign to a VariantValue (just no conversion problems)
-
-commit 01bac07b39da49f9db79042c9a96f25c54de1d54
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 11 02:06:17 2021 +0100
-
-    react to now explicit VariantValue ctors
-
-commit ab4b45411c644af90118b3eeb83b8a633b1d1fbc
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 11 02:07:13 2021 +0100
-
-    react to now explicit VariantValue ctors
-
-commit 5360084dc19b133c1ffb44b5dc9ee540111b1a69
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date: Thu Jun 10 21:09:16 2021 -0400
-
-    react to change in explicit VariantValue CTORS
-
-commit ba124a0dd2744752e6cf649b97cae8a18ca23afe
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 11 02:14:08 2021 +0100
-
-    react to Exicit VariantValue CTOR cahnge
-
-commit 7a670377478871f89038b78e13fddd27840e9ca3
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 11 02:15:35 2021 +0100
-
-    react to Exicit VariantValue CTOR cahnge
-
-commit 33e41ac364bbff9546e04a0e0b86b6621507314a
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date: Thu Jun 10 21:19:34 2021 -0400
-
-    react to cahnge in explicit VariantValue CTORs
 
 commit 577a6b1b506f7b7fb3966a53bd6028d1c68b8a29
 Author: Lewis Pringle <lewis@sophists.com>
@@ -579,69 +361,11 @@ Date: Thu Jun 10 21:36:40 2021 -0400
 
     tested and verfied broken (didnt dig more) into qCompilerAndStdLib_initializer_list_sometimes_very_Buggy - since not supporting vs2k17 much longer or super well, not worth digging)
 
-commit 0a0fb878129364fcffd09691b19febc4f3068978
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 11 14:40:41 2021 +0100
-
-    vs2k17 qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy BWA ,and cosmetic
-
-commit 85f4a74bbb649aec78751922ee3c9aaa57b8fcf2
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 11 15:00:12 2021 +0100
-
-    qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy vs2k17 BWA for CORSOptions
-
-commit de1c5d3c36b5616af2505ce1a9d7b047873cbf02
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 11 15:32:36 2021 +0100
-
-    in regressiontests - print version of XCode installed
-
-commit 4838c6bef255b67e901c7bccfaf1b0b293479457
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 11 15:34:27 2021 +0100
-
-    and in regressiontest script - print xcode install path
-
-commit 8b78a46e9c7a7c01bb45fd160ce0ddc8f145901f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 11 21:30:29 2021 -0400
-
-    fixed link error with qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy vs2k17 BWA
-
-commit d00369ecace5bc33533a155681e9501380b35186
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jun 13 01:31:18 2021 +0100
-
-    fixed a qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy BWA
-
-commit 3d981dd79293e32be9ec18b3fd050a515f75353e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jun 15 01:06:23 2021 +0100
-
-    lose no longer needed bug define qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy (for vs2k17 but not referenced anymore)
-    (((WRONG - UNDID!!!!) - REVERTED THIS COMMIT))
-    (((REDIDD - REPLACED IT WITH qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy)))
-
 commit 2aee6dfe1d43c20c776ccc45ef21a17450681da9
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Tue Jun 15 01:21:02 2021 +0100
 
     lose no longer needed bug define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy (we only support vs2k17 back to 15.7.x (and maybe only back to 15.9.x); and lose most of the intermediate bug version defines for in between FULLVERSIONS
-
-commit b9ce82a38e827341706b1d931e7d3d50093a5ece
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jun 15 02:30:44 2021 +0100
-
-commit ef6b7ae922e542c210234d09cd5536815db2d631
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jun 15 14:10:51 2021 +0100
-
-    minor cleanups (docs and static inline)
-
-commit 1377e328c395757da34fcd8d157a84052598d661
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jun 15 14:31:55 2021 +0100
 
 #endif
 
