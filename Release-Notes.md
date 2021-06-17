@@ -23,18 +23,24 @@ especially those they need to be aware of when upgrading.
 #### Change Details
 
 - Build System And Tools
-
   - support for Ubuntu 21.04, g++11, clang++12
   - fixed calls to cygpath to use --ignore so they behave reasonably when you call with no path arguments (eg. when StroikaLibs is the empty string/list)
   - ScriptsLib/ApplyConfigurations now also sets NMakeIncludeSearchPath so we can find all the included libraries/headers from visual studio that are part of the stroika thirdpartycomponents too (and others); also had to update each project file to use inheirted values
   - compiler bug defines
-    - new bug define qCompilerAndStdLib_const_extern_declare_then_const_define_namespace_Buggy
-    - new qCompilerAndStdLib_startupAppMagicStaticsNotWorkingFully_Buggy bug workaround for vs2k17
+    - specifically related to getting VS2k17 working again
+      - lose no longer needed bug define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy (we only support vs2k17 back to 15.7.x (and maybe only back to 15.9.x); and lose most of the intermediate bug version defines for in between FULLVERSIONS
+      - bug defines qCompilerAndStdLib_usingOfEnumFailsToBringIntoScope_Buggy for vs 2k 17 compat
+      - qCompilerAndStdLib_initializer_list_sometimes_very_Buggy bug workaround vs2k17
+      - qCompilerAndStdLib_uniformInitializationsFailsOnIntSize_t_Buggy bug define for vs2k17
+      - new bug define qCompilerAndStdLib_const_extern_declare_then_const_define_namespace_Buggy
+      - new qCompilerAndStdLib_constexpr_call_constexpr_sometimes_internalError_Buggy, qCompilerAndStdLib_MemInitializerWithBitfield_Buggy vs2k17 BWA
+      - new qCompilerAndStdLib_startupAppMagicStaticsNotWorkingFully_Buggy bug workaround for vs2k17
+      - lose no longer needed bug define qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy (for vs2k17 but not referenced anymore) replaced places still needed with better named bug define qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     - tweak bug defines for g++ - 10.3 (and GLIBCXX*10x* and AND 11x bug define comments), fixed qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy define for clang++12, qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy already broken in clang12, <https://stroika.atlassian.net/browse/STK-601> broken for clang++12 too
+    - lose qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy bug define and workaround - I htink was a mistake and order of CTOR before main bug
     - new compiler bug workaround qCompilerAndStdLib_enum_with_bitLength_opequals_Buggy; and updates for gcc-11 bug defines
     - qCompiler_HasNoMisleadingIndentation_Flag bug define for SQLITE
     - One worakround marked qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy really has nothing todo with LTO - want to avoid deadly startup (before main const ref) ordering bug - so use function / magic inits to lazy create instead of file scope global
-    - lose no longer needed bug define qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy (for vs2k17 but not referenced anymore) replaced places still needed with better named bug define qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
       - These instances of qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy where a PITA to find all of and workaround (and still cannot fully) - but enuf so it all works/runs (just lots of linker warnings still and ugly BWAs)
       - Deal with static inline constexpr definitions - which dont really work right with vs2k17: /FORCE:MULTIPLE
     - new bug defines qCompilerAndStdLib_relaxedEnumClassInitializationRules_Buggy, qCompilerAndStdLib_default_constructor_initialization_issueWithExplicit_Buggy
@@ -49,7 +55,6 @@ especially those they need to be aware of when upgrading.
     - small dockerfile celanups/simplifations (lose DEBIGNA_FRONTEEND=nonointeractive doesnt seem needed anymore
   - RegressionTests
     - in regressiontests - print version of XCode installed, and where its installed
-
 - Documentation
   - top level readme docs big improvement (especailly introduction)
   - readme on docker containers improvements
@@ -66,6 +71,7 @@ especially those they need to be aware of when upgrading.
     - use more uniform initialization
     - fixed <https://stroika.atlassian.net/browse/STK-738> - bad enable_if in CTOR Mapping\<> overloads
       - Also dont restruct/prevent is_base_of for other containers like Set etc - to do comparer/otherset args
+    - resolved (mostly) <https://stroika.atlassian.net/browse/STK-739>: documented in Iterable<T>::CTOR (initializer_list<>) issue and why often not safe/desirable (with templates) to use {} cuz interpretted as list-initialization
   - Cryptography
     - OpenSSL changes (inspired by testing openssl 3.0 alpha)
       - **not backward compatible** - renamed (CipherAlgorithm::e\* to CipherAlgorithms:k\*, making
@@ -99,6 +105,7 @@ especially those they need to be aware of when upgrading.
     - Fixed bug with InternetMediaType CTOR where it could lose proper mapping comparer; todo had to workaround stroika bug 738 with mapping class, and added jira ticket for that bug, along with regression test case
   - Execution
     - WaitableEvent::Wait overload
+    - more careful/restrictive CTOR template overload for Execution::Function class
   - IO::Network
     - HTTP
       - Removed Headers::CopyFlags (KLUDGE); added/respected property 'autoComputeContentLength'
@@ -115,6 +122,7 @@ especially those they need to be aware of when upgrading.
       - Added a few static_asserts () to Iterable\<T> to make clearer error messages
       - Added Iterable\<T>::operator bool ()
       - deprecated Iterable::First/Last/1 overloads and replaced with a slightly better definition (templated)
+      - documented ambugituy on subclasses of Iterable\<> calling base class Iterable CTOR - be carefuly to select inherited&& CTOR
 - Frameworks Library
   - Led
     - Lots of miscelaneous cleanups, especailly to GDI code, cleaning up names used etc (sb nothing functional changed)
@@ -182,119 +190,17 @@ especially those they need to be aware of when upgrading.
   - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
   - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
 - Known (minor) issues with regression test output
-  - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
-  - badssl.com site failed on raspberripi (havent investigated but seems minor)
-
-#if 0
-
-commit 352a9bada7086afbd1a3690848960fe5eba08c32
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 4 10:21:43 2021 -0400
-
-    qCompilerAndStdLib_constexpr_call_constexpr_sometimes_internalError_Buggy vs2k17 BWA
-
-commit c87f267b806c3deae012b85dd504fee8cf5cc0a5
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 4 23:28:27 2021 +0100
-
-    new vs2k17 bug workoaurnd qCompilerAndStdLib_MemInitializerWithBitfield_Buggy
-
-commit 40b170492247095a2a99ef99444178a7454e0bf4
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 4 19:52:16 2021 -0400
-
-    bug defines qCompilerAndStdLib_usingOfEnumFailsToBringIntoScope_Buggy for vs 2k 17 compat
-
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jun 5 09:47:34 2021 -0400
-
-    qCompilerAndStdLib_uniformInitializationsFailsOnIntSize_t_Buggy bug define for vs2k17
-
-commit ef8883c474d955d28f8937b7bfe0443932591a02
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jun 7 02:45:10 2021 +0100
-
-    Compiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy workarounds
-
-commit 6ba8934fe5330a1d3f9ecab0efdcff7fd94aeaf6
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jun 9 15:40:02 2021 +0100
-
-    simplify one worakround for qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy
-
-commit a0632d21358a49a15560249341a7189365940467
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jun 9 17:32:00 2021 +0100
-
-    qCompilerAndStdLib_initializer_list_sometimes_very_Buggy bug workaround vs2k17
-
-commit cf718a0d2bf7530a330d2f181724cc24c7bf5d22
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jun 10 16:05:36 2021 +0100
-
-    more careful/restrictive CTOR template overload for Execution::Function class
-
-commit 6b25f8ff6c8199481967da26fc9574e718912ea6
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jun 10 17:18:28 2021 +0100
-
-    lose qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy bug define and workaround - I htink was a mistake and order of CTOR before main bug
-
-commit f1146f3d3c1c5f62f447dc63f2e4a38c115259a3
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date: Thu Jun 10 12:36:51 2021 -0400
-
-    qCompilerAndStdLib_uniformInitializationInsteadOfParenInit_Buggy bug define
-
-commit efed4cc8229cab55f2db9eda5c02dd9ebaca66fc
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jun 10 13:07:04 2021 -0400
-
-    qCompilerAndStdLib_uniformInitializationInsteadOfParenInit_Buggy
-
-commit 285668251714882f02b8784f93ec6808c83a6c1e
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date: Thu Jun 10 13:10:44 2021 -0400
-
-    qCompilerAndStdLib_uniformInitializationInsteadOfParenInit_Buggy workaround
-
-commit 20528c3ab3433a68c56b73d269dd6a2794ed24d6
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jun 10 18:58:10 2021 +0100
-
-    Lose qCompilerAndStdLib_uniformInitializationInsteadOfParenInit_Buggy in many places - was REGRESSION I introduced recently - documented ambugituy on subclasses of Iterable<> calling base class Iterable CTOR - be carefuly to select inherited&& CTOR - still more similar to review/test
-
-commit 25768f887108373e9f100b82617ac420f3f50051
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jun 10 22:43:52 2021 +0100
-
-    rprogress workaring around https://stroika.atlassian.net/browse/STK-739
-
-commit 8a5b236bb3c61e4a999c8c6190f7526efe3cda88
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 11 00:56:27 2021 +0100
-
-    resolved (mostly) https://stroika.atlassian.net/browse/STK-739: documented in Iterable<T>::CTOR (initializer_list<>) issue and why often not safe/desirable (with templates) to use {} cuz interpretted as list-initialization
-
-commit 91a50144eb708adf917612857df5e896571f048d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 11 01:38:48 2021 +0100
-
-    Lose (never rleeased) qCompilerAndStdLib_uniformInitializationInsteadOfParenInit_Buggy bug define - not needed anymore - was really the initializer_list isue
-
-commit 577a6b1b506f7b7fb3966a53bd6028d1c68b8a29
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jun 10 21:36:40 2021 -0400
-
-    tested and verfied broken (didnt dig more) into qCompilerAndStdLib_initializer_list_sometimes_very_Buggy - since not supporting vs2k17 much longer or super well, not worth digging)
-
-commit 2aee6dfe1d43c20c776ccc45ef21a17450681da9
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jun 15 01:21:02 2021 +0100
-
-    lose no longer needed bug define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy (we only support vs2k17 back to 15.7.x (and maybe only back to 15.9.x); and lose most of the intermediate bug version defines for in between FULLVERSIONS
-
-#endif
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+  - Centos 7
+    - two warnings about locale issues, very minor
+  - VS2k17
+    - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
+  - vs2k19
+    - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
+  - WSL-Regtests
+    - Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure
 
 ---
 
