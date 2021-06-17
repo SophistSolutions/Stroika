@@ -65,6 +65,7 @@ especially those they need to be aware of when upgrading.
     - Added Set\<T>::Contains (const Iterable\<T>& items) overload
     - use more uniform initialization
     - fixed <https://stroika.atlassian.net/browse/STK-738> - bad enable_if in CTOR Mapping\<> overloads
+      - Also dont restruct/prevent is_base_of for other containers like Set etc - to do comparer/otherset args
   - Cryptography
     - OpenSSL changes (inspired by testing openssl 3.0 alpha)
       - **not backward compatible** - renamed (CipherAlgorithm::e\* to CipherAlgorithms:k\*, making
@@ -93,11 +94,15 @@ especially those they need to be aware of when upgrading.
         - added operator= overloads to compoensate, a bit
         - (**not backward compatible but minor**) - Several VariantValue CTORS now explicit, so you need to wrap calls with VariantValue{}; helps make less likely trouble with Iterable\<T> or other types with initializer_list\<T> that might be used with VariantValue (and cause issues like <https://stroika.atlassian.net/browse/STK-739>)
     - CTOR for StructFieldMetaInfo (using new Memory::OffsetOf), and change Stroika_Foundation_DataExchange_StructFieldMetaInfo() - to not use offsetof() - with **Stroika_Foundation_DataExchange_StructFieldMetaInfo now deprecated**
+    - ObjectVariantMapper
+      - AddCommonType now does forwarding of arguments, and MakeCommonSerializer for GUID now takes optional type arg for how to store (still stores by default as string)
+    - Fixed bug with InternetMediaType CTOR where it could lose proper mapping comparer; todo had to workaround stroika bug 738 with mapping class, and added jira ticket for that bug, along with regression test case
   - Execution
     - WaitableEvent::Wait overload
   - IO::Network
     - HTTP
       - Removed Headers::CopyFlags (KLUDGE); added/respected property 'autoComputeContentLength'
+    - restructure IO::Netwowrk::Interface weindows code to get wirelessinfo based on feedback from ASAN: new code LOOKS worse, but corresponds more precseily to example docs
   - Memory
     - Memory::AccumulateIf () - more overloads/docs; and in Memory namespace: optional operator+-\*/ functions CHANGED SEMANTICS INCOMPATIBLY (**apichange**) - now if ither lhs or rhs is nullopt, returns nullopt
     - **not backward compatible** reversed args for Memory::CopyToIf() - now assign right to left, so destinition always required and first argument (address of arg)
@@ -182,28 +187,6 @@ especially those they need to be aware of when upgrading.
 
 #if 0
 
-commit 21191fbcacf3501eea229726e7e3ca5e5743f61e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jun 1 01:43:50 2021 +0100
-
-    ObjectVariantMapper: AddCommonType now does forwarding of arguments, and MakeCommonSerializer for GUID now takes optional type arg for how to store (still sotres by default as string)
-
-commit d3ed414814a69e78c3662a285e33b457707bec0e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jun 1 01:47:15 2021 +0100
-
-    ORM::Schema::Table::GetIDField (), and ORM::Schema::StandardSQLStatements and further cleanups to samples
-
-commit a5397a194427b876b972304d02f50e4286c00dd4
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jun 1 14:58:54 2021 +0100
-
-    ORM::Schema::CatchAllField::GetEffectiveRawToCombined etc
-
-commit 78b9248c6ddee837db47e57b87ddc99ba89f6743
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jun 2 14:30:55 2021 +0100
-
     fixed regrression in versions for qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy define (RECENT)
 
 commit 49e40d6d679e6a99bcbfe0b7f8afc49f043911c0
@@ -211,18 +194,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date: Wed Jun 2 15:26:13 2021 +0100
 
     qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy bug workaround for visual studio ASAN
-
-commit ab3d39a1a08352bf349d15b6a10ff5a17e1da9bf
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jun 2 15:49:33 2021 +0100
-
-    updated how we set COMPILER_DRIVER flag/var in configure script for msvc (so set eariler and checked better)
-
-commit 1b301519ef8c628dfed9907a546b149a34c8d2e3
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jun 2 16:05:36 2021 +0100
-
-    I think fixed bug so configure properly sets ASAN enabled for clang builds on apply-default-debug-flags
 
 commit a4655787c76b99d9f5fb667c6186f65bbfb4fd8c
 Author: Lewis Pringle <lewis@sophists.com>
@@ -259,12 +230,6 @@ Date: Fri Jun 4 19:52:16 2021 -0400
 
     bug defines qCompilerAndStdLib_usingOfEnumFailsToBringIntoScope_Buggy for vs 2k 17 compat
 
-commit 6708821d9c3504409ab98cea243980f2c77a6cad
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jun 5 04:14:12 2021 +0100
-
-    restructure IO::Netwowrk::Itnerface weindows code to get wirelessinfo based on feedback from ASAN: new code LOOKS worse, but corresponds more precseily to example docs
-
 Author: Lewis Pringle <lewis@sophists.com>
 Date: Sat Jun 5 09:47:34 2021 -0400
 
@@ -275,13 +240,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date: Mon Jun 7 02:45:10 2021 +0100
 
     Compiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy workarounds
-
-commit 23d0451d9cb7653d3e771b7913b44e290ef94101
-commit 05858c8d5a40d147b4dcc6f61747f3234c4998ec
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jun 9 15:30:48 2021 +0100
-
-    Fixed bug with InternetMediaType CTOR where it could lose proper mapping comparer; todo had to workaround stroika bug 738 with mapping class, and added jira ticket for that bug, along with regression test case
 
 commit 6ba8934fe5330a1d3f9ecab0efdcff7fd94aeaf6
 Author: Lewis Pringle <lewis@sophists.com>
@@ -294,12 +252,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date: Wed Jun 9 17:32:00 2021 +0100
 
     qCompilerAndStdLib_initializer_list_sometimes_very_Buggy bug workaround vs2k17
-
-commit 3e4a2f0d8a27902a2cb60bdd47af149575c76132
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jun 10 12:22:03 2021 +0100
-
-    just like https://stroika.atlassian.net/browse/STK-738  - also dont restruct/prevent is_base_of for other containers like Set etc - to do comparer/otherset args
 
 commit cf718a0d2bf7530a330d2f181724cc24c7bf5d22
 Author: Lewis Pringle <lewis@sophists.com>
