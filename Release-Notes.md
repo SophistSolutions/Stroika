@@ -14,11 +14,12 @@ especially those they need to be aware of when upgrading.
 #### TLDR
 
 - Overall ReadMe docs improvements
-- SystemPerformance framework cleanups
-- new compilers (g++11, clang++12) and OSes (MacOS 11.4, Ubuntu 21.04)
-- Database infrastrucutre improvements (incomplete)
-- OpenSSL API wrapper improvements
 - Fixed horrible build-system issue - was not actually testing with VS2k17: fixed regression tests and all bug compatability logic to work wtih vs2k17 again
+- new compilers (g++11, clang++12) and OSes (MacOS 11.4, Ubuntu 21.04)
+- Database infrastructure improvements (incomplete)
+- new ptr-to-member CTOR for StructFieldMetaInfo (using new Memory::OffsetOf), and change Stroika_Foundation_DataExchange_StructFieldMetaInfo() - to not use offsetof() - with Stroika_Foundation_DataExchange_StructFieldMetaInfo now deprecated
+- Led and SystemPerformance framework cleanups
+- OpenSSL API wrapper improvements
 
 #### Change Details
 
@@ -37,7 +38,7 @@ especially those they need to be aware of when upgrading.
       - new qCompilerAndStdLib_startupAppMagicStaticsNotWorkingFully_Buggy bug workaround for vs2k17
       - lose no longer needed bug define qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy (for vs2k17 but not referenced anymore) replaced places still needed with better named bug define qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     - tweak bug defines for g++ - 10.3 (and GLIBCXX*10x* and AND 11x bug define comments), fixed qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy define for clang++12, qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy already broken in clang12, <https://stroika.atlassian.net/browse/STK-601> broken for clang++12 too
-    - lose qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy bug define and workaround - I htink was a mistake and order of CTOR before main bug
+    - lose qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy bug define and workaround - I think was a mistake and order of CTOR before main bug
     - new compiler bug workaround qCompilerAndStdLib_enum_with_bitLength_opequals_Buggy; and updates for gcc-11 bug defines
     - qCompiler_HasNoMisleadingIndentation_Flag bug define for SQLITE
     - One worakround marked qCompilerAndStdLib_static_const_inline_struct_with_LTO_Buggy really has nothing todo with LTO - want to avoid deadly startup (before main const ref) ordering bug - so use function / magic inits to lazy create instead of file scope global
@@ -46,13 +47,13 @@ especially those they need to be aware of when upgrading.
     - new bug defines qCompilerAndStdLib_relaxedEnumClassInitializationRules_Buggy, qCompilerAndStdLib_default_constructor_initialization_issueWithExplicit_Buggy
     - new qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy bug workaround for visual studio ASAN
     - qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop2_Buggy bug define and workaround
-  - deprecated use of Ubuntu2010 and insetad use Ubuntu2104
+  - deprecated use of Ubuntu2010 and instead use Ubuntu2104
   - fixed serious bug in ScriptsLib/Configure-VisualStudio-Support.pl - was always using vs2k19 compilers - not vs2k17 - so havent been testing vs2k17 since I rewrote that script
   - tweak basic-unix-test-configurations*valgrind_configs* so uses valgrind on latest / default compiler, not specificialy g++-8 (excpet on ububtu 1804 where that selection needed)
   - Configure
     - by default, on msvc > 16.10 msvc - and apply-default-flags- turn on asan by default
   - Docker
-    - small dockerfile celanups/simplifations (lose DEBIGNA_FRONTEEND=nonointeractive doesnt seem needed anymore
+    - small dockerfile cleanups/simplifations (lose DEBIGNA_FRONTEEND=nonointeractive doesnt seem needed anymore
   - RegressionTests
     - in regressiontests - print version of XCode installed, and where its installed
 - Documentation
@@ -4175,7 +4176,7 @@ especially those they need to be aware of when upgrading.
         <li>use C++17 class type deduction in a few places/uses of lock_guard (so not repeating type)</li>
         <li>cosmetic changes due to constexpr statics being inline since c++17</li>
         <li>new Streams::Copy module (and simple regtest)</li>
-        <li>major celanups to warnings (esp on windows); [[maybe_unused]] used, cleanued up lots of unneeded qSilenceAnnoyingCompilerWarnings/#pragma warnings, and use alot of noexcepts on move CTORs/operator= calls</li>
+        <li>major cleanups to warnings (esp on windows); [[maybe_unused]] used, cleanued up lots of unneeded qSilenceAnnoyingCompilerWarnings/#pragma warnings, and use alot of noexcepts on move CTORs/operator= calls</li>
         <li>lose obsolete bug and feature defines qFriendDeclsCannotReferToEnclosingClassInNestedClassDeclBug qAccessCheckAcrossInstancesSometimesWrongWithVirtualBaseqSupportEnterIdleCallback qUseGDIScrollbitsForScrolling</li>
         <li>more cosemtic changes - noexcept CTORs, initialized files (already initialized in CTOR to silence bad warning from msvc analayzer, and similar)</li>
         <li>update WindowsTargetPlatform from 10.0.16299.0 to 10.0.17134.0</li>
@@ -5808,7 +5809,7 @@ especially those they need to be aware of when upgrading.
                 <li>tons of changes to windows build system (still incomplete but builds Debug-U-32 at least); mostly use ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) MSBuild.exe ... in place of buildall_vs.pl scripts and refactored that .pl code so works with recent changes in vcvars.bat</li>
                 <li>VisualStudio.Net-2017/SetupBuildCommonVars.pl
                     <ul>
-                        <li>lose Fill_Defined_Variables_ from Projects/VisualStudio.Net-2017/SetupBuildCommonVars and use CC insetad of CC_32 etc - in caslls to PrintEnvVarFromCommonBuildVars.pl (most places - but still must review)</li>
+                        <li>lose Fill_Defined_Variables_ from Projects/VisualStudio.Net-2017/SetupBuildCommonVars and use CC instead of CC_32 etc - in caslls to PrintEnvVarFromCommonBuildVars.pl (most places - but still must review)</li>
                         <li>fix handling of PATH with PrintEnvVarFromCommonBuildVars.pl - so now maybe works for -64 builds</li>
                         <li>lose obsolete code from VisualStudio.Net-2017/SetupBuildCommonVars.pl, and added new helper GetAugmentedEnvironmentVariablesForConfiguration () which is still not used</li>
                         <li>had to re-install OS, and not sure what all changed. Maybe update to VS2k? - but now vcvarsall.bat seems to change directory, so undo that change (probably new visual studio verison caused this and OS install coincidence)</li>
@@ -9915,7 +9916,7 @@ with:
             </ul>
         </li>
         <li>Cleanup signal handling and static usage (still more todo) on Frameworks::Service</li>
-        <li>minor comments/celanups/. Containers::ReserveSpeedTweekAddNCapacity in InputStream<Byte>::ReadAll</li>
+        <li>minor comments/cleanups/. Containers::ReserveSpeedTweekAddNCapacity in InputStream<Byte>::ReadAll</li>
         <li>New Debug::Backtrace() call to generate a string with stack backtrace, suitable
             for logging. Now automatically called at the point where exceptions
             are thrown in tracelog.
