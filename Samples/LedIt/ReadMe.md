@@ -1,10 +1,7 @@
-It looks like this code USED to work on UNIX, so porting again to unix
-SB pretty easy.
+# About LedIt
 
-I'm pretty sure I didnt have that mcuh working with x-windows - but maybe enoug
-to be intersting...
+Ledit is an MFC-based Stroika application, which leverages the Led word-processor library to implement a simple word processor (roughly equivilent to WordPad).
 
-Try and get compiling/working at least as well as it did before....
+LedIt supports tables, style runs, RTF, rulers etc.
 
-Maybe target other GDI (like libfb?).
-
+(LedIt used to Run on MacOS/Carbon as well, and could probably be ported to X-Windows relatively easily, but there is little reason at this point).

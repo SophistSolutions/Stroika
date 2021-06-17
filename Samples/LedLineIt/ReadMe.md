@@ -1,3 +1,5 @@
+# About LedLineIt
+
 LedLineIt is a plain text editor, built using the Led Class Library.
 
 This code is based on the latest (approximately vintage 2004) copy
