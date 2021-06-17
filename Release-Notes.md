@@ -28,7 +28,6 @@ especially those they need to be aware of when upgrading.
   - fixed calls to cygpath to use --ignore so they behave reasonably when you call with no path arguments (eg. when StroikaLibs is the empty string/list)
   - ScriptsLib/ApplyConfigurations now also sets NMakeIncludeSearchPath so we can find all the included libraries/headers from visual studio that are part of the stroika thirdpartycomponents too (and others); also had to update each project file to use inheirted values
   - compiler bug defines
-
     - new bug define qCompilerAndStdLib_const_extern_declare_then_const_define_namespace_Buggy
     - new qCompilerAndStdLib_startupAppMagicStaticsNotWorkingFully_Buggy bug workaround for vs2k17
     - tweak bug defines for g++ - 10.3 (and GLIBCXX*10x* and AND 11x bug define comments), fixed qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy define for clang++12, qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy already broken in clang12, <https://stroika.atlassian.net/browse/STK-601> broken for clang++12 too
@@ -39,7 +38,8 @@ especially those they need to be aware of when upgrading.
       - These instances of qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy where a PITA to find all of and workaround (and still cannot fully) - but enuf so it all works/runs (just lots of linker warnings still and ugly BWAs)
       - Deal with static inline constexpr definitions - which dont really work right with vs2k17: /FORCE:MULTIPLE
     - new bug defines qCompilerAndStdLib_relaxedEnumClassInitializationRules_Buggy, qCompilerAndStdLib_default_constructor_initialization_issueWithExplicit_Buggy
-
+    - new qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy bug workaround for visual studio ASAN
+    - qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop2_Buggy bug define and workaround
   - deprecated use of Ubuntu2010 and insetad use Ubuntu2104
   - fixed serious bug in ScriptsLib/Configure-VisualStudio-Support.pl - was always using vs2k19 compilers - not vs2k17 - so havent been testing vs2k17 since I rewrote that script
   - tweak basic-unix-test-configurations*valgrind_configs* so uses valgrind on latest / default compiler, not specificialy g++-8 (excpet on ububtu 1804 where that selection needed)
@@ -186,31 +186,6 @@ especially those they need to be aware of when upgrading.
   - badssl.com site failed on raspberripi (havent investigated but seems minor)
 
 #if 0
-
-    fixed regrression in versions for qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy define (RECENT)
-
-commit 49e40d6d679e6a99bcbfe0b7f8afc49f043911c0
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jun 2 15:26:13 2021 +0100
-
-    qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy bug workaround for visual studio ASAN
-
-commit a4655787c76b99d9f5fb667c6186f65bbfb4fd8c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jun 2 16:38:58 2021 +0100
-
-    fixed small recent regression in bugdefine setting qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
-
-commit d266b4323dc921a76a251d8adb2bb2d490d83f77
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jun 3 14:59:17 2021 +0100
-
-    Commetns on https://developercommunity.visualstudio.com/t/please-re-open-httpsdevelopercommunityvisualstudio/1440675 bug workaround
-
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 4 09:56:01 2021 -0400
-
-    qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop2_Buggy bug define and workaround
 
 commit 352a9bada7086afbd1a3690848960fe5eba08c32
 Author: Lewis Pringle <lewis@sophists.com>
