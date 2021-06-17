@@ -20,6 +20,7 @@ especially those they need to be aware of when upgrading.
 - new ptr-to-member CTOR for StructFieldMetaInfo (using new Memory::OffsetOf), and change Stroika_Foundation_DataExchange_StructFieldMetaInfo() - to not use offsetof() - with Stroika_Foundation_DataExchange_StructFieldMetaInfo now deprecated
 - Led and SystemPerformance framework cleanups
 - OpenSSL API wrapper improvements
+- Default to using ASAN on windows debug builds
 
 #### Change Details
 
@@ -123,7 +124,7 @@ especially those they need to be aware of when upgrading.
       - Added a few static_asserts () to Iterable\<T> to make clearer error messages
       - Added Iterable\<T>::operator bool ()
       - deprecated Iterable::First/Last/1 overloads and replaced with a slightly better definition (templated)
-      - documented ambugituy on subclasses of Iterable\<> calling base class Iterable CTOR - be carefuly to select inherited&& CTOR
+      - documented ambiguity on subclasses of Iterable\<> calling base class Iterable CTOR - be carefuly to select inherited&& CTOR
 - Frameworks Library
   - Led
     - Lots of miscelaneous cleanups, especailly to GDI code, cleaning up names used etc (sb nothing functional changed)
