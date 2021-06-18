@@ -216,7 +216,7 @@ DateTime::DateTime (const ::timespec& tmTime, const optional<Timezone>& tz) noex
     if (errno_t e = ::gmtime_s (&tmTimeDataBuf, &unixTime)) {
         ThrowPOSIXErrNo (e);
     };
-    ::tm*        tmTimeData = &tmTimeDataBuf;
+    ::tm* tmTimeData = &tmTimeDataBuf;
 #else
     ::tm* tmTimeData = ::gmtime (&unixTime); // not threadsafe
 #endif
