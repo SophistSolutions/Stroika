@@ -40,10 +40,6 @@ using namespace Stroika::Frameworks::NetworkMonitor::Ping;
  ********************** NetworkMonitor::Ping::Options ***************************
  ********************************************************************************
  */
-constexpr Traversal::Range<size_t> Ping::Options::kAllowedICMPPayloadSizeRange;
-
-const Duration Ping::Options::kDefaultTimeout{1.0};
-
 String Ping::Options::ToString () const
 {
     StringBuilder sb;
@@ -193,13 +189,13 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
                 return ResultType{Duration (Time::GetTickCount () - replyICMPHeader->timestamp / 1000.0), nHops};
             }
             case ICMP::V4::ICMP_TTL_EXPIRE: {
-                Execution::Throw (ICMP::V4::TTLExpiredException (InternetAddress{replyIPHeader->saddr}));
+                Execution::Throw (ICMP::V4::TTLExpiredException{InternetAddress{replyIPHeader->saddr}});
             }
             case ICMP::V4::ICMP_DEST_UNREACH: {
-                Execution::Throw (ICMP::V4::DestinationUnreachableException (replyICMPHeader->code, InternetAddress{replyIPHeader->saddr}));
+                Execution::Throw (ICMP::V4::DestinationUnreachableException{replyICMPHeader->code, InternetAddress{replyIPHeader->saddr}});
             };
             default: {
-                Execution::Throw (ICMP::V4::UnknownICMPPacket (replyICMPHeader->type));
+                Execution::Throw (ICMP::V4::UnknownICMPPacket{replyICMPHeader->type});
             }
         }
     }
@@ -270,5 +266,5 @@ SampleResults NetworkMonitor::Ping::Sample (const InternetAddress& addr, const S
             samplesTaken++;
         }
     }
-    return sampleTimes.empty () ? SampleResults{{}, {}, samplesTaken} : SampleResults{Duration (*sampleTimes.Median ()), *sampleHopCounts.Median (), static_cast<unsigned int> (samplesTaken - sampleTimes.size ())};
+    return sampleTimes.empty () ? SampleResults{{}, {}, samplesTaken} : SampleResults{Duration{*sampleTimes.Median ()}, *sampleHopCounts.Median (), static_cast<unsigned int> (samplesTaken - sampleTimes.size ())};
 }

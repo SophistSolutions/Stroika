@@ -42,7 +42,7 @@ namespace Stroika::Frameworks::NetworkMonitor::Traceroute {
 
         /**
          */
-        static const inline Duration kDefaultTimeout{1.0};
+        static const inline Duration kDefaultTimeout{1.0s};
 
         /**
          *  time after a single ping is sent before we treat the ping as having timed out 
