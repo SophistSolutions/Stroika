@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Time {
 #if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     constexpr Timezone Timezone::kUTC{TZ_::eUTC};
 #else
-    inline constexpr Timezone           Timezone::kUTC{TZ_::eUTC};
+    inline constexpr Timezone Timezone::kUTC{TZ_::eUTC};
 #endif
     inline constexpr Timezone Timezone::UTC ()
     {
@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Time {
 #if qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
     constexpr Timezone Timezone::kLocalTime{TZ_::eLocalTime};
 #else
-    inline constexpr Timezone           Timezone::kLocalTime{TZ_::eLocalTime};
+    inline constexpr Timezone Timezone::kLocalTime{TZ_::eLocalTime};
 #endif
     inline constexpr Timezone Timezone::LocalTime ()
     {
