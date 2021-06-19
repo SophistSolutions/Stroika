@@ -37,7 +37,7 @@ namespace Stroika::Foundation::DataExchange {
     RANGE_TYPE CheckedConverter_Range (const typename RANGE_TYPE::value_type& s, const typename RANGE_TYPE::value_type& e);
 
     /**
-     *  CheckedConverter_ValueInRange () will throw BadFormatException () if the argument 'val' is outside
+     *  CheckedConverter_ValueInRange () will throw BadFormatException{} if the argument 'val' is outside
      *  the given argument range.
      *
      *  The 'range' defaults to the RANGE_TYPE::FullRange ().

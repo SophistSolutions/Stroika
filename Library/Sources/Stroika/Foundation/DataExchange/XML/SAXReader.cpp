@@ -230,7 +230,7 @@ public:
     virtual void error (
         const unsigned int /*errCode*/, const XMLCh* const /*errDomain*/, const ErrTypes /*type*/, const XMLCh* const errorText, const XMLCh* const /*systemId*/, const XMLCh* const /*publicId*/, const XMLFileLoc lineNum, const XMLFileLoc colNum) override
     {
-        Execution::Throw (BadFormatException (xercesString2String_ (errorText), static_cast<unsigned int> (lineNum), static_cast<unsigned int> (colNum), 0));
+        Execution::Throw (BadFormatException{xercesString2String_ (errorText), static_cast<unsigned int> (lineNum), static_cast<unsigned int> (colNum), 0});
     }
     virtual void resetErrors () override
     {
@@ -244,11 +244,11 @@ public:
     }
     virtual void error (const SAXParseException& exc) override
     {
-        Execution::Throw (BadFormatException (xercesString2String_ (exc.getMessage ()), static_cast<unsigned int> (exc.getLineNumber ()), static_cast<unsigned int> (exc.getColumnNumber ()), 0));
+        Execution::Throw (BadFormatException{xercesString2String_ (exc.getMessage ()), static_cast<unsigned int> (exc.getLineNumber ()), static_cast<unsigned int> (exc.getColumnNumber ()), 0});
     }
     virtual void fatalError (const SAXParseException& exc) override
     {
-        Execution::Throw (BadFormatException (xercesString2String_ (exc.getMessage ()), static_cast<unsigned int> (exc.getLineNumber ()), static_cast<unsigned int> (exc.getColumnNumber ()), 0));
+        Execution::Throw (BadFormatException{xercesString2String_ (exc.getMessage ()), static_cast<unsigned int> (exc.getLineNumber ()), static_cast<unsigned int> (exc.getColumnNumber ()), 0});
     }
 };
 static MyErrorReproter_ sMyErrorReproter_;
