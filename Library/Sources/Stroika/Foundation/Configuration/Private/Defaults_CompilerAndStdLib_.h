@@ -418,7 +418,9 @@ c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.1
                     assert (i.length () == 1);
                 }
 
-
+ * UPDATED BUG REPORT WITH 
+ *      https://developercommunity.visualstudio.com/t/initializer-list-lifetime-buggy-maybe-just-asan-is/1439352#T-N1439942-N1454940
+ *      reproduction example
  */
 #ifndef qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
 
