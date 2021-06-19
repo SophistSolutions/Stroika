@@ -300,7 +300,7 @@ filesystem::path IO::FileSystem::Ptr::GetFullPathName (const filesystem::path& p
         name2Use = kAnySizePrefix_ + name2Use;
     }
     DWORD                     sz = ::GetFullPathNameW (name2Use.c_str (), 0, nullptr, nullptr);
-    SmallStackBuffer<wchar_t> buf (SmallStackBufferCommon::eUninitialized, sz + 1);
+    SmallStackBuffer<wchar_t> buf{SmallStackBufferCommon::eUninitialized, sz + 1};
     Execution::Platform::Windows::ThrowIfZeroGetLastError (::GetFullPathNameW (name2Use.c_str (), static_cast<DWORD> (buf.GetSize ()), buf.begin (), nullptr));
     return buf.begin ();
 #endif
