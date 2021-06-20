@@ -11,7 +11,7 @@ RUN dnf install langpacks-en glibc-all-langpacks -y
 RUN dnf groupinstall -y "Development Tools"
 
 RUN dnf install -y which wget
-RUN dnf install -y cmake3 && ln -s /usr/bin/cmake3 /usr/local/bin/cmake
+RUN dnf install -y cmake
 RUN dnf install -y libubsan.x86_64
 
 # epel-release needed to be able to install p7zip
