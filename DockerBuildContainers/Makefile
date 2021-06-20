@@ -29,6 +29,7 @@ ifeq ($(shell uname),Linux)
 	docker build -f Centos-7-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-centos-7-small .
 	docker build -f Centos-8-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-centos-8-small .
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev .
+	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-1804 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests .
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2004 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests .
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2104 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2104-regression-tests .
 	 
@@ -45,8 +46,9 @@ endif
 stroika-dev-containers:
 ifeq ($(shell uname),Linux)
 	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10022:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
-	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2004 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2004 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10122:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
-	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2104 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2104 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10222:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
+	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-1804 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-1804 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10122:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
+	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2004 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2004 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10222:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
+	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2104 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2104 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10322:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
 endif
 
 
