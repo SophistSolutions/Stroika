@@ -212,7 +212,7 @@ struct Connection::Rep_ final : IRep {
             }
         }
         if (e != SQLITE_OK) [[UNLIKELY_ATTR]] {
-            [[maybe_unused]] auto&& cleanup = Finally ([=] () noexcept { if (fDB_ != nullptr) { Verify (::sqlite3_close (fDB_) == SQLITE_OK); } });
+            [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { if (fDB_ != nullptr) { Verify (::sqlite3_close (fDB_) == SQLITE_OK); } });
             ThrowSQLiteError_ (e, fDB_);
         }
         if (options.fBusyTimeout) {
