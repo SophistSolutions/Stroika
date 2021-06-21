@@ -34,12 +34,12 @@ namespace {
         }
         else if (islower (digit)) {
             if (digit > 'f') {
-                Execution::Throw (Execution::RuntimeErrorException (L"illegal hex digit"sv));
+                Execution::Throw (Execution::RuntimeErrorException{L"illegal hex digit"sv});
             }
             return static_cast<uint8_t> (10 + (digit - 'a'));
         }
         else {
-            Execution::Throw (Execution::RuntimeErrorException (L"illegal hex digit"sv));
+            Execution::Throw (Execution::RuntimeErrorException{L"illegal hex digit"sv});
         }
     }
 }
@@ -111,7 +111,7 @@ pair<optional<String>, optional<InternetAddress>> Host::ParseRaw_ (const String&
         // must be ipv6 address
         // must be surrounded with []
         if (raw.Last () != ']') {
-            Execution::Throw (Execution::RuntimeErrorException (L"IPV6 hostanme in URL must be surrounded with []"sv));
+            Execution::Throw (Execution::RuntimeErrorException{L"IPV6 hostname in URL must be surrounded with []"sv});
         }
         return pair<optional<String>, optional<InternetAddress>>{nullopt, InternetAddress{raw.SubString (1, -1), InternetAddress::AddressFamily::V6}};
     }
@@ -497,7 +497,7 @@ string UniformResourceIdentification::PCTDecode (const string& s)
                     result += (newC);
                 }
                 else {
-                    Execution::Throw (Execution::RuntimeErrorException (L"incomplete % encoded character in URI"sv));
+                    Execution::Throw (Execution::RuntimeErrorException{L"incomplete % encoded character in URI"sv});
                 }
             } break;
             default: {
