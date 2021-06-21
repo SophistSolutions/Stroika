@@ -212,10 +212,8 @@ struct Connection::Rep_ final : IRep {
             }
         }
         if (e != SQLITE_OK) [[UNLIKELY_ATTR]] {
-            if (fDB_ != nullptr) {
-                Verify (::sqlite3_close (fDB_) == SQLITE_OK);
-            }
-            ThrowSQLiteErrorIfNotOK_ (e, fDB_);
+            [[maybe_unused]] auto&& cleanup = Finally ([=] () noexcept { if (fDB_ != nullptr) { Verify (::sqlite3_close (fDB_) == SQLITE_OK); } });
+            ThrowSQLiteError_ (e, fDB_);
         }
         if (options.fBusyTimeout) {
             SetBusyTimeout (*options.fBusyTimeout);
