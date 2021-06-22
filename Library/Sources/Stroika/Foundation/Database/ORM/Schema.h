@@ -129,6 +129,16 @@ namespace Stroika::Foundation::Database::ORM {
             nonvirtual String DeleteByID () const;
 
             /**
+             *  Return SQL to get record by ID parameter.
+             */
+            nonvirtual String GetByID () const;
+
+            /**
+             *  Return SQL to update record by ID parameter (and set all the rest - same params as Insert).
+             */
+            nonvirtual String UpdateByID () const;
+
+            /**
              *  @todo add overload taking restrict to list of args projection and maybe arg for filterby
              */
             nonvirtual String GetAllElements () const;

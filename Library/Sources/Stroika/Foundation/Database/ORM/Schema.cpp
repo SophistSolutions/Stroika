@@ -300,12 +300,56 @@ String ORM::Schema::StandardSQLStatements::DeleteByID () const
     return sb.str ();
 }
 
+String ORM::Schema::StandardSQLStatements::GetByID () const
+{
+    StringBuilder sb;
+    /*
+     *   SELECT * FROM DEVICES where ID=:ID;
+     */
+    Field indexField = Memory::ValueOf (fTable.GetIDField ());
+    sb += L"SELECT * FROM " + fTable.fName + L" WHERE " + indexField.fName + L"=:" + indexField.fName + L";";
+    return sb.str ();
+}
+
+String ORM::Schema::StandardSQLStatements::UpdateByID () const
+{
+    StringBuilder sb;
+    /*
+     *   UPDATE Customers
+     *   SET ContactName = 'Alfred Schmidt', City= 'Frankfurt'
+     *   WHERE ID=:ID;
+     */
+    Field indexField = Memory::ValueOf (fTable.GetIDField ());
+    sb += L"UPDATE " + fTable.fName;
+    bool firstField   = true;
+    auto addSetField = [&] (const Field& fi) {
+        if (firstField) {
+            firstField = false;
+            sb += L" SET ";
+        }
+        else {
+            sb += L", ";
+        }
+        sb += fi.fName + L"=:" + fi.fName;
+    };
+    for (const Field& i : fTable.fNamedFields) {
+        if (not i.fIsKeyField) {
+            addSetField (i);
+        }
+    }
+    if (fTable.fSpecialCatchAll) {
+        addSetField (*fTable.fSpecialCatchAll);
+    }
+    sb += L" WHERE " + indexField.fName + L"=:" + indexField.fName + L";";
+    return sb.str ();
+}
+
 String ORM::Schema::StandardSQLStatements::GetAllElements () const
 {
     StringBuilder sb;
     /*
-      *   Select * from DEVICES;
-      */
+     *   Select * from DEVICES;
+     */
     sb += L"SELECT * FROM " + fTable.fName + L";";
     return sb.str ();
 }
