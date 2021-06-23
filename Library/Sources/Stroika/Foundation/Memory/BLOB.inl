@@ -111,10 +111,12 @@ namespace Stroika::Foundation::Memory {
     inline BLOB::BLOB (const byte* start, const byte* end)
         : fRep_{start == end ? _SharedIRep (_MakeSharedPtr<ZeroRep_> ()) : _SharedIRep (_MakeSharedPtr<BasicRep_> (start, end))}
     {
+        Ensure (end - start == size ());
     }
     inline BLOB::BLOB (const uint8_t* start, const uint8_t* end)
         : fRep_{start == end ? _SharedIRep (_MakeSharedPtr<ZeroRep_> ()) : _SharedIRep (_MakeSharedPtr<BasicRep_> (start, end))}
     {
+        Ensure (end - start == size ());
     }
     inline BLOB::BLOB (const initializer_list<pair<const byte*, const byte*>>& startEndPairs)
         : fRep_{_MakeSharedPtr<BasicRep_> (startEndPairs)}
