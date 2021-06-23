@@ -321,7 +321,7 @@ String ORM::Schema::StandardSQLStatements::UpdateByID () const
      */
     Field indexField = Memory::ValueOf (fTable.GetIDField ());
     sb += L"UPDATE " + fTable.fName;
-    bool firstField   = true;
+    bool firstField  = true;
     auto addSetField = [&] (const Field& fi) {
         if (firstField) {
             firstField = false;
