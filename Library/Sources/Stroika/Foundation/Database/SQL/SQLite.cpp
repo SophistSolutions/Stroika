@@ -1,15 +1,15 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
 #include <system_error>
 
-#include "../Characters/Format.h"
-#include "../Characters/StringBuilder.h"
-#include "../Characters/ToString.h"
-#include "../Debug/Trace.h"
-#include "../Time/Duration.h"
+#include "../../Characters/Format.h"
+#include "../../Characters/StringBuilder.h"
+#include "../../Characters/ToString.h"
+#include "../../Debug/Trace.h"
+#include "../../Time/Duration.h"
 
 #include "SQLite.h"
 
@@ -20,7 +20,7 @@ using namespace Stroika::Foundation;
 using namespace Characters;
 using namespace Debug;
 using namespace Database;
-using namespace Database::SQLite;
+using namespace Database::SQL::SQLite;
 using namespace Execution;
 using namespace Time;
 
@@ -272,10 +272,10 @@ struct Connection::Rep_ final : IRep {
 
 /*
  ********************************************************************************
- ******************************* SQLite::Ptr ************************************
+ **************************** Connection::Ptr ***********************************
  ********************************************************************************
  */
-SQLite::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
+SQL::SQLite::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
     : pBusyTimeout{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
               const Ptr* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Ptr::pBusyTimeout);
@@ -301,7 +301,7 @@ SQLite::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
  ***************************** SQLite::Connection *******************************
  ********************************************************************************
  */
-auto SQLite::Connection::New (const Options& options, const function<void (const Connection::Ptr&)>& dbInitializer) -> Ptr
+auto SQL::SQLite::Connection::New (const Options& options, const function<void (const Connection::Ptr&)>& dbInitializer) -> Ptr
 {
     auto tmp = make_shared<Rep_> (options);
     Ptr  result{tmp};

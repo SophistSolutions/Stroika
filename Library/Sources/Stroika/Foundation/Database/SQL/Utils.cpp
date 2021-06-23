@@ -1,11 +1,11 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
-#include "../Characters/StringBuilder.h"
+#include "../../Characters/StringBuilder.h"
 
-#include "SQLUtils.h"
+#include "Utils.h"
 
 using std::byte;
 
@@ -19,10 +19,10 @@ using namespace Database;
 
 /*
  ********************************************************************************
- *********************** SQLUtils::QuoteStringForDB *****************************
+ *********************** SQL::Utils::QuoteStringForDB *****************************
  ********************************************************************************
  */
-String SQLUtils::QuoteStringForDB (const String& s)
+String SQL::Utils::QuoteStringForDB (const String& s)
 {
     if (s.Contains ('\'')) {
         StringBuilder sb;

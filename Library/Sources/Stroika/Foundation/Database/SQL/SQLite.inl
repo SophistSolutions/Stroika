@@ -4,10 +4,10 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#ifndef _Stroika_Foundation_Database_SQLite_inl_
-#define _Stroika_Foundation_Database_SQLite_inl_ 1
+#ifndef _Stroika_Foundation_Database_SQL_SQLite_inl_
+#define _Stroika_Foundation_Database_SQL_SQLite_inl_ 1
 
-namespace Stroika::Foundation::Database::SQLite {
+namespace Stroika::Foundation::Database::SQL::SQLite {
 
 #if qHasFeature_sqlite
     /*
@@ -156,4 +156,4 @@ namespace Stroika::Foundation::Database::SQLite {
 
 }
 
-#endif /*_Stroika_Foundation_Database_SQLite_inl_*/
+#endif /*_Stroika_Foundation_Database_SQL_SQLite_inl_*/

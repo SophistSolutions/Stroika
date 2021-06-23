@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
  */
-#include "../StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
 #if qPlatform_Windows
 #include <windows.h>
@@ -12,21 +12,22 @@
 #include <sqlext.h>
 #endif
 
-#include "../Characters/CString/Utilities.h"
-#include "../Characters/Format.h"
+#include "../../Characters/CString/Utilities.h"
+#include "../../Characters/Format.h"
 
 #include "ODBCClient.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Database;
+using namespace Stroika::Foundation::Database::SQL;
 
 /*
  ********************************************************************************
  **************************** ODBCSupport::Exception ****************************
  ********************************************************************************
  */
-Database::Exception::Exception (const String& message)
+Database::SQL::Exception::Exception (const String& message)
     : inherited{Format (L"Database connection error: %s", message.c_str ())}
 {
 }
@@ -36,7 +37,7 @@ Database::Exception::Exception (const String& message)
  ************************* ODBCSupport::NoDataException *************************
  ********************************************************************************
  */
-Database::NoDataException::NoDataException ()
+Database::SQL::NoDataException::NoDataException ()
     : Exception{L"No Data"sv}
 {
 }
@@ -56,7 +57,7 @@ namespace {
         }
     }
 }
-class Database::DBConnection::Rep {
+class Database::SQL::DBConnection::Rep {
 public:
     SQLHDBC      fConnectionHandle{nullptr};
     SQLHENV      fODBCEnvironmentHandle{nullptr};
@@ -134,12 +135,12 @@ public:
         }
     }
 };
-Database::DBConnection::DBConnection (const wstring& dsn)
+Database::SQL::DBConnection::DBConnection (const wstring& dsn)
     : fRep{make_shared<Rep> (dsn)}
 {
 }
 
-unsigned int Database::DBConnection::GetNestedTransactionCount () const
+unsigned int Database::SQL::DBConnection::GetNestedTransactionCount () const
 {
     return fRep->fNestedTransactionCount;
 }

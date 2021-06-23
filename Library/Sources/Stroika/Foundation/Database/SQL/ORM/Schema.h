@@ -1,16 +1,16 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Database_ORM_Schema_h_
-#define _Stroika_Foundation_Database_ORM_Schema_h_ 1
+#ifndef _Stroika_Foundation_Database_SQL_ORM_Schema_h_
+#define _Stroika_Foundation_Database_SQL_ORM_Schema_h_ 1
 
-#include "../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
 #include <optional>
 
-#include "../../Containers/Collection.h"
-#include "../../Containers/Mapping.h"
-#include "../../DataExchange/VariantValue.h"
+#include "../../../Containers/Collection.h"
+#include "../../../Containers/Mapping.h"
+#include "../../../DataExchange/VariantValue.h"
 
 /**
  *  \file
@@ -25,7 +25,7 @@
  *      @todo redo in light of JSON1 extension to sqlite
  */
 
-namespace Stroika::Foundation::Database::ORM {
+namespace Stroika::Foundation::Database::SQL::ORM {
 
     using namespace Containers;
     using namespace DataExchange;
@@ -167,4 +167,4 @@ namespace Stroika::Foundation::Database::ORM {
  */
 #include "Schema.inl"
 
-#endif /*_Stroika_Foundation_Database_ORM_Schema_h_*/
+#endif /*_Stroika_Foundation_Database_SQL_ORM_Schema_h_*/

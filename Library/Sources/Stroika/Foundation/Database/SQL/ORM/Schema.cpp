@@ -1,11 +1,11 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
  */
-#include "../../StroikaPreComp.h"
+#include "../../../StroikaPreComp.h"
 
-#include "../../Characters/StringBuilder.h"
-#include "../../DataExchange/Variant/JSON/Reader.h"
-#include "../../DataExchange/Variant/JSON/Writer.h"
+#include "../../../Characters/StringBuilder.h"
+#include "../../../DataExchange/Variant/JSON/Reader.h"
+#include "../../../DataExchange/Variant/JSON/Writer.h"
 
 #include "Schema.h"
 
@@ -14,6 +14,7 @@ using std::byte;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Database;
+using namespace Stroika::Foundation::Database::SQL;
 using namespace Stroika::Foundation::DataExchange;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
