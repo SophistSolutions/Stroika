@@ -401,13 +401,30 @@ namespace Stroika::Foundation::Database::SQLite {
 
     public:
         /**
-         *  \brief - Call GetNextRow () repeatedly, and accumulate Rows into a Sequence (could have been called GetAllRemainingRows)
+         *  \brief - Call GetNextRow () repeatedly, and accumulate Rows into a Sequence (@see GetAllRows ())
+         * 
+         *  The overloads that take a sequence of column numbers return each row as a tuple of columns (VariantValue)
+         *  for just the specified column numbers.
          * 
          * ... @todo use variadic templates to generatelas GetAllRows()
          * ... @todo COULD overload so columns named by 'name' instead of index, but simple to use index (as specified by result of
          *           GetColumns ()
+         */
+        nonvirtual Sequence<Row> GetAllRemainingRows ();
+        nonvirtual Sequence<VariantValue> GetAllRemainingRows (size_t restrictToColumn);
+        nonvirtual Sequence<tuple<VariantValue, VariantValue>> GetAllRemainingRows (size_t restrictToColumn1, size_t restrictToColumn2);
+        nonvirtual Sequence<tuple<VariantValue, VariantValue, VariantValue>> GetAllRemainingRows (size_t restrictToColumn1, size_t restrictToColumn2, size_t restrictToColumn3);
+
+    public:
+        /**
+         *  \brief - call Reset (), and then GetAllRemainingRows () - which always starts current statement with current bindings from the beginning.
          * 
-         *  \note GetAllRows() calls Reset() when its done, so it can be called repeatedly.
+         *  The overloads that take a sequence of column numbers return each row as a tuple of columns (VariantValue)
+         *  for just the specified column numbers.
+         * 
+         * ... @todo use variadic templates to generatelas GetAllRows()
+         * ... @todo COULD overload so columns named by 'name' instead of index, but simple to use index (as specified by result of
+         *           GetColumns ()
          */
         nonvirtual Sequence<Row> GetAllRows ();
         nonvirtual Sequence<VariantValue> GetAllRows (size_t restrictToColumn);
@@ -519,12 +536,12 @@ namespace Stroika::Foundation::Database::SQLite {
 
     public:
         /**
-         *  Execute the given statement, and ignore its result value. Do NOT mix Execute() with GetNextRow().
+         *  Execute the given statement, and ignore its result value. Do NOT mix Execute() with GetNextRow() or GetAllRows ().
          *  It is legal to call this on an SQL statement that returns results, but you will not see the results.
          * 
          *  Execute () with a list of ParameterDescriptions is like:
          *      >   Reset
-         *      >   Bind () with that list of parameters and then 
+         *      >   Bind () with that list of parameters and then  (can be empty list/missing)
          *      >   Execute ()
          * 
          *  No need to call Reset() before calling Execute () as it calls it internally.

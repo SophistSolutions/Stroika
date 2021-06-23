@@ -463,37 +463,35 @@ void Statement::Reset ()
     ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (fStatementObj_), fConnectionPtr_->Peek ());
 }
 
-auto Statement::GetAllRows () -> Sequence<Row>
+auto Statement::GetAllRemainingRows () -> Sequence<Row>
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{"SQLite::DB::Statement::GetAllRows"};
+    TraceContextBumper ctx{"SQLite::DB::Statement::GetAllRemainingRows"};
 #endif
     Sequence<Row> result;
     while (auto o = GetNextRow ()) {
         result += *o;
     }
-    Reset ();
     return result;
 }
 
-Sequence<VariantValue> Statement::GetAllRows (size_t restrictToColumn)
+Sequence<VariantValue> Statement::GetAllRemainingRows (size_t restrictToColumn)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{"SQLite::DB::Statement::GetAllRows"};
+    TraceContextBumper ctx{"SQLite::DB::Statement::GetAllRemainingRows"};
 #endif
     Sequence<VariantValue> result;
     ColumnDescription      col0 = GetColumns ()[restrictToColumn];
     while (auto o = GetNextRow ()) {
         result += *o->Lookup (col0.fName);
     }
-    Reset ();
     return result;
 }
 
-Sequence<tuple<VariantValue, VariantValue>> Statement::GetAllRows (size_t restrictToColumn1, size_t restrictToColumn2)
+Sequence<tuple<VariantValue, VariantValue>> Statement::GetAllRemainingRows (size_t restrictToColumn1, size_t restrictToColumn2)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{"SQLite::DB::Statement::GetAllRows"};
+    TraceContextBumper ctx{"SQLite::DB::Statement::GetAllRemainingRows"};
 #endif
     Sequence<tuple<VariantValue, VariantValue>> result;
     ColumnDescription                           col0 = GetColumns ()[restrictToColumn1];
@@ -501,14 +499,13 @@ Sequence<tuple<VariantValue, VariantValue>> Statement::GetAllRows (size_t restri
     while (auto o = GetNextRow ()) {
         result += make_tuple (*o->Lookup (col0.fName), *o->Lookup (col1.fName));
     }
-    Reset ();
     return result;
 }
 
-Sequence<tuple<VariantValue, VariantValue, VariantValue>> Statement::GetAllRows (size_t restrictToColumn1, size_t restrictToColumn2, size_t restrictToColumn3)
+Sequence<tuple<VariantValue, VariantValue, VariantValue>> Statement::GetAllRemainingRows (size_t restrictToColumn1, size_t restrictToColumn2, size_t restrictToColumn3)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{"SQLite::DB::Statement::GetAllRows"};
+    TraceContextBumper ctx{"SQLite::DB::Statement::GetAllRemainingRows"};
 #endif
     Sequence<tuple<VariantValue, VariantValue, VariantValue>> result;
     ColumnDescription                                         col0 = GetColumns ()[restrictToColumn1];
@@ -517,7 +514,6 @@ Sequence<tuple<VariantValue, VariantValue, VariantValue>> Statement::GetAllRows 
     while (auto o = GetNextRow ()) {
         result += make_tuple (*o->Lookup (col0.fName), *o->Lookup (col1.fName), *o->Lookup (col2.fName));
     }
-    Reset ();
     return result;
 }
 
