@@ -93,11 +93,13 @@ Characters::String Common::GUID::ToString () const
 template <>
 Memory::BLOB Common::GUID::As () const
 {
+    Assert ((end () - begin ()) == 16);
     return Memory::BLOB{begin (), end ()};
 }
 
 Common::GUID::operator Memory::BLOB () const
 {
+    Assert ((end () - begin ()) == 16);
     return Memory::BLOB{begin (), end ()};
 }
 
