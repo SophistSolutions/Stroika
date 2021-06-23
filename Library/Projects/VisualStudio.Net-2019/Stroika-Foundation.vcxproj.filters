@@ -214,8 +214,11 @@
     <Filter Include="Sources\Configuration\Platform\Windows">
       <UniqueIdentifier>{9ae88586-8d81-45fe-a5f3-d1652094bebe}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Database\ORM">
-      <UniqueIdentifier>{46c7b135-f3a0-4455-9111-13e571b66e7c}</UniqueIdentifier>
+    <Filter Include="Sources\Database\SQL">
+      <UniqueIdentifier>{2b398eed-afd2-44f7-a473-a8986124846b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Database\SQL\ORM">
+      <UniqueIdentifier>{02077998-1185-4a8b-9d59-2bea3217bddd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -233,9 +236,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Realtime.cpp">
       <Filter>Sources\Time</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.cpp">
-      <Filter>Sources\Database</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.cpp">
       <Filter>Sources\Execution\Platform\Windows</Filter>
@@ -552,9 +552,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\MallocGuard.cpp">
       <Filter>Sources\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQLite.cpp">
-      <Filter>Sources\Database</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\7z\Reader.cpp">
       <Filter>Sources\DataExchange\Archive\7z</Filter>
     </ClCompile>
@@ -810,14 +807,20 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\TransferEncoding.cpp">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQLUtils.cpp">
-      <Filter>Sources\Database</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\LibraryContext.cpp">
       <Filter>Sources\Cryptography\OpenSSL</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\ORM\Schema.cpp">
-      <Filter>Sources\Database\ORM</Filter>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\ODBCClient.cpp">
+      <Filter>Sources\Database\SQL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\SQLite.cpp">
+      <Filter>Sources\Database\SQL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\Utils.cpp">
+      <Filter>Sources\Database\SQL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\ORM\Schema.cpp">
+      <Filter>Sources\Database\SQL\ORM</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -848,9 +851,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\StroikaPreComp.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Optional.h">
       <Filter>Sources\Memory</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.h">
-      <Filter>Sources\Database</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.h">
       <Filter>Sources\Memory\Platform\Windows</Filter>
@@ -1644,9 +1644,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Adapters\Adder.h">
       <Filter>Sources\Containers\Adapters</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQLite.h">
-      <Filter>Sources\Database</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\7z\Reader.h">
       <Filter>Sources\DataExchange\Archive\7z</Filter>
     </ClInclude>
@@ -2085,14 +2082,29 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\Algorithm.h">
       <Filter>Sources\Cryptography\Digest\Algorithm</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQLUtils.h">
-      <Filter>Sources\Database</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\LibraryContext.h">
       <Filter>Sources\Cryptography\OpenSSL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\ORM\Schema.h">
-      <Filter>Sources\Database\ORM</Filter>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.h">
+      <Filter>Sources\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQLite.h">
+      <Filter>Sources\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQLUtils.h">
+      <Filter>Sources\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\ODBCClient.h">
+      <Filter>Sources\Database\SQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\SQLite.h">
+      <Filter>Sources\Database\SQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\Utils.h">
+      <Filter>Sources\Database\SQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\ORM\Schema.h">
+      <Filter>Sources\Database\SQL\ORM</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2261,9 +2273,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\ReadMe.md">
       <Filter>Sources\Cryptography</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Database\ReadMe.md">
-      <Filter>Sources\Database</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ReadMe.md">
       <Filter>Sources\DataExchange</Filter>
@@ -2856,9 +2865,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Adapters\Adder.inl">
       <Filter>Sources\Containers\Adapters</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Database\SQLite.inl">
-      <Filter>Sources\Database</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Reader.inl">
       <Filter>Sources\DataExchange\Archive</Filter>
     </None>
@@ -3005,9 +3011,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\Makefile">
       <Filter>Sources\Cryptography\SSL</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Database\Makefile">
-      <Filter>Sources\Database</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Makefile">
       <Filter>Sources\DataExchange</Filter>
@@ -3399,9 +3402,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Common\ObjectForSideEffects.inl">
       <Filter>Sources\Common</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Database\SQLUtils.inl">
-      <Filter>Sources\Database</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\CipherAlgorithm.inl">
       <Filter>Sources\Cryptography\OpenSSL</Filter>
     </None>
@@ -3411,11 +3411,29 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DigestAlgorithm.inl">
       <Filter>Sources\Cryptography\OpenSSL</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Database\ORM\Schema.inl">
-      <Filter>Sources\Database\ORM</Filter>
+    <None Include="..\..\Sources\Stroika\Foundation\Database\Makefile">
+      <Filter>Sources\Database</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Database\ORM\Makefile">
-      <Filter>Sources\Database\ORM</Filter>
+    <None Include="..\..\Sources\Stroika\Foundation\Database\ReadMe.md">
+      <Filter>Sources\Database</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\Makefile">
+      <Filter>Sources\Database\SQL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\ReadMe.md">
+      <Filter>Sources\Database\SQL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\SQLite.inl">
+      <Filter>Sources\Database\SQL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\Utils.inl">
+      <Filter>Sources\Database\SQL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\ORM\Makefile">
+      <Filter>Sources\Database\SQL\ORM</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\ORM\Schema.inl">
+      <Filter>Sources\Database\SQL\ORM</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
