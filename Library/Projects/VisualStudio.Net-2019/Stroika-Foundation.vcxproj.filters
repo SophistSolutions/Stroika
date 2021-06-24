@@ -825,6 +825,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\Statement.cpp">
       <Filter>Sources\Database\SQL</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\Connection.cpp">
+      <Filter>Sources\Database\SQL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">

@@ -32,11 +32,14 @@ namespace Stroika::Foundation::Database::SQL {
     public:
         class IRep;
 
-    protected:
+    public:
         /**
          */
-        Transaction (unique_ptr<IRep>&& rep);
+        Transaction (Transaction&&)      = default;
         Transaction (const Transaction&) = delete;
+
+    protected:
+        Transaction (unique_ptr<IRep>&& rep);
 
     public:
         /**

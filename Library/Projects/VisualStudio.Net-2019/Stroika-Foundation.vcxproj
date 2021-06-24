@@ -95,6 +95,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DigestAlgorithm.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Exception.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\LibraryContext.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\Connection.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\ODBCClient.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\ORM\Schema.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\SQLite.cpp" />

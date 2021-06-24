@@ -26,6 +26,9 @@ namespace Stroika::Foundation::Database::SQL {
 
     using Characters::String;
 
+    class Transaction;
+    class Statement;
+
     /**
      *  'Connection' is a quasi-namespace.
      */
@@ -50,11 +53,24 @@ namespace Stroika::Foundation::Database::SQL {
      *          But though each connection can only be accessed from a single thread at a time, the underlying database may be
      *          threadsafe (even if accessed across processes).
      */
-    class Connection::IRep : protected Debug::AssertExternallySynchronizedLock {
+    class Connection::IRep : protected Debug::AssertExternallySynchronizedLock, protected enable_shared_from_this<Connection::IRep> {
     public:
         /**
          */
         virtual ~IRep () = default;
+
+    public:
+        /**
+         *  Statement object factory
+         */
+        virtual Statement mkStatement (const String& sql) = 0;
+
+    public:
+        /**
+         *  Transaction object factory
+         */
+
+        virtual Transaction mkTransaction () = 0;
 
     public:
         /**
@@ -96,6 +112,18 @@ namespace Stroika::Foundation::Database::SQL {
         /**
          */
         nonvirtual IRep* operator-> () const noexcept;
+
+    public:
+        /**
+         *  Statement object factory
+         */
+        nonvirtual Statement mkStatement (const String& sql);
+
+    public:
+        /**
+         *  Transaction object factory
+         */
+        nonvirtual Transaction mkTransaction ();
 
     public:
         /**

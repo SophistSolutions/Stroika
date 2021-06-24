@@ -42,11 +42,14 @@ namespace Stroika::Foundation::Database::SQL {
     public:
         class IRep;
 
-    protected:
+    public:
         /**
          */
-        Statement (unique_ptr<IRep>&& rep);
+        Statement (Statement&&)      = default;
         Statement (const Statement&) = delete;
+
+    protected:
+        Statement (unique_ptr<IRep>&& rep);
 
     public:
         /**
