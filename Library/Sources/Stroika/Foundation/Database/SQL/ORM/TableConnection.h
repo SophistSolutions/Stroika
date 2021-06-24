@@ -45,6 +45,9 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         nonvirtual optional<T> GetByID (const typename TRAITS::IDType& id);
 
     public:
+        nonvirtual Sequence<T> GetAll ();
+
+    public:
         nonvirtual void AddNew (const T& v);
 
     public:
