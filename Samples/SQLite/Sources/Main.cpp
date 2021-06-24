@@ -5,7 +5,7 @@
 
 #include <cstdlib>
 
-#include "Stroika/Foundation/Database/SQLite.h"
+#include "Stroika/Foundation/Database/SQL/SQLite.h"
 
 #include "ComputerNetwork.h"
 #include "SimpleEmployeesDB.h"
