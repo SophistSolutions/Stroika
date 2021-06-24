@@ -9,8 +9,8 @@
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Database/SQLUtils.h"
-#include "Stroika/Foundation/Database/SQLite.h"
+#include "Stroika/Foundation/Database/SQL/SQLite.h"
+#include "Stroika/Foundation/Database/SQL/Utils.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
@@ -37,7 +37,7 @@ namespace {
     // Bad example (for now) without Bind - just formatting sql lines
     namespace RegressionTest1_sqlite_ScansDBTest_ {
         namespace PRIVATE_ {
-            using namespace Database::SQLite;
+            using namespace Database::SQL::SQLite;
             enum class ScanKindType_ {
                 Background,
                 Reference,
@@ -54,9 +54,9 @@ namespace {
                     bool created = false;
                     try {
 #if __cpp_designated_initializers
-                        fDB_ = Connection::New (Options{.fDBPath = testDBFile}, [&created] (Database::SQLite::Connection::Ptr db) { created = true; InitialSetup_ (db); });
+                        fDB_ = Connection::New (Options{.fDBPath = testDBFile}, [&created] (Database::SQL::SQLite::Connection::Ptr db) { created = true; InitialSetup_ (db); });
 #else
-                        fDB_ = Connection::New (Options{testDBFile}, [&created] (Database::SQLite::Connection::Ptr db) { created = true; InitialSetup_ (db); });
+                        fDB_ = Connection::New (Options{testDBFile}, [&created] (Database::SQL::SQLite::Connection::Ptr db) { created = true; InitialSetup_ (db); });
 #endif
                     }
                     catch (...) {
@@ -75,9 +75,9 @@ namespace {
                     bool created = false;
                     try {
 #if __cpp_designated_initializers
-                        fDB_ = Connection::New (Options{.fInMemoryDB = L""}, [&created] (Database::SQLite::Connection::Ptr db) { created = true; InitialSetup_(db); });
+                        fDB_ = Connection::New (Options{.fInMemoryDB = L""}, [&created] (Database::SQL::SQLite::Connection::Ptr db) { created = true; InitialSetup_(db); });
 #else
-                        fDB_ = Connection::New (Options{nullopt, true, nullopt, L""}, [&created] (Database::SQLite::Connection::Ptr db) { created = true; InitialSetup_(db); });
+                        fDB_ = Connection::New (Options{nullopt, true, nullopt, L""}, [&created] (Database::SQL::SQLite::Connection::Ptr db) { created = true; InitialSetup_(db); });
 #endif
                     }
                     catch (...) {
@@ -119,13 +119,13 @@ namespace {
                             sb += L"'" + ScanEnd.AsUTC ().Format (DateTime::kISO8601Format) + L"',";
                             sb += Characters::Format (L"%d", scanKind) + L",";
                             if (rawSpectrum) {
-                                sb += L"'" + Database::SQLUtils::QuoteStringForDB (L"SomeLongASCIIStringS\r\r\n\t'omeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString") + L"',";
+                                sb += L"'" + Database::SQL::Utils::QuoteStringForDB (L"SomeLongASCIIStringS\r\r\n\t'omeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString") + L"',";
                             }
                             else {
                                 sb += L"NULL,";
                             }
                             if (ScanLabel) {
-                                sb += L"'" + Database::SQLUtils::QuoteStringForDB (*ScanLabel) + L"'";
+                                sb += L"'" + Database::SQL::Utils::QuoteStringForDB (*ScanLabel) + L"'";
                             }
                             else {
                                 sb += L"NULL";
@@ -171,7 +171,7 @@ namespace {
                     }
                     return nullopt;
                 }
-                static void InitialSetup_ (Database::SQLite::Connection::Ptr db)
+                static void InitialSetup_ (Database::SQL::SQLite::Connection::Ptr db)
                 {
                     // @todo rewrite this using Bind()
                     TraceContextBumper ctx{"ScanDB_::DB::InitialSetup_"};
@@ -225,7 +225,7 @@ namespace {
                     tableSetup_AuxData ();
                     tableSetup_ExtraForeignKeys ();
                 }
-                Database::SQLite::Connection::Ptr fDB_;
+                Database::SQL::SQLite::Connection::Ptr fDB_;
             };
         }
         void DoIt ()
@@ -275,7 +275,7 @@ namespace {
 
     namespace RegressionTest2_sqlite_EmployeesDB_with_threads_ {
 
-        using namespace Database::SQLite;
+        using namespace Database::SQL::SQLite;
 
         namespace PRIVATE_ {
 
@@ -466,7 +466,7 @@ namespace {
         void DoIt ()
         {
             TraceContextBumper ctx{"RegressionTest2_sqlite_EmployeesDB_with_threads_::DoIt"};
-            using namespace Database::SQLite;
+            using namespace Database::SQL::SQLite;
             auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "threads-test.db";
             (void)std::filesystem::remove (dbPath);
 #if __cpp_designated_initializers

@@ -6,11 +6,11 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Database/SQLite.h"
+#include "Stroika/Foundation/Database/SQL/SQLite.h"
 
 namespace Stroika::Samples::SQLite {
 #if qHasFeature_sqlite
-    using Stroika::Foundation::Database::SQLite::Options;
+    using Stroika::Foundation::Database::SQL::SQLite::Options;
     /**
      *  \brief  Simple test of using threads with SQLite - one thread updates employees table, and one writes paychecks
      */
