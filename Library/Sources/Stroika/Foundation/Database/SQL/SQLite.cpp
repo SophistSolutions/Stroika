@@ -357,7 +357,6 @@ struct Statement::MyRep_ : IRep {
     }
     virtual String GetSQL (WhichSQLFlag whichSQL) const override
     {
-        Assert (not CompiledOptions::kThe.ENABLE_NORMALIZE);
         shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{*this};
         switch (whichSQL) {
             case WhichSQLFlag::eOriginal:
