@@ -10,7 +10,7 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Set.h"
 
-#include "Stroika/Foundation/Database/SQLite.h"
+#include "Stroika/Foundation/Database/SQL/SQLite.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Time/DateTime.h"
@@ -27,7 +27,7 @@ using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Time;
 
 #if qHasFeature_sqlite
-using namespace Database::SQLite;
+using namespace Database::SQL::SQLite;
 
 namespace {
     Connection::Ptr SetupDB_ (const Options& options)

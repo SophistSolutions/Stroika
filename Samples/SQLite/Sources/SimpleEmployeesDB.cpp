@@ -8,7 +8,7 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Set.h"
 
-#include "Stroika/Foundation/Database/SQLite.h"
+#include "Stroika/Foundation/Database/SQL/SQLite.h"
 
 #include "SimpleEmployeesDB.h"
 
@@ -20,7 +20,7 @@ using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Database;
 
 #if qHasFeature_sqlite
-using namespace Database::SQLite;
+using namespace Database::SQL::SQLite;
 
 void Stroika::Samples::SQLite::SimpleEmployeesDB (const Options& options)
 {
