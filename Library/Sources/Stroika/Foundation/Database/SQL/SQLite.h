@@ -22,6 +22,8 @@
 #include "../../IO/Network/URI.h"
 #include "../../Time/Duration.h"
 
+#include "Connection.h"
+
 /**
  *  \file
  *
@@ -193,15 +195,11 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
     /**
      *  'Connection' is a quasi-namespace.
      */
-    class Connection {
+    class Connection : SQL::Connection {
     public:
-        /**
-         */
         class IRep;
 
     public:
-        /**
-         */
         class Ptr;
 
     private:
@@ -234,18 +232,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
      *          @see https://www.sqlite.org/threadsafe.html
      *          We set SQLITE_OPEN_NOMUTEX on open (so mode Multi-thread, but not Serialized).
      */
-    class Connection::IRep : protected Debug::AssertExternallySynchronizedLock {
-    public:
-        /**
-         */
-        virtual ~IRep () = default;
-
-    public:
-        /**
-         *  This returns nothing, but raises exceptions on errors.
-         */
-        virtual void Exec (const String& sql) = 0;
-
+    class Connection::IRep : public SQL::Connection::IRep {
     public:
         /**
          *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the sqlite API.
@@ -282,7 +269,10 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
      *          We set SQLITE_OPEN_NOMUTEX on open (so mode Multi-thread, but not Serialized).
      *
      */
-    class Connection::Ptr : private Debug::AssertExternallySynchronizedLock {
+    class Connection::Ptr : public SQL::Connection::Ptr {
+    private:
+        using inherited = SQL::Connection::Ptr;
+
     public:
         /**
          */
@@ -305,14 +295,6 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
 
     public:
         /**
-         *  This returns nothing, but raises exceptions on errors.
-         *
-         *  \todo - EXTEND this to write the RESPONSE (use the callback) to DbgTrace () calls - perhaps optionally?)
-         */
-        nonvirtual void Exec (const String& sql) const;
-
-    public:
-        /**
          *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the sqlite API.
          */
         nonvirtual ::sqlite3* Peek () const;
@@ -325,25 +307,14 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
         Common::Property<Duration> pBusyTimeout;
 
     public:
-        nonvirtual auto operator== (const Ptr& rhs) const;
-        nonvirtual bool operator== (nullptr_t) const noexcept;
-#if __cpp_impl_three_way_comparison < 201907
-        nonvirtual bool operator!= (const Ptr& rhs) const;
-        nonvirtual bool operator!= (nullptr_t) const;
-#endif
-
-    private:
-        shared_ptr<IRep> fRep_;
-
-    private:
-        friend class Statement;
+        friend class Statement; // sb able to lose this...
     };
 
     /**
      *  \note - Design Note - we use String for the result-column-name - and could use int or Atom. But
      *        String slightly simpler, and nearly as performant, so going with that for now.
      *
-     *  \todo   CONSIDER redo Row as iterator; or maybe GetREsults () method that returns iterable of Rows? and lazy pulls them?
+     *  \todo   CONSIDER redo Row as iterator; or maybe GetResults () method that returns iterable of Rows? and lazy pulls them?
      * 
      *  Unlike a Connection::Ptr, a Statement cannot be copied (though you can use shared_ptr<Statement> if you wish to copy them).
      */

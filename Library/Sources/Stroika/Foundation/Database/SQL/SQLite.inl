@@ -61,62 +61,26 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
      ********************************************************************************
      */
     inline Connection::Ptr::Ptr (const Ptr& src)
-        : Ptr{src.fRep_}
+        : Ptr{dynamic_pointer_cast<IRep> (src._fRep)}
     {
     }
     inline Connection::Ptr& Connection::Ptr::operator= (const Ptr& src)
     {
-        if (this != &src) {
-            fRep_ = src.fRep_;
-#if qDebug
-            if (fRep_) {
-                _fSharedContext = fRep_->_fSharedContext;
-            }
-#endif
-        }
+        inherited::operator= (src);
         return *this;
     }
     inline Connection::Ptr& Connection::Ptr::operator= (Ptr&& src) noexcept
     {
-        if (this != &src) {
-            fRep_ = move (src.fRep_);
-#if qDebug
-            if (fRep_) {
-                _fSharedContext = fRep_->_fSharedContext;
-            }
-#endif
-        }
+        inherited::operator= (move (src));
         return *this;
     }
     inline Connection::IRep* Connection::Ptr::operator-> () const noexcept
     {
-        return fRep_.get ();
-    }
-    inline auto Connection::Ptr::operator== (const Ptr& rhs) const
-    {
-        return fRep_ == rhs.fRep_;
-    }
-    inline bool Connection::Ptr::operator== (nullptr_t) const noexcept
-    {
-        return fRep_.get () == nullptr;
-    }
-#if __cpp_impl_three_way_comparison < 201907
-    inline bool Connection::Ptr::operator!= (const Ptr& rhs) const
-    {
-        return fRep_ == rhs.fRep_;
-    }
-    inline bool Connection::Ptr::operator!= (nullptr_t) const
-    {
-        return fRep_ != nullptr;
-    }
-#endif
-    inline void Connection::Ptr::Exec (const String& sql) const
-    {
-        fRep_->Exec (sql);
+        return dynamic_pointer_cast<IRep> (_fRep).get ();
     }
     inline ::sqlite3* Connection::Ptr::Peek () const
     {
-        return fRep_->Peek ();
+        return dynamic_pointer_cast<IRep> (_fRep)->Peek ();
     }
 
     /*
