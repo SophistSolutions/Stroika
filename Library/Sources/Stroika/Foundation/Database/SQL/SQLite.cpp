@@ -272,33 +272,28 @@ struct Connection::Rep_ final : IRep {
 
 /*
  ********************************************************************************
- **************************** Connection::Ptr ***********************************
+ *********************** SQL::SQLite::Connection::Ptr ***************************
  ********************************************************************************
  */
 SQL::SQLite::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
-    : pBusyTimeout{
+    : inherited{src}
+    , pBusyTimeout{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
               const Ptr* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Ptr::pBusyTimeout);
-              RequireNotNull (thisObj->fRep_);
-              return thisObj->fRep_->GetBusyTimeout ();
+              RequireNotNull (thisObj->operator-> ());
+              return thisObj->operator-> ()->GetBusyTimeout ();
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, auto timeout) {
               Ptr* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Ptr::pBusyTimeout);
-              RequireNotNull (thisObj->fRep_);
-              thisObj->fRep_->SetBusyTimeout (timeout);
+              RequireNotNull (thisObj->operator-> ());
+              thisObj->operator-> ()->SetBusyTimeout (timeout);
           }}
-    , fRep_{src}
 {
-#if qDebug
-    if (fRep_) {
-        _fSharedContext = fRep_->_fSharedContext;
-    }
-#endif
 }
 
 /*
  ********************************************************************************
- ***************************** SQLite::Connection *******************************
+ ************************** SQL::SQLite::Connection *****************************
  ********************************************************************************
  */
 auto SQL::SQLite::Connection::New (const Options& options, const function<void (const Connection::Ptr&)>& dbInitializer) -> Ptr
@@ -356,7 +351,7 @@ Statement::Statement (const Connection::Ptr& db, const String& query)
     RequireNotNull (db->Peek ());
 
 #if qDebug
-    _fSharedContext = fConnectionPtr_._fSharedContext;
+    _fSharedContext = fConnectionPtr_.GetSharedContext ();
 #endif
 
     string                                                    queryUTF8 = query.AsUTF8 ();
