@@ -11,8 +11,8 @@
 #include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
-#include "Stroika/Foundation/Database/ORM/Schema.h"
-#include "Stroika/Foundation/Database/SQLite.h"
+#include "Stroika/Foundation/Database/SQL/ORM/Schema.h"
+#include "Stroika/Foundation/Database/SQL/SQLite.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Time/DateTime.h"
@@ -32,9 +32,9 @@ using namespace Stroika::Foundation::Time;
 using Common::GUID;
 
 #if qHasFeature_sqlite
-using namespace Database::SQLite;
+using namespace Database::SQL::SQLite;
 
-using ORM::Schema::StandardSQLStatements;
+using SQL::ORM::Schema::StandardSQLStatements;
 
 namespace {
     /// TWO ways to handle sets:
@@ -87,13 +87,13 @@ namespace {
     /**
      *  This defines the mapping from our external data model (Device::kMapper) to the SQL data model.
      */
-    const ORM::Schema::Table kDeviceTableSchema_{
+    const SQL::ORM::Schema::Table kDeviceTableSchema_{
         L"Devices",
         /*
          *  use the same names as the ObjectVariantMapper for simpler mapping, or specify an alternate name
          *  for ID, just as an example.
          */
-        Collection<ORM::Schema::Field>{
+        Collection<SQL::ORM::Schema::Field>{
 #if __cpp_designated_initializers
             /**
              *  For ID, generate random GUID (BLOB) automatically in database
@@ -105,7 +105,7 @@ namespace {
             {L"name", nullopt, false, VariantValue::eString, nullopt, nullopt, nullopt, nullopt, true}
 #endif
         },
-        ORM::Schema::CatchAllField{}};
+        SQL::ORM::Schema::CatchAllField{}};
 
     Connection::Ptr SetupDB_ (const Options& options)
     {
