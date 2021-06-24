@@ -551,7 +551,7 @@ struct Transaction::MyRep_ : public SQL::Transaction::IRep {
         // @todo record more info so we can report finer grained status ; try/catch in rollback/commit and dbgtraces
         return fCompleted_ ? Disposition::eCompleted : Disposition::eNone;
     }
-    Connection::Ptr     fConnectionPtr_;
+    Connection::Ptr fConnectionPtr_;
     bool            fCompleted_{false};
 };
 Transaction::Transaction (const Connection::Ptr& db, Flag f)

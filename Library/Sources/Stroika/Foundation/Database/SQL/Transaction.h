@@ -7,6 +7,7 @@
 #include "../../StroikaPreComp.h"
 
 #include "../../Characters/String.h"
+#include "../../Configuration/Enumeration.h"
 #include "../../Debug/AssertExternallySynchronizedLock.h"
 
 #include "Connection.h"
@@ -111,10 +112,14 @@ namespace Stroika::Foundation::Database::SQL {
         virtual void Rollback () = 0;
 
     public:
-        enum Disposition { eNone,
-                           eRolledBack,
-                           eCompleted,
-                           eFailed };
+        enum class Disposition {
+            eNone,
+            eRolledBack,
+            eCompleted,
+            eFailed,
+
+            Stroika_Define_Enum_Bounds (eNone, eFailed)
+        };
 
     public:
         /**
