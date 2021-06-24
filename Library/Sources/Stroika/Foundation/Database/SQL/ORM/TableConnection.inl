@@ -17,10 +17,10 @@ namespace Stroika::Foundation::Database::SQL::ORM {
      ********************************************************************************
      */
     template <typename T, typename TRAITS>
-    TableConnection<T,TRAITS>::TableConnection (const Connection::Ptr& conn, const Schema::Table& tableSchema, const ObjectVariantMapper& objectVariantMapper)
+    TableConnection<T, TRAITS>::TableConnection (const Connection::Ptr& conn, const Schema::Table& tableSchema, const ObjectVariantMapper& objectVariantMapper)
         : fConnection_{conn}
         , fTableSchema_{tableSchema}
-        , fObjectVariantMapper_{ objectVariantMapper}
+        , fObjectVariantMapper_{objectVariantMapper}
     {
     }
     template <typename T, typename TRAITS>
