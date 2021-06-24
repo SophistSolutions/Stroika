@@ -129,6 +129,9 @@ namespace Stroika::Foundation::Database::SQL {
          *  Mostly this reports eNone or something else. But extra status could be useful for logging.
          */
         virtual Disposition GetDisposition () const = 0;
+
+    private:
+        friend class Transaction;
     };
 
 }

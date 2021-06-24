@@ -20,8 +20,7 @@ namespace Stroika::Foundation::Database::SQL {
     inline Transaction::Transaction (unique_ptr<IRep>&& rep)
         : _fRep{move (rep)}
     {
-#if qDebug && 0
-        // @todo debug why not compiles
+#if qDebug
         _fSharedContext = _fRep->_fSharedContext;
 #endif
     }
