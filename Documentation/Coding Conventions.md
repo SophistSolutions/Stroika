@@ -121,6 +121,13 @@ but if count was numeric_limits\&lt;size_t\&gt;::max(), then the e pointer compu
 
 ---
 
+## quasi-namespace (quasi namespace)
+
+This is the use of a struct as a namespace. Now that C++ has namespaces, you might ask - why would anybody do this? The answer is that struct allows defining part of the namespace is PRIVATE, and part public. This can be sometimes useful,
+and that is why Stroika occasionally uses this pattern.
+
+---
+
 ## New static methods and Factories
 
 In Stroika, a New () is static method, which allocates an instance of some class, but returns some kind of shared_ptr/smart pointer to the type – not a bare C++ pointer.
