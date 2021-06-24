@@ -98,6 +98,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\ODBCClient.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\ORM\Schema.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\SQLite.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\Statement.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\Utils.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\7z\Reader.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Reader.cpp" />
@@ -448,6 +449,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\ODBCClient.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\ORM\Schema.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\SQLite.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\Statement.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\Utils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\7z\Reader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Reader.h" />
@@ -879,6 +881,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\ORM\Schema.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\SQLite.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\Statement.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\Utils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\7z\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Makefile" />

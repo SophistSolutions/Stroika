@@ -21,6 +21,7 @@ vpath %cpp $(SrcDir)
 Objs	=	\
 	$(ObjDir)ODBCClient${OBJ_SUFFIX}\
 	$(ObjDir)SQLite${OBJ_SUFFIX}\
+	$(ObjDir)Statement${OBJ_SUFFIX}\
 	$(ObjDir)Utils${OBJ_SUFFIX}\
 
 SubDirs	=	\

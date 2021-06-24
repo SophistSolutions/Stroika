@@ -23,6 +23,7 @@
 #include "../../Time/Duration.h"
 
 #include "Connection.h"
+#include "Statement.h"
 
 /**
  *  \file
@@ -189,9 +190,6 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
         optional<Duration> fBusyTimeout;
     };
 
-    class Statement;
-    class Transaction;
-
     /**
      *  'Connection' is a quasi-namespace.
      */
@@ -305,9 +303,6 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
          *  and retry up to this long, to avoid the timeout.
          */
         Common::Property<Duration> pBusyTimeout;
-
-    public:
-        friend class Statement; // sb able to lose this...
     };
 
     /**
@@ -318,7 +313,10 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
      * 
      *  Unlike a Connection::Ptr, a Statement cannot be copied (though you can use shared_ptr<Statement> if you wish to copy them).
      */
-    class Statement : private Debug::AssertExternallySynchronizedLock {
+    class Statement : public SQL::Statement {
+    private:
+        using inherited = SQL::Statement;
+
     public:
         /**
          */
@@ -326,212 +324,8 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
         Statement (const Connection::Ptr& db, const String& query);
         Statement (const Statement&) = delete;
 
-    public:
-        /**
-         */
-        ~Statement ();
-
-    public:
-        /**
-         */
-        nonvirtual Statement& operator= (const Statement&) = delete;
-
-    public:
-        /**
-         *  Could use 'int' index for this and faster, but tracking names maybe slightly better for readability and logging,
-         *  and given that string shared_ptr, not too bad to copy around/compare
-         *  COULD use Atom<> - which would be a good performance/funcitonality compromise, but would want to use private atomMgr,
-         *  so scope of names limited (else list of interned strings could become large). Not worth the efforts/risk for small benefit for now.
-         */
-        using ColumnName = String;
-
-    public:
-        /**
-         */
-        using Row = Mapping<ColumnName, VariantValue>;
-
-    public:
-        /**
-         *  This mimics the sqlite3_reset () functionality/API.
-         * 
-         *  This clears any ongoing query, so the next call to GetNextRow () will start with the first row from the current query.
-         *  This does NOT affect any values currently bound.
-         * 
-         *  BUT NOTE, it is required to call Reset() (if there are any ongoing queries) before calling Bind.
-         */
-        nonvirtual void Reset ();
-
-    public:
-        /**
-         *  If called on a new Statement, or on a statement that has been reset (since the last call to GetNextRow() - this re-runs the query.
-         *  But either way, it returns the next row.
-         *
-         * returns 'missing' on EOF, exception on error
-         */
-        nonvirtual optional<Row> GetNextRow ();
-
-    public:
-        /**
-         *  \brief - Call GetNextRow () repeatedly, and accumulate Rows into a Sequence (@see GetAllRows ())
-         * 
-         *  The overloads that take a sequence of column numbers return each row as a tuple of columns (VariantValue)
-         *  for just the specified column numbers.
-         * 
-         * ... @todo use variadic templates to generatelas GetAllRows()
-         * ... @todo COULD overload so columns named by 'name' instead of index, but simple to use index (as specified by result of
-         *           GetColumns ()
-         */
-        nonvirtual Sequence<Row> GetAllRemainingRows ();
-        nonvirtual Sequence<VariantValue> GetAllRemainingRows (size_t restrictToColumn);
-        nonvirtual Sequence<tuple<VariantValue, VariantValue>> GetAllRemainingRows (size_t restrictToColumn1, size_t restrictToColumn2);
-        nonvirtual Sequence<tuple<VariantValue, VariantValue, VariantValue>> GetAllRemainingRows (size_t restrictToColumn1, size_t restrictToColumn2, size_t restrictToColumn3);
-
-    public:
-        /**
-         *  \brief - call Reset (), and then GetAllRemainingRows () - which always starts current statement with current bindings from the beginning.
-         * 
-         *  The overloads that take a sequence of column numbers return each row as a tuple of columns (VariantValue)
-         *  for just the specified column numbers.
-         * 
-         * ... @todo use variadic templates to generatelas GetAllRows()
-         * ... @todo COULD overload so columns named by 'name' instead of index, but simple to use index (as specified by result of
-         *           GetColumns ()
-         */
-        nonvirtual Sequence<Row> GetAllRows ();
-        nonvirtual Sequence<VariantValue> GetAllRows (size_t restrictToColumn);
-        nonvirtual Sequence<tuple<VariantValue, VariantValue>> GetAllRows (size_t restrictToColumn1, size_t restrictToColumn2);
-        nonvirtual Sequence<tuple<VariantValue, VariantValue, VariantValue>> GetAllRows (size_t restrictToColumn1, size_t restrictToColumn2, size_t restrictToColumn3);
-
-    public:
-        enum class WhichSQLFlag {
-            /**
-             *  This is the original SQL passed in as argument to the statement.
-             */
-            eOriginal,
-
-            /**
-             * string containing the SQL text of prepared statement P with [bound parameters] expanded
-             */
-            eExpanded,
-
-            /**
-             * This option is available iff CompiledOptions::kThe.ENABLE_NORMALIZE
-             */
-            eNormalized
-        };
-
-    public:
-        /**
-         *  Return the original (or normalized or expanded with bindings) SQL associated with this statement.
-         */
-        nonvirtual String GetSQL (WhichSQLFlag whichSQL = WhichSQLFlag::eOriginal) const;
-
-    public:
-        /**
-         *  This describes an SQL column. The 'type' is a string (and optional at that), and refers to the SQLite type system.
-         */
-        struct ColumnDescription {
-            /**
-             */
-            ColumnName fName;
-
-            /**
-             * sqlite3_column_decltype
-             */
-            optional<String> fType;
-
-            /**
-             *  @see Characters::ToString ()
-             */
-            nonvirtual String ToString () const;
-        };
-
-    public:
-        /**
-         *  \note the types returned in .fType are generally wrong until we've run our first query).
-         * 
-         * @ todo consider rename to GetResultColumns
-         */
-        nonvirtual Sequence<ColumnDescription> GetColumns () const;
-
-    public:
-        /**
-         *  Parameters are set with a call to "Bind" so maybe also called parameter bindings.
-         */
-        struct ParameterDescription {
-            /**
-             *  name is optional - bindings can be specified by index
-             */
-            optional<String> fName;
-
-            /**
-             */
-            VariantValue fValue;
-
-            /**
-             *  @see Characters::ToString ()
-             */
-            nonvirtual String ToString () const;
-        };
-
-    public:
-        /**
-         *  Gets the names and values of all the current parameters to this sql statement.
-         * 
-         *  \see Bind ()
-         */
-        nonvirtual Sequence<ParameterDescription> GetParameters () const;
-
-    public:
-        /**
-         *  Specify one, or a collection of parameter bindings. This never changes the order of the bindings, just
-         *  applies them to the appropriate binding elements.
-         * 
-         *  \note the paramterIndex is 'zero-based' unlike sqlite native APIs
-         *
-         *  \req parameterIndex < GetParameters ().length ()
-         *  \req paramterName FOUND in GetParameters ().fName's
-         *  and similarly for other overloads
-         *
-         *  \note - parameterName can be the name of the variable with or without the prefixing :
-         *
-         *  If iterable argument to Bind (), the if the arguments have parameter names, the association will be done by name.
-         *  if they do not have names, the order in the bind argument list will be interpretted as argument order (parameter order) for that item)
-         * 
-         *  \see GetParameters ()
-         */
-        nonvirtual void Bind (unsigned int parameterIndex, const VariantValue& v);
-        nonvirtual void Bind (const String& parameterName, const VariantValue& v);
-        nonvirtual void Bind (const Traversal::Iterable<ParameterDescription>& parameters);
-        nonvirtual void Bind (const Traversal::Iterable<Common::KeyValuePair<String, VariantValue>>& parameters);
-
-    public:
-        /**
-         *  Execute the given statement, and ignore its result value. Do NOT mix Execute() with GetNextRow() or GetAllRows ().
-         *  It is legal to call this on an SQL statement that returns results, but you will not see the results.
-         * 
-         *  Execute () with a list of ParameterDescriptions is like:
-         *      >   Reset
-         *      >   Bind () with that list of parameters and then  (can be empty list/missing)
-         *      >   Execute ()
-         * 
-         *  No need to call Reset() before calling Execute () as it calls it internally.
-         */
-        nonvirtual void Execute ();
-        nonvirtual void Execute (const Traversal::Iterable<ParameterDescription>& parameters);
-        nonvirtual void Execute (const Traversal::Iterable<Common::KeyValuePair<String, VariantValue>>& parameters);
-
-    public:
-        /**
-         *  @see Characters::ToString ()
-         */
-        nonvirtual String ToString () const;
-
     private:
-        Connection::Ptr                fConnectionPtr_;
-        ::sqlite3_stmt*                fStatementObj_;
-        vector<ColumnDescription>      fColumns_;
-        Sequence<ParameterDescription> fParameters_;
+        struct MyRep_;
     };
 
     /**

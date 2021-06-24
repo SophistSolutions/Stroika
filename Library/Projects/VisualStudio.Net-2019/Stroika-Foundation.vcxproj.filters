@@ -822,6 +822,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\ORM\Schema.cpp">
       <Filter>Sources\Database\SQL\ORM</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\Statement.cpp">
+      <Filter>Sources\Database\SQL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2107,6 +2110,9 @@
       <Filter>Sources\Database\SQL\ORM</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\Connection.h">
+      <Filter>Sources\Database\SQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\Statement.h">
       <Filter>Sources\Database\SQL</Filter>
     </ClInclude>
   </ItemGroup>
@@ -3439,6 +3445,9 @@
       <Filter>Sources\Database\SQL\ORM</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\Connection.inl">
+      <Filter>Sources\Database\SQL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\Statement.inl">
       <Filter>Sources\Database\SQL</Filter>
     </None>
   </ItemGroup>

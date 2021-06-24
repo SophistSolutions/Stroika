@@ -308,349 +308,208 @@ auto SQL::SQLite::Connection::New (const Options& options, const function<void (
 
 /*
  ********************************************************************************
- ********************* SQLite::Statement::ColumnDescription *********************
- ********************************************************************************
- */
-String Statement::ColumnDescription::ToString () const
-{
-    StringBuilder sb;
-    sb += L"{";
-    sb += L"name: " + Characters::ToString (fName) + L", ";
-    sb += L"type: " + Characters::ToString (fType);
-    sb += L"}";
-    return sb.str ();
-}
-
-/*
- ********************************************************************************
- ****************** SQLite::Statement::ParameterDescription *********************
- ********************************************************************************
- */
-String Statement::ParameterDescription::ToString () const
-{
-    StringBuilder sb;
-    sb += L"{";
-    sb += L"name: " + Characters::ToString (fName) + L", ";
-    sb += L"value: " + Characters::ToString (fValue);
-    sb += L"}";
-    return sb.str ();
-}
-
-/*
- ********************************************************************************
  ******************************* SQLite::Statement ******************************
  ********************************************************************************
  */
-Statement::Statement (const Connection::Ptr& db, const String& query)
-    : fConnectionPtr_{db}
-{
+struct Statement::MyRep_ : IRep {
+    MyRep_ (const Connection::Ptr& db, const String& query)
+        : fConnectionPtr_{db}
+    {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{"SQLite::DB::Statement::CTOR", Stroika_Foundation_Debug_OptionalizeTraceArgs (L "db=%p, query='%s'", db, query.c_str ())};
+        TraceContextBumper ctx{"SQLite::Statement::MyRep_::CTOR", Stroika_Foundation_Debug_OptionalizeTraceArgs (L "db=%p, query='%s'", db, query.c_str ())};
 #endif
-    RequireNotNull (db);
-    RequireNotNull (db->Peek ());
-
+        RequireNotNull (db);
+        RequireNotNull (db->Peek ());
 #if qDebug
-    _fSharedContext = fConnectionPtr_.GetSharedContext ();
+        _fSharedContext = fConnectionPtr_.GetSharedContext ();
 #endif
-
-    string                                                    queryUTF8 = query.AsUTF8 ();
-    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
-    const char*                                               pzTail = nullptr;
-    ThrowSQLiteErrorIfNotOK_ (::sqlite3_prepare_v2 (db->Peek (), queryUTF8.c_str (), -1, &fStatementObj_, &pzTail), db->Peek ());
-    Assert (pzTail != nullptr);
-    if (*pzTail != '\0') {
-        // @todo possibly should allow 0 or string of whitespace and ignore that too? -- LGP 2021-04-29
-        Execution::Throw (Exception{L"Unexpected text after query"sv});
-    }
-    AssertNotNull (fStatementObj_);
-    unsigned int colCount = static_cast<unsigned int> (::sqlite3_column_count (fStatementObj_));
-    for (unsigned int i = 0; i < colCount; ++i) {
-        const char* colTypeUTF8 = ::sqlite3_column_decltype (fStatementObj_, i);
-        fColumns_.push_back (ColumnDescription{String::FromUTF8 (::sqlite3_column_name (fStatementObj_, i)), (colTypeUTF8 == nullptr) ? optional<String>{} : String::FromUTF8 (colTypeUTF8)});
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"sqlite3_column_decltype(i) = %s", ::sqlite3_column_decltype (fStatementObj_, i) == nullptr ? L"{nullptr}" : String::FromUTF8 (::sqlite3_column_decltype (fStatementObj_, i)).c_str ());
-#endif
-    }
-
-    // Default setting (not documented, but I assume) is null
-    unsigned int paramCount = static_cast<unsigned int> (::sqlite3_bind_parameter_count (fStatementObj_));
-    for (unsigned int i = 1; i <= paramCount; ++i) {
-        const char* tmp = ::sqlite3_bind_parameter_name (fStatementObj_, i); // can be null
-        fParameters_ += ParameterDescription{tmp == nullptr ? optional<String>{} : String::FromUTF8 (tmp), nullptr};
-    }
-}
-
-String Statement::GetSQL (WhichSQLFlag whichSQL) const
-{
-    Assert (not CompiledOptions::kThe.ENABLE_NORMALIZE);
-    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
-    switch (whichSQL) {
-        case WhichSQLFlag::eOriginal:
-            return String::FromUTF8 (::sqlite3_sql (fStatementObj_));
-        case WhichSQLFlag::eExpanded: {
-            auto tmp = ::sqlite3_expanded_sql (fStatementObj_);
-            if (tmp != nullptr) {
-                String r = String::FromUTF8 (tmp);
-                ::sqlite3_free (tmp);
-                return r;
-            }
-            throw bad_alloc{};
+        string                                                    queryUTF8 = query.AsUTF8 ();
+        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
+        const char*                                               pzTail = nullptr;
+        ThrowSQLiteErrorIfNotOK_ (::sqlite3_prepare_v2 (db->Peek (), queryUTF8.c_str (), -1, &fStatementObj_, &pzTail), db->Peek ());
+        Assert (pzTail != nullptr);
+        if (*pzTail != '\0') {
+            // @todo possibly should allow 0 or string of whitespace and ignore that too? -- LGP 2021-04-29
+            Execution::Throw (Exception{L"Unexpected text after query"sv});
         }
-        case WhichSQLFlag::eNormalized:
-            if constexpr (CompiledOptions::kThe.ENABLE_NORMALIZE) {
-                return String::FromUTF8 (::sqlite3_normalized_sql (fStatementObj_));
-            }
-            RequireNotReached ();
-            return String{};
-        default:
-            RequireNotReached ();
-            return String{};
+        AssertNotNull (fStatementObj_);
+        unsigned int colCount = static_cast<unsigned int> (::sqlite3_column_count (fStatementObj_));
+        for (unsigned int i = 0; i < colCount; ++i) {
+            const char* colTypeUTF8 = ::sqlite3_column_decltype (fStatementObj_, i);
+            fColumns_.push_back (ColumnDescription{String::FromUTF8 (::sqlite3_column_name (fStatementObj_, i)), (colTypeUTF8 == nullptr) ? optional<String>{} : String::FromUTF8 (colTypeUTF8)});
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"sqlite3_column_decltype(i) = %s", ::sqlite3_column_decltype (fStatementObj_, i) == nullptr ? L"{nullptr}" : String::FromUTF8 (::sqlite3_column_decltype (fStatementObj_, i)).c_str ());
+#endif
+        }
+
+        // Default setting (not documented, but I assume) is null
+        unsigned int paramCount = static_cast<unsigned int> (::sqlite3_bind_parameter_count (fStatementObj_));
+        for (unsigned int i = 1; i <= paramCount; ++i) {
+            const char* tmp = ::sqlite3_bind_parameter_name (fStatementObj_, i); // can be null
+            fParameters_ += ParameterDescription{tmp == nullptr ? optional<String>{} : String::FromUTF8 (tmp), nullptr};
+        }
     }
-}
-
-void Statement::Execute ()
-{
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{"SQLite::DB::Statement::Execute"};
-#endif
-    AssertNotNull (fStatementObj_);
-    ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (fStatementObj_), fConnectionPtr_->Peek ());
-    int rc = ::sqlite3_step (fStatementObj_);
-    switch (rc) {
-        case SQLITE_ROW:
-        case SQLITE_DONE: {
-            return; // this is OK, the main way thoush should go
-        } break;
-        default: {
-            ThrowSQLiteError_ (rc, fConnectionPtr_->Peek ());
-        } break;
+    ~MyRep_ ()
+    {
+        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
+        AssertNotNull (fStatementObj_);
+        (void)::sqlite3_finalize (fStatementObj_);
     }
-}
-
-void Statement::Execute (const Traversal::Iterable<ParameterDescription>& parameters)
-{
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{"SQLite::DB::Statement::Execute"};
-#endif
-    Reset ();
-    Bind (parameters);
-    Execute ();
-}
-
-void Statement::Execute (const Traversal::Iterable<Common::KeyValuePair<String, VariantValue>>& parameters)
-{
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"SQLite::DB::Statement::Execute", L"parameters=%s", Characters::ToString (parameters).c_str ())};
-#endif
-    Reset ();
-    Bind (parameters);
-    Execute ();
-}
-
-void Statement::Reset ()
-{
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{"SQLite::DB::Statement::Reset"};
-#endif
-    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
-    AssertNotNull (fStatementObj_);
-    ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (fStatementObj_), fConnectionPtr_->Peek ());
-}
-
-auto Statement::GetAllRemainingRows () -> Sequence<Row>
-{
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{"SQLite::DB::Statement::GetAllRemainingRows"};
-#endif
-    Sequence<Row> result;
-    while (auto o = GetNextRow ()) {
-        result += *o;
-    }
-    return result;
-}
-
-Sequence<VariantValue> Statement::GetAllRemainingRows (size_t restrictToColumn)
-{
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{"SQLite::DB::Statement::GetAllRemainingRows"};
-#endif
-    Sequence<VariantValue> result;
-    ColumnDescription      col0 = GetColumns ()[restrictToColumn];
-    while (auto o = GetNextRow ()) {
-        result += *o->Lookup (col0.fName);
-    }
-    return result;
-}
-
-Sequence<tuple<VariantValue, VariantValue>> Statement::GetAllRemainingRows (size_t restrictToColumn1, size_t restrictToColumn2)
-{
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{"SQLite::DB::Statement::GetAllRemainingRows"};
-#endif
-    Sequence<tuple<VariantValue, VariantValue>> result;
-    ColumnDescription                           col0 = GetColumns ()[restrictToColumn1];
-    ColumnDescription                           col1 = GetColumns ()[restrictToColumn2];
-    while (auto o = GetNextRow ()) {
-        result += make_tuple (*o->Lookup (col0.fName), *o->Lookup (col1.fName));
-    }
-    return result;
-}
-
-Sequence<tuple<VariantValue, VariantValue, VariantValue>> Statement::GetAllRemainingRows (size_t restrictToColumn1, size_t restrictToColumn2, size_t restrictToColumn3)
-{
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{"SQLite::DB::Statement::GetAllRemainingRows"};
-#endif
-    Sequence<tuple<VariantValue, VariantValue, VariantValue>> result;
-    ColumnDescription                                         col0 = GetColumns ()[restrictToColumn1];
-    ColumnDescription                                         col1 = GetColumns ()[restrictToColumn2];
-    ColumnDescription                                         col2 = GetColumns ()[restrictToColumn3];
-    while (auto o = GetNextRow ()) {
-        result += make_tuple (*o->Lookup (col0.fName), *o->Lookup (col1.fName), *o->Lookup (col2.fName));
-    }
-    return result;
-}
-
-auto Statement::GetNextRow () -> optional<Row>
-{
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{"SQLite::DB::Statement::GetNextRow"};
-#endif
-    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
-    // @todo MAYBE redo with https://www.sqlite.org/c3ref/value.html
-    AssertNotNull (fStatementObj_);
-    int rc = ::sqlite3_step (fStatementObj_);
-    switch (rc) {
-        case SQLITE_OK: {
-            AssertNotReached (); // I think this should never happen with this API
-        } break;
-        case SQLITE_ROW: {
-            Row row;
-            for (unsigned int i = 0; i < fColumns_.size (); ++i) {
-                VariantValue v;
-                // The actual returned type may not be the same as the DECLARED type (for example if the column is declared varaint)
-                switch (::sqlite3_column_type (fStatementObj_, i)) {
-                    case SQLITE_INTEGER: {
-                        v = VariantValue{::sqlite3_column_int (fStatementObj_, i)};
-                    } break;
-                    case SQLITE_FLOAT: {
-                        v = VariantValue{::sqlite3_column_double (fStatementObj_, i)};
-                    } break;
-                    case SQLITE_BLOB: {
-                        const byte* data      = reinterpret_cast<const byte*> (::sqlite3_column_blob (fStatementObj_, i));
-                        size_t      byteCount = static_cast<size_t> (::sqlite3_column_bytes (fStatementObj_, i));
-                        v                     = VariantValue{Memory::BLOB{data, data + byteCount}};
-                    } break;
-                    case SQLITE_NULL: {
-                        // default to null value
-                    } break;
-                    case SQLITE_TEXT: {
-                        // @todo redo as sqlite3_column_text16, but doesn't help unix case? Maybe just iff sizeof(wchart_t)==2?
-                        AssertNotNull (::sqlite3_column_text (fStatementObj_, i));
-                        v = VariantValue{String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (fStatementObj_, i)))};
-                    } break;
-                    default: {
-                        AssertNotReached ();
-                    } break;
+    virtual String GetSQL (WhichSQLFlag whichSQL) const override
+    {
+        Assert (not CompiledOptions::kThe.ENABLE_NORMALIZE);
+        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{*this};
+        switch (whichSQL) {
+            case WhichSQLFlag::eOriginal:
+                return String::FromUTF8 (::sqlite3_sql (fStatementObj_));
+            case WhichSQLFlag::eExpanded: {
+                auto tmp = ::sqlite3_expanded_sql (fStatementObj_);
+                if (tmp != nullptr) {
+                    String r = String::FromUTF8 (tmp);
+                    ::sqlite3_free (tmp);
+                    return r;
                 }
-                row.Add (fColumns_[i].fName, v);
+                throw bad_alloc{};
             }
-            return row;
-        } break;
-        case SQLITE_DONE: {
-            return nullopt;
-        } break;
-    }
-    ThrowSQLiteError_ (rc, fConnectionPtr_->Peek ());
-}
-
-Statement::~Statement ()
-{
-    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
-    AssertNotNull (fStatementObj_);
-    (void)::sqlite3_finalize (fStatementObj_);
-}
-
-void Statement::Bind (unsigned int parameterIndex, const VariantValue& v)
-{
-    lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
-    fParameters_[parameterIndex].fValue = v;
-    switch (v.GetType ()) {
-        case VariantValue::eDate:
-        case VariantValue::eDateTime:
-        case VariantValue::eString: {
-            string u = v.As<String> ().AsUTF8 ();
-            ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_text (fStatementObj_, parameterIndex + 1, u.c_str (), static_cast<int> (u.length ()), SQLITE_TRANSIENT), fConnectionPtr_->Peek ());
-        } break;
-        case VariantValue::eBoolean:
-        case VariantValue::eInteger:
-            ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_int64 (fStatementObj_, parameterIndex + 1, v.As<sqlite3_int64> ()), fConnectionPtr_->Peek ());
-            break;
-        case VariantValue::eFloat:
-            ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_double (fStatementObj_, parameterIndex + 1, v.As<double> ()), fConnectionPtr_->Peek ());
-            break;
-        case VariantValue::eBLOB: {
-            Memory::BLOB b = v.As<Memory::BLOB> ();
-            ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_blob64 (fStatementObj_, parameterIndex + 1, b.begin (), b.size (), SQLITE_TRANSIENT), fConnectionPtr_->Peek ());
-        } break;
-        case VariantValue::eNull:
-            ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_null (fStatementObj_, parameterIndex + 1), fConnectionPtr_->Peek ());
-            break;
-        default:
-            AssertNotImplemented (); // add more types
-            break;
-    }
-}
-
-void Statement::Bind (const String& parameterName, const VariantValue& v)
-{
-    Require (not parameterName.empty ());
-    String pn = parameterName;
-    if (pn[0] != ':') {
-        pn = L":" + pn;
-    }
-    for (unsigned int i = 0; i < fParameters_.length (); ++i) {
-        if (fParameters_[i].fName == pn) {
-            Bind (i, v);
-            return;
+            case WhichSQLFlag::eNormalized:
+                if constexpr (CompiledOptions::kThe.ENABLE_NORMALIZE) {
+                    return String::FromUTF8 (::sqlite3_normalized_sql (fStatementObj_));
+                }
+                RequireNotReached ();
+                return String{};
+            default:
+                RequireNotReached ();
+                return String{};
         }
     }
-    DbgTrace (L"Statement::Bind: Parameter '%s' not found in list %s", parameterName.c_str (), Characters::ToString (fParameters_.Select<String> ([] (const auto& i) { return i.fName; })).c_str ());
-    RequireNotReached (); // invalid paramter name provided
-}
-
-void Statement::Bind (const Traversal::Iterable<ParameterDescription>& parameters)
-{
-    int idx = 0;
-    for (auto i : parameters) {
-        if (i.fName) {
-            Bind (*i.fName, i.fValue);
+    virtual Sequence<ColumnDescription> GetColumns () const override
+    {
+        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{*this};
+        return Sequence<ColumnDescription>{fColumns_};
+    };
+    virtual Sequence<ParameterDescription> GetParameters () const override
+    {
+        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{*this};
+        return fParameters_;
+    };
+    virtual void Bind (unsigned int parameterIndex, const VariantValue& v) override
+    {
+        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
+        fParameters_[parameterIndex].fValue = v;
+        switch (v.GetType ()) {
+            case VariantValue::eDate:
+            case VariantValue::eDateTime:
+            case VariantValue::eString: {
+                string u = v.As<String> ().AsUTF8 ();
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_text (fStatementObj_, parameterIndex + 1, u.c_str (), static_cast<int> (u.length ()), SQLITE_TRANSIENT), fConnectionPtr_->Peek ());
+            } break;
+            case VariantValue::eBoolean:
+            case VariantValue::eInteger:
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_int64 (fStatementObj_, parameterIndex + 1, v.As<sqlite3_int64> ()), fConnectionPtr_->Peek ());
+                break;
+            case VariantValue::eFloat:
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_double (fStatementObj_, parameterIndex + 1, v.As<double> ()), fConnectionPtr_->Peek ());
+                break;
+            case VariantValue::eBLOB: {
+                Memory::BLOB b = v.As<Memory::BLOB> ();
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_blob64 (fStatementObj_, parameterIndex + 1, b.begin (), b.size (), SQLITE_TRANSIENT), fConnectionPtr_->Peek ());
+            } break;
+            case VariantValue::eNull:
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_null (fStatementObj_, parameterIndex + 1), fConnectionPtr_->Peek ());
+                break;
+            default:
+                AssertNotImplemented (); // add more types
+                break;
         }
-        else {
-            Bind (idx, i.fValue);
+    }
+    virtual void Bind (const String& parameterName, const VariantValue& v) override
+    {
+        Require (not parameterName.empty ());
+        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
+        String                                                    pn = parameterName;
+        if (pn[0] != ':') {
+            pn = L":" + pn;
         }
-        idx++;
+        for (unsigned int i = 0; i < fParameters_.length (); ++i) {
+            if (fParameters_[i].fName == pn) {
+                Bind (i, v);
+                return;
+            }
+        }
+        DbgTrace (L"Statement::Bind: Parameter '%s' not found in list %s", parameterName.c_str (), Characters::ToString (fParameters_.Select<String> ([] (const auto& i) { return i.fName; })).c_str ());
+        RequireNotReached (); // invalid paramter name provided
     }
-}
-
-void Statement::Bind (const Traversal::Iterable<Common::KeyValuePair<String, VariantValue>>& parameters)
-{
-    for (auto i : parameters) {
-        Bind (i.fKey, i.fValue);
+    virtual void Reset () override
+    {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        TraceContextBumper ctx{"SQLite::Statement::MyRep_::Statement::Reset"};
+#endif
+        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
+        AssertNotNull (fStatementObj_);
+        ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (fStatementObj_), fConnectionPtr_->Peek ());
     }
-}
+    virtual optional<Row> GetNextRow () override
+    {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        TraceContextBumper ctx{"SQLite::Statement::MyRep_::Statement::GetNextRow"};
+#endif
+        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
+        // @todo MAYBE redo with https://www.sqlite.org/c3ref/value.html
+        AssertNotNull (fStatementObj_);
+        int rc = ::sqlite3_step (fStatementObj_);
+        switch (rc) {
+            case SQLITE_OK: {
+                AssertNotReached (); // I think this should never happen with this API
+            } break;
+            case SQLITE_ROW: {
+                Row row;
+                for (unsigned int i = 0; i < fColumns_.size (); ++i) {
+                    VariantValue v;
+                    // The actual returned type may not be the same as the DECLARED type (for example if the column is declared variant)
+                    switch (::sqlite3_column_type (fStatementObj_, i)) {
+                        case SQLITE_INTEGER: {
+                            v = VariantValue{::sqlite3_column_int (fStatementObj_, i)};
+                        } break;
+                        case SQLITE_FLOAT: {
+                            v = VariantValue{::sqlite3_column_double (fStatementObj_, i)};
+                        } break;
+                        case SQLITE_BLOB: {
+                            const byte* data      = reinterpret_cast<const byte*> (::sqlite3_column_blob (fStatementObj_, i));
+                            size_t      byteCount = static_cast<size_t> (::sqlite3_column_bytes (fStatementObj_, i));
+                            v                     = VariantValue{Memory::BLOB{data, data + byteCount}};
+                        } break;
+                        case SQLITE_NULL: {
+                            // default to null value
+                        } break;
+                        case SQLITE_TEXT: {
+                            // @todo redo as sqlite3_column_text16, but doesn't help unix case? Maybe just iff sizeof(wchart_t)==2?
+                            AssertNotNull (::sqlite3_column_text (fStatementObj_, i));
+                            v = VariantValue{String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (fStatementObj_, i)))};
+                        } break;
+                        default: {
+                            AssertNotReached ();
+                        } break;
+                    }
+                    row.Add (fColumns_[i].fName, v);
+                }
+                return row;
+            } break;
+            case SQLITE_DONE: {
+                return nullopt;
+            } break;
+        }
+        ThrowSQLiteError_ (rc, fConnectionPtr_->Peek ());
+    }
 
-String Statement::ToString () const
+    Connection::Ptr                fConnectionPtr_;
+    ::sqlite3_stmt*                fStatementObj_;
+    vector<ColumnDescription>      fColumns_;
+    Sequence<ParameterDescription> fParameters_;
+};
+
+Statement::Statement (const Connection::Ptr& db, const String& query)
+    : inherited{make_unique<MyRep_> (db, query)}
 {
-    shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{*this};
-    StringBuilder                                              sb;
-    sb += L"{";
-    sb += L"Parameter-Bindings: " + Characters::ToString (fParameters_) + L", ";
-    sb += L"Column-Descriptions: " + Characters::ToString (fColumns_) + L", ";
-    sb += L"Original-SQL: " + Characters::ToString (GetSQL ());
-    sb += L"}";
-    return sb.str ();
 }
 
 /*
