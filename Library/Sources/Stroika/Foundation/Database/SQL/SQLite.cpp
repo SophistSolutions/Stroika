@@ -516,53 +516,46 @@ Statement::Statement (const Connection::Ptr& db, const String& query)
  ******************************* SQLite::Transaction ****************************
  ********************************************************************************
  */
+struct Transaction::MyRep_ : public SQL::Transaction::IRep {
+    MyRep_ (const Connection::Ptr& db, Flag f)
+        : fConnectionPtr_{db}
+    {
+        switch (f) {
+            case Flag::eDeferred:
+                db->Exec (L"BEGIN DEFERRED"sv);
+                break;
+            case Flag::eExclusive:
+                db->Exec (L"BEGIN EXCLUSIVE"sv);
+                break;
+            case Flag::eImmediate:
+                db->Exec (L"BEGIN IMMEDIATE"sv);
+                break;
+            default:
+                RequireNotReached ();
+        }
+    }
+    virtual void Commit () override
+    {
+        Require (not fCompleted_);
+        fCompleted_ = true;
+        fConnectionPtr_->Exec (L"COMMIT;"sv);
+    }
+    virtual void Rollback () override
+    {
+        Require (not fCompleted_);
+        fCompleted_ = true;
+        fConnectionPtr_->Exec (L"ROLLBACK;"sv);
+    }
+    virtual Disposition GetDisposition () const override
+    {
+        // @todo record more info so we can report finer grained status ; try/catch in rollback/commit and dbgtraces
+        return fCompleted_ ? Disposition::eCompleted : Disposition::eNone;
+    }
+    Connection::Ptr     fConnectionPtr_;
+    bool            fCompleted_{false};
+};
 Transaction::Transaction (const Connection::Ptr& db, Flag f)
-    : fConnectionPtr_{db}
+    : inherited{make_unique<MyRep_> (db, f)}
 {
-    switch (f) {
-        case Flag::eDeferred:
-            db->Exec (L"BEGIN DEFERRED"sv);
-            break;
-        case Flag::eExclusive:
-            db->Exec (L"BEGIN EXCLUSIVE"sv);
-            break;
-        case Flag::eImmediate:
-            db->Exec (L"BEGIN IMMEDIATE"sv);
-            break;
-        default:
-            RequireNotReached ();
-    }
-}
-
-Transaction::~Transaction ()
-{
-    if (not fCompleted_) {
-        try {
-            Rollback ();
-        }
-        catch (...) {
-            DbgTrace (L"Suppress rollback failure exception in SQLITE transaction: %s", Characters::ToString (current_exception ()).c_str ());
-            // intentially fall-thru
-        }
-    }
-}
-
-void Transaction::Commit ()
-{
-    Require (not fCompleted_);
-    fCompleted_ = true;
-    fConnectionPtr_->Exec (L"COMMIT;"sv);
-}
-
-void Transaction::Rollback ()
-{
-    Require (not fCompleted_);
-    fCompleted_ = true;
-    fConnectionPtr_->Exec (L"ROLLBACK;"sv);
-}
-
-String Transaction::ToString () const
-{
-    return String{};
 }
 #endif

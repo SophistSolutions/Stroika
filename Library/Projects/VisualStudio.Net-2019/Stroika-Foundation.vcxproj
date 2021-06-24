@@ -450,6 +450,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\ORM\Schema.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\SQLite.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\Statement.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\Transaction.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\Utils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\7z\Reader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Reader.h" />
@@ -882,6 +883,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\SQLite.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\Statement.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\Transaction.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\Utils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\7z\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Makefile" />

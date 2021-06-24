@@ -82,42 +82,6 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
     {
         return dynamic_pointer_cast<IRep> (_fRep)->Peek ();
     }
-
-/*
-     ********************************************************************************
-     ****************************** SQLite::Statement *******************************
-     ********************************************************************************
-     */
-#if 0
-    inline auto Statement::GetColumns () const -> Sequence<ColumnDescription>
-    {
-        return Sequence<ColumnDescription>{fColumns_};
-    }
-    inline auto Statement::GetParameters () const -> Sequence<ParameterDescription>
-    {
-        return fParameters_;
-    }
-    inline auto Statement::GetAllRows () -> Sequence<Row>
-    {
-        Reset ();
-        return GetAllRemainingRows ();
-    }
-    inline Sequence<VariantValue> Statement::GetAllRows (size_t restrictToColumn)
-    {
-        Reset ();
-        return GetAllRemainingRows (restrictToColumn);
-    }
-    inline Sequence<tuple<VariantValue, VariantValue>> Statement::GetAllRows (size_t restrictToColumn1, size_t restrictToColumn2)
-    {
-        Reset ();
-        return GetAllRemainingRows (restrictToColumn1, restrictToColumn2);
-    }
-    inline Sequence<tuple<VariantValue, VariantValue, VariantValue>> Statement::GetAllRows (size_t restrictToColumn1, size_t restrictToColumn2, size_t restrictToColumn3)
-    {
-        Reset ();
-        return GetAllRemainingRows (restrictToColumn1, restrictToColumn2, restrictToColumn3);
-    }
-#endif
 #endif
 
 }
