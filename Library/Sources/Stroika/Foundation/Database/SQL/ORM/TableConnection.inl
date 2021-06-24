@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     {
         using DataExchange::VariantValue;
         using Stroika::Foundation::Common::KeyValuePair;
-        Statement statement = conn->mkStatement (Schema::StandardSQLStatements{fTableSchema_}.GetByID ());
+        Statement statement = fConnection_->mkStatement (Schema::StandardSQLStatements{fTableSchema_}.GetByID ());
         getStatement.Execute (initializer_list<KeyValuePair<String, VariantValue>>{{fTableSchema_.GetIDField ()->fName, VariantValue{static_cast<Memory::BLOB> (id)}}});
         if constexpr (TRAITS::kTraceLogEachRequest) {
             //DbgTrace ("SQL: %s", statement.GetSQL ().c_str ());
@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     {
         using DataExchange::VariantValue;
         using Stroika::Foundation::Common::KeyValuePair;
-        Statement statement = conn->mkStatement (Schema::StandardSQLStatements{fTableSchema_}.Insert ());
+        Statement statement = fConnection_->mkStatement (Schema::StandardSQLStatements{fTableSchema_}.Insert ());
         statement.Bind (fObjectVariantMapper_.MapToDB (fObjectVariantMapper_.FromObject (d).As<Mapping<String, VariantValue>> ()));
         if constexpr (TRAITS::kTraceLogEachRequest) {
             //DbgTrace ("SQL: %s", statement.GetSQL ().c_str ());
@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     {
         using DataExchange::VariantValue;
         using Stroika::Foundation::Common::KeyValuePair;
-        Statement statement = conn->mkStatement (Schema::StandardSQLStatements{fTableSchema_}.UpdateByID ());
+        Statement statement = fConnection_->mkStatement (Schema::StandardSQLStatements{fTableSchema_}.UpdateByID ());
         statement.Bind (fTableSchema_.MapToDB (fObjectVariantMapper_.FromObject (merged).As<Mapping<String, VariantValue>> ()));
         if constexpr (TRAITS::kTraceLogEachRequest) {
             //DbgTrace ("SQL: %s", statement.GetSQL ().c_str ());
