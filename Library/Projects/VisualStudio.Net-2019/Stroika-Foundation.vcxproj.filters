@@ -2121,6 +2121,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\Transaction.h">
       <Filter>Sources\Database\SQL</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\ORM\TableConnection.h">
+      <Filter>Sources\Database\SQL\ORM</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -3458,6 +3461,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\Transaction.inl">
       <Filter>Sources\Database\SQL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\ORM\TableConnection.inl">
+      <Filter>Sources\Database\SQL\ORM</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
