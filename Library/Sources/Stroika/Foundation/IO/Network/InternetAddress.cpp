@@ -152,18 +152,22 @@ namespace Stroika::Foundation::IO::Network {
     template <>
     vector<bool> InternetAddress::As<vector<bool>> () const
     {
-        Require (GetAddressSize ().has_value ());
-        size_t       sz = *GetAddressSize ();
-        vector<bool> result;
-        result.reserve (sz * 8);
-        for (uint8_t b : As<vector<uint8_t>> ()) {
-            // We could logically have numbered bits either way, but since this returns high order byte first only makes
-            // sense to return high order bit first
-            for (unsigned int i = 0; i < 8; ++i) {
-                result.push_back (BitSubstring (b, 7 - i, 7 - i + 1));
+        if (GetAddressSize ().has_value ()) {
+            size_t       sz = *GetAddressSize ();
+            vector<bool> result;
+            result.reserve (sz * 8);
+            for (uint8_t b : As<vector<uint8_t>> ()) {
+                // We could logically have numbered bits either way, but since this returns high order byte first only makes
+                // sense to return high order bit first
+                for (unsigned int i = 0; i < 8; ++i) {
+                    result.push_back (BitSubstring (b, 7 - i, 7 - i + 1));
+                }
             }
+            return result;
         }
-        return result;
+        else {
+            return vector<bool>{};
+        }
     }
     template <>
     String InternetAddress::As<String> () const
