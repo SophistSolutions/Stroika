@@ -35,6 +35,9 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     };
 
     /**
+     *  \note we choose to create/cache the statements in the constructor and re-use them. We COULD
+     *        lazy create (which would work better if you use only a small subset of the methods). But then
+     *        we would incurr a cost checking each time (locking), so unclear if lazy creation is worth it.
      */
     template <typename T, typename TRAITS = TableConnectionTraits<T>>
     class TableConnection {
@@ -57,6 +60,10 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         Connection::Ptr     fConnection_;
         Schema::Table       fTableSchema_;
         ObjectVariantMapper fObjectVariantMapper_;
+        Statement           fGetByID_Statement_;
+        Statement           fGetAll_Statement_;
+        Statement           fAddNew_Statement_;
+        Statement           fUpdate_Statement_;
     };
 
 }
