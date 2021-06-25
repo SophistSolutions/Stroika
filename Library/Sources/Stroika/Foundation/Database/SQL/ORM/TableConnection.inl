@@ -21,12 +21,12 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         : fConnection_{conn}
         , fTableSchema_{tableSchema}
         , fObjectVariantMapper_{objectVariantMapper}
-        , fGetByID_Statement_{conn->mkStatement (Schema::StandardSQLStatements{tableSchema}.GetByID ()}
+        , fGetByID_Statement_{conn->mkStatement (Schema::StandardSQLStatements{tableSchema}.GetByID ())}
         , fGetAll_Statement_ {conn->mkStatement (Schema::StandardSQLStatements{tableSchema}.GetAllElements ())}
         , fAddNew_Statement_ {conn->mkStatement (Schema::StandardSQLStatements{tableSchema}.Insert ())}
         , fUpdate_Statement_ {conn->mkStatement (Schema::StandardSQLStatements{tableSchema}.UpdateByID ())}
     {
-        Require (conn != nullptr);  // too late, but good docs
+        Require (conn != nullptr); // too late, but good docs
     }
     template <typename T, typename TRAITS>
     optional<T> TableConnection<T, TRAITS>::GetByID (const typename TRAITS::IDType& id)
