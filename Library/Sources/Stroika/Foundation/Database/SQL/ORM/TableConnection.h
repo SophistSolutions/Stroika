@@ -48,6 +48,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     class TableConnection : private Debug::AssertExternallySynchronizedLock {
     public:
         TableConnection (const Connection::Ptr& conn, const Schema::Table& tableSchema, const ObjectVariantMapper& objectVariantMapper);
+        TableConnection (TableConnection&& src) = default;
 
     public:
         nonvirtual optional<T> GetByID (const typename TRAITS::IDType& id);

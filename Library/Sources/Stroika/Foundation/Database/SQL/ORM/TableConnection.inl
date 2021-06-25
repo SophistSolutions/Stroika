@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         using DataExchange::VariantValue;
         using Stroika::Foundation::Common::KeyValuePair;
         fAddNew_Statement_.Reset ();
-        fAddNew_Statement_.Bind (fObjectVariantMapper_.MapToDB (fObjectVariantMapper_.FromObject (v).As<Mapping<String, VariantValue>> ()));
+        fAddNew_Statement_.Bind (fTableSchema_.MapToDB (fObjectVariantMapper_.FromObject (v).As<Mapping<String, VariantValue>> ()));
         if constexpr (TRAITS::kTraceLogEachRequest) {
             DbgTrace ("SQL: %s", fAddNew_Statement_.GetSQL (Statement::WhichSQLFlag::eExpanded).c_str ());
         }
