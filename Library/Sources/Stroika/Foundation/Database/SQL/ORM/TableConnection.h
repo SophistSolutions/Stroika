@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
      *          threadsafe (even if accessed across processes).
      */
     template <typename T, typename TRAITS = TableConnectionTraits<T>>
-    class TableConnection : private Debug::AssertExternallySyncrhonizedLock {
+    class TableConnection : private Debug::AssertExternallySynchronizedLock {
     public:
         TableConnection (const Connection::Ptr& conn, const Schema::Table& tableSchema, const ObjectVariantMapper& objectVariantMapper);
 

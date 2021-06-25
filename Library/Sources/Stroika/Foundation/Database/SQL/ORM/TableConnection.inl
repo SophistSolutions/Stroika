@@ -22,16 +22,16 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         , fTableSchema_{tableSchema}
         , fObjectVariantMapper_{objectVariantMapper}
         , fGetByID_Statement_{conn->mkStatement (Schema::StandardSQLStatements{tableSchema}.GetByID ())}
-        , fGetAll_Statement_ {conn->mkStatement (Schema::StandardSQLStatements{tableSchema}.GetAllElements ())}
-        , fAddNew_Statement_ {conn->mkStatement (Schema::StandardSQLStatements{tableSchema}.Insert ())}
-        , fUpdate_Statement_ {conn->mkStatement (Schema::StandardSQLStatements{tableSchema}.UpdateByID ())}
+        , fGetAll_Statement_{conn->mkStatement (Schema::StandardSQLStatements{tableSchema}.GetAllElements ())}
+        , fAddNew_Statement_{conn->mkStatement (Schema::StandardSQLStatements{tableSchema}.Insert ())}
+        , fUpdate_Statement_{conn->mkStatement (Schema::StandardSQLStatements{tableSchema}.UpdateByID ())}
     {
         Require (conn != nullptr); // too late, but good docs
     }
     template <typename T, typename TRAITS>
     optional<T> TableConnection<T, TRAITS>::GetByID (const typename TRAITS::IDType& id)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         using DataExchange::VariantValue;
         using Stroika::Foundation::Common::KeyValuePair;
         fGetByID_Statement_.Reset ();
@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     template <typename T, typename TRAITS>
     Sequence<T> TableConnection<T, TRAITS>::GetAll ()
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         using DataExchange::VariantValue;
         using Stroika::Foundation::Common::KeyValuePair;
         if constexpr (TRAITS::kTraceLogEachRequest) {
@@ -67,26 +67,26 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     template <typename T, typename TRAITS>
     void TableConnection<T, TRAITS>::AddNew (const T& v)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         using DataExchange::VariantValue;
         using Stroika::Foundation::Common::KeyValuePair;
         fAddNew_Statement_.Reset ();
         fAddNew_Statement_.Bind (fObjectVariantMapper_.MapToDB (fObjectVariantMapper_.FromObject (v).As<Mapping<String, VariantValue>> ()));
         if constexpr (TRAITS::kTraceLogEachRequest) {
-            DbgTrace ("SQL: %s", statement.GetSQL (Statement::WhichSQLFlag::eExpanded).c_str ());
+            DbgTrace ("SQL: %s", fAddNew_Statement_.GetSQL (Statement::WhichSQLFlag::eExpanded).c_str ());
         }
         fAddNew_Statement_.Execute ();
     }
     template <typename T, typename TRAITS>
     void TableConnection<T, TRAITS>::Update (const T& v)
     {
-        lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         using DataExchange::VariantValue;
         using Stroika::Foundation::Common::KeyValuePair;
         fUpdate_Statement_.Reset ();
         fUpdate_Statement_.Bind (fTableSchema_.MapToDB (fObjectVariantMapper_.FromObject (v).As<Mapping<String, VariantValue>> ()));
         if constexpr (TRAITS::kTraceLogEachRequest) {
-            DbgTrace ("SQL: %s", statement.GetSQL (Statement::WhichSQLFlag::eExpanded).c_str ());
+            DbgTrace ("SQL: %s", fUpdate_Statement_.GetSQL (Statement::WhichSQLFlag::eExpanded).c_str ());
         }
         fUpdate_Statement_.Execute ();
     }
