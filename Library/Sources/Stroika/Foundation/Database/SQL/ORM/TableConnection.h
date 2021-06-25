@@ -7,6 +7,7 @@
 #include "../../../StroikaPreComp.h"
 
 #include "../../../DataExchange/ObjectVariantMapper.h"
+#include "../../../Debug/AssertExternallySynchronizedLock.h"
 
 #include "../Connection.h"
 
@@ -38,9 +39,13 @@ namespace Stroika::Foundation::Database::SQL::ORM {
      *  \note we choose to create/cache the statements in the constructor and re-use them. We COULD
      *        lazy create (which would work better if you use only a small subset of the methods). But then
      *        we would incurr a cost checking each time (locking), so unclear if lazy creation is worth it.
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
+     *          But though each connection can only be accessed from a single thread at a time, the underlying database may be
+     *          threadsafe (even if accessed across processes).
      */
     template <typename T, typename TRAITS = TableConnectionTraits<T>>
-    class TableConnection {
+    class TableConnection: private Debug::AssertExternallySyncrhonizedLock {
     public:
         TableConnection (const Connection::Ptr& conn, const Schema::Table& tableSchema, const ObjectVariantMapper& objectVariantMapper);
 
