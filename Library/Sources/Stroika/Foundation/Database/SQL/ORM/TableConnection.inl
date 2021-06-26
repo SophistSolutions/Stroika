@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
             DbgTrace (L"SQL: %s", fGetByID_Statement_.GetSQL (Statement::WhichSQLFlag::eExpanded).c_str ());
         }
         auto rows = fGetByID_Statement_.GetAllRows ()
-                        .Select<T> ([this] (const Statement::Row& r) {
+                        .template Select<T> ([this] (const Statement::Row& r) {
                             return fObjectVariantMapper_.ToObject<T> (VariantValue{fTableSchema_.MapFromDB (r)});
                         });
         if (rows.empty ()) {
@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
             DbgTrace (L"SQL: %s", fGetAll_Statement_.GetSQL ().c_str ());
         }
         auto rows = fGetAll_Statement_.GetAllRows ()
-                        .Select<T> ([this] (const Statement::Row& r) {
+                        .template Select<T> ([this] (const Statement::Row& r) {
                             return fObjectVariantMapper_.ToObject<T> (VariantValue{fTableSchema_.MapFromDB (r)});
                         });
         return rows;
