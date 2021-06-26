@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         fGetByID_Statement_.Reset ();
         fGetByID_Statement_.Bind (initializer_list<KeyValuePair<String, VariantValue>>{{fTableSchema_.GetIDField ()->fName, VariantValue{static_cast<Memory::BLOB> (id)}}});
         if constexpr (TRAITS::kTraceLogEachRequest) {
-            DbgTrace ("SQL: %s", fGetByID_Statement_.GetSQL (Statement::WhichSQLFlag::eExpanded).c_str ());
+            DbgTrace (L"SQL: %s", fGetByID_Statement_.GetSQL (Statement::WhichSQLFlag::eExpanded).c_str ());
         }
         auto rows = fGetByID_Statement_.GetAllRows ()
                         .Select<T> ([this] (const Statement::Row& r) {
@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         using DataExchange::VariantValue;
         using Stroika::Foundation::Common::KeyValuePair;
         if constexpr (TRAITS::kTraceLogEachRequest) {
-            DbgTrace ("SQL: %s", fGetAll_Statement_.GetSQL ().c_str ());
+            DbgTrace (L"SQL: %s", fGetAll_Statement_.GetSQL ().c_str ());
         }
         auto rows = fGetAll_Statement_.GetAllRows ()
                         .Select<T> ([this] (const Statement::Row& r) {
@@ -71,9 +71,9 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         using DataExchange::VariantValue;
         using Stroika::Foundation::Common::KeyValuePair;
         fAddNew_Statement_.Reset ();
-        fAddNew_Statement_.Bind (fTableSchema_.MapToDB (fObjectVariantMapper_.FromObject (v).As<Mapping<String, VariantValue>> ()));
+        fAddNew_Statement_.Bind (fTableSchema_.MapToDB (fObjectVariantMapper_.FromObject (v).template As<Mapping<String, VariantValue>> ()));
         if constexpr (TRAITS::kTraceLogEachRequest) {
-            DbgTrace ("SQL: %s", fAddNew_Statement_.GetSQL (Statement::WhichSQLFlag::eExpanded).c_str ());
+            DbgTrace (L"SQL: %s", fAddNew_Statement_.GetSQL (Statement::WhichSQLFlag::eExpanded).c_str ());
         }
         fAddNew_Statement_.Execute ();
     }
@@ -84,9 +84,9 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         using DataExchange::VariantValue;
         using Stroika::Foundation::Common::KeyValuePair;
         fUpdate_Statement_.Reset ();
-        fUpdate_Statement_.Bind (fTableSchema_.MapToDB (fObjectVariantMapper_.FromObject (v).As<Mapping<String, VariantValue>> ()));
+        fUpdate_Statement_.Bind (fTableSchema_.MapToDB (fObjectVariantMapper_.FromObject (v).template As<Mapping<String, VariantValue>> ()));
         if constexpr (TRAITS::kTraceLogEachRequest) {
-            DbgTrace ("SQL: %s", fUpdate_Statement_.GetSQL (Statement::WhichSQLFlag::eExpanded).c_str ());
+            DbgTrace (L"SQL: %s", fUpdate_Statement_.GetSQL (Statement::WhichSQLFlag::eExpanded).c_str ());
         }
         fUpdate_Statement_.Execute ();
     }
