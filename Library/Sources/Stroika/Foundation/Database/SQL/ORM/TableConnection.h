@@ -10,6 +10,7 @@
 #include "../../../Debug/AssertExternallySynchronizedLock.h"
 
 #include "../Connection.h"
+#include "../Statement.h"
 
 #include "Schema.h"
 
