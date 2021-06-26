@@ -6,6 +6,7 @@
 
 #include "../../../StroikaPreComp.h"
 
+#include "../../../Common/GUID.h"
 #include "../../../DataExchange/ObjectVariantMapper.h"
 #include "../../../Debug/AssertExternallySynchronizedLock.h"
 
@@ -20,8 +21,6 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Early</a>
  *
  */
-
-#include "../../../Common/GUID.h"
 
 namespace Stroika::Foundation::Database::SQL::ORM {
 
