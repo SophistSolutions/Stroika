@@ -29,10 +29,10 @@ namespace Stroika::Foundation::Database::SQL::ORM {
 
     /**
      */
-    template <typename T>
+    template <typename T, typename ID_TYPE = Common::GUID, bool TRACE_LOG_EACH_REQUEST = false>
     struct TableConnectionTraits {
-        using IDType                               = Common::GUID;
-        static constexpr bool kTraceLogEachRequest = false;
+        using IDType                               = ID_TYPE;
+        static constexpr bool kTraceLogEachRequest = TRACE_LOG_EACH_REQUEST;
     };
 
     /**
