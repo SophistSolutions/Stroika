@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
                         .template Select<T> ([this] (const Statement::Row& r) {
                             return fObjectVariantMapper_.ToObject<T> (VariantValue{fTableSchema_.MapFromDB (r)});
                         });
-        return rows;
+        return Sequence<T>{rows};
     }
     template <typename T, typename TRAITS>
     void TableConnection<T, TRAITS>::AddNew (const T& v)
