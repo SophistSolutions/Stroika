@@ -237,6 +237,16 @@ namespace Stroika::Foundation::Containers {
         return false;
     }
     template <typename T>
+    inline bool Set<T>::Intersects (const Set<T>& lhs, const Iterable<T>& rhs)
+    {
+        return lhs.Intersects (rhs);
+    }
+    template <typename T>
+    inline bool Set<T>::Intersects (const Iterable<T>& lhs, const Set<T>& rhs)
+    {
+        return rhs.Intersects (lhs);
+    }
+    template <typename T>
     Set<T> Set<T>::Intersection (const Iterable<T>& rhs) const
     {
         using namespace Stroika::Foundation::Common;
