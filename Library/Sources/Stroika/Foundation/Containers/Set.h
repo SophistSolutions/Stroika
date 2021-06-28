@@ -348,13 +348,15 @@ namespace Stroika::Foundation::Containers {
         /**
          */
         nonvirtual bool Intersects (const Iterable<T>& rhs) const;
-        static bool     Intersects (const Set<T>& lhs, const Iterable<T>& rhs) const;
-        static bool     Intersects (const Iterable<T>& lhs, const Set<T>& rhs) const;
+        static bool     Intersects (const Set& lhs, const Iterable<T>& rhs);
+        static bool     Intersects (const Iterable<T>& lhs, const Set& rhs);
 
     public:
         /**
          */
         nonvirtual Set Intersection (const Iterable<T>& rhs) const;
+        static Set     Intersection (const Set& lhs, const Iterable<T>& rhs);
+        static Set     Intersection (const Iterable<T>& lhs, const Set& rhs);
 
     public:
         /**

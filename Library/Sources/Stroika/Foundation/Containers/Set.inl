@@ -237,12 +237,12 @@ namespace Stroika::Foundation::Containers {
         return false;
     }
     template <typename T>
-    inline bool Set<T>::Intersects (const Set<T>& lhs, const Iterable<T>& rhs)
+    inline bool Set<T>::Intersects (const Set& lhs, const Iterable<T>& rhs)
     {
         return lhs.Intersects (rhs);
     }
     template <typename T>
-    inline bool Set<T>::Intersects (const Iterable<T>& lhs, const Set<T>& rhs)
+    inline bool Set<T>::Intersects (const Iterable<T>& lhs, const Set& rhs)
     {
         return rhs.Intersects (lhs);
     }
@@ -257,6 +257,16 @@ namespace Stroika::Foundation::Containers {
             }
         }
         return result;
+    }
+    template <typename T>
+    inline Set<T> Set<T>::Intersection (const Set& lhs, const Iterable<T>& rhs)
+    {
+        return lhs.Intersection (rhs);
+    }
+    template <typename T>
+    inline Set<T> Set<T>::Intersection (const Iterable<T>& lhs, const Set& rhs)
+    {
+        return rhs.Intersection (lhs);
     }
     template <typename T>
     inline Set<T> Set<T>::Union (const Iterable<T>& rhs) const
