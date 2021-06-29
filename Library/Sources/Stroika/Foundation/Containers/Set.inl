@@ -332,16 +332,27 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    Set<T> Set<T>::Difference (const Iterable<T>& rhs) const
+    Set<T> Set<T>::Difference (const Set& rhs) const
     {
         using namespace Stroika::Foundation::Common;
         Set result{this->GetElementEqualsComparer ()};
+        // whether its better to incrementally create the result set, or better to incrementally remove
+        // from the result set (performance wise) (probably) depends on how close *this and rhs are to one another.
         for (T i : *this) {
             if (not rhs.Contains (i)) {
                 result.Add (i);
             }
         }
         return result;
+    }
+    template <typename T>
+    Set<T> Set<T>::Difference (const Iterable<T>& rhs) const
+    {
+        // We could iterate (doubly nested loop) over both *this and rhs, and that would avoid constructing
+        // an intermediate object. However, in the INNER loop, we would do an O(N) operation, and this way we
+        // probably have an (O(Log(N)) operation in the inner loop. At least for larger containers, that 
+        // makes sense (except for requiring more memory temporarily). For smaller ones, it probably doesn't matter.
+        return Difference (Set{this->GetElementEqualsComparer (), rhs});
     }
     template <typename T>
     Set<T> Set<T>::Difference (ArgByValueType<T> rhs) const
