@@ -247,6 +247,18 @@ namespace Stroika::Foundation::Containers {
         return rhs.Intersects (lhs);
     }
     template <typename T>
+    inline bool Set<T>::Intersects (const Set& lhs, const Set& rhs)
+    {
+        // intersection operation is commutitive; and O(N) in side we iterate over, and < O(N) in side we do lookups
+        // on, so do iteration on shorter side
+        if (lhs.size () < rhs.size ()) {
+            return rhs.Intersects (static_cast<const Iterable<T>&> (lhs));
+        }
+        else {
+            return lhs.Intersects (static_cast<const Iterable<T>&> (rhs));
+        }
+    }
+    template <typename T>
     Set<T> Set<T>::Intersection (const Iterable<T>& rhs) const
     {
         using namespace Stroika::Foundation::Common;
@@ -269,6 +281,19 @@ namespace Stroika::Foundation::Containers {
         return rhs.Intersection (lhs);
     }
     template <typename T>
+    inline Set<T> Set<T>::Intersection (const Set& lhs, const Set& rhs)
+    {
+        // Require (lhs.GetElementEqualsComparer () == rhs.GetElementEqualsComparer ());  Not LITERALLY required, but results undefined if these comparers produce diffrent answers
+        // union operation is commutitive; and O(N) in side we iterate over, and < O(N) in side we do lookups
+        // on, so do iteration on shorter side
+        if (lhs.size () < rhs.size ()) {
+            return rhs.Intersection (static_cast<const Iterable<T>&> (lhs));
+        }
+        else {
+            return lhs.Intersection (static_cast<const Iterable<T>&> (rhs));
+        }
+    }
+    template <typename T>
     inline Set<T> Set<T>::Union (const Iterable<T>& rhs) const
     {
         Set r = *this;
@@ -281,6 +306,32 @@ namespace Stroika::Foundation::Containers {
         Set r = *this;
         r.Add (rhs);
         return r;
+    }
+    template <typename T>
+    Set<T> Set<T>::Union (const Set& lhs, const Iterable<T>& rhs)
+    {
+        return lhs.Union (rhs);
+    }
+    template <typename T>
+    Set<T> Set<T>::Union (const Iterable<T>& lhs, const Set& rhs)
+    {
+        // union operation is commutitive
+        return rhs.Union (lhs);
+    }
+    template <typename T>
+    inline Set<T> Set<T>::Union (const Set& lhs, const Set& rhs)
+    {
+        // Require (lhs.GetElementEqualsComparer () == rhs.GetElementEqualsComparer ());  Not LITERALLY required, but results undefined if these comparers produce diffrent answers
+        // union operation is commutitive; and O(N) in side we iterate over, and < O(N) in side we do lookups
+        // on, so do iteration on shorter side
+        if (lhs.size () < rhs.size ()) {
+            Set r = rhs;
+            r.AddAll (lhs);
+        }
+        else {
+            Set r = lhs;
+            r.AddAll (rhs);
+        }
     }
     template <typename T>
     Set<T> Set<T>::Difference (const Set& rhs) const
