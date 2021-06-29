@@ -325,16 +325,14 @@ namespace Stroika::Foundation::Containers {
         // union operation is commutitive; and O(N) in side we iterate over, and < O(N) in side we do lookups
         // on, so do iteration on shorter side
         if (lhs.size () < rhs.size ()) {
-            Set r = rhs;
-            r.AddAll (lhs);
+            return rhs.Union (static_cast<const Iterable<T>&> (lhs));
         }
         else {
-            Set r = lhs;
-            r.AddAll (rhs);
+            return lhs.Union (static_cast<const Iterable<T>&> (rhs));
         }
     }
     template <typename T>
-    Set<T> Set<T>::Difference (const Set& rhs) const
+    Set<T> Set<T>::Difference (const Iterable<T>& rhs) const
     {
         using namespace Stroika::Foundation::Common;
         Set result{this->GetElementEqualsComparer ()};

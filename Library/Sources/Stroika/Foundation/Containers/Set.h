@@ -372,7 +372,7 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        nonvirtual Set Difference (const Set& rhs) const;
+        nonvirtual Set Difference (const Iterable<T>& rhs) const;
         nonvirtual Set Difference (ArgByValueType<T> rhs) const;
 
     public:
