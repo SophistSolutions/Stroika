@@ -101,7 +101,13 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapToDB (const Mapping<String,
         String srcKey = fi.GetVariantValueFieldName ();
         if (auto oFieldVal = fields.Lookup (srcKey)) {
             if (fi.fVariantType) {
-                resultFields.Add (fi.fName, oFieldVal->ConvertTo (*fi.fVariantType));
+                try {
+                    resultFields.Add (fi.fName, oFieldVal->ConvertTo (*fi.fVariantType));
+                }
+                catch (...) {
+                    DbgTrace (L"IN ORM::Schema::Table::MapToDB for field %s: %s", fi.fName.c_str (), Characters::ToString (current_exception ()).c_str ());
+                    throw; // dont call Execution::ReThrow () to avoid extra log entry - above enuf
+                }
             }
             else {
                 resultFields.Add (fi.fName, *oFieldVal);
@@ -194,6 +200,10 @@ namespace {
                 case VariantValue::eBoolean:
                 case VariantValue::eInteger:
                 case VariantValue::eUnsignedInteger:
+                    if (f.fIsKeyField) {
+                        // see https://stackoverflow.com/questions/20289410/difference-between-int-primary-key-and-integer-primary-key-sqlite/20289487#:~:text=Yes%2C%20there%20is%20a%20difference,separate%20primary%20key%20is%20created.
+                        return L"INTEGER"sv;
+                    }
                     return L"INT"sv;
                 case VariantValue::eFloat:
                     return L"REAL"sv;
@@ -230,8 +240,11 @@ String ORM::Schema::StandardSQLStatements::CreateTable () const
         if (fi.fDefaultExpression) {
             sb += L" DEFAULT(" + *fi.fDefaultExpression + L")";
         }
-        if (fi.fNotNull == true) {
+        if (fi.fNotNull) {
             sb += L" NOT NULL";
+        }
+        if (fi.fAutoIncrement) {
+            sb += L" AUTOINCREMENT";
         }
     };
     for (const Field& i : fTable.fNamedFields) {

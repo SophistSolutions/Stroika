@@ -67,10 +67,11 @@ namespace Stroika::Foundation::Database::SQL::ORM {
             bool                         fRequired{false};
             optional<VariantValue::Type> fVariantType;
             optional<String>             fTypeName;
-            optional<bool>               fIsKeyField;
+            bool                         fIsKeyField{false};
             optional<String>             fForeignKeyToTable;
             optional<String>             fDefaultExpression;
-            optional<bool>               fNotNull;
+            bool                         fNotNull{false};
+            bool                         fAutoIncrement{false};
 
             nonvirtual String GetVariantValueFieldName () const;
         };
