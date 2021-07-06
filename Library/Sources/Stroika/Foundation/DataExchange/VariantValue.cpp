@@ -379,6 +379,11 @@ VariantValue::IntegerType_ VariantValue::AsInteger_ () const
         return 0;
     }
     switch (fVal_->GetType ()) {
+        case Type::eBoolean: {
+            auto v = dynamic_cast<const TIRep_<bool>*> (fVal_.get ());
+            AssertNotNull (v);
+            return v->fVal;
+        }
         case Type::eFloat: {
             auto v = dynamic_cast<const TIRep_<FloatType_>*> (fVal_.get ());
             AssertNotNull (v);
