@@ -39,5 +39,6 @@
     "ThirdPartyComponents/*/CURRENT/**": true,
     "**/.git/objects/**": true,
     "**/.git/subtree-cache/**": true
-  }
+  },
+  "git.ignoreLimitWarning": true
 }
