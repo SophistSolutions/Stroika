@@ -6,6 +6,7 @@
 #include "../../../Characters/StringBuilder.h"
 #include "../../../DataExchange/Variant/JSON/Reader.h"
 #include "../../../DataExchange/Variant/JSON/Writer.h"
+#include "../../../Debug/Trace.h"
 
 #include "Schema.h"
 
@@ -16,9 +17,10 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Database;
 using namespace Stroika::Foundation::Database::SQL;
 using namespace Stroika::Foundation::DataExchange;
+using namespace Stroika::Foundation::Debug;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+// #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 /*
  ********************************************************************************
@@ -93,13 +95,18 @@ Mapping<String, VariantValue> ORM::Schema::CatchAllField::kDefaultMapper_Combine
 Mapping<String, VariantValue> ORM::Schema::Table::MapToDB (const Mapping<String, VariantValue>& fields) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{"ORM::Schema::Table::MapToDB", Stroika_Foundation_Debug_OptionalizeTraceArgs (L"fields=%s", Characters::ToString (fields).c_str ())};
+    TraceContextBumper ctx{L"ORM::Schema::Table::MapToDB", Stroika_Foundation_Debug_OptionalizeTraceArgs (L"fields=%s", Characters::ToString (fields).c_str ())};
 #endif
     Mapping<String, VariantValue> resultFields;
     Set<String>                   usedFields; // must track outside of resultFields.Keys () cuz input key could differ from output
     for (const auto& fi : fNamedFields) {
         String srcKey = fi.GetVariantValueFieldName ();
-        if (auto oFieldVal = fields.Lookup (srcKey)) {
+        if (optional<VariantValue> oFieldVal = fields.Lookup (srcKey)) {
+            if (oFieldVal->GetType () == VariantValue::eNull) {
+                // special case - don't write a NULL value - treat as not specified (but don't roll into fSpecialCatchAll)
+                usedFields += srcKey;
+                continue;
+            }
             if (fi.fVariantType) {
                 try {
                     resultFields.Add (fi.fName, oFieldVal->ConvertTo (*fi.fVariantType));
@@ -121,7 +128,7 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapToDB (const Mapping<String,
     }
     // now fold remaining fields into special 'extra' field (for structured non-indexed/non-searchable data)
     Set<String> fields2Accumulate = Set<String>{fields.Keys ()} - usedFields;
-    if (fSpecialCatchAll.has_value () and not fields2Accumulate.empty ()) {
+    if (fSpecialCatchAll.has_value ()) {
         Mapping<String, VariantValue> extraFields;
         for (auto i : fields2Accumulate) {
             extraFields.Add (i, *fields.Lookup (i));
@@ -129,11 +136,8 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapToDB (const Mapping<String,
         // Combine fields into a new variant value (typically json string)
         resultFields.Add (fSpecialCatchAll->fName, fSpecialCatchAll->GetEffectiveRawToCombined () (extraFields));
     }
-    else {
-        Require (fields2Accumulate.empty () or fSpecialCatchAll.has_value ());
-    }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"returning: %s", Characters::ToString (vv).c_str ());
+    DbgTrace (L"returning: %s", Characters::ToString (resultFields).c_str ());
 #endif
     return resultFields;
 }
@@ -141,7 +145,7 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapToDB (const Mapping<String,
 Mapping<String, VariantValue> ORM::Schema::Table::MapFromDB (const Mapping<String, VariantValue>& fields) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{"ORM::Schema::Table::MapFromDB", Stroika_Foundation_Debug_OptionalizeTraceArgs (L"fields=%s", Characters::ToString (fields).c_str ())};
+    TraceContextBumper ctx{L"ORM::Schema::Table::MapFromDB", Stroika_Foundation_Debug_OptionalizeTraceArgs (L"fields=%s", Characters::ToString (fields).c_str ())};
 #endif
     Mapping<String, VariantValue> resultFields;
     for (const auto& fi : fNamedFields) {
@@ -168,6 +172,9 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapFromDB (const Mapping<Strin
     else {
         // @todo maybe check fNamedFields contains all the actual fields??? Maybe OK to not check
     }
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace (L"resultFields=%s", Characters::ToString (resultFields).c_str ());
+#endif
     return resultFields;
 }
 
