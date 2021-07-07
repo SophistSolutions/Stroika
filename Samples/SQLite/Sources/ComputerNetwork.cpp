@@ -102,7 +102,7 @@ namespace {
             {.fName = L"name", .fVariantType = VariantValue::eString, .fNotNull = true}
 #else
             {L"ID", L"id"sv, false, VariantValue::eBLOB, nullopt, true, nullopt, L"randomblob(16)"sv, true},
-            {L"name", nullopt, false, VariantValue::eString, nullopt, nullopt, nullopt, nullopt, true}
+            {L"name", nullopt, false, VariantValue::eString, nullopt, false, nullopt, nullopt, true}
 #endif
         },
         SQL::ORM::Schema::CatchAllField{}};

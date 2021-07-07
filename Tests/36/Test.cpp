@@ -577,7 +577,7 @@ namespace {
                 , {.fName = L"DATE", .fVariantValueFieldName = L"Date"sv, .fVariantType = VariantValue::eDate}
                 #else
                 {L"ID", L"id"sv, false, VariantValue::eInteger, nullopt, true, nullopt, nullopt, false, true}
-                , {L"EMPLOYEEREF", L"Employee-Ref"sv, false, VariantValue::eInteger, nullopt, nullopt, nullopt, nullopt, true}
+                , {L"EMPLOYEEREF", L"Employee-Ref"sv, false, VariantValue::eInteger, nullopt, false, nullopt, nullopt, true}
                 , {L"AMOUNT", L"Amount"sv, false, VariantValue::eFloat}
                 , {L"DATE", L"Date"sv, false, VariantValue::eDate}
 #endif
