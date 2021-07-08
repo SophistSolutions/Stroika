@@ -201,14 +201,14 @@ jobs:
         # Add to extra_config_args for build speed: --Xerces no --OpenSSL no --lzma no --boost no
         include:
           - displayTargetName: MacOS-Debug
-            os: macos-10.15
-            runs_on: macos-10.15
+            os: macos-latest
+            runs_on: macos-latest
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable
             includeInDevBranchBuilds: true
           # - displayTargetName: MacOS
-          #   os: macos-10.15
-          #   runs_on: macos-10.15
+          #   os: macos-latest
+          #   runs_on: macos-latest
           #   config_name: Release
           #   extra_config_args: --apply-default-release-flags --trace2file enable
           #   includeInDevBranchBuilds: false
