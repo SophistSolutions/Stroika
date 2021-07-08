@@ -64,12 +64,14 @@
   <ItemGroup>
     <ClCompile Include="..\..\Sources\ComputerNetwork.cpp" />
     <ClCompile Include="..\..\Sources\Main.cpp" />
-    <ClCompile Include="..\..\Sources\SimpleEmployeesDB.cpp" />
+    <ClCompile Include="..\..\Sources\ORMEmployeesDB.cpp" />
+    <ClCompile Include="..\..\Sources\DirectEmployeesDB.cpp" />
     <ClCompile Include="..\..\Sources\ThreadTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\ComputerNetwork.h" />
-    <ClInclude Include="..\..\Sources\SimpleEmployeesDB.h" />
+    <ClInclude Include="..\..\Sources\ORMEmployeesDB.h" />
+    <ClInclude Include="..\..\Sources\DirectEmployeesDB.h" />
     <ClInclude Include="..\..\Sources\ThreadTest.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

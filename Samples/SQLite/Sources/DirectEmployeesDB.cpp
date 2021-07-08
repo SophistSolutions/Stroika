@@ -10,7 +10,7 @@
 
 #include "Stroika/Foundation/Database/SQL/SQLite.h"
 
-#include "SimpleEmployeesDB.h"
+#include "DirectEmployeesDB.h"
 
 using namespace std;
 
@@ -22,7 +22,7 @@ using namespace Stroika::Foundation::Database;
 #if qHasFeature_sqlite
 using namespace Database::SQL::SQLite;
 
-void Stroika::Samples::SQLite::SimpleEmployeesDB (const Options& options)
+void Stroika::Samples::SQLite::DirectEmployeesDB (const Options& options)
 {
     /*
      ***** SETUP SCHEMA ****

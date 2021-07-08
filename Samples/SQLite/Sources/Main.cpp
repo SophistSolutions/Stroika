@@ -8,7 +8,8 @@
 #include "Stroika/Foundation/Database/SQL/SQLite.h"
 
 #include "ComputerNetwork.h"
-#include "SimpleEmployeesDB.h"
+#include "DirectEmployeesDB.h"
+#include "ORMEmployeesDB.h"
 #include "ThreadTest.h"
 
 using namespace std;
@@ -21,19 +22,21 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 
 #if qHasFeature_sqlite
     {
+        // Use InMemory DB
 #if __cpp_designated_initializers
-        SimpleEmployeesDB (Options{.fInMemoryDB = u"simple-employees-test"});
+        DirectEmployeesDB (Options{.fInMemoryDB = u"direct-employees-test"});
 #else
-        SimpleEmployeesDB (Options{nullopt, true, nullopt, u"simple-employees-test"});
+        DirectEmployeesDB (Options{nullopt, true, nullopt, u"direct-employees-test"});
 #endif
     }
     {
-        auto dbPath = filesystem::current_path () / "simple-employees-test.db";
+        // Same DirectEmployeesDB test, but write to a file so you can explore DB from command-line
+        auto dbPath = filesystem::current_path () / "direct-employees-test.db";
         (void)std::filesystem::remove (dbPath);
 #if __cpp_designated_initializers
-        SimpleEmployeesDB (Options{.fDBPath = dbPath});
+        DirectEmployeesDB (Options{.fDBPath = dbPath});
 #else
-        SimpleEmployeesDB (Options{dbPath});
+        DirectEmployeesDB (Options{dbPath});
 #endif
     }
     {
@@ -43,6 +46,16 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         ThreadTest (Options{.fDBPath = dbPath, .fThreadingMode = Options::ThreadingMode::eMultiThread});
 #else
         ThreadTest (Options{dbPath, true, nullopt, nullopt, Options::ThreadingMode::eMultiThread});
+#endif
+    }
+    {
+        // EmployeesDB test, but using C++ objects and ORM mapping layer (and threads)
+        auto dbPath = filesystem::current_path () / "orm-employees-test.db";
+        (void)std::filesystem::remove (dbPath);
+#if __cpp_designated_initializers
+        ORMEmployeesDB (Options{.fDBPath = dbPath});
+#else
+        ORMEmployeesDB (Options{dbPath});
 #endif
     }
     {

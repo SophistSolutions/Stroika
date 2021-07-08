@@ -22,7 +22,7 @@
     <ClCompile Include="..\..\Sources\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\SimpleEmployeesDB.cpp">
+    <ClCompile Include="..\..\Sources\DirectEmployeesDB.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\ThreadTest.cpp">
@@ -31,15 +31,21 @@
     <ClCompile Include="..\..\Sources\ComputerNetwork.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\ORMEmployeesDB.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Sources\SimpleEmployeesDB.h">
+    <ClInclude Include="..\..\Sources\DirectEmployeesDB.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\ThreadTest.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\ComputerNetwork.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\ORMEmployeesDB.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

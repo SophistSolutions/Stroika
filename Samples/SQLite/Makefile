@@ -18,7 +18,8 @@ TARGETEXE				=	$(TARGETDIR)SQLite${EXE_SUFFIX}
 Objs	=	\
 	$(ObjDir)Main${OBJ_SUFFIX}\
 	$(ObjDir)ComputerNetwork${OBJ_SUFFIX}\
-	$(ObjDir)SimpleEmployeesDB${OBJ_SUFFIX}\
+	$(ObjDir)DirectEmployeesDB${OBJ_SUFFIX}\
+	$(ObjDir)ORMEmployeesDB${OBJ_SUFFIX}\
 	$(ObjDir)ThreadTest${OBJ_SUFFIX}\
 	\
 
