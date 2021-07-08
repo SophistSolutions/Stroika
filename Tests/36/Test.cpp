@@ -534,6 +534,11 @@ namespace {
                 return mapper;
             }};
 
+            /**
+             *  Combine all the ObjectVariantMappers for the objects we use in this database into one, and
+             *  AMEND any mappers as needed to accomodate possible changes in the mappings (like represeting
+             *  some things as strings vs. BLOBs etc).
+             */
             const ConstantProperty<ObjectVariantMapper> kDBObjectMapper_{[] () {
                 ObjectVariantMapper mapper;
                 mapper += Employee::kMapper;
@@ -541,6 +546,10 @@ namespace {
                 return mapper;
             }};
 
+            /*
+             * Define the schema, and how to map between the VariantValue objects and the database
+             * for the EMPLOYEES table.
+             */
             const Schema::Table kEmployeesTableSchema_{
                 L"EMPLOYEES",
                 /*
@@ -567,6 +576,10 @@ namespace {
                 },
                 Schema::CatchAllField{}};
 
+            /*
+             * Define the schema, and how to map between the VariantValue objects and the database
+             * for the PAYCHECKS table.
+             */
             const Schema::Table kPaychecksTableSchema_{
                 L"PAYCHECKS",
                 Collection<Schema::Field>{
@@ -584,6 +597,10 @@ namespace {
                 }};
             // clang-format on
 
+            /*
+             * Create database connection, with hook to establish the database schema,
+             * (and soon to provide database schema upgrades as needed)
+             */
             Connection::Ptr SetupDB_ (const Options& options)
             {
                 TraceContextBumper ctx{"RegressionTest3_sqlite_EmployeesDB_with_ORM_and_threads_::SetupDB_"};
@@ -598,6 +615,9 @@ namespace {
                 return r;
             }
 
+            /*
+             * Example thread making updates to the employees table.
+             */
             void PeriodicallyUpdateEmployeesTable_ (Connection::Ptr conn)
             {
                 TraceContextBumper ctx{"RegressionTest3_sqlite_EmployeesDB_with_ORM_and_threads_::PeriodicallyUpdateEmployeesTable_"};
@@ -659,6 +679,9 @@ namespace {
                 }
             }
 
+            /*
+             * Example thread making updates to the paychecks table (while consulting the employees table).
+             */
             void PeriodicallyWriteChecksForEmployeesTable_ (Connection::Ptr conn)
             {
                 TraceContextBumper ctx{"RegressionTest3_sqlite_EmployeesDB_with_ORM_and_threads_::PeriodicallyWriteChecksForEmployeesTable_"};
@@ -693,7 +716,6 @@ namespace {
                 Thread::CleanupPtr writeChecks{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { PeriodicallyWriteChecksForEmployeesTable_ (conn2); }, Thread::eAutoStart, L"Write Checks")};
                 Execution::WaitableEvent{}.WaitQuietly (15s);
             }
-
         }
 
         void DoIt ()
