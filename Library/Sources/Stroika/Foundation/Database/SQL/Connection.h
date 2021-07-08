@@ -42,6 +42,8 @@ namespace Stroika::Foundation::Database::SQL {
     public:
         /**
          *  Quasi-namespace class - don't construct - construct a SOME_CONNECTION_SUBCLASS::New ()
+         * 
+         *  \see SQLite::Connection::New ()
          */
         Connection () = delete;
     };
@@ -84,6 +86,8 @@ namespace Stroika::Foundation::Database::SQL {
 
     /**
      *  Connection::Ptr provides an API for accessing an SQLite database.
+     * 
+     *  A new Connection::Ptr is typically created with SOME_SERVICE::Connection::New () (e..g SQLite::Connection::New())
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
      *          But though each connection can only be accessed from a single thread at a time, the underlying database may be
@@ -116,12 +120,20 @@ namespace Stroika::Foundation::Database::SQL {
     public:
         /**
          *  Statement object factory
+         * 
+         *  The reason you might use this instead of SQLite::Statement{} - is in writing generic code
+         *  that doesn't depend on the particular kind of SQL database you are connected to (e.g. that
+         *  might be used for ODBC or SQLite).
          */
         nonvirtual Statement mkStatement (const String& sql);
 
     public:
         /**
          *  Transaction object factory
+         * 
+         *  The reason you might use this instead of SQLite::Transaction{} - is in writing generic code
+         *  that doesn't depend on the particular kind of SQL database you are connected to (e.g. that
+         *  might be used for ODBC or SQLite).
          */
         nonvirtual Transaction mkTransaction ();
 

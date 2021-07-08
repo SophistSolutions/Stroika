@@ -220,6 +220,8 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
 
     /**
      *  Connection provides an API for accessing an SQLite database.
+     * 
+     *  Typically don't use this directly, but use Connecion::Ptr, a smart ptr wrapper on this interface.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
      *          But though each connection can only be accessed from a single thread at a time, the underlying database may be
@@ -256,6 +258,8 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
 
     /**
      *  Connection provides an API for accessing an SQLite database.
+     *
+     *  A new Connection::Ptr is typically created SQLite::Connection::New()
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
      *          But though each connection can only be accessed from a single thread at a time, the underlying database may be

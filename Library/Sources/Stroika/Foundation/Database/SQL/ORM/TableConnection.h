@@ -36,6 +36,16 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     };
 
     /**
+     *  \brief TableConnection<T> wraps a database Connection::Ptr with information to map c++ objects to/from SQL database objects, and provides a series of common, building block queries (CRUD)
+     *
+     *  Generally, these functions use the (constructor provided) tableSchema to know the layout/shape of the SQL data
+     *  and the (constructor provided) ObjectVariantMapper to map arguments and results between c++ T objects and
+     *  VariantValue objects.
+     * 
+     *  Together, this means you can simple Read, Write, Update, etc C++ objects directly from a SQL database,
+     *  with all intervening mapping of data handled inside the TableConnection (via the Schema::Table and
+     *  ObjectVariantMapper objects provided in the TableConnection::CTOR).
+     * 
      *  \note we choose to create/cache the statements in the constructor and re-use them. We COULD
      *        lazy create (which would work better if you use only a small subset of the methods). But then
      *        we would incurr a cost checking each time (locking), so unclear if lazy creation is worth it.
@@ -51,15 +61,32 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         TableConnection (TableConnection&& src) = default;
 
     public:
+        /**
+         *  Lookup the given object by ID. This does a select * from table where id=id, and maps the various
+         *  SQL parameters that come back to a C++ object.
+         */
         nonvirtual optional<T> GetByID (const typename TRAITS::IDType& id);
 
     public:
+        /**
+         *  Get ALL the c++ objects in this table. This does a select * from table, and maps the various
+         *  SQL parameters that come back to C++ objects.
+         */
         nonvirtual Sequence<T> GetAll ();
 
     public:
+        /**
+         *  Convert the argument object to database form, and write it as a new row to the database. The ID is
+         *  generally not provided as part of T (though it can be), as you generally supply a default creation rule for
+         *  IDs in the Schema::Table.
+         */
         nonvirtual void AddNew (const T& v);
 
     public:
+        /**
+         *  Use the ID field from the argument object to update all the OTHER fields of that object in the database.
+         *  The ID field is known because of the Table::Schema, and must be valid (else this will fail).
+         */
         nonvirtual void Update (const T& v);
 
     private:
