@@ -79,3 +79,9 @@
    fun:sqlite3_mutex_enter
    ...
 }
+{
+   https://stroika.atlassian.net/browse/STK-741
+   Helgrind:Race
+   ...
+   fun:*call_once<*
+}
