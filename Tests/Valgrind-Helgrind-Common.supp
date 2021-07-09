@@ -83,5 +83,5 @@
    https://stroika.atlassian.net/browse/STK-741
    Helgrind:Race
    ...
-   fun:*std::call_once*
+   fun:*Stroika::Foundation::Common::ConstantProperty*
 }
