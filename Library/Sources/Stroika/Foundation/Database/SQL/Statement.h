@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Database::SQL {
     using DataExchange::VariantValue;
 
     /**
-     *  'Statement' is a non-copyable object, referencing a particalar SQL Connection object.
+     *  'Statement' is a non-copyable (but moveable) object, referencing a particalar SQL Connection object.
      *
      *  \note - Design Note - we use String for the result-column-name - and could use int or Atom. But
      *        String slightly simpler, and nearly as performant, so going with that for now.
@@ -45,6 +45,7 @@ namespace Stroika::Foundation::Database::SQL {
     public:
         /**
          */
+        Statement ()      = delete;
         Statement (Statement&&)      = default;
         Statement (const Statement&) = delete;
 
