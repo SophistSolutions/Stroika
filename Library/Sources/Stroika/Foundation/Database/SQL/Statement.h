@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Database::SQL {
     public:
         /**
          */
-        Statement ()      = delete;
+        Statement ()                 = delete;
         Statement (Statement&&)      = default;
         Statement (const Statement&) = delete;
 
