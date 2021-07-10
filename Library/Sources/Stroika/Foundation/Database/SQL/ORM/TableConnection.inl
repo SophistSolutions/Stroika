@@ -18,7 +18,19 @@ namespace Stroika::Foundation::Database::SQL::ORM {
      */
     template <typename T, typename TRAITS>
     TableConnection<T, TRAITS>::TableConnection (const Connection::Ptr& conn, const Schema::Table& tableSchema, const ObjectVariantMapper& objectVariantMapper)
-        : fConnection_{conn}
+        : pConnection{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+            const TableConnection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &TableConnection::pConnection);
+            return thisObj->fConnection_;
+        }}
+        , pTableSchema{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+            const TableConnection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &TableConnection::pTableSchema);
+            return thisObj->fTableSchema_;
+        }}
+        , pObjectVariantMapper{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+            const TableConnection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &TableConnection::pObjectVariantMapper);
+            return thisObj->fObjectVariantMapper_;
+        }}
+        , fConnection_{conn}
         , fTableSchema_{tableSchema}
         , fObjectVariantMapper_{objectVariantMapper}
         , fGetByID_Statement_{conn->mkStatement (Schema::StandardSQLStatements{tableSchema}.GetByID ())}
@@ -27,6 +39,11 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         , fUpdate_Statement_{conn->mkStatement (Schema::StandardSQLStatements{tableSchema}.UpdateByID ())}
     {
         Require (conn != nullptr); // too late, but good docs
+    }
+    template <typename T, typename TRAITS>
+    inline TableConnection<T, TRAITS>::TableConnection (const TableConnection& src)
+        : TableConnection{src.fConnection_, src.fTableSchema_, src.fObjectVariantMapper_}
+    {
     }
     template <typename T, typename TRAITS>
     optional<T> TableConnection<T, TRAITS>::GetByID (const typename TRAITS::IDType& id)

@@ -7,6 +7,7 @@
 #include "../../../StroikaPreComp.h"
 
 #include "../../../Common/GUID.h"
+#include "../../../Common/Property.h"
 #include "../../../DataExchange/ObjectVariantMapper.h"
 #include "../../../Debug/AssertExternallySynchronizedLock.h"
 
@@ -57,8 +58,24 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     template <typename T, typename TRAITS = TableConnectionTraits<T>>
     class TableConnection : private Debug::AssertExternallySynchronizedLock {
     public:
+        TableConnection () = delete;
         TableConnection (const Connection::Ptr& conn, const Schema::Table& tableSchema, const ObjectVariantMapper& objectVariantMapper);
-        TableConnection (TableConnection&& src) = default;
+        TableConnection (const TableConnection& src);
+
+    public:
+        /**
+         */
+        Common::ReadOnlyProperty<Connection::Ptr> pConnection;
+
+    public:
+        /**
+         */
+        Common::ReadOnlyProperty<Schema::Table> pTableSchema;
+
+    public:
+        /**
+         */
+        Common::ReadOnlyProperty<ObjectVariantMapper> pObjectVariantMapper;
 
     public:
         /**
