@@ -26,30 +26,36 @@ namespace Stroika::Foundation::Database::SQL {
     }
     inline Transaction::~Transaction ()
     {
-        if (_fRep->GetDisposition () == IRep::Disposition::eNone) {
-            try {
-                Rollback ();
-            }
-            catch (...) {
-                DbgTrace (L"Suppress rollback failure exception in SQL transaction: %s", Characters::ToString (current_exception ()).c_str ());
-                // intentially fall-thru
+        // Since we allow move, that nulls out _fRep
+        if (_fRep != nullptr) {
+            if (_fRep->GetDisposition () == IRep::Disposition::eNone) {
+                try {
+                    Rollback ();
+                }
+                catch (...) {
+                    DbgTrace (L"Suppress rollback failure exception in SQL transaction: %s", Characters::ToString (current_exception ()).c_str ());
+                    // intentially fall-thru
+                }
             }
         }
     }
     inline void Transaction::Rollback ()
     {
         lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
+        RequireNotNull (_fRep);
         _fRep->Rollback ();
     }
     inline void Transaction::Commit ()
     {
         lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
+        RequireNotNull (_fRep);
         _fRep->Commit ();
     }
     inline String Transaction::ToString () const
     {
         shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{*this};
-        Characters::StringBuilder                                  sb;
+        RequireNotNull (_fRep);
+        Characters::StringBuilder sb;
         sb += L"{";
         sb += L" disposition: " + Characters::ToString (_fRep->GetDisposition ());
         sb += L"}";
