@@ -62,4 +62,19 @@
       {ToString ()}
     </DisplayString>
   </Type>
+  <Type Name="Stroika::Foundation::Time::Date">
+    <DisplayString>
+      {ToString ()}
+    </DisplayString>
+  </Type>
+  <Type Name="Stroika::Foundation::Time::DateTime">
+    <DisplayString>
+      {ToString ()}
+    </DisplayString>
+  </Type>
+  <Type Name="Stroika::Foundation::Time::TimeOfDay">
+    <DisplayString>
+      {ToString ()}
+    </DisplayString>
+  </Type>
 </AutoVisualizer>
