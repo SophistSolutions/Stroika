@@ -503,3 +503,25 @@ Reasons:
 Most Stroika functions raise an exception when they fail. For example, Wait () methods etc, Parse() methods, etc.
 But sometimes you just want the thing to return an optional result (for speed and simplicity - cuz the failure case is common, not
 exceptional). To simplify these situations, many APIs have a 'Quietly' variant, that does what the main function does, but instead of raising an exception when it fails, it returns a nullopt.
+
+---
+
+## Deprecating old APIs
+
+### Use [[deprecated()]]
+
+For many APIs (e.g. member functions) - we annotate the API with a deprecated attribute, and document the new API to be used instead.
+We try to keep these around til the major version switch (e..g til we switch from 2.1b9 to 2.1rc, or 3.1a, to 3.1b, etc).
+
+### Use inline namespaces
+
+For large sections of code which may change (e.g. the ORM or SQL APIs), we may version the entire API section with
+inline namespaces
+
+```c++
+namespace Stroika::Foundation::Database::SQL:: inline v1 {
+  // just add the inline v1 and a new section :v2 (to test backward compatabilty works)
+  // Maybe provide #define to control if v1 or v2 is the default? Or maybe just quick test run
+  // that all builds with one inline and then swtich to the other and require users to switch to explicitly add the 'v1'/v2 (and default to v2).
+}
+```
