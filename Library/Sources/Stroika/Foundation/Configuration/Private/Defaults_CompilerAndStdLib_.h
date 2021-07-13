@@ -2054,7 +2054,10 @@ stHarness/SimpleClass.cpp ...
 
 /**
  *  We use some of these definitions in .natvis files, so we need them to stay around
- *  so they can be called by the debugger.
+ *  so they can be called by the debugger.\
+ * 
+ *  See https://developercommunity.visualstudio.com/t/please-re-open-httpsdevelopercommunityvisualstudio-1/1473717 
+ *  for where I complained about this.
 */
 #ifndef qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy
 
