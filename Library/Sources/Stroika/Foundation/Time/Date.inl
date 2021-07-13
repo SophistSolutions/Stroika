@@ -224,10 +224,12 @@ namespace Stroika::Foundation::Time {
         }
         return ParseQuietly_ (rep.As<wstring> (), use_facet<time_get<wchar_t>> (l), formatPattern, nullptr);
     }
+#if not(qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy && qDebug)
     inline String Date::ToString () const
     {
         return Format ();
     }
+#endif
     inline Date& Date::operator++ ()
     {
         *this = this->AddDays (1);

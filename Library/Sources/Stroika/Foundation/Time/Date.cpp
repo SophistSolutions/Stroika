@@ -480,6 +480,13 @@ void Date::mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const
     *year = static_cast<Year> (y);
 }
 
+#if qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy && qDebug
+String Date::ToString () const
+{
+    return Format ();
+}
+#endif
+
 /*
  ********************************************************************************
  *************************** Date::DayDifference ********************************

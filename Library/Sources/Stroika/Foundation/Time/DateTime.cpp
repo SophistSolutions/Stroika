@@ -725,9 +725,10 @@ String DateTime::Format (const locale& l, const String& formatPattern) const
 
 #if qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy
     if (l == locale::classic () and formatPattern == kLocaleStandardFormat) {
+        // this seems a weird format, but from https://en.cppreference.com/w/cpp/chrono/c/strftime: writes standard date and time string, e.g. Sun Oct 17 04:41:13 2010 (locale dependent)
         static const String kAltPattern_{L"%a %b %e %T %Y"sv};
         tmput.put (oss, oss, ' ', &when, kAltPattern_.c_str (), kAltPattern_.c_str () + kAltPattern_.length ());
-        return String (oss.str ());
+        return String{oss.str ()};
     }
 #endif
 

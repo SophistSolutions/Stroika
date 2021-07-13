@@ -2052,6 +2052,21 @@ stHarness/SimpleClass.cpp ...
 
 #endif
 
+/**
+ *  We use some of these definitions in .natvis files, so we need them to stay around
+ *  so they can be called by the debugger.
+*/
+#ifndef qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy
+
+#if defined(_MSC_VER)
+// first noticed broken in _MSC_VER_2k19_16Pt10_
+#define qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt10_)
+#else
+#define qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy 0
+#endif
+
+#endif
+
 /*
  * Assertions.cpp:178:5: error: use of undeclared identifier 'quick_exit'
  */

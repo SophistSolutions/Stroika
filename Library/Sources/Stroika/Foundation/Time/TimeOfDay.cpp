@@ -411,3 +411,10 @@ void TimeOfDay::ClearSecondsField ()
     fTime_ -= secs;
     Assert (fTime_ < kMaxSecondsPerDay);
 }
+
+#if qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy && qDebug
+String TimeOfDay::ToString () const
+{
+    return Format ();
+}
+#endif
