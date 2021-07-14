@@ -4,13 +4,17 @@ This folder contains all the Stroika Library Foundation::[Database](../ReadMe.md
 
 ## Modules
 
-- [Connection.h](Connection.h) - Abstract Rep and Ptr for generic SQL database connection
-- [Statement.h](Statement.h) - Abstract Rep and Ptr for generic SQL database statment
-- [Transaction.h](Transaction.h) - Abstract Rep and Ptr for generic SQL database transaction
+- Interfaces/Ptr classes
 
-- [ODBCClient.h](ODBCClient.h) - Concrete ODBC client (implements abstract Connection etc interfaces)
-- [SQLite.h](SQLite.h)- Concrete ODBC client (implements abstract Connection etc interfaces)
+  - [Connection.h](Connection.h) - IRep/Ptr for generic SQL database connection
+  - [Statement.h](Statement.h) - IRep/Ptr for generic SQL database statment
+  - [Transaction.h](Transaction.h) - IRep/Ptr for generic SQL database transaction
 
-- [Utils.h](Utils.h)
+- Concrete
 
-- [ORM](ORM/ReadMe.md) - code to map between VariantValue tree structures and relational database
+  - [ODBCClient.h](ODBCClient.h) - Concrete ODBC client (implements abstract Connection etc interfaces)
+  - [SQLite.h](SQLite.h)- Concrete ODBC client (implements abstract Connection etc interfaces)
+
+- Other
+  - [Utils.h](Utils.h)
+  - [ORM](ORM/ReadMe.md) - Map between VariantValue tree structures and relational database

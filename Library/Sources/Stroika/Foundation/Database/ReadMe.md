@@ -4,4 +4,4 @@ This folder contains all the Stroika Library [Foundation](../ReadMe.md)::Databas
 
 ## Modules
 
-- [SQL](SQL/ReadMe.md)
+- [SQL](SQL/ReadMe.md) - tools like SQLite, ODBCClient, ORM, etc...
