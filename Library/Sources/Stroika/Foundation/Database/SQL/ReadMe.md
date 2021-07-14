@@ -17,4 +17,4 @@ This folder contains all the Stroika Library Foundation::[Database](../ReadMe.md
 
 - Other
   - [Utils.h](Utils.h)
-  - [ORM](ORM/ReadMe.md) - Map between VariantValue tree structures and relational database
+  - [ORM/](ORM/ReadMe.md) - Map between VariantValue tree structures and relational database
