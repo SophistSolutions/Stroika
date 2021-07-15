@@ -84,6 +84,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'TARGET_PLATFORMS'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<BuildByDefault>");
+		if (defined $pps) {
+			$configuration {'BuildByDefault'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<BUILD_TOOLS_ROOT>");
 		if (defined $pps) {
 			$configuration {'BUILD_TOOLS_ROOT'} = $pps;

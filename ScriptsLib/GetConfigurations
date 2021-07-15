@@ -4,6 +4,8 @@
 #		./ScriptsLib/GetConfigurations
 #		./ScriptsLib/GetConfigurations --config-tags "Windows"
 #		./ScriptsLib/GetConfigurations --config-tags "Windows 32" --quiet
+#		./ScriptsLib/GetConfigurations --all-default
+#		./ScriptsLib/GetConfigurations --all
 #
 get_script_dir () {
      #https://www.ostricher.com/2014/10/the-right-way-to-get-the-directory-of-a-bash-script/
@@ -20,6 +22,8 @@ get_script_dir () {
 }
 MY_PATH=$(get_script_dir)
 QUIET=0
+ALL=1
+ALLDEFAULT=0
 
 CONFIG_TAG_RESTRICTION=""
 while [[ $# -gt 0 ]]; do
@@ -34,6 +38,16 @@ while [[ $# -gt 0 ]]; do
       ;;
     --quiet)
       QUIET=1
+      shift 1
+      ;;
+    --all)
+      ALL=1
+      ALLDEFAULT=0
+      shift 1
+      ;;
+    --all-default)
+      ALL=0
+      ALLDEFAULT=1
       shift 1
       ;;
     --help)
@@ -61,7 +75,23 @@ if [ -e "$MY_PATH/../ConfigurationFiles/" ] ; then
 	RAW_CONFIGS=`/usr/bin/find "$MY_PATH/../ConfigurationFiles/" -type f -exec basename \{} .xml \; | $SORT | tr '\n' ' '`
 fi
 if [ "$CONFIG_TAG_RESTRICTION" == "" ] ; then
-	echo $RAW_CONFIGS
+  if [ $ALL -eq 1 ]; then
+  	echo $RAW_CONFIGS
+  fi
+  if [ $ALLDEFAULT -eq 1 ]; then
+    UNAME=`uname -o`
+    if [ $UNAME == "" ]; then
+      UNAME=`uname`
+    fi
+    NEW_CONFIGS=""
+    for c in $RAW_CONFIGS ; do
+      BBD=`$MY_PATH/../ScriptsLib/GetConfigurationParameter $c BuildByDefault`
+      if [ "$BBD" == 'always' ] || [ "$BBD" == "$UNAME" ]; then
+        NEW_CONFIGS="$NEW_CONFIGS $c"
+      fi
+    done
+    echo $NEW_CONFIGS
+  fi
 else
 	NEW_CONFIGS=""
 	for c in $RAW_CONFIGS ; do

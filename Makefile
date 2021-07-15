@@ -29,8 +29,16 @@ export TEST_FAILURES_CAUSE_FAILED_MAKE?=1
 #Handy shortcut
 CONFIGURATION_TAGS?=$(TAGS)
 
-
-APPLY_CONFIGS=$(or $(CONFIGURATION), $(shell ScriptsLib/GetConfigurations --config-tags "$(CONFIGURATION_TAGS)"))
+APPLY_CONFIGS:=$(or \
+				$(CONFIGURATION), \
+				$(if $(CONFIGURATION_TAGS), \
+					$(shell ScriptsLib/GetConfigurations --config-tags "$(CONFIGURATION_TAGS)"),\
+					$(if $(filter clobber, $(MAKECMDGOALS)),\
+						$(shell ScriptsLib/GetConfigurations --all),\
+						$(shell ScriptsLib/GetConfigurations --all-default)\
+					)\
+				)\
+			)
 
 help:
 	@$(ECHO) "Help for making Stroika:"
@@ -384,23 +392,23 @@ endif
 	@echo "done"
 
 
-UNAME_DASH_O_=$(shell uname -o 2>/dev/null || true)
+UNAME_DASH_O_=$(shell uname -o 2>/dev/null || uname)
 
 default-configurations:
 	@ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making default configurations:"
 	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	if [ "$(UNAME_DASH_O_)" = "Cygwin" ] ; then\
-		./configure Debug --config-tag Windows --config-tag x86_64 --arch x86_64 --apply-default-debug-flags;\
-		./configure Release --config-tag Windows --config-tag x86_64 --arch x86_64 --apply-default-release-flags;\
-		./configure Release-Logging --config-tag Windows --config-tag x86_64 --arch x86_64 --apply-default-release-flags --trace2file enable;\
-		./configure Debug-x86 --config-tag Windows --config-tag x86 --arch x86 --apply-default-debug-flags;\
-		./configure Debug-x86_64 --config-tag Windows --config-tag x86_64 --arch x86_64 --apply-default-debug-flags;\
-		./configure Release-x86 --config-tag Windows --config-tag x86 --arch x86 --apply-default-release-flags;\
-		./configure Release-x86_64 --config-tag Windows --config-tag x86_64 --arch x86_64 --apply-default-release-flags;\
+		./configure Debug --config-tag Windows --config-tag x86_64 --build-by-default $(UNAME_DASH_O_) --arch x86_64 --apply-default-debug-flags;\
+		./configure Release --config-tag Windows --config-tag x86_64 --build-by-default $(UNAME_DASH_O_) --arch x86_64 --apply-default-release-flags;\
+		./configure Release-Logging --config-tag Windows --config-tag x86_64 --build-by-default $(UNAME_DASH_O_) --arch x86_64 --apply-default-release-flags --trace2file enable;\
+		./configure Debug-x86 --config-tag Windows --config-tag x86 --arch x86 --build-by-default $(UNAME_DASH_O_) --apply-default-debug-flags;\
+		./configure Debug-x86_64 --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-debug-flags;\
+		./configure Release-x86 --config-tag Windows --config-tag x86 --arch x86 --build-by-default $(UNAME_DASH_O_) --apply-default-release-flags;\
+		./configure Release-x86_64 --config-tag Windows --config-tag x86_64 --arch x86_64 --build-by-default never --apply-default-release-flags;\
 	else\
-		./configure Debug --config-tag Unix --apply-default-debug-flags;\
-		./configure Release --config-tag Unix --apply-default-release-flags;\
-		./configure Release-Logging --config-tag Unix --apply-default-release-flags --trace2file enable;\
+		./configure Debug --config-tag Unix --build-by-default $(UNAME_DASH_O_) --apply-default-debug-flags;\
+		./configure Release --config-tag Unix --build-by-default $(UNAME_DASH_O_) --apply-default-release-flags;\
+		./configure Release-Logging --config-tag Unix --build-by-default $(UNAME_DASH_O_) --apply-default-release-flags --trace2file enable;\
 	fi
 
 

@@ -136,6 +136,8 @@ $DEFAULT_CWARNING_FLAGS_CLANG		= $DEFAULT_CWARNING_FLAGS_CLANG . '-Wno-future-co
 
 my $Config_Tag = undef;   #see 	https://stroika.atlassian.net/browse/STK-667 to support plural
 
+my $BuildByDefault = "always";	# for now default to always...
+
 my $FEATUREFLAG_ActivePerl = undef;
 my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;		#$LIBFEATUREFLAG_UseStaticTPP; tricky some places because of dependencies - resolve that first
 my $FEATUREFLAG_boost = $LIBFEATUREFLAG_UseStaticTPP;
@@ -198,6 +200,7 @@ sub	DoHelp_
 		print("  configure CONFIGURATION-NAME [OPTIONS]* where options can be:\n");
 		print("	    --arch {ARCH}                                   /* for high level architecture - first section of gcc -machine - e.g. x86, x86_64, arm - usually auto-detected */\n");
 		print("	    [--config-tag {TAG-NAME}]*                      /* Add TAG-NAME to the list of tags associated with this configuration (for now limit one). Maybe repeated */\n");
+		print("	    --build-by-default never|always|{uname}         /* Mark configuration to be built by default always (DEFAULT), never, or only if host uname/uname -o equals ARGUMENT */\n");
 		print("	    --platform {PLATFORM}                           /* Specifies the ProjectPlatformSubdir (Unix, VisualStudio.Net-2017, VisualStudio.Net-2019) - usually auto-detected */\n");
 		print("	    --target-platforms {TARGET_PLATFORMS}           /* Specifies the target-platforms- system compiling Stroika for - (set of ENUM where ENUM=(Windows, POSIX, Linux, MacOS)) - usually auto-detected */\n");
 		print("	    --build-tools-root {BUILD_TOOLS_ROOT}           /* Specifies the BUILD_TOOLS_ROOT - initially just for visual studio - usually auto-detected */\n");
@@ -1287,6 +1290,11 @@ sub	ParseCommandLine_Remaining_
 			}
 			$Config_Tag .= $var;
 		}
+		elsif ((lc ($var) eq "-build-by-default") or (lc ($var) eq "--build-by-default")) {
+			$i++;
+			$var = $args[$i];
+			$BuildByDefault = $var;
+		}
 		elsif ((lc ($var) eq "-libcurl") or (lc ($var) eq "--libcurl")) {
 			$i++;
 			$var = $args[$i];
@@ -2329,6 +2337,7 @@ sub	WriteConfigFile_
 	else {
 		print (OUT "    <ConfigTags></ConfigTags>\n");
 	}
+	print (OUT "    <BuildByDefault>$BuildByDefault</BuildByDefault>\n");
 	print (OUT "    <AS>$AS</AS>\n");
 	print (OUT "    <CC>$COMPILER_DRIVER_C</CC>\n");
 	print (OUT "    <CXX>$COMPILER_DRIVER_CPlusPlus</CXX>\n");
