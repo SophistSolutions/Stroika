@@ -168,7 +168,7 @@ RASPBERRYPIVALGRINDCONFIGS=`ScriptsLib/GetConfigurations --quiet --config-tags "
 echo $RASPBERRYPIVALGRINDCONFIGS > /tmp/raspvalconfigs.txt
 ScriptsLib/GetConfigurations --quiet --config-tags "valgrind"  > /tmp/allvalgrindconfigs.txt
 if [ `uname -s | cut -b 1-6` != "CYGWIN" ] ; then
-	LOCAL_CONFIGS=`comm -23 <(ScriptsLib/GetConfigurations) <(echo $RASPBERRYPICONFIGS)`
+	LOCAL_CONFIGS=`comm -23 <(ScriptsLib/GetConfigurations --all-default) <(echo $RASPBERRYPICONFIGS)`
 	LOCAL_VALGRIND_CONFIGS=`comm -23 <(sort /tmp/allvalgrindconfigs.txt) <(sort /tmp/raspvalconfigs.txt)`
 	#provide better defaults for these flags
 	if [ "$INCLUDE_VALGRIND_MEMCHECK_TESTS" == "" ]; then
@@ -186,7 +186,7 @@ if [ `uname -s | cut -b 1-6` != "CYGWIN" ] ; then
 		fi
 	fi
 else
-	LOCAL_CONFIGS=`ScriptsLib/GetConfigurations --quiet`
+	LOCAL_CONFIGS=`ScriptsLib/GetConfigurations --quiet --all-default`
 	LOCAL_VALGRIND_CONFIGS=""
 fi
 rm -f /tmp/raspvalconfigs.txt /tmp/allvalgrindconfigs.txt
@@ -199,7 +199,7 @@ if [ "$INCLUDE_RASPBERRYPI_TESTS" == "" ]; then
 	fi
 fi
 
-NUM_CONFIGURATIONS=`ScriptsLib/GetConfigurations | wc -w`
+NUM_CONFIGURATIONS=`ScriptsLib/GetConfigurations --all-default | wc -w`
 NUM_REMOTE_CONFIGURATIONS=`echo $RASPBERRYPICONFIGS | wc -w`
 NUM_REGTESTS=`wc -l Tests/Tests-Description.txt | awk '{print $1;}'`
 NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS=`echo $LOCAL_VALGRIND_CONFIGS | wc -w`
@@ -266,7 +266,7 @@ echo >>$TEST_OUT_FILE 2>&1
 echo >>$TEST_OUT_FILE 2>&1
 echo "Building configurations ($NUM_CONFIGURATIONS):"
 echo "$PREFIX_OUT_LABEL" "Building configurations ($NUM_CONFIGURATIONS):" >>$TEST_OUT_FILE 2>&1
-for i in `ScriptsLib/GetConfigurations`; do
+for i in `ScriptsLib/GetConfigurations --all-default`; do
 	echo "   $i";
 	echo "   $i"  >>$TEST_OUT_FILE 2>&1;
 done
@@ -274,7 +274,7 @@ done
 echo >>$TEST_OUT_FILE 2>&1
 echo >>$TEST_OUT_FILE 2>&1
 echo "$PREFIX_OUT_LABEL" "Configurations DETAILS ($NUM_CONFIGURATIONS):" >>$TEST_OUT_FILE 2>&1
-for i in `ScriptsLib/GetConfigurations`; do
+for i in `ScriptsLib/GetConfigurations --all-default`; do
 	echo "   $i:"  >>$TEST_OUT_FILE 2>&1;
 	sed 's/^/      /' ConfigurationFiles/$i.xml >>$TEST_OUT_FILE
 	echo >>$TEST_OUT_FILE 2>&1
