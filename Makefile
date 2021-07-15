@@ -390,15 +390,17 @@ default-configurations:
 	@ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making default configurations:"
 	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	if [ "$(UNAME_DASH_O_)" = "Cygwin" ] ; then\
-		./configure Debug-U-32 --config-tag Windows --config-tag 32 --arch x86 --apply-default-debug-flags;\
-		./configure Debug-U-64 --config-tag Windows --config-tag 64 --arch x86_64 --apply-default-debug-flags;\
-		./configure Release-Logging-U-32 --config-tag Windows --config-tag 32 --arch x86 --apply-default-release-flags --trace2file enable;\
-		./configure Release-Logging-U-64 --config-tag Windows --config-tag 64 --arch x86_64 --apply-default-release-flags --trace2file enable;\
-		./configure Release-U-32 --config-tag Windows --config-tag 32 --arch x86 --apply-default-release-flags;\
-		./configure Release-U-64 --config-tag Windows --config-tag 64 --arch x86_64 --apply-default-release-flags;\
+		./configure Debug --config-tag Windows --config-tag x86_64 --arch x86_64 --apply-default-debug-flags;\
+		./configure Release --config-tag Windows --config-tag x86_64 --arch x86_64 --apply-default-release-flags;\
+		./configure Release-Logging --config-tag Windows --config-tag x86_64 --arch x86_64 --apply-default-release-flags --trace2file enable;\
+		./configure Debug-x86 --config-tag Windows --config-tag x86 --arch x86 --apply-default-debug-flags;\
+		./configure Debug-x86_64 --config-tag Windows --config-tag x86_64 --arch x86_64 --apply-default-debug-flags;\
+		./configure Release-x86 --config-tag Windows --config-tag x86 --arch x86 --apply-default-release-flags;\
+		./configure Release-x86_64 --config-tag Windows --config-tag x86_64 --arch x86_64 --apply-default-release-flags;\
 	else\
 		./configure Debug --config-tag Unix --apply-default-debug-flags;\
 		./configure Release --config-tag Unix --apply-default-release-flags;\
+		./configure Release-Logging --config-tag Unix --apply-default-release-flags --trace2file enable;\
 	fi
 
 
