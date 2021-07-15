@@ -33,7 +33,7 @@ namespace {
         Debug::TraceContextBumper ctx{L"Test2_ThrowCatchStringException_"};
         {
             try {
-                Throw (Exception (L"HiMom"));
+                Throw (Exception{L"HiMom"});
                 VerifyTestResult (false);
             }
             catch (const Exception<>& e) {
@@ -42,7 +42,7 @@ namespace {
         }
         {
             try {
-                Throw (Exception (L"HiMom"));
+                Throw (Exception{L"HiMom"});
                 VerifyTestResult (false);
             }
             catch (const std::exception& e) {
