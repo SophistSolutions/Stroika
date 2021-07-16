@@ -79,7 +79,7 @@ if [ "$CONFIG_TAG_RESTRICTION" == "" ] ; then
   	echo $RAW_CONFIGS
   fi
   if [ $ALLDEFAULT -eq 1 ]; then
-    UNAME=`uname -o`
+    UNAME=`uname -o 2>/dev/null || uname`
     if [ $UNAME == "" ]; then
       UNAME=`uname`
     fi
