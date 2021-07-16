@@ -28,13 +28,13 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ] ; then
     CMDRUN_PREFIX="nice -10 taskset -c 0 "
 elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ] ; then
     # Do something under Windows NT platform
-    EXE=${EXE-"Builds/Release-U-32/Tests/Test52"}
-	if [ "$USE_TEST_BASENAME" == "UNKNOWN" ] ; then USE_TEST_BASENAME="Windows-x86-vs2k17"; fi
+    EXE=${EXE-"Builds/Release-x86/Tests/Test52"}
+	if [ "$USE_TEST_BASENAME" == "UNKNOWN" ] ; then USE_TEST_BASENAME="Windows-x86-vs2k19"; fi
     CMDRUN_PREFIX=""
 elif [ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ] ; then
     # Do something under Windows NT platform
-    EXE=${EXE-"Builds/Release-U-32/Tests/Test52"}
-	if [ "$USE_TEST_BASENAME" == "UNKNOWN" ] ; then USE_TEST_BASENAME="Windows-x86-vs2k17"; fi
+    EXE=${EXE-"Builds/Release-x86/Tests/Test52"}
+	if [ "$USE_TEST_BASENAME" == "UNKNOWN" ] ; then USE_TEST_BASENAME="Windows-x86-vs2k19"; fi
     CMDRUN_PREFIX=""
 else
     echo "WARNING - unrecognized OS"
