@@ -1,5 +1,8 @@
 #!/bin/bash
 #
+# Provide --all XOR --all-default XOR (--config-tags XXX)*; if config-tags
+# provided, the --all args ignored
+#
 # EXAMPLES:
 #		./ScriptsLib/GetConfigurations
 #		./ScriptsLib/GetConfigurations --config-tags "Windows"
