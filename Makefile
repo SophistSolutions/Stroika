@@ -29,7 +29,9 @@ export TEST_FAILURES_CAUSE_FAILED_MAKE?=1
 #Handy shortcut
 CONFIGURATION_TAGS?=$(TAGS)
 
-APPLY_CONFIGS:=$(or \
+# use = not := cuz rarely used more than once, and commonly never, and when called without configs,needs
+# re-evaluation (make default-configurations internally called - assure...)
+APPLY_CONFIGS=$(or \
 				$(CONFIGURATION), \
 				$(if $(CONFIGURATION_TAGS), \
 					$(shell ScriptsLib/GetConfigurations --config-tags "$(CONFIGURATION_TAGS)"),\
