@@ -200,7 +200,7 @@ void WMICollector::Collect ()
             if (not isPDH_PDH_NO_DATA) {
                 // happens when we try to read data about compact disk??? anyhow - best to just not throw here I think?
                 // --LGP 2015-05-06 - at least not til I underand better
-                Execution::Throw (Exception (L"PdhCollectQueryData"sv));
+                Execution::Throw (Exception{L"PdhCollectQueryData"sv});
             }
         }
     });
