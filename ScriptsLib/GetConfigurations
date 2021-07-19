@@ -102,11 +102,15 @@ else
 		#echo c=$c, and itsTAGS = $ITS_TAGS
 		allMatch=1
 		for t in $CONFIG_TAG_RESTRICTION ; do
-			if [[ $ITS_TAGS = *"$t"* ]]; then
-				true;
-			else
-				allMatch=0
-			fi
+      itMatched=0
+      for ct in $ITS_TAGS ; do
+        if [[ "$ct" == "$t" ]]; then
+          itMatched=1
+        fi
+      done
+      if [[ $itMatched -eq 0 ]]; then
+        allMatch=0
+      fi
 		done
 		if [ $allMatch -eq 1 ]; then
 			NEW_CONFIGS="$NEW_CONFIGS $c"
