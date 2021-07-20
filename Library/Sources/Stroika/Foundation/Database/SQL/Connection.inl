@@ -68,6 +68,10 @@ namespace Stroika::Foundation::Database::SQL {
         return _fRep != nullptr;
     }
 #endif
+    inline shared_ptr<const EngineProperties> Connection::Ptr::GetEngineProperties () const
+    {
+        return _fRep->GetEngineProperties ();
+    }
     inline void Connection::Ptr::Exec (const String& sql) const
     {
         _fRep->Exec (sql);

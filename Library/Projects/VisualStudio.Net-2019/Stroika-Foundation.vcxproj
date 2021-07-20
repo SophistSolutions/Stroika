@@ -451,6 +451,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQLite.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQLUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\Connection.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\EngineProperties.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\ODBCClient.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\ORM\Schema.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\ORM\TableConnection.h" />
@@ -883,6 +884,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Database\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\Connection.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\EngineProperties.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\ORM\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\ORM\Schema.inl" />

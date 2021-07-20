@@ -12,6 +12,8 @@
 #include "../../Common/Property.h"
 #include "../../Debug/AssertExternallySynchronizedLock.h"
 
+#include "EngineProperties.h"
+
 /**
  *  \file
  * 
@@ -60,6 +62,12 @@ namespace Stroika::Foundation::Database::SQL {
         /**
          */
         virtual ~IRep () = default;
+
+    public:
+        /**
+         *  The return the EngineProperties of the database being talked to via the Connection::Ptr
+         */
+        virtual shared_ptr<const EngineProperties> GetEngineProperties () const = 0;
 
     public:
         /**
@@ -116,6 +124,12 @@ namespace Stroika::Foundation::Database::SQL {
         /**
          */
         nonvirtual IRep* operator-> () const noexcept;
+
+    public:
+        /**
+         *  The return the EngineProperties of the database being talked to via the Connection::Ptr
+         */
+        nonvirtual shared_ptr<const EngineProperties> GetEngineProperties () const;
 
     public:
         /**

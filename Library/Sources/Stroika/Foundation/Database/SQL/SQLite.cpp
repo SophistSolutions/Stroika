@@ -225,7 +225,22 @@ struct Connection::Rep_ final : IRep {
         AssertNotNull (fDB_);
         Verify (::sqlite3_close (fDB_) == SQLITE_OK);
     }
-    bool                   fTmpHackCreated_{false};
+    bool                                       fTmpHackCreated_{false};
+    virtual shared_ptr<const EngineProperties> GetEngineProperties () const override
+    {
+        struct MyEngineProperties_ final : EngineProperties {
+            virtual String GetEngineName () const override
+            {
+                return L"SQLite"sv;
+            }
+            virtual bool SupportsNestedTransactions () const override
+            {
+                return false;
+            }
+        };
+        static const shared_ptr<const EngineProperties> kProps_ = make_shared<const MyEngineProperties_> ();
+        return kProps_;
+    }
     virtual SQL::Statement mkStatement (const String& sql) override
     {
         Connection::Ptr conn = Connection::Ptr{dynamic_pointer_cast<Connection::IRep> (shared_from_this ())};
