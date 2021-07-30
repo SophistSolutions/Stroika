@@ -132,7 +132,7 @@ namespace Stroika::Foundation::IO::Network {
         if (auto op = GetAbsPath<optional<String>> ()) {
             return *op;
         }
-        Execution::Throw (Execution::RuntimeErrorException (L"This URI does not have an absolute path"));
+        Execution::Throw (Execution::RuntimeErrorException{L"This URI does not have an absolute path"sv});
     }
     template <>
     inline auto URI::GetQuery () const -> optional<String>

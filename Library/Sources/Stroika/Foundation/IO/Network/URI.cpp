@@ -147,7 +147,7 @@ String URI::As () const
 
     if (fAuthority_ and not(fPath_.empty () or fPath_.StartsWith (L"/"))) {
         // NOT SURE HOW TO HANDLE
-        Execution::Throw (Execution::RuntimeErrorException (L"This is not a legal URI to encode (authority present, but path not empty or absolute)"));
+        Execution::Throw (Execution::RuntimeErrorException{L"This is not a legal URI to encode (authority present, but path not empty or absolute)"sv});
     }
 
     static constexpr UniformResourceIdentification::PCTEncodeOptions kPathEncodeOptions_{false, false, false, false, true};

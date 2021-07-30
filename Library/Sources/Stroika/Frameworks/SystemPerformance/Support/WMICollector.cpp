@@ -56,7 +56,7 @@ WMICollector::PerInstanceData_::PerInstanceData_ (const String& objectName, cons
 #endif
     PDH_STATUS x = ::PdhOpenQuery (NULL, NULL, &fQuery_);
     if (x != 0) {
-        Execution::Throw (Exception (L"PdhOpenQuery"sv));
+        Execution::Throw (Exception{Characters::Format (L"PdhOpenQuery: %d", x)});
     }
     counterNames.Apply ([this] (String i) { AddCounter (i); });
 }
@@ -79,7 +79,7 @@ void WMICollector::PerInstanceData_::AddCounter (const String& counterName)
     if (x != 0) {
         [[maybe_unused]] bool isPDH_CSTATUS_NO_OBJECT  = (x == PDH_CSTATUS_NO_OBJECT);
         [[maybe_unused]] bool isPDH_CSTATUS_NO_COUNTER = (x == PDH_CSTATUS_NO_COUNTER);
-        Execution::Throw (Exception (L"PdhAddCounter"sv));
+        Execution::Throw (Exception{Characters::Format (L"PdhAddCounter: %d", x)});
     }
     fCounters_.Add (counterName, newCounter);
 }
@@ -88,10 +88,10 @@ double WMICollector::PerInstanceData_::GetCurrentValue (const String& counterNam
 {
     PDH_FMT_COUNTERVALUE counterVal;
     PDH_HCOUNTER         counter = *fCounters_.Lookup (counterName);
-    PDH_STATUS           x       = ::PdhGetFormattedCounterValue (counter, PDH_FMT_DOUBLE, NULL, &counterVal);
+    PDH_STATUS           x       = ::PdhGetFormattedCounterValue (counter, PDH_FMT_DOUBLE, nullptr, &counterVal);
     if (x != 0) {
         [[maybe_unused]] bool isPDH_PDH_INVALID_DATA = (x == PDH_INVALID_DATA);
-        Execution::Throw (Exception (L"PdhGetFormattedCounterValue"sv));
+        Execution::Throw (Exception{Characters::Format (L"PdhGetFormattedCounterValue: %d", x)});
     }
     return counterVal.doubleValue;
 }
@@ -100,7 +100,7 @@ optional<double> WMICollector::PerInstanceData_::PeekCurrentValue (const String&
 {
     PDH_FMT_COUNTERVALUE counterVal{};
     PDH_HCOUNTER         counter = *fCounters_.Lookup (counterName);
-    PDH_STATUS           x       = ::PdhGetFormattedCounterValue (counter, PDH_FMT_DOUBLE, NULL, &counterVal);
+    PDH_STATUS           x       = ::PdhGetFormattedCounterValue (counter, PDH_FMT_DOUBLE, nullptr, &counterVal);
     if (x != 0) {
         return nullopt;
     }
@@ -133,7 +133,7 @@ Mapping<String, double> WMICollector::PerInstanceData_::GetCurrentValues (const 
     if (status != 0) {
         //PDH_CSTATUS_INVALID_DATA
         [[maybe_unused]] bool isPDH_PDH_INVALID_DATA = (status == PDH_INVALID_DATA);
-        Execution::Throw (Exception (L"PdhGetFormattedCounterValue"sv));
+        Execution::Throw (Exception{Characters::Format (L"PdhGetFormattedCounterArray: %d", status)});
     }
 
     Mapping<String, double> result;
@@ -200,7 +200,7 @@ void WMICollector::Collect ()
             if (not isPDH_PDH_NO_DATA) {
                 // happens when we try to read data about compact disk??? anyhow - best to just not throw here I think?
                 // --LGP 2015-05-06 - at least not til I underand better
-                Execution::Throw (Exception{L"PdhCollectQueryData"sv});
+                Execution::Throw (Exception{Characters::Format (L"PdhCollectQueryData: %d", x)});
             }
         }
     });
@@ -216,15 +216,15 @@ Set<String> WMICollector::GetAvailableInstaces ()
     DWORD dwCounterListSize  = 0;
     DWORD dwInstanceListSize = 0;
 
-    PDH_STATUS pdhStatus = ::PdhEnumObjectItems (NULL, NULL, fObjectName_.c_str (), nullptr, &dwCounterListSize, nullptr, &dwInstanceListSize, PERF_DETAIL_WIZARD, 0);
+    PDH_STATUS pdhStatus = ::PdhEnumObjectItems (nullptr, nullptr, fObjectName_.c_str (), nullptr, &dwCounterListSize, nullptr, &dwInstanceListSize, PERF_DETAIL_WIZARD, 0);
     Assert (pdhStatus == PDH_MORE_DATA);
 
     SmallStackBuffer<Characters::SDKChar> counterBuf (dwCounterListSize + 2);
     SmallStackBuffer<Characters::SDKChar> instanceBuf (dwInstanceListSize + 2);
 
-    pdhStatus = ::PdhEnumObjectItems (NULL, NULL, fObjectName_.c_str (), counterBuf.begin (), &dwCounterListSize, instanceBuf.begin (), &dwInstanceListSize, PERF_DETAIL_WIZARD, 0);
+    pdhStatus = ::PdhEnumObjectItems (nullptr, nullptr, fObjectName_.c_str (), counterBuf.begin (), &dwCounterListSize, instanceBuf.begin (), &dwInstanceListSize, PERF_DETAIL_WIZARD, 0);
     if (pdhStatus != 0) {
-        Execution::Throw (Exception (L"PdhEnumObjectItems"sv));
+        Execution::Throw (Exception{Characters::Format (L"PdhEnumObjectItems: %d", pdhStatus)});
     }
 
     Set<String> result;
@@ -251,7 +251,7 @@ Set<String> WMICollector::GetAvailableCounters ()
 
     pdhStatus = ::PdhEnumObjectItems (NULL, NULL, fObjectName_.c_str (), counterBuf.begin (), &dwCounterListSize, instanceBuf.begin (), &dwInstanceListSize, PERF_DETAIL_WIZARD, 0);
     if (pdhStatus != 0) {
-        Execution::Throw (Exception (L"PdhEnumObjectItems"sv));
+        Execution::Throw (Exception{Characters::Format (L"PdhEnumObjectItems: %d", pdhStatus)});
     }
 
     Set<String> result;

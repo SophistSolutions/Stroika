@@ -100,7 +100,7 @@ optional<Timezone> Timezone::ParseTimezoneOffsetString (const char* tzStr)
                 return Timezone (n);
             }
         }
-        Execution::Throw (Execution::RuntimeErrorException (L"invalid timezone offset"sv));
+        Execution::Throw (Execution::RuntimeErrorException{L"invalid timezone offset"sv});
     }
 }
 
@@ -130,7 +130,7 @@ optional<Timezone> Timezone::ParseTimezoneOffsetString (const wchar_t* tzStr)
                 return Timezone (n);
             }
         }
-        Execution::Throw (Execution::RuntimeErrorException (L"invalid timezone offset"sv));
+        Execution::Throw (Execution::RuntimeErrorException{L"invalid timezone offset"sv});
     }
 }
 

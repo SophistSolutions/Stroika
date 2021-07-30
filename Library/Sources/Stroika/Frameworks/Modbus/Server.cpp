@@ -170,12 +170,12 @@ namespace {
              */
             if (requestPayload.size () != 4) {
                 DbgTrace (L"requestPayload=%s", Characters::ToString (requestPayload).c_str ());
-                Throw (Execution::Exception (Characters::Format (L"Invalid payload length (got %d, expected 4)", requestPayload.size ())));
+                Throw (Execution::Exception{Characters::Format (L"Invalid payload length (got %d, expected 4)", requestPayload.size ())});
             }
             uint16_t startingAddress = FromNetwork_ (*reinterpret_cast<const uint16_t*> (requestPayload.begin () + 0));
             uint16_t quantity        = FromNetwork_ (*reinterpret_cast<const uint16_t*> (requestPayload.begin () + 2)); // allowed 1..maxSecondValue
             if (not(minSecondValue <= quantity and quantity <= maxSecondValue)) {
-                Throw (Execution::Exception (Characters::Format (L"Invalid quantity parameter (%d): expected value from %d..%d", quantity, minSecondValue, maxSecondValue)));
+                Throw (Execution::Exception{Characters::Format (L"Invalid quantity parameter (%d): expected value from %d..%d", quantity, minSecondValue, maxSecondValue)});
             }
             return pair<uint16_t, uint16_t>{startingAddress, quantity};
         };
@@ -193,7 +193,7 @@ namespace {
                         break; // just EOF - so quietly end/close connection
                     }
                     else {
-                        Throw (Execution::Exception (L"Incomplete MBAP header"sv)); // Bad packet - incomplete header - so closing connection
+                        Throw (Execution::Exception{L"Incomplete MBAP header"sv}); // Bad packet - incomplete header - so closing connection
                     }
                 }
                 requestHeader = FromNetwork_ (requestHeader);
@@ -202,11 +202,11 @@ namespace {
                  * Perform minimal validation and - for now - abandon conneciton - but soon bettter error handling (see above)
                  */
                 if (requestHeader.fProtocolID != 0) {
-                    Throw (Execution::Exception (L"bad protocol"sv));
+                    Throw (Execution::Exception{L"bad protocol"sv});
                 }
                 if (requestHeader.fLength < 2) {
                     // Error cuz each full header I know of requires 2 bytes at least
-                    Throw (Execution::Exception (L"Illegal short MBAP request length"sv));
+                    Throw (Execution::Exception{L"Illegal short MBAP request length"sv});
                 }
 
                 Memory::BLOB requestPayload      = in.ReadAll (requestHeader.GetPayloadLength ());

@@ -3401,11 +3401,11 @@ namespace Stroika::Foundation::Characters::UTFConvert {
     namespace Private_ {
         void DoThrowBadSourceString_ThrowSourceExhausted_ ()
         {
-            Execution::Throw (Execution::RuntimeErrorException (L"Invalid UNICODE source string (incomplete UTF character)"sv));
+            Execution::Throw (Execution::RuntimeErrorException{L"Invalid UNICODE source string (incomplete UTF character)"sv});
         }
         void DoThrowBadSourceString_ThrowSourceIllegal_ ()
         {
-            Execution::Throw (Execution::RuntimeErrorException (L"Invalid UNICODE source string"sv));
+            Execution::Throw (Execution::RuntimeErrorException{L"Invalid UNICODE source string"sv});
         }
     }
 }
@@ -3764,6 +3764,6 @@ namespace Stroika::Foundation::Characters {
             static const codecvt_iso10646_ kConverter_; // safe to keep static because only read-only const methods used
             return kConverter_;
         }
-        Execution::Throw (Execution::Exception (L"charset not supported"sv));
+        Execution::Throw (Execution::Exception{L"charset not supported"sv});
     }
 }

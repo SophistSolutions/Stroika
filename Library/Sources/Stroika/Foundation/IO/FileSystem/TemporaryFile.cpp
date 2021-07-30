@@ -175,7 +175,7 @@ String AppTempFileManager::GetTempDir (const String& fileNameBase)
             return s;
         }
     }
-    Execution::Throw (Exception (L"Unknown error creating temporary file"sv), "AppTempFileManager::GetTempDir (): failed to create tempdir");
+    Execution::Throw (Exception{L"Unknown error creating temporary file"sv}, "AppTempFileManager::GetTempDir (): failed to create tempdir");
 }
 
 #if 0

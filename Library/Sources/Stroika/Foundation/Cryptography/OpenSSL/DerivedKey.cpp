@@ -267,7 +267,7 @@ namespace {
             static_cast<int> (keyLen + ivLen),
             reinterpret_cast<unsigned char*> (outBuf.begin ()));
         if (a == 0) [[UNLIKELY_ATTR]] {
-            Execution::Throw (Execution::Exception (L"PKCS5_PBKDF2_HMAC error"sv));
+            Execution::Throw (Execution::Exception{L"PKCS5_PBKDF2_HMAC error"sv});
         }
         const byte* p = outBuf.begin ();
         return pair<BLOB, BLOB> (BLOB (p, p + keyLen), BLOB (p + keyLen, p + keyLen + ivLen));

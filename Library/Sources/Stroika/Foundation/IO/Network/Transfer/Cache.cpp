@@ -208,7 +208,7 @@ Transfer::Cache::Element::Element (const Response& response)
         //
         if (i->fKey == HTTP::HeaderName::kETag) {
             if (i->fValue.size () < 2 or not i->fValue.StartsWith (L"\"") or not i->fValue.EndsWith (L"\"")) {
-                Execution::Throw (Execution::Exception (L"malformed etag"sv));
+                Execution::Throw (Execution::Exception{L"malformed etag"sv});
             }
             fETag = i->fValue.SubString (1, -1);
             headers.erase (i);
