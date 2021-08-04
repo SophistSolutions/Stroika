@@ -306,6 +306,9 @@ ifneq (,$(findstring CYGWIN,$(shell uname)))
 	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type dos2unix 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool dos2unix && exit 1)"
 	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type unix2dos 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool unix2dos && exit 1)"
 endif
+ifneq (,$(findstring Darwin,$(shell uname)))
+	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type gsed 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool gsed && exit 1)"
+endif
 	@mkdir -p IntermediateFiles
 	@touch IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL
 
