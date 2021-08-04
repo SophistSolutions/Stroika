@@ -33,7 +33,7 @@ OUT_FIELD_NAME=$2
 
 SED=sed
 # for crapple, brew install gnu-sed
-if [[ `uname` == 'Darwin' ]] ; then SED=/usr/local/opt/gnu-sed/libexec/gnubin/sed; fi
+if [[ `uname` == 'Darwin' ]] ; then SED=gsed; fi
 
 
 FULLVERSIONSTRING=`$SED 's/[ \t]*$//' $VERSION_IN_FILE | xargs echo -n | tr -d '[[:space:]]'`
