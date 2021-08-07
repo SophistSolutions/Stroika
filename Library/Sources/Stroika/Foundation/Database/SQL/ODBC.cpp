@@ -36,15 +36,14 @@ namespace {
     }
 }
 
-
 /*
  ********************************************************************************
  *************************** ODBC::Connection::Rep_ *****************************
  ********************************************************************************
  */
 struct Connection::Rep_ final : IRep {
-    SQLHDBC      fConnectionHandle{nullptr};
-    SQLHENV      fODBCEnvironmentHandle{nullptr};
+    SQLHDBC fConnectionHandle{nullptr};
+    SQLHENV fODBCEnvironmentHandle{nullptr};
 
     Rep_ (const Options& options)
     {
@@ -126,14 +125,14 @@ struct Connection::Rep_ final : IRep {
         struct MyEngineProperties_ final : EngineProperties {
             virtual String GetEngineName () const override
             {
-                return L"ODBC"sv;   // must indirect to connection to get more info (from dns at least? not clear)
+                return L"ODBC"sv; // must indirect to connection to get more info (from dns at least? not clear)
             }
             virtual bool SupportsNestedTransactions () const override
             {
                 return false;
             }
         };
-        return make_shared<const MyEngineProperties_> ();   // dynamic info based on connection/dsn
+        return make_shared<const MyEngineProperties_> (); // dynamic info based on connection/dsn
     }
     virtual SQL::Statement mkStatement (const String& sql) override
     {
@@ -150,9 +149,6 @@ struct Connection::Rep_ final : IRep {
         AssertNotImplemented ();
     }
 };
-
-
-
 
 /*
  ********************************************************************************
@@ -304,8 +300,6 @@ Transaction::Transaction (const Connection::Ptr& db)
     : inherited{make_unique<MyRep_> (db)}
 {
 }
-
-
 
 /*
  ********************************************************************************
