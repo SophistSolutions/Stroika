@@ -8,12 +8,12 @@ endif
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
-SrcDir				=	$(StroikaRoot)Samples/SQLite/
-ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-SQLite/
+SrcDir				=	$(StroikaRoot)Samples/SQL/
+ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-SQL/
 
 
-TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SQLite/
-TARGETEXE				=	$(TARGETDIR)SQLite${EXE_SUFFIX}
+TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SQL/
+TARGETEXE				=	$(TARGETDIR)SQL${EXE_SUFFIX}
 
 Objs	=	\
 	$(ObjDir)Main${OBJ_SUFFIX}\
@@ -34,13 +34,13 @@ VPATH	=			$(SrcDir)/Sources/
 
 
 all:
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Samples/SQLite:"
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building Samples/SQL:"
 	@mkdir -p $(TARGETDIR)
 	@$(MAKE) --silent $(TARGETEXE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 
 
 check:
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking Samples/SQLite...               "
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking Samples/SQL...               "
 	@$(StroikaRoot)ScriptsLib/CheckFileExists $(TARGETEXE)
 	@$(ECHO) "[SUCCEEDED]";
 

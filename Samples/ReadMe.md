@@ -44,8 +44,9 @@
   this code is only tested for Windows).
   SimpleLedTest is based on the Stroika Led WordProcessor framework.
 
-* [SQLite](SQLite/)
-  Simple example program using the Stroika SQLite wrappers to access/update an SQLite database.
+* [SQL](SQL/)
+  Simple example program using the Stroika SQL wrappers to access/update an SQL database.
+  Only SQL fully supported for now.
 
 * [SSDPClient](SSDPClient/)
   shows how to user the Stroika UPnP framework to search (SSDP) for UPnP devices.

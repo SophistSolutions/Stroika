@@ -54,8 +54,8 @@
   <PropertyGroup>
     <NMakeBuildCommandLine>make --directory $(ProjectDir)\..\..\ CONFIGURATION=$(CONFIGURATION) $(JOBS_FLAG) --silent all</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>make --directory $(ProjectDir)\..\..\ CONFIGURATION=$(CONFIGURATION) clean --silent</NMakeCleanCommandLine>
-    <OutDir>$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-SQLite\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-SQLite\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-SQL\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-SQL\</IntDir>
   </PropertyGroup>
   <PropertyGroup>
     <NMakeIncludeSearchPath>$(ProjectDir)\..\..\;$(ProjectDir)\..\..\..\..\Library\Sources\;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
