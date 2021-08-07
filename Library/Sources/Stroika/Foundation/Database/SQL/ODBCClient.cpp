@@ -15,6 +15,8 @@
 #include "../../Characters/CString/Utilities.h"
 #include "../../Characters/Format.h"
 
+#include "../Exception.h"
+
 #include "ODBCClient.h"
 
 using namespace Stroika::Foundation;
@@ -22,25 +24,6 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Database;
 using namespace Stroika::Foundation::Database::SQL;
 
-/*
- ********************************************************************************
- **************************** ODBCSupport::Exception ****************************
- ********************************************************************************
- */
-Database::SQL::Exception::Exception (const String& message)
-    : inherited{Format (L"Database connection error: %s", message.c_str ())}
-{
-}
-
-/*
- ********************************************************************************
- ************************* ODBCSupport::NoDataException *************************
- ********************************************************************************
- */
-Database::SQL::NoDataException::NoDataException ()
-    : Exception{L"No Data"sv}
-{
-}
 
 #if qHasLibrary_ODBC
 /*

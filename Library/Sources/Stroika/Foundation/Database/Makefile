@@ -25,6 +25,7 @@ SubDirs	=	\
 vpath %cpp $(SrcDir)
 
 Objs	=	\
+	$(ObjDir)Exception${OBJ_SUFFIX}\
 
 
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk

@@ -40,21 +40,6 @@
 namespace Stroika::Foundation::Database::SQL {
 
     using namespace std;
-    using namespace Stroika::Foundation;
-
-    using Characters::String;
-
-    class Exception : public Execution::RuntimeErrorException<> {
-    private:
-        using inherited = Execution::RuntimeErrorException<>;
-
-    public:
-        Exception (const String& message);
-    };
-    class NoDataException : public Exception {
-    public:
-        NoDataException ();
-    };
 
 #if qHasLibrary_ODBC
     class DBConnection {
@@ -67,32 +52,6 @@ namespace Stroika::Foundation::Database::SQL {
 
     public:
         nonvirtual unsigned int GetNestedTransactionCount () const;
-
-    private:
-        shared_ptr<Rep> fRep;
-    };
-#endif
-
-#if qHasLibrary_ODBC
-    // Maybe pattern this more after an 'iterator'?
-    class Query {
-    public:
-        class AbstractColumn;
-
-    private:
-        class Rep;
-
-    public:
-        Query (DBConnection database);
-
-    public:
-        void Bind (shared_ptr<AbstractColumn>* columns, size_t numberColumns);
-
-    public:
-        void Execute (const wstring& sqlQuery);
-
-    public:
-        bool FetchRow ();
 
     private:
         shared_ptr<Rep> fRep;

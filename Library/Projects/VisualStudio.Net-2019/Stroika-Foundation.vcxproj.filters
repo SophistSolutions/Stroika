@@ -828,6 +828,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\Connection.cpp">
       <Filter>Sources\Database\SQL</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\Exception.cpp">
+      <Filter>Sources\Database</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2126,6 +2129,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\EngineProperties.h">
       <Filter>Sources\Database\SQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Exception.h">
+      <Filter>Sources\Database</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
