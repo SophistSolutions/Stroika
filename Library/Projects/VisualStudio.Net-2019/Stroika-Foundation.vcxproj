@@ -101,7 +101,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\LibraryContext.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\Exception.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\Connection.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\ODBCClient.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\ODBC.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\ORM\Schema.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\SQLite.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\Statement.cpp" />
@@ -454,7 +454,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQLUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\Connection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\EngineProperties.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\ODBCClient.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\ODBC.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\ORM\Schema.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\ORM\TableConnection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\SQLite.h" />
@@ -888,6 +888,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\Connection.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\EngineProperties.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\Makefile" />
+    <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\ODBC.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\ORM\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\ORM\Schema.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\ORM\TableConnection.inl" />

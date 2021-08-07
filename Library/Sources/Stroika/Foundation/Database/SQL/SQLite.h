@@ -311,12 +311,6 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
     };
 
     /**
-     *  \note - Design Note - we use String for the result-column-name - and could use int or Atom. But
-     *        String slightly simpler, and nearly as performant, so going with that for now.
-     *
-     *  \todo   CONSIDER redo Row as iterator; or maybe GetResults () method that returns iterable of Rows? and lazy pulls them?
-     * 
-     *  Unlike a Connection::Ptr, a Statement cannot be copied (though you can use shared_ptr<Statement> if you wish to copy them).
      */
     class Statement : public SQL::Statement {
     private:

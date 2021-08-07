@@ -22,6 +22,9 @@ namespace Stroika::Foundation::Database {
 
     using Characters::String;
 
+    /**
+     *  An exception reported by the (typically remote) database.
+     */
     class Exception : public Execution::RuntimeErrorException<> {
     private:
         using inherited = Execution::RuntimeErrorException<>;
@@ -29,6 +32,10 @@ namespace Stroika::Foundation::Database {
     public:
         Exception (const String& message);
     };
+
+    /**
+     *  The database unexpectedly reported no data for the request.
+     */
     class NoDataException : public Exception {
     public:
         NoDataException ();

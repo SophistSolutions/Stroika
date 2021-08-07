@@ -6,13 +6,13 @@
 
 #include "../StroikaPreComp.h"
 
-#include "SQL/ODBCClient.h"
+#include "Exception.h"
+#include "SQL/ODBC.h"
 
-#pragma message("Warning: Database deprecated - use Database::SQL")
+#pragma message("Warning: Database deprecated - use Database::SQL::ODBC::Connection")
 namespace Stroika::Foundation::Database {
-    using Database::SQL::Exception;
 #if qHasLibrary_ODBC
-    using Database::SQL::DBConnection;
+    using Database::SQL::ODBC::DBConnection;
 #endif
 
 }

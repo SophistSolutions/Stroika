@@ -3,7 +3,6 @@
  */
 #include "../StroikaPreComp.h"
 
-#include "../Characters/CString/Utilities.h"
 #include "../Characters/Format.h"
 
 #include "Exception.h"
@@ -18,7 +17,7 @@ using namespace Stroika::Foundation::Database;
  ********************************************************************************
  */
 Database::Exception::Exception (const String& message)
-    : inherited{Format (L"Database connection error: %s", message.c_str ())}
+    : inherited{Format (L"Database error: %s", message.c_str ())}
 {
 }
 

@@ -65,7 +65,9 @@ namespace Stroika::Foundation::Database::SQL {
 
     public:
         /**
-         *  The return the EngineProperties of the database being talked to via the Connection::Ptr
+         *  The return the EngineProperties of the database being talked to via the Connection::Ptr.
+         * 
+         *  \note for some Connections, this can change dynamically (like ODBC depending on connection state)
          */
         virtual shared_ptr<const EngineProperties> GetEngineProperties () const = 0;
 
@@ -127,7 +129,9 @@ namespace Stroika::Foundation::Database::SQL {
 
     public:
         /**
-         *  The return the EngineProperties of the database being talked to via the Connection::Ptr
+         *  The return the EngineProperties of the database being talked to via the Connection::Ptr.
+         * 
+         *  \note for some Connections, this can change dynamically (like ODBC depending on connection state)
          */
         nonvirtual shared_ptr<const EngineProperties> GetEngineProperties () const;
 
