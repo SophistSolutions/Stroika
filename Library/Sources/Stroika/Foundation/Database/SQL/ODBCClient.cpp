@@ -24,7 +24,6 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Database;
 using namespace Stroika::Foundation::Database::SQL;
 
-
 #if qHasLibrary_ODBC
 /*
  ********************************************************************************
@@ -34,8 +33,7 @@ using namespace Stroika::Foundation::Database::SQL;
 namespace {
     void ThrowIfSQLError_ (SQLRETURN r, const wstring& message)
     {
-        if ((r != SQL_SUCCESS) and (r != SQL_SUCCESS_WITH_INFO))
-            [[UNLIKELY_ATTR]] {
+        if ((r != SQL_SUCCESS) and (r != SQL_SUCCESS_WITH_INFO)) [[UNLIKELY_ATTR]] {
             Execution::Throw (Exception{message});
         }
     }

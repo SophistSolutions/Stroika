@@ -3,7 +3,6 @@
  */
 #include "../StroikaPreComp.h"
 
-
 #include "../Characters/CString/Utilities.h"
 #include "../Characters/Format.h"
 
@@ -32,4 +31,3 @@ Database::NoDataException::NoDataException ()
     : Exception{L"No Data"sv}
 {
 }
-
