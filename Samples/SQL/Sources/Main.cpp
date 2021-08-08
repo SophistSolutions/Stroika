@@ -31,7 +31,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 #if __cpp_designated_initializers
             return SQLite::Connection::New (SQLite::Options{.fInMemoryDB = u"direct-employees-test"});
 #else
-            return SQLite::Connection::New (SQLite::Options{nullopt, true, nullopt, u"direct-employees-test"}));
+            return SQLite::Connection::New (SQLite::Options{nullopt, true, nullopt, u"direct-employees-test"});
 #endif
         };
         DirectEmployeesDB (connectionFactory);
@@ -47,7 +47,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 #if __cpp_designated_initializers
             return SQLite::Connection::New (SQLite::Options{.fDBPath = dbPath});
 #else
-            return SQLite::Connection::New (SQLite::Options{dbPath}));
+            return SQLite::Connection::New (SQLite::Options{dbPath});
 #endif
         };
         DirectEmployeesDB (connectionFactory);
@@ -75,7 +75,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 #if __cpp_designated_initializers
             auto conn = SQLite::Connection::New (SQLite::Options{.fDBPath = dbPath, .fThreadingMode = SQLite::Options::ThreadingMode::eMultiThread, .fBusyTimeout = 1s});
 #else
-            auto conn = SQLite::Connection::New (SQLite::Options{dbPath, true, nullopt, nullopt, SQLite::Options::ThreadingMode::eMultiThread, optional, false, false, 1s}));
+            auto conn = SQLite::Connection::New (SQLite::Options{dbPath, true, nullopt, nullopt, SQLite::Options::ThreadingMode::eMultiThread, nullopt, false, false, 1s});
 #endif
             Assert (Math::NearlyEquals (conn.pBusyTimeout ().As<double> (), 1.0));
             return conn;
@@ -94,7 +94,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 #if __cpp_designated_initializers
             auto conn = SQLite::Connection::New (SQLite::Options{.fDBPath = dbPath, .fThreadingMode = SQLite::Options::ThreadingMode::eMultiThread, .fBusyTimeout = 1s});
 #else
-            auto conn = SQLite::Connection::New (SQLite::Options{dbPath, true, nullopt, nullopt, SQLite::Options::ThreadingMode::eMultiThread, optional, false, false, 1s}));
+            auto conn = SQLite::Connection::New (SQLite::Options{dbPath, true, nullopt, nullopt, SQLite::Options::ThreadingMode::eMultiThread, nullopt, false, false, 1s});
 #endif
             Assert (Math::NearlyEquals (conn.pBusyTimeout ().As<double> (), 1.0));
             return conn;
@@ -111,7 +111,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 #if __cpp_designated_initializers
             return SQLite::Connection::New (SQLite::Options{.fDBPath = dbPath});
 #else
-            return SQLite::Connection::New (SQLite::Options{dbPath}));
+            return SQLite::Connection::New (SQLite::Options{dbPath});
 #endif
         };
         ComputerNetworksModel (connectionFactory);
