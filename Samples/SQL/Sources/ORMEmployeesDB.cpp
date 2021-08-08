@@ -150,12 +150,6 @@ namespace {
     Connection::Ptr SetupDB_ (const Options& options)
     {
         TraceContextBumper ctx{"{}::SetupDB_"};
-        #if 0
-        auto               initializeDB = [] (const Connection::Ptr& c) {
-            c.Exec (Schema::StandardSQLStatements{kEmployeesTableSchema_}.CreateTable ());
-            c.Exec (Schema::StandardSQLStatements{kPaychecksTableSchema_}.CreateTable ());
-        };
-        #endif
         Options o      = options;
         o.fBusyTimeout = o.fBusyTimeout.value_or (1s); // default to 1 second busy timeout for these tests
         auto r         = Connection::New (o);

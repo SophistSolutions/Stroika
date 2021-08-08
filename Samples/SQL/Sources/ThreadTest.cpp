@@ -10,8 +10,8 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Set.h"
 
-#include "Stroika/Foundation/Database/SQL/SQLite.h"
 #include "Stroika/Foundation/Database/SQL/ORM/Versioning.h"
+#include "Stroika/Foundation/Database/SQL/SQLite.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Time/DateTime.h"
@@ -33,30 +33,9 @@ using namespace Database::SQL::SQLite;
 namespace {
     Connection::Ptr SetupDB_ (const Options& options)
     {
-        #if 0
-        auto initializeDB = [] (const Connection::Ptr& c) {
-            // Use Connection::Ptr::Exec because no parameter bindings needed
-            c.Exec (
-                L"CREATE TABLE EMPLOYEES("
-                L"ID INTEGER PRIMARY KEY AUTOINCREMENT,"
-                L"NAME           TEXT    NOT NULL,"
-                L"AGE            INT     NOT NULL,"
-                L"ADDRESS        CHAR(50),"
-                L"SALARY         REAL,"
-                L"STILL_EMPLOYED INT"
-                L");");
-            c.Exec (
-                L"CREATE TABLE PAYCHECKS("
-                L"ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-                L"EMPLOYEEREF INT NOT NULL,"
-                L"AMOUNT REAL,"
-                L"DATE TEXT"
-                L");");
-        };
-        #endif
-        Options o      = options;
-        o.fBusyTimeout = o.fBusyTimeout.value_or (1s); // default to 1 second busy timeout for these tests
-        auto conn = Connection::New (o);
+        Options o                                         = options;
+        o.fBusyTimeout                                    = o.fBusyTimeout.value_or (1s); // default to 1 second busy timeout for these tests
+        auto                             conn             = Connection::New (o);
         constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
         SQL::ORM::ProvisionForVersion (conn,
                                        kCurrentVersion_,

@@ -110,11 +110,6 @@ namespace {
 
     Connection::Ptr SetupDB_ (const Options& options)
     {
-        #if 0
-        auto initializeDB = [] (const Connection::Ptr& c) {
-            c.Exec (StandardSQLStatements{kDeviceTableSchema_}.CreateTable ());
-        };
-        #endif
         auto                             conn             = Connection::New (options);
         constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
         SQL::ORM::ProvisionForVersion (conn,
