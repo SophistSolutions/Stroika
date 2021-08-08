@@ -8,6 +8,7 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Set.h"
 
+#include "Stroika/Foundation/Database/SQL/ORM/Versioning.h"
 #include "Stroika/Foundation/Database/SQL/SQLite.h"
 
 #include "DirectEmployeesDB.h"
@@ -25,28 +26,43 @@ using namespace Database::SQL::SQLite;
 void Stroika::Samples::SQLite::DirectEmployeesDB (const Options& options)
 {
     /*
-     ***** SETUP SCHEMA ****
-     */
-    // Example roughly from https://www.tutorialspoint.com/sqlite/sqlite_insert_query.htm
-    auto initializeDB = [] (const Connection::Ptr& c) {
-        // Use Connection::Ptr::Exec because no parameter bindings needed
-        c.Exec (
-            L"CREATE TABLE DEPARTMENT(ID INT PRIMARY KEY NOT NULL,"
-            L"NAME CHAR (50) NOT NULL"
-            L");");
-        c.Exec (
-            L"CREATE TABLE EMPLOYEES("
-            L"ID INT PRIMARY KEY     NOT NULL," // See example ThreadTest for simple example using AUTOINCREMENT instead of explicit IDs
-            L"NAME           TEXT    NOT NULL,"
-            L"AGE            INT     NOT NULL,"
-            L"ADDRESS        CHAR(50),"
-            L"SALARY         REAL"
-            L");");
-    };
-    /*
      ***** CONNECT TO DATABASE ****
      */
-    Connection::Ptr conn = Connection::New (options, initializeDB);
+    Connection::Ptr conn = Connection::New (options);
+
+    /*
+     ***** SETUP SCHEMA ****
+     */
+    // Example schema roughly from https://www.tutorialspoint.com/sqlite/sqlite_insert_query.htm
+    constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
+    SQL::ORM::ProvisionForVersion (conn,
+                                   kCurrentVersion_,
+                                   initializer_list<SQL::ORM::TableProvisioner>{
+                                       {L"DEPARTMENT"sv,
+                                        [] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
+                                            // for now no upgrade support
+                                            if (not v) {
+                                                c.Exec (
+                                                    L"CREATE TABLE DEPARTMENT(ID INT PRIMARY KEY NOT NULL,"
+                                                    L"NAME CHAR (50) NOT NULL"
+                                                    L");");
+                                            }
+                                        }},
+                                       {L"EMPLOYEES"sv,
+                                        [] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
+                                            // for now no upgrade support
+                                            if (not v) {
+                                                c.Exec (
+                                                    L"CREATE TABLE EMPLOYEES("
+                                                    L"ID INT PRIMARY KEY     NOT NULL," // See example ThreadTest for simple example using AUTOINCREMENT instead of explicit IDs
+                                                    L"NAME           TEXT    NOT NULL,"
+                                                    L"AGE            INT     NOT NULL,"
+                                                    L"ADDRESS        CHAR(50),"
+                                                    L"SALARY         REAL"
+                                                    L");");
+                                            }
+                                        }},
+                                   });
 
     /*
         ID          NAME        AGE         ADDRESS     SALARY

@@ -42,6 +42,19 @@ namespace Stroika::Foundation::Database::SQL {
         virtual String GetEngineName () const = 0;
 
     public:
+        static constexpr inline wstring_view kDoesTableExistParameterName{L":TABLENAME"};
+        enum NonStandardSQL {
+            // variable name for parameter is :TABLENAME
+            // @todo docs return
+            eDoesTableExist,
+        };
+
+    public:
+        /**
+         */
+        virtual String GetSQL (NonStandardSQL n) const = 0;
+
+    public:
         virtual bool SupportsNestedTransactions () const = 0;
     };
 

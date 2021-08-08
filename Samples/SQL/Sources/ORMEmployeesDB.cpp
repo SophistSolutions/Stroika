@@ -10,6 +10,7 @@
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Database/SQL/ORM/Schema.h"
 #include "Stroika/Foundation/Database/SQL/ORM/TableConnection.h"
+#include "Stroika/Foundation/Database/SQL/ORM/Versioning.h"
 #include "Stroika/Foundation/Database/SQL/SQLite.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
@@ -149,14 +150,21 @@ namespace {
     Connection::Ptr SetupDB_ (const Options& options)
     {
         TraceContextBumper ctx{"{}::SetupDB_"};
+        #if 0
         auto               initializeDB = [] (const Connection::Ptr& c) {
             c.Exec (Schema::StandardSQLStatements{kEmployeesTableSchema_}.CreateTable ());
             c.Exec (Schema::StandardSQLStatements{kPaychecksTableSchema_}.CreateTable ());
         };
+        #endif
         Options o      = options;
         o.fBusyTimeout = o.fBusyTimeout.value_or (1s); // default to 1 second busy timeout for these tests
-        auto r         = Connection::New (o, initializeDB);
+        auto r         = Connection::New (o);
         Assert (Math::NearlyEquals (r.pBusyTimeout ().As<double> (), 1.0));
+
+        constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
+        SQL::ORM::ProvisionForVersion (r,
+                                       kCurrentVersion_,
+                                       Traversal::Iterable<SQL::ORM::Schema::Table>{kEmployeesTableSchema_, kPaychecksTableSchema_});
         return r;
     }
 

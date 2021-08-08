@@ -171,6 +171,12 @@ namespace Stroika::Foundation::Database::SQL {
 #endif
 
     public:
+        /**
+         *  @see Characters::ToString ()
+         */
+        nonvirtual String ToString () const;
+
+    public:
         nonvirtual auto operator== (const Ptr& rhs) const;
         nonvirtual bool operator== (nullptr_t) const noexcept;
 #if __cpp_impl_three_way_comparison < 201907

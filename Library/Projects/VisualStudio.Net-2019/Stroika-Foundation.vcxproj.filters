@@ -831,6 +831,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\Exception.cpp">
       <Filter>Sources\Database</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\ORM\Versioning.cpp">
+      <Filter>Sources\Database\SQL\ORM</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2132,6 +2135,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Exception.h">
       <Filter>Sources\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\ORM\Versioning.h">
+      <Filter>Sources\Database\SQL\ORM</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3479,6 +3485,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\ODBC.inl">
       <Filter>Sources\Database\SQL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\ORM\Versioning.inl">
+      <Filter>Sources\Database\SQL\ORM</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

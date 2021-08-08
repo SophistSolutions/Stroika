@@ -127,6 +127,12 @@ struct Connection::Rep_ final : IRep {
             {
                 return L"ODBC"sv; // must indirect to connection to get more info (from dns at least? not clear)
             }
+            virtual String GetSQL (NonStandardSQL n) const override
+            {
+                // see https://stackoverflow.com/questions/167576/check-if-table-exists-in-sql-server
+                AssertNotImplemented ();
+                return L"";
+            }
             virtual bool SupportsNestedTransactions () const override
             {
                 return false;

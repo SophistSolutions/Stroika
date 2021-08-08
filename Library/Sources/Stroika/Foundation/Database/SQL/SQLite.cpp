@@ -233,6 +233,15 @@ struct Connection::Rep_ final : IRep {
             {
                 return L"SQLite"sv;
             }
+            virtual String GetSQL (NonStandardSQL n) const override
+            {
+                switch (n) {
+                    case NonStandardSQL::eDoesTableExist:
+                        return L"SELECT name FROM sqlite_master WHERE type='table' AND name="sv + SQL::EngineProperties::kDoesTableExistParameterName;
+                }
+                AssertNotReached ();
+                return String{};
+            }
             virtual bool SupportsNestedTransactions () const override
             {
                 return false;

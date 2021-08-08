@@ -20,6 +20,7 @@ vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)Schema${OBJ_SUFFIX}\
+	$(ObjDir)Versioning${OBJ_SUFFIX}\
 
 
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk

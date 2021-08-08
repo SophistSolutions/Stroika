@@ -12,6 +12,7 @@
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include "Stroika/Foundation/Database/SQL/ORM/Schema.h"
+#include "Stroika/Foundation/Database/SQL/ORM/Versioning.h"
 #include "Stroika/Foundation/Database/SQL/SQLite.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
@@ -109,10 +110,17 @@ namespace {
 
     Connection::Ptr SetupDB_ (const Options& options)
     {
+        #if 0
         auto initializeDB = [] (const Connection::Ptr& c) {
             c.Exec (StandardSQLStatements{kDeviceTableSchema_}.CreateTable ());
         };
-        return Connection::New (options, initializeDB);
+        #endif
+        auto                             conn             = Connection::New (options);
+        constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
+        SQL::ORM::ProvisionForVersion (conn,
+                                       kCurrentVersion_,
+                                       Traversal::Iterable<SQL::ORM::Schema::Table>{kDeviceTableSchema_});
+        return conn;
     }
 }
 

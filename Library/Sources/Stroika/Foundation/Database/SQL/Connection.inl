@@ -7,6 +7,8 @@
 #ifndef _Stroika_Foundation_Database_SQL_Connection_inl_
 #define _Stroika_Foundation_Database_SQL_Connection_inl_ 1
 
+#include "../../Characters/Format.h"
+
 namespace Stroika::Foundation::Database::SQL {
 
     /*
@@ -75,6 +77,10 @@ namespace Stroika::Foundation::Database::SQL {
     inline void Connection::Ptr::Exec (const String& sql) const
     {
         _fRep->Exec (sql);
+    }
+    inline String Connection::Ptr::ToString () const
+    {
+        return Characters::Format (L"%p", _fRep.get ());
     }
 #if qDebug
     inline auto Connection::Ptr::GetSharedContext () const -> shared_ptr<SharedContext>
