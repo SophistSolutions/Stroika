@@ -214,8 +214,8 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
         /**
          *  The dbInitializer is called IFF the New () call results in a newly created database (@todo RECONSIDER).
          */
-        static Ptr New (
-            const Options& options, const function<void (const Connection::Ptr&)>& dbInitializer = [] (const Connection::Ptr&) {});
+        static Ptr                                                                       New (const Options& options);
+        [[deprecated ("Since Stroika 2.1b13, use ORM::ProvisionForVersion")]] static Ptr New (const Options& options, const function<void (const Connection::Ptr&)>& dbInitializer);
     };
 
     /**
