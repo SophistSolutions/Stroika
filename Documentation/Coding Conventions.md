@@ -525,3 +525,29 @@ namespace Stroika::Foundation::Database::SQL:: inline v1 {
   // that all builds with one inline and then swtich to the other and require users to switch to explicitly add the 'v1'/v2 (and default to v2).
 }
 ```
+
+---
+
+## Cosmetic Hint Macros
+
+### nonvirtual
+
+```c++
+struct b {
+    virtual void f (){};
+};
+struct d : b {
+    void f (){};
+};
+```
+
+for this C++, f is really 'virtual'. It would be best if the compiler
+warned that there was no 'override' directive, but at least some
+compilers dont do that.
+
+So when you see a function declaration WITHOUT a virtual or override, its not clear if that function is virtual or not.
+
+Stroika uses the CONVENTION (sadly unenforced by the compilers)
+of using the macro nonvirtual as a hint/reminder that the given function
+is NOT virtual (not even implicitly because the base contains a virtual
+with the same signature).
