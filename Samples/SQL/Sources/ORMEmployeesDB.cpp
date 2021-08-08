@@ -233,10 +233,6 @@ void Stroika::Samples::SQL::ORMEmployeesDB (const std::function<Connection::Ptr 
 {
     TraceContextBumper ctx{"ORMEmployeesDB"};
 
-    /*
-     *  Create threads for each of our activities.
-     *  When the waitable even times out, the threads will automatically be 'canceled' as they go out of scope.
-     */
     Connection::Ptr conn1 = connectionFactory ();
     Connection::Ptr conn2 = connectionFactory ();
 
@@ -246,6 +242,10 @@ void Stroika::Samples::SQL::ORMEmployeesDB (const std::function<Connection::Ptr 
                               kCurrentVersion_,
                               Traversal::Iterable<ORM::Schema::Table>{kEmployeesTableSchema_, kPaychecksTableSchema_});
 
+    /*
+     *  Create threads for each of our activities.
+     *  When the waitable even times out, the threads will automatically be 'canceled' as they go out of scope.
+     */
     Thread::CleanupPtr updateEmpDBThread{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { PeriodicallyUpdateEmployeesTable_ (conn1); }, Thread::eAutoStart, L"Update Employee Table")};
     Thread::CleanupPtr writeChecks{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { PeriodicallyWriteChecksForEmployeesTable_ (conn2); }, Thread::eAutoStart, L"Write Checks")};
     Execution::WaitableEvent{}.WaitQuietly (15s);

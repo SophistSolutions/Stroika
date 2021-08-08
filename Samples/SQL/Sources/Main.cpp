@@ -7,6 +7,7 @@
 
 #include "Stroika/Foundation/Database/SQL/ODBC.h"
 #include "Stroika/Foundation/Database/SQL/SQLite.h"
+#include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
 
 #include "ComputerNetwork.h"
 #include "DirectEmployeesDB.h"
@@ -39,7 +40,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 
     {
 #if qHasFeature_sqlite
-        auto dbPath = filesystem::current_path () / "direct-employees-test.db";
+        auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "direct-employees-test.db";
         (void)std::filesystem::remove (dbPath);
         auto connectionFactory = [=] () {
         // Same DirectEmployeesDB test, but write to a file so you can explore DB from command-line
@@ -67,7 +68,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 
     {
 #if qHasFeature_sqlite
-        auto dbPath = filesystem::current_path () / "threads-test.db";
+        auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "threads-test.db";
         (void)std::filesystem::remove (dbPath);
         auto connectionFactory = [=] () {
         // default to 1 second fBusyTimeout for these tests
@@ -86,7 +87,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     {
         // EmployeesDB test, but using C++ objects and ORM mapping layer (and threads)
 #if qHasFeature_sqlite
-        auto dbPath = filesystem::current_path () / "orm-employees-test.db";
+        auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "orm-employees-test.db";
         (void)std::filesystem::remove (dbPath);
         auto connectionFactory = [=] () {
         // default to 1 second fBusyTimeout for these tests
@@ -104,7 +105,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 
     {
 #if qHasFeature_sqlite
-        auto dbPath = filesystem::current_path () / "computer-network.db";
+        auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "computer-network.db";
         (void)std::filesystem::remove (dbPath);
         auto connectionFactory = [=] () {
 #if __cpp_designated_initializers
