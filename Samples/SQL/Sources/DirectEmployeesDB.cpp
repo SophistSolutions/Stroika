@@ -7,9 +7,9 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Set.h"
-
+#include "Stroika/Foundation/Database/SQL/Connection.h"
 #include "Stroika/Foundation/Database/SQL/ORM/Versioning.h"
-#include "Stroika/Foundation/Database/SQL/SQLite.h"
+#include "Stroika/Foundation/Database/SQL/Statement.h"
 
 #include "DirectEmployeesDB.h"
 
@@ -19,50 +19,48 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Database;
+using namespace Stroika::Foundation::Database::SQL;
 
-#if qHasFeature_sqlite
-using namespace Database::SQL::SQLite;
-
-void Stroika::Samples::SQLite::DirectEmployeesDB (const Options& options)
+void Stroika::Samples::SQL::DirectEmployeesDB (const std::function<Connection::Ptr ()>& connectionFactory)
 {
     /*
      ***** CONNECT TO DATABASE ****
      */
-    Connection::Ptr conn = Connection::New (options);
+    Connection::Ptr conn = connectionFactory ();
 
     /*
      ***** SETUP SCHEMA ****
      */
     // Example schema roughly from https://www.tutorialspoint.com/sqlite/sqlite_insert_query.htm
     constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
-    SQL::ORM::ProvisionForVersion (conn,
-                                   kCurrentVersion_,
-                                   initializer_list<SQL::ORM::TableProvisioner>{
-                                       {L"DEPARTMENT"sv,
-                                        [] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
-                                            // for now no upgrade support
-                                            if (not v) {
-                                                c.Exec (
-                                                    L"CREATE TABLE DEPARTMENT(ID INT PRIMARY KEY NOT NULL,"
-                                                    L"NAME CHAR (50) NOT NULL"
-                                                    L");");
-                                            }
-                                        }},
-                                       {L"EMPLOYEES"sv,
-                                        [] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
-                                            // for now no upgrade support
-                                            if (not v) {
-                                                c.Exec (
-                                                    L"CREATE TABLE EMPLOYEES("
-                                                    L"ID INT PRIMARY KEY     NOT NULL," // See example ThreadTest for simple example using AUTOINCREMENT instead of explicit IDs
-                                                    L"NAME           TEXT    NOT NULL,"
-                                                    L"AGE            INT     NOT NULL,"
-                                                    L"ADDRESS        CHAR(50),"
-                                                    L"SALARY         REAL"
-                                                    L");");
-                                            }
-                                        }},
-                                   });
+    ORM::ProvisionForVersion (conn,
+                              kCurrentVersion_,
+                              initializer_list<ORM::TableProvisioner>{
+                                  {L"DEPARTMENT"sv,
+                                   [] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
+                                       // for now no upgrade support
+                                       if (not v) {
+                                           c.Exec (
+                                               L"CREATE TABLE DEPARTMENT(ID INT PRIMARY KEY NOT NULL,"
+                                               L"NAME CHAR (50) NOT NULL"
+                                               L");");
+                                       }
+                                   }},
+                                  {L"EMPLOYEES"sv,
+                                   [] (Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
+                                       // for now no upgrade support
+                                       if (not v) {
+                                           c.Exec (
+                                               L"CREATE TABLE EMPLOYEES("
+                                               L"ID INT PRIMARY KEY     NOT NULL," // See example ThreadTest for simple example using AUTOINCREMENT instead of explicit IDs
+                                               L"NAME           TEXT    NOT NULL,"
+                                               L"AGE            INT     NOT NULL,"
+                                               L"ADDRESS        CHAR(50),"
+                                               L"SALARY         REAL"
+                                               L");");
+                                       }
+                                   }},
+                              });
 
     /*
         ID          NAME        AGE         ADDRESS     SALARY
@@ -79,12 +77,12 @@ void Stroika::Samples::SQLite::DirectEmployeesDB (const Options& options)
      ***** INSERT ROWS ****
      */
     // Use Statement with named parameters (to avoid sql injection and to add clarity)
-    Statement addDepartment{conn, L"INSERT INTO DEPARTMENT (ID, NAME) values (:ID, :NAME);"};
+    Statement addDepartment = conn.mkStatement (L"INSERT INTO DEPARTMENT (ID, NAME) values (:ID, :NAME);");
     addDepartment.Execute (initializer_list<Statement::ParameterDescription>{
         {L":ID", 1},
         {L":NAME", L"Washing machines"},
     });
-    Statement addEmployeeStatement{conn, L"INSERT INTO EMPLOYEES (ID,NAME,AGE,ADDRESS,SALARY) values (:ID, :NAME, :AGE, :ADDRESS, :SALARY);"};
+    Statement addEmployeeStatement = conn.mkStatement (L"INSERT INTO EMPLOYEES (ID,NAME,AGE,ADDRESS,SALARY) values (:ID, :NAME, :AGE, :ADDRESS, :SALARY);");
     addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
         {L":ID", 1},
         {L":NAME", L"Paul"},
@@ -166,15 +164,14 @@ void Stroika::Samples::SQLite::DirectEmployeesDB (const Options& options)
     /*
      ***** SIMPLE QUERIES ****
      */
-    Statement   getAllNames{conn, L"Select NAME from EMPLOYEES;"};
-    Set<String> allNames = getAllNames.GetAllRows (0).Select<String> ([] (VariantValue v) { return v.As<String> (); }).As<Set<String>> ();
+    Statement   getAllNames = conn.mkStatement (L"Select NAME from EMPLOYEES;");
+    Set<String> allNames    = getAllNames.GetAllRows (0).Select<String> ([] (VariantValue v) { return v.As<String> (); }).As<Set<String>> ();
     Assert ((allNames == Set<String>{L"Paul", L"Allen", L"Kim", L"David", L"Mark", L"James", L"Teddy"}));
 
     // Either rollup using SQL, or using C++ functional (Iterable) wrappers.
-    Statement               sumAllSalarys{conn, L"select SUM(SALARY) from EMPLOYEES;"};
-    [[maybe_unused]] double sumSalaryUsingSQL = sumAllSalarys.GetAllRows (0)[0].As<double> ();
-    Statement               getAllSalarys{conn, L"select SALARY from EMPLOYEES;"};
+    Statement               sumAllSalarys               = conn.mkStatement (L"select SUM(SALARY) from EMPLOYEES;");
+    [[maybe_unused]] double sumSalaryUsingSQL           = sumAllSalarys.GetAllRows (0)[0].As<double> ();
+    Statement               getAllSalarys               = conn.mkStatement (L"select SALARY from EMPLOYEES;");
     [[maybe_unused]] double sumSalaryUsingIterableApply = getAllSalarys.GetAllRows (0).Select<double> ([] (VariantValue v) { return v.As<double> (); }).SumValue ();
     Assert (Math::NearlyEquals (sumSalaryUsingSQL, sumSalaryUsingIterableApply));
 }
-#endif

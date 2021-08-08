@@ -5,6 +5,7 @@
 
 #include <cstdlib>
 
+#include "Stroika/Foundation/Database/SQL/ODBC.h"
 #include "Stroika/Foundation/Database/SQL/SQLite.h"
 
 #include "ComputerNetwork.h"
@@ -18,56 +19,103 @@ using namespace Stroika::Foundation;
 
 int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
-    using namespace Stroika::Samples::SQLite;
+    using namespace Stroika::Foundation::Database::SQL;
 
-#if qHasFeature_sqlite
+    using namespace Stroika::Samples::SQL;
+
     {
+#if qHasFeature_sqlite
+        auto connectionFactory = [=] () {
         // Use InMemory DB
 #if __cpp_designated_initializers
-        DirectEmployeesDB (Options{.fInMemoryDB = u"direct-employees-test"});
+            return SQLite::Connection::New (SQLite::Options{.fInMemoryDB = u"direct-employees-test"});
 #else
-        DirectEmployeesDB (Options{nullopt, true, nullopt, u"direct-employees-test"});
+            return SQLite::Connection::New (SQLite::Options{nullopt, true, nullopt, u"direct-employees-test"}));
+#endif
+        };
+        DirectEmployeesDB (connectionFactory);
 #endif
     }
+
     {
-        // Same DirectEmployeesDB test, but write to a file so you can explore DB from command-line
+#if qHasFeature_sqlite
         auto dbPath = filesystem::current_path () / "direct-employees-test.db";
         (void)std::filesystem::remove (dbPath);
+        auto connectionFactory = [=] () {
+        // Same DirectEmployeesDB test, but write to a file so you can explore DB from command-line
 #if __cpp_designated_initializers
-        DirectEmployeesDB (Options{.fDBPath = dbPath});
+            return SQLite::Connection::New (SQLite::Options{.fDBPath = dbPath});
 #else
-        DirectEmployeesDB (Options{dbPath});
+            return SQLite::Connection::New (SQLite::Options{dbPath}));
+#endif
+        };
+        DirectEmployeesDB (connectionFactory);
 #endif
     }
+
+#if qHasLibrary_ODBC
     {
+        // Note - classes structured so you COULD use SQLite or ODBC transparently, but
+        // the ODBC layer NYI (as of 2021-08-08) so commented out...
+        // @todo change this sample so command-line arg grabs dsn from command-line
+        auto connectionFactory = [=] () {
+            return ODBC::Connection::New (ODBC::Options{L"some-dsn"});
+        };
+        // NYI - DirectEmployeesDB (connectionFactory);
+    }
+#endif
+
+    {
+#if qHasFeature_sqlite
         auto dbPath = filesystem::current_path () / "threads-test.db";
         (void)std::filesystem::remove (dbPath);
+        auto connectionFactory = [=] () {
+        // default to 1 second fBusyTimeout for these tests
 #if __cpp_designated_initializers
-        ThreadTest (Options{.fDBPath = dbPath, .fThreadingMode = Options::ThreadingMode::eMultiThread});
+            auto conn = SQLite::Connection::New (SQLite::Options{.fDBPath = dbPath, .fThreadingMode = SQLite::Options::ThreadingMode::eMultiThread, .fBusyTimeout = 1s});
 #else
-        ThreadTest (Options{dbPath, true, nullopt, nullopt, Options::ThreadingMode::eMultiThread});
+            auto conn = SQLite::Connection::New (SQLite::Options{dbPath, true, nullopt, nullopt, SQLite::Options::ThreadingMode::eMultiThread, optional, false, false, 1s}));
+#endif
+            Assert (Math::NearlyEquals (conn.pBusyTimeout ().As<double> (), 1.0));
+            return conn;
+        };
+        ThreadTest (connectionFactory);
 #endif
     }
+
     {
         // EmployeesDB test, but using C++ objects and ORM mapping layer (and threads)
+#if qHasFeature_sqlite
         auto dbPath = filesystem::current_path () / "orm-employees-test.db";
         (void)std::filesystem::remove (dbPath);
+        auto connectionFactory = [=] () {
+        // default to 1 second fBusyTimeout for these tests
 #if __cpp_designated_initializers
-        ORMEmployeesDB (Options{.fDBPath = dbPath});
+            auto conn = SQLite::Connection::New (SQLite::Options{.fDBPath = dbPath, .fThreadingMode = SQLite::Options::ThreadingMode::eMultiThread, .fBusyTimeout = 1s});
 #else
-        ORMEmployeesDB (Options{dbPath});
+            auto conn = SQLite::Connection::New (SQLite::Options{dbPath, true, nullopt, nullopt, SQLite::Options::ThreadingMode::eMultiThread, optional, false, false, 1s}));
+#endif
+            Assert (Math::NearlyEquals (conn.pBusyTimeout ().As<double> (), 1.0));
+            return conn;
+        };
+        ORMEmployeesDB (connectionFactory);
 #endif
     }
+
     {
+#if qHasFeature_sqlite
         auto dbPath = filesystem::current_path () / "computer-network.db";
         (void)std::filesystem::remove (dbPath);
+        auto connectionFactory = [=] () {
 #if __cpp_designated_initializers
-        ComputerNetworksModel (Options{.fDBPath = dbPath});
+            return SQLite::Connection::New (SQLite::Options{.fDBPath = dbPath});
 #else
-        ComputerNetworksModel (Options{dbPath});
+            return SQLite::Connection::New (SQLite::Options{dbPath}));
+#endif
+        };
+        ComputerNetworksModel (connectionFactory);
 #endif
     }
-#endif
 
     return EXIT_SUCCESS;
 }

@@ -1,21 +1,24 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
  */
-#ifndef _Samples_SQLite_ComputerNetwork_h_
-#define _Samples_SQLite_ComputerNetwork_h_ 1
+#ifndef _Samples_SQL_ComputerNetwork_h_
+#define _Samples_SQL_ComputerNetwork_h_ 1
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Database/SQL/SQLite.h"
+#include <functional>
 
-namespace Stroika::Samples::SQLite {
-#if qHasFeature_sqlite
-    using Stroika::Foundation::Database::SQL::SQLite::Options;
+#include "Stroika/Foundation/Database/SQL/Connection.h"
+
+namespace Stroika::Samples::SQL {
+
+    using Stroika::Foundation::Database::SQL::Connection;
+
     /**
-     *  \brief  Simple test of using threads with SQLite - one thread updates employees table, and one writes paychecks
+     *  \brief  Simple test of using threads with SQL - one thread updates employees table, and one writes paychecks
      */
-    void ComputerNetworksModel (const Options& options);
-#endif
+    void ComputerNetworksModel (const std::function<Connection::Ptr ()>& connectionFactory);
+
 }
 
 /*
@@ -24,4 +27,4 @@ namespace Stroika::Samples::SQLite {
  ********************************************************************************
  */
 
-#endif /*_Samples_SQLite_ComputerNetwork_h_*/
+#endif /*_Samples_SQL_ComputerNetwork_h_*/

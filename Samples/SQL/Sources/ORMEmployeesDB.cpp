@@ -11,7 +11,6 @@
 #include "Stroika/Foundation/Database/SQL/ORM/Schema.h"
 #include "Stroika/Foundation/Database/SQL/ORM/TableConnection.h"
 #include "Stroika/Foundation/Database/SQL/ORM/Versioning.h"
-#include "Stroika/Foundation/Database/SQL/SQLite.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
@@ -29,10 +28,8 @@ using namespace Stroika::Foundation::Database;
 using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Execution;
 
-#if qHasFeature_sqlite
-using namespace Database::SQL::SQLite;
+using namespace Database::SQL;
 using namespace SQL::ORM;
-using namespace SQL::SQLite;
 
 namespace {
 
@@ -134,7 +131,7 @@ namespace {
         , {.fName = L"EMPLOYEEREF", .fVariantValueFieldName = L"Employee-Ref"sv, .fVariantType = VariantValue::eInteger, .fNotNull = true}
         , {.fName = L"AMOUNT", .fVariantValueFieldName = L"Amount"sv, .fVariantType = VariantValue::eFloat}
         , {.fName = L"DATE", .fVariantValueFieldName = L"Date"sv, .fVariantType = VariantValue::eDate}
-        #else
+#else
         {L"ID", L"id"sv, false, VariantValue::eInteger, nullopt, true, nullopt, nullopt, false, true}
         , {L"EMPLOYEEREF", L"Employee-Ref"sv, false, VariantValue::eInteger, nullopt, false, nullopt, nullopt, true}
         , {L"AMOUNT", L"Amount"sv, false, VariantValue::eFloat}
@@ -142,25 +139,6 @@ namespace {
 #endif
         }};
     // clang-format on
-
-    /*
-     * Create database connection, with hook to establish the database schema,
-     * (and soon to provide database schema upgrades as needed)
-     */
-    Connection::Ptr SetupDB_ (const Options& options)
-    {
-        TraceContextBumper ctx{"{}::SetupDB_"};
-        Options o      = options;
-        o.fBusyTimeout = o.fBusyTimeout.value_or (1s); // default to 1 second busy timeout for these tests
-        auto r         = Connection::New (o);
-        Assert (Math::NearlyEquals (r.pBusyTimeout ().As<double> (), 1.0));
-
-        constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
-        SQL::ORM::ProvisionForVersion (r,
-                                       kCurrentVersion_,
-                                       Traversal::Iterable<SQL::ORM::Schema::Table>{kEmployeesTableSchema_, kPaychecksTableSchema_});
-        return r;
-    }
 
     /*
      * Example thread making updates to the employees table.
@@ -251,18 +229,24 @@ namespace {
     }
 }
 
-void Stroika::Samples::SQLite::ORMEmployeesDB (const Options& options)
+void Stroika::Samples::SQL::ORMEmployeesDB (const std::function<Connection::Ptr ()>& connectionFactory)
 {
     TraceContextBumper ctx{"ORMEmployeesDB"};
-    using namespace Database::SQL::SQLite;
+
     /*
      *  Create threads for each of our activities.
      *  When the waitable even times out, the threads will automatically be 'canceled' as they go out of scope.
      */
-    Connection::Ptr    conn1 = SetupDB_ (options); // serialize construction of connections so no race creating/setting up DB
-    Connection::Ptr    conn2 = SetupDB_ (options);
+    Connection::Ptr conn1 = connectionFactory ();
+    Connection::Ptr conn2 = connectionFactory ();
+
+    // setup DB schema (on either connection) before running access threads
+    constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
+    ORM::ProvisionForVersion (conn1,
+                              kCurrentVersion_,
+                              Traversal::Iterable<ORM::Schema::Table>{kEmployeesTableSchema_, kPaychecksTableSchema_});
+
     Thread::CleanupPtr updateEmpDBThread{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { PeriodicallyUpdateEmployeesTable_ (conn1); }, Thread::eAutoStart, L"Update Employee Table")};
     Thread::CleanupPtr writeChecks{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { PeriodicallyWriteChecksForEmployeesTable_ (conn2); }, Thread::eAutoStart, L"Write Checks")};
     Execution::WaitableEvent{}.WaitQuietly (15s);
 }
-#endif

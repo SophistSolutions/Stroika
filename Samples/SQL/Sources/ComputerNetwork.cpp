@@ -11,9 +11,10 @@
 #include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
+#include "Stroika/Foundation/Database/SQL/Connection.h"
 #include "Stroika/Foundation/Database/SQL/ORM/Schema.h"
 #include "Stroika/Foundation/Database/SQL/ORM/Versioning.h"
-#include "Stroika/Foundation/Database/SQL/SQLite.h"
+#include "Stroika/Foundation/Database/SQL/Statement.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Time/DateTime.h"
@@ -26,14 +27,12 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Database;
+using namespace Stroika::Foundation::Database::SQL;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Time;
 
 using Common::GUID;
-
-#if qHasFeature_sqlite
-using namespace Database::SQL::SQLite;
 
 using SQL::ORM::Schema::StandardSQLStatements;
 
@@ -107,38 +106,33 @@ namespace {
 #endif
         },
         SQL::ORM::Schema::CatchAllField{}};
-
-    Connection::Ptr SetupDB_ (const Options& options)
-    {
-        auto                             conn             = Connection::New (options);
-        constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
-        SQL::ORM::ProvisionForVersion (conn,
-                                       kCurrentVersion_,
-                                       Traversal::Iterable<SQL::ORM::Schema::Table>{kDeviceTableSchema_});
-        return conn;
-    }
 }
 
-void Stroika::Samples::SQLite::ComputerNetworksModel (const Options& options)
+void Stroika::Samples::SQL::ComputerNetworksModel (const std::function<Connection::Ptr ()>& connectionFactory)
 {
     /*
      */
-    Connection::Ptr conn = SetupDB_ (options);
+    Connection::Ptr conn = connectionFactory ();
+
+    constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
+    ORM::ProvisionForVersion (conn,
+                              kCurrentVersion_,
+                              Traversal::Iterable<ORM::Schema::Table>{kDeviceTableSchema_});
 
     using Model::Device;
     auto addDevice = [&] (const Device& d) {
-        Statement addDeviceStatement{conn, StandardSQLStatements{kDeviceTableSchema_}.Insert ()};
+        Statement addDeviceStatement = conn.mkStatement (StandardSQLStatements{kDeviceTableSchema_}.Insert ());
         addDeviceStatement.Execute (kDeviceTableSchema_.MapToDB (Device::kMapper.FromObject (d).As<Mapping<String, VariantValue>> ()));
     };
     auto getAllDevices = [&] () -> Sequence<Device> {
-        Statement getAllDevicesStatement{conn, StandardSQLStatements{kDeviceTableSchema_}.GetAllElements ()};
+        Statement getAllDevicesStatement = conn.mkStatement (StandardSQLStatements{kDeviceTableSchema_}.GetAllElements ());
         return getAllDevicesStatement.GetAllRows ().Select<Device> ([] (const Statement::Row& r) {
                                                        return Device::kMapper.ToObject<Device> (VariantValue{kDeviceTableSchema_.MapFromDB (r)});
                                                    })
             .As<Sequence<Device>> ();
     };
     auto removeDevice = [&] (const GUID& id) {
-        Statement deleteDeviceStatement{conn, StandardSQLStatements{kDeviceTableSchema_}.DeleteByID ()};
+        Statement deleteDeviceStatement = conn.mkStatement (StandardSQLStatements{kDeviceTableSchema_}.DeleteByID ());
         deleteDeviceStatement.Execute (initializer_list<Common::KeyValuePair<String, VariantValue>>{{kDeviceTableSchema_.GetIDField ()->fName, VariantValue{static_cast<Memory::BLOB> (id)}}});
     };
 
@@ -172,4 +166,3 @@ void Stroika::Samples::SQLite::ComputerNetworksModel (const Options& options)
         }
     }
 }
-#endif

@@ -9,9 +9,9 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Set.h"
-
+#include "Stroika/Foundation/Database/SQL/Connection.h"
 #include "Stroika/Foundation/Database/SQL/ORM/Versioning.h"
-#include "Stroika/Foundation/Database/SQL/SQLite.h"
+#include "Stroika/Foundation/Database/SQL/Statement.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Time/DateTime.h"
@@ -27,15 +27,11 @@ using namespace Stroika::Foundation::Database;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Time;
 
-#if qHasFeature_sqlite
-using namespace Database::SQL::SQLite;
+using namespace Database::SQL;
 
 namespace {
-    Connection::Ptr SetupDB_ (const Options& options)
+    void SetupDB_ (Connection::Ptr conn)
     {
-        Options o                                         = options;
-        o.fBusyTimeout                                    = o.fBusyTimeout.value_or (1s); // default to 1 second busy timeout for these tests
-        auto                             conn             = Connection::New (o);
         constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
         SQL::ORM::ProvisionForVersion (conn,
                                        kCurrentVersion_,
@@ -69,12 +65,11 @@ namespace {
                                                 }
                                             }},
                                        });
-        return conn;
     }
 
     void PeriodicallyUpdateEmployeesTable_ (Connection::Ptr conn)
     {
-        Statement addEmployeeStatement{conn, L"INSERT INTO EMPLOYEES (NAME,AGE,ADDRESS,SALARY,STILL_EMPLOYED) values (:NAME, :AGE, :ADDRESS, :SALARY, :STILL_EMPLOYED);"};
+        Statement addEmployeeStatement = conn.mkStatement (L"INSERT INTO EMPLOYEES (NAME,AGE,ADDRESS,SALARY,STILL_EMPLOYED) values (:NAME, :AGE, :ADDRESS, :SALARY, :STILL_EMPLOYED);");
 
         // Add Initial Employees
         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
@@ -130,9 +125,9 @@ namespace {
         default_random_engine         generator;
         uniform_int_distribution<int> distribution{1, 6};
 
-        Statement getAllActiveEmployees{conn, L"Select ID,NAME from EMPLOYEES where STILL_EMPLOYED=1;"};
+        Statement getAllActiveEmployees = conn.mkStatement (L"Select ID,NAME from EMPLOYEES where STILL_EMPLOYED=1;");
 
-        Statement fireEmployee{conn, L"Update EMPLOYEES Set STILL_EMPLOYED=0 where ID=:ID;"};
+        Statement fireEmployee = conn.mkStatement (L"Update EMPLOYEES Set STILL_EMPLOYED=0 where ID=:ID;");
 
         // then keep adding/removing people randomly (but dont really remove just mark no longer employed so we
         // can REF in paycheck table
@@ -183,8 +178,8 @@ namespace {
 
     void PeriodicallyWriteChecksForEmployeesTable_ (Connection::Ptr conn)
     {
-        Statement addPaycheckStatement{conn, L"INSERT INTO PAYCHECKS (EMPLOYEEREF,AMOUNT,DATE) values (:EMPLOYEEREF, :AMOUNT, :DATE);"};
-        Statement getAllActiveEmployees{conn, L"Select ID,NAME,SALARY from EMPLOYEES where STILL_EMPLOYED=1;"};
+        Statement addPaycheckStatement  = conn.mkStatement (L"INSERT INTO PAYCHECKS (EMPLOYEEREF,AMOUNT,DATE) values (:EMPLOYEEREF, :AMOUNT, :DATE);");
+        Statement getAllActiveEmployees = conn.mkStatement (L"Select ID,NAME,SALARY from EMPLOYEES where STILL_EMPLOYED=1;");
 
         while (true) {
             try {
@@ -209,16 +204,16 @@ namespace {
     }
 }
 
-void Stroika::Samples::SQLite::ThreadTest (const Options& options)
+void Stroika::Samples::SQL::ThreadTest (const function<Connection::Ptr ()>& connectionFactory)
 {
     /*
      *  Create threads for each of our activities.
      *  When the waitable even times out, the threads will automatically be 'canceled' as they go out of scope.
      */
-    Connection::Ptr    conn1 = SetupDB_ (options); // serialize construction of connections so no race creating/setting up DB
-    Connection::Ptr    conn2 = SetupDB_ (options);
+    SQL::Connection::Ptr conn1 = connectionFactory ();
+    SQL::Connection::Ptr conn2 = connectionFactory ();
+    SetupDB_ (conn1);
     Thread::CleanupPtr updateEmpDBThread{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { PeriodicallyUpdateEmployeesTable_ (conn1); }, Thread::eAutoStart, L"Update Employee Table")};
     Thread::CleanupPtr writeChecks{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { PeriodicallyWriteChecksForEmployeesTable_ (conn2); }, Thread::eAutoStart, L"Write Checks")};
     Execution::WaitableEvent{}.WaitQuietly (15s);
 }
-#endif
