@@ -98,11 +98,11 @@ namespace {
             /**
              *  For ID, generate random GUID (BLOB) automatically in database
              */
-            {.fName = L"ID", .fVariantValueFieldName = L"id"sv, .fVariantType = VariantValue::eBLOB, .fIsKeyField = true, .fDefaultExpression = L"randomblob(16)"sv, .fNotNull = true},
-            {.fName = L"name", .fVariantType = VariantValue::eString, .fNotNull = true}
+            {.fName = L"ID", .fVariantValueFieldName = L"id"sv, .fRequired = true, .fVariantType = VariantValue::eBLOB, .fIsKeyField = true, .fDefaultExpression = L"randomblob(16)"sv},
+            {.fName = L"name", .fRequired = true, .fVariantType = VariantValue::eString}
 #else
-            {L"ID", L"id"sv, false, VariantValue::eBLOB, nullopt, true, nullopt, L"randomblob(16)"sv, true},
-            {L"name", nullopt, false, VariantValue::eString, nullopt, false, nullopt, nullopt, true}
+            {L"ID", L"id"sv, true, VariantValue::eBLOB, nullopt, true, nullopt, L"randomblob(16)"sv},
+            {L"name", nullopt, true, VariantValue::eString}
 #endif
         },
         SQL::ORM::Schema::CatchAllField{}};

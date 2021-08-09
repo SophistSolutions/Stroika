@@ -8,6 +8,8 @@
 #include "../../../DataExchange/Variant/JSON/Writer.h"
 #include "../../../Debug/Trace.h"
 
+#include "../../Exception.h"
+
 #include "Schema.h"
 
 using std::byte;
@@ -151,7 +153,7 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapFromDB (const Mapping<Strin
     for (const auto& fi : fNamedFields) {
         if (auto oFieldVal = fields.Lookup (fi.fName)) {
             String toName = fi.GetVariantValueFieldName ();
-            if (fi.IsNullable () and oFieldVal->GetType () == VariantValue::eNull) {
+            if (not fi.fRequired and oFieldVal->GetType () == VariantValue::eNull) {
                 // @todo consider just not adding it if its null (not in DB) and nullable
                 resultFields.Add (toName, *oFieldVal);
             }
@@ -163,7 +165,7 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapFromDB (const Mapping<Strin
             }
         }
         else if (fi.fRequired) {
-            // throw or assert?
+            Execution::Throw (Exception{L"missing required field"});
         }
     }
     // now fold remaining fields into special 'extra' field (for structured non-indexed/non-searchable data)
@@ -251,11 +253,11 @@ String ORM::Schema::StandardSQLStatements::CreateTable () const
         if (fi.fDefaultExpression) {
             sb += L" DEFAULT(" + *fi.fDefaultExpression + L")";
         }
-        if (fi.fNotNull) {
-            sb += L" NOT NULL";
-        }
         if (fi.fAutoIncrement) {
             sb += L" AUTOINCREMENT";
+        }
+        if (fi.fRequired) {
+            sb += L" NOT NULL";
         }
     };
     for (const Field& i : fTable.fNamedFields) {

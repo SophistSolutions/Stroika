@@ -64,17 +64,32 @@ namespace Stroika::Foundation::Database::SQL::ORM {
              */
             optional<String> fVariantValueFieldName;
 
+            /**
+             * if required, implies NOT NULL in db schema.
+             * synonym for not nullable;
+             * 
+             * NOTE a value can be Required and not provided if
+             * 'default-value' is provided (for adding new objects, not for
+             * what is returned from DB). Also allowed if fVariantType is integer, and fIsKeyField and then default is 'autocomputed'
+             */
             bool                         fRequired{false};
             optional<VariantValue::Type> fVariantType;
             optional<String>             fTypeName;
-            bool                         fIsKeyField{false};
-            optional<String>             fForeignKeyToTable;
-            optional<String>             fDefaultExpression;
-            bool                         fNotNull{false};
-            bool                         fAutoIncrement{false};
+
+            /**
+             *  If fIsKeyField, then fRequired must be true.
+             */
+            bool             fIsKeyField{false};
+            optional<String> fForeignKeyToTable;
+            optional<String> fDefaultExpression;
+            // bool                         fNotNull{false};    REMOVED in 2.1b13x - use !fRequired
+            /**
+             *  @todo consider replacing fAutoIncremnet with a new special value
+             * for DefaultExpression!!!
+             */
+            bool fAutoIncrement{false};
 
             nonvirtual String GetVariantValueFieldName () const;
-            nonvirtual bool   IsNullable () const;
         };
 
         /**
