@@ -81,13 +81,18 @@ namespace Stroika::Foundation::Database::SQL::ORM {
              */
             bool             fIsKeyField{false};
             optional<String> fForeignKeyToTable;
+
+            /**
+             *  Note, this can be the special (sentinal) value kDefaultExpression_AutoIncrement
+             */
             optional<String> fDefaultExpression;
             // bool                         fNotNull{false};    REMOVED in 2.1b13x - use !fRequired
             /**
              *  @todo consider replacing fAutoIncremnet with a new special value
              * for DefaultExpression!!!
              */
-            bool fAutoIncrement{false};
+//            bool fAutoIncrement{false}; REMOVED in 2.1b13x - use fDefaultExpression = kDefaultExpression_AutoIncrement
+            static inline constexpr wstring_view kDefaultExpression_AutoIncrement = L"<<auto-increment>>"sv;
 
             nonvirtual String GetVariantValueFieldName () const;
         };

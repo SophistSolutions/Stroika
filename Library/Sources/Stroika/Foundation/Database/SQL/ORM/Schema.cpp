@@ -251,10 +251,12 @@ String ORM::Schema::StandardSQLStatements::CreateTable () const
             sb += L" PRIMARY KEY";
         }
         if (fi.fDefaultExpression) {
-            sb += L" DEFAULT(" + *fi.fDefaultExpression + L")";
-        }
-        if (fi.fAutoIncrement) {
-            sb += L" AUTOINCREMENT";
+            if (*fi.fDefaultExpression == Field::kDefaultExpression_AutoIncrement) {
+                sb += L" AUTOINCREMENT";
+            }
+            else {
+                sb += L" DEFAULT(" + *fi.fDefaultExpression + L")";
+            }
         }
         if (fi.fRequired) {
             sb += L" NOT NULL";
