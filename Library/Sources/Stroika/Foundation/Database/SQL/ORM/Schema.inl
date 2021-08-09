@@ -20,6 +20,10 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     {
         return Memory::NullCoalesce (fVariantValueFieldName, fName);
     }
+    inline bool Schema::Field::IsNullable () const
+    {
+        return not fNotNull;
+    }
 
 }
 

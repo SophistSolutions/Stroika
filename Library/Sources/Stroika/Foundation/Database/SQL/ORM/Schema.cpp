@@ -151,7 +151,11 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapFromDB (const Mapping<Strin
     for (const auto& fi : fNamedFields) {
         if (auto oFieldVal = fields.Lookup (fi.fName)) {
             String toName = fi.GetVariantValueFieldName ();
-            if (fi.fVariantType) {
+            if (fi.IsNullable () and oFieldVal->GetType () == VariantValue::eNull) {
+                // @todo consider just not adding it if its null (not in DB) and nullable
+                resultFields.Add (toName, *oFieldVal);
+            }
+            else if (fi.fVariantType) {
                 resultFields.Add (toName, oFieldVal->ConvertTo (*fi.fVariantType));
             }
             else {

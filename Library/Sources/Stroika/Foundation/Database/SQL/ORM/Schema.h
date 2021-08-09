@@ -74,6 +74,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
             bool                         fAutoIncrement{false};
 
             nonvirtual String GetVariantValueFieldName () const;
+            nonvirtual bool   IsNullable () const;
         };
 
         /**
@@ -112,12 +113,16 @@ namespace Stroika::Foundation::Database::SQL::ORM {
             /**
              *  Note - this looks for fieldnames as provided by Field::GetVariantValueFieldName () and 
              *  returns field-names as provided by Field::fName.
+             * 
+             *  This can return a different number of values (.size of arg maybe != .size of result), and it can change values of associated fields.
              */
             nonvirtual Mapping<String, VariantValue> MapToDB (const Mapping<String, VariantValue>& fields) const;
 
             /**
              *  Note - this looks for fieldnames as provided by Field::fName and 
              *  returns field-names as provided by Field::GetVariantValueFieldName().
+             * 
+             *  This can return a different number of values (.size of arg maybe != .size of result), and it can change values of associated fields.
              */
             nonvirtual Mapping<String, VariantValue> MapFromDB (const Mapping<String, VariantValue>& fields) const;
 
