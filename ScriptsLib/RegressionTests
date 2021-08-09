@@ -415,7 +415,7 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 	SAMPLE_APPS_2_TEST+=("Samples-ArchiveUtility/ArchiveUtility --no-fail-on-missing-library --list ThirdPartyComponents/Origs-Cache/lzma1604.7z")
 	SAMPLE_APPS_2_TEST+=("Samples-Containers/Containers")
 	SAMPLE_APPS_2_TEST+=("Samples-Serialization/Serialization")
-	SAMPLE_APPS_2_TEST+=("Samples-SQLite/SQLite")
+	SAMPLE_APPS_2_TEST+=("Samples-SQL/SQL")
 	SAMPLE_APPS_2_TEST+=("Samples-SystemPerformanceClient/SystemPerformanceClient")
 	if [[ ("$EUID" -eq 0) || ($OSTYPE == "cygwin") ]] ; then
 		# requires root access on UNIX else fails
