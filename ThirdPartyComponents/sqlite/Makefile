@@ -14,7 +14,8 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
-VERSION=3350500
+VERSION=3360000
+#VERSION=3350500
 #VERSION=3340100
 #VERSION=3340000
 
