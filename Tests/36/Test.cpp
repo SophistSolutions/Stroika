@@ -82,7 +82,7 @@ namespace {
                         InitialSetup_ (fDB_);
                     }
                     catch (...) {
-                        DbgTrace (L"Error %s experiment DB: %s: %s",  L"opening", L"MEMORY", Characters::ToString (current_exception ()).c_str ());
+                        DbgTrace (L"Error %s experiment DB: %s: %s", L"opening", L"MEMORY", Characters::ToString (current_exception ()).c_str ());
                         Execution::ReThrow ();
                     }
                 }
@@ -169,7 +169,7 @@ namespace {
                 static void InitialSetup_ (Database::SQL::SQLite::Connection::Ptr db)
                 {
                     // @todo rewrite this using Bind()
-                    TraceContextBumper ctx{"ScanDB_::DB::InitialSetup_"};
+                    TraceContextBumper               ctx{"ScanDB_::DB::InitialSetup_"};
                     bool                             created          = false;
                     constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
                     SQL::ORM::ProvisionForVersion (db,
