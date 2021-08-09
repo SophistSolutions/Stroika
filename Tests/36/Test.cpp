@@ -13,6 +13,7 @@
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include "Stroika/Foundation/Database/SQL/ORM/Schema.h"
 #include "Stroika/Foundation/Database/SQL/ORM/TableConnection.h"
+#include "Stroika/Foundation/Database/SQL/ORM/Versioning.h"
 #include "Stroika/Foundation/Database/SQL/SQLite.h"
 #include "Stroika/Foundation/Database/SQL/Utils.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -57,44 +58,32 @@ namespace {
             public:
                 DB (const filesystem::path& testDBFile)
                 {
-                    bool created = false;
                     try {
 #if __cpp_designated_initializers
-                        fDB_ = Connection::New (Options{.fDBPath = testDBFile}, [&created] (Database::SQL::SQLite::Connection::Ptr db) { created = true; InitialSetup_ (db); });
+                        fDB_ = Connection::New (Options{.fDBPath = testDBFile});
 #else
-                        fDB_ = Connection::New (Options{testDBFile}, [&created] (Database::SQL::SQLite::Connection::Ptr db) { created = true; InitialSetup_ (db); });
+                        fDB_ = Connection::New (Options{testDBFile});
 #endif
+                        InitialSetup_ (fDB_);
                     }
                     catch (...) {
-                        DbgTrace (L"Error %s experiment DB: %s: %s", created ? L"creating" : L"opening", Characters::ToString (testDBFile).c_str (), Characters::ToString (current_exception ()).c_str ());
+                        DbgTrace (L"Error %s experiment DB: %s: %s", L"opening", Characters::ToString (testDBFile).c_str (), Characters::ToString (current_exception ()).c_str ());
                         Execution::ReThrow ();
-                    }
-                    if (created) {
-                        DbgTrace (L"Initialized new experiment DB: %s", Characters::ToString (testDBFile).c_str ());
-                    }
-                    else {
-                        DbgTrace (L"Opened experiment DB: %s", Characters::ToString (testDBFile).c_str ());
                     }
                 }
                 DB ()
                 {
-                    bool created = false;
                     try {
 #if __cpp_designated_initializers
-                        fDB_ = Connection::New (Options{.fInMemoryDB = L""}, [&created] (Database::SQL::SQLite::Connection::Ptr db) { created = true; InitialSetup_(db); });
+                        fDB_ = Connection::New (Options{.fInMemoryDB = L""});
 #else
-                        fDB_ = Connection::New (Options{nullopt, true, nullopt, L""}, [&created] (Database::SQL::SQLite::Connection::Ptr db) { created = true; InitialSetup_(db); });
+                        fDB_ = Connection::New (Options{nullopt, true, nullopt, L""});
 #endif
+                        InitialSetup_ (fDB_);
                     }
                     catch (...) {
-                        DbgTrace (L"Error %s experiment DB: %s: %s", created ? L"creating" : L"opening", L"MEMORY", Characters::ToString (current_exception ()).c_str ());
+                        DbgTrace (L"Error %s experiment DB: %s: %s",  L"opening", L"MEMORY", Characters::ToString (current_exception ()).c_str ());
                         Execution::ReThrow ();
-                    }
-                    if (created) {
-                        DbgTrace (L"Initialized new experiment DB: %s", L"MEMORY");
-                    }
-                    else {
-                        DbgTrace (L"Opened experiment DB: %s", L"MEMORY");
                     }
                 }
                 DB (const DB&)                 = delete;
@@ -181,55 +170,80 @@ namespace {
                 {
                     // @todo rewrite this using Bind()
                     TraceContextBumper ctx{"ScanDB_::DB::InitialSetup_"};
-                    auto               tableSetup_ScanTypes = [&db] () {
-                        db.Exec (L"create table 'ScanTypes' "
-                                 L"("
-                                 L"ScanTypeId tinyint Primary Key,"
-                                 L"TypeName varchar(255) not null"
-                                 L");");
-                        db.Exec (Characters::Format (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Reference';", ScanKindType_::Reference));
-                        db.Exec (Characters::Format (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Sample';", ScanKindType_::Sample));
-                        db.Exec (Characters::Format (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Background';", ScanKindType_::Background));
-                    };
-                    auto tableSetup_Scans = [&db] () {
-                        db.Exec (
-                            L"create table 'Scans'"
-                            L"("
-                            L"ScanId integer Primary Key AUTOINCREMENT,"
-                            L"StartAt Datetime not null,"
-                            L"EndAt Datetime not null,"
-                            L"ScanTypeIDRef tinyint not null,"
-                            L"ScanLabel varchar,"
-                            L"Foreign key (ScanTypeIDRef) References ScanTypes (ScanTypeId)"
-                            L");");
-                    };
-                    auto tableSetup_ScanSets = [&db] () {
-                        db.Exec (
-                            L"Create table ScanSet"
-                            L"("
-                            L"ScanSetID bigint,"
-                            L"ScanIDRef integer,"
-                            L"Foreign key (ScanIdRef) References Scans(ScanId)"
-                            L");");
-                    };
-                    auto tableSetup_AuxData = [&db] () {
-                        db.Exec (
-                            L"Create table AuxData"
-                            L"("
-                            L"ScanSetIDRef bigint Primary Key,"
-                            L"Results varchar,"
-                            L"Foreign key (ScanSetIDRef) References ScanSet(ScanSetID)"
-                            L");");
-                    };
-                    auto tableSetup_ExtraForeignKeys = [&db] () {
-                        db.Exec (L"Alter table Scans add column DependsOnScanSetIdRef bigint references ScanSet(ScanSetID);");
-                        db.Exec (L"Alter table Scans add column RawScanData BLOB;");
-                    };
-                    tableSetup_ScanTypes ();
-                    tableSetup_Scans ();
-                    tableSetup_ScanSets ();
-                    tableSetup_AuxData ();
-                    tableSetup_ExtraForeignKeys ();
+                    bool                             created          = false;
+                    constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
+                    SQL::ORM::ProvisionForVersion (db,
+                                                   kCurrentVersion_,
+                                                   initializer_list<SQL::ORM::TableProvisioner>{
+                                                       {L"ScanTypes"sv,
+                                                        [&created] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
+                                                            // for now no upgrade support
+                                                            if (not v) {
+                                                                created = true;
+                                                                c.Exec (L"create table 'ScanTypes' "
+                                                                        L"("
+                                                                        L"ScanTypeId tinyint Primary Key,"
+                                                                        L"TypeName varchar(255) not null"
+                                                                        L");");
+                                                                c.Exec (Characters::Format (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Reference';", ScanKindType_::Reference));
+                                                                c.Exec (Characters::Format (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Sample';", ScanKindType_::Sample));
+                                                                c.Exec (Characters::Format (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Background';", ScanKindType_::Background));
+                                                            }
+                                                        }},
+                                                       {L"Scans"sv,
+                                                        [&created] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
+                                                            // for now no upgrade support
+                                                            if (not v) {
+                                                                created = true;
+                                                                c.Exec (
+                                                                    L"create table 'Scans'"
+                                                                    L"("
+                                                                    L"ScanId integer Primary Key AUTOINCREMENT,"
+                                                                    L"StartAt Datetime not null,"
+                                                                    L"EndAt Datetime not null,"
+                                                                    L"ScanTypeIDRef tinyint not null,"
+                                                                    L"ScanLabel varchar,"
+                                                                    L"Foreign key (ScanTypeIDRef) References ScanTypes (ScanTypeId)"
+                                                                    L");");
+                                                                c.Exec (L"Alter table Scans add column RawScanData BLOB;");
+                                                            }
+                                                        }},
+                                                       {L"ScanSet"sv,
+                                                        [&created] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
+                                                            // for now no upgrade support
+                                                            if (not v) {
+                                                                created = true;
+                                                                c.Exec (
+                                                                    L"Create table ScanSet"
+                                                                    L"("
+                                                                    L"ScanSetID bigint,"
+                                                                    L"ScanIDRef integer,"
+                                                                    L"Foreign key (ScanIdRef) References Scans(ScanId)"
+                                                                    L");");
+                                                                c.Exec (L"Alter table Scans add column DependsOnScanSetIdRef bigint references ScanSet(ScanSetID);");
+                                                            }
+                                                        }},
+                                                       {L"AuxData"sv,
+                                                        [&created] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
+                                                            // for now no upgrade support
+                                                            if (not v) {
+                                                                created = true;
+                                                                c.Exec (
+                                                                    L"Create table AuxData"
+                                                                    L"("
+                                                                    L"ScanSetIDRef bigint Primary Key,"
+                                                                    L"Results varchar,"
+                                                                    L"Foreign key (ScanSetIDRef) References ScanSet(ScanSetID)"
+                                                                    L");");
+                                                            }
+                                                        }},
+                                                   });
+                    if (created) {
+                        DbgTrace (L"Initialized new experiment DB: %s", Characters::ToString (db).c_str ());
+                    }
+                    else {
+                        DbgTrace (L"Opened experiment DB: %s", Characters::ToString (db).c_str ());
+                    }
                 }
                 Database::SQL::SQLite::Connection::Ptr fDB_;
             };
@@ -288,30 +302,44 @@ namespace {
             Connection::Ptr SetupDB_ (const Options& options)
             {
                 TraceContextBumper ctx{"RegressionTest2_sqlite_EmployeesDB_with_threads_::SetupDB_"};
-                auto               initializeDB = [] (const Connection::Ptr& c) {
-                    // Use Connection::Ptr::Exec because no parameter bindings needed
-                    c.Exec (
-                        L"CREATE TABLE EMPLOYEES("
-                        L"ID INTEGER PRIMARY KEY AUTOINCREMENT,"
-                        L"NAME           TEXT    NOT NULL,"
-                        L"AGE            INT     NOT NULL,"
-                        L"ADDRESS        CHAR(50),"
-                        L"SALARY         REAL,"
-                        L"STILL_EMPLOYED INT"
-                        L");");
-                    c.Exec (
-                        L"CREATE TABLE PAYCHECKS("
-                        L"ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-                        L"EMPLOYEEREF INT NOT NULL,"
-                        L"AMOUNT REAL,"
-                        L"DATE TEXT"
-                        L");");
-                };
-                Options o      = options;
-                o.fBusyTimeout = o.fBusyTimeout.value_or (1s); // default to 1 second busy timeout for these tests
-                auto r         = Connection::New (o, initializeDB);
-                VerifyTestResult (Math::NearlyEquals (r.pBusyTimeout ().As<double> (), 1.0));
-                return r;
+                Options            o = options;
+                o.fBusyTimeout       = o.fBusyTimeout.value_or (1s); // default to 1 second busy timeout for these tests
+                auto conn            = Connection::New (o);
+                VerifyTestResult (Math::NearlyEquals (conn.pBusyTimeout ().As<double> (), 1.0));
+                constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
+                SQL::ORM::ProvisionForVersion (conn,
+                                               kCurrentVersion_,
+                                               initializer_list<SQL::ORM::TableProvisioner>{
+                                                   {L"EMPLOYEES"sv,
+                                                    [] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
+                                                        // for now no upgrade support
+                                                        if (not v) {
+                                                            c.Exec (
+                                                                L"CREATE TABLE EMPLOYEES("
+                                                                L"ID INTEGER PRIMARY KEY AUTOINCREMENT,"
+                                                                L"NAME           TEXT    NOT NULL,"
+                                                                L"AGE            INT     NOT NULL,"
+                                                                L"ADDRESS        CHAR(50),"
+                                                                L"SALARY         REAL,"
+                                                                L"STILL_EMPLOYED INT"
+                                                                L");");
+                                                        }
+                                                    }},
+                                                   {L"PAYCHECKS"sv,
+                                                    [] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
+                                                        // for now no upgrade support
+                                                        if (not v) {
+                                                            c.Exec (
+                                                                L"CREATE TABLE PAYCHECKS("
+                                                                L"ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+                                                                L"EMPLOYEEREF INT NOT NULL,"
+                                                                L"AMOUNT REAL,"
+                                                                L"DATE TEXT"
+                                                                L");");
+                                                        }
+                                                    }},
+                                               });
+                return conn;
             }
 
             void PeriodicallyUpdateEmployeesTable_ (Connection::Ptr conn)
@@ -604,15 +632,15 @@ namespace {
             Connection::Ptr SetupDB_ (const Options& options)
             {
                 TraceContextBumper ctx{"RegressionTest3_sqlite_EmployeesDB_with_ORM_and_threads_::SetupDB_"};
-                auto               initializeDB = [] (const Connection::Ptr& c) {
-                    c.Exec (Schema::StandardSQLStatements{kEmployeesTableSchema_}.CreateTable ());
-                    c.Exec (Schema::StandardSQLStatements{kPaychecksTableSchema_}.CreateTable ());
-                };
-                Options o      = options;
-                o.fBusyTimeout = o.fBusyTimeout.value_or (1s); // default to 1 second busy timeout for these tests
-                auto r         = Connection::New (o, initializeDB);
-                VerifyTestResult (Math::NearlyEquals (r.pBusyTimeout ().As<double> (), 1.0));
-                return r;
+                Options            o = options;
+                o.fBusyTimeout       = o.fBusyTimeout.value_or (1s); // default to 1 second busy timeout for these tests
+                auto conn            = Connection::New (o);
+                VerifyTestResult (Math::NearlyEquals (conn.pBusyTimeout ().As<double> (), 1.0));
+                constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
+                SQL::ORM::ProvisionForVersion (conn,
+                                               kCurrentVersion_,
+                                               Traversal::Iterable<SQL::ORM::Schema::Table>{kEmployeesTableSchema_, kPaychecksTableSchema_});
+                return conn;
             }
 
             /*
