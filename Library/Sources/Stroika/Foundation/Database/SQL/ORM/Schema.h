@@ -72,7 +72,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
              * 'default-value' is provided (for adding new objects, not for
              * what is returned from DB). Also allowed if fVariantType is integer, and fIsKeyField and then default is 'autocomputed'
              */
-            bool                         fRequired{false};
+            bool fRequired{false};
 
             /**
              *  This is the type of the VariantValue object and is used as a hint for the SQL typename (if not provided).
@@ -87,7 +87,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
             /**
              *  If fIsKeyField, then fRequired must be true.
              */
-            bool             fIsKeyField{false};
+            bool fIsKeyField{false};
 
             /**
              *  Use to instruct the database to check referential integrity (so argument to foriegnKey statement)

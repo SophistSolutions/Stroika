@@ -202,6 +202,7 @@ auto ORM::Schema::Table::GetIDField () const -> optional<Field>
 namespace {
     String GetSQLiteFldType_ (const ORM::Schema::Field& f)
     {
+        // @todo - this must be factored through SQL::EngineProperties
         if (f.fVariantType) {
             switch (*f.fVariantType) {
                 case VariantValue::eBLOB:
