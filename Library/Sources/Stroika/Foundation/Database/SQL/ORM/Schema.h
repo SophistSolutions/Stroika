@@ -73,25 +73,35 @@ namespace Stroika::Foundation::Database::SQL::ORM {
              * what is returned from DB). Also allowed if fVariantType is integer, and fIsKeyField and then default is 'autocomputed'
              */
             bool                         fRequired{false};
+
+            /**
+             *  This is the type of the VariantValue object and is used as a hint for the SQL typename (if not provided).
+             */
             optional<VariantValue::Type> fVariantType;
-            optional<String>             fTypeName;
+
+            /**
+             *  SQL type name for the field. If not provided, inferred from fVariantType.
+             */
+            optional<String> fTypeName;
 
             /**
              *  If fIsKeyField, then fRequired must be true.
              */
             bool             fIsKeyField{false};
+
+            /**
+             *  Use to instruct the database to check referential integrity (so argument to foriegnKey statement)
+             */
             optional<String> fForeignKeyToTable;
 
             /**
              *  Note, this can be the special (sentinal) value kDefaultExpression_AutoIncrement
              */
             optional<String> fDefaultExpression;
-            // bool                         fNotNull{false};    REMOVED in 2.1b13x - use !fRequired
+
             /**
-             *  @todo consider replacing fAutoIncremnet with a new special value
-             * for DefaultExpression!!!
+             *  Sentinal value for fDefaultExpression, meaning the default value is 1 + the previous max for the field.
              */
-//            bool fAutoIncrement{false}; REMOVED in 2.1b13x - use fDefaultExpression = kDefaultExpression_AutoIncrement
             static inline constexpr wstring_view kDefaultExpression_AutoIncrement = L"<<auto-increment>>"sv;
 
             nonvirtual String GetVariantValueFieldName () const;
