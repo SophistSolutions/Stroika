@@ -18,7 +18,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
      */
     inline String Schema::Field::GetVariantValueFieldName () const
     {
-        return Memory::NullCoalesce (fVariantValueFieldName, fName);
+        return Memory::NullCoalesce (fVariantValueName, fName);
     }
 
 }

@@ -51,6 +51,10 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     namespace Schema {
 
         /**
+         * @brief Provide enough information about a field of a c++ VariantValue object to map it to a field in the SQL database.
+         * 
+         * This is used to automate provisioning (defining the schema) for an SQL database, and used to help automate mapping
+         * of VariantValue objects to/from SQL database rows.
          */
         struct Field {
             /*
@@ -62,10 +66,12 @@ namespace Stroika::Foundation::Database::SQL::ORM {
              */
             String fName;
 
-            /*
-             *  Only used in mapping to/from DB representation
+            /**
+             *  \brief Variant Value field name (if missing, use fName)
+             * 
+             *  Only used in mapping to/from DB representation.
              */
-            optional<String> fVariantValueFieldName;
+            optional<String> fVariantValueName;
 
             /**
              * if required, implies NOT NULL in db schema.

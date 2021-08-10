@@ -587,12 +587,12 @@ namespace {
                 // clang-format off
                 Collection<Schema::Field>{
 #if __cpp_designated_initializers
-                {.fName = L"ID", .fVariantValueFieldName = L"id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
-                , {.fName = L"NAME", .fVariantValueFieldName = L"Name"sv, .fVariantValueType = VariantValue::eString}
-                , {.fName = L"AGE", .fVariantValueFieldName = L"Age"sv, .fVariantValueType = VariantValue::eInteger}
-                , {.fName = L"ADDRESS", .fVariantValueFieldName = L"Address"sv, .fVariantValueType = VariantValue::eString}
-                , {.fName = L"SALARY", .fVariantValueFieldName = L"Salary"sv, .fVariantValueType = VariantValue::eFloat}
-                , {.fName = L"STILL_EMPLOYED", .fVariantValueFieldName = L"Still-Employed"sv, .fVariantValueType = VariantValue::eInteger}
+                {.fName = L"ID", .fVariantValueName = L"id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
+                , {.fName = L"NAME", .fVariantValueName = L"Name"sv, .fVariantValueType = VariantValue::eString}
+                , {.fName = L"AGE", .fVariantValueName = L"Age"sv, .fVariantValueType = VariantValue::eInteger}
+                , {.fName = L"ADDRESS", .fVariantValueName = L"Address"sv, .fVariantValueType = VariantValue::eString}
+                , {.fName = L"SALARY", .fVariantValueName = L"Salary"sv, .fVariantValueType = VariantValue::eFloat}
+                , {.fName = L"STILL_EMPLOYED", .fVariantValueName = L"Still-Employed"sv, .fVariantValueType = VariantValue::eInteger}
 #else
                 {L"ID", L"id"sv, true, VariantValue::eInteger, nullopt, true, nullopt, Schema::Field::kDefaultExpression_AutoIncrement}
                 , {L"name", L"Name"sv, false, VariantValue::eString}
@@ -612,10 +612,10 @@ namespace {
                 L"PAYCHECKS",
                 Collection<Schema::Field>{
 #if __cpp_designated_initializers
-                {.fName = L"ID", .fVariantValueFieldName = L"id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
-                , {.fName = L"EMPLOYEEREF", .fVariantValueFieldName = L"Employee-Ref"sv,.fRequired = true,  .fVariantValueType = VariantValue::eInteger}
-                , {.fName = L"AMOUNT", .fVariantValueFieldName = L"Amount"sv, .fVariantValueType = VariantValue::eFloat}
-                , {.fName = L"DATE", .fVariantValueFieldName = L"Date"sv, .fVariantValueType = VariantValue::eDate}
+                {.fName = L"ID", .fVariantValueName = L"id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
+                , {.fName = L"EMPLOYEEREF", .fVariantValueName = L"Employee-Ref"sv,.fRequired = true,  .fVariantValueType = VariantValue::eInteger}
+                , {.fName = L"AMOUNT", .fVariantValueName = L"Amount"sv, .fVariantValueType = VariantValue::eFloat}
+                , {.fName = L"DATE", .fVariantValueName = L"Date"sv, .fVariantValueType = VariantValue::eDate}
 #else
                 {L"ID", L"id"sv, true, VariantValue::eInteger, nullopt, true, nullopt, Schema::Field::kDefaultExpression_AutoIncrement}
                 , {L"EMPLOYEEREF", L"Employee-Ref"sv, true, VariantValue::eInteger}
