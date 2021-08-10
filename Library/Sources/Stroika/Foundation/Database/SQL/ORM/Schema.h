@@ -55,7 +55,10 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         struct Field {
             /*
              *  This is the database field name, and by default also the name of the field
-             *  mapped to in the VariantValue
+             *  mapped to in the VariantValue;
+             * 
+             *  \note - this is called fName (and not fSQLName) since it is required and generally the same
+             *          for the SQL fields and the VariantValue fields.
              */
             String fName;
 
@@ -77,12 +80,12 @@ namespace Stroika::Foundation::Database::SQL::ORM {
             /**
              *  This is the type of the VariantValue object and is used as a hint for the SQL typename (if not provided).
              */
-            optional<VariantValue::Type> fVariantType;
+            optional<VariantValue::Type> fVariantValueType;
 
             /**
              *  SQL type name for the field. If not provided, inferred from fVariantType.
              */
-            optional<String> fTypeName;
+            optional<String> fSQLTypeName;
 
             /**
              *  If fIsKeyField, then fRequired must be true.

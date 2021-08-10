@@ -32,7 +32,7 @@ using namespace Stroika::Foundation::Debug;
 ORM::Schema::CatchAllField::CatchAllField ()
 {
     fName        = L"_other_fields_"sv;
-    fVariantType = VariantValue::Type::eBLOB; // can be BLOB or String, but BLOB more compact/efficient
+    fVariantValueType = VariantValue::Type::eBLOB; // can be BLOB or String, but BLOB more compact/efficient
 }
 
 function<VariantValue (const Mapping<String, VariantValue>& fields2Map)> ORM::Schema::CatchAllField::GetEffectiveRawToCombined () const
@@ -40,8 +40,8 @@ function<VariantValue (const Mapping<String, VariantValue>& fields2Map)> ORM::Sc
     if (fMapRawFieldsToCombinedField != nullptr) {
         return fMapRawFieldsToCombinedField;
     }
-    Require (fVariantType);
-    switch (*fVariantType) {
+    Require (fVariantValueType);
+    switch (*fVariantValueType) {
         case VariantValue::eBLOB:
             return kDefaultMapper_RawToCombined_BLOB;
         case VariantValue::eString:
@@ -57,8 +57,8 @@ function<Mapping<String, VariantValue> (const VariantValue& map2Fields)> ORM::Sc
     if (fMapCombinedFieldToRawFields != nullptr) {
         return fMapCombinedFieldToRawFields;
     }
-    Require (fVariantType);
-    switch (*fVariantType) {
+    Require (fVariantValueType);
+    switch (*fVariantValueType) {
         case VariantValue::eBLOB:
             return kDefaultMapper_CombinedToRaw_BLOB;
         case VariantValue::eString:
@@ -109,9 +109,9 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapToDB (const Mapping<String,
                 usedFields += srcKey;
                 continue;
             }
-            if (fi.fVariantType) {
+            if (fi.fVariantValueType) {
                 try {
-                    resultFields.Add (fi.fName, oFieldVal->ConvertTo (*fi.fVariantType));
+                    resultFields.Add (fi.fName, oFieldVal->ConvertTo (*fi.fVariantValueType));
                 }
                 catch (...) {
                     DbgTrace (L"IN ORM::Schema::Table::MapToDB for field %s: %s", fi.fName.c_str (), Characters::ToString (current_exception ()).c_str ());
@@ -157,8 +157,8 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapFromDB (const Mapping<Strin
                 // @todo consider just not adding it if its null (not in DB) and nullable
                 resultFields.Add (toName, *oFieldVal);
             }
-            else if (fi.fVariantType) {
-                resultFields.Add (toName, oFieldVal->ConvertTo (*fi.fVariantType));
+            else if (fi.fVariantValueType) {
+                resultFields.Add (toName, oFieldVal->ConvertTo (*fi.fVariantValueType));
             }
             else {
                 resultFields.Add (toName, *oFieldVal);
@@ -203,8 +203,8 @@ namespace {
     String GetSQLiteFldType_ (const ORM::Schema::Field& f)
     {
         // @todo - this must be factored through SQL::EngineProperties
-        if (f.fVariantType) {
-            switch (*f.fVariantType) {
+        if (f.fVariantValueType) {
+            switch (*f.fVariantValueType) {
                 case VariantValue::eBLOB:
                     return L"BLOB"sv;
                 case VariantValue::eDate:
