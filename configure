@@ -1049,7 +1049,14 @@ sub	SetDefaultForCompilerDriver_
 sub	SetDefaultForPlatform_
 {
 	if ($PROJECTPLATFORMSUBDIR eq 'Unix' && $COMPILER_DRIVER eq '') {
-		$COMPILER_DRIVER = "gcc";
+		# Ubuntu 18.04 comes with gcc version 7.x, which this version of Stroika doesnt support so
+		# if < 8, at least force gcc 8 as default; if wrong default - user can specify what they wanted explicitly
+		if (GetGCCVersion_ ("gcc") < '8') {
+			$COMPILER_DRIVER = "gcc-8";
+		}
+		else {
+			$COMPILER_DRIVER = "gcc";
+		}
 		#$COMPILER_DRIVER = "clang++";
 		#$COMPILER_DRIVER = "gcc";
 		#$COMPILER_DRIVER = "g++ -V5.0";
