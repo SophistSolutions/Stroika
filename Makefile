@@ -576,4 +576,5 @@ list-configuration-tags:
 
 
 install-realpath:
+	mkdir -p /usr/local/bin
 	g++ --std=c++17 -O -o /usr/local/bin/realpath BootstrapToolsSrc/realpath.cpp
