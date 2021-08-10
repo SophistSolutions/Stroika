@@ -17,6 +17,18 @@
  *
  *  TODO:
  *      \todo   Store and pass along actually stored version, and do upgrading.
+ * 
+ *      \todo   Provide configuration options and ability to EITHER version# tables (table-v) or do
+ *              that at the database level (differnt connection) - so must be able to construct the connection
+ *              from here). A sensible pattern is what I do for WTF, where I say db-v3, db-v4 etccc each time
+ *              I change db version, and have migration code to migrate data from v3 to v4.
+ * 
+ *              todo this maybe have IN-ConnectionPtr and OUT-Connection-Ptr in TableProvisioner API? or
+ *              pair<Connection::Ptr,optional<Version>> from, and same-type to. maybe optional<pair> for the
+ *              from for the case of no DB to start with.
+ * 
+ *              Extend versioninfo so we track actual app code version and format version; (so instead of pair<>
+ *              probably struct).
  */
 
 namespace Stroika::Foundation::Database::SQL::ORM {
