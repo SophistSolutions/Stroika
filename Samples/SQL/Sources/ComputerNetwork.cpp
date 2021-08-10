@@ -98,8 +98,8 @@ namespace {
             /**
              *  For ID, generate random GUID (BLOB) automatically in database
              */
-            {.fName = L"ID", .fVariantValueFieldName = L"id"sv, .fRequired = true, .fVariantType = VariantValue::eBLOB, .fIsKeyField = true, .fDefaultExpression = L"randomblob(16)"sv},
-            {.fName = L"name", .fRequired = true, .fVariantType = VariantValue::eString}
+            {.fName = L"ID", .fVariantValueFieldName = L"id"sv, .fRequired = true, .fVariantValueType = VariantValue::eBLOB, .fIsKeyField = true, .fDefaultExpression = L"randomblob(16)"sv},
+            {.fName = L"name", .fRequired = true, .fVariantValueType = VariantValue::eString}
 #else
             {L"ID", L"id"sv, true, VariantValue::eBLOB, nullopt, true, nullopt, L"randomblob(16)"sv},
             {L"name", nullopt, true, VariantValue::eString}

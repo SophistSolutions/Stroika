@@ -31,7 +31,7 @@ using namespace Stroika::Foundation::Debug;
  */
 ORM::Schema::CatchAllField::CatchAllField ()
 {
-    fName        = L"_other_fields_"sv;
+    fName             = L"_other_fields_"sv;
     fVariantValueType = VariantValue::Type::eBLOB; // can be BLOB or String, but BLOB more compact/efficient
 }
 
