@@ -1058,7 +1058,7 @@ sub	SetDefaultForCompilerDriver_
 	}
 
 	if ($MACOSX_DEPLOYMENT_TARGET ne "") {
-		$EXTRA_PREFIX_LINKER_ARGS .= " --mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET";
+		$EXTRA_PREFIX_LINKER_ARGS .= " -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET";
 	}
 }
 
