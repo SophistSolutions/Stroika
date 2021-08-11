@@ -98,6 +98,7 @@ my $LIBFEATUREFLAG_No = "no";
 my $ENABLE_LTO = DEFAULT_BOOL_OPTIONS;
 my $ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
 my $ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
+my $MACOSX_DEPLOYMENT_TARGET = undef;
 my $CPPSTD_VERSION_FLAG = '';
 my $CWARNING_FLAGS = undef;
 my $SharedSymbolVisibility = undef;	# gcc visibility flag - -fvisible=hidden
@@ -208,6 +209,7 @@ sub	DoHelp_
 		print("	    --block-allocation { enable|disable|default }   /* Enables/disable block-allocation (a feature that improves performance, but messes up valgrind) */\n");
 		print("	    --valgrind { enable|disable|default }           /* Enables/disable valgrind-specific runtime code (so far only needed for clean helgrind use) */\n");
 		print("	    --GLIBCXX_DEBUG { enable|disable|default }      /* Enables/Disables GLIBCXX_DEBUG (G++-specific) */\n");
+		print("	    --MACOSX_DEPLOYMENT_TARGET { #|default|none }   /* set MACOSX_DEPLOYMENT_TARGET (mac os min version) (macosx target specific) */\n");
 		print("	    --cppstd-version {FLAG}                         /* Sets can be c++17, or c++2a */\n");
 		print("	    --stdlib {LIB}                                  /* libc++ (clang lib), libstdc++ (gcc and often clang) */\n");
 		print("	    --ActivePerl {use|no}                           /* Enables/disables use of ActivePerl (Windows Only) - JUST USED TO BUILD OPENSSL for Windows*/\n");
@@ -723,6 +725,16 @@ sub	SetDefaultForCompilerDriver_
 		}
 	}
 
+	# I've found almost no docs about this. However, when I first ported to new imac with m1 chip,
+	# and rebuilt stroika, I found XERCES automatically did something like this to force this
+	# setting. But rest of my code didn't and I got compiler warnings. So try to find the best
+	# setting to force to, and allow external settings to override.
+	if (!defined $MACOSX_DEPLOYMENT_TARGET && "$^O" eq "darwin") {
+		my $osVersion = trim (`/usr/bin/sw_vers | grep ProductVersion | awk 'END {print \$2}'`);
+		($osVersion =~ /^((\d+)\.(\d+))/gm);	# force convert to 2-digit form as I've seen in examples but not sure makes much sense
+		$MACOSX_DEPLOYMENT_TARGET = $1;
+	}
+
 	no warnings;	#@todo fix - not sure why we get warning on use of $CPPSTD_VERSION_FLAG
 	if ($CPPSTD_VERSION_FLAG eq '') {
 		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
@@ -1044,6 +1056,10 @@ sub	SetDefaultForCompilerDriver_
 	if ($PROJECTPLATFORMSUBDIR eq 'Unix' && trim(`awk -F= '/^NAME/{print $2}' /etc/os-release 2> /dev/null`) =~ /CentOS/) {
 		$STATIC_LINK_GCCRUNTIME = 0;
 	}
+
+	if ($MACOSX_DEPLOYMENT_TARGET ne "") {
+		$EXTRA_PREFIX_LINKER_ARGS .= " --mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET";
+	}
 }
 
 sub	SetDefaultForPlatform_
@@ -1255,6 +1271,19 @@ sub	ParseCommandLine_Remaining_
 			else  {
 				print ("UNRECOGNIZED$ENABLE_GLIBCXX_DEBUG ARG: $var\n");
 				DoHelp_ (1);
+			}
+		}
+		elsif ((lc ($var) eq lc("-MACOSX_DEPLOYMENT_TARGET")) or (lc ($var) eq lc("--MACOSX_DEPLOYMENT_TARGET"))) {
+			$i++;
+			$var = $args[$i];
+			if ($var eq "none") {
+				$MACOSX_DEPLOYMENT_TARGET = "";	# "" means not set, undefined means do default
+			}
+			elsif ($var eq "default") {
+				$MACOSX_DEPLOYMENT_TARGET = undef;
+			}
+			else  {
+				$MACOSX_DEPLOYMENT_TARGET = $var;
 			}
 		}
 		elsif ((lc ($var) eq "-stdlib") or (lc ($var) eq "--stdlib")) {
@@ -2396,6 +2425,9 @@ sub	WriteConfigFile_
 	print (OUT "    <qFeatureFlag_LZMA>$FEATUREFLAG_LZMA</qFeatureFlag_LZMA>\n");
 	print (OUT "    <qFeatureFlag_WIX>$FEATUREFLAG_WIX</qFeatureFlag_WIX>\n");
 
+	if ($MACOSX_DEPLOYMENT_TARGET ne "") {
+		print (OUT "    <MACOSX_DEPLOYMENT_TARGET>$MACOSX_DEPLOYMENT_TARGET</MACOSX_DEPLOYMENT_TARGET>\n");
+	}
 	if ($HasMakefileBugWorkaround_lto_skipping_undefined_incompatible == true) {
 		print (OUT "    <HasMakefileBugWorkaround_lto_skipping_undefined_incompatible>true</HasMakefileBugWorkaround_lto_skipping_undefined_incompatible>\n");
 	}
