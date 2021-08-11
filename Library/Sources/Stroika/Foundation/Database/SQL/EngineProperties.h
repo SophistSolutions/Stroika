@@ -6,6 +6,8 @@
 
 #include "../../StroikaPreComp.h"
 
+#include <string_view>
+
 #include "../../Characters/String.h"
 
 /**
@@ -42,7 +44,13 @@ namespace Stroika::Foundation::Database::SQL {
         virtual String GetEngineName () const = 0;
 
     public:
-        static constexpr inline wstring_view kDoesTableExistParameterName{L":TABLENAME"};
+        /**
+         */
+        static constexpr inline wstring_view kDoesTableExistParameterName{L":TABLENAME"sv};
+
+    public:
+        /**
+         */
         enum NonStandardSQL {
             // variable name for parameter is :TABLENAME
             // @todo docs return
