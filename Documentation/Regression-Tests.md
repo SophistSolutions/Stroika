@@ -31,6 +31,15 @@ checkin from one spot.
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
+- \$TEST_TARGET=MacOS_XCode12-m1
+
+  (takes about 1 HR)
+
+  ```bash
+  MACHINE=lewis-Mac2 USE_TEST_BASENAME=MacOS_XCode12-m1 \
+      ./ScriptsLib/RunRemoteRegressionTests
+  ```
+
 - \$TEST_TARGET=Windows_VS2k17
 
   (on windows bash shell run; takes about 8 HRs)
