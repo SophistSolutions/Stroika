@@ -729,7 +729,8 @@ sub	SetDefaultForCompilerDriver_
 	# and rebuilt stroika, I found XERCES automatically did something like this to force this
 	# setting. But rest of my code didn't and I got compiler warnings. So try to find the best
 	# setting to force to, and allow external settings to override.
-	if (!defined $MACOSX_DEPLOYMENT_TARGET && "$^O" eq "darwin") {
+	# `uname -m` eq 'arm64' checks if OS is running new m1 hardware (only time this appears needed) --LGP 2021-08-11
+	if (!defined $MACOSX_DEPLOYMENT_TARGET && "$^O" eq "darwin" && trim(`uname -m`) eq 'arm64') {
 		my $osVersion = trim (`/usr/bin/sw_vers | grep ProductVersion | awk 'END {print \$2}'`);
 		($osVersion =~ /^((\d+)\.(\d+))/gm);	# force convert to 2-digit form as I've seen in examples but not sure makes much sense
 		$MACOSX_DEPLOYMENT_TARGET = $1;
@@ -2425,7 +2426,7 @@ sub	WriteConfigFile_
 	print (OUT "    <qFeatureFlag_LZMA>$FEATUREFLAG_LZMA</qFeatureFlag_LZMA>\n");
 	print (OUT "    <qFeatureFlag_WIX>$FEATUREFLAG_WIX</qFeatureFlag_WIX>\n");
 
-	if ($MACOSX_DEPLOYMENT_TARGET ne "") {
+	if (defined $MACOSX_DEPLOYMENT_TARGET && $MACOSX_DEPLOYMENT_TARGET ne "") {
 		print (OUT "    <MACOSX_DEPLOYMENT_TARGET>$MACOSX_DEPLOYMENT_TARGET</MACOSX_DEPLOYMENT_TARGET>\n");
 	}
 	if ($HasMakefileBugWorkaround_lto_skipping_undefined_incompatible == true) {
