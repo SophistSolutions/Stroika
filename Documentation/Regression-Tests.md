@@ -31,12 +31,12 @@ checkin from one spot.
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
-- \$TEST_TARGET=MacOS_XCode12-m1
+- \$TEST_TARGET=MacOS_XCode12_m1
 
   (takes about 1 HR)
 
   ```bash
-  MACHINE=lewis-Mac2 USE_TEST_BASENAME=MacOS_XCode12-m1 \
+  MACHINE=lewis-Mac2 USE_TEST_BASENAME=MacOS_XCode12_m1 \
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
