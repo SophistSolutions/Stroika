@@ -39,6 +39,7 @@ especially those they need to be aware of when upgrading.
   - MacOS Builds
     - gsed not /usr/local/opt/gnu-sed/libexec/gnubin/sed
     - support checking for gsed on MacOS X
+    - configuraiton changes to allow build for m1
   - CI Systems
     - switched macos- github action runner from macos-10.15 to macos-latest (still maps to same thing but will switch to macos-11l when github actions support it)
   - Debugger
