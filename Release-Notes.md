@@ -7,830 +7,120 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 2.1b13 start relnotes
-
-#if 0
-commit 79203f809368ded7f727242689339d9b6a92e29e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jun 17 18:45:23 2021 +0100
-
-    start dev 2.1b13x
-
-commit 11197572cf2cfede1f5fb465972c2527c7272c4c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jun 17 23:45:21 2021 +0100
-
-    ReadMe docs
-
-commit 229e9978c6eeb3089b43fe1840e7be91bd2571b1
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 18 14:52:28 2021 +0100
-
-    mostly cosmetic cleanups; and a few static const /constexpr inline cleanups(must test on vs2k17)
-
-commit 52f77557e81b99e377d55962d6a9668cd2edee7b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 18 14:53:02 2021 +0100
-
-    cosmeitc
-
-commit aa5c2b626b4b0bed9df52b9fa7a00625f3e34535
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 18 14:56:38 2021 +0100
-
-    clang-format
-
-commit 0af5a5516636d25fbfaa9197182aec5abe0354e0
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jun 19 01:38:59 2021 +0100
-
-    cosmetic (uniform init)
-
-commit 8968a5dc9979eeeb61348afed4becd41b8952bc3
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jun 19 01:40:12 2021 +0100
-
-    added link to POST of updated reproduction instructions for bug report
-    qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
-
-commit c39012915323e9453b9a904a138b3b75f7efd126
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jun 19 04:15:35 2021 +0100
-
-    cleanups (uniformly initialized)
-
-commit 528a992435d9ba70b8e7fb8e2e27089dbc73c984
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jun 19 22:17:16 2021 -0400
-
-    also build sophistsolutionsinc/stroika-dev-1804
-
-commit f4c1f7c2fa8d64878c335157f973008bb359090c
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date: Sun Jun 20 15:02:06 2021 -0400
-
-    fixced dockerfile for centos8 (change in name of cmake package)
-
-commit 760d20ad94c8bf1a797a9e29a2264473b57d6ade
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jun 21 14:53:16 2021 +0100
-
-    support Stroika-Dev-1804
-
-commit 040f937b1ee642c55bf5651e62b799b7fef0d08d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jun 21 14:53:51 2021 +0100
-
-    fixed small bug in openeing SQLite exception hanlding where we used variable after delete (caught by asan)
-
-commit 4d7e452331ff2bc8cdc51
-commit 46367c4b6f3be66586d7ef70e0b630ef67651212
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jun 23 15:20:23 2021 +0100
-
-    cleaned up semantics of SQLite Statement::GetAllRows() and added GetRemainingRows() method
-
-commit a99e0258db0305d1dd6632e2f0e2154a88bdb813
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jun 23 21:53:31 2021 +0100
-
-    refactored Database/SQL code - down one level - into SQL folder/namespace (affects SQLite and ODBCClient and related code - **old names deprecated**
-
-commit da08cc4070cbb5589915ea7f1eecc7ebbbcbd899
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jun 23 21:57:32 2021 +0100
-
-    update vs2k19 project for sql refactoring
-
-commit f84eeb99cb5b57f7d578ef434a83a98f35a542fa
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date: Wed Jun 23 20:15:18 2021 -0400
-
-    react to SQL refactoring
-
-commit 95045c07579eabdfc9a8dcbc3e0f310278715bf9
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date: Wed Jun 23 20:28:46 2021 -0400
-
-    more SQL refactoring
-
-commit 77499d12dd258a5f7dbf423986e8f78a8db1bbb4
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date: Wed Jun 23 21:15:23 2021 -0400
-
-    react to SQL namespace changes
-
-commit eee7b427597bbb78578bbe53b26713e55fe484c4
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jun 24 02:46:41 2021 +0100
-
-    new abstraction SQL::Connection (used in SQL::SQLite::Connection as base-class)
-
-commit 53819e3a550b76bf546eedf0d9369a5f35b5f5d0
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date: Wed Jun 23 21:47:50 2021 -0400
-
-    quasi-namespace desgin pattern dcos
-
-commit 4db3bbdc841144bc63077c28911b77db4a19520f
-Merge: 53819e3a5 eee7b4275
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date: Wed Jun 23 21:47:55 2021 -0400
-
-    Merge branch 'v2.1-Dev' of github.com:SophistSolutions/Stroika into v2.1-Dev
-
-commit 5bbfaa9d7b31a90b6b317ef161f04738029e293d
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date: Thu Jun 24 09:26:22 2021 -0400
-
-    more SQL cleanups
-
-commit b27b11a84452402344741e109e4b1f7d3e2fb367
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jun 24 16:41:29 2021 +0100
-
-    refactored alot of SQLite::Statement logic into new SQL::Statement, and have SQLite::Statement inherit
-
-commit 3b1de95719de5e3cfbb6e5b43ea867d9e597e994
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jun 24 17:43:49 2021 +0100
-
-    minor sqlite code cleanup
-
-commit 347318657c75106bcf564072dde93a848ca7eeae
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jun 24 19:22:37 2021 +0100
-
-    refactored SQLite Transaction into SQL::Transaction
-
-commit 9ff3510e72f19f072ead06432b22947048c53939
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jun 24 20:56:24 2021 +0100
-
-    SQL::Connection::Ptr now has mkStatement and mkTransaction factory functions
-
-commit e96de63752dd818cc78c151ff3c4f5c2d8dc40fc
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jun 24 21:44:12 2021 +0100
-
-    Early draft SQL ORM TableConnection class template
-
-commit 446f6c366db79b2c0e9150bea13fac2c586864a8
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jun 24 22:09:38 2021 +0100
-
-    tweaks to Library/Sources/Stroika/Foundation/Database/SQL/ORM/TableConnection
-
-commit c944dc452461c0cd58d9987dda57fd275a1c98e8
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 25 15:21:18 2021 +0100
-
-    Connection::IRep muse use PUBLIC enable_shared_from_this git diff --staged!
-
-commit 3f5f05fa45de1799a2f0eeb620ba34a1cd53b2d7
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 25 15:51:04 2021 +0100
-
-    small cleanups to ORM TableConnection class (cache statements)
-
-commit 973f8f218a6bcdfcdd5e44e55bdd0f94d979942c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 25 16:10:45 2021 +0100
-
-    threadsafety checks/docs for TableConnection
-
-commit b1dfec53872c32f01520afea90c57cad08434344
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 25 16:23:55 2021 +0100
-
-    cosmetic
-
-commit 6bbba3c3932bb5cb9025106e6f3308e6849838a5
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 25 16:47:12 2021 +0100
-
-    make format/fix typos
-
-commit cc06c4ec5f8bb06f2c17316f7af10b74b6b39f0a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 25 18:27:05 2021 +0100
-
-    TableConnection - added move CTOR and fixed typo
-
-commit 569387b8f436c64ae0412f677a1aeba67a451f01
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jun 25 22:20:19 2021 +0100
-
-    InternetAddress::As<vector<>> templates now documented to allow cases were size not known (and return empty vector)
-
-commit 5ca69ecdf40c597cc8410fbb066fcf6e09766011
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jun 26 03:56:02 2021 +0100
-
-    Comments/todo
-
-commit 94049d500d7de32b125c3f01bef7ef696a5f35fa
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jun 26 04:22:52 2021 +0100
-
-    add missing include
-
-commit 97aea6ef508fec98982e475d3ddc062ffce86455
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jun 26 04:38:38 2021 +0100
-
-    small fixes to new ORM code (stricly c++ gcc and other bugfixes)
-
-commit 0e5f9a9a57af625feb1415f53c61f8da2dcd210e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jun 26 05:03:09 2021 +0100
-
-    Cosmetic
-
-commit 0614c3b2f897faa3e9b414ee4f515d91dbd78e2c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jun 26 13:35:57 2021 +0100
-
-    fixed template issue noticed by clang
-
-commit c27b4d09d178c8677cc15a3ec97b36b2295d03d5
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jun 27 01:21:03 2021 +0100
-
-    tweaks to ORM TableConnectionTraits
-
-commit 0988d4714a17e94a86f09bf3e21f30f82894a8b8
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jun 27 04:58:27 2021 +0100
-
-    fixed minor typo
-
-commit 99aa386c1252fc702518e99a58a26c0daf42eb7c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jun 28 22:04:10 2021 +0100
-
-    Added Set<>::Intersects() overloads
-
-commit 939a9bb947a7b702faefc3a88d4340a613dfc726
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jun 28 22:17:58 2021 +0100
-
-    Set Intersect/Insersection cleanups
-
-commit fb39b193a428b32c2cfbf1ab9e29a4768fba588d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jun 29 02:14:29 2021 +0100
-
-    more Set<> Union Intersection etc overloads
-
-commit 65e2f9b691828e0a63ad1bcd056ae1fc3bc31299
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jun 29 02:17:38 2021 +0100
-
-    more cleanups to Set (DIfference0 etc overloads
-
-commit 22c42f40ad6d5f46f6c6c6d80a1e9e33b8cb186c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jun 29 15:28:48 2021 +0100
-
-    Tweak Set<>::Difference
-
-commit 2a6829c020f7e827966fdce3ebfd339e7b2f213f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jun 29 15:39:38 2021 +0100
-
-    Comments
-
-commit 8bd11ba8fb1ec422e760e4079975c91952568607
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jul 6 14:55:28 2021 +0100
-
-    fixed VariantValue 0 cibvertbool to int support to being allowed (used to throw)
-
-commit 7c821aa9f42d3b0e368a7d7464e950ce491f3747
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jul 6 15:15:13 2021 +0100
-
-    ORM schmea code - fIsKeyField and fNotNull now boolean instead of optional<bool>; better error logging; and use INTEGER not INT with autoincrement (for sqlite)
-
-commit 4a58e1e3060cd659682b6ab880d9b1ee62cc75ff
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 7 14:34:43 2021 +0100
-
-    ORM::Schema::Table::Map to/from DB - improved dbgtraces, and fixed issues with mapping elts whose name differs in table vs struct
-
-commit 24ff94f8113fce36a6156fc289c1e0e788523242
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 7 14:39:52 2021 +0100
-
-    draft of RegressionTest3_sqlite_EmployeesDB_with_ORM_and_threads_ regtest
-
-commit d31232449c0ff327919840d918c90feb55436641
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date: Wed Jul 7 10:04:08 2021 -0400
-
-    fixed typos
-
-commit 6b78373a97cbe243c0a0e8c3fa717e6150d22d22
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date: Wed Jul 7 10:04:21 2021 -0400
-
-    vscode settings
-
-commit 36e263b96924aaf248c85559e838905100744ef3
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jul 8 09:00:42 2021 -0400
-
-    vs2k19 16.10.3 in docker container
-
-commit 96426d98329d31aa54145842335f8064a777bc42
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jul 8 15:51:18 2021 +0100
-
-    todo docs
-
-commit 857854cc8945b8ad7ecce5e9c43b7ed854a8beea
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jul 8 15:52:14 2021 +0100
-
-    docs
-
-commit 06a2f6aad63cc33947402ae5a930f37d9a905ec4
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jul 8 15:52:34 2021 +0100
-
-    docs
-
-commit 42212d596fb2422bfb94ccbe7479f9dc15ff2c17
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jul 8 15:54:53 2021 +0100
-
-    SQLIte sample now has ORMEmployeesDB sample code
-
-commit c59f3ad86d706a8f09baa7feb906d3499d09221d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jul 8 23:49:22 2021 +0100
-
-    switched macos- github action runner from macos-10.15 to macos-latest (still maps to same thing but will switch to macos-11l when github actions support it)
-
-commit 21cbc0e753fb9a18c3d72229d5f3e5def9ca871f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jul 9 15:51:53 2021 +0100
-
-    https://stroika.atlassian.net/browse/STK-741 valgrind helgrind suppression
-
-commit cdf8e133e61573952536cfe7967a4f2d257a72e0
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jul 9 15:56:53 2021 +0100
-
-    tweaked BWA for https://stroika.atlassian.net/browse/STK-741
-
-commit 25f5988135a82bf31aeb9db2d02eb910d6f7593b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jul 9 16:11:11 2021 +0100
-
-    tweaked BWA for https://stroika.atlassian.net/browse/STK-741 (sporadic so got wrong BWA)
-
-commit 8b39878a8c04b5b995d2e59e6eebc524db5d3939
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jul 9 16:39:29 2021 +0100
-
-    tweaked BWA for https://stroika.atlassian.net/browse/STK-741 (sporadic so got wrong BWA)
-
-commit 10de1a62557db477cd11e93ed5c650e9537aa7fa
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jul 10 02:49:00 2021 +0100
-
-    TableConnection<> now has readonly properties for things like Connection, tableSchema, and objectVariantMapper
-
-commit 0e2a617f8cfb46991a0bcf86c408e4b9ef80652a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jul 10 03:36:02 2021 +0100
-
-    Fixed bug with SQL::Transaction (move nulls ptr)
-
-commit cbee55c23c2a73a1bc532dddbd9ed960fd264bf3
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jul 10 03:45:16 2021 +0100
-
-    Tweak SQL::Statement object - asserts on methods called that rep not null
-
-commit c109c783e694e7d1cbdb52efb0fda49856d1c335
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jul 10 03:48:44 2021 +0100
-
-    cosmetic
-
-commit de860dd70c02125e0817d02e614d191226f27f05
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Jul 11 16:49:33 2021 +0100
-
-    Added datetime visualiizers for VisualStudio-Stroika-Foundation-Debugger-Template.natvis
-
-commit 70b1be0ff9b87e620700ea78ebe2195272f70a5c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jul 13 14:57:52 2021 +0100
-
-    docs
-
-commit a272158582a0ec9484758a0b73ed310d00a2d397
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jul 13 15:49:20 2021 +0100
-
-    qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy bug define so .natvis files work better for some types in VS2k19
-
-commit cd904e5ad838bac958d7b6cf534f409253320bb4
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jul 13 15:57:44 2021 +0100
-
-    Comments
-
-commit e2fc6a98812462c487fdc1da90fea14d552c6086
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 14 16:37:24 2021 +0100
-
-    docs
-
-commit cfb8dd592f95a7125ec1816f922799040c12f07b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 14 16:42:23 2021 +0100
-
-    docs
-
-commit 5b3230eafba76521bf00a43ad6fb85e042997a3a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 14 16:46:52 2021 +0100
-
-    docs
-
-commit 842f045fc6134a72c1443895063788c19fdb5238
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Jul 14 16:47:40 2021 +0100
-
-    docs
-
-commit bca30baebdc1ae51097fd1f1806c3ee79249aaf3
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jul 15 15:07:40 2021 +0100
-
-    **not fully backward compat**: changed default names of windows configurations from Debug-U-32 etc to Debug, Debug-x86, Debug-x86_64, etc - so a bit more like unix world
-
-commit 6b7f47fa8a5dd2003f8d2e01e54dd3111a0bb5e2
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jul 15 18:49:42 2021 +0100
-
-    new configure feature - build-by-default; can be set to always, never, or  (uname -o or if that fails uname); then in builds when no args to make specified for configuration, by default just buold GetConfigurations --all-default instead of GetConfigurations --all (except for clobber which defaults to all); idea is to amke it easier to make one directory with multiple sets of builds from differnt hosts (like WSL)
-
-commit cdaae98872b231f4bf2869d4069dcaf8b30f038b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jul 15 18:53:34 2021 +0100
-
-    use GetConfigurations --all-default in RegressionTest script
-
-commit 53a65140a5f0bc840b19053b38301e6cfe0ea5b1
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jul 15 18:56:07 2021 +0100
-
-    changed windows default configurations a bit
-
-commit 47a2178f40b73aae61915974d8f3092fa7566c7f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Jul 15 19:55:35 2021 +0100
-
-    disable Release-Logging configuration in make-default-configurations by default (still generated but not make of make all)
-
-commit ca306a17b2d4c4337f34f38e65f18d5f74aef8ad
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jul 16 00:29:38 2021 +0100
-
-    Cosemtic
-
-commit cef1f01e60e19d58cd5f490d5ce79799b25330d6
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jul 16 15:37:40 2021 +0100
-
-    test uname fix for macos
-
-commit bc5171a3c6b9e1e801719e2803c3cd257312640d
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jul 16 15:46:30 2021 +0100
-
-    Tweak makefile APPLY_CONFIGS flag
-
-commit 13f9f8deb6d8739f6bffe8970d0cb1fe92eb818c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jul 16 16:32:26 2021 +0100
-
-    docs
-
-commit 4518772fc826d42fd7363e78a7fccf39266dcd75
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jul 16 19:45:23 2021 -0400
-
-    fixed default names for runregressiontests config names to use for preformance tests
-
-commit 00233154f324fee167411a61299c19838dc189d3
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Jul 17 02:43:49 2021 +0100
-
-    cosmetic
-
-commit bce55ad71b952e24975345b71b0e62704f0e7594
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Jul 19 16:19:06 2021 +0100
-
-    fixed matching logic in ScriptsLib/GetConfigurations for --config-tags case (now --config-tags x86 works correctly)
-
-commit fb2e34751f923b6b7ca7d940a635105d13e566f4
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jul 20 03:28:07 2021 +0100
-
-    first (placeholder) draft of SQL::EngineProperties
-
-commit 50af7fdde08e59a767b4976d02179ac8fb578d57
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Jul 20 03:31:52 2021 +0100
-
-    fixup SLN for recent change in names for vs2k19 configs
-
-commit b3d34165719b5eb027b24f431cb5cced51d389de
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Jul 30 14:24:41 2021 +0100
-
-    cosmetic, and cleanup exceptions in Frameworks/SystemPerformance/
-    Support/WMICollector
-
-commit 7cc91b3c2bc4e80931cb718dfe6c7315f828730e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Aug 4 17:24:05 2021 -0400
-
-    on crapple machine, use gsed not /usr/local/opt/gnu-sed/libexec/gnubin/sed
-
-commit 9b35695f3f8cbf55d1d216aae22c525c2a866923
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Aug 4 23:16:58 2021 +0100
-
-    support checking for gsed on MacOS X
-
-commit a772647759effcf4f05a83a258a5e3918b598296
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Aug 6 21:38:06 2021 -0400
-
-    use latest vs2k19 VS_16_10_4 in docker contianer
-
-commit 37a1f2caf38fc593a98646bab81f609e65c10f1f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Aug 7 03:09:23 2021 +0100
-
-    start refactor of ODBCClient code to use Database::SQL::Connection
-
-commit 37c28f1b4ca24173f114a96f9dd3a34842067297
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Aug 7 03:13:42 2021 +0100
-
-    Cosmetic
-
-commit 8790bd46237354ef7c3664e4ac0f318dea725b72
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Aug 7 13:51:22 2021 +0100
-
-    cleanup ODBC database support (still quite incomplete/untested) but at least now built on new Connection abstract API (so works with ORM code)
-
-commit 1144ccccd2c3e2ee6d43b0abd8f47f9c7a840142
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Aug 7 15:09:17 2021 +0100
-
-    cosemtic
-
-commit d5ec4b305bb97df3b670e5de5eb4d718d976ea9f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sat Aug 7 15:29:52 2021 +0100
-
-    Renamed Samples/SQLite to Samples/SQL (in preps for generization of that sample)
-
-commit 90605a648538ff1dc664da3ab3f134a896ffd438
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Aug 8 02:35:02 2021 +0100
-
-    new module Database/SQL/ORM/Versioning, and used new ProvisionForVersion () in the samples, to avoid dbINit arg to SQLIte::Connection::New() - instead separate provision of DB after connection created
-
-commit 83f616e8540d3c55407d63ed2cea165e1e95a157
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Aug 8 02:37:10 2021 +0100
-
-    cosmetic
-
-commit 028d278a17d6bdce09f0f0eba28a818cbe7e0d83
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Aug 8 02:50:54 2021 +0100
-
-    SQLite::Connection::New ()/2 deprecated (use provisionveriosn)
-
-commit ff3a2ff7bade3741d47927da92f483f24bf51bfa
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Aug 8 16:20:35 2021 +0100
-
-    refactored SQLLite sample into SQL sample, just using SQL abstract API, and factories (and so dependency on SQLite very narrow) - still cannot really test ODBC/based tests, but moved in that direction code organizaiton wise
-
-commit 1c8746c101de34da310578bf7f8e528e462fa777
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Aug 8 16:30:24 2021 +0100
-
-    documetnation
-
-commit 13781e33bcc440ba50cf03ca2bd00789da58e0bb
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Sun Aug 8 16:45:24 2021 +0100
-
-    SQL sample - write DBs to tmmp directory - not current directory
-
-commit 21279d3d47f1255e7b9ea035d2d3d5b019d12fd8
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date: Sun Aug 8 12:09:31 2021 -0400
-
-    fixed typos
-
-commit e31ccb54960ff1f93855090931de662cc3cf06b4
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Aug 9 02:44:50 2021 +0100
-
-    sqlite 3.36.0
-
-commit 3029070dab27e2185b1d4d2b684c346ce6a49092
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Aug 9 02:45:22 2021 +0100
-
-    notes on openssl 3 beta2 test - not working
-
-commit f1d179b1d7f46c1ac0a7170c11818151000aaa90
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Aug 9 03:14:22 2021 +0100
-
-    cosmetic
-
-commit 3bf8b832acb76ddfe09fdea1e7c9c2b077f35742
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Aug 9 14:42:42 2021 +0100
-
-    fixed regressiontest for SQLite sample app name
-
-commit e42674fab800fd8f46520e7f6ff92c48f0f20995
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Aug 9 14:50:41 2021 +0100
-
-    cosmetic
-
-commit a728371d561f21718cc47ac62af88900c099b13f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Aug 9 15:41:47 2021 +0100
-
-    regtression tests react to new SQL::ORM::ProvisionForVersion and deprecated overload of SQLite::Connection::New
-
-commit 30ab0dee21fe4577b793ba2ad3424eff54ce5734
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Aug 9 15:47:23 2021 +0100
-
-    cosemtic
-
-commit 2db8b1fd28dda7aefa10537b2419d67aff3c514b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Aug 9 16:52:55 2021 +0100
-
-    fixed bug with handling of nullable fields in ORM::Schema::Table::MapFromDB: dont force coerece them to their target type
-
-commit 6cff1f63775aaf804828756e712e622c0718f7e6
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Aug 9 22:09:39 2021 +0100
-
-    ORM::Schema::Field change in fields - lose fNotNull and just use fRquired - means same thing - and better documented details (and suggestions for next steps)  and updated samples/regtests
-
-commit 738a66b52ac24c5c4a6663998b2f161f3a9a3b6b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Aug 9 22:31:10 2021 +0100
-
-    SQL::ORM::Schema::Field - lose fAutoIncrement and replace with fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement
-
-commit c131ab233a3042dc54c882888d6da8b54fa2c12f
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Aug 9 22:47:52 2021 +0100
-
-    comments
-
-commit e17d68d11fb94d5cc1db47c5496e1dff260f86cf
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Aug 9 22:56:11 2021 +0100
-
-    todo
-
-commit eabb8ecfeca26301fa2dd23bd617bcf80846695e
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Mon Aug 9 23:06:25 2021 +0100
-
-    adjust samples to accomodate recent ORM code change
-
-commit b7f5d92921abbe61fd672f1102c3f0f24fbb32f9
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Aug 10 02:49:09 2021 +0100
-
-    SQL ORM Schema name cleanups
-
-commit 9bc63facf260ac79d61415dcd94225e0fce89da6
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Aug 10 13:50:13 2021 +0100
-
-    cosmetic+/fix typo
-
-commit 83e1e412ed99eff005cdb1cb57a7402d486fa9e0
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Aug 10 14:00:25 2021 +0100
-
-    todo comments
-
-commit 45bda3a0f1cea8faa72f3a291895a136374fde76
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Aug 10 14:42:29 2021 +0100
-
-    libcurl 7.78.0
-
-commit 880195ee66f0e49fe225928e8710f7ea65203c6a
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date: Tue Aug 10 15:35:28 2021 -0400
-
-    make defualt-configurations now uses --only-if-has-compiler
-
-commit dbe43e17bdd3085833336f93359e25155dc6075f
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date: Tue Aug 10 15:43:01 2021 -0400
-
-    (for ubuntu 18.04) - if you do make default-configurations - configure will default to gcc-8 instead of gcc (which wont work)
-
-commit 49c5a00ab9dc71da8eb2cacb430e4a7dd3a7ece9
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Aug 10 20:57:07 2021 +0100
-
-    cosmetic and (not backward compatlable) ORM name changes
-
-commit 1749aa0dd5c51aa6c6a4da82c16e5d1c131f6c85
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Tue Aug 10 22:55:57 2021 +0100
-
-    tweak rule for install-realpath for macos xcode fresh installs
-
-commit e7682829cf8717f356ff8d4c76781beae0191eaa
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date: Wed Aug 11 09:19:06 2021 -0400
-
-    cosmetic
-
-commit ff25b6be9d793f580614b6dc37a591adce0075a4
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date: Wed Aug 11 09:19:46 2021 -0400
-
-    workarspace file
-
-commit 465d456d117c570103f39adcf529694eaf6c54ea
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Aug 11 17:19:41 2021 +0100
-
-    Configure support for MACOSX_DEPLOYMENT_TARGET - with sensible (but not great) defaulting. Seems needed to build for m1 macos processor machine
-
-commit ab3e60b461bb19a455a0eedc2f6cd9db9a547517
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Wed Aug 11 12:27:28 2021 -0400
-
-    fixed typo
-
-commit aabe05750698ab0f30cfa77b0e73fa49032b45c6
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Aug 12 01:28:03 2021 +0100
-
-    small fix to MACOSX_DEPLOYMENT_TARGET configure support
-
-commit bbf5be49f1f5094a44f0a8edf32ff824d0a9a996
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Aug 12 02:00:25 2021 +0100
-
-    docs cleanups; and notes for issues with building on m1 MacOS
-
-commit f9df06563da61f873b7b5a6ea24a2927b9db1e5a
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Aug 12 03:10:38 2021 +0100
-
-    docs
-
-commit d2fc9b323df9ecc089811e69df3d668038c3875c
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Thu Aug 12 14:00:14 2021 +0100
-
-    docs
-
-commit 8faaf5ab8af6a220eb687bc6c01972499831336b
-Author: Lewis Pringle <lewis@sophists.com>
-Date: Fri Aug 13 00:15:29 2021 +0100
-
-    release process docs
-
-#endif
+### 2.1b13 {2021-08-15}
+
+#### TLDR
+
+- Database (SQL) refactoring - new SQL namespace, improvements to ORM code, versioning (still alpha), ODBC (not usable yet)
+- Support MacOSX M1 machines
+- New Configuration names on Windows (Debug, Debug-x86_64, etc)
+
+#### Change Details
+
+- Build System And Tools
+  - Build Scripts
+    - use GetConfigurations --all-default in RegressionTest script
+  - Compiler versions
+    - use vs2k19 VS_16_10_4 in docker contianer
+  - compiler bug defines
+    - qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy (updated link)
+    - qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy bug define so .natvis files work better for some types in VS2k19
+  - Configurations
+    - **not fully backward compat**: changed default names of windows configurations from Debug-U-32 etc to Debug, Debug-x86, Debug-x86_64, etc - so a bit more like unix world
+    - new configure feature - build-by-default; can be set to always, never, or (uname -o or if that fails uname); then in builds when no args to make specified for configuration, by default just buold GetConfigurations --all-default instead of GetConfigurations --all (except for clobber which defaults to all); idea is to amke it easier to make one directory with multiple sets of builds from differnt hosts (like WSL)
+    - disable Release-Logging configuration in make-default-configurations by default (still generated but not make of make all)
+    - fixed matching logic in ScriptsLib/GetConfigurations for --config-tags case (now --config-tags x86 works correctly)
+    - Configure support for MACOSX_DEPLOYMENT_TARGET - with sensible (but not great) defaulting. Seems needed to build for m1 macos processor machine
+    - make defualt-configurations now uses --only-if-has-compiler
+    - (for ubuntu 18.04) - if you do make default-configurations - configure will default to gcc-8 instead of gcc (which wont work)
+  - Docker Containers
+    - Build more containers for Stroika-Dev-{1804,2004,2010}
+    - fixed dockerfile for centos8 (change in name of cmake package)
+  - MacOS Builds
+    - gsed not /usr/local/opt/gnu-sed/libexec/gnubin/sed
+    - support checking for gsed on MacOS X
+  - CI Systems
+    - switched macos- github action runner from macos-10.15 to macos-latest (still maps to same thing but will switch to macos-11l when github actions support it)
+  - Debugger
+    - Added datetime visualiizers for VisualStudio-Stroika-Foundation-Debugger-Template.natvis
+- Documentation
+  - quasi-namespace design pattern
+  - docs cleanups; and notes for issues with building on m1 MacOS
+- Foundation Library
+  - Containers
+    - Added Set<>::Intersects(), Intersect/Insersection,Difference cleanups
+  - Database
+    - Refactor SQL code into Database::SQL namespace (includes ORM, SQLite, ODBC code)
+    - new abstraction SQL::Connection (used in SQL::SQLite::Connection as base-class) (and statement and transaction)
+    - SQL::EngineProperties - **new**
+    - SQL::ORM
+      - new TableConnection class (wraps connection and adds logic based on ORM Schema)
+      - schema code - fIsKeyField and fNotNull now boolean instead of optional\<bool>; better error logging; and use INTEGER not INT with autoincrement (for sqlite)
+      - ORM::Provisioning - new module Database/SQL/ORM/Versioning, and used new ProvisionForVersion () in the samples, to avoid dbInit() arg to SQLIte::Connection::New() - instead separate provision of DB after connection created
+      - fixed bug with handling of nullable fields in ORM::Schema::Table::MapFromDB: dont force coerece them to their target type
+      - ORM::Schema::Field change in fields - lose fNotNull and just use fRquired - means same thing - and better documented details (and suggestions for next steps) and updated samples/regtests
+      - SQL::ORM::Schema::Field - lose fAutoIncrement and replace with fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement
+    - SQL::SQLite
+      - many cleanups / **old names deprecated**
+      - cleaned up semantics of SQLite Statement::GetAllRows() and added GetRemainingRows() method
+      - SQLite::Connection::New ()/2 deprecated (use provisionveriosn)
+    - SQL::ODBC
+      - refactor of ODBCClient code to use Database::SQL::Connection and renamed to SQL::ODBC
+      - Not enough there to really work/use, but enough so you could do a simple connection to ODBC database but untested
+  - DataExchange
+    - fixed VariantValue convert to int support to being allowed (used to throw)
+  - IO::Network
+    - InternetAddress::As<vector<>> templates now documented to allow cases were size not known (and return empty vector)
+- Samples
+  - SQL (renamed from SQLite sample)
+    - refactored to use new connection API - still only runs with SQLite, but now COULD be used with ODBC connections too
+    - sample now has ORMEmployeesDB sample code
+- Tests
+  - draft of RegressionTest3*sqlite_EmployeesDB_with_ORM_and_threads* regtest
+  - <https://stroika.atlassian.net/browse/STK-741> valgrind helgrind suppression
+- ThirdPartyComponents
+  - libcurl
+    - use libcurl 7.78.0 (EXCEPT ON MACOS - where its broken so use 7.76.1)
+  - openssl
+    - notes on openssl 3 beta2 test - not working
+  - SQLite
+    - sqlite 3.36.0
+
+#### Release-Validation
+
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10, 11 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12; XCode: 12 }
+  - MSVC: { 15.9.36, 16.10.4 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - version 21H1
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v1
+  - MacOS
+    - 11.4 (Big Sur) - both running x86_64 and arn64/m1 chips
+  - Linux: { Ubuntu: [18.04, 20.04, 21.04], Centos: [7, 8], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+- Build Systems
+  - [CircleCI](https://app.circleci.com/pipelines/github/SophistSolutions/Stroika)
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+  - Centos 7
+    - two warnings about locale issues, very minor
+  - VS2k17
+    - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
+  - vs2k19
+    - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
+  - WSL-Regression tests
+    - Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure
 
 ---
 
