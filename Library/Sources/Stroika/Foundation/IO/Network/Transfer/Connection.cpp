@@ -160,7 +160,7 @@ Response Connection::Ptr::Send (const Request& r)
     DeclareActivity        declaredActivity{GetOptions ().fDeclareActivities.value_or (kDeclareActivitiesFlag_Default_) ? &activity : nullptr};
     Response               response = fRep_->Send (r);
     if (not response.GetSucceeded ()) [[UNLIKELY_ATTR]] {
-        Throw (Exception (response));
+        Throw (Exception{response});
     }
     Ensure (response.GetSucceeded ());
     return response;
@@ -179,5 +179,5 @@ Connection::Ptr Transfer::Connection::New (const Connection::Options& options)
 #if qHasFeature_WinHTTP
     return Connection_WinHTTP::New (options);
 #endif
-    Execution::Throw (Execution::RequiredComponentMissingException (Execution::RequiredComponentMissingException::kIONetworkClientFactory));
+    Execution::Throw (Execution::RequiredComponentMissingException{Execution::RequiredComponentMissingException::kIONetworkClientFactory});
 }
