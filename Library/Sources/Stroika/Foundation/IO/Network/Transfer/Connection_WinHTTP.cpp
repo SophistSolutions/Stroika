@@ -318,14 +318,12 @@ RetryWithAuth:
         if (useRequest.fData.size () > numeric_limits<DWORD>::max ()) {
             Throw (Execution::Exception{L"Too large a message to send using WinHTTP"sv});
         }
-        DISABLE_COMPILER_MSC_WARNING_START (4267)
         ThrowIfZeroGetLastError (::WinHttpSendRequest (
             hRequest,
             useHeaderStrBuf.c_str (), static_cast<DWORD> (-1),
-            const_cast<byte*> (useRequest.fData.begin ()), useRequest.fData.size (),
-            useRequest.fData.size (),
+            useRequest.fData.empty () ? nullptr : const_cast<byte*> (useRequest.fData.begin ()), static_cast<DWORD> (useRequest.fData.size ()),
+            static_cast<DWORD> (useRequest.fData.size ()),
             NULL));
-        DISABLE_COMPILER_MSC_WARNING_END (4267)
 
         // this must be called before the 'body' goes out of scope!
         ThrowIfZeroGetLastError (::WinHttpReceiveResponse (hRequest, nullptr));
@@ -361,7 +359,7 @@ RetryWithAuth:
             ThrowIfZeroGetLastError (::WinHttpReadData (hRequest, outBuffer, dwSize, &dwDownloaded));
             Assert (dwDownloaded <= dwSize);
             totalBytes += dwDownloaded;
-            bytesRead.push_back (vector<byte> (outBuffer.begin (), outBuffer.begin () + dwDownloaded));
+            bytesRead.push_back (vector<byte>{outBuffer.begin (), outBuffer.begin () + dwDownloaded});
         } while (dwSize > 0);
     }
 
@@ -370,7 +368,7 @@ RetryWithAuth:
     //
     // probably should check header content-type for codepage, but this SB OK for now...
     {
-        SmallStackBuffer<byte> bytesArray (SmallStackBufferCommon::eUninitialized, totalBytes);
+        SmallStackBuffer<byte> bytesArray{SmallStackBufferCommon::eUninitialized, totalBytes};
         size_t                 iii = 0;
         for (auto i = bytesRead.begin (); i != bytesRead.end (); ++i) {
             auto v2 = *i;
@@ -380,7 +378,7 @@ RetryWithAuth:
             }
         }
         Assert (iii == totalBytes);
-        data = BLOB (bytesArray.begin (), bytesArray.end ());
+        data = BLOB{bytesArray.begin (), bytesArray.end ()};
     }
 
     // don't throw here - record the bad status in the response. The reason is we often wish to read the whole body of the response.
@@ -471,8 +469,8 @@ RetryWithAuth:
             resultSSLInfo.fIssuer = certInfo.lpszIssuerInfo;
         }
         // check dates
-        Date startCertDate = DateTime (certInfo.ftStart).GetDate ();
-        Date endCertDate   = DateTime (certInfo.ftExpiry).GetDate ();
+        Date startCertDate = DateTime{certInfo.ftStart}.GetDate ();
+        Date endCertDate   = DateTime{certInfo.ftExpiry}.GetDate ();
         Date now           = DateTime::GetToday ();
         if (now < startCertDate) {
             resultSSLInfo.fValidationStatus = Response::SSLResultInfo::ValidationStatus::eCertNotYetValid;
