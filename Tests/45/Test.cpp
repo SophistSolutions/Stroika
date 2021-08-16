@@ -54,14 +54,14 @@ namespace {
         namespace Private_ {
             void Test_1_SimpleFetch_Google_C_ (Connection::Ptr c)
             {
-                Debug::TraceContextBumper ctx ("{}::...Test_1_SimpleFetch_Google_C_");
+                Debug::TraceContextBumper ctx{"{}::...Test_1_SimpleFetch_Google_C_"};
                 Response                  r = c.GET (URI{L"http://www.google.com"});
                 VerifyTestResult (r.GetSucceeded ());
                 VerifyTestResult (r.GetData ().size () > 1);
             }
             void Test_2_SimpleFetch_SSL_Google_C_ (Connection::Ptr c)
             {
-                Debug::TraceContextBumper ctx ("{}::...Test_2_SimpleFetch_SSL_Google_C_");
+                Debug::TraceContextBumper ctx{"{}::...Test_2_SimpleFetch_SSL_Google_C_"};
                 try {
                     Response r = c.GET (URI{L"https://www.google.com"});
                     VerifyTestResult (r.GetSucceeded ());
@@ -110,7 +110,7 @@ namespace {
         }
         void DoTests_ ()
         {
-            Debug::TraceContextBumper     ctx ("{}::Test_1_SimpleConnnectionTests_");
+            Debug::TraceContextBumper     ctx{"{}::Test_1_SimpleConnnectionTests_"};
             constexpr Execution::Activity kActivity_{L"running Test_1_SimpleConnnectionTests_"sv};
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
@@ -142,7 +142,7 @@ namespace {
         namespace Private_ {
             void T1_httpbin_SimpleGET_ (Connection::Ptr c)
             {
-                Debug::TraceContextBumper ctx ("T1_httpbin_SimpleGET_");
+                Debug::TraceContextBumper ctx{"T1_httpbin_SimpleGET_"};
                 Response                  r = c.GET (URI{L"http://httpbin.org/get"});
                 VerifyTestResult (r.GetSucceeded ());
                 VerifyTestResult (r.GetData ().size () > 1);
@@ -157,7 +157,7 @@ namespace {
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wunused-label\"")
             void T2_httpbin_SimplePOST_ (Connection::Ptr c)
             {
-                Debug::TraceContextBumper ctx ("T2_httpbin_SimplePOST_");
+                Debug::TraceContextBumper ctx{"T2_httpbin_SimplePOST_"};
                 using Memory::BLOB;
 
                 static mt19937 sRNG_;
@@ -233,7 +233,7 @@ namespace {
             DISABLE_COMPILER_MSC_WARNING_END (4102);
             void T3_httpbin_SimplePUT_ (Connection::Ptr c)
             {
-                Debug::TraceContextBumper ctx ("T3_httpbin_SimplePUT_");
+                Debug::TraceContextBumper ctx{"T3_httpbin_SimplePUT_"};
                 using Memory::BLOB;
 
                 static mt19937 sRNG_;
@@ -267,7 +267,7 @@ namespace {
             }
             void DoRegressionTests_ForConnectionFactory_ (Connection::Ptr (*factory) ())
             {
-                Debug::TraceContextBumper ctx ("{}::...DoRegressionTests_ForConnectionFactory_");
+                Debug::TraceContextBumper ctx{"{}::...DoRegressionTests_ForConnectionFactory_"};
                 // Ignore some server-side errors, because this service we use (http://httpbin.org/) sometimes fails
                 try {
                     {
@@ -330,7 +330,7 @@ namespace {
         }
         void DoTests_ ()
         {
-            Debug::TraceContextBumper     ctx ("{}::Test_2_SimpleFetch_httpbin_");
+            Debug::TraceContextBumper     ctx{"{}::Test_2_SimpleFetch_httpbin_"};
             constexpr Execution::Activity kActivity_{L"running Test_2_SimpleFetch_httpbin_"sv};
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
@@ -380,7 +380,7 @@ namespace {
         }
         void DoTests_ ()
         {
-            Debug::TraceContextBumper     ctx ("{}::Test3_TextStreamResponse_");
+            Debug::TraceContextBumper     ctx{"{}::Test3_TextStreamResponse_"};
             constexpr Execution::Activity kActivity_{L"running Test3_TextStreamResponse_"sv};
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
@@ -428,7 +428,7 @@ namespace {
         }
         void DoTests_ ()
         {
-            Debug::TraceContextBumper     ctx ("{}::Test_4_RefDocsTests_");
+            Debug::TraceContextBumper     ctx{"{}::Test_4_RefDocsTests_"};
             constexpr Execution::Activity kActivity_{L"running Test_4_RefDocsTests_"sv};
             Execution::DeclareActivity    declareActivity{&kActivity_};
             try {
@@ -459,7 +459,7 @@ namespace {
     namespace Test_5_SSLCertCheckTests_ {
         void DoTests_ ()
         {
-            Debug::TraceContextBumper ctx ("{}::Test_5_SSLCertCheckTests_");
+            Debug::TraceContextBumper ctx{"{}::Test_5_SSLCertCheckTests_"};
 
             // Note, this code used to use https://testssl-valid.disig.sk/index.en.html, but that site started failing (bad cert) around 2020-02-01,
             // so switched to https://badssl.com/ (which seems to have good and bad ssl certs)
@@ -607,7 +607,7 @@ namespace {
         }
         void DoTests_ ()
         {
-            Debug::TraceContextBumper     ctx ("{}::Test_6_TestWithCache_");
+            Debug::TraceContextBumper     ctx{"{}::Test_6_TestWithCache_"};
             constexpr Execution::Activity kActivity_{L"running Test_6_TestWithCache_"sv};
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
@@ -675,7 +675,7 @@ namespace {
         }
         void DoTests_ ()
         {
-            Debug::TraceContextBumper     ctx ("{}::Test_7_TestWithConnectionPool_");
+            Debug::TraceContextBumper     ctx{"{}::Test_7_TestWithConnectionPool_"};
             constexpr Execution::Activity kActivity_{L"running Test_7_TestWithConnectionPool_"sv};
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
