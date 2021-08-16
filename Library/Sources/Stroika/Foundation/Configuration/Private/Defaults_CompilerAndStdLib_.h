@@ -433,6 +433,17 @@ c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.1
 
 #endif
 
+#ifndef qCompilerAndStdLib_ASAN_windows_http_badheader_Buggy
+
+#if defined(_MSC_VER)
+// verified broken in _MSC_VER_2k19_16Pt10_
+#define qCompilerAndStdLib_ASAN_windows_http_badheader_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt10_)
+#else
+#define qCompilerAndStdLib_ASAN_windows_http_badheader_Buggy 0
+#endif
+
+#endif
+
 /*
 1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\Base64.cpp(60): error C2440: 'initializing': cannot convert from 'int' to 'std::byte'
 1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\Base64.cpp(60): note: Conversion to enumeration type requires an explicit cast (static_cast, C-style cast or function-style cast)

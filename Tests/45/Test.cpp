@@ -531,28 +531,36 @@ namespace {
 
             // BAD SSL SITE
             const URI kBad_Expired_Site_{L"https://expired.badssl.com/"}; // see https://badssl.com/ - there are several other bads I could try
-            try {
-                o.fFailConnectionIfSSLCertificateInvalid = true;
-                T1_get_ignore_SSLNotConfigured (o, kBad_Expired_Site_);
-                VerifyTestResult (false); // getting here means our check for invalid cert didn't work, so thats bad
-            }
-            catch (...) {
-                DbgTrace (L"Good - this should fail");
-            }
-            try {
-                o.fFailConnectionIfSSLCertificateInvalid = false;
-                T1_get_ignore_SSLNotConfigured (o, kBad_Expired_Site_);
-                // Getting here is fine - we should be able to ignore the invalid CERT
-            }
-            catch (const Execution::RequiredComponentMissingException&) {
-#if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
-                // OK to ignore. We don't want to call this failing a test, because there is nothing to fix.
-                // This is more like the absence of a feature beacuse of the missing component.
-                DbgTrace (L"ignore RequiredComponentMissingException cuz no curl/winhttp");
+            
+#if qCompilerAndStdLib_ASAN_windows_http_badheader_Buggy
+            bool doTest = not Debug::kBuiltWithAddressSanitizer;
+#else
+            bool doTest = true;
 #endif
-            }
-            catch (...) {
-                Stroika::TestHarness::WarnTestIssue (Characters::Format (L"badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: %s", Characters::ToString (current_exception ()).c_str ()).c_str ());
+            if (doTest) {
+                try {
+                    o.fFailConnectionIfSSLCertificateInvalid = true;
+                    T1_get_ignore_SSLNotConfigured (o, kBad_Expired_Site_);
+                    VerifyTestResult (false); // getting here means our check for invalid cert didn't work, so thats bad
+                }
+                catch (...) {
+                    DbgTrace (L"Good - this should fail");
+                }
+                try {
+                    o.fFailConnectionIfSSLCertificateInvalid = false;
+                    T1_get_ignore_SSLNotConfigured (o, kBad_Expired_Site_);
+                    // Getting here is fine - we should be able to ignore the invalid CERT
+                }
+                catch (const Execution::RequiredComponentMissingException&) {
+#if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
+                    // OK to ignore. We don't want to call this failing a test, because there is nothing to fix.
+                    // This is more like the absence of a feature beacuse of the missing component.
+                    DbgTrace (L"ignore RequiredComponentMissingException cuz no curl/winhttp");
+#endif
+                }
+                catch (...) {
+                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: %s", Characters::ToString (current_exception ()).c_str ()).c_str ());
+                }
             }
         }
     }
