@@ -72,6 +72,7 @@ namespace {
         {
             ThrowIfZeroGetLastError (fHandle);
         }
+        AutoWinHINTERNET_ () = delete;
         AutoWinHINTERNET_ (const AutoWinHINTERNET_&) = delete;
         ~AutoWinHINTERNET_ ()
         {
@@ -136,7 +137,7 @@ namespace {
         (void)::WinHttpQueryHeaders (hRequest, dwInfoLevel, pwszName, WINHTTP_NO_OUTPUT_BUFFER, &size, lpdwIndex);
         DWORD error = GetLastError ();
         if (error == ERROR_INSUFFICIENT_BUFFER) {
-            SmallStackBuffer<wchar_t> buf (SmallStackBuffer<wchar_t>::eUninitialized, size + 1);
+            SmallStackBuffer<wchar_t> buf{SmallStackBuffer<wchar_t>::eUninitialized, size + 1};
             (void)::memset (buf, 0, buf.GetSize ());
             ThrowIfZeroGetLastError (::WinHttpQueryHeaders (hRequest, dwInfoLevel, pwszName, buf, &size, lpdwIndex));
             return buf.begin ();
