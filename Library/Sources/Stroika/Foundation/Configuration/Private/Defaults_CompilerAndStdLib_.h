@@ -433,6 +433,7 @@ c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.1
 
 #endif
 
+// First broken vs2k19 16.11.0, but seems to have same MSC_VER, so lump in with previous compiler
 #ifndef qCompilerAndStdLib_ASAN_windows_http_badheader_Buggy
 
 #if defined(_MSC_VER)

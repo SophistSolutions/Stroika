@@ -72,7 +72,7 @@ namespace {
         {
             ThrowIfZeroGetLastError (fHandle);
         }
-        AutoWinHINTERNET_ () = delete;
+        AutoWinHINTERNET_ ()                         = delete;
         AutoWinHINTERNET_ (const AutoWinHINTERNET_&) = delete;
         ~AutoWinHINTERNET_ ()
         {

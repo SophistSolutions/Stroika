@@ -531,7 +531,7 @@ namespace {
 
             // BAD SSL SITE
             const URI kBad_Expired_Site_{L"https://expired.badssl.com/"}; // see https://badssl.com/ - there are several other bads I could try
-            
+
 #if qCompilerAndStdLib_ASAN_windows_http_badheader_Buggy
             bool doTest = not Debug::kBuiltWithAddressSanitizer;
 #else
