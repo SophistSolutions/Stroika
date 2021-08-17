@@ -104,6 +104,12 @@ $(ObjDir)ActiveLedIt.res:
 	@$(call DEFAULT_RC_LINE,$(SrcDir)Sources/ActiveLedIt.rc,$(ObjDir)ActiveLedIt.res) > $(ObjDir)RC-Build.out 2>&1
 
 
+# WORKAROUND https://developercommunity.visualstudio.com/t/mfc-application-fails-to-link-with-address-sanitiz/1144525
+# https://developercommunity.visualstudio.com/t/please-re-open-httpsdevelopercommunityvisualstudio/1440675
+ifneq ($(filter-out -fanitize=address, $(CXXFLAGS)), $(CXXFLAGS))
+EXTRA_SUFFIX_LINKER_ARGS+= /FORCE:MULTIPLE
+endif
+
 # without this the regsvr32 will fail; tried adding explict dllexport() in c++ code but couldnt find the right syntax to make it work
 EXTRA_SUFFIX_LINKER_ARGS += /DEF:Sources/ActiveLedIt.def
 
