@@ -729,8 +729,9 @@ sub	SetDefaultForCompilerDriver_
 	# and rebuilt stroika, I found XERCES automatically did something like this to force this
 	# setting. But rest of my code didn't and I got compiler warnings. So try to find the best
 	# setting to force to, and allow external settings to override.
-	# `uname -m` eq 'arm64' checks if OS is running new m1 hardware (only time this appears needed) --LGP 2021-08-11
-	if (!defined $MACOSX_DEPLOYMENT_TARGET && "$^O" eq "darwin" && trim(`uname -m`) eq 'arm64') {
+	# This appears to only be needed when running on m1 hardware, but no easy way I can find to
+	# tell that so always do this by default
+	if (!defined $MACOSX_DEPLOYMENT_TARGET && "$^O" eq "darwin") {
 		my $osVersion = trim (`/usr/bin/sw_vers | grep ProductVersion | awk 'END {print \$2}'`);
 		($osVersion =~ /^((\d+)\.(\d+))/gm);	# force convert to 2-digit form as I've seen in examples but not sure makes much sense
 		$MACOSX_DEPLOYMENT_TARGET = $1;
@@ -2284,6 +2285,13 @@ sub PostProcessOptions_ ()
 		elsif ($PROJECTPLATFORMSUBDIR eq 'Unix') {
 			$EXTRA_PREFIX_LINKER_ARGS .= " -g";
 		}
+	}
+
+
+	if (("$^O" eq "darwin") and IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus) and not ($ARCH eq "")) {
+		push @CFLAGS, " -arch $ARCH";
+		push @CXXFLAGS, " -arch $ARCH";
+		$EXTRA_PREFIX_LINKER_ARGS .= " -arch $ARCH";
 	}
 
 }
