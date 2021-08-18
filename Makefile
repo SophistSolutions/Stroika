@@ -302,11 +302,11 @@ check-prerequisite-tools-common:
 	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type tr 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool tr && exit 1)"
 	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(pkg-config --version 1> /dev/null 2> /dev/null && type pkg-config 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool pkg-config && exit 1)"
 	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type realpath 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool realpath && exit 1)"
-ifneq (,$(findstring CYGWIN,$(shell uname)))
+ifneq (,$(findstring CYGWIN,$(UNAME_DASH_O_)))
 	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type dos2unix 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool dos2unix && exit 1)"
 	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type unix2dos 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool unix2dos && exit 1)"
 endif
-ifneq (,$(findstring Darwin,$(shell uname)))
+ifneq (,$(findstring Darwin,$(UNAME_DASH_O_)))
 	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type gsed 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool gsed && exit 1)"
 endif
 	@mkdir -p IntermediateFiles
@@ -411,11 +411,11 @@ default-configurations:
 		./configure Release-x86 --config-tag Windows --config-tag x86 --arch x86 --build-by-default $(UNAME_DASH_O_) --apply-default-release-flags;\
 		./configure Release-x86_64 --config-tag Windows --config-tag x86_64 --arch x86_64 --build-by-default $(UNAME_DASH_O_)  --apply-default-release-flags;\
 	elif [ "$(UNAME_DASH_O_)" = "Darwin" ] ; then\
-		./configure Debug --config-tag Unix --build-by-default $(UNAME_DASH_O_) --only-if-has-compiler --apply-default-debug-flags;\
-		./configure Release --config-tag Unix --build-by-default $(UNAME_DASH_O_) --only-if-has-compiler --apply-default-release-flags;\
+		./configure Debug --build-by-default $(UNAME_DASH_O_) --only-if-has-compiler --apply-default-debug-flags;\
+		./configure Release --build-by-default $(UNAME_DASH_O_) --only-if-has-compiler --apply-default-release-flags;\
 		./configure Release-Logging --config-tag Unix --build-by-default never --only-if-has-compiler --apply-default-release-flags --trace2file enable;\
-		./configure Release-x86_64 --arch x86_64 --config-tag Unix --build-by-default $(UNAME_DASH_O_) --only-if-has-compiler --apply-default-release-flags;\
-		./configure Release-arm64e --arch arm64e --config-tag Unix --build-by-default $(UNAME_DASH_O_) --only-if-has-compiler --apply-default-release-flags;\
+		./configure Release-x86_64 --arch x86_64 --config-tag x86_64 --build-by-default $(UNAME_DASH_O_) --only-if-has-compiler --apply-default-release-flags;\
+		./configure Release-arm64e --arch arm64e --config-tag arm --build-by-default $(UNAME_DASH_O_) --only-if-has-compiler --apply-default-release-flags;\
 	else\
 		./configure Debug --config-tag Unix --build-by-default $(UNAME_DASH_O_) --only-if-has-compiler --apply-default-debug-flags;\
 		./configure Release --config-tag Unix --build-by-default $(UNAME_DASH_O_) --only-if-has-compiler --apply-default-release-flags;\
