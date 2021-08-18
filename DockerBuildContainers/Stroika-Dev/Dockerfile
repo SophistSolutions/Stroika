@@ -5,15 +5,9 @@ FROM $BASED_ON_IMAGE
 # Get latest packages system, so can do installs
 RUN apt-get update
 
-RUN apt-get install -y clang-format curl vim apt-file iproute2 npm
+RUN apt-get install -y openssh-server
 
-###TMPHACK FOR UBUNTU 21.04
-#RUN apt-get install -y openssh-server
-RUN apt-get install aptitude -y
-RUN aptitude install openssh-server -y
-
-
-RUN apt-get install -y lldb
+RUN apt-get install -y clang-format curl vim apt-file iproute2 npm lldb
 
 EXPOSE 22
 ## @todo have not figured out how to get sshd to start automatically
