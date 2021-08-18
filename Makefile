@@ -415,7 +415,7 @@ default-configurations:
 		./configure Release --build-by-default $(UNAME_DASH_O_) --only-if-has-compiler --apply-default-release-flags;\
 		./configure Release-Logging --config-tag Unix --build-by-default never --only-if-has-compiler --apply-default-release-flags --trace2file enable;\
 		./configure Release-x86_64 --arch x86_64 --config-tag x86_64 --build-by-default $(UNAME_DASH_O_) --only-if-has-compiler --apply-default-release-flags;\
-		./configure Release-arm64e --arch arm64e --config-tag arm --build-by-default $(UNAME_DASH_O_) --only-if-has-compiler --apply-default-release-flags;\
+		./configure Release-arm64 --arch arm64 --config-tag arm --build-by-default $(UNAME_DASH_O_) --only-if-has-compiler --apply-default-release-flags;\
 	else\
 		./configure Debug --config-tag Unix --build-by-default $(UNAME_DASH_O_) --only-if-has-compiler --apply-default-debug-flags;\
 		./configure Release --config-tag Unix --build-by-default $(UNAME_DASH_O_) --only-if-has-compiler --apply-default-release-flags;\
