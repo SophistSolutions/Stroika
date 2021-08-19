@@ -150,6 +150,8 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 		CXX='$(CXX)' \
 		CFLAGS='$(CFLAGS)' \
 		CXXFLAGS='$(CXXFLAGS)' \
+		LD='$(Linker)' \
+		LDFLAGS='$(EXTRA_PREFIX_LINKER_ARGS) $(EXTRA_SUFFIX_LINKER_ARGS)' \
 		ProjectPlatformSubdir='$(ProjectPlatformSubdir)' \
 		LIBS='$(LIBS)' \
 		all
