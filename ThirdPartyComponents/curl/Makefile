@@ -112,10 +112,6 @@ ENVIRONMENT_CONFIGURE_PREFIX=
 ifneq (,$(PKG_CONFIG_PATH))
 ENVIRONMENT_CONFIGURE_PREFIX=
 ENVIRONMENT_CONFIGURE_PREFIX+= export PKG_CONFIG_PATH=$(PKG_CONFIG_PATH);
-
-###https://stroika.atlassian.net/browse/STK-427 workaround - these are needed else HMAC_xxx detect fails looking for openssl - not sure why it ignores the PKG_CONFIG_PATH - openssl 1.1.1 -LGP 2018-07-06
-ENVIRONMENT_CONFIGURE_PREFIX+= export CFLAGS=-I$(shell realpath --canonicalize-missing `pwd`/../../Builds/$(CONFIGURATION)/ThirdPartyComponents/include);
-ENVIRONMENT_CONFIGURE_PREFIX+= export LDFLAGS=-L$(shell realpath --canonicalize-missing `pwd`/../../Builds/$(CONFIGURATION)/ThirdPartyComponents/lib);
 endif
 
 
