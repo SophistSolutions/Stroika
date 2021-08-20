@@ -9,6 +9,7 @@
 #		./ScriptsLib/GetConfigurations --config-tags "Windows 32" --quiet
 #		./ScriptsLib/GetConfigurations --all-default
 #		./ScriptsLib/GetConfigurations --all
+#		./ScriptsLib/GetConfigurations --cross-compiled-only
 #
 get_script_dir () {
      #https://www.ostricher.com/2014/10/the-right-way-to-get-the-directory-of-a-bash-script/
@@ -27,6 +28,7 @@ MY_PATH=$(get_script_dir)
 QUIET=0
 ALL=1
 ALLDEFAULT=0
+CROSS_COMPILED_ONLY=0
 
 CONFIG_TAG_RESTRICTION=""
 while [[ $# -gt 0 ]]; do
@@ -53,6 +55,10 @@ while [[ $# -gt 0 ]]; do
       ALLDEFAULT=1
       shift 1
       ;;
+    --cross-compiled-only)
+      CROSS_COMPILED_ONLY=1
+      shift 1
+      ;;
     --help)
       echo "GetConfigurations returns all configurations; GetConfigurations --config-tags 'abc def' returns all configurations with BOTH the abc and def tags; optional --quiet flag suppresses warnings"
       exit 0
@@ -77,9 +83,10 @@ if [ -e "$MY_PATH/../ConfigurationFiles/" ] ; then
 	#/usr/bin/find "$MY_PATH/../ConfigurationFiles/" -mindepth 1 -maxdepth 1 -type f -print0 | xargs -0 -I {} basename "{}" .xml | tr '\n' ' '
 	RAW_CONFIGS=`/usr/bin/find "$MY_PATH/../ConfigurationFiles/" -type f -exec basename \{} .xml \; | $SORT | tr '\n' ' '`
 fi
+# Take the raw configs, and apply restrictions to produce the list NEW_CONFIGS
 if [ "$CONFIG_TAG_RESTRICTION" == "" ] ; then
   if [ $ALL -eq 1 ]; then
-  	echo $RAW_CONFIGS
+  	NEW_CONFIGS="$RAW_CONFIGS"
   fi
   if [ $ALLDEFAULT -eq 1 ]; then
     UNAME=`uname -o 2>/dev/null || uname`
@@ -93,7 +100,6 @@ if [ "$CONFIG_TAG_RESTRICTION" == "" ] ; then
         NEW_CONFIGS="$NEW_CONFIGS $c"
       fi
     done
-    echo $NEW_CONFIGS
   fi
 else
 	NEW_CONFIGS=""
@@ -116,11 +122,21 @@ else
 			NEW_CONFIGS="$NEW_CONFIGS $c"
 		fi
 	done
-	echo $NEW_CONFIGS
-  if [ "$NEW_CONFIGS" = "" ] ; then
-      #not necessarily a bug/mistake, but often a typo;
-	  if [ "$QUIET" = "0" ] ; then
-		echo "Warning: no tags match $CONFIG_TAG_RESTRICTION" >&2
-	  fi
+fi
+if [ $CROSS_COMPILED_ONLY -eq 1 ]; then
+  NEW_CONFIGS2=""
+  for c in $NEW_CONFIGS ; do
+    if [ `$MY_PATH/../ScriptsLib/GetConfigurationParameter $c CrossCompiling` == 'true' ]; then
+      NEW_CONFIGS2="$NEW_CONFIGS2 $c"
+    fi
+  done
+  NEW_CONFIGS=$NEW_CONFIGS2
+fi
+# Print the final NEW_CONFIGS list
+echo $NEW_CONFIGS
+if [ "$NEW_CONFIGS" = "" ] ; then
+    #not necessarily a bug/mistake, but often a typo;
+  if [ "$QUIET" = "0" ] ; then
+  echo "Warning: no tags match $CONFIG_TAG_RESTRICTION" >&2
   fi
 fi
