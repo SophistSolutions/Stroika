@@ -160,7 +160,8 @@ if [ $CONTINUE -eq 0 ] ; then
 fi
 
 
-
+###todo FIX CROSS_COMPILE_CONFIGS configs here
+CROSS_COMPILE_CONFIGS=`ScriptsLib/GetConfigurations --quiet --cross-compiled-only`
 RASPBERRYPICONFIGS=`ScriptsLib/GetConfigurations --quiet --config-tags "raspberrypi"`
 RASPBERRYPIVALGRINDCONFIGS=`ScriptsLib/GetConfigurations --quiet --config-tags "raspberrypi valgrind"`
 
@@ -200,6 +201,7 @@ if [ "$INCLUDE_RASPBERRYPI_TESTS" == "" ]; then
 fi
 
 NUM_CONFIGURATIONS=`ScriptsLib/GetConfigurations --all-default | wc -w`
+NUM_CROSS_COMPILE_CONFIGURATIONS=`echo $CROSS_COMPILE_CONFIGS | wc -w`
 NUM_REMOTE_CONFIGURATIONS=`echo $RASPBERRYPICONFIGS | wc -w`
 NUM_REGTESTS=`wc -l Tests/Tests-Description.txt | awk '{print $1;}'`
 NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS=`echo $LOCAL_VALGRIND_CONFIGS | wc -w`
@@ -222,7 +224,7 @@ fi
 
 NUM_PASSES_OF_REGTESTS_RUN=0
 if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
-	NUM_LOCAL_TESTS=$(($NUM_CONFIGURATIONS - $NUM_REMOTE_CONFIGURATIONS))
+	NUM_LOCAL_TESTS=$(($NUM_CONFIGURATIONS - $NUM_CROSS_COMPILE_CONFIGURATIONS))
 	NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + $NUM_LOCAL_TESTS))
 	if [ $INCLUDE_VALGRIND_MEMCHECK_TESTS -eq 1 ]; then
 		NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + $NUM_LOCAL_TEST_VALGRINDCONFIGURATIONS))
