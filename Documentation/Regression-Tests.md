@@ -27,7 +27,7 @@ checkin from one spot.
   (takes about 2 HRs)
 
   ```bash
-  MACHINE=lewis-Mac USE_TEST_BASENAME=MacOS_XCode12 \
+  MACHINE=lewis-Mac USE_TEST_BASENAME=MacOS_XCode12 PARALELLMAKEFLAG=-j5 \
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
@@ -36,7 +36,7 @@ checkin from one spot.
   (takes about 1 HR)
 
   ```bash
-  MACHINE=lewis-Mac2 USE_TEST_BASENAME=MacOS_XCode12_m1 PARALELLMAKEFLAG=-j4 \
+  MACHINE=lewis-Mac2 USE_TEST_BASENAME=MacOS_XCode12_m1 PARALELLMAKEFLAG=-j5 \
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
