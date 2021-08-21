@@ -34,10 +34,10 @@ CONFIGURATION_TAGS?=$(TAGS)
 APPLY_CONFIGS=$(or \
 				$(CONFIGURATION), \
 				$(if $(CONFIGURATION_TAGS), \
-					$(shell ScriptsLib/GetConfigurations --config-tags "$(CONFIGURATION_TAGS)"),\
+					$(shell ScriptsLib/GetConfigurations --quiet --config-tags "$(CONFIGURATION_TAGS)"),\
 					$(if $(filter clobber, $(MAKECMDGOALS)),\
-						$(shell ScriptsLib/GetConfigurations --all),\
-						$(shell ScriptsLib/GetConfigurations --all-default)\
+						$(shell ScriptsLib/GetConfigurations --quiet --all),\
+						$(shell ScriptsLib/GetConfigurations --quiet --all-default)\
 					)\
 				)\
 			)
@@ -333,7 +333,7 @@ IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED:
 
 
 assure-default-configurations-exist_:
-ifeq ($(shell ScriptsLib/GetConfigurations),)
+ifeq ($(shell ScriptsLib/GetConfigurations --quiet),)
 	@$(MAKE) default-configurations --no-print-directory
 endif
 
