@@ -134,9 +134,9 @@ if [ $CROSS_COMPILED_ONLY -eq 1 ]; then
 fi
 # Print the final NEW_CONFIGS list
 echo $NEW_CONFIGS
-if [ "$NEW_CONFIGS" = "" ] ; then
-    #not necessarily a bug/mistake, but often a typo;
-  if [ "$QUIET" = "0" ] ; then
-  echo "Warning: no tags match $CONFIG_TAG_RESTRICTION" >&2
+if [ "$NEW_CONFIGS" == "" ] ; then
+  #not necessarily a bug/mistake, but often a typo;
+  if [ "$QUIET" == "0" ] ; then
+    echo "Warning: no tags match $CONFIG_TAG_RESTRICTION" >&2
   fi
 fi
