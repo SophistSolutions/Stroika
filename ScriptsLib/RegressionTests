@@ -430,6 +430,11 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 	echo >>$TEST_OUT_FILE 2>&1
 	echo "<Running SAMPLE_APP basic tests>" >>$TEST_OUT_FILE 2>&1
 		for cfg in ${LOCAL_CONFIGS} ; do
+
+			if [ `ScriptsLib/GetConfigurationParameter $cfg CrossCompiling` == 'true' ]; then
+				continue;
+			fi
+
 			RUN_PREFIX=`ScriptsLib/GetConfigurationParameter $cfg RUN_PREFIX`
 			for app in "${SAMPLE_APPS_2_TEST[@]}" ; do
 				if [ "${RUN_PREFIX}" = "" ] ; then
