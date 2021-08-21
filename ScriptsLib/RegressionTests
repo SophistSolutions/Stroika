@@ -160,6 +160,7 @@ echo "**1" >>$TEST_OUT_FILE 2>&1
 ### Create the actual configuration files that drive what is built
 if [ $CONTINUE -eq 0 ] ; then
 	rm -rf ConfigurationFiles
+echo "***make $BUILD_CONFIGURATIONS_MAKEFILE_TARGET" >>$TEST_OUT_FILE 2>&1
 	make $BUILD_CONFIGURATIONS_MAKEFILE_TARGET >>$TEST_OUT_FILE 2>&1
 fi
 
