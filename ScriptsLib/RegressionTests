@@ -99,8 +99,6 @@ if [ $? -eq 0 ] ; then
 	echo "$PREFIX_OUT_LABEL" "    GIT COMMIT: $GIT_COMMIT" >>$TEST_OUT_FILE 2>&1
 fi
 
-echo "**1.2" >>$TEST_OUT_FILE 2>&1
-
 ### Print INFO about what OS version running (for several major OSes check)
 command -v lsb_release 2>&1 > /dev/null
 if [ $? -eq 0 ] ; then
@@ -142,7 +140,6 @@ fi
 echo >>$TEST_OUT_FILE 2>&1
 
 
-echo "**1.1" >>$TEST_OUT_FILE 2>&1
 
 
 if [ $BUILD_EXTRA_COMPILERS_IF_MISSING -ne 0 ] ; then
@@ -154,7 +151,6 @@ if [ $BUILD_EXTRA_COMPILERS_IF_MISSING -ne 0 ] ; then
 	fi
 fi
 
-echo "**1" >>$TEST_OUT_FILE 2>&1
 
 
 ### Create the actual configuration files that drive what is built
