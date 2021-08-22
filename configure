@@ -904,11 +904,17 @@ sub	SetDefaultForCompilerDriver_
 			$ENABLE_ASSERTIONS = 0;
 		}
 		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS) {
-			if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) || IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+			if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) ) {
 				if (trim(`awk -F= '/^NAME/{print $2}' /etc/os-release 2>/dev/null`) =~ /CentOS/) {
 					#skip cuz broken on Centos7  - generates link errors with boost (maybe an issue how I build boost)
 				}
 				else {
+					$ENABLE_LTO = true;
+				}
+			}
+			if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+				# On ubuntu 18.04 gives error linking libcurl
+				if (7.0 <= GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus)) {
 					$ENABLE_LTO = true;
 				}
 			}
