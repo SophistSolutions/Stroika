@@ -38,7 +38,8 @@ ifeq (Windows,$(findstring Windows,$(OS)))
 	# to build this you may need  --storage-opts "size 100GB", but that currently doesn't work with build, so set
 	# in docker windows configuration settings (can get from docker gui - settings/Docker Engine)
 	# Build with -m 4GB cuz default of 1GB pages alot
-	docker build -m 4GB -f Windows-Cygwin-VS2k19/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 .
+	# Due to https://stroika.atlassian.net/browse/STK-742 - add   --network "Default Switch" 
+	docker build -m 4GB --network "Default Switch" -f Windows-Cygwin-VS2k19/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 .
 	#docker build -f Windows-MinGW-VS2k19/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-mingw-vs2k19 .
 endif
 

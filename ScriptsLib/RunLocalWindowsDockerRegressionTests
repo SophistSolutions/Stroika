@@ -11,6 +11,7 @@ DOCKER="${DOCKER:-docker.exe}"
 [[ "$($DOCKER ps -a | grep $CONTAINER_NAME)" ]] && $DOCKER rm -f $CONTAINER_NAME
 
 ## Unclear why we need --interactive, but without it, the shell stops and we cannot exec anything -- LGP 2020-03-09
+# Due to https://stroika.atlassian.net/browse/STK-742 - add   --network "Default Switch" 
 echo "Running docker build (usually takes about 5 hrs)"
 $DOCKER run \
     --detach \
@@ -18,6 +19,7 @@ $DOCKER run \
     --storage-opt "size=100GB" \
     --memory 8G \
     --cpus 4\
+    --network "Default Switch" \
     --name $CONTAINER_NAME \
     $CONTAINER_IMAGE
 $DOCKER exec \
