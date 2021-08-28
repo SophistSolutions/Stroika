@@ -346,6 +346,9 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  \brief return true iff the Intersection () is non-empty
+         *
+         *  Returns true iff the two specified containers contain at least one element in common. 
          */
         nonvirtual bool Intersects (const Iterable<T>& rhs) const;
         static bool     Intersects (const Set& lhs, const Iterable<T>& rhs);
