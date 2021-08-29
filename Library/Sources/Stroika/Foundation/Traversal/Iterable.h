@@ -639,7 +639,7 @@ namespace Stroika::Foundation::Traversal {
          *          VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).SequentialEquals (Iterable<int> { 2, 4, 6 }));
          *      \endcode
          *
-         *  \note   Could have been called EachWith, EachWhere, EachThat (), Filter, or SubsetWhere.
+         *  \note   Could have been called EachWith, EachWhere, EachThat (), AllThat, AllWhere, Filter, or SubsetWhere.
          */
         nonvirtual Iterable<T> Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const;
         template <typename RESULT_CONTAINER>
@@ -948,6 +948,8 @@ namespace Stroika::Foundation::Traversal {
          *  \note
          *      BASED ON Microsoft .net Linq. (Last)
          *      @see https://docs.microsoft.com/en-us/dotnet/api/system.linq.enumerable.all?view=netframework-4.7.2
+         * 
+         *  @see also Iterable<T>::Where ()
          */
         nonvirtual bool All (const function<bool (ArgByValueType<T>)>& testEachElt) const;
 
