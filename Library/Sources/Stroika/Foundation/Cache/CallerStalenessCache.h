@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Cache {
      *
      *  For example, consider a system where memory is stored across a slow bus, and several components need to read data from
      *  across that bus. But the different components have different tolerance for staleness (e.g. PID loop needs fresh temperature sensor
-     *  data but GUI can use stale data).
+     *  data but GUI can use more stale data).
      *
      *  This CallerStalenessCache will store when the value is updated, and let the caller either return the
      *  value from cache, or fetch it and update the cache if needed.
@@ -181,6 +181,8 @@ namespace Stroika::Foundation::Cache {
         nonvirtual optional<VALUE> Lookup (K1 k, TimeStampType staleIfOlderThan) const;
 
     public:
+        /**
+         */
         template <typename K1 = KEY, enable_if_t<not IsKeyedCache<K1>>* = nullptr>
         nonvirtual VALUE LookupValue (TimeStampType staleIfOlderThan, const function<VALUE ()>& cacheFiller);
         template <typename F, typename K1 = KEY, enable_if_t<IsKeyedCache<K1> and is_invocable_r_v<VALUE, F, K1>>* = nullptr>
@@ -199,8 +201,8 @@ namespace Stroika::Foundation::Cache {
             VALUE         fValue;
             TimeStampType fDataCapturedAt;
             myVal_ (VALUE&& v, TimeStampType t)
-                : fValue (forward<VALUE> (v))
-                , fDataCapturedAt (t)
+                : fValue{forward<VALUE> (v)}
+                , fDataCapturedAt{t}
             {
             }
         };
