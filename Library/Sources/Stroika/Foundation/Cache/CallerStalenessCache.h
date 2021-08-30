@@ -12,7 +12,7 @@
 /**
  *      \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
+ *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
  *
  * TODO:
  *      @todo   Add Debug::AssertExternallySynchronizedLock usage.
@@ -95,17 +95,32 @@ namespace Stroika::Foundation::Cache {
      *          optional<int> MapValue_ (int value, optional<Time::DurationSecondsType> allowedStaleness = {})
      *          {
      *              static CallerStalenessCache<int, optional<int>> sCache_;
-     *              return sCache_.Lookup (value, sCache_.Ago (allowedStaleness.value_or (30)), [=](int v) -> optional<int> {
+     *              return sCache_.LookupValue (value, sCache_.Ago (allowedStaleness.value_or (30)), [=](int v) -> optional<int> {
      *                  return v;   // could be more expensive computation
      *              });
      *          }
      *          VerifyTestResult (MapValue_ (1) == 1);  // skips 'more expensive computation' if in cache
      *          VerifyTestResult (MapValue_ (2) == 2);  // ''
      *      \endcode
+     * 
+     *  \par Example Usage
+     *      \code
+     *          // using KEY=void (so singleton cache)
+     *          unsigned int  sCalls1_{0};
+     *          optional<int> LookupExternalInternetAddress_ (optional<Time::DurationSecondsType> allowedStaleness = {})
+     *          {
+     *              using Cache::CallerStalenessCache;
+     *              static CallerStalenessCache<void, optional<int>> sCache_;
+     *              return sCache_.LookupValue (sCache_.Ago (allowedStaleness.value_or (30)), [] () -> optional<int> {
+     *                  sCalls1_++;
+     *                  return 1;
+     *              });
+     *          }
+     *      \endcode
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
-     *  @see TimedCache
+     *  @see TimedCache, SynchronizedCallerStalenessCache
      */
     template <typename KEY, typename VALUE, typename TIME_TRAITS = CallerStalenessCache_Traits_DEFAULT>
     class CallerStalenessCache {
@@ -182,6 +197,8 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
+         *  Lookup the value associated with the given key (or key omitted of KEY type is void) and always return it.
+         *  In case it was stale (or missing) return the provided defaule value (or cacheFiller computed value).
          */
         template <typename K1 = KEY, enable_if_t<not IsKeyedCache<K1>>* = nullptr>
         nonvirtual VALUE LookupValue (TimeStampType staleIfOlderThan, const function<VALUE ()>& cacheFiller);

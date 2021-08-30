@@ -74,13 +74,13 @@ namespace Stroika::Foundation::Cache {
     template <typename K1, enable_if_t<not IsKeyedCache<K1>>*>
     inline void CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Add (VALUE v)
     {
-        fData_ = myVal_ (move (v), GetCurrentTimestamp ());
+        fData_ = myVal_{move (v), GetCurrentTimestamp ()};
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
     template <typename K1, enable_if_t<IsKeyedCache<K1>>*>
     inline void CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Add (K1 k, VALUE v)
     {
-        fData_.Add (k, myVal_ (move (v), GetCurrentTimestamp ()));
+        fData_.Add (k, myVal_{move (v), GetCurrentTimestamp ()});
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
     template <typename K1, enable_if_t<not IsKeyedCache<K1>>*>
@@ -108,7 +108,8 @@ namespace Stroika::Foundation::Cache {
     {
         optional<myVal_> o = fData_;
         if (not o.has_value () or o->fDataCapturedAt < staleIfOlderThan) {
-            myVal_ mv (cacheFiller (), GetCurrentTimestamp ());
+            VALUE  v{cacheFiller ()}; // cache fill can take some time, so make sure we call GetCurrentTimestamp() after cachefiller
+            myVal_ mv{move (v), GetCurrentTimestamp ()};
             fData_ = mv;
             return move (mv.fValue);
         }
@@ -120,7 +121,8 @@ namespace Stroika::Foundation::Cache {
     {
         optional<myVal_> o = fData_.Lookup (k);
         if (not o.has_value () or o->fDataCapturedAt < staleIfOlderThan) {
-            myVal_ mv (cacheFiller (k), GetCurrentTimestamp ());
+            VALUE  v{cacheFiller (k)}; // cache fill can take some time, so make sure we call GetCurrentTimestamp() after cachefiller
+            myVal_ mv{move (v), GetCurrentTimestamp ()};
             fData_.Add (k, mv);
             return move (mv.fValue);
         }
