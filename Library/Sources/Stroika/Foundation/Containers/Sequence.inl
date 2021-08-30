@@ -147,9 +147,18 @@ namespace Stroika::Foundation::Containers {
     }
 #endif
     template <typename T>
-    inline auto Sequence<T>::Where (const function<bool (ArgByValueType<T>)>& doToElement) const -> Sequence
+    inline auto Sequence<T>::Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const -> Sequence
     {
+#if 1
+        Sequence<T> result;
+        for (const auto i : Where (includeIfTrue)) {
+            //result.Add (i);
+            result.push_back (i);
+        }
+        return result;
+#else
         return Iterable<T>::Where (doToElement, Sequence<T>{});
+#endif
     }
     template <typename T>
     template <typename INORDER_COMPARER_TYPE>

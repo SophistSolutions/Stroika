@@ -297,7 +297,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  @see Iterable<T>::Where
          */
-        nonvirtual Sequence Where (const function<bool (ArgByValueType<T>)>& doToElement) const;
+        nonvirtual Sequence Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const;
 
     public:
         /**

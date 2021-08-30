@@ -21,6 +21,7 @@
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/IO/Network/InternetAddress.h"
 #include "Stroika/Foundation/Traversal/DiscreteRange.h"
 
 #include "../TestHarness/SimpleClass.h"
@@ -820,6 +821,17 @@ namespace {
 }
 
 namespace {
+    namespace BugWithWhereCallingAdd_Test20_ {
+        void DoTest ()
+        {
+            using IO::Network::InternetAddress;
+            Sequence<InternetAddress> s1;
+            auto                      s2 = s1.Where ([] (InternetAddress i) { return i.GetAddressFamily () == InternetAddress::AddressFamily::V4; });
+        }
+    }
+}
+
+namespace {
 
     void DoRegressionTests_ ()
     {
@@ -871,6 +883,7 @@ namespace {
         ExampleCTORS_Test_17_::DoTest ();
         ExampleCompare_Test_18_::DoTest ();
         ExampleOrderBy_Test19_::DoTest ();
+        BugWithWhereCallingAdd_Test20_::DoTest ();
     }
 }
 
