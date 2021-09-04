@@ -388,6 +388,16 @@ namespace Stroika::Foundation::Containers {
         RemoveAll ();
     }
     template <typename T>
+    inline void Sequence<T>::erase (size_t i)
+    {
+        this->Remove (i);
+    }
+    template <typename T>
+    inline void Sequence<T>::erase (const Iterator<T>& i)
+    {
+        this->Remove (i);
+    }
+    template <typename T>
     inline Sequence<T>& Sequence<T>::operator+= (ArgByValueType<T> item)
     {
         Append (item);

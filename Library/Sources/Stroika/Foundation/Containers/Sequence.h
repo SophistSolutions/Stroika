@@ -602,6 +602,15 @@ namespace Stroika::Foundation::Containers {
         nonvirtual void clear ();
 
     public:
+        /**
+         * \brief STL-ish alias for Remove ().
+         *
+         *  \note mutates container
+         */
+        nonvirtual void erase (size_t i);
+        nonvirtual void erase (const Iterator<T>& i);
+
+    public:
         nonvirtual Sequence<T>& operator+= (ArgByValueType<T> item);
         nonvirtual Sequence<T>& operator+= (const Sequence<T>& items);
 
