@@ -97,6 +97,9 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 CONFIG_ARGS+=	-no-asm
 endif
 
+# autoconfigure sometimes detects multilib and then changes default libdir to lib64... - so override to look where rest of code looks for it
+CONFIG_ARGS+=	--libdir=lib
+
 #Attempt to wrokaround bug on centos6:
 #	(gdb) #0  0x0000000000000000 in ?? ()
 #	(gdb) #1  0x00007ffff7bd629c in _dlerror_run () from /lib64/libdl.so.2
