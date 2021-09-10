@@ -537,10 +537,17 @@ namespace {
                 providers2Try += OpenSSL::LibraryContext::kLegacyProvider;
             }
             for (String provider : providers2Try) {
+#if qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy
+                optional<OpenSSL::LibraryContext::TemporarilyAddProvider> providerAdder;
+                if (not(Debug::kBuiltWithAddressSanitizer and provider == OpenSSL::LibraryContext::kLegacyProvider)) {
+                    providerAdder = OpenSSL::LibraryContext::TemporarilyAddProvider{&OpenSSL::LibraryContext::sDefault, provider};
+                }
+#else
                 OpenSSL::LibraryContext::TemporarilyAddProvider providerAdder{&OpenSSL::LibraryContext::sDefault, provider};
-                unsigned int                                    nCipherTests{};
-                unsigned int                                    nFailures{};
-                Set<String>                                     failingCiphers;
+#endif
+                unsigned int nCipherTests{};
+                unsigned int nFailures{};
+                Set<String>  failingCiphers;
                 for (BLOB passphrase : kPassphrases_) {
                     for (BLOB inputMessage : kTestMessages_) {
                         for (CipherAlgorithm ci : OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ()) {

@@ -1779,6 +1779,18 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 
 #endif
 
+// ASAN crash on windows, with openssl maybe just with default provider
+#ifndef qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy
+
+#if defined(_MSC_VER)
+// first noticed IN _MSC_VER_2k19_16Pt10_
+#define qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt10_)
+#else
+#define qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy 0
+#endif
+
+#endif
+
 /*
 ON DEBUG builds on macos only
 
