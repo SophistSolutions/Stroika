@@ -19,7 +19,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
      ********************************************************************************
      */
     inline LibraryContext::TemporarilyAddProvider::TemporarilyAddProvider (LibraryContext* context, const String& providerName)
-        : fContext{context}
+        : fContext_{context}
         , fProviderName_{providerName}
     {
         RequireNotNull (context);
@@ -27,8 +27,8 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
     }
     inline LibraryContext::TemporarilyAddProvider::~TemporarilyAddProvider ()
     {
-        AssertNotNull (fContext);
-        fContext->UnLoadProvider (fProviderName_);
+        AssertNotNull (fContext_);
+        fContext_->UnLoadProvider (fProviderName_);
     }
 #endif
 

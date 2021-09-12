@@ -85,11 +85,13 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
          */
         class TemporarilyAddProvider {
         public:
+            TemporarilyAddProvider () = delete;
+            TemporarilyAddProvider (const TemporarilyAddProvider&) = delete;
             TemporarilyAddProvider (LibraryContext* context, const String& providerName);
             ~TemporarilyAddProvider ();
 
         private:
-            LibraryContext* fContext;
+            LibraryContext* fContext_;
             String          fProviderName_;
         };
 

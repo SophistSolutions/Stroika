@@ -207,18 +207,19 @@ LibraryContext ::~LibraryContext ()
 
 void LibraryContext::LoadProvider ([[maybe_unused]] const String& providerName)
 {
-    DbgTrace (L"OpenSSL::LibraryContext::LoadProvider", L"%s", providerName.c_str ());
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs(L"OpenSSL::LibraryContext::LoadProvider", L"%s", providerName.c_str ())};
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
 #if OPENSSL_VERSION_MAJOR >= 3
-    OSSL_PROVIDER*                                p = ::OSSL_PROVIDER_load (nullptr, providerName.AsNarrowSDKString ().c_str ());
-    static const Execution::RuntimeErrorException kErr_{L"No such SSL provider"sv};
-    Execution::ThrowIfNull (p, kErr_);
     if (auto l = fLoadedProviders_.Lookup (providerName)) {
         l->second++;
         fLoadedProviders_.Add (providerName, *l);
     }
     else {
+        OSSL_PROVIDER*                                p = ::OSSL_PROVIDER_load (nullptr, providerName.AsNarrowSDKString ().c_str ());
+        static const Execution::RuntimeErrorException kErr_{L"No such SSL provider"sv};
+        Execution::ThrowIfNull (p, kErr_);
         fLoadedProviders_.Add (providerName, {p, 1});
+        DbgTrace (L"real load");
     }
 #else
     Require (providerName == kDefaultProvider or providerName == kLegacyProvider);
@@ -227,7 +228,7 @@ void LibraryContext::LoadProvider ([[maybe_unused]] const String& providerName)
 
 void LibraryContext ::UnLoadProvider ([[maybe_unused]] const String& providerName)
 {
-    DbgTrace (L"OpenSSL::LibraryContext::UnLoadProvider", L"%s", providerName.c_str ());
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs(L"OpenSSL::LibraryContext::UnLoadProvider", L"%s", providerName.c_str ())};
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
 #if OPENSSL_VERSION_MAJOR >= 3
     Require (fLoadedProviders_.ContainsKey (providerName));
@@ -237,6 +238,7 @@ void LibraryContext ::UnLoadProvider ([[maybe_unused]] const String& providerNam
     if (l->second == 0) {
         fLoadedProviders_.Remove (providerName);
         Verify (::OSSL_PROVIDER_unload (l->first) == 1);
+        DbgTrace (L"real unload");
     }
     else {
         fLoadedProviders_.Add (providerName, *l);

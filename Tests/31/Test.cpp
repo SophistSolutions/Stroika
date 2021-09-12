@@ -538,9 +538,9 @@ namespace {
             }
             for (String provider : providers2Try) {
 #if qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy
-                optional<OpenSSL::LibraryContext::TemporarilyAddProvider> providerAdder;
+                shared_ptr<OpenSSL::LibraryContext::TemporarilyAddProvider> providerAdder;
                 if (not(Debug::kBuiltWithAddressSanitizer and provider == OpenSSL::LibraryContext::kLegacyProvider)) {
-                    providerAdder = OpenSSL::LibraryContext::TemporarilyAddProvider{&OpenSSL::LibraryContext::sDefault, provider};
+                    providerAdder = make_shared< OpenSSL::LibraryContext::TemporarilyAddProvider> (&OpenSSL::LibraryContext::sDefault, provider);
                 }
 #else
                 OpenSSL::LibraryContext::TemporarilyAddProvider providerAdder{&OpenSSL::LibraryContext::sDefault, provider};
