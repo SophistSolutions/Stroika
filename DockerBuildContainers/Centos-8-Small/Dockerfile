@@ -16,3 +16,6 @@ RUN dnf install -y libubsan.x86_64
 
 # epel-release needed to be able to install p7zip
 RUN dnf install -y epel-release && dnf install -y p7zip
+
+# For OpenSSL 3
+RUN yum install  -y perl-IPC-Cmd perl-Pod-Html
