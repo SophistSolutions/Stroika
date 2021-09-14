@@ -538,14 +538,20 @@ namespace {
                 providers2Try += OpenSSL::LibraryContext::kLegacyProvider;
             }
             for (String provider : providers2Try) {
-#if qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy
                 shared_ptr<OpenSSL::LibraryContext::TemporarilyAddProvider> providerAdder;
-                if (not(Debug::kBuiltWithAddressSanitizer and provider == OpenSSL::LibraryContext::kLegacyProvider)) {
-                    providerAdder = make_shared<OpenSSL::LibraryContext::TemporarilyAddProvider> (&OpenSSL::LibraryContext::sDefault, provider);
-                }
+                try {
+#if qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy
+                    if (not(Debug::kBuiltWithAddressSanitizer and provider == OpenSSL::LibraryContext::kLegacyProvider)) {
+                        providerAdder = make_shared<OpenSSL::LibraryContext::TemporarilyAddProvider> (&OpenSSL::LibraryContext::sDefault, provider);
+                    }
 #else
-                OpenSSL::LibraryContext::TemporarilyAddProvider providerAdder{&OpenSSL::LibraryContext::sDefault, provider};
+                    providerAdder = make_shared<OpenSSL::LibraryContext::TemporarilyAddProvider> (&OpenSSL::LibraryContext::sDefault, provider);
 #endif
+                }
+                catch (...) {
+                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Skipping provider=%s, due to exception: %s", provider.c_str (), Characters::ToString (current_exception ()).c_str ()).c_str ());
+                    continue;
+                }
                 unsigned int     nCipherTests{};
                 unsigned int     nFailures{};
                 MultiSet<String> failingCiphers;
