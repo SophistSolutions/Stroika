@@ -19,6 +19,9 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Cryptography;
 using namespace Stroika::Foundation::Cryptography::OpenSSL;
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
 #if qHasFeature_OpenSSL && defined(_MSC_VER)
 // Use #pragma comment lib instead of explicit entry in the lib entry of the project file
 #if OPENSSL_VERSION_NUMBER < 0x1010000fL
@@ -39,6 +42,7 @@ namespace {
     {
         RequireNotNull (ciphers);
         if (ciph != nullptr) {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
 #if OPENSSL_VERSION_MAJOR >= 3
             DbgTrace (L"cipher: %p (name: %s), provider: %p (name %s)", ciph,
                       CipherAlgorithm{ciph}.pName ().c_str (),
@@ -51,7 +55,7 @@ namespace {
             int flags = ::EVP_CIPHER_flags (ciph);
             DbgTrace ("flags=%x", flags);
 #endif
-
+#endif
             ciphers->Add (CipherAlgorithm{ciph}.pName ());
         }
     };
@@ -59,13 +63,15 @@ namespace {
     {
         RequireNotNull (digestNames);
         if (digest != nullptr) {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
 #if OPENSSL_VERSION_MAJOR >= 3
-            DbgTrace (L"digest: %p (name: %s), provider: %p (name %s)", 
-                digest, DigestAlgorithm{digest}.pName ().c_str (),
-                ::EVP_MD_get0_provider (digest),
+            DbgTrace (L"digest: %p (name: %s), provider: %p (name %s)",
+                      digest, DigestAlgorithm{digest}.pName ().c_str (),
+                      ::EVP_MD_get0_provider (digest),
                       (::EVP_MD_get0_provider (digest) == nullptr ? L"null" : String::FromNarrowSDKString (::OSSL_PROVIDER_get0_name (::EVP_MD_get0_provider (digest))).c_str ()));
 #else
             DbgTrace (L"digest: %p (name: %s)", digest, DigestAlgorithm{digest}.pName ().c_str ());
+#endif
 #endif
             digestNames->Add (DigestAlgorithm{digest}.pName ());
         }
@@ -101,7 +107,9 @@ LibraryContext::LibraryContext ()
 #endif
                   &cipherNames);
 #endif
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
               DbgTrace (L"Found pAvailableCipherAlgorithms-FIRST-PASS (cnt=%d): %s", cipherNames.size (), Characters::ToString (cipherNames).c_str ());
+#endif
 
               Set<CipherAlgorithm> results{cipherNames.Select<CipherAlgorithm> ([] (const String& n) -> optional<CipherAlgorithm> { return OpenSSL::CipherAlgorithm::GetByNameQuietly (n); })};
               DbgTrace (L"Found pAvailableCipherAlgorithms (cnt=%d): %s", results.size (), Characters::ToString (results).c_str ());
@@ -168,7 +176,9 @@ LibraryContext::LibraryContext ()
 #endif
             &digestNames);
 #endif
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"Found pAvailableDigestAlgorithms-FIRST-PASS (cnt=%d): %s", digestNames.size (), Characters::ToString (digestNames).c_str ());
+#endif
 
         Set<DigestAlgorithm> results{digestNames.Select<DigestAlgorithm> ([] (const String& n) -> optional<DigestAlgorithm> { return OpenSSL::DigestAlgorithm::GetByNameQuietly (n); })};
         DbgTrace (L"Found pAvailableDigestAlgorithms (cnt=%d): %s", results.size (), Characters::ToString (results).c_str ());
@@ -181,10 +191,14 @@ LibraryContext::LibraryContext ()
         Set<DigestAlgorithm>                                results;
         results += DigestAlgorithms::kMD5;
         results += DigestAlgorithms::kSHA1;
-        results += DigestAlgorithms::kSHA224;
-        results += DigestAlgorithms::kSHA256;
-        results += DigestAlgorithms::kSHA384;
-        results += DigestAlgorithms::kSHA512;
+        results += DigestAlgorithms::kSHA1_224;
+        results += DigestAlgorithms::kSHA1_256;
+        results += DigestAlgorithms::kSHA1_384;
+        results += DigestAlgorithms::kSHA1_512;
+        results += DigestAlgorithms::kSHA3_224;
+        results += DigestAlgorithms::kSHA3_256;
+        results += DigestAlgorithms::kSHA3_384;
+        results += DigestAlgorithms::kSHA3_512;
         return results;
     }}
 {

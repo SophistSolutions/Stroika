@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
     };
 
     /**
-     *      @see http://linux.die.net/man/3/evp_cipher_ctx_init
+     *      @see https://wiki.openssl.org/index.php/OpenSSL_3.0 section 9.3.2
      */
     namespace CipherAlgorithms {
         extern const Common::ConstantProperty<CipherAlgorithm> kAES_128_CBC;

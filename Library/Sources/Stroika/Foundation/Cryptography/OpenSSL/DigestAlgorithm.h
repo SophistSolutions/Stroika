@@ -75,6 +75,9 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         const ::EVP_MD* fDigester_;
     };
 
+    /**
+     *      @see https://wiki.openssl.org/index.php/OpenSSL_3.0 section 9.3.3
+     */
     namespace DigestAlgorithms {
         /**
          *  very widely used, but not secure
@@ -89,10 +92,18 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         /**
          *  kSHA224, kSHA256, kSHA384, and kSHA512 are generally a good (secure) choice
          */
-        extern const Common::ConstantProperty<DigestAlgorithm> kSHA224;
-        extern const Common::ConstantProperty<DigestAlgorithm> kSHA256;
-        extern const Common::ConstantProperty<DigestAlgorithm> kSHA384;
-        extern const Common::ConstantProperty<DigestAlgorithm> kSHA512;
+        extern const Common::ConstantProperty<DigestAlgorithm> kSHA1_224;
+        extern const Common::ConstantProperty<DigestAlgorithm> kSHA1_256;
+        extern const Common::ConstantProperty<DigestAlgorithm> kSHA1_384;
+        extern const Common::ConstantProperty<DigestAlgorithm> kSHA1_512;
+
+        /**
+         *  https://www.veracode.com/blog/research/message-digests-aka-hashing-functions
+         */
+        extern const Common::ConstantProperty<DigestAlgorithm> kSHA3_224;
+        extern const Common::ConstantProperty<DigestAlgorithm> kSHA3_256;
+        extern const Common::ConstantProperty<DigestAlgorithm> kSHA3_384;
+        extern const Common::ConstantProperty<DigestAlgorithm> kSHA3_512;
     }
 
 #endif
