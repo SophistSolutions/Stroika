@@ -71,6 +71,16 @@ FETCHURLS+=https://ftp.heanet.ie/mirrors/ftp.openssl.org/source/$(BASENAME).tar.
 
 
 CONFIG_ARGS=
+
+ifneq ($(CC),)
+ifeq (arm-linux-gnueabihf,$(shell $(CC) -dumpmachine))
+# OpenSSL 3.0 automatically considers the TARGETMACHINE to be this HOST compiling machine and generates -m64 lines that break
+# the compile - this works around that issue for at least this configuration
+CONFIG_ARGS+=	linux-generic32
+endif
+endif
+
+
 CONFIG_ARGS+=	-no-shared
 ifeq (purify,$(findstring purify,$(CONFIGURED_EXTRA_ARGS)))
 #see https://stroika.atlassian.net/browse/STK-400 - -DPURIFY to cleanly valgrind
@@ -96,6 +106,7 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 #CONFIG_ARGS+=	-asm
 CONFIG_ARGS+=	-no-asm
 endif
+
 
 # autoconfigure sometimes detects multilib and then changes default libdir to lib64... - so override to look where rest of code looks for it
 CONFIG_ARGS+=	--libdir=lib
