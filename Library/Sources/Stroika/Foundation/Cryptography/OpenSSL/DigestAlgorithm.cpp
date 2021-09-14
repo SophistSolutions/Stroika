@@ -11,6 +11,7 @@
 #include "../../Debug/Assertions.h"
 #include "../../Execution/Common.h"
 #include "../../Execution/Synchronized.h"
+#include "../../Memory/Optional.h"
 #include "../../Memory/SmallStackBuffer.h"
 
 #include "DigestAlgorithm.h"
@@ -63,7 +64,7 @@ DigestAlgorithm DigestAlgorithm::GetByName (const String& digestName)
 
 optional<DigestAlgorithm> DigestAlgorithm::GetByNameQuietly (const String& digestName)
 {
-    //return Memory::OptionalFromNullable (::EVP_get_digestbyname (digestName.AsNarrowSDKString ().c_str ()));
+    // not sure why doesnt compile ... return Memory::OptionalFromNullable (::EVP_get_digestbyname (digestName.AsNarrowSDKString ().c_str ()));
     auto tmp = ::EVP_get_digestbyname (digestName.AsNarrowSDKString ().c_str ());
     return tmp == nullptr ? optional<DigestAlgorithm>{} : tmp;
 }

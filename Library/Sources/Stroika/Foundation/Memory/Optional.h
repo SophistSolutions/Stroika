@@ -162,10 +162,10 @@ namespace Stroika::Foundation::Memory {
      *
      *  \par Example Usage
      *      \code
-     *      float*  d1  =   nullptr;
-     *      double* d2  =   nullptr;
-     *      Assert (not Optional<double>::OptionalFromNullable (d1).has_value ());
-     *      Assert (not Optional<double>::OptionalFromNullable (d2).has_value ());
+     *          float*  d1  =   nullptr;
+     *          double* d2  =   nullptr;
+     *          Assert (not Optional<double>::OptionalFromNullable (d1).has_value ());
+     *          Assert (not Optional<double>::OptionalFromNullable (d2).has_value ());
      *      \endcode
      *
      *  \note   I tried making this an Optional<T> constructor overload, but it lead to dangerous confusion with things like
