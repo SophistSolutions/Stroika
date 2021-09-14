@@ -914,22 +914,22 @@ namespace {
         }
         {
             char buf[3] = {'1', '1', '1'};
-            CString::Copy (buf, NEltsOf (buf), "3");
+            CString::Copy (buf, Memory::NEltsOf (buf), "3");
             VerifyTestResult (::strcmp (buf, "3") == 0);
         }
         {
             wchar_t buf[3] = {'1', '1', '1'};
-            CString::Copy (buf, NEltsOf (buf), L"3");
+            CString::Copy (buf, Memory::NEltsOf (buf), L"3");
             VerifyTestResult (::wcscmp (buf, L"3") == 0);
         }
         {
             char buf[3] = {'1', '1', '1'};
-            CString::Copy (buf, NEltsOf (buf), "12345");
+            CString::Copy (buf, Memory::NEltsOf (buf), "12345");
             VerifyTestResult (::strcmp (buf, "12") == 0);
         }
         {
             wchar_t buf[3] = {'1', '1', '1'};
-            CString::Copy (buf, NEltsOf (buf), L"12345");
+            CString::Copy (buf, Memory::NEltsOf (buf), L"12345");
             VerifyTestResult (::wcscmp (buf, L"12") == 0);
         }
     }
@@ -1219,7 +1219,7 @@ namespace {
         String                    result;
         Character                 buf[]{'a', 'b', 'c', 'd'};
         for (int i = 0; i < 10; ++i) {
-            result.Append (std::begin (buf), std::begin (buf) + NEltsOf (buf));
+            result.Append (std::begin (buf), std::begin (buf) + Memory::NEltsOf (buf));
         }
         VerifyTestResult (result.size () == 4 * 10);
         VerifyTestResult (result == L"abcdabcdabcdabcdabcdabcdabcdabcdabcdabcd");

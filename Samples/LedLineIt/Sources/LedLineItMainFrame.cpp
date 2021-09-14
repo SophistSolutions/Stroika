@@ -213,10 +213,10 @@ void LedLineItMainFrame::OnUpdateLineIndicator (CCmdUI* pCmdUI)
         LedLineItView* v = GetActiveLedItView ();
         if (v == NULL) {
             // can happen, for example, during PrintPreview
-            Characters::CString::Copy (buf, NEltsOf (buf), _T ("N/A"));
+            Characters::CString::Copy (buf, Memory::NEltsOf (buf), _T ("N/A"));
         }
         else {
-            Characters::CString::Copy (buf, NEltsOf (buf), Characters::Format (L"%d", static_cast<int> (v->GetCurUserLine ())).AsSDKString ().c_str ());
+            Characters::CString::Copy (buf, Memory::NEltsOf (buf), Characters::Format (L"%d", static_cast<int> (v->GetCurUserLine ())).AsSDKString ().c_str ());
         }
     }
     pCmdUI->SetText (buf);

@@ -3511,7 +3511,7 @@ IDispatch* ActiveLedItControl::OLE_MakeBuiltinToolbarItem (LPCOLESTR builtinTool
     };
 
     try {
-        for (size_t i = 0; i < NEltsOf (kToolBarIconSpecs); ++i) {
+        for (size_t i = 0; i < Memory::NEltsOf (kToolBarIconSpecs); ++i) {
             if (CComBSTR (builtinToolbarItemName) == CComBSTR (kToolBarIconSpecs[i].fIconName)) {
                 return mkIconElement (kToolBarIconSpecs[i]).Detach ();
             }

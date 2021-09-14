@@ -79,13 +79,13 @@ namespace {
     void PrettyPrint_ (const Options_& /*options*/, long long int v, const OutputStream<Character>::Ptr& out)
     {
         wchar_t buf[1024];
-        (void)::swprintf (buf, NEltsOf (buf), L"%lld", v);
+        (void)::swprintf (buf, Memory::NEltsOf (buf), L"%lld", v);
         out.Write (buf);
     }
     void PrettyPrint_ (const Options_& /*options*/, unsigned long long int v, const OutputStream<Character>::Ptr& out)
     {
         wchar_t buf[1024];
-        (void)::swprintf (buf, NEltsOf (buf), L"%llu", v);
+        (void)::swprintf (buf, Memory::NEltsOf (buf), L"%llu", v);
         out.Write (buf);
     }
     void PrettyPrint_ (const Options_& options, const String& v, const OutputStream<Character>::Ptr& out);
@@ -134,7 +134,7 @@ namespace {
                     wchar_t c = *i;
                     if (iswcntrl (c)) {
                         wchar_t buf[10];
-                        (void)::swprintf (buf, NEltsOf (buf), L"\\u%04x", static_cast<char16_t> (c));
+                        (void)::swprintf (buf, Memory::NEltsOf (buf), L"\\u%04x", static_cast<char16_t> (c));
                         sb.Append (buf);
                     }
                     else {

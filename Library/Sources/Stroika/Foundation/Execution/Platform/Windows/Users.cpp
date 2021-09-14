@@ -26,8 +26,8 @@ String Platform::Windows::SID22UserName (PSID sid)
     SID_NAME_USE iUse{};
     SDKChar      name[1024];
     SDKChar      domain[1024];
-    DWORD        nameLen{static_cast<DWORD> (NEltsOf (name))};
-    DWORD        domainLen{static_cast<DWORD> (NEltsOf (domain))};
+    DWORD        nameLen{static_cast<DWORD> (Memory::NEltsOf (name))};
+    DWORD        domainLen{static_cast<DWORD> (Memory::NEltsOf (domain))};
     ThrowIfZeroGetLastError (::LookupAccountSid (nullptr, sid, name, &nameLen, domain, &domainLen, &iUse));
     if (domainLen == 0) {
         return String::FromSDKString (name);

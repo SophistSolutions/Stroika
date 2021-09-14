@@ -725,14 +725,14 @@ namespace {
                 [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, RGBColor* intoObj) -> void {
                     String tmpInBuf = d.As<String> ();
                     if (tmpInBuf.length () != 7) {
-                        Execution::Throw (DataExchange::BadFormatException (L"RGBColor sb length 7"));
+                        Execution::Throw (DataExchange::BadFormatException{L"RGBColor sb length 7"});
                     }
                     if (tmpInBuf[0] != '#') {
-                        Execution::Throw (DataExchange::BadFormatException (L"RGBColor must start with #"));
+                        Execution::Throw (DataExchange::BadFormatException{L"RGBColor must start with #"});
                     }
                     auto readColorComponent = [] (const wchar_t* start, const wchar_t* end) -> uint8_t {
                         wchar_t buf[1024];
-                        Require (end - start < static_cast<ptrdiff_t> (NEltsOf (buf)));
+                        Require (end - start < static_cast<ptrdiff_t> (Memory::NEltsOf (buf)));
                         memcpy (buf, start, (end - start) * sizeof (wchar_t));
                         buf[(end - start)] = '\0';
                         wchar_t* e         = nullptr;

@@ -2806,12 +2806,12 @@ public:
         Streams::MemoryStream<byte>::Ptr tmpBuf   = Streams::MemoryStream<byte>::New ();
         do {
             byte buf[10 * 1024];
-            err = unzReadCurrentFile_ (fZipFile_, buf, static_cast<unsigned int> (NEltsOf (buf)));
+            err = unzReadCurrentFile_ (fZipFile_, buf, static_cast<unsigned int> (Memory::NEltsOf (buf)));
             if (err < 0) [[UNLIKELY_ATTR]] {
                 Execution::Throw (Execution::RuntimeErrorException{Characters::Format (L"File '%s' error %d extracting", fileName.c_str (), err)});
             }
             else if (err > 0) {
-                Assert (static_cast<size_t> (err) <= NEltsOf (buf));
+                Assert (static_cast<size_t> (err) <= Memory::NEltsOf (buf));
                 tmpBuf.Write (buf, buf + err);
             }
         } while (err > 0);

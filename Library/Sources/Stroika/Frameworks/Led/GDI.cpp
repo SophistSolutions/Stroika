@@ -791,7 +791,7 @@ void FontSpecification::SetFontName (const Led_SDK_String& fontName)
     // has no idea about the font. This is NOT what we want. But unsure what we can do better at this point!
     fFontSpecifier = fontNum;
 #elif qPlatform_Windows
-    Characters::CString::Copy (fFontInfo.lfFaceName, NEltsOf (fFontInfo.lfFaceName), fontName.c_str ());
+    Characters::CString::Copy (fFontInfo.lfFaceName, Memory::NEltsOf (fFontInfo.lfFaceName), fontName.c_str ());
     fFontInfo.lfCharSet = DEFAULT_CHARSET;
 #elif qStroika_FeatureSupported_XWindows
     fFontFamily = fontName;
@@ -801,7 +801,7 @@ void FontSpecification::SetFontName (const Led_SDK_String& fontName)
 #if qPlatform_Windows
 FontSpecification::FontNameSpecifier::FontNameSpecifier (const Led_SDK_Char* from)
 {
-    Characters::CString::Copy (fName, NEltsOf (fName), from);
+    Characters::CString::Copy (fName, Memory::NEltsOf (fName), from);
 }
 #endif
 
@@ -810,7 +810,7 @@ void FontSpecification::SetFontNameSpecifier (FontNameSpecifier fontNameSpecifie
 #if qPlatform_MacOS
     fFontSpecifier = fontNameSpecifier;
 #elif qPlatform_Windows
-    Characters::CString::Copy (fFontInfo.lfFaceName, NEltsOf (fFontInfo.lfFaceName), fontNameSpecifier.fName);
+    Characters::CString::Copy (fFontInfo.lfFaceName, Memory::NEltsOf (fFontInfo.lfFaceName), fontNameSpecifier.fName);
     fFontInfo.lfCharSet = DEFAULT_CHARSET;
 #elif qStroika_FeatureSupported_XWindows
     fFontFamily = fontNameSpecifier;
@@ -3138,10 +3138,10 @@ wstring IME::GetCompositionResultStringW (HWND hWnd)
         HIMC hImc = 0;
         if ((hImc = fImmGetContext (hWnd)) != 0) {
             wchar_t curIMEString[2048];
-            LONG    nChars = fImmGetCompositionStringW (hImc, GCS_RESULTSTR, curIMEString, static_cast<DWORD> (NEltsOf (curIMEString)));
+            LONG    nChars = fImmGetCompositionStringW (hImc, GCS_RESULTSTR, curIMEString, static_cast<DWORD> (Memory::NEltsOf (curIMEString)));
 
             nChars /= sizeof (wchar_t); // why???? LGP 991214
-            if (nChars >= 0 and static_cast<size_t> (nChars) < NEltsOf (curIMEString)) {
+            if (nChars >= 0 and static_cast<size_t> (nChars) < Memory::NEltsOf (curIMEString)) {
                 curIMEString[nChars] = '\0';
             }
             else {

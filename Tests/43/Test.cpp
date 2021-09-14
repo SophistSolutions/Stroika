@@ -54,7 +54,7 @@ namespace {
         wchar_t outBuf[10 * 1024];
 
         String canonical;
-        ThrowIfErrorHRESULT (::CoInternetParseUrl (CComBSTR (w.c_str ()), PARSE_CANONICALIZE, 0, outBuf, static_cast<DWORD> (NEltsOf (outBuf)), &ignr, 0));
+        ThrowIfErrorHRESULT (::CoInternetParseUrl (CComBSTR (w.c_str ()), PARSE_CANONICALIZE, 0, outBuf, static_cast<DWORD> (Memory::NEltsOf (outBuf)), &ignr, 0));
         canonical = outBuf;
 
         {
@@ -64,16 +64,16 @@ namespace {
             }
         }
 
-        if (SUCCEEDED (::CoInternetParseUrl (CComBSTR (canonical.c_str ()), PARSE_DOMAIN, 0, outBuf, static_cast<DWORD> (NEltsOf (outBuf)), &ignr, 0))) {
+        if (SUCCEEDED (::CoInternetParseUrl (CComBSTR (canonical.c_str ()), PARSE_DOMAIN, 0, outBuf, static_cast<DWORD> (Memory::NEltsOf (outBuf)), &ignr, 0))) {
             *host = outBuf;
         }
 
         // I cannot see how to get other fields using CoInternetParseURL??? - LGP 2004-04-13...
         {
-            String matchStr    = *protocol + String_Constant (L"://") + *host;
+            String matchStr    = *protocol + L"://"sv + *host;
             size_t startOfPath = canonical.Find (matchStr).value_or (String::npos);
             if (startOfPath == String::npos) {
-                matchStr    = *protocol + String_Constant (L":");
+                matchStr    = *protocol + L":"sv;
                 startOfPath = canonical.Find (matchStr).value_or (String::npos);
             }
             if (startOfPath == String::npos) {

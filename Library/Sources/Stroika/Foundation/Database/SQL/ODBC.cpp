@@ -79,7 +79,7 @@ struct Connection::Rep_ final : IRep {
                         SQL_HANDLE_DBC, fConnectionHandle, 1,
                         reinterpret_cast<SQLTCHAR*> (sqlState), &errorCode,
                         reinterpret_cast<SQLTCHAR*> (errorMessage),
-                        NEltsOf (errorMessage), &messageLength);
+                        Memory::NEltsOf (errorMessage), &messageLength);
                     DISABLE_COMPILER_MSC_WARNING_END (4267)
                     if (errValue == SQL_SUCCESS) {
                         // TCHAR isn't the same SQLTCHAR for 'ANSI' because for some crazy reason, they
@@ -349,7 +349,7 @@ public:
                         SQL_HANDLE_DBC, fConnectionHandle, 1,
                         reinterpret_cast<SQLTCHAR*> (sqlState), &errorCode,
                         reinterpret_cast<SQLTCHAR*> (errorMessage),
-                        NEltsOf (errorMessage), &messageLength);
+                        Memory::NEltsOf (errorMessage), &messageLength);
                     DISABLE_COMPILER_MSC_WARNING_END (4267)
                     if (errValue == SQL_SUCCESS) {
                         // TCHAR isn't the same SQLTCHAR for 'ANSI' because for some crazy reason, they

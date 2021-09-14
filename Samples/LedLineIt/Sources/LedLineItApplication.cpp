@@ -153,7 +153,7 @@ inline Led_SDK_String GetLongPathName (const Led_SDK_String& pathName)
 {
     TCHAR szPath[_MAX_PATH];
     Require (pathName.length () < _MAX_PATH);
-    Characters::CString::Copy (szPath, NEltsOf (szPath), pathName.c_str ());
+    Characters::CString::Copy (szPath, Memory::NEltsOf (szPath), pathName.c_str ());
     WIN32_FIND_DATA fileData;
     HANDLE          hFind = ::FindFirstFile (szPath, &fileData);
     if (hFind != INVALID_HANDLE_VALUE) {
@@ -164,9 +164,9 @@ inline Led_SDK_String GetLongPathName (const Led_SDK_String& pathName)
         else {
             // strip the filename part - just keeping the full directory path
             *lastSlash = '\0';
-            Characters::CString::Cat (szPath, NEltsOf (szPath), _T ("\\"));
+            Characters::CString::Cat (szPath, Memory::NEltsOf (szPath), _T ("\\"));
         }
-        Characters::CString::Cat (szPath, NEltsOf (szPath), fileData.cFileName);
+        Characters::CString::Cat (szPath, Memory::NEltsOf (szPath), fileData.cFileName);
         VERIFY (::FindClose (hFind));
     }
     return szPath;
@@ -463,7 +463,7 @@ void LedLineItApplication::WinHelpInternal ([[maybe_unused]] DWORD_PTR dwData, [
         ASSERT (*lpszExt == '\\');
         *(lpszExt + 1) = '\0';
     }
-    Characters::CString::Cat (directoryName, NEltsOf (directoryName), _T ("LedLineItDocs\\"));
+    Characters::CString::Cat (directoryName, Memory::NEltsOf (directoryName), _T ("LedLineItDocs\\"));
 
     // wrap in try/catch, and display error if no open???
     // (NB: we use .htm instead of .html cuz some old systems - I think maybe
@@ -748,7 +748,7 @@ void LedLineItApplication::OnChooseDefaultFontCommand ()
     LOGFONT lf;
     (void)::memset (&lf, 0, sizeof (lf));
     {
-        Characters::CString::Copy (lf.lfFaceName, NEltsOf (lf.lfFaceName), fsp.GetFontNameSpecifier ().fName);
+        Characters::CString::Copy (lf.lfFaceName, Memory::NEltsOf (lf.lfFaceName), fsp.GetFontNameSpecifier ().fName);
         Assert (::_tcslen (lf.lfFaceName) < sizeof (lf.lfFaceName)); // cuz our cached entry - if valid - always short enuf...
     }
     lf.lfWeight    = (fsp.GetStyle_Bold ()) ? FW_BOLD : FW_NORMAL;

@@ -136,7 +136,7 @@ public:
                     byte          buf[8 * 1024]; // not sure of max packet size
                     SocketAddress from;
                     size_t        nBytesRead = s.ReceiveFrom (std::begin (buf), std::end (buf), 0, &from);
-                    Assert (nBytesRead <= NEltsOf (buf));
+                    Assert (nBytesRead <= Memory::NEltsOf (buf));
                     using namespace Streams;
                     ReadPacketAndNotifyCallbacks_ (TextReader::New (ExternallyOwnedMemoryInputStream<byte>::New (std::begin (buf), std::begin (buf) + nBytesRead)));
                 }

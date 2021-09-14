@@ -325,7 +325,7 @@ namespace {
             }
             else {
                 char buf[1024];
-                (void)snprintf (buf, NEltsOf (buf), "%.*d", sMinWidth_.load (), threadIndex2Show);
+                (void)::snprintf (buf, Memory::NEltsOf (buf), "%.*d", sMinWidth_.load (), threadIndex2Show);
                 return pair<bool, string>{wasNew, buf};
             }
         }
@@ -345,17 +345,17 @@ Emitter::TraceLastBufferedWriteTokenType Emitter::DoEmitMessage_ (size_t bufferL
         char               buf[1024];
         Thread::IDType     threadID     = Execution::Thread::GetCurrentThreadID ();
         pair<bool, string> threadIDInfo = mkThreadLabelForThreadID_ (threadID);
-        Verify (snprintf (buf, NEltsOf (buf), "[%s][%08.3f]\t", threadIDInfo.second.c_str (), static_cast<double> (curRelativeTime)) > 0);
+        Verify (snprintf (buf, Memory::NEltsOf (buf), "[%s][%08.3f]\t", threadIDInfo.second.c_str (), static_cast<double> (curRelativeTime)) > 0);
         if (threadIDInfo.first) {
             char buf2[1024];
-            Verify (snprintf (buf2, NEltsOf (buf2), "(NEW THREAD, index=%s Real Thread ID=%s)\t", threadIDInfo.second.c_str (), Thread::FormatThreadID_A (threadID).c_str ()) > 0);
+            Verify (snprintf (buf2, Memory::NEltsOf (buf2), "(NEW THREAD, index=%s Real Thread ID=%s)\t", threadIDInfo.second.c_str (), Thread::FormatThreadID_A (threadID).c_str ()) > 0);
 #if __STDC_WANT_SECURE_LIB__
             strcat_s (buf, buf2);
 #else
             strcat (buf, buf2);
 #endif
 #if qPlatform_POSIX
-            Verify (snprintf (buf2, NEltsOf (buf2), "(pthread_self=0x%lx)\t", (unsigned long)pthread_self ()) > 0);
+            Verify (snprintf (buf2, Memory::NEltsOf (buf2), "(pthread_self=0x%lx)\t", (unsigned long)pthread_self ()) > 0);
 #if __STDC_WANT_SECURE_LIB__
             strcat_s (buf, buf2);
 #else
@@ -387,7 +387,7 @@ Emitter::TraceLastBufferedWriteTokenType Emitter::DoEmitMessage_ (size_t bufferL
 
 void Emitter::BufferNChars_ (size_t bufferLastNChars, const char* p)
 {
-    Assert (bufferLastNChars < NEltsOf (fLastNCharBuf_CHAR_));
+    Assert (bufferLastNChars < Memory::NEltsOf (fLastNCharBuf_CHAR_));
     fLastNCharBufCharCount_ = bufferLastNChars;
     memcpy (fLastNCharBuf_CHAR_, p, bufferLastNChars); // no need to nul-terminate because fLastNCharBufCharCount_ stores length
     fLastNCharBuf_WCHARFlag_ = false;
@@ -395,7 +395,7 @@ void Emitter::BufferNChars_ (size_t bufferLastNChars, const char* p)
 
 void Emitter::BufferNChars_ (size_t bufferLastNChars, const wchar_t* p)
 {
-    Assert (bufferLastNChars < NEltsOf (fLastNCharBuf_WCHAR_));
+    Assert (bufferLastNChars < Memory::NEltsOf (fLastNCharBuf_WCHAR_));
     fLastNCharBufCharCount_ = bufferLastNChars;
     memcpy (fLastNCharBuf_WCHAR_, p, bufferLastNChars * sizeof (wchar_t)); // no need to nul-terminate because fLastNCharBufCharCount_ stores length
     fLastNCharBuf_WCHARFlag_ = true;
@@ -438,7 +438,7 @@ void Emitter::DoEmit_ (const char* p) noexcept
     else {
         char buf[1024]; // @todo if/when we always support constexpr can use that here!
         (void)::memcpy (buf, p, sizeof (buf));
-        buf[NEltsOf (buf) - 1] = 0;
+        buf[Memory::NEltsOf (buf) - 1] = 0;
         ::OutputDebugStringA (buf);
         ::OutputDebugStringA ("...");
         ::OutputDebugStringA (GetEOL<char> ());
@@ -459,7 +459,7 @@ void Emitter::DoEmit_ (const wchar_t* p) noexcept
     else {
         wchar_t buf[1024]; // @todo if/when we always support constexpr can use that here!
         (void)::memcpy (buf, p, sizeof (buf));
-        buf[NEltsOf (buf) - 1] = 0;
+        buf[Memory::NEltsOf (buf) - 1] = 0;
         ::OutputDebugStringW (buf);
         ::OutputDebugStringW (L"...");
         ::OutputDebugStringW (GetEOL<wchar_t> ());
@@ -518,9 +518,9 @@ TraceContextBumper::TraceContextBumper (const wchar_t* contextName) noexcept
     : fDoEndMarker{true}
 {
     fLastWriteToken_ = Emitter::Get ().EmitTraceMessage (3 + ::wcslen (GetEOL<wchar_t> ()), L"<%s> {", contextName);
-    size_t len       = min (NEltsOf (fSavedContextName_) - 1, char_traits<wchar_t>::length (contextName));
+    size_t len       = min (Memory::NEltsOf (fSavedContextName_) - 1, char_traits<wchar_t>::length (contextName));
     char_traits<wchar_t>::copy (fSavedContextName_, contextName, len);
-    if (len >= NEltsOf (fSavedContextName_) - 1) {
+    if (len >= Memory::NEltsOf (fSavedContextName_) - 1) {
         char_traits<wchar_t>::copy (&fSavedContextName_[len - 3], L"...", 3);
     }
     *(std::end (fSavedContextName_) - 1) = '\0';
@@ -536,9 +536,9 @@ TraceContextBumper::TraceContextBumper (const wchar_t* contextName, const wchar_
         va_start (argsList, extraFmt);
         fLastWriteToken_ = Emitter::Get ().EmitTraceMessage (3 + ::wcslen (GetEOL<wchar_t> ()), L"<%s (%s)> {", contextName, Characters::CString::FormatV (extraFmt, argsList).c_str ());
         va_end (argsList);
-        size_t len = min (NEltsOf (fSavedContextName_) - 1, char_traits<wchar_t>::length (contextName));
+        size_t len = min (Memory::NEltsOf (fSavedContextName_) - 1, char_traits<wchar_t>::length (contextName));
         char_traits<wchar_t>::copy (fSavedContextName_, contextName, len);
-        if (len >= NEltsOf (fSavedContextName_) - 1) {
+        if (len >= Memory::NEltsOf (fSavedContextName_) - 1) {
             char_traits<wchar_t>::copy (&fSavedContextName_[len - 3], L"...", 3);
         }
         *(std::end (fSavedContextName_) - 1) = '\0';

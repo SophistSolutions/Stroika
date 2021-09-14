@@ -86,7 +86,7 @@ namespace {
                     return "EXCEPTION_INVALID_HANDLE";
                 default: {
                     char buf[1024];
-                    (void)::snprintf (buf, NEltsOf (buf), "#0x%x", u);
+                    (void)::snprintf (buf, Memory::NEltsOf (buf), "#0x%x", u);
                     return buf;
                 }
             }

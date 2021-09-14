@@ -69,7 +69,7 @@ namespace {
 
     inline uint32_t UPDC32_ (byte octet, uint32_t crc)
     {
-        Assert (NEltsOf (kcrc_32_tab_) == 256); // byte index always safe/cool
+        Assert (Memory::NEltsOf (kcrc_32_tab_) == 256); // byte index always safe/cool
         return kcrc_32_tab_[(crc ^ to_integer<uint32_t> (octet)) & 0xff] ^ (crc >> 8);
     }
     inline void DoMore_ (uint32_t* hash2Update, const byte* from, const byte* to)

@@ -611,22 +611,22 @@ void LedLineItView::OnUpdateFontSizeChangeCommand (CCmdUI* pCmdUI)
 
             case kFontSizeOtherCmdID: {
                 TCHAR nameBuf[1024];
-                Characters::CString::Copy (nameBuf, NEltsOf (nameBuf), _T ("Other"));
+                Characters::CString::Copy (nameBuf, Memory::NEltsOf (nameBuf), _T ("Other"));
                 pCmdUI->SetCheck (false);
                 {
                     int pointSize = GetDefaultFont ().GetPointSize ();
                     if (not IsPredefinedFontSize (pointSize)) {
-                        Characters::CString::Cat (nameBuf, NEltsOf (nameBuf), _T (" ("));
+                        Characters::CString::Cat (nameBuf, Memory::NEltsOf (nameBuf), _T (" ("));
                         TCHAR nBuf[100];
                         DISABLE_COMPILER_MSC_WARNING_START (4996)
                         _stprintf (nBuf, _T ("%d"), GetDefaultFont ().GetPointSize ());
                         DISABLE_COMPILER_MSC_WARNING_END (4996)
-                        Characters::CString::Cat (nameBuf, NEltsOf (nameBuf), nBuf);
-                        Characters::CString::Cat (nameBuf, NEltsOf (nameBuf), _T (")"));
+                        Characters::CString::Cat (nameBuf, Memory::NEltsOf (nameBuf), nBuf);
+                        Characters::CString::Cat (nameBuf, Memory::NEltsOf (nameBuf), _T (")"));
                         pCmdUI->SetCheck (true);
                     }
                 }
-                Characters::CString::Cat (nameBuf, NEltsOf (nameBuf), _T ("..."));
+                Characters::CString::Cat (nameBuf, Memory::NEltsOf (nameBuf), _T ("..."));
                 pCmdUI->SetText (nameBuf);
             } break;
         }
@@ -882,7 +882,7 @@ void LedLineItView::OnChooseFontCommand ()
     LOGFONT lf;
     (void)::memset (&lf, 0, sizeof (lf));
     {
-        Characters::CString::Copy (lf.lfFaceName, NEltsOf (lf.lfFaceName), GetDefaultFont ().GetFontNameSpecifier ().fName);
+        Characters::CString::Copy (lf.lfFaceName, Memory::NEltsOf (lf.lfFaceName), GetDefaultFont ().GetFontNameSpecifier ().fName);
         Assert (::_tcslen (lf.lfFaceName) < sizeof (lf.lfFaceName)); // cuz our cached entry - if valid - always short enuf...
     }
     lf.lfWeight    = (GetDefaultFont ().GetStyle_Bold ()) ? FW_BOLD : FW_NORMAL;

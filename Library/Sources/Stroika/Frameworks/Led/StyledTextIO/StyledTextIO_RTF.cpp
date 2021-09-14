@@ -1180,7 +1180,7 @@ void SinkStreamDestination::AppendText_ (const Led_tChar* text, size_t nTChars)
         }
     }
 
-    if (fTCharsInSmallBuffer + nTChars < (NEltsOf (fSmallBuffer))) {
+    if (fTCharsInSmallBuffer + nTChars < (Memory::NEltsOf (fSmallBuffer))) {
         (void)::memcpy (&fSmallBuffer[fTCharsInSmallBuffer], text, nTChars * sizeof (Led_tChar));
         fTCharsInSmallBuffer += nTChars;
     }
@@ -1188,7 +1188,7 @@ void SinkStreamDestination::AppendText_ (const Led_tChar* text, size_t nTChars)
         Flush ();
         Assert (fTCharsInSmallBuffer == 0);
 
-        if (nTChars < (NEltsOf (fSmallBuffer))) {
+        if (nTChars < (Memory::NEltsOf (fSmallBuffer))) {
             (void)::memcpy (&fSmallBuffer[0], text, nTChars * sizeof (Led_tChar));
             fTCharsInSmallBuffer = nTChars;
         }
@@ -3061,7 +3061,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_UnknownControlWord (ReaderContext
 bool StyledTextIOReader_RTF::HandlePossibleSpecialCharacterControlWord (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
 {
     // Lookup. If good, then insert special character, and return true. Else return false to handle normally.
-    for (size_t i = 0; i < NEltsOf (kMappings); i++) {
+    for (size_t i = 0; i < Memory::NEltsOf (kMappings); i++) {
         if (controlWord.fWord == kMappings[i].fControlWordName) {
             CheckIfAboutToStartBody (readerContext);
 #if qWideCharacters
@@ -4166,7 +4166,7 @@ StyledTextIOWriter_RTF::StyledTextIOWriter_RTF (SrcStream* srcStream, SinkStream
         pair<string, wchar_t> ("ldblquote", L'\x201c'),
         pair<string, wchar_t> ("rdblquote", L'\x201d'),
     };
-    SetCharactersSavedByName (vector<pair<string, wchar_t>> (&kCharsWrittenByName[0], &kCharsWrittenByName[NEltsOf (kCharsWrittenByName)]));
+    SetCharactersSavedByName (vector<pair<string, wchar_t>> (&kCharsWrittenByName[0], &kCharsWrittenByName[Memory::NEltsOf (kCharsWrittenByName)]));
 }
 
 StyledTextIOWriter_RTF::~StyledTextIOWriter_RTF ()
@@ -4860,7 +4860,7 @@ void StyledTextIOWriter_RTF::WriteTagNValue (const char* tagStr, int value)
     write ('\\');
     write (tagStr);
     char buf[1024];
-    (void)snprintf (buf, NEltsOf (buf), "%d", value);
+    (void)snprintf (buf, Memory::NEltsOf (buf), "%d", value);
     write (buf);
     write (' ');
 }
@@ -4985,7 +4985,7 @@ void StyledTextIOWriter_RTF::WriteColorTable (WriterContext& writerContext)
     for (size_t i = 0; i < entryCount; i++) {
         Color c = fColorTable->LookupColor (i);
         char  buf[1024];
-        (void)snprintf (buf, NEltsOf (buf), "\\red%d\\green%d\\blue%d;", c.GetRed () >> 8, c.GetGreen () >> 8, c.GetBlue () >> 8);
+        (void)snprintf (buf, Memory::NEltsOf (buf), "\\red%d\\green%d\\blue%d;", c.GetRed () >> 8, c.GetGreen () >> 8, c.GetBlue () >> 8);
         write (buf);
     }
 
@@ -5195,7 +5195,7 @@ void StyledTextIOWriter_RTF::AssureFontTableBuilt (WriterContext& writerContext)
 #elif qPlatform_Windows
                 LOGFONT lf;
                 (void)::memset (&lf, 0, sizeof (lf));
-                Characters::CString::Copy (lf.lfFaceName, NEltsOf (lf.lfFaceName), name.c_str ());
+                Characters::CString::Copy (lf.lfFaceName, Memory::NEltsOf (lf.lfFaceName), name.c_str ());
                 lf.lfCharSet = DEFAULT_CHARSET;
                 BYTE useCharset = DEFAULT_CHARSET;
                 ::EnumFontFamiliesEx (screenDC.m_hDC, &lf, (FONTENUMPROC)Save_Charset_EnumFontFamiliesProc, reinterpret_cast<LPARAM> (&useCharset), 0);

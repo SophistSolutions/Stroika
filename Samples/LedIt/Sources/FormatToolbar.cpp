@@ -346,10 +346,9 @@ void FontComboBox::DrawItem (LPDRAWITEMSTRUCT lpDIS)
 
     bool isTrueType = false;
     {
-        LOGFONT lf;
-        memset (&lf, 0, sizeof (LOGFONT));
-        Characters::CString::Copy (lf.lfFaceName, NEltsOf (lf.lfFaceName), static_cast<const TCHAR*> (strText));
-        CWindowDC screenDC (NULL);
+        LOGFONT lf{};
+        Characters::CString::Copy (lf.lfFaceName, Memory::NEltsOf (lf.lfFaceName), static_cast<const TCHAR*> (strText));
+        CWindowDC screenDC{nullptr};
         HDC       hDC = screenDC.m_hDC;
         ASSERT (hDC != NULL);
         ::EnumFontFamiliesEx (hDC, &lf, (FONTENUMPROC)CheckIsTrueTypeEnumFamCallback, (LPARAM)&isTrueType, NULL);

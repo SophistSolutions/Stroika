@@ -198,7 +198,7 @@ filesystem::path IO::FileSystem::Ptr::ResolveShortcut (const filesystem::path& p
             if (SUCCEEDED (psl->Resolve (0, SLR_NO_UI))) {
                 TCHAR path[MAX_PATH + 1]{};
                 DISABLE_COMPILER_MSC_WARNING_START (4267)
-                if (SUCCEEDED (psl->GetPath (path, NEltsOf (path), nullptr, 0))) {
+                if (SUCCEEDED (psl->GetPath (path, Memory::NEltsOf (path), nullptr, 0))) {
                     return path;
                 }
                 DISABLE_COMPILER_MSC_WARNING_END (4267)
@@ -531,11 +531,11 @@ filesystem::path IO::FileSystem::Ptr::GetCurrentDirectory () const
 {
 #if qPlatform_POSIX
     SDKChar buf[PATH_MAX];
-    Execution::ThrowPOSIXErrNoIfNull (::getcwd (buf, NEltsOf (buf)));
+    Execution::ThrowPOSIXErrNoIfNull (::getcwd (buf, Memory::NEltsOf (buf)));
     return buf;
 #elif qPlatform_Windows
     SDKChar buf[MAX_PATH];
-    ThrowIfZeroGetLastError (::GetCurrentDirectory (static_cast<DWORD> (NEltsOf (buf)), buf));
+    ThrowIfZeroGetLastError (::GetCurrentDirectory (static_cast<DWORD> (Memory::NEltsOf (buf)), buf));
     return buf;
 #else
     AssertNotImplemented ();

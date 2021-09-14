@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Common {
         , Data2{src.Data2}
         , Data3{src.Data3}
     {
-        for (size_t i = 0; i < NEltsOf (Data4); ++i) {
+        for (size_t i = 0; i < Memory::NEltsOf (Data4); ++i) {
             Data4[i] = src.Data4[i];
         }
     }

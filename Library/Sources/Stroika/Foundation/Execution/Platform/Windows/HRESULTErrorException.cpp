@@ -82,7 +82,7 @@ namespace {
                 return system_category ().message (HRESULT_CODE (wCode));
             }
             char buf[1024];
-            (void)::snprintf (buf, NEltsOf (buf), "HRESULT error code: 0x%x", hr);
+            (void)::snprintf (buf, Memory::NEltsOf (buf), "HRESULT error code: 0x%x", hr);
             return buf;
         }
     };

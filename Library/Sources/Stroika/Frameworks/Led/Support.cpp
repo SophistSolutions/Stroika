@@ -748,11 +748,11 @@ void Led::DumpObjectsInIterator (IEnumUnknown* iter, const char* iteratorName, c
     IUnknown* nextObj = nullptr;
     for (size_t i = 0; SUCCEEDED (iter->Next (1, &nextObj, nullptr)); ++i) {
         char nameBuf[1024];
-        (void)snprintf (nameBuf, NEltsOf (nameBuf), "obj#%d", static_cast<int> (i));
+        (void)snprintf (nameBuf, Memory::NEltsOf (nameBuf), "obj#%d", static_cast<int> (i));
         char levelPrefixBuf[1024];
         Assert (::strlen (levelPrefix) < sizeof (levelPrefixBuf) / 2); // assert MUCH less
-        Characters::CString::Copy (levelPrefixBuf, NEltsOf (levelPrefixBuf), levelPrefix);
-        CString::Cat (levelPrefixBuf, NEltsOf (levelPrefixBuf), "\t");
+        Characters::CString::Copy (levelPrefixBuf, Memory::NEltsOf (levelPrefixBuf), levelPrefix);
+        CString::Cat (levelPrefixBuf, Memory::NEltsOf (levelPrefixBuf), "\t");
         DumpSupportedInterfaces (nextObj, nameBuf, levelPrefixBuf);
         AssertNotNull (nextObj);
         nextObj->Release ();
@@ -998,7 +998,7 @@ void Led_URLManager::Open_IC (const string& url)
         // Unclear if/why url would be modified, but since they declare it as non-cost
         // better be sure...LGP 961028
         char urlBuf[1024];
-        CString::Copy (urlBuf, url.c_str (), NEltsOf (urlBuf));
+        CString::Copy (urlBuf, url.c_str (), Memory::NEltsOf (urlBuf));
         err = ::ICLaunchURL (icInstance, hint, urlBuf, ::strlen (urlBuf), &urlStart, &urlEnd);
     }
     ::ICStop (icInstance);
@@ -1331,7 +1331,7 @@ HSZ Led_URLManager::ClientArguments (const char* pFormat, ...)
             DWORD* pWord = va_arg (VarList, DWORD*);
             if (pWord != nullptr) {
                 //  See if we need to use hex.
-                snprintf (caNumpad, NEltsOf (caNumpad), "%lu", *pWord);
+                snprintf (caNumpad, Memory::NEltsOf (caNumpad), "%lu", *pWord);
                 csRetval += caNumpad;
             }
         }
@@ -1651,7 +1651,7 @@ string Led::MakeSophistsAppNameVersionURL (const string& relURL, const string& a
 {
     Require (relURL.length () > 0 and relURL[0] == '/');
     char fullVersionBuf[1024];
-    (void)snprintf (fullVersionBuf, NEltsOf (fullVersionBuf), "%d", qLed_FullVersion);
+    (void)snprintf (fullVersionBuf, Memory::NEltsOf (fullVersionBuf), "%d", qLed_FullVersion);
     string fullURL = "http://www.sophists.com" + relURL +
                      "?AppName=" + appName +
 #if qPlatform_Windows

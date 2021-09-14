@@ -790,7 +790,7 @@ namespace {
                             skipedThisMany = 0;
                         }
                     }
-                    buf[(nBytesRead == NEltsOf (buf)) ? (NEltsOf (buf) - 1) : nBytesRead] = '\0';
+                    buf[(nBytesRead == Memory::NEltsOf (buf)) ? (Memory::NEltsOf (buf) - 1) : nBytesRead] = '\0';
                     DbgTrace ("read from process (fd=%d) nBytesRead = %d: %s", fd, nBytesRead, buf);
 #endif
                 }
@@ -830,7 +830,7 @@ namespace {
                 // even if no input is ready to send to child.
                 while (true) {
                     if (optional<size_t> oNBytes = in.ReadNonBlocking (begin (stdinBuf), end (stdinBuf))) {
-                        Assert (*oNBytes <= NEltsOf (stdinBuf));
+                        Assert (*oNBytes <= Memory::NEltsOf (stdinBuf));
                         const byte* p = begin (stdinBuf);
                         const byte* e = p + *oNBytes;
                         if (p == e) {
@@ -892,7 +892,7 @@ namespace {
                 DbgTrace ("childPID=%d, result=%d, status=%d, WIFEXITED=%d, WEXITSTATUS=%d, WIFSIGNALED=%d", childPID, result, status, WIFEXITED (status), WEXITSTATUS (status), WIFSIGNALED (status));
                 if (processResult == nullptr) {
                     StringBuilder stderrMsg;
-                    if (trailingStderrBufNWritten > NEltsOf (trailingStderrBuf)) {
+                    if (trailingStderrBufNWritten > Memory::NEltsOf (trailingStderrBuf)) {
                         stderrMsg += L"...";
                         stderrMsg += String::FromISOLatin1 (trailingStderrBufNextByte2WriteAt, end (trailingStderrBuf));
                     }
@@ -974,7 +974,7 @@ namespace {
             {
                 bool  bInheritHandles = true;
                 TCHAR cmdLineBuf[32768]; // crazy MSFT definition! - why this should need to be non-const!
-                Characters::CString::Copy (cmdLineBuf, NEltsOf (cmdLineBuf), cmdLine.AsSDKString ().c_str ());
+                Characters::CString::Copy (cmdLineBuf, Memory::NEltsOf (cmdLineBuf), cmdLine.AsSDKString ().c_str ());
                 Execution::Platform::Windows::ThrowIfZeroGetLastError (::CreateProcess (nullptr, cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, currentDir, &startInfo, &processInfo));
             }
 
@@ -1018,7 +1018,7 @@ namespace {
                         o.Write (buf, buf + nBytesRead);
                     }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    buf[(nBytesRead == NEltsOf (buf)) ? (NEltsOf (buf) - 1) : nBytesRead] = '\0';
+                    buf[(nBytesRead == Memory::NEltsOf (buf)) ? (Memory::NEltsOf (buf) - 1) : nBytesRead] = '\0';
                     DbgTrace ("read from process (fd=%p) nBytesRead = %d: %s", p, nBytesRead, buf);
 #endif
                 }
@@ -1048,7 +1048,7 @@ namespace {
                         byte stdinBuf[10 * 1024];
                         // blocking read to 'in' til it reaches EOF (returns 0)
                         while (size_t nbytes = in.Read (begin (stdinBuf), end (stdinBuf))) {
-                            Assert (nbytes <= NEltsOf (stdinBuf));
+                            Assert (nbytes <= Memory::NEltsOf (stdinBuf));
                             const byte* p = begin (stdinBuf);
                             const byte* e = p + nbytes;
                             while (p < e) {
@@ -1118,7 +1118,7 @@ namespace {
                     // Also - its not exactly a busy-wait. Its just a wait between reading stuff to avoid buffers filling. If the
                     // process actually finishes, it will change state and the wait should return immediately.
                     double remainingTimeout = (timesWaited <= 5) ? 0.1 : 0.5;
-                    DWORD  waitResult       = ::WaitForMultipleObjects (static_cast<DWORD> (NEltsOf (events)), events, false, static_cast<int> (remainingTimeout * 1000));
+                    DWORD  waitResult       = ::WaitForMultipleObjects (static_cast<DWORD> (Memory::NEltsOf (events)), events, false, static_cast<int> (remainingTimeout * 1000));
                     timesWaited++;
 
                     readAnyAvailableAndCopy2StreamWithoutBlocking (useSTDOUT, out);
@@ -1362,9 +1362,9 @@ pid_t Execution::DetachedProcessRunner (const filesystem::path& executable, cons
         for (String i : useArgs) {
             //quickie/weak impl...
             if (cmdLineBuf[0] != '\0') {
-                Characters::CString::Cat (cmdLineBuf, NEltsOf (cmdLineBuf), SDKSTR (" "));
+                Characters::CString::Cat (cmdLineBuf, Memory::NEltsOf (cmdLineBuf), SDKSTR (" "));
             }
-            Characters::CString::Cat (cmdLineBuf, NEltsOf (cmdLineBuf), i.AsSDKString ().c_str ());
+            Characters::CString::Cat (cmdLineBuf, Memory::NEltsOf (cmdLineBuf), i.AsSDKString ().c_str ());
         }
         Execution::Platform::Windows::ThrowIfZeroGetLastError (
             ::CreateProcess (executable.c_str (), cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, nullptr, &startInfo, &processInfo));

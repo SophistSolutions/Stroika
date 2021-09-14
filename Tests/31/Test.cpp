@@ -518,8 +518,8 @@ namespace {
             const char        kKey1_[]        = "Mr Key";
             const char        kKey2_[]        = "One Very Very Very Long key 123";
             static const BLOB kPassphrases_[] = {
-                BLOB::Raw (kKey1_, NEltsOf (kKey1_) - 1),
-                BLOB::Raw (kKey2_, NEltsOf (kKey2_) - 1),
+                BLOB::Raw (kKey1_, Memory::NEltsOf (kKey1_) - 1),
+                BLOB::Raw (kKey2_, Memory::NEltsOf (kKey2_) - 1),
             };
 
             const char kSrc1_[] = "This is a very good test of a very good test";
@@ -528,10 +528,10 @@ namespace {
             const char kSrc4_[] = "0123456789";
 
             static const BLOB kTestMessages_[] = {
-                BLOB::Raw (kSrc1_, NEltsOf (kSrc1_) - 1),
-                BLOB::Raw (kSrc2_, NEltsOf (kSrc2_) - 1),
-                BLOB::Raw (kSrc3_, NEltsOf (kSrc3_) - 1),
-                BLOB::Raw (kSrc4_, NEltsOf (kSrc4_) - 1)};
+                BLOB::Raw (kSrc1_, Memory::NEltsOf (kSrc1_) - 1),
+                BLOB::Raw (kSrc2_, Memory::NEltsOf (kSrc2_) - 1),
+                BLOB::Raw (kSrc3_, Memory::NEltsOf (kSrc3_) - 1),
+                BLOB::Raw (kSrc4_, Memory::NEltsOf (kSrc4_) - 1)};
 
             Set<String> providers2Try{OpenSSL::LibraryContext::kDefaultProvider};
             if (OPENSSL_VERSION_NUMBER >= 0x30000000L) {

@@ -875,7 +875,7 @@ vector<Led_tChar> SpellCheckEngine_Basic::EditableDictionary::SaveToBuffer () co
 #else
     const Led_tChar kLineTerm[] = LED_TCHAR_OF ("\n");
 #endif
-    const size_t kLineTerm_Length  = NEltsOf (kLineTerm) - 1;
+    const size_t kLineTerm_Length  = Memory::NEltsOf (kLineTerm) - 1;
     size_t       totalBufSizeSoFar = 0;
     for (auto i = fSortedWordList.begin (); i != fSortedWordList.end (); ++i) {
         {

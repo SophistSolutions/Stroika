@@ -163,7 +163,7 @@ void SearchResponder::Run (const Iterable<Advertisement>& advertisements)
                     byte          buf[4 * 1024]; // not sure of max packet size
                     SocketAddress from;
                     size_t        nBytesRead = s.ReceiveFrom (begin (buf), end (buf), 0, &from);
-                    Assert (nBytesRead <= NEltsOf (buf));
+                    Assert (nBytesRead <= Memory::NEltsOf (buf));
                     using namespace Streams;
                     ParsePacketAndRespond_ (TextReader::New (ExternallyOwnedMemoryInputStream<byte>::New (begin (buf), begin (buf) + nBytesRead)), advertisements, s, from);
                 }

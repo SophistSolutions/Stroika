@@ -65,7 +65,7 @@ namespace {
             pair<string, string> ("teal", "008080"),
             pair<string, string> ("aqua", "00FFFF"),
         };
-        return vector<pair<string, string>> (&kColorNameTable[0], &kColorNameTable[NEltsOf (kColorNameTable)]);
+        return vector<pair<string, string>> (&kColorNameTable[0], &kColorNameTable[Memory::NEltsOf (kColorNameTable)]);
     }
     static vector<pair<string, string>> kColorNameTable = _mk_Color_Name_Table ();
 #else
@@ -124,7 +124,7 @@ namespace {
             }
         }
 #else
-        for (size_t i = 0; i < NEltsOf (kColorNameTable); ++i) {
+        for (size_t i = 0; i < Memory::NEltsOf (kColorNameTable); ++i) {
             if (Led_CasedStringsEqual (colorStr, kColorNameTable[i].first)) {
                 colorStr = kColorNameTable[i].second;
                 break;
@@ -454,7 +454,7 @@ HTMLInfo::EntityRefMapEntry HTMLInfo::sDefaultEntityRefMapTable[] = {
     EntityRefMapEntry ("lsaquo", 0x2039),
     EntityRefMapEntry ("rsaquo", 0x203a),
 };
-const size_t HTMLInfo::kDefaultEntityRefMapTable_Count = NEltsOf (HTMLInfo::sDefaultEntityRefMapTable);
+const size_t HTMLInfo::kDefaultEntityRefMapTable_Count = Memory::NEltsOf (HTMLInfo::sDefaultEntityRefMapTable);
 
 FontSpecification::FontSize HTMLInfo::HTMLFontSizeToRealFontSize (int size)
 {
@@ -2519,7 +2519,7 @@ static inline string PrintColorString (Color color)
         }
     }
 #else
-    for (size_t i = 0; i < NEltsOf (kColorNameTable); ++i) {
+    for (size_t i = 0; i < Memory::NEltsOf (kColorNameTable); ++i) {
         if (Led_CasedStringsEqual (buf, "\"" + kColorNameTable[i].second + "\"")) {
             //result = "\'" + kColorNameTable[i].first + "\'";
             result = kColorNameTable[i].first;
@@ -2568,7 +2568,7 @@ void StyledTextIOWriter_HTML::EmitBodyFontInfoChange (WriterContext& writerConte
             char   sprintfBuffer[1024];
             string cssInfo = "style=\"";
             cssInfo += "font-family: '" + Led_SDKString2ANSI (newOne.GetFontName ()) + "'; ";
-            cssInfo += (snprintf (sprintfBuffer, NEltsOf (sprintfBuffer), "font-size: %dpt; ", newOne.GetPointSize ()), sprintfBuffer);
+            cssInfo += (snprintf (sprintfBuffer, Memory::NEltsOf (sprintfBuffer), "font-size: %dpt; ", newOne.GetPointSize ()), sprintfBuffer);
             cssInfo += "color: " + PrintColorString (newOne.GetTextColor ());
             cssInfo += "\"";
             WriteOpenTag (writerContext, "span",
@@ -2633,7 +2633,7 @@ string StyledTextIOWriter_HTML::MapOutputTextFromWString (const wstring& text)
         }
         else {
             char buf[1024];
-            (void)snprintf (buf, NEltsOf (buf), "&#%d;", static_cast<unsigned int> (*i));
+            (void)snprintf (buf, Memory::NEltsOf (buf), "&#%d;", static_cast<unsigned int> (*i));
             result += buf;
         }
     }

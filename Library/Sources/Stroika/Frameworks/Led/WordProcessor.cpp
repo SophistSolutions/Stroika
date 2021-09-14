@@ -779,8 +779,8 @@ bool WordProcessor::DialogSupport::ChooseFont ([[maybe_unused]] IncrementalFontS
     LOGFONT lf;
     (void)::memset (&lf, 0, sizeof (lf));
     if (font->GetFontNameSpecifier_Valid ()) {
-        Characters::CString::Copy (lf.lfFaceName, NEltsOf (lf.lfFaceName), font->GetFontNameSpecifier ().fName);
-        Assert (::_tcslen (lf.lfFaceName) < NEltsOf (lf.lfFaceName)); // cuz our cached entry - if valid - always short enuf...
+        Characters::CString::Copy (lf.lfFaceName, Memory::NEltsOf (lf.lfFaceName), font->GetFontNameSpecifier ().fName);
+        Assert (::_tcslen (lf.lfFaceName) < Memory::NEltsOf (lf.lfFaceName)); // cuz our cached entry - if valid - always short enuf...
     }
     lf.lfWeight    = (font->GetStyle_Bold_Valid () and font->GetStyle_Bold ()) ? FW_BOLD : FW_NORMAL;
     lf.lfItalic    = (font->GetStyle_Italic_Valid () and font->GetStyle_Italic ());
@@ -3762,7 +3762,7 @@ void WordProcessor::DrawSegment (Tablet* tablet,
                     pts[0] = AsPOINT (tip);
                     pts[1] = AsPOINT (topPt);
                     pts[2] = AsPOINT (botPt);
-                    Verify (::Polygon (*tablet, pts, static_cast<int> (NEltsOf (pts))));
+                    Verify (::Polygon (*tablet, pts, static_cast<int> (Memory::NEltsOf (pts))));
 #elif qPlatform_MacOS
                     PolyHandle ph = ::OpenPoly ();
                     ::MoveTo (tip.h, tip.v);

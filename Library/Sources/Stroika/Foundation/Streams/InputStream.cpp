@@ -102,12 +102,12 @@ String InputStream<Character>::Ptr::ReadAll (size_t upTo) const
         Character  buf[16 * 1024];
         Character* s = std::begin (buf);
         Character* e = std::end (buf);
-        if (nEltsLeft < NEltsOf (buf)) {
+        if (nEltsLeft < Memory::NEltsOf (buf)) {
             e = s + nEltsLeft;
         }
         size_t n = Read (s, e);
         Assert (0 <= n and n <= nEltsLeft);
-        Assert (0 <= n and n <= NEltsOf (buf));
+        Assert (0 <= n and n <= Memory::NEltsOf (buf));
         if (n == 0) {
             break;
         }
@@ -156,13 +156,13 @@ Memory::BLOB InputStream<byte>::Ptr::ReadAll (size_t upTo) const
         byte  buf[64 * 1024];
         byte* s = std::begin (buf);
         byte* e = std::end (buf);
-        if (nEltsLeft < NEltsOf (buf)) {
+        if (nEltsLeft < Memory::NEltsOf (buf)) {
             e = s + nEltsLeft;
         }
         Assert (s < e);
         size_t n = Read (s, e);
         Assert (0 <= n and n <= nEltsLeft);
-        Assert (0 <= n and n <= NEltsOf (buf));
+        Assert (0 <= n and n <= Memory::NEltsOf (buf));
         if (n == 0) {
             break;
         }

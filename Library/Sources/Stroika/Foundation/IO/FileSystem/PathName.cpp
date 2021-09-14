@@ -113,7 +113,7 @@ String FileSystem::GetFileSuffix (const String& fileName)
         SDKChar fNameBuf[4 * MAX_PATH];
         fNameBuf[0] = '\0';
         DISABLE_COMPILER_MSC_WARNING_START (4267)
-        DWORD r = ::GetLongPathName (fileName.AsSDKString ().c_str (), fNameBuf, NEltsOf (fNameBuf) - 1);
+        DWORD r = ::GetLongPathName (fileName.AsSDKString ().c_str (), fNameBuf, Memory::NEltsOf (fNameBuf) - 1);
         DISABLE_COMPILER_MSC_WARNING_END (4267)
         if (r != 0) {
             useFName = String::FromSDKString (fNameBuf);

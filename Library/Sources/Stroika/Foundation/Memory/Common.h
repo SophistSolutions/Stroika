@@ -11,24 +11,18 @@
 #include "../Configuration/Common.h"
 
 /**
- * TODO:
  */
 
 namespace Stroika::Foundation::Memory {
 
     /**
-     *  \brief NEltsOf(X) returns the number of elements in array X
+     *  \brief NEltsOf(X) returns the number of elements in array argument (ie return sizeof (arg)/sizeof(arg[0]))
      *
      *      @todo   Found std::begin() could be used to replace old StartOfArray() macro -
      *              see if this too can be replaced with something in C++11?
      */
     template <typename ARRAY_TYPE, size_t SIZE_OF_ARRAY>
-    inline constexpr size_t NEltsOf_REAL_ ([[maybe_unused]] const ARRAY_TYPE (&arr)[SIZE_OF_ARRAY])
-    {
-        return SIZE_OF_ARRAY;
-    }
-// after testing - do this - cuz otherwise use in constant array arg wont work
-#define NEltsOf(X) Stroika::Foundation::Memory::NEltsOf_REAL_ (X)
+    constexpr size_t NEltsOf ([[maybe_unused]] const ARRAY_TYPE (&arr)[SIZE_OF_ARRAY]);
 
     /**
      *  API to return memory allocation statistics. Generally - these will be inaccurate,

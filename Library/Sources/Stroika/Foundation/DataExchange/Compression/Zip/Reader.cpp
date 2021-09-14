@@ -95,7 +95,7 @@ namespace {
             {
                 Require (IsOpenRead ());
                 if (fZStream_.avail_in == 0) {
-                    Assert (NEltsOf (fInBuf_) < numeric_limits<uInt>::max ());
+                    Assert (Memory::NEltsOf (fInBuf_) < numeric_limits<uInt>::max ());
                     fZStream_.avail_in = static_cast<uInt> (fInStream_.Read (begin (fInBuf_), end (fInBuf_)));
                     fZStream_.next_in  = reinterpret_cast<Bytef*> (begin (fInBuf_));
                 }
@@ -159,7 +159,7 @@ namespace {
                     Assert (intoStart < intoEnd);
                 Again:
                     if (fZStream_.avail_in == 0) {
-                        Assert (NEltsOf (fInBuf_) < numeric_limits<uInt>::max ());
+                        Assert (Memory::NEltsOf (fInBuf_) < numeric_limits<uInt>::max ());
                         if (auto o = fInStream_.ReadNonBlocking (begin (fInBuf_), end (fInBuf_))) {
                             fZStream_.avail_in = static_cast<uInt> (*o);
                             fZStream_.next_in = begin (fInBuf_);

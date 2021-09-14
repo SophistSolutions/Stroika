@@ -209,7 +209,7 @@ void Algorithm::DigesterAlgorithm<Algorithm::MD5>::MD5Final_ (MD5_CTX* mdContext
     if (padLen == 64) {
         padLen = 0;
     }
-    Assert (padLen < NEltsOf (kPADDING_));
+    Assert (padLen < Memory::NEltsOf (kPADDING_));
     MD5Update_ (mdContext, kPADDING_, padLen);
 
     /* append length in bits and transform */
