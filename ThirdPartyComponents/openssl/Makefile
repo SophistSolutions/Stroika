@@ -73,7 +73,7 @@ FETCHURLS+=https://ftp.heanet.ie/mirrors/ftp.openssl.org/source/$(BASENAME).tar.
 CONFIG_ARGS=
 
 ifneq ($(CC),)
-ifeq (arm-linux-gnueabihf,$(shell $(CC) -dumpmachine 2> /dev/null))
+ifeq (arm-linux-gnueabihf,$(shell "$(CC)" -dumpmachine 2> /dev/null))
 # OpenSSL 3.0 automatically considers the TARGETMACHINE to be this HOST compiling machine and generates -m64 lines that break
 # the compile - this works around that issue for at least this configuration
 CONFIG_ARGS+=	linux-generic32
