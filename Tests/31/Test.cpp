@@ -18,6 +18,7 @@
 #include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/Configuration/Endian.h"
 #include "Stroika/Foundation/Containers/Common.h"
+#include "Stroika/Foundation/Containers/MultiSet.h"
 #include "Stroika/Foundation/Cryptography/Digest/Algorithm/CRC32.h"
 #include "Stroika/Foundation/Cryptography/Digest/Algorithm/Jenkins.h"
 #include "Stroika/Foundation/Cryptography/Digest/Algorithm/MD5.h"
@@ -545,9 +546,10 @@ namespace {
 #else
                 OpenSSL::LibraryContext::TemporarilyAddProvider providerAdder{&OpenSSL::LibraryContext::sDefault, provider};
 #endif
-                unsigned int nCipherTests{};
-                unsigned int nFailures{};
-                Set<String>  failingCiphers;
+                unsigned int     nCipherTests{};
+                unsigned int     nFailures{};
+                MultiSet<String> failingCiphers;
+                const size_t     totalDigestAlgorithms = OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ().GetLength ();
                 for (BLOB passphrase : kPassphrases_) {
                     for (BLOB inputMessage : kTestMessages_) {
                         for (CipherAlgorithm ci : OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ()) {
@@ -571,14 +573,54 @@ namespace {
                 }
                 if (nFailures != 0) {
                     Set<String>              allCiphers{OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ().Select<String> ([] (auto i) { return i.pName (); })};
-                    Set<String>              passingCiphers              = allCiphers - failingCiphers;
-                    static const Set<String> kLastSeenAllFailingCiphers_ = {L"AES-128-OCB", L"AES-128-XTS", L"AES-192-OCB", L"AES-256-OCB", L"AES-256-XTS", L"ARIA-128-CCM", L"ARIA-128-GCM", L"ARIA-192-CCM", L"ARIA-192-GCM", L"ARIA-256-CCM", L"ARIA-256-GCM", L"id-aes128-CCM", L"id-aes128-GCM", L"id-aes128-wrap",  L"id-aes192-CCM", L"id-aes192-GCM", L"id-aes192-wrap", L"id-aes256-CCM", L"id-aes256-GCM", L"id-aes256-wrap", L"id-smime-alg-CMS3DESwrap"};
-                    if (kLastSeenAllFailingCiphers_ != failingCiphers) {
-                        Stroika::TestHarness::WarnTestIssue (Characters::Format (L"For provider=%s, nCipherTests=%d, nFailures=%d, failingCiphers=%s, passing-ciphrs=%s, new-failures=%s, remove-failures=%s", provider.c_str (), nCipherTests, nFailures, Characters::ToString (failingCiphers).c_str (), Characters::ToString (passingCiphers).c_str (), Characters::ToString (failingCiphers - kLastSeenAllFailingCiphers_).c_str (), Characters::ToString (kLastSeenAllFailingCiphers_ - failingCiphers).c_str ()).c_str ());
+                    Set<String>              passingCiphers              = allCiphers - failingCiphers.Elements ();
+                    static const Set<String> kLastSeenAllFailingCiphers_ = {
+                        L"AES-128-OCB",
+                        L"AES-128-XTS",
+                        L"AES-192-OCB",
+                        L"AES-256-OCB",
+                        L"AES-256-XTS",
+                        L"ARIA-128-CCM",
+                        L"ARIA-128-GCM",
+                        L"ARIA-192-CCM",
+                        L"ARIA-192-GCM",
+                        L"ARIA-256-CCM",
+                        L"ARIA-256-GCM",
+
+// no idea why these work on windows, but fail on Unix... --LGP 2021-09-14
+#if qPlatform_POSIX
+                        L"AES-256-CBC-HMAC-SHA256",
+                        L"AES-256-CBC-HMAC-SHA1",
+                        L"AES-128-CBC-HMAC-SHA256",
+                        L"AES-128-CBC-HMAC-SHA1",
+#endif
+
+                        L"id-aes128-CCM",
+                        L"id-aes128-GCM",
+                        L"id-aes128-wrap",
+                        L"id-aes192-CCM",
+                        L"id-aes192-GCM",
+                        L"id-aes192-wrap",
+                        L"id-aes256-CCM",
+                        L"id-aes256-GCM",
+                        L"id-aes256-wrap",
+                        L"id-smime-alg-CMS3DESwrap"
+                    };
+                    if (kLastSeenAllFailingCiphers_ != Set<String>{failingCiphers.Elements ()}) {
+                        Stroika::TestHarness::WarnTestIssue (
+                            Characters::Format (
+                                L"For provider=%s, nCipherTests=%d, nFailures=%d, new-failures=%s, remove-failures=%s, failingCiphers=%s, passing-ciphrs=%s",
+                                provider.c_str (),
+                                nCipherTests, nFailures,
+                                Characters::ToString (Set<String>{failingCiphers.Elements ()} - kLastSeenAllFailingCiphers_).c_str (),
+                                Characters::ToString (kLastSeenAllFailingCiphers_ - failingCiphers.Elements ()).c_str (),
+                                Characters::ToString (failingCiphers).c_str (),
+                                Characters::ToString (passingCiphers).c_str ())
+                                .c_str ());
                     }
                     static const Set<String> kStandardCipherAlgorithmNames{OpenSSL::LibraryContext::sDefault.pStandardCipherAlgorithms ().Select<String> ([] (auto i) { return i.pName (); })};
-                    if (failingCiphers ^ kStandardCipherAlgorithmNames) {
-                        Stroika::TestHarness::WarnTestIssue (Characters::Format (L"For provider=%s, some standard ciphers failed: %s", provider.c_str (), Characters::ToString (failingCiphers ^ kStandardCipherAlgorithmNames).c_str ()).c_str ());
+                    if (failingCiphers.Elements () ^ kStandardCipherAlgorithmNames) {
+                        Stroika::TestHarness::WarnTestIssue (Characters::Format (L"For provider=%s, some standard ciphers failed: %s", provider.c_str (), Characters::ToString (failingCiphers.Elements () ^ kStandardCipherAlgorithmNames).c_str ()).c_str ());
                     }
                 }
             }
