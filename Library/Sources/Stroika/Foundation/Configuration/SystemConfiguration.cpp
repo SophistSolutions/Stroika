@@ -877,8 +877,8 @@ SystemConfiguration::ComputerNames Configuration::GetSystemConfiguration_Compute
 #else
     char nameBuf[1024]; // Mac XCode 11 doesn't define HOST_NAME_MAX
 #endif
-    Execution::ThrowPOSIXErrNoIfNegative (::gethostname (nameBuf, NEltsOf (nameBuf)));
-    nameBuf[NEltsOf (nameBuf) - 1] = '\0'; // http://linux.die.net/man/2/gethostname says not necessarily nul-terminated
+    Execution::ThrowPOSIXErrNoIfNegative (::gethostname (nameBuf, Memory::NEltsOf (nameBuf)));
+    nameBuf[Memory::NEltsOf (nameBuf) - 1] = '\0'; // http://linux.die.net/man/2/gethostname says not necessarily nul-terminated
     result.fHostname               = String::FromNarrowSDKString (nameBuf);
 #elif qPlatform_Windows
     constexpr COMPUTER_NAME_FORMAT kUseNameFormat_ = ComputerNameNetBIOS; // total WAG -- LGP 2014-10-10
