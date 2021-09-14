@@ -554,13 +554,17 @@ namespace Stroika::Foundation::Containers {
      *  Alias for Set<>::Difference.
      */
     template <typename T>
-    Set<T> operator- (const Set<T>& lhs, const Set<T>& rhs);
+    Set<T> operator- (const Set<T>& lhs, const Iterable<T>& rhs);
 
     /**
      *   Alias for Set<>::Intersection.
      */
     template <typename T>
     Set<T> operator^ (const Set<T>& lhs, const Iterable<T>& rhs);
+    template <typename T>
+    Set<T> operator^ (const Iterable<T>& lhs, const Set<T>& rhs);
+    template <typename T>
+    Set<T> operator^ (const Set<T>& lhs, const Set<T>& rhs);
 
 }
 

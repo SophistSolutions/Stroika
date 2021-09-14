@@ -336,8 +336,10 @@ namespace Stroika::Foundation::Containers {
     {
         using namespace Stroika::Foundation::Common;
         Set result{this->GetElementEqualsComparer ()};
-        // whether its better to incrementally create the result set, or better to incrementally remove
-        // from the result set (performance wise) (probably) depends on how close *this and rhs are to one another.
+        /*
+         *  whether its better to incrementally create the result set, or better to incrementally remove
+         * from the result set (performance wise) (probably) depends on how close *this and rhs are to one another.
+         */
         for (T i : *this) {
             if (not rhs.Contains (i)) {
                 result.Add (i);
@@ -348,16 +350,33 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     Set<T> Set<T>::Difference (const Iterable<T>& rhs) const
     {
-        // We could iterate (doubly nested loop) over both *this and rhs, and that would avoid constructing
-        // an intermediate object. However, in the INNER loop, we would do an O(N) operation, and this way we
-        // probably have an (O(Log(N)) operation in the inner loop. At least for larger containers, that
-        // makes sense (except for requiring more memory temporarily). For smaller ones, it probably doesn't matter.
-        return Difference (Set{this->GetElementEqualsComparer (), rhs});
+        /*
+         * We could iterate (doubly nested loop) over both *this and rhs, and that would avoid constructing
+         * an intermediate object. However, in the INNER loop, we would do an O(N) operation, and this way we
+         * probably have an (O(Log(N)) operation in the inner loop. At least for larger containers, that
+         * makes sense (except for requiring more memory temporarily). For smaller ones, it probably doesn't matter.
+         *
+         * OR - maybe better, could CLONE this, and iterate over rhs, and just remove els as needed. for special case where nothing removed
+         * that would be faster (because of COW), and maybe in general faster.
+         *
+         *  OR return Difference (Set{this->GetElementEqualsComparer (), rhs});
+         */
+        Set<T> result = *this;
+        for (auto i : rhs) {
+            result.Remove (i);
+        }
+        return result;
     }
     template <typename T>
     Set<T> Set<T>::Difference (ArgByValueType<T> rhs) const
     {
-        return Difference (Set{rhs});
+        /*
+         *  Could implement as return Difference (Set{rhs});
+         *  But due to COW in SharedByValue, this is better if 'rhs' not found in this.
+         */
+        Set<T> result = *this;
+        result.Remove (rhs);
+        return result;
     }
     template <typename T>
     inline Set<T>& Set<T>::operator+= (ArgByValueType<T> item)
@@ -529,7 +548,7 @@ namespace Stroika::Foundation::Containers {
         return lhs.Union (rhs);
     }
     template <typename T>
-    inline Set<T> operator- (const Set<T>& lhs, const Set<T>& rhs)
+    inline Set<T> operator- (const Set<T>& lhs, const Iterable<T>& rhs)
     {
         return lhs.Difference (rhs);
     }
@@ -540,6 +559,16 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     inline Set<T> operator^ (const Set<T>& lhs, const Iterable<T>& rhs)
+    {
+        return lhs.Intersection (rhs);
+    }
+    template <typename T>
+    inline Set<T> operator^ (const Iterable<T>& lhs, const Set<T>& rhs)
+    {
+        return rhs.Intersection (lhs); // intersection is commutative
+    }
+    template <typename T>
+    inline Set<T> operator^ (const Set<T>& lhs, const Set<T>& rhs)
     {
         return lhs.Intersection (rhs);
     }
