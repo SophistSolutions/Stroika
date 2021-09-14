@@ -40,14 +40,12 @@ namespace {
         RequireNotNull (ciphers);
         if (ciph != nullptr) {
 #if OPENSSL_VERSION_MAJOR >= 3
-            DbgTrace (L"cipher: %p (name: %s), provider: %p", ciph, CipherAlgorithm{ciph}.pName ().c_str (), ::EVP_CIPHER_get0_provider (ciph));
+            DbgTrace (L"cipher: %p (name: %s), provider: %p (name %s)", ciph,
+                      CipherAlgorithm{ciph}.pName ().c_str (),
+                      ::EVP_CIPHER_get0_provider (ciph),
+                      (::EVP_CIPHER_get0_provider (ciph) == nullptr ? L"null" : String::FromNarrowSDKString (::OSSL_PROVIDER_get0_name (::EVP_CIPHER_get0_provider (ciph))).c_str ()));
 #else
             DbgTrace (L"cipher: %p (name: %s)", ciph, CipherAlgorithm{ciph}.pName ().c_str ());
-#endif
-#if OPENSSL_VERSION_MAJOR >= 3
-            if (auto provider = ::EVP_CIPHER_get0_provider (ciph)) {
-                DbgTrace ("providername = %s", ::OSSL_PROVIDER_get0_name (provider));
-            }
 #endif
 #if 0
             int flags = ::EVP_CIPHER_flags (ciph);
@@ -62,14 +60,12 @@ namespace {
         RequireNotNull (digestNames);
         if (digest != nullptr) {
 #if OPENSSL_VERSION_MAJOR >= 3
-            DbgTrace (L"digest: %p (name: %s), provider: %p", digest, DigestAlgorithm{digest}.pName ().c_str (), ::EVP_MD_get0_provider (digest));
+            DbgTrace (L"digest: %p (name: %s), provider: %p (name %s)", 
+                digest, DigestAlgorithm{digest}.pName ().c_str (),
+                ::EVP_MD_get0_provider (digest),
+                      (::EVP_MD_get0_provider (digest) == nullptr ? L"null" : String::FromNarrowSDKString (::OSSL_PROVIDER_get0_name (::EVP_MD_get0_provider (digest))).c_str ()));
 #else
             DbgTrace (L"digest: %p (name: %s)", digest, DigestAlgorithm{digest}.pName ().c_str ());
-#endif
-#if OPENSSL_VERSION_MAJOR >= 3
-            if (auto provider = ::EVP_MD_get0_provider (digest)) {
-                DbgTrace ("providername = %s", ::OSSL_PROVIDER_get0_name (provider));
-            }
 #endif
             digestNames->Add (DigestAlgorithm{digest}.pName ());
         }
