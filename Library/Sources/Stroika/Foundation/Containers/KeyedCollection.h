@@ -18,6 +18,12 @@
 /*
  *  \file
  *
+ * 
+ * 
+ * 
+ *              &&&& PROBABLY IDEA OBSOLETED by Set<T>::mkComparerByIDExtract method -- LGP 2021-09-14
+ * 
+ * 
  *          NYI
  *
  *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a> --- NOFUNCTIONAL DRAFT
