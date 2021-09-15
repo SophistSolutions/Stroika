@@ -130,10 +130,7 @@ namespace Stroika::Foundation::Containers {
          *  Instead do Set<T> with equalsComparer = mkSetComparerByIDExtract ([] (T t) { return t.fID; });
          */
         template <typename ID>
-        static ElementEqualityComparerType mkComparerByIDExtract (const function<ID (T)>& idExtractor)
-        {
-            return [idExtractor] (const T& lhs, const T& rhs) { return idExtractor (lhs) == idExtractor (rhs); };
-        }
+        static ElementEqualityComparerType mkComparerByIDExtract (const function<ID (T)>& idExtractor);
 
     public:
         /**
