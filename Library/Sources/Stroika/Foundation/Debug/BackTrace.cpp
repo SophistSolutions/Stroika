@@ -93,7 +93,7 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
     constexpr size_t kMaxStackSize_ = 100; // could look at return size and re-run if equals exactly...
     // @todo combine maxFrames with trial and error on backtrace() calls
     void*  stackTraceBuf[kMaxStackSize_]{};
-    int    nptrs = ::backtrace (stackTraceBuf, NEltsOf (stackTraceBuf));
+    int    nptrs = ::backtrace (stackTraceBuf, Memory::NEltsOf (stackTraceBuf));
     char** syms  = ::backtrace_symbols (stackTraceBuf, nptrs);
     if (syms == NULL) {
         //DbgTrace ("%d errno", errno); // perror("backtrace_symbols");
