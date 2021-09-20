@@ -221,8 +221,18 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        nonvirtual bool Contains (ArgByValueType<T> item) const;
-        nonvirtual bool Contains (const Iterable<T>& items) const;
+        nonvirtual bool                                                         Contains (ArgByValueType<T> item) const;
+        nonvirtual [[deprecated ("Since Stroika 2.1b14 use ContainsAny")]] bool Contains (const Iterable<T>& items) const;
+
+    public:
+        /**
+         */
+        nonvirtual bool ContainsAll (const Iterable<T>& items) const;
+
+    public:
+        /**
+         */
+        nonvirtual bool ContainsAny (const Iterable<T>& items) const;
 
     public:
         /**
@@ -295,7 +305,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  RemoveIf item if not already present. Whether present or not it does the same thing and
+         *  RemoveIf item if present. Whether present or not it does the same thing and
          *  assures the item is no longer present, but returns true iff the call made a change (removed
          *  the item).
          *

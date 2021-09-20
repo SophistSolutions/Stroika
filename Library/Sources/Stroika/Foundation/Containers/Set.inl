@@ -126,6 +126,26 @@ namespace Stroika::Foundation::Containers {
         return true;
     }
     template <typename T>
+    bool Set<T>::ContainsAll (const Iterable<T>& items) const
+    {
+        for (auto i : items) {
+            if (not Contains (i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    template <typename T>
+    bool Set<T>::ContainsAny (const Iterable<T>& items) const
+    {
+        for (auto i : items) {
+            if (Contains (i)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    template <typename T>
     bool Set<T>::IsSubsetOf (const Set& superset) const
     {
         for (auto i : *this) {
