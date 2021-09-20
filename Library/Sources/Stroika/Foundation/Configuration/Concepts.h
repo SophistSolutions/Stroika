@@ -199,6 +199,11 @@ namespace Stroika::Foundation::Configuration {
     template <typename T>
     using is_callable = conditional_t<is_class_v<T>, Private_::is_callable_impl_<T>, false_type>;
 
+    /**
+     */
+    template <typename T>
+    constexpr bool is_callable_v = is_callable<T>::value;
+
     // handy to have remove_cvref/remove_cvref_t definition around, even if using pre-c++20
     // Put in our namespace, and when we switch to C++20, we can deprecate our local namespace copy
 #if __cplusplus < kStrokia_Foundation_Configuration_cplusplus_20
