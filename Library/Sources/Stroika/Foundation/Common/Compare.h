@@ -312,13 +312,16 @@ namespace Stroika::Foundation::Common {
      */
     template <ComparisonRelationType KIND, typename ACTUAL_COMPARER = void>
     struct ComparisonRelationDeclaration {
-        static constexpr ComparisonRelationType kComparisonRelationKind = KIND; // accessed by ExtractComparisonTraits<>
-        ACTUAL_COMPARER                         fActualComparer;
+        static constexpr inline ComparisonRelationType kComparisonRelationKind{KIND}; // accessed by ExtractComparisonTraits<>
+        ACTUAL_COMPARER                                fActualComparer;
 
         /**
          */
+        constexpr ComparisonRelationDeclaration () = default;
+        constexpr ComparisonRelationDeclaration (nullptr_t);
         constexpr ComparisonRelationDeclaration (const ACTUAL_COMPARER& actualComparer);
         constexpr ComparisonRelationDeclaration (ACTUAL_COMPARER&& actualComparer);
+        constexpr ComparisonRelationDeclaration (const ComparisonRelationDeclaration& src) = default;
 
         /**
          */

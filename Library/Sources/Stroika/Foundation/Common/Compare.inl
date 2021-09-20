@@ -121,7 +121,10 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <ComparisonRelationType KIND, typename ACTUAL_COMPARER>
-    constexpr ComparisonRelationType ComparisonRelationDeclaration<KIND, ACTUAL_COMPARER>::kComparisonRelationKind;
+    inline constexpr ComparisonRelationDeclaration<KIND, ACTUAL_COMPARER>::ComparisonRelationDeclaration (nullptr_t)
+        : fActualComparer{nullptr}
+    {
+    }
     template <ComparisonRelationType KIND, typename ACTUAL_COMPARER>
     inline constexpr ComparisonRelationDeclaration<KIND, ACTUAL_COMPARER>::ComparisonRelationDeclaration (const ACTUAL_COMPARER& actualComparer)
         : fActualComparer{actualComparer}
