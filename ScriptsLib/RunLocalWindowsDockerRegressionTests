@@ -12,16 +12,19 @@ DOCKER="${DOCKER:-docker.exe}"
 
 ## Unclear why we need --interactive, but without it, the shell stops and we cannot exec anything -- LGP 2020-03-09
 # Due to https://stroika.atlassian.net/browse/STK-742 - add   --network "Default Switch" 
+#https://stackoverflow.com/questions/67162945/docker-for-windows-the-requested-resource-is-in-use-error-when-mem-limit-is-set
+#   --memory 8G 
+
 echo "Running docker build (usually takes about 5 hrs)"
 $DOCKER run \
     --detach \
     --interactive \
     --storage-opt "size=100GB" \
-    --memory 8G \
-    --cpus 4\
+    --cpus 8\
     --network "Default Switch" \
     --name $CONTAINER_NAME \
     $CONTAINER_IMAGE
+
 $DOCKER exec \
     $CONTAINER_NAME \
     sh -c "git clone https://github.com/SophistSolutions/Stroika.git --branch $BRANCH"
@@ -29,7 +32,7 @@ $DOCKER exec \
     --workdir c:/Stroika \
     --env USE_TEST_BASENAME=$USE_TEST_BASENAME \
     $CONTAINER_NAME \
-    sh -c "PARALELLMAKEFLAG=-j4 ./ScriptsLib/RegressionTests"
+    sh -c "PARALELLMAKEFLAG=-j8 ./ScriptsLib/RegressionTests"
 $DOCKER stop $CONTAINER_NAME
 echo "Done with build, so copying out results to (Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_BASENAME-$VERSION-OUT.txt Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$VERSION.txt)"
 $DOCKER cp $CONTAINER_NAME:Stroika/Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_BASENAME-$VERSION-OUT.txt Tests/HistoricalRegressionTestResults/
